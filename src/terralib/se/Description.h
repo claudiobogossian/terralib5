@@ -1,0 +1,120 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file Description.h
+  
+  \brief A Description gives human-readable descriptive information for the object it is included within.
+ */
+
+#ifndef __TERRALIB_SE_INTERNAL_DESCRIPTION_H
+#define __TERRALIB_SE_INTERNAL_DESCRIPTION_H
+
+// TerraLib
+#include "../common/BaseVisitable.h"
+#include "Config.h"
+#include "Visitor.h"
+
+// STL
+#include <string>
+
+namespace te
+{
+  namespace se
+  {
+    /*!
+      \class Description
+      
+      \brief A Description gives human-readable descriptive information for the object it is included within.
+
+      This information can be extracted and used
+      for such purposes as creating informal searchable
+      metadata in catalogue systems. More metadata
+      fields may be added to this element in the future.
+
+      \sa Symbolizer, CoverageStyle, Rule, FeatureTypeStyle, CoverageStyle
+     */
+    class TESEEXPORT Description
+    {
+      public:
+
+        /** @name Initializer Methods
+         *  Methods related to instantiation and destruction.
+         */
+        //@{
+
+        /*! \brief It initializes a new Description. */
+        Description();
+
+        /*! \brief Destructor. */
+        ~Description();
+
+        //@}
+
+        /** @name Accessor methods
+         *  Methods used to get or set properties.
+         */
+        //@{
+
+        void setTitle(const std::string& title);
+
+        const std::string& getTitle() const;
+
+        void setAbstract(const std::string& a);
+
+        const std::string& getAbstract() const;
+
+        //@}
+
+        private:
+
+        /** @name Not Allowed Methods
+         *  No copy allowed. 
+         */
+        //@{
+
+        /*!
+          \brief No copy constructor allowed.
+
+          \param rhs The other Description.
+         */
+        Description(const Description& rhs);
+
+        /*!
+          \brief No assignment operator allowed.
+
+          \param rhs The other Description.
+
+          \return A reference for this.
+         */
+        Description& operator=(const Description& rhs);
+
+        //@}
+
+      private:
+
+        std::string m_title;     //!< Title. (Optional)
+        std::string m_abstract;  //!< Abstract. (Optional)
+    };    
+
+  } // end namespace se
+}   // end namespace te
+
+#endif  // __TERRALIB_SE_INTERNAL_DESCRIPTION_H
+

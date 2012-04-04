@@ -1,0 +1,436 @@
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*! 
+  \file terralib/srs/Converter.cpp
+
+  \brief This file contains the support to convert coordinates from a SRS to another.
+*/
+
+// TerraLib
+#include "../common/Exception.h"
+#include "../common/Translator.h"
+#include "Config.h"
+#include "Converter.h"
+#include "CoordinateSystemFactory.h"
+#include "Module.h"
+
+#ifdef TE_USE_PROJ4
+// proj4
+#include <proj_api.h>
+#endif
+
+// STL
+#include <cassert>
+#include <cstring>
+
+te::srs::Converter::Converter():
+  m_targetSRID(-1),
+  m_sourceSRID(-1),
+  m_sourcePj4Handler(0),
+  m_targetPj4Handler(0)
+{
+}
+
+te::srs::Converter::Converter(int sourceSRID, int targetSRID):
+  m_targetSRID(targetSRID),
+  m_sourceSRID(sourceSRID),
+  m_sourcePj4Handler(0),
+  m_targetPj4Handler(0)
+{
+#ifdef TE_USE_PROJ4  
+  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",sourceSRID);
+  if (description.empty())
+    throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+
+  m_sourcePj4Handler = pj_init_plus(description.c_str());
+  if (!m_sourcePj4Handler)
+  {
+    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::common::Exception(exceptionTxt);
+  }  
+  
+  description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",targetSRID);
+  if ( description.empty())
+      throw te::common::Exception(TR_SRS("Target SRS ID not recognized."));
+
+  m_targetPj4Handler = pj_init_plus(description.c_str());
+  if (!m_targetPj4Handler)
+  {
+    std::string exceptionTxt = TR_SRS("srs Target SRS description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::common::Exception(exceptionTxt);
+  }
+#endif
+}
+
+te::srs::Converter::~Converter()
+{
+  m_sourceSRID = -1;
+  m_targetSRID= -1;
+
+#ifdef TE_USE_PROJ4 
+  pj_free(m_sourcePj4Handler);
+  pj_free(m_targetPj4Handler);
+#endif  
+  m_sourcePj4Handler = 0;
+  m_targetPj4Handler = 0;
+}
+
+void 
+te::srs::Converter::setSourceSRID(int sourceSRID)
+{
+#ifdef TE_USE_PROJ4 
+  if (m_sourcePj4Handler)
+  {
+    pj_free(m_sourcePj4Handler);
+    m_sourcePj4Handler = 0;
+  }
+
+  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",sourceSRID);
+  if ( description.empty())
+      throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+
+  m_sourcePj4Handler = pj_init_plus(description.c_str());
+  if (!m_sourcePj4Handler)
+  {
+    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::common::Exception(exceptionTxt);
+  }
+#endif
+  m_sourceSRID = sourceSRID;  
+}
+
+int 
+te::srs::Converter::getSourceSRID() const
+{
+  return m_sourceSRID;
+}
+
+void 
+te::srs::Converter::setTargetSRID(int targetSRID)
+{
+#ifdef TE_USE_PROJ4 
+  if (m_targetPj4Handler)
+  {
+    pj_free(m_targetPj4Handler);
+    m_targetPj4Handler = 0;
+  }
+
+  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",targetSRID);
+  if ( description.empty())
+      throw te::common::Exception(TR_SRS("Target SRS ID not recognized."));
+
+  m_targetPj4Handler = pj_init_plus(description.c_str());
+  if (!m_targetPj4Handler)
+  {
+    std::string exceptionTxt = TR_SRS("srs Target SRS description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::common::Exception(exceptionTxt);
+  }
+#endif
+  m_targetSRID = targetSRID;  
+}
+
+int 
+te::srs::Converter::getTargetSRID() const
+{
+  return m_targetSRID;
+}
+
+bool
+te::srs::Converter::convert(double *xIn, double *yIn, double *xOut, double* yOut, long numCoord, int coordOffset) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  memcpy(xOut, xIn, numCoord*sizeof(double));
+  memcpy(yOut, yIn, numCoord*sizeof(double));
+
+  if (pj_is_latlong(m_sourcePj4Handler))
+    for (long i=0; i<numCoord; xOut[i*coordOffset]*=DEG_TO_RAD, yOut[i*coordOffset]*=DEG_TO_RAD,  ++i);
+
+  int res = pj_transform(m_sourcePj4Handler, m_targetPj4Handler,  numCoord, coordOffset, xOut, yOut, 0);
+
+  if (res==0 && pj_is_latlong(m_targetPj4Handler))
+    for (long i=0; i<numCoord; xOut[i*coordOffset]*=RAD_TO_DEG,yOut[i*coordOffset]*=RAD_TO_DEG, ++i);
+
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::convert(double *x, double* y, long numCoord, int coordOffset) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  if (pj_is_latlong(m_sourcePj4Handler))
+    for (long i=0; i<numCoord; x[i*coordOffset]*=DEG_TO_RAD, y[i*coordOffset]*=DEG_TO_RAD,  ++i);
+
+  int res = pj_transform(m_sourcePj4Handler, m_targetPj4Handler,  numCoord, coordOffset, x, y, 0);
+
+  if (res==0 && pj_is_latlong(m_targetPj4Handler))
+    for (long i=0; i<numCoord; x[i*coordOffset]*=RAD_TO_DEG,y[i*coordOffset]*=RAD_TO_DEG, ++i);
+
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::convert(const double xIn, const double yIn, double &xOut, double &yOut) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  xOut = xIn;
+  yOut = yIn;
+
+  if (pj_is_latlong(m_sourcePj4Handler))
+  {
+    xOut *= DEG_TO_RAD;
+    yOut *= DEG_TO_RAD;  
+  }
+
+  int res = pj_transform(m_sourcePj4Handler, m_targetPj4Handler,  1, 1, &xOut, &yOut, 0);
+
+  if (pj_is_latlong(m_targetPj4Handler))
+  {
+    xOut *= RAD_TO_DEG;
+    yOut *= RAD_TO_DEG;  
+  }
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::convert(double &x, double &y) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  if (pj_is_latlong(m_sourcePj4Handler))
+  {
+    x *= DEG_TO_RAD;
+    y *= DEG_TO_RAD;  
+  }
+
+  int res = pj_transform(m_sourcePj4Handler, m_targetPj4Handler,  1, 1, &x, &y, 0);
+
+  if (pj_is_latlong(m_targetPj4Handler))
+  {
+    x *= RAD_TO_DEG;
+    y *= RAD_TO_DEG;  
+  }
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::invert(double *xIn, double *yIn, double *xOut, double* yOut, long numCoord, int coordOffset) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  memcpy(xOut, xIn, numCoord*sizeof(double));
+  memcpy(yOut, yIn, numCoord*sizeof(double));
+
+  if (pj_is_latlong(m_targetPj4Handler))
+    for (long i=0; i<numCoord; xOut[i*coordOffset]*=DEG_TO_RAD, yOut[i*coordOffset]*=DEG_TO_RAD, ++i);
+
+  int res = pj_transform(m_targetPj4Handler, m_sourcePj4Handler,  numCoord, coordOffset, xOut, yOut, 0);
+
+  if (res==0 && pj_is_latlong(m_sourcePj4Handler))
+    for (long i=0; i<numCoord; xOut[i*coordOffset]*=RAD_TO_DEG, yOut[i*coordOffset]*=RAD_TO_DEG, ++i);
+
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::invert(double *x, double* y, long numCoord, int coordOffset) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  if (pj_is_latlong(m_targetPj4Handler))
+    for (long i=0; i<numCoord; x[i*coordOffset]*=DEG_TO_RAD, y[i]*=DEG_TO_RAD, ++i);
+
+  int res = pj_transform(m_targetPj4Handler, m_sourcePj4Handler,  numCoord, coordOffset, x, y, 0);
+
+  if (res==0 && pj_is_latlong(m_sourcePj4Handler))
+    for (long i=0; i<numCoord; x[i*coordOffset]*=RAD_TO_DEG, y[i]*=RAD_TO_DEG, ++i);
+
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::invert(const double xIn, const double yIn, double &xOut, double &yOut) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  xOut = xIn;
+  yOut = yIn;
+
+  if (pj_is_latlong(m_targetPj4Handler))
+  {
+    xOut *= DEG_TO_RAD;
+    yOut *= DEG_TO_RAD;  
+  }
+
+  int res = pj_transform(m_targetPj4Handler, m_sourcePj4Handler,  1, 1, &xOut, &yOut, 0);
+
+  if (res==0 && pj_is_latlong(m_sourcePj4Handler))
+  {
+    xOut *= RAD_TO_DEG;
+    yOut *= RAD_TO_DEG;  
+  }
+  
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool
+te::srs::Converter::invert(double &x, double &y) const
+{
+#ifdef TE_USE_PROJ4 
+  assert(m_sourcePj4Handler);
+  assert(m_targetPj4Handler);
+
+  if (pj_is_latlong(m_targetPj4Handler))
+  {
+    x *= DEG_TO_RAD;
+    y *= DEG_TO_RAD;  
+  }
+
+  int res = pj_transform(m_targetPj4Handler, m_sourcePj4Handler,  1, 1, &x, &y, 0);
+
+  if (res==0 && pj_is_latlong(m_sourcePj4Handler))
+  {
+    x *= RAD_TO_DEG;
+    y *= RAD_TO_DEG;  
+  }
+
+  return (res == 0);
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+
+bool 
+te::srs::Converter::convertToGeographic(double &x, double &y, int SRID) const
+{
+#ifdef TE_USE_PROJ4 
+
+  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",SRID);
+  if (description.empty())
+    throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+  
+  projPJ pjhProj = pj_init_plus(description.c_str());
+  if (!pjhProj)
+  {
+    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::common::Exception(exceptionTxt);
+  }
+
+  if (pj_is_latlong(pjhProj))
+  {
+    pj_free(pjhProj);
+    return true;
+  }
+  
+  projPJ pjhGeog = pj_latlong_from_proj(pjhProj);
+  int res = pj_transform(pjhGeog, pjhProj, 1, 1, &x, &y, 0);
+  pj_free(pjhProj);
+  pj_free(pjhGeog);
+
+  if (res == 0)
+  {
+    x *= RAD_TO_DEG;
+    y *= RAD_TO_DEG;
+    return true;
+  }
+  return false;
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+}
+
+bool te::srs::Converter::convertToProjected(double &lon, double &lat, int SRID) const
+{
+#ifdef TE_USE_PROJ4 
+  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",SRID);
+  if (description.empty())
+    throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+  
+  projPJ pjhProj = pj_init_plus(description.c_str());
+  if (!pjhProj)
+  {
+    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::common::Exception(exceptionTxt);
+  }
+  projPJ pjhGeog = pj_latlong_from_proj(pjhProj);
+
+  lon *= DEG_TO_RAD;
+  lat *= DEG_TO_RAD;  
+  int res = pj_transform(pjhProj, pjhGeog, 1, 1, &lon, &lat, 0);
+
+  pj_free(pjhProj);
+  pj_free(pjhGeog);  
+  return (res == 0);
+
+#else
+  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+#endif
+
+}

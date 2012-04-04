@@ -1,0 +1,20 @@
+====================================================
+              (!!UNDER DEVELOPMENT!!)
+====================================================
+
+This folder contains some helper scripts to create
+install packages for the TerraLib Platform.
+
+targets:
+--------
+nsis        Scripts for the NSIS installer.
+			
+      
+Any problems encountered with these installers
+should be reported to terralib-team@dpi.inpe.br.
+
+                           @-TerraLib Team-@
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            01/01/2011
+							

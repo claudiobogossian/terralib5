@@ -1,0 +1,107 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/common/Enums.h
+
+  \brief General enumerations.
+ */
+
+#ifndef __TERRALIB_COMMON_INTERNAL_ENUMS_H
+#define __TERRALIB_COMMON_INTERNAL_ENUMS_H
+
+namespace te
+{
+  namespace common
+  {
+    /*!
+      \enum AccessPolicy
+
+      \brief Supported data access policies (can be used as bitfield).
+    */
+    enum AccessPolicy
+    {          
+      NoAccess = 0, /*!< No access allowed             */
+      RAccess = 1,  /*!< Read-only access allowed      */
+      WAccess = 2,  /*!< Write-only access allowed     */
+      RWAccess = 3  /*!< Read and write access allowed */
+    };
+
+    /*!
+      \enum TraverseType
+      
+      \brief A dataset can be traversed in two ways:
+    */
+    enum TraverseType
+    {
+      FORWARDONLY = 0,    /*!< Used when the dataset is only able to move forward.                */
+      BIDIRECTIONAL = 1,  /*!< Used when the dataset is able to move forward and backward.        */
+      RANDOM = 2,         /*!< Used when the dataset is able to move to any item.                 */
+      INDEXED = 3,        /*!< Used when the dataset is able to move to an item indexed by a key. */
+    };
+
+    /*!
+      \enum LoggerConfigurationType
+          
+      \brief Each enumerated type tells TerraLib how the configuration is done for a logger. 
+    */
+    enum LoggerConfigurationType
+    {
+      LOGGER_XML_CONFIG,     /*!< It indicates the use of a XML based configuration for a logger.             */
+      LOGGER_TXT_CONFIG      /*!< It indicates the use of a plain text file based configuration for a logger. */
+    };
+
+    /*!
+      \enum MeasureType
+
+      \brief Defines the type of measure associated to a unit.
+    */
+    enum MeasureType
+    {
+      LengthMeasure,
+      AreaMeasure,
+      VolumeMeasure,
+      AngleMeasure,
+      ScaleMeasure,
+      TimeMeasure,
+      SpeedMeasure
+    };
+
+    enum Hemisphere
+    {
+      NorthHem = 0,  /*!< North hemisphere. */
+      SouthHem = 1   /*!< South hemisphere. */
+    };
+
+    /*!
+      \enum MachineByteOrder
+
+      \brief Endianness.
+    */
+    enum MachineByteOrder
+    {
+      XDR = 0,  /*!< Big endian.   */
+      NDR = 1   /*!< Little endian. */
+    };
+
+  } // end namespace common
+}   // end namespace te
+
+#endif  // __TERRALIB_COMMON_INTERNAL_ENUMS_H
+

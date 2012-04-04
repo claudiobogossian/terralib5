@@ -1,0 +1,159 @@
+
+                      =====================================================================
+                      Instructions for Compiling TerraLib, Examples and Unittest with CMake
+                      =====================================================================
+
+In order to compile TerraLib, Examples and Unittest projects you need to install the CMake tool that
+builds the compiling environment for the Windows, Linux, and Mac platforms.
+
+The CMake tool can be found in "http://www.cmake.org" and it builds the environment for compiling 
+libraries and executables based on files named CMakeLists.txt that contains CMake scripts with commands,
+macros, and functions.
+  
+===================================
+In-source vs Out-of-source Building
+===================================
+
+We have to consider where to put the resulting object files, libraries, and executables.
+There are two different approaches commonly used:
+- in-source build:     the binary files are produced in the same directory as the source files;
+- out-of-source build: the binary files are put into a separate tree that has the same structure as the source tree.
+
+In the examples below we will use the "out-of-source build" because it doesn't pollute the source directories where 
+the CMake scripts are located, making easy the clean up of the binaries built.
+
+=========================================================
+Directory Root Where TerraLib is Supposed to be Installed
+=========================================================
+
+Depending on the platform used, we will suppose that TerraLib5 is installed in the following directory:
+  - Windows:       "C:/Users/<user_name>/terralib5/trunk"
+  - Linux and Mac: "/home/<user_name>/terralib5/trunk"
+  
+We will refer to this directory as the TerraLib Root Directory, or plainly as <terralib_root>.
+
+=====================================================
+Directory Where The Projects Are Supposed to be Built
+=====================================================
+
+Depending on the platform used, we will suppose that TerraLib, the Examples and Unittest
+projects will be built in the following directory:
+  - Windows:       "C:/Users/<user_name>/terralib_build"
+  - Linux and Mac: "/home/<user_name>/terralib_build"
+  
+This directory will be referred as the Building Directory, or plainly as <building_dir>.
+
+==============================================
+Instructions for Compiling TerraLib with CMake
+==============================================
+
+The directory "<terralib_root>/build/terralib" contains a CMakeLists.txt with references to all the TerraLib
+projects (all project), while each of their sub-directories contain the script specific for a TerraLib project:
+    
+To obey the same tree structure as the "<terralib_root>/build" we will create a terralib directory in
+<building_dir>:
+
+     mkdir <building_dir>/terralib
+     
+where will be generated the compiling environment for the target platform.
+
+There are two ways for compiling TerraLib:
+- Using the CMake GUI;
+- Using the Command Prompt.
+
+-------------------
+Using the CMake GUI
+-------------------
+1. In the CMake GUI interface there are two fields called "Where is the source code:"
+and "Where to build the binaries:". These fields must be filled with:
+
+  Where is the source code:    <terralib_root>/build/terralib
+  Where to build the binaries: <building_dir>/terralib
+
+2. We can then press the Configure button that will pop up a window asking for the generator to be used.
+   In the case of the Windows platform you will select the Visual Studio 10.
+
+3. Next we will press the Generate button that will generate the environment needed to compile the TerraLib projects.
+
+4. We can then proceed to compile the TerraLib projects, calling the all.sln solution for Windows or the make
+   command for the Linux or Mac platforms in the directory "<building_dir>/terralib".
+
+------------------------
+Using the Command Prompt
+------------------------
+1. In the Command Prompt, go to the directory "<building_dir>/terralib"
+
+    cd <building_dir>/terralib
+
+2. In this directory the following command must be given:
+
+    cmake -G "Visual Studio 10"  "<terralib_root>/build/terralib"  (for Windows)
+    
+    cmake -G "Unix Makefiles"    "<terralib_root>/build/terralib"  (for UNIX-style platforms)
+       
+4. We can then proceed to compile the TerraLib projects, calling the all.sln solution for Windows or the make
+   command for the Linux or Mac platforms in the directory "<building_dir>/terralib".
+
+===================================================
+How to Build a Specific TerraLib Module Using CMake
+===================================================
+
+If you want to build a specific TerraLib module, for example the common module, that is found in the
+directory "<terralib_root>/terralib/terralib_common", you can proceed the same steps as described above:
+
+  - Create the directory "<building_dir>/terralib/terralib_common"
+  
+  - Using the CMake GUI:
+  
+      Where is the source code:    <terralib_root>/build/terralib/terralib_common
+      Where to build the binaries: <building_dir>/terralib/terralib_common
+      
+  - Using the Command Prompt:
+     
+      cd "<building_dir>/terralib/terralib_common"
+      
+      cmake -G "Visual Studio 10"   "<terralib_root>/build/terralib/terralib_common"  (for Windows)
+      
+      cmake -G "Unix Makefiles"     "<terralib_root>/build/terralib/terralib_common"  (for UNIX-style platforms)
+
+      
+===============================================
+Compiling TerraLib Using Eclipse CDT4 Generator
+===============================================
+
+It is mandatory to use the Command Prompt to generate the Debug version for the
+TerraLib projects using the Eclipse CDT4 Generator, through the following commands:
+
+  cd "<building_dir>/terralib"
+
+  cmake -G "Eclipse CDT4 - Unix Makefiles" -D CMAKE_BUILD_TYPE=Debug "<terralib_root>/build/terralib"
+
+The command above will create the files .project and .cproject in the directory "<building_dir>/terralib"
+
+Import the created project file into Eclipse:
+     - Import project using Menu File->Import
+     - Select General->Existing projects into workspace:
+     - Browse where your build tree is and select the directory "<building_dir>/terralib".
+       Keep "Copy projects into workspace" unchecked.
+     - You get a fully functional eclipse project.
+     
+     
+====================================================================
+Instructions for Compiling Examples and Unittest projects with CMake
+====================================================================
+
+The proceedings for compiling the Examples and Unittest projects are similar to the 
+TerraLib projects.
+
+The source code directory will be:
+  
+  <terralib_root>/build/examples  (for the Examples projects)
+  <terralib_root>/build/unittest  (for the Unittest projects)
+  
+The building directory will be:
+  
+  <building_dir>/examples  (for the Examples projects)
+  <building_dir>/unittest  (for the Unittest projects)
+  
+  
+

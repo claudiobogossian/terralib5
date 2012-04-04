@@ -1,0 +1,128 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file ChannelSelection.h
+  
+  \brief ChannelSelection specifies the false-color channel selection for a multi-spectral raster source (such as a multi-band satellite-imagery source).
+ */
+
+#ifndef __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
+#define __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
+
+// TerraLib
+#include "../common/BaseVisitable.h"
+#include "Config.h"
+#include "Visitor.h"
+
+namespace te
+{
+  namespace se
+  { 
+// Forward declaration
+    class SelectedChannel;
+
+    /*!
+      \class ChannelSelection
+      
+      \brief ChannelSelection specifies the false-color channel selection for a multi-spectral raster source (such as a multi-band satellite-imagery source).
+
+      Either a channel may be selected to display in
+      each of red, green, and blue, or a single channel
+      may be selected to display in grayscale. (The
+      spelling "gray" is used since it seems to be
+      more common on the Web than "grey" by a ratio
+      of about 3:1.) Contrast enhancement may be applied
+      to each channel in isolation. Channels are identified
+      by a system and data-dependent character identifier.
+      Commonly, channels will be labelled as "1", "2", etc.
+
+      \sa RasterSymbolizer, SelectedChannel
+     */
+    class TESEEXPORT ChannelSelection
+    {
+      public:
+
+        /** @name Initializer Methods
+         *  Methods related to instantiation and destruction.
+         */
+        //@{  
+
+        /*! \brief It initializes a new ChannelSelection. */
+        ChannelSelection();
+
+        /*! \brief Destructor. */
+        ~ChannelSelection();
+
+        //@}
+
+        /** @name Accessor methods
+         *  Methods used to get or set properties.
+         */
+        //@{
+
+        void setRedChannel(SelectedChannel* c);
+        SelectedChannel* getRedChannel() { return m_redChannel; }
+        void setGreenChannel(SelectedChannel* c);
+        SelectedChannel* getGreenChannel() { return m_greenChannel; }
+        void setBlueChannel(SelectedChannel* c);
+        SelectedChannel* getBlueChannel() { return m_blueChannel; }
+        void setGrayChannel(SelectedChannel* c);
+        SelectedChannel* getGrayChannel() { return m_grayChannel; }
+        
+        //@}
+
+      private:
+
+        /** @name Not Allowed Methods
+         *  No copy allowed. 
+         */
+        //@{
+
+        /*!
+          \brief No copy constructor allowed.
+
+          \param rhs The other ChannelSelection.
+         */
+        ChannelSelection(const ChannelSelection& rhs);
+
+        /*!
+          \brief No assignment operator allowed.
+
+          \param rhs The other ChannelSelection.
+
+          \return A reference for this.
+         */
+        ChannelSelection& operator=(const ChannelSelection& rhs);
+
+        //@}
+
+      private:
+
+        SelectedChannel* m_redChannel;     //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if grayChannel_ is not informed)
+        SelectedChannel* m_greenChannel;   //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if grayChannel_ is not informed)
+        SelectedChannel* m_blueChannel;    //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if grayChannel_ is not informed)
+        SelectedChannel* m_grayChannel;    //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if redChannel_, greenChannel_ and blueChannel_ is not informed)
+    };    
+
+  } // end namespace se
+}   // end namespace te
+
+#endif  // __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
+

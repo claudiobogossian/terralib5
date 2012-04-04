@@ -1,0 +1,218 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file PlatformUtils.cpp
+
+  \brief This file contains several utility functions when dealing with Linux specific API.
+*/
+
+// TerraLib
+#include "Exception.h"
+#include "PlatformUtils.h"
+
+// STL
+#include <fstream>
+
+// O.S. Specific
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#include <windows.h>
+#include <winbase.h>
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_AIX || TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD
+#include <cstring>
+#include <errno.h>
+#include <dirent.h>
+#include <malloc.h>
+#include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/sysctl.h>
+#include <sys/types.h>  
+#include <unistd.h>
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#include <cstdlib>
+#include <dirent.h>
+#include <sys/stat.h>  
+#include <sys/sysctl.h> 
+
+#else
+  #error "Unsuported plataform for physical memory checking"
+#endif
+
+namespace te
+{
+  namespace common
+  {
+    unsigned long int GetFreePhysicalMemory()
+    {
+      unsigned long int freemem = 0;
+
+#if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      unsigned int usermem;
+
+      std::size_t usermem_len = sizeof(usermem);
+
+      int mib[2] = { CTL_HW, HW_USERMEM };
+        
+      if(sysctl(mib, (2 * sizeof(int)), &usermem, &usermem_len, NULL, 0) == 0)
+      {
+        freemem = static_cast<unsigned long int>(usermem);
+      }
+      else
+      {
+        throw Exception("Could not get free physical memory!");
+      }
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+      freemem = static_cast<unsigned long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_AVPHYS_PAGES) );
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
+      GlobalMemoryStatus(status_buffer);
+      freemem = static_cast<unsigned long int>(status_buffer->dwAvailPhys);
+      delete status_buffer;
+#else
+  #error "Unsuported plataform for physical memory checking"
+#endif
+
+      return freemem;
+    }
+
+    unsigned long int GetTotalPhysicalMemory()
+    {
+      unsigned long int totalmem = 0;
+
+#if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      unsigned int physmem = 0;
+
+      std::size_t physmem_len = sizeof(physmem);
+
+      int mib[2] = { CTL_HW, HW_PHYSMEM };
+        
+      if(sysctl(mib, (2 * sizeof(int)), &physmem, &physmem_len, NULL, 0) == 0)
+      {
+        totalmem = static_cast<unsigned long int>(physmem); 
+      }
+      else
+      {
+        throw Exception("Could not get total physical memory!");
+      }
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+      totalmem = static_cast<unsigned long int>( sysconf(_SC_PAGESIZE) * sysconf(_SC_PHYS_PAGES) );
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
+      GlobalMemoryStatus(status_buffer);
+      totalmem = static_cast<unsigned long int>(status_buffer->dwTotalPhys);
+      delete status_buffer;
+#else
+  #error "Unsuported plataform for physical memory checking"
+#endif
+
+      return totalmem;
+    }
+
+    unsigned long int GetUsedVirtualMemory()
+    {
+      unsigned long int usedmem = 0;
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_FREEBSD || TE_PLATFORM == TE_PLATFORMCODE_OPENBSD
+      struct rusage rusageinfo;
+      getrusage( RUSAGE_SELF, &rusageinfo );
+      usedmem = static_cast<unsigned long int>(1024 * rusageinfo.ru_maxrss);
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+      std::string pid, comm, state, ppid, pgrp, session, tty_nr, 
+                  tpgid, flags, minflt, cminflt, majflt, cmajflt,
+                  utime, stime, cutime, cstime, priority, nice,
+                  stringO, itrealvalue, starttime;
+      
+      std::ifstream stat_stream("/proc/self/stat", std::ios_base::in); 
+        
+      stat_stream >> pid >> comm >> state >> ppid >> pgrp >> session >> tty_nr 
+                  >> tpgid >> flags >> minflt >> cminflt >> majflt >> cmajflt 
+                  >> utime >> stime >> cutime >> cstime >> priority >> nice 
+                  >> stringO >> itrealvalue >> starttime >> usedmem;    
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_AIX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      struct rusage rusageinfo;
+      getrusage(RUSAGE_SELF, &rusageinfo);
+      usedmem = static_cast<unsigned long int>(1024 * rusageinfo.ru_maxrss);
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
+      GlobalMemoryStatus( status_buffer );
+      usedmem = static_cast<unsigned long int>(status_buffer->dwTotalVirtual - status_buffer->dwAvailVirtual);
+      delete status_buffer;
+
+#else
+  #error "Unsuported plataform for virtual memory checking"
+#endif
+
+      return usedmem;
+    }
+
+
+    unsigned long int GetTotalVirtualMemory()
+    {
+      unsigned long int totalmem = 0;
+
+#if (TE_PLATFORM == TE_PLATFORMCODE_FREEBSD) || (TE_PLATFORM == TE_PLATFORMCODE_OPENBSD) || (TE_PLATFORM == TE_PLATFORMCODE_APPLE) || (TE_PLATFORM == TE_PLATFORMCODE_LINUX)
+      struct rlimit info;
+        
+      if( getrlimit( RLIMIT_AS, &info ) == 0 )
+      {
+        totalmem = (unsigned long int)info.rlim_max;
+      }
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      LPMEMORYSTATUS status_buffer = new MEMORYSTATUS;
+      GlobalMemoryStatus( status_buffer );
+      totalmem = (unsigned long int) status_buffer->dwTotalVirtual;
+      delete status_buffer;
+
+#else
+  #error "Unsuported plataform for virtual memory checking"
+#endif
+
+      return totalmem;
+    }
+
+    unsigned int GetPhysProcNumber()
+    {
+      unsigned int procnmb = 0;
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      SYSTEM_INFO siSysInfo;
+      GetSystemInfo(&siSysInfo);
+      procnmb = static_cast<unsigned int>(siSysInfo.dwNumberOfProcessors);
+
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_AIX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      procnmb = static_cast<unsigned int>(sysconf(_SC_NPROCESSORS_ONLN));
+
+#else
+  #error "ERROR: Unsupported platform"
+#endif    
+
+      return procnmb;
+    }
+  }     // end namespace common
+}       // end namespace te

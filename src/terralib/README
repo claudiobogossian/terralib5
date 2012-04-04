@@ -1,0 +1,53 @@
+          TerraLib 5 - Source Code
+          ========================
+            (UNDER DEVELOPMENT)
+          
+This folder constains all the source code of TerraLib.
+
+We have organized the code by modules. Each folder contains one or more modules.
+
+The following modules are found in each folder:
+- annotationtext:
+- antigrain.....:
+- binding.......:
+- color.........:
+- common........:
+- dataaccess....:
+- datatype......:
+- dygeo.........:
+- fe............:
+- gdal..........:
+- geometry......:
+- gml...........:
+- grib..........:
+- maptools......:
+- memory........:
+- ogr...........:
+- plugin........:
+- postgis.......:
+- qp............:
+- qt............:
+- raster........:
+- rp............:
+- sam...........:
+- se............:
+- sqlite........:
+- srs...........:
+- tools.........:
+- xerces........:
+- xlink.........:
+- xml...........:
+- xsd...........:
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of each module and the codebase organization:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            11/18/2008							

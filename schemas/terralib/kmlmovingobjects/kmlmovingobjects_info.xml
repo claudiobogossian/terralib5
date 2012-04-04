@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:kmo="http://www.terralib.org/schemas/kmlmovingobjects"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/schemas/kmlmovingobjects"
+			elementFormDefault="qualified"
+            xml:lang="en">
+			
+ <xsd:annotation>
+    <xsd:appinfo>KMLMovingObjectInfo</xsd:appinfo>
+    <xsd:documentation>This XML Schema describes the information about moving objects in KML files</xsd:documentation>
+ </xsd:annotation>			
+			
+<xsd:complexType name="KMLMovingObjectInfo">
+	<xsd:sequence>
+		<xsd:element name="KMLFilePath" type="xsd:string" minOccurs="1" maxOccurs="1" use="required"/>
+		<xsd:element name="KMLFileName" type="xsd:string" minOccurs="1" maxOccurs="1" use="required"/>
+		<xsd:element name="MovingObject" type="kmo:MovingObjectType" minOccurs="1" maxOccurs="unbounded" use="required" />
+    </xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="MovingObjectType">
+    <xsd:sequence>
+		<xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" use="required"/>
+		<xsd:element name="Type" minOccurs="1" maxOccurs="1" use="required">
+			<xsd:simpleType>
+			<xsd:restriction base="xsd:string">
+			   <xsd:enumeration value="MovingPoint"/>
+			   <xsd:enumeration value="MovingLine"/>
+			   <xsd:enumeration value="MovingRegion"/>
+			</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:element>
+		<xsd:element name="ObservationContainer" type="kmo:ObservationContainerType" minOccurs="1" maxOccurs="1" use="required"/>   
+	</xsd:sequence>
+</xsd:complexType>
+
+<xsd:complexType name="ObservationContainerType">
+    <xsd:sequence>
+		<xsd:element name="Type" type="xsd:string" minOccurs="1" maxOccurs="1" use="required"/>
+		<xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" use="required"/>
+    </xsd:sequence>
+ </xsd:complexType> 
+</xsd:schema>
+
+

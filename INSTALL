@@ -1,0 +1,40 @@
+  Installation Procedures for TerraLib 5
+  ======================================
+          (!!UNDER DEVELOPMENT!!)
+		  
+If you haven't built the TerraLib yet,
+please, refer to the BUILD-NOTES documentation first.
+
+If you have successfully built TerraLib
+the following steps will guide you through
+the process of installation of TerraLib in your plataform.
+Note that there are specific notes depending on the Operational
+System.
+
+Notes for Windows XP - 32 bit
+-----------------------------
+
+Notes for Windows XP - 64 bit
+-----------------------------
+
+Notes for Windows Vista - 32 bit
+--------------------------------
+
+Notes for Windows Vista - 64 bit
+--------------------------------
+
+Notes for Windows 7 - 32 bit
+----------------------------
+
+Notes for Windows 7 - 64 bit
+----------------------------
+
+Notes for Linux
+---------------
+
+Notes for Linux - Kubuntu 10.x
+------------------------------
+
+Notes for Mac
+-------------
+

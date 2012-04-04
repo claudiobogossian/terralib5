@@ -1,0 +1,344 @@
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/raster/BandIterator.h
+
+  \brief It implements and iterator to "navigate" over a single band.
+*/
+
+#ifndef __TERRALIB_RASTER_INTERNAL_BANDITERATOR_H
+#define __TERRALIB_RASTER_INTERNAL_BANDITERATOR_H
+
+// Terralib
+#include "Band.h"
+#include "BandProperty.h"
+#include "BlockUtils.h"
+
+namespace te
+{
+  namespace rst
+  {
+// Forward declaration.
+    class Band;
+
+    /*!
+      \class BandIterator
+
+      \brief This class implements and iterator to "navigate" over a single band.
+
+      We provide an efficient method to obtain all values in a raster, without regard
+      to their locations. The implementation navigates through the blocks of the image.
+
+      \sa te::rst::Band
+    */
+    template<class T> class BandIterator
+    {
+      public:
+
+        /*! \brief Constructor. */
+        BandIterator();
+
+        /*!
+          \brief Constructor.
+
+          \param b The band to iterate.
+        */
+        BandIterator(Band* b);
+
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The right-hand-side copy used to copy from.
+        */
+        BandIterator(const BandIterator& rhs);
+
+        /*! \brief Destructor. */
+        ~BandIterator();
+
+        /*! \brief Returns the current row in iterator. */
+        unsigned int getRow() const;
+
+        /*! \brief Returns the current column in iterator. */
+        unsigned int getCol() const;
+
+        /*! \brief Returns the value in current position (column, row) from iterator. */
+        T getValue() const;
+
+        /*! \brief Advances to the next position. */
+        void operator++();
+
+        /*! \brief Returns to the previous position. */
+        void operator--();
+
+        BandIterator operator*();
+
+        /*!
+          \brief Assignment operator.
+
+          \param rhs The right-hand-side copy used to copy from.
+
+          \return A reference to this object.
+        */
+        BandIterator& operator=(const BandIterator& rhs);
+
+        /*! \brief Returns an iterator referring to the first value of the band.*/
+        static BandIterator begin(Band* b);
+
+        /*! \brief Returns an iterator referring to after the end of the iterator. */
+        static BandIterator end(Band* b);
+
+        /*!
+          \brief Difference operator.
+
+          \param rhs The right-hand side to compare.
+
+          \return Returns true if the iterators are at different positions, or false otherwise.
+        */
+        bool operator!=(const BandIterator& rhs) const;
+
+        /*! \brief Replaces the current bufferized block values. */
+        void replaceBlock();
+
+      private:
+
+        int m_blkw;                              //!< The internal block width.
+        int m_blkh;                              //!< The internal block height.
+        int m_npxlsblk;                          //!< The maximum number of pixels inside the block.
+        int m_nblocksx;                          //!< The number of blocks in X direction.
+        int m_nblocksy;                          //!< The number of blocks in Y direction.
+        int m_i;                                 //!< The actual position inside the block.
+        int m_blkx;                              //!< The position in X of the current block.
+        int m_blky;                              //!< The position in Y of the current block.
+        int m_lastblksize;                       //!< The number of pixels inside the last block.
+        T* m_blk;                                //!< Internal block.
+        Band* m_band;                            //!< The band from where to get the values.
+        te::rst::GetBufferValueFPtr m_getBuff;   //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::GetBufferValueFPtr m_getBuffI;  //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
+        te::rst::SetBufferValueFPtr m_setBuff;   //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::SetBufferValueFPtr m_setBuffI;  //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
+
+    };
+
+    template<class T> te::rst::BandIterator<T>::BandIterator()
+      : m_blkw(-1),
+        m_blkh(-1),
+        m_npxlsblk(-1),
+        m_nblocksx(-1),
+        m_nblocksy(-1),
+        m_i(-1),
+        m_blkx(-1),
+        m_blky(-1),
+        m_lastblksize(-1),
+        m_blk(0),
+        m_band(0),
+        m_getBuff(0),
+        m_getBuffI(0),
+        m_setBuff(0),
+        m_setBuffI(0)
+    {
+    }
+
+    template<class T> te::rst::BandIterator<T>::BandIterator(te::rst::Band* b)
+      : m_blkw(b->getProperty()->m_blkw),
+        m_blkh(b->getProperty()->m_blkh),
+        m_npxlsblk(m_blkw * m_blkh),
+        m_nblocksx(b->getProperty()->m_nblocksx),
+        m_nblocksy(b->getProperty()->m_nblocksy),
+        m_i(0),
+        m_blkx(0),
+        m_blky(0),
+        m_band(b),
+        m_getBuff(0),
+        m_getBuffI(0),
+        m_setBuff(0),
+        m_setBuffI(0)
+    {
+      m_lastblksize = m_npxlsblk - ((m_npxlsblk * m_nblocksx * m_nblocksy) -
+                                    (b->getRaster()->getNumberOfColumns() * b->getRaster()->getNumberOfRows()));
+
+      m_blk = new T[b->getBlockSize()];
+
+      te::rst::SetBlockFunctions(&m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, b->getProperty()->getType());
+
+      replaceBlock();
+    }
+
+    template<class T> te::rst::BandIterator<T>::BandIterator(const BandIterator<T>& rhs)
+      : m_blkw(rhs.m_blkw),
+        m_blkh(rhs.m_blkh),
+        m_npxlsblk(rhs.m_npxlsblk),
+        m_nblocksx(rhs.m_nblocksx),
+        m_nblocksy(rhs.m_nblocksy),
+        m_i(rhs.m_i),
+        m_blkx(rhs.m_blkx),
+        m_blky(rhs.m_blky),
+        m_lastblksize(rhs.m_lastblksize),
+        m_band(rhs.m_band),
+        m_getBuff(rhs.m_getBuff),
+        m_getBuffI(rhs.m_getBuffI),
+        m_setBuff(rhs.m_setBuff),
+        m_setBuffI(rhs.m_setBuffI)
+    {
+      if (m_band)
+      {
+        m_blk = new T[m_band->getBlockSize()];
+
+        replaceBlock();
+      }
+    }
+
+    template<class T> te::rst::BandIterator<T>::~BandIterator()
+    {
+      if (m_band)
+        delete [] m_blk;
+    }
+
+    template<class T> unsigned int te::rst::BandIterator<T>::getRow() const
+    {
+      return m_blky * m_blkh + (m_i - (m_i % m_blkw)) / m_blkw;
+    }
+
+    template<class T> unsigned int te::rst::BandIterator<T>::getCol() const
+    {
+      return m_blkx * m_blkw + m_i % m_blkw;
+    }
+
+    template<class T> T te::rst::BandIterator<T>::getValue() const
+    {
+      double value;
+
+      m_getBuff(m_i, m_blk, &value);
+
+      return (T) value;
+    }
+
+    template<class T> void te::rst::BandIterator<T>::operator++()
+    {
+      m_i++;
+
+      if(m_i < m_npxlsblk)
+        return;
+
+      m_i = 0;
+
+      m_blkx++;
+
+      if(m_blkx < m_nblocksx)
+      {
+        replaceBlock();
+
+        return;
+      }
+
+      m_blkx = 0;
+
+      m_blky++;
+
+      if(m_blky < m_nblocksy)
+        replaceBlock();
+
+      if((m_blkx == m_nblocksx - 1) && (m_blky == m_nblocksy - 1))
+        m_npxlsblk = m_lastblksize;
+    }
+
+    template<class T> void te::rst::BandIterator<T>::operator--()
+    {
+      m_i--;
+
+      if(m_i >= 0)
+        return;
+
+      m_i = m_npxlsblk - 1;
+
+      m_blkx--;
+
+      if(m_blkx >= 0)
+      {
+        replaceBlock();
+
+        return;
+      }
+
+      m_blkx = m_nblocksx - 1;
+
+      m_blky--;
+
+      if(m_blky >= 0)
+        replaceBlock();
+      else
+        m_blky = m_nblocksy;
+    }
+
+    template<class T> te::rst::BandIterator<T> te::rst::BandIterator<T>::operator*()
+    {
+      return *this;
+    }
+
+    template<class T> te::rst::BandIterator<T>& te::rst::BandIterator<T>::operator=(const te::rst::BandIterator<T>& rhs)
+    {
+      if (this != &rhs)
+      {
+        m_blkw = rhs.m_blkw;
+        m_blkh = rhs.m_blkh;
+        m_npxlsblk = rhs.m_npxlsblk;
+        m_nblocksx = rhs.m_nblocksx;
+        m_nblocksy = rhs.m_nblocksy;
+        m_i = rhs.m_i;
+        m_blkx = rhs.m_blkx;
+        m_blky = rhs.m_blky;
+        m_lastblksize = rhs.m_lastblksize;
+        m_band = rhs.m_band;
+        
+        delete [] m_blk;
+        m_blk = new T[rhs.m_band->getBlockSize()];
+        replaceBlock();
+      }
+
+      return *this;
+    }
+
+    template<class T> bool te::rst::BandIterator<T>::operator!=(const BandIterator& rhs) const
+    {
+      return (m_blky != rhs.m_blky);
+    }
+
+    template<class T> te::rst::BandIterator<T> te::rst::BandIterator<T>::begin(te::rst::Band* b)
+    {
+      return te::rst::BandIterator<T>(b);
+    }
+
+    template<class T> te::rst::BandIterator<T> te::rst::BandIterator<T>::end(te::rst::Band* b)
+    {
+      te::rst::BandIterator<T> it;
+
+      it.m_blky = b->getProperty()->m_nblocksy;
+
+      return it;
+    }
+
+    template<class T> void te::rst::BandIterator<T>::replaceBlock()
+    {
+      m_band->read(m_blkx, m_blky, m_blk);
+    }
+
+  } // end namespace rst
+}   // end namespace te
+
+#endif  // __TERRALIB_RASTER_INTERNAL_BANDITERATOR_H

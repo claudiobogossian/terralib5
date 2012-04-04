@@ -1,0 +1,38 @@
+          TerraLib 5 - Common Runtime Module
+          ==================================
+                 (UNDER DEVELOPMENT)
+          
+This folder contains the source code of the common rutime module
+of TerraLib.
+
+Module Dependencies:
+--------------------
+
+This is the basic module of TerraLib and doesn't depend
+on other modules.
+
+The third-party software needed:
+1. Boost.FileSystem
+2. Boost.Locale
+3. Boost.Thread
+4. Apache log4cxx
+5. Gnu Iconv
+6. Gnu Gettext
+
+All that dependencies can be turned off
+in Linux configure, or in VC++ windowsplatformdefines.h file.
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this module:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:common
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            11/18/2008
+							

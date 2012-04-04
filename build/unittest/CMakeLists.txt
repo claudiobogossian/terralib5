@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(all)
+
+add_subdirectory(terralib_unittest_common)
+add_subdirectory(terralib_unittest_dataaccess)
+add_subdirectory(terralib_unittest_datatype)
+add_subdirectory(terralib_unittest_geometry)
+add_subdirectory(terralib_unittest_qtwidgets)
+add_subdirectory(terralib_unittest_rp)
+add_subdirectory(terralib_unittest_sam)
+add_subdirectory(terralib_unittest_srs)
