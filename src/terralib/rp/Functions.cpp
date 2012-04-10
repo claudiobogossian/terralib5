@@ -469,7 +469,7 @@ namespace te
           std::complex< short int >* vPtr = (std::complex< short int >*)
             outputVector;
           for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
-            vPtr[ idx ].real( (short int)inputVector[ idx ] );
+            vPtr[ idx ]= ( (short int)inputVector[ idx ] );
           break;
         }
         case te::dt::UINT16_TYPE :
@@ -491,7 +491,7 @@ namespace te
           std::complex< int >* vPtr = (std::complex< int >*)
             outputVector;
           for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
-            vPtr[ idx ].real( (int)inputVector[ idx ] );
+            vPtr[ idx ] = ( (int)inputVector[ idx ] );
           break;
         }
         case te::dt::UINT32_TYPE :
@@ -527,7 +527,7 @@ namespace te
           std::complex< float >* vPtr = (std::complex< float >*)
             outputVector;
           for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
-            vPtr[ idx ].real( (float)inputVector[ idx ] );
+            vPtr[ idx ] = ( (float)inputVector[ idx ] );
           break;
         }
         case te::dt::DOUBLE_TYPE :
@@ -540,7 +540,7 @@ namespace te
           std::complex< double >* vPtr = (std::complex< double >*)
             outputVector;
           for( register unsigned int idx = 0 ; idx < inputVectorSize ; ++idx )
-            vPtr[ idx ].real( (double)inputVector[ idx ] );
+            vPtr[ idx ] = ( (double)inputVector[ idx ] );
           break;
         }
         default :
