@@ -13,7 +13,7 @@ if(UNIX)
 		PATHS "/usr/local/include" "/usr/include")
 
 	find_library(DL_LIBRARY
-				 NAMES libdl
+				 NAMES dl libdl
 				 HINTS /usr/lib /usr/lib/i386-linux-gnu/)
 		  
 # Export include and library path for linking with other libraries
