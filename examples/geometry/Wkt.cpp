@@ -19,7 +19,8 @@ void readWkts(const std::string& filePath)
   while(wktFile.good()) // for each Wkt
   {
     std::getline(wktFile, wkt);
-    
+
+    std::cout << std::endl;
     std::cout << "File Wkt: " << wkt << std::endl;
     
     te::gm::Geometry* g = 0;
