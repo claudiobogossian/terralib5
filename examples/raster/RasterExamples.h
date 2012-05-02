@@ -70,10 +70,4 @@ void ExemplifyIterators();
 /*! \brief An example to use Grib and Geometry. */
 void GribPolygonExample();
 
-/* \brief Segmentation example using Raster Processing module. */
-void Segmenter();
-
-/* \brief Contrast example using Raster Processing module. */
-void Contrast();
-
 #endif
