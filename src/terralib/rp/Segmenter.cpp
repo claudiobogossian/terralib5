@@ -210,9 +210,7 @@ namespace te
         
         if( m_parameters.m_enableBlockProcessing )
         {
-          const unsigned int totalRasterPixels = (double)( 
-            m_parameters.m_inRasterPtr->getNumberOfRows() * 
-            m_parameters.m_inRasterPtr->getNumberOfColumns() );          
+          const unsigned int totalRasterPixels = m_parameters.m_inRasterPtr->getNumberOfRows() * m_parameters.m_inRasterPtr->getNumberOfColumns();
             
           unsigned int maxBlockPixels = 0;
           
@@ -246,9 +244,9 @@ namespace te
               ( 0.20 * freeVMem ) / pixelRequiredRam );
             
             // What about threaded environment ?
-            maxBlockPixels = 
+            maxBlockPixels = static_cast<unsigned int>(
               ( maxSimultaneousMemoryPixels / 
-              ( (double)( maxSegThreads ? maxSegThreads : 1 ) ) );
+              ( static_cast<double>( maxSegThreads ? maxSegThreads : 1 ) ) ) );
           }
           
           // The image must be divided into 4 sub-images, at least
