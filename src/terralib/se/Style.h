@@ -35,6 +35,9 @@
 #include <string>
 #include <vector>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
 // Forward declarations
@@ -57,7 +60,7 @@ namespace te
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Rule
      */
-    class TESEEXPORT Style : public te::common::BaseVisitable<Visitor>
+    class TESEEXPORT Style : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
     {
       public:
 
@@ -95,6 +98,8 @@ namespace te
 
         void push_back(Rule* rule);
 
+        size_t getNRules() const;
+
         const Rule* getRule(size_t i) const;
 
         void push_back(te::xl::SimpleLink* onlineResource);
@@ -104,31 +109,6 @@ namespace te
         void setVersion(const std::string& v);
 
         const std::string& getVersion() const;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        Style(const Style& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        Style& operator=(const Style& rhs);
 
         //@}
 

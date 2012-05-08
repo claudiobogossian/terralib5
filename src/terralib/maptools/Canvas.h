@@ -19,7 +19,7 @@
 
 /*!
   \file Canvas.h
-  
+
   \brief A canvas is an abstraction of a drawing area.
 */
 
@@ -46,7 +46,7 @@ namespace te
     class LineString;
     class MultiLineString;
     class MultiPoint;
-    class MultiPolygon;    
+    class MultiPolygon;
     class Point;
     class PointM;
     class PointZ;
@@ -119,7 +119,7 @@ namespace te
           \note The coordinates must be in the Spatial Reference System of the features to be drawn in canvas.
         */
         virtual void setWindow(const double& llx, const double& lly,
-                               const double& urx, const double& ury) = 0;        
+                               const double& urx, const double& ury) = 0;
 
         /*!
           \brief It calculates the best aspect ratio for world (or window) coordinates area (supposing a cartesian reference system).
@@ -272,10 +272,7 @@ namespace te
           \param quality  JPEG quality, generally a value between 0 and 95.
           \param fg       Foreground color for WBMP images.
         */
-        virtual void save(const char* fileName,
-                          ImageType t,
-                          int quality = 75,
-                          int fg = 0) const = 0;
+        virtual void save(const char* fileName, ImageType t, int quality = 75, int fg = 0) const = 0;
 
         /*!
           \brief It returns the internal content as an image in a specific format (PNG, JPEG, ...).
@@ -323,7 +320,7 @@ namespace te
           \param w   The image width (number of columns).
           \param h   The image height (number of rows).
         */
-        virtual void drawImage(te::color::RGBAColor** src, int w, int h) = 0;        
+        virtual void drawImage(te::color::RGBAColor** src, int w, int h) = 0;
 
         /*!
           \brief It draws the src image over the canvas at the specified position (x, y).
@@ -442,7 +439,7 @@ namespace te
           \brief It sets a pixel using the point pen.
 
           \param x Column.
-          \param y Row.  
+          \param y Row.
         */
         virtual void drawPixel(int x, int y) = 0;
 
@@ -457,7 +454,7 @@ namespace te
           <li>A: 0-255.</li>
 
           \param x     Column.
-          \param y     Row.  
+          \param y     Row.
           \param color Pixel color.
         */
         virtual void drawPixel(int x, int y, const te::color::RGBAColor& color) = 0;
@@ -732,33 +729,11 @@ namespace te
           \brief It sets the point drawing color.
 
           This method will instruct the canvas to draw points like pixels.
-          Any marker or pattern previously set will be released.
+          Any pattern previously set will be released.
 
           \param color The new color for drawing a point.
         */
         virtual void setPointColor(const te::color::RGBAColor& color) = 0;
-
-        /*!
-          \brief It sets width for point markers and point patterns.
-
-          \param w The width used to draw point markers and point patterns.
-        */
-        virtual void setPointWidth(int w) = 0;
-
-        /*!
-          \brief It sets the point marker type.
-
-          \param type The point marker type.
-          \param w    The marker size. If 0 it will use the last point width set.
-        */
-        virtual void setPointMarker(PtMarkerType type, int w = 0) = 0;
-
-        /*!
-          \brief It sets the color used to draw markers.
-
-          \param color The color used to draw markers.
-        */
-        virtual void setPointMarkerColor(const te::color::RGBAColor& color) = 0;
 
         /*!
           \brief It sets the point pattern.
@@ -779,6 +754,27 @@ namespace te
           \param t       The image type used by the style.
         */
         virtual void setPointPattern(char* pattern, std::size_t size, ImageType t) = 0;
+
+        /*!
+          \brief It sets the point pattern width.
+
+          \param w The pattern width.
+        */
+        virtual void setPointPatternWidth(int w) = 0;
+
+        /*!
+          \brief It sets the point pattern rotation.
+
+          \param angle The rotation angle in degress.
+        */
+        virtual void setPointPatternRotation(const double& angle) = 0;
+
+        /*!
+          \brief It sets the point pattern opacity.
+
+          \param opacity The pattern opacity.
+        */
+        virtual void setPointPatternOpacity(int opacity) = 0;
 
         /*!
           \brief It sets the pen color used to draw line geometries.
@@ -808,6 +804,58 @@ namespace te
           \param t       The image type used by the style.
         */
         virtual void setLinePattern(char* pattern, std::size_t size, ImageType t) = 0;
+
+        /*!
+          \brief It sets the line pattern width.
+
+          \param w The pattern width.
+        */
+        virtual void setLinePatternWidth(int w) = 0;
+
+        /*!
+          \brief It sets the line pattern rotation.
+
+          \param angle The rotation angle in degress.
+        */
+        virtual void setLinePatternRotation(const double& angle) = 0;
+
+        /*!
+          \brief It sets the line pattern opacity.
+
+          \param opacity The pattern opacity.
+        */
+        virtual void setLinePatternOpacity(int opacity) = 0;
+
+        /*!
+          \brief It sets the line dash style.
+
+          \param style The line dash style.
+        */
+        virtual void setLineDashStyle(LineDashStyle style) = 0;
+
+        /*!
+          \brief It sets the line dash style to the given pattern.
+
+          \param style The line custom dash style.
+          
+          \note The style should be specified as an even number of positive double where 
+                the entries 0, 2, 4, ... are dashes and 1, 3, 5, ... are spaces.
+        */
+        virtual void setLineDashStyle(const std::vector<double>& style) = 0;
+
+        /*!
+          \brief It sets the line cap style.
+
+          \param style The line cap style.
+        */
+        virtual void setLineCapStyle(LineCapStyle style) = 0;
+
+        /*!
+          \brief It sets the line join style.
+
+          \param style The line join style.
+        */
+        virtual void setLineJoinStyle(LineJoinStyle style) = 0;
 
         /*!
           \brief It sets the line width.
@@ -851,16 +899,23 @@ namespace te
         virtual void setPolygonFillPattern(char* pattern, std::size_t size, ImageType t) = 0;
 
         /*!
-          \brief It sets the polygon brush icon width.
+          \brief It sets the polygon pattern width.
 
-          \param w The icon width.
+          \param w The pattern width.
         */
         virtual void setPolygonPatternWidth(int w) = 0;
 
         /*!
-          \brief It sets the polygon brush icon opacity.
+          \brief It sets the polygon pattern rotation.
 
-          \param opacity The brush opacity.
+          \param angle The rotation angle in degress.
+        */
+        virtual void setPolygonPatternRotation(const double& angle) = 0;
+
+        /*!
+          \brief It sets the polygon pattern opacity.
+
+          \param opacity The pattern opacity.
         */
         virtual void setPolygonPatternOpacity(int opacity) = 0;
 
@@ -883,6 +938,58 @@ namespace te
           \param t       The image type used by the style.
         */
         virtual void setPolygonContourPattern(char* pattern, std::size_t size, ImageType t) = 0;
+
+        /*!
+          \brief It sets the polygon contour pattern width.
+
+          \param w The pattern width.
+        */
+        virtual void setPolygonContourPatternWidth(int w) = 0;
+
+        /*!
+          \brief It sets the polygon contour pattern rotation.
+
+          \param angle The rotation angle in degress.
+        */
+        virtual void setPolygonContourPatternRotation(const double& angle) = 0;
+
+        /*!
+          \brief It sets the polygon contour pattern opacity.
+
+          \param opacity The pattern opacity.
+        */
+        virtual void setPolygonContourPatternOpacity(int opacity) = 0;
+
+        /*!
+          \brief It sets the polygon contour dash style.
+
+          \param style The polygon contour dash style.
+        */
+        virtual void setPolygonContourDashStyle(LineDashStyle style) = 0;
+
+        /*!
+          \brief It sets the polygon contour dash style to the given pattern.
+
+          \param style The polygon contour custom dash style.
+          
+          \note The style should be specified as an even number of positive double where 
+                the entries 0, 2, 4, ... are dashes and 1, 3, 5, ... are spaces.
+        */
+        virtual void setPolygonContourDashStyle(const std::vector<double>& style) = 0;
+
+        /*!
+          \brief It sets the polygon contour cap style.
+
+          \param style The polygon contour cap style.
+        */
+        virtual void setPolygonContourCapStyle(LineCapStyle style) = 0;
+
+        /*!
+          \brief It sets the polygon contour join style.
+
+          \param style The polygon contour join style.
+        */
+        virtual void setPolygonContourJoinStyle(LineJoinStyle style) = 0;
 
         /*!
           \brief It sets the polygon contour width.

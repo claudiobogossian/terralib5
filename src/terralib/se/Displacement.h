@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -54,7 +57,7 @@ namespace te
 
       \sa Graphic, ParameterValue, PointPlacement
      */
-    class TESEEXPORT Displacement : public te::common::BaseVisitable<Visitor>
+    class TESEEXPORT Displacement : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
     {
       public:
 
@@ -78,31 +81,6 @@ namespace te
 
         void setDisplacementX(ParameterValue* x);
         void setDisplacementY(ParameterValue* y);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Displacement.
-         */
-        Displacement(const Displacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Displacement.
-
-          \return A reference for this.
-         */
-        Displacement& operator=(const Displacement& rhs);
 
         //@}
 

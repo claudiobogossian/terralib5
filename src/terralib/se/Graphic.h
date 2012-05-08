@@ -34,6 +34,9 @@
 // STL
 #include <vector>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -60,7 +63,7 @@ namespace te
 
       \sa Rule, PointSymbolizer, Stroke, GraphicStroke, Mark, ExternalGraphic, Displacement, ParameterValue, AnchorPoint
      */
-    class TESEEXPORT Graphic
+    class TESEEXPORT Graphic : public boost::noncopyable
     {
       public:
 
@@ -101,6 +104,7 @@ namespace te
           \brief
          */
         void add(Mark* m);
+        const std::vector<Mark*> getMarks() const;
 
         /*!
           \brief
@@ -111,6 +115,7 @@ namespace te
           SvgParameter. The default value is 1.0.
          */
         void setOpacity(ParameterValue* value);
+        const ParameterValue* getOpacity() const;
 
         /*!
           \brief
@@ -135,6 +140,7 @@ namespace te
           images "smoothly", the results will be visually pleasing.
          */
         void setSize(ParameterValue* value);
+        const ParameterValue* getSize() const;
 
         /*!
           \brief
@@ -154,35 +160,11 @@ namespace te
           should be the centroid.
          */
         void setRotation(ParameterValue* value);
+        const ParameterValue* getRotation() const;
 
         void setAnchorPoint(AnchorPoint* value);
 
         void setDisplacement(Displacement* value);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Graphic.
-         */
-        Graphic(const Graphic& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Graphic.
-
-          \return A reference for this.
-         */
-        Graphic& operator=(const Graphic& rhs);
 
         //@}
 

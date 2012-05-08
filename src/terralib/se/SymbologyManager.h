@@ -129,31 +129,6 @@ namespace te
 
       private:
 
-        /** @name Copy Constructor and Assignment Operator
-         *  Copy constructor and assignment operator not allowed.
-         */
-        //@{
-
-        /*!
-          \brief Copy constructor not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-         */
-        SymbologyManager(const SymbologyManager& rhs);
-
-        /*!
-          \brief Assignment operator not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-
-          \return A reference to this object.
-         */
-        SymbologyManager& operator=(const SymbologyManager& rhs);
-
-        //@}
-
-      private:
-
         std::map<std::string, Symbolizer*> m_catalogIdxByName;  //!< An index from catalog's name to catalog's instance (note: we can not have duplicated names).
     };
 

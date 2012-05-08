@@ -54,10 +54,12 @@ int main(int /*argc*/, char** /*argv*/)
     LoadModules();
 
     // Show a MapDisplay
-    MapDisplay();
+    //MapDisplay();
 
     // Creates a OGC Filter Expression and convert it to Query TerraLib.
-    Filter2Query();
+    //Filter2Query();
+
+    DrawStyledLayers();
   }
   catch(const std::exception& e)
   {
@@ -86,8 +88,8 @@ int main(int /*argc*/, char** /*argv*/)
   //te::common::Platform::finalize();
   TerraLib::getInstance().finalize();
 
-  std::cout << "Press Enter to exit..." << std::endl;
-  std::cin.get();
+  //std::cout << "Press Enter to exit..." << std::endl;
+  //std::cin.get();
 
   return EXIT_SUCCESS;
 }

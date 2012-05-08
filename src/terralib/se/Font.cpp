@@ -28,17 +28,93 @@
 #include "Font.h"
 #include "SvgParameter.h"
 
+std::map<te::se::Font::FontStyleType, std::string>  te::se::Font::sm_fontStyleMap;
+std::map<te::se::Font::FontWeightType, std::string> te::se::Font::sm_fontWeightMap;
+
+const std::string te::se::Font::sm_family = "font-family";
+const std::string te::se::Font::sm_style  = "font-style";
+const std::string te::se::Font::sm_weight = "font-weight";
+const std::string te::se::Font::sm_size   = "font-size";
+
 te::se::Font::Font()
 {
+  // FontStyle
+  sm_fontStyleMap[te::se::Font::StyleNormal]  = "normal";
+  sm_fontStyleMap[te::se::Font::StyleItalic]  = "italic";
+  sm_fontStyleMap[te::se::Font::StyleOblique] = "oblique";
+  
+  // FontWeightType
+  sm_fontWeightMap[te::se::Font::WeightNormal]  = "normal";
+  sm_fontWeightMap[te::se::Font::WeightBold]    = "bold";
 }
 
 te::se::Font::~Font()
 {
-  te::common::FreeContents(m_parameters);
+  te::common::FreeContents(m_svgParams);
 }
 
-void te::se::Font::add(SvgParameter* p)
+void te::se::Font::add(te::se::SvgParameter* p)
 {
-  m_parameters.push_back(p);
+  std::string name = p->getName();
+  std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);
+  if(it != m_svgParams.end())
+    delete it->second;
+  m_svgParams[name] = p;
 }
 
+void te::se::Font::setFamily(const std::string& family)
+{
+  setParameter(sm_family, family);
+}
+
+void te::se::Font::setStyle(const te::se::Font::FontStyleType& style)
+{
+  setParameter(sm_style, sm_fontStyleMap[style]);
+}
+
+void te::se::Font::setWeight(const FontWeightType& weight)
+{
+  setParameter(sm_weight, sm_fontWeightMap[weight]);
+}
+
+void te::se::Font::setSize(const std::string& size)
+{
+  setParameter(sm_size, size);
+}
+
+const te::se::SvgParameter* te::se::Font::getFamily() const
+{
+  return getParameter(sm_family);
+}
+
+const te::se::SvgParameter* te::se::Font::getStyle() const
+{
+  return getParameter(sm_style);
+}
+
+const te::se::SvgParameter* te::se::Font::getWeight() const
+{
+  return getParameter(sm_weight);
+}
+
+const te::se::SvgParameter* te::se::Font::getSize() const
+{
+  return getParameter(sm_size);
+}
+
+void te::se::Font::setParameter(const std::string& name, const std::string& value)
+{
+  std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);
+  if(it != m_svgParams.end())
+    delete it->second;
+  m_svgParams[name] = new te::se::SvgParameter(name, value);
+}
+
+const te::se::SvgParameter* te::se::Font::getParameter(const std::string& name) const
+{
+  std::map<std::string, te::se::SvgParameter*>::const_iterator it = m_svgParams.find(name);
+  if(it != m_svgParams.end())
+    return it->second;
+
+  return 0; // Not found
+}

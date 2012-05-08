@@ -34,6 +34,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
 // Forward declaration
@@ -71,7 +74,7 @@ namespace te
 
       \sa Rule, LineSymbolizer, PointSymbolizer, PolygonSymbolizer, TextSymbolizer, RasterSymbolizer, Description
      */
-    class TESEEXPORT Symbolizer : public te::common::BaseVisitable<Visitor>
+    class TESEEXPORT Symbolizer : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
     {
       public:
 
@@ -131,31 +134,6 @@ namespace te
         void setUom(const te::common::BaseUnitOfMeasure* uom);
 
         const te::common::BaseUnitOfMeasure* getUom() const;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Symbolizer.
-         */
-        Symbolizer(const Symbolizer& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Symbolizer.
-
-          \return A reference for this.
-         */
-        Symbolizer& operator=(const Symbolizer& rhs);
 
         //@}
 

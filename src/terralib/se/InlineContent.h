@@ -34,6 +34,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -47,7 +50,7 @@ namespace te
 
       \todo Esta classe precisa lidar com dados mixed!
      */
-    class TESEEXPORT InlineContent
+    class TESEEXPORT InlineContent : public boost::noncopyable
     {
       public:
 
@@ -91,31 +94,6 @@ namespace te
         void setEncoding(EncodingType e);
 
         EncodingType getEncoding() const;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other InlineContent.
-         */
-        InlineContent(const InlineContent& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other InlineContent.
-
-          \return A reference for this.
-         */
-        InlineContent& operator=(const InlineContent& rhs);
 
         //@}
 

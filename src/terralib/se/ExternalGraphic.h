@@ -35,6 +35,9 @@
 #include <string>
 #include <vector>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
 // Forward declarations
@@ -80,7 +83,7 @@ namespace te
 
       \sa Graphic, InlineContent, Recode
      */
-    class TESEEXPORT ExternalGraphic
+    class TESEEXPORT ExternalGraphic : public boost::noncopyable
     {
       public:
 
@@ -109,31 +112,6 @@ namespace te
         void setFormat(const std::string& f);
 
         void add(Recode* r);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        ExternalGraphic(const ExternalGraphic& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        ExternalGraphic& operator=(const ExternalGraphic& rhs);
 
         //@}
 

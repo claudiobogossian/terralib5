@@ -26,12 +26,13 @@
 // TerraLib
 #include "../common/STLUtils.h"
 #include "../fe/Expression.h"
+#include "../fe/Literal.h"
 #include "ParameterValue.h"
 
 te::se::ParameterValue::Parameter::Parameter()
   : m_mixedData(0),
     m_expression(0)
-{              
+{
 }
 
 te::se::ParameterValue::Parameter::~Parameter()
@@ -44,6 +45,11 @@ te::se::ParameterValue::ParameterValue()
 {
 }
 
+te::se::ParameterValue::ParameterValue(const std::string& value)
+{
+  add(value);
+}
+
 te::se::ParameterValue::~ParameterValue()
 {
   te::common::FreeContents(m_parameters);
@@ -54,3 +60,20 @@ void te::se::ParameterValue::add(Parameter* p)
   m_parameters.push_back(p);
 }
 
+void te::se::ParameterValue::add(const std::string& value)
+{
+  te::se::ParameterValue::Parameter* p = new te::se::ParameterValue::Parameter;
+  p->m_expression = new te::fe::Literal(value);
+  add(p);
+}
+
+size_t te::se::ParameterValue::getNParameters() const
+{
+  return m_parameters.size();
+}
+
+const te::se::ParameterValue::Parameter* te::se::ParameterValue::getParameter(size_t i) const
+{
+  assert(i < m_parameters.size());
+  return m_parameters[i];
+}

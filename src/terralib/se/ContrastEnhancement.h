@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -58,7 +61,7 @@ namespace te
 
       \sa SelectedChannel, RasterSymbolizer
      */
-    class TESEEXPORT ContrastEnhancement
+    class TESEEXPORT ContrastEnhancement : public boost::noncopyable
     {
       public:
 
@@ -106,31 +109,6 @@ namespace te
         ContrastEnhancementType getContrastEnhancementType() { return m_contrast; } 
         void setGammaValue(const double& v);
         double getGammaValue() { return m_gammaValue; }
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ContrastEnhancement.
-         */
-        ContrastEnhancement(const ContrastEnhancement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ContrastEnhancement.
-
-          \return A reference for this.
-         */
-        ContrastEnhancement& operator=(const ContrastEnhancement& rhs);
 
         //@}
 

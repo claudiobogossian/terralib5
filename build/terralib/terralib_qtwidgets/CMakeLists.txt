@@ -105,9 +105,11 @@ set(DEP_LIBS  ${DEP_LIBS}
 		optimized terralib_common
 		optimized terralib_dataaccess
 		optimized terralib_datatype
+		optimized terralib_filter
 		optimized terralib_geometry
 		optimized terralib_maptools
 		optimized terralib_raster
+		optimized terralib_se
 		optimized terralib_srs
 		optimized terralib_xlink
 		debug     terralib_annotationtext_d
@@ -115,9 +117,11 @@ set(DEP_LIBS  ${DEP_LIBS}
 		debug     terralib_common_d
 		debug     terralib_dataaccess_d
 		debug     terralib_datatype_d
+		debug     terralib_filter_d
 		debug     terralib_geometry_d
 		debug     terralib_maptools_d
 		debug     terralib_raster_d
+		debug     terralib_se_d
 		debug     terralib_srs_d
 		debug     terralib_xlink_d)
 	
@@ -125,6 +129,7 @@ link_libraries(${DEP_LIBS})
 
 # Select the source files
 file(GLOB QWT_SRCS      ${SRCDIR}/qwt/*.cpp)
+file(GLOB SE_SRCS  		${SRCDIR}/se/*.cpp)
 file(GLOB WIDGETS_SRCS  ${SRCDIR}/widgets/*.cpp)
 file(GLOB CANVAS_SRCS   ${SRCDIR}/widgets/canvas/*.cpp)
 file(GLOB DATAGRID_SRCS ${SRCDIR}/widgets/datagrid/*.cpp)
@@ -134,6 +139,7 @@ file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
 
 # Select the header files
 file(GLOB QWT_HDRS      ${SRCDIR}/qwt/*.h)
+file(GLOB SE_HDRS       ${SRCDIR}/se/*.h)
 file(GLOB WIDGETS_HDRS  ${SRCDIR}/widgets/*.h)
 file(GLOB CANVAS_HDRS   ${SRCDIR}/widgets/canvas/*.h)
 file(GLOB DATAGRID_HDRS ${SRCDIR}/widgets/datagrid/*.h)
@@ -143,6 +149,7 @@ file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
 
 # Group the source and header files
 source_group("qwt\\Source Files"               FILES ${QWT_SRCS})
+source_group("se\\Source Files"                FILES ${SE_SRCS})
 source_group("widgets\\Source Files"           FILES ${WIDGETS_SRCS})
 source_group("widgets\\canvas\\Source Files"   FILES ${CANVAS_SRCS})
 source_group("widgets\\datagrid\\Source Files" FILES ${DATAGRID_SRCS})
@@ -150,6 +157,7 @@ source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
 source_group("qwt\\Header Files"               FILES ${QWT_HDRS})
+source_group("se\\Header Files"                FILES ${SE_HDRS})
 source_group("widgets\\Header Files"           FILES ${WIDGETS_HDRS})
 source_group("widgets\\canvas\\Header Files"   FILES ${CANVAS_HDRS})
 source_group("widgets\\datagrid\\Header Files" FILES ${DATAGRID_HDRS})
@@ -216,6 +224,7 @@ include_directories(${ROOT}/src
 		
 add_library(${LIB_NAME} SHARED
             ${QWT_SRCS}      ${QWT_HDRS}
+			${SE_SRCS}  	 ${SE_HDRS}
             ${WIDGETS_SRCS}  ${WIDGETS_HDRS}
             ${CANVAS_SRCS}   ${CANVAS_HDRS}
             ${DATAGRID_SRCS} ${DATAGRID_HDRS}
@@ -229,13 +238,15 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 add_dependencies(${PROJ_NAME}
  	               terralib_annotationtext
 	               terralib_color
-                 terralib_common 
+				   terralib_common 
 	               terralib_dataaccess
 	               terralib_datatype
+				   terralib_filter
 	               terralib_geometry
 	               terralib_maptools
 	               terralib_raster
-                 terralib_srs
+				   terralib_se
+                   terralib_srs
 	               terralib_xlink)
                  
 if(WIN32)

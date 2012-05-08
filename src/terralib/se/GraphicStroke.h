@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -46,7 +49,7 @@ namespace te
 
       \sa Stroke, Graphic, ParameterValue
      */
-    class TESEEXPORT GraphicStroke
+    class TESEEXPORT GraphicStroke : public boost::noncopyable
     {
       public:
 
@@ -82,9 +85,7 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed Graphic pointer.
          */
         void setGraphic(Graphic* g);
-
         const Graphic* getGraphic() const;
-
         void removeGraphic();
 
         /*!
@@ -95,7 +96,6 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
          */
         void setInitialGap(ParameterValue* initialGap);
-
         const ParameterValue* getInitialGap() const;
 
         /*!
@@ -106,35 +106,9 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
          */
         void setGap(ParameterValue* gap);
-
         const ParameterValue* getGap() const;
 
         //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        GraphicStroke(const GraphicStroke& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        GraphicStroke& operator=(const GraphicStroke& rhs);
-
-        //@}      
 
       private:
 

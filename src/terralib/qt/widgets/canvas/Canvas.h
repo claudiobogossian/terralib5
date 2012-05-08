@@ -62,7 +62,7 @@ namespace te
             \brief It initializes a new Canvas and associates a pixmap as the default device.
 
             \param w The internal pixmap width in pixels.
-            \param h The internal pixmap height in pixels.            
+            \param h The internal pixmap height in pixels.
            */
           Canvas(int w, int h);
 
@@ -75,7 +75,6 @@ namespace te
            *  These methods are re-implementations from abstract canvas.
            */
           //@{
-
 
           void setWindow(const double& llx, const double& lly,
                          const double& urx, const double& ury);
@@ -115,10 +114,7 @@ namespace te
 
           void draw(const te::gm::GeometryCollection* g);
 
-          void save(const char* fileName,
-                    te::map::ImageType t,
-                    int quality = 75,
-                    int fg = 0) const;
+          void save(const char* fileName, te::map::ImageType t, int quality = 75, int fg = 0) const;
 
           char* getImage(te::map::ImageType t, std::size_t& size, int quality = 75, int fg = 0) const;
 
@@ -196,8 +192,6 @@ namespace te
 
           void setTextPointSize(double psize);
 
-          /////////////////////////////////////////
-
           void setTextStyle(te::at::FontStyle style);
 
           void setTextWeight(te::at::FontWeight weight);
@@ -228,21 +222,35 @@ namespace te
 
           void setPointColor(const te::color::RGBAColor& color);
 
-          void setPointWidth(int w);
-
-          void setPointMarker(te::map::PtMarkerType type, int w = 0);
-
-          void setPointMarkerColor(const te::color::RGBAColor& color);
-
           void setPointPattern(te::color::RGBAColor** pattern, int ncols, int nrows);
 
           void setPointPattern(char* pattern, std::size_t size, te::map::ImageType t);
+
+          void setPointPatternWidth(int w);
+
+          void setPointPatternRotation(const double& angle);
+          
+          void setPointPatternOpacity(int opacity);
 
           void setLineColor(const te::color::RGBAColor& color);
 
           void setLinePattern(te::color::RGBAColor** pattern, int ncols, int nrows);
 
           void setLinePattern(char* pattern, std::size_t size, te::map::ImageType t);
+
+          void setLinePatternWidth(int w);
+
+          void setLinePatternRotation(const double& angle);
+
+          void setLinePatternOpacity(int opacity);
+
+          void setLineDashStyle(te::map::LineDashStyle style);
+
+          void setLineDashStyle(const std::vector<double>& style);
+
+          void setLineCapStyle(te::map::LineCapStyle style);
+
+          void setLineJoinStyle(te::map::LineJoinStyle style);
 
           void setLineWidth(int w);
 
@@ -256,11 +264,27 @@ namespace te
 
           void setPolygonPatternWidth(int w);
 
+          void setPolygonPatternRotation(const double& angle);
+
           void setPolygonPatternOpacity(int opacity);
 
           void setPolygonContourPattern(te::color::RGBAColor** pattern, int ncols, int nrows);
 
           void setPolygonContourPattern(char* pattern, std::size_t size, te::map::ImageType t);
+
+          void setPolygonContourPatternWidth(int w);
+
+          void setPolygonContourPatternRotation(const double& angle);
+
+          void setPolygonContourPatternOpacity(int opacity);
+
+          void setPolygonContourDashStyle(te::map::LineDashStyle style);
+
+          void setPolygonContourDashStyle(const std::vector<double>& style);
+
+          void setPolygonContourCapStyle(te::map::LineCapStyle style);
+
+          void setPolygonContourJoinStyle(te::map::LineJoinStyle style);
 
           void setPolygonContourWidth(int w);
 
@@ -326,21 +350,21 @@ namespace te
             \param device        The new paint device.
             \param takeOwnerShip If true the canvas will take the ownership of the given device otherwise it is the caller responsability to release the device.
            */
-          void setDevice(QPaintDevice* device, bool takeOwnerShip); 
+          void setDevice(QPaintDevice* device, bool takeOwnerShip);
 
           /*!
             \brief It returns the device resolution.
 
             \return The device resolution.
            */
-          int getResolution(); 
+          int getResolution();
 
           /*!
             \brief It returns the matrix.
 
             \return The marix.
            */
-          QMatrix getMatrix(); 
+          QMatrix getMatrix();
 
           //@}
 
@@ -369,41 +393,58 @@ namespace te
 
           //@}
 
-        private:          
+          /** @name Auxiliary Methods
+           *  Auxiliary methods.
+           */
+          //@{
 
-          QMatrix m_matrix;         //!< Matrix that transforms the world coordinate to device coordinate.
+          /*!
+            \brief It adjusts the given pen to use the given pattern.
 
-          QPainter m_painter;       //!< The painter used to draw geometric objects.
+            \param pen   The pen that will be adjusted.
+            \param style The line custom dash style.
+           */
+          void setLineDashStyle(QPen& pen, const std::vector<double>& style);
 
-          bool m_isDeviceOwner;     //!< Tells if canvas is the owner of the paint device.
-                    
-          QColor m_bgColor;         //!< Canvas background color. Defaults: white fully transparent.
+          /*!
+            \brief It updates the alpha channel of the given image using the given opacity value.
 
-          QPointF m_pt;                         //!< Point buffer to avoid creating another point instance.
-          QColor m_ptColor;                     //!< The color used to draw point (pixel) or marker.
-          QImage* m_ptImg;                      //!< The marker or pattern used to draw points.
-          te::map::PtMarkerType m_ptMarkerType; //!< The type of pointe marker.
-          QColor m_ptMarkerColor;               //!< The color used to draw point (pixel) or marker.
-          int m_ptVOffset;                      //!< Vertical offset in pixels (in device coordinate) applied to point pattern or marker.
-          int m_ptHOffset;                      //!< Horizontal offset in pixels (in device coordinate) applied to point pattern or marker.
-          int m_ptWidth;                        //!< The width for point markers and point pattern
+            \param img     The image that will be updated.
+            \param opacity The opacity value that will be used.
+           */
+          void updateAlpha(QImage& img, const int& opacity);
 
-          QPen m_lnPen;             //!< The pen used to draw lines.
+          //@}
 
-          QPen m_polyPen;           //!< The pen used to draw polygons.
-          QBrush m_polyBrush;       //!< The brush used to draw polygons.
-          int m_polyPatternWidth;   //!< The size used to draw the pattern.
+        private:
 
-          QPen m_txtContourPen;         //!< The pen used to draw the text contour.
-          bool m_txtContourEnabled;     //!< The flag indicates whether the outline of the text should be drawn.
-          QBrush m_txtBrush;            //!< The brush used to draw texts.
-          QFont m_font;                 //!< The text font.
-          int m_txtLetterSpacing;       //!< Text letter spacing.
-          int m_txtWordSpacing;         //!< Text word spacing.
-          //int m_txtLineJustification;   //!< Text multi line justification.
-          int m_txtLineSpacing;         //!< Text multi line spacing.
+          QMatrix m_matrix;                       //!< Matrix that transforms the world coordinate to device coordinate.
 
-          std::map<std::string, QPixmap*> m_patterns; //!< The pixmap styles used to draw patterns.
+          QPainter m_painter;                     //!< The painter used to draw geometric objects.
+
+          bool m_isDeviceOwner;                   //!< Tells if canvas is the owner of the paint device.
+
+          QColor m_bgColor;                       //!< Canvas background color. Default: white fully transparent.
+
+          QPointF m_point;                        //!< Auxiliary point buffer to avoid creating another point instance.
+          QColor m_pointColor;                    //!< The color used to draw point.
+          QImage* m_pointPattern;                 //!< The pattern used to draw points.
+          int m_pointVOffset;                     //!< Vertical offset in pixels (device coordinate) applied to point pattern.
+          int m_pointHOffset;                     //!< Horizontal offset in pixels (device coordinate) applied to point pattern.
+
+          QPen m_linePen;                         //!< The pen used to draw lines.
+
+          QPen m_polygonPen;                      //!< The pen used to draw polygons.
+          QBrush m_polygonBrush;                  //!< The brush used to draw polygons.
+
+          QPen m_txtContourPen;                   //!< The pen used to draw the text contour.
+          bool m_txtContourEnabled;               //!< The flag indicates whether the outline of the text should be drawn.
+          QBrush m_txtBrush;                      //!< The brush used to draw texts.
+          QFont m_font;                           //!< The text font.
+          int m_txtLetterSpacing;                 //!< Text letter spacing.
+          int m_txtWordSpacing;                   //!< Text word spacing.
+          //int m_txtLineJustification;           //!< Text multi line justification.
+          int m_txtLineSpacing;                   //!< Text multi line spacing.
       }; 
     } // end namespace widgets
   }   // end namespace qt

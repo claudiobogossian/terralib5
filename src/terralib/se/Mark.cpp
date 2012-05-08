@@ -57,6 +57,11 @@ void te::se::Mark::setWellKnownName(std::string* name)
   m_wellKnownName = name;
 }
 
+const std::string* te::se::Mark::getWellKnownName() const
+{
+  return m_wellKnownName;
+}
+
 void te::se::Mark::setOnlineResource(te::xl::SimpleLink* link)
 {
   delete m_onlineResource;
@@ -86,9 +91,18 @@ void te::se::Mark::setFill(Fill* f)
   m_fill = f;
 }
 
+const te::se::Fill* te::se::Mark::getFill() const
+{
+  return m_fill;
+}
+
 void te::se::Mark::setStroke(Stroke* s)
 {
   delete m_stroke;
   m_stroke = s;
 }
 
+const te::se::Stroke* te::se::Mark::getStroke() const
+{
+  return m_stroke;
+}

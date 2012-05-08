@@ -35,6 +35,9 @@
 #include <string>
 #include <vector>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
 // Forward declaration
@@ -71,7 +74,7 @@ namespace te
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Graphic, Symbolizer, te::fe::Filter
      */
-    class TESEEXPORT Rule
+    class TESEEXPORT Rule : public boost::noncopyable
     {
       public:
 
@@ -139,31 +142,6 @@ namespace te
         const std::vector<Symbolizer*>& getSymbolizers() const;
 
         const Symbolizer* getSymbolizer(size_t i) const;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Rule.
-         */
-        Rule(const Rule& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Rule.
-
-          \return A reference for this.
-         */
-        Rule& operator=(const Rule& rhs);
 
         //@}
 

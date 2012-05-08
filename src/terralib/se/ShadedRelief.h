@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -54,7 +57,7 @@ namespace te
         
       \sa RasterSymbolizer
      */
-    class TESEEXPORT ShadedRelief
+    class TESEEXPORT ShadedRelief : public boost::noncopyable
     {
       public:
 
@@ -79,31 +82,6 @@ namespace te
         void setBrightnessOnly(bool b);
         void setReliefFactor(const double& rf);
         
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ShadedRelief.
-         */
-        ShadedRelief(const ShadedRelief& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ShadedRelief.
-
-          \return A reference for this.
-         */
-        ShadedRelief& operator=(const ShadedRelief& rhs);
-
         //@}
 
       private:

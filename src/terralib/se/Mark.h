@@ -31,6 +31,12 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// STL
+#include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
 // Forward declarations
@@ -74,7 +80,7 @@ namespace te
 
         \sa Graphic, Fill, Stroke, InlineContent
      */
-    class TESEEXPORT Mark
+    class TESEEXPORT Mark : public boost::noncopyable
     {
       public:
 
@@ -95,41 +101,24 @@ namespace te
           \brief The WellKnownName element gives the well-known name of the shape of the mark.
 
           Allowed values include at least "square", "circle", "triangle", "star", "cross", and "x".
-          The default WellKnownName is "square".          
+          The default WellKnownName is "square".
          */
         void setWellKnownName(std::string* name);
+        const std::string* getWellKnownName() const;
+
         void setOnlineResource(te::xl::SimpleLink* link);
+
         void setInlineContent(InlineContent* iContent);
+
         void setFormat(std::string* f);
+
         void setMarkIndex(int i);
+
         void setFill(Fill* f);
+        const Fill* getFill() const;
+
         void setStroke(Stroke* s);
-
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Mark.
-         */
-        Mark(const Mark& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Mark.
-
-          \return A reference for this.
-         */
-        Mark& operator=(const Mark& rhs);
-
-        //@}
+        const Stroke* getStroke() const;
 
       private:
 

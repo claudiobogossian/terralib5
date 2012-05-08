@@ -85,6 +85,11 @@ const std::string& te::se::Style::getSemanticTypeIdentifier(size_t i)
   return (*m_semanticTypeIdentifiers)[i];
 }
 
+size_t te::se::Style::getNRules() const
+{
+  return m_rules.size();
+}
+
 void te::se::Style::push_back(Rule* rule)
 {
   assert(rule);

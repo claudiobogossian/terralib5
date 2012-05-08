@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -46,7 +49,7 @@ namespace te
 
       \sa TextSymbolizer, PointPlacement, LinePlacement
      */
-    class TESEEXPORT LabelPlacement
+    class TESEEXPORT LabelPlacement : public boost::noncopyable
     {
       public:
 
@@ -70,31 +73,6 @@ namespace te
 
         void setPointPlacement(PointPlacement* p);
         void setLinePlacement(LinePlacement* l);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other LabelPlacement.
-         */
-        LabelPlacement(const LabelPlacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other LabelPlacement.
-
-          \return A reference for this.
-         */
-        LabelPlacement& operator=(const LabelPlacement& rhs);
 
         //@}
 

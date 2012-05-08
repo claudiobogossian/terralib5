@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -55,7 +58,7 @@ namespace te
 
       \sa RasterSymbolizer, SelectedChannel
      */
-    class TESEEXPORT ChannelSelection
+    class TESEEXPORT ChannelSelection : public boost::noncopyable
     {
       public:
 
@@ -86,31 +89,6 @@ namespace te
         void setGrayChannel(SelectedChannel* c);
         SelectedChannel* getGrayChannel() { return m_grayChannel; }
         
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ChannelSelection.
-         */
-        ChannelSelection(const ChannelSelection& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ChannelSelection.
-
-          \return A reference for this.
-         */
-        ChannelSelection& operator=(const ChannelSelection& rhs);
-
         //@}
 
       private:

@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -54,7 +57,7 @@ namespace te
         
       \sa RasterSymbolizer, Categorize, Interpolate
      */
-    class TESEEXPORT ColorMap
+    class TESEEXPORT ColorMap : public boost::noncopyable
     {
       public:
 
@@ -78,31 +81,6 @@ namespace te
 
         void setCategorize(Categorize* c);
         void setInterpolate(Interpolate* i);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ColorMap.
-         */
-        ColorMap(const ColorMap& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ColorMap.
-
-          \return A reference for this.
-         */
-        ColorMap& operator=(const ColorMap& rhs);
 
         //@}
 

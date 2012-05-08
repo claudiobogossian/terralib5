@@ -58,6 +58,14 @@ namespace te
          */
         SvgParameter(const std::string& name);
 
+        /*!
+          \brief It initializes a new SvgParameter with the given value.
+
+          \param name  SVG parameter name.
+          \param value SVG parameter value.
+         */
+        SvgParameter(const std::string& name, const std::string& value);
+
         /*! \brief Destructor. */
         ~SvgParameter();
 
@@ -69,13 +77,14 @@ namespace te
         //@{
 
         void setName(const std::string& name);
+        std::string getName() const;
 
         //@}
 
       private:
 
-        std::string m_name;  //!< Mandatory.
-    };    
+        std::string m_name; //!< The name attribute of the SvgParameter element. (Mandatory)
+    };
 
   } // end namespace se
 }   // end namespace te

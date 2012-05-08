@@ -85,6 +85,48 @@
  */
 #define TE_SE_DEFAULT_VERSION "1.1.0"
 
+/*!
+  \def TE_SE_BUTT_CAP
+  
+  \brief It specifies the value "butt" for stroke-linecap parameter.
+ */
+#define TE_SE_BUTT_CAP "butt"
+
+/*!
+  \def TE_SE_ROUND_CAP
+  
+  \brief It specifies the value "round" for stroke-linecap parameter.
+ */
+#define TE_SE_ROUND_CAP "round"
+
+/*!
+  \def TE_SE_SQUARE_CAP
+  
+  \brief It specifies the value "square" for stroke-linecap parameter.
+ */
+#define TE_SE_SQUARE_CAP "square"
+
+/*!
+  \def TE_SE_MITRE_JOIN
+  
+  \brief It specifies the value "mitre" for stroke-linejoin parameter.
+ */
+#define TE_SE_MITRE_JOIN "mitre"
+
+/*!
+  \def TE_SE_ROUND_JOIN
+  
+  \brief It specifies the value "round" for stroke-linejoin parameter.
+ */
+#define TE_SE_ROUND_JOIN "round"
+
+/*!
+  \def TE_SE_BEVEL_JOIN
+  
+  \brief It specifies the value "bevel" for stroke-linejoin parameter.
+ */
+#define TE_SE_BEVEL_JOIN "bevel"
+
 //@}
 
 /** @name Internationalization Defines
@@ -140,6 +182,7 @@
 
   #ifdef _MSC_VER 
     #pragma warning( disable : 4251 )
+    #pragma warning( disable : 4275 )
   #endif
 
   #ifdef TESESTATIC

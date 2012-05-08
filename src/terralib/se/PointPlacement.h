@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -70,7 +73,7 @@ namespace te
 
       \sa LabelPlacement, AnchorPoint, Displacement, ParameterValue
      */
-    class TESEEXPORT PointPlacement
+    class TESEEXPORT PointPlacement : public boost::noncopyable
     {
       public:
 
@@ -95,31 +98,6 @@ namespace te
         void setAnchorPoint(AnchorPoint* a);
         void setDisplacement(Displacement* d);
         void setRotation(ParameterValue* r);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other PointPlacement.
-         */
-        PointPlacement(const PointPlacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other PointPlacement.
-
-          \return A reference for this.
-         */
-        PointPlacement& operator=(const PointPlacement& rhs);
 
         //@}
 

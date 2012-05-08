@@ -60,13 +60,15 @@ namespace te
          */
         //@{
 
-        virtual void visit(const CoverageStyle& visited) = 0;
-        virtual void visit(const FeatureTypeStyle& visited) = 0;
-        virtual void visit(const PointSymbolizer& visited) = 0;
-        virtual void visit(const PolygonSymbolizer& visited) = 0;
         virtual void visit(const Style& visited) = 0;
+        virtual void visit(const FeatureTypeStyle& visited) = 0;
+        virtual void visit(const CoverageStyle& visited) = 0;
         virtual void visit(const Symbolizer& visited) = 0;
+        virtual void visit(const PolygonSymbolizer& visited) = 0;
+        virtual void visit(const LineSymbolizer& visited) = 0;
+        virtual void visit(const PointSymbolizer& visited) = 0;
         virtual void visit(const TextSymbolizer& visited) = 0;
+        virtual void visit(const RasterSymbolizer& visited) = 0;
 
         //@}
     };

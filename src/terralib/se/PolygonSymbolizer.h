@@ -69,7 +69,7 @@ namespace te
         /*! \brief It initializes a new PolygonSymbolizer. */
         PolygonSymbolizer();
 
-        /*! \brief Destructor. */ 
+        /*! \brief Destructor. */
         ~PolygonSymbolizer();
 
         //@}
@@ -120,6 +120,11 @@ namespace te
          */
         void setFill(Fill* f);
 
+        /*!
+          \brief Gets the Fill associates with the PolygonSymbolizer.
+
+          \return The Fill element.
+         */
         const Fill* getFill() const;
 
         /*!
@@ -129,6 +134,11 @@ namespace te
          */          
         void setStroke(Stroke* stroke);
 
+        /*!
+          \brief Gets the Stroke associates with the PolygonSymbolizer.
+
+          \return The Stroke element.
+         */
         const Stroke* getStroke() const;
 
         /*!

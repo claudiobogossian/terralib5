@@ -34,6 +34,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -50,7 +53,7 @@ namespace te
 
       \sa Symbolizer, CoverageStyle, Rule, FeatureTypeStyle, CoverageStyle
      */
-    class TESEEXPORT Description
+    class TESEEXPORT Description : public boost::noncopyable
     {
       public:
 
@@ -79,31 +82,6 @@ namespace te
         void setAbstract(const std::string& a);
 
         const std::string& getAbstract() const;
-
-        //@}
-
-        private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Description.
-         */
-        Description(const Description& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Description.
-
-          \return A reference for this.
-         */
-        Description& operator=(const Description& rhs);
 
         //@}
 

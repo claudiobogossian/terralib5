@@ -31,6 +31,9 @@
 #include "Config.h"
 #include "Visitor.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace se
@@ -49,7 +52,7 @@ namespace te
         
       \sa RasterSymbolizer, LineSymbolizer, PolygonSymbolizer
      */
-    class TESEEXPORT ImageOutline
+    class TESEEXPORT ImageOutline : public boost::noncopyable
     {
       public:
 
@@ -72,31 +75,6 @@ namespace te
         //@{
         
         void setSymbolizer(Symbolizer* s);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ImageOutline.
-         */
-        ImageOutline(const ImageOutline& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ImageOutline.
-
-          \return A reference for this.
-         */
-        ImageOutline& operator=(const ImageOutline& rhs);
 
         //@}
 
