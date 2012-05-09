@@ -74,6 +74,7 @@
 #include "se/SymbologyManager.h"
 #include "se/TextSymbolizer.h"
 #include "se/Trim.h"
+#include "se/Utils.h"
 
 namespace te
 {
