@@ -94,7 +94,7 @@ namespace te
       \param style     The vector of double that will be filled with the values extracted from dasharray string.
 
       \note The dasharray should be specified as an even number of positive values separated by blank space. i.e "10 5 3 4"
-            Here, the values "10" and "3" are dashes (in pixels) and the values "5" and "4" are spaces (in pixels).
+            Here, the values "10" and "3" (in uom) are dashes and the values "5" and "4" are spaces (in uom).
             The given vector style will be filled with the values: style[0] = 10; style[1] = 5; style[2] = 3; style[3] = 4.
     */
     TEMAPEXPORT void GetDashStyle(const std::string& dasharray, std::vector<double>& style);
@@ -102,4 +102,4 @@ namespace te
   } // end namespace map
 }   // end namespace te
 
-#endif  // __TERRALIB_MAPTOOLS_INTERNAL_UTILS_H
+#endif // __TERRALIB_MAPTOOLS_INTERNAL_UTILS_H
