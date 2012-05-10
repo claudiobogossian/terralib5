@@ -27,9 +27,9 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
-#include "../se/MarkFactory.h"
 #include "layer/FolderLayerItemFactory.h"
 #include "layer/LayerItemFactory.h"
+#include "se/MarkFactory.h"
 #include "Config.h"
 #include "Module.h"
 

@@ -27,9 +27,9 @@
 #define __TERRALIB_QT_SE_INTERNAL_MARKFACTORY_H
 
 // TerraLib
-#include "../widgets/Config.h"
-#include "../../maptools/AbstractMarkFactory.h"
-#include "../../maptools/Enums.h"
+#include "../../../maptools/AbstractMarkFactory.h"
+#include "../../../maptools/Enums.h"
+#include "../Config.h"
 
 // Qt
 #include <QtGui/QPainter>
@@ -164,7 +164,7 @@ namespace te
           The key of a MarkFactory is a string.
 
           \param factoryKey The key that identifies the factory.
-          */
+        */
         MarkFactory();
 
         //@}
