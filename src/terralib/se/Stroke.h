@@ -33,6 +33,7 @@
 
 // STL
 #include <map>
+#include <string>
 
 // Boost
 #include <boost/noncopyable.hpp>
