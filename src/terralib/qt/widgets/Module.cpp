@@ -27,6 +27,7 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
+#include "../se/MarkFactory.h"
 #include "layer/FolderLayerItemFactory.h"
 #include "layer/LayerItemFactory.h"
 #include "Config.h"
@@ -95,6 +96,9 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::FolderLayerItemFactory::initialize();
   te::qt::widgets::LayerItemFactory::initialize();
 
+// It initializes the mark factory
+  te::qt::MarkFactory::initialize();
+
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
 
@@ -104,6 +108,9 @@ void te::qt::widgets::Module::finalize()
   te::qt::widgets::FolderLayerItemFactory::finalize();
   te::qt::widgets::LayerItemFactory::finalize();
 
+// It finalizes the mark factory
+  te::qt::MarkFactory::finalize();
+
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
 }
 
@@ -111,5 +118,3 @@ void te::qt::widgets::Module::finalize()
 //#include "../../common/ModuleUtils.h"
 //
 //TE_REGISTER_MODULE(TE_QTWIDGETS_MODULE_NAME, TeQtWidgetsInitialize, TeQtWidgetsFinalize)
-
-
