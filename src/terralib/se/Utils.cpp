@@ -54,21 +54,22 @@ te::se::Stroke* te::se::CreateStroke(const std::string& color, const std::string
                                      const std::string& opacity, const std::string& dasharray,
                                      const std::string& linecap, const std::string& linejoin)
 {
-  return te::se::CreateStroke(0, color, width, opacity, dasharray, linecap, linejoin);
+  te::se::Stroke* stroke = te::se::CreateStroke(0, width, opacity, dasharray, linecap, linejoin);
+
+  if(!color.empty())
+    stroke->setColor(color);
+  
+  return stroke;
 }
 
 te::se::Stroke* te::se::CreateStroke(te::se::Graphic* graphicFill,
-                                     const std::string& color, const std::string& width,
-                                     const std::string& opacity, const std::string& dasharray,
-                                     const std::string& linecap, const std::string& linejoin)
+                                     const std::string& width, const std::string& opacity, 
+                                     const std::string& dasharray, const std::string& linecap, const std::string& linejoin)
 {
   te::se::Stroke* stroke = new te::se::Stroke;
 
   if(graphicFill)
     stroke->setGraphicFill(graphicFill);
-  
-  if(!color.empty())
-    stroke->setColor(color);
   
   if(!width.empty())
     stroke->setWidth(width);
@@ -91,8 +92,12 @@ te::se::Stroke* te::se::CreateStroke(te::se::Graphic* graphicFill,
 te::se::Fill* te::se::CreateFill(const std::string& color, const std::string& opacity)
 {
   te::se::Fill* fill = new te::se::Fill;
-  fill->setColor(color);
-  fill->setOpacity(opacity);
+
+  if(!color.empty())
+    fill->setColor(color);
+
+  if(!opacity.empty())
+    fill->setOpacity(opacity);
 
   return fill;
 }

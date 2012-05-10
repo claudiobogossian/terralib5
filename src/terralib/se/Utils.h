@@ -107,7 +107,6 @@ namespace te
       \brief Creates a stroke.
 
       \param graphic   The stroke graphic fill.
-      \param color     The stroke color enconded hexadecimal i.e "#FF0000".
       \param width     The stroke width.
       \param opacity   The stroke opacity [0,1].
       \param dasharray The stroke dasharray.
@@ -119,9 +118,8 @@ namespace te
       \note The caller of this method will take the ownership of the returned pointer.
     */
     TESEEXPORT Stroke* CreateStroke(Graphic* graphicFill,
-                                    const std::string& color, const std::string& width,
-                                    const std::string& opacity, const std::string& dasharray,
-                                    const std::string& linecap, const std::string& linejoin);
+                                    const std::string& width, const std::string& opacity, 
+                                    const std::string& dasharray, const std::string& linecap, const std::string& linejoin);
 
     /*!
       \brief Creates a fill.
