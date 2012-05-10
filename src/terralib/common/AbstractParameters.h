@@ -21,11 +21,12 @@
   \file terralib/common/AbstractParameters.h
   
   \brief Abstract parameters base interface.
- */
+*/
 
-#ifndef __TERRALIB_COMMON_INTERNAL_ABSTRACT_PARAMETERS_H
-#define __TERRALIB_COMMON_INTERNAL_ABSTRACT_PARAMETERS_H
+#ifndef __TERRALIB_COMMON_INTERNAL_ABSTRACTPARAMETERS_H
+#define __TERRALIB_COMMON_INTERNAL_ABSTRACTPARAMETERS_H
 
+// TerraLib
 #include "Config.h"
 #include "Exception.h"
 
@@ -41,18 +42,15 @@ namespace te
     class TECOMMONEXPORT AbstractParameters
     {
       public:
-        
+
+        /*! \brief Constructor. */
+        AbstractParameters();
+
+        /*! \brief Virtual destructor. */
         virtual ~AbstractParameters();
-        
-        /*!
-          \brief Assignment operator (it must be overloaded when necessary).
-        */        
-        virtual const AbstractParameters& operator=( const AbstractParameters& params );
-        
-        /*!
-          \brief Clear all internal allocated resources and reset the parameters instance to its initial state.
-        */
-        virtual void reset() throw( te::common::Exception ) = 0;        
+
+        /*! \brief Clear all internal allocated resources and reset the parameters instance to its initial state. */
+        virtual void reset() throw( te::common::Exception ) = 0;
 
         /*!
           \brief Create a clone copy of this instance.
@@ -60,17 +58,12 @@ namespace te
           \return A clone copy of this instance.
           
           \note The returned pointer must be deleted by the caller of this method when necessary.
-        */        
-        virtual AbstractParameters* clone() const= 0;
-
-      protected:
-
-        AbstractParameters();
-        
-        AbstractParameters( const AbstractParameters& ext );
+        */
+        virtual AbstractParameters* clone() const = 0;
     };
+
   } // end namespace common
 }   // end namespace te
 
-#endif  // __TERRALIB_COMMON_INTERNAL_ABSTRACT_PARAMETERS_H
+#endif  // __TERRALIB_COMMON_INTERNAL_ABSTRACTPARAMETERS_H
 

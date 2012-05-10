@@ -19,6 +19,7 @@
 
 /*!
   \file terralib/geometry/GTFilter.h
+
   \brief 2D Geometric transformation outliers remotion filter.
 */
 
@@ -38,23 +39,19 @@ namespace te
     */
     class TEGEOMEXPORT GTFilter
     {
-      public:        
+      public:
 
-        /*! 
-          \brief Virtual destructor. 
-          */
+        /*! \brief Virtual destructor. */
         virtual ~GTFilter();
         
       private:
         
-        /*!
-          \brief Default constructor.
-        */
+        /*! \brief Default constructor. */
         GTFilter();
 
         /*!
           \brief Copy constructor.
-          
+
           \param rhs The input filter.
         */
         GTFilter(const GTFilter& rhs);

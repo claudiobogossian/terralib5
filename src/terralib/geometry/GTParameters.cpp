@@ -23,6 +23,7 @@
   \brief 2D Geometric transformation parameters.
 */
 
+// TerraLib
 #include "GTParameters.h"
 
 te::gm::GTParameters::GTParameters()
@@ -44,14 +45,12 @@ void te::gm::GTParameters::reset() throw( te::common::Exception )
   m_modelParameters.clear();
 }
 
-const te::common::AbstractParameters& te::gm::GTParameters::operator=( const 
-  te::common::AbstractParameters& params )
+const te::common::AbstractParameters& te::gm::GTParameters::operator=( const te::common::AbstractParameters& params )
 {
   reset();
   
-  GTParameters const* paramsPtr = 
-    dynamic_cast< GTParameters const* >(&params );
-    
+  GTParameters const* paramsPtr = dynamic_cast< GTParameters const* >(&params );
+
   if( paramsPtr )
   {
     m_tiePoints = paramsPtr->m_tiePoints;

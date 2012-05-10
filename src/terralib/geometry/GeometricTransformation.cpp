@@ -26,14 +26,11 @@
 // TerraLib
 #include "GeometricTransformation.h"
 
+// STL
 #include <cmath>
 
-te::gm::GeometricTransformation::GeometricTransformation()
-{  
-}
-
 te::gm::GeometricTransformation::~GeometricTransformation()
-{  
+{
 }
 
 bool te::gm::GeometricTransformation::initialize( const GTParameters& newParameters )
@@ -42,7 +39,7 @@ bool te::gm::GeometricTransformation::initialize( const GTParameters& newParamet
 
   if( isValid( newParameters ) ) 
   {
-    m_internalParameters_ = newParameters;
+    m_internalParameters = newParameters;
     
     return true;
   } 
@@ -51,7 +48,7 @@ bool te::gm::GeometricTransformation::initialize( const GTParameters& newParamet
     /* No previous parameters given - Need to calculate the new transformation
        parameters */
     
-    return computeParameters( m_internalParameters_ );
+    return computeParameters( m_internalParameters );
   }
 }
 
@@ -188,3 +185,7 @@ double te::gm::GeometricTransformation::getInverseMappingError(
     
   return hypot( diffX, diffY );
 }
+te::gm::GeometricTransformation::GeometricTransformation()
+{  
+}
+

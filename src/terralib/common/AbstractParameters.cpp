@@ -23,30 +23,15 @@
   \brief Abstract parameters base interface.
 */
 
+// TerraLib
 #include "AbstractParameters.h"
 
-namespace te
+te::common::AbstractParameters::AbstractParameters()
 {
-  namespace common
-  {
-    AbstractParameters::AbstractParameters()
-    {
-    }
-    
-    AbstractParameters::~AbstractParameters()
-    {
-    }
-    
-    const AbstractParameters& AbstractParameters::operator=( 
-      const AbstractParameters& params )
-    {
-      return *this;
-    }
-    
-    AbstractParameters::AbstractParameters( const AbstractParameters& )
-    {
-    }
-    
-  } // end namespace common
-}   // end namespace te    
+}
+
+te::common::AbstractParameters::~AbstractParameters()
+{
+}
+
 

@@ -19,25 +19,18 @@
 
 /*!
   \file terralib/geometry/GTFactory.cpp
+
   \brief 2D Geometric transformation factory.
 */
 
+// TerraLib
 #include "GTFactory.h"
 
-namespace te
+te::gm::GTFactory::GTFactory(const std::string& factoryKey)
+  : te::common::AbstractFactory< GeometricTransformation, std::string, std::less<std::string> >(factoryKey)
 {
-  namespace gm
-  {
-    GTFactory::GTFactory( 
-      const std::string& factoryKey )
-    : te::common::AbstractFactory< GeometricTransformation, std::string,
-      std::less<std::string> >( factoryKey )
-    {
-    }
-    
-    GTFactory::~GTFactory()
-    {
-    }
-  } // end namespace rp
-}   // end namespace te    
+}
 
+te::gm::GTFactory::~GTFactory()
+{
+}

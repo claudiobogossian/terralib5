@@ -26,19 +26,20 @@
 // TerraLib
 #include "GTFilter.h"
 
+te::gm::GTFilter::~GTFilter()
+{
+}
+
 te::gm::GTFilter::GTFilter()
-{  
+{
 }
 
 te::gm::GTFilter::GTFilter( const GTFilter& )
-{  
-}
-
-te::gm::GTFilter::~GTFilter()
-{  
+{
 }
 
 te::gm::GTFilter::GTFilter& te::gm::GTFilter::operator=( const GTFilter& )
 {
   return *this;
 }
+

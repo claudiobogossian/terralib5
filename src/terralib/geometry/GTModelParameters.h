@@ -19,16 +19,16 @@
 
 /*!
   \file terralib/geometry/GTModelParameters.h
-  
+
   \brief 2D Geometric transformation model parameters.
 */
 
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_GTMODELPARAMETERS_H
 #define __TERRALIB_GEOMETRY_INTERNAL_GTMODELPARAMETERS_H
 
-#include "Config.h"
-
+// TerraLib
 #include "../common/AbstractParameters.h"
+#include "Config.h"
 
 namespace te
 {
@@ -41,15 +41,17 @@ namespace te
     */
     class TEGEOMEXPORT GTModelParameters : public te::common::AbstractParameters
     {
-      public:      
-        
-        virtual ~GTModelParameters();
-        
-      protected :
-        
-        GTModelParameters();
+      public:
 
+        /*! \brief Virtual destructor. */
+        virtual ~GTModelParameters();
+
+      protected :
+
+        /*! \brief Constructor. */
+        GTModelParameters();
     };
+
   } // end namespace gm
 }   // end namespace te
 

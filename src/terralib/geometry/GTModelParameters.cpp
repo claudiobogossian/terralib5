@@ -23,13 +23,16 @@
   \brief 2D Geometric transformation model parameters.
 */
 
+// TerraLib
 #include "GTModelParameters.h"
+
+te::gm::GTModelParameters::~GTModelParameters()
+{
+}
 
 te::gm::GTModelParameters::GTModelParameters()
 {
 }
 
-te::gm::GTModelParameters::~GTModelParameters()
-{
-}
+
 

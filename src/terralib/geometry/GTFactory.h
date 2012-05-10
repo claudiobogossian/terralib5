@@ -19,17 +19,19 @@
 
 /*!
   \file terralib/geometry/GTFactory.h
+
   \brief 2D Geometric transformation factory.
- */
+*/
 
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_GTFACTORY_H
 #define __TERRALIB_GEOMETRY_INTERNAL_GTFACTORY_H
 
+// TerraLib
+#include "../common/AbstractFactory.h"
 #include "Config.h"
 #include "GeometricTransformation.h"
 
-#include "../common/AbstractFactory.h"
-
+// STL
 #include <string>
 
 namespace te
@@ -38,22 +40,21 @@ namespace te
   {
     /*!
       \class GTFactory
+
       \brief 2D Geometric transformation factory.
-     */
-    class TEGEOMEXPORT GTFactory : public 
-      te::common::AbstractFactory< GeometricTransformation, std::string,
-      std::less<std::string> >
+    */
+    class TEGEOMEXPORT GTFactory : public te::common::AbstractFactory< GeometricTransformation, std::string, std::less<std::string> >
     {
       public:
-        
-        virtual ~GTFactory();   
+
+        virtual ~GTFactory();
 
       protected:
 
-        GTFactory( const std::string& factoryKey );        
+        GTFactory( const std::string& factoryKey );
     };
 
-  } // end namespace rp
+  } // end namespace gm
 }   // end namespace te
 
 #endif  // __TERRALIB_GEOMETRY_INTERNAL_GTFACTORY_H

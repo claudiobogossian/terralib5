@@ -26,14 +26,16 @@
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_GTPARAMETERS_H
 #define __TERRALIB_GEOMETRY_INTERNAL_GTPARAMETERS_H
 
+// TerraLib
 #include "../common/AbstractParameters.h"
-#include "GTModelParameters.h"
-#include "Coord2D.h"
 #include "Config.h"
+#include "Coord2D.h"
+#include "GTModelParameters.h"
 
+// STL
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace te
 {
@@ -46,38 +48,33 @@ namespace te
     */
     class TEGEOMEXPORT GTParameters : public te::common::AbstractParameters
     {
-      public:      
+      public:
         
         /*!
           \typedef std::pair< Coord2D, Coord2D > TiePoint
+
           \brief Tie point type definition.
-          */        
+        */
         typedef std::pair< Coord2D, Coord2D > TiePoint;
-        
-        /*!
-          \brief Tie points.
-          */        
-        std::vector< TiePoint > m_tiePoints;
-        
-        /*!
-          \brief Transformation model numeric parameters.
-          */        
-        std::vector< double > m_modelParameters;         
-        
+
+        /*! \brief Constructor. */
         GTParameters();
-        
+
+        /*! \brief Destructor. */
         ~GTParameters();
-        
-        // overload
+
         te::common::AbstractParameters* clone() const;
-        
-        // overload
+
         void reset() throw( te::common::Exception );
-        
-        // overload
+
         const AbstractParameters& operator=( const AbstractParameters& params );
 
+      public:
+
+        std::vector< TiePoint > m_tiePoints;      //!< Tie points.
+        std::vector< double > m_modelParameters;  //!< Transformation model numeric parameters.
     };
+
   } // end namespace gm
 }   // end namespace te
 
