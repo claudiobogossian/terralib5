@@ -7,7 +7,6 @@
 #include <terralib/maptools.h>
 #include <terralib/se.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
-#include <terralib/qt/se/MarkFactory.h>
 
 // STL
 #include <cassert>
@@ -344,8 +343,6 @@ void DrawStyledLayers()
 
   try
   {
-    te::qt::MarkFactory::initialize();
-    
     // Gets supported marks
     std::vector<std::string> marks;
     te::map::AbstractMarkFactory::SupportedMarks(marks);
@@ -406,8 +403,6 @@ void DrawStyledLayers()
     delete points;
     delete lines;
     delete polygons;
-
-    te::qt::MarkFactory::finalize();
   }
   catch(const std::exception& e)
   {
