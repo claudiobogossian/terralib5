@@ -31,7 +31,7 @@
 #include "GTParameters.h"
 
 // STL
-#include <assert>
+#include <cassert>
 
 // Boost
 #include <boost/noncopyable.hpp>
