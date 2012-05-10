@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MarkFactory.cpp
+  \file terralib/qt/widgets/MarkFactory.cpp
 
   \brief This is the concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
  */
@@ -65,7 +65,8 @@ void te::qt::MarkFactory::finalize()
 }
 
 te::qt::MarkFactory::~MarkFactory()
-{}
+{
+}
 
 te::map::AbstractMarkFactory* te::qt::MarkFactory::build()
 {

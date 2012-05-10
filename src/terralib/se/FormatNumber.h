@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FormatNumber.h
+  \file terralib/se/FormatNumber.h
   
   \brief Numeric formatting function.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FORMATNUMBER_H
 #define __TERRALIB_SE_INTERNAL_FORMATNUMBER_H

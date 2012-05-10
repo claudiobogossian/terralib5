@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Font.h
+  \file terralib/se/Font.h
   
   \brief A Font specifies the text font to use in a text symbolizer.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FONT_H
 #define __TERRALIB_SE_INTERNAL_FONT_H

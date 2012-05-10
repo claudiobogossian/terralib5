@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ShadedRelief.cpp
+  \file terralib/se/ShadedRelief.cpp
   
   \brief ShadedRelief specifies the application of relief shading (or "hill shading") to a DEM raster to give it somewhat of a three-dimensional effect and to make elevation changes more visible.
- */
+*/
 
 // TerraLib
 #include "ShadedRelief.h"

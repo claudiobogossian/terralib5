@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Stroke.cpp
+  \file terralib/se/Stroke.cpp
   
   \brief A Stroke specifies the appearance of a linear geometry.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

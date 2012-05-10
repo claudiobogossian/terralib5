@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ContrastEnhancement.h
+  \file terralib/se/ContrastEnhancement.h
   
   \brief ContrastEnhancement defines the 'stretching' of contrast for a channel of a false-color image or for a whole grey/color image.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CONTRASTENHANCEMENT_H
 #define __TERRALIB_SE_INTERNAL_CONTRASTENHANCEMENT_H

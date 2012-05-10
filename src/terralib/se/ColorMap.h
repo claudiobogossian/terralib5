@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ColorMap.h
+  \file terralib/se/ColorMap.h
   
   \brief A ColorMap defines either the colors of a pallette-type raster source or the mapping of numeric pixel values to colors.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_COLORMAP_H
 #define __TERRALIB_SE_INTERNAL_COLORMAP_H

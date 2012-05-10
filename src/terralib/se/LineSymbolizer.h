@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LineSymbolizer.h
+  \file terralib/se/LineSymbolizer.h
   
   \brief A LineSymbolizer is used to style a stroke along a linear geometry type, such as a string of line segments.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LINESYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_LINESYMBOLIZER_H

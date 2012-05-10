@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Utils.cpp
+  \file terralib/se/Utils.cpp
 
   \brief Utility functions for Symbology Enconding module.
 */

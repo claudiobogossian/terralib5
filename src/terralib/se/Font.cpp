@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Font.cpp
+  \file terralib/se/Font.cpp
   
   \brief A Font specifies the text font to use in a text symbolizer.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

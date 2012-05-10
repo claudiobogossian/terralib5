@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file MarkFactory.h
+  \file terralib/qt/widgets/se/MarkFactory.h
 
   \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
- */
+*/
 
 #ifndef __TERRALIB_QT_SE_INTERNAL_MARKFACTORY_H
 #define __TERRALIB_QT_SE_INTERNAL_MARKFACTORY_H
@@ -56,13 +56,14 @@ namespace te
       \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 
       \sa AbstractMarkFactory, AbstractFactory
-      */
+    */
     class TEQTWIDGETSEXPORT MarkFactory : public te::map::AbstractMarkFactory
     {
       public:
 
         /*!
           \enum MarkType
+
           \brief This enum specifies mark types handle by this factory.
         */
         enum MarkType
@@ -97,7 +98,7 @@ namespace te
           \brief Destructor.
 
           \note It will automatically unregister the factory from the dictionary.
-          */
+        */
         ~MarkFactory();
 
         //@} 

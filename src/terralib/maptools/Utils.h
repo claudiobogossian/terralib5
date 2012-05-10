@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Utils.h
+  \file terralib/maptools/Utils.h
 
   \brief Utility functions for MapTools module.
 */

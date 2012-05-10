@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Displacement.h
+  \file terralib/se/Displacement.h
   
   \brief A Displacement gives X and Y offset displacements to use for rendering a text label, graphic or other Symbolizer near a point.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_DISPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_DISPLACEMENT_H

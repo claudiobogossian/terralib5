@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Graphic.h
+  \file terralib/se/Graphic.h
   
   \brief A Graphic is a graphic symbol with an inherent shape, color(s), and possibly size.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_GRAPHIC_H
 #define __TERRALIB_SE_INTERNAL_GRAPHIC_H

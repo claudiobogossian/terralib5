@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file AbstractMarkFactory.cpp
+  \file terralib/maptools/AbstractMarkFactory.cpp
 
   \brief This is the abstract factory for conversion of Symbology Enconding Mark elements to an image pattern.
- */
+*/
 
 // TerraLib
 #include "../common/StringUtils.h"
@@ -35,11 +35,13 @@
 #include <vector>
 
 te::map::AbstractMarkFactory::~AbstractMarkFactory()
-{}
+{
+}
 
 te::map::AbstractMarkFactory::AbstractMarkFactory(const std::string& factoryKey)
   : te::common::AbstractFactory<te::map::AbstractMarkFactory, std::string>(factoryKey)
-{}
+{
+}
 
 te::color::RGBAColor** te::map::AbstractMarkFactory::make(const te::se::Mark* mark, std::size_t size)
 {

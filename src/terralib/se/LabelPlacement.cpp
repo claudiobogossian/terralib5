@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LabelPlacement.cpp
+  \file terralib/se/LabelPlacement.cpp
   
   \brief The LabelPlacement specifies where and how a text label should be rendered relative to a geometry.
- */
+*/
 
 // TerraLib
 #include "LabelPlacement.h"

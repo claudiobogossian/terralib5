@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ChannelSelection.h
+  \file terralib/se/ChannelSelection.h
   
   \brief ChannelSelection specifies the false-color channel selection for a multi-spectral raster source (such as a multi-band satellite-imagery source).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
 #define __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H

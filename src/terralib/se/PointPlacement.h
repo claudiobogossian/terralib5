@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PointPlacement.h
+  \file terralib/se/PointPlacement.h
   
   \brief A PointPlacement specifies how a text label should be rendered relative to a geometric point.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_POINTPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_POINTPLACEMENT_H
@@ -72,7 +72,7 @@ namespace te
       Latin-derived human languages at least).
 
       \sa LabelPlacement, AnchorPoint, Displacement, ParameterValue
-     */
+    */
     class TESEEXPORT PointPlacement : public boost::noncopyable
     {
       public:

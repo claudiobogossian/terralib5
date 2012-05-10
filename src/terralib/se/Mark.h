@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Mark.h
+  \file terralib/se/Mark.h
   
   \brief A Mark specifies a geometric shape and applies coloring to it.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_MARK_H
 #define __TERRALIB_SE_INTERNAL_MARK_H
@@ -61,14 +61,14 @@ namespace te
         default WellKnownName is "square". Renderings of these
         marks may be made solid or hollow depending on Fill
         and Stroke elements.
-        <br>
+
         The alternative to a WellKnownName is an external
         mark format. The MarkIndex allows an individual mark
         in a mark archive to be selected. An example format
         for an external mark achive would be a TrueType font
         file, with MarkIndex being used to select an individual
         glyph from that file.
-        <br>
+
         The Mark element serves two purposes. It allows the
         selection of simple shapes, and, in combination with
         the capability to select and mix multiple external-URL
@@ -79,7 +79,7 @@ namespace te
         every Graphic.
 
         \sa Graphic, Fill, Stroke, InlineContent
-     */
+    */
     class TESEEXPORT Mark : public boost::noncopyable
     {
       public:
@@ -102,8 +102,9 @@ namespace te
 
           Allowed values include at least "square", "circle", "triangle", "star", "cross", and "x".
           The default WellKnownName is "square".
-         */
+        */
         void setWellKnownName(std::string* name);
+
         const std::string* getWellKnownName() const;
 
         void setOnlineResource(te::xl::SimpleLink* link);
@@ -115,9 +116,11 @@ namespace te
         void setMarkIndex(int i);
 
         void setFill(Fill* f);
+
         const Fill* getFill() const;
 
         void setStroke(Stroke* s);
+
         const Stroke* getStroke() const;
 
       private:

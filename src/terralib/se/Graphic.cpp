@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Graphic.cpp
+  \file terralib/se/Graphic.cpp
   
   \brief A Graphic is a graphic symbol with an inherent shape, color(s), and possibly size.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

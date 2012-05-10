@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file MapItem.h
+  \file terralib/se/MapItem.h
   
   \brief 
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_MAPITEM_H
 #define __TERRALIB_SE_INTERNAL_MAPITEM_H

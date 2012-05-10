@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/se/Config.h
 
   \brief Configuration flags for the Symbology Encoding support of TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CONFIG_H
 #define __TERRALIB_SE_INTERNAL_CONFIG_H

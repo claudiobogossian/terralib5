@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LineSymbolizer.cpp
+  \file terralib/se/LineSymbolizer.cpp
   
   \brief A LineSymbolizer is used to style a stroke along a linear geometry type, such as a string of line segments.
- */
+*/
 
 // TerraLib
 #include "../fe/PropertyName.h"

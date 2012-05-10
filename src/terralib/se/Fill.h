@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Fill.h
+  \file terralib/se/Fill.h
   
   \brief A Fill specifies the pattern for filling an area geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FILL_H
 #define __TERRALIB_SE_INTERNAL_FILL_H

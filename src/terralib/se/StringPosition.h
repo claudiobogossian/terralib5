@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file StringPosition.h
+  \file terralib/se/StringPosition.h
   
   \brief It returns the position of first occurence of a substring (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_STRINGPOSITION_H
 #define __TERRALIB_SE_INTERNAL_STRINGPOSITION_H

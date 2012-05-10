@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file RasterSymbolizer.h
+  \file terralib/se/RasterSymbolizer.h
   
   \brief The RasterSymbolizer describes how to render raster/matrix-coverage data (e.g., satellite photos, DEMs).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RASTERSYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_RASTERSYMBOLIZER_H

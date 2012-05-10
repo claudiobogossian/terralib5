@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LinePlacement.h
+  \file terralib/se/LinePlacement.h
   
   \brief A LinePlacement specifies how a text label should be rendered relative to a linear geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H

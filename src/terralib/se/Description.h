@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Description.h
+  \file terralib/se/Description.h
   
   \brief A Description gives human-readable descriptive information for the object it is included within.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_DESCRIPTION_H
 #define __TERRALIB_SE_INTERNAL_DESCRIPTION_H

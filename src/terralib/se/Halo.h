@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Halo.h
+  \file terralib/se/Halo.h
   
   \brief A Halo is a type of Fill that is applied to the backgrounds of font glyphs.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_HALO_H
 #define __TERRALIB_SE_INTERNAL_HALO_H
@@ -62,7 +62,7 @@ namespace te
       in the containing TextSymbolizer, then no halo will be rendered.
 
       \sa TextSymbolizer, Fill, ParameterValue
-     */
+    */
     class TESEEXPORT Halo : public boost::noncopyable
     {
       public:
@@ -86,6 +86,7 @@ namespace te
         //@{
 
         void setRadius(ParameterValue* radius);
+
         void setFill(Fill* fill);
         
         //@}

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Mark.cpp
+  \file terralib/se/Mark.cpp
   
   \brief A Mark specifies a geometric shape and applies coloring to it.
- */
+*/
 
 // TerraLib
 #include "../xlink/SimpleLink.h"

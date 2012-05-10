@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file TextSymbolizer.h
+  \file terralib/se/TextSymbolizer.h
   
   \brief A TextSymbolizer is used to render text labels according to various graphical parameters.  
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_TEXTSYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_TEXTSYMBOLIZER_H

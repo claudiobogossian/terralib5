@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file CanvasConfigurer.h
+  \file terralib/maptools/CanvasConfigurer.h
   
   \brief A Symbology Enconding visitor that configures a given canvas based on symbolizers elements.
- */
+*/
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_CANVASCONFIGURER_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_CANVASCONFIGURER_H
@@ -65,7 +65,7 @@ namespace te
              </code>
 
       \sa te::se::Visitor
-     */
+    */
     class TEMAPEXPORT CanvasConfigurer : public te::se::Visitor, public boost::noncopyable
     {
       public:
@@ -97,7 +97,7 @@ namespace te
           \brief It configs the canvas based on given symbolizer.
 
           \param symbolizer The symbolizer that will be used to config the canvas.
-         */
+        */
         void config(const te::se::Symbolizer* symbolizer);
 
         //@}
@@ -125,7 +125,7 @@ namespace te
           \enum ConfigStyle
 
           \brief Internal enum that indicates which style that should be configured.
-         */
+        */
         enum ConfigStyle
         {
           Point,   /*!< Adjust parameters associated with point.           */
@@ -135,7 +135,9 @@ namespace te
         };
 
         void config(const te::se::Stroke* stroke, const bool& fromLineSymbolizer = true);
+
         void config(const te::se::Fill* fill);
+
         void config(const te::se::Graphic* graphic, ConfigStyle configStyle);
 
       private:

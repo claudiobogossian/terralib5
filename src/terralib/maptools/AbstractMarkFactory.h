@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file AbstractMarkFactory.h
+  \file terralib/maptools/AbstractMarkFactory.h
 
   \brief The abstract factory for conversion of Symbology Enconding Mark elements to an image pattern.
- */
+*/
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMARKFACTORY_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMARKFACTORY_H
@@ -49,7 +49,7 @@ namespace te
       </code>
 
       \sa AbstractFactory
-     */
+    */
     class TEMAPEXPORT AbstractMarkFactory : public te::common::AbstractFactory<AbstractMarkFactory, std::string>
     {
       public:
@@ -63,7 +63,7 @@ namespace te
           \brief Virtual destructor.
 
           \note It will automatically unregister the factory from the dictionary.
-         */
+        */
         virtual ~AbstractMarkFactory();
 
         //@}
@@ -80,7 +80,7 @@ namespace te
                 The pattern used is "factoryKey://markName".
                 Case empty will be used "DefaultMarkFactory".
           \note The caller will take the ownership of the returned pointer.
-         */
+        */
         static te::color::RGBAColor** make(const te::se::Mark* mark, std::size_t size);
 
         /*!
@@ -93,7 +93,7 @@ namespace te
           \return The RGBA image that represents the mark.
 
           \note The caller will take the ownership of the returned pointer.
-         */
+        */
         static te::color::RGBAColor** make(const std::string& factoryKey, const te::se::Mark* mark, std::size_t size);
 
         /*!
@@ -102,7 +102,7 @@ namespace te
           \param marks A pre-created vector of string that will be filled with the supported marks names.
 
           \note All registered mark factories will be consulted.
-         */
+        */
         static void SupportedMarks(std::vector<std::string>& marks);
 
       protected:
@@ -115,14 +115,14 @@ namespace te
           \return The RGBA image that represents the mark.
 
           \note The caller will take the ownership of the returned pointer.
-         */
+        */
         virtual te::color::RGBAColor** create(const te::se::Mark* mark, std::size_t size) = 0;
 
         /*!
           \brief Pure virtual method that informs the set of supported marks by a specific concrete factory.
 
           \param marks A pre-created vector of string that will be filled with the supported marks names.
-         */
+        */
         virtual void getSupportedMarks(std::vector<std::string>& marks) const = 0;
 
       protected:
@@ -138,7 +138,7 @@ namespace te
           The key of a AbstractMarkFactory is a string.
 
           \param factoryKey The key that identifies the factory.
-         */
+        */
         AbstractMarkFactory(const std::string& factoryKey);
 
         //@}

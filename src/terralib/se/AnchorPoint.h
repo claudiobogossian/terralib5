@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file AnchorPoint.h
+  \file terralib/se/AnchorPoint.h
   
   \brief An AnchorPoint identifies the location inside of a text label to use an 'anchor' for positioning it relative to a point geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_ANCHORPOINT_H
 #define __TERRALIB_SE_INTERNAL_ANCHORPOINT_H

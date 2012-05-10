@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ChangeCase.h
+  \file terralib/se/ChangeCase.h
   
   \brief Changes the case of strings (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CHANGECASE_H
 #define __TERRALIB_SE_INTERNAL_CHANGECASE_H

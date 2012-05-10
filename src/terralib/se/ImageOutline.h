@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ImageOutline.h
+  \file terralib/se/ImageOutline.h
   
   \brief ImageOutline specifies how individual source rasters in a multi-raster set (such as a set of satellite-image scenes) should be outlined to make the individual-image locations visible.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_IMAGEOUTLINE_H
 #define __TERRALIB_SE_INTERNAL_IMAGEOUTLINE_H

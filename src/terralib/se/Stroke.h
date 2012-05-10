@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Stroke.h
+  \file terralib/se/Stroke.h
   
   \brief A Stroke specifies the appearance of a linear geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_STROKE_H
 #define __TERRALIB_SE_INTERNAL_STROKE_H
@@ -62,7 +62,7 @@ namespace te
       is given, then the line Symbolizer will render a solid color.
 
       \sa LineSymbolizer, Graphic, GraphicStroke, Mark
-     */
+    */
     class TESEEXPORT Stroke : public boost::noncopyable
     {
       public:
@@ -90,14 +90,14 @@ namespace te
                  GraphicFill defines that the pixels of the line will be drawn repeating an area-fill pattern.
 
           \note The Stroke object will take the ownership of the informed fill pointer.
-         */
+        */
         void setGraphicFill(Graphic* fill);
 
         /*!
           \brief Gets the GraphicFill element associate to this Stroke.
           
           \return The GraphicFill element.
-         */
+        */
         const Graphic* getGraphicFill() const;
 
         /*!
@@ -106,14 +106,14 @@ namespace te
                  and has its graphic bent around the curves of the line string.
 
           \note The Stroke object will take the ownership of the informed stroke pointer.
-         */
+        */
         void setGraphicStroke(GraphicStroke* stroke);
 
         /*!
           \brief Gets the GraphicStroke element associate to this Stroke.
           
           \return The GraphicStroke element.
-         */
+        */
         const GraphicStroke* getGraphicStroke() const;
 
         /*!
@@ -145,6 +145,7 @@ namespace te
       private:
 
         void setParameter(const std::string& name, const std::string& value);
+
         const SvgParameter* getParameter(const std::string& name) const;
 
       private:

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Style.cpp
+  \file terralib/se/Style.cpp
   
   \brief The Style defines the styling that is to be applied to a single feature (also applies to coverage).
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

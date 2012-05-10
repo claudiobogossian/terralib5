@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file InlineContent.h
+  \file terralib/se/InlineContent.h
   
   \brief InlineContent is XML or base64 encoded content in some externally-defined format that is included in an SE in-line.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_INLINECONTENT_H
 #define __TERRALIB_SE_INTERNAL_INLINECONTENT_H

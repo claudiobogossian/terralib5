@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Style.h
+  \file terralib/se/Style.h
   
   \brief The Style defines the styling that is to be applied to a geographic dataset (vector geometries or coverage).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_STYLE_H
 #define __TERRALIB_SE_INTERNAL_STYLE_H
@@ -59,7 +59,7 @@ namespace te
       being the first item plotted and hence being on the "bottom".
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Rule
-     */
+    */
     class TESEEXPORT Style : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
     {
       public:

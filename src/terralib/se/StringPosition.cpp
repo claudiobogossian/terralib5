@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file StringPosition.cpp
+  \file terralib/se/StringPosition.cpp
   
   \brief It returns the position of first occurence of a substring (String formatting functions).
- */
+*/
 
 // TerraLib
 #include "ParameterValue.h"

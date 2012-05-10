@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Fill.cpp
+  \file terralib/se/Fill.cpp
   
   \brief A Fill specifies the pattern for filling an area geometry.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

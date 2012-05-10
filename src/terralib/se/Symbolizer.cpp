@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Symbolizer.cpp
+  \file terralib/se/Symbolizer.cpp
   
   \brief A Symbolizer describes how a Feature is to appear on a map.
- */
+*/
 
 // TerraLib
 #include "../common/Exception.h"

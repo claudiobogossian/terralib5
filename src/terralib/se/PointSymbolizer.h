@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PointSymbolizer.h
+  \file terralib/se/PointSymbolizer.h
   
   \brief A PointSymbolizer specifies the rendering of a graphic Symbolizer at a point.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_POINTSYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_POINTSYMBOLIZER_H

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file CanvasConfigurer.cpp
+  \file terralib/maptools/CanvasConfigurer.cpp
   
   \brief A Symbology Enconding visitor that configures a given canvas based on symbolizers elements.
- */
+*/
 
 // TerraLib
 #include "../common/StringUtils.h"
@@ -51,12 +51,12 @@ std::map<std::string, te::map::LineJoinStyle> te::map::CanvasConfigurer::sm_line
 te::map::CanvasConfigurer::CanvasConfigurer(te::map::Canvas* canvas)
   : m_canvas(canvas)
 {
-  // LineCapMap
+// LineCapMap
   sm_lineCapMap[TE_SE_BUTT_CAP  ] = te::map::FlatCap;
   sm_lineCapMap[TE_SE_ROUND_CAP ] = te::map::RoundCap;
   sm_lineCapMap[TE_SE_SQUARE_CAP] = te::map::SquareCap;
 
-  // LineJoinMap
+// LineJoinMap
   sm_lineJoinMap[TE_SE_MITRE_JOIN] = te::map::MiterJoin;
   sm_lineJoinMap[TE_SE_ROUND_JOIN] = te::map::RoundJoin;
   sm_lineJoinMap[TE_SE_BEVEL_JOIN] = te::map::BevelJoin;
@@ -77,22 +77,22 @@ void te::map::CanvasConfigurer::visit(const te::se::Style& visited)
 
 void te::map::CanvasConfigurer::visit(const te::se::FeatureTypeStyle& visited)
 {
-  // no need
+// no need
 }
 
 void te::map::CanvasConfigurer::visit(const te::se::CoverageStyle& visited)
 {
-  // no need
+// no need
 }
 
 void te::map::CanvasConfigurer::visit(const te::se::Symbolizer& visited)
 {
-  // no need
+// no need
 }
 
 void te::map::CanvasConfigurer::visit(const te::se::PolygonSymbolizer& visited)
 {
-  // Default configuration
+// Default configuration
   m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
   m_canvas->setPolygonContourWidth(1);
   m_canvas->setPolygonContourDashStyle(te::map::SolidLine);
@@ -100,14 +100,14 @@ void te::map::CanvasConfigurer::visit(const te::se::PolygonSymbolizer& visited)
   m_canvas->setPolygonContourJoinStyle(te::map::RoundJoin);
   m_canvas->setPolygonFillColor(te::color::RGBAColor(127, 127, 127, TE_OPAQUE));
 
-  // Configuring the polygon stroke...
+// Configuring the polygon stroke...
   const te::se::Stroke* stroke = visited.getStroke();
   if(stroke)
     config(stroke, false);
   else
     m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // no stroke
 
-  // Configuring the polygon fill...
+// Configuring the polygon fill...
   const te::se::Fill* fill = visited.getFill();
   if(fill)
     config(fill);
@@ -117,14 +117,14 @@ void te::map::CanvasConfigurer::visit(const te::se::PolygonSymbolizer& visited)
 
 void te::map::CanvasConfigurer::visit(const te::se::LineSymbolizer& visited)
 {
-  // Default configuration
+// Default configuration
   m_canvas->setLineColor(te::color::RGBAColor(0 , 0, 255, TE_OPAQUE));
   m_canvas->setLineWidth(1);
   m_canvas->setLineDashStyle(te::map::SolidLine);
   m_canvas->setLineCapStyle(te::map::RoundCap);
   m_canvas->setLineJoinStyle(te::map::RoundJoin);
 
-  // Configuring the line stroke...
+// Configuring the line stroke...
   const te::se::Stroke* stroke = visited.getStroke();
   if(stroke)
     config(stroke);
@@ -141,12 +141,12 @@ void te::map::CanvasConfigurer::visit(const te::se::PointSymbolizer& visited)
 
 void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
 {
-  // TODO
+// TODO
 }
 
 void te::map::CanvasConfigurer::visit(const te::se::RasterSymbolizer& visited)
 {
-  // TODO
+// TODO
 }
 
 void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool& fromLineSymbolizer)

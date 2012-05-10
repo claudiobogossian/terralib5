@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ParameterValue.cpp
+  \file terralib/se/ParameterValue.cpp
   
   \brief The ParameterValueType uses WFS-Filter expressions to give values for SE graphic parameters.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SelectedChannel.h
+  \file terralib/se/SelectedChannel.h
   
   \brief A selected channel to be display.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
 #define __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ExternalGraphic.cpp
+  \file terralib/se/ExternalGraphic.cpp
   
   \brief The ExternalGraphic allows a reference to be made to an external graphic file with a Web URL or to in-line content.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

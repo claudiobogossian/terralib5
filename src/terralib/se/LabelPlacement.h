@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LabelPlacement.h
+  \file terralib/se/LabelPlacement.h
   
   \brief The LabelPlacement specifies where and how a text label should be rendered relative to a geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LABELPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_LABELPLACEMENT_H

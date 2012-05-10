@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file GraphicStroke.h
+  \file terralib/se/GraphicStroke.h
   
   \brief A GraphicStroke defines a repeated-linear graphic pattern to be used for stroking a line.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_GRAPHICSTROKE_H
 #define __TERRALIB_SE_INTERNAL_GRAPHICSTROKE_H

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ExternalGraphic.h
+  \file terralib/se/ExternalGraphic.h
   
   \brief The ExternalGraphic allows a reference to be made to an external graphic file with a Web URL or to in-line content.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_EXTERNALGRAPHIC_H
 #define __TERRALIB_SE_INTERNAL_EXTERNALGRAPHIC_H

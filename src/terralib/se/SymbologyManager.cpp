@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SymbologyManager.cpp
+  \file terralib/se/SymbologyManager.cpp
  
   \brief The SymbologyManager is a singleton that can be used to manage all loaded symbols in TerraLib.
- */
+*/
 
 // TerraLib
 #include "Symbolizer.h"

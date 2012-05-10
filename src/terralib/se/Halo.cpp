@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Halo.cpp
+  \file terralib/se/Halo.cpp
   
   \brief A Halo is a type of Fill that is applied to the backgrounds of font glyphs.
- */
+*/
 
 // TerraLib
 #include "Fill.h"

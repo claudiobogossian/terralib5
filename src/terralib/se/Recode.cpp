@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Recode.cpp
+  \file terralib/se/Recode.cpp
   
   \brief Transformation of discrete values to other values.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

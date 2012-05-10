@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Rule.h
+  \file terralib/se/Rule.h
   
   \brief A Rule is used to attach property/scale conditions to and group the individual symbols used for rendering.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RULE_H
 #define __TERRALIB_SE_INTERNAL_RULE_H
@@ -73,7 +73,7 @@ namespace te
       global "not" of that condition.
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Graphic, Symbolizer, te::fe::Filter
-     */
+    */
     class TESEEXPORT Rule : public boost::noncopyable
     {
       public:
@@ -114,7 +114,7 @@ namespace te
           \brief
 
           \note The ElseFilter must be false in order to set a filter.
-         */
+        */
         void setFilter(te::fe::Filter* f);
 
         const te::fe::Filter* getFilter() const;
@@ -124,7 +124,7 @@ namespace te
           \brief
 
           \note The filter must be NULL in order to call this method.
-         */
+        */
         void enableElseFilter();
 
         void disableElseFilter();

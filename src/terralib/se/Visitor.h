@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Visitor.h
+  \file terralib/se/Visitor.h
 
   \brief A visitor interface for the SymbologyEncoding hierarchy.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_VISITOR_H
 #define __TERRALIB_SE_INTERNAL_VISITOR_H
@@ -37,7 +37,7 @@ namespace te
       \class Visitor
       
       \brief A visitor interface for the SymbologyEncoding hierarchy.
-     */
+    */
     class Visitor
     {
       public:

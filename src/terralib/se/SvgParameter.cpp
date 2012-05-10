@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SvgParameter.cpp
+  \file terralib/se/SvgParameter.cpp
   
   \brief A SvgParameter refers to an SVG/CSS graphical-formatting parameter.
- */
+*/
 
 // TerraLib
 #include "SvgParameter.h"
