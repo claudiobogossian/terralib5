@@ -129,41 +129,41 @@ link_libraries(${DEP_LIBS})
 
 # Select the source files
 file(GLOB QWT_SRCS      ${SRCDIR}/qwt/*.cpp)
-file(GLOB SE_SRCS  		${SRCDIR}/se/*.cpp)
 file(GLOB WIDGETS_SRCS  ${SRCDIR}/widgets/*.cpp)
 file(GLOB CANVAS_SRCS   ${SRCDIR}/widgets/canvas/*.cpp)
 file(GLOB DATAGRID_SRCS ${SRCDIR}/widgets/datagrid/*.cpp)
 file(GLOB DATASET_SRCS  ${SRCDIR}/widgets/dataset/*.cpp)
 file(GLOB LAYER_SRCS    ${SRCDIR}/widgets/layer/*.cpp)
 file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
+file(GLOB SE_SRCS  		${SRCDIR}/widgets/se/*.cpp)
 
 # Select the header files
 file(GLOB QWT_HDRS      ${SRCDIR}/qwt/*.h)
-file(GLOB SE_HDRS       ${SRCDIR}/se/*.h)
 file(GLOB WIDGETS_HDRS  ${SRCDIR}/widgets/*.h)
 file(GLOB CANVAS_HDRS   ${SRCDIR}/widgets/canvas/*.h)
 file(GLOB DATAGRID_HDRS ${SRCDIR}/widgets/datagrid/*.h)
 file(GLOB DATASET_HDRS  ${SRCDIR}/widgets/dataset/*.h)
 file(GLOB LAYER_HDRS    ${SRCDIR}/widgets/layer/*.h)
 file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
+file(GLOB SE_HDRS       ${SRCDIR}/widgets/se/*.h)
 
 # Group the source and header files
 source_group("qwt\\Source Files"               FILES ${QWT_SRCS})
-source_group("se\\Source Files"                FILES ${SE_SRCS})
 source_group("widgets\\Source Files"           FILES ${WIDGETS_SRCS})
 source_group("widgets\\canvas\\Source Files"   FILES ${CANVAS_SRCS})
 source_group("widgets\\datagrid\\Source Files" FILES ${DATAGRID_SRCS})
 source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
+source_group("widgets\\se\\Source Files"       FILES ${SE_SRCS})
 source_group("qwt\\Header Files"               FILES ${QWT_HDRS})
-source_group("se\\Header Files"                FILES ${SE_HDRS})
 source_group("widgets\\Header Files"           FILES ${WIDGETS_HDRS})
 source_group("widgets\\canvas\\Header Files"   FILES ${CANVAS_HDRS})
 source_group("widgets\\datagrid\\Header Files" FILES ${DATAGRID_HDRS})
 source_group("widgets\\dataset\\Header Files"  FILES ${DATASET_HDRS})
 source_group("widgets\\layer\\Header Files"    FILES ${LAYER_HDRS})
 source_group("widgets\\property\\Header Files" FILES ${PROPERTY_HDRS})
+source_group("widgets\\se\\Header Files"       FILES ${SE_HDRS})
 
 # Select the header files for moc'ing
 file(GLOB HDRS_TO_MOC
@@ -174,32 +174,32 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/qwt/ScatterDisplay.h
 	 ${SRCDIR}/qwt/ScatterSelectionCursor.h
 	 ${SRCDIR}/qwt/TimeSeriesDisplay.h
-   ${SRCDIR}/widgets/layer/AbstractLayerItem.h
-   ${SRCDIR}/widgets/layer/LayerExplorer.h
-   ${SRCDIR}/widgets/layer/LayerExplorerModel.h
-   ${SRCDIR}/widgets/layer/LayerItem.h
-   ${SRCDIR}/widgets/layer/LegendItem.h
-   ${SRCDIR}/widgets/layer/FolderLayerItem.h	
-   ${SRCDIR}/widgets/dataset/CreateDataSet.h
-   ${SRCDIR}/widgets/dataset/AddIndex.h	
-   ${SRCDIR}/widgets/datagrid/DataGridModel.h
-   ${SRCDIR}/widgets/datagrid/DataGridView.h	
-   ${SRCDIR}/widgets/datagrid/HeaderView.h	
-   ${SRCDIR}/widgets/property/AddProperty.h
-   ${SRCDIR}/widgets/property/RemoveProperty.h
-   ${SRCDIR}/widgets/property/RenameProperty.h
-   ${SRCDIR}/widgets/property/UpdateProperty.h	
-   ${SRCDIR}/widgets/canvas/MapDisplay.h
-   ${SRCDIR}/widgets/canvas/ZoomAndPan.h)
+	 ${SRCDIR}/widgets/layer/AbstractLayerItem.h
+	 ${SRCDIR}/widgets/layer/LayerExplorer.h
+	 ${SRCDIR}/widgets/layer/LayerExplorerModel.h
+	 ${SRCDIR}/widgets/layer/LayerItem.h
+	 ${SRCDIR}/widgets/layer/LegendItem.h
+	 ${SRCDIR}/widgets/layer/FolderLayerItem.h	
+	 ${SRCDIR}/widgets/dataset/CreateDataSet.h
+	 ${SRCDIR}/widgets/dataset/AddIndex.h	
+	 ${SRCDIR}/widgets/datagrid/DataGridModel.h
+	 ${SRCDIR}/widgets/datagrid/DataGridView.h	
+	 ${SRCDIR}/widgets/datagrid/HeaderView.h	
+	 ${SRCDIR}/widgets/property/AddProperty.h
+	 ${SRCDIR}/widgets/property/RemoveProperty.h
+	 ${SRCDIR}/widgets/property/RenameProperty.h
+	 ${SRCDIR}/widgets/property/UpdateProperty.h	
+	 ${SRCDIR}/widgets/canvas/MapDisplay.h
+	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
-	   ${SRCDIR}/widgets/*.ui
-	   ${SRCDIR}/widgets/canvas/*.ui
-	   ${SRCDIR}/widgets/datagrid/*.ui
-	   ${SRCDIR}/widgets/dataset/*.ui
-	   ${SRCDIR}/widgets/layer/*.ui
-	   ${SRCDIR}/widgets/property/*.ui)
+	 ${SRCDIR}/widgets/*.ui
+     ${SRCDIR}/widgets/canvas/*.ui
+     ${SRCDIR}/widgets/datagrid/*.ui
+     ${SRCDIR}/widgets/dataset/*.ui
+     ${SRCDIR}/widgets/layer/*.ui
+     ${SRCDIR}/widgets/property/*.ui)
 
 list(REMOVE_ITEM WIDGETS_HDRS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	
@@ -224,13 +224,13 @@ include_directories(${ROOT}/src
 		
 add_library(${LIB_NAME} SHARED
             ${QWT_SRCS}      ${QWT_HDRS}
-			${SE_SRCS}  	 ${SE_HDRS}
             ${WIDGETS_SRCS}  ${WIDGETS_HDRS}
             ${CANVAS_SRCS}   ${CANVAS_HDRS}
             ${DATAGRID_SRCS} ${DATAGRID_HDRS}
             ${DATASET_SRCS}  ${DATASET_HDRS}
             ${LAYER_SRCS}    ${LAYER_HDRS}
             ${PROPERTY_SRCS} ${PROPERTY_HDRS}
+			${SE_SRCS}  	 ${SE_HDRS}
             ${UI} ${MOC})
             
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
