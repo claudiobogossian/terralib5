@@ -85,15 +85,19 @@ endif(UNIX)
 # Select the source files
 file(GLOB SRCS     ${SRCDIR}/*.cpp)
 file(GLOB URI_SRCS ${SRCDIR}/URI/*.cpp)
+file(GLOB PROGRESS_SRCS ${SRCDIR}/progress/*.cpp)
 
 # Select the header files
 file(GLOB HDRS     ${SRCDIR}/*.h)
 file(GLOB URI_HDRS ${SRCDIR}/URI/*.h)
+file(GLOB PROGRESS_HDRS ${SRCDIR}/progress/*.h)
 
 # Group the source and header files
 source_group("Source Files"      FILES ${SRCDIR})
+source_group("Progress\\Source Files" FILES ${PROGRESS_SRCS})
 source_group("URI\\Source Files" FILES ${URI_SRCS})
 source_group("Header Files"      FILES ${HDRS})
+source_group("Progress\\Header Files" FILES ${PROGRESS_HDRS})
 source_group("URI\\Header Files" FILES ${URI_HDRS})
 
 # Select the include directories
@@ -101,7 +105,7 @@ include_directories(${ROOT}/src ${INCLDIR}/URI ${DEP_INCLUDES})
 
 link_libraries(${DEP_LIBS})
 
-add_library(${LIB_NAME} SHARED ${SRCS} ${URI_SRCS} ${HDRS} ${URI_HDRS})
+add_library(${LIB_NAME} SHARED ${SRCS} ${PROGRESS_SRCS} ${URI_SRCS} ${HDRS} ${PROGRESS_HDRS} ${URI_HDRS})
 
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 

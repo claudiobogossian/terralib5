@@ -134,6 +134,7 @@ file(GLOB CANVAS_SRCS   ${SRCDIR}/widgets/canvas/*.cpp)
 file(GLOB DATAGRID_SRCS ${SRCDIR}/widgets/datagrid/*.cpp)
 file(GLOB DATASET_SRCS  ${SRCDIR}/widgets/dataset/*.cpp)
 file(GLOB LAYER_SRCS    ${SRCDIR}/widgets/layer/*.cpp)
+file(GLOB PROGRESS_SRCS ${SRCDIR}/widgets/progress/*.cpp)
 file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
 file(GLOB SE_SRCS  		${SRCDIR}/widgets/se/*.cpp)
 
@@ -144,6 +145,7 @@ file(GLOB CANVAS_HDRS   ${SRCDIR}/widgets/canvas/*.h)
 file(GLOB DATAGRID_HDRS ${SRCDIR}/widgets/datagrid/*.h)
 file(GLOB DATASET_HDRS  ${SRCDIR}/widgets/dataset/*.h)
 file(GLOB LAYER_HDRS    ${SRCDIR}/widgets/layer/*.h)
+file(GLOB PROGRESS_HDRS ${SRCDIR}/widgets/progress/*.h)
 file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
 file(GLOB SE_HDRS       ${SRCDIR}/widgets/se/*.h)
 
@@ -154,6 +156,7 @@ source_group("widgets\\canvas\\Source Files"   FILES ${CANVAS_SRCS})
 source_group("widgets\\datagrid\\Source Files" FILES ${DATAGRID_SRCS})
 source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
+source_group("widgets\\progress\\Source Files" FILES ${PROGRESS_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
 source_group("widgets\\se\\Source Files"       FILES ${SE_SRCS})
 source_group("qwt\\Header Files"               FILES ${QWT_HDRS})
@@ -162,6 +165,7 @@ source_group("widgets\\canvas\\Header Files"   FILES ${CANVAS_HDRS})
 source_group("widgets\\datagrid\\Header Files" FILES ${DATAGRID_HDRS})
 source_group("widgets\\dataset\\Header Files"  FILES ${DATASET_HDRS})
 source_group("widgets\\layer\\Header Files"    FILES ${LAYER_HDRS})
+source_group("widgets\\progress\\Header Files" FILES ${PROGRESS_HDRS})
 source_group("widgets\\property\\Header Files" FILES ${PROPERTY_HDRS})
 source_group("widgets\\se\\Header Files"       FILES ${SE_HDRS})
 
@@ -190,7 +194,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/RenameProperty.h
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
 	 ${SRCDIR}/widgets/canvas/MapDisplay.h
-	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h)
+	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h
+	 ${SRCDIR}/widgets/progress/QtProgress.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
@@ -229,6 +234,7 @@ add_library(${LIB_NAME} SHARED
             ${DATAGRID_SRCS} ${DATAGRID_HDRS}
             ${DATASET_SRCS}  ${DATASET_HDRS}
             ${LAYER_SRCS}    ${LAYER_HDRS}
+	    ${PROGRESS_SRCS} ${PROGRESS_HDRS}
             ${PROPERTY_SRCS} ${PROPERTY_HDRS}
 			${SE_SRCS}  	 ${SE_HDRS}
             ${UI} ${MOC})
