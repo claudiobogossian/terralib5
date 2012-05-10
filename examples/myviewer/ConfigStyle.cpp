@@ -6,21 +6,22 @@
 //#include <terralib/maptools.h>
 //#include <terralib/postgis.h>
 #include <terralib/qt/widgets.h>
-#include "terralib/geometry/Coord2D.h"
-#include "terralib/geometry/Geometry.h"
-#include "terralib/geometry/GeometryCollection.h"
-#include "terralib/geometry/LineString.h"
-#include "terralib/geometry/LinearRing.h"
-#include "terralib/geometry/MultiLineString.h"
-#include "terralib/geometry/MultiPoint.h"
+#include <terralib/geometry/Coord2D.h>
+#include <terralib/geometry/Geometry.h>
+#include <terralib/geometry/GeometryCollection.h>
+#include <terralib/geometry/LineString.h>
+#include <terralib/geometry/LinearRing.h>
+#include <terralib/geometry/MultiLineString.h>
+#include <terralib/geometry/MultiPoint.h>
 #include "terralib/geometry/MultiPolygon.h"
-#include "terralib/geometry/Point.h"
-#include "terralib/geometry/PointM.h"
-#include "terralib/geometry/PointZ.h"
-#include "terralib/geometry/PointZM.h"
-#include "terralib/geometry/Polygon.h"
-#include "terralib/postgis/EWKBReader.h"
-#include "terralib/postgis/Utils.h"
+#include <terralib/geometry/Point.h>
+#include <terralib/geometry/PointM.h>
+#include <terralib/geometry/PointZ.h>
+#include <terralib/geometry/PointZM.h>
+#include <terralib/geometry/Polygon.h>
+#include <terralib/maptools/PtMarker.h>
+#include <terralib/postgis/EWKBReader.h>
+#include <terralib/postgis/Utils.h>
 
 //Qt
 #include <QPainter>
@@ -197,9 +198,11 @@ void ConfigStyle::paintEvent(QPaintEvent*)
   canvas.resize(60, 60);
   canvas.clear();
   canvas.setWindow(0, 0, 59, 59);
-  canvas.setPointColor(m_pointColor);
-  canvas.setPointWidth(m_pointWidth);
-  canvas.setPointMarker(m_pointType);
+  //canvas.setPointColor(m_pointColor);
+  //canvas.setPointWidth(m_pointWidth);
+  //canvas.setPointMarker(m_pointType);
+  te::color::RGBAColor** mark = te::map::CreateMarker(m_pointType, m_pointWidth, m_pointColor);
+  canvas.setPointPattern(mark, m_pointWidth, m_pointWidth);
   te::gm::Point *pt = new te::gm::Point();
   pt->setX(29.);
   pt->setY(29.);
