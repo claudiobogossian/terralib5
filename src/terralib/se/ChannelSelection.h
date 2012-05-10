@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ChannelSelection.h
+  \file terralib/se/ChannelSelection.h
   
   \brief ChannelSelection specifies the false-color channel selection for a multi-spectral raster source (such as a multi-band satellite-imagery source).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
 #define __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -55,7 +58,7 @@ namespace te
 
       \sa RasterSymbolizer, SelectedChannel
      */
-    class TESEEXPORT ChannelSelection
+    class TESEEXPORT ChannelSelection : public boost::noncopyable
     {
       public:
 
@@ -86,31 +89,6 @@ namespace te
         void setGrayChannel(SelectedChannel* c);
         SelectedChannel* getGrayChannel() { return m_grayChannel; }
         
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ChannelSelection.
-         */
-        ChannelSelection(const ChannelSelection& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ChannelSelection.
-
-          \return A reference for this.
-         */
-        ChannelSelection& operator=(const ChannelSelection& rhs);
-
         //@}
 
       private:

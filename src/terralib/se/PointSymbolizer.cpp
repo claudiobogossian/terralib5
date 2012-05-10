@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PointSymbolizer.cpp
+  \file terralib/se/PointSymbolizer.cpp
   
   \brief A PointSymbolizer specifies the rendering of a graphic Symbolizer at a point.
- */
+*/
 
 // TerraLib
 #include "../fe/PropertyName.h"

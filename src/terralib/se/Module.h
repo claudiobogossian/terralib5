@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/se/Module.h
    
   \brief This singleton defines the TerraLib Symbology Encoding module entry.
 */

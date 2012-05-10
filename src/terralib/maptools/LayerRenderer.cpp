@@ -29,16 +29,20 @@
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../fe/Filter.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../se/CoverageStyle.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/Style.h"
+#include "../se/Rule.h"
 #include "AbstractLayer.h"
 #include "Canvas.h"
+#include "CanvasConfigurer.h"
 #include "Layer.h"
 #include "LayerRenderer.h"
+#include "QueryEncoder.h"
 
 te::map::LayerRenderer::LayerRenderer()
 {}
@@ -48,125 +52,117 @@ te::map::LayerRenderer::~LayerRenderer()
 
 void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
                                   const te::gm::Envelope& bbox, int srid)
-//void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
-//                                  const te::gm::Envelope& bbox, int /*srid*/)
 {
+  // Is our business?
   te::map::Layer* l = dynamic_cast<Layer*>(layer);
   assert(l);
 
+  // Gets the associate data source
   te::da::DataSource* ds = l->getDataSource();
   assert(ds);
 
-  std::string dsname = l->getId();
-  assert(!dsname.empty());
-  //std::string dsname = l->getDataSetName();
-  //assert(!dsname.empty());
-
+  // Gets a transactor
   te::da::DataSourceTransactor* t = ds->getTransactor();
   assert(t);
 
+  // What is the dataset?
+  std::string dsname = l->getDataSetName();
+  assert(!dsname.empty());
+
+  // Gets a catalog loader
   te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
   assert(loader);
+  
+  // Gets the dataset type
+  te::da::DataSetType* dataSetType = loader->getDataSetType(dsname);
+  assert(dataSetType);
 
-  // std::vector<Rule*> rules = style->getRules();
-  // for each <Rule>
-  // {
-
-  /* Here should be called the transactor query() method. 
-  It is necessary interprets the <Rule> elements included on Style.
-  For now, gets the data set using only box restriction. */
-  te::da::DataSetType* type = loader->getDataSetType(dsname);
-  assert(type);
   delete loader;
-  te::gm::GeometryProperty* gcol = type->getDefaultGeomProperty();
+
+  // For while, default geometry...
+  te::gm::GeometryProperty* gcol = dataSetType->getDefaultGeomProperty();
   assert(gcol);
 
+  // Adjusting box...
   te::gm::Envelope box(bbox);
   if(gcol->getSRID() != -1 && gcol->getSRID() != srid)
     box.transform(srid, gcol->getSRID());
-  te::da::DataSet* dataset = t->getDataSet(dsname, gcol, &box, te::gm::INTERSECTS);
-  assert(dataset);
-//  delete t;
 
-  // Here goes the canvas configuration. It is necessary interprets the <Symbolizers> elements included on Style.
-  // For now...
-  switch( gcol->getGeometryType())
+  // Gets the associated layer style
+  te::se::Style* style = l->getStyle();
+  assert(style);
+
+  // The canvas configurer
+  te::map::CanvasConfigurer cc(canvas);
+
+  std::size_t nRules = style->getNRules();
+  for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
   {
-    case te::gm::MultiPolygonType:
-    case te::gm::PolygonType:
+    // Current rule
+    const te::se::Rule* rule = style->getRule(i);
+    assert(rule);
+
+    // TODO: Should be verified the MinScaleDenominator and MaxScaleDenominator!
+
+    // Gets the rule filter...
+    const te::fe::Filter* filter = rule->getFilter();
+
+    // Let's retrieve the correct dataset...
+    te::da::DataSet* dataset = 0;
+    if(!filter)
+    {
+      // There isn't a filter expression. Gets the dataset using only box restriction...
+      dataset = t->getDataSet(dsname, gcol, &box, te::gm::INTERSECTS);
+    }
+    else
+    {
+      // ... gets an enconder...
+      te::map::QueryEncoder converter;
+      // ... and converts the filter expression to a TerraLib Query object!
+      te::da::Where* wh = converter.getWhere(filter);
+      /* TODO: 1) Create te::da::Select object with this where + box restriction;
+               2) Call the transactor query method to get the correct restricted dataset. */
+    }
+    assert(dataset);
+
+    /* Here goes the canvas configuration.
+       It is necessary interprets the <Symbolizers> elements included on Rule. */
+
+    // Gets the set of symbolizers
+    const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
+    for(std::size_t j = 0; j < symbolizers.size(); ++j) // for each <Symbolizer>
+    {
+      te::se::Symbolizer* symb = symbolizers[j];
+
+      // Let's config de canvas!
+      cc.config(symb);
+
+      // Let's draw!
+      while(dataset->moveNext())
       {
-        canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
-        if(l->getId().find("br") != std::string::npos)
-          canvas->setPolygonFillColor(te::color::RGBAColor(220 ,0, 0, 255));
-        else
-        {
-          canvas->setPolygonFillColor(te::color::RGBAColor(220 ,0, 0, 255));
-          //char buf[64*1024];
-          //FILE* fp = fopen("C:\\lixo\\ButtonInfo64.png", "rb");
-          //int size = fread(buf, sizeof(char), 64*1024, fp);
-          //fclose(fp);
-          //canvas->setPolygonPatternWidth(64);
-          //canvas->setPolygonFillPattern(buf, size, te::map::PNG);
-          //canvas->setPolygonPatternOpacity(100);
-          //canvas->setPolygonContourColor(te::color::RGBAColor(80, 200, 120, 255));
-          //canvas->setPolygonContourWidth(1);
-        }
+        /* How can we get anothers or a specified, for example? And others data sets? <Geometry> element? 
+           For while, Default Geometry. */
+        te::gm::Geometry* g = dataset->getGeometry();
+        if(g == 0)
+          continue;
+
+        // Verifies the SRID. Case differents, converts coordinates...
+        /*int gsrid = g->getSRID();
+        if(gsrid != -1 && gsrid != srid)
+          g->transform(srid);*/
+
+        canvas->draw(g);
+
+        delete g;
       }
-    break;
-    
-    case te::gm::MultiLineStringType:
-    case te::gm::LineStringType:
-      {
-        canvas->setLineColor(te::color::RGBAColor(220 ,0, 0, 255));
-        //char buf[256*1024];
-        //FILE* fp = fopen("C:\\lixo\\2.bmp", "rb");
-        //int size = fread(buf, sizeof(char), 256*1024, fp);
-        //fclose(fp);
+      dataset->moveBeforeFirst();
+    } // end for each <Symbolizer>
 
-        //canvas->setLinePattern(buf, size, te::map::BMP);
-        //canvas->setLineWidth(16);
-      }
-    break;
-  
-    default:
-      canvas->setPointColor(te::color::RGBAColor(220 ,0, 0, 255));
-      canvas->setPointWidth(15);
-      canvas->setPointMarker(te::map::MarkerFourRays);
-  }
-  delete type;
+    delete dataset;
 
-  // let´s draw!
-  //int aaa = 2;
-  //while(dataset->moveNext() && aaa--)
-  while(dataset->moveNext())
-  {
-    /* How can we get anothers or a specified, for example? And others data sets? <Geometry> element? 
-       For while, Default Geometry. */
-    te::gm::Geometry* g = dataset->getGeometry();
-    if(g == 0)
-      continue;
+  } // end for each <Rule>
 
-    // Verifies the SRID. Case differents, converts coordinates...
-    if(g->getSRID() > 0)
-      g->transform(srid);
-    canvas->draw(g);
-
-    delete g;
-  }
-
-  delete dataset;
   delete t;
-
-  //canvas->setTextColor(te::color::RGBAColor(0, 255, 255, 255));
-  //canvas->setTextContourEnabled(true);
-  //canvas->setTextContourColor(te::color::RGBAColor(255, 0, 0, 255));
-  //canvas->setTextDecorationColor(te::color::RGBAColor(255, 255, 0, 255));
-  //canvas->setTextPointSize(80.);
-  //canvas->setTextWeight(te::at::ExtraBold);
-  //canvas->setTextUnderline(true);
-  //canvas->drawText(20, 300, "Teste");
-
-  // } end for each <Rule>
 }
 
 void te::map::LayerRenderer::draw(Layer* /*layer*/, te::se::FeatureTypeStyle* /*style*/, Canvas* /*canvas*/,

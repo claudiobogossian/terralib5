@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Categorize.h
+  \file terralib/se/Categorize.h
   
   \brief The transformation of continuous values to distinct values (Categorize function). 
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CATEGORIZE_H
 #define __TERRALIB_SE_INTERNAL_CATEGORIZE_H

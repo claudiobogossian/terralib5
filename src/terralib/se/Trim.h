@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Trim.h
+  \file terralib/se/Trim.h
   
   \brief Strips off chars from a string value (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_TRIM_H
 #define __TERRALIB_SE_INTERNAL_TRIM_H

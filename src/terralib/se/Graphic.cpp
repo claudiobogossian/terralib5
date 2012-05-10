@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Graphic.cpp
+  \file terralib/se/Graphic.cpp
   
   \brief A Graphic is a graphic symbol with an inherent shape, color(s), and possibly size.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"
@@ -40,7 +40,7 @@ te::se::Graphic::Graphic()
     m_size(0),
     m_rotation(0),
     m_anchorPoint(0),
-    m_displacement(0)          
+    m_displacement(0)
 {
 }
 
@@ -68,10 +68,20 @@ void te::se::Graphic::add(Mark* m)
   m_marks.push_back(m);
 }
 
+const std::vector<te::se::Mark*> te::se::Graphic::getMarks() const
+{
+  return m_marks;
+}
+
 void te::se::Graphic::setOpacity(ParameterValue* value)
 {
   delete m_opacity;
   m_opacity = value;
+}
+
+const te::se::ParameterValue* te::se::Graphic::getOpacity() const
+{
+  return m_opacity;
 }
 
 void te::se::Graphic::setSize(ParameterValue* value)
@@ -80,10 +90,20 @@ void te::se::Graphic::setSize(ParameterValue* value)
   m_size = value;
 }
 
+const te::se::ParameterValue* te::se::Graphic::getSize() const
+{
+  return m_size;
+}
+
 void te::se::Graphic::setRotation(ParameterValue* value)
 {
   delete m_rotation;
   m_rotation = value;
+}
+
+const te::se::ParameterValue* te::se::Graphic::getRotation() const
+{
+  return m_rotation;
 }
 
 void te::se::Graphic::setAnchorPoint(AnchorPoint* value)

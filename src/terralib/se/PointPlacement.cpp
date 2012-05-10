@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PointPlacement.cpp
+  \file terralib/se/PointPlacement.cpp
   
   \brief A PointPlacement specifies how a text label should be rendered relative to a geometric point.
- */
+*/
 
 // TerraLib
 #include "AnchorPoint.h"

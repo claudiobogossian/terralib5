@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SelectedChannel.h
+  \file terralib/se/SelectedChannel.h
   
   \brief A selected channel to be display.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
 #define __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
@@ -33,6 +33,9 @@
 
 // STL
 #include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -48,7 +51,7 @@ namespace te
 
       \sa ChannelSelection, ContrastEnhancement
      */
-    class TESEEXPORT SelectedChannel
+    class TESEEXPORT SelectedChannel : public boost::noncopyable
     {
       public:
 
@@ -75,31 +78,6 @@ namespace te
         void setContrastEnhancement(ContrastEnhancement* c);
         ContrastEnhancement* getContrastEnhancement() { return m_contrastEnhancement; }
         
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other SelectedChannel.
-         */
-        SelectedChannel(const SelectedChannel& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Halo.
-
-          \return A reference for this.
-         */
-        SelectedChannel& operator=(const SelectedChannel& rhs);
-
         //@}
 
       private:

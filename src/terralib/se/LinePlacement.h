@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LinePlacement.h
+  \file terralib/se/LinePlacement.h
   
   \brief A LinePlacement specifies how a text label should be rendered relative to a linear geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -57,7 +60,7 @@ namespace te
 
       \sa LabelPlacement, ParameterValue
      */
-    class TESEEXPORT LinePlacement
+    class TESEEXPORT LinePlacement : public boost::noncopyable
     {
       public:
 
@@ -85,31 +88,6 @@ namespace te
         void setGap(ParameterValue* p);
         void setIsAligned(bool i);
         void setGeneralizeLine(bool g);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other LinePlacement.
-         */
-        LinePlacement(const LinePlacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other LinePlacement.
-
-          \return A reference for this.
-         */
-        LinePlacement& operator=(const LinePlacement& rhs);
 
         //@}
 

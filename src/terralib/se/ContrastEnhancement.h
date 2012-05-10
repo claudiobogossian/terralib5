@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ContrastEnhancement.h
+  \file terralib/se/ContrastEnhancement.h
   
   \brief ContrastEnhancement defines the 'stretching' of contrast for a channel of a false-color image or for a whole grey/color image.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CONTRASTENHANCEMENT_H
 #define __TERRALIB_SE_INTERNAL_CONTRASTENHANCEMENT_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -58,7 +61,7 @@ namespace te
 
       \sa SelectedChannel, RasterSymbolizer
      */
-    class TESEEXPORT ContrastEnhancement
+    class TESEEXPORT ContrastEnhancement : public boost::noncopyable
     {
       public:
 
@@ -106,31 +109,6 @@ namespace te
         ContrastEnhancementType getContrastEnhancementType() { return m_contrast; } 
         void setGammaValue(const double& v);
         double getGammaValue() { return m_gammaValue; }
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ContrastEnhancement.
-         */
-        ContrastEnhancement(const ContrastEnhancement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ContrastEnhancement.
-
-          \return A reference for this.
-         */
-        ContrastEnhancement& operator=(const ContrastEnhancement& rhs);
 
         //@}
 

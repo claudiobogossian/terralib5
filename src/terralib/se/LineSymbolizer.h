@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LineSymbolizer.h
+  \file terralib/se/LineSymbolizer.h
   
   \brief A LineSymbolizer is used to style a stroke along a linear geometry type, such as a string of line segments.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LINESYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_LINESYMBOLIZER_H
@@ -91,7 +91,6 @@ namespace te
                 coverage-area outline is used for the line, rendered with no end caps.
          */
         void setGeometry(te::fe::PropertyName* geometry);
-
         const te::fe::PropertyName* getGeometry() const;
 
         /*!
@@ -103,7 +102,6 @@ namespace te
           stroke is to be rendered.
          */
         void setStroke(Stroke* stroke);
-
         const Stroke* getStroke() const;
 
         /*!
@@ -120,7 +118,6 @@ namespace te
           mean right. The default offset is 0.
          */
         void setPerpendicularOffset(ParameterValue* perpendicularOffset);
-
         const ParameterValue* getPerpendicularOffset() const;
 
         //@}

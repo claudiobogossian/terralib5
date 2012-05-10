@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file StringLength.h
+  \file terralib/se/StringLength.h
   
   \brief Returns length of string (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_STRINGLENGTH_H
 #define __TERRALIB_SE_INTERNAL_STRINGLENGTH_H

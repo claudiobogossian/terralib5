@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file GraphicStroke.h
+  \file terralib/se/GraphicStroke.h
   
   \brief A GraphicStroke defines a repeated-linear graphic pattern to be used for stroking a line.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_GRAPHICSTROKE_H
 #define __TERRALIB_SE_INTERNAL_GRAPHICSTROKE_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -46,7 +49,7 @@ namespace te
 
       \sa Stroke, Graphic, ParameterValue
      */
-    class TESEEXPORT GraphicStroke
+    class TESEEXPORT GraphicStroke : public boost::noncopyable
     {
       public:
 
@@ -82,9 +85,7 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed Graphic pointer.
          */
         void setGraphic(Graphic* g);
-
         const Graphic* getGraphic() const;
-
         void removeGraphic();
 
         /*!
@@ -95,7 +96,6 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
          */
         void setInitialGap(ParameterValue* initialGap);
-
         const ParameterValue* getInitialGap() const;
 
         /*!
@@ -106,35 +106,9 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
          */
         void setGap(ParameterValue* gap);
-
         const ParameterValue* getGap() const;
 
         //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        GraphicStroke(const GraphicStroke& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        GraphicStroke& operator=(const GraphicStroke& rhs);
-
-        //@}      
 
       private:
 

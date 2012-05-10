@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Concatenate.h
+  \file terralib/se/Concatenate.h
   
   \brief Concatenates strings (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CONCATENATE_H
 #define __TERRALIB_SE_INTERNAL_CONCATENATE_H

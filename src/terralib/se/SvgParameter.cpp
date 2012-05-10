@@ -18,16 +18,23 @@
  */
 
 /*!
-  \file SvgParameter.cpp
+  \file terralib/se/SvgParameter.cpp
   
   \brief A SvgParameter refers to an SVG/CSS graphical-formatting parameter.
- */
+*/
 
 // TerraLib
 #include "SvgParameter.h"
 
 te::se::SvgParameter::SvgParameter(const std::string& name)
-  : m_name(name)
+  : te::se::ParameterValue(),
+    m_name(name)
+{
+}
+
+te::se::SvgParameter::SvgParameter(const std::string& name, const std::string& value)
+  : te::se::ParameterValue(value),
+    m_name(name)
 {
 }
 
@@ -40,3 +47,7 @@ void te::se::SvgParameter::setName(const std::string& name)
   m_name = name;
 }
 
+std::string te::se::SvgParameter::getName() const
+{
+  return m_name;
+}

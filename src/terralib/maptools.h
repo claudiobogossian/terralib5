@@ -33,6 +33,7 @@
 // TerraLib
 #include "maptools/AbstractLayer.h"
 #include "maptools/AbstractMapDisplay.h"
+#include "maptools/AbstractMarkFactory.h"
 #include "maptools/AbstractRenderer.h"
 #include "maptools/Canvas.h"
 #include "maptools/Config.h"

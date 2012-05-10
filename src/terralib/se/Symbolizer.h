@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Symbolizer.h
+  \file terralib/se/Symbolizer.h
   
   \brief A Symbolizer describes how a Feature is to appear on a map.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_SYMBOLIZER_H
@@ -33,6 +33,9 @@
 
 // STL
 #include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -70,8 +73,8 @@ namespace te
       Concrete Symbolizer types are derived from this base type.
 
       \sa Rule, LineSymbolizer, PointSymbolizer, PolygonSymbolizer, TextSymbolizer, RasterSymbolizer, Description
-     */
-    class TESEEXPORT Symbolizer : public te::common::BaseVisitable<Visitor>
+    */
+    class TESEEXPORT Symbolizer : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
     {
       public:
 
@@ -127,35 +130,10 @@ namespace te
           <li>http://www.opengeospatial.org/se/units/foot</li>
           <li>http://www.opengeospatial.org/se/units/pixel</li>
           </ul>
-         */
+        */
         void setUom(const te::common::BaseUnitOfMeasure* uom);
 
         const te::common::BaseUnitOfMeasure* getUom() const;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Symbolizer.
-         */
-        Symbolizer(const Symbolizer& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Symbolizer.
-
-          \return A reference for this.
-         */
-        Symbolizer& operator=(const Symbolizer& rhs);
 
         //@}
 

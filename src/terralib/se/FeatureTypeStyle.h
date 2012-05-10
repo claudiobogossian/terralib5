@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FeatureTypeStyle.h
+  \file terralib/se/FeatureTypeStyle.h
   
   \brief The FeatureTypeStyle defines the styling that is to be applied to a dataset that can be viewed as a feature type.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FEATURETYPESTYLE_H
 #define __TERRALIB_SE_INTERNAL_FEATURETYPESTYLE_H

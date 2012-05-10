@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Function.cpp
+  \file terralib/se/Function.cpp
   
   \brief Symbology Encoding functions.
- */
+*/
 
 // TerraLib
 #include "Function.h"

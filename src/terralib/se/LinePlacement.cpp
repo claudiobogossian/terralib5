@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LinePlacement.cpp
+  \file terralib/se/LinePlacement.cpp
   
   \brief A LinePlacement specifies how a text label should be rendered relative to a linear geometry.
- */
+*/
 
 // TerraLib
 #include "LinePlacement.h"

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SvgParameter.h
+  \file terralib/se/SvgParameter.h
   
   \brief A SvgParameter refers to an SVG/CSS graphical-formatting parameter.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SVGPARAMETER_H
 #define __TERRALIB_SE_INTERNAL_SVGPARAMETER_H
@@ -41,7 +41,7 @@ namespace te
         and the content of the element gives the SVG/CSS-coded value.
 
         \sa ParameterValue
-     */
+    */
     class TESEEXPORT SvgParameter : public ParameterValue
     {
       public:
@@ -55,8 +55,16 @@ namespace te
           \brief It initializes a new SvgParameter.
 
           \param name SVG parameter name.
-         */
+        */
         SvgParameter(const std::string& name);
+
+        /*!
+          \brief It initializes a new SvgParameter with the given value.
+
+          \param name  SVG parameter name.
+          \param value SVG parameter value.
+        */
+        SvgParameter(const std::string& name, const std::string& value);
 
         /*! \brief Destructor. */
         ~SvgParameter();
@@ -70,12 +78,14 @@ namespace te
 
         void setName(const std::string& name);
 
+        std::string getName() const;
+
         //@}
 
       private:
 
-        std::string m_name;  //!< Mandatory.
-    };    
+        std::string m_name; //!< The name attribute of the SvgParameter element. (Mandatory)
+    };
 
   } // end namespace se
 }   // end namespace te

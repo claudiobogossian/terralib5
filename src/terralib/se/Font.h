@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Font.h
+  \file terralib/se/Font.h
   
   \brief A Font specifies the text font to use in a text symbolizer.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FONT_H
 #define __TERRALIB_SE_INTERNAL_FONT_H
@@ -32,8 +32,11 @@
 #include "Visitor.h"
 
 // STL
+#include <map>
 #include <string>
-#include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -57,7 +60,7 @@ namespace te
 
       \sa TextSymbolizer
      */
-    class TESEEXPORT Font
+    class TESEEXPORT Font : public boost::noncopyable
     {
       public:
 
@@ -68,20 +71,20 @@ namespace te
          */
         enum FontStyleType
         {
-          STYLE_NORMAL,   /*!< Normal font style.  */
-          STYLE_ITALIC,   /*!< Italic font style.  */
-          STYLE_OBLIQUE   /*!< Oblique font style. */
+          StyleNormal,   /*!< Normal font style.  */
+          StyleItalic,   /*!< Italic font style.  */
+          StyleOblique   /*!< Oblique font style. */
         };
 
         /*!
-          \enum FontWightType
+          \enum FontWeightType
 
           \brief It gives the amount of weight or boldness to use for a font.
          */
-        enum FontWightType
+        enum FontWeightType
         {
-          WEIGHT_NORMAL,  /*!< Normal. */
-          WEIGHT_BOLD     /*!< Bold.   */
+          WeightNormal,  /*!< Normal. */
+          WeightBold     /*!< Bold.   */
         };
 
         /** @name Initializer Methods
@@ -97,37 +100,48 @@ namespace te
 
         //@}
 
-        void add(SvgParameter* p);
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
+        /** @name Accessor methods
+         *  Methods used to get or set properties.
          */
         //@{
 
         /*!
-          \brief No copy constructor allowed.
+          \brief Add a SvgParameter to this Font.
 
-          \param rhs The other Font.
+          \note If there is already a SvgParamater with the same name it will be overrided.
+          \note The Font object will take the ownership of the informed p pointer.
          */
-        Font(const Font& rhs);
+        void add(SvgParameter* p);
 
-        /*!
-          \brief No assignment operator allowed.
+        void setFamily(const std::string& family);
+        void setStyle(const FontStyleType& style);
+        void setWeight(const FontWeightType& weight);
+        void setSize(const std::string& size);
 
-          \param rhs The other Font.
-
-          \return A reference for this.
-         */
-        Font& operator=(const Font& rhs);
+        const SvgParameter* getFamily() const;
+        const SvgParameter* getStyle() const;
+        const SvgParameter* getWeight() const;
+        const SvgParameter* getSize() const;
 
         //@}
 
       private:
 
-        std::vector<SvgParameter*> m_parameters;
-    };    
+        void setParameter(const std::string& name, const std::string& value);
+        const SvgParameter* getParameter(const std::string& name) const;
+
+      private:
+
+        std::map<std::string, SvgParameter*> m_svgParams;              //!< Set of SvgParameters.
+
+        static std::map<FontStyleType, std::string> sm_fontStyleMap;   //!< A map that associates FontStyleType to the correct string value.
+        static std::map<FontWeightType, std::string> sm_fontWeightMap; //!< A map that associates FontWeightType to the correct string value.
+
+        static const std::string sm_family;                            //!< SVG/CSS "font-family" parameter.
+        static const std::string sm_style;                             //!< SVG/CSS "font-style parameter.
+        static const std::string sm_weight;                            //!< SVG/CSS "font-weight" parameter.
+        static const std::string sm_size;                              //!< SVG/CSS "font-size" parameter.
+    };
 
   } // end namespace se
 }   // end namespace te

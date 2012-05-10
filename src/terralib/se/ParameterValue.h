@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ParameterValue.h
+  \file terralib/se/ParameterValue.h
   
   \brief The ParameterValueType uses WFS-Filter expressions to give values for SE graphic parameters.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_PARAMETERVALUE_H
 #define __TERRALIB_SE_INTERNAL_PARAMETERVALUE_H
@@ -34,6 +34,9 @@
 // STL
 #include <string>
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -50,8 +53,8 @@ namespace te
       model is used with textual substitution for values.
 
       \sa SvgParameter, LineSymbolizer, GraphicStroke, Halo, MapItem, Interpolate, InterpolationPoint
-     */
-    class TESEEXPORT ParameterValue
+    */
+    class TESEEXPORT ParameterValue : public boost::noncopyable
     {
       public:
 
@@ -59,7 +62,7 @@ namespace te
           \struct Parameter
 
           \brief Data parameter.
-         */
+        */
         struct Parameter
         {
           std::string* m_mixedData;          //!< Parameter from a mixed data content.
@@ -74,8 +77,17 @@ namespace te
          */
         //@{
 
-        /*! \brief It initializes a new ParameterValue. */
-        ParameterValue(); 
+        /*! \brief It initializes an empty ParameterValue. */
+        ParameterValue();
+
+        /*!
+          \brief It initializes a new ParameterValue based on given literal value.
+          
+          \param value Literal value for the new ParamaterValue.
+
+          \note A new Parameter with a Filter Literal Expression will be created and added to ParamaterValue.
+        */
+        ParameterValue(const std::string& value);
 
         /*! \brief Virtual destructor. */
         virtual ~ParameterValue();
@@ -87,39 +99,18 @@ namespace te
          */
         //@{
 
-        void add(Parameter* p);        
+        void add(Parameter* p);
+        void add(const std::string& value);
+
+        size_t getNParameters() const;
+        const Parameter* getParameter(size_t i) const;
 
         //@}
 
-       private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        ParameterValue(const ParameterValue& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        ParameterValue& operator=(const ParameterValue& rhs);
-
-        //@}
-
-      private:          
+      private:
 
         std::vector<Parameter*> m_parameters; //!< Regular text may be mixed and WFS-Filter expressions to give values for SE graphic parameters. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

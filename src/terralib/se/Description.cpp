@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Description.cpp
+  \file terralib/se/Description.cpp
   
   \brief A Description gives human-readable descriptive information for the object it is included within.
- */
+*/
 
 // TerraLib
 #include "Description.h"

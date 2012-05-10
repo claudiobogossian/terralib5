@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Mark.h
+  \file terralib/se/Mark.h
   
   \brief A Mark specifies a geometric shape and applies coloring to it.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_MARK_H
 #define __TERRALIB_SE_INTERNAL_MARK_H
@@ -30,6 +30,12 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// STL
+#include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -55,14 +61,14 @@ namespace te
         default WellKnownName is "square". Renderings of these
         marks may be made solid or hollow depending on Fill
         and Stroke elements.
-        <br>
+
         The alternative to a WellKnownName is an external
         mark format. The MarkIndex allows an individual mark
         in a mark archive to be selected. An example format
         for an external mark achive would be a TrueType font
         file, with MarkIndex being used to select an individual
         glyph from that file.
-        <br>
+
         The Mark element serves two purposes. It allows the
         selection of simple shapes, and, in combination with
         the capability to select and mix multiple external-URL
@@ -73,8 +79,8 @@ namespace te
         every Graphic.
 
         \sa Graphic, Fill, Stroke, InlineContent
-     */
-    class TESEEXPORT Mark
+    */
+    class TESEEXPORT Mark : public boost::noncopyable
     {
       public:
 
@@ -95,41 +101,27 @@ namespace te
           \brief The WellKnownName element gives the well-known name of the shape of the mark.
 
           Allowed values include at least "square", "circle", "triangle", "star", "cross", and "x".
-          The default WellKnownName is "square".          
-         */
+          The default WellKnownName is "square".
+        */
         void setWellKnownName(std::string* name);
+
+        const std::string* getWellKnownName() const;
+
         void setOnlineResource(te::xl::SimpleLink* link);
+
         void setInlineContent(InlineContent* iContent);
+
         void setFormat(std::string* f);
+
         void setMarkIndex(int i);
+
         void setFill(Fill* f);
+
+        const Fill* getFill() const;
+
         void setStroke(Stroke* s);
 
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Mark.
-         */
-        Mark(const Mark& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Mark.
-
-          \return A reference for this.
-         */
-        Mark& operator=(const Mark& rhs);
-
-        //@}
+        const Stroke* getStroke() const;
 
       private:
 

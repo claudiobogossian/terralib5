@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file InterpolationPoint.cpp
+  \file terralib/se/InterpolationPoint.cpp
   
   \brief They are used to define a graph of points.
- */
+*/
 
 // TerraLib
 #include "InterpolationPoint.h"

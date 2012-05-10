@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Function.h
+  \file terralib/se/Function.h
   
   \brief Symbology Encoding functions.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FUNCTION_H
 #define __TERRALIB_SE_INTERNAL_FUNCTION_H

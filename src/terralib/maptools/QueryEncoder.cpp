@@ -73,7 +73,7 @@ te::map::QueryEncoder::~QueryEncoder()
   delete m_expression;
 }
 
-te::da::Where* te::map::QueryEncoder::getWhere(te::fe::Filter* f)
+te::da::Where* te::map::QueryEncoder::getWhere(const te::fe::Filter* f)
 {
   te::da::Where* w = 0;
   te::fe::AbstractOp* ops = f->getOp();

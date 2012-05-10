@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Categorize.cpp
+  \file terralib/se/Categorize.cpp
   
   \brief The transformation of continuous values to distinct values (Categorize function).
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

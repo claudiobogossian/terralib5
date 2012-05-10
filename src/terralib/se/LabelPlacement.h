@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LabelPlacement.h
+  \file terralib/se/LabelPlacement.h
   
   \brief The LabelPlacement specifies where and how a text label should be rendered relative to a geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LABELPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_LABELPLACEMENT_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -46,7 +49,7 @@ namespace te
 
       \sa TextSymbolizer, PointPlacement, LinePlacement
      */
-    class TESEEXPORT LabelPlacement
+    class TESEEXPORT LabelPlacement : public boost::noncopyable
     {
       public:
 
@@ -70,31 +73,6 @@ namespace te
 
         void setPointPlacement(PointPlacement* p);
         void setLinePlacement(LinePlacement* l);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other LabelPlacement.
-         */
-        LabelPlacement(const LabelPlacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other LabelPlacement.
-
-          \return A reference for this.
-         */
-        LabelPlacement& operator=(const LabelPlacement& rhs);
 
         //@}
 

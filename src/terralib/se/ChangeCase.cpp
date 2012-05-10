@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ChangeCase.cpp
+  \file terralib/se/ChangeCase.cpp
   
   \brief Changes the case of strings (String formatting functions).
- */
+*/
 
 // TerraLib
 #include "ChangeCase.h"

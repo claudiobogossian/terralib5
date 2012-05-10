@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file MapItem.cpp
+  \file terralib/se/MapItem.cpp
   
   \brief 
- */
+*/
 
 // TerraLib
 #include "MapItem.h"

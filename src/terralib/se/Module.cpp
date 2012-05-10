@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.cpp
+  \file terralib/se/Module.cpp
    
   \brief This singleton defines the TerraLib Symbology Encoding module entry.
 */

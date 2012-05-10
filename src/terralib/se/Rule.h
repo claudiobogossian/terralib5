@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Rule.h
+  \file terralib/se/Rule.h
   
   \brief A Rule is used to attach property/scale conditions to and group the individual symbols used for rendering.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RULE_H
 #define __TERRALIB_SE_INTERNAL_RULE_H
@@ -34,6 +34,9 @@
 // STL 
 #include <string>
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -70,8 +73,8 @@ namespace te
       global "not" of that condition.
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Graphic, Symbolizer, te::fe::Filter
-     */
-    class TESEEXPORT Rule
+    */
+    class TESEEXPORT Rule : public boost::noncopyable
     {
       public:
 
@@ -111,7 +114,7 @@ namespace te
           \brief
 
           \note The ElseFilter must be false in order to set a filter.
-         */
+        */
         void setFilter(te::fe::Filter* f);
 
         const te::fe::Filter* getFilter() const;
@@ -121,7 +124,7 @@ namespace te
           \brief
 
           \note The filter must be NULL in order to call this method.
-         */
+        */
         void enableElseFilter();
 
         void disableElseFilter();
@@ -139,31 +142,6 @@ namespace te
         const std::vector<Symbolizer*>& getSymbolizers() const;
 
         const Symbolizer* getSymbolizer(size_t i) const;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Rule.
-         */
-        Rule(const Rule& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Rule.
-
-          \return A reference for this.
-         */
-        Rule& operator=(const Rule& rhs);
 
         //@}
 

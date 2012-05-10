@@ -2,6 +2,7 @@
 #include "MyLayer.h"
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
+#include <terralib/maptools/PtMarker.h>
 #include <terralib/maptools.h>
 #include <terralib/qt/widgets.h>
 
@@ -47,12 +48,14 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
 
     canvas->setPolygonContourColor(op->getContourColor());
     canvas->setPolygonContourWidth(op->getContourWidth());
-    canvas->setPointWidth(op->getPtWidth());
-    canvas->setPointMarker(op->getPtMarkerType());
+    //canvas->setPointWidth(op->getPtWidth());
+    //canvas->setPointMarker(op->getPtMarkerType());
+    te::color::RGBAColor** mark = te::map::CreateMarker(op->getPtMarkerType(), op->getPtWidth(), op->getDeselectedColor());
+    canvas->setPointPattern(mark, op->getPtWidth(), op->getPtWidth());
     canvas->setLineWidth(op->getLineWidth());
     canvas->setPolygonFillColor(op->getDeselectedColor());
     canvas->setLineColor(op->getDeselectedColor());
-    canvas->setPointColor(op->getDeselectedColor());
+    //canvas->setPointColor(op->getDeselectedColor());
 
     size_t size = changeds.size();
 
@@ -120,7 +123,11 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
         break;
   
         default:
-          canvas->setPointMarkerColor(cor);
+        {
+          //canvas->setPointMarkerColor(cor);
+          te::color::RGBAColor** mark = te::map::CreateMarker(op->getPtMarkerType(), op->getPtWidth(), cor);
+          canvas->setPointPattern(mark, op->getPtWidth(), op->getPtWidth());
+        }
       }
 
       canvas->draw(g);

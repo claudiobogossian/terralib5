@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file CoverageStyle.h
+  \file terralib/se/CoverageStyle.h
   
   \brief The CoverageStyle defines the styling that is to be applied to a subset of Coverage data.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_COVERAGESTYLE_H
 #define __TERRALIB_SE_INTERNAL_COVERAGESTYLE_H

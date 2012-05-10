@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file InterpolationPoint.h
+  \file terralib/se/InterpolationPoint.h
   
   \brief They are used to define a graph of points.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_INTERPOLATIONPOINT_H
 #define __TERRALIB_SE_INTERNAL_INTERPOLATIONPOINT_H

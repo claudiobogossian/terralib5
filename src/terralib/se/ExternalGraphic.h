@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ExternalGraphic.h
+  \file terralib/se/ExternalGraphic.h
   
   \brief The ExternalGraphic allows a reference to be made to an external graphic file with a Web URL or to in-line content.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_EXTERNALGRAPHIC_H
 #define __TERRALIB_SE_INTERNAL_EXTERNALGRAPHIC_H
@@ -34,6 +34,9 @@
 // STL
 #include <string>
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -80,7 +83,7 @@ namespace te
 
       \sa Graphic, InlineContent, Recode
      */
-    class TESEEXPORT ExternalGraphic
+    class TESEEXPORT ExternalGraphic : public boost::noncopyable
     {
       public:
 
@@ -109,31 +112,6 @@ namespace te
         void setFormat(const std::string& f);
 
         void add(Recode* r);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        ExternalGraphic(const ExternalGraphic& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        ExternalGraphic& operator=(const ExternalGraphic& rhs);
 
         //@}
 

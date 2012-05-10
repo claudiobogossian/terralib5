@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file TextSymbolizer.cpp
+  \file terralib/se/TextSymbolizer.cpp
   
   \brief A TextSymbolizer is used to render text labels according to various graphical parameters.
- */
+*/
 
 // TerraLib
 #include "../fe/PropertyName.h"

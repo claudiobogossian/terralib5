@@ -76,7 +76,7 @@ namespace te
 
           \note The caller of this method will take the ownership of the returned where.
          */
-        te::da::Where* getWhere(te::fe::Filter* f);
+        te::da::Where* getWhere(const te::fe::Filter* f);
 
         //@}
 

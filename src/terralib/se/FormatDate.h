@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FormatDate.h
+  \file terralib/se/FormatDate.h
   
   \brief Date formatting function.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FORMATDATE_H
 #define __TERRALIB_SE_INTERNAL_FORMATDATE_H

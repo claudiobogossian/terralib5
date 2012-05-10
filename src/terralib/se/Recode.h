@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Recode.h
+  \file terralib/se/Recode.h
   
   \brief Transformation of discrete values to other values.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RECODE_H
 #define __TERRALIB_SE_INTERNAL_RECODE_H

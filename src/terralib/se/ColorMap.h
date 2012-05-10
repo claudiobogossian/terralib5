@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ColorMap.h
+  \file terralib/se/ColorMap.h
   
   \brief A ColorMap defines either the colors of a pallette-type raster source or the mapping of numeric pixel values to colors.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_COLORMAP_H
 #define __TERRALIB_SE_INTERNAL_COLORMAP_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -54,7 +57,7 @@ namespace te
         
       \sa RasterSymbolizer, Categorize, Interpolate
      */
-    class TESEEXPORT ColorMap
+    class TESEEXPORT ColorMap : public boost::noncopyable
     {
       public:
 
@@ -78,31 +81,6 @@ namespace te
 
         void setCategorize(Categorize* c);
         void setInterpolate(Interpolate* i);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ColorMap.
-         */
-        ColorMap(const ColorMap& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ColorMap.
-
-          \return A reference for this.
-         */
-        ColorMap& operator=(const ColorMap& rhs);
 
         //@}
 

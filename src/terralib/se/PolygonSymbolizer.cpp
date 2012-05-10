@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PolygonSymbolizer.cpp
+  \file terralib/se/PolygonSymbolizer.cpp
   
   \brief A PolygonSymbolizer is used to draw a polygon (or other area-type geometries), including filling its interior and stroking its border (outline).
- */
+*/
 
 // TerraLib
 #include "../fe/PropertyName.h"

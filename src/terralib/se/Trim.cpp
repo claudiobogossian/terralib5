@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Trim.cpp
+  \file terralib/se/Trim.cpp
   
   \brief Strips off chars from a string value (String formatting functions).
- */
+*/
 
 // TerraLib
 #include "ParameterValue.h"

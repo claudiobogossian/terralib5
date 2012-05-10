@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PointPlacement.h
+  \file terralib/se/PointPlacement.h
   
   \brief A PointPlacement specifies how a text label should be rendered relative to a geometric point.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_POINTPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_POINTPLACEMENT_H
@@ -30,6 +30,9 @@
 #include "../common/BaseVisitable.h"
 #include "Config.h"
 #include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -69,8 +72,8 @@ namespace te
       Latin-derived human languages at least).
 
       \sa LabelPlacement, AnchorPoint, Displacement, ParameterValue
-     */
-    class TESEEXPORT PointPlacement
+    */
+    class TESEEXPORT PointPlacement : public boost::noncopyable
     {
       public:
 
@@ -95,31 +98,6 @@ namespace te
         void setAnchorPoint(AnchorPoint* a);
         void setDisplacement(Displacement* d);
         void setRotation(ParameterValue* r);
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other PointPlacement.
-         */
-        PointPlacement(const PointPlacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other PointPlacement.
-
-          \return A reference for this.
-         */
-        PointPlacement& operator=(const PointPlacement& rhs);
 
         //@}
 

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file CoverageStyle.cpp
+  \file terralib/se/CoverageStyle.cpp
   
   \brief The CoverageStyle defines the styling that is to be applied to a subset of Coverage data.
- */
+*/
 
 // TerraLib
 #include "CoverageStyle.h"
