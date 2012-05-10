@@ -19,139 +19,11 @@
 #include <QtGui/QDialog>
 #include <QtGui/QLabel>
 
-te::se::Stroke* CreateStroke(const std::string& color     = "#000000",
-                             const std::string& width     = "1",
-                             const std::string& opacity   = "1.0",
-                             const std::string& linecap   = "round",
-                             const std::string& linejoin  = "round",
-                             const std::string& dasharray = "")
-{
-  te::se::Stroke* stroke = new te::se::Stroke;
-  stroke->setColor(color);
-  stroke->setWidth(width);
-  stroke->setOpacity(opacity);
-  stroke->setLineCap(linecap);
-  stroke->setLineJoin(linejoin);
-  
-  if(!dasharray.empty())
-    stroke->setDashArray(dasharray);
-
-  return stroke;
-}
-
-te::se::Stroke* CreateStroke(te::se::Graphic* graphic)
-{
-  te::se::Stroke* stroke = new te::se::Stroke;
-  stroke->setGraphicFill(graphic);
-
-  return stroke;
-}
-
-te::se::Fill* CreateFill(const std::string& color = "#888888", const std::string& opacity = "1.0")
-{
-  te::se::Fill* fill = new te::se::Fill;
-  fill->setColor(color);
-  fill->setOpacity(opacity);
-
-  return fill;
-}
-
-te::se::Fill* CreateFill(te::se::Graphic* graphic)
-{
-  te::se::Fill* fill = new te::se::Fill;
-  fill->setGraphicFill(graphic);
-
-  return fill;
-}
-
-te::se::Mark* CreateMark(const std::string& name, te::se::Fill* fill,  te::se::Stroke* stroke)
-{
-  te::se::Mark* mark = new te::se::Mark;
-  mark->setWellKnownName(new std::string(name));
-
-  if(fill)
-    mark->setFill(fill);
-
-  if(stroke)
-    mark->setStroke(stroke);
-
-  return mark;
-}
-
-te::se::Mark* CreateMark(const std::string& name             = "square",
-                         const std::string& color            = "#888888",
-                         const std::string& opacity          = "1.0",
-                         const std::string& contourColor     = "#000000",
-                         const std::string& contourWidth     = "1",
-                         const std::string& contourOpacity   = "1.0",
-                         const std::string& countourLinecap  = "round",
-                         const std::string& contourLinejoin  = "round",
-                         const std::string& contourDasharray = "")
-{
-  te::se::Fill* fill = CreateFill(color, opacity); 
-  te::se::Stroke* stroke = CreateStroke(contourColor, contourWidth, contourOpacity, countourLinecap, contourLinejoin, contourDasharray);
-
-  return CreateMark(name, fill, stroke);
-}
-
-te::se::PolygonSymbolizer* CreatePolygonSymbolizer(te::se::Fill* fill, te::se::Stroke* stroke)
-{
-  te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-
-  if(fill)
-    symbolizer->setFill(fill);
-
-  if(stroke)
-    symbolizer->setStroke(stroke);
-
-  return symbolizer;
-}
-
-te::se::PolygonSymbolizer* CreatePolygonSymbolizer(te::se::Fill* fill,
-                                                   const std::string& contourColor     = "#000000",
-                                                   const std::string& contourWidth     = "1",
-                                                   const std::string& contourOpacity   = "1.0",
-                                                   const std::string& countourLinecap  = "round",
-                                                   const std::string& contourLinejoin  = "round",
-                                                   const std::string& contourDasharray = "")
-{
-  te::se::Stroke* stroke = CreateStroke(contourColor, contourWidth, contourOpacity, countourLinecap, contourLinejoin, contourDasharray);
-  return CreatePolygonSymbolizer(fill, stroke);
-}
-
-te::se::PolygonSymbolizer* CreatePolygonSymbolizer(const std::string& color            = "#888888",
-                                                   const std::string& opacity          = "1.0",
-                                                   const std::string& contourColor     = "#000000",
-                                                   const std::string& contourWidth     = "1",
-                                                   const std::string& contourOpacity   = "1.0",
-                                                   const std::string& countourLinecap  = "round",
-                                                   const std::string& contourLinejoin  = "round",
-                                                   const std::string& contourDasharray = "")
-{
-  te::se::Fill* fill = CreateFill(color, opacity);
-  return CreatePolygonSymbolizer(fill, contourColor, contourWidth, contourOpacity, countourLinecap, contourLinejoin, contourDasharray);
-}
-
-te::se::LineSymbolizer* CreateLineSymbolizer(const std::string& color     = "#000000",
-                                             const std::string& width     = "1",
-                                             const std::string& opacity   = "1.0",
-                                             const std::string& linecap   = "round",
-                                             const std::string& linejoin  = "round",
-                                             const std::string& dasharray = "")
-{
-  te::se::Stroke* stroke = CreateStroke(color, width, opacity, linecap, linejoin, dasharray);
-
-  te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
-  symbolizer->setStroke(stroke);
-
-  return symbolizer;
-}
-
 /** @name Polygon Styles */
 //@{
 te::se::Style* SimplePolygonStyle()
 {
-  te::se::Fill* fill = CreateFill("#000080");
+  te::se::Fill* fill = te::se::CreateFill("#FF8C00", "1.0");
 
   te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
   symbolizer->setFill(fill);
@@ -167,7 +39,10 @@ te::se::Style* SimplePolygonStyle()
 
 te::se::Style* SimplePolygonStyleWithStroke()
 {
-  te::se::PolygonSymbolizer* symbolizer = CreatePolygonSymbolizer("#000080", "1.0", "#FFFFFF", "2");
+  te::se::Fill* fill = te::se::CreateFill("#FF8C00", "1.0");
+  te::se::Stroke* stroke = te::se::CreateStroke("#FFFFFF", "2");
+
+  te::se::PolygonSymbolizer* symbolizer = te::se::CreatePolygonSymbolizer(stroke, fill);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizer);
@@ -180,7 +55,33 @@ te::se::Style* SimplePolygonStyleWithStroke()
 
 te::se::Style* TransparentPolygonStyle()
 {
-  te::se::PolygonSymbolizer* symbolizer = CreatePolygonSymbolizer("#000080", "0.5", "#FFFFFF", "2");
+  te::se::Fill* fill = te::se::CreateFill("#FF8C00", "0.5");
+  te::se::Stroke* stroke = te::se::CreateStroke("#FFFFFF", "2");
+
+  te::se::PolygonSymbolizer* symbolizer = CreatePolygonSymbolizer(stroke, fill);
+
+  te::se::Rule* rule = new te::se::Rule;
+  rule->push_back(symbolizer);
+
+  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+  style->push_back(rule);
+
+  return style;
+}
+
+te::se::Style* GraphicFillPolygonStyle(const std::string& markName)
+{
+  te::se::Fill* markFill = te::se::CreateFill("#FF8C00", "1.0");
+  te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "1");
+
+  te::se::Mark* mark = te::se::CreateMark(markName, markStroke, markFill);
+
+  te::se::Graphic* graphic = te::se::CreateGraphic(mark, "16", "", "");
+
+  te::se::Fill* fill = te::se::CreateFill(graphic);
+  te::se::Stroke* stroke = te::se::CreateStroke("#000000", "2");
+
+  te::se::PolygonSymbolizer* symbolizer = te::se::CreatePolygonSymbolizer(stroke, fill);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizer);
@@ -193,16 +94,21 @@ te::se::Style* TransparentPolygonStyle()
 
 te::se::Style* TreePolygonStyle()
 {
-  te::se::Mark* mark = CreateMark("triangle", "#00FF00", "1.0", "#900020", "2");
+  te::se::Fill* markFill = te::se::CreateFill("#00FF00", "1.0");
+  te::se::Stroke* markStroke = te::se::CreateStroke("#900020", "2");
 
-  te::se::Graphic* graphic = new te::se::Graphic;
-  graphic->add(mark);
-  graphic->setSize(new te::se::ParameterValue("20"));
+  te::se::Mark* mark = te::se::CreateMark("triangle", markStroke, markFill);
 
-  te::se::Fill* fill = CreateFill(graphic);
+  te::se::Graphic* graphic = te::se::CreateGraphic(mark, "24", "", "");
 
-  te::se::PolygonSymbolizer* symbolizerOne = CreatePolygonSymbolizer(fill, 0);
-  te::se::PolygonSymbolizer* symbolizerTwo = CreatePolygonSymbolizer("#008000", "0.5", "#900020", "3");
+  te::se::Fill* fillOne = te::se::CreateFill(graphic);
+
+  te::se::PolygonSymbolizer* symbolizerOne = te::se::CreatePolygonSymbolizer(0, fillOne);
+
+  te::se::Fill* fillTwo = te::se::CreateFill("#00FF00", "0.5");
+  te::se::Stroke* stroke = te::se::CreateStroke("#900020", "2");
+
+  te::se::PolygonSymbolizer* symbolizerTwo = te::se::CreatePolygonSymbolizer(stroke, fillTwo);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizerOne);
@@ -214,42 +120,20 @@ te::se::Style* TreePolygonStyle()
   return style;
 }
 
-te::se::Style* GraphicFillPolygonStyle(const std::string& markName)
+te::se::Style* GraphicFillContourPolygonStyle(const std::string& markName)
 {
-  te::se::Mark* mark = CreateMark(markName, "#FF0000", "1.0", "#000000");
+  te::se::Fill* markFill = te::se::CreateFill("#FF0000", "1.0");
+  te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "1");
 
-  te::se::Graphic* graphic = new te::se::Graphic;
-  graphic->add(mark);
-  graphic->setSize(new te::se::ParameterValue("16"));
+  te::se::Mark* mark = te::se::CreateMark(markName, markStroke, markFill);
 
-  te::se::Fill* fill = CreateFill(graphic);
+  te::se::Graphic* graphic = te::se::CreateGraphic(mark, "16", "-45", "");
 
-  te::se::PolygonSymbolizer* symbolizer = CreatePolygonSymbolizer(fill, "#000000", "2", "1.0");
+  te::se::Stroke* stroke = te::se::CreateStroke(graphic, "16", "", "", "", "");
 
-  te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(symbolizer);
+  te::se::Fill* fill = te::se::CreateFill("#000000", "1.0");
 
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-  style->push_back(rule);
-
-  return style;
-}
-
-te::se::Style* GraphicFillStrokePolygonStyle(const std::string& markName)
-{
-  te::se::Mark* mark = CreateMark(markName, "#FF0000", "1.0", "#000000");
-
-  te::se::Graphic* graphic = new te::se::Graphic;
-  graphic->add(mark);
-  graphic->setSize(new te::se::ParameterValue("16"));
-  graphic->setRotation(new te::se::ParameterValue("-45"));
-
-  te::se::Stroke* stroke = CreateStroke(graphic);
-  stroke->setWidth("32");
-
-  te::se::Fill* fill = CreateFill("#000000");
-
-  te::se::PolygonSymbolizer* symbolizer = CreatePolygonSymbolizer(fill, stroke);
+  te::se::PolygonSymbolizer* symbolizer = te::se::CreatePolygonSymbolizer(stroke, fill);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizer);
@@ -265,7 +149,23 @@ te::se::Style* GraphicFillStrokePolygonStyle(const std::string& markName)
 //@{
 te::se::Style* SimpleLineStyle()
 {
-  te::se::LineSymbolizer* symbolizer = CreateLineSymbolizer("#000000", "3.0");
+  te::se::Stroke* stroke = te::se::CreateStroke("#000000", "3.0");
+
+  te::se::LineSymbolizer* symbolizer = te::se::CreateLineSymbolizer(stroke);
+
+  te::se::Rule* rule = new te::se::Rule;
+  rule->push_back(symbolizer);
+
+  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+  style->push_back(rule);
+
+  return style;
+}
+
+te::se::Style* DashedLineStyle()
+{
+  te::se::Stroke* stroke = te::se::CreateStroke("#0000FF", "3", "1.0", "5 2");
+  te::se::LineSymbolizer* symbolizer = te::se::CreateLineSymbolizer(stroke);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizer);
@@ -278,8 +178,11 @@ te::se::Style* SimpleLineStyle()
 
 te::se::Style* LineWithBorderStyle()
 {
-  te::se::LineSymbolizer* symbolizerOne = CreateLineSymbolizer("#333333", "5");
-  te::se::LineSymbolizer* symbolizerTwo = CreateLineSymbolizer("#6699FF", "3");
+  te::se::Stroke* strokeOne = te::se::CreateStroke("#333333", "5");
+  te::se::LineSymbolizer* symbolizerOne = te::se::CreateLineSymbolizer(strokeOne);
+
+  te::se::Stroke* strokeTwo = te::se::CreateStroke("#6699FF", "3");
+  te::se::LineSymbolizer* symbolizerTwo = te::se::CreateLineSymbolizer(strokeTwo);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizerOne);
@@ -293,9 +196,14 @@ te::se::Style* LineWithBorderStyle()
 
 te::se::Style* RoadStyleOne()
 {
-  te::se::LineSymbolizer* symbolizerOne = CreateLineSymbolizer("#000000", "12");
-  te::se::LineSymbolizer* symbolizerTwo = CreateLineSymbolizer("#888888", "8");
-  te::se::LineSymbolizer* symbolizerThree = CreateLineSymbolizer("#FFFF00", "2", "1.0", "round", "round", "5 5");
+  te::se::Stroke* strokeOne = te::se::CreateStroke("#000000", "12");
+  te::se::LineSymbolizer* symbolizerOne = te::se::CreateLineSymbolizer(strokeOne);
+
+  te::se::Stroke* strokeTwo = te::se::CreateStroke("#888888", "8");
+  te::se::LineSymbolizer* symbolizerTwo = te::se::CreateLineSymbolizer(strokeTwo);
+  
+  te::se::Stroke* strokeThree = te::se::CreateStroke("#FFFF00", "2", "1.0", "5 5");
+  te::se::LineSymbolizer* symbolizerThree = te::se::CreateLineSymbolizer(strokeThree);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizerOne);
@@ -310,50 +218,19 @@ te::se::Style* RoadStyleOne()
 
 te::se::Style* RoadStyleTwo()
 {
-  te::se::LineSymbolizer* symbolizerOne = CreateLineSymbolizer("#000000", "16", "1.0", "butt", "miter");
-  te::se::LineSymbolizer* symbolizerTwo = CreateLineSymbolizer("#666666", "10", "1.0", "butt", "miter");
-  te::se::LineSymbolizer* symbolizerThree = CreateLineSymbolizer("#FFFFFF", "2", "1.0", "butt", "miter", "2 2");
+  te::se::Stroke* strokeOne = te::se::CreateStroke("#000000", "16", "1.0", "", "butt", "miter");
+  te::se::LineSymbolizer* symbolizerOne = te::se::CreateLineSymbolizer(strokeOne);
+
+  te::se::Stroke* strokeTwo = te::se::CreateStroke("#666666", "10", "1.0", "", "butt", "miter");
+  te::se::LineSymbolizer* symbolizerTwo = te::se::CreateLineSymbolizer(strokeTwo);
+  
+  te::se::Stroke* strokeThree = te::se::CreateStroke("#FFFFFF", "2", "1.0", "2 2", "butt", "miter");
+  te::se::LineSymbolizer* symbolizerThree = te::se::CreateLineSymbolizer(strokeThree);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizerOne);
   rule->push_back(symbolizerTwo);
   rule->push_back(symbolizerThree);
-
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-  style->push_back(rule);
-
-  return style;
-}
-
-te::se::Style* DashedLineStyle()
-{
-  te::se::LineSymbolizer* symbolizer = CreateLineSymbolizer("#0000FF", "3", "1.0", "round", "round", "5 2");
-
-  te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(symbolizer);
-
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-  style->push_back(rule);
-
-  return style;
-}
-
-te::se::Style* GraphicFillLineStyle(const std::string& markName)
-{
-  te::se::Mark* mark = CreateMark(markName, "#FFFF00", "1.0", "#000000", "3.0");
-
-  te::se::Graphic* graphic = new te::se::Graphic;
-  graphic->add(mark);
-  graphic->setSize(new te::se::ParameterValue("16"));
-
-  te::se::Stroke* stroke = CreateStroke(graphic);
-  stroke->setWidth("8");
-
-  te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
-  symbolizer->setStroke(stroke);
-
-  te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(symbolizer);
 
   te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
   style->push_back(rule);
@@ -366,58 +243,16 @@ te::se::Style* GraphicFillLineStyle(const std::string& markName)
 //@{
 te::se::Style* MarkPointStyle(const std::string& markName)
 {
-  te::se::Mark* mark = CreateMark(markName, "#009900", "1.0", "#000000");
+  te::se::Fill* markFill = te::se::CreateFill("#009900", "1.0");
+  te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "1");
+  te::se::Mark* mark = te::se::CreateMark(markName, markStroke, markFill);
 
-  te::se::Graphic* graphic = new te::se::Graphic;
-  graphic->add(mark);
-  graphic->setSize(new te::se::ParameterValue("16"));
-  graphic->setOpacity(new te::se::ParameterValue("0.5"));
+  te::se::Graphic* graphic = te::se::CreateGraphic(mark, "16", "", "");
 
-  te::se::PointSymbolizer* symbolizer = new te::se::PointSymbolizer;
-  symbolizer->setGraphic(graphic);
+  te::se::PointSymbolizer* symbolizer = te::se::CreatePointSymbolizer(graphic);
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizer);
-
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-  style->push_back(rule);
-
-  return style;
-}
-
-te::se::Style* MultiMarkPointStyle()
-{
-  // Square
-  te::se::Mark* squareMark = CreateMark("square", "#00FFFF", "1.0", "#000000", "1", "1.0", "round", "round", "1 2");
-  te::se::Graphic* graphicSquare = new te::se::Graphic;
-  graphicSquare->add(squareMark);
-  graphicSquare->setSize(new te::se::ParameterValue("30"));
-
-  // Circle
-  te::se::Mark* circleMark = CreateMark("circle", "#FFFF00", "1.0");
-  te::se::Graphic* graphicCircle = new te::se::Graphic;
-  graphicCircle->add(circleMark);
-  graphicCircle->setSize(new te::se::ParameterValue("24"));
-
-  // Star
-  te::se::Mark* starMark = CreateMark("star", "#FF0000", "1.0", "#000000");
-  te::se::Graphic* graphicStar = new te::se::Graphic;
-  graphicStar->add(starMark);
-  graphicStar->setSize(new te::se::ParameterValue("16"));
-
-  te::se::PointSymbolizer* symbolizerOne = new te::se::PointSymbolizer;
-  symbolizerOne->setGraphic(graphicSquare);
-
-  te::se::PointSymbolizer* symbolizerTwo = new te::se::PointSymbolizer;
-  symbolizerTwo->setGraphic(graphicCircle);
-  
-  te::se::PointSymbolizer* symbolizerThree = new te::se::PointSymbolizer;
-  symbolizerThree->setGraphic(graphicStar);
-
-  te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(symbolizerOne);
-  rule->push_back(symbolizerTwo);
-  rule->push_back(symbolizerThree);
 
   te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
   style->push_back(rule);
@@ -526,7 +361,7 @@ void DrawStyledLayers()
     for(std::size_t i = 0; i < marks.size(); ++i)
       polygonStyles.push_back(GraphicFillPolygonStyle(marks[i]));
     polygonStyles.push_back(TreePolygonStyle());
-    polygonStyles.push_back(GraphicFillStrokePolygonStyle("triangle"));
+    polygonStyles.push_back(GraphicFillContourPolygonStyle("star"));
 
     // Draw!
     for(std::size_t i = 0; i < polygonStyles.size(); ++i)
@@ -540,7 +375,6 @@ void DrawStyledLayers()
 
     // Line Styles
     std::vector<te::se::Style*> lineStyles;
-    lineStyles.push_back(GraphicFillLineStyle("triangle"));
     lineStyles.push_back(SimpleLineStyle());
     lineStyles.push_back(DashedLineStyle());
     lineStyles.push_back(LineWithBorderStyle());
@@ -561,7 +395,6 @@ void DrawStyledLayers()
     std::vector<te::se::Style*> pointStyles;
     for(std::size_t i = 0; i < marks.size(); ++i)
       pointStyles.push_back(MarkPointStyle(marks[i]));
-    pointStyles.push_back(MultiMarkPointStyle());
 
     // Draw!
     for(std::size_t i = 0; i < pointStyles.size(); ++i)
