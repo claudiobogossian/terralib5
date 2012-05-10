@@ -24,12 +24,12 @@
  */
 
 // TerraLib
-#include "../../common/StringUtils.h"
-#include "../../fe/Literal.h"
-#include "../../maptools//Utils.h"
-#include "../../se/Fill.h"
-#include "../../se/Stroke.h"
-#include "../../se/SvgParameter.h"
+#include "../../../common/StringUtils.h"
+#include "../../../fe/Literal.h"
+#include "../../../maptools//Utils.h"
+#include "../../../se/Fill.h"
+#include "../../../se/Stroke.h"
+#include "../../../se/SvgParameter.h"
 #include "MarkFactory.h"
 
 // STL
