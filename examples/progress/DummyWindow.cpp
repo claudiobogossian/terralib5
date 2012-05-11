@@ -5,7 +5,7 @@
 #include "terralib/qt/widgets/progress/QtProgress.h"
 
 // System
-#ifdef TE_PLATFORMCODE_MSWINDOWS
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
   #include <windows.h>
 #endif
 
@@ -58,7 +58,7 @@ void DummyWindow::showProgressBar()
 			break;
 		}
 
-		#ifdef TE_PLATFORMCODE_MSWINDOWS
+		#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 		  Sleep(5);
     #endif
 
@@ -93,7 +93,7 @@ void DummyWindow::showThreadProgressBar()
 	{
 		if(te::common::ProgressManager::getInstance().isActive())
 		{
-			#ifdef TE_PLATFORMCODE_MSWINDOWS
+			#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 		    Sleep(5);
       #endif
 

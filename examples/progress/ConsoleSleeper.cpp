@@ -5,7 +5,7 @@
 #include "terralib/common/progress/ProgressManager.h"
 
 // System
-#ifdef TE_PLATFORMCODE_MSWINDOWS
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
   #include <windows.h>
 #endif
 
@@ -31,7 +31,7 @@ void ConsoleSleeper()
 			break;
 		}
 
-    #ifdef TE_PLATFORMCODE_MSWINDOWS
+    #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
 		  Sleep(5);
     #endif
 
