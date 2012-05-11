@@ -15,26 +15,26 @@
 
 void ConsoleSleeperMultiThread()
 {
-	te::common::ProgressManager::getInstance().getProgress()->reset();
-	te::common::ProgressManager::getInstance().getProgress()->setTotalSteps(TOTAL_STEPS);
-	te::common::ProgressManager::getInstance().getProgress()->setMessage("Console Progress Test");
+  te::common::ProgressManager::getInstance().getProgress()->reset();
+  te::common::ProgressManager::getInstance().getProgress()->setTotalSteps(TOTAL_STEPS);
+  te::common::ProgressManager::getInstance().getProgress()->setMessage("Console Progress Test");
   te::common::ProgressManager::getInstance().getProgress()->useProgressTimer(false);
 
 
-	std::cout << std::endl << "Console progress bar test..." << std::endl;
+  std::cout << std::endl << "Console progress bar test..." << std::endl;
 
   omp_set_num_threads( 4 );
 
   #pragma omp parallel for
-	for(int i = 0; i < TOTAL_STEPS; ++i)
-	{
-		if(te::common::ProgressManager::getInstance().getProgress()->isActive())
-		{
+  for(int i = 0; i < TOTAL_STEPS; ++i)
+  {
+    if(te::common::ProgressManager::getInstance().getProgress()->isActive())
+    {
       #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-		    Sleep(5);
+        Sleep(5);
       #endif
 
-		  te::common::ProgressManager::getInstance().getProgress()->pulse();
-		}
-	}
+      te::common::ProgressManager::getInstance().getProgress()->pulse();
+    }
+  }
 }

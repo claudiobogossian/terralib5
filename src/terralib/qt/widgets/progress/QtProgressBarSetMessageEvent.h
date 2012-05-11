@@ -38,40 +38,23 @@ namespace te
 {
   namespace qt
   {
-    namespace progress
+    namespace widgets
     {
       class TEQTWIDGETSEXPORT QtProgressBarSetMessageEvent : public QEvent
       {
         public:
-          QtProgressBarSetMessageEvent(std::string value) : 
-              QEvent(QtProgressBarSetMessageEvent::type()), m_value(value)
-          {
-          }
-
-          ~QtProgressBarSetMessageEvent()
-          {
-          }
-
-          static QEvent::Type type()
-          {
-            if (m_customEventType == QEvent::None)
-            {
-              int generatedType = QEvent::registerEventType();
-              m_customEventType = static_cast<QEvent::Type>(generatedType);
-            }
-            
-            return m_customEventType;
-          }
+          QtProgressBarSetMessageEvent(std::string value);
+          
+          ~QtProgressBarSetMessageEvent();
+          
+          static QEvent::Type type();
       
-      private:
-        static QEvent::Type m_customEventType;
+        private:
+          static QEvent::Type m_customEventType;
 
-      public:
-        std::string m_value;
-    };
-
-    QEvent::Type QtProgressBarSetMessageEvent::m_customEventType = QEvent::None;
-    
+        public:
+          std::string m_value;
+      };    
     }  // end namespace progress
   }    // end namespace qt
 }      // end namespace te

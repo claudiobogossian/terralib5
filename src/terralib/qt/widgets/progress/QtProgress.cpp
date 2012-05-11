@@ -25,8 +25,9 @@
 
 // TerraLib
 #include "QtProgress.h"
-#include "QtProgressBarSetValueEvent.h"
+
 #include "QtProgressBarSetMessageEvent.h"
+#include "QtProgressBarSetValueEvent.h"
 
 #include "terralib.h"
 
@@ -62,7 +63,7 @@ void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
     int value = this->getCurrentProportionalStep();
     if(m_isMultiThread)
     {
-      QCoreApplication::postEvent(this, new te::qt::progress::QtProgressBarSetValueEvent(value));
+      QCoreApplication::postEvent(this, new te::qt::widgets::QtProgressBarSetValueEvent(value));
 
       QCoreApplication::processEvents();
     }
@@ -77,7 +78,7 @@ void te::qt::widgets::QtProgress::setMessage(const std::string& message)
 {
   if(m_isMultiThread)
   {
-    QCoreApplication::postEvent(this, new te::qt::progress::QtProgressBarSetMessageEvent(message));
+    QCoreApplication::postEvent(this, new te::qt::widgets::QtProgressBarSetMessageEvent(message));
   }
   else
   {
@@ -106,10 +107,10 @@ void te::qt::widgets::QtProgress::cancel()
 
 bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
 {
-  if(obj == this && event->type() == te::qt::progress::QtProgressBarSetValueEvent::type())
+  if(obj == this && event->type() == te::qt::widgets::QtProgressBarSetValueEvent::type())
   {
-    te::qt::progress::QtProgressBarSetValueEvent* e = 
-      static_cast<te::qt::progress::QtProgressBarSetValueEvent*>(event);
+    te::qt::widgets::QtProgressBarSetValueEvent* e = 
+      static_cast<te::qt::widgets::QtProgressBarSetValueEvent*>(event);
 
     QProgressDialog::setValue(e->m_value);
 
@@ -117,10 +118,10 @@ bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
 
     return true;
   }
-  else if(obj == this && event->type() == te::qt::progress::QtProgressBarSetMessageEvent::type())
+  else if(obj == this && event->type() == te::qt::widgets::QtProgressBarSetMessageEvent::type())
   {
-    te::qt::progress::QtProgressBarSetMessageEvent* e = 
-      static_cast<te::qt::progress::QtProgressBarSetMessageEvent*>(event);
+    te::qt::widgets::QtProgressBarSetMessageEvent* e = 
+      static_cast<te::qt::widgets::QtProgressBarSetMessageEvent*>(event);
 
     QProgressDialog::setLabelText(e->m_value.c_str());
 

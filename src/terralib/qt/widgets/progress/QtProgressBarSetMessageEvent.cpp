@@ -24,40 +24,30 @@
          a progress bar. Used in thread codes.
 */
 
-#ifndef __TERRALIB_QT_PROGRESS_QTPROGRESSSETVALUE_H
-#define __TERRALIB_QT_PROGRESS_QTPROGRESSSETVALUE_H
 
 //TerraLib
-#include "../../widgets/Config.h"
-#include "terralib/common/progress/AbstractProgress.h"
+#include "QtProgressBarSetMessageEvent.h"
 
-//Qt
-#include <QtCore/QEvent>
+QEvent::Type te::qt::widgets::QtProgressBarSetMessageEvent::m_customEventType = QEvent::None;
 
-namespace te
+te::qt::widgets::QtProgressBarSetMessageEvent::QtProgressBarSetMessageEvent(std::string value) : 
+  QEvent(QtProgressBarSetMessageEvent::type()), m_value(value)
 {
-  namespace qt
+}
+
+te::qt::widgets::QtProgressBarSetMessageEvent::~QtProgressBarSetMessageEvent()
+{
+}
+
+QEvent::Type te::qt::widgets::QtProgressBarSetMessageEvent::type()
+{
+  if (m_customEventType == QEvent::None)
   {
-    namespace widgets
-    {
-      class TEQTWIDGETSEXPORT QtProgressBarSetValueEvent : public QEvent
-      {
-        public:
-          QtProgressBarSetValueEvent(int value);
-
-          ~QtProgressBarSetValueEvent();
-
-          static QEvent::Type type();
+    int generatedType = QEvent::registerEventType();
+    m_customEventType = static_cast<QEvent::Type>(generatedType);
+  }
+            
+  return m_customEventType;
+}
       
-        private:
-          static QEvent::Type m_customEventType;
-
-        public:
-          int m_value;
-      };
-    
-    }  // end namespace progress
-  }    // end namespace qt
-}      // end namespace te
-
-#endif  // __TERRALIB_QT_PROGRESS_QTPROGRESSSETVALUE_H
+      
