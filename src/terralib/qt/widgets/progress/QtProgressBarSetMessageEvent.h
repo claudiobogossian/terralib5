@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file QtProgressEvent.h
+  \file terralib/qt/widgets/progress/QtProgressEvent.h
  
   \brief The QtProgressBarSetValueEvent is a custom event used to set a new value into 
          a progress bar. Used in thread codes.
@@ -38,7 +38,7 @@ namespace te
 {
   namespace qt
   {
-    namespace progress
+    namespace widgets
     {
       class TEQTWIDGETSEXPORT QtProgressBarSetMessageEvent : public QEvent
       {
@@ -72,8 +72,9 @@ namespace te
 
     QEvent::Type QtProgressBarSetMessageEvent::m_customEventType = QEvent::None;
     
-    }  // end namespace progress
+    }  // end namespace widgets
   }    // end namespace qt
 }      // end namespace te
 
 #endif  // __TERRALIB_QT_PROGRESS_QTPROGRESSSETMESSAGE_H
+

@@ -18,21 +18,18 @@
  */
 
 /*!
-  \file QtProgress.cpp
+  \file terralib/qt/widgets/progress/QtProgress.cpp
 
   \brief The QtProgress is a qt implementation of a progress class used to define the main progress functions.
 */
 
 // TerraLib
 #include "QtProgress.h"
-#include "QtProgressBarSetValueEvent.h"
 #include "QtProgressBarSetMessageEvent.h"
-
-#include "terralib.h"
+#include "QtProgressBarSetValueEvent.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
-
 
 te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : QProgressDialog(parent), te::common::AbstractProgress()
 {
@@ -49,8 +46,7 @@ te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : QProgressDialog(paren
 }
 
 te::qt::widgets::QtProgress::~QtProgress()
-{  
-
+{
 }
 
 void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
@@ -70,7 +66,7 @@ void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
     {
       QProgressDialog::setValue(value);
     }
-	}
+  }
 }
 
 void te::qt::widgets::QtProgress::setMessage(const std::string& message)
