@@ -18,26 +18,22 @@
  */
 
 /*!
-  \file terralib/common/ProgressTimer.cpp
+  \file terralib/common/progress/ProgressTimer.cpp
 
-  \brief The ProgressTimer is a util class used to calculate the estimated
-         time to finish loop job.
+  \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
 */
 
 // TerraLib
-#include "ProgressTimer.h"
-
 #include "../StringUtils.h"
 #include "../Translator.h"
+#include "ProgressTimer.h"
 
-
-
-te::common::ProgressTimer::ProgressTimer(int totalSteps) :
-  m_totalSteps(totalSteps),
-  m_count(0),
-  m_startTime(NULL),
-  m_remainingTime(0.),
-  m_speedTime(0.)
+te::common::ProgressTimer::ProgressTimer(int totalSteps)
+  : m_totalSteps(totalSteps),
+    m_count(0),
+    m_startTime(NULL),
+    m_remainingTime(0.),
+    m_speedTime(0.)
 {
 }
 
@@ -47,7 +43,7 @@ te::common::ProgressTimer::~ProgressTimer()
 
 void te::common::ProgressTimer::start()
 {
-  //start time
+//start time
    time(&m_startTime); 
 }
 

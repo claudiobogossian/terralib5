@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/common/ProgressManager.cpp
+  \file terralib/common/progress/ProgressManager.cpp
 
   \brief Implementation of the singleton to keep a progress interface instance.
 */
@@ -26,20 +26,8 @@
 // TerraLib
 #include "../Exception.h"
 #include "../Translator.h"
-
 #include "AbstractProgress.h"
 #include "ProgressManager.h"
-
-
-
-te::common::ProgressManager::ProgressManager() : m_progressInterface(0)
-{
-}
-
-te::common::ProgressManager::~ProgressManager()
-{  
-  delete m_progressInterface;
-}
 
 void te::common::ProgressManager::setProgress(AbstractProgress* pi)
 {
@@ -178,3 +166,14 @@ void te::common::ProgressManager::startTimer()
 
   m_progressInterface->startTimer();
 }
+
+te::common::ProgressManager::ProgressManager()
+  : m_progressInterface(0)
+{
+}
+
+te::common::ProgressManager::~ProgressManager()
+{  
+  delete m_progressInterface;
+}
+
