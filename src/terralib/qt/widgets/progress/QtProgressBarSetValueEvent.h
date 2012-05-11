@@ -28,7 +28,7 @@
 #define __TERRALIB_QT_WIDGETS_PROGRESS_QTPROGRESSSETVALUE_H
 
 //TerraLib
-#include "../../common/progress/AbstractProgress.h"
+#include "../../../common/progress/AbstractProgress.h"
 #include "../Config.h"
 
 //Qt

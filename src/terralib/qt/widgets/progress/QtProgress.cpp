@@ -58,7 +58,7 @@ void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
     int value = this->getCurrentProportionalStep();
     if(m_isMultiThread)
     {
-      QCoreApplication::postEvent(this, new te::qt::progress::QtProgressBarSetValueEvent(value));
+      QCoreApplication::postEvent(this, new QtProgressBarSetValueEvent(value));
 
       QCoreApplication::processEvents();
     }
@@ -73,7 +73,7 @@ void te::qt::widgets::QtProgress::setMessage(const std::string& message)
 {
   if(m_isMultiThread)
   {
-    QCoreApplication::postEvent(this, new te::qt::progress::QtProgressBarSetMessageEvent(message));
+    QCoreApplication::postEvent(this, new QtProgressBarSetMessageEvent(message));
   }
   else
   {
@@ -102,10 +102,10 @@ void te::qt::widgets::QtProgress::cancel()
 
 bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
 {
-  if(obj == this && event->type() == te::qt::progress::QtProgressBarSetValueEvent::type())
+  if(obj == this && event->type() == QtProgressBarSetValueEvent::type())
   {
-    te::qt::progress::QtProgressBarSetValueEvent* e = 
-      static_cast<te::qt::progress::QtProgressBarSetValueEvent*>(event);
+    QtProgressBarSetValueEvent* e = 
+      static_cast<QtProgressBarSetValueEvent*>(event);
 
     QProgressDialog::setValue(e->m_value);
 
@@ -113,10 +113,10 @@ bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
 
     return true;
   }
-  else if(obj == this && event->type() == te::qt::progress::QtProgressBarSetMessageEvent::type())
+  else if(obj == this && event->type() == QtProgressBarSetMessageEvent::type())
   {
-    te::qt::progress::QtProgressBarSetMessageEvent* e = 
-      static_cast<te::qt::progress::QtProgressBarSetMessageEvent*>(event);
+    QtProgressBarSetMessageEvent* e = 
+      static_cast<QtProgressBarSetMessageEvent*>(event);
 
     QProgressDialog::setLabelText(e->m_value.c_str());
 
