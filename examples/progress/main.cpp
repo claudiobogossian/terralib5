@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	  te::common::ProgressManager::getInstance().setProgress(progress);
     
     //console sleeper
-	  //ConsoleSleeper();
+	  ConsoleSleeper();
 
     //console sleeper multi thread
 	  ConsoleSleeperMultiThread();

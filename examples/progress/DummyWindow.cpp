@@ -5,7 +5,9 @@
 #include "terralib/qt/widgets/progress/QtProgress.h"
 
 // System
-#include <Windows.h>
+#ifdef TE_PLATFORMCODE_MSWINDOWS
+  #include <windows.h>
+#endif
 
 // OpenMP
 #include <omp.h>
@@ -56,7 +58,9 @@ void DummyWindow::showProgressBar()
 			break;
 		}
 
-		Sleep(5);
+		#ifdef TE_PLATFORMCODE_MSWINDOWS
+		  Sleep(5);
+    #endif
 
 		te::common::ProgressManager::getInstance().pulse();
 	}
@@ -89,7 +93,9 @@ void DummyWindow::showThreadProgressBar()
 	{
 		if(te::common::ProgressManager::getInstance().isActive())
 		{
-			Sleep(5);
+			#ifdef TE_PLATFORMCODE_MSWINDOWS
+		    Sleep(5);
+      #endif
 
 		  te::common::ProgressManager::getInstance().pulse();
 		}

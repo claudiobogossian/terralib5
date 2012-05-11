@@ -1,7 +1,11 @@
 #include "ProgressExamples.h"
 #include "terralib/common/progress/ProgressManager.h"
 
-#include <windows.h>
+// System
+#ifdef TE_PLATFORMCODE_MSWINDOWS
+  #include <windows.h>
+#endif
+
 #include <iostream>
 
 // OpenMP
@@ -26,7 +30,9 @@ void ConsoleSleeperMultiThread()
 	{
 		if(te::common::ProgressManager::getInstance().getProgress()->isActive())
 		{
-      Sleep(5);
+      #ifdef TE_PLATFORMCODE_MSWINDOWS
+		    Sleep(5);
+      #endif
 
 		  te::common::ProgressManager::getInstance().getProgress()->pulse();
 		}

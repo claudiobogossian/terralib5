@@ -5,7 +5,10 @@
 #include "terralib/common/progress/ProgressManager.h"
 
 // System
-#include <windows.h>
+#ifdef TE_PLATFORMCODE_MSWINDOWS
+  #include <windows.h>
+#endif
+
 #include <iostream>
 
 #define TOTAL_STEPS 15000
@@ -28,7 +31,9 @@ void ConsoleSleeper()
 			break;
 		}
 
-		Sleep(5);
+    #ifdef TE_PLATFORMCODE_MSWINDOWS
+		  Sleep(5);
+    #endif
 
 		te::common::ProgressManager::getInstance().pulse();
 	}
