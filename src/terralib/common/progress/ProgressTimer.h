@@ -18,121 +18,86 @@
  */
 
 /*!
-  \file terralib/common/ProgressTimer.h
+  \file terralib/common/progress/ProgressTimer.h
  
-  \brief The ProgressTimer is a util class used to calculate the estimated
-         time to finish loop job.
+  \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
 */
 
-#ifndef __TERRALIB_COMMON_INTERNAL_PROGRESSTIMER_H
-#define __TERRALIB_COMMON_INTERNAL_PROGRESSTIMER_H
+#ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSTIMER_H
+#define __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSTIMER_H
 
 // TerraLib
 #include "../Config.h"
 
 // STL
+#include <ctime>
 #include <string>
-
-#include <time.h>
-
 
 namespace te
 {
   namespace common
   {
     /*!
-    \class ProgressTimer
+      \class ProgressTimer
 
-    \brief The ProgressTimer is a util class used to calculate the estimated
-           time to finish loop job.
-    \sa 
-
-    \todo 
-
+      \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
     */
     class TECOMMONEXPORT ProgressTimer
     {
-      
+
       public:
 
-
-      /** @name Initializer Methods
-      *  Methods related to instantiation and destruction.
-      */
-      //@{
-
-      /*! \brief It initializes a new AbstractProgress.
-
-      */
+      /*! \brief It initializes a ProgressTimer. */
       ProgressTimer(int totalSteps);
 
       /*! \brief Destructor */
       ~ProgressTimer();
 
-      //@}
-
-      
-      /*!
-      \brief 
-
-      */
+      /*! \brief Start the internal timer */
       void start();
 
-      
-      /*!
-      \brief 
+      /*! 
+        \brief Define a new step process evolution
 
+        \note Each tick a new value for remaining time and speed time is generated.
       */
       void tick();
 
-      /*!
-      \brief 
-
-      */
+      /*! \brief Set the total steps*/
       void setTotalSteps(const int& totalSteps);
 
-
-      /** @name ProgressTimer Accessor Method
-      *  Methods used to access the attributes stored on this class.
-      */
-      //@{
-
       /*!
-      \brief 
+        \brief Function used to get the remaining time to end the process
 
-      \return 
-
+        \return Dobule value, the remaingin time in minutes
       */
       double getRemainingTimeInMin();
 
       /*!
-      \brief 
+        \brief Function used to get the speed time.
 
-      \return 
-
+        \return Double value, the spped time in seconds
       */
       double getSpeedTimeInSec();
 
       /*!
-      \brief 
+        \brief Get the information about the evolution of the process.
 
-      \return 
-
+        \return String with the information about remaining and speed time
       */
       std::string getMessage();
-      //@}
 
-		
       private:
 
-      int m_totalSteps;       //!< Total steps
-      int m_count;            //!< Internal counter
-      time_t m_startTime;     //!< Initial time
-      double m_remainingTime;	//!< Remaining time in minutes
-      double m_speedTime;	    //!< Speed time in seconds
+      int m_totalSteps;         //!< Total steps.
+      int m_count;              //!< Internal counter.
+      time_t m_startTime;       //!< Initial time.
+      double m_remainingTime;   //!< Remaining time in minutes.
+      double m_speedTime;       //!< Speed time in seconds.
     };
 
   } // end namespace common
 }   // end namespace te
 
-#endif  // __TERRALIB_COMMON_INTERNAL_PROGRESSTIMER_H
+#endif  // __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSTIMER_H
+

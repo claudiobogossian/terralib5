@@ -37,4 +37,6 @@ void ConsoleSleeper()
 
     te::common::ProgressManager::getInstance().pulse();
   }
+
+  te::common::ProgressManager::getInstance().reset();
 }

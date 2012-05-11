@@ -18,36 +18,35 @@
  */
 
 /*!
-  \file terralib/common/ProgressManager.h
+  \file terralib/common/progress/ProgressManager.h
  
   \brief The Progress is a singleton that can be used to define a progress interface instance.
 */
 
-#ifndef __TERRALIB_COMMON_INTERNAL_PROGRESSMANAGER_H
-#define __TERRALIB_COMMON_INTERNAL_PROGRESSMANAGER_H
+#ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
+#define __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
 
 // TerraLib
-#include "AbstractProgress.h"
-#include "../Singleton.h"
 #include "../Config.h"
+#include "../Singleton.h"
+#include "AbstractProgress.h"
 
+// STL
+#include <map>
 
 namespace te
 {
   namespace common
   {
     /*!
-    \class ProgressManager
+      \class ProgressManager
 
-    \brief The ProgressManager is a singleton that can be used to define a progress interface instance.
+      \brief The ProgressManager is a singleton that can be used to define a progress interface instance.
 
-    Use this class to keep a instance of a Progress Bar. When the singleton finishes
-    its life time it automatically delete the current progress interface instance.
+      Use this class to keep a instance of a Progress Bar. This singleton is not owner of none
+      progress instance, those instances must be deleted by his owner.
       
-    \sa Singleton, AbstractProgress
-
-    \todo 
-
+      \sa Singleton, AbstractProgress
     */
     class TECOMMONEXPORT ProgressManager : public te::common::Singleton<ProgressManager>
     {
@@ -55,35 +54,37 @@ namespace te
 
       public:
 
-        /** @name Initializer Methods
-        *  Methods related to instantiation and destruction.
+        /*!
+          \brief Define the main progress interface
+
+          \param pi Instance of a AbstractProgress.
         */
-        //@{
-
-        /*! \brief It initializes the Singleton. */
-        ProgressManager();
-
-        /*! \brief Destructor. */
-        ~ProgressManager();
-
-        //@}
+        void setMainProgress(AbstractProgress* pi);
 
         /*!
-        \brief Define the progress interface
+          \brief Get the main progress interface.
 
-        \param pi Instance of a AbstractProgress
-
+          \return Instance of a AbstractProgress.
         */
-        void setProgress(AbstractProgress* pi);
+        AbstractProgress* getMainProgress();
 
         /*!
-        \brief Get the progress interface
+          \brief Define the progress interface
 
-        \return Instance of a AbstractProgress
+          \param pi Instance of a AbstractProgress.
 
+          \return Interger value - Progress ID
         */
-        AbstractProgress* getProgress();
+        int setProgress(AbstractProgress* pi);
 
+        /*!
+          \brief Get the progress interface.
+
+          \param id Progress identification
+
+          \return Instance of a AbstractProgress.
+        */
+        AbstractProgress* getProgress(const int& id);
 
         /** @name ProgressManager facade Methods for AbstractProgress
         *  Method used to access the instance stored on this singleton.
@@ -91,205 +92,226 @@ namespace te
         //@{
 
         /*!
-        \brief Used to set the progress total steps
+          \brief Used to set the progress total steps.
 
-        \param value Integer value
+          \param value Integer value.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note Used in case of a  default range ( 0 - value)
+          \exception Exception If the progress instance was not defined.
+
+          \note Used in case of a  default range ( 0 - value).
         */
-        void setTotalSteps(const int& value);
+        void setTotalSteps(const int& value, const int& id = -1);
 
         /*!
-        \brief Used to set the current step 
+          \brief Used to set the current step 
 
-        \param step Integer value
+          \param step Integer value
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note This function updates the proportional progress value, if this value has changed
-              the variable m_hasToUpdate is TRUE. This function only works if the attribute
-              m_isActive is TRUE.
+          \exception Exception If the progress instance was not defined
+
+          \note This function updates the proportional progress value, if this value has changed
+                the variable m_hasToUpdate is TRUE. This function only works if the attribute
+                m_isActive is TRUE.
         */
-        void setCurrentStep(const int& step);
+        void setCurrentStep(const int& step, const int& id = -1);
 
         /*!
-        \brief Gets the current step
+          \brief Gets the current step.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \return Integer value
+          \exception Exception If the progress instance was not defined.
 
+          \return Integer value.
         */
-        int getCurrentStep();
+        int getCurrentStep(const int& id = -1);
 
         /*!
-        \brief Gets the proportional value from the current step
+          \brief Gets the proportional value from the current step.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \return Integer value
+          \exception Exception If the progress instance was not defined.
 
+          \return Integer value.
         */
-        int getCurrentProportionalStep();
+        int getCurrentProportionalStep(const int& id = -1);
      
         /*!
-        \brief Set the progress message
+          \brief Set the progress message.
 
-        \exception Exception If the progress instance was not defined
+          \param message String used to define the progress message
 
-        \param message String value
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
+          \exception Exception If the progress instance was not defined.
+
+          \param message String value.
         */
-        void setMessage(const std::string& message);
+        void setMessage(const std::string& message, const int& id = -1);
 
         /*!
-        \brief Get the progress message
+          \brief Get the progress message.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \return String value
+          \exception Exception If the progress instance was not defined.
 
+          \return String value.
         */
-        std::string getMessage();
+        std::string getMessage(const int& id = -1);
 
         /*!
-        \brief Set the title caption.
+          \brief Set the title caption.
 
-        \param title String value
+          \param title String value.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note This function has a empty implementation here, this function should be reimplemented
-              in GUI applications that uses a progress bar.
+          \exception Exception If the progress instance was not defined.
+
+          \note This function has a empty implementation here, this function should be reimplemented
+                in GUI applications that uses a progress bar.
         */
-        void setTitle(const std::string& title);
+        void setTitle(const std::string& title, const int& id = -1);
 
         /*!
-        \brief Set the progress status
+          \brief Set the progress status
 
-        \param status Boolean attribute.
+          \param status Boolean attribute.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
+          \exception Exception If the progress instance was not defined.
         */
-        void setActive(const bool& status);
+        void setActive(const bool& status, const int& id = -1);
 
         /*!
-        \brief Get the progress status
+          \brief Get the progress status.
 
-        \return Boolean type.
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \exception Exception If the progress instance was not defined
+          \return Boolean type.
 
+          \exception Exception If the progress instance was not defined.
         */
-        bool isActive();
+        bool isActive(const int& id = -1);
 
         /*!
-        \brief Reset all internal attributes and also restart all progress params attributes
+          \brief Reset all internal attributes and also restart all progress params attributes
 
-        \note The m_isMultiThread is turn to FALSE and m_isActive is turn to TRUE.
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \exception Exception If the progress instance was not defined
+          \note The m_isMultiThread is turn to FALSE and m_isActive is turn to TRUE.
 
+          \exception Exception If the progress instance was not defined.
         */
-        void reset();
+        void reset(const int& id = -1);
         
         /*!
-        \brief Function used to indicate if the progress interface has to be updated.
+          \brief Function used to indicate if the progress interface has to be updated.
 
-        \return True if the progress has to be updated and false in other case.
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \exception Exception If the progress instance was not defined
+          \return True if the progress has to be updated and false in other case.
 
+          \exception Exception If the progress instance was not defined.
         */
-        bool hasToUpdate();
+        bool hasToUpdate(const int& id = -1);
 
         /*!
-        \brief Auxiliar function used to increment the progress.
+          \brief Auxiliar function used to increment the progress.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note This function calls the method setCurrentStep(int) using the current step + 1
+          \exception Exception If the progress instance was not defined.
 
+          \note This function calls the method setCurrentStep(int) using the current step + 1.
         */
-        void pulse();
+        void pulse(const int& id = -1);
         
         /*!
-        \brief This function is used to stop a progress.
+          \brief This function is used to stop a progress.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note Turn the variable m_isActive to FALSE.
+          \exception Exception If the progress instance was not defined.
+
+          \note Turn the variable m_isActive to FALSE.
+        */
+        void cancel(const int& id = -1);
+
+         /*!
+          \brief This function is used to set the window modality
+
+          \param flag Status to define the window modality, true is modal.
+
+          \exception Exception If the progress instance was not defined.
 
         */
-        void cancel();
+        virtual void setModal(const bool& flag, const int& id = -1);
 
         /*!
-        \brief Set if the progress will be used in a multithread enviroment.
+          \brief Set if the progress will be used in a multithread enviroment.
 
-        \param flag Boolean value used to set the multithread state.
-        
-        \exception Exception If the progress instance was not defined
+          \param flag Boolean value used to set the multithread state.
 
-        \note At the end of the process this flag will turn to FALSE.
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
+          \exception Exception If the progress instance was not defined
+
+          \note At the end of the process this flag will turn to FALSE.
         */
-        void setMultiThreadProgress(const bool& flag);
+        void setMultiThreadProgress(const bool& flag, const int& id = -1);
       
         /*!
-        \brief Set if progress timer will be used to estimate time.
+          \brief Set if progress timer will be used to estimate time.
 
-        \exception Exception If the progress instance was not defined             
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note If progressTimer is enabled the time will start at the startTimer() function
+          \exception Exception If the progress instance was not defined.
 
+          \note If progressTimer is enabled the time will start at the startTimer() function.
         */
-        void useProgressTimer(const bool& flag);
+        void useProgressTimer(const bool& flag, const int& id = -1);
 
         /*!
-        \brief Start the ProgressTimer timer.
+          \brief Start the ProgressTimer timer.
 
-        \exception Exception If the progress instance was not defined
+          \param id Progress Identification, if id is equal -1, the main progress will be used
 
-        \note Only works if progressTimer is enabled
+          \exception Exception If the progress instance was not defined.
+
+          \note Only works if progressTimer is enabled.
         */
-        void startTimer();
-
-        //@}
- 
-      private:
-
-        /** @name Copy Constructor and Assignment Operator
-        *  Copy constructor and assignment operator not allowed.
-        */
-        //@{
-
-        /*!
-        \brief Copy constructor not allowed.
-
-        \param rhs The right-hand-side copy that would be used to copy from.
-        */
-        ProgressManager(const ProgressManager& rhs);
-
-        /*!
-        \brief Assignment operator not allowed.
-
-        \param rhs The right-hand-side copy that would be used to copy from.
-
-        \return A reference to this object.
-        */
-        ProgressManager& operator=(const ProgressManager& rhs);
+        void startTimer(const int& id = -1);
 
         //@}
 
+      protected:
+
+        /*! \brief It initializes the Singleton. */
+        ProgressManager();
+
+        /*! \brief Destructor. */
+        ~ProgressManager();
+
+        /*! \brief Generate a new ID. */
+        int getProgressId();
+
       private:
 
-        AbstractProgress* m_progressInterface;  //!< A progress interface instance.
+        int m_progressCounter;                          //!< Internal counter used to generate progress Ids
+
+        std::map<int, AbstractProgress*> m_progressMap; //!< Map with all progress instances
     };
 
   } // end namespace common
 }   // end namespace te
 
-#endif  // __TERRALIB_COMMON_INTERNAL_PROGRESSMANAGER_H
+#endif  // __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
+

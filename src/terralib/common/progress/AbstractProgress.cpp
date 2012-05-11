@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/common/AbstractProgress.cpp
+  \file terralib/common/progress/AbstractProgress.cpp
 
   \brief The AbstractProgress is an abstract class used to define the main progress functions.
 */
@@ -28,8 +28,8 @@
 #include "ProgressParams.h"
 #include "ProgressTimer.h"
 
-
-te::common::AbstractProgress::AbstractProgress() : m_timer(0)
+te::common::AbstractProgress::AbstractProgress()
+  : m_timer(0)
 {
   reset();
 }
@@ -41,8 +41,8 @@ te::common::AbstractProgress::~AbstractProgress()
 
 void te::common::AbstractProgress::setTotalSteps(const int& value)
 {
-	m_progressParams.m_minValue = 0;
-	m_progressParams.m_maxValue = value - 1;
+  m_progressParams.m_minValue = 0;
+  m_progressParams.m_maxValue = value - 1;
 
   m_progressParams.m_totalSteps = value;
 
@@ -65,19 +65,19 @@ void te::common::AbstractProgress::setCurrentStep(const int& step)
 
     m_progressParams.m_currentStep = step;
 
-	  double aux = (double) m_progressParams.m_currentStep / (double) m_progressParams.m_totalSteps;
+    double aux = (double) m_progressParams.m_currentStep / (double) m_progressParams.m_totalSteps;
 
     int val = int (100. * aux);
 
-	  if(val > m_progressParams.m_currentPropStep)
-	  {
-		  m_progressParams.m_currentPropStep = val;
-		  m_hasToUpdate = true;
-	  }
-	  else
-	  {
-		  m_hasToUpdate = false;
-	  }
+    if(val > m_progressParams.m_currentPropStep)
+    {
+      m_progressParams.m_currentPropStep = val;
+      m_hasToUpdate = true;
+    }
+    else
+    {
+      m_hasToUpdate = false;
+    }
   }
 }
 
@@ -93,7 +93,7 @@ int te::common::AbstractProgress::getCurrentProportionalStep()
 
 void te::common::AbstractProgress::setMessage(const std::string& message)
 {
-	m_progressParams.m_message = message;
+  m_progressParams.m_message = message;
 }
 
 std::string te::common::AbstractProgress::getMessage()
@@ -110,10 +110,9 @@ void te::common::AbstractProgress::setActive(const bool& status)
   m_isActive = status;
 }
 
-
 bool te::common::AbstractProgress::isActive()
 {
-	return m_isActive;
+  return m_isActive;
 }
 
 void te::common::AbstractProgress::reset()
@@ -143,6 +142,10 @@ void te::common::AbstractProgress::pulse()
 void te::common::AbstractProgress::cancel()
 {
   m_isActive = false;
+}
+
+void te::common::AbstractProgress::setModal(const bool& flag)
+{
 }
 
 void te::common::AbstractProgress::setMultiThreadProgress(const bool& flag)

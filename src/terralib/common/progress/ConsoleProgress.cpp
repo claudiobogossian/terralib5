@@ -18,26 +18,25 @@
  */
 
 /*!
-  \file terralib/common/AbstractProgress.cpp
+  \file terralib/common/progress/AbstractProgress.cpp
 
   \brief The AbstractProgress is an abstract class used to define the main progress functions.
 */
 
 // TerraLib
-#include "ConsoleProgress.h"
 #include "../Translator.h"
+#include "ConsoleProgress.h"
 
+// STL
 #include <iostream>
 
-
-te::common::ConsoleProgress::ConsoleProgress() : AbstractProgress()
+te::common::ConsoleProgress::ConsoleProgress()
+  : AbstractProgress()
 {
-
 }
 
 te::common::ConsoleProgress::~ConsoleProgress()
-{  
-
+{
 }
 
 void te::common::ConsoleProgress::setCurrentStep(const int& step)

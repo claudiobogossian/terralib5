@@ -20,12 +20,14 @@ class DummyWindow : public QWidget
   public slots:
     void showProgressBar();
     void showThreadProgressBar();
+    void showThreadProgressBar2();
     void showStatusProgressBar();
 
   protected:
     QGridLayout* m_mainLayout;
     QPushButton* m_progressPushButton;
     QPushButton* m_progressThreadPushButton;
+    QPushButton* m_progressThreadPushButton2;
     QPushButton* m_progressStatusBar;
     QStatusBar*  m_statusBar;
 

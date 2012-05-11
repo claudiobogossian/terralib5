@@ -18,61 +18,46 @@
  */
 
 /*!
-  \file terralib/common/ConsoleProgress.h
+  \file terralib/common/progress/ConsoleProgress.h
  
-  \brief The ConsoleProgress is class used to define the main progress functions
-         in console applications.
+  \brief A class used to define the main progress functions in console applications.
 */
 
-#ifndef __TERRALIB_COMMON_INTERNAL_CONSOLEPROGRESS_H
-#define __TERRALIB_COMMON_INTERNAL_CONSOLEPROGRESS_H
+#ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_CONSOLEPROGRESS_H
+#define __TERRALIB_COMMON_PROGRESS_INTERNAL_CONSOLEPROGRESS_H
 
 // TerraLib
 #include "../Config.h"
 #include "AbstractProgress.h"
-
 
 namespace te
 {
   namespace common
   {
     /*!
-    \class ConsoleProgress
+      \class ConsoleProgress
 
-    \brief The ConsoleProgress is a progress bar for console applications.
+      \brief The ConsoleProgress is a progress bar for console applications.
 
-	        
-    \sa ProgressManager, AbstractProgress, ProgressParams
-
-    \todo 
-
+      \sa ProgressManager, AbstractProgress, ProgressParams
     */
     class TECOMMONEXPORT ConsoleProgress : public AbstractProgress
     {
       public:
 
-        /** @name Initializer Methods
-        *  Methods related to instantiation and destruction.
-        */
-        //@{
-
-        /*! \brief It initializes a new AbstractProgress.
-
-        */
+        /*! \brief It initializes a new AbstractProgress. */
         ConsoleProgress();
 
         /*! \brief Destructor */
         ~ConsoleProgress();
 
-        //@}
-
         /*!
-        \brief Used to set the current step 
+          \brief Used to set the current step 
 
-        \param step Integer value
+          \param step Integer value
 
-        \note This function call the abstract setCurrentStep implementation and after
-              shows a console message with the progress information
+          \note This function call the abstract setCurrentStep implementation and after
+                shows a console message with the progress information
         */
         virtual void setCurrentStep(const int& step);
     };
@@ -80,4 +65,5 @@ namespace te
   } // end namespace common
 }   // end namespace te
 
-#endif  // __TERRALIB_COMMON_INTERNAL_CONSOLEPROGRESS_H
+#endif  // __TERRALIB_COMMON_PROGRESS_INTERNAL_CONSOLEPROGRESS_H
+

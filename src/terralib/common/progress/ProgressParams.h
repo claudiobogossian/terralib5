@@ -18,14 +18,13 @@
  */
 
 /*!
-  \file terralib/common/ProgressParams.h
+  \file terralib/common/progress/ProgressParams.h
  
-  \brief The ProgressParams is a struct with all common attributes of
-         a progress bar.
+  \brief The ProgressParams is a struct with all common attributes of a progress bar.
 */
 
-#ifndef __TERRALIB_COMMON_INTERNAL_PROGRESSPARAMS_H
-#define __TERRALIB_COMMON_INTERNAL_PROGRESSPARAMS_H
+#ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSPARAMS_H
+#define __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSPARAMS_H
 
 // TerraLib
 #include "../Config.h"
@@ -33,34 +32,27 @@
 // STL
 #include <string>
 
-
 namespace te
 {
   namespace common
   {
     /*!
-    \class ProgressParams
+      \struct ProgressParams
 
-    \brief The ProgressParams is a class to manager the progress bar common
-    attributes. It' possible to define a range different from 0 - 100.
-    The flag "m_isActive" is used to indicate the progress status. If
-    the progress was canceled this flag is turn to FALSE.
+      \brief The ProgressParams is a struct with progress bar common attributes.
 
-	       
-    \sa ProgressManager, AbstractProgress
+      \sa ProgressManager, AbstractProgress
 
-    \todo 
-
+      \todo
     */
     struct ProgressParams
     {
-      int m_minValue;         //!< Range minimum value 
-      int m_maxValue;         //!< Range maximum value
-      int m_totalSteps;       //!< Progress total steps
-      int m_currentStep;			//!< Current value
-      int m_currentPropStep;	//!< Current proportional value (0 - 100)
-      
-      std::string m_message;	//!< Progress message
+      int m_minValue;         //!< Range minimum value.
+      int m_maxValue;         //!< Range maximum value.
+      int m_totalSteps;       //!< Progress total steps.
+      int m_currentStep;      //!< Current value.
+      int m_currentPropStep;  //!< Current proportional value (0 - 100).
+      std::string m_message;  //!< Progress message.
     };
 
   } // end namespace common

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file QtProgress.cpp
+  \file terralib/qt/widgets/progress/QtProgress.cpp
 
   \brief The QtProgress is a qt implementation of a progress class used to define the main progress functions.
 */
@@ -29,13 +29,12 @@
 #include "QtProgressBarSetMessageEvent.h"
 #include "QtProgressBarSetValueEvent.h"
 
-#include "terralib.h"
-
 // Qt
 #include <QtCore/QCoreApplication>
+#include <QtGui/QApplication>
 
-
-te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : QProgressDialog(parent), te::common::AbstractProgress()
+te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : 
+  QProgressDialog(parent), te::common::AbstractProgress(), m_numberOfCursors(0)
 {
   this->setWindowModality(Qt::WindowModal);
 
@@ -50,8 +49,26 @@ te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : QProgressDialog(paren
 }
 
 te::qt::widgets::QtProgress::~QtProgress()
-{  
+{
+}
 
+void te::qt::widgets::QtProgress::setTotalSteps(const int& value)
+{
+  if(QApplication::overrideCursor())
+  {
+    if(QApplication::overrideCursor()->shape() != Qt::WaitCursor)
+    {
+      QApplication::setOverrideCursor( Qt::WaitCursor );
+      m_numberOfCursors++;
+    }
+  }
+  else
+  {
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    m_numberOfCursors++;
+  }
+
+  te::common::AbstractProgress::setTotalSteps(value);
 }
 
 void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
@@ -63,22 +80,21 @@ void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
     int value = this->getCurrentProportionalStep();
     if(m_isMultiThread)
     {
-      QCoreApplication::postEvent(this, new te::qt::widgets::QtProgressBarSetValueEvent(value));
-
+      QCoreApplication::postEvent(this, new QtProgressBarSetValueEvent(value));
       QCoreApplication::processEvents();
     }
     else
     {
       QProgressDialog::setValue(value);
     }
-	}
+  }
 }
 
 void te::qt::widgets::QtProgress::setMessage(const std::string& message)
 {
   if(m_isMultiThread)
   {
-    QCoreApplication::postEvent(this, new te::qt::widgets::QtProgressBarSetMessageEvent(message));
+    QCoreApplication::postEvent(this, new QtProgressBarSetMessageEvent(message));
   }
   else
   {
@@ -97,20 +113,34 @@ void te::qt::widgets::QtProgress::reset()
 {
   QProgressDialog::reset();
 
+  setModal(true);
+
+  resetCursor();
+
   te::common::AbstractProgress::reset();
+}
+
+void te::qt::widgets::QtProgress::setModal(const bool& flag)
+{
+  if(flag)
+    this->setWindowModality(Qt::WindowModal);
+  else
+    this->setWindowModality(Qt::NonModal);
 }
 
 void te::qt::widgets::QtProgress::cancel()
 {
+  resetCursor();
+
   this->setActive(false);
 }
 
 bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
 {
-  if(obj == this && event->type() == te::qt::widgets::QtProgressBarSetValueEvent::type())
+  if(obj == this && event->type() == QtProgressBarSetValueEvent::type())
   {
-    te::qt::widgets::QtProgressBarSetValueEvent* e = 
-      static_cast<te::qt::widgets::QtProgressBarSetValueEvent*>(event);
+    QtProgressBarSetValueEvent* e = 
+      static_cast<QtProgressBarSetValueEvent*>(event);
 
     QProgressDialog::setValue(e->m_value);
 
@@ -118,10 +148,10 @@ bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
 
     return true;
   }
-  else if(obj == this && event->type() == te::qt::widgets::QtProgressBarSetMessageEvent::type())
+  else if(obj == this && event->type() == QtProgressBarSetMessageEvent::type())
   {
-    te::qt::widgets::QtProgressBarSetMessageEvent* e = 
-      static_cast<te::qt::widgets::QtProgressBarSetMessageEvent*>(event);
+    QtProgressBarSetMessageEvent* e = 
+      static_cast<QtProgressBarSetMessageEvent*>(event);
 
     QProgressDialog::setLabelText(e->m_value.c_str());
 
@@ -133,4 +163,39 @@ bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
   {
     return QProgressDialog::eventFilter(obj, event);
   }
+}
+
+void te::qt::widgets::QtProgress::enterEvent(QEvent* event)
+{
+  if(QApplication::overrideCursor())
+  {
+    if(QApplication::overrideCursor()->shape() != Qt::ArrowCursor)
+    {
+      QApplication::setOverrideCursor( Qt::ArrowCursor );
+      m_numberOfCursors++;
+    }
+  }
+}
+
+void te::qt::widgets::QtProgress::leaveEvent(QEvent* event)
+{
+  if(QApplication::overrideCursor())
+  {
+    if(QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
+    {
+      QApplication::restoreOverrideCursor();
+      m_numberOfCursors--;
+    }
+  }
+}
+
+void te::qt::widgets::QtProgress::resetCursor()
+{
+  //Restore all cursors that were set by QtProgress.
+  for (int i = 0; i < m_numberOfCursors; i++)
+  {
+    if(QApplication::overrideCursor())
+      QApplication::restoreOverrideCursor();
+  }
+  m_numberOfCursors = 0;
 }
