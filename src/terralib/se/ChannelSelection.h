@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/ChannelSelection.h
-  
+
   \brief ChannelSelection specifies the false-color channel selection for a multi-spectral raster source (such as a multi-band satellite-imagery source).
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_CHANNELSELECTION_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -57,7 +55,7 @@ namespace te
       Commonly, channels will be labelled as "1", "2", etc.
 
       \sa RasterSymbolizer, SelectedChannel
-     */
+    */
     class TESEEXPORT ChannelSelection : public boost::noncopyable
     {
       public:
@@ -65,7 +63,7 @@ namespace te
         /** @name Initializer Methods
          *  Methods related to instantiation and destruction.
          */
-        //@{  
+        //@{
 
         /*! \brief It initializes a new ChannelSelection. */
         ChannelSelection();

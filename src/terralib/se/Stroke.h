@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Stroke.h
-  
+
   \brief A Stroke specifies the appearance of a linear geometry.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_STROKE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <map>
@@ -122,7 +120,7 @@ namespace te
 
           \note If there is already a SvgParamater with the same name it will be overrided.
           \note The Stroke object will take the ownership of the informed p pointer.
-         */
+        */
         void add(SvgParameter* p);
 
         void setColor(const std::string& color);

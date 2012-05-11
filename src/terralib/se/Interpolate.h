@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Interpolate.h
-  
+
   \brief The transformation of continuous values to a number of values (Interpolate function).
 */
 
@@ -93,7 +93,7 @@ namespace te
           \enum ModeType
 
           \brief It controls the ...
-         */
+        */
         enum ModeType
         {
           LINEAR, /*!<  */
@@ -105,7 +105,7 @@ namespace te
           \enum MethodType
 
           \brief It controls the ...
-         */
+        */
         enum MethodType
         {
           NUMERIC, /*!<  */
@@ -146,10 +146,9 @@ namespace te
         std::vector<InterpolationPoint*> m_interpolationPoints;  //!< Mandatory.
         ModeType m_mode;                                         //!< Mandatory.
         MethodType m_method;                                     //!< Mandatory.
-    };      
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_INTERPOLATE_H
-

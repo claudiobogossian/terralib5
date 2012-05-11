@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/ChangeCase.h
-  
+
   \brief Changes the case of strings (String formatting functions).
 */
 
@@ -36,18 +36,19 @@ namespace te
 // Forward declaration
     class ParameterValue;
 
-    /*! \class ChangeCase
-      
-        \brief Changes the case of strings (String formatting functions).
+    /*!
+      \class ChangeCase
 
-        The function changes the case of the
-        StringValue as indicated by the attribute
-        direction. Possible values of the latter are
-        "toUpper" and "toLower", where the former is
-        the default value.
+      \brief Changes the case of strings (String formatting functions).
 
-        \sa Function, ParameterValue
-     */
+      The function changes the case of the
+      StringValue as indicated by the attribute
+      direction. Possible values of the latter are
+      "toUpper" and "toLower", where the former is
+      the default value.
+
+      \sa Function, ParameterValue
+    */
     class TESEEXPORT ChangeCase : public Function
     {
       public:
@@ -56,7 +57,7 @@ namespace te
           \enum CaseDirectionType
 
           \brief The type of case.
-         */
+        */
         enum CaseDirectionType
         {
           TOUPPER,  /*!< It means to change case to upper case. */
@@ -83,7 +84,7 @@ namespace te
 
         ParameterValue* m_stringValue; //!< Mandatory.
         CaseDirectionType m_direction; //!< Mandatory.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

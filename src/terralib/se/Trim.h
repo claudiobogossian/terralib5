@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Trim.h
-  
+
   \brief Strips off chars from a string value (String formatting functions).
 */
 
@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "Function.h"
-
 
 namespace te
 {
@@ -48,7 +47,7 @@ namespace te
       stripped. Defaults are "leading" and blank.
 
       \sa Function, ParameterValue, StringLength, StringPosition
-     */
+    */
     class TESEEXPORT Trim : public Function
     {
       public:
@@ -57,7 +56,7 @@ namespace te
           \enum StripOffPositionType
 
           \brief It controls the mode of stripping characters.
-         */
+        */
         enum StripOffPositionType
         {
           LEADING,  /*!< It means to strips off leading chars from a string value.                     */
@@ -87,7 +86,7 @@ namespace te
         ParameterValue* m_stringValue;           //!< Mandatory.
         StripOffPositionType m_stripOffPosition; //!< Mandatory.
         std::string m_stripOffChar;              //!< Mandatory.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

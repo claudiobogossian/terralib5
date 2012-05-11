@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/PointPlacement.h
-  
+
   \brief A PointPlacement specifies how a text label should be rendered relative to a geometric point.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_POINTPLACEMENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -106,10 +104,9 @@ namespace te
         AnchorPoint*    m_anchorPoint;    //!< It identifies the location inside of a text label to use an an 'anchor' for positioning it relative to a point geometry. (Optional)
         Displacement*   m_displacement;   //!< It gives X and Y offset displacements to use for rendering a text label, graphic or other Symbolizer near a point. (Optional)
         ParameterValue* m_rotation;       //!< The Rotation element gives the rotation of a graphic in the clockwise direction about its center point in decimal degrees, encoded as a floating-point number. Negative values mean counter-clockwise rotation. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_POINTPLACEMENT_H
-

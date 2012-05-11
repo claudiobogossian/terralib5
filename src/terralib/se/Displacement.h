@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Displacement.h
-  
+
   \brief A Displacement gives X and Y offset displacements to use for rendering a text label, graphic or other Symbolizer near a point.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_DISPLACEMENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -56,8 +54,8 @@ namespace te
       then the graphic symbol shall be scaled and/or rotated before it is displaced.
 
       \sa Graphic, ParameterValue, PointPlacement
-     */
-    class TESEEXPORT Displacement : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
+    */
+    class TESEEXPORT Displacement : public boost::noncopyable
     {
       public:
 
@@ -88,7 +86,7 @@ namespace te
 
         ParameterValue* m_x;    //!< It gives the X offset displacement.
         ParameterValue* m_y;    //!< It gives the Y offset displacement.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

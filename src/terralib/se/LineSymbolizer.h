@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/LineSymbolizer.h
-  
+
   \brief A LineSymbolizer is used to style a stroke along a linear geometry type, such as a string of line segments.
 */
 
@@ -45,7 +45,7 @@ namespace te
       \brief A LineSymbolizer is used to style a stroke along a linear geometry type, such as a string of line segments.
 
       \sa Symbolizer, Stroke, ParameterValue, te::fe::PropertyName, ImageOutline
-     */
+    */
     class TESEEXPORT LineSymbolizer : public Symbolizer
     {
       public:
@@ -89,7 +89,7 @@ namespace te
                 other "area" type), then its closed outline is used as the line
                 string (with no end caps). If a raster geometry is used, its
                 coverage-area outline is used for the line, rendered with no end caps.
-         */
+        */
         void setGeometry(te::fe::PropertyName* geometry);
         const te::fe::PropertyName* getGeometry() const;
 
@@ -100,7 +100,7 @@ namespace te
           The Stroke element is optional inside of LineSymbolizer
           (and other Symbolizers), and its absence means that no
           stroke is to be rendered.
-         */
+        */
         void setStroke(Stroke* stroke);
         const Stroke* getStroke() const;
 
@@ -116,7 +116,7 @@ namespace te
           geometry. The distance is in uoms and is positive
           to the left-hand side of the line string. Negative numbers
           mean right. The default offset is 0.
-         */
+        */
         void setPerpendicularOffset(ParameterValue* perpendicularOffset);
         const ParameterValue* getPerpendicularOffset() const;
 
@@ -127,10 +127,9 @@ namespace te
         te::fe::PropertyName* m_geometry;       //!< A Geometry gives reference to a (the) geometry property of a feature to be used for rendering. (Optional)
         Stroke* m_stroke;                       //!< A Stroke specifies the appearance of a linear geometry. (Optional)
         ParameterValue* m_perpendicularOffset;  //!< A PerpendicularOffset gives the perpendicular distance away from a line to draw a label. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_LINESYMBOLIZER_H
-

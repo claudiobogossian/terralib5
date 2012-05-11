@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/StringPosition.h
-  
+
   \brief It returns the position of first occurence of a substring (String formatting functions).
 */
 
@@ -50,7 +50,7 @@ namespace te
       the former is the default.
 
       \sa Function, ParameterValue, StringLength, Trim
-     */
+    */
     class TESEEXPORT StringPosition : public Function
     {
       public:
@@ -59,7 +59,7 @@ namespace te
           \enum SearchDirectionType
 
           \brief It controls the direction of search.
-         */
+        */
         enum SearchDirectionType
         {
           FRONTTOBACK,  /*!< It means to search from front to back. */
@@ -88,7 +88,7 @@ namespace te
         ParameterValue* m_lookupString;        //!< Mandatory.
         ParameterValue* m_stringValue;         //!< Mandatory. 
         SearchDirectionType m_searchDirection; //!< Mandatory.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

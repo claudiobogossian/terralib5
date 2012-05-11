@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Description.h
-  
+
   \brief A Description gives human-readable descriptive information for the object it is included within.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_DESCRIPTION_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
@@ -52,7 +50,7 @@ namespace te
       fields may be added to this element in the future.
 
       \sa Symbolizer, CoverageStyle, Rule, FeatureTypeStyle, CoverageStyle
-     */
+    */
     class TESEEXPORT Description : public boost::noncopyable
     {
       public:
@@ -89,7 +87,7 @@ namespace te
 
         std::string m_title;     //!< Title. (Optional)
         std::string m_abstract;  //!< Abstract. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

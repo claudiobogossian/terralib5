@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/ExternalGraphic.h
-  
+
   \brief The ExternalGraphic allows a reference to be made to an external graphic file with a Web URL or to in-line content.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_EXTERNALGRAPHIC_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
@@ -82,7 +80,7 @@ namespace te
       both Data and Value elements are set to color values.
 
       \sa Graphic, InlineContent, Recode
-     */
+    */
     class TESEEXPORT ExternalGraphic : public boost::noncopyable
     {
       public:
@@ -121,7 +119,7 @@ namespace te
         InlineContent* m_inlineContent;           //!< It allows the content of an external graphic object to be included in-line. (Mandatory if m_onlineResource is absent)
         std::string m_format;                     //!< It identifies the expected document MIME type of a successful fetch. (Mandatory)
         std::vector<Recode*> m_colorReplacements; //!< Transformation of discrete values to other values. (Optional)
-    };   
+    };
 
   } // end namespace se
 }   // end namespace te

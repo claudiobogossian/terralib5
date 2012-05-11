@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/SelectedChannel.h
-  
+
   \brief A selected channel to be display.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
@@ -50,7 +48,7 @@ namespace te
       \brief A selected channel to be display.
 
       \sa ChannelSelection, ContrastEnhancement
-     */
+    */
     class TESEEXPORT SelectedChannel : public boost::noncopyable
     {
       public:
@@ -90,4 +88,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
-

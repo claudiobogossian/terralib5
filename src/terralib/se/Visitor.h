@@ -76,6 +76,4 @@ namespace te
   } // end namespace se
 }   // end namespace te
 
-
 #endif  // __TERRALIB_SE_INTERNAL_VISITOR_H
-

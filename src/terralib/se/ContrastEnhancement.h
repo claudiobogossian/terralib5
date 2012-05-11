@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/ContrastEnhancement.h
-  
+
   \brief ContrastEnhancement defines the 'stretching' of contrast for a channel of a false-color image or for a whole grey/color image.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_CONTRASTENHANCEMENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -60,7 +58,7 @@ namespace te
       then no enhancement is performed.
 
       \sa SelectedChannel, RasterSymbolizer
-     */
+    */
     class TESEEXPORT ContrastEnhancement : public boost::noncopyable
     {
       public:
@@ -69,7 +67,7 @@ namespace te
           \enum ContrastEnhancementType
 
           \brief The type of contrast enhancement.
-         */
+        */
         enum ContrastEnhancementType
         {
           ENHANCEMENT_NORMALIZE,  /*!< It means to stretch the contrast so that
@@ -116,7 +114,7 @@ namespace te
 
         ContrastEnhancementType m_contrast;  //!< Contrast enhancement type. (Optional)
         double m_gammaValue;                 //!< It tells how much to brighten (values greater than 1.0) or dim (values less than 1.0) an image. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

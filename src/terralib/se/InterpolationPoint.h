@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/InterpolationPoint.h
-  
+
   \brief They are used to define a graph of points.
 */
 
@@ -27,10 +27,8 @@
 #define __TERRALIB_SE_INTERNAL_INTERPOLATIONPOINT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "../fe/Expression.h"
 #include "Config.h"
-#include "Visitor.h"
 
 namespace te
 {
@@ -45,7 +43,7 @@ namespace te
       \brief They are used to define a graph of points.
 
       \sa Interpolate, te::fe::Expression, ParameterValue
-     */
+    */
     class TESEEXPORT InterpolationPoint : public te::fe::Expression
     {
       public:
@@ -84,7 +82,7 @@ namespace te
           \brief No copy constructor allowed.
 
           \param rhs The other InterpolationPoint.
-         */
+        */
         InterpolationPoint(const InterpolationPoint& rhs);
 
         /*!
@@ -93,7 +91,7 @@ namespace te
           \param rhs The other InterpolationPoint.
 
           \return A reference for this.
-         */
+        */
         InterpolationPoint& operator=(const InterpolationPoint& rhs);
 
         //@}

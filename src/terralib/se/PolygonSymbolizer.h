@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/PolygonSymbolizer.h
-  
+
   \brief A PolygonSymbolizer is used to draw a polygon (or other area-type geometries), including filling its interior and stroking its border (outline).
 */
 
@@ -176,10 +176,9 @@ namespace te
         Stroke* m_stroke;                      //!< A "Stroke" specifies the appearance of a linear geometry. (Optional)
         Displacement* m_displacement;          //!< The Displacement gives the X and Y displacements from the original geometry. (Optional)
         ParameterValue* m_perpendicularOffset; //!< A "PerpendicularOffset" gives the perpendicular distance away from a line to draw a label. (Optional)
-    };    
+    };
 
   } // namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_POLYGONSYMBOLIZER_H
-

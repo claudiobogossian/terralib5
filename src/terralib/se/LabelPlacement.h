@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_LABELPLACEMENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -48,7 +46,7 @@ namespace te
       \brief The LabelPlacement specifies where and how a text label should be rendered relative to a geometry.
 
       \sa TextSymbolizer, PointPlacement, LinePlacement
-     */
+    */
     class TESEEXPORT LabelPlacement : public boost::noncopyable
     {
       public:
@@ -80,10 +78,9 @@ namespace te
 
         PointPlacement* m_pointPlacement;     //!< It specifies how a text label should be rendered relative to a geometric point. (Mandatory)
         LinePlacement*  m_linePlacement;      //!< It specifies how a text label should be rendered relative to a linear geometry. (Mandatory)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_LABELPLACEMENT_H
-

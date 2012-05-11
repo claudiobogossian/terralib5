@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/TextSymbolizer.h
-  
+
   \brief A TextSymbolizer is used to render text labels according to various graphical parameters.  
 */
 
@@ -56,7 +56,7 @@ namespace te
       \sa Symbolizer, ParameterValue, Font, LabelPlacement, Halo, Fill, te::fe::PropertyName
 
       \note If a Label element is not provided in a TextSymbolizer, then no text shall be rendered.
-     */
+    */
     class TESEEXPORT TextSymbolizer : public Symbolizer
     {
       TE_DEFINE_VISITABLE
@@ -98,10 +98,9 @@ namespace te
         LabelPlacement* m_labelPlacement;  //!< The label placement specifies where and how a text label should be rendered relative to a geometry. (Optional)
         Halo* m_halo;                      //!< A Halo is a type of Fill that is applied to the backgrounds of font glyphs. (Optional)
         Fill* m_fill;                      //!< It specifies how the text area will be filled. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_TEXTSYMBOLIZER_H
-

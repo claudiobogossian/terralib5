@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/CoverageStyle.h
-  
+
   \brief The CoverageStyle defines the styling that is to be applied to a subset of Coverage data.
 */
 
@@ -39,7 +39,7 @@ namespace te
       \brief The CoverageStyle defines the styling that is to be applied to a subset of Coverage data.
 
       \sa Style, FeatureTypeStyle
-     */
+    */
     class TESEEXPORT CoverageStyle : public Style
     {
       public:
@@ -73,7 +73,7 @@ namespace te
       private:
 
         std::string* m_coverageName;  //!< It identifies the specific coverage that the coverage style is for. (Optional)
-    };   
+    };
 
   } // end namespace se
 }   // end namespace te
