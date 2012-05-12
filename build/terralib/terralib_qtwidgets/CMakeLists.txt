@@ -195,7 +195,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
 	 ${SRCDIR}/widgets/canvas/MapDisplay.h
 	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h
-	 ${SRCDIR}/widgets/progress/QtProgress.h)
+	 ${SRCDIR}/widgets/progress/QtProgress.h
+	 ${SRCDIR}/widgets/progress/QtWidgetProgress.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS

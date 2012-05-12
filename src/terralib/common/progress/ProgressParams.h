@@ -37,13 +37,9 @@ namespace te
   namespace common
   {
     /*!
-      \class ProgressParams
+      \struct ProgressParams
 
-      \brief The ProgressParams is a class to manager the progress bar common attributes.
-
-      It' possible to define a range different from 0 - 100.
-      The flag "m_isActive" is used to indicate the progress status. If
-      the progress was canceled this flag is turn to FALSE.
+      \brief The ProgressParams is a struct with progress bar common attributes.
 
       \sa ProgressManager, AbstractProgress
 

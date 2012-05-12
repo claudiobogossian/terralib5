@@ -18,34 +18,34 @@
  */
 
 /*!
-  \file terralib/common/progress/AbstractProgress.cpp
-
-  \brief The AbstractProgress is an abstract class used to define the main progress functions.
+  \file QtProgressEvent.h
+ 
+  \brief The QtProgressBarSetValueEvent is a custom event used to set a new value into 
+         a progress bar. Used in thread codes.
 */
 
-// TerraLib
-#include "../Translator.h"
-#include "ConsoleProgress.h"
 
-// STL
-#include <iostream>
+//TerraLib
+#include "QtProgressBarSetValueEvent.h"
 
-te::common::ConsoleProgress::ConsoleProgress()
-  : AbstractProgress()
+QEvent::Type te::qt::widgets::QtProgressBarSetValueEvent::m_customEventType = QEvent::None;
+
+te::qt::widgets::QtProgressBarSetValueEvent::QtProgressBarSetValueEvent(int value) :
+  QEvent(QtProgressBarSetValueEvent::type()), m_value(value)
 {
 }
 
-te::common::ConsoleProgress::~ConsoleProgress()
+te::qt::widgets::QtProgressBarSetValueEvent::~QtProgressBarSetValueEvent()
 {
 }
 
-void te::common::ConsoleProgress::setCurrentStep(const int& step)
+QEvent::Type te::qt::widgets::QtProgressBarSetValueEvent::type()
 {
-  te::common::AbstractProgress::setCurrentStep(step);
-
-  if(this->hasToUpdate())
+  if (m_customEventType == QEvent::None)
   {
-    // Show the percentage complete.
-    std::cout << this->getMessage() << TR_COMMON(" - Percent: ") << this->getCurrentProportionalStep() << "%" << std::endl;
+    int generatedType = QEvent::registerEventType();
+    m_customEventType = static_cast<QEvent::Type>(generatedType);
   }
+            
+  return m_customEventType;
 }

@@ -25,13 +25,16 @@
 
 // TerraLib
 #include "QtProgress.h"
+
 #include "QtProgressBarSetMessageEvent.h"
 #include "QtProgressBarSetValueEvent.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
+#include <QtGui/QApplication>
 
-te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : QProgressDialog(parent), te::common::AbstractProgress()
+te::qt::widgets::QtProgress::QtProgress(QWidget* parent) : 
+  QProgressDialog(parent), te::common::AbstractProgress(), m_numberOfCursors(0)
 {
   this->setWindowModality(Qt::WindowModal);
 
@@ -49,6 +52,25 @@ te::qt::widgets::QtProgress::~QtProgress()
 {
 }
 
+void te::qt::widgets::QtProgress::setTotalSteps(const int& value)
+{
+  if(QApplication::overrideCursor())
+  {
+    if(QApplication::overrideCursor()->shape() != Qt::WaitCursor)
+    {
+      QApplication::setOverrideCursor( Qt::WaitCursor );
+      m_numberOfCursors++;
+    }
+  }
+  else
+  {
+    QApplication::setOverrideCursor( Qt::WaitCursor );
+    m_numberOfCursors++;
+  }
+
+  te::common::AbstractProgress::setTotalSteps(value);
+}
+
 void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
 {
   te::common::AbstractProgress::setCurrentStep(step);
@@ -59,7 +81,6 @@ void te::qt::widgets::QtProgress::setCurrentStep(const int& step)
     if(m_isMultiThread)
     {
       QCoreApplication::postEvent(this, new QtProgressBarSetValueEvent(value));
-
       QCoreApplication::processEvents();
     }
     else
@@ -92,11 +113,25 @@ void te::qt::widgets::QtProgress::reset()
 {
   QProgressDialog::reset();
 
+  setModal(true);
+
+  resetCursor();
+
   te::common::AbstractProgress::reset();
+}
+
+void te::qt::widgets::QtProgress::setModal(const bool& flag)
+{
+  if(flag)
+    this->setWindowModality(Qt::WindowModal);
+  else
+    this->setWindowModality(Qt::NonModal);
 }
 
 void te::qt::widgets::QtProgress::cancel()
 {
+  resetCursor();
+
   this->setActive(false);
 }
 
@@ -128,4 +163,39 @@ bool te::qt::widgets::QtProgress::eventFilter(QObject* obj, QEvent* event)
   {
     return QProgressDialog::eventFilter(obj, event);
   }
+}
+
+void te::qt::widgets::QtProgress::enterEvent(QEvent* event)
+{
+  if(QApplication::overrideCursor())
+  {
+    if(QApplication::overrideCursor()->shape() != Qt::ArrowCursor)
+    {
+      QApplication::setOverrideCursor( Qt::ArrowCursor );
+      m_numberOfCursors++;
+    }
+  }
+}
+
+void te::qt::widgets::QtProgress::leaveEvent(QEvent* event)
+{
+  if(QApplication::overrideCursor())
+  {
+    if(QApplication::overrideCursor()->shape() == Qt::ArrowCursor)
+    {
+      QApplication::restoreOverrideCursor();
+      m_numberOfCursors--;
+    }
+  }
+}
+
+void te::qt::widgets::QtProgress::resetCursor()
+{
+  //Restore all cursors that were set by QtProgress.
+  for (int i = 0; i < m_numberOfCursors; i++)
+  {
+    if(QApplication::overrideCursor())
+      QApplication::restoreOverrideCursor();
+  }
+  m_numberOfCursors = 0;
 }

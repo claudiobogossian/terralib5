@@ -1,0 +1,35 @@
+          TerraLib Application Framework for Qt
+          =====================================
+          
+This folder contains an implementation of a simple application
+framework over Qt. Basically, this framework is used by INPE's
+applications (TerraView, TerraAmazon and TerraMA2) to share
+and reuse components connection and to help to control
+the application life cycle (startup of plugins, singnals/slots, menus
+toolbars).
+
+Dependencies:
+-------------
+
+This module requires others in order to be built:
+1. Common Runtime
+2. Plugin
+3. Qt::Widgets
+
+The third-party software needed:
+1. Qt (QCore, QGui)
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this framework:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:qt::af
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            01/01/2012
+							

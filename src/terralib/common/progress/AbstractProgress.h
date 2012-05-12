@@ -164,6 +164,13 @@ namespace te
         virtual void cancel();
 
         /*!
+          \brief This function is used to set the window modality
+
+          \note Empty implementation here
+        */
+        virtual void setModal(const bool& flag);
+
+        /*!
           \brief Set if the progress will be used in a multithread enviroment.
 
           \param flag Boolean value used to set the multithread state.

@@ -47,39 +47,43 @@ namespace te
 
       public:
 
-      /*! \brief It initializes a new AbstractProgress. */
+      /*! \brief It initializes a ProgressTimer. */
       ProgressTimer(int totalSteps);
 
       /*! \brief Destructor */
       ~ProgressTimer();
 
-      /*! \brief */
+      /*! \brief Start the internal timer */
       void start();
 
-      /*! \brief */
+      /*! 
+        \brief Define a new step process evolution
+
+        \note Each tick a new value for remaining time and speed time is generated.
+      */
       void tick();
 
-      /*! \brief */
+      /*! \brief Set the total steps*/
       void setTotalSteps(const int& totalSteps);
 
       /*!
-        \brief
+        \brief Function used to get the remaining time to end the process
 
-        \return 
+        \return Dobule value, the remaingin time in minutes
       */
       double getRemainingTimeInMin();
 
       /*!
-        \brief 
+        \brief Function used to get the speed time.
 
-        \return
+        \return Double value, the spped time in seconds
       */
       double getSpeedTimeInSec();
 
       /*!
-        \brief 
+        \brief Get the information about the evolution of the process.
 
-        \return 
+        \return String with the information about remaining and speed time
       */
       std::string getMessage();
 

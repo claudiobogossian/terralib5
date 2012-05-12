@@ -89,7 +89,7 @@ std::string te::common::ProgressTimer::getMessage()
 
   if(m_remainingTime < 1.)
   {
-	  strTime = TR_COMMON("Remaining Time: Less than one minute");
+    strTime = TR_COMMON("Remaining Time: Less than one minute");
   }
   else
   {

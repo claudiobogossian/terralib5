@@ -110,7 +110,6 @@ void te::common::AbstractProgress::setActive(const bool& status)
   m_isActive = status;
 }
 
-
 bool te::common::AbstractProgress::isActive()
 {
   return m_isActive;
@@ -143,6 +142,10 @@ void te::common::AbstractProgress::pulse()
 void te::common::AbstractProgress::cancel()
 {
   m_isActive = false;
+}
+
+void te::common::AbstractProgress::setModal(const bool& flag)
+{
 }
 
 void te::common::AbstractProgress::setMultiThreadProgress(const bool& flag)

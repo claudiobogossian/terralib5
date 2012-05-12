@@ -29,151 +29,167 @@
 #include "AbstractProgress.h"
 #include "ProgressManager.h"
 
-void te::common::ProgressManager::setProgress(AbstractProgress* pi)
+void te::common::ProgressManager::setMainProgress(AbstractProgress* pi)
 {
-  m_progressInterface = pi;
+  m_progressMap.insert(std::map<int, AbstractProgress*>::value_type(-1, pi));
 }
 
-te::common::AbstractProgress* te::common::ProgressManager::getProgress()
+te::common::AbstractProgress* te::common::ProgressManager::getMainProgress()
 {
-  return m_progressInterface;
+  return getProgress(-1);
 }
 
-void te::common::ProgressManager::setTotalSteps(const int& value)
+int te::common::ProgressManager::setProgress(AbstractProgress* pi)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  int id = getProgressId();
 
-  m_progressInterface->setTotalSteps(value);
+  m_progressMap.insert(std::map<int, AbstractProgress*>::value_type(id, pi));
+
+  return id;
 }
 
-void te::common::ProgressManager::setCurrentStep(const int& step)
+te::common::AbstractProgress* te::common::ProgressManager::getProgress(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  std::map<int, AbstractProgress*>::iterator it = m_progressMap.find(id);
 
-  m_progressInterface->setCurrentStep(step);
+  if(it == m_progressMap.end())
+  {
+    throw te::common::Exception(TR_COMMON("Progress not found!"));
+  }
+
+  return it->second;
 }
 
-int te::common::ProgressManager::getCurrentStep()
+void te::common::ProgressManager::setTotalSteps(const int& value, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+    AbstractProgress* ap = getProgress(id);
 
-  return m_progressInterface->getCurrentStep();
+    ap->setTotalSteps(value);
 }
 
-int te::common::ProgressManager::getCurrentProportionalStep()
+void te::common::ProgressManager::setCurrentStep(const int& step, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  return m_progressInterface->getCurrentProportionalStep();
+  ap->setCurrentStep(step);
+}
+
+int te::common::ProgressManager::getCurrentStep(const int& id)
+{
+  AbstractProgress* ap = getProgress(id);
+
+  return ap->getCurrentStep();
+}
+
+int te::common::ProgressManager::getCurrentProportionalStep(const int& id)
+{
+  AbstractProgress* ap = getProgress(id);
+
+  return ap->getCurrentProportionalStep();
 }
      
-void te::common::ProgressManager::setMessage(const std::string& message)
+void te::common::ProgressManager::setMessage(const std::string& message, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->setMessage(message);
+  ap->setMessage(message);
 }
 
-std::string te::common::ProgressManager::getMessage()
+std::string te::common::ProgressManager::getMessage(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  return m_progressInterface->getMessage();
+  return ap->getMessage();
 }
 
-void te::common::ProgressManager::setTitle(const std::string& title)
+void te::common::ProgressManager::setTitle(const std::string& title, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->setTitle(title);
+  ap->setTitle(title);
 }
 
-void te::common::ProgressManager::setActive(const bool& status)
+void te::common::ProgressManager::setActive(const bool& status, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->setActive(status);
+  ap->setActive(status);
 }
 
-bool te::common::ProgressManager::isActive()
+bool te::common::ProgressManager::isActive(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  return m_progressInterface->isActive();
+  return ap->isActive();
 }
 
-void te::common::ProgressManager::reset()
+void te::common::ProgressManager::reset(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->reset();
+  ap->reset();
 }
         
-bool te::common::ProgressManager::hasToUpdate()
+bool te::common::ProgressManager::hasToUpdate(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  return m_progressInterface->hasToUpdate();
+  return ap->hasToUpdate();
 }
 
-void te::common::ProgressManager::pulse()
+void te::common::ProgressManager::pulse(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->pulse();
+  ap->pulse();
 }
         
-void te::common::ProgressManager::cancel()
+void te::common::ProgressManager::cancel(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->cancel();
+  ap->cancel();
 }
 
-void te::common::ProgressManager::setMultiThreadProgress(const bool& flag)
+void te::common::ProgressManager::setModal(const bool& flag, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->setMultiThreadProgress(flag);
+  ap->setModal(flag);
+}
+
+void te::common::ProgressManager::setMultiThreadProgress(const bool& flag, const int& id)
+{
+  AbstractProgress* ap = getProgress(id);
+
+  ap->setMultiThreadProgress(flag);
 }
       
-void te::common::ProgressManager::useProgressTimer(const bool& flag)
+void te::common::ProgressManager::useProgressTimer(const bool& flag, const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->useProgressTimer(flag);
+  ap->useProgressTimer(flag);
 }
 
-void te::common::ProgressManager::startTimer()
+void te::common::ProgressManager::startTimer(const int& id)
 {
-  if(!m_progressInterface)
-    throw te::common::Exception(TR_COMMON("No progress interface was defined!"));
+  AbstractProgress* ap = getProgress(id);
 
-  m_progressInterface->startTimer();
+  ap->startTimer();
 }
 
-te::common::ProgressManager::ProgressManager()
-  : m_progressInterface(0)
+te::common::ProgressManager::ProgressManager():
+m_progressCounter(0)
 {
 }
 
 te::common::ProgressManager::~ProgressManager()
-{  
-  delete m_progressInterface;
+{
+  m_progressMap.clear();
 }
 
+int te::common::ProgressManager::getProgressId()
+{
+  return m_progressCounter++;
+}

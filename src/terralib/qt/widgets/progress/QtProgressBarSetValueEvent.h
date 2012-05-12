@@ -40,41 +40,33 @@ namespace te
   {
     namespace widgets
     {
+      /*!
+        \class QtProgressBarSetValueEvent
+
+        \brief The QtProgressBarSetValueEvent is a custom event used to set a new value into 
+               a progress bar. Used in thread codes.
+
+        \sa QtProgress
+      */
       class TEQTWIDGETSEXPORT QtProgressBarSetValueEvent : public QEvent
       {
         public:
 
-          QtProgressBarSetValueEvent(int value) : 
-              QEvent(QtProgressBarSetValueEvent::type()), m_value(value)
-          {
-          }
+          /*! \brief It initializes a new QtProgress. */
+          QtProgressBarSetValueEvent(int value);
 
-          ~QtProgressBarSetValueEvent()
-          {
-          }
+          /*! \brief Destructor */
+          ~QtProgressBarSetValueEvent();
 
-          static QEvent::Type type()
-          {
-            if (m_customEventType == QEvent::None)
-            {
-              int generatedType = QEvent::registerEventType();
-              m_customEventType = static_cast<QEvent::Type>(generatedType);
-            }
-            
-            return m_customEventType;
-          }
+          /*! \brief Get the custom event type */
+          static QEvent::Type type();
       
-      private:
+        private:
+          static QEvent::Type m_customEventType;  //!< Custom Event Type
 
-        static QEvent::Type m_customEventType;
-
-      public:
-
-        int m_value;
-    };
-
-    QEvent::Type QtProgressBarSetValueEvent::m_customEventType = QEvent::None;
-    
+        public:
+          int m_value;                            //!< Progress bar value attribute
+      };
     }  // end namespace widgets
   }    // end namespace qt
 }      // end namespace te

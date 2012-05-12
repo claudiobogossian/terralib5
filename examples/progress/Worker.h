@@ -33,4 +33,4 @@ class Worker
       unsigned    m_Number;  
       float       m_Guess;  
       unsigned    m_Iterations;  
-};  
+};

@@ -26,7 +26,6 @@
 #ifndef __TERRALIB_EXAMPLES_INTERNAL_PROGRESSEXAMPLES_H
 #define __TERRALIB_EXAMPLES_INTERNAL_PROGRESSEXAMPLES_H
 
-
 void ConsoleSleeper();
 
 void ConsoleSleeperMultiThread();
@@ -34,11 +33,6 @@ void ConsoleSleeperMultiThread();
 void QtSleeper(int argc, char *argv[]);
 
 void WorkerThread();
-
-// TerraLib
-
-
-
 
 #endif
 

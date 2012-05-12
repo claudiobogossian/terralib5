@@ -58,7 +58,7 @@ namespace te
         //@{
 
         /*!
-          \brief It initializes a new AbstractProgress.
+          \brief It initializes a new QtProgress.
         */
         QtProgress(QWidget* parent);
 
@@ -71,6 +71,15 @@ namespace te
         *  Methods used to manage the progress interface.
         */
         //@{
+
+        /*!
+          \brief Used to set the progress total steps.
+
+          \param value Integer value.
+
+          \note Used in case of a  default range (0 - value).
+        */
+        virtual void setTotalSteps(const int& value);
 
         /*!
           \brief Used to set the current step.
@@ -103,6 +112,11 @@ namespace te
         */
         virtual void reset();
 
+        /*!
+          \brief This function is used to set the window modality
+        */
+        virtual void setModal(const bool& flag);
+
       public slots:
 
         /*!
@@ -120,6 +134,16 @@ namespace te
           \note Is oly used if m_isMultiThread attribute is TRUE.
         */
         virtual bool eventFilter(QObject* obj, QEvent* event);
+
+        virtual void enterEvent(QEvent* event);
+
+        virtual void leaveEvent(QEvent* event);
+
+        virtual void resetCursor();
+
+      protected:
+
+        int m_numberOfCursors;     //<! Number of cursors that were pushed on application stack.
     
         //@}
       };

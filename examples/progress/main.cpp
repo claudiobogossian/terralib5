@@ -16,24 +16,26 @@ int main(int argc, char *argv[])
 {
   try
   {
-	//init components
+  //init components
     TerraLib::getInstance().initialize();
 
-	  te::common::ConsoleProgress* progress = new te::common::ConsoleProgress();
+    te::common::ConsoleProgress* progress = new te::common::ConsoleProgress();
 
-	  te::common::ProgressManager::getInstance().setProgress(progress);
+    te::common::ProgressManager::getInstance().setMainProgress(progress);
     
     //console sleeper
-	  ConsoleSleeper();
+    //ConsoleSleeper();
 
     //console sleeper multi thread
-	  ConsoleSleeperMultiThread();
+    //ConsoleSleeperMultiThread();
 
     //qt sleeper
-	  QtSleeper(argc, argv);
+    QtSleeper(argc, argv);
 
     //boost thread as functor
     //WorkerThread();
+
+    delete progress;
 
     TerraLib::getInstance().finalize();
   }
