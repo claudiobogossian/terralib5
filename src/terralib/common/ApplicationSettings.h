@@ -61,19 +61,13 @@ namespace te
 
       \todo Make some methods that accept arrays (get and set)!!!
     */
-    template
-    <
-      template <class, class, class, class> class ThreadingPolicy = ObjectLevelLockable,
-      class MutexPolicy = TE_DEFAULT_MUTEX_POLICY,
-      class LockReadingPolicy = TE_DEFAULT_LOCK_READING_POLICY,
-      class LockWritingPolicy = TE_DEFAULT_LOCK_WRITING_POLICY
-    >
     class ApplicationSettings
-          : public ThreadingPolicy<ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>, MutexPolicy, LockReadingPolicy, LockWritingPolicy>,
+          : public ObjectLevelLockable<ApplicationSettings,
+                                       ::boost::recursive_mutex,
+                                       ::boost::lock_guard< ::boost::recursive_mutex>,
+                                       ::boost::lock_guard< ::boost::recursive_mutex> >,
             public ::boost::noncopyable
     {
-      typedef typename ThreadingPolicy<ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>, MutexPolicy, LockReadingPolicy, LockWritingPolicy> threading_policy_type;
-
       public:
 
         /*! \brief Constructor. */
@@ -171,39 +165,35 @@ namespace te
         bool m_dirty;                             //!< A dirty bit to indicate wheter the clients have made changes in the settings since the last update.
     };
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::ApplicationSettings()
+    inline ApplicationSettings::ApplicationSettings()
       : m_dirty(false)
     {
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::~ApplicationSettings()
+    inline
+    ApplicationSettings::~ApplicationSettings()
     {
       update();
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::setValue(const std::string& key, const std::string& value)
+    inline void ApplicationSettings::setValue(const std::string& key, const std::string& value)
     {
-      threading_policy_type::LockWrite l(this);
+      LockWrite l(this);
 
       m_settings.put(key, value);
       m_dirty = true;
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    std::string ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::getValue(const std::string& key)
+    inline std::string ApplicationSettings::getValue(const std::string& key)
     {
-      threading_policy_type::LockRead l(this);
+      LockRead l(this);
 
       return m_settings.get<std::string>(key);
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::load(const std::string& settingsFile)
+    inline void ApplicationSettings::load(const std::string& settingsFile)
     {
-      threading_policy_type::LockWrite l(this);
+      LockWrite l(this);
 
       m_dirty = false;
       m_settings.clear();
@@ -213,10 +203,9 @@ namespace te
         boost::property_tree::read_xml(settingsFile, m_settings);
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::update()
+    inline void ApplicationSettings::update()
     {
-      threading_policy_type::LockWrite l(this);
+      LockWrite l(this);
 
       if(m_dirty == false)
         return;
@@ -234,22 +223,19 @@ namespace te
       m_dirty = false;
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::changed()
+    inline void ApplicationSettings::changed()
     {
-      threading_policy_type::LockWrite l(this);
+      LockWrite l(this);
 
       m_dirty = true;
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    const boost::property_tree::ptree& ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::getAllSettings() const
+    inline const boost::property_tree::ptree& ApplicationSettings::getAllSettings() const
     {
       return m_settings;
     }
 
-    template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
-    boost::property_tree::ptree& ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::getAllSettings()
+    inline boost::property_tree::ptree& ApplicationSettings::getAllSettings()
     {
       return m_settings;
     }

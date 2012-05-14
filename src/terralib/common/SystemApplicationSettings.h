@@ -48,12 +48,8 @@ namespace te
       <li>use a location defined by an environment variable TERRALIB_DIR_ENVVAR and a sub-dir defined by the macro TERRALIB_CONFIG_DIR</li>
       </ul>
     */
-    class TECOMMONEXPORT SystemApplicationSettings
-      : public ApplicationSettings<ObjectLevelLockable,
-                                   ::boost::recursive_mutex,
-                                   ::boost::lock_guard< ::boost::recursive_mutex>,
-                                   ::boost::lock_guard< ::boost::recursive_mutex> >,
-        public Singleton<SystemApplicationSettings>
+    class TECOMMONEXPORT SystemApplicationSettings : public ApplicationSettings,
+                                                     public Singleton<SystemApplicationSettings>
     {
       friend class Singleton<SystemApplicationSettings>;
 

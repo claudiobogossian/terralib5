@@ -52,10 +52,7 @@ namespace te
       </ul>
     */
     class TECOMMONEXPORT UserApplicationSettings
-      : public ApplicationSettings<ObjectLevelLockable,
-                                   ::boost::recursive_mutex,
-                                   ::boost::lock_guard< ::boost::recursive_mutex>,
-                                   ::boost::lock_guard< ::boost::recursive_mutex> >,
+      : public ApplicationSettings,
         public Singleton<UserApplicationSettings>
     {
       friend class te::common::Singleton<UserApplicationSettings>;
