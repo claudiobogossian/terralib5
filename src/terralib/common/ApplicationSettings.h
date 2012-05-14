@@ -72,10 +72,9 @@ namespace te
           : public ThreadingPolicy<ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>, MutexPolicy, LockReadingPolicy, LockWritingPolicy>,
             public ::boost::noncopyable
     {
-      public:
+      typedef typename ThreadingPolicy<ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>, MutexPolicy, LockReadingPolicy, LockWritingPolicy> threading_policy_type;
 
-        /*! \brief This typedef is required by MACOSX. */
-        typedef ThreadingPolicy<ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>, MutexPolicy, LockReadingPolicy, LockWritingPolicy> threading_policy_type;
+      public:
 
         /*! \brief Constructor. */
         ApplicationSettings();
@@ -187,7 +186,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::setValue(const std::string& key, const std::string& value)
     {
-      typename threading_policy_type::LockWrite l(this);
+      threading_policy_type::LockWrite l(this);
 
       m_settings.put(key, value);
       m_dirty = true;
@@ -196,7 +195,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     std::string ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::getValue(const std::string& key)
     {
-      typename threading_policy_type::LockRead l(this);
+      threading_policy_type::LockRead l(this);
 
       return m_settings.get<std::string>(key);
     }
@@ -204,7 +203,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::load(const std::string& settingsFile)
     {
-      typename threading_policy_type::LockWrite l(this);
+      threading_policy_type::LockWrite l(this);
 
       m_dirty = false;
       m_settings.clear();
@@ -217,7 +216,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::update()
     {
-      typename threading_policy_type::LockWrite l(this);
+      threading_policy_type::LockWrite l(this);
 
       if(m_dirty == false)
         return;
@@ -238,7 +237,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::changed()
     {
-      typename threading_policy_type::LockWrite l(this);
+      threading_policy_type::LockWrite l(this);
 
       m_dirty = true;
     }
