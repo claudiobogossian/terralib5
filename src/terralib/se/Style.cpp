@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Style.cpp
+  \file terralib/se/Style.cpp
   
   \brief The Style defines the styling that is to be applied to a single feature (also applies to coverage).
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"
@@ -83,6 +83,11 @@ const std::string& te::se::Style::getSemanticTypeIdentifier(size_t i)
 {
   assert(m_semanticTypeIdentifiers && (i < m_semanticTypeIdentifiers->size()));
   return (*m_semanticTypeIdentifiers)[i];
+}
+
+size_t te::se::Style::getNRules() const
+{
+  return m_rules.size();
 }
 
 void te::se::Style::push_back(Rule* rule)

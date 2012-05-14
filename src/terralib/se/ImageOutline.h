@@ -18,18 +18,19 @@
  */
 
 /*!
-  \file ImageOutline.h
-  
+  \file terralib/se/ImageOutline.h
+
   \brief ImageOutline specifies how individual source rasters in a multi-raster set (such as a set of satellite-image scenes) should be outlined to make the individual-image locations visible.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_IMAGEOUTLINE_H
 #define __TERRALIB_SE_INTERNAL_IMAGEOUTLINE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -48,8 +49,8 @@ namespace te
       scenes) should be outlined with either a LineSymbolizer or PolygonSymbolizer.
         
       \sa RasterSymbolizer, LineSymbolizer, PolygonSymbolizer
-     */
-    class TESEEXPORT ImageOutline
+    */
+    class TESEEXPORT ImageOutline : public boost::noncopyable
     {
       public:
 
@@ -77,33 +78,8 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ImageOutline.
-         */
-        ImageOutline(const ImageOutline& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ImageOutline.
-
-          \return A reference for this.
-         */
-        ImageOutline& operator=(const ImageOutline& rhs);
-
-        //@}
-
-      private:
-
-        Symbolizer* m_symbol;      //!< Mandatory.
-    };    
+        Symbolizer* m_symbol; //!< Mandatory.
+    };
 
   } // end namespace se
 }   // end namespace te

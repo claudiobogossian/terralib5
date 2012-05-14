@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SymbologyManager.h
- 
+  \file terralib/se/SymbologyManager.h
+
   \brief The SymbologyManager is a singleton that can be used to manage all loaded symbols in TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SYMBOLOGYMANAGER_H
 #define __TERRALIB_SE_INTERNAL_SYMBOLOGYMANAGER_H
@@ -51,7 +51,7 @@ namespace te
 
       \todo Sera que nao devia ser uma classe chamada StyleManager? Eu acho que nao pois soh tem serventia p/ os tipos basicos de desenho que a pessoa poderia escolher previamente e neste caso nao sao estilos e sim simbolos!
       \todo Talvez seria interessante criar uma classe StyleManager com estilos completos ou pelo menos que a partir de simbolos ele jah defina tudinho: tracejado-vazado-linhas-amarelas...
-     */
+    */
     class TESEEXPORT SymbologyManager : public te::common::Singleton<SymbologyManager>
     {
       friend class te::common::Singleton<SymbologyManager>;
@@ -71,7 +71,7 @@ namespace te
           \exception Exception If the catalog already exists it will raise an exception.
 
           \note Don't free the resources used by the catalog, the manager will take the ownership of it.
-         */
+        */
         //void insert(Symbolizer* c);
 
         /*! \brief It removes the catalog from the system. It will not delete it from disk.
@@ -81,7 +81,7 @@ namespace te
             \exception Exception If the catalog doesn't exist it will raise an exception.
 
             \note The memory pointed by c will be deallocated. Don't reference it anymore.
-         */
+        */
         //void remove(Symbolizer* c);
 
         /*! \brief It returns the catalog identified by a given name or NULL if none is found.
@@ -89,14 +89,14 @@ namespace te
             \param name The name of the catalog we are looking for.
 
             \return A pointer to a catalog (don't free the pointer) or NULL if none is found.
-         */
+        */
         //Symbolizer* findByName(const std::string& name) const;
 
         /*! \brief It returns a pair of iterators over the catalogs of this manager.
 
             \return A pair of iterators over the catalogs of this manager where pair.first will be
                     the beginning and pair.second will be the end iterator.
-         */
+        */
         //std::pair<std::vector<Symbolizer*>::const_iterator,
         //          std::vector<Symbolizer*>::const_iterator> getIterator() const;
 
@@ -124,31 +124,6 @@ namespace te
 
         /*! \brief It initializes the Singleton. */
         SymbologyManager();
-
-        //@}
-
-      private:
-
-        /** @name Copy Constructor and Assignment Operator
-         *  Copy constructor and assignment operator not allowed.
-         */
-        //@{
-
-        /*!
-          \brief Copy constructor not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-         */
-        SymbologyManager(const SymbologyManager& rhs);
-
-        /*!
-          \brief Assignment operator not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-
-          \return A reference to this object.
-         */
-        SymbologyManager& operator=(const SymbologyManager& rhs);
 
         //@}
 

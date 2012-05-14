@@ -18,17 +18,16 @@
  */
 
 /*!
-  \file Recode.h
-  
+  \file terralib/se/Recode.h
+
   \brief Transformation of discrete values to other values.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RECODE_H
 #define __TERRALIB_SE_INTERNAL_RECODE_H
 
 // TerraLib
 #include "Function.h"
-
 
 namespace te
 {
@@ -72,7 +71,7 @@ namespace te
       color as a result of a recode function.
 
       \sa Function, ExternalGraphic, MapItem, ParameterValue
-     */
+    */
     class TESEEXPORT Recode : public Function
     {
       public:
@@ -104,10 +103,9 @@ namespace te
 
         ParameterValue* m_lookupValue;     //!< Mandatory.
         std::vector<MapItem*> m_mapItens;  //!< Mandatory.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_RECODE_H
-

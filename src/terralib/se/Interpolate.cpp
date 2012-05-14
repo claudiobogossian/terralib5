@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Interpolate.cpp
+  \file terralib/se/Interpolate.cpp
   
   \brief The transformation of continuous values to a number of values (Interpolate function).
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

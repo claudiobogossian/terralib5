@@ -18,22 +18,23 @@
  */
 
 /*!
-  \file Rule.h
-  
+  \file terralib/se/Rule.h
+
   \brief A Rule is used to attach property/scale conditions to and group the individual symbols used for rendering.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RULE_H
 #define __TERRALIB_SE_INTERNAL_RULE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL 
 #include <string>
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -70,8 +71,8 @@ namespace te
       global "not" of that condition.
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Graphic, Symbolizer, te::fe::Filter
-     */
-    class TESEEXPORT Rule
+    */
+    class TESEEXPORT Rule : public boost::noncopyable
     {
       public:
 
@@ -111,17 +112,16 @@ namespace te
           \brief
 
           \note The ElseFilter must be false in order to set a filter.
-         */
+        */
         void setFilter(te::fe::Filter* f);
 
         const te::fe::Filter* getFilter() const;
-
 
         /*!
           \brief
 
           \note The filter must be NULL in order to call this method.
-         */
+        */
         void enableElseFilter();
 
         void disableElseFilter();
@@ -144,31 +144,6 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Rule.
-         */
-        Rule(const Rule& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Rule.
-
-          \return A reference for this.
-         */
-        Rule& operator=(const Rule& rhs);
-
-        //@}
-
-      private:
-
         std::string* m_name;                     //!< It allows the rule to be referenced externally, which is needed in some methods of SE usage. (Optional)
         Description* m_description;              //!< It gives the familiar short title for display lists and longer description for the rule. (Optional)
         Graphic* m_legendGraphic;                //!< It allows an optional explicit Graphic Symbolizer to be displayed in a legend for this rule. (Optional)
@@ -177,10 +152,9 @@ namespace te
         double m_minScaleDenominator;            //!< It defines the range of map-rendering scales for which the rule should be applied. Default: 0.0. (Optional)
         double m_maxScaleDenominator;            //!< It defines the range of map-rendering scales for which the rule should be applied. Default: TE_DOUBLE_INFINITY. (Optional)
         std::vector<Symbolizer*> m_symbolizers;  //!< A Symbolizer describes how a feature/coverage is to appear on a map. (Mandatory)
-    };      
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_RULE_H
-

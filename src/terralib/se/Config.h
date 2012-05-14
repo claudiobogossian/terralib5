@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/se/Config.h
 
   \brief Configuration flags for the Symbology Encoding support of TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CONFIG_H
 #define __TERRALIB_SE_INTERNAL_CONFIG_H
@@ -38,52 +38,94 @@
 
 /*!
   \def TE_SE_DEFAULT_UOM
-  
+
   \brief It specifies the default unit-of-measurement used by OGC Symbology Encoding.
- */
+*/
 #define TE_SE_DEFAULT_UOM 3
 
 /*!
   \def TE_SE_DEFAULT_FONT_SIZE
-  
+
   \brief It specifies the default font size.
- */
+*/
 #define TE_SE_DEFAULT_FONT_SIZE 10
 
 /*!
   \def TE_SE_DEFAULT_FILL_BASIC_COLOR
-  
+
   \brief It specifies the default color used by basic fill (solid colors).
- */
+*/
 #define TE_SE_DEFAULT_FILL_BASIC_COLOR 128, 128, 128, 0
 
 /*!
   \def TE_SE_DEFAULT_STROKE_BASIC_COLOR
-  
+
   \brief It specifies the default color used by stroke basic (solid colors).
- */
+*/
 #define TE_SE_DEFAULT_STROKE_BASIC_COLOR 0
 
 /*!
   \def TE_SE_DEFAULT_STROKE_BASIC_WIDTH
-  
+
   \brief It specifies the default width used by stroke basic (solid colors).
- */
+*/
 #define TE_SE_DEFAULT_STROKE_BASIC_WIDTH 1
 
 /*!
   \def TE_SE_DEFAULT_GAMMA_VALUE
-  
+
   \brief It specifies the default gamma value.
- */
+*/
 #define TE_SE_DEFAULT_GAMMA_VALUE 1.0
 
 /*!
   \def TE_SE_DEFAULT_VERSION
-  
+
   \brief It specifies the default version used by OGC Symbology Encoding.
- */
+*/
 #define TE_SE_DEFAULT_VERSION "1.1.0"
+
+/*!
+  \def TE_SE_BUTT_CAP
+
+  \brief It specifies the value "butt" for stroke-linecap parameter.
+*/
+#define TE_SE_BUTT_CAP "butt"
+
+/*!
+  \def TE_SE_ROUND_CAP
+
+  \brief It specifies the value "round" for stroke-linecap parameter.
+*/
+#define TE_SE_ROUND_CAP "round"
+
+/*!
+  \def TE_SE_SQUARE_CAP
+
+  \brief It specifies the value "square" for stroke-linecap parameter.
+*/
+#define TE_SE_SQUARE_CAP "square"
+
+/*!
+  \def TE_SE_MITRE_JOIN
+
+  \brief It specifies the value "mitre" for stroke-linejoin parameter.
+*/
+#define TE_SE_MITRE_JOIN "mitre"
+
+/*!
+  \def TE_SE_ROUND_JOIN
+
+  \brief It specifies the value "round" for stroke-linejoin parameter.
+*/
+#define TE_SE_ROUND_JOIN "round"
+
+/*!
+  \def TE_SE_BEVEL_JOIN
+
+  \brief It specifies the value "bevel" for stroke-linejoin parameter.
+*/
+#define TE_SE_BEVEL_JOIN "bevel"
 
 //@}
 
@@ -96,28 +138,28 @@
   \def TE_SE_TEXT_DOMAIN
 
   \brief It contains the name of the text domain used in the translation of messages in TerraLib Symbology module.
- */
+*/
 #define TE_SE_TEXT_DOMAIN "tlse"
 
 /*!
   \def TE_SE_TEXT_DOMAIN_DIR
 
   \brief It contains the translation catalog directory.
- */
+*/
 #define TE_SE_TEXT_DOMAIN_DIR "locale"
 
 /*!
   \def TR_SE
 
   \brief It marks a string in order to get translated. This is a special mark used in the Symbology module of TerraLib. 
- */
+*/
 #define TR_SE(message) TR(message, TE_SE_TEXT_DOMAIN)
 
 /*!
   \def TR_PLURAL_SE
 
   \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Symbology module of TerraLib. 
- */
+*/
 #define TR_PLURAL_SE(message1, message2, n) TR_PLURAL(TE_SE_TEXT_DOMAIN, message1, message2, n)
 
 //@}
@@ -135,11 +177,12 @@
   \note If you want to compile TerraLib as DLL in Windows, remember to insert TESEDLL into the project's list of defines.
 
   \note If you want to compile TerraLib as an Static Library under Windows, remember to insert the TESESTATIC flag into the project list of defines.
- */
+*/
 #ifdef WIN32
 
   #ifdef _MSC_VER 
     #pragma warning( disable : 4251 )
+    #pragma warning( disable : 4275 )
   #endif
 
   #ifdef TESESTATIC
@@ -153,7 +196,6 @@
   #define TESEEXPORT
 #endif
 
-//@}        
+//@}
 
 #endif  // __TERRALIB_SE_INTERNAL_CONFIG_H
-

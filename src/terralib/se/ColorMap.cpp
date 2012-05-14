@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file ColorMap.cpp
+  \file terralib/se/ColorMap.cpp
   
   \brief A ColorMap defines either the colors of a pallette-type raster source or the mapping of numeric pixel values to colors.
- */
+*/
 
 // TerraLib
 #include "Categorize.h"

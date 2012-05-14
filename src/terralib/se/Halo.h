@@ -18,18 +18,19 @@
  */
 
 /*!
-  \file Halo.h
-  
+  \file terralib/se/Halo.h
+
   \brief A Halo is a type of Fill that is applied to the backgrounds of font glyphs.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_HALO_H
 #define __TERRALIB_SE_INTERNAL_HALO_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -59,10 +60,8 @@ namespace te
       in the containing TextSymbolizer, then no halo will be rendered.
 
       \sa TextSymbolizer, Fill, ParameterValue
-           
-      
-     */
-    class TESEEXPORT Halo
+    */
+    class TESEEXPORT Halo : public boost::noncopyable
     {
       public:
 
@@ -85,43 +84,18 @@ namespace te
         //@{
 
         void setRadius(ParameterValue* radius);
+
         void setFill(Fill* fill);
         
         //@}
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Halo.
-         */
-        Halo(const Halo& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Halo.
-
-          \return A reference for this.
-         */
-        Halo& operator=(const Halo& rhs);
-
-        //@}
-
-      private:
-
         ParameterValue* m_radius;    //!< The Radius element gives the absolute size of a halo radius in pixels encoded as a floating-point number. The radius is taken from the outside edge of a font glyph to extend the area of coverage of the glyph (and the inside edge of 'holes' in the glyphs). The halo of a text label is considered to be a single shape. (Optional)
         Fill* m_fill;                //!< Specifies how the hallo text area will be filled. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_HALO_H
-

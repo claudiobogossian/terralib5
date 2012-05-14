@@ -18,21 +18,22 @@
  */
 
 /*!
-  \file Graphic.h
-  
+  \file terralib/se/Graphic.h
+
   \brief A Graphic is a graphic symbol with an inherent shape, color(s), and possibly size.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_GRAPHIC_H
 #define __TERRALIB_SE_INTERNAL_GRAPHIC_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -59,8 +60,8 @@ namespace te
       explicit Size is specified.
 
       \sa Rule, PointSymbolizer, Stroke, GraphicStroke, Mark, ExternalGraphic, Displacement, ParameterValue, AnchorPoint
-     */
-    class TESEEXPORT Graphic
+    */
+    class TESEEXPORT Graphic : public boost::noncopyable
     {
       public:
 
@@ -94,13 +95,14 @@ namespace te
           external format or is defined to be the "central point" of
           the graphic, where the exact definition "central point" is
           system-dependent.
-         */
+        */
         void add(ExternalGraphic* g);
 
         /*!
           \brief
-         */
+        */
         void add(Mark* m);
+        const std::vector<Mark*> getMarks() const;
 
         /*!
           \brief
@@ -109,8 +111,9 @@ namespace te
           for rendering the graphic. It has the same
           semantics as the "stroke-opacity" and "fill-opacity"
           SvgParameter. The default value is 1.0.
-         */
+        */
         void setOpacity(ParameterValue* value);
+        const ParameterValue* getOpacity() const;
 
         /*!
           \brief
@@ -133,8 +136,9 @@ namespace te
           of 200 pixels in linear size and to be scaled to lower
           sizes. On systems that can resample these graphic
           images "smoothly", the results will be visually pleasing.
-         */
+        */
         void setSize(ParameterValue* value);
+        const ParameterValue* getSize() const;
 
         /*!
           \brief
@@ -152,8 +156,9 @@ namespace te
           dependent. If a format does not include an
           inherent rotation point, then the point of rotation
           should be the centroid.
-         */
+        */
         void setRotation(ParameterValue* value);
+        const ParameterValue* getRotation() const;
 
         void setAnchorPoint(AnchorPoint* value);
 
@@ -163,43 +168,16 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Graphic.
-         */
-        Graphic(const Graphic& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Graphic.
-
-          \return A reference for this.
-         */
-        Graphic& operator=(const Graphic& rhs);
-
-        //@}
-
-      private:
-
         std::vector<ExternalGraphic*> m_externalGraphics;  //!< An ExternalGraphic gives a reference to a raster or vector graphical object, either online or inline, in an externally-defined graphic format. (Optional)
-        std::vector<Mark*> m_marks;     //!< A Mark specifies a geometric shape and applies coloring to it. (Optional)
-        ParameterValue* m_opacity;      //!< The Opacity element gives the opacity to use for rendering the graphic. (Optional)
-        ParameterValue* m_size;         //!< The Size element gives the absolute size of the graphic in uoms encoded as a floating-point number. (Optional)
-        ParameterValue* m_rotation;     //!< The Rotation element gives the rotation of a graphic in the clockwise direction about its center point in decimal degrees, encoded as a floating-point number. Negative values mean counter-clockwise rotation. (Optional)
-        AnchorPoint* m_anchorPoint;     //!< The AnchorPoint element of a PointSymbolizer gives the location inside of a Graphic to use for anchoring the graphic to the main-geometry point. (Optional)
-        Displacement* m_displacement;   //!< The Displacement gives the X and Y displacements from the "hot-spot" point. (Optional)
+        std::vector<Mark*> m_marks;                        //!< A Mark specifies a geometric shape and applies coloring to it. (Optional)
+        ParameterValue* m_opacity;                         //!< The Opacity element gives the opacity to use for rendering the graphic. (Optional)
+        ParameterValue* m_size;                            //!< The Size element gives the absolute size of the graphic in uoms encoded as a floating-point number. (Optional)
+        ParameterValue* m_rotation;                        //!< The Rotation element gives the rotation of a graphic in the clockwise direction about its center point in decimal degrees, encoded as a floating-point number. Negative values mean counter-clockwise rotation. (Optional)
+        AnchorPoint* m_anchorPoint;                        //!< The AnchorPoint element of a PointSymbolizer gives the location inside of a Graphic to use for anchoring the graphic to the main-geometry point. (Optional)
+        Displacement* m_displacement;                      //!< The Displacement gives the X and Y displacements from the "hot-spot" point. (Optional)
     };
- 
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_GRAPHIC_H
-

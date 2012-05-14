@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FormatNumber.cpp
+  \file terralib/se/FormatNumber.cpp
   
   \brief Numeric formatting function.
- */
+*/
 
 // TerraLib
 #include "FormatNumber.h"

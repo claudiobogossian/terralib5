@@ -25,7 +25,7 @@ else(WIN32)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/lib32")
 endif(WIN32)
 
-find_package(Boost 1.44.0 REQUIRED)
+find_package(Boost 1.44.0 COMPONENTS filesystem system thread REQUIRED)
 if(Boost_FOUND)
   if(WIN32)
     set(BOOST_LIBRARY

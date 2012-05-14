@@ -18,19 +18,17 @@
  */
 
 /*!
-  \file MapItem.h
-  
+  \file terralib/se/MapItem.h
+
   \brief 
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_MAPITEM_H
 #define __TERRALIB_SE_INTERNAL_MAPITEM_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "../fe/Expression.h"
 #include "Config.h"
-#include "Visitor.h"
 
 namespace te
 {
@@ -45,7 +43,7 @@ namespace te
       \brief 
 
       \sa te::fe::Expression, ParameterValue, Recode
-     */
+    */
     class TESEEXPORT MapItem : public te::fe::Expression
     {
       public:
@@ -84,7 +82,7 @@ namespace te
           \brief No copy constructor allowed.
 
           \param rhs The other MapItem.
-         */
+        */
         MapItem(const MapItem& rhs);
 
         /*!
@@ -93,7 +91,7 @@ namespace te
           \param rhs The other MapItem.
 
           \return A reference for this.
-         */
+        */
         MapItem& operator=(const MapItem& rhs);
 
         //@}
@@ -102,10 +100,9 @@ namespace te
 
         double m_data;             //!< Mandatory.
         ParameterValue* m_value;   //!< Mandatory. 
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_MAPITEM_H
-

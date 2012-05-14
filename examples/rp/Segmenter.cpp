@@ -1,4 +1,4 @@
-#include "RasterExamples.h"
+#include "RPExamples.h"
 
 // TerraLib
 #include <terralib/gdal/Utils.h>

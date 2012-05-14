@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FeatureTypeStyle.cpp
+  \file terralib/se/FeatureTypeStyle.cpp
   
   \brief The FeatureTypeStyle defines the styling that is to be applied to a dataset that can be viewed as a feature type.
- */
+*/
 
 // TerraLib
 #include "FeatureTypeStyle.h"

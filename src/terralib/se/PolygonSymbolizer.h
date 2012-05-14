@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PolygonSymbolizer.h
-  
+  \file terralib/se/PolygonSymbolizer.h
+
   \brief A PolygonSymbolizer is used to draw a polygon (or other area-type geometries), including filling its interior and stroking its border (outline).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_POLYGONSYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_POLYGONSYMBOLIZER_H
@@ -54,7 +54,7 @@ namespace te
       A missing Stroke element means that the geometry will not be stroked.
 
       \sa Symbolizer, Fill, Stroke, te::fe::PropertyName, Displacement, ParameterValue, ImageOutline
-     */
+    */
     class TESEEXPORT PolygonSymbolizer : public Symbolizer
     {
       public:
@@ -69,7 +69,7 @@ namespace te
         /*! \brief It initializes a new PolygonSymbolizer. */
         PolygonSymbolizer();
 
-        /*! \brief Destructor. */ 
+        /*! \brief Destructor. */
         ~PolygonSymbolizer();
 
         //@}
@@ -108,7 +108,7 @@ namespace te
                 other "area" type), then its closed outline is used as the line
                 string (with no end caps). If a raster geometry is used, its
                 coverage-area outline is used for the line, rendered with no end caps.
-         */
+        */
         void setGeometry(te::fe::PropertyName* geometry);
 
         const te::fe::PropertyName* getGeometry() const;
@@ -117,18 +117,28 @@ namespace te
           \brief A Fill specifies the pattern for filling an area geometry.
 
           The allowed SvgParameters are: "fill" (color) and "fill-opacity".
-         */
+        */
         void setFill(Fill* f);
 
+        /*!
+          \brief Gets the Fill associates with the PolygonSymbolizer.
+
+          \return The Fill element.
+        */
         const Fill* getFill() const;
 
         /*!
           \brief A Stroke specifies the appearance of a linear geometry.
 
           A missing Stroke element means that the geometry will not be stroked.
-         */          
+        */
         void setStroke(Stroke* stroke);
 
+        /*!
+          \brief Gets the Stroke associates with the PolygonSymbolizer.
+
+          \return The Stroke element.
+        */
         const Stroke* getStroke() const;
 
         /*!
@@ -141,7 +151,7 @@ namespace te
           right of the point. The default displacement is X = 0, Y = 0.
 
           \param d
-         */
+        */
         void setDisplacement(Displacement* d);
 
         const Displacement* getDisplacement() const;
@@ -152,7 +162,7 @@ namespace te
           The distance is in uoms and is positive
           to the outside of the polygon. Negative numbers mean drawing
           the polygon smaller. The default offset is 0.
-         */
+        */
         void setPerpendicularOffset(ParameterValue* perpendicularOffset);
 
         const ParameterValue* getPerpendicularOffset() const;
@@ -166,10 +176,9 @@ namespace te
         Stroke* m_stroke;                      //!< A "Stroke" specifies the appearance of a linear geometry. (Optional)
         Displacement* m_displacement;          //!< The Displacement gives the X and Y displacements from the original geometry. (Optional)
         ParameterValue* m_perpendicularOffset; //!< A "PerpendicularOffset" gives the perpendicular distance away from a line to draw a label. (Optional)
-    };    
+    };
 
   } // namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_POLYGONSYMBOLIZER_H
-

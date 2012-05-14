@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Rule.cpp
+  \file terralib/se/Rule.cpp
   
   \brief A Rule is used to attach property/scale conditions to and group the individual symbols used for rendering.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

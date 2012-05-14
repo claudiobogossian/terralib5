@@ -18,21 +18,23 @@
  */
 
 /*!
-  \file Stroke.h
-  
+  \file terralib/se/Stroke.h
+
   \brief A Stroke specifies the appearance of a linear geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_STROKE_H
 #define __TERRALIB_SE_INTERNAL_STROKE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
-#include <vector>
+#include <map>
+#include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -59,8 +61,8 @@ namespace te
       is given, then the line Symbolizer will render a solid color.
 
       \sa LineSymbolizer, Graphic, GraphicStroke, Mark
-     */
-    class TESEEXPORT Stroke
+    */
+    class TESEEXPORT Stroke : public boost::noncopyable
     {
       public:
 
@@ -83,57 +85,81 @@ namespace te
         //@{
 
         /*!
-          \brief
+          \brief Sets the GraphicFill element to this Stroke.
+                 GraphicFill defines that the pixels of the line will be drawn repeating an area-fill pattern.
 
           \note The Stroke object will take the ownership of the informed fill pointer.
-         */
+        */
         void setGraphicFill(Graphic* fill);
 
+        /*!
+          \brief Gets the GraphicFill element associate to this Stroke.
+          
+          \return The GraphicFill element.
+        */
         const Graphic* getGraphicFill() const;
 
         /*!
-          \brief
+          \brief Sets the GraphicStroke element to this Stroke.
+                 GraphicStroke defines that a repeated linear graphic is plotted linearly
+                 and has its graphic bent around the curves of the line string.
 
           \note The Stroke object will take the ownership of the informed stroke pointer.
-         */
+        */
         void setGraphicStroke(GraphicStroke* stroke);
 
+        /*!
+          \brief Gets the GraphicStroke element associate to this Stroke.
+          
+          \return The GraphicStroke element.
+        */
         const GraphicStroke* getGraphicStroke() const;
 
+        /*!
+          \brief Add a SvgParameter to this Stroke.
+
+          \note If there is already a SvgParamater with the same name it will be overrided.
+          \note The Stroke object will take the ownership of the informed p pointer.
+        */
         void add(SvgParameter* p);
 
-        //@}
+        void setColor(const std::string& color);
+        void setOpacity(const std::string& opacity);
+        void setWidth(const std::string& width);
+        void setLineJoin(const std::string& join);
+        void setLineCap(const std::string& cap);
+        void setDashArray(const std::string& dasharray);
+        void setDashOffset(const std::string& offset);
 
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        Stroke(const Stroke& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        Stroke& operator=(const Stroke& rhs);
+        const SvgParameter* getColor() const;
+        const SvgParameter* getOpacity() const;
+        const SvgParameter* getWidth() const;
+        const SvgParameter* getLineJoin() const;
+        const SvgParameter* getLineCap() const;
+        const SvgParameter* getDashArray() const;
+        const SvgParameter* setDashOffset() const;
 
         //@}
 
       private:
 
-        Graphic* m_fill;                         //!< The GraphicFill both indicates that a stipple-fill repeated graphic will be used and specifies the fill graphic. (Optional)
-        GraphicStroke* m_stroke;                 //!< The GraphicStroke both indicates that a repeated-linear-graphic stroke type will be used. (Optional)          
-        std::vector<SvgParameter*> m_svgParams;  //!< If neither a GraphicFill nor GraphicStroke is given, then the line Symbolizer will render a solid color.  (Optional)
+        void setParameter(const std::string& name, const std::string& value);
+
+        const SvgParameter* getParameter(const std::string& name) const;
+
+      private:
+
+        Graphic* m_fill;                                   //!< The GraphicFill both indicates that a stipple-fill repeated graphic will be used and specifies the fill graphic. (Optional)
+        GraphicStroke* m_stroke;                           //!< The GraphicStroke both indicates that a repeated-linear-graphic stroke type will be used. (Optional)
+        std::map<std::string, SvgParameter*> m_svgParams;  //!< If neither a GraphicFill nor GraphicStroke is given, then the line Symbolizer will render a solid color. (Optional)
+
+        static const std::string sm_stroke;                //!< SVG/CSS "stroke" parameter.
+        static const std::string sm_opacity;               //!< SVG/CSS "stroke-opacity parameter.
+        static const std::string sm_width;                 //!< SVG/CSS "stroke-width" parameter.
+        static const std::string sm_linejoin;              //!< SVG/CSS "stroke-linejoin" parameter.
+        static const std::string sm_linecap;               //!< SVG/CSS "stroke-linecap" parameter.
+        static const std::string sm_dasharray;             //!< SVG/CSS "stroke-dasharray" parameter.
+        static const std::string sm_dashoffset;            //!< SVG/CSS "stroke-dashoffset" parameter.
     };
 
   } // end namespace se

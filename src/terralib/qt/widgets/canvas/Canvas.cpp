@@ -21,7 +21,7 @@
   \file Canvas.cpp
 
   \brief A canvas built on top of Qt.
- */
+*/
 
 // TerraLib
 #include "../../../annotationtext/Attributes.h"
@@ -50,18 +50,14 @@
 
 te::qt::widgets::Canvas::Canvas(int w, int h)
   : m_isDeviceOwner(true),
-    m_bgColor(QColor(255, 255, 255, 0)),
-    m_ptColor(QColor(0, 0, 0, 255)),
-    m_ptImg(0),
-    m_ptMarkerType(te::map::MarkerDot),
-    m_ptMarkerColor(QColor(255, 0, 0, 255)),
-    m_ptVOffset(0),
-    m_ptHOffset(0),
-    m_ptWidth(1),
-    m_lnPen(Qt::blue),
-    m_polyPen(Qt::gray),
-    m_polyBrush(Qt::magenta),
-    m_polyPatternWidth(16),
+    m_bgColor(Qt::transparent),
+    m_pointColor(Qt::black),
+    m_pointPattern(0),
+    m_pointVOffset(0),
+    m_pointHOffset(0),
+    m_linePen(Qt::black),
+    m_polygonPen(Qt::black),
+    m_polygonBrush(Qt::darkGray),
     m_txtContourPen(Qt::black),
     m_txtContourEnabled(false),
     m_txtBrush(Qt::black),
@@ -76,14 +72,15 @@ te::qt::widgets::Canvas::Canvas(int w, int h)
 
 te::qt::widgets::Canvas::~Canvas()
 {
-  if(m_isDeviceOwner)
-  {
-    QPaintDevice* device = m_painter.device();
-    m_painter.end();
-    delete device;
-  }
+  delete m_pointPattern;
 
-  delete m_ptImg;
+  if(!m_isDeviceOwner)
+    return;
+
+  QPaintDevice* device = m_painter.device();
+  m_painter.end();
+
+  delete device;
 }
 
 void te::qt::widgets::Canvas::setWindow(const double& llx, const double& lly,
@@ -93,7 +90,7 @@ void te::qt::widgets::Canvas::setWindow(const double& llx, const double& lly,
   double yScale = static_cast<double>(getHeight()) / (ury - lly);
 
   m_matrix.reset();
-  m_matrix.scale(xScale, -yScale);  
+  m_matrix.scale(xScale, -yScale);
   m_matrix.translate(-llx, -ury);
 
   m_painter.setMatrix(m_matrix);
@@ -117,9 +114,9 @@ void te::qt::widgets::Canvas::calcAspectRatio(double& llx, double& lly, double& 
       urx = llx + ww;
     else if(hAlign == te::map::Right)
       llx = urx - ww;
-    else  // it is center
+    else // it is center
     {
-      llx = llx - (ww - v) / 2.;
+      llx = llx - (ww - v) / 2.0;
       urx = llx + ww;
     }
   }
@@ -133,9 +130,9 @@ void te::qt::widgets::Canvas::calcAspectRatio(double& llx, double& lly, double& 
       lly = ury - wh;
     else if(vAlign == te::map::Bottom)
       ury = lly + wh;
-    else  // it is center
+    else // it is center
     {
-      lly = lly - (wh - v) / 2.;
+      lly = lly - (wh - v) / 2.0;
       ury = lly + wh;
     }
   }
@@ -151,10 +148,9 @@ void te::qt::widgets::Canvas::setBackgroundColor(const te::color::RGBAColor& col
   m_bgColor = QColor(color.getRgba());
   m_bgColor.setAlpha(qAlpha(color.getRgba()));
 
-  if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
-    return;
-
-  static_cast<QPixmap*>(m_painter.device())->fill(m_bgColor);
+  m_painter.setWorldMatrixEnabled(false);
+  m_painter.fillRect(m_painter.viewport(), m_bgColor);
+  m_painter.setWorldMatrixEnabled(true);
 }
 
 te::color::RGBAColor te::qt::widgets::Canvas::getBackgroundColor() const
@@ -164,15 +160,14 @@ te::color::RGBAColor te::qt::widgets::Canvas::getBackgroundColor() const
 
 void te::qt::widgets::Canvas::clear()
 {
-  if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
-    return;
-
-  static_cast<QPixmap*>(m_painter.device())->fill(m_bgColor);
+  m_painter.setWorldMatrixEnabled(false);
+  m_painter.fillRect(m_painter.viewport(), m_bgColor);
+  m_painter.setWorldMatrixEnabled(true);
 }
 
 void te::qt::widgets::Canvas::resize(int w, int h)
 {
-  if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
+  if(m_painter.device()->devType() != QInternal::Pixmap)
     return;
 
   if(!m_isDeviceOwner)
@@ -193,7 +188,7 @@ int te::qt::widgets::Canvas::getWidth() const
 {
   return m_painter.device()->width();
 }
-          
+
 int te::qt::widgets::Canvas::getHeight() const
 {
   return m_painter.device()->height();
@@ -208,168 +203,100 @@ void te::qt::widgets::Canvas::draw(const te::gm::Geometry* geom)
     case te::gm::MultiPolygonMType:
     case te::gm::MultiPolygonZMType:
       draw(static_cast<const te::gm::MultiPolygon*>(geom));
-      break;
+    break;
 
     case te::gm::PointType:
     case te::gm::PointZType:
     case te::gm::PointMType:
     case te::gm::PointZMType:
       draw(static_cast<const te::gm::Point*>(geom));
-      break;
+    break;
 
     case te::gm::LineStringType:
     case te::gm::LineStringZType:
     case te::gm::LineStringMType:
     case te::gm::LineStringZMType:
       draw(static_cast<const te::gm::LineString*>(geom));
-      break;
+    break;
 
     case te::gm::PolygonType:
     case te::gm::PolygonZType:
     case te::gm::PolygonMType:
     case te::gm::PolygonZMType:
       draw(static_cast<const te::gm::Polygon*>(geom));
-      break;
+    break;
 
     case te::gm::MultiLineStringType:
     case te::gm::MultiLineStringZType:
     case te::gm::MultiLineStringMType:
     case te::gm::MultiLineStringZMType:
       draw(static_cast<const te::gm::MultiLineString*>(geom));
-      break;
+    break;
 
     case te::gm::MultiPointType:
     case te::gm::MultiPointZType:
     case te::gm::MultiPointMType:
     case te::gm::MultiPointZMType:
       draw(static_cast<const te::gm::MultiPoint*>(geom));
-      break;
+    break;
 
     case te::gm::GeometryCollectionType:
     case te::gm::GeometryCollectionZType:
     case te::gm::GeometryCollectionMType:
     case te::gm::GeometryCollectionZMType:
       draw(static_cast<const te::gm::GeometryCollection*>(geom));
-      break;
-
-    default:
-      break;
+    break;
   }
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::Point* point)
 {
-  m_pt.setX(point->getX());
-  m_pt.setY(point->getY());
+  m_point.setX(point->getX());
+  m_point.setY(point->getY());
 
-  if(m_ptImg != 0)
+  if(m_pointPattern == 0)
   {
-    QRectF rectf(0, 0, m_ptImg->width(), m_ptImg->height());
-    QPointF pc = m_matrix.map(m_pt);
-    pc.setX(pc.x() + m_ptHOffset);
-    pc.setY(pc.y() + m_ptVOffset);
-    rectf.moveCenter(pc);
-
-    m_painter.setWorldMatrixEnabled(false);
-    m_painter.drawImage(rectf, *m_ptImg);
-    m_painter.setWorldMatrixEnabled(true);
-    return;
+     m_painter.drawPoint(m_point);
+     return;
   }
 
-  m_painter.drawPoint(m_pt);
+  QPointF center = m_matrix.map(m_point);
+  center.setX(center.x() + m_pointHOffset);
+  center.setY(center.y() + m_pointVOffset);
+
+  QRectF rect(0.0, 0.0, m_pointPattern->width(), m_pointPattern->height());
+  rect.moveCenter(center);
+
+  m_painter.setWorldMatrixEnabled(false);
+  m_painter.drawImage(rect, *m_pointPattern);
+  m_painter.setWorldMatrixEnabled(true);
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::MultiPoint* mpoint)
 {
-  std::size_t size = mpoint->getNumGeometries();
-
+  const std::size_t size = mpoint->getNumGeometries();
   for(std::size_t i = 0; i < size; ++i)
     draw(static_cast<const te::gm::Point*>(mpoint->getGeometryN(i)));
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
 {
-  QPointF p1;
-  QPointF p2;
-  double radians, degrees;
+  QPainterPath path;
 
   te::gm::Coord2D* coords = line->getCoordinates();
-  std::size_t size = line->getNPoints();
-  if(size <= 1)
-    return;
-
-  p1.setX(coords[0].x);
-  p1.setY(coords[0].y);
-
+  path.moveTo(coords[0].x, coords[0].y);
+  
+  const std::size_t size = line->getNPoints();
   for(register std::size_t i = 1; i != size; ++i)
-  {    
-    p2.setX(coords[i].x);
-    p2.setY(coords[i].y);
+    path.lineTo(coords[i].x, coords[i].y);
 
-    QBrush brush = m_lnPen.brush();
-    QImage img = brush.textureImage();
-    if(img.isNull() == false)
-    {
-      QPointF dp1 = m_matrix.map(p1);
-      QPointF dp2 = m_matrix.map(p2);
-      if(dp2.x() == dp1.x())
-        radians = 3.1415926536/2.;
-      else
-        radians = atan((dp1.y() - dp2.y())/(dp2.x() - dp1.x()));
-      degrees = radians * 180. / 3.1415926536;
- 
-      QMatrix matrix = m_matrix.inverted();
-      matrix.rotate(-degrees);
-
-      QRectF rec(0, 0, m_lnPen.widthF(), m_lnPen.widthF()*(double)(img.width())/(double)(img.height()));
-      int iw = (int)(m_matrix.mapRect(rec).width() + .5);
-      //int ih = (int)(m_matrix.mapRect(rec).height() + .5);
-      int v = (int)(sin(radians) * dp1.x() + cos(radians)*dp1.y());
-      int offy = (v%iw)+iw/2;
-      //int vx = (int)(dp1.x() / sin(radians) + dp1.y() / cos(radians));
-      //int offx = vx%ih;
-
-      //matrix.translate(-offx, offy);
-      matrix.translate(0, offy);
-
-      double scale = (double)iw / (double)img.height();
-      matrix.scale(scale, scale);
-      brush.setMatrix(matrix);
-      m_lnPen.setBrush(brush);
-    }
-    m_painter.setPen(m_lnPen);  
-    m_painter.drawLine(p1, p2);
-
-    p1 = p2;
-  }
-
-/////////////////////////////////////////////////////////////////////////////////////////////////
-  //QPointF p1;
-  //QPointF p2;
-
-  //m_painter.setPen(m_lnPen);
-
-  //te::gm::Coord2D* coords = line->getCoordinates();
-  //std::size_t size = line->getNPoints();
-
-  //p1.setX(coords[0].x);
-  //p1.setY(coords[0].y);
-
-  //for(register std::size_t i = 1; i != size; ++i)
-  //{    
-  //  p2.setX(coords[i].x);
-  //  p2.setY(coords[i].y);
-  //  
-  //  m_painter.drawLine(p1, p2);
-
-  //  p1 = p2;
-  //}
+  m_painter.setPen(m_linePen);
+  m_painter.drawPath(path);
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::MultiLineString* mline)
 {
-  std::size_t size = mline->getNumGeometries();
-
+  const std::size_t size = mline->getNumGeometries();
   for(size_t i = 0; i < size; ++i)
     draw(static_cast<const te::gm::LineString*>(mline->getGeometryN(i)));
 }
@@ -381,9 +308,8 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
   assert(nRings > 0);
 
   QPainterPath path;
-
   for(register std::size_t i = 0; i != nRings; ++i)
-  { 
+  {
     te::gm::LinearRing* ring = static_cast<te::gm::LinearRing*>(poly->getRingN(i));
 
     const std::size_t nPoints = ring->getNPoints();
@@ -397,39 +323,36 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
     path.addPolygon(qpol);
   }
 
-  m_painter.setPen(m_polyPen);
-  m_painter.setBrush(m_polyBrush);
+  m_painter.setPen(m_polygonPen);
+  m_painter.setBrush(m_polygonBrush);
   m_painter.drawPath(path);
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::MultiPolygon* mpoly)
 {
   const std::size_t size = mpoly->getNumGeometries();
-
   for(std::size_t i = 0; i < size; ++i)
     draw(static_cast<te::gm::Polygon*>(mpoly->getGeometryN(i)));
 }
 
 void te::qt::widgets::Canvas::draw(const te::gm::GeometryCollection* g)
 {
-  size_t size = g->getNumGeometries();
-
+  const std::size_t size = g->getNumGeometries();
   for(size_t i = 0; i < size; ++i)
     draw(g->getGeometryN(i));
 }
 
-void te::qt::widgets::Canvas::save(const char* fileName,
-                                   te::map::ImageType t,
-                                   int quality,
-                                   int /*fg*/) const
+void te::qt::widgets::Canvas::save(const char* fileName, te::map::ImageType t, int quality, int /*fg*/) const
 {
-  if(m_painter.device()->devType() == 2)  // is the device a pixmap?
-    static_cast<QPixmap*>(m_painter.device())->save(fileName, GetFormat(t), quality);
+  if(m_painter.device()->devType() != QInternal::Pixmap)
+    return;
+
+  static_cast<QPixmap*>(m_painter.device())->save(fileName, GetFormat(t), quality);
 }
 
 char* te::qt::widgets::Canvas::getImage(te::map::ImageType t, std::size_t& size, int quality, int /*fg*/) const
 {
-  if(m_painter.device()->devType() != 2)  // if it is not a pixmap device... return!
+  if(m_painter.device()->devType() != QInternal::Pixmap)
     return 0;
 
   QByteArray bytes;
@@ -440,31 +363,31 @@ char* te::qt::widgets::Canvas::getImage(te::map::ImageType t, std::size_t& size,
   {
     case te::map::PNG:
       static_cast<QPixmap*>(m_painter.device())->save(&buffer, Globals::sm_pngFmt);
-      break;
+    break;
 
     case te::map::JPEG:
       static_cast<QPixmap*>(m_painter.device())->save(&buffer, Globals::sm_jpegFmt, quality);
-      break;
+    break;
 
     case te::map::GIF:
       static_cast<QPixmap*>(m_painter.device())->save(&buffer, Globals::sm_gifFmt);
-      break;
+    break;
 
     case te::map::BMP:
       static_cast<QPixmap*>(m_painter.device())->save(&buffer, Globals::sm_bmpFmt);
-      break;
+    break;
 
     case te::map::XPM:
       static_cast<QPixmap*>(m_painter.device())->save(&buffer, Globals::sm_xpmFmt);
-      break;
+    break;
 
     case te::map::XBM:
       static_cast<QPixmap*>(m_painter.device())->save(&buffer, Globals::sm_xbmFmt);
-      break;
+    break;
 
     default:
       return 0;
-  };
+  }
 
   int nbytes = bytes.size();
 
@@ -479,32 +402,32 @@ char* te::qt::widgets::Canvas::getImage(te::map::ImageType t, std::size_t& size,
 
 te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int y, const int w, const int h) const
 {
-  if(m_painter.device()->devType() != 2)  // if it is not a pixmap device... return!
+  if(m_painter.device()->devType() != QInternal::Pixmap)
     return 0;
 
   te::color::RGBAColor** colors = 0;
 
   QPixmap* pixmap = static_cast<QPixmap*>(m_painter.device());
 
-  int width = pixmap->width();
-  int height = pixmap->width();
-
   if(x == 0 && y == 0 && w == 0 && y == 0)
   {
-    QImage ima = pixmap->toImage();
+    QImage img = pixmap->toImage();
+
+    int width = pixmap->width();
+    int height = pixmap->height();
 
     for(int i = 0; i < height; ++i)
     {
       colors[i] = new te::color::RGBAColor[width];
 
-      unsigned char* u = ima.scanLine(i);
+      unsigned char* u = img.scanLine(i);
 
       for(int j = 0; j < width; ++j)
       {
-        QRgb* v = (QRgb*)(u + (j << 2));
-        QRgb val = *v;
-        te::color::RGBAColor cor(qRed(val), qGreen(val), qBlue(val), qAlpha(val));
-        colors[i][j] = cor;
+        QRgb* qrgb = (QRgb*)(u + (j << 2));
+        QRgb value = *qrgb;
+        te::color::RGBAColor rgba(qRed(value), qGreen(value), qBlue(value), qAlpha(value));
+        colors[i][j] = rgba;
       }
     }
   }
@@ -512,20 +435,20 @@ te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int 
   {
     QPixmap pix = pixmap->copy(x, y, w, h);
 
-    QImage ima = pix.toImage();
+    QImage img = pix.toImage();
 
     for(int i = 0; i < h; ++i)
     {
       colors[i] = new te::color::RGBAColor[h];
 
-      unsigned char* u = ima.scanLine(i);
+      unsigned char* u = img.scanLine(i);
 
       for(int j = 0; j < w; ++j)
       {
-        QRgb* v = (QRgb*)(u+(j<<2));
-        QRgb val = *v;
-        te::color::RGBAColor cor(qRed(val), qGreen(val), qBlue(val), qAlpha(val));
-        colors[i][j] = cor;
+        QRgb* qrgba = (QRgb*)(u+(j<<2));
+        QRgb value = *qrgba;
+        te::color::RGBAColor rgba(qRed(value), qGreen(value), qBlue(value), qAlpha(value));
+        colors[i][j] = rgba;
       }
     }
   }
@@ -551,8 +474,10 @@ void te::qt::widgets::Canvas::drawImage(te::color::RGBAColor** src, int w, int h
 void te::qt::widgets::Canvas::drawImage(int x, int y, char* src, std::size_t size, te::map::ImageType t)
 {
   QPixmap pix;
+
   const char* f = GetFormat(t);
   pix.loadFromData((unsigned char*)src, size, f);
+
   m_painter.setWorldMatrixEnabled(false);
   m_painter.drawPixmap(x, y, pix);
   m_painter.setWorldMatrixEnabled(true);
@@ -574,8 +499,10 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, te::color::RGBAColor** src
 void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, char* src, std::size_t size, te::map::ImageType t)
 {
   QPixmap pix;
+
   const char* f = GetFormat(t);
   pix.loadFromData((unsigned char*)src, size, f);
+
   m_painter.setWorldMatrixEnabled(false);
   m_painter.drawPixmap(x, y, w, h, pix);
   m_painter.setWorldMatrixEnabled(true);
@@ -597,8 +524,10 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::color::R
 void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, char* src, std::size_t size, te::map::ImageType t, int sx, int sy, int sw, int sh)
 {
   QPixmap pix;
+
   const char* f = GetFormat(t);
   pix.loadFromData((unsigned char*)src, size, f);
+
   m_painter.setWorldMatrixEnabled(false);
   m_painter.drawPixmap(x, y, w, h, pix, sx, sy, sw, sh);
   m_painter.setWorldMatrixEnabled(true);
@@ -630,7 +559,7 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, te::rst::Raster* src)
 
 void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh)
 {
-  // Define qimage size. 
+  // Defines QImage size
   int iw = std::min(sw, w);
   int ih = std::min(sh, h);
 
@@ -638,11 +567,11 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Ras
   double pr, pg, pb;
   te::color::RGBAColor* pixel;
 
-  // Check if undersampling is needed. 
+  // Checks if undersampling is needed
   double sl = std::max(1.0, sh/(double)h);
   double sr = std::max(1.0, sw/(double)w);
-  int l, r;
 
+  int l, r;
   double dl = sy;
   for(int li = 0; li < ih; dl+=sl, ++li)
   {
@@ -901,7 +830,7 @@ void te::qt::widgets::Canvas::setTextPointSize(double psize)
 {
   double resolution = 0.0;
 
-  if(m_painter.device()->devType() == 4)
+  if(m_painter.device()->devType() == QInternal::Printer)
     resolution = static_cast<QPrinter*>(m_painter.device())->resolution();
   else
     resolution = m_painter.device()->logicalDpiY();
@@ -976,11 +905,11 @@ void te::qt::widgets::Canvas::setTextContourWidth(int width)
 {
   m_txtContourPen.setWidth(width);
 }
-          
+
 void te::qt::widgets::Canvas::setTextJustification(te::at::LineJustification /*just*/)
 {
 }
-          
+
 void te::qt::widgets::Canvas::setTextMultiLineSpacing(int spacing)
 {
   m_txtLineSpacing = spacing;
@@ -988,301 +917,386 @@ void te::qt::widgets::Canvas::setTextMultiLineSpacing(int spacing)
 
 void te::qt::widgets::Canvas::setPointColor(const te::color::RGBAColor& color)
 {
-  m_ptColor = QColor(color.getRgba());
-  m_ptColor.setAlpha(qAlpha(color.getRgba()));
-
-// clear marker and pattern
-  delete m_ptImg;
-  m_ptImg = 0;
-}
-
-void te::qt::widgets::Canvas::setPointWidth(int w)
-{
-  if(w == m_ptWidth)
-    return;
-
-  m_ptWidth = w;
-
-  if(m_ptMarkerType != te::map::MarkerNone)
-    setPointMarker(m_ptMarkerType, m_ptWidth);
-}
-
-void te::qt::widgets::Canvas::setPointMarker(te::map::PtMarkerType type, int w)
-{
-  if(w!= 0)
-    m_ptWidth = w;
-
-  m_ptMarkerType = type;
-
-  te::color::RGBAColor c(m_ptMarkerColor.rgba());
-  
-  te::color::RGBAColor** marker = te::map::CreateMarker(type, m_ptWidth, c);
-
-  delete m_ptImg;
-
-  m_ptImg = GetImage(marker, m_ptWidth, m_ptWidth);
-
-  for(int i = 0; i < m_ptWidth; ++i)
-    delete []marker[i];
-
-  delete []marker;
-}
-
-void  te::qt::widgets::Canvas::setPointMarkerColor(const te::color::RGBAColor& color)
-{
-  m_ptMarkerColor = QColor(color.getRgba());
-  m_ptMarkerColor.setAlpha(qAlpha(color.getRgba()));
-
-  setPointMarker(m_ptMarkerType, m_ptWidth);
+  m_pointColor = QColor(color.getRgba());
+  m_pointColor.setAlpha(qAlpha(color.getRgba()));
+// Clear point pattern
+  delete m_pointPattern;
+  m_pointPattern = 0;
 }
 
 void te::qt::widgets::Canvas::setPointPattern(te::color::RGBAColor** pattern, int ncols, int nrows)
 {
-  delete m_ptImg;
-
-  m_ptImg = GetImage(pattern, ncols, nrows);
+  delete m_pointPattern;
+  m_pointPattern = GetImage(pattern, ncols, nrows);
+  if(m_pointPattern->isNull())
+  {
+    delete m_pointPattern;
+    m_pointPattern = 0;
+  }
 }
 
 void te::qt::widgets::Canvas::setPointPattern(char* pattern, std::size_t size, te::map::ImageType t)
-{  
-  delete m_ptImg;
-
-  m_ptImg = new QImage();
+{
+  delete m_pointPattern;
+  m_pointPattern = new QImage;
 
   const char* format = te::qt::widgets::GetFormat(t);
+  if(!m_pointPattern->loadFromData((const uchar*)pattern, size, format) || m_pointPattern->isNull())
+  {
+    delete m_pointPattern;
+    m_pointPattern = 0;
+  }
+}
 
-  m_ptImg->loadFromData((const uchar*)pattern, size, format);
+void te::qt::widgets::Canvas::setPointPatternWidth(int w)
+{
+  if(m_pointPattern == 0)
+    return;
+
+  QImage scaled = m_pointPattern->scaledToWidth(w);
+
+  delete m_pointPattern;
+  m_pointPattern = new QImage(scaled);
+}
+
+void te::qt::widgets::Canvas::setPointPatternRotation(const double& angle)
+{
+  if(m_pointPattern == 0)
+    return;
+
+  QMatrix m;
+  m.rotate(angle);
+
+  QImage rotated = m_pointPattern->transformed(m);
+
+  delete m_pointPattern;
+  m_pointPattern = new QImage(rotated);
+}
+
+void te::qt::widgets::Canvas::setPointPatternOpacity(int opacity)
+{
+  if(m_pointPattern == 0)
+    return;
+
+  updateAlpha(*m_pointPattern, opacity);
 }
 
 void te::qt::widgets::Canvas::setLineColor(const te::color::RGBAColor& color)
 {
   QColor qcolor(color.getRgba());
   qcolor.setAlpha(qAlpha(color.getRgba()));
-  m_lnPen.setColor(qcolor);
-  m_lnPen.setCapStyle(Qt::RoundCap);
+  m_linePen.setColor(qcolor);
 }
 
 void te::qt::widgets::Canvas::setLinePattern(te::color::RGBAColor** pattern, int ncols, int nrows)
 {
   QImage* img = GetImage(pattern, ncols, nrows);
+  if(img->isNull())
+    return;
 
-  if(img->isNull() == false)
-  {
-    QRectF rec(0, 0, m_lnPen.widthF(), m_lnPen.widthF());
-    double w = m_matrix.mapRect(rec).width();
-    QMatrix matrix = m_matrix.inverted();
-    QBrush brush;
-    brush.setTextureImage(*img);
-    double scale = w / (double)img->height();
-    matrix.scale(scale, scale);
-    brush.setMatrix(matrix);
-    m_lnPen.setBrush(brush);
-    m_lnPen.setCapStyle(Qt::RoundCap);
-    //m_lnPen.setCapStyle(Qt::FlatCap);
-  }
+  // Initializes the transformation matrix
+  QBrush brush = m_linePen.brush();
+  QMatrix m = brush.matrix() * m_matrix.inverted();
+  brush.setMatrix(m);
+
+  brush.setTextureImage(*img);
+
+  m_linePen.setBrush(brush);
+
   delete img;
 }
 
 void te::qt::widgets::Canvas::setLinePattern(char* pattern, std::size_t size, te::map::ImageType t)
 {
-  QImage img;
-
   const char* format = te::qt::widgets::GetFormat(t);
 
-  bool result = img.loadFromData((const uchar*)pattern, size, format);
+  QImage img;
+  if(!img.loadFromData((const uchar*)pattern, size, format))
+    return;
 
-  if(result && img.isNull() == false)
-  {
-    QRectF rec(0, 0, m_lnPen.widthF(), m_lnPen.widthF());
-    double w = m_matrix.mapRect(rec).width();
-    QMatrix matrix = m_matrix.inverted();
-    QBrush brush;
-    brush.setTextureImage(img);
-    double scale = w / (double)img.height();
-    matrix.scale(scale, scale);
-    brush.setMatrix(matrix);
-    m_lnPen.setBrush(brush);
-    m_lnPen.setCapStyle(Qt::RoundCap);
-    //m_lnPen.setCapStyle(Qt::FlatCap);
-  }
+  if(img.isNull())
+    return;
+
+  // Initializes the transformation matrix
+  QBrush brush = m_linePen.brush();
+  QMatrix m = brush.matrix() * m_matrix.inverted();
+  brush.setMatrix(m);
+
+  brush.setTextureImage(img);
+
+  m_linePen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setLinePatternWidth(int w)
+{
+  QBrush brush = m_linePen.brush();
+  QImage img = brush.textureImage();
+  if(img.isNull())
+    return;
+
+  double scale = static_cast<double>(w) / static_cast<double>(img.width());
+
+  // Updates matrix
+  QMatrix matrix = brush.matrix();
+  matrix.scale(scale, scale);
+  brush.setMatrix(matrix);
+
+  m_linePen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setLinePatternRotation(const double& angle)
+{
+  QBrush brush = m_linePen.brush();
+  QImage img = brush.textureImage();
+  if(img.isNull())
+    return;
+
+  // Updates matrix
+  QMatrix matrix = brush.matrix();
+  matrix.rotate(angle);
+  brush.setMatrix(matrix);
+
+  m_linePen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setLinePatternOpacity(int opacity)
+{
+  QBrush brush = m_linePen.brush();
+  QImage img = brush.textureImage();
+  if(img.isNull())
+    return;
+
+  // Updates the alpha channel
+  updateAlpha(img, opacity);
+
+  brush.setTextureImage(img);
+  m_linePen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setLineDashStyle(te::map::LineDashStyle style)
+{
+  m_linePen.setStyle((Qt::PenStyle)style);
+}
+
+void te::qt::widgets::Canvas::setLineDashStyle(const std::vector<double>& style)
+{
+  setLineDashStyle(m_linePen, style);
+}
+
+void te::qt::widgets::Canvas::setLineCapStyle(te::map::LineCapStyle style)
+{
+  m_linePen.setCapStyle((Qt::PenCapStyle)style);
+}
+
+void te::qt::widgets::Canvas::setLineJoinStyle(te::map::LineJoinStyle style)
+{
+  m_linePen.setJoinStyle((Qt::PenJoinStyle)style);
 }
 
 void te::qt::widgets::Canvas::setLineWidth(int w)
 {
-  QRectF rec(QPoint(0., 0.), QPoint(w, w));
+  QRectF rec(QPoint(0.0, 0.0), QPoint(w, w));
   rec = m_matrix.inverted().mapRect(rec);
-  m_lnPen.setWidthF(rec.width());
-
-  QBrush brush = m_lnPen.brush();
-  QImage img = brush.textureImage();
-  if(img.isNull() == false)
-  {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(w) / static_cast<double>(img.width());
-    matrix.scale(scale, scale);
-    brush.setMatrix(matrix);
-    m_lnPen.setBrush(brush);
-  }
+  m_linePen.setWidthF(rec.width());
 }
 
 void te::qt::widgets::Canvas::setPolygonFillColor(const te::color::RGBAColor& color)
 {
-  QColor cor(color.getRgba());
-  cor.setAlpha(qAlpha(color.getRgba()));
-  m_polyBrush.setColor(cor);
-  //m_polyBrush.setColor(QColor(color.getRgba()));
-  m_polyBrush.setStyle(Qt::SolidPattern);
+  QColor qcolor(color.getRgba());
+  qcolor.setAlpha(qAlpha(color.getRgba()));
+  m_polygonBrush.setColor(qcolor);
+  m_polygonBrush.setStyle(Qt::SolidPattern);
 }
 
 void te::qt::widgets::Canvas::setPolygonContourColor(const te::color::RGBAColor& color)
 {
-  QColor cor(color.getRgba());
-  cor.setAlpha(qAlpha(color.getRgba()));
-  m_polyPen.setColor(cor);
+  QColor qcolor(color.getRgba());
+  qcolor.setAlpha(qAlpha(color.getRgba()));
+  m_polygonPen.setColor(qcolor);
 }
 
 void te::qt::widgets::Canvas::setPolygonFillPattern(te::color::RGBAColor** pattern, int ncols, int nrows)
 {
   QImage* img = GetImage(pattern, ncols, nrows);
+  if(img->isNull())
+    return;
 
-  if(img->isNull() == false)
-  {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img->width());
-    matrix.scale(scale, scale);
-    m_polyBrush.setMatrix(matrix);
-    m_polyBrush.setTextureImage(*img);
-  }
+  // Initializes the transformation matrix
+  QMatrix m = m_polygonBrush.matrix() * m_matrix.inverted();
+  m_polygonBrush.setMatrix(m);
+
+  m_polygonBrush.setTextureImage(*img);
+
   delete img;
 }
 
 void te::qt::widgets::Canvas::setPolygonFillPattern(char* pattern, std::size_t size, te::map::ImageType t)
 {
-  QImage img;
-
   const char* format = te::qt::widgets::GetFormat(t);
 
-  bool result = img.loadFromData((const uchar*)pattern, size, format);
-
-  if(result && img.isNull() == false)
-  {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
-    matrix.scale(scale, scale);
-    m_polyBrush.setMatrix(matrix);
-    m_polyBrush.setTextureImage(img);
-  }
-}
-
-void te::qt::widgets::Canvas::setPolygonPatternWidth(int w)
-{
-  m_polyPatternWidth = w;
-
-  if(m_polyPatternWidth == 0.)
-    m_polyPatternWidth = 1.;
-
-  QImage img = m_polyBrush.textureImage();
-
-  if(img.isNull() == false)
-  {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
-    matrix.scale(scale, scale);
-    m_polyBrush.setMatrix(matrix);
-  }
-}
-
-void te::qt::widgets::Canvas::setPolygonPatternOpacity(int opacity)
-{
-// TESTAR SE ESTA SENDIO APLICADA A IMAGEM????
-  //QColor cor = m_polyBrush.color();
-  //cor.setAlpha(opacity);
-  //m_polyBrush.setColor(cor);
-// NAO FUNCIONA... o painter nao usa isto para plotar polygons com pattern
-
-// O que pode fazer é mudar a opacidade do pattern, mas,
-  // o melhor mesmo é setar outro pattern com transparencia desejada.
-  // por enquanto vou mudar a opacidade do pattern existente no brush.
-
-  // melhor e' fazer pattern com fundo 100% trasnparente.
-
-  QImage img = m_polyBrush.textureImage();
+  QImage img;
+  if(!img.loadFromData((const uchar*)pattern, size, format))
+    return;
 
   if(img.isNull())
     return;
 
-  int op = opacity << 24;
-  for(int i = 0; i < img.height(); ++i)
-  {
-    unsigned char* u = img.scanLine(i);
+  // Initializes the transformation matrix
+  QMatrix m = m_polygonBrush.matrix() * m_matrix.inverted();
+  m_polygonBrush.setMatrix(m);
 
-    for(int j = 0; j < img.width(); ++j)
-    {
-      QRgb* v = (QRgb*)(u + (j << 2));
-      *v = *v & 0x00ffffff;
-      *v = op | *v;
-    }
-  }
-  m_polyBrush.setTextureImage(img);
+  m_polygonBrush.setTextureImage(img);
+}
+
+void te::qt::widgets::Canvas::setPolygonPatternWidth(int w)
+{
+  QImage img = m_polygonBrush.textureImage();
+  if(img.isNull())
+    return;
+
+  double scale = static_cast<double>(w) / static_cast<double>(img.width());
+
+  // Updates the transformation matrix
+  QMatrix matrix = m_polygonBrush.matrix();
+  matrix.scale(scale, scale);
+
+  m_polygonBrush.setMatrix(matrix);
+}
+
+void te::qt::widgets::Canvas::setPolygonPatternRotation(const double& angle)
+{
+  QImage img = m_polygonBrush.textureImage();
+  if(img.isNull())
+    return;
+
+  // Updates the transformation matrix
+  QMatrix matrix = m_polygonBrush.matrix();
+  matrix.rotate(angle);
+
+  m_polygonBrush.setMatrix(matrix);
+}
+
+void te::qt::widgets::Canvas::setPolygonPatternOpacity(int opacity)
+{
+  QImage img = m_polygonBrush.textureImage();
+  if(img.isNull())
+    return;
+
+  // Updates the alpha channel
+  updateAlpha(img, opacity);
+
+  m_polygonBrush.setTextureImage(img);
 }
 
 void te::qt::widgets::Canvas::setPolygonContourPattern(te::color::RGBAColor** pattern, int ncols, int nrows)
 {
   QImage* img = GetImage(pattern, ncols, nrows);
+  if(img->isNull())
+    return;
 
-  if(img->isNull() == false)
-  {
-    QRectF rec(0, 0, m_polyPen.widthF(), m_polyPen.widthF());
-    double w = m_matrix.mapRect(rec).width();
-    QMatrix matrix = m_matrix.inverted();
-    QBrush brush;
-    brush.setTextureImage(*img);
-    double scale = w / (double)img->height();
-    matrix.scale(scale, scale);
-    brush.setMatrix(matrix);
-    m_polyPen.setBrush(brush);
-  }
+  // Initializes the transformation matrix
+  QBrush brush = m_polygonPen.brush();
+  QMatrix m = brush.matrix() * m_matrix.inverted();
+  brush.setMatrix(m);
+  brush.setTextureImage(*img);
+
+  m_polygonPen.setBrush(brush);
+
+  delete img;
 }
 
 void te::qt::widgets::Canvas::setPolygonContourPattern(char* pattern, std::size_t size, te::map::ImageType t)
-{  
-  QImage img;
-
+{
   const char* format = te::qt::widgets::GetFormat(t);
 
-  bool result = img.loadFromData((const uchar*)pattern, size, format);
+  QImage img;
+  if(!img.loadFromData((const uchar*)pattern, size, format))
+    return;
 
-  if(result && img.isNull() == false)
-  {
-    QRectF rec(0, 0, m_polyPen.widthF(), m_polyPen.widthF());
-    double w = m_matrix.mapRect(rec).width();
-    QMatrix matrix = m_matrix.inverted();
-    QBrush brush;
-    brush.setTextureImage(img);
-    double scale = w / (double)img.height();
-    matrix.scale(scale, scale);
-    brush.setMatrix(matrix);
-    m_polyPen.setBrush(brush);
-  }
+  if(img.isNull())
+    return;
+
+  // Initializes the transformation matrix
+  QBrush brush = m_polygonPen.brush();
+  QMatrix m = brush.matrix() * m_matrix.inverted();
+  brush.setMatrix(m);
+
+  brush.setTextureImage(img);
+
+  m_polygonPen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourPatternWidth(int w)
+{
+  QBrush brush = m_polygonPen.brush();
+  QImage img = brush.textureImage();
+  if(img.isNull())
+    return;
+
+  double scale = static_cast<double>(w) / static_cast<double>(img.width());
+
+  // Updates matrix
+  QMatrix matrix = brush.matrix();
+  matrix.scale(scale, scale);
+  brush.setMatrix(matrix);
+
+  m_polygonPen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourPatternRotation(const double& angle)
+{
+  QBrush brush = m_polygonPen.brush();
+  QImage img = brush.textureImage();
+  if(img.isNull())
+    return;
+
+  // Updates matrix
+  QMatrix matrix = brush.matrix();
+  matrix.rotate(angle);
+  brush.setMatrix(matrix);
+
+  m_polygonPen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourPatternOpacity(int opacity)
+{
+  QBrush brush = m_polygonPen.brush();
+  QImage img = brush.textureImage();
+  if(img.isNull())
+    return;
+
+  // Updates the alpha channel
+  updateAlpha(img, opacity);
+
+  brush.setTextureImage(img);
+  m_polygonPen.setBrush(brush);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourDashStyle(te::map::LineDashStyle style)
+{
+  m_polygonPen.setStyle((Qt::PenStyle)style);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourDashStyle(const std::vector<double>& style)
+{
+  setLineDashStyle(m_polygonPen, style);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourCapStyle(te::map::LineCapStyle style)
+{
+  m_polygonPen.setCapStyle((Qt::PenCapStyle)style);
+}
+
+void te::qt::widgets::Canvas::setPolygonContourJoinStyle(te::map::LineJoinStyle style)
+{
+  m_polygonPen.setJoinStyle((Qt::PenJoinStyle)style);
 }
 
 void te::qt::widgets::Canvas::setPolygonContourWidth(int w)
 {
-  QRectF rec(QPoint(0., 0.), QPoint(w, w));
+  QRectF rec(QPoint(0.0, 0.0), QPoint(w, w));
   rec = m_matrix.inverted().mapRect(rec);
-  m_polyPen.setWidthF(rec.width());
-
-  QBrush brush = m_polyPen.brush();
-  QImage img = m_polyPen.brush().textureImage();
-
-  if(img.isNull() == false)
-  {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(w) / static_cast<double>(img.width());
-    matrix.scale(scale, scale);
-    brush.setMatrix(matrix);
-    m_polyPen.setBrush(brush);
-  }
+  m_polygonPen.setWidthF(rec.width());
 }
 
 void te::qt::widgets::Canvas::drawText(const QPoint& p,
@@ -1385,12 +1399,12 @@ te::gm::Polygon* te::qt::widgets::Canvas::getTextBoundary(const QPoint& p, const
   lr->setPoint(1, polf.at(1).x(), polf.at(1).y());
   lr->setPoint(2, polf.at(2).x(), polf.at(2).y());
   lr->setPoint(3, polf.at(3).x(), polf.at(3).y());
-  return poly;  
+  return poly;
 }
 
 QPixmap* te::qt::widgets::Canvas::getPixmap() const
 {
-  if(m_painter.device()->devType() == 2)
+  if(m_painter.device()->devType() == QInternal::Pixmap)
     return static_cast<QPixmap*>(m_painter.device());
   else
     return 0;
@@ -1409,7 +1423,7 @@ void te::qt::widgets::Canvas::setDevice(QPaintDevice* device, bool takeOwnerShip
 
 int te::qt::widgets::Canvas::getResolution()
 {
-  if(m_painter.device()->devType() == 4)
+  if(m_painter.device()->devType() == QInternal::Printer)
     return static_cast<QPrinter*>(m_painter.device())->resolution();
   else
     return m_painter.device()->logicalDpiX();
@@ -1420,4 +1434,28 @@ QMatrix te::qt::widgets::Canvas::getMatrix()
   return m_matrix;
 }
 
+void te::qt::widgets::Canvas::setLineDashStyle(QPen& pen, const std::vector<double>& style)
+{
+  assert(style.size() % 2 == 0);
+  QVector<qreal> pattern;
+  for(std::size_t i = 0; i < style.size(); ++i)
+    pattern << style[i];
+  pen.setDashPattern(pattern);
+}
 
+void te::qt::widgets::Canvas::updateAlpha(QImage& img, const int& opacity)
+{
+  int o = opacity << 24;
+  for(int i = 0; i < img.height(); ++i)
+  {
+    unsigned char* u = img.scanLine(i);
+    for(int j = 0; j < img.width(); ++j)
+    {
+      QRgb* v = (QRgb*)(u + (j << 2));
+      if(qAlpha(*v) <= opacity)
+        continue;
+      *v = *v & 0x00ffffff;
+      *v = o | *v;
+    }
+  }
+}

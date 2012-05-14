@@ -18,18 +18,19 @@
  */
 
 /*!
-  \file LinePlacement.h
-  
+  \file terralib/se/LinePlacement.h
+
   \brief A LinePlacement specifies how a text label should be rendered relative to a linear geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
 #define __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -56,8 +57,8 @@ namespace te
       shape of the polygon.
 
       \sa LabelPlacement, ParameterValue
-     */
-    class TESEEXPORT LinePlacement
+    */
+    class TESEEXPORT LinePlacement : public boost::noncopyable
     {
       public:
 
@@ -74,7 +75,7 @@ namespace te
 
         //@}
 
-         /** @name Accessor methods
+        /** @name Accessor methods
          *  Methods used to get or set properties.
          */
         //@{
@@ -90,41 +91,15 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other LinePlacement.
-         */
-        LinePlacement(const LinePlacement& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other LinePlacement.
-
-          \return A reference for this.
-         */
-        LinePlacement& operator=(const LinePlacement& rhs);
-
-        //@}
-
-      private:
-
         ParameterValue* m_perpendicularOffset; //!< A perpendicular offset gives the perpendicular distance away from a line to draw a label. (Optional)
         bool m_isRepeated;                     //!< If IsRepeated is "true", the label will be repeatedly drawn along the line with m_initialGap and m_gap defining the spaces at the beginning and between labels. (Optional)
         ParameterValue* m_initialGap;          //!< Initial gap defines the initial empty space, before the first Graphic or Label should be rendered. (Optional)
         ParameterValue* m_gap;                 //!< Gap defines the empty space between two Graphics or Labels. (Optional)
         bool m_isAligned;                      //!< Labels can either be aligned to the line geometry if m_isAligned is "true" (the default) or are drawn horizontally. (Optional)
         bool m_generalizeLine;                 //!< It allows the actual geometry, be it a linestring or polygon, to be generalized for label placement. This is e.g. useful for labelling polygons inside their interior when there is need for the label to resemble the shape of the polygon. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
-

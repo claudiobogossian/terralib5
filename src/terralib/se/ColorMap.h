@@ -18,18 +18,19 @@
  */
 
 /*!
-  \file ColorMap.h
-  
+  \file terralib/se/ColorMap.h
+
   \brief A ColorMap defines either the colors of a pallette-type raster source or the mapping of numeric pixel values to colors.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_COLORMAP_H
 #define __TERRALIB_SE_INTERNAL_COLORMAP_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -53,8 +54,8 @@ namespace te
       using a Categorize function.
         
       \sa RasterSymbolizer, Categorize, Interpolate
-     */
-    class TESEEXPORT ColorMap
+    */
+    class TESEEXPORT ColorMap : public boost::noncopyable
     {
       public:
 
@@ -83,34 +84,9 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ColorMap.
-         */
-        ColorMap(const ColorMap& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ColorMap.
-
-          \return A reference for this.
-         */
-        ColorMap& operator=(const ColorMap& rhs);
-
-        //@}
-
-      private:
-
-        Categorize*  m_categorize;    //!< Categorize function. (Mandatory if interpolate_ is not defined or empty otherwise)
-        Interpolate* m_interpolate;   //!< Interpolate function. (Mandatory if categorize_ is not defined or empty otherwise)
-    };    
+        Categorize*  m_categorize;  //!< Categorize function. (Mandatory if interpolate_ is not defined or empty otherwise)
+        Interpolate* m_interpolate; //!< Interpolate function. (Mandatory if categorize_ is not defined or empty otherwise)
+    };
 
   } // end namespace se
 }   // end namespace te

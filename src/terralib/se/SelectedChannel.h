@@ -18,21 +18,22 @@
  */
 
 /*!
-  \file SelectedChannel.h
-  
+  \file terralib/se/SelectedChannel.h
+
   \brief A selected channel to be display.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
 #define __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -47,8 +48,8 @@ namespace te
       \brief A selected channel to be display.
 
       \sa ChannelSelection, ContrastEnhancement
-     */
-    class TESEEXPORT SelectedChannel
+    */
+    class TESEEXPORT SelectedChannel : public boost::noncopyable
     {
       public:
 
@@ -79,31 +80,6 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other SelectedChannel.
-         */
-        SelectedChannel(const SelectedChannel& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Halo.
-
-          \return A reference for this.
-         */
-        SelectedChannel& operator=(const SelectedChannel& rhs);
-
-        //@}
-
-      private:
-
         std::string m_sourceChannelName;             //!< Channels are identified by a system and data-dependent character identifier. Commonly, channels will be labelled as "1", "2" and so on. (Mandatory)
         ContrastEnhancement* m_contrastEnhancement;  //!< Contrast enhancement that can be applied to a channel in isolation. (Optional)
     };
@@ -112,4 +88,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_SELECTEDCHANNEL_H
-

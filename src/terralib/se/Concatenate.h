@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Concatenate.h
-  
+  \file terralib/se/Concatenate.h
+
   \brief Concatenates strings (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_CONCATENATE_H
 #define __TERRALIB_SE_INTERNAL_CONCATENATE_H
@@ -46,7 +46,7 @@ namespace te
       arguments of functions.
 
       \sa Function, ParameterValue
-     */
+    */
     class TESEEXPORT Concatenate : public Function
     {
       public:
@@ -69,7 +69,7 @@ namespace te
       private:
 
         std::vector<ParameterValue*> m_stringValue; //!< Mandatory at least two.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

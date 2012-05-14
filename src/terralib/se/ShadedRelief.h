@@ -18,18 +18,19 @@
  */
 
 /*!
-  \file ShadedRelief.h
-  
+  \file terralib/se/ShadedRelief.h
+
   \brief ShadedRelief specifies the application of relief shading (or "hill shading") to a DEM raster to give it somewhat of a three-dimensional effect and to make elevation changes more visible.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SHADEDRELIEF_H
 #define __TERRALIB_SE_INTERNAL_SHADEDRELIEF_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -53,8 +54,8 @@ namespace te
       for Earth-based DEMs. The default value is system-dependent.
         
       \sa RasterSymbolizer
-     */
-    class TESEEXPORT ShadedRelief
+    */
+    class TESEEXPORT ShadedRelief : public boost::noncopyable
     {
       public:
 
@@ -83,34 +84,9 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other ShadedRelief.
-         */
-        ShadedRelief(const ShadedRelief& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other ShadedRelief.
-
-          \return A reference for this.
-         */
-        ShadedRelief& operator=(const ShadedRelief& rhs);
-
-        //@}
-
-      private:
-
         bool m_brightnessOnly;  //!< It may be 0 (false) or 1 (true). (Optional)
         double m_reliefFactor;  //!< It gives the amount of exaggeration to use for the height of the "hills". (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

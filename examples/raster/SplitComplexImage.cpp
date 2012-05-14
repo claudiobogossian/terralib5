@@ -14,9 +14,6 @@
 #include <string>
 #include <vector>
 
-// boost
-#include <boost/filesystem.hpp>
-
 void SplitComplexImage()
 {
   try

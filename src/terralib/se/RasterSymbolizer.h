@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file RasterSymbolizer.h
-  
+  \file terralib/se/RasterSymbolizer.h
+
   \brief The RasterSymbolizer describes how to render raster/matrix-coverage data (e.g., satellite photos, DEMs).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_RASTERSYMBOLIZER_H
 #define __TERRALIB_SE_INTERNAL_RASTERSYMBOLIZER_H
@@ -55,7 +55,7 @@ namespace te
       it is assumed that this capability will be little used.
 
       \sa Symbolizer, te::fe::PropertyName, ParameterValue, ChannelSelection, ColorMap, ContrastEnhancement, ShadedRelief, ImageOutline
-     */
+    */
     class TESEEXPORT RasterSymbolizer : public Symbolizer
     {
       public:
@@ -68,7 +68,7 @@ namespace te
           \brief OverlapBehavior tells a system how to behave when multiple
                  raster images in a layer overlap each other, for example with
                  satellite-image scenes.
-         */
+        */
         enum OverlapBehavior
         {
           LATEST_ON_TOP,      /*!< It refers to the time the scene was captured.       */
@@ -123,10 +123,9 @@ namespace te
         ContrastEnhancement* m_contrastEnhancement; //!< It defines contrast enhancement for a channel of a false-color image or for a color image. (Optional)
         ShadedRelief* m_shadedRelief;               //!< It selects the application of relief shading (or "hill shading") to an image for a three-dimensional visual effect. (Optional)
         ImageOutline* m_imageOutline;               //!< It specifies how individual source rasters in a multi-raster set (such as a set of satellite-image scenes) should be outlined to make the individual-image locations visible. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_RASTERSYMBOLIZER_H
-

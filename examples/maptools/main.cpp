@@ -40,13 +40,7 @@
 int main(int /*argc*/, char** /*argv*/)
 {
 // initialize Terralib support
-  //te::common::Platform::initialize();
-  //te::gm::Platform::initialize();
-  //te::da::Platform::initialize();  
-  //te::qt::widgets::Platform::initialize();
-  //te::plugin::Platform::initialize();
   TerraLib::getInstance().initialize();
-
 
   try
   {
@@ -54,10 +48,13 @@ int main(int /*argc*/, char** /*argv*/)
     LoadModules();
 
     // Show a MapDisplay
-    MapDisplay();
+    //MapDisplay();
 
-    // Creates a OGC Filter Expression and convert it to Query TerraLib.
+    // Creates a OGC Filter Expression and convert it to TerraLib Expression.
     Filter2Query();
+
+    // Creates a set of Layers and Styles.
+    DrawStyledLayers();
   }
   catch(const std::exception& e)
   {
@@ -78,12 +75,6 @@ int main(int /*argc*/, char** /*argv*/)
     return EXIT_FAILURE;
   }
 
-// shutdown Terralib support
-  //te::plugin::Platform::finalize();
-  //te::qt::widgets::Platform::finalize();
-  //te::da::Platform::finalize();
-  //te::gm::Platform::finalize();
-  //te::common::Platform::finalize();
   TerraLib::getInstance().finalize();
 
   std::cout << "Press Enter to exit..." << std::endl;
@@ -91,4 +82,3 @@ int main(int /*argc*/, char** /*argv*/)
 
   return EXIT_SUCCESS;
 }
-

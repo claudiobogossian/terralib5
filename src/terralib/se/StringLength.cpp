@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file StringLength.cpp
+  \file terralib/se/StringLength.cpp
   
   \brief Returns length of string (String formatting functions).
- */
+*/
 
 // TerraLib
 #include "ParameterValue.h"

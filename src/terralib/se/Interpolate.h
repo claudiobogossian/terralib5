@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Interpolate.h
-  
+  \file terralib/se/Interpolate.h
+
   \brief The transformation of continuous values to a number of values (Interpolate function).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_INTERPOLATE_H
 #define __TERRALIB_SE_INTERNAL_INTERPOLATE_H
@@ -38,7 +38,7 @@ namespace te
   {
 // Forward declarations
     class InterpolationPoint;
-    class ParameterValue;    
+    class ParameterValue;
 
     /*!
       \class Interpolate
@@ -67,7 +67,7 @@ namespace te
                            text contents into other texts or numeric values
                            or colors.</li>
       </ul>
-      <br>
+
       The Interpolation points have to be specified in
       ascending order of Data. They define a graph of
       points. LookupValues less than the Data value of the
@@ -84,7 +84,7 @@ namespace te
       the attribute mode="color" at the Interpolate element.
 
       \sa Function, ParameterValue, InterpolationPoint
-     */
+    */
     class TESEEXPORT Interpolate : public Function
     {
       public:
@@ -93,7 +93,7 @@ namespace te
           \enum ModeType
 
           \brief It controls the ...
-         */
+        */
         enum ModeType
         {
           LINEAR, /*!<  */
@@ -105,7 +105,7 @@ namespace te
           \enum MethodType
 
           \brief It controls the ...
-         */
+        */
         enum MethodType
         {
           NUMERIC, /*!<  */
@@ -131,8 +131,11 @@ namespace te
         //@{
 
         void setLookupValue(ParameterValue* v);
+
         void add(InterpolationPoint* i);
+
         void setModeType(ModeType t);
+
         void setMethodType(MethodType t);
 
         //@}
@@ -143,10 +146,9 @@ namespace te
         std::vector<InterpolationPoint*> m_interpolationPoints;  //!< Mandatory.
         ModeType m_mode;                                         //!< Mandatory.
         MethodType m_method;                                     //!< Mandatory.
-    };      
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_INTERPOLATE_H
-

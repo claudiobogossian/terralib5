@@ -18,19 +18,17 @@
  */
 
 /*!
-  \file Function.h
-  
+  \file terralib/se/Function.h
+
   \brief Symbology Encoding functions.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FUNCTION_H
 #define __TERRALIB_SE_INTERNAL_FUNCTION_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "../fe/Expression.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
@@ -63,7 +61,7 @@ namespace te
           Concatenate, ChangeCase, Trim,
           StringPosition, StringLength, Categorize,
           Interpolate, Recode
-     */
+    */
     class TESEEXPORT Function : public te::fe::Expression
     {
       public:
@@ -86,7 +84,7 @@ namespace te
       protected:
 
         std::string m_fallbackValue;  //!< The value of the fallbackValue attribute is used as a default value, if the SE implementation does not support the function. If the implementation supports the function, then the result value is determined by executing the function. (Mandatory)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file RasterSymbolizer.cpp
+  \file terralib/se/RasterSymbolizer.cpp
   
   \brief The RasterSymbolizer describes how to render raster/matrix-coverage data (e.g., satellite photos, DEMs).
- */
+*/
 
 // TerraLib
 #include "../fe/PropertyName.h"

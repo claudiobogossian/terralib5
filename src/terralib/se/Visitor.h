@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Visitor.h
+  \file terralib/se/Visitor.h
 
   \brief A visitor interface for the SymbologyEncoding hierarchy.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_VISITOR_H
 #define __TERRALIB_SE_INTERNAL_VISITOR_H
@@ -37,7 +37,7 @@ namespace te
       \class Visitor
       
       \brief A visitor interface for the SymbologyEncoding hierarchy.
-     */
+    */
     class Visitor
     {
       public:
@@ -60,13 +60,15 @@ namespace te
          */
         //@{
 
-        virtual void visit(const CoverageStyle& visited) = 0;
-        virtual void visit(const FeatureTypeStyle& visited) = 0;
-        virtual void visit(const PointSymbolizer& visited) = 0;
-        virtual void visit(const PolygonSymbolizer& visited) = 0;
         virtual void visit(const Style& visited) = 0;
+        virtual void visit(const FeatureTypeStyle& visited) = 0;
+        virtual void visit(const CoverageStyle& visited) = 0;
         virtual void visit(const Symbolizer& visited) = 0;
+        virtual void visit(const PolygonSymbolizer& visited) = 0;
+        virtual void visit(const LineSymbolizer& visited) = 0;
+        virtual void visit(const PointSymbolizer& visited) = 0;
         virtual void visit(const TextSymbolizer& visited) = 0;
+        virtual void visit(const RasterSymbolizer& visited) = 0;
 
         //@}
     };
@@ -74,6 +76,4 @@ namespace te
   } // end namespace se
 }   // end namespace te
 
-
 #endif  // __TERRALIB_SE_INTERNAL_VISITOR_H
-

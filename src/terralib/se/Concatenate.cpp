@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Concatenate.cpp
+  \file terralib/se/Concatenate.cpp
   
   \brief Concatenates strings (String formatting functions).
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"

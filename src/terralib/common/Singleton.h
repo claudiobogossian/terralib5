@@ -39,7 +39,7 @@ namespace te
     /*!
       \class Singleton
 
-      \brief Template support for singleton pattern.      
+      \brief Template support for singleton pattern.
       
       In TerraLib, classes that manage resources like DataSourceManager and ProjectManager
       are singletons. The basic interface of a singleton is defined by

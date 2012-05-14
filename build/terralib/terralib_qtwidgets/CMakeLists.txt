@@ -105,9 +105,11 @@ set(DEP_LIBS  ${DEP_LIBS}
 		optimized terralib_common
 		optimized terralib_dataaccess
 		optimized terralib_datatype
+		optimized terralib_filter
 		optimized terralib_geometry
 		optimized terralib_maptools
 		optimized terralib_raster
+		optimized terralib_se
 		optimized terralib_srs
 		optimized terralib_xlink
 		debug     terralib_annotationtext_d
@@ -115,9 +117,11 @@ set(DEP_LIBS  ${DEP_LIBS}
 		debug     terralib_common_d
 		debug     terralib_dataaccess_d
 		debug     terralib_datatype_d
+		debug     terralib_filter_d
 		debug     terralib_geometry_d
 		debug     terralib_maptools_d
 		debug     terralib_raster_d
+		debug     terralib_se_d
 		debug     terralib_srs_d
 		debug     terralib_xlink_d)
 	
@@ -130,7 +134,9 @@ file(GLOB CANVAS_SRCS   ${SRCDIR}/widgets/canvas/*.cpp)
 file(GLOB DATAGRID_SRCS ${SRCDIR}/widgets/datagrid/*.cpp)
 file(GLOB DATASET_SRCS  ${SRCDIR}/widgets/dataset/*.cpp)
 file(GLOB LAYER_SRCS    ${SRCDIR}/widgets/layer/*.cpp)
+file(GLOB PROGRESS_SRCS ${SRCDIR}/widgets/progress/*.cpp)
 file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
+file(GLOB SE_SRCS  		${SRCDIR}/widgets/se/*.cpp)
 file(GLOB HELP_SRCS ${SRCDIR}/widgets/help/*.cpp)
 
 # Select the header files
@@ -140,7 +146,9 @@ file(GLOB CANVAS_HDRS   ${SRCDIR}/widgets/canvas/*.h)
 file(GLOB DATAGRID_HDRS ${SRCDIR}/widgets/datagrid/*.h)
 file(GLOB DATASET_HDRS  ${SRCDIR}/widgets/dataset/*.h)
 file(GLOB LAYER_HDRS    ${SRCDIR}/widgets/layer/*.h)
+file(GLOB PROGRESS_HDRS ${SRCDIR}/widgets/progress/*.h)
 file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
+file(GLOB SE_HDRS       ${SRCDIR}/widgets/se/*.h)
 file(GLOB HELP_HDRS ${SRCDIR}/widgets/help/*.h)
 
 # Group the source and header files
@@ -150,7 +158,9 @@ source_group("widgets\\canvas\\Source Files"   FILES ${CANVAS_SRCS})
 source_group("widgets\\datagrid\\Source Files" FILES ${DATAGRID_SRCS})
 source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
+source_group("widgets\\progress\\Source Files" FILES ${PROGRESS_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
+source_group("widgets\\se\\Source Files"       FILES ${SE_SRCS})
 source_group("widgets\\help\\Source Files" FILES ${HELP_SRCS})
 source_group("qwt\\Header Files"               FILES ${QWT_HDRS})
 source_group("widgets\\Header Files"           FILES ${WIDGETS_HDRS})
@@ -158,7 +168,9 @@ source_group("widgets\\canvas\\Header Files"   FILES ${CANVAS_HDRS})
 source_group("widgets\\datagrid\\Header Files" FILES ${DATAGRID_HDRS})
 source_group("widgets\\dataset\\Header Files"  FILES ${DATASET_HDRS})
 source_group("widgets\\layer\\Header Files"    FILES ${LAYER_HDRS})
+source_group("widgets\\progress\\Header Files" FILES ${PROGRESS_HDRS})
 source_group("widgets\\property\\Header Files" FILES ${PROPERTY_HDRS})
+source_group("widgets\\se\\Header Files"       FILES ${SE_HDRS})
 source_group("widgets\\help\\Header Files" FILES ${HELP_HDRS})
 
 # Select the header files for moc'ing
@@ -170,34 +182,36 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/qwt/ScatterDisplay.h
 	 ${SRCDIR}/qwt/ScatterSelectionCursor.h
 	 ${SRCDIR}/qwt/TimeSeriesDisplay.h
-   ${SRCDIR}/widgets/layer/AbstractLayerItem.h
-   ${SRCDIR}/widgets/layer/LayerExplorer.h
-   ${SRCDIR}/widgets/layer/LayerExplorerModel.h
-   ${SRCDIR}/widgets/layer/LayerItem.h
-   ${SRCDIR}/widgets/layer/LegendItem.h
-   ${SRCDIR}/widgets/layer/FolderLayerItem.h	
-   ${SRCDIR}/widgets/dataset/CreateDataSet.h
-   ${SRCDIR}/widgets/dataset/AddIndex.h	
-   ${SRCDIR}/widgets/datagrid/DataGridModel.h
-   ${SRCDIR}/widgets/datagrid/DataGridView.h	
-   ${SRCDIR}/widgets/datagrid/HeaderView.h	
-   ${SRCDIR}/widgets/property/AddProperty.h
-   ${SRCDIR}/widgets/property/RemoveProperty.h
-   ${SRCDIR}/widgets/property/RenameProperty.h
-   ${SRCDIR}/widgets/property/UpdateProperty.h	
-   ${SRCDIR}/widgets/canvas/MapDisplay.h
-   ${SRCDIR}/widgets/canvas/ZoomAndPan.h
+	 ${SRCDIR}/widgets/layer/AbstractLayerItem.h
+	 ${SRCDIR}/widgets/layer/LayerExplorer.h
+	 ${SRCDIR}/widgets/layer/LayerExplorerModel.h
+	 ${SRCDIR}/widgets/layer/LayerItem.h
+	 ${SRCDIR}/widgets/layer/LegendItem.h
+	 ${SRCDIR}/widgets/layer/FolderLayerItem.h	
+	 ${SRCDIR}/widgets/dataset/CreateDataSet.h
+	 ${SRCDIR}/widgets/dataset/AddIndex.h	
+	 ${SRCDIR}/widgets/datagrid/DataGridModel.h
+	 ${SRCDIR}/widgets/datagrid/DataGridView.h	
+	 ${SRCDIR}/widgets/datagrid/HeaderView.h	
+	 ${SRCDIR}/widgets/property/AddProperty.h
+	 ${SRCDIR}/widgets/property/RemoveProperty.h
+	 ${SRCDIR}/widgets/property/RenameProperty.h
+	 ${SRCDIR}/widgets/property/UpdateProperty.h	
+	 ${SRCDIR}/widgets/canvas/MapDisplay.h
+	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h
+	 ${SRCDIR}/widgets/progress/QtProgress.h
+	 ${SRCDIR}/widgets/progress/QtWidgetProgress.h
    ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
    ${SRCDIR}/widgets/help/HelpPushButton.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
-	   ${SRCDIR}/widgets/*.ui
-	   ${SRCDIR}/widgets/canvas/*.ui
-	   ${SRCDIR}/widgets/datagrid/*.ui
-	   ${SRCDIR}/widgets/dataset/*.ui
-	   ${SRCDIR}/widgets/layer/*.ui
-	   ${SRCDIR}/widgets/property/*.ui)
+	 ${SRCDIR}/widgets/*.ui
+     ${SRCDIR}/widgets/canvas/*.ui
+     ${SRCDIR}/widgets/datagrid/*.ui
+     ${SRCDIR}/widgets/dataset/*.ui
+     ${SRCDIR}/widgets/layer/*.ui
+     ${SRCDIR}/widgets/property/*.ui)
 
 list(REMOVE_ITEM WIDGETS_HDRS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	
@@ -227,7 +241,9 @@ add_library(${LIB_NAME} SHARED
             ${DATAGRID_SRCS} ${DATAGRID_HDRS}
             ${DATASET_SRCS}  ${DATASET_HDRS}
             ${LAYER_SRCS}    ${LAYER_HDRS}
+	    ${PROGRESS_SRCS} ${PROGRESS_HDRS}
             ${PROPERTY_SRCS} ${PROPERTY_HDRS}
+			${SE_SRCS}  	 ${SE_HDRS}
             ${HELP_SRCS}     ${HELP_HDRS}
             ${UI} ${MOC})
             
@@ -236,13 +252,15 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 add_dependencies(${PROJ_NAME}
  	               terralib_annotationtext
 	               terralib_color
-                 terralib_common 
+				   terralib_common 
 	               terralib_dataaccess
 	               terralib_datatype
+				   terralib_filter
 	               terralib_geometry
 	               terralib_maptools
 	               terralib_raster
-                 terralib_srs
+				   terralib_se
+                   terralib_srs
 	               terralib_xlink)
                  
 if(WIN32)

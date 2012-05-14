@@ -18,23 +18,24 @@
  */
 
 /*!
-  \file AnchorPoint.h
-  
+  \file terralib/se/AnchorPoint.h
+
   \brief An AnchorPoint identifies the location inside of a text label to use an 'anchor' for positioning it relative to a point geometry.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_ANCHORPOINT_H
 #define __TERRALIB_SE_INTERNAL_ANCHORPOINT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
   namespace se
-  { 
+  {
 // Forward declaration
     class ParameterValue;
 
@@ -57,9 +58,9 @@ namespace te
       graphic/label text. A system may choose different anchor
       points to de-conflict graphics/labels.
 
-      \sa Graphic, ParameterValue, PointPlacement      
-     */
-    class TESEEXPORT AnchorPoint : public te::common::BaseVisitable<Visitor>
+      \sa Graphic, ParameterValue, PointPlacement
+    */
+    class TESEEXPORT AnchorPoint : public boost::noncopyable
     {
       public:
 
@@ -85,37 +86,12 @@ namespace te
         void setAnchorPointY(ParameterValue* y);
 
         //@}
-    
-    private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other AnchorPoint.
-         */
-        AnchorPoint(const AnchorPoint& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other PointPlacement.
-
-          \return A reference for this.
-         */
-        AnchorPoint& operator=(const AnchorPoint& rhs);
-
-        //@}
 
       private:
 
         ParameterValue* m_x;  //!< Floating-point number of the the coordinate to anchoring (default = 0.5).
         ParameterValue* m_y;  //!< Floating-point number of the the coordinate to anchoring (default = 0.5).
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

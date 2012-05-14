@@ -19,7 +19,7 @@ The third-party software needed:
 5. Gnu Iconv
 6. Gnu Gettext
 
-All that dependencies can be turned off
+All those dependencies can be turned off
 in Linux configure, or in VC++ windowsplatformdefines.h file.
 
 More Information:

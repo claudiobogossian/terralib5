@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FormatDate.h
+  \file terralib/se/FormatDate.h
   
   \brief Date formatting function.
- */
+*/
 
 // TerraLib
 #include "FormatDate.h"

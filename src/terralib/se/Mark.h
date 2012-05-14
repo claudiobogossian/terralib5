@@ -18,18 +18,22 @@
  */
 
 /*!
-  \file Mark.h
-  
+  \file terralib/se/Mark.h
+
   \brief A Mark specifies a geometric shape and applies coloring to it.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_MARK_H
 #define __TERRALIB_SE_INTERNAL_MARK_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
+
+// STL
+#include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -43,38 +47,39 @@ namespace te
     class InlineContent;
     class Stroke;
 
-    /*! \class Mark
-      
-        \brief A Mark specifies a geometric shape and applies coloring to it.
+    /*!
+      \class Mark
 
-        The WellKnownName element gives the well-known name
-        of the shape of the mark. Allowed values include at
-        least "square", "circle", "triangle", "star", "cross",
-        and "x", though map servers may draw a different symbol
-        instead if they don't have a shape for all of these. The
-        default WellKnownName is "square". Renderings of these
-        marks may be made solid or hollow depending on Fill
-        and Stroke elements.
-        <br>
-        The alternative to a WellKnownName is an external
-        mark format. The MarkIndex allows an individual mark
-        in a mark archive to be selected. An example format
-        for an external mark achive would be a TrueType font
-        file, with MarkIndex being used to select an individual
-        glyph from that file.
-        <br>
-        The Mark element serves two purposes. It allows the
-        selection of simple shapes, and, in combination with
-        the capability to select and mix multiple external-URL
-        graphics and marks, it allows a style to be specified
-        that can produce a usable result in a best-effort
-        rendering environment, provided that a simple Mark
-        is included at the bottom of the list of sources for
-        every Graphic.
+      \brief A Mark specifies a geometric shape and applies coloring to it.
 
-        \sa Graphic, Fill, Stroke, InlineContent
-     */
-    class TESEEXPORT Mark
+      The WellKnownName element gives the well-known name
+      of the shape of the mark. Allowed values include at
+      least "square", "circle", "triangle", "star", "cross",
+      and "x", though map servers may draw a different symbol
+      instead if they don't have a shape for all of these. The
+      default WellKnownName is "square". Renderings of these
+      marks may be made solid or hollow depending on Fill
+      and Stroke elements.
+
+      The alternative to a WellKnownName is an external
+      mark format. The MarkIndex allows an individual mark
+      in a mark archive to be selected. An example format
+      for an external mark achive would be a TrueType font
+      file, with MarkIndex being used to select an individual
+      glyph from that file.
+
+      The Mark element serves two purposes. It allows the
+      selection of simple shapes, and, in combination with
+      the capability to select and mix multiple external-URL
+      graphics and marks, it allows a style to be specified
+      that can produce a usable result in a best-effort
+      rendering environment, provided that a simple Mark
+      is included at the bottom of the list of sources for
+      every Graphic.
+
+      \sa Graphic, Fill, Stroke, InlineContent
+    */
+    class TESEEXPORT Mark : public boost::noncopyable
     {
       public:
 
@@ -95,41 +100,27 @@ namespace te
           \brief The WellKnownName element gives the well-known name of the shape of the mark.
 
           Allowed values include at least "square", "circle", "triangle", "star", "cross", and "x".
-          The default WellKnownName is "square".          
-         */
+          The default WellKnownName is "square".
+        */
         void setWellKnownName(std::string* name);
+
+        const std::string* getWellKnownName() const;
+
         void setOnlineResource(te::xl::SimpleLink* link);
+
         void setInlineContent(InlineContent* iContent);
+
         void setFormat(std::string* f);
+
         void setMarkIndex(int i);
+
         void setFill(Fill* f);
+
+        const Fill* getFill() const;
+
         void setStroke(Stroke* s);
 
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other Mark.
-         */
-        Mark(const Mark& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other Mark.
-
-          \return A reference for this.
-         */
-        Mark& operator=(const Mark& rhs);
-
-        //@}
+        const Stroke* getStroke() const;
 
       private:
 
@@ -140,7 +131,7 @@ namespace te
         int m_markIndex;                      //!< It allows an individual mark in a mark archive to be selected. (Optional and it should be set only if onlineResource_ or inlineContent_ is set)
         Fill* m_fill;                         //!< It specifies the pattern for filling an area geometry. (Optional)
         Stroke* m_stroke;                     //!< It specifies the appearance of a linear geometry. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

@@ -18,21 +18,22 @@
  */
 
 /*!
-  \file InlineContent.h
-  
+  \file terralib/se/InlineContent.h
+
   \brief InlineContent is XML or base64 encoded content in some externally-defined format that is included in an SE in-line.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_INLINECONTENT_H
 #define __TERRALIB_SE_INTERNAL_INLINECONTENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -46,8 +47,8 @@ namespace te
       \sa Mark, ExternalGraphic
 
       \todo Esta classe precisa lidar com dados mixed!
-     */
-    class TESEEXPORT InlineContent
+    */
+    class TESEEXPORT InlineContent : public boost::noncopyable
     {
       public:
 
@@ -55,7 +56,7 @@ namespace te
           \enum EncodingType
 
           \brief The format type of encoded data.
-         */
+        */
         enum EncodingType
         {
           XML,    /*!< XML encoded.     */
@@ -71,7 +72,7 @@ namespace te
           \brief It initializes a new InlineContent.
 
           \param e Encoding type.
-         */
+        */
         explicit InlineContent(const EncodingType& e);
 
         /*! \brief Destructor. */
@@ -96,34 +97,9 @@ namespace te
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other InlineContent.
-         */
-        InlineContent(const InlineContent& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other InlineContent.
-
-          \return A reference for this.
-         */
-        InlineContent& operator=(const InlineContent& rhs);
-
-        //@}
-
-      private:
-
         std::string m_data;      //!< The inlined data. (Optional)
         EncodingType m_encoding; //!< The possible values are: xml or base64. (Mandatory)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

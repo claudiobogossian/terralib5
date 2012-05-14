@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Displacement.cpp
+  \file terralib/se/Displacement.cpp
 
   \brief A Displacement gives X and Y offset displacements to use for rendering a text label, graphic or other Symbolizer near a point.
- */
+*/
 
 // TerraLib
 #include "Displacement.h"

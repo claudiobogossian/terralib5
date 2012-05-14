@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Style.h
+  \file terralib/se/Style.h
   
   \brief The Style defines the styling that is to be applied to a geographic dataset (vector geometries or coverage).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_STYLE_H
 #define __TERRALIB_SE_INTERNAL_STYLE_H
@@ -34,6 +34,9 @@
 // STL
 #include <string>
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -56,8 +59,8 @@ namespace te
       being the first item plotted and hence being on the "bottom".
 
       \sa FeatureTypeStyle, CoverageStyle, Description, Rule
-     */
-    class TESEEXPORT Style : public te::common::BaseVisitable<Visitor>
+    */
+    class TESEEXPORT Style : public te::common::BaseVisitable<Visitor>, public boost::noncopyable
     {
       public:
 
@@ -95,6 +98,8 @@ namespace te
 
         void push_back(Rule* rule);
 
+        size_t getNRules() const;
+
         const Rule* getRule(size_t i) const;
 
         void push_back(te::xl::SimpleLink* onlineResource);
@@ -107,31 +112,6 @@ namespace te
 
         //@}
 
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other object.
-         */
-        Style(const Style& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other object.
-
-          \return A reference for this.
-         */
-        Style& operator=(const Style& rhs);
-
-        //@}
-
       protected:
 
         std::string* m_name;                                  //!< It allows the style to be referenced. Names must be unique in the context in which they are defined. (Optional)
@@ -140,10 +120,9 @@ namespace te
         std::vector<Rule*> m_rules;                           //!< It allows conditional rendering. (Mandatory if m_onlineResource is empty, otherwise, it is optional)
         std::vector<te::xl::SimpleLink*> m_onlineResources;   //!< It refers to an external document. (Mandatory if m_rules is empty, otherwise, it is optional)
         std::string m_version;                                //!< The version is an optional attribute on the FeatureTypeStyle that identifies the SE version number that the FeatureTypeStyle corresponds to. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_STYLE_H
-

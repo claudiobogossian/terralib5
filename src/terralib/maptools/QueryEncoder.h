@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file QueryEncoder.h
+  \file terralib/maptools/QueryEncoder.h
   
-  \brief A visitor that converts a Filter expression to TerraLib Where clause.
+  \brief A visitor that converts a OGC Filter Expression to TerraLib Expression.
  */
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_QUERYENCODER_H
@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "Config.h"
-#include "../dataaccess/query/Where.h"
 #include "../fe/Visitor.h"
 
 // STL
@@ -36,15 +35,21 @@
 
 namespace te
 {
+// Forward declarations
+  namespace da
+  {
+    class Expression;
+  }
+
   namespace map
   {
     /*!
       \class QueryEncoder
       
-      \brief A visitor that converts a Filter expression to TerraLib Where clause.
+      \brief A visitor that converts a OGC Filter Expression to TerraLib Expression.
 
       \sa Visitor
-     */
+    */
     class TEMAPEXPORT QueryEncoder : public te::fe::Visitor
     {
       public:
@@ -63,20 +68,20 @@ namespace te
         //@}
 
         /** @name Conversion Methods
-         *  Methods that can be used to convert a Filter to a TerraLib Where clause.
+         *  Methods that can be used to convert a OGC Filter Expression to a TerraLib Expression.
          */
         //@{
 
         /*!
-          \brief It converts the filter expression to a where clause.
+          \brief It converts the OGC Filter Expression to a TerraLib Expression.
 
           \param f A valid filter expression.
 
-          \return An equivalent where clause for the given filter.
+          \return An equivalent TerraLib expression for the given filter.
 
-          \note The caller of this method will take the ownership of the returned where.
-         */
-        te::da::Where* getWhere(te::fe::Filter* f);
+          \note The caller of this method will take the ownership of the returned expression.
+        */
+        te::da::Expression* getExpression(const te::fe::Filter* f);
 
         //@}
 
@@ -117,7 +122,7 @@ namespace te
           \brief No copy constructor allowed.
 
           \param rhs The other object.
-         */
+        */
         QueryEncoder(const QueryEncoder& rhs);
 
         /*!
@@ -126,15 +131,14 @@ namespace te
           \param rhs The other object.
 
           \return A reference for this.
-         */
+        */
         QueryEncoder& operator=(const QueryEncoder& rhs);
 
         //@}
 
       private:
 
-        te::da::Expression* m_expression; //!< Expression used during conversion from Filter to Where.
-
+        te::da::Expression* m_expression;                      //!< Expression used during conversion.
         static std::map<std::string, std::string> sm_fnameMap; //!< A map that associates Filter Operator names to Query Functions names.
     };
 

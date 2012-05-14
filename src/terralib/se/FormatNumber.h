@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file FormatNumber.h
-  
+  \file terralib/se/FormatNumber.h
+
   \brief Numeric formatting function.
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_FORMATNUMBER_H
 #define __TERRALIB_SE_INTERNAL_FORMATNUMBER_H
@@ -48,7 +48,7 @@ namespace te
       numeric property value.
 
       \sa Function, ParameterValue
-     */
+    */
     class TESEEXPORT FormatNumber : public Function
     {
       public:
@@ -85,9 +85,7 @@ namespace te
           groupingSeperator=","
 
           If there is no NegativePattern, "-" is prefixed to the Pattern.
-
         */
-
         void setNumericValue(ParameterValue* v);
         void setPattern(const std::string& p);
         void setNegativePattern(const std::string& np);
@@ -105,7 +103,7 @@ namespace te
           \brief No copy constructor allowed.
 
           \param rhs The other object.
-         */
+        */
         FormatNumber(const FormatNumber& rhs);
 
         /*!
@@ -114,7 +112,7 @@ namespace te
           \param rhs The other object.
 
           \return A reference for this.
-         */
+        */
         FormatNumber& operator=(const FormatNumber& rhs);
 
         //@}
@@ -125,8 +123,8 @@ namespace te
         std::string m_pattern;             //!< Mandatory.
         std::string m_negativePattern;     //!< Optional.
         std::string m_decimalPoint;        //!< Optional. Default: ".".
-        std::string m_groupingSeparator;   //!< Optional. Default: ",".          
-    };    
+        std::string m_groupingSeparator;   //!< Optional. Default: ",".
+    };
 
   } // end namespace se
 }   // end namespace te

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file SelectedChannel.cpp
+  \file terralib/se/SelectedChannel.cpp
   
   \brief A selected channel to be display.
- */
+*/
 
 // TerraLib
 #include "ContrastEnhancement.h"

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Stroke.cpp
+  \file terralib/se/Stroke.cpp
   
   \brief A Stroke specifies the appearance of a linear geometry.
- */
+*/
 
 // TerraLib
 #include "../common/STLUtils.h"
@@ -32,6 +32,14 @@
 
 // STL
 #include <cassert>
+
+const std::string te::se::Stroke::sm_stroke     = "stroke";
+const std::string te::se::Stroke::sm_opacity    = "stroke-opacity";
+const std::string te::se::Stroke::sm_width      = "stroke-width";
+const std::string te::se::Stroke::sm_linejoin   = "stroke-linejoin";
+const std::string te::se::Stroke::sm_linecap    = "stroke-linecap";
+const std::string te::se::Stroke::sm_dasharray  = "stroke-dasharray";
+const std::string te::se::Stroke::sm_dashoffset = "stroke-dashoffset";
 
 te::se::Stroke::Stroke()
   : m_fill(0),
@@ -68,8 +76,98 @@ const te::se::GraphicStroke* te::se::Stroke::getGraphicStroke() const
   return m_stroke;
 }
 
-void te::se::Stroke::add(SvgParameter* p)
+void te::se::Stroke::add(te::se::SvgParameter* p)
 {
-  m_svgParams.push_back(p);
+  std::string name = p->getName();
+  std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);
+  if(it != m_svgParams.end())
+    delete it->second;
+  m_svgParams[name] = p;
 }
 
+void te::se::Stroke::setColor(const std::string& color)
+{
+  setParameter(sm_stroke, color);
+}
+
+void te::se::Stroke::setOpacity(const std::string& opacity)
+{
+  setParameter(sm_opacity, opacity);
+}
+
+void te::se::Stroke::setWidth(const std::string& width)
+{
+  setParameter(sm_width, width);
+}
+
+void te::se::Stroke::setLineJoin(const std::string& join)
+{
+  setParameter(sm_linejoin, join);
+}
+
+void te::se::Stroke::setLineCap(const std::string& cap)
+{
+  setParameter(sm_linecap, cap);
+}
+
+void te::se::Stroke::setDashArray(const std::string& dasharray)
+{
+  setParameter(sm_dasharray, dasharray);
+}
+
+void te::se::Stroke::setDashOffset(const std::string& offset)
+{
+  setParameter(sm_dashoffset, offset);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getColor() const
+{
+  return getParameter(sm_stroke);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getOpacity() const
+{
+  return getParameter(sm_opacity);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getWidth() const
+{
+  return getParameter(sm_width);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getLineJoin() const
+{
+  return getParameter(sm_linejoin);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getLineCap() const
+{
+  return getParameter(sm_linecap);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getDashArray() const
+{
+  return getParameter(sm_dasharray);
+}
+
+const te::se::SvgParameter* te::se::Stroke::setDashOffset() const
+{
+  return getParameter(sm_dashoffset);
+}
+
+void te::se::Stroke::setParameter(const std::string& name, const std::string& value)
+{
+  std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);
+  if(it != m_svgParams.end())
+    delete it->second;
+  m_svgParams[name] = new te::se::SvgParameter(name, value);
+}
+
+const te::se::SvgParameter* te::se::Stroke::getParameter(const std::string& name) const
+{
+  std::map<std::string, te::se::SvgParameter*>::const_iterator it = m_svgParams.find(name);
+  if(it != m_svgParams.end())
+    return it->second;
+
+  return 0; // Not found
+}

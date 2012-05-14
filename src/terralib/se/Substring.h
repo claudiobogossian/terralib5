@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Substring.h
+  \file terralib/se/Substring.h
   
   \brief It returns the substring (String formatting functions).
- */
+*/
 
 #ifndef __TERRALIB_SE_INTERNAL_SUBSTRING_H
 #define __TERRALIB_SE_INTERNAL_SUBSTRING_H

@@ -40,7 +40,6 @@
 #include "se/ExternalGraphic.h"
 #include "se/FeatureTypeStyle.h"
 #include "se/Fill.h"
-#include "se/FillBasicColor.h"
 #include "se/Font.h"
 #include "se/FormatDate.h"
 #include "se/FormatNumber.h"
@@ -69,13 +68,13 @@
 #include "se/StringLength.h"
 #include "se/StringPosition.h"
 #include "se/Stroke.h"
-#include "se/StrokeBasicColor.h"
 #include "se/Substring.h"
 #include "se/SvgParameter.h"
 #include "se/Symbolizer.h"
 #include "se/SymbologyManager.h"
 #include "se/TextSymbolizer.h"
 #include "se/Trim.h"
+#include "se/Utils.h"
 
 namespace te
 {

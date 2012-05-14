@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Substring.cpp
+  \file terralib/se/Substring.cpp
   
   \brief It returns the substring (String formatting functions).
- */
+*/
 
 // TerraLib
 #include "ParameterValue.h"

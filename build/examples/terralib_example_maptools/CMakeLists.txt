@@ -79,6 +79,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		optimized terralib_plugin
 		optimized terralib_qtwidgets
 		optimized terralib_raster
+		optimized terralib_se
 		optimized terralib_srs
 		optimized terralib_xlink
 		debug     terralib_annotationtext_d
@@ -93,6 +94,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		debug     terralib_plugin_d
 		debug     terralib_qtwidgets_d
 		debug     terralib_raster_d
+		debug     terralib_se_d
 		debug     terralib_srs_d
 		debug     terralib_xlink_d)  
 
