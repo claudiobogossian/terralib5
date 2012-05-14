@@ -1,14 +1,41 @@
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/widgets/help/AssistantHelpManagerImpl.cpp
+
+  \brief An implementation of HelpManager that uses QAssistant to show help files.
+*/
+
+// TerraLib
 #include "AssistantHelpManagerImpl.h"
 
-//Qt
-#include <QDir>
-#include <QProcess>
-#include <QLibraryInfo>
-#include <QMessageBox>
-
+// STL
 #include <iostream>
 
-void initAssistant(QProcess* proc)
+// Qt
+#include <QDir>
+#include <QLibraryInfo>
+#include <QMessageBox>
+#include <QProcess>
+
+void TeInitAssistant(QProcess* proc)
 {
   QStringList args;
   QString app;
@@ -16,11 +43,12 @@ void initAssistant(QProcess* proc)
 #if !defined(Q_OS_MAC)
   app += QLatin1String("assistant");
 #else
-  app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");    
+  app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
 #endif
+
   args << QLatin1String("-collectionFile")
-    << QLatin1String("terraview.qhc")
-    << QLatin1String("-enableRemoteControl");
+       << QLatin1String("terraview.qhc")
+       << QLatin1String("-enableRemoteControl");
 
   proc->start(app, args);
 
@@ -65,29 +93,27 @@ void te::qt::widgets::AssistantHelpManagerImpl::showHelp (const QString& htmRef)
   if(m_proc == 0)
     m_proc = new QProcess;
 
-  QStringList args;
-  QString app;
   QByteArray ba;
   QStringList::iterator it;
 
   switch(m_proc->state())
   {
-  case QProcess::NotRunning:
-    initAssistant(m_proc);
+    case QProcess::NotRunning:
+      TeInitAssistant(m_proc);
 
-    ba.append("setSource " + htmRef.toLocal8Bit() + "\n");
-    m_proc->write(ba);
+      ba.append("setSource " + htmRef.toLocal8Bit() + "\n");
+      m_proc->write(ba);
 
     break;
 
-  case QProcess::Running:
-    ba.append("setSource " + htmRef + ";");
-    ba.append("syncContents\n");
+    case QProcess::Running:
+      ba.append("setSource " + htmRef + ";");
+      ba.append("syncContents\n");
 
-    m_proc->write(ba);
+      m_proc->write(ba);
     break;
 
-  default:
+    default:
     break;
   }
 }
@@ -109,14 +135,15 @@ void te::qt::widgets::AssistantHelpManagerImpl::appendDoc(const QString& docRef)
   #if !defined(Q_OS_MAC)
     app += QLatin1String("assistant");
   #else
-    app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");    
+    app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
   #endif
+
     args << QLatin1String("-collectionFile")
-      << QLatin1String("terraview.qhc");
+         << QLatin1String("terraview.qhc");
 
     args << QLatin1String("-register")
-      << docRef
-      << QLatin1String("-quiet");
+         << docRef
+         << QLatin1String("-quiet");
 
     r = QProcess::execute(app, args);
   }
@@ -126,3 +153,4 @@ void te::qt::widgets::AssistantHelpManagerImpl::appendDoc(const QString& docRef)
     m_proc->write(ba);
   }
 }
+

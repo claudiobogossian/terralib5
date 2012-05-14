@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -23,8 +23,8 @@
   \brief An implementation of HelpManager that uses QAssistant to show help files.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
+#ifndef __TERRALIB_QT_WIDGETS_HELP_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
+#define __TERRALIB_QT_WIDGETS_HELP_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
 
 //TerraLib
 #include "HelpManagerImpl.h"
@@ -36,7 +36,6 @@
 #include <QObject>
 #include <QStringList>
 
-
 //Forward declarations
 class QProcess;
 
@@ -47,11 +46,9 @@ namespace te
     namespace widgets
     {
       /*!
-        
         \class AssistantManagerImpl
 
         \brief A help manager that uses the QAssistant to manage help files.
-
       */
       class TEQTWIDGETSEXPORT AssistantHelpManagerImpl : public QObject, public HelpManagerImpl, public boost::noncopyable
       {
@@ -78,11 +75,11 @@ namespace te
         protected:
 
           QProcess* m_proc;
-
           QStringList m_regDocs;
       };
     }
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
+#endif //__TERRALIB_QT_WIDGETS_HELP_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
+

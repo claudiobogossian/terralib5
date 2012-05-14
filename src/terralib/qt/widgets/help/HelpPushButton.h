@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,7 +21,7 @@
   \file terralib/qt/widgets/help/HelpPushButton.h
 
   \brief A specialized button that uses terralib help managers.
- */
+*/
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HELPPUSHBUTTON_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_HELPPUSHBUTTON_H
@@ -40,6 +40,7 @@ namespace te
     {
       /*!
         \class HelpPushButton
+
         \brief Push button that uses te::qt::widgets::HelpManager on its mouse pressed implementation.
 
         The client must set the page reference, as described in te::qt::widgets::HelpManagerImpl API documentation, before using it or nothing will happen.
@@ -48,29 +49,36 @@ namespace te
       {
         Q_OBJECT
 
-      public:
+        public:
 
-        /*! 
-          \brief Constructor 
-          \param parent Parent widget, used by Qt.
-        */
-        HelpPushButton(QWidget* parent=0);
+          /*! 
+            \brief Constructor.
 
-        /*!
-          \brief Sets the documentation page reference. 
-          \param ref Reference to a page contained in help file project. See te::qt::widgets::HelpManagerImpl for correct syntax of this value.
+            \param parent Parent widget, used by Qt.
+          */
+          HelpPushButton(QWidget* parent=0);
 
-          This will be used to open the correct help file when left mouse button pressed. Using it we can make a context sensitive helper.
-        */
-        void setPageReference(const QString& ref);
+          /*!
+            \brief Sets the documentation page reference. 
 
-      protected:
+            \param ref Reference to a page contained in help file project. See te::qt::widgets::HelpManagerImpl for correct syntax of this value.
 
-        /*! \brief Overloaded function of QPushButton. Only LEFT button pressed will show the help.
-        */
-        void mousePressEvent(QMouseEvent* e);
+            This will be used to open the correct help file when left mouse button pressed. Using it we can make a context sensitive helper.
+          */
+          void setPageReference(const QString& ref);
 
-        QString m_pg_ref;                 //!< Stores the reference for the help file to be presented.
+        protected:
+
+          /*!
+            \brief Overloaded function of QPushButton. Only LEFT button pressed will show the help.
+
+            \param e The mouse press event.
+          */
+          void mousePressEvent(QMouseEvent* e);
+
+        protected:
+
+          QString m_pgRef;   //!< Stores the reference for the help file to be presented.
       };
     }
   }
