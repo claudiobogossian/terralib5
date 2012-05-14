@@ -48,7 +48,7 @@
 
   \brief It specifies the default color used to show texts.
 */
-#define TE_SE_DEFAULT_TEXT_COLOR 0
+#define TE_SE_DEFAULT_TEXT_COLOR 0, 0, 0
 
 /*!
   \def TE_SE_DEFAULT_FONT_SIZE
@@ -76,7 +76,7 @@
 
   \brief It specifies the default color used by stroke basic (solid colors).
 */
-#define TE_SE_DEFAULT_STROKE_BASIC_COLOR 0
+#define TE_SE_DEFAULT_STROKE_BASIC_COLOR 0, 0, 0
 
 /*!
   \def TE_SE_DEFAULT_STROKE_BASIC_WIDTH

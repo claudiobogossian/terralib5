@@ -42,7 +42,7 @@ te::se::Halo::~Halo()
 
 void te::se::Halo::setRadius(ParameterValue* radius)
 {
-  delete radius;
+  delete m_radius;
   m_radius = radius;
 }
 
