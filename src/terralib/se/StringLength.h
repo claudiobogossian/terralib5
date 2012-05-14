@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/StringLength.h
-  
+
   \brief Returns length of string (String formatting functions).
 */
 
@@ -48,7 +48,7 @@ namespace te
       computing its length.
 
       \sa Function, ParameterValue, StringPosition, Trim
-     */
+    */
     class TESEEXPORT StringLength : public Function
     {
       public:
@@ -72,8 +72,6 @@ namespace te
 
         ParameterValue* m_stringValue;  //!< Mandatory.
     };
-
-    
 
   } // end namespace se
 }   // end namespace te

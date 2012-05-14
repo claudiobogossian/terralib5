@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Halo.h
-  
+
   \brief A Halo is a type of Fill that is applied to the backgrounds of font glyphs.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_HALO_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -95,10 +93,9 @@ namespace te
 
         ParameterValue* m_radius;    //!< The Radius element gives the absolute size of a halo radius in pixels encoded as a floating-point number. The radius is taken from the outside edge of a font glyph to extend the area of coverage of the glyph (and the inside edge of 'holes' in the glyphs). The halo of a text label is considered to be a single shape. (Optional)
         Fill* m_fill;                //!< Specifies how the hallo text area will be filled. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_HALO_H
-

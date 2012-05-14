@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/FormatDate.h
-  
+
   \brief Date formatting function.
 */
 
@@ -59,7 +59,7 @@ namespace te
       Standard output is as defined in ISO 8601: <b>YYYY-MM-DDThh:mm:ss</b>.
 
       \sa Function, ParameterValue
-     */
+    */
     class TESEEXPORT FormatDate : public Function
     {
       public:
@@ -105,8 +105,7 @@ namespace te
           <li><b>a:</b> am/pm marker</li>
           <li><b>z:</b> z: time zone (if present e.g. Pacific Standard Time; PST; GMT-08:00)</li>
           </ul>
-         */
-
+        */
         void setDateValue(ParameterValue* v);
         void setPattern(const std::string& p);
 
@@ -121,7 +120,7 @@ namespace te
           \brief No copy constructor allowed.
 
           \param rhs The other object.
-         */
+        */
         FormatDate(const FormatDate& rhs);
 
         /*!
@@ -130,7 +129,7 @@ namespace te
           \param rhs The other object.
 
           \return A reference for this.
-         */
+        */
         FormatDate& operator=(const FormatDate& rhs);
 
         //@}
@@ -139,7 +138,7 @@ namespace te
 
         ParameterValue* m_dateValue; //!< Mandatory.
         std::string m_pattern;       //!< Mandatory.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

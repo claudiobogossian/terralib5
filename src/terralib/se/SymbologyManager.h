@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/SymbologyManager.h
- 
+
   \brief The SymbologyManager is a singleton that can be used to manage all loaded symbols in TerraLib.
 */
 
@@ -51,7 +51,7 @@ namespace te
 
       \todo Sera que nao devia ser uma classe chamada StyleManager? Eu acho que nao pois soh tem serventia p/ os tipos basicos de desenho que a pessoa poderia escolher previamente e neste caso nao sao estilos e sim simbolos!
       \todo Talvez seria interessante criar uma classe StyleManager com estilos completos ou pelo menos que a partir de simbolos ele jah defina tudinho: tracejado-vazado-linhas-amarelas...
-     */
+    */
     class TESEEXPORT SymbologyManager : public te::common::Singleton<SymbologyManager>
     {
       friend class te::common::Singleton<SymbologyManager>;

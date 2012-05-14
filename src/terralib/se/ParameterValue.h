@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/ParameterValue.h
-  
+
   \brief The ParameterValueType uses WFS-Filter expressions to give values for SE graphic parameters.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_PARAMETERVALUE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <string>
@@ -116,4 +114,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_PARAMETERVALUE_H
-

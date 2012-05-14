@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/ShadedRelief.h
-  
+
   \brief ShadedRelief specifies the application of relief shading (or "hill shading") to a DEM raster to give it somewhat of a three-dimensional effect and to make elevation changes more visible.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_SHADEDRELIEF_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -88,7 +86,7 @@ namespace te
 
         bool m_brightnessOnly;  //!< It may be 0 (false) or 1 (true). (Optional)
         double m_reliefFactor;  //!< It gives the amount of exaggeration to use for the height of the "hills". (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

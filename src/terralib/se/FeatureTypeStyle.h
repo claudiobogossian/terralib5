@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/FeatureTypeStyle.h
-  
+
   \brief The FeatureTypeStyle defines the styling that is to be applied to a dataset that can be viewed as a feature type.
 */
 
@@ -39,7 +39,7 @@ namespace te
       \brief The FeatureTypeStyle defines the styling that is to be applied to a dataset that can be viewed as a feature type.
 
       \sa Style, CoverageStyle
-     */
+    */
     class TESEEXPORT FeatureTypeStyle : public Style
     {
       public:
@@ -65,7 +65,6 @@ namespace te
         //@{
 
         void setFeatureTypeName(std::string* name);
-
         const std::string* getFeatureTypeName() const;
 
         //@}
@@ -73,7 +72,7 @@ namespace te
       private:
 
         std::string* m_featureTypeName; //!< It identifies the specific feature type that the style is for. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

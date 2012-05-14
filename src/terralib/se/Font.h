@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Font.h
-  
+
   \brief A Font specifies the text font to use in a text symbolizer.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_FONT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <map>
@@ -59,7 +57,7 @@ namespace te
       </ul>
 
       \sa TextSymbolizer
-     */
+    */
     class TESEEXPORT Font : public boost::noncopyable
     {
       public:
@@ -110,7 +108,7 @@ namespace te
 
           \note If there is already a SvgParamater with the same name it will be overrided.
           \note The Font object will take the ownership of the informed p pointer.
-         */
+        */
         void add(SvgParameter* p);
 
         void setFamily(const std::string& family);

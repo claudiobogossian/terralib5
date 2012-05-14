@@ -19,8 +19,8 @@
 
 /*!
   \file terralib/se/Categorize.h
-  
-  \brief The transformation of continuous values to distinct values (Categorize function). 
+
+  \brief The transformation of continuous values to distinct values (Categorize function).
 */
 
 #ifndef __TERRALIB_SE_INTERNAL_CATEGORIZE_H
@@ -29,7 +29,7 @@
 // TerraLib
 #include "Function.h"
 
-// STL 
+// STL
 #include <vector>
 
 namespace te
@@ -86,7 +86,7 @@ namespace te
       "succeeding" the latter being the default.
 
       \sa Function, ParameterValue
-     */
+    */
     class TESEEXPORT Categorize : public Function
     {
       public:
@@ -123,12 +123,12 @@ namespace te
 
       private:
 
-        ParameterValue* m_lookupValue; //!< Mandatory.
-        ParameterValue* m_value;       //!< Mandatory.
-        std::vector<ParameterValue*> m_thresholds;   //!< A vector of pairs (Threshold, Value). (Optional)
+        ParameterValue* m_lookupValue;                  //!< Mandatory.
+        ParameterValue* m_value;                        //!< Mandatory.
+        std::vector<ParameterValue*> m_thresholds;      //!< A vector of pairs (Threshold, Value). (Optional)
         std::vector<ParameterValue*> m_thresholdValues;
-        ThresholdsBelongToType m_threshholdsBelongTo;                             //!<  (Optional)
-    };    
+        ThresholdsBelongToType m_threshholdsBelongTo;   //!< (Optional)
+    };
 
   } // end namespace se
 }   // end namespace te

@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/GraphicStroke.h
-  
+
   \brief A GraphicStroke defines a repeated-linear graphic pattern to be used for stroking a line.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_GRAPHICSTROKE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -48,7 +46,7 @@ namespace te
       \brief A GraphicStroke defines a repeated-linear graphic pattern to be used for stroking a line.
 
       \sa Stroke, Graphic, ParameterValue
-     */
+    */
     class TESEEXPORT GraphicStroke : public boost::noncopyable
     {
       public:
@@ -83,7 +81,7 @@ namespace te
           \param g The linear graphic.
 
           \note The GraphicStroke object will take the ownership of the informed Graphic pointer.
-         */
+        */
         void setGraphic(Graphic* g);
         const Graphic* getGraphic() const;
         void removeGraphic();
@@ -94,7 +92,7 @@ namespace te
           \param initialGap The initial gap.
 
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
-         */
+        */
         void setInitialGap(ParameterValue* initialGap);
         const ParameterValue* getInitialGap() const;
 
@@ -104,7 +102,7 @@ namespace te
           \param gap The initial gap.
 
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
-         */
+        */
         void setGap(ParameterValue* gap);
         const ParameterValue* getGap() const;
 
@@ -121,4 +119,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_GRAPHICSTROKE_H
-

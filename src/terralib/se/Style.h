@@ -120,10 +120,9 @@ namespace te
         std::vector<Rule*> m_rules;                           //!< It allows conditional rendering. (Mandatory if m_onlineResource is empty, otherwise, it is optional)
         std::vector<te::xl::SimpleLink*> m_onlineResources;   //!< It refers to an external document. (Mandatory if m_rules is empty, otherwise, it is optional)
         std::string m_version;                                //!< The version is an optional attribute on the FeatureTypeStyle that identifies the SE version number that the FeatureTypeStyle corresponds to. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_STYLE_H
-

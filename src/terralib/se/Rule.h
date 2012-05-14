@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Rule.h
-  
+
   \brief A Rule is used to attach property/scale conditions to and group the individual symbols used for rendering.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_RULE_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL 
 #include <string>
@@ -119,7 +117,6 @@ namespace te
 
         const te::fe::Filter* getFilter() const;
 
-
         /*!
           \brief
 
@@ -155,10 +152,9 @@ namespace te
         double m_minScaleDenominator;            //!< It defines the range of map-rendering scales for which the rule should be applied. Default: 0.0. (Optional)
         double m_maxScaleDenominator;            //!< It defines the range of map-rendering scales for which the rule should be applied. Default: TE_DOUBLE_INFINITY. (Optional)
         std::vector<Symbolizer*> m_symbolizers;  //!< A Symbolizer describes how a feature/coverage is to appear on a map. (Mandatory)
-    };      
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_RULE_H
-

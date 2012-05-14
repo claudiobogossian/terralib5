@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/Fill.h
-  
+
   \brief A Fill specifies the pattern for filling an area geometry.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_FILL_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // STL
 #include <map>
@@ -55,7 +53,7 @@ namespace te
       and "fill-opacity" instead of "stroke-opacity".
 
       \sa PolygonSymbolizer, Graphic, FillBasicColor, Mark, TextSymbolizer, Halo
-     */
+    */
     class TESEEXPORT Fill : public boost::noncopyable
     {
       public:
@@ -83,14 +81,14 @@ namespace te
                  GraphicFill defines that the pixels of the area will be drawn repeating an area-fill pattern.
 
           \note The Fill object will take the ownership of the informed fill pointer.
-         */
+        */
         void setGraphicFill(Graphic* g);
 
         /*!
           \brief Gets the GraphicFill element associate to this Fill.
           
           \return The GraphicFill element.
-         */
+        */
         const Graphic* getGraphicFill() const;
 
         /*!
@@ -98,7 +96,7 @@ namespace te
 
           \note If there is already a SvgParamater with the same name it will be overrided.
           \note The Fill object will take the ownership of the informed p pointer.
-         */
+        */
         void add(SvgParameter* p);
 
         void setColor(const std::string& color);
@@ -121,7 +119,7 @@ namespace te
 
         static const std::string sm_fill;                  //!< SVG/CSS "fill" parameter.
         static const std::string sm_opacity;               //!< SVG/CSS "fill-opacity parameter.
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te

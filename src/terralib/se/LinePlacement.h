@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/se/LinePlacement.h
-  
+
   \brief A LinePlacement specifies how a text label should be rendered relative to a linear geometry.
 */
 
@@ -27,9 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
 
 // TerraLib
-#include "../common/BaseVisitable.h"
 #include "Config.h"
-#include "Visitor.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -59,7 +57,7 @@ namespace te
       shape of the polygon.
 
       \sa LabelPlacement, ParameterValue
-     */
+    */
     class TESEEXPORT LinePlacement : public boost::noncopyable
     {
       public:
@@ -77,7 +75,7 @@ namespace te
 
         //@}
 
-         /** @name Accessor methods
+        /** @name Accessor methods
          *  Methods used to get or set properties.
          */
         //@{
@@ -99,10 +97,9 @@ namespace te
         ParameterValue* m_gap;                 //!< Gap defines the empty space between two Graphics or Labels. (Optional)
         bool m_isAligned;                      //!< Labels can either be aligned to the line geometry if m_isAligned is "true" (the default) or are drawn horizontally. (Optional)
         bool m_generalizeLine;                 //!< It allows the actual geometry, be it a linestring or polygon, to be generalized for label placement. This is e.g. useful for labelling polygons inside their interior when there is need for the label to resemble the shape of the polygon. (Optional)
-    };    
+    };
 
   } // end namespace se
 }   // end namespace te
 
 #endif  // __TERRALIB_SE_INTERNAL_LINEPLACEMENT_H
-

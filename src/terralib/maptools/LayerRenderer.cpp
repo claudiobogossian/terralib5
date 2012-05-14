@@ -29,6 +29,14 @@
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/query/And.h"
+#include "../dataaccess/query/DataSetName.h"
+#include "../dataaccess/query/Field.h"
+#include "../dataaccess/query/LiteralEnvelope.h"
+#include "../dataaccess/query/PropertyName.h"
+#include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/ST_Intersects.h"
+#include "../dataaccess/query/Where.h"
 #include "../fe/Filter.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Envelope.h"
@@ -111,22 +119,46 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     te::da::DataSet* dataset = 0;
     if(!filter)
     {
-      // There isn't a filter expression. Gets the dataset using only box restriction...
+      // There isn't a Filter expression. Gets the dataset using only box restriction...
       dataset = t->getDataSet(dsname, gcol, &box, te::gm::INTERSECTS);
     }
     else
     {
-      // ... gets an enconder...
+      // Gets an enconder...
       te::map::QueryEncoder converter;
-      // ... and converts the filter expression to a TerraLib Query object!
-      te::da::Where* wh = converter.getWhere(filter);
-      /* TODO: 1) Create te::da::Select object with this where + box restriction;
-               2) Call the transactor query method to get the correct restricted dataset. */
+      // ... and converts the Filter expression to a TerraLib Expression!
+      te::da::Expression* exp = converter.getExpression(filter);
+      assert(exp);
+
+      /* 1) Creating te::da::Where object with this expression + box restriction */
+
+      // Box restriction
+      te::da::LiteralEnvelope* lenv = new te::da::LiteralEnvelope(box, srid);
+      te::da::PropertyName* geomProperty = new te::da::PropertyName(gcol->getName());
+      te::da::ST_Intersects* intersects = new te::da::ST_Intersects(geomProperty, lenv);
+
+      // Combining the two expressions (Filter expression + box restriction)
+      te::da::And* finalRestriction = new te::da::And(exp, intersects);
+      
+      te::da::Where* wh = new te::da::Where(exp);
+      wh->setExp(finalRestriction);
+
+      // Fields
+      te::da::Fields* all = new te::da::Fields;
+      all->push_back(new te::da::Field("*"));
+
+      // From
+      te::da::FromItem* fi = new te::da::DataSetName(dsname);
+      te::da::From* from = new te::da::From;
+      from->push_back(fi);
+
+      // Builds the Select
+      te::da::Select select(all, from, wh);
+
+      /* 2) Calling the transactor query method to get the correct restricted dataset. */
+      dataset = t->query(select);
     }
     assert(dataset);
-
-    /* Here goes the canvas configuration.
-       It is necessary interprets the <Symbolizers> elements included on Rule. */
 
     // Gets the set of symbolizers
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
