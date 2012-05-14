@@ -74,6 +74,9 @@ namespace te
     {
       public:
 
+        /*! \brief This typedef is required by MACOSX. */
+        typedef ThreadingPolicy<ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>, MutexPolicy, LockReadingPolicy, LockWritingPolicy> threading_policy_type;
+
         /*! \brief Constructor. */
         ApplicationSettings();
 
@@ -184,7 +187,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::setValue(const std::string& key, const std::string& value)
     {
-      LockWrite l(this);
+      typename threading_policy_type::LockWrite l(this);
 
       m_settings.put(key, value);
       m_dirty = true;
@@ -193,7 +196,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     std::string ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::getValue(const std::string& key)
     {
-      LockRead l(this);
+      typename threading_policy_type::LockRead l(this);
 
       return m_settings.get<std::string>(key);
     }
@@ -201,7 +204,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::load(const std::string& settingsFile)
     {
-      LockWrite l(this);
+      typename threading_policy_type::LockWrite l(this);
 
       m_dirty = false;
       m_settings.clear();
@@ -214,7 +217,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::update()
     {
-      LockWrite l(this);
+      typename threading_policy_type::LockWrite l(this);
 
       if(m_dirty == false)
         return;
@@ -235,7 +238,7 @@ namespace te
     template<template <class, class, class, class> class ThreadingPolicy, class MutexPolicy, class LockReadingPolicy, class LockWritingPolicy> inline
     void ApplicationSettings<ThreadingPolicy, MutexPolicy, LockReadingPolicy, LockWritingPolicy>::changed()
     {
-      LockWrite l(this);
+      typename threading_policy_type::LockWrite l(this);
 
       m_dirty = true;
     }
