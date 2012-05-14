@@ -69,7 +69,7 @@ namespace te
 
       \return The amount of total virtual memory (bytes).
     */
-    TECOMMONEXPORT unsigned long int GetTotalVirtualMemory();  
+    TECOMMONEXPORT unsigned long int GetTotalVirtualMemory();
 
     /*!
       \brief Returns the number of physical processors.

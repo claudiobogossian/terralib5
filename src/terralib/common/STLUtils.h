@@ -103,6 +103,22 @@ namespace te
     }
 
     /*!
+      \brief This function can be applied to a vector of pointers. It will delete each pointer in the vector.
+
+      \param v The vector of pointers to be cleaned.
+
+      \note It will not clear the vector at the end of the cleanup.
+    */
+    template<class IT> inline void FreeContents(IT it, IT itend)
+    {
+      while(it != itend)
+      {
+        delete *it;
+        ++it;
+      }
+    }
+
+    /*!
       \brief This function can be applied to a pointer to a vector of pointers.
       
       It will delete each pointer in the vector and then delete the pointer to the vector.
