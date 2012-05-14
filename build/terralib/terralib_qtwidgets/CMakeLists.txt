@@ -131,6 +131,7 @@ file(GLOB DATAGRID_SRCS ${SRCDIR}/widgets/datagrid/*.cpp)
 file(GLOB DATASET_SRCS  ${SRCDIR}/widgets/dataset/*.cpp)
 file(GLOB LAYER_SRCS    ${SRCDIR}/widgets/layer/*.cpp)
 file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
+file(GLOB HELP_SRCS ${SRCDIR}/widgets/help/*.cpp)
 
 # Select the header files
 file(GLOB QWT_HDRS      ${SRCDIR}/qwt/*.h)
@@ -140,6 +141,7 @@ file(GLOB DATAGRID_HDRS ${SRCDIR}/widgets/datagrid/*.h)
 file(GLOB DATASET_HDRS  ${SRCDIR}/widgets/dataset/*.h)
 file(GLOB LAYER_HDRS    ${SRCDIR}/widgets/layer/*.h)
 file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
+file(GLOB HELP_HDRS ${SRCDIR}/widgets/help/*.h)
 
 # Group the source and header files
 source_group("qwt\\Source Files"               FILES ${QWT_SRCS})
@@ -149,6 +151,7 @@ source_group("widgets\\datagrid\\Source Files" FILES ${DATAGRID_SRCS})
 source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
+source_group("widgets\\help\\Source Files" FILES ${HELP_SRCS})
 source_group("qwt\\Header Files"               FILES ${QWT_HDRS})
 source_group("widgets\\Header Files"           FILES ${WIDGETS_HDRS})
 source_group("widgets\\canvas\\Header Files"   FILES ${CANVAS_HDRS})
@@ -156,6 +159,7 @@ source_group("widgets\\datagrid\\Header Files" FILES ${DATAGRID_HDRS})
 source_group("widgets\\dataset\\Header Files"  FILES ${DATASET_HDRS})
 source_group("widgets\\layer\\Header Files"    FILES ${LAYER_HDRS})
 source_group("widgets\\property\\Header Files" FILES ${PROPERTY_HDRS})
+source_group("widgets\\help\\Header Files" FILES ${HELP_HDRS})
 
 # Select the header files for moc'ing
 file(GLOB HDRS_TO_MOC
@@ -182,7 +186,9 @@ file(GLOB HDRS_TO_MOC
    ${SRCDIR}/widgets/property/RenameProperty.h
    ${SRCDIR}/widgets/property/UpdateProperty.h	
    ${SRCDIR}/widgets/canvas/MapDisplay.h
-   ${SRCDIR}/widgets/canvas/ZoomAndPan.h)
+   ${SRCDIR}/widgets/canvas/ZoomAndPan.h
+   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
+   ${SRCDIR}/widgets/help/HelpPushButton.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
@@ -222,6 +228,7 @@ add_library(${LIB_NAME} SHARED
             ${DATASET_SRCS}  ${DATASET_HDRS}
             ${LAYER_SRCS}    ${LAYER_HDRS}
             ${PROPERTY_SRCS} ${PROPERTY_HDRS}
+            ${HELP_SRCS}     ${HELP_HDRS}
             ${UI} ${MOC})
             
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
