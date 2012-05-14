@@ -51,8 +51,8 @@ namespace te
     class TECOMMONEXPORT SystemApplicationSettings
       : public ApplicationSettings<ObjectLevelLockable,
                                    ::boost::recursive_mutex,
-                                   ::boost::lock_guard<::boost::recursive_mutex>,
-                                   ::boost::lock_guard<::boost::recursive_mutex> >,
+                                   ::boost::lock_guard< ::boost::recursive_mutex>,
+                                   ::boost::lock_guard< ::boost::recursive_mutex> >,
         public Singleton<SystemApplicationSettings>
     {
       friend class Singleton<SystemApplicationSettings>;
