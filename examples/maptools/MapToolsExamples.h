@@ -44,11 +44,10 @@ void LoadModules();
 /*! \brief It retrieves data from a data source, create a set of layer and show map display. */
 void MapDisplay();
 
-/*! \brief It converts a OGC Filter Expression to TerraLib Query. */
+/*! \brief It converts a OGC Filter Expression to TerraLib Expression. */
 void Filter2Query();
 
 /*! \brief It draws a set of layers using styles encoded using OGC Symbology Enconding specification. */
 void DrawStyledLayers();
 
 #endif  // __TERRALIB_EXAMPLES_MAPTOOLS_INTERNAL_MAPTOOLSEXAMPLES_H
-

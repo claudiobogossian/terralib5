@@ -45,22 +45,21 @@ void Filter2Query()
 
   // Gets an enconder...
   te::map::QueryEncoder converter;
-  // ... and convert it to a TerraLib Query object!
-  te::da::Where* wh = converter.getWhere(filter);
+  // ... and convert it to a TerraLib Expression!
+  te::da::Expression* exp = converter.getExpression(filter);
 
   // Let's see the result...
-  
   te::da::SQLDialect* dialect = createDialect(); // a hard-coded dialect
   
   std::string sql;
   te::da::SQLVisitor sqlConverter(*dialect, sql);
-  wh->getExp()->accept(sqlConverter);
+  exp->accept(sqlConverter);
 
   std::cout << "Conversion result is: " << sql << std::endl;
-  std::cout << "Press enter...";
-  getchar();
+  std::cout << "Press Enter..." << std::endl;
+  std::cin.get();
 
   delete filter;
-  delete wh;
+  delete exp;
   delete dialect;
 }
