@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file QueryEncoder.cpp
+  \file terralib/maptools/QueryEncoder.cpp
   
-  \brief A visitor that converts a Filter expression to TerraLib Query object.
+  \brief A visitor that converts a OGC Filter Expression to TerraLib Expression.
  */
 
 // TerraLib
@@ -70,18 +70,15 @@ te::map::QueryEncoder::QueryEncoder()
 
 te::map::QueryEncoder::~QueryEncoder()
 {
-  delete m_expression;
 }
 
-te::da::Where* te::map::QueryEncoder::getWhere(const te::fe::Filter* f)
+te::da::Expression* te::map::QueryEncoder::getExpression(const te::fe::Filter* f)
 {
-  te::da::Where* w = 0;
   te::fe::AbstractOp* ops = f->getOp();
   if(ops)
   {
     ops->accept(*this);
-    w = new te::da::Where(m_expression);
-    m_expression = 0;
+    return m_expression;
   }
   else
   {
@@ -93,10 +90,10 @@ te::da::Where* te::map::QueryEncoder::getWhere(const te::fe::Filter* f)
       te::fe::ObjectId* objId = f->getOid(i);
       in->add(new te::da::LiteralString(objId->getId()));
     }
-    w = new te::da::Where(in);
+    return in;
   }
 
-  return w;
+  return 0;
 }
 
 void te::map::QueryEncoder::visit(const te::fe::AbstractOp& /*visited*/)
