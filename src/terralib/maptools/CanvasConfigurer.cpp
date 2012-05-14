@@ -27,14 +27,17 @@
 #include "../common/StringUtils.h"
 #include "../fe/Literal.h"
 #include "../se/Fill.h"
+#include "../se/Font.h"
 #include "../se/Graphic.h"
 #include "../se/GraphicStroke.h"
+#include "../se/Halo.h"
 #include "../se/LineSymbolizer.h"
 #include "../se/PointSymbolizer.h"
 #include "../se/PolygonSymbolizer.h"
 #include "../se/Stroke.h"
 #include "../se/SvgParameter.h"
 #include "../se/Symbolizer.h"
+#include "../se/TextSymbolizer.h"
 #include "AbstractMarkFactory.h"
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
@@ -92,13 +95,8 @@ void te::map::CanvasConfigurer::visit(const te::se::Symbolizer& visited)
 
 void te::map::CanvasConfigurer::visit(const te::se::PolygonSymbolizer& visited)
 {
-// Default configuration
-  m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
-  m_canvas->setPolygonContourWidth(1);
-  m_canvas->setPolygonContourDashStyle(te::map::SolidLine);
-  m_canvas->setPolygonContourCapStyle(te::map::RoundCap);
-  m_canvas->setPolygonContourJoinStyle(te::map::RoundJoin);
-  m_canvas->setPolygonFillColor(te::color::RGBAColor(127, 127, 127, TE_OPAQUE));
+// Default
+  configDefaultPolygon();
 
 // Configuring the polygon stroke...
   const te::se::Stroke* stroke = visited.getStroke();
@@ -117,23 +115,25 @@ void te::map::CanvasConfigurer::visit(const te::se::PolygonSymbolizer& visited)
 
 void te::map::CanvasConfigurer::visit(const te::se::LineSymbolizer& visited)
 {
-// Default configuration
-  m_canvas->setLineColor(te::color::RGBAColor(0 , 0, 255, TE_OPAQUE));
-  m_canvas->setLineWidth(1);
-  m_canvas->setLineDashStyle(te::map::SolidLine);
-  m_canvas->setLineCapStyle(te::map::RoundCap);
-  m_canvas->setLineJoinStyle(te::map::RoundJoin);
-
 // Configuring the line stroke...
   const te::se::Stroke* stroke = visited.getStroke();
-  if(stroke)
-    config(stroke);
-  else
+  if(!stroke)
+  {
     m_canvas->setLineColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // no stroke
+    return;
+  }
+
+// Default
+  configDefaultLine();
+
+  config(stroke);
 }
 
 void te::map::CanvasConfigurer::visit(const te::se::PointSymbolizer& visited)
 {
+// Default
+  configDefaultPoint();
+
   const te::se::Graphic* graphic = visited.getGraphic();
   if(graphic)
     config(graphic, te::map::CanvasConfigurer::Point);
@@ -141,7 +141,74 @@ void te::map::CanvasConfigurer::visit(const te::se::PointSymbolizer& visited)
 
 void te::map::CanvasConfigurer::visit(const te::se::TextSymbolizer& visited)
 {
-// TODO
+// Default
+  configDefaultText();
+
+  const te::se::Font* font = visited.getFont();
+
+// Color
+  const te::se::Fill* fill = visited.getFill();
+  if(fill)
+    config(fill, false);
+
+// Family
+  const te::se::SvgParameter* family = font->getFamily();
+  if(family)
+    m_canvas->setFontFamily(te::map::GetString(family));
+
+// Size
+  const te::se::SvgParameter* size = font->getSize();
+  if(size)
+    m_canvas->setTextPointSize(te::map::GetDouble(size));
+
+// Style - {normal, italic, and oblique}
+  const te::se::SvgParameter* style = font->getStyle();
+  if(style)
+  {
+    std::string value = te::map::GetString(style);
+    //TODO: m_canvas->setTextStyle(need a map <std::string, te::FontStyle>);
+  }
+
+// Weight - {normal, and bold}
+  const te::se::SvgParameter* weight = font->getWeight();
+  if(weight)
+  {
+    std::string value = te::map::GetString(weight);
+    //TODO: m_canvas->setTextWeight(need a map <std::string, te::WeightStyle>);
+  }
+
+// Halo
+  const te::se::Halo* halo = visited.getHalo();
+  if(halo)
+  {
+    m_canvas->setTextContourEnabled(true);
+    m_canvas->setTextContourColor(te::color::RGBAColor(TE_SE_DEFAULT_HALO_COLOR, TE_OPAQUE));
+    m_canvas->setTextContourWidth(1);
+
+    const te::se::Fill* haloFill = halo->getFill();
+    if(haloFill)
+    {
+      // Halo Color
+      int alpha = TE_OPAQUE;
+      const te::se::SvgParameter* opacity = haloFill->getOpacity();
+      if(opacity)
+        alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
+      const te::se::SvgParameter* haloColor = haloFill->getColor();
+      if(haloColor)
+      {
+        te::color::RGBAColor rgba = te::map::GetColor(haloColor);
+        rgba.setColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
+        m_canvas->setTextContourColor(rgba);
+      }
+    }
+
+    const te::se::ParameterValue* radius = halo->getRadius();
+    if(radius)
+    {
+      int width = te::map::GetInt(radius);
+      m_canvas->setTextContourWidth(width);
+    }
+  }
 }
 
 void te::map::CanvasConfigurer::visit(const te::se::RasterSymbolizer& visited)
@@ -151,27 +218,30 @@ void te::map::CanvasConfigurer::visit(const te::se::RasterSymbolizer& visited)
 
 void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool& fromLineSymbolizer)
 {
+// Graphic Fill
   const te::se::Graphic* graphicFill = stroke->getGraphicFill();
   if(graphicFill)
     fromLineSymbolizer ? config(graphicFill, te::map::CanvasConfigurer::Line) : config(graphicFill, te::map::CanvasConfigurer::Contour);
 
+// Color
   int alpha = TE_OPAQUE;
   const te::se::SvgParameter* opacity = stroke->getOpacity();
   if(opacity)
     alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
-
   const te::se::SvgParameter* color = stroke->getColor();
   if(color)
   {
     te::color::RGBAColor rgba = te::map::GetColor(color);
-    rgba = te::color::RGBAColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
+    rgba.setColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
     fromLineSymbolizer ? m_canvas->setLineColor(rgba) : m_canvas->setPolygonContourColor(rgba);
   }
 
+// Width
   const te::se::SvgParameter* width = stroke->getWidth();
   if(width)
     fromLineSymbolizer ? m_canvas->setLineWidth(te::map::GetInt(width)) : m_canvas->setPolygonContourWidth(te::map::GetInt(width));
 
+// LineCap
   const te::se::SvgParameter* linecap = stroke->getLineCap();
   if(linecap)
   {
@@ -180,6 +250,7 @@ void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool&
       fromLineSymbolizer ? m_canvas->setLineCapStyle(it->second) : m_canvas->setPolygonContourCapStyle(it->second);
   }
 
+// LineJoin
   const te::se::SvgParameter* linejoin = stroke->getLineJoin();
   if(linejoin)
   {
@@ -188,6 +259,7 @@ void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool&
       fromLineSymbolizer ? m_canvas->setLineJoinStyle(it->second) : m_canvas->setPolygonContourJoinStyle(it->second);
   }
 
+// Dasharray
   const te::se::SvgParameter* dasharray = stroke->getDashArray();
   if(dasharray)
   {
@@ -201,26 +273,27 @@ void te::map::CanvasConfigurer::config(const te::se::Stroke* stroke, const bool&
            2) Should be verified the GraphicStroke. */
 }
 
-void te::map::CanvasConfigurer::config(const te::se::Fill* fill)
+void te::map::CanvasConfigurer::config(const te::se::Fill* fill, const bool& fromPolygonSymbolizer)
 {
+// Graphic Fill
   const te::se::Graphic* graphicFill = fill->getGraphicFill();
-  if(graphicFill)
+  if(graphicFill && fromPolygonSymbolizer)
   {
     config(graphicFill, te::map::CanvasConfigurer::Fill);
     return;
   }
 
+// Color
   int alpha = TE_OPAQUE;
   const te::se::SvgParameter* opacity = fill->getOpacity();
   if(opacity)
     alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
-
   const te::se::SvgParameter* color = fill->getColor();
   if(color)
   {
     te::color::RGBAColor rgba = te::map::GetColor(color);
-    rgba = te::color::RGBAColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
-    m_canvas->setPolygonFillColor(rgba);
+    rgba.setColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
+    fromPolygonSymbolizer ? m_canvas->setPolygonFillColor(rgba) : m_canvas->setTextColor(rgba);
   }
 }
 
@@ -228,7 +301,7 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
 {
   // Gets the graphic size
   const te::se::ParameterValue* size = graphic->getSize();
-  int sizeValue = 16; /* TODO: Defines a default size! */
+  int sizeValue = TE_SE_DEFAULT_GRAPHIC_SIZE;
   if(size)
     sizeValue = te::map::GetInt(size);
 
@@ -243,9 +316,9 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
   if(opacity)
     alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
 
-  const std::vector<te::se::Mark*> marks = graphic->getMarks();
-   /* TODO: Here we have a set of marks. Need review! 
+  /* TODO: Here we have a set of marks. Need review! 
             Maybe keep a reference to the dataset and make the draw here... */
+  const std::vector<te::se::Mark*> marks = graphic->getMarks();
   if(!marks.empty())
   {
     for(std::size_t i = 0; i < marks.size(); ++i)
@@ -279,4 +352,41 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
       }
     }
   }
+
+  /* TODO: Here we have a set of ExternalGraphic. */
+}
+
+void te::map::CanvasConfigurer::configDefaultPolygon()
+{
+  m_canvas->setPolygonContourColor(te::color::RGBAColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
+  m_canvas->setPolygonContourWidth(TE_SE_DEFAULT_STROKE_BASIC_WIDTH);
+
+  m_canvas->setPolygonContourDashStyle(te::map::SolidLine);
+  
+  m_canvas->setPolygonContourCapStyle(te::map::RoundCap);
+  m_canvas->setPolygonContourJoinStyle(te::map::RoundJoin);
+
+  m_canvas->setPolygonFillColor(te::color::RGBAColor(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE));
+}
+
+void te::map::CanvasConfigurer::configDefaultLine()
+{
+  m_canvas->setLineColor(te::color::RGBAColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
+  m_canvas->setLineWidth(TE_SE_DEFAULT_STROKE_BASIC_WIDTH);
+
+  m_canvas->setLineDashStyle(te::map::SolidLine);
+
+  m_canvas->setLineCapStyle(te::map::RoundCap);
+  m_canvas->setLineJoinStyle(te::map::RoundJoin);
+}
+
+void te::map::CanvasConfigurer::configDefaultPoint()
+{
+  m_canvas->setPointColor(te::color::RGBAColor(0));
+}
+
+void te::map::CanvasConfigurer::configDefaultText()
+{
+  m_canvas->setTextColor(te::color::RGBAColor(TE_SE_DEFAULT_TEXT_COLOR));
+  m_canvas->setTextPointSize(TE_SE_DEFAULT_FONT_SIZE);
 }

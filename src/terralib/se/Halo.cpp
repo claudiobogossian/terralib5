@@ -46,9 +46,18 @@ void te::se::Halo::setRadius(ParameterValue* radius)
   m_radius = radius;
 }
 
+const te::se::ParameterValue* te::se::Halo::getRadius() const
+{
+  return m_radius;
+}
+
 void te::se::Halo::setFill(Fill* fill)
 {
   delete m_fill;
   m_fill = fill;
 }
 
+const te::se::Fill* te::se::Halo::getFill() const
+{
+  return m_fill;
+}

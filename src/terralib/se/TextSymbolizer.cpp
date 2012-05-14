@@ -64,10 +64,20 @@ void te::se::TextSymbolizer::setLabel(ParameterValue* l)
   m_label = l;
 }
 
+const te::se::ParameterValue* te::se::TextSymbolizer::getLabel() const
+{
+  return m_label;
+}
+
 void te::se::TextSymbolizer::setFont(Font* f)
 {
   delete m_font;
   m_font = f;
+}
+
+const te::se::Font* te::se::TextSymbolizer::getFont() const
+{
+  return m_font;
 }
 
 void te::se::TextSymbolizer::setLabelPlacement(LabelPlacement* l)
@@ -82,9 +92,18 @@ void te::se::TextSymbolizer::setHalo(Halo* h)
   m_halo = h;
 }
 
+const te::se::Halo* te::se::TextSymbolizer::getHalo() const
+{
+  return m_halo;
+}
+
 void te::se::TextSymbolizer::setFill(Fill* f)
 {
   delete m_fill;
   m_fill = f;
 }
 
+const te::se::Fill* te::se::TextSymbolizer::getFill() const
+{
+  return m_fill;
+}

@@ -134,11 +134,41 @@ namespace te
           Fill     /*!< Adjust parameters associated with fill.            */
         };
 
+        /*!
+          \brief Internal method that configs the canvas based on given Stroke element. 
+          
+          \param stroke             The Stroke element that will be used to config the canvas.
+          \param fromLineSymbolizer A flag that indicates if the given stroke come from LineSymbolizer element.
+        */
         void config(const te::se::Stroke* stroke, const bool& fromLineSymbolizer = true);
 
-        void config(const te::se::Fill* fill);
+        /*!
+          \brief Internal method that configs the canvas based on given Fill element. 
+          
+          \param fill The Fill element that will be used to config the canvas.
+          \param fromPolygonSymbolizer A flag that indicates if the given fill come from PolygonSymbolizer element.
+        */
+        void config(const te::se::Fill* fill, const bool& fromPolygonSymbolizer = true);
 
+        /*!
+          \brief Internal method that configs the canvas based on given Graphic element. 
+          
+          \param graphic     The Graphic element that will be used to config the canvas.
+          \param configStyle Enumerated value that indicates which style that should be configured (for Points, Lines, Contours, or Fill).
+        */
         void config(const te::se::Graphic* graphic, ConfigStyle configStyle);
+
+        /*! \brief Configs the canvas with default values for polygon styles. */
+        void configDefaultPolygon();
+
+        /*! \brief Configs the canvas with default values for line styles. */
+        void configDefaultLine();
+        
+        /*! \brief Configs the canvas with default values for point styles. */
+        void configDefaultPoint();
+
+        /*! \brief Configs the canvas with default values for text styles. */
+        void configDefaultText();
 
       private:
 

@@ -82,11 +82,20 @@ namespace te
         //@{
 
         void setGeometry(te::fe::PropertyName* g);
+
         void setLabel(ParameterValue* l);
+        const ParameterValue* getLabel() const;
+
         void setFont(Font* f);
+        const Font* getFont() const;
+
         void setLabelPlacement(LabelPlacement* l);
+
         void setHalo(Halo* h);
+        const Halo* getHalo() const;
+
         void setFill(Fill* f);
+        const Fill* getFill() const;
 
         //@}
 

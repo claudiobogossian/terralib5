@@ -84,8 +84,10 @@ namespace te
         //@{
 
         void setRadius(ParameterValue* radius);
+        const ParameterValue* getRadius() const;
 
         void setFill(Fill* fill);
+        const Fill* getFill() const;
         
         //@}
 
