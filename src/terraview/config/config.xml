@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.terralib.org/schemas/af"
+             xsd:schemaLocation="http://www.terralib.org/schemas/af ../myschemas/terralib/af/af.xsd"
+             version="5.0.0"
+             release="2011-01-01">
+  <Organization>INPE</Organization>
+  <Name>TerraView</Name>	
+  <Title>TerraView</Title>
+  <IconName>terraview</IconName>	
+  <UserSettingsFile xlink:href="user_settings.xml"/>
+  <PluginsFile xlink:href="application_plugins.xml"/>
+  <IconThemeInfo>
+    <BaseDirectory xlink:href="../../icons"/>
+    <DefaultTheme>tango</DefaultTheme>
+  </IconThemeInfo>
+  <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
+  <DefaultPluginsCategory>
+    <Category>Cellular Space</Category>
+    <Category>Data Access</Category>
+	<Category>Data Management</Category>
+    <Category>Examples</Category>
+    <Category>Language Bindings</Category>
+    <Category>Location Base Services</Category>
+    <Category>Plugin Managememt</Category>
+    <Category>Spatial Analysis</Category>
+    <Category>Spatial Operations</Category>
+    <Category>Web Services</Category>
+  </DefaultPluginsCategory>
+  <AboutDialogLogo xlink:href="../../myimages/png/logo_terraview.png"/>
+  <TerraLibLogo xlink:href="../../myimages/png/terralib-logo-100x100.png"/>
+</Application>
