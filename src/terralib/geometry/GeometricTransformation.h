@@ -55,6 +55,13 @@ namespace te
 
         /*! \brief Virtual destructor. */
         virtual ~GeometricTransformation();
+        
+        /*!
+          \brief Returns the current transformation name.
+
+          \return The current transformation name.
+        */
+        virtual const std::string& getName() const = 0;
 
         /*!
           \brief Verifies if the supplied parameters already has a valid transformation.
@@ -285,7 +292,7 @@ namespace te
         */
         virtual unsigned int getMinRequiredTiePoints() const = 0;
 
-      private:
+      protected:
 
         /*! \brief Default constructor. */
         GeometricTransformation();

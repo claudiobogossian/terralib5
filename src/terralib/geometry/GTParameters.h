@@ -36,6 +36,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 namespace te
 {
@@ -48,6 +49,10 @@ namespace te
     */
     class TEGEOMEXPORT GTParameters : public te::common::AbstractParameters
     {
+      protected:
+        
+        mutable std::auto_ptr< GTModelParameters > m_modelParameters; //!< Transformation model parameters.
+        
       public:
         
         /*!
@@ -56,9 +61,16 @@ namespace te
           \brief Tie point type definition.
         */
         typedef std::pair< Coord2D, Coord2D > TiePoint;
+        
+        std::vector< TiePoint > m_tiePoints;      //!< Tie points.
+        std::vector< double > m_directParameters;  //!< Transformation numeric direct parameters.
+        std::vector< double > m_inverseParameters;  //!< Transformation numeric inverse parameters.
 
         /*! \brief Constructor. */
         GTParameters();
+        
+        /*! \brief copy constructor. */
+        GTParameters( const GTParameters& other );        
 
         /*! \brief Destructor. */
         ~GTParameters();
@@ -67,12 +79,28 @@ namespace te
 
         void reset() throw( te::common::Exception );
 
-        const AbstractParameters& operator=( const AbstractParameters& params );
-
-      public:
-
-        std::vector< TiePoint > m_tiePoints;      //!< Tie points.
-        std::vector< double > m_modelParameters;  //!< Transformation model numeric parameters.
+        const GTParameters& operator=( const GTParameters& params );
+        
+        /*!
+          \brief Returns a pointer the the internal specific model parameters or null if they do not exist.
+          
+          \return A pointer the the internal specific model parameters or null if they do not exist.
+        */        
+        inline GTModelParameters const* getModelParameters() const
+        {
+          return m_modelParameters.get();
+        };
+        
+        /*!
+          \brief Set the the internal specific model parameters.
+          
+          \param modelParamsPtr The new model specific parameters.
+        */        
+        void setModelParameters( GTModelParameters const* modelParamsPtr ) const
+        {
+          m_modelParameters.reset( modelParamsPtr ? 
+            ( (GTModelParameters*)modelParamsPtr->clone() ) : 0 );
+        };        
     };
 
   } // end namespace gm

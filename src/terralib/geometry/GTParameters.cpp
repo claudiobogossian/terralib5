@@ -30,6 +30,11 @@ te::gm::GTParameters::GTParameters()
 {
 }
 
+te::gm::GTParameters::GTParameters( const GTParameters& other )
+{ 
+  this->operator=( other );
+}
+
 te::gm::GTParameters::~GTParameters()
 {
 }
@@ -42,19 +47,26 @@ te::common::AbstractParameters* te::gm::GTParameters::clone() const
 void te::gm::GTParameters::reset() throw( te::common::Exception )
 {
   m_tiePoints.clear();
-  m_modelParameters.clear();
+  m_directParameters.clear();
+  m_inverseParameters.clear();
+  m_modelParameters.reset();
 }
 
-const te::common::AbstractParameters& te::gm::GTParameters::operator=( const te::common::AbstractParameters& params )
+const te::gm::GTParameters& te::gm::GTParameters::operator=( 
+  const te::gm::GTParameters& params )
 {
-  reset();
+  m_tiePoints = params.m_tiePoints;
+  m_directParameters = params.m_directParameters;
+  m_inverseParameters = params.m_inverseParameters;
   
-  GTParameters const* paramsPtr = dynamic_cast< GTParameters const* >(&params );
-
-  if( paramsPtr )
+  if( params.m_modelParameters.get() )
   {
-    m_tiePoints = paramsPtr->m_tiePoints;
-    m_modelParameters = paramsPtr->m_modelParameters;
+    m_modelParameters.reset( (GTModelParameters*)
+      params.m_modelParameters->clone() );
+  }
+  else
+  {
+    m_modelParameters.reset();
   }
   
   return *this;

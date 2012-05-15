@@ -43,12 +43,28 @@ bool te::gm::GeometricTransformation::initialize( const GTParameters& newParamet
     
     return true;
   } 
-  else 
+  else if( newParameters.m_tiePoints.size() < getMinRequiredTiePoints() )
+  {
+    /* insufficient number of tie-points */
+    
+    return false;
+  }
+  else
   {
     /* No previous parameters given - Need to calculate the new transformation
        parameters */
     
-    return computeParameters( m_internalParameters );
+    m_internalParameters = newParameters;
+    
+    if( computeParameters( m_internalParameters ) )
+    {
+      return true;
+    }
+    else
+    {
+      m_internalParameters.reset();
+      return false;
+    }
   }
 }
 
