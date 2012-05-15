@@ -44,6 +44,13 @@
 #define TE_SE_DEFAULT_UOM 3
 
 /*!
+  \def TE_SE_DEFAULT_TEXT_COLOR
+
+  \brief It specifies the default color used to show texts.
+*/
+#define TE_SE_DEFAULT_TEXT_COLOR 0, 0, 0
+
+/*!
   \def TE_SE_DEFAULT_FONT_SIZE
 
   \brief It specifies the default font size.
@@ -51,18 +58,32 @@
 #define TE_SE_DEFAULT_FONT_SIZE 10
 
 /*!
+  \def TE_SE_DEFAULT_HALO_COLOR
+
+  \brief It specifies the default color used to show text halo.
+*/
+#define TE_SE_DEFAULT_HALO_COLOR 255, 255, 255
+
+/*!
+  \def TE_SE_DEFAULT_HALO_RADIUS
+
+  \brief It specifies the default halo radius (in pixels).
+*/
+#define TE_SE_DEFAULT_HALO_RADIUS 1
+
+/*!
   \def TE_SE_DEFAULT_FILL_BASIC_COLOR
 
   \brief It specifies the default color used by basic fill (solid colors).
 */
-#define TE_SE_DEFAULT_FILL_BASIC_COLOR 128, 128, 128, 0
+#define TE_SE_DEFAULT_FILL_BASIC_COLOR 128, 128, 128
 
 /*!
   \def TE_SE_DEFAULT_STROKE_BASIC_COLOR
 
   \brief It specifies the default color used by stroke basic (solid colors).
 */
-#define TE_SE_DEFAULT_STROKE_BASIC_COLOR 0
+#define TE_SE_DEFAULT_STROKE_BASIC_COLOR 0, 0, 0
 
 /*!
   \def TE_SE_DEFAULT_STROKE_BASIC_WIDTH
@@ -70,6 +91,13 @@
   \brief It specifies the default width used by stroke basic (solid colors).
 */
 #define TE_SE_DEFAULT_STROKE_BASIC_WIDTH 1
+
+/*!
+  \def TE_SE_DEFAULT_GRAPHIC_SIZE
+
+  \brief It specifies the default graphic size.
+*/
+#define TE_SE_DEFAULT_GRAPHIC_SIZE 16
 
 /*!
   \def TE_SE_DEFAULT_GAMMA_VALUE

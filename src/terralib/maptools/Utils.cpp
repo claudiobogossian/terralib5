@@ -26,12 +26,48 @@
 // TerraLib
 #include "../common/StringUtils.h"
 #include "../fe/Literal.h"
+#include "../se/Fill.h"
 #include "../se/ParameterValue.h"
+#include "../se/Stroke.h"
+#include "../se/SvgParameter.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <cstdlib>
+
+void te::map::GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color)
+{
+  if(stroke == 0)
+    return;
+  te:map::GetColor(stroke->getColor(), stroke->getOpacity(), color);
+}
+
+void te::map::GetColor(const te::se::Fill* fill, te::color::RGBAColor& color)
+{
+  if(fill == 0)
+    return;
+  te::map::GetColor(fill->getColor(), fill->getOpacity(), color);
+}
+
+void  te::map::GetColor(const te::se::ParameterValue* color, const te::se::ParameterValue* opacity, te::color::RGBAColor& rgba)
+{
+  if(color == 0 &&  opacity == 0)
+    return;
+
+  int alpha = TE_OPAQUE;
+  if(opacity)
+  {
+    alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
+    rgba.setColor(rgba.getRed(), rgba.getGreen(), rgba.getBlue(), alpha);
+  }
+
+  if(color)
+  {
+    te::color::RGBAColor rgb = te::map::GetColor(color);
+    rgba.setColor(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), rgba.getAlpha());
+  }
+}
 
 te::color::RGBAColor te::map::GetColor(const te::se::ParameterValue* param)
 {

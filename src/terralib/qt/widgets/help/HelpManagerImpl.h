@@ -38,43 +38,41 @@ namespace te
     namespace widgets
     {
       /*!
-        
         \class HelpManagerImpl
 
         \brief An interface for help managers implementations.
-
       */
       class TEQTWIDGETSEXPORT HelpManagerImpl
       {
-      public:
+        public:
 
+          /** @name Accessor Methods
+           *  Methods used to access internal attributes.
+           */
+          //@{
 
-        /** @name Accessor Methods
-         *  Methods used to access internal attributes.
-         */
-        //@{
+          /*!
+            \brief Opens the help on the selected page.
 
-        /*!
-          \brief Opens the help on the selected page.
+            \param htmRef Reference to some page on the help collection.
 
-          \param htmRef Reference to some page on the help collection.
+            \note There is a syntax for the argument. If it is not respected, we CAN NOT garantee the correct operation. 
+                  The right syntax is as follows: "qthelp://<NAMESPACE defined in Qt help project/<virtual folder>/<fileName>",
+                  i.e. qthelp://dpi.inpe.br.terraview.5.0/doc/associando_arquivos_sites.htm, "dpi.inpe.br.terraview.5.0" is the namespace defined in the Qt help project file, 
+                  "doc" is the virtual folder, also defined in Qt project file, and "associando_arquivos_sites.htm" is file compiled within the project.
+          */
+          virtual void showHelp (const QString& htmRef ) = 0;
 
-          \note There is a syntax for the argument. If it is not respected, we CAN NOT garantee the correct operation. 
-          The right syntax is as follows: "qthelp://<NAMESPACE defined in Qt help project/<virtual folder>/<fileName>",
-          i.e. qthelp://dpi.inpe.br.terraview.5.0/doc/associando_arquivos_sites.htm, "dpi.inpe.br.terraview.5.0" is the namespace defined in the Qt help project file, 
-          "doc" is the virtual folder, also defined in Qt project file, and "associando_arquivos_sites.htm" is file compiled within the project.
-        */
-        virtual void showHelp (const QString& htmRef ) = 0;
+          /*!
+            \brief Appends a collection of help documentation to the existing collection.
 
-        /*!
-          \brief Appends a collection of help documentation to the existing collection.
+            \param docRef Reference to the help collection to be appended.
 
-          \param docRef Reference to the help collection to be appended.
+            \note The docRef argument refers to an existing Qt Help project file. See Qt documentation for details on how to create these kind of files. 
+          */
+          virtual void appendDoc(const QString& docRef) = 0;
 
-          \note The docRef argument refers to an existing Qt Help project file. See Qt documentation for details on how to create these kind of files. 
-        */
-        virtual void appendDoc(const QString& docRef) = 0;
-        //@}
+          //@}
       };
     }
   }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,46 +18,35 @@
  */
 
 /*!
-  \file terralib/se/Halo.cpp
-  
-  \brief A Halo is a type of Fill that is applied to the backgrounds of font glyphs.
+  \file terralib/qt/af/events/Enums.h
+
+  \brief Enumerations for the TerraLib Application Framework.
 */
 
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+
 // TerraLib
-#include "Fill.h"
-#include "Halo.h"
-#include "ParameterValue.h"
+#include "Event.h"
 
-te::se::Halo::Halo()
-  : m_radius(0),
-    m_fill(0)
+namespace te
 {
-}
+  namespace qt
+  {
+    namespace af
+    {
+      namespace evt
+      {
+        enum
+        {
+          APP_CLOSE,
+          CUSTOM = 1024
+        };
 
-te::se::Halo::~Halo()
-{
-  delete m_radius;
-  delete m_fill;
-}
+      } // end namespace evt
+    }   // end namespace af
+  }     // end namesopace qt
+}       // end namespace te
 
-void te::se::Halo::setRadius(ParameterValue* radius)
-{
-  delete m_radius;
-  m_radius = radius;
-}
+#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
 
-const te::se::ParameterValue* te::se::Halo::getRadius() const
-{
-  return m_radius;
-}
-
-void te::se::Halo::setFill(Fill* fill)
-{
-  delete m_fill;
-  m_fill = fill;
-}
-
-const te::se::Fill* te::se::Halo::getFill() const
-{
-  return m_fill;
-}

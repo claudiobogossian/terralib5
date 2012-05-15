@@ -18,32 +18,46 @@
  */
 
 /*!
-  \file terralib/qt/widgets/help/HelpPushButton.cpp
+  \file terralib/qt/af/events/AppClose.h
 
-  \brief A specialized button that uses terralib help managers.
+  \brief This event signals that the application is about to close.
 */
 
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_APPCLOSE_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_APPCLOSE_H
+
 // TerraLib
-#include "HelpManager.h"
-#include "HelpPushButton.h"
+#include "Enums.h"
+#include "Event.h"
 
-//Qt
-#include <QMouseEvent>
-
-te::qt::widgets::HelpPushButton::HelpPushButton(QWidget* parent)
-  : QPushButton(tr("&Help"), parent)
+namespace te
 {
-}
+  namespace qt
+  {
+    namespace af
+    {
+      /*!
+        \class AppClose
 
-void te::qt::widgets::HelpPushButton::setPageReference(const QString& ref)
-{
-  m_pgRef = ref;
-}
+        \brief This event signals that the application is about to close.
+      */
+      class AppClose : public Event
+      {
+        public:
 
-void te::qt::widgets::HelpPushButton::mousePressEvent(QMouseEvent* e)
-{
-  QPushButton::mousePressEvent(e);
+          AppClose()
+            : Event(te::qt::af::evt::APP_CLOSE)
+          {
+          }
 
-  if(e->button() == Qt::LeftButton)
-    te::qt::widgets::HelpManager::getInstance().showHelp(m_pgRef);
-}
+          ~AppClose()
+          {
+          }
+      };
+
+    } // end namespace af
+  }   // end namespace qt
+}     // end namespace te
+
+#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_APPCLOSE_H
+
