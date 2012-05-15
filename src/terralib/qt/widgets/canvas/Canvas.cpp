@@ -1337,14 +1337,18 @@ void te::qt::widgets::Canvas::drawText(const QPoint& p,
   if(angle != 0.)
     m_painter.rotate(angle);
 
-  m_painter.setBrush(Qt::NoBrush);
-  m_painter.fillPath(path, m_txtBrush);
-
   if(m_txtContourEnabled)
   {
+    m_painter.setBrush(Qt::NoBrush);
     m_painter.setPen(m_txtContourPen);
     m_painter.drawPath(path);
   }
+  
+  m_painter.setPen(Qt::NoPen);
+  m_painter.fillPath(path, m_txtBrush);
+
+  m_painter.drawPath(path);
+
   m_painter.setMatrix(m_matrix);
 }
 
