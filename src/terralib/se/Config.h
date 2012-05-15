@@ -58,11 +58,18 @@
 #define TE_SE_DEFAULT_FONT_SIZE 10
 
 /*!
-  \def TE_SE_DEFAULT_HALO_BASIC_COLOR
+  \def TE_SE_DEFAULT_HALO_COLOR
 
   \brief It specifies the default color used to show text halo.
 */
 #define TE_SE_DEFAULT_HALO_COLOR 255, 255, 255
+
+/*!
+  \def TE_SE_DEFAULT_HALO_RADIUS
+
+  \brief It specifies the default halo radius (in pixels).
+*/
+#define TE_SE_DEFAULT_HALO_RADIUS 1
 
 /*!
   \def TE_SE_DEFAULT_FILL_BASIC_COLOR
