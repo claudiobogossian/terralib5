@@ -146,15 +146,14 @@ namespace te
           \brief Internal method that configs the canvas based on given Fill element. 
           
           \param fill The Fill element that will be used to config the canvas.
-          \param fromPolygonSymbolizer A flag that indicates if the given fill come from PolygonSymbolizer element.
         */
-        void config(const te::se::Fill* fill, const bool& fromPolygonSymbolizer = true);
+        void config(const te::se::Fill* fill);
 
         /*!
           \brief Internal method that configs the canvas based on given Graphic element. 
           
           \param graphic     The Graphic element that will be used to config the canvas.
-          \param configStyle Enumerated value that indicates which style that should be configured (for Points, Lines, Contours, or Fill).
+          \param configStyle Enumerated value that indicates which style that should be configured (for Point, Line, Contour, or Fill).
         */
         void config(const te::se::Graphic* graphic, ConfigStyle configStyle);
 
@@ -173,6 +172,7 @@ namespace te
       private:
 
         Canvas* m_canvas;                                                    //!< A pointer to the canvas that will be configured.
+
         static std::map<std::string, te::map::LineCapStyle> sm_lineCapMap;   //!< A map that associates stroke-linecap value to the correct LineCapStyle.
         static std::map<std::string, te::map::LineJoinStyle> sm_lineJoinMap; //!< A map that associates stroke-linejoin value to the correct LineJoinStyle.
     };
