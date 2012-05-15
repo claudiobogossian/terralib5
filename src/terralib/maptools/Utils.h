@@ -38,11 +38,46 @@ namespace te
 // Forward declarations
   namespace se
   {
+    class Fill;
     class ParameterValue;
+    class Stroke;
   }
 
   namespace map
   {
+
+    /*!
+      \brief Gets the RGBA color from Stroke element.
+
+      \param stroke The Symbology Enconding Stroke element.
+      \param color  A pre-created color that will be filled with the values extracted from Stroke.
+
+      \note The given color will be altered based on "stroke" and "stroke-opacity" attributes, if availables.
+    */
+    TEMAPEXPORT void GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color);
+
+    /*!
+      \brief Gets the RGBA color from Fill element.
+
+      \param fill  The Symbology Enconding Fill element.
+      \param color A pre-created color that will be filled with the values extracted from Fill.
+
+      \note The given color will be altered based on "fill" and "fill-opacity" attributes, if availables.
+    */
+    TEMAPEXPORT void GetColor(const te::se::Fill* fill, te::color::RGBAColor& color);
+
+    /*!
+      \brief Gets the RGBA color from parameter values.
+
+      \param color   The Symbology Enconding Parameter Value element that represents the color.
+      \param opacity The Symbology Enconding Parameter Value element that represents the opacity.
+      \param color A pre-created color that will be filled with the values extracted from color and opacity.
+
+      \note The given color will be altered based on "color" and "opacity" parameters, if availables.
+      \note Warning: It consider that the paramater value is enconded using a Literal OGC Filter expression.
+    */
+    TEMAPEXPORT void GetColor(const te::se::ParameterValue* color, const te::se::ParameterValue* opacity, te::color::RGBAColor& rgba);
+
     /*!
       \brief Gets the parameter value as RGBA color.
 
