@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file MatrixUtils.h
+  \file terralib/common/MatrixUtils.h
 
   \brief Matrix manipulation utils.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_MATRIXUTILS_H
 #define __TERRALIB_COMMON_INTERNAL_MATRIXUTILS_H
@@ -29,6 +29,10 @@
 // TerraLib
 #include "Config.h"
 
+// STL
+#include <cassert>
+
+// Boost
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -50,11 +54,11 @@ namespace te
       \return true if ok, false on errors.
     */
     template<class T>
-    bool getInverseMatrix( const boost::numeric::ublas::matrix<T>& inputMatrix,
-      boost::numeric::ublas::matrix<T>& outputMatrix )
+    bool getInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
+                          boost::numeric::ublas::matrix<T>& outputMatrix)
     {
       assert( inputMatrix.size1() == inputMatrix.size2() );
-      
+
       // create a working copy of the input
       boost::numeric::ublas::matrix<T> A( inputMatrix );
       

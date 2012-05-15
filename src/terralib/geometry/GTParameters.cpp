@@ -30,9 +30,9 @@ te::gm::GTParameters::GTParameters()
 {
 }
 
-te::gm::GTParameters::GTParameters( const GTParameters& other )
+te::gm::GTParameters::GTParameters( const GTParameters& rhs )
 { 
-  this->operator=( other );
+  this->operator=( rhs );
 }
 
 te::gm::GTParameters::~GTParameters()

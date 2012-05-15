@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MatrixUtils.cpp
+  \file terralib/common/MatrixUtils.cpp
 
   \brief Matrix manipulation utils.
 */

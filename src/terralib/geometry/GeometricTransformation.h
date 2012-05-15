@@ -96,7 +96,7 @@ namespace te
           
           \return A reference of the current internal transformation parameters.
         */
-        inline const GTParameters& getParameters()
+        const GTParameters& getParameters()
         {
           return m_internalParameters;
         };
@@ -119,7 +119,7 @@ namespace te
 
           \param pt2 pt2 coordinate.
         */
-        inline void directMap( const Coord2D& pt1, Coord2D& pt2 ) const
+        void directMap( const Coord2D& pt1, Coord2D& pt2 ) const
         {
           assert( isValid( m_internalParameters ) );
 
@@ -228,7 +228,7 @@ namespace te
           
           \return The root mean square error.
         */
-        inline double getInverseMapRMSE() const
+        double getInverseMapRMSE() const
         {
           assert( isValid( m_internalParameters ) );
 
@@ -253,7 +253,7 @@ namespace te
 
           \return The current direct mapping error.
         */
-        inline double getDirectMappingError( const GTParameters::TiePoint& tiePoint ) const
+        double getDirectMappingError( const GTParameters::TiePoint& tiePoint ) const
         {
           assert( isValid( m_internalParameters ) );
 

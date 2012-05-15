@@ -19,15 +19,19 @@
 
 /*!
   \file terralib/geometry/AffineGT.h
+
   \brief 2D Affine Geometric transformation base class.
 */
 
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_AFFINEGT_H
 #define __TERRALIB_GEOMETRY_INTERNAL_AFFINEGT_H
 
+// TerraLib
+#include "Config.h"
 #include "GeometricTransformation.h"
 #include "GTFactory.h"
-#include "Config.h"
+
+// Boost
 #include <boost/concept_check.hpp>
 
 namespace te
@@ -51,33 +55,24 @@ GTParameters::m_directParameters = [ a b c d e f ]
     */
     class TEGEOMEXPORT AffineGT : public GeometricTransformation
     {
-      public:        
+      public:
         
-        /*!
-          \brief Default constructor.
-        */
-        AffineGT();        
+        /*! \brief Default constructor. */
+        AffineGT();
 
-        /*! 
-          \brief Virtual destructor. 
-          */
+        /*! \brief Virtual destructor. */
         virtual ~AffineGT();
-        
-        //overload
+
         const std::string& getName() const;
-        
-        //overload
+
         bool isValid( const GTParameters& params ) const;
-        
-        //overload
+
         void directMap( const GTParameters& params, const Coord2D& pt1, 
           Coord2D& pt2 ) const;
           
-        //overload
         void inverseMap( const GTParameters& params, const Coord2D& pt2, 
           Coord2D& pt1 ) const;
-          
-        //overload
+
         unsigned int getMinRequiredTiePoints() const;
         
         /*!
@@ -103,18 +98,16 @@ GTParameters::m_directParameters = [ a b c d e f ]
           
           \return true if ok, false on errors.
         */       
-        static bool decompose( const std::vector< double >& transfParams,
-          double& translationX, double& translationY,
-          double& scalingFactorX, double& scalingFactorY, double& skew,
-          double& squeeze, double& scaling, double& rotation );         
+        static bool decompose(const std::vector< double >& transfParams,
+                              double& translationX, double& translationY,
+                              double& scalingFactorX, double& scalingFactorY, double& skew,
+                              double& squeeze, double& scaling, double& rotation );
 
       protected:
-        
-        //overload
-        bool computeParameters( GTParameters& params ) const;
 
+        bool computeParameters( GTParameters& params ) const;
     };
-    
+
     /*!
       \class GTAffineFactory
 
@@ -129,9 +122,10 @@ GTParameters::m_directParameters = [ a b c d e f ]
         GTAffineFactory();
         
         GeometricTransformation* build();
-    };    
+    };
+
   } // end namespace gm
 }   // end namespace te
 
-#endif  // __TERRALIB_GEOMETRY_INTERNAL_GEOMETRICTRANSFORMATION_H
+#endif  // __TERRALIB_GEOMETRY_INTERNAL_GAFFINEGT_H
 

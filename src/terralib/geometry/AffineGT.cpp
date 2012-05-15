@@ -24,12 +24,14 @@
 */
 
 // TerraLib
-#include "AffineGT.h"
 #include "../common/MatrixUtils.h"
+#include "AffineGT.h"
 
-#include <boost/numeric/ublas/matrix.hpp>
-
+// STL
 #include <cmath>
+
+// Boost
+#include <boost/numeric/ublas/matrix.hpp>
 
 te::gm::AffineGT::AffineGT()
 {  
@@ -258,7 +260,7 @@ bool te::gm::AffineGT::decompose( const std::vector< double >& transfParams,
 }
 
 te::gm::GTAffineFactory::GTAffineFactory()
-: GTFactory( "affine" )
+  : GTFactory( "affine" )
 {
 }
 
@@ -275,5 +277,4 @@ namespace
 {
   te::gm::GTAffineFactory GTAffineFactoryInstance;
 }
-
 
