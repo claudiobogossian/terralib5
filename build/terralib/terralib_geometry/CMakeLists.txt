@@ -42,9 +42,7 @@ add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEGEOMDLL -DBOOST_ALL_NO_LIB)
 #Set the TerraLib modules to be linked
 if(WIN32)
   link_directories(${ROOT}/lib32/msvc2010)
-elseif(APPLE)
-  link_directories(${ROOT}/lib32/Release ${ROOT}/lib32/Debug)
-elseif(UNIX)
+else(WIN32)
   link_directories(${ROOT}/lib32)
 endif(WIN32)
 
