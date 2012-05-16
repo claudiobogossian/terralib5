@@ -35,11 +35,12 @@ namespace te
     SegmenterStrategyParameters::~SegmenterStrategyParameters()
     {
     }
-    
+/*    
     SegmenterStrategyParameters::SegmenterStrategyParameters( 
       const SegmenterStrategyParameters& )
     {
     }    
+*/    
   } // end namespace rp
 }   // end namespace te    
 

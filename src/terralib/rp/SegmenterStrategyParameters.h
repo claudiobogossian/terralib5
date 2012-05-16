@@ -25,7 +25,8 @@
 #ifndef __TERRALIB_RP_INTERNAL_SEGMENTERSTRATEGYPARAMETERS_H
 #define __TERRALIB_RP_INTERNAL_SEGMENTERSTRATEGYPARAMETERS_H
 
-#include "AbstractParameters.h"
+#include "../common/AbstractParameters.h"
+#include "Config.h"
 
 namespace te
 {
@@ -35,26 +36,25 @@ namespace te
       \class SegmenterStrategyParameters
       \brief Segmenter Strategy Parameters
       */        
-    class TERPEXPORT SegmenterStrategyParameters : public AbstractParameters
+    class TERPEXPORT SegmenterStrategyParameters : public te::common::AbstractParameters
     {
       public:
         
         virtual ~SegmenterStrategyParameters();
         
-        //overload 
-        virtual const AbstractParameters& operator=( const AbstractParameters& params ) = 0;
+        virtual const SegmenterStrategyParameters& operator=( const SegmenterStrategyParameters& params ) = 0;
         
         //overload
-        virtual void reset() throw( te::rp::Exception ) = 0;
+        //virtual void reset() throw( te::common::Exception ) = 0;
         
         //overload
-        virtual AbstractParameters* clone() const= 0;        
+        //virtual AbstractParameters* clone() const= 0;        
         
       protected :
         
         SegmenterStrategyParameters();
         
-        SegmenterStrategyParameters( const SegmenterStrategyParameters& );
+        //SegmenterStrategyParameters( const SegmenterStrategyParameters& );
     };        
   } // end namespace rp
 }   // end namespace te

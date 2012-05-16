@@ -85,8 +85,8 @@ namespace te
       }
     }
     
-    const AbstractParameters& Segmenter::Parameters::operator=( 
-      const AbstractParameters& params )
+    const AlgorithmParameters& Segmenter::Parameters::operator=( 
+      const AlgorithmParameters& params )
     {
       reset();
       
@@ -117,7 +117,7 @@ namespace te
       return *this;
     }
     
-    AbstractParameters* Segmenter::Parameters::clone() const
+    te::common::AbstractParameters* Segmenter::Parameters::clone() const
     {
       return new Parameters( *this );
     }    
