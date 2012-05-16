@@ -27,7 +27,6 @@
 
 #include "Algorithm.h"
 #include "AlgorithmParameters.h"
-#include "AbstractParameters.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -116,7 +115,7 @@ namespace te
             void reset() throw( te::rp::Exception );
             
             //overload
-            const AbstractParameters& operator=( const AbstractParameters& params );
+            const AlgorithmParameters& operator=( const AlgorithmParameters& params );
             
             //overload
             AbstractParameters* clone() const;

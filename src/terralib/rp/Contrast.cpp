@@ -68,8 +68,8 @@ namespace te
       m_outRasterHandlerPtr.reset();
     }
     
-    const AbstractParameters& Contrast::Parameters::operator=( 
-      const AbstractParameters& params )
+    const AlgorithmParameters& Contrast::Parameters::operator=( 
+      const AlgorithmParameters& params )
     {
       reset();
       
@@ -93,7 +93,7 @@ namespace te
       return *this;
     }
     
-    AbstractParameters* Contrast::Parameters::clone() const
+    te::common::AbstractParameters* Contrast::Parameters::clone() const
     {
       return new Parameters( *this );
     }

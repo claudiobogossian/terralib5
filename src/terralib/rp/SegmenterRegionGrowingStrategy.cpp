@@ -56,9 +56,9 @@ namespace te
     {
     }    
     
-    const AbstractParameters& 
+    const SegmenterStrategyParameters& 
     SegmenterRegionGrowingStrategy::Parameters::operator=( 
-      const AbstractParameters& params )
+      const SegmenterStrategyParameters& params )
     {
       reset();
       
@@ -83,7 +83,7 @@ namespace te
       m_segmentFeatures = MeanFeatureType;      
     }
     
-    AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
+    te::common::AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
     {
       return new te::rp::SegmenterRegionGrowingStrategy::Parameters( *this );
     }

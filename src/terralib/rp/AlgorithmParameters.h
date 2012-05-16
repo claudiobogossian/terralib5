@@ -25,7 +25,8 @@
 #ifndef __TERRALIB_RP_INTERNAL_ALGORITHM_PARAMETERS_H
 #define __TERRALIB_RP_INTERNAL_ALGORITHM_PARAMETERS_H
 
-#include "AbstractParameters.h"
+#include "../common/AbstractParameters.h"
+#include "Config.h"
 
 namespace te
 {
@@ -35,17 +36,16 @@ namespace te
       \class AlgorithmParameters
       \brief Raster Processing algorithm parameters base interface.
     */
-    class TERPEXPORT AlgorithmParameters : public AbstractParameters
+    class TERPEXPORT AlgorithmParameters : public te::common::AbstractParameters
     {
       public:
         
         virtual ~AlgorithmParameters();
         
-        //overload 
-        virtual const AbstractParameters& operator=( const AbstractParameters& params ) = 0;
+        virtual const AlgorithmParameters& operator=( const AlgorithmParameters& params ) = 0;
         
         //overload
-        virtual void reset() throw( te::rp::Exception ) = 0;
+        virtual void reset() throw( te::common::Exception ) = 0;
         
         //overload
         virtual AbstractParameters* clone() const= 0;

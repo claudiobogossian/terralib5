@@ -72,7 +72,7 @@ namespace te
             ~Parameters();
             
             //overload 
-            const AbstractParameters& operator=( const AbstractParameters& params );
+            const SegmenterStrategyParameters& operator=( const SegmenterStrategyParameters& params );
             
             //overload
             void reset() throw( te::rp::Exception );
