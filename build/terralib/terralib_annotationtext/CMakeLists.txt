@@ -38,9 +38,7 @@ endif(WIN32)
 #Set the TerraLib modules to be linked
 if(WIN32)
   link_directories(${ROOT}/lib32/msvc2010)
-elseif(APPLE)
-  link_directories(${ROOT}/lib32/Release ${ROOT}/lib32/Debug)
-elseif(UNIX)
+else (WIN32)
   link_directories(${ROOT}/lib32)
 endif(WIN32)
 
@@ -70,5 +68,5 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 add_dependencies(${PROJ_NAME}
                  terralib_common 
                  terralib_datatype
-	               terralib_geometry
-	               terralib_srs)
+	             terralib_geometry
+	             terralib_srs)
