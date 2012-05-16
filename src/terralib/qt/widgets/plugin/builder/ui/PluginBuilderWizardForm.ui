@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PluginBuilderWizardForm</class>
+ <widget class="QWizard" name="PluginBuilderWizardForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Plugin Builder</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <property name="wizardStyle">
+   <enum>QWizard::ModernStyle</enum>
+  </property>
+  <property name="options">
+   <set>QWizard::HaveCustomButton1|QWizard::HaveHelpButton|QWizard::IndependentPages</set>
+  </property>
+  <property name="subTitleFormat">
+   <enum>Qt::AutoText</enum>
+  </property>
+  <widget class="QWizardPage" name="m_basicPluginInfoPage">
+   <property name="title">
+    <string>Basic Plugin Information</string>
+   </property>
+   <property name="subTitle">
+    <string>These information will be added to you plugin configuration file</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,1,1">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Plugin Name</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_pluginNameLineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_7">
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>Category</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="m_pluginCategoryComboBox">
+          <property name="editable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Target Programming Language</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="m_pluginEngineComboBox"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="1,1,1">
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Version</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_pluginVersionLineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Release</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_pluginReleaseLineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>TerraLib Version</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_terralibVersionLineEdit"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Display Text</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="m_pluginDisplayTextLineEdit"/>
+      </item>
+     </layout>
+    </item>
+    <item row="3" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Description:</string>
+        </property>
+        <property name="scaledContents">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTextEdit" name="m_pluginDescriptionTextEdit"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="m_licenseAndProviderPage">
+   <property name="title">
+    <string>Plugin's License &amp; Provider</string>
+   </property>
+   <property name="subTitle">
+    <string>Choose a license and fill some information about how people can contact plugin's provider</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_9">
+      <item>
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>License type</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="m_pluginLicenseComboBox">
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_10">
+      <item>
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Primary Site</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="m_pluginSiteLineEdit"/>
+      </item>
+     </layout>
+    </item>
+    <item row="2" column="0">
+     <widget class="QGroupBox" name="groupBox">
+      <property name="title">
+       <string>Provider</string>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_11">
+         <item>
+          <widget class="QLabel" name="label_12">
+           <property name="text">
+            <string>Name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="m_pluginProviderNameLineEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_12">
+         <item>
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>Site</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="m_pluginProviderSiteLineEdit"/>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <layout class="QVBoxLayout" name="verticalLayout_13">
+         <item>
+          <widget class="QLabel" name="label_14">
+           <property name="text">
+            <string>Email</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="m_pluginProviderEmailLineEdit"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="m_pluginDependenciesPage">
+   <property name="title">
+    <string>Plugin Dependencies</string>
+   </property>
+   <property name="subTitle">
+    <string>In order to have your plugin loaded, you must inform if yur plugin depends on others</string>
+   </property>
+   <layout class="QGridLayout" name="m_pluginDependenciesGridLayout"/>
+  </widget>
+  <widget class="QWizardPage" name="m_categoryDependenciesPage">
+   <property name="title">
+    <string>Plugin Category Dependencies</string>
+   </property>
+   <property name="subTitle">
+    <string>If your plugin must be loaded just afetr a certain cataegory of plugins, please, inform this</string>
+   </property>
+   <layout class="QGridLayout" name="m_categoryDependenciesGridLayout"/>
+  </widget>
+  <widget class="QWizardPage" name="m_moduleDependenciesPage">
+   <property name="title">
+    <string>Plugin Module Dependencies</string>
+   </property>
+   <property name="subTitle">
+    <string>We need to know what modules are used by your plugin in order to automatically start them befre your plugin gets run</string>
+   </property>
+   <layout class="QGridLayout" name="m_moduleDependenciesGridLayout"/>
+  </widget>
+  <widget class="QWizardPage" name="m_resourcesPage">
+   <property name="title">
+    <string>Plugin Resources</string>
+   </property>
+   <property name="subTitle">
+    <string>Please, inform resources that must be bundled with your plugin</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_6">
+      <item>
+       <widget class="QColumnView" name="m_pluginResourcesColumnView"/>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_23">
+        <item>
+         <widget class="QToolButton" name="m_resourceAddToolButton">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_resourceEditToolButton">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_resourceRemoveToolButton">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_7">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="m_parametersPage">
+   <property name="title">
+    <string>Plugin Parameters</string>
+   </property>
+   <property name="subTitle">
+    <string>Some plugins need a default configuration in order to run</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_8">
+    <item row="0" column="0">
+     <layout class="QHBoxLayout" name="horizontalLayout_7">
+      <item>
+       <widget class="QColumnView" name="m_pluginParametersColumnView"/>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="verticalLayout_24">
+        <item>
+         <widget class="QToolButton" name="toolButton_19">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_21">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QToolButton" name="toolButton_20">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="verticalSpacer_8">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>40</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="m_targetDeployEnvironments">
+   <property name="title">
+    <string>Deployment Environments</string>
+   </property>
+   <property name="subTitle">
+    <string>It is possible to automatically create deployment environments fr your plugin</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_9">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_25">
+      <item>
+       <widget class="QCheckBox" name="m_vcppCheckBox">
+        <property name="text">
+         <string>Microsoft Visual C++ 2010</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_gccCheckBox">
+        <property name="text">
+         <string>Linux g++ (Autotools)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_qtCreatorCheckBox">
+        <property name="text">
+         <string>Qt Creator</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWizardPage" name="m_pluginTargetLocationPage">
+   <property name="title">
+    <string>Plugin Target Location</string>
+   </property>
+   <property name="subTitle">
+    <string>Please, inform where to store the default files for you new plugin</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_10">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_26">
+      <item>
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>Source Code Location</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QLineEdit" name="m_sourceCodeLocationLineEdit"/>
+        </item>
+        <item>
+         <widget class="QToolButton" name="m_sourceCodeLocationToolButton">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>24</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>0</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+    <item row="1" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_28">
+      <item>
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>Build Project Locations</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QColumnView" name="m_buildLocationsColumnView"/>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_27">
+          <item>
+           <widget class="QToolButton" name="m_addBuildLocationToolButton">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="m_editBuildLocationToolButton">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="m_removeBuildLocationToolButton">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>m_pluginNameLineEdit</tabstop>
+  <tabstop>m_pluginCategoryComboBox</tabstop>
+  <tabstop>m_pluginEngineComboBox</tabstop>
+  <tabstop>m_pluginVersionLineEdit</tabstop>
+  <tabstop>m_pluginReleaseLineEdit</tabstop>
+  <tabstop>m_terralibVersionLineEdit</tabstop>
+  <tabstop>m_pluginDisplayTextLineEdit</tabstop>
+  <tabstop>m_pluginDescriptionTextEdit</tabstop>
+  <tabstop>m_pluginLicenseComboBox</tabstop>
+  <tabstop>m_pluginSiteLineEdit</tabstop>
+  <tabstop>m_pluginProviderNameLineEdit</tabstop>
+  <tabstop>m_pluginProviderSiteLineEdit</tabstop>
+  <tabstop>m_pluginProviderEmailLineEdit</tabstop>
+  <tabstop>m_resourceAddToolButton</tabstop>
+  <tabstop>m_resourceEditToolButton</tabstop>
+  <tabstop>m_resourceRemoveToolButton</tabstop>
+  <tabstop>toolButton_19</tabstop>
+  <tabstop>toolButton_21</tabstop>
+  <tabstop>toolButton_20</tabstop>
+  <tabstop>m_pluginResourcesColumnView</tabstop>
+  <tabstop>m_pluginParametersColumnView</tabstop>
+  <tabstop>m_vcppCheckBox</tabstop>
+  <tabstop>m_gccCheckBox</tabstop>
+  <tabstop>m_qtCreatorCheckBox</tabstop>
+  <tabstop>m_sourceCodeLocationLineEdit</tabstop>
+  <tabstop>m_sourceCodeLocationToolButton</tabstop>
+  <tabstop>m_buildLocationsColumnView</tabstop>
+  <tabstop>m_addBuildLocationToolButton</tabstop>
+  <tabstop>m_editBuildLocationToolButton</tabstop>
+  <tabstop>m_removeBuildLocationToolButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>
