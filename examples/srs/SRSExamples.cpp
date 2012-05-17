@@ -8,42 +8,40 @@
 
 void CoordinateSystemFactory()
 {
-  std::cout << "Example how to use the Coordinate System Factory - begin" << std::endl;
+  std::cout << "Showing how to use the Coordinate System Factory - begin" << std::endl;
 
   std::vector<int> epsgs;
 
   // test codes to the main CS used in Brazil:
-  // teographic CS: Corrego Alegre, WGS84, SIRGAS 2000 and SAD69
-  epsgs.push_back(4225); epsgs.push_back(4326); epsgs.push_back(4674); epsgs.push_back(4618);
-
+  
+  // Geographic CS: Corrego Alegre, WGS84, SIRGAS 2000 and SAD69
+  //  epsgs.push_back(TE_SRS_CORREGO_ALEGRE); epsgs.push_back(TE_SRS_WGS84); epsgs.push_back(TE_SRS_SIRGAS2000); epsgs.push_back(TE_SRS_SAD69);
+  
   // UTM SAD69 North
-  for (unsigned int i=29168; i<=29172; ++i, epsgs.push_back(i));
+  for (size_t i=TE_SRS_SAD69_UTM_ZONE_18N; i<=TE_SRS_SAD69_UTM_ZONE_22N; epsgs.push_back(i), ++i);
 
   // UTM SAD69 South
-  for (unsigned int i=29187; i<=29195; ++i, epsgs.push_back(i));
+  for (size_t i=TE_SRS_SAD69_UTM_ZONE_17S; i<=TE_SRS_SAD69_UTM_ZONE_25S; epsgs.push_back(i), ++i);
 
   // UTM Corrego Alegre South
-  for (unsigned int i=22521; i<=22525; ++i, epsgs.push_back(i));
+  for (size_t i=TE_SRS_CORREGO_ALEGRE_UTM_ZONE_21S; i<=TE_SRS_CORREGO_ALEGRE_UTM_ZONE_25S; epsgs.push_back(i), ++i);
 
   // UTM WGS84 North
-  for (unsigned int i=32618; i<=32622; ++i, epsgs.push_back(i));
+  for (size_t i=TE_SRS_WGS84_UTM_ZONE_18N; i<=TE_SRS_WGS84_UTM_ZONE_22N; epsgs.push_back(i), ++i);
 
   // UTM WGS84 South
-  for (unsigned int i=32717; i<=32725; ++i, epsgs.push_back(i));
+  for (size_t i=TE_SRS_WGS84_UTM_ZONE_17S; i<=TE_SRS_WGS84_UTM_ZONE_25S; epsgs.push_back(i), ++i);
 
   // UTM SIRGAS North
-  for (unsigned int i=31972; i<=31976; ++i, epsgs.push_back(i));
+  for (size_t i=TE_SRS_SIRGAS2000_UTM_ZONE_18N; i<=TE_SRS_SIRGAS2000_UTM_ZONE_22N; epsgs.push_back(i), ++i);
 
   // Polyconic SAD69
-  epsgs.push_back(29101); 
+  epsgs.push_back(TE_SRS_SAD69_POLYCONIC); 
   
   // Antartic Polar Stereographic WGS84
-  epsgs.push_back(3031);
+  epsgs.push_back(TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC);
 
-  // Deprecated Codes 
-  epsgs.push_back(4291); 
-  for (unsigned int i=29177; i<=29185; ++i, epsgs.push_back(i));
-
+  std::string wkt;
   te::srs::CoordinateSystem* cs = 0;
   for (size_t i=0; i<epsgs.size();++i)
   {
@@ -51,46 +49,89 @@ void CoordinateSystemFactory()
     cs = te::srs::CoordinateSystemFactory::make("EPSG",epsgs[i]);
     if (!cs)
     {
-      std::cout << std::endl << "Couldn't obtain a valid coordinate system for the identifier: " << epsgs[i] << std:: endl;
-      continue;
+      std::cout << std::endl << "EPSG " << epsgs[i] << ": Couldn't obtain a valid coordinate system for the identifier" << std:: endl;
     }
-    std::cout << std::endl << "EPSG " << epsgs[i] << ": " << cs->getName() << std:: endl;
-    std::string wkt = cs->getWKT();
-    delete cs;
-
-    // try to reconstruct it from the its own generated wkt
-    cs = te::srs::CoordinateSystemFactory::make("WKT",wkt);
-    if (!cs)
-      std::cout << std::endl << "Couldn't obtain a valid coordinate system for the wkt: " << epsgs[i] << std:: endl;
-    else
-      std::cout << std::endl << "Reconstruction from WKT valid" << std:: endl;
-    delete cs;
+    else 
+    {
+      std::cout << std::endl << "EPSG " << epsgs[i] << ": " << cs->getName();
+      std::string wkt = cs->getWKT();
+      delete cs;
+      
+        // try to reconstruct it from the its own generated wkt
+      cs = te::srs::CoordinateSystemFactory::make("WKT",wkt);
+      if (!cs)
+        std::cout << ": couldn't obtain a valid coordinate system for the wkt" << std:: endl;
+      else
+        std::cout << ": reconstruction from WKT valid" << std:: endl;
+      delete cs;
+    }
   }
-
-
-  std::cout << "Example how to use the Coordinate System Factory - end " << std::endl << std::endl;
-    return;
+  std::cout << "Showing how to use the Coordinate System Factory - end " << std::endl << std::endl;
 }
 
+
+void RecognizeSRIDs()
+{
+  std::cout << "Showing how SRID's are recognized by the converter - begin" << std::endl;
+  
+  std::vector<int> epsgs;
+  
+  // test codes to the main CS used in Brazil:
+  
+  // Geographic CS: Corrego Alegre, WGS84, SIRGAS 2000 and SAD69
+  epsgs.push_back(TE_SRS_CORREGO_ALEGRE); epsgs.push_back(TE_SRS_WGS84); epsgs.push_back(TE_SRS_SIRGAS2000); epsgs.push_back(TE_SRS_SAD69);
+  
+    // UTM SAD69 North
+  for (size_t i=TE_SRS_SAD69_UTM_ZONE_18N; i<=TE_SRS_SAD69_UTM_ZONE_22N; epsgs.push_back(i), ++i);
+  
+    // UTM SAD69 South
+  for (size_t i=TE_SRS_SAD69_UTM_ZONE_17S; i<=TE_SRS_SAD69_UTM_ZONE_25S; epsgs.push_back(i), ++i);
+  
+    // UTM Corrego Alegre South
+  for (size_t i=TE_SRS_CORREGO_ALEGRE_UTM_ZONE_21S; i<=TE_SRS_CORREGO_ALEGRE_UTM_ZONE_25S; epsgs.push_back(i), ++i);
+  
+    // UTM WGS84 North
+  for (size_t i=TE_SRS_WGS84_UTM_ZONE_18N; i<=TE_SRS_WGS84_UTM_ZONE_22N; epsgs.push_back(i), ++i);
+  
+    // UTM WGS84 South
+  for (size_t i=TE_SRS_WGS84_UTM_ZONE_17S; i<=TE_SRS_WGS84_UTM_ZONE_25S; epsgs.push_back(i), ++i);
+  
+    // UTM SIRGAS North
+  for (size_t i=TE_SRS_SIRGAS2000_UTM_ZONE_18N; i<=TE_SRS_SIRGAS2000_UTM_ZONE_22N; epsgs.push_back(i), ++i);
+  
+    // Polyconic SAD69
+  epsgs.push_back(TE_SRS_SAD69_POLYCONIC); 
+  
+    // Antartic Polar Stereographic WGS84
+  epsgs.push_back(TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC);
+  
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+  for (size_t i=0; i<epsgs.size();++i)
+  {
+    try 
+    {
+      converter->setSourceSRID(epsgs[i]);
+      std::cout << "SRS identifier  " << epsgs[i] << " recognized\n"; 
+    }
+    catch (...) {
+      std::cout << "SRS identifier  " << epsgs[i] << " NOT recognized\n";
+    }
+  }
+  std::cout << "Showing how SRID's are recognized by the converter - end " << std::endl << std::endl;
+}
 
 
 void ConvertCoordinates()
 {
-  std::cout << "Example how Convert coordinates - end " << std::endl << std::endl;
-
-  // 4326 : Lat/Long WGS84
-  // 32723 : UTM Zone 23 South WGS
-
-  // 4618 : Lat/Long SAD69
-  // 29193 : UTM Zone 23 South SAD69
+  std::cout << "Showing how Convert coordinates - end " << std::endl << std::endl;
 
   std::cout << "Converting a geometry: " << std::endl;
-  te::gm::Geometry* geom = new te::gm::Point(-45.0,-23.0,4326); 
+  te::gm::Geometry* geom = new te::gm::Point(-45.0,-23.0,TE_SRS_WGS84); 
   std::cout << geom->asText() << std::endl;
 
   std::cout << std::endl;
 
-  geom->transform(32723);
+  geom->transform(TE_SRS_WGS84_UTM_ZONE_23S);
   std::cout << geom->asText() << std::endl;
 
   delete geom;
@@ -101,8 +142,8 @@ void ConvertCoordinates()
 
   std::cout << "Converting one Coordinate: " << std::endl;
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
-  converter->setSourceSRID(4326);      
-	converter->setTargetSRID(32723);     
+  converter->setSourceSRID(TE_SRS_WGS84);      
+	converter->setTargetSRID(TE_SRS_WGS84_UTM_ZONE_23S);     
 
   double llX = -45.0;
 	double llY = 0.0;
@@ -146,7 +187,7 @@ void ConvertCoordinates()
   // 
   int usercode = te::srs::CoordinateSystemFactory::add("PROJ4","+proj=utm +zone=23 +south +ellps=WGS84 +datum=WGS84 +units=km +no_defs");
   converter->setSourceSRID(usercode);
-  converter->setTargetSRID(4326);
+  converter->setTargetSRID(TE_SRS_WGS84);
 
   xyX = 500000 * 0.001;   // meter to kilometer
 	xyY = 10000000 * 0.001; // meter to kilometer
@@ -155,5 +196,5 @@ void ConvertCoordinates()
 
   std::cout << xyX << " " << xyY << " >>>> " << llX << " " << llY << std::endl;
 
-  std::cout << "Example how Convert coordinates - end " << std::endl << std::endl;
+  std::cout << "Showing how Convert coordinates - end " << std::endl << std::endl;
 }

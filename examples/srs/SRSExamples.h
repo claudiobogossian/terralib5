@@ -31,6 +31,9 @@
 /*! \brief This example shows how to build Coordinate Systems from identifiers. */
 void CoordinateSystemFactory();
 
+/*! \brief This example shows how Coordinate Systems from identifiers are recognized by the converter. */
+void RecognizeSRIDs();
+
 /*! \brief This example shows how to transform a geometry from an SRS to another. */
 void ConvertCoordinates();
 
