@@ -72,6 +72,7 @@ int main(int /*argc*/, char** /*argv*/)
   {
     TerraLib::getInstance().initialize();
     CoordinateSystemFactory();
+    RecognizeSRIDs();
     ConvertCoordinates();
     TerraLib::getInstance().finalize();
   }

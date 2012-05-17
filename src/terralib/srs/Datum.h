@@ -18,6 +18,8 @@ namespace te
 	namespace srs
 	{   
     /*!
+     \class Datum.
+     
       \brief A geodetic datum defines a reference to measure Earth's surface.
       Planimetric datum parameters are used for defining geodetic coordinates, 
       which are necessary to establish a map projection system.
@@ -32,7 +34,7 @@ namespace te
       Datum();
 
       /*!
-        \brief It initializes a new Datum from parameters.
+        \brief Initializes a new Datum from parameters.
 
         \param name Datum name.
         \param ellps The Ellipsoid associated to the Datum.
@@ -40,7 +42,7 @@ namespace te
       Datum(const std::string& name, const Ellipsoid& ellps);
 
       /*!
-        \brief It returns the Datum name.
+        \brief Returns the Datum name.
         \return The Datum name.
        */
       const std::string& getName() const { return m_name; }
@@ -52,7 +54,7 @@ namespace te
       void setName(const std::string& name) { m_name = name; }
 
       /*!
-        \brief It returns the Ellipsoid associated to the Datum.
+        \brief Returns the Ellipsoid associated to the Datum.
         \return The Ellipsoid associated to the Datum.
        */
       const Ellipsoid& getEllipsoid() const { return m_ellipsoid; }

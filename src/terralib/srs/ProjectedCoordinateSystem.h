@@ -40,7 +40,8 @@ namespace te
 	namespace srs
 	{
     /*!
-    \brief A Projected Coordinate System (PROJCS).
+     \class ProjectedCoordinateSystem
+     \brief A Projected Coordinate System (PROJCS).
       A coordinate reference system that is based on a geographic CRS and then 
       uses a map projection to convert the coordinates to a plane.
     */

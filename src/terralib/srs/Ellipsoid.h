@@ -35,9 +35,10 @@ namespace te
 	namespace srs
 	{
     /*!
-    \brief A reference ellipsoid is an approximation of the Earth's surface as a squashed sphere.
-    \note The terms “spheroid” and “ellipsoid” are synonymous.
-    \todo Verify if it is necessary to keep an <Id,Authority> to this object.
+     \class Ellipsoid
+     \brief A reference ellipsoid is an approximation of the Earth's surface as a squashed sphere.
+     \note The terms "spheroid" and "ellipsoid" are synonymous.
+     \todo Verify if it is necessary to keep an <Id,Authority> to this object.
     */
     class TESRSEXPORT Ellipsoid
     {
@@ -45,7 +46,7 @@ namespace te
     public:
 
       /*!
-        \brief It initializes a new Ellipsoid from parameters.
+        \brief Initializes a new Ellipsoid from parameters.
 
         \param name Ellipsoid name.
         \param rad  Semi-major axis
@@ -54,38 +55,38 @@ namespace te
       Ellipsoid(const std::string& name = "", double rad = 0.0, double invflat = 0.0);
 
       /*!
-        \brief It returns the Ellipsoid name.
-        \return The Ellipsoid name.
+        \brief Returns the Ellipsoid name.
+        \return  Ellipsoid name.
        */
       const std::string& getName() const { return m_name; }
       
       /*!
         \brief Sets the Ellipsoid name.        
-        \param name The Ellipsoid name.
+        \param name Ellipsoid name.
        */
       void setName(const std::string& name) { m_name = name; }
 
       /*!
-        \brief It returns the Ellipsoid radium.
-        \return The Ellipsoid radium.
+        \brief Returns the Ellipsoid radium.
+        \return Ellipsoid radium.
        */
       double getRadium() const { return m_radium; }
 
       /*!
         \brief Sets the Ellipsoid radium.        
-        \param rad The Ellipsoid radium.
+        \param rad Ellipsoid radium.
        */
       void setRadium(const double& rad) { m_radium = rad; }
 
       /*!
-        \brief It returns the Ellipsoid inverse flattening.
-        \return The Ellipsoid inverse flattening.
+        \brief Returns the Ellipsoid inverse flattening.
+        \return  Ellipsoid inverse flattening.
        */
       double getInverseFlattening() const { return m_invFlattening; }
 
       /*!
         \brief Sets the Ellipsoid inverse flattening.
-        \param invflat The Ellipsoid inverse flattening.
+        \param invflat  Ellipsoid inverse flattening.
        */
       void setInverseFlattening(const double& invflat) { m_invFlattening = invflat; }
 

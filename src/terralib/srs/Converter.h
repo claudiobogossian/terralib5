@@ -35,84 +35,86 @@ namespace te
 {
 	namespace srs
 	{
-	//! A Converter is responsible for the conversion of coordinates between different Coordinate Systems (CS).
-	/*
-		A Converter is responsible for the conversion of coordinates between two 
+	/*!
+    \class Converter
+    \brief A Converter is responsible for the conversion of coordinates between different Coordinate Systems (CS).
+		
+    A Converter is responsible for the conversion of coordinates between two 
     different Coordinate Systems (CS) or a Spatial Reference System (SRS). 
-    A CS can be uniquely identified by a numeric code. 
+    A CS can be uniquely identified by a numeric code (SRID). 
 
-		This implementation is based on th PROJ4 cartographic library and only works if
+		This implementation is based on the PROJ4 cartographic library and only works if
     it has been enabled.
-
-    \sa Proj4Dictionarly.
 
 		\todo Methods to convert 3D coordinates.
 	*/
 	class TESRSEXPORT Converter
 	{
 	public:
-		//! Default constructor.
+		//! Default empty constructor.
 		Converter();
 
-		//! Constructor with parameters.
 		/*!
-			\param sourceSRID the code associated to the source SRS (input).
-			\param targetSRID the code associated to the target SRS (input).
+      \brief Constructor with parameters.
+			\param sourceSRID source SRS identifier (input).
+			\param targetSRID target SRS identifier (input).
+      \exception te::common::Exception source or input SRS identifiers are not recognized.
 		*/
     Converter(int sourceSRID, int targetSRID);
 
 		//! Destructor
 		~Converter();
-
-		//! Define the source SRS from a code. 
+    
 		/*!
-			\param sourceSRID the code associated to the source SRS (input).
-			\exception It throws an exception if the code associated 
-                 to source SRS is not recognized.
+      \brief Sets the source SRS identifier.
+			\param sourceSRID the source SRS identifier (input).
+			\exception te::common::Exception source SRS identifier not recognized.
 		*/
 		void setSourceSRID(int sourceSRID);
 
-		//! Get the source SRS. 
 		/*!
-			\return the code associated to the source SRS.
+      \brief Gets source SRS identifier.
+			\return the source SRS identifier.
 		*/
 		int getSourceSRID() const;
 
-		//! Define the target SRS from a code. 
 		/*!
-			\param targetSRID the code associated to the target SRS (input).
-			\exception It throws an exception if the code associated to 
-                 target SRS is not recognized.
-		*/
+     \brief Sets the target SRS identifier.
+     \param targetSRID the target SRS identifier (input).
+     \exception te::common::Exception target SRS identifier not recognized.
+     */
 		void setTargetSRID(int targetSRID);
 
-		//! Get the target SRS ID.  
 		/*!
-			\return the code associated to the target SRS.
-		*/
+     \brief Gets target SRS identifier.
+     \return the target SRS identifier.
+     */
 		int getTargetSRID() const;
-
-		//! Converts a vector of coordinates from source SRS to target SRS. 
+ 
 		/*!
-			Converts a vector of coordinates from source SRS to target SRS.
+     \brief Converts a vector of coordinates from source SRS to target SRS.
+     
+			Converts a vector of coordinates from source SRS to target SRS. The X and
+      Y dimensions of the coordinates are given in separate vectors.
 
-			Output vectors must be previously allocaded by the caller of this method. 
-			Likewise the caller is responsible for deallocating it.
+			Output vectors must be previously allocaded by the caller of this method 
+      and caller is responsible for deallocating them.
 
 			\param xIn					pointer to array of X values in source SRS (input).
 			\param yIn					pointer to array of Y valueS in source SRS (input).
+     
 			\param xOut					pointer to array of X values in target SRS (output). 
 			\param yOut					pointer to array of X values in target SRS (output).
-			\param numCoord			number of coordinates in the array (input).
+     
+			\param numCoord			number of coordinates in the input arrays (input).
 			\param coordOffset	the step size from value to value (measured in doubles) 
-                          within the x/y arrays (input).
+                          within the xIn/yIn arrays (input).
 			\return true if succeed and false otherwise.
 		*/
 		bool convert(double *xIn, double *yIn, double *xOut, double* yOut, long numCoord, int coordOffset=1) const;
 
-		//! Converts a vector of coordinates from source SRS to target SRS. 
 		/*!
-			Converts a vector of coordinates from source SRS to target SRS.
+     \brief Converts a vector of coordinates from source SRS to target SRS.
 
 			\param x						pointer to array of X values in source SRS as input 
                           and modified to target SRS for output.
@@ -126,21 +128,19 @@ namespace te
 		*/
 		bool convert(double *x, double* y, long numCoord, int coordOffset=1) const;
 
-		//! Converts a coordinate from source SRS to target SRS. 
 		/*!
-			Converts a coordinate from source SRS to target SRS.
+			\brief Converts a single coordinate from source SRS to target SRS.
 
-			\param xIn					X value in source SRS (input).
-			\param yIn					Y value in source SRS (input).
-			\param xOut					X value in target SRS (output). 
-			\param yOut					Y values in target SRS (output).
+			\param xIn					coordinate X value in source SRS (input).
+			\param yIn					coordinate Y value in source SRS (input).
+			\param xOut					coordinate X value in target SRS (output). 
+			\param yOut					coordinate Y values in target SRS (output).
 			\return true if succeed and false otherwise.
 		*/
 		bool convert(const double xIn, const double yIn, double &xOut, double &yOut) const;
 
-		//! Converts a coordinate from source SRS to target SRS. 
 		/*!
-			Converts a coordinate from source SRS to target SRS.
+			\brief Converts a coordinate from source SRS to target SRS.
 
 			\param x	X value in source SRS as input and modified 
                   to target SRS for output.
@@ -150,27 +150,28 @@ namespace te
 		*/
 		bool convert(double &x, double &y) const;
 
-		//! Inverts a vector of coordinates from source SRS to target SRS. 
-		/*!
-			Inverts a vector of coordinates from source SRS to target SRS.
-
-			Output vectors must be previously allocaded by the caller of this method. 
-			Likewise the caller is responsible for deallocating it.
-
-			\param xIn					pointer to array of X values in target SRS (input).
-			\param yIn					pointer to array of Y valueS in target SRS (input).
-			\param xOut					pointer to array of X values in source SRS (output). 
-			\param yOut					pointer to array of Y values in source SRS (output).
-			\param numCoord			number of coordinates in the array (input).
-			\param coordOffset	the step size from value to value (in double size) 
+		/*!     
+     \brief Inverts a vector of coordinates from target SRS to source SRS.
+     
+     Inverts a vector of coordinates from target SRS to dource SRS. The X and
+     Y dimensions of the coordinates are given in separate vectors. 
+     
+     Output vectors must be previously allocaded by the caller of this method, 
+     and caller is responsible for deallocating them.
+     
+     \param xIn					pointer to array of X values in target SRS (input).
+     \param yIn					pointer to array of Y valueS in target SRS (input).
+     \param xOut				pointer to array of X values in source SRS (output). 
+     \param yOut				pointer to array of Y values in source SRS (output).
+     \param numCoord		number of coordinates in the array (input).
+     \param coordOffset	the step size from value to value (in double size) 
                           within the x/y arrays (input).
 			\return true if succeed and false otherwise.
 		*/
 		bool invert(double *xIn, double *yIn, double *xOut, double* yOut, long numCoord, int coordOffset=1) const;
-
-		//! Inverts a vector of coordinates from target SRS to source SRS. 
+ 
 		/*!
-			Inverts a vector of coordinates from target SRS to source SRS
+			\brief Inverts a vector of coordinates from target SRS to source SRS
 			\param x						pointer to array of X values in target SRS as input 
                           and modified to source SRS for output.
 			\param y						pointer to array of Y values in target SRS as input 
@@ -182,9 +183,8 @@ namespace te
 		*/
 		bool invert(double *x, double* y, long numCoord, int coordOffset=1) const;
 
-		//! Inverts a coordinate from source SRS to target SRS. 
 		/*!
-			Inverts a coordinate from source SRS to target SRS.
+			\brief Inverts a coordinate from source SRS to target SRS.
 
 			\param xIn	pointer to array of X values in target SRS (input).
 			\param yIn	pointer to array of Y valueS in target SRS (input).
@@ -193,10 +193,9 @@ namespace te
 			\return true if succeed and false otherwise.
 		*/
 		bool invert(const double xIn, const double yIn, double &xOut, double &yOut) const;
-
-		//! Inverts a coordinate from target SRS to source SRS. 
+ 
 		/*!
-			Inverts a coordinate from target SRS to source SRS
+			\brief Inverts a coordinate from target SRS to source SRS
 			\param x						pointer to array of X values in target SRS as input 
                           and modified to source SRS for output.
 			\param y						pointer to array of Y values in target SRS as input 
@@ -205,26 +204,24 @@ namespace te
 		*/
 		bool invert(double &x, double &y) const;
 
-    //! Converts a coordinate from a projected SRS to its underlying geographic SRS. 
 		/*!
-			Converts a coordinate from a projected SRS to its underlying geographic SRS 
+			\brief Converts a coordinate from a projected SRS to its underlying geographic SRS 
       (same Datum).
 
 			\param x projected X-coordinate. Will return the geographic longitude coordinate.
 			\param y projected Y-coordinate. Will retunr the geographic latitude coordinate.
-      \param SRID the id of the projected SRS that y and y refers to.
+      \param SRID projected SRS identifier that x and y refers to.
 			\return true if succeed and false otherwise.
 		*/
 		bool convertToGeographic(double &x, double &y, int SRID) const;
 
-    //! Converts a coordinate from a geographic SRS to a projected SRS. 
 		/*!
-			Converts a coordinate from a geographic SRS to a projected SRS based on 
+			\brief Converts a coordinate from a geographic SRS to a projected SRS based on 
       the same Datum.
 
 			\param lon geographic longitude. Will return the projected x-coordinate.
 			\param lat geogrpahic latitude. Will return the projected y-coordinate.
-      \param SRID the id of the target projected SRS.
+      \param SRID target projected SRS identifier.
 			\return true if succeed and false otherwise.
 		*/
 		bool convertToProjected(double &lon, double &lat, int SRID) const;
