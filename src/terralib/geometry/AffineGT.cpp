@@ -20,7 +20,7 @@
 /*!
   \file terralib/geometry/AffineGT.cpp
 
-  \brief 2D Geometric transformation base class.
+  \brief 2D Geometric transformation.
 */
 
 // TerraLib
@@ -43,7 +43,7 @@ te::gm::AffineGT::~AffineGT()
 
 const std::string& te::gm::AffineGT::getName() const
 {
-  static std::string name( "affine" );
+  static std::string name( "Affine" );
   return name;
 }
 
@@ -259,22 +259,22 @@ bool te::gm::AffineGT::decompose( const std::vector< double >& transfParams,
   return true;
 }
 
-te::gm::GTAffineFactory::GTAffineFactory()
-  : GTFactory( "affine" )
+te::gm::AffineGTFactory::AffineGTFactory()
+  : GTFactory( "Affine" )
 {
 }
 
-te::gm::GTAffineFactory::~GTAffineFactory()
+te::gm::AffineGTFactory::~AffineGTFactory()
 {
 }
 
-te::gm::GeometricTransformation* te::gm::GTAffineFactory::build()
+te::gm::GeometricTransformation* te::gm::AffineGTFactory::build()
 {
   return new AffineGT();
 }
 
 namespace
 {
-  te::gm::GTAffineFactory GTAffineFactoryInstance;
+  te::gm::AffineGTFactory AffineGTFactoryInstance;
 }
 

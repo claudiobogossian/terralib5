@@ -42,6 +42,7 @@ class TsMatrixUtils : public CPPUNIT_NS::TestFixture
 // It registers the class methods as Test Cases belonging to the suit 
   
   CPPUNIT_TEST( getInverseMatrix ); 
+  CPPUNIT_TEST( getPseudoInverseMatrix );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -59,6 +60,9 @@ class TsMatrixUtils : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: getInverseMatrix. */
     void getInverseMatrix();
+    
+    /*! \brief Test Case: getInverseMatrix. */
+    void getPseudoInverseMatrix();
 
 };
 

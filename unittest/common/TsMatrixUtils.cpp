@@ -61,3 +61,29 @@ void TsMatrixUtils::getInverseMatrix()
   CPPUNIT_ASSERT( std::abs( outputMatrix( 2 , 2 ) + 0.125000 ) < 0.000001 );
 }
 
+void TsMatrixUtils::getPseudoInverseMatrix()
+{
+  boost::numeric::ublas::matrix< double > inputMatrix( 3, 3 );
+  inputMatrix( 0 , 0 ) = 1;
+  inputMatrix( 0 , 1 ) = 2;
+  inputMatrix( 0 , 2 ) = 3;
+  inputMatrix( 1 , 0 ) = 4;
+  inputMatrix( 1 , 1 ) = 5;
+  inputMatrix( 1 , 2 ) = 6;
+  inputMatrix( 2 , 0 ) = 7;
+  inputMatrix( 2 , 1 ) = 8;
+  inputMatrix( 2 , 2 ) = 1;
+  
+  boost::numeric::ublas::matrix< double > outputMatrix( 3, 3 );
+  CPPUNIT_ASSERT( te::common::getPseudoInverseMatrix( inputMatrix, outputMatrix ) );
+  
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 0 , 0 ) + 1.791667 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 0 , 1 ) - 0.916667 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 0 , 2 ) + 0.125000 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 1 , 0 ) - 1.583333 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 1 , 1 ) + 0.833333 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 1 , 2 ) - 0.250000 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 2 , 0 ) + 0.125000 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 2 , 1 ) - 0.250000 ) < 0.000001 );
+  CPPUNIT_ASSERT( std::abs( outputMatrix( 2 , 2 ) + 0.125000 ) < 0.000001 );
+}

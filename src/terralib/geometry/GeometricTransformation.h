@@ -96,7 +96,7 @@ namespace te
           
           \return A reference of the current internal transformation parameters.
         */
-        const GTParameters& getParameters()
+        const GTParameters& getParameters() const
         {
           return m_internalParameters;
         };

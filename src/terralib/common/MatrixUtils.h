@@ -81,6 +81,40 @@ namespace te
         return true;
       }
     }
+    
+    /*!
+      \brief Pseudo matrix inversion.
+      
+      \note PinvX = Inv( Xt * X ) * Xt, where Inv=Inverse and Xt is the transposed matrix of X.
+      
+      \param inputMatrix Input matrix.
+      
+      \param outputMatrix Output matrix.
+
+      \return true if ok, false on errors.
+    */
+    template<class T>
+    bool getPseudoInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
+                          boost::numeric::ublas::matrix<T>& outputMatrix)
+    {
+      boost::numeric::ublas::matrix<T> trans( boost::numeric::ublas::trans( 
+        inputMatrix ) );
+      
+      boost::numeric::ublas::matrix<T> aux1( boost::numeric::ublas::prod( trans, 
+        inputMatrix ) );
+        
+      boost::numeric::ublas::matrix<T> aux1Inv;
+      
+      if( getInverseMatrix( aux1, aux1Inv ) )
+      {
+        outputMatrix = boost::numeric::ublas::prod( aux1Inv, trans );
+        return true;
+      }
+      else
+      {
+        return false;
+      }
+    }
 
 
   }     // end namespace common

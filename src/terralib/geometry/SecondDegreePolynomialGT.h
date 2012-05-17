@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/geometry/AffineGT.h
+  \file terralib/geometry/SecondDegreePolynomialGT.h
 
-  \brief 2D Affine Geometric transformation.
+  \brief Second Degree Polynomial Geometric transformation.
 */
 
-#ifndef __TERRALIB_GEOMETRY_INTERNAL_AFFINEGT_H
-#define __TERRALIB_GEOMETRY_INTERNAL_AFFINEGT_H
+#ifndef __TERRALIB_GEOMETRY_INTERNAL_SECONDDEGREEPOLYNOMIALGT_H
+#define __TERRALIB_GEOMETRY_INTERNAL_SECONDDEGREEPOLYNOMIALGT_H
 
 // TerraLib
 #include "Config.h"
@@ -39,9 +39,9 @@ namespace te
   namespace gm
   {
     /*!
-      \class AffineGT
+      \class SecondDegreePolynomialGT
       
-      \brief 2D Affine Geometric transformation.
+      \brief Second Degree Polynomial Geometric transformation.
       
       \note The transformation parameters (inside GTParameters::m_directParameters) are disposed on the following form:
       
@@ -53,15 +53,15 @@ namespace te
 GTParameters::m_directParameters = [ a b c d e f ]
       \endcode
     */
-    class TEGEOMEXPORT AffineGT : public GeometricTransformation
+    class TEGEOMEXPORT SecondDegreePolynomialGT : public GeometricTransformation
     {
       public:
         
         /*! \brief Default constructor. */
-        AffineGT();
+        SecondDegreePolynomialGT();
 
         /*! \brief Virtual destructor. */
-        virtual ~AffineGT();
+        virtual ~SecondDegreePolynomialGT();
 
         const std::string& getName() const;
 
@@ -74,34 +74,6 @@ GTParameters::m_directParameters = [ a b c d e f ]
           Coord2D& pt1 ) const;
 
         unsigned int getMinRequiredTiePoints() const;
-        
-        /*!
-          \brief Returns the basic set of transform parameters given by the decomposition of a given affine transformation parameters as described above.
-          
-          \param transfParams Input affine transformation parameters.
-        
-          \param translationX X axis translation (combination of a squeeze and scaling).
-          
-          \param translationY Y axis translation (combination of a squeeze and scaling).
-          
-          \param scalingFactorX X axis scaling.
-          
-          \param scalingFactorX Y axis scaling.
-          
-          \param skew Skew.
-          
-          \param squeeze Aspect ratio changes.
-          
-          \param scaling Uniform scaling.
-          
-          \param rotation Rotation angle (radians).
-          
-          \return true if ok, false on errors.
-        */       
-        static bool decompose(const std::vector< double >& transfParams,
-                              double& translationX, double& translationY,
-                              double& scalingFactorX, double& scalingFactorY, double& skew,
-                              double& squeeze, double& scaling, double& rotation );
 
       protected:
 
@@ -109,17 +81,17 @@ GTParameters::m_directParameters = [ a b c d e f ]
     };
 
     /*!
-      \class GTAffineFactory
+      \class SecondDegreePolynomialGTFactory
 
       \brief 2D Affine Geometric transformation factory.
     */
-    class TEGEOMEXPORT AffineGTFactory : public GTFactory
+    class TEGEOMEXPORT SecondDegreePolynomialGTFactory : public GTFactory
     {
       public:
 
-        ~AffineGTFactory();
+        ~SecondDegreePolynomialGTFactory();
 
-        AffineGTFactory();
+        SecondDegreePolynomialGTFactory();
         
         GeometricTransformation* build();
     };
@@ -127,5 +99,5 @@ GTParameters::m_directParameters = [ a b c d e f ]
   } // end namespace gm
 }   // end namespace te
 
-#endif  // __TERRALIB_GEOMETRY_INTERNAL_GAFFINEGT_H
+#endif  // __TERRALIB_GEOMETRY_INTERNAL_SECONDDEGREEPOLYNOMIALGT_H
 
