@@ -39,7 +39,8 @@ namespace te
 	namespace srs
 	{
     /*!
-    \brief A Geographic Coordinate System (GEOGCS).
+     \class GeographicCoordinateSystem
+     \brief A Geographic Coordinate System (GEOGCS).
       A Geographic Coordinate System is a coordinate system based on latitude and longitude.
     */
     class TESRSEXPORT GeographicCoordinateSystem: public CoordinateSystem
