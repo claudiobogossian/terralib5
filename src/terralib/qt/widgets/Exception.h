@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,24 +18,29 @@
  */
 
 /*!
-  \file SRSExamples.h
+  \file terralib/qt/widgets/Exception.h
 
-  \brief Several examples on how to use Spatial Reference Systens handling in TerraLib.
- */
+  \brief An exception class for the Qt Widgets module.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
-#define __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_EXCEPTION_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_EXCEPTION_H
 
+// TerraLib
+#include "../../common/Exception.h"
 #include "Config.h"
 
-/*! \brief This example shows how to build Coordinate Systems from identifiers. */
-void CoordinateSystemFactory();
+namespace te
+{
+  namespace qt
+  {
+    namespace widgets
+    {
+      TE_DECLARE_EXCEPTION_CLASS(TEQTWIDGETSEXPORT, Exception, te::common::Exception)
 
-/*! \brief This example shows how Coordinate Systems from identifiers are recognized by the converter. */
-void RecognizeSRIDs();
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
 
-/*! \brief This example shows how to transform a geometry from an SRS to another. */
-void ConvertCoordinates();
-
-#endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_EXCEPTION_H
 

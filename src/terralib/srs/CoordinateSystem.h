@@ -37,18 +37,18 @@ namespace te
 	namespace srs
 	{
     /*!
-    \brief A Coordinate System (CS).
-      A coordinate system (CS) is an abstract mathematical concept without any relationship to a physical object.
+     \class CoordinateSystem
+     \brief A Coordinate System (CS).
+     A coordinate system (CS) is an abstract mathematical concept without any relationship to a physical object.
     */
     class TESRSEXPORT CoordinateSystem
     {
     
       public:
-
-        //! Default constructor.
-        /*
-          \param name Coordinate System nam.
-          \param unit Pointer to the unit used for values in this coordinate system (default a null pointer).
+        /*!
+         \brief Default constructor.
+         \param name Coordinate System nam.
+         \param unit Pointer to the unit used for values in this coordinate system (default a null pointer).
         */
         CoordinateSystem(const std::string& name="", const std::string& unitName="");
 
@@ -65,27 +65,28 @@ namespace te
         const std::string& getUnitName() const { return m_unitName; }   
 
         //! Sets the name of the unit of measure.
-        /*
-        \param unit the name of the unit of measure.
+        /*!
+         \brief Sets the name of the unit of measure.
+         \param unit the name of the unit of measure.
         */
         void setUnitName(const std::string& unitName) { m_unitName = unitName; }
 
-        //! Assigns a system unique id.
         /*!
-          \param id The CS id.
-          \param authName The authority responsible for the id.
+         \brief Assigns a unique identifier for the CS.
+         \param id The CS identifier.
+         \param authName The authority responsible for the identifier.
         */
         void setId(int id, const std::string& authName);
 
-        //! Returns the coordinate system unique id managed by an authority.
         /*!
-          \param id To return the unique id (output).
-          \param authName To return the authority responsible for the id (output).
+         \brief Returns the coordinate system unique id managed by an authority.
+         \param id To return the unique id (output);
+         \param authName To return the authority responsible for the id (output).
         */
         void getId(int& id, std::string& authName) const;
 
-        //! Returns a WKT string that represent the CS.
         /*!
+         \brief Returns a WKT string that represent the CS.
           WKT definition based on document "OpenGIS® Implementation Specification:
           Coordinate Transformation Services Revision 1.00 - pages 18 and 19.
         */

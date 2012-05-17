@@ -18,24 +18,27 @@
  */
 
 /*!
-  \file SRSExamples.h
+  \file Exception.h
 
-  \brief Several examples on how to use Spatial Reference Systens handling in TerraLib.
- */
+  \brief An exception class for ADO.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
-#define __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
+#ifndef __TERRALIB_ADO_INTERNAL_EXCEPTION_H
+#define __TERRALIB_ADO_INTERNAL_EXCEPTION_H
 
+// TerraLib
+#include "../dataaccess/Exception.h"
 #include "Config.h"
 
-/*! \brief This example shows how to build Coordinate Systems from identifiers. */
-void CoordinateSystemFactory();
 
-/*! \brief This example shows how Coordinate Systems from identifiers are recognized by the converter. */
-void RecognizeSRIDs();
+namespace te
+{
+  namespace ado
+  {
+    TE_DECLARE_EXCEPTION_CLASS(TEADOEXPORT, Exception, te::da::Exception)
 
-/*! \brief This example shows how to transform a geometry from an SRS to another. */
-void ConvertCoordinates();
+  } // end namespace ado
+}   // end namespace te
 
-#endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
+#endif  // __TERRALIB_ADO_INTERNAL_EXCEPTION_H
 

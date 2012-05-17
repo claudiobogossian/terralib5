@@ -18,24 +18,39 @@
  */
 
 /*!
-  \file SRSExamples.h
+  \file Globals.h
+   
+  \brief An static class with global definitions.
+*/
 
-  \brief Several examples on how to use Spatial Reference Systens handling in TerraLib.
- */
+#ifndef __TERRALIB_ADO_INTERNAL_GLOBALS_H
+#define __TERRALIB_ADO_INTERNAL_GLOBALS_H
 
-#ifndef __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
-#define __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
-
+// TerraLib
+#include "../common/Static.h"
 #include "Config.h"
 
-/*! \brief This example shows how to build Coordinate Systems from identifiers. */
-void CoordinateSystemFactory();
+// STL
+#include <string>
 
-/*! \brief This example shows how Coordinate Systems from identifiers are recognized by the converter. */
-void RecognizeSRIDs();
+namespace te
+{
+  namespace ado
+  {
+    /*!
+      \class Globals
 
-/*! \brief This example shows how to transform a geometry from an SRS to another. */
-void ConvertCoordinates();
+      \brief An static class with global definitions.
+    */
+    class TEADOEXPORT Globals : public te::common::Static
+    {
+      public:
 
-#endif  // __TERRALIB_EXAMPLES_SRS_INTERNAL_SRSEXAMPLES_H
+        static const std::string sm_driverIdentifier;  //!< The ADO driver identifier.
+    };
+
+  } // end namespace ado
+}   // end namespace te
+
+#endif  // __TERRALIB_ADO_INTERNAL_GLOBALS_H
 

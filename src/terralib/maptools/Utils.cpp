@@ -40,7 +40,8 @@ void te::map::GetColor(const te::se::Stroke* stroke, te::color::RGBAColor& color
 {
   if(stroke == 0)
     return;
-  te:map::GetColor(stroke->getColor(), stroke->getOpacity(), color);
+
+  te::map::GetColor(stroke->getColor(), stroke->getOpacity(), color);
 }
 
 void te::map::GetColor(const te::se::Fill* fill, te::color::RGBAColor& color)
