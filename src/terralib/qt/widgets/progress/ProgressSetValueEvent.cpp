@@ -18,28 +18,28 @@
  */
 
 /*!
-  \file QtProgressEvent.h
+  \file terralib/qt/widgets/progress/ProgressSetValueEvent.cpp
  
-  \brief The QtProgressBarSetValueEvent is a custom event used to set a new value into 
+  \brief The ProgressSetValueEvent is a custom event used to set a new value into 
          a progress bar. Used in thread codes.
 */
 
 
 //TerraLib
-#include "QtProgressBarSetMessageEvent.h"
+#include "ProgressSetValueEvent.h"
 
-QEvent::Type te::qt::widgets::QtProgressBarSetMessageEvent::m_customEventType = QEvent::None;
+QEvent::Type te::qt::widgets::ProgressSetValueEvent::m_customEventType = QEvent::None;
 
-te::qt::widgets::QtProgressBarSetMessageEvent::QtProgressBarSetMessageEvent(std::string value) : 
-  QEvent(QtProgressBarSetMessageEvent::type()), m_value(value)
+te::qt::widgets::ProgressSetValueEvent::ProgressSetValueEvent(int value) :
+  QEvent(ProgressSetValueEvent::type()), m_value(value)
 {
 }
 
-te::qt::widgets::QtProgressBarSetMessageEvent::~QtProgressBarSetMessageEvent()
+te::qt::widgets::ProgressSetValueEvent::~ProgressSetValueEvent()
 {
 }
 
-QEvent::Type te::qt::widgets::QtProgressBarSetMessageEvent::type()
+QEvent::Type te::qt::widgets::ProgressSetValueEvent::type()
 {
   if (m_customEventType == QEvent::None)
   {
@@ -49,5 +49,3 @@ QEvent::Type te::qt::widgets::QtProgressBarSetMessageEvent::type()
             
   return m_customEventType;
 }
-      
-      

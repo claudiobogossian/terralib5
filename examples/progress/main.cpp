@@ -4,7 +4,7 @@
 // TerraLib
 #include <terralib/common/TerraLib.h>
 #include <terralib/common/progress/ProgressManager.h>
-#include <terralib/common/progress/ConsoleProgress.h>
+#include <terralib/common/progress/ConsoleProgressViewer.h>
 
 // STL
 #include <cstdlib>
@@ -19,23 +19,24 @@ int main(int argc, char *argv[])
   //init components
     TerraLib::getInstance().initialize();
 
-    te::common::ConsoleProgress* progress = new te::common::ConsoleProgress();
+    te::common::ConsoleProgressViewer* cpv = new te::common::ConsoleProgressViewer();
 
-    te::common::ProgressManager::getInstance().setMainProgress(progress);
+    int idViewer = te::common::ProgressManager::getInstance().addViewer(cpv);
     
     //console sleeper
+    std::cout << std::endl << "Console progress Test using multi tasks... " << std::endl;
     //ConsoleSleeper();
 
     //console sleeper multi thread
+    std::cout << std::endl << "Console progress Test using multi thread... " << std::endl;
     //ConsoleSleeperMultiThread();
 
     //qt sleeper
     QtSleeper(argc, argv);
 
-    //boost thread as functor
-    //WorkerThread();
+    te::common::ProgressManager::getInstance().removeViewer(idViewer);
 
-    delete progress;
+    delete cpv;
 
     TerraLib::getInstance().finalize();
   }

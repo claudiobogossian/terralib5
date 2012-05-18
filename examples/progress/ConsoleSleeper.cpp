@@ -2,7 +2,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-#include "terralib/common/progress/ProgressManager.h"
+#include "terralib/common/progress/TaskProgress.h"
 
 // System
 #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
@@ -11,22 +11,41 @@
 
 #include <iostream>
 
-#define TOTAL_STEPS 15000
+#define TOTAL_STEPS 2000
+#define TOTAL_STEPS_INTERNAL 1000
 
 void ConsoleSleeper()
 {
-  te::common::ProgressManager::getInstance().reset();
-  te::common::ProgressManager::getInstance().setTotalSteps(TOTAL_STEPS);
-  te::common::ProgressManager::getInstance().setMessage("Console Progress Test");
-  te::common::ProgressManager::getInstance().useProgressTimer(true);
+  te::common::TaskProgress task;
   
-  std::cout << std::endl << "Console progress bar test..." << std::endl;
-
-  te::common::ProgressManager::getInstance().startTimer();
+  task.setTotalSteps(TOTAL_STEPS);
+  task.setMessage("Console Progress Test");
 
   for(unsigned int i = 0; i < TOTAL_STEPS; ++i)
   {
-    if(!te::common::ProgressManager::getInstance().isActive())
+    if(i == TOTAL_STEPS_INTERNAL)
+    {
+      te::common::TaskProgress taskInteral;
+
+      taskInteral.setTotalSteps(TOTAL_STEPS_INTERNAL);
+      taskInteral.setMessage("Second Task");
+
+      for(unsigned int j = 0; j < TOTAL_STEPS_INTERNAL; ++j)
+      {
+        if(!taskInteral.isActive())
+        {
+          break;
+        }
+
+        #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+          Sleep(5);
+        #endif
+
+        taskInteral.pulse();
+      }
+    }
+
+    if(!task.isActive())
     {
       break;
     }
@@ -35,8 +54,6 @@ void ConsoleSleeper()
       Sleep(5);
     #endif
 
-    te::common::ProgressManager::getInstance().pulse();
+    task.pulse();
   }
-
-  te::common::ProgressManager::getInstance().reset();
 }
