@@ -18,18 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/QtProgressEvent.h
+  \file terralib/qt/widgets/progress/ProgressSetValueEvent.h
  
-  \brief The QtProgressBarSetMessageEvent is a custom event used to set a new message into 
+  \brief The ProgressSetValueEvent is a custom event used to set a new value into 
          a progress bar. Used in thread codes.
 */
 
-#ifndef __TERRALIB_QT_PROGRESS_QTPROGRESSSETMESSAGE_H
-#define __TERRALIB_QT_PROGRESS_QTPROGRESSSETMESSAGE_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_PROGRESSSETVALUEEVENT_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_PROGRESSSETVALUEEVENT_H
 
 //TerraLib
-#include "../../widgets/Config.h"
-#include "terralib/common/progress/AbstractProgress.h"
+#include "../Config.h"
 
 //Qt
 #include <QtCore/QEvent>
@@ -41,22 +40,23 @@ namespace te
     namespace widgets
     {
       /*!
-        \class QtProgressBarSetMessageEvent
+        \class ProgressSetValueEvent
 
-        \brief The QtProgressBarSetMessageEvent is a custom event used to set a new value into 
-               a progress bar. Used in thread codes.
+        \brief The ProgressSetValueEvent is a custom event used to set a new value into 
+         a progress bar. Used in thread codes.
 
-        \sa QtProgress
+        \sa DialogProgressViewer, WidgetProgressItem
       */
-      class TEQTWIDGETSEXPORT QtProgressBarSetMessageEvent : public QEvent
+      class TEQTWIDGETSEXPORT ProgressSetValueEvent : public QEvent
       {
         public:
+
           /*! \brief It initializes a new QtProgress. */
-          QtProgressBarSetMessageEvent(std::string value);
-          
+          ProgressSetValueEvent(int value);
+
           /*! \brief Destructor */
-          ~QtProgressBarSetMessageEvent();
-          
+          ~ProgressSetValueEvent();
+
           /*! \brief Get the custom event type */
           static QEvent::Type type();
       
@@ -64,12 +64,10 @@ namespace te
           static QEvent::Type m_customEventType;  //!< Custom Event Type
 
         public:
-          std::string m_value;                    //!< Progress bar message attribute
+          int m_value;                            //!< Progress bar value attribute
       };
-    }  // end namespace progress
-
+    }  // end namespace widgets
   }    // end namespace qt
 }      // end namespace te
 
-#endif  // __TERRALIB_QT_PROGRESS_QTPROGRESSSETMESSAGE_H
-
+#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_PROGRESSSETVALUEEVENT_H

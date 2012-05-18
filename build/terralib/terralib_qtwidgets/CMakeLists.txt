@@ -197,10 +197,13 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
 	 ${SRCDIR}/widgets/canvas/MapDisplay.h
 	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h
-	 ${SRCDIR}/widgets/progress/QtProgress.h
-	 ${SRCDIR}/widgets/progress/QtWidgetProgress.h
-   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
-   ${SRCDIR}/widgets/help/HelpPushButton.h)
+	 ${SRCDIR}/widgets/progress/BarProgressViewer.h
+	 ${SRCDIR}/widgets/progress/DialogProgressViewer.h
+	 ${SRCDIR}/widgets/progress/WidgetProgressItem.h
+	 ${SRCDIR}/widgets/progress/WidgetProgressViewer.h
+     ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
+     ${SRCDIR}/widgets/help/HelpPushButton.h)
+
 
 # Select the FORMS widgets     
 file(GLOB FORMS

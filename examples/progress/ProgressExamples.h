@@ -32,8 +32,6 @@ void ConsoleSleeperMultiThread();
 
 void QtSleeper(int argc, char *argv[]);
 
-void WorkerThread();
-
 #endif
 
 //__TERRALIB_EXAMPLES_INTERNAL_PROGRESSEXAMPLES_H
