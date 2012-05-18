@@ -42,19 +42,12 @@ namespace te
         
         virtual ~SegmenterStrategyParameters();
         
-        virtual const SegmenterStrategyParameters& operator=( const SegmenterStrategyParameters& params ) = 0;
-        
-        //overload
-        //virtual void reset() throw( te::common::Exception ) = 0;
-        
-        //overload
-        //virtual AbstractParameters* clone() const= 0;        
-        
       protected :
         
         SegmenterStrategyParameters();
         
-        //SegmenterStrategyParameters( const SegmenterStrategyParameters& );
+        SegmenterStrategyParameters( const SegmenterStrategyParameters& );
+        
     };        
   } // end namespace rp
 }   // end namespace te

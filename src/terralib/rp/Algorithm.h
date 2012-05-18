@@ -30,6 +30,7 @@
 #ifndef __TERRALIB_RP_INTERNAL_ALGORITHM_H
 #define __TERRALIB_RP_INTERNAL_ALGORITHM_H
 
+#include "AlgorithmParameters.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -37,8 +38,6 @@ namespace te
 {
   namespace rp
   {
-    class AlgorithmParameters;
-    
     /*!
       \class Algorithm
       \brief Raster Processing algorithm base interface.
@@ -52,11 +51,12 @@ namespace te
         
         /*!
           \brief Initialize the algorithm instance making it ready for execution.
-          \param params Contrast parameters.
+          \param inputParams Input parameters.
+          \param outputParams Output parameters.
           \return true if OK, false on errors.
          */
-        virtual bool initialize( AlgorithmParameters& params ) 
-          throw( te::rp::Exception ) = 0;
+        virtual bool initialize( const AlgorithmParameters& inputParams,
+          AlgorithmParameters& outputParams ) throw( te::rp::Exception ) = 0;
         
         /*!
           \brief Executes the algorithm using the current internal parameters.

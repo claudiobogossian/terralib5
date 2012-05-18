@@ -61,23 +61,24 @@ void TsContrast::LinearContrast()
 
   // Creating the algorithm parameters
 
-  te::rp::Contrast::Parameters algoParams;
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
 
-  algoParams.m_type = te::rp::Contrast::Parameters::LinearContrastT;
-  algoParams.m_minInput = 50;
-  algoParams.m_maxInput = 200;
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = "terralib_unittest_rp_Contrast_noOptimization_Test.tif";
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::LinearContrastT;
+  algoInputParams.m_lCMinInput = 50;
+  algoInputParams.m_lCMaxInput = 200;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = "terralib_unittest_rp_Contrast_noOptimization_Test.tif";
 
   // Executing the algorithm
 
   te::rp::Contrast algorithmInstance;
 
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 
@@ -106,22 +107,23 @@ void TsContrast::HistogramEqualizationContrast()
 
   // Creating the algorithm parameters
 
-  te::rp::Contrast::Parameters algoParams;
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
 
-  algoParams.m_type = te::rp::Contrast::Parameters::LinearContrastT;
-  algoParams.m_maxInput = 255; // set this parameter to normalize raster [0, 255]
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = "terralib_unittest_rp_HistogramEqualizationContrast_Test.tif";
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::LinearContrastT;
+  algoInputParams.m_hECMaxInput = 255; // set this parameter to normalize raster [0, 255]
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = "terralib_unittest_rp_HistogramEqualizationContrast_Test.tif";
 
   // Executing the algorithm
 
   te::rp::Contrast algorithmInstance;
 
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 
@@ -150,23 +152,24 @@ void TsContrast::SetMeanAndStdContrast()
 
   // Creating the algorithm parameters
 
-  te::rp::Contrast::Parameters algoParams;
+  te::rp::Contrast::InputParameters algoInputParams;
+  te::rp::Contrast::OutputParameters algoOutputParams;
 
-  algoParams.m_type = te::rp::Contrast::Parameters::SetMeanAndStdContrastT;
-  algoParams.m_meanInput = 127;
-  algoParams.m_stdInput = 100;
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = "terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
+  algoInputParams.m_type = te::rp::Contrast::InputParameters::SetMeanAndStdContrastT;
+  algoInputParams.m_sMASCMeanInput = 127;
+  algoInputParams.m_sMASCStdInput = 100;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = "terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
 
   // Executing the algorithm
 
   te::rp::Contrast algorithmInstance;
 
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 

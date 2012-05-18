@@ -42,16 +42,6 @@ namespace te
       \class SecondDegreePolynomialGT
       
       \brief Second Degree Polynomial Geometric transformation.
-      
-      \note The transformation parameters (inside GTParameters::m_directParameters) are disposed on the following form:
-      
-      \code
-| u | = | a b c | * | x |
-| v |   | d e f |   | y |
-        | 0 0 1 |
-        
-GTParameters::m_directParameters = [ a b c d e f ]
-      \endcode
     */
     class TEGEOMEXPORT SecondDegreePolynomialGT : public GeometricTransformation
     {

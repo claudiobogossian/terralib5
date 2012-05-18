@@ -65,30 +65,31 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   strategyParameters.m_minSegmentSize = 50;
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
+  te::rp::Segmenter::InputParameters algoInputParams;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_enableThreadedProcessing = false;
+  algoInputParams.m_maxSegThreads = 0;
+  algoInputParams.m_enableBlockProcessing = true;
+  algoInputParams.m_enableBlockMerging = false;
+  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_strategyName = "Dummy";
+  algoInputParams.setSegStrategyParams( strategyParameters );
   
-  te::rp::Segmenter::Parameters algoParams;
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outRasterPtr = 0;
-  algoParams.m_outRasterBand = 0;
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = 
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+  algoOutputParams.m_outRasterPtr = 0;
+  algoOutputParams.m_outRasterBand = 0;
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = 
     "terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
-  algoParams.m_enableThreadedProcessing = false;
-  algoParams.m_maxSegThreads = 0;
-  algoParams.m_enableBlockProcessing = true;
-  algoParams.m_enableBlockMerging = false;
-  algoParams.m_maxBlockSize = 0;
-  algoParams.m_strategyName = "Dummy";
-  algoParams.setSegStrategyParams( strategyParameters );
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 
@@ -121,30 +122,31 @@ void TsSegmenter::BlockProcessingWithMerging()
   strategyParameters.m_minSegmentSize = 50;
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
+  te::rp::Segmenter::InputParameters algoInputParams;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_enableThreadedProcessing = false;
+  algoInputParams.m_maxSegThreads = 0;
+  algoInputParams.m_enableBlockProcessing = true;
+  algoInputParams.m_enableBlockMerging = true;
+  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_strategyName = "Dummy";
+  algoInputParams.setSegStrategyParams( strategyParameters );
   
-  te::rp::Segmenter::Parameters algoParams;
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outRasterPtr = 0;
-  algoParams.m_outRasterBand = 0;
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = 
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+  algoOutputParams.m_outRasterPtr = 0;
+  algoOutputParams.m_outRasterBand = 0;
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = 
     "terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
-  algoParams.m_enableThreadedProcessing = false;
-  algoParams.m_maxSegThreads = 0;
-  algoParams.m_enableBlockProcessing = true;
-  algoParams.m_enableBlockMerging = true;
-  algoParams.m_maxBlockSize = 0;
-  algoParams.m_strategyName = "Dummy";
-  algoParams.setSegStrategyParams( strategyParameters );
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 
@@ -177,30 +179,31 @@ void TsSegmenter::ThreadedProcessing()
   strategyParameters.m_minSegmentSize = 50;
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
+  te::rp::Segmenter::InputParameters algoInputParams;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_enableThreadedProcessing = true;
+  algoInputParams.m_maxSegThreads = 4;
+  algoInputParams.m_enableBlockProcessing = true;
+  algoInputParams.m_enableBlockMerging = true;
+  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_strategyName = "Dummy";
+  algoInputParams.setSegStrategyParams( strategyParameters );
   
-  te::rp::Segmenter::Parameters algoParams;
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outRasterPtr = 0;
-  algoParams.m_outRasterBand = 0;
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = 
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+  algoOutputParams.m_outRasterPtr = 0;
+  algoOutputParams.m_outRasterBand = 0;
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = 
     "terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
-  algoParams.m_enableThreadedProcessing = true;
-  algoParams.m_maxSegThreads = 4;
-  algoParams.m_enableBlockProcessing = true;
-  algoParams.m_enableBlockMerging = true;
-  algoParams.m_maxBlockSize = 0;
-  algoParams.m_strategyName = "Dummy";
-  algoParams.setSegStrategyParams( strategyParameters );
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 
@@ -234,29 +237,31 @@ void TsSegmenter::RegionGrowingStrategy()
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
   
-  te::rp::Segmenter::Parameters algoParams;
-  algoParams.m_inRasterPtr = inputRasterPointer.get();
-  algoParams.m_inRasterBands.push_back( 0 );
-  algoParams.m_inRasterBands.push_back( 1 );
-  algoParams.m_inRasterBands.push_back( 2 );
-  algoParams.m_outRasterPtr = 0;
-  algoParams.m_outRasterBand = 0;
-  algoParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoParams.m_outDataSetName = 
+  te::rp::Segmenter::InputParameters algoInputParams;
+  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inRasterBands.push_back( 0 );
+  algoInputParams.m_inRasterBands.push_back( 1 );
+  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_enableThreadedProcessing = false;
+  algoInputParams.m_maxSegThreads = 0;
+  algoInputParams.m_enableBlockProcessing = false;
+  algoInputParams.m_enableBlockMerging = false;
+  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_strategyName = "RegionGrowing";
+  algoInputParams.setSegStrategyParams( strategyParameters );
+  
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+  algoOutputParams.m_outRasterPtr = 0;
+  algoOutputParams.m_outRasterBand = 0;
+  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
+  algoOutputParams.m_outDataSetName = 
     "terralib_unittest_rp_Segmenter_RegionGrowingStrategy_Test.tif";
-  algoParams.m_enableThreadedProcessing = false;
-  algoParams.m_maxSegThreads = 0;
-  algoParams.m_enableBlockProcessing = false;
-  algoParams.m_enableBlockMerging = false;
-  algoParams.m_maxBlockSize = 0;
-  algoParams.m_strategyName = "RegionGrowing";
-  algoParams.setSegStrategyParams( strategyParameters );
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute() );
 }
 

@@ -42,14 +42,6 @@ namespace te
         
         virtual ~AlgorithmParameters();
         
-        virtual const AlgorithmParameters& operator=( const AlgorithmParameters& params ) = 0;
-        
-        //overload
-        virtual void reset() throw( te::common::Exception ) = 0;
-        
-        //overload
-        virtual AbstractParameters* clone() const= 0;
-
       protected:
 
         AlgorithmParameters();
