@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -19,9 +19,9 @@
 
 /*!
   \file terralib/common/progress/ProgressManager.h
- 
-  \brief The Progress is a singleton that can be used to define a progress interface instance.
-*/
+
+  \brief A class that defines the singleton to manager tasks and viewers
+ */
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
 #define __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
@@ -29,24 +29,31 @@
 // TerraLib
 #include "../Config.h"
 #include "../Singleton.h"
-#include "AbstractProgress.h"
 
 // STL
 #include <map>
+#include <string>
 
 namespace te
 {
   namespace common
   {
+    // Forward declarations
+    class TaskProgress;
+    class AbstractProgressViewer;
+
     /*!
       \class ProgressManager
 
-      \brief The ProgressManager is a singleton that can be used to define a progress interface instance.
+      \brief A class that defines the singleton to manager tasks and viewers
 
-      Use this class to keep a instance of a Progress Bar. This singleton is not owner of none
-      progress instance, those instances must be deleted by his owner.
-      
-      \sa Singleton, AbstractProgress
+        This singleton is used to store all tasks created, also is
+        used to attach progress viewers. If one or more viewers is attached,
+        all instances will be used to display the tasks progress.
+
+      \sa AbstractProgressViewer, TaskProgress
+
+      \note
     */
     class TECOMMONEXPORT ProgressManager : public te::common::Singleton<ProgressManager>
     {
@@ -54,264 +61,104 @@ namespace te
 
       public:
 
-        /*!
-          \brief Define the main progress interface
-
-          \param pi Instance of a AbstractProgress.
-        */
-        void setMainProgress(AbstractProgress* pi);
-
-        /*!
-          \brief Get the main progress interface.
-
-          \return Instance of a AbstractProgress.
-        */
-        AbstractProgress* getMainProgress();
-
-        /*!
-          \brief Define the progress interface
-
-          \param pi Instance of a AbstractProgress.
-
-          \return Interger value - Progress ID
-        */
-        int setProgress(AbstractProgress* pi);
-
-        /*!
-          \brief Get the progress interface.
-
-          \param id Progress identification
-
-          \return Instance of a AbstractProgress.
-        */
-        AbstractProgress* getProgress(const int& id);
-
-        /** @name ProgressManager facade Methods for AbstractProgress
-        *  Method used to access the instance stored on this singleton.
-        */
+        /** @name ProgressManager Methods
+         *  Methods to add and remove tasks and viewers
+         */
         //@{
 
         /*!
-          \brief Used to set the progress total steps.
+          \brief Attach a progress viewer
 
-          \param value Integer value.
+          \param apv Progress viewer instance
 
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \note Used in case of a  default range ( 0 - value).
+          \return Progress viewer identifier
         */
-        void setTotalSteps(const int& value, const int& id = -1);
+        int addViewer(AbstractProgressViewer* apv);
 
         /*!
-          \brief Used to set the current step 
+          \brief Dettach a progress viewer
 
-          \param step Integer value
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined
-
-          \note This function updates the proportional progress value, if this value has changed
-                the variable m_hasToUpdate is TRUE. This function only works if the attribute
-                m_isActive is TRUE.
+          \param viewerId Progress viewer identifier
         */
-        void setCurrentStep(const int& step, const int& id = -1);
+        void removeViewer(int viewerId);
 
         /*!
-          \brief Gets the current step.
+          \brief Used in TaskProgress constructor, register this task generating a task id.
 
-          \param id Progress Identification, if id is equal -1, the main progress will be used
+          \param tp TaskProgress instance
 
-          \exception Exception If the progress instance was not defined.
-
-          \return Integer value.
+          \return  Task identifier
         */
-        int getCurrentStep(const int& id = -1);
+        int addTask(TaskProgress* tp);
 
         /*!
-          \brief Gets the proportional value from the current step.
+          \brief Used in TaskProgress destructor, remove task from singleton.
 
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \return Integer value.
+          \param taskId Task identifier
         */
-        int getCurrentProportionalStep(const int& id = -1);
-     
-        /*!
-          \brief Set the progress message.
-
-          \param message String used to define the progress message
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \param message String value.
-        */
-        void setMessage(const std::string& message, const int& id = -1);
+        void removeTask(int taskId);
 
         /*!
-          \brief Get the progress message.
+          \brief Inform all viewers that a task was canceled
 
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \return String value.
+          \param taskId Task identifier
         */
-        std::string getMessage(const int& id = -1);
+        void cancelTask(int taskId);
 
         /*!
-          \brief Set the title caption.
+          \brief Inform all viewers that a task set the total values
 
-          \param title String value.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \note This function has a empty implementation here, this function should be reimplemented
-                in GUI applications that uses a progress bar.
+          \param taskId Task identifier
         */
-        void setTitle(const std::string& title, const int& id = -1);
+        void setTotalValues(int taskId);
 
         /*!
-          \brief Set the progress status
+          \brief Inform all viewers that a task set the current step
 
-          \param status Boolean attribute.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
+          \param taskId Task identifier
         */
-        void setActive(const bool& status, const int& id = -1);
+        void updateValue(int taskId);
 
         /*!
-          \brief Get the progress status.
+          \brief Inform all viewers that a task set the message
 
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \return Boolean type.
-
-          \exception Exception If the progress instance was not defined.
+          \param taskId Task identifier
         */
-        bool isActive(const int& id = -1);
-
-        /*!
-          \brief Reset all internal attributes and also restart all progress params attributes
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \note The m_isMultiThread is turn to FALSE and m_isActive is turn to TRUE.
-
-          \exception Exception If the progress instance was not defined.
-        */
-        void reset(const int& id = -1);
-        
-        /*!
-          \brief Function used to indicate if the progress interface has to be updated.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \return True if the progress has to be updated and false in other case.
-
-          \exception Exception If the progress instance was not defined.
-        */
-        bool hasToUpdate(const int& id = -1);
-
-        /*!
-          \brief Auxiliar function used to increment the progress.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \note This function calls the method setCurrentStep(int) using the current step + 1.
-        */
-        void pulse(const int& id = -1);
-        
-        /*!
-          \brief This function is used to stop a progress.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \note Turn the variable m_isActive to FALSE.
-        */
-        void cancel(const int& id = -1);
-
-         /*!
-          \brief This function is used to set the window modality
-
-          \param flag Status to define the window modality, true is modal.
-
-          \exception Exception If the progress instance was not defined.
-
-        */
-        virtual void setModal(const bool& flag, const int& id = -1);
-
-        /*!
-          \brief Set if the progress will be used in a multithread enviroment.
-
-          \param flag Boolean value used to set the multithread state.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined
-
-          \note At the end of the process this flag will turn to FALSE.
-        */
-        void setMultiThreadProgress(const bool& flag, const int& id = -1);
-      
-        /*!
-          \brief Set if progress timer will be used to estimate time.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \note If progressTimer is enabled the time will start at the startTimer() function.
-        */
-        void useProgressTimer(const bool& flag, const int& id = -1);
-
-        /*!
-          \brief Start the ProgressTimer timer.
-
-          \param id Progress Identification, if id is equal -1, the main progress will be used
-
-          \exception Exception If the progress instance was not defined.
-
-          \note Only works if progressTimer is enabled.
-        */
-        void startTimer(const int& id = -1);
+        void updateMessage(int taskId);
 
         //@}
 
       protected:
 
-        /*! \brief It initializes the Singleton. */
+        /*! \brief Default constructor. */
         ProgressManager();
 
         /*! \brief Destructor. */
         ~ProgressManager();
 
-        /*! \brief Generate a new ID. */
-        int getProgressId();
+        /*!
+          \brief Used to generate a new viewer id (use internal counter)
 
-      private:
+          \return Viewer identification as integer value
+        */
+        int generateViewerId();
 
-        int m_progressCounter;                          //!< Internal counter used to generate progress Ids
+        /*!
+          \brief Used to generate a new task id (use internal counter)
 
-        std::map<int, AbstractProgress*> m_progressMap; //!< Map with all progress instances
+          \return Task identification as integer value
+        */
+        int generateTaskId();
+
+      protected:
+
+        int m_taskCounter;                                //!< Counter used to generate a task id
+        int m_viewerCounter;                              //!< Counter used to generate a viewer id
+        std::map<int, TaskProgress*> m_tasks;             //!< Container with tasks
+        std::map<int, AbstractProgressViewer*> m_viewers; //!< Container with viewers
+
     };
-
   } // end namespace common
 }   // end namespace te
 
-#endif  // __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
-
+#endif //__TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
