@@ -45,7 +45,7 @@ namespace te
         \brief The ProgressSetValueEvent is a custom event used to set a new value into 
          a progress bar. Used in thread codes.
 
-        \sa DialogProgressViewer, WidgetProgressItem
+        \sa ProgressViewerDialog, ProgressWidgetItem
       */
       class TEQTWIDGETSEXPORT ProgressSetValueEvent : public QEvent
       {

@@ -2,9 +2,9 @@
 #define __DUMMY_WINDOW_H
 
 //Terralib
-#include "terralib/qt/widgets/progress/DialogProgressViewer.h"
-#include "terralib/qt/widgets/progress/WidgetProgressViewer.h"
-#include "terralib/qt/widgets/progress/BarProgressViewer.h"
+#include "terralib/qt/widgets/progress/ProgressViewerDialog.h"
+#include "terralib/qt/widgets/progress/ProgressViewerWidget.h"
+#include "terralib/qt/widgets/progress/ProgressViewerBar.h"
 
 // QT
 #include <QtGui/QWidget>
@@ -37,8 +37,8 @@ class DummyWindow : public QWidget
     int m_dlgViewerId;
     int m_WidgetViewerId;
     int m_barViewerId;
-    te::qt::widgets::DialogProgressViewer* m_dlgViewer;
-    te::qt::widgets::WidgetProgressViewer* m_widgetViewer;
-    te::qt::widgets::BarProgressViewer* m_barViewer;
+    te::qt::widgets::ProgressViewerDialog* m_dlgViewer;
+    te::qt::widgets::ProgressViewerWidget* m_widgetViewer;
+    te::qt::widgets::ProgressViewerBar* m_barViewer;
 };
 #endif //__DUMMY_WINDOW_H

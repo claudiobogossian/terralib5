@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/WidgetProgressItem.cpp
+  \file terralib/qt/widgets/progress/ProgressWidgetItem.cpp
 
   \brief Custom widget used to represent a single task.
  */
@@ -26,7 +26,7 @@
 // TerraLib
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
-#include "WidgetProgressItem.h"
+#include "ProgressWidgetItem.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
@@ -34,7 +34,7 @@
 #include <QtGui/QStyle>
 
 
-te::qt::widgets::WidgetProgressItem::WidgetProgressItem(QWidget* parent, int taskId) : 
+te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId) : 
   QWidget(parent),
   m_taskId(taskId)
 {
@@ -79,33 +79,33 @@ te::qt::widgets::WidgetProgressItem::WidgetProgressItem(QWidget* parent, int tas
   this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed); 
 }
 
-te::qt::widgets::WidgetProgressItem::~WidgetProgressItem()
+te::qt::widgets::ProgressWidgetItem::~ProgressWidgetItem()
 {
 }
 
-void te::qt::widgets::WidgetProgressItem::setValue(int step)
+void te::qt::widgets::ProgressWidgetItem::setValue(int step)
 {
   QCoreApplication::postEvent(this, new te::qt::widgets::ProgressSetValueEvent(step));
 
   QCoreApplication::processEvents();
 }
 
-void te::qt::widgets::WidgetProgressItem::setLabel(std::string message)
+void te::qt::widgets::ProgressWidgetItem::setLabel(std::string message)
 {
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(message));
 }
 
-void te::qt::widgets::WidgetProgressItem::reset()
+void te::qt::widgets::ProgressWidgetItem::reset()
 {
   m_progressBar->reset();
 }
 
-void te::qt::widgets::WidgetProgressItem::cancel()
+void te::qt::widgets::ProgressWidgetItem::cancel()
 {
   emit taskCanceled(m_taskId);
 }
 
-bool te::qt::widgets::WidgetProgressItem::eventFilter(QObject* obj, QEvent* event)
+bool te::qt::widgets::ProgressWidgetItem::eventFilter(QObject* obj, QEvent* event)
 {
   if(obj == this && event->type() == te::qt::widgets::ProgressSetValueEvent::type())
   {

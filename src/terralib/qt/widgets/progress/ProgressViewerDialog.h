@@ -18,14 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/WidgetProgressViewer.h
+  \file terralib/qt/widgets/progress/ProgressViewerDialog.h
 
-  \brief A class that defines the interface of a qt widget to group
-         a set of WidgetProgressItem.
+  \brief A class that defines the interface of a qt bar progress viewer.
+         This widget is a dialog box with progress information and a
+         cancel button.
  */
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_WIDGETPROGRESSVIEWER_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_WIDGETPROGRESSVIEWER_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerDialog_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerDialog_H
 
 // TerraLib
 #include "../Config.h"
@@ -33,9 +34,7 @@
 #include "terralib/common/progress/TaskProgress.h"
 
 //Qt
-#include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
-#include <QtGui/QScrollArea>
+#include <QtGui/QProgressDialog>
 
 // STL
 #include <map>
@@ -47,39 +46,44 @@ namespace te
   {
     namespace widgets
     {
-      // Forward declarations
-      class WidgetProgressItem;
 
       /*!
-        \class WidgetProgressViewer
+        \class ProgressViewerDialog
 
-        \brief A class that defines the interface of a qt widget to group
-               a set of WidgetProgressItem.
+        \brief  A class that defines the interface of a qt bar progress viewer.
+                This widget is a dialog box with progress information and a
+                cancel button.
+         
+                This viewer is made using Qt Progress Dialog Feed back will be generated
+                over a dialog window. Multiples tasks will be displayed using ONLY one
+                progress.
 
-              This viewer is made using WidgetProgressItem. Feed back will be generated
-              over a custom widget. Multiples tasks will be displayed using individual
-              progress widgets
+                The proportional value is calculated using TOTALSTEPS / CURRENTSTEPS.
 
-              The proportional value is informed by each task.
+                TOTALSTEPS - Sum of all total steps of all tasks
+                CURRENTSTEPS - Sum of all current steps of all tasks
 
-        \sa AbstractProgressViewer, QtProgressBar
+                The progress message is defined by the task message, if it has more than
+                on task the message will be "MULTI TASKS".
 
-        \note In this viewer, tasks can be deleted.
+        \sa 
+
+        \note
       */
-      class TEQTWIDGETSEXPORT WidgetProgressViewer : public QDialog,  public te::common::AbstractProgressViewer
+      class TEQTWIDGETSEXPORT ProgressViewerDialog : public QObject,  public te::common::AbstractProgressViewer
       {
         Q_OBJECT
 
         public:
 
           /*! \brief Default constructor. */
-          WidgetProgressViewer(QWidget* parent);
+          ProgressViewerDialog(QWidget* parent);
 
           /*! \brief Virtual destructor. */
-          virtual ~WidgetProgressViewer();
+          virtual ~ProgressViewerDialog();
 
-          /** @name WidgetProgressViewer Methods
-           *  Methods for WidgetProgressViewer access
+           /** @name ProgressViewerDialog Methods
+           *  Methods for ProgressViewerDialog access
            */
           //@{
 
@@ -129,26 +133,37 @@ namespace te
 
           //@}
 
+        protected:
+
+          /*!
+            \brief Used to receive internal events
+
+            \param obj Object sender
+
+            \param event Event sended by object
+
+            \return Always return true
+          */
+          virtual bool eventFilter(QObject* obj, QEvent* event);
+
         public slots:
 
           /*!
-            \brief This slot is connect to all cancel buttons of each progress itens
-
-            \param Integer value used to inform what task was canceled.
+            \brief Get the button clicked and cancel ALL tasks
           */
-          virtual void cancel(int);
+          virtual void cancel();
 
         protected:
 
+          int m_totalSteps;                                   //!< Attribute used to define the total steps of all tasks
+          int m_currentStep;                                  //!< Attribute used to define the current steps of all task
+          int m_propStep;                                     //!< Attribute used to define the proportional step (0-100)
+          std::string m_message;                              //!< Attribute used to define dialog message
           std::map<int, te::common::TaskProgress*> m_tasks;   //!< Task container
-          std::map<int, WidgetProgressItem*> m_itens;         //!< Custom widget progress item  container
-          QGridLayout* m_MainLayout;                          //!< GUI Objects used to build the custom widget
-          QGridLayout* m_widgetLayout;                        //!< GUI Objects used to build the custom widget
-          QScrollArea* m_scroll;                              //!< GUI Objects used to build the custom widget
-          QWidget* m_widget;                                  //!< GUI Objects used to build the custom widget
+          QProgressDialog* m_dlgProgress;                     //!< GUI Objects used as progress bar dialog
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif //__TERRALIB_QT_WIDGETS_PROGRESS_WIDGETPROGRESSVIEWER_H
+#endif //__TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerDialog_H

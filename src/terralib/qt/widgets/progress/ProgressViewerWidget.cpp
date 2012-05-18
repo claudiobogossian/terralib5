@@ -18,22 +18,22 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/WidgetProgressViewer.cpp
+  \file terralib/qt/widgets/progress/ProgressViewerWidget.cpp
 
   \brief A class that defines the interface of a qt widget to group
-         a set of WidgetProgressItem.
+         a set of ProgressWidgetItem.
  */
 
 // Terralib
-#include "WidgetProgressItem.h"
-#include "WidgetProgressViewer.h"
+#include "ProgressWidgetItem.h"
+#include "ProgressViewerWidget.h"
 
 // Qt
 #include <QtGui/QApplication>
 #include <QtCore/QCoreApplication>
 #include <QtGui/QScrollBar>
 
-te::qt::widgets::WidgetProgressViewer::WidgetProgressViewer(QWidget* parent) : 
+te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent) : 
   QDialog(parent, Qt::Tool), 
   AbstractProgressViewer()
 {
@@ -55,20 +55,20 @@ te::qt::widgets::WidgetProgressViewer::WidgetProgressViewer(QWidget* parent) :
   m_widgetLayout->setSizeConstraint(QLayout::SetMinAndMaxSize);
 }
 
-te::qt::widgets::WidgetProgressViewer::~WidgetProgressViewer()
+te::qt::widgets::ProgressViewerWidget::~ProgressViewerWidget()
 {
 
 }
 
-void te::qt::widgets::WidgetProgressViewer::addTask(te::common::TaskProgress* t, int id)
+void te::qt::widgets::ProgressViewerWidget::addTask(te::common::TaskProgress* t, int id)
 {
   m_tasks.insert(std::map<int, te::common::TaskProgress*>::value_type(id, t));
 
-  WidgetProgressItem* item = new WidgetProgressItem(m_widget, id);
+  ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, id);
 
   item->setLabel(t->getMessage());
 
-  m_itens.insert(std::map<int, WidgetProgressItem*>::value_type(id, item));
+  m_itens.insert(std::map<int, ProgressWidgetItem*>::value_type(id, item));
 
   connect(item, SIGNAL(taskCanceled(int)), this, SLOT(cancel(int)));
 
@@ -77,7 +77,7 @@ void te::qt::widgets::WidgetProgressViewer::addTask(te::common::TaskProgress* t,
   item->show();
 }
 
-void te::qt::widgets::WidgetProgressViewer::removeTask(int taskId)
+void te::qt::widgets::ProgressViewerWidget::removeTask(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
@@ -86,7 +86,7 @@ void te::qt::widgets::WidgetProgressViewer::removeTask(int taskId)
     m_tasks.erase(it);
   }
 
-  std::map<int, te::qt::widgets::WidgetProgressItem*>::iterator itItem = m_itens.find(taskId);
+  std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(taskId);
 
   if(itItem != m_itens.end())
   {
@@ -103,22 +103,22 @@ void te::qt::widgets::WidgetProgressViewer::removeTask(int taskId)
   }
 }
 
-void te::qt::widgets::WidgetProgressViewer::cancelTask(int taskId)
+void te::qt::widgets::ProgressViewerWidget::cancelTask(int taskId)
 {
   removeTask(taskId);
 }
 
-void te::qt::widgets::WidgetProgressViewer::setTotalValues(int taskId)
+void te::qt::widgets::ProgressViewerWidget::setTotalValues(int taskId)
 {
 }
 
-void te::qt::widgets::WidgetProgressViewer::updateValue(int taskId)
+void te::qt::widgets::ProgressViewerWidget::updateValue(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
   {
-    std::map<int, te::qt::widgets::WidgetProgressItem*>::iterator itItem = m_itens.find(taskId);
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(taskId);
 
     if(itItem != m_itens.end())
     {
@@ -127,13 +127,13 @@ void te::qt::widgets::WidgetProgressViewer::updateValue(int taskId)
   }
 }
 
-void te::qt::widgets::WidgetProgressViewer::updateMessage(int taskId)
+void te::qt::widgets::ProgressViewerWidget::updateMessage(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
   {
-    std::map<int, te::qt::widgets::WidgetProgressItem*>::iterator itItem = m_itens.find(taskId);
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(taskId);
 
     if(itItem != m_itens.end())
     {
@@ -142,7 +142,7 @@ void te::qt::widgets::WidgetProgressViewer::updateMessage(int taskId)
   }
 }
 
-void te::qt::widgets::WidgetProgressViewer::cancel(int id)
+void te::qt::widgets::ProgressViewerWidget::cancel(int id)
 {
   std::map<int, te::common::TaskProgress*>::iterator itTask = m_tasks.find(id);
 

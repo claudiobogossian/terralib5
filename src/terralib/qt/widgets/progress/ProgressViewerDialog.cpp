@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/DialogProgressViewer.cpp
+  \file terralib/qt/widgets/progress/ProgressViewerDialog.cpp
 
   \brief A class that defines the interface of a qt bar progress viewer.
          This widget is a dialog box with progress information and a
@@ -26,7 +26,7 @@
  */
 
 // Terralib
-#include "DialogProgressViewer.h"
+#include "ProgressViewerDialog.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
 #include "terralib/common/Translator.h"
@@ -35,7 +35,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtGui/QApplication>
 
-te::qt::widgets::DialogProgressViewer::DialogProgressViewer(QWidget* parent) : AbstractProgressViewer(),
+te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent) : AbstractProgressViewer(),
   m_totalSteps(0),
   m_currentStep(0),
   m_propStep(0),
@@ -50,19 +50,19 @@ te::qt::widgets::DialogProgressViewer::DialogProgressViewer(QWidget* parent) : A
   connect(m_dlgProgress, SIGNAL(canceled()), this, SLOT(cancel()));
 }
 
-te::qt::widgets::DialogProgressViewer::~DialogProgressViewer()
+te::qt::widgets::ProgressViewerDialog::~ProgressViewerDialog()
 {
   delete m_dlgProgress;
 }
 
-void te::qt::widgets::DialogProgressViewer::addTask(te::common::TaskProgress* t, int id)
+void te::qt::widgets::ProgressViewerDialog::addTask(te::common::TaskProgress* t, int id)
 {
   m_tasks.insert(std::map<int, te::common::TaskProgress*>::value_type(id, t));
 
   updateMessage(-1);
 }
 
-void te::qt::widgets::DialogProgressViewer::removeTask(int taskId)
+void te::qt::widgets::ProgressViewerDialog::removeTask(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
@@ -82,7 +82,7 @@ void te::qt::widgets::DialogProgressViewer::removeTask(int taskId)
   }
 }
 
-void te::qt::widgets::DialogProgressViewer::cancelTask(int taskId)
+void te::qt::widgets::ProgressViewerDialog::cancelTask(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
@@ -98,12 +98,12 @@ void te::qt::widgets::DialogProgressViewer::cancelTask(int taskId)
   }
 }
 
-void te::qt::widgets::DialogProgressViewer::setTotalValues(int taskId)
+void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
 {
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::qt::widgets::DialogProgressViewer::updateValue(int taskId)
+void te::qt::widgets::ProgressViewerDialog::updateValue(int taskId)
 {
   m_currentStep++;
 
@@ -120,7 +120,7 @@ void te::qt::widgets::DialogProgressViewer::updateValue(int taskId)
   }
 }
 
-void te::qt::widgets::DialogProgressViewer::updateMessage(int taskId)
+void te::qt::widgets::ProgressViewerDialog::updateMessage(int taskId)
 {
   if(m_tasks.size() == 1)
   {
@@ -134,7 +134,7 @@ void te::qt::widgets::DialogProgressViewer::updateMessage(int taskId)
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(m_message));
 }
 
-bool te::qt::widgets::DialogProgressViewer::eventFilter(QObject* obj, QEvent* event)
+bool te::qt::widgets::ProgressViewerDialog::eventFilter(QObject* obj, QEvent* event)
 {
   if(obj == this && event->type() == ProgressSetValueEvent::type())
   {
@@ -158,7 +158,7 @@ bool te::qt::widgets::DialogProgressViewer::eventFilter(QObject* obj, QEvent* ev
   return true;
 }
 
-void te::qt::widgets::DialogProgressViewer::cancel()
+void te::qt::widgets::ProgressViewerDialog::cancel()
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.begin();
 

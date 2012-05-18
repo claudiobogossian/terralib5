@@ -29,10 +29,10 @@ DummyWindow::DummyWindow(QWidget* parent) : QWidget(parent)
 
   QSpacerItem* spacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Expanding);
   
-  m_dlgViewer = new te::qt::widgets::DialogProgressViewer(this);
+  m_dlgViewer = new te::qt::widgets::ProgressViewerDialog(this);
   m_dlgViewerId = te::common::ProgressManager::getInstance().addViewer(m_dlgViewer);
 
-  m_barViewer = new te::qt::widgets::BarProgressViewer(this);
+  m_barViewer = new te::qt::widgets::ProgressViewerBar(this);
   m_barViewerId = te::common::ProgressManager::getInstance().addViewer(m_barViewer);
 
   m_statusBar->addPermanentWidget(m_barViewer);
@@ -116,7 +116,7 @@ void DummyWindow::showWidgetViewer()
 {
   if(m_widgetViewer == 0)
   {
-    m_widgetViewer = new te::qt::widgets::WidgetProgressViewer(this);
+    m_widgetViewer = new te::qt::widgets::ProgressViewerWidget(this);
     m_WidgetViewerId = te::common::ProgressManager::getInstance().addViewer(m_widgetViewer);
   }
 

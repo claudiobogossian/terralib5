@@ -197,10 +197,10 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
 	 ${SRCDIR}/widgets/canvas/MapDisplay.h
 	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h
-	 ${SRCDIR}/widgets/progress/BarProgressViewer.h
-	 ${SRCDIR}/widgets/progress/DialogProgressViewer.h
-	 ${SRCDIR}/widgets/progress/WidgetProgressItem.h
-	 ${SRCDIR}/widgets/progress/WidgetProgressViewer.h
+	 ${SRCDIR}/widgets/progress/ProgressViewerBar.h
+	 ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
+	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
+	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
      ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
      ${SRCDIR}/widgets/help/HelpPushButton.h)
 

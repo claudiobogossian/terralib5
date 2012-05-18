@@ -48,7 +48,7 @@ namespace te
         \brief The ProgressSetMessageEvent is a custom event used to set a new message into 
          a progress bar. Used in thread codes.
 
-        \sa DialogProgressViewer, WidgetProgressItem
+        \sa ProgressViewerDialog, ProgressWidgetItem
       */
       class TEQTWIDGETSEXPORT ProgressSetMessageEvent : public QEvent
       {

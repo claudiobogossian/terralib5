@@ -18,14 +18,14 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/WidgetProgressItem.h
+  \file terralib/qt/widgets/progress/ProgressViewerBar.h
 
   \brief A class that defines the interface of a qt bar progress viewer.
          Can be use inside a status bar.
  */
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_BARPROGRESSVIEWER_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_BARPROGRESSVIEWER_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerBar_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerBar_H
 
 // TerraLib
 #include "../Config.h"
@@ -49,7 +49,7 @@ namespace te
     {
 
       /*!
-        \class BarProgressViewer
+        \class ProgressViewerBar
 
         \brief A class that defines the interface of a qt bar progress viewer.
                Can be use inside a status bar.
@@ -71,21 +71,21 @@ namespace te
 
         \note In this viewer, tasks can NOT be deleted.
       */
-      class TEQTWIDGETSEXPORT BarProgressViewer : public QWidget,  public te::common::AbstractProgressViewer
+      class TEQTWIDGETSEXPORT ProgressViewerBar : public QWidget,  public te::common::AbstractProgressViewer
       {
         Q_OBJECT
 
         public:
 
           /*! \brief Default constructor. */
-          BarProgressViewer(QWidget* parent);
+          ProgressViewerBar(QWidget* parent);
 
           /*! \brief Virtual destructor. */
-          virtual ~BarProgressViewer();
+          virtual ~ProgressViewerBar();
 
 
-          /** @name BarProgressViewer Methods
-           *  Methods for BarProgressViewer access
+          /** @name ProgressViewerBar Methods
+           *  Methods for ProgressViewerBar access
            */
           //@{
 
@@ -176,4 +176,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif //__TERRALIB_QT_WIDGETS_PROGRESS_BARPROGRESSVIEWER_H
+#endif //__TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerBar_H

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/WidgetProgressItem.h
+  \file terralib/qt/widgets/progress/ProgressWidgetItem.h
 
   \brief Custom widget used to represent a single task.
  */
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_WIDGETPROGRESSITEM_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_WIDGETPROGRESSITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_ProgressWidgetItem_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_ProgressWidgetItem_H
 
 //TerraLib
 #include "../../widgets/Config.h"
@@ -45,29 +45,29 @@ namespace te
     {
 
       /*!
-        \class WidgetProgressItem
+        \class ProgressWidgetItem
 
         \brief Custom widget used to represent a single task.
 
-        \sa WidgetProgressViewer
+        \sa ProgressViewerWidget
 
         \note
       */
-      class TEQTWIDGETSEXPORT WidgetProgressItem : public QWidget
+      class TEQTWIDGETSEXPORT ProgressWidgetItem : public QWidget
       {
         Q_OBJECT
 
         public:
 
           /*! \brief Default constructor. */
-          WidgetProgressItem(QWidget* parent, int taskId);
+          ProgressWidgetItem(QWidget* parent, int taskId);
 
           /*! \brief Virtual destructor. */
-          ~WidgetProgressItem();
+          ~ProgressWidgetItem();
 
 
-          /** @name WidgetProgressItem Methods
-           *  Methods for WidgetProgressItem access
+          /** @name ProgressWidgetItem Methods
+           *  Methods for ProgressWidgetItem access
            */
           //@{
 
@@ -137,4 +137,4 @@ namespace te
   }
 }
 
-#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_WIDGETPROGRESSITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_ProgressWidgetItem_H

@@ -18,14 +18,14 @@
  */
 
 /*!
-  \file terralib/qt/widgets/progress/WidgetProgressItem.cpp
+  \file terralib/qt/widgets/progress/ProgressViewerBar.cpp
 
   \brief A class that defines the interface of a qt bar progress viewer.
          Can be use inside a status bar.
  */
 
 // Terralib
-#include "BarProgressViewer.h"
+#include "ProgressViewerBar.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
 #include "terralib/common/Translator.h"
@@ -34,7 +34,7 @@
 #include <QtCore/QCoreApplication>
 #include <QtGui/QApplication>
 
-te::qt::widgets::BarProgressViewer::BarProgressViewer(QWidget* parent) : 
+te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent) : 
   QWidget(parent), 
   AbstractProgressViewer(),
   m_totalSteps(0),
@@ -62,16 +62,16 @@ te::qt::widgets::BarProgressViewer::BarProgressViewer(QWidget* parent) :
   connect(m_button, SIGNAL(released()), this, SLOT(on_Released()));
 }
 
-te::qt::widgets::BarProgressViewer::~BarProgressViewer()
+te::qt::widgets::ProgressViewerBar::~ProgressViewerBar()
 {
 }
 
-void te::qt::widgets::BarProgressViewer::addTask(te::common::TaskProgress* t, int id)
+void te::qt::widgets::ProgressViewerBar::addTask(te::common::TaskProgress* t, int id)
 {
   m_tasks.insert(std::map<int, te::common::TaskProgress*>::value_type(id, t));
 }
 
-void te::qt::widgets::BarProgressViewer::removeTask(int taskId)
+void te::qt::widgets::ProgressViewerBar::removeTask(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
@@ -90,7 +90,7 @@ void te::qt::widgets::BarProgressViewer::removeTask(int taskId)
   }
 }
 
-void te::qt::widgets::BarProgressViewer::cancelTask(int taskId)
+void te::qt::widgets::ProgressViewerBar::cancelTask(int taskId)
 {
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
@@ -106,12 +106,12 @@ void te::qt::widgets::BarProgressViewer::cancelTask(int taskId)
   }
 }
 
-void te::qt::widgets::BarProgressViewer::setTotalValues(int taskId)
+void te::qt::widgets::ProgressViewerBar::setTotalValues(int taskId)
 {
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::qt::widgets::BarProgressViewer::updateValue(int taskId)
+void te::qt::widgets::ProgressViewerBar::updateValue(int taskId)
 {
   m_currentStep++;
 
@@ -128,11 +128,11 @@ void te::qt::widgets::BarProgressViewer::updateValue(int taskId)
   }
 }
 
-void te::qt::widgets::BarProgressViewer::updateMessage(int taskId)
+void te::qt::widgets::ProgressViewerBar::updateMessage(int taskId)
 {
 }
 
-bool te::qt::widgets::BarProgressViewer::eventFilter(QObject* obj, QEvent* event)
+bool te::qt::widgets::ProgressViewerBar::eventFilter(QObject* obj, QEvent* event)
 {
   if(obj == this && event->type() == ProgressSetValueEvent::type())
   {
@@ -147,7 +147,7 @@ bool te::qt::widgets::BarProgressViewer::eventFilter(QObject* obj, QEvent* event
   return true;
 }
 
-void te::qt::widgets::BarProgressViewer::on_Released()
+void te::qt::widgets::ProgressViewerBar::on_Released()
 {
   emit clicked();
 }
