@@ -70,7 +70,7 @@ void DummyWindow::showProgressBar()
   te::common::TaskProgress task;
   task.setTotalSteps(TOTAL_STEPS);
   task.setMessage("Qt Progress Test");
-  task.useTimer(false);
+  task.useTimer(true);
 
   for(unsigned int i = 0; i < TOTAL_STEPS; ++i)
   {
@@ -94,7 +94,6 @@ void DummyWindow::showThreadProgressBar()
   task.setMessage("Qt Thread Progress Test");
   task.useTimer(false);
   task.useMultiThread(true);
-  task.useTimer(false);
 
   omp_set_num_threads( 4 );
 
