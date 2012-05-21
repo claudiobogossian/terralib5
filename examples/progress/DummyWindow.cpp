@@ -13,7 +13,9 @@
 #endif
 
 // OpenMP
-#include <omp.h>
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  #include <omp.h>
+#endif
 
 #define TOTAL_STEPS 15000
 
@@ -95,9 +97,10 @@ void DummyWindow::showThreadProgressBar()
   task.useTimer(false);
   task.useMultiThread(true);
 
-  omp_set_num_threads( 4 );
-
-  #pragma omp parallel for
+  #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    omp_set_num_threads( 4 );
+    #pragma omp parallel for
+  #endif
   for(int i = 0; i < TOTAL_STEPS; ++i)
   {
     if(task.isActive())
