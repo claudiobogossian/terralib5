@@ -27,7 +27,7 @@
 #define __TERRALIB_DATATYPE_INTERNAL_DATEPERIOD_H
 
 // TerraLib
-#include "terralib/datatype/DateTimePeriod.h"
+#include "DateTimePeriod.h"
 
 // Boost
 #include <boost/date_time/gregorian/gregorian.hpp>
