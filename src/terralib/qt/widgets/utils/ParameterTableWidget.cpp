@@ -26,10 +26,10 @@
 // TerraLib
 #include "../../../common/Translator.h"
 #include "../Exception.h"
-#include "ui/ParameterDialogForm.h"
-#include "ui/ParameterTableWidgetForm.h"
 #include "ParameterDialog.h"
 #include "ParameterTableWidget.h"
+#include "ui_ParameterDialogForm.h"
+#include "ui_ParameterTableWidgetForm.h"
 
 // Qt
 #include <QtGui/QIcon>

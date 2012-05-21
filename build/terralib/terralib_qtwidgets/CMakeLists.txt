@@ -135,7 +135,8 @@ file(GLOB LAYER_SRCS    ${SRCDIR}/widgets/layer/*.cpp)
 file(GLOB PROGRESS_SRCS ${SRCDIR}/widgets/progress/*.cpp)
 file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
 file(GLOB SE_SRCS  		${SRCDIR}/widgets/se/*.cpp)
-file(GLOB HELP_SRCS ${SRCDIR}/widgets/help/*.cpp)
+file(GLOB HELP_SRCS 	${SRCDIR}/widgets/help/*.cpp)
+file(GLOB UTILS_SRCS 	${SRCDIR}/widgets/utils/*.cpp)
 
 # Select the header files
 file(GLOB QWT_HDRS      ${SRCDIR}/qwt/*.h)
@@ -147,7 +148,8 @@ file(GLOB LAYER_HDRS    ${SRCDIR}/widgets/layer/*.h)
 file(GLOB PROGRESS_HDRS ${SRCDIR}/widgets/progress/*.h)
 file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
 file(GLOB SE_HDRS       ${SRCDIR}/widgets/se/*.h)
-file(GLOB HELP_HDRS ${SRCDIR}/widgets/help/*.h)
+file(GLOB HELP_HDRS 	${SRCDIR}/widgets/help/*.h)
+file(GLOB UTILS_HDRS 	${SRCDIR}/widgets/utils/*.h)
 
 # Group the source and header files
 source_group("qwt\\Source Files"               FILES ${QWT_SRCS})
@@ -159,7 +161,8 @@ source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
 source_group("widgets\\progress\\Source Files" FILES ${PROGRESS_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
 source_group("widgets\\se\\Source Files"       FILES ${SE_SRCS})
-source_group("widgets\\help\\Source Files" FILES ${HELP_SRCS})
+source_group("widgets\\help\\Source Files"	   FILES ${HELP_SRCS})
+source_group("widgets\\utils\\Source Files"	   FILES ${UTILS_SRCS})
 source_group("qwt\\Header Files"               FILES ${QWT_HDRS})
 source_group("widgets\\Header Files"           FILES ${WIDGETS_HDRS})
 source_group("widgets\\canvas\\Header Files"   FILES ${CANVAS_HDRS})
@@ -169,7 +172,8 @@ source_group("widgets\\layer\\Header Files"    FILES ${LAYER_HDRS})
 source_group("widgets\\progress\\Header Files" FILES ${PROGRESS_HDRS})
 source_group("widgets\\property\\Header Files" FILES ${PROPERTY_HDRS})
 source_group("widgets\\se\\Header Files"       FILES ${SE_HDRS})
-source_group("widgets\\help\\Header Files" FILES ${HELP_HDRS})
+source_group("widgets\\help\\Header Files" 	   FILES ${HELP_HDRS})
+source_group("widgets\\utils\\Header Files"    FILES ${UTILS_HDRS})
 
 # Select the header files for moc'ing
 file(GLOB HDRS_TO_MOC
@@ -202,7 +206,11 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
      ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
-     ${SRCDIR}/widgets/help/HelpPushButton.h)
+     ${SRCDIR}/widgets/help/HelpPushButton.h
+	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
+	 ${SRCDIR}/widgets/utils/ParameterDialog.h
+	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
+	 ${SRCDIR}/widgets/utils/ScopedCursor.h)
 
 
 # Select the FORMS widgets     
@@ -212,7 +220,8 @@ file(GLOB FORMS
      ${SRCDIR}/widgets/datagrid/*.ui
      ${SRCDIR}/widgets/dataset/*.ui
      ${SRCDIR}/widgets/layer/*.ui
-     ${SRCDIR}/widgets/property/*.ui)
+     ${SRCDIR}/widgets/property/*.ui
+	 ${SRCDIR}/widgets/utils/ui/*.ui)
 
 list(REMOVE_ITEM WIDGETS_HDRS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	
@@ -242,10 +251,11 @@ add_library(${LIB_NAME} SHARED
             ${DATAGRID_SRCS} ${DATAGRID_HDRS}
             ${DATASET_SRCS}  ${DATASET_HDRS}
             ${LAYER_SRCS}    ${LAYER_HDRS}
-	    ${PROGRESS_SRCS} ${PROGRESS_HDRS}
+			${PROGRESS_SRCS} ${PROGRESS_HDRS}
             ${PROPERTY_SRCS} ${PROPERTY_HDRS}
 			${SE_SRCS}  	 ${SE_HDRS}
             ${HELP_SRCS}     ${HELP_HDRS}
+			${UTILS_SRCS}    ${UTILS_HDRS}
             ${UI} ${MOC})
             
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)

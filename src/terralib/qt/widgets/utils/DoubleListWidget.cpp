@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "ui/DoubleListWidgetForm.h"
+#include "ui_DoubleListWidgetForm.h"
 #include "DoubleListWidget.h"
 
 // Qt
