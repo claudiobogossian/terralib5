@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "ProgressManager.h"
+#include "ProgressTimer.h"
 #include "TaskProgress.h"
 
 
@@ -36,7 +37,8 @@ te::common::TaskProgress::TaskProgress():
   m_hasToUpdate(false),
   m_isActive(true),
   m_isMultiThread(false),
-  m_useTimer(false)
+  m_useTimer(false),
+  m_timer(0)
 {
   //get task id from progress manager singleton
   m_id = te::common::ProgressManager::getInstance().addTask(this);
@@ -45,6 +47,8 @@ te::common::TaskProgress::TaskProgress():
 te::common::TaskProgress::~TaskProgress()
 {
   te::common::ProgressManager::getInstance().removeTask(m_id);
+
+  delete m_timer;
 }
 
 int te::common::TaskProgress::getId()
@@ -60,6 +64,14 @@ int te::common::TaskProgress::getTotalSteps()
 void te::common::TaskProgress::setTotalSteps(int value)
 {
   m_totalSteps = value;
+
+  if(m_timer)
+  {
+    m_timer->setTotalSteps(m_totalSteps);
+    
+    //reset timer clock
+    m_timer->start();
+  }
 
   te::common::ProgressManager::getInstance().setTotalValues(m_id);
 }
@@ -92,6 +104,13 @@ void te::common::TaskProgress::setCurrentStep(int value)
     else
     {
       m_hasToUpdate = false;
+    }
+
+    if(m_timer)
+    {
+      m_timer->tick();
+
+      setMessage(m_timer->getMessage());
     }
 
     //inform progress manager singleton that current value has changed
@@ -136,11 +155,29 @@ void te::common::TaskProgress::cancel()
 void te::common::TaskProgress::useMultiThread(bool flag)
 {
   m_isMultiThread = flag;
+
+  //code restriction, must be fixed
+  if(m_isMultiThread)
+  {
+    delete m_timer;
+    m_timer = 0;
+    m_useTimer = false;
+  }
 }
 
 void te::common::TaskProgress::useTimer(bool flag)
 {
   m_useTimer = flag;
+
+  if(m_timer == 0 && m_useTimer)
+  {
+    //code restriction, must be fixed
+    if(!m_isMultiThread)
+    {
+      m_timer = new ProgressTimer(getTotalSteps());
+      m_timer->start();
+    }
+  }
 }
 
 bool te::common::TaskProgress::hasToUpdate()

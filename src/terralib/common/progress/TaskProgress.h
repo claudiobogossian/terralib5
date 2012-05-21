@@ -36,6 +36,8 @@ namespace te
 {
   namespace common
   {
+    //forward declaration
+    class ProgressTimer;
 
     /*!
       \class TaskProgress
@@ -46,6 +48,8 @@ namespace te
 
       \note In constructor the task auto register in progress manager and in
             detructor the task is removed from progress manager.
+
+      \todo ProgressTimer is NOT working if TaskProgress is in multithread mode.
     */
     class TECOMMONEXPORT TaskProgress
     {
@@ -169,7 +173,7 @@ namespace te
         bool m_isActive;            //!< Flag used to indicate the task status
         bool m_isMultiThread;       //!< Flag used to indicate the thread mode
         bool m_useTimer;            //!< Flag used to indicate the timer status
-
+        ProgressTimer* m_timer;     //!< Progress timer instance
     };
   }
 }
