@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,10 +21,10 @@
   \file terralib/qt/widgets/progress/ProgressWidgetItem.h
 
   \brief Custom widget used to represent a single task.
- */
+*/
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_ProgressWidgetItem_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_ProgressWidgetItem_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSWIDGETITEM_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSWIDGETITEM_H
 
 //TerraLib
 #include "../../widgets/Config.h"
@@ -50,8 +50,6 @@ namespace te
         \brief Custom widget used to represent a single task.
 
         \sa ProgressViewerWidget
-
-        \note
       */
       class TEQTWIDGETSEXPORT ProgressWidgetItem : public QWidget
       {
@@ -72,22 +70,20 @@ namespace te
           //@{
 
           /*!
-            \brief Set the current value in progress bar
+            \brief Set the current value in progress bar.
 
-            \param step Step value as integer
+            \param step Step value as integer.
           */
           virtual void setValue(int step);
 
           /*!
-            \brief Set the progress label information
+            \brief Set the progress label information.
             
-            \param message String with the label information
+            \param message String with the label information.
           */
           virtual void setLabel(std::string message);
 
-          /*!
-            \brief Reset the progress bar
-          */
+          /*! \brief Reset the progress bar. */
           virtual void reset();
 
 
@@ -95,46 +91,44 @@ namespace te
 
         public slots:
 
-          /*!
-            \brief Get the button clicked and cancel ALL tasks
-          */
+          /*! \brief Get the button clicked and cancel ALL tasks. */
           virtual void cancel();
 
         signals:
 
           /*!
-            \brief Inform that a task as canceled
+            \brief Inform that a task as canceled.
 
-            \param taskId
+            \param id taskId.
           */
-          void taskCanceled(int);
+          void taskCanceled(int id);
 
         protected:
 
           /*!
-            \brief Used to receive internal events
+            \brief Used to receive internal events.
 
-            \param obj Object sender
+            \param obj Object sender.
+            \param evt Event sended by object.
 
-            \param event Event sended by object
-
-            \return Always return true
+            \return Always return true.
           */
-          virtual bool eventFilter(QObject* obj, QEvent* event);
+          virtual bool eventFilter(QObject* obj, QEvent* evt);
 
         protected:
 
-          int m_taskId;                   //!< Task Identifier
-          QLabel* m_label;                //!< GUI Objects used to build the custom widget
-          QProgressBar* m_progressBar;    //!< GUI Objects used to build the custom widget
-          QCommandLinkButton* m_button;   //!< GUI Objects used to build the custom widget
-          QFrame* m_frame;                //!< GUI Objects used to build the custom widget
-          QGridLayout* m_mainGridLayout;  //!< GUI Objects used to build the custom widget
-          QGridLayout* m_frameGridLayout; //!< GUI Objects used to build the custom widget
-
+          int m_taskId;                   //!< Task Identifier.
+          QLabel* m_label;                //!< GUI Objects used to build the custom widget.
+          QProgressBar* m_progressBar;    //!< GUI Objects used to build the custom widget.
+          QCommandLinkButton* m_button;   //!< GUI Objects used to build the custom widget.
+          QFrame* m_frame;                //!< GUI Objects used to build the custom widget.
+          QGridLayout* m_mainGridLayout;  //!< GUI Objects used to build the custom widget.
+          QGridLayout* m_frameGridLayout; //!< GUI Objects used to build the custom widget.
       };
-    }
-  }
-}
 
-#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_ProgressWidgetItem_H
+    } // end namespace widgets
+  }   // end namespave qt
+}     // end namespave te
+
+#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSWIDGETITEM_H
+

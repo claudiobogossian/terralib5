@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,17 +20,16 @@
 /*!
   \file terralib/qt/widgets/progress/ProgressViewerWidget.h
 
-  \brief A class that defines the interface of a qt widget to group
-         a set of ProgressWidgetItem.
+  \brief A class that defines the interface of a qt widget to group a set of ProgressWidgetItem.
  */
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerWidget_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerWidget_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERWIDGET_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERWIDGET_H
 
 // TerraLib
+#include "../../../common/progress/AbstractProgressViewer.h"
+#include "../../../common/progress/TaskProgress.h"
 #include "../Config.h"
-#include "terralib/common/progress/AbstractProgressViewer.h"
-#include "terralib/common/progress/TaskProgress.h"
 
 //Qt
 #include <QtGui/QDialog>
@@ -47,20 +46,19 @@ namespace te
   {
     namespace widgets
     {
-      // Forward declarations
+// Forward declarations
       class ProgressWidgetItem;
 
       /*!
         \class ProgressViewerWidget
 
-        \brief A class that defines the interface of a qt widget to group
-               a set of ProgressWidgetItem.
+        \brief A class that defines the interface of a qt widget to group a set of ProgressWidgetItem.
 
-              This viewer is made using ProgressWidgetItem. Feed back will be generated
-              over a custom widget. Multiples tasks will be displayed using individual
-              progress widgets
+        This viewer is made using ProgressWidgetItem. Feed back will be generated
+        over a custom widget. Multiples tasks will be displayed using individual
+        progress widgets
 
-              The proportional value is informed by each task.
+        The proportional value is informed by each task.
 
         \sa AbstractProgressViewer, QtProgressBar
 
@@ -84,46 +82,45 @@ namespace te
           //@{
 
            /*!
-            \brief Insert a new taks to progress viewer container
+            \brief Insert a new taks to progress viewer container.
 
-            \param t Task pointer
-
-            \param id Task identifier
+            \param t  Task pointer.
+            \param id Task identifier.
           */
           virtual void addTask(te::common::TaskProgress* t, int id);
 
           /*!
-            \brief Removes a task from progress viewer container
+            \brief Removes a task from progress viewer container.
 
-            \param taskId Task identifier
+            \param taskId Task identifier.
           */
           virtual void removeTask(int taskId);
 
           /*!
-            \brief Cancel a task
+            \brief Cancel a task.
 
-            \param taskId Task identifier
+            \param taskId Task identifier.
           */
           virtual void cancelTask(int taskId);
 
           /*!
-            \brief Set task total steps
+            \brief Set task total steps.
 
-            \param taskId Task identifier
+            \param taskId Task identifier.
           */
           virtual void setTotalValues(int taskId);
 
           /*!
-            \brief Update the progress evaluation
+            \brief Update the progress evaluation.
 
-            \param taskId Task identifier
+            \param taskId Task identifier.
           */
           virtual void updateValue(int taskId);
 
           /*!
-            \brief Update the progress message
+            \brief Update the progress message.
 
-            \param taskId Task identifier
+            \param taskId Task identifier.
           */
           virtual void updateMessage(int taskId);
 
@@ -134,21 +131,22 @@ namespace te
           /*!
             \brief This slot is connect to all cancel buttons of each progress itens
 
-            \param Integer value used to inform what task was canceled.
+            \param id value used to inform what task was canceled.
           */
-          virtual void cancel(int);
+          virtual void cancel(int id);
 
         protected:
 
-          std::map<int, te::common::TaskProgress*> m_tasks;   //!< Task container
-          std::map<int, ProgressWidgetItem*> m_itens;         //!< Custom widget progress item  container
-          QGridLayout* m_MainLayout;                          //!< GUI Objects used to build the custom widget
-          QGridLayout* m_widgetLayout;                        //!< GUI Objects used to build the custom widget
-          QScrollArea* m_scroll;                              //!< GUI Objects used to build the custom widget
-          QWidget* m_widget;                                  //!< GUI Objects used to build the custom widget
+          std::map<int, te::common::TaskProgress*> m_tasks;   //!< Task container.
+          std::map<int, ProgressWidgetItem*> m_itens;         //!< Custom widget progress item  container.
+          QGridLayout* m_MainLayout;                          //!< GUI Objects used to build the custom widget.
+          QGridLayout* m_widgetLayout;                        //!< GUI Objects used to build the custom widget.
+          QScrollArea* m_scroll;                              //!< GUI Objects used to build the custom widget.
+          QWidget* m_widget;                                  //!< GUI Objects used to build the custom widget.
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif //__TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerWidget_H
+#endif //__TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERWIDGET_H
+

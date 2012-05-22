@@ -21,25 +21,24 @@
   \file terralib/qt/widgets/progress/ProgressViewerDialog.cpp
 
   \brief A class that defines the interface of a qt bar progress viewer.
-         This widget is a dialog box with progress information and a
-         cancel button.
- */
+*/
 
 // Terralib
-#include "ProgressViewerDialog.h"
+#include "../../../common/Translator.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
-#include "terralib/common/Translator.h"
+#include "ProgressViewerDialog.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
 #include <QtGui/QApplication>
 
-te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent) : AbstractProgressViewer(),
-  m_totalSteps(0),
-  m_currentStep(0),
-  m_propStep(0),
-  m_message("")
+te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
+  : AbstractProgressViewer(),
+    m_totalSteps(0),
+    m_currentStep(0),
+    m_propStep(0),
+    m_message("")
 {
   m_dlgProgress = new QProgressDialog(parent);
   m_dlgProgress->setWindowModality(Qt::NonModal);
@@ -103,7 +102,7 @@ void te::qt::widgets::ProgressViewerDialog::setTotalValues(int taskId)
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::qt::widgets::ProgressViewerDialog::updateValue(int taskId)
+void te::qt::widgets::ProgressViewerDialog::updateValue(int /*taskId*/)
 {
   m_currentStep++;
 
@@ -120,7 +119,7 @@ void te::qt::widgets::ProgressViewerDialog::updateValue(int taskId)
   }
 }
 
-void te::qt::widgets::ProgressViewerDialog::updateMessage(int taskId)
+void te::qt::widgets::ProgressViewerDialog::updateMessage(int /*taskId*/)
 {
   if(m_tasks.size() == 1)
   {
@@ -134,21 +133,19 @@ void te::qt::widgets::ProgressViewerDialog::updateMessage(int taskId)
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(m_message));
 }
 
-bool te::qt::widgets::ProgressViewerDialog::eventFilter(QObject* obj, QEvent* event)
+bool te::qt::widgets::ProgressViewerDialog::eventFilter(QObject* obj, QEvent* evt)
 {
-  if(obj == this && event->type() == ProgressSetValueEvent::type())
+  if(obj == this && evt->type() == ProgressSetValueEvent::type())
   {
-    ProgressSetValueEvent* e = 
-      static_cast<ProgressSetValueEvent*>(event);
+    ProgressSetValueEvent* e = static_cast<ProgressSetValueEvent*>(evt);
 
     m_dlgProgress->setValue(e->m_value);
 
     return true;
   }
-  else if(obj == this && event->type() == ProgressSetMessageEvent::type())
+  else if(obj == this && evt->type() == ProgressSetMessageEvent::type())
   {
-    ProgressSetMessageEvent* e = 
-      static_cast<ProgressSetMessageEvent*>(event);
+    ProgressSetMessageEvent* e = static_cast<ProgressSetMessageEvent*>(evt);
 
     m_dlgProgress->setLabelText(e->m_value.c_str());
 
