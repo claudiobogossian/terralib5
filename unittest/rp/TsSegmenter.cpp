@@ -41,7 +41,8 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
+    "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -50,14 +51,8 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/data/rasters";
-  
-  boost::shared_ptr< te::da::DataSource > outDataSourcePtr( 
-    te::da::DataSourceFactory::make("GDAL") );
-  CPPUNIT_ASSERT( outDataSourcePtr.get() );
-  
-  outDataSourcePtr->open(outputRasterInfo);  
-  CPPUNIT_ASSERT( outDataSourcePtr->isOpened() );
+  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
   
   // Creating the algorithm parameters
   
@@ -66,10 +61,10 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
   te::rp::Segmenter::InputParameters algoInputParams;
-  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
-  algoInputParams.m_inRasterBands.push_back( 0 );
-  algoInputParams.m_inRasterBands.push_back( 1 );
-  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inputRasterBands.push_back( 0 );
+  algoInputParams.m_inputRasterBands.push_back( 1 );
+  algoInputParams.m_inputRasterBands.push_back( 2 );
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
@@ -79,18 +74,15 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   algoInputParams.setSegStrategyParams( strategyParameters );
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
-  algoOutputParams.m_outRasterPtr = 0;
-  algoOutputParams.m_outRasterBand = 0;
-  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoOutputParams.m_outDataSetName = 
-    "terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
+  algoOutputParams.m_rInfo = outputRasterInfo;
+  algoOutputParams.m_rType = "GDAL";
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
-  CPPUNIT_ASSERT( algorithmInstance.execute() );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 
 void TsSegmenter::BlockProcessingWithMerging()
@@ -107,14 +99,8 @@ void TsSegmenter::BlockProcessingWithMerging()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/data/rasters";
-  
-  boost::shared_ptr< te::da::DataSource > outDataSourcePtr( 
-    te::da::DataSourceFactory::make("GDAL") );
-  CPPUNIT_ASSERT( outDataSourcePtr.get() );
-  
-  outDataSourcePtr->open(outputRasterInfo);  
-  CPPUNIT_ASSERT( outDataSourcePtr->isOpened() );
+  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
   
   // Creating the algorithm parameters
   
@@ -123,10 +109,10 @@ void TsSegmenter::BlockProcessingWithMerging()
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
   te::rp::Segmenter::InputParameters algoInputParams;
-  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
-  algoInputParams.m_inRasterBands.push_back( 0 );
-  algoInputParams.m_inRasterBands.push_back( 1 );
-  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inputRasterBands.push_back( 0 );
+  algoInputParams.m_inputRasterBands.push_back( 1 );
+  algoInputParams.m_inputRasterBands.push_back( 2 );
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = true;
@@ -136,18 +122,15 @@ void TsSegmenter::BlockProcessingWithMerging()
   algoInputParams.setSegStrategyParams( strategyParameters );
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
-  algoOutputParams.m_outRasterPtr = 0;
-  algoOutputParams.m_outRasterBand = 0;
-  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoOutputParams.m_outDataSetName = 
-    "terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
+  algoOutputParams.m_rInfo = outputRasterInfo;
+  algoOutputParams.m_rType = "GDAL";  
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
-  CPPUNIT_ASSERT( algorithmInstance.execute() );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 
 void TsSegmenter::ThreadedProcessing()
@@ -164,7 +147,8 @@ void TsSegmenter::ThreadedProcessing()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/data/rasters";
+  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
   
   boost::shared_ptr< te::da::DataSource > outDataSourcePtr( 
     te::da::DataSourceFactory::make("GDAL") );
@@ -180,10 +164,10 @@ void TsSegmenter::ThreadedProcessing()
   strategyParameters.m_segmentsSimilarityThreshold = 30;
   
   te::rp::Segmenter::InputParameters algoInputParams;
-  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
-  algoInputParams.m_inRasterBands.push_back( 0 );
-  algoInputParams.m_inRasterBands.push_back( 1 );
-  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inputRasterBands.push_back( 0 );
+  algoInputParams.m_inputRasterBands.push_back( 1 );
+  algoInputParams.m_inputRasterBands.push_back( 2 );
   algoInputParams.m_enableThreadedProcessing = true;
   algoInputParams.m_maxSegThreads = 4;
   algoInputParams.m_enableBlockProcessing = true;
@@ -193,18 +177,15 @@ void TsSegmenter::ThreadedProcessing()
   algoInputParams.setSegStrategyParams( strategyParameters );
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
-  algoOutputParams.m_outRasterPtr = 0;
-  algoOutputParams.m_outRasterBand = 0;
-  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoOutputParams.m_outDataSetName = 
-    "terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
+  algoOutputParams.m_rInfo = outputRasterInfo;
+  algoOutputParams.m_rType = "GDAL";   
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
-  CPPUNIT_ASSERT( algorithmInstance.execute() );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 
 void TsSegmenter::RegionGrowingStrategy()
@@ -221,14 +202,8 @@ void TsSegmenter::RegionGrowingStrategy()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/data/rasters";
-  
-  boost::shared_ptr< te::da::DataSource > outDataSourcePtr( 
-    te::da::DataSourceFactory::make("GDAL") );
-  CPPUNIT_ASSERT( outDataSourcePtr.get() );
-  
-  outDataSourcePtr->open(outputRasterInfo);  
-  CPPUNIT_ASSERT( outDataSourcePtr->isOpened() );
+  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_RegionGrowingStrategy_Test.tif";
   
   // Creating the algorithm parameters
   
@@ -238,10 +213,10 @@ void TsSegmenter::RegionGrowingStrategy()
   
   
   te::rp::Segmenter::InputParameters algoInputParams;
-  algoInputParams.m_inRasterPtr = inputRasterPointer.get();
-  algoInputParams.m_inRasterBands.push_back( 0 );
-  algoInputParams.m_inRasterBands.push_back( 1 );
-  algoInputParams.m_inRasterBands.push_back( 2 );
+  algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inputRasterBands.push_back( 0 );
+  algoInputParams.m_inputRasterBands.push_back( 1 );
+  algoInputParams.m_inputRasterBands.push_back( 2 );
   algoInputParams.m_enableThreadedProcessing = false;
   algoInputParams.m_maxSegThreads = 0;
   algoInputParams.m_enableBlockProcessing = false;
@@ -251,17 +226,14 @@ void TsSegmenter::RegionGrowingStrategy()
   algoInputParams.setSegStrategyParams( strategyParameters );
   
   te::rp::Segmenter::OutputParameters algoOutputParams;
-  algoOutputParams.m_outRasterPtr = 0;
-  algoOutputParams.m_outRasterBand = 0;
-  algoOutputParams.m_outDataSourcePtr = outDataSourcePtr.get();
-  algoOutputParams.m_outDataSetName = 
-    "terralib_unittest_rp_Segmenter_RegionGrowingStrategy_Test.tif";
+  algoOutputParams.m_rInfo = outputRasterInfo;
+  algoOutputParams.m_rType = "GDAL";   
   
   // Executing the algorithm
   
   te::rp::Segmenter algorithmInstance;
   
-  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams, algoOutputParams ) );
-  CPPUNIT_ASSERT( algorithmInstance.execute() );
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 

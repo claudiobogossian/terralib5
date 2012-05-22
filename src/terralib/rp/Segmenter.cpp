@@ -56,6 +56,13 @@ namespace te
       m_segStratParamsPtr = 0;
       reset();
     }
+
+    Segmenter::InputParameters::InputParameters( const InputParameters& other )
+    {
+      m_segStratParamsPtr = 0;
+      reset();
+      operator=( other );
+    }
     
     Segmenter::InputParameters::~InputParameters()
     {
@@ -64,8 +71,8 @@ namespace te
     
     void Segmenter::InputParameters::reset() throw( te::rp::Exception ) 
     {
-      m_inRasterPtr = 0;
-      m_inRasterBands.clear();
+      m_inputRasterPtr = 0;
+      m_inputRasterBands.clear();
       m_enableThreadedProcessing = false;
       m_maxSegThreads = 0;
       m_enableBlockProcessing = true;
@@ -85,8 +92,8 @@ namespace te
     {
       reset();
         
-      m_inRasterPtr = params.m_inRasterPtr;
-      m_inRasterBands = params.m_inRasterBands;
+      m_inputRasterPtr = params.m_inputRasterPtr;
+      m_inputRasterBands = params.m_inputRasterBands;
       m_enableThreadedProcessing = params.m_enableThreadedProcessing;
       m_maxSegThreads = params.m_maxSegThreads;
       m_enableBlockProcessing = params.m_enableBlockProcessing;
@@ -129,6 +136,12 @@ namespace te
       reset();
     }
     
+    Segmenter::OutputParameters::OutputParameters( const OutputParameters& other )
+    {
+      reset();
+      operator=( other );
+    }
+    
     Segmenter::OutputParameters::~OutputParameters()
     {
       reset();
@@ -136,11 +149,9 @@ namespace te
     
     void Segmenter::OutputParameters::reset() throw( te::rp::Exception ) 
     {
-      m_outRasterPtr = 0;
-      m_outRasterBand = 0;
-      m_outDataSourcePtr = 0;    
-      m_outDataSetName.clear();
-      m_outRasterHandlerPtr.reset();
+      m_rType.clear();
+      m_rInfo.clear();
+      m_outputRasterPtr.reset();
     }
     
     const Segmenter::OutputParameters& Segmenter::OutputParameters::operator=( 
@@ -148,11 +159,9 @@ namespace te
     {
       reset();
         
-      m_outRasterPtr = params.m_outRasterPtr;
-      m_outRasterBand = params.m_outRasterBand;
-      m_outDataSourcePtr = params.m_outDataSourcePtr;    
-      m_outDataSetName = params.m_outDataSetName;
-      m_outRasterHandlerPtr = params.m_outRasterHandlerPtr;
+      m_rType = params.m_rType;
+      m_rInfo = params.m_rInfo;
+      m_outputRasterPtr = params.m_outputRasterPtr;    
 
       return *this;
     }
@@ -190,10 +199,39 @@ namespace te
     {
     }    
     
-    bool Segmenter::execute() throw( te::rp::Exception )
+    bool Segmenter::execute( AlgorithmOutputParameters& outputParams ) 
+      throw( te::rp::Exception )
     {
       if( m_instanceInitialized )
       {
+        // creating the output raster
+        
+        Segmenter::OutputParameters* outputParamsPtr = dynamic_cast< 
+          Segmenter::OutputParameters* >( &outputParams );          
+        TERP_TRUE_OR_RETURN_FALSE( outputParamsPtr, "Invalid parameters" );
+        
+        {
+          std::vector< te::rst::BandProperty* > bandsProperties;
+          bandsProperties.push_back( new te::rst::BandProperty(
+            *( m_inputParameters.m_inputRasterPtr->getBand( 
+            m_inputParameters.m_inputRasterBands[ 0 ] )->getProperty() ) ) );  
+          bandsProperties[ 0 ]->m_colorInterp = te::rst::GrayIdxCInt;
+          bandsProperties[ 0 ]->m_noDataValue = 0;
+          bandsProperties[ 0 ]->m_type = te::dt::UINT32_TYPE;
+          bandsProperties[ 0 ]->m_noDataValue = 0;          
+          
+          outputParamsPtr->m_outputRasterPtr.reset( 
+            te::rst::RasterFactory::make(
+              outputParamsPtr->m_rType, 
+              new te::rst::Grid( *( m_inputParameters.m_inputRasterPtr->getGrid() ) ),
+              bandsProperties,
+              outputParamsPtr->m_rInfo,
+              0,
+              0 ) );
+          TERP_TRUE_OR_RETURN_FALSE( outputParamsPtr->m_outputRasterPtr.get(),
+            "Output raster creation error" );
+        }
+        
         // instantiating the segmentation strategy
         
         boost::shared_ptr< SegmenterStrategy > strategyPtr(
@@ -205,7 +243,7 @@ namespace te
           "Unable to initialize the segmentation strategy" );   
           
         const double stratMemUsageFactor = strategyPtr->getMemUsageFactor(
-          m_inputParameters.m_inRasterPtr->getNumberOfBands() );  
+          m_inputParameters.m_inputRasterPtr->getNumberOfBands() );  
         TERP_DEBUG_TRUE_OR_THROW( stratMemUsageFactor > 0.0,
           "Invalid strategy memory usage factorMemUsageFactor" );       
           
@@ -234,8 +272,8 @@ namespace te
         if( m_inputParameters.m_enableBlockProcessing )
         {
           const unsigned int totalRasterPixels = 
-            m_inputParameters.m_inRasterPtr->getNumberOfRows() * 
-            m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+            m_inputParameters.m_inputRasterPtr->getNumberOfRows() * 
+            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
             
           unsigned int maxBlockPixels = 0;
           
@@ -262,7 +300,7 @@ namespace te
               ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );
                       
             const double pixelRequiredRam = ((double)stratMemUsageFactor) *
-              (double)(m_inputParameters.m_inRasterBands.size() * sizeof( double ) );
+              (double)(m_inputParameters.m_inputRasterBands.size() * sizeof( double ) );
               
             const double maxSimultaneousMemoryPixels = MIN( 
               ((double)totalRasterPixels), 
@@ -282,8 +320,8 @@ namespace te
           if( m_inputParameters.m_enableBlockMerging )
           {
             const double rasterRCFactor = 
-              ((double)m_inputParameters.m_inRasterPtr->getNumberOfRows()) /
-              ((double)m_inputParameters.m_inRasterPtr->getNumberOfColumns());
+              ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) /
+              ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns());
             const unsigned int tempMaxExpandedBlockHeight = (unsigned int)
               ceil( sqrt( rasterRCFactor * ( (double)maxBlockPixels ) ) );
             const unsigned int tempMaxExpandedBlockWidth = (unsigned int)ceil(
@@ -296,8 +334,8 @@ namespace te
             // Adjusting the block sizes
             
             TERP_TRUE_OR_THROW( calcBestBlockSize( 
-              m_inputParameters.m_inRasterPtr->getNumberOfRows(),
-              m_inputParameters.m_inRasterPtr->getNumberOfColumns(), 1000,
+              m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
+              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 1000,
               maxBlockPixels, blocksHOverlapSize, blocksVOverlapSize,
               maxNonExpandedBlockWidth, maxNonExpandedBlockHeight ), 
               "Error calculating best block size" );   
@@ -315,8 +353,8 @@ namespace te
             // Adjusting the block sizes
             
             TERP_TRUE_OR_THROW( calcBestBlockSize( 
-              m_inputParameters.m_inRasterPtr->getNumberOfRows(),
-              m_inputParameters.m_inRasterPtr->getNumberOfColumns(), 1000,
+              m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
+              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 1000,
               maxBlockPixels, 0, 0,
               maxNonExpandedBlockWidth, maxNonExpandedBlockHeight ), 
               "Error calculating best block size" );  
@@ -328,18 +366,18 @@ namespace te
         else
         {
           maxNonExpandedBlockWidth = maxExpandedBlockWidth =
-            m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
           maxNonExpandedBlockHeight = maxExpandedBlockHeight =
-            m_inputParameters.m_inRasterPtr->getNumberOfRows();
+            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
         }
 
         // Defining number of blocks
           
         const unsigned int hBlocksNumber = (unsigned int)ceil( 
-          ((double)m_inputParameters.m_inRasterPtr->getNumberOfColumns()) / 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) / 
           ((double)maxNonExpandedBlockWidth) );
         const unsigned int vBlocksNumber = (unsigned int)ceil( 
-          ((double)m_inputParameters.m_inRasterPtr->getNumberOfRows()) / 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) / 
           ((double)maxNonExpandedBlockHeight ) );        
 
         // Generating cut off profiles. When possible, an empty profile
@@ -373,7 +411,7 @@ namespace te
             imageHorizontalProfilesCenterLines.push_back( centerLine );
             
             if( genImageHCutOffProfile( centerLine,
-              *(m_inputParameters.m_inRasterPtr), m_inputParameters.m_inRasterBands, 
+              *(m_inputParameters.m_inputRasterPtr), m_inputParameters.m_inputRasterBands, 
               pixelNeighborhoodSize, tileHNeighborhoodSize, 
               profileAntiSmoothingFactor, profile ) )
             {
@@ -395,7 +433,7 @@ namespace te
             imageVerticalProfilesCenterLines.push_back( centerLine );            
             
             if( genImageVCutOffProfile( centerLine,
-              *(m_inputParameters.m_inRasterPtr), m_inputParameters.m_inRasterBands, 
+              *(m_inputParameters.m_inputRasterPtr), m_inputParameters.m_inputRasterBands, 
               pixelNeighborhoodSize, tileVNeighborhoodSize, 
               profileAntiSmoothingFactor, profile ) )
             {
@@ -426,9 +464,9 @@ namespace te
             hBlocksNumber ), "Blocks matrix reset error" );
             
           const int linesBound = (int)
-            m_inputParameters.m_inRasterPtr->getNumberOfRows();
+            m_inputParameters.m_inputRasterPtr->getNumberOfRows();
           const int colsBound = (int)
-            m_inputParameters.m_inRasterPtr->getNumberOfColumns();
+            m_inputParameters.m_inputRasterPtr->getNumberOfColumns();
           int blockXBound = 0;
           int blockYBound = 0;
           int blockXStart = 0;
@@ -493,7 +531,7 @@ namespace te
         
         SegmenterThreadEntryParams segmenterThreadEntryParams;
         segmenterThreadEntryParams.m_inputParametersPtr = &m_inputParameters;
-        segmenterThreadEntryParams.m_outputParametersPtr = &m_outputParameters;
+        segmenterThreadEntryParams.m_outputParametersPtr = outputParamsPtr;
         segmenterThreadEntryParams.m_segsBlocksMatrixPtr = &segmentsblocksMatrix;
         segmenterThreadEntryParams.m_generalMutexPtr = &generalMutex;
         segmenterThreadEntryParams.m_inputRasterIOMutexPtr = 
@@ -568,111 +606,42 @@ namespace te
     {
       m_instanceInitialized = false;
       m_inputParameters.reset();
-      m_outputParameters.reset();
     }
     
-    bool Segmenter::initialize( const AlgorithmParameters& inputParams,
-      AlgorithmParameters& outputParams ) throw( te::rp::Exception )
+    bool Segmenter::initialize( const AlgorithmInputParameters& inputParams ) 
+      throw( te::rp::Exception )
     {
       reset();
       
       Segmenter::InputParameters const* inputParamsPtr = dynamic_cast< 
         Segmenter::InputParameters const* >( &inputParams );
         
-      Segmenter::OutputParameters* outputParamsPtr = dynamic_cast< 
-        Segmenter::OutputParameters* >( &outputParams );  
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr, "Invalid parameters" );
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inputRasterPtr, 
+        "Invalid raster pointer" );
+      TERP_TRUE_OR_RETURN_FALSE( 
+        inputParamsPtr->m_inputRasterPtr->getAccessPolicy() & te::common::RAccess, 
+        "Invalid raster" );
         
-      if( ( inputParamsPtr == 0 ) || ( outputParamsPtr == 0 ) )
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
+        inputParamsPtr->m_inputRasterBands.size() ; ++inRasterBandsIdx )
       {
-        return false;
+        TERP_TRUE_OR_RETURN_FALSE( 
+          inputParamsPtr->m_inputRasterBands[ inRasterBandsIdx ] <
+          inputParamsPtr->m_inputRasterPtr->getNumberOfBands(), 
+          "Invalid raster bands" );
       }
-      else
-      {
-        if( ( inputParamsPtr->m_inRasterPtr != 0 )
-          && ( inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess ) )
-        {
-          if( outputParamsPtr->m_outRasterPtr == 0 )
-          {
-            if( ( outputParamsPtr->m_outDataSourcePtr != 0 ) 
-              && ( outputParamsPtr->m_outDataSourcePtr->isValid() ) )
-            {
-              // Allocating the output raster
-              
-              if( outputParamsPtr->m_outRasterHandlerPtr.get() == 0 )
-              {
-                outputParamsPtr->m_outRasterHandlerPtr.reset( new RasterHandler );
-              }            
-              
-              outputParamsPtr->m_outRasterBand = 0;
-              
-              std::vector< te::rst::BandProperty* > bandsProperties;
-              bandsProperties.push_back( new te::rst::BandProperty(
-                *( inputParamsPtr->m_inRasterPtr->getBand( inputParamsPtr->m_inRasterBands[ 
-                0 ] )->getProperty() ) ) );  
-              bandsProperties[ 0 ]->m_colorInterp = te::rst::GrayIdxCInt;
-              bandsProperties[ 0 ]->m_noDataValue = 0;
-              bandsProperties[ 0 ]->m_type = te::dt::UINT32_TYPE;
-              bandsProperties[ 0 ]->m_noDataValue = 0;
-
-              if( ! createNewRaster( *( inputParamsPtr->m_inRasterPtr->getGrid() ),
-                bandsProperties, outputParamsPtr->m_outDataSetName, 
-                *outputParamsPtr->m_outDataSourcePtr, 
-                *(outputParamsPtr->m_outRasterHandlerPtr) ) )
-              {
-                outputParamsPtr->m_outRasterHandlerPtr.reset();
-                return false;
-              }
-              
-              outputParamsPtr->m_outRasterPtr = 
-                outputParamsPtr->m_outRasterHandlerPtr->getRasterPtr();
-            }
-            else
-            {
-              return false;
-            }
-          }
-          else
-          {
-            if( ( outputParamsPtr->m_outRasterPtr->getAccessPolicy() & te::common::WAccess )
-              && ( outputParamsPtr->m_outRasterPtr->getNumberOfColumns() ==
-              inputParamsPtr->m_inRasterPtr->getNumberOfColumns() )
-              && ( outputParamsPtr->m_outRasterPtr->getNumberOfRows() ==
-              inputParamsPtr->m_inRasterPtr->getNumberOfRows() ) )            
-            {
-              for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
-                inputParamsPtr->m_inRasterBands.size() ; ++inRasterBandsIdx )
-              {
-                if( inputParamsPtr->m_inRasterBands[ inRasterBandsIdx ] >=
-                  inputParamsPtr->m_inRasterPtr->getNumberOfBands() )
-                {
-                  return false;
-                }
-              }
-              
-              if( outputParamsPtr->m_outRasterBand >=
-                outputParamsPtr->m_outRasterPtr->getNumberOfBands() )
-              {
-                return false;
-              }            
-            }
-            else
-            {
-              return false;
-            }
-          }
           
-          m_inputParameters = *inputParamsPtr;
-          m_outputParameters = *outputParamsPtr;
-          m_instanceInitialized = true;
-          
-          return true;
-        }
-        else
-        {
-          return false;
-        }
-      }
+      m_inputParameters = *inputParamsPtr;
+      m_instanceInitialized = true;
+      
+      return true;
     }
+    
+    bool Segmenter::isInitialized() const
+    {
+      return m_instanceInitialized;
+    }    
     
     bool Segmenter::calcBestBlockSize( 
       const unsigned int totalImageLines, const unsigned totalImageCols, 
@@ -819,16 +788,16 @@ namespace te
                   std::vector< te::rst::BandProperty* > newInBandProperties;
                   
                   for( unsigned int inRasterBandsIdx = 0; inRasterBandsIdx <
-                    paramsPtr->m_inputParametersPtr->m_inRasterBands.size() ;
+                    paramsPtr->m_inputParametersPtr->m_inputRasterBands.size() ;
                     ++inRasterBandsIdx )
                   {
                     newInBandProperties.push_back( new te::rst::BandProperty(
-                      *(paramsPtr->m_inputParametersPtr->m_inRasterPtr->operator[]( 
+                      *(paramsPtr->m_inputParametersPtr->m_inputRasterPtr->operator[]( 
                       inRasterBandsIdx ).getProperty() ) ) );
                   }
                   
                   te::rst::Grid* oldGridPtr = 
-                    paramsPtr->m_inputParametersPtr->m_inRasterPtr->getGrid();
+                    paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
                   te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
                     segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
                     
@@ -864,7 +833,7 @@ namespace te
                   currentInRasterBands.clear();
                   
                   for( unsigned int inRasterBandsIdx = 0; inRasterBandsIdx <
-                    paramsPtr->m_inputParametersPtr->m_inRasterBands.size() ;
+                    paramsPtr->m_inputParametersPtr->m_inputRasterBands.size() ;
                     ++inRasterBandsIdx )
                   {         
                     currentInRasterBands.push_back( inRasterBandsIdx );
@@ -886,12 +855,12 @@ namespace te
                   double value = 0;
                   
                   for( unsigned int inRasterBandsIdx = 0; inRasterBandsIdx <
-                    paramsPtr->m_inputParametersPtr->m_inRasterBands.size() ;
+                    paramsPtr->m_inputParametersPtr->m_inputRasterBands.size() ;
                     ++inRasterBandsIdx )
                   {         
                     inBandPtr = 
-                      paramsPtr->m_inputParametersPtr->m_inRasterPtr->getBand( 
-                      paramsPtr->m_inputParametersPtr->m_inRasterBands[ 
+                      paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getBand( 
+                      paramsPtr->m_inputParametersPtr->m_inputRasterBands[ 
                       inRasterBandsIdx ] );
                     outBandPtr = 
                       tempInRasterHandlerPtr->getRasterPtr()->getBand(
@@ -930,7 +899,7 @@ namespace te
                   newBandProperties.push_back( newBandPropertyPtr );
                   
                   te::rst::Grid* oldGridPtr = 
-                    paramsPtr->m_inputParametersPtr->m_inRasterPtr->getGrid();
+                    paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
                   te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
                     segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
                     
@@ -973,10 +942,10 @@ namespace te
               }
               else
               {
-                currentInRasterPtr = paramsPtr->m_inputParametersPtr->m_inRasterPtr;
-                currentOutRasterPtr = paramsPtr->m_outputParametersPtr->m_outRasterPtr;
-                currentInRasterBands = paramsPtr->m_inputParametersPtr->m_inRasterBands;
-                currentOutRasterBand = paramsPtr->m_outputParametersPtr->m_outRasterBand;
+                currentInRasterPtr = paramsPtr->m_inputParametersPtr->m_inputRasterPtr;
+                currentOutRasterPtr = paramsPtr->m_outputParametersPtr->m_outputRasterPtr.get();
+                currentInRasterBands = paramsPtr->m_inputParametersPtr->m_inputRasterBands;
+                currentOutRasterBand = 0;
               }              
               
               // Creating the segmentation strategy instance
@@ -1039,8 +1008,8 @@ namespace te
                 te::rst::Band& inBand =  
                   *( tempOutRasterHandlerPtr->getRasterPtr()->getBand(0) );
                 te::rst::Band& outBand = 
-                  *( paramsPtr->m_outputParametersPtr->m_outRasterPtr->getBand( 
-                  paramsPtr->m_outputParametersPtr->m_outRasterBand ) );
+                  *( paramsPtr->m_outputParametersPtr->m_outputRasterPtr->getBand( 
+                  0 ) );
                 double value = 0;
                 
                 if( paramsPtr->m_inputParametersPtr->m_enableBlockMerging )
@@ -1581,8 +1550,8 @@ namespace te
         
       std::vector< te::rst::BandProperty* > bandsProperties;
       bandsProperties.push_back( new te::rst::BandProperty(
-        *( m_inputParameters.m_inRasterPtr->getBand( 
-        m_inputParameters.m_inRasterBands[ 0 ] )->getProperty() ) ) );  
+        *( m_inputParameters.m_inputRasterPtr->getBand( 
+        m_inputParameters.m_inputRasterBands[ 0 ] )->getProperty() ) ) );  
       bandsProperties[ 0 ]->m_colorInterp = te::rst::GrayIdxCInt;
       bandsProperties[ 0 ]->m_noDataValue = 0;
       bandsProperties[ 0 ]->m_type = te::dt::UCHAR_TYPE;
@@ -1593,7 +1562,7 @@ namespace te
 
       std::auto_ptr< te::rst::Raster > outRasterPtr(
         te::rst::RasterFactory::make( "GDAL",
-        new te::rst::Grid( *m_inputParameters.m_inRasterPtr->getGrid() ),
+        new te::rst::Grid( *m_inputParameters.m_inputRasterPtr->getGrid() ),
         bandsProperties, rInfo ) );
       TERP_TRUE_OR_RETURN_FALSE( outRasterPtr.get(),  
         "Tiff creation error" )
