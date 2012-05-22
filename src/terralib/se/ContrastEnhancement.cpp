@@ -46,3 +46,11 @@ void te::se::ContrastEnhancement::setGammaValue(const double& v)
   m_gammaValue = v;
 }
 
+ te::se::ContrastEnhancement* te::se::ContrastEnhancement::clone() const
+{
+  ContrastEnhancement* ce = new ContrastEnhancement;
+  ce->setContrastEnhancementType(m_contrast);
+  ce->setGammaValue(m_gammaValue);
+
+  return ce;
+}

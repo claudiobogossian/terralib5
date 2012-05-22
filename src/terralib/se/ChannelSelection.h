@@ -79,15 +79,25 @@ namespace te
         //@{
 
         void setRedChannel(SelectedChannel* c);
+
         SelectedChannel* getRedChannel() { return m_redChannel; }
+
         void setGreenChannel(SelectedChannel* c);
+
         SelectedChannel* getGreenChannel() { return m_greenChannel; }
+
         void setBlueChannel(SelectedChannel* c);
+
         SelectedChannel* getBlueChannel() { return m_blueChannel; }
+
         void setGrayChannel(SelectedChannel* c);
+
         SelectedChannel* getGrayChannel() { return m_grayChannel; }
         
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        ChannelSelection* clone() const;
 
       private:
 
