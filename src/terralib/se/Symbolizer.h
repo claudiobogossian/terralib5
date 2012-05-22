@@ -88,6 +88,13 @@ namespace te
         /*! \brief It initializes a new Symbolizer. */
         Symbolizer();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other symbolizer.
+        */
+        Symbolizer(const Symbolizer& rhs);
+
         /*! \brief Virtual destructor. */
         virtual ~Symbolizer();
 
@@ -136,6 +143,9 @@ namespace te
         const te::common::BaseUnitOfMeasure* getUom() const;
 
         //@}
+
+         /*! \brief It creates a new copy of this object. */
+        virtual Symbolizer* clone() const = 0;
 
       private:
 

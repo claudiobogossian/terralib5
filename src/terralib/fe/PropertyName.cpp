@@ -48,3 +48,7 @@ const std::string& te::fe::PropertyName::getName() const
   return m_name;
 }
 
+te::fe::Expression* te::fe::PropertyName::clone() const
+{
+  return new PropertyName(m_name);
+}

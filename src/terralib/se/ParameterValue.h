@@ -33,9 +33,6 @@
 #include <string>
 #include <vector>
 
-// Boost
-#include <boost/noncopyable.hpp>
-
 namespace te
 {
   namespace fe { class Expression; }
@@ -52,7 +49,7 @@ namespace te
 
       \sa SvgParameter, LineSymbolizer, GraphicStroke, Halo, MapItem, Interpolate, InterpolationPoint
     */
-    class TESEEXPORT ParameterValue : public boost::noncopyable
+    class TESEEXPORT ParameterValue
     {
       public:
 
@@ -67,6 +64,7 @@ namespace te
           te::fe::Expression* m_expression;  //!< Parameter from an expression.
 
           Parameter();
+          Parameter(const Parameter& rhs);
           ~Parameter();
         };
 
@@ -87,6 +85,13 @@ namespace te
         */
         ParameterValue(const std::string& value);
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other parameter value.
+        */
+        ParameterValue(const ParameterValue& rhs);
+
         /*! \brief Virtual destructor. */
         virtual ~ParameterValue();
 
@@ -104,6 +109,9 @@ namespace te
         const Parameter* getParameter(size_t i) const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        ParameterValue* clone() const;
 
       private:
 

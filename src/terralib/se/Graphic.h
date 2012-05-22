@@ -102,6 +102,7 @@ namespace te
           \brief
         */
         void add(Mark* m);
+
         const std::vector<Mark*> getMarks() const;
 
         /*!
@@ -113,6 +114,7 @@ namespace te
           SvgParameter. The default value is 1.0.
         */
         void setOpacity(ParameterValue* value);
+
         const ParameterValue* getOpacity() const;
 
         /*!
@@ -138,6 +140,7 @@ namespace te
           images "smoothly", the results will be visually pleasing.
         */
         void setSize(ParameterValue* value);
+
         const ParameterValue* getSize() const;
 
         /*!
@@ -158,6 +161,7 @@ namespace te
           should be the centroid.
         */
         void setRotation(ParameterValue* value);
+
         const ParameterValue* getRotation() const;
 
         void setAnchorPoint(AnchorPoint* value);
@@ -165,6 +169,9 @@ namespace te
         void setDisplacement(Displacement* value);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Graphic* clone() const;
 
       private:
 

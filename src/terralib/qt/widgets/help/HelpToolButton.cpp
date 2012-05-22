@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,47 +18,34 @@
  */
 
 /*!
-  \file terralib/se/Description.cpp
-  
-  \brief A Description gives human-readable descriptive information for the object it is included within.
+  \file terralib/qt/widgets/help/HelpToolButton.cpp
+
+  \brief A specialized tool button that uses terralib help managers.
 */
 
 // TerraLib
-#include "Description.h"
+#include "HelpManager.h"
+#include "HelpToolButton.h"
 
-te::se::Description::Description()
+//Qt
+#include <QtGui/QIcon>
+#include <QtGui/QMouseEvent>
+
+te::qt::widgets::HelpToolButton::HelpToolButton(QWidget* parent)
+  : QToolButton(parent)
 {
+  setIcon(QIcon::fromTheme("help-browser"));
 }
 
-te::se::Description::~Description()
+void te::qt::widgets::HelpToolButton::setPageReference(const QString& ref)
 {
+  m_pgRef = ref;
 }
 
-void te::se::Description::setTitle(const std::string& title)
+void te::qt::widgets::HelpToolButton::mousePressEvent(QMouseEvent* e)
 {
-  m_title = title;
-}
+  QToolButton::mousePressEvent(e);
 
-const std::string& te::se::Description::getTitle() const
-{
-  return m_title;
-}
-
-void te::se::Description::setAbstract(const std::string& a)
-{
-  m_abstract = a;
-}
-
-const std::string& te::se::Description::getAbstract() const
-{
-  return m_abstract;
-}
-
-te::se::Description* te::se::Description::clone() const
-{
-  Description* d = new Description;
-  d->setTitle(m_title);
-  d->setAbstract(m_abstract);
-
-  return d;
+  if(e->button() == Qt::LeftButton)
+    te::qt::widgets::HelpManager::getInstance().showHelp(m_pgRef);
 }

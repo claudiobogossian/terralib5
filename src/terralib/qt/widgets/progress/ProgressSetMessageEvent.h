@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -19,18 +19,19 @@
 
 /*!
   \file terralib/qt/widgets/progress/ProgressSetMessageEvent.h
- 
-  \brief The ProgressSetMessageEvent is a custom event used to set a new message into 
-         a progress bar. Used in thread codes.
+
+  \brief A custom event used to set a new message into a progress bar.
+
+  \note Used in multi-threaded code.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_PROGRESSSETMESSAGEEVENT_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_PROGRESSSETMESSAGEEVENT_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSSETMESSAGEEVENT_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSSETMESSAGEEVENT_H
 
-//TerraLib
+// TerraLib
 #include "../../widgets/Config.h"
 
-// C++ Library
+// STL
 #include <string>
 
 //Qt
@@ -45,33 +46,37 @@ namespace te
       /*!
         \class ProgressSetMessageEvent
 
-        \brief The ProgressSetMessageEvent is a custom event used to set a new message into 
-         a progress bar. Used in thread codes.
+        \brief The ProgressSetMessageEvent is a custom event used to set a new message into a progress bar.
+
+        Used in thread codes.
 
         \sa ProgressViewerDialog, ProgressWidgetItem
       */
       class TEQTWIDGETSEXPORT ProgressSetMessageEvent : public QEvent
       {
         public:
-          /*! \brief It initializes a new QtProgress. */
+
+          /*! \brief It initializes a new Progress. */
           ProgressSetMessageEvent(std::string value);
-          
+
           /*! \brief Destructor */
           ~ProgressSetMessageEvent();
-          
+
           /*! \brief Get the custom event type */
           static QEvent::Type type();
-      
-        private:
-          static QEvent::Type m_customEventType;  //!< Custom Event Type
 
         public:
-          std::string m_value;                    //!< Progress bar message attribute
-      };
-    }  // end namespace progress
 
+          std::string m_value;   //!< Progress bar message attribute
+
+        private:
+
+          static QEvent::Type m_customEventType;  //!< Custom Event Type.
+      };
+
+    }  // end namespace widgets
   }    // end namespace qt
 }      // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_PROGRESSSETMESSAGEEVENT_H
+#endif  // __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSSETMESSAGEEVENT_H
 

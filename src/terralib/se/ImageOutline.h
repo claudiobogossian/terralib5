@@ -76,6 +76,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        ImageOutline* clone() const;
+
       private:
 
         Symbolizer* m_symbol; //!< Mandatory.

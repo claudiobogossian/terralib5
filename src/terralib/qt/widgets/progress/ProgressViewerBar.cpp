@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,25 +21,24 @@
   \file terralib/qt/widgets/progress/ProgressViewerBar.cpp
 
   \brief A class that defines the interface of a qt bar progress viewer.
-         Can be use inside a status bar.
- */
+*/
 
 // Terralib
-#include "ProgressViewerBar.h"
+#include "../../../common/Translator.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
-#include "terralib/common/Translator.h"
+#include "ProgressViewerBar.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
 #include <QtGui/QApplication>
 
-te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent) : 
-  QWidget(parent), 
-  AbstractProgressViewer(),
-  m_totalSteps(0),
-  m_currentStep(0),
-  m_propStep(0)
+te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent)
+  : QWidget(parent), 
+    AbstractProgressViewer(),
+    m_totalSteps(0),
+    m_currentStep(0),
+    m_propStep(0)
 {
   m_barProgress = new QProgressBar(this);
   m_barProgress->setRange(0, 100);
@@ -111,7 +110,7 @@ void te::qt::widgets::ProgressViewerBar::setTotalValues(int taskId)
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::qt::widgets::ProgressViewerBar::updateValue(int taskId)
+void te::qt::widgets::ProgressViewerBar::updateValue(int /*taskId*/)
 {
   m_currentStep++;
 
@@ -128,16 +127,15 @@ void te::qt::widgets::ProgressViewerBar::updateValue(int taskId)
   }
 }
 
-void te::qt::widgets::ProgressViewerBar::updateMessage(int taskId)
+void te::qt::widgets::ProgressViewerBar::updateMessage(int /*taskId*/)
 {
 }
 
-bool te::qt::widgets::ProgressViewerBar::eventFilter(QObject* obj, QEvent* event)
+bool te::qt::widgets::ProgressViewerBar::eventFilter(QObject* obj, QEvent* evt)
 {
-  if(obj == this && event->type() == ProgressSetValueEvent::type())
+  if(obj == this && evt->type() == ProgressSetValueEvent::type())
   {
-    ProgressSetValueEvent* e = 
-      static_cast<ProgressSetValueEvent*>(event);
+    ProgressSetValueEvent* e = static_cast<ProgressSetValueEvent*>(evt);
 
     m_barProgress->setValue(e->m_value);
 
@@ -151,3 +149,4 @@ void te::qt::widgets::ProgressViewerBar::on_Released()
 {
   emit clicked();
 }
+

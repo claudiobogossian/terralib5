@@ -61,3 +61,18 @@ void te::se::PointPlacement::setRotation(ParameterValue* r)
   m_rotation = r;
 }
 
+te::se::PointPlacement* te::se::PointPlacement::clone() const
+{
+  PointPlacement* pp = new PointPlacement;
+
+  if(m_anchorPoint)
+    pp->setAnchorPoint(m_anchorPoint->clone());
+
+  if(m_displacement)
+    pp->setDisplacement(m_displacement->clone());
+
+  if(m_rotation)
+    pp->setRotation(m_rotation->clone());
+
+  return pp;
+}

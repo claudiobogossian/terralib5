@@ -61,7 +61,7 @@ namespace te
         //@{
 
         /*!
-          \brief It initializes a new PropertyName.              
+          \brief It initializes a new PropertyName.
 
           \name The property name.
 
@@ -92,6 +92,15 @@ namespace te
           \return The property name.
          */
         const std::string& getName() const;
+
+        //@}
+
+        /** @name Expression Re-implementation
+         *  Methods re-implemented from Expression.
+         */
+        //@{
+
+        Expression* clone() const;
 
         //@}
 

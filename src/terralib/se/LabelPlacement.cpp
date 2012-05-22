@@ -52,3 +52,15 @@ void te::se::LabelPlacement::setLinePlacement(LinePlacement* l)
   m_linePlacement = l;
 }
 
+te::se::LabelPlacement* te::se::LabelPlacement::clone() const
+{
+  LabelPlacement* lp = new LabelPlacement;
+
+  if(m_pointPlacement)
+    lp->setPointPlacement(m_pointPlacement->clone());
+
+  if(m_linePlacement)
+    lp->setLinePlacement(m_linePlacement->clone());
+
+  return lp;
+}

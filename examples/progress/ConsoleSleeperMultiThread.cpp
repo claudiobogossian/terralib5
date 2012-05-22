@@ -10,7 +10,9 @@
 #include <iostream>
 
 // OpenMP
-#include <omp.h>
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+  #include <omp.h>
+#endif
 
 #define TOTAL_STEPS 3000
 #define PART_1 1000
@@ -27,9 +29,10 @@ void ConsoleSleeperMultiThread()
   task.useMultiThread(true);
   task.useTimer(true);
 
-  omp_set_num_threads( 4 );
-
-  #pragma omp parallel for
+  #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    omp_set_num_threads( 4 );
+    #pragma omp parallel for
+  #endif
   for(int i = 0; i < TOTAL_STEPS; ++i)
   {
     if(task.isActive())

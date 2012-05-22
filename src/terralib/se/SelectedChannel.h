@@ -72,11 +72,17 @@ namespace te
         //@{
         
         void setSourceChannelName(const std::string& name);
+
         std::string getSourceChannelName() { return m_sourceChannelName; }
+
         void setContrastEnhancement(ContrastEnhancement* c);
+
         ContrastEnhancement* getContrastEnhancement() { return m_contrastEnhancement; }
         
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        SelectedChannel* clone() const;
 
       private:
 

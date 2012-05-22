@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,7 +21,7 @@
   \file terralib/qt/widgets/progress/ProgressWidgetItem.cpp
 
   \brief Custom widget used to represent a single task.
- */
+*/
 
 // TerraLib
 #include "ProgressSetMessageEvent.h"
@@ -105,26 +105,25 @@ void te::qt::widgets::ProgressWidgetItem::cancel()
   emit taskCanceled(m_taskId);
 }
 
-bool te::qt::widgets::ProgressWidgetItem::eventFilter(QObject* obj, QEvent* event)
+bool te::qt::widgets::ProgressWidgetItem::eventFilter(QObject* obj, QEvent* evt)
 {
-  if(obj == this && event->type() == te::qt::widgets::ProgressSetValueEvent::type())
+  if(obj == this && evt->type() == te::qt::widgets::ProgressSetValueEvent::type())
   {
-    te::qt::widgets::ProgressSetValueEvent* e = 
-      static_cast<te::qt::widgets::ProgressSetValueEvent*>(event);
+    te::qt::widgets::ProgressSetValueEvent* e = static_cast<te::qt::widgets::ProgressSetValueEvent*>(evt);
 
     m_progressBar->setValue(e->m_value);
 
     return true;
   }
-  else if(obj == this && event->type() == ProgressSetMessageEvent::type())
+  else if(obj == this && evt->type() == ProgressSetMessageEvent::type())
   {
-    ProgressSetMessageEvent* e = 
-      static_cast<ProgressSetMessageEvent*>(event);
+    ProgressSetMessageEvent* e = static_cast<ProgressSetMessageEvent*>(evt);
 
-     m_label->setText(e->m_value.c_str());
+    m_label->setText(e->m_value.c_str());
 
     return true;
   }
 
   return true;
 }
+

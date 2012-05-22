@@ -50,3 +50,16 @@ void te::se::AnchorPoint::setAnchorPointY(ParameterValue* y)
   delete m_y;
   m_y = y;
 }
+
+te::se::AnchorPoint* te::se::AnchorPoint::clone() const
+{
+  AnchorPoint* anchorPoint = new AnchorPoint;
+
+  if(m_x)
+    anchorPoint->setAnchorPointX(m_x->clone());
+
+  if(m_y)
+    anchorPoint->setAnchorPointY(m_y->clone());
+
+  return anchorPoint;
+}

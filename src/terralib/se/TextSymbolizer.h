@@ -71,6 +71,13 @@ namespace te
         /*! \brief It initializes a new TextSymbolizer. */
         TextSymbolizer();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other text symbolizer.
+        */
+        TextSymbolizer(const TextSymbolizer& rhs);
+
         /*! \brief Destructor. */
         ~TextSymbolizer();
 
@@ -84,20 +91,27 @@ namespace te
         void setGeometry(te::fe::PropertyName* g);
 
         void setLabel(ParameterValue* l);
+
         const ParameterValue* getLabel() const;
 
         void setFont(Font* f);
+
         const Font* getFont() const;
 
         void setLabelPlacement(LabelPlacement* l);
 
         void setHalo(Halo* h);
+
         const Halo* getHalo() const;
 
         void setFill(Fill* f);
+
         const Fill* getFill() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Symbolizer* clone() const;
 
       private:
 

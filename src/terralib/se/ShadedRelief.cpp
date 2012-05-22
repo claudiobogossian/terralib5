@@ -46,3 +46,11 @@ void te::se::ShadedRelief::setReliefFactor(const double& rf)
   m_reliefFactor = rf;
 }
 
+te::se::ShadedRelief* te::se::ShadedRelief::clone() const
+{
+  ShadedRelief* sr = new ShadedRelief;
+  sr->setBrightnessOnly(m_brightnessOnly);
+  sr->setReliefFactor(m_reliefFactor);
+
+  return sr;
+}

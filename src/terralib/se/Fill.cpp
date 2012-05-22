@@ -83,6 +83,21 @@ const te::se::SvgParameter* te::se::Fill::getOpacity() const
   return getParameter(sm_opacity);
 }
 
+te::se::Fill* te::se::Fill::clone() const
+{
+  Fill* fill = new Fill;
+
+  std::map<std::string, SvgParameter*>::const_iterator it;
+  for(it = m_svgParams.begin(); it != m_svgParams.end(); ++it)
+    fill->add(it->second->clone());
+
+  const Graphic* graphicFill = getGraphicFill();
+  if(graphicFill)
+    fill->setGraphicFill(graphicFill->clone());
+
+  return fill;
+}
+
 void te::se::Fill::setParameter(const std::string& name, const std::string& value)
 {
   std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);

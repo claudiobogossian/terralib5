@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,16 +21,15 @@
   \file terralib/qt/widgets/progress/ProgressViewerBar.h
 
   \brief A class that defines the interface of a qt bar progress viewer.
-         Can be use inside a status bar.
- */
+*/
 
-#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerBar_H
-#define __TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerBar_H
+#ifndef __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERBAR_H
+#define __TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERBAR_H
 
 // TerraLib
+#include "../../../common/progress/AbstractProgressViewer.h"
+#include "../../../common/progress/TaskProgress.h"
 #include "../Config.h"
-#include "terralib/common/progress/AbstractProgressViewer.h"
-#include "terralib/common/progress/TaskProgress.h"
 
 //Qt
 #include <QtGui/QGridLayout>
@@ -52,20 +51,21 @@ namespace te
         \class ProgressViewerBar
 
         \brief A class that defines the interface of a qt bar progress viewer.
-               Can be use inside a status bar.
 
-               This viewer is made using QtProgressBar object. Feed back will be generated
-                over a custom widget. Multiples tasks will be displayed using ONLY one
-                progress.
+        It can be use inside a status bar.
 
-                The proportional value is calculated using TOTALSTEPS / CURRENTSTEPS.
+        This viewer is made using QtProgressBar object. Feed back will be generated
+        over a custom widget. Multiples tasks will be displayed using ONLY one
+        progress.
 
-                TOTALSTEPS - Sum of all total steps of all tasks
-                CURRENTSTEPS - Sum of all current steps of all tasks
+        The proportional value is calculated using TOTALSTEPS / CURRENTSTEPS.
 
-                This viwer does NOT have message information. A Qt Button objected has located
-                at the right side of the bar. The button clicked can be accessed getting 
-                clicked() signal.
+        TOTALSTEPS - Sum of all total steps of all tasks
+        CURRENTSTEPS - Sum of all current steps of all tasks
+
+        This viwer does NOT have message information. A Qt Button objected has located
+        at the right side of the bar. The button clicked can be accessed getting 
+        clicked() signal.
 
         \sa AbstractProgressViewer, QtProgressBar
 
@@ -83,7 +83,6 @@ namespace te
           /*! \brief Virtual destructor. */
           virtual ~ProgressViewerBar();
 
-
           /** @name ProgressViewerBar Methods
            *  Methods for ProgressViewerBar access
            */
@@ -92,8 +91,7 @@ namespace te
            /*!
             \brief Insert a new taks to progress viewer container
 
-            \param t Task pointer
-
+            \param t  Task pointer
             \param id Task identifier
           */
           virtual void addTask(te::common::TaskProgress* t, int id);
@@ -140,40 +138,35 @@ namespace te
           /*!
             \brief Used to receive internal events
 
-            \param obj Object sender
+            \param obj Object sender.
+            \param evt Event sended by object.
 
-            \param event Event sended by object
-
-            \return Always return true
+            \return Always return true.
           */
-          virtual bool eventFilter(QObject* obj, QEvent* event);
+          virtual bool eventFilter(QObject* obj, QEvent* evt);
 
         public slots:
 
-          /*!
-            \brief Used to get the button clicked (internal function)
-          */
+          /*! \brief Used to get the button clicked (internal function). */
           virtual void on_Released();
 
         signals:
 
-          /*!
-            \brief Emit a signal if the button was clicked
-          */
+          /*! \brief Emit a signal if the button was clicked. */
           void clicked();
 
         protected:
 
-          int m_totalSteps;                                   //!< Attribute used to define the total steps of all tasks
-          int m_currentStep;                                  //!< Attribute used to define the current steps of all task
-          int m_propStep;                                     //!< Attribute used to define the proportional step (0-100)
+          int m_totalSteps;                                   //!< Attribute used to define the total steps of all tasks.
+          int m_currentStep;                                  //!< Attribute used to define the current steps of all task.
+          int m_propStep;                                     //!< Attribute used to define the proportional step (0-100).
           std::map<int, te::common::TaskProgress*> m_tasks;   //!< Task container.
-          QGridLayout* m_layout;                              //!< GUI Objects used to build the custom widget
-          QProgressBar* m_barProgress;                        //!< GUI Objects used to build the custom widget
-          QPushButton* m_button;                              //!< GUI Objects used to build the custom widget
+          QGridLayout* m_layout;                              //!< GUI Objects used to build the custom widget.
+          QProgressBar* m_barProgress;                        //!< GUI Objects used to build the custom widget.
+          QPushButton* m_button;                              //!< GUI Objects used to build the custom widget.
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif //__TERRALIB_QT_WIDGETS_PROGRESS_ProgressViewerBar_H
+#endif //__TERRALIB_QT_WIDGETS_PROGRESS_INTERNAL_PROGRESSVIEWERBAR_H

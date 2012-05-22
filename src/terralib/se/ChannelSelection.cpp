@@ -66,3 +66,22 @@ void te::se::ChannelSelection::setGrayChannel(SelectedChannel* c)
   delete m_grayChannel;
   m_grayChannel = c;
 }
+
+te::se::ChannelSelection* te::se::ChannelSelection::clone() const
+{
+  ChannelSelection* cs = new ChannelSelection;
+
+  if(m_redChannel)
+    cs->setBlueChannel(m_redChannel->clone());
+
+  if(m_greenChannel)
+    cs->setBlueChannel(m_greenChannel->clone());
+
+  if(m_blueChannel)
+    cs->setBlueChannel(m_blueChannel->clone());
+
+  if(m_grayChannel)
+    cs->setGrayChannel(m_grayChannel);
+
+  return cs;
+}

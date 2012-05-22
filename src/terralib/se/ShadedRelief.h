@@ -78,9 +78,13 @@ namespace te
         //@{
         
         void setBrightnessOnly(bool b);
+
         void setReliefFactor(const double& rf);
         
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        ShadedRelief* clone() const;
 
       private:
 

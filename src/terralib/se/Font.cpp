@@ -102,6 +102,17 @@ const te::se::SvgParameter* te::se::Font::getSize() const
   return getParameter(sm_size);
 }
 
+te::se::Font* te::se::Font::clone() const
+{
+  Font* font = new Font;
+
+  std::map<std::string, SvgParameter*>::const_iterator it;
+  for(it = m_svgParams.begin(); it != m_svgParams.end(); ++it)
+    font->add(it->second->clone());
+
+  return font;
+}
+
 void te::se::Font::setParameter(const std::string& name, const std::string& value)
 {
   std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);

@@ -40,6 +40,24 @@ te::se::Symbolizer::Symbolizer()
 {
 }
 
+te::se::Symbolizer::Symbolizer(const te::se::Symbolizer& rhs)
+  : m_name(rhs.m_name),
+    m_description(0),
+    m_baseSymbolizer(0),
+    m_version(rhs.m_version),
+    m_uom(0)
+{
+  if(rhs.m_description)
+    m_description = rhs.m_description->clone();
+
+  if(rhs.m_baseSymbolizer)
+    m_baseSymbolizer = new te::xl::SimpleLink(*rhs.m_baseSymbolizer);
+
+  // TODO: Review BaseUnitOfMeasure
+  //if(rhs.m_uom) 
+    //m_uom = new te::common::BaseUnitOfMeasure(*m_uom);
+}
+
 te::se::Symbolizer::~Symbolizer()
 {
   delete m_description;

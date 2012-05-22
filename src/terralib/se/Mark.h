@@ -122,6 +122,9 @@ namespace te
 
         const Stroke* getStroke() const;
 
+        /*! \brief It creates a new copy of this object. */
+        Mark* clone() const;
+
       private:
 
         std::string* m_wellKnownName;         //!< The WellKnownName element gives the well-known name of the shape of the mark. (Optional and if it is set then nor onlineResource_ neither inlineContent_ should be set)

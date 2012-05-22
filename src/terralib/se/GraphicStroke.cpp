@@ -75,3 +75,18 @@ const te::se::ParameterValue* te::se::GraphicStroke::getGap() const
   return m_gap;
 }
 
+te::se::GraphicStroke* te::se::GraphicStroke::clone() const
+{
+  GraphicStroke* graphicStroke = new GraphicStroke;
+  
+  if(m_graphic)
+    graphicStroke->setGraphic(m_graphic->clone());
+
+  if(m_initialGap)
+    graphicStroke->setInitialGap(new ParameterValue(*m_initialGap));
+
+  if(m_gap)
+    graphicStroke->setGap(new ParameterValue(*m_gap));
+
+  return graphicStroke;
+}

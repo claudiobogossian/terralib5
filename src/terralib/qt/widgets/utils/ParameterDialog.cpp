@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "ui/ParameterDialogForm.h"
+#include "ui_ParameterDialogForm.h"
 #include "ParameterDialog.h"
 
 

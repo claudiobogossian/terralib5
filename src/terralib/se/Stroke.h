@@ -124,22 +124,37 @@ namespace te
         void add(SvgParameter* p);
 
         void setColor(const std::string& color);
+
         void setOpacity(const std::string& opacity);
+
         void setWidth(const std::string& width);
+
         void setLineJoin(const std::string& join);
+
         void setLineCap(const std::string& cap);
+
         void setDashArray(const std::string& dasharray);
+
         void setDashOffset(const std::string& offset);
 
         const SvgParameter* getColor() const;
+
         const SvgParameter* getOpacity() const;
+
         const SvgParameter* getWidth() const;
+
         const SvgParameter* getLineJoin() const;
+
         const SvgParameter* getLineCap() const;
+
         const SvgParameter* getDashArray() const;
+
         const SvgParameter* setDashOffset() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Stroke* clone() const;
 
       private:
 

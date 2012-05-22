@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,22 +20,23 @@
 /*!
   \file terralib/common/progress/ConsoleProgressViewer.cpp
 
-  \brief 
- */
+  \brief A class that defines the interface of an console progress viewer.
+*/
 
 // TerraLib
 #include "../Translator.h"
 #include "ConsoleProgressViewer.h"
 #include "TaskProgress.h"
 
-// C++ library
+// STL
 #include <iostream>
 
-te::common::ConsoleProgressViewer::ConsoleProgressViewer() : AbstractProgressViewer(),
-  m_totalSteps(0),
-  m_currentStep(0),
-  m_propStep(0),
-  m_message("")
+te::common::ConsoleProgressViewer::ConsoleProgressViewer()
+  : AbstractProgressViewer(),
+    m_totalSteps(0),
+    m_currentStep(0),
+    m_propStep(0),
+    m_message("")
 {
 }
 
@@ -89,7 +90,7 @@ void te::common::ConsoleProgressViewer::setTotalValues(int taskId)
   m_totalSteps += m_tasks[taskId]->getTotalSteps();
 }
 
-void te::common::ConsoleProgressViewer::updateValue(int taskId)
+void te::common::ConsoleProgressViewer::updateValue(int /*taskId*/)
 {
   m_currentStep++;
 
@@ -105,7 +106,7 @@ void te::common::ConsoleProgressViewer::updateValue(int taskId)
   }
 }
 
-void te::common::ConsoleProgressViewer::updateMessage(int taskId)
+void te::common::ConsoleProgressViewer::updateMessage(int /*taskId*/)
 {
   if(m_tasks.size() == 1)
   {
@@ -116,3 +117,4 @@ void te::common::ConsoleProgressViewer::updateMessage(int taskId)
     m_message = TR_COMMON("Multi Tasks");
   }
 }
+

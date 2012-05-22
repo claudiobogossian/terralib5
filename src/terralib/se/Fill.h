@@ -100,16 +100,22 @@ namespace te
         void add(SvgParameter* p);
 
         void setColor(const std::string& color);
+
         void setOpacity(const std::string& opacity);
 
         const SvgParameter* getColor() const;
+
         const SvgParameter* getOpacity() const;
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        Fill* clone() const;
+
       private:
 
         void setParameter(const std::string& name, const std::string& value);
+
         const SvgParameter* getParameter(const std::string& name) const;
 
       private:

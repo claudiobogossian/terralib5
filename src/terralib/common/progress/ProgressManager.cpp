@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,13 +20,12 @@
 /*!
   \file terralib/common/progress/ProgressManager.cpp
 
-  \brief 
- */
+  \brief A class that defines the singleton to manager tasks and viewers.
+*/
 
 // TerraLib
 #include "AbstractProgressViewer.h"
 #include "ProgressManager.h"
-
 
 int te::common::ProgressManager::addViewer(AbstractProgressViewer* apv)
 {

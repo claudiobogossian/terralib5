@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -19,19 +19,19 @@
 
 /*!
   \file terralib/qt/widgets/progress/ProgressSetValueEvent.cpp
- 
-  \brief The ProgressSetValueEvent is a custom event used to set a new value into 
-         a progress bar. Used in thread codes.
-*/
 
+  \brief The ProgressSetValueEvent is a custom event used to set a new value into a progress bar.
+
+  \note Used in thread codes.
+*/
 
 //TerraLib
 #include "ProgressSetValueEvent.h"
 
 QEvent::Type te::qt::widgets::ProgressSetValueEvent::m_customEventType = QEvent::None;
 
-te::qt::widgets::ProgressSetValueEvent::ProgressSetValueEvent(int value) :
-  QEvent(ProgressSetValueEvent::type()), m_value(value)
+te::qt::widgets::ProgressSetValueEvent::ProgressSetValueEvent(int value)
+  : QEvent(ProgressSetValueEvent::type()), m_value(value)
 {
 }
 
@@ -46,6 +46,7 @@ QEvent::Type te::qt::widgets::ProgressSetValueEvent::type()
     int generatedType = QEvent::registerEventType();
     m_customEventType = static_cast<QEvent::Type>(generatedType);
   }
-            
+
   return m_customEventType;
 }
+

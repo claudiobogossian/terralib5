@@ -155,6 +155,25 @@ const te::se::SvgParameter* te::se::Stroke::setDashOffset() const
   return getParameter(sm_dashoffset);
 }
 
+te::se::Stroke* te::se::Stroke::clone() const
+{
+  Stroke* stroke = new Stroke;
+
+  std::map<std::string, SvgParameter*>::const_iterator it;
+  for(it = m_svgParams.begin(); it != m_svgParams.end(); ++it)
+    stroke->add(it->second->clone());
+
+  const Graphic* graphicFill = getGraphicFill();
+  if(graphicFill)
+    stroke->setGraphicFill(graphicFill->clone());
+
+  const GraphicStroke* graphicStroke = getGraphicStroke();
+  if(graphicStroke)
+    stroke->setGraphicStroke(graphicStroke->clone());
+
+  return stroke;
+}
+
 void te::se::Stroke::setParameter(const std::string& name, const std::string& value)
 {
   std::map<std::string, te::se::SvgParameter*>::iterator it = m_svgParams.find(name);

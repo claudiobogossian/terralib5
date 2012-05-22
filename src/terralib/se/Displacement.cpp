@@ -50,3 +50,16 @@ void te::se::Displacement::setDisplacementY(ParameterValue* y)
   delete m_y;
   m_y = y;
 }
+
+te::se::Displacement* te::se::Displacement::clone() const
+{
+  Displacement* displacement = new Displacement;
+
+  if(m_x)
+    displacement->setDisplacementX(m_x->clone());
+
+  if(m_y)
+    displacement->setDisplacementY(m_y->clone());
+
+  return displacement;
+}

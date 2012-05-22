@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,22 +20,21 @@
 /*!
   \file terralib/qt/widgets/progress/ProgressViewerWidget.cpp
 
-  \brief A class that defines the interface of a qt widget to group
-         a set of ProgressWidgetItem.
- */
+  \brief A class that defines the interface of a qt widget to group a set of ProgressWidgetItem.
+*/
 
 // Terralib
-#include "ProgressWidgetItem.h"
 #include "ProgressViewerWidget.h"
+#include "ProgressWidgetItem.h"
 
 // Qt
-#include <QtGui/QApplication>
 #include <QtCore/QCoreApplication>
+#include <QtGui/QApplication>
 #include <QtGui/QScrollBar>
 
-te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent) : 
-  QDialog(parent, Qt::Tool), 
-  AbstractProgressViewer()
+te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent) 
+  : QDialog(parent, Qt::Tool), 
+    AbstractProgressViewer()
 {
   //create custom widget
   m_MainLayout = new QGridLayout(this);
@@ -108,7 +107,7 @@ void te::qt::widgets::ProgressViewerWidget::cancelTask(int taskId)
   removeTask(taskId);
 }
 
-void te::qt::widgets::ProgressViewerWidget::setTotalValues(int taskId)
+void te::qt::widgets::ProgressViewerWidget::setTotalValues(int /*taskId*/)
 {
 }
 
@@ -151,3 +150,4 @@ void te::qt::widgets::ProgressViewerWidget::cancel(int id)
     itTask->second->cancel();
   }
 }
+

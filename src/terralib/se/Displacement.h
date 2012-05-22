@@ -78,9 +78,13 @@ namespace te
         //@{
 
         void setDisplacementX(ParameterValue* x);
+
         void setDisplacementY(ParameterValue* y);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Displacement* clone() const;
 
       private:
 

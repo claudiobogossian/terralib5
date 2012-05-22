@@ -69,6 +69,13 @@ namespace te
         /*! \brief It initializes a new PolygonSymbolizer. */
         PolygonSymbolizer();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other polygon symbolizer.
+        */
+        PolygonSymbolizer(const PolygonSymbolizer& rhs);
+
         /*! \brief Destructor. */
         ~PolygonSymbolizer();
 
@@ -168,6 +175,9 @@ namespace te
         const ParameterValue* getPerpendicularOffset() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Symbolizer* clone() const;
 
       private:
 

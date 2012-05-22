@@ -42,6 +42,34 @@ te::se::TextSymbolizer::TextSymbolizer()
 {
 }
 
+te::se::TextSymbolizer::TextSymbolizer(const te::se::TextSymbolizer& rhs)
+  : te::se::Symbolizer(rhs),
+    m_geometry(0),
+    m_label(0),
+    m_font(0),
+    m_labelPlacement(0),
+    m_halo(0),
+    m_fill(0)
+{
+  if(rhs.m_geometry)
+    m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());
+
+  if(rhs.m_label)
+    m_label = rhs.m_label->clone();
+
+  if(rhs.m_font)
+    m_font = rhs.m_font->clone();
+
+  if(rhs.m_labelPlacement)
+    m_labelPlacement = rhs.m_labelPlacement->clone();
+
+  if(rhs.m_halo)
+    m_halo = rhs.m_halo->clone();
+
+  if(rhs.m_fill)
+    m_fill = rhs.m_fill->clone();
+}
+
 te::se::TextSymbolizer::~TextSymbolizer()
 {
   delete m_geometry;
@@ -106,4 +134,9 @@ void te::se::TextSymbolizer::setFill(Fill* f)
 const te::se::Fill* te::se::TextSymbolizer::getFill() const
 {
   return m_fill;
+}
+
+te::se::Symbolizer* te::se::TextSymbolizer::clone() const
+{
+  return new TextSymbolizer(*this);
 }

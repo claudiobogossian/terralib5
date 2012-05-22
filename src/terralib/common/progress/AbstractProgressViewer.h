@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -21,7 +21,7 @@
   \file terralib/common/progress/AbstractProgressViewer.h
 
   \brief A class that defines the interface of an abstract progress viewer.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_ABSTRACTPROGRESSVIEWER_H
 #define __TERRALIB_COMMON_PROGRESS_INTERNAL_ABSTRACTPROGRESSVIEWER_H
@@ -29,12 +29,11 @@
 // TerraLib
 #include "../Config.h"
 
-
 namespace te
 {
   namespace common
   {
-    // Forward declarations
+// Forward declarations
     class TaskProgress;
 
     /*!
@@ -43,10 +42,7 @@ namespace te
       \brief A class that defines the interface of an abstract progress viewer.
 
       \sa TaskProgress
-
-      \note
     */
-
     class TECOMMONEXPORT AbstractProgressViewer
     {
       public:
@@ -63,51 +59,51 @@ namespace te
         //@{
 
         /*!
-          \brief Insert a new taks to progress viewer container
+          \brief Insert a new taks to progress viewer container.
 
-          \param t Task pointer
-
-          \param id Task identifier
+          \param t  Task pointer.
+          \param id Task identifier.
         */
         virtual void addTask(TaskProgress* t, int id) = 0;
 
         /*!
-          \brief Removes a task from progress viewer container
+          \brief Removes a task from progress viewer container.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         virtual void removeTask(int taskId) = 0;
 
         /*!
-          \brief Cancel a task
+          \brief Cancel a task.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         virtual void cancelTask(int taskId) = 0;
 
         /*!
-          \brief Set task total steps
+          \brief Set task total steps.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         virtual void setTotalValues(int taskId) = 0;
 
         /*!
-          \brief Update the progress evaluation
+          \brief Update the progress evaluation.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         virtual void updateValue(int taskId) = 0;
 
         /*!
-          \brief Update the progress message
+          \brief Update the progress message.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         virtual void updateMessage(int taskId) = 0;
 
         //@}
     };
+
   } // end namespace common
 }   // end namespace te
 
