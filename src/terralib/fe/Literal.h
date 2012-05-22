@@ -95,6 +95,15 @@ namespace te
 
         //@}
 
+        /** @name Expression Re-implementation
+         *  Methods re-implemented from Expression.
+         */
+        //@{
+
+        Expression* clone() const;
+
+        //@}
+
       private:
 
         std::string m_value;   //!< Literal expression. (Mandatory)

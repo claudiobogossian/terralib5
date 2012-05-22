@@ -124,7 +124,7 @@ namespace te
 
           \note It doesn't check the index range.
          */
-        void setArgument(size_t i, Expression* argument);          
+        void setArgument(size_t i, Expression* argument);
 
         /*!
           \brief It removes the n-th argument.
@@ -135,6 +135,15 @@ namespace te
          */
         void removeArgument(size_t i);
         
+        //@}
+
+        /** @name Expression Re-implementation
+         *  Methods re-implemented from Expression.
+         */
+        //@{
+
+        virtual Expression* clone() const;
+
         //@}
 
       protected:

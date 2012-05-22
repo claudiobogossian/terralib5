@@ -143,7 +143,16 @@ namespace te
          */
         Expression* getSecond() const;
 
-        //@}      
+        //@}
+
+        /** @name Expression Re-implementation
+         *  Methods re-implemented from Expression.
+         */
+        //@{
+
+        virtual Expression* clone() const;
+
+        //@}
 
       private:
 

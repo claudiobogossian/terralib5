@@ -43,7 +43,7 @@ namespace te
         or more symbols that evaluate to single boolean
         value of true or false.
 
-        \sa BinaryOperator, PropertyName, Function, Literal, BinaryComparisonOp, PropertyIsBetween        
+        \sa BinaryOperator, PropertyName, Function, Literal, BinaryComparisonOp, PropertyIsBetween
      */
     class TEFEEXPORT Expression : public te::common::BaseVisitable<Visitor>
     {
@@ -63,6 +63,13 @@ namespace te
         virtual ~Expression() {}
 
         //@}
+
+        /*!
+          \brief It returns a clone of this object.
+          
+          \return A clone of this object.
+        */
+        virtual Expression* clone() const = 0;
 
       private:
 

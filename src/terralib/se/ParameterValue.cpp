@@ -42,8 +42,8 @@ te::se::ParameterValue::Parameter::Parameter(const te::se::ParameterValue::Param
   if(rhs.m_mixedData)
     m_mixedData = new std::string(*rhs.m_mixedData);
   
-  //if(rhs.m_expression)
-    // m_expression = rhs.m_expression->clone();
+  if(rhs.m_expression)
+    m_expression = rhs.m_expression->clone();
 }
 
 te::se::ParameterValue::Parameter::~Parameter()
