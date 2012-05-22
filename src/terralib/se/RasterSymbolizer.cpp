@@ -68,14 +68,14 @@ te::se::RasterSymbolizer::RasterSymbolizer(const te::se::RasterSymbolizer& rhs)
   //if(rhs.m_colorMap)
     //m_colorMap = rhs.m_colorMap->clone();
 
-  //if(rhs.m_contrastEnhancement)
-    //m_contrastEnhancement = rhs.m_contrastEnhancement->clone();
+  if(rhs.m_contrastEnhancement)
+    m_contrastEnhancement = rhs.m_contrastEnhancement->clone();
 
-  //if(rhs.m_shadedRelief)
-    //m_shadedRelief = rhs.m_shadedRelief->clone();
+  if(rhs.m_shadedRelief)
+    m_shadedRelief = rhs.m_shadedRelief->clone();
 
-  //if(rhs.m_imageOutline)
-    //m_imageOutline = rhs.m_imageOutline->clone();
+  if(rhs.m_imageOutline)
+    m_imageOutline = rhs.m_imageOutline->clone();
 }
 
 te::se::RasterSymbolizer::~RasterSymbolizer()
