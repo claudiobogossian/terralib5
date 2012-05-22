@@ -207,10 +207,16 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
      ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
      ${SRCDIR}/widgets/help/HelpPushButton.h
+	 ${SRCDIR}/widgets/help/HelpToolButton.h
 	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
-	 ${SRCDIR}/widgets/utils/ScopedCursor.h)
+	 ${SRCDIR}/widgets/utils/ScopedCursor.h
+	 ${SRCDIR}/widgets/se/BasicFillWidget.h
+	 ${SRCDIR}/widgets/se/BasicStrokeDialog.h
+	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
+	 ${SRCDIR}/widgets/se/MarkDialog.h
+	 ${SRCDIR}/widgets/se/MarkWidget.h)
 
 
 # Select the FORMS widgets     
@@ -221,7 +227,8 @@ file(GLOB FORMS
      ${SRCDIR}/widgets/dataset/*.ui
      ${SRCDIR}/widgets/layer/*.ui
      ${SRCDIR}/widgets/property/*.ui
-	 ${SRCDIR}/widgets/utils/ui/*.ui)
+	 ${SRCDIR}/widgets/utils/ui/*.ui
+	 ${SRCDIR}/widgets/se/ui/*.ui)
 
 list(REMOVE_ITEM WIDGETS_HDRS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	
