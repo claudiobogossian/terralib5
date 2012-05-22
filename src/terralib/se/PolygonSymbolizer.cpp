@@ -41,7 +41,12 @@ te::se::PolygonSymbolizer::PolygonSymbolizer()
 }
 
 te::se::PolygonSymbolizer::PolygonSymbolizer(const te::se::PolygonSymbolizer& rhs)
-  : te::se::Symbolizer(rhs)
+  : te::se::Symbolizer(rhs),
+    m_geometry(0),
+    m_fill(0),
+    m_stroke(0),
+    m_displacement(0),
+    m_perpendicularOffset(0)
 {
   if(rhs.m_geometry)
     m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());

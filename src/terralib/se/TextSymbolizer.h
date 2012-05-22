@@ -74,7 +74,7 @@ namespace te
         /*!
           \brief Copy constructor.
 
-          \param rhs The other polygon symbolizer.
+          \param rhs The other text symbolizer.
         */
         TextSymbolizer(const TextSymbolizer& rhs);
 

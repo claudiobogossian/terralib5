@@ -43,7 +43,13 @@ te::se::TextSymbolizer::TextSymbolizer()
 }
 
 te::se::TextSymbolizer::TextSymbolizer(const te::se::TextSymbolizer& rhs)
-  : te::se::Symbolizer(rhs)
+  : te::se::Symbolizer(rhs),
+    m_geometry(0),
+    m_label(0),
+    m_font(0),
+    m_labelPlacement(0),
+    m_halo(0),
+    m_fill(0)
 {
   if(rhs.m_geometry)
     m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());

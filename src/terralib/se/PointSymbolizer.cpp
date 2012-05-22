@@ -35,7 +35,9 @@ te::se::PointSymbolizer::PointSymbolizer()
 }
 
 te::se::PointSymbolizer::PointSymbolizer(const te::se::PointSymbolizer& rhs)
-  : te::se::Symbolizer(rhs)
+  : te::se::Symbolizer(rhs),
+    m_geometry(0),
+    m_graphic(0)
 {
   if(rhs.m_geometry)
     m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());

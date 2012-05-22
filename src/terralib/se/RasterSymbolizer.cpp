@@ -45,6 +45,11 @@ te::se::RasterSymbolizer::RasterSymbolizer()
 {
 }
 
+te::se::RasterSymbolizer::RasterSymbolizer(const te::se::RasterSymbolizer& rhs)
+  : te::se::Symbolizer(rhs)
+{
+}
+
 te::se::RasterSymbolizer::~RasterSymbolizer()
 {
   delete m_geometry;
@@ -101,4 +106,9 @@ void te::se::RasterSymbolizer::setImageOutline(ImageOutline* i)
 {
   delete m_imageOutline;
   m_imageOutline = i;
+}
+
+te::se::Symbolizer* te::se::RasterSymbolizer::clone() const
+{
+  return new RasterSymbolizer(*this);
 }
