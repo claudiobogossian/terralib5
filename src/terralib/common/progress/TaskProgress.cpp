@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/progress/TaskProgress.cpp
 
-  \brief 
+  \brief This class is the implementation of a progress evalution of a task.
  */
 
 // TerraLib
@@ -28,17 +28,16 @@
 #include "ProgressTimer.h"
 #include "TaskProgress.h"
 
-
-te::common::TaskProgress::TaskProgress():
-  m_totalSteps(0),
-  m_currentStep(0),
-  m_currentPropStep(0),
-  m_message(""),
-  m_hasToUpdate(false),
-  m_isActive(true),
-  m_isMultiThread(false),
-  m_useTimer(false),
-  m_timer(0)
+te::common::TaskProgress::TaskProgress()
+  : m_totalSteps(0),
+    m_currentStep(0),
+    m_currentPropStep(0),
+    m_message(""),
+    m_hasToUpdate(false),
+    m_isActive(true),
+    m_isMultiThread(false),
+    m_useTimer(false),
+    m_timer(0)
 {
   //get task id from progress manager singleton
   m_id = te::common::ProgressManager::getInstance().addTask(this);

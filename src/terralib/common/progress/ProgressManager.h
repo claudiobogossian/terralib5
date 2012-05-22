@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,8 +20,8 @@
 /*!
   \file terralib/common/progress/ProgressManager.h
 
-  \brief A class that defines the singleton to manager tasks and viewers
- */
+  \brief A class that defines the singleton to manager tasks and viewers.
+*/
 
 #ifndef __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
 #define __TERRALIB_COMMON_PROGRESS_INTERNAL_PROGRESSMANAGER_H
@@ -38,22 +38,20 @@ namespace te
 {
   namespace common
   {
-    // Forward declarations
-    class TaskProgress;
+// Forward declarations
     class AbstractProgressViewer;
+    class TaskProgress;
 
     /*!
       \class ProgressManager
 
       \brief A class that defines the singleton to manager tasks and viewers
 
-        This singleton is used to store all tasks created, also is
-        used to attach progress viewers. If one or more viewers is attached,
-        all instances will be used to display the tasks progress.
+      This singleton is used to store all tasks created, also is
+      used to attach progress viewers. If one or more viewers is attached,
+      all instances will be used to display the tasks progress.
 
       \sa AbstractProgressViewer, TaskProgress
-
-      \note
     */
     class TECOMMONEXPORT ProgressManager : public te::common::Singleton<ProgressManager>
     {
@@ -94,35 +92,35 @@ namespace te
         /*!
           \brief Used in TaskProgress destructor, remove task from singleton.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         void removeTask(int taskId);
 
         /*!
-          \brief Inform all viewers that a task was canceled
+          \brief Inform all viewers that a task was canceled.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         void cancelTask(int taskId);
 
         /*!
-          \brief Inform all viewers that a task set the total values
+          \brief Inform all viewers that a task set the total values.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         void setTotalValues(int taskId);
 
         /*!
-          \brief Inform all viewers that a task set the current step
+          \brief Inform all viewers that a task set the current step.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         void updateValue(int taskId);
 
         /*!
-          \brief Inform all viewers that a task set the message
+          \brief Inform all viewers that a task set the message.
 
-          \param taskId Task identifier
+          \param taskId Task identifier.
         */
         void updateMessage(int taskId);
 
@@ -137,27 +135,27 @@ namespace te
         ~ProgressManager();
 
         /*!
-          \brief Used to generate a new viewer id (use internal counter)
+          \brief Used to generate a new viewer id (use internal counter).
 
-          \return Viewer identification as integer value
+          \return Viewer identification as integer value.
         */
         int generateViewerId();
 
         /*!
-          \brief Used to generate a new task id (use internal counter)
+          \brief Used to generate a new task id (use internal counter).
 
-          \return Task identification as integer value
+          \return Task identification as integer value.
         */
         int generateTaskId();
 
       protected:
 
-        int m_taskCounter;                                //!< Counter used to generate a task id
-        int m_viewerCounter;                              //!< Counter used to generate a viewer id
-        std::map<int, TaskProgress*> m_tasks;             //!< Container with tasks
-        std::map<int, AbstractProgressViewer*> m_viewers; //!< Container with viewers
-
+        int m_taskCounter;                                //!< Counter used to generate a task id.
+        int m_viewerCounter;                              //!< Counter used to generate a viewer id.
+        std::map<int, TaskProgress*> m_tasks;             //!< Container with tasks.
+        std::map<int, AbstractProgressViewer*> m_viewers; //!< Container with viewers.
     };
+
   } // end namespace common
 }   // end namespace te
 

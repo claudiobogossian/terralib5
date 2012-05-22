@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -44,9 +44,9 @@ te::common::ProgressTimer::~ProgressTimer()
 void te::common::ProgressTimer::start()
 {
 //start time
-   time(&m_startTime);
+  time(&m_startTime);
 
-   m_count = 0;
+  m_count = 0;
 }
 
 void te::common::ProgressTimer::tick()
