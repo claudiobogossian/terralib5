@@ -83,6 +83,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        Description* clone() const;
+
       private:
 
         std::string m_title;     //!< Title. (Optional)

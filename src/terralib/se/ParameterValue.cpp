@@ -35,6 +35,17 @@ te::se::ParameterValue::Parameter::Parameter()
 {
 }
 
+te::se::ParameterValue::Parameter::Parameter(const te::se::ParameterValue::Parameter& rhs)
+  : m_mixedData(0),
+    m_expression(0)
+{
+  if(rhs.m_mixedData)
+    m_mixedData = new std::string(*rhs.m_mixedData);
+  
+  //if(rhs.m_expression)
+    // m_expression = rhs.m_expression->clone();
+}
+
 te::se::ParameterValue::Parameter::~Parameter()
 {
   delete m_mixedData;
@@ -48,6 +59,12 @@ te::se::ParameterValue::ParameterValue()
 te::se::ParameterValue::ParameterValue(const std::string& value)
 {
   add(value);
+}
+
+te::se::ParameterValue::ParameterValue(const ParameterValue& rhs)
+{
+  for(std::size_t i = 0; i < rhs.m_parameters.size(); ++i)
+    add(new te::se::ParameterValue::Parameter(*rhs.m_parameters[i]));
 }
 
 te::se::ParameterValue::~ParameterValue()
@@ -76,4 +93,9 @@ const te::se::ParameterValue::Parameter* te::se::ParameterValue::getParameter(si
 {
   assert(i < m_parameters.size());
   return m_parameters[i];
+}
+
+te::se::ParameterValue* te::se::ParameterValue::clone() const
+{
+  return new ParameterValue(*this);
 }

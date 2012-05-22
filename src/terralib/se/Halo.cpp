@@ -61,3 +61,16 @@ const te::se::Fill* te::se::Halo::getFill() const
 {
   return m_fill;
 }
+
+te::se::Halo* te::se::Halo::clone() const
+{
+  Halo* halo = new Halo;
+
+  if(m_radius)
+    halo->setRadius(m_radius->clone());
+
+  if(m_fill)
+    halo->setFill(m_fill->clone());
+
+  return halo;
+}

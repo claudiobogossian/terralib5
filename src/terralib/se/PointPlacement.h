@@ -94,10 +94,15 @@ namespace te
         //@{
 
         void setAnchorPoint(AnchorPoint* a);
+
         void setDisplacement(Displacement* d);
+
         void setRotation(ParameterValue* r);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        PointPlacement* clone() const;
 
       private:
 

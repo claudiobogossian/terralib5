@@ -77,3 +77,22 @@ void te::se::LinePlacement::setGeneralizeLine(bool g)
   m_generalizeLine = g;
 }
 
+te::se::LinePlacement* te::se::LinePlacement::clone() const
+{
+  LinePlacement* lp = new LinePlacement;
+
+  lp->setIsRepeated(m_isRepeated);
+  lp->setIsAligned(m_isAligned);
+  lp->setGeneralizeLine(m_generalizeLine);
+
+  if(m_perpendicularOffset)
+    lp->setPerpendicularOffset(m_perpendicularOffset->clone());
+
+  if(m_gap)
+    lp->setGap(m_gap->clone());
+
+  if(m_initialGap)
+    lp->setInitialGap(m_initialGap->clone());
+
+  return lp;
+}

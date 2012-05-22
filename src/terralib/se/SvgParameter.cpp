@@ -38,6 +38,12 @@ te::se::SvgParameter::SvgParameter(const std::string& name, const std::string& v
 {
 }
 
+te::se::SvgParameter::SvgParameter(const SvgParameter& rhs)
+  : te::se::ParameterValue(rhs),
+    m_name(rhs.m_name)
+{
+}
+
 te::se::SvgParameter::~SvgParameter()
 {
 }
@@ -50,4 +56,9 @@ void te::se::SvgParameter::setName(const std::string& name)
 std::string te::se::SvgParameter::getName() const
 {
   return m_name;
+}
+
+te::se::SvgParameter* te::se::SvgParameter::clone() const
+{
+  return new SvgParameter(*this);
 }

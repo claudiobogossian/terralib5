@@ -84,12 +84,17 @@ namespace te
         //@{
 
         void setRadius(ParameterValue* radius);
+
         const ParameterValue* getRadius() const;
 
         void setFill(Fill* fill);
+
         const Fill* getFill() const;
-        
+
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Halo* clone() const;
 
       private:
 

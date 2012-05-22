@@ -66,6 +66,13 @@ namespace te
         */
         SvgParameter(const std::string& name, const std::string& value);
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other svg parameter.
+        */
+        SvgParameter(const SvgParameter& rhs);
+
         /*! \brief Destructor. */
         ~SvgParameter();
 
@@ -81,6 +88,9 @@ namespace te
         std::string getName() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        SvgParameter* clone() const;
 
       private:
 

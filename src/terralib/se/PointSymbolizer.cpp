@@ -34,6 +34,16 @@ te::se::PointSymbolizer::PointSymbolizer()
 {
 }
 
+te::se::PointSymbolizer::PointSymbolizer(const te::se::PointSymbolizer& rhs)
+  : te::se::Symbolizer(rhs)
+{
+  if(rhs.m_geometry)
+    m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());
+
+  if(rhs.m_graphic)
+    m_graphic = rhs.m_graphic->clone();
+}
+
 te::se::PointSymbolizer::~PointSymbolizer()
 {
   delete m_geometry;
@@ -62,3 +72,7 @@ const te::se::Graphic* te::se::PointSymbolizer::getGraphic() const
   return m_graphic;
 }
 
+te::se::Symbolizer* te::se::PointSymbolizer::clone() const
+{
+  return new PointSymbolizer(*this);
+}

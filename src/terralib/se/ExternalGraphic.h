@@ -113,6 +113,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        ExternalGraphic* clone() const;
+
       private:
 
         te::xl::SimpleLink* m_onlineResource;     //!< The URL of the external graphic. (Mandatory if m_inlineContent is absent)

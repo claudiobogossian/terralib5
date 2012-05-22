@@ -53,3 +53,12 @@ const std::string& te::se::Description::getAbstract() const
 {
   return m_abstract;
 }
+
+te::se::Description* te::se::Description::clone() const
+{
+  Description* d = new Description;
+  d->setTitle(m_title);
+  d->setAbstract(m_abstract);
+
+  return d;
+}

@@ -40,6 +40,25 @@ te::se::PolygonSymbolizer::PolygonSymbolizer()
 {
 }
 
+te::se::PolygonSymbolizer::PolygonSymbolizer(const te::se::PolygonSymbolizer& rhs)
+  : te::se::Symbolizer(rhs)
+{
+  if(rhs.m_geometry)
+    m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());
+
+  if(rhs.m_fill)
+    m_fill = rhs.m_fill->clone();
+
+  if(rhs.m_stroke)
+    m_stroke = rhs.m_stroke->clone();
+
+  if(rhs.m_displacement)
+    m_displacement = rhs.m_displacement->clone();
+
+  if(rhs.m_perpendicularOffset)
+    m_perpendicularOffset = rhs.m_perpendicularOffset->clone();
+}
+
 te::se::PolygonSymbolizer::~PolygonSymbolizer()
 {
   delete m_geometry;
@@ -104,3 +123,7 @@ const te::se::ParameterValue* te::se::PolygonSymbolizer::getPerpendicularOffset(
   return m_perpendicularOffset;
 }
 
+te::se::Symbolizer* te::se::PolygonSymbolizer::clone() const
+{
+  return new PolygonSymbolizer(*this);
+}

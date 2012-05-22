@@ -36,6 +36,19 @@ te::se::LineSymbolizer::LineSymbolizer()
 {
 }
 
+te::se::LineSymbolizer::LineSymbolizer(const te::se::LineSymbolizer& rhs)
+  : te::se::Symbolizer(rhs)
+{
+  if(rhs.m_geometry)
+    m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());
+
+  if(rhs.m_stroke)
+    m_stroke = rhs.m_stroke->clone();
+
+  if(rhs.m_perpendicularOffset)
+    m_perpendicularOffset = rhs.m_perpendicularOffset->clone();
+}
+
 te::se::LineSymbolizer::~LineSymbolizer()
 {
   delete m_geometry;
@@ -76,3 +89,7 @@ const te::se::ParameterValue* te::se::LineSymbolizer::getPerpendicularOffset() c
   return m_perpendicularOffset;
 }
 
+te::se::Symbolizer* te::se::LineSymbolizer::clone() const
+{
+  return new LineSymbolizer(*this);
+}
