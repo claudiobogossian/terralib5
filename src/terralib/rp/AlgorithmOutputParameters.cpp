@@ -18,38 +18,28 @@
  */
 
 /*!
-  \file terralib/rp/AlgorithmParameters.h
-  \brief Raster Processing algorithm parameters base interface.
- */
+  \file terralib/rp/AlgorithmOutputParameters.cpp
+  \brief Raster Processing algorithm output parameters base interface.
+*/
 
-#ifndef __TERRALIB_RP_INTERNAL_ALGORITHM_PARAMETERS_H
-#define __TERRALIB_RP_INTERNAL_ALGORITHM_PARAMETERS_H
-
-#include "../common/AbstractParameters.h"
-#include "Config.h"
+#include "AlgorithmOutputParameters.h"
 
 namespace te
 {
   namespace rp
   {
-    /*!
-      \class AlgorithmParameters
-      \brief Raster Processing algorithm parameters base interface.
-    */
-    class TERPEXPORT AlgorithmParameters : public te::common::AbstractParameters
+    AlgorithmOutputParameters::AlgorithmOutputParameters()
     {
-      public:
-        
-        virtual ~AlgorithmParameters();
-        
-      protected:
-
-        AlgorithmParameters();
-        
-        AlgorithmParameters( const AlgorithmParameters& );
-    };
+    }
+    
+    AlgorithmOutputParameters::~AlgorithmOutputParameters()
+    {
+    }
+    
+    AlgorithmOutputParameters::AlgorithmOutputParameters( const AlgorithmOutputParameters& )
+    {
+    }
+    
   } // end namespace rp
-}   // end namespace te
-
-#endif  // __TERRALIB_RP_INTERNAL_ALGORITHM_PARAMETERS_H
+}   // end namespace te    
 

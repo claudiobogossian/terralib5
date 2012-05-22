@@ -26,12 +26,12 @@
 #define __TERRALIB_RP_INTERNAL_CONTRAST_H
 
 #include "Algorithm.h"
-#include "AlgorithmParameters.h"
 
 #include <boost/shared_ptr.hpp>
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace te
 {
@@ -48,9 +48,6 @@ namespace te
 
   namespace rp
   {
-    // Forward declarations
-    class RasterHandler;
-
     /*!
       \class Contrast
       \brief Contrast enhancement.
@@ -65,7 +62,7 @@ namespace te
           \class InputParameters
           \brief Contrast input parameters
          */        
-        class TERPEXPORT InputParameters : public AlgorithmParameters
+        class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
             
@@ -117,21 +114,21 @@ namespace te
           created inside the given data source pointed by m_outDataSourcePtr 
           (in this case the data set name must be supplied - m_outDataSetName ).
          */        
-        class TERPEXPORT OutputParameters : public AlgorithmParameters
+        class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
         {
           public:
             
-            te::rst::Raster* m_outRasterPtr; //!< A pointer to a valid (initialized ) output raster instance.
+            mutable std::auto_ptr< te::rst::Raster > m_outRasterPtr; //!< A pointer to a valid (initialized ) output raster instance or an empty pointer.
             
             std::vector< unsigned int > m_outRasterBands; //!< Bands to be processed from the output raster.
             
-            te::da::DataSource* m_outDataSourcePtr; //!< The data source where the output raster will be stored.
+            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
             
-            std::string m_outDataSetName; //!< The data set name related to the output raster.
-            
-            boost::shared_ptr< RasterHandler > m_outRasterHandlerPtr; //!< A handler for the generated output raster.
+            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory). 
           
             OutputParameters();
+            
+            OutputParameters( const OutputParameters& );
             
             ~OutputParameters();
             
@@ -150,14 +147,15 @@ namespace te
         ~Contrast();
        
         //overload
-        bool execute() throw( te::rp::Exception );
+        bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
         
         //overload
         void reset() throw( te::rp::Exception );
         
         //overload
-        bool initialize( const AlgorithmParameters& inputParams,
-          AlgorithmParameters& outputParams ) throw( te::rp::Exception );
+        bool initialize( const AlgorithmInputParameters& inputParams ) throw( te::rp::Exception );
+        
+        bool isInitialized() const;
 
       protected:
         
@@ -168,7 +166,9 @@ namespace te
           double& outValue );
 
         Contrast::InputParameters m_inputParameters; //!< Contrast input execution parameters.
-        Contrast::OutputParameters m_outputParameters; //!< Contrast output execution parameters.
+        Contrast::OutputParameters* m_outputParametersPtr; //!< Contrast input execution parameters.
+        
+        bool m_isInitialized; //!< Tells if this instance is initialized.
 
         /*!
           \brief Execute a linear contrast following the internal parameters

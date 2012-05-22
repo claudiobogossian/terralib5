@@ -35,16 +35,15 @@
 #include "SegmenterSegmentsBlock.h"
 #include "SegmenterIdsManager.h"
 #include "Algorithm.h"
-#include "AlgorithmParameters.h"
 #include "Matrix.h"
 #include "Config.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
+//#include <boost/thread/thread.hpp>
+//#include <boost/thread/mutex.hpp>
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace te
 {
@@ -86,13 +85,13 @@ namespace te
           \class InputParameters
           \brief Segmenter Input Parameters
          */        
-        class TERPEXPORT InputParameters : public AlgorithmParameters
+        class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
             
-            te::rst::Raster* m_inRasterPtr; //!< Input raster.
+            te::rst::Raster* m_inputRasterPtr; //!< Input raster.
             
-            std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
+            std::vector< unsigned int > m_inputRasterBands; //!< Bands to be processed from the input raster.
             
             bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:false).
             
@@ -107,6 +106,8 @@ namespace te
             std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
             
             InputParameters();
+            
+            InputParameters( const InputParameters& other );
             
             ~InputParameters();
             
@@ -146,21 +147,19 @@ namespace te
           \class OutputParameters
           \brief Segmenter Output Parameters
          */        
-        class TERPEXPORT OutputParameters : public AlgorithmParameters
+        class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
         {
           public:
             
-            te::rst::Raster* m_outRasterPtr; //!< Output raster (generated label image).
+            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
             
-            unsigned int m_outRasterBand; //!< Band where the data will be written to the output raster (generated label image).
+            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory). 
             
-            te::da::DataSource* m_outDataSourcePtr; //!< The data source where the output raster (generated label image) will be stored.
-            
-            std::string m_outDataSetName; //!< The data set name related to the output raster (generated label image).
-            
-            boost::shared_ptr< RasterHandler > m_outRasterHandlerPtr; //!< A handler for the generated output raster (generated label image).
+            mutable std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< A pointer the ge generated output raster (label image).
             
             OutputParameters();
+            
+            OutputParameters( const OutputParameters& other );
             
             ~OutputParameters();
             
@@ -179,14 +178,16 @@ namespace te
         ~Segmenter();
        
         //overload
-        bool execute() throw( te::rp::Exception );          
+        bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );          
         
         //overload
         void reset() throw( te::rp::Exception );        
         
         //overload
-        bool initialize( const AlgorithmParameters& inputParams,
-          AlgorithmParameters& outputParams ) throw( te::rp::Exception );
+        bool initialize( const AlgorithmInputParameters& inputParams ) 
+          throw( te::rp::Exception );
+          
+        bool isInitialized() const;
           
       protected :
         
@@ -240,7 +241,6 @@ namespace te
         bool m_instanceInitialized; //"< Is this instance already initialized ?
         
         Segmenter::InputParameters m_inputParameters; //!< Segmenter execution parameters.
-        Segmenter::OutputParameters m_outputParameters; //!< Segmenter execution parameters.
         
         /*! 
           \brief Calc the best sub-image block size for each thread to
