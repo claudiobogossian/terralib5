@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../maptools/AbstractMarkFactory.h"
 #include "../../../se/Mark.h"
 #include "../Utils.h"
@@ -161,10 +162,7 @@ void te::qt::widgets::MarkWidget::updateMarkIcons()
 
     delete img;
 
-    // TODO: Move to common! FreeArray(T** a, std::size_t dim)
-    for(std::size_t i = 0; i != size; ++i)
-      delete [] (rgba[i]);
-    delete [] rgba;
+    te::common::Free(rgba, size);
 
     delete temporaryMark;
   }
