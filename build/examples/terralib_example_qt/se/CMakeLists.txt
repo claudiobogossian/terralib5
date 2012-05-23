@@ -1,18 +1,18 @@
-# This script builds the widgets example
+# This script builds the symbology Qt widgets example
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
-set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")  # the terralib root directory (change it if it is in another directory)
-set(SRCDIR ${ROOT}/examples/widgets)              # directory where the source files of the widgets example are located
-set(INCLDIR ${SRCDIR})                            # directory where the header files of the widgets example are located
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../Modules")
+set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")  # the terralib root directory (change it if it is in another directory)
+set(SRCDIR ${ROOT}/examples/qt/se)                   # directory where the source files of the symbology Qt widgets example are located
+set(INCLDIR ${SRCDIR})                               # directory where the header files of the symbology Qt widgets example are located
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules")
 
 # Set the project name
-set(PROJ_NAME "terralib_example_widgets")
-project(${PROJ_NAME})         # the project name is terralib_example_widgets
-SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_widgets
+set(PROJ_NAME "terralib_example_qt_symbology")
+project(${PROJ_NAME})         # the project name is terralib_example_qt_symbology
+SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_symbology
 
 if(WIN32)
 	if(MSVC)
@@ -33,7 +33,7 @@ if(QT4_FOUND)
 	set(QT_LIBRARY ${QT_LIBRARY} ${QT_QTMAIN_LIBRARY})
 	set(QT_LIBRARY ${QT_LIBRARY} ${QT_QTCORE_LIBRARY})
 	set(QT_LIBRARY ${QT_LIBRARY} ${QT_QTGUI_LIBRARY})
-	set(DEP_LIBS   ${DEP_LIBS} ${QT_LIBRARY})	
+	set(DEP_LIBS   ${DEP_LIBS}   ${QT_LIBRARY})	
 endif(QT4_FOUND)
 
 find_package(Boost 1.44 REQUIRED)
@@ -115,53 +115,3 @@ add_executable(${PROJ_NAME} ${SRCS} ${HDRS})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
-
-############### Get the data used for testing the example ###############
-
-# Set the directory where the executable of
-# this example is generated (EXEC_DIR)
-if(WIN32)
-  set(EXEC_DIR "${ROOT}/bin32/msvc2010")
-else(WIN32)
-  set(EXEC_DIR "${ROOT}/bin32")
-endif(WIN32)
-
-# Check if there is data in the EXEC_DIR
-set(EXEC_DIR_DATA_EXISTS FALSE)
-if(EXISTS ${EXEC_DIR}/data)
-  set(EXEC_DIR_DATA_EXISTS TRUE)
-endif(EXISTS ${EXEC_DIR}/data)
-
-# Check if there is data in the current
-# build directory (CURRENT_BINARY_DIR)
-set(BUILD_DIR_DATA_EXISTS FALSE)
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-  set(BUILD_DIR_DATA_EXISTS TRUE)
-endif(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-
-if(EXEC_DIR_DATA_EXISTS)
-  if(NOT BUILD_DIR_DATA_EXISTS)
-    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/data")
-    file(COPY "${EXEC_DIR}/data/"
-         DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/data")
-  endif(NOT BUILD_DIR_DATA_EXISTS)
-else(EXEC_DIR_DATA_EXISTS)
-  if(BUILD_DIR_DATA_EXISTS)
-    file(MAKE_DIRECTORY "${EXEC_DIR}/data")
-    file(COPY "${CMAKE_CURRENT_BINARY_DIR}/data/"
-         DESTINATION "${EXEC_DIR}/data")
-  else(BUILD_DIR_DATA_EXISTS)
-    file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.tar.gz"  ${CMAKE_CURRENT_BINARY_DIR}/data.tar.gz)
-                    
-    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.tar.gz
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-                    
-    file(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/data.tar.gz)
-
-    # Copy the data into the EXEC_DIR
-    file(MAKE_DIRECTORY "${EXEC_DIR}/data")
-    file(COPY "${CMAKE_CURRENT_BINARY_DIR}/data/"
-         DESTINATION "${EXEC_DIR}/data")    
-  endif(BUILD_DIR_DATA_EXISTS) 
-endif(EXEC_DIR_DATA_EXISTS)
-            

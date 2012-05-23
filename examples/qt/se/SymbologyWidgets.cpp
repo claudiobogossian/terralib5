@@ -1,4 +1,4 @@
-#include "WidgetsExamples.h"
+#include "SymbologyWidgets.h"
 
 // TerraLib
 #include <terralib/se.h>

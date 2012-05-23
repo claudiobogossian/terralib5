@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file WidgetsExamples.h
+  \file SymbologyWidgets.h
 
   \brief Several examples declarations.
 */
 
-#ifndef __TERRALIB_EXAMPLES_WIDGETS_INTERNAL_WIDGETSEXAMPLES_H
-#define __TERRALIB_EXAMPLES_WIDGETS_INTERNAL_WIDGETSEXAMPLES_H
+#ifndef __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
+#define __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
 
 /*! \brief It shows a set of widgets related with Symbology Encondig. */
 void SymbologyWidgets();
 
-#endif  // __TERRALIB_EXAMPLES_WIDGETS_INTERNAL_WIDGETSEXAMPLES_H
+#endif  // __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H

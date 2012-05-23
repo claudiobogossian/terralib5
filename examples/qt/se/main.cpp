@@ -25,7 +25,7 @@
 
 // TerraLib
 #include <terralib/common.h>
-#include "WidgetsExamples.h"
+#include "SymbologyWidgets.h"
 
 // STL
 #include <exception>
