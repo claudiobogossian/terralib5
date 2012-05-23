@@ -74,7 +74,7 @@ namespace te
 
         public:
 
-          void setMark(te::se::Mark* mark);
+          void setMark(const te::se::Mark* mark);
 
           te::se::Mark* getMark() const;
 
