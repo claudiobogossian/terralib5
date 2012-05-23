@@ -126,7 +126,7 @@ te::se::Mark* te::se::Mark::clone() const
     mark->setOnlineResource(new te::xl::SimpleLink(*m_onlineResource));
 
   if(m_inlineContent)
-    mark->setInlineContent(new te::se::InlineContent(*m_inlineContent));
+    mark->setInlineContent(m_inlineContent->clone());
 
   if(m_format)
     mark->setFormat(new std::string(*m_format));
