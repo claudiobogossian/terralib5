@@ -70,6 +70,8 @@ namespace te
 
         public:
 
+          static te::se::Stroke* getStroke(const te::se::Stroke* initialStroke, QWidget* parent = 0, const QString& title = "");
+
           te::se::Stroke* getStroke() const;
 
         private:
