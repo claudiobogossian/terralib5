@@ -277,6 +277,9 @@ void te::qt::widgets::BasicStrokeWidget::onStrokeWidthDoubleSpinBoxValueChanged(
 
 void te::qt::widgets::BasicStrokeWidget::onStrokeDashComboBoxCurrentIndexChanged(int index)
 {
+  if(index == -1)
+    return;
+
   std::string pattern = m_dashes[index];
   m_stroke->setDashArray(pattern);
   emit strokeChanged();

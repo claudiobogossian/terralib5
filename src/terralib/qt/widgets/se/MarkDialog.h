@@ -72,6 +72,8 @@ namespace te
 
         public:
 
+          static te::se::Mark* getMark(const te::se::Mark* initialMark, QWidget* parent = 0, const QString& title = "");
+
           te::se::Mark* getMark() const;
 
         private:
