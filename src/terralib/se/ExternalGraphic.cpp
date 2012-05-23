@@ -76,7 +76,7 @@ te::se::ExternalGraphic* te::se::ExternalGraphic::clone() const
     externalGraphic->setOnlineResource(new te::xl::SimpleLink(*m_onlineResource));
 
   if(m_inlineContent)
-    externalGraphic->setInlineContent(new te::se::InlineContent(*m_inlineContent));
+    externalGraphic->setInlineContent(m_inlineContent->clone());
 
   // TODO: std::vector<Recode*>
 
