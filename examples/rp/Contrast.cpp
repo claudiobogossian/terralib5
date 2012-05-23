@@ -38,14 +38,6 @@ void Contrast()
       std::map<std::string, std::string> orinfo;
       orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_linear_contrast.tif";
 
-      te::rst::Grid* ogrid = new te::rst::Grid(*rin->getGrid());
-
-      std::vector<te::rst::BandProperty*> obands;
-      for (unsigned b = 0; b < rin->getNumberOfBands(); b++)
-        obands.push_back(new te::rst::BandProperty(b, rin->getBandDataType(b), "band with linear contrast"));
-
-      te::rst::Raster* rout = te::rst::RasterFactory::make(ogrid, obands, orinfo);
-
 // create contrast algorithm parameters
       te::rp::Contrast::InputParameters contInputParameters;
       te::rp::Contrast::OutputParameters contOutputParameters;
@@ -57,22 +49,20 @@ void Contrast()
       for (unsigned b = 0; b < rin->getNumberOfBands(); b++)
       {
         contInputParameters.m_inRasterBands.push_back(b);
-        contOutputParameters.m_outRasterBands.push_back(b);
       }
-      contOutputParameters.m_outRasterPtr = rout;
+      contOutputParameters.m_rInfo = orinfo;
+      contOutputParameters.m_rType = "GDAL";
 
 // execute the algorithm
       te::rp::Contrast continstance;
 
-      initok = continstance.initialize(contInputParameters, contOutputParameters );
+      initok = continstance.initialize(contInputParameters );
 
       if (initok)
-        executeok = continstance.execute();
+        executeok = continstance.execute( contOutputParameters );
 
       if (!executeok)
         std::cout << "Problems in linear contrast." << std::endl;
-
-      delete rout;
     }
 
     // clean up

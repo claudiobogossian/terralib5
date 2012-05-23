@@ -148,13 +148,13 @@ namespace te
       
       // Initializing the output raster
       
-      Contrast::OutputParameters* outputParamsPtr = dynamic_cast< 
+      m_outputParametersPtr = dynamic_cast< 
         Contrast::OutputParameters* >( &outputParams );          
-      TERP_TRUE_OR_RETURN_FALSE( outputParamsPtr, "Invalid parameters" );      
+      TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr, "Invalid parameters" );      
       
-      if( outputParamsPtr->m_outRasterPtr.get() == 0 )
+      if( m_outputParametersPtr->m_outRasterPtr.get() == 0 )
       {
-        outputParamsPtr->m_outRasterBands.clear();
+        m_outputParametersPtr->m_outRasterBands.clear();
 
         std::vector< te::rst::BandProperty* > bandsProperties;
         for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
@@ -168,34 +168,34 @@ namespace te
             m_inputParameters.m_inRasterBands[ 
             inRasterBandsIdx ] )->getProperty() ) ) );  
 
-          outputParamsPtr->m_outRasterBands.push_back( inRasterBandsIdx );
+          m_outputParametersPtr->m_outRasterBands.push_back( inRasterBandsIdx );
         }
         
-        outputParamsPtr->m_outRasterPtr.reset( 
+        m_outputParametersPtr->m_outRasterPtr.reset( 
           te::rst::RasterFactory::make(
-            outputParamsPtr->m_rType, 
+            m_outputParametersPtr->m_rType, 
             new te::rst::Grid( *( m_inputParameters.m_inRasterPtr->getGrid() ) ),
             bandsProperties,
-            outputParamsPtr->m_rInfo,
+            m_outputParametersPtr->m_rInfo,
             0,
             0 ) );
-        TERP_TRUE_OR_RETURN_FALSE( outputParamsPtr->m_outRasterPtr.get(),
+        TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr->m_outRasterPtr.get(),
           "Output raster creation error" );
       }
       else
       {
-        if( ( outputParamsPtr->m_outRasterPtr->getAccessPolicy() & te::common::WAccess )
-          && ( outputParamsPtr->m_outRasterPtr->getNumberOfColumns() ==
+        if( ( m_outputParametersPtr->m_outRasterPtr->getAccessPolicy() & te::common::WAccess )
+          && ( m_outputParametersPtr->m_outRasterPtr->getNumberOfColumns() ==
           m_inputParameters.m_inRasterPtr->getNumberOfColumns() )
-          && ( outputParamsPtr->m_outRasterPtr->getNumberOfRows() ==
+          && ( m_outputParametersPtr->m_outRasterPtr->getNumberOfRows() ==
           m_inputParameters.m_inRasterPtr->getNumberOfRows() ) )
         {
           for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
             m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
           {
             TERP_TRUE_OR_RETURN_FALSE( 
-              outputParamsPtr->m_outRasterBands[ inRasterBandsIdx ] <
-              outputParamsPtr->m_outRasterPtr->getNumberOfBands(),
+              m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] <
+              m_outputParametersPtr->m_outRasterPtr->getNumberOfBands(),
               "Invalid output raster band" )
           }
         }
