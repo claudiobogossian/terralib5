@@ -52,7 +52,6 @@ te::qt::widgets::MarkWidget::MarkWidget(QWidget* parent, Qt::WindowFlags f)
 
   // Adjusting...
   QGridLayout* fillLayout = new QGridLayout(m_ui->m_fillGroupBox);
-  fillLayout->setContentsMargins(0, 0, 0, 0);
   fillLayout->addWidget(m_fillWidget);
 
   // Stroke Widget
@@ -60,7 +59,6 @@ te::qt::widgets::MarkWidget::MarkWidget(QWidget* parent, Qt::WindowFlags f)
 
   // Adjusting...
   QGridLayout* strokeLayout = new QGridLayout(m_ui->m_strokeGroupBox);
-  strokeLayout->setContentsMargins(0, 0, 0, 0);
   strokeLayout->addWidget(m_strokeWidget);
 
   // Mark Contents
@@ -91,7 +89,7 @@ te::qt::widgets::MarkWidget::MarkWidget(QWidget* parent, Qt::WindowFlags f)
   // Adjusting...
   QGridLayout* contentsLayout = new QGridLayout(m_ui->m_markTypeGroupBox);
   contentsLayout->addWidget(m_contentsMarkWidget);
-  m_ui->m_markTypeGroupBox->setMinimumWidth(128);
+  m_ui->m_markTypeGroupBox->setMaximumWidth(128);
 
   // Signals & slots
   connect(m_contentsMarkWidget, SIGNAL(currentTextChanged(const QString&)), this, SLOT(onMarkTypeChanged(const QString&)));
