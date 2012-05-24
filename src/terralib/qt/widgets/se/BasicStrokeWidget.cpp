@@ -105,7 +105,7 @@ void te::qt::widgets::BasicStrokeWidget::initialize()
 
   // Controlling Cap Style Buttons
   m_strokeCapStyleButtonGroup = new QButtonGroup(this);
-  m_strokeCapStyleButtonGroup->addButton(m_ui->m_buttCapPushButton, te::map::ButtCap);
+  m_strokeCapStyleButtonGroup->addButton(m_ui->m_buttCapPushButton, te::map::FlatCap);
   m_strokeCapStyleButtonGroup->addButton(m_ui->m_roundCapPushButton, te::map::RoundCap);
   m_strokeCapStyleButtonGroup->addButton(m_ui->m_squareCapPushButton, te::map::SquareCap);
 
@@ -309,7 +309,7 @@ void te::qt::widgets::BasicStrokeWidget::onStrokeCapStyleChanged(int style)
 {
   switch(style)
   {
-    case te::map::ButtCap:
+    case te::map::FlatCap:
       m_stroke->setLineCap(TE_SE_BUTT_CAP);
     break;
 

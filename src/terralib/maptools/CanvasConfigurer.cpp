@@ -55,7 +55,7 @@ te::map::CanvasConfigurer::CanvasConfigurer(te::map::Canvas* canvas)
   : m_canvas(canvas)
 {
   // LineCapMap
-  sm_lineCapMap[TE_SE_BUTT_CAP  ] = te::map::ButtCap;
+  sm_lineCapMap[TE_SE_BUTT_CAP  ] = te::map::FlatCap;
   sm_lineCapMap[TE_SE_ROUND_CAP ] = te::map::RoundCap;
   sm_lineCapMap[TE_SE_SQUARE_CAP] = te::map::SquareCap;
 

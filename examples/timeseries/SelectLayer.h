@@ -29,6 +29,7 @@ public:
   QComboBox* m_dataSourceTypeComboBox;
   QLineEdit* m_connectionStringLineEdit;
   QComboBox* m_layerNameComboBox;
+  QLineEdit* m_titleNameLineEdit;
   QPushButton* m_okPushButton;
   QPushButton* m_cancelPushButton;
 };

@@ -234,14 +234,16 @@ QStringList te::qt::widgets::LayerExplorerModel::mimeTypes() const
 
 QMimeData* te::qt::widgets::LayerExplorerModel::mimeData(const QModelIndexList& indexes) const
 {
-  QMimeData *mimeData = new QMimeData();
-  QByteArray encodedData;
-
-  QDataStream stream(&encodedData, QIODevice::WriteOnly);
-
+  QString s;
   m_dragIndex = indexes[0];
 
+  QMimeData *mimeData = new QMimeData();
+  te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(indexes[0].internalPointer());
+  te::map::AbstractLayer* al = item->getRefLayer();
+  s.setNum((qulonglong)al);
+  QByteArray encodedData(s.toStdString().c_str());
   mimeData->setData("application/layer-explorer", encodedData);
+
   return mimeData;
 }
 

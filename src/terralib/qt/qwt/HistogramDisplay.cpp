@@ -46,6 +46,7 @@ te::qt::qwt::HistogramDisplay::HistogramDisplay(int col, te::map::DataGridOperat
   if(dataSet == 0)
     return;
 
+  m_yCol = -1;
   m_xStringScaleDraw = new te::qt::qwt::StringScaleDraw();
 
   m_xCol = col;
@@ -362,35 +363,39 @@ bool te::qt::qwt::HistogramDisplay::createHistograms()
     }
   }
 
-  te::color::RGBAColor cor(100, 100, 100, 255);
-  QColor qcor(cor.getRed(), cor.getGreen(), cor.getBlue());
+  QColor qcor(m_color.getRed(), m_color.getGreen(), m_color.getBlue());
   if(m_allHistogram == 0)
     m_allHistogram = new Histogram(qcor, "All");
   m_allHistogram->setValues(m_allValues, m_xType, m_xTimeType, m_XMIN, m_barInterval);
+  m_allHistogram->setColor(qcor);
 
-  cor = m_op->getDeselectedColor();
+  te::color::RGBAColor cor = m_op->getDefaultColor();
   qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue());
   if(m_deselectedHistogram == 0)
     m_deselectedHistogram = new Histogram(qcor, "Deselected");
   m_deselectedHistogram->setValues(deselectedValues, m_xType, m_xTimeType, m_XMIN, m_barInterval);
+  m_deselectedHistogram->setColor(qcor);
 
   cor = m_op->getPointedColor();
   qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue());
   if(m_pointedHistogram == 0)
     m_pointedHistogram = new Histogram(qcor, "Pointed");
   m_pointedHistogram->setValues(pointedValues, m_xType, m_xTimeType, m_XMIN, m_barInterval);
+  m_pointedHistogram->setColor(qcor);
 
   cor = m_op->getQueriedColor();
   qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue());
   if(m_queriedHistogram == 0)
     m_queriedHistogram = new Histogram(qcor, "Queried");
   m_queriedHistogram->setValues(queriedValues, m_xType, m_xTimeType, m_XMIN, m_barInterval);
+  m_queriedHistogram->setColor(qcor);
 
   cor = m_op->getPointedAndQueriedColor();
   qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue());
   if(m_pointedAndQueriedHistogram == 0)
     m_pointedAndQueriedHistogram = new Histogram(qcor, "Point/Query");
   m_pointedAndQueriedHistogram->setValues(pointedAndQueriedValues, m_xType, m_xTimeType, m_XMIN, m_barInterval);
+  m_pointedAndQueriedHistogram->setColor(qcor);
   return true;
 }
 
@@ -458,9 +463,9 @@ void te::qt::qwt::HistogramDisplay::legendMenuSlot(QPoint& p, QWidget* w)
     m_legendMenu->addAction(action);
     connect(action, SIGNAL(triggered()), this, SLOT(legendToBackSlot()));
 
-    action = new QAction("&Color...", m_legendMenu);
-    m_legendMenu->addAction(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(legendColorSlot()));
+    //action = new QAction("&Color...", m_legendMenu);
+    //m_legendMenu->addAction(action);
+    //connect(action, SIGNAL(triggered()), this, SLOT(legendColorSlot()));
   }
   m_legendMenu->exec(p);
 }
@@ -547,9 +552,9 @@ void te::qt::qwt::HistogramDisplay::legendColorSlot()
   Histogram* hitem = (Histogram*)m_legend->find(m_legendWidget);
   QString title = hitem->title().text();
   if(title == "All")
-    cor = m_op->getDeselectedColor();
+    cor = m_color;
   else if(title == "Deselected")
-    cor = m_op->getDeselectedColor();
+    cor = m_op->getDefaultColor();
   else if(title == "Pointed")
     cor = m_op->getPointedColor();
   else if(title == "Queried")
@@ -564,11 +569,11 @@ void te::qt::qwt::HistogramDisplay::legendColorSlot()
   {
     hitem->setColor(color);
 
-    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+    cor.setColor(color.red(), color.green(), color.blue(), 200);
     if(title == "All")
-      m_op->setDeselectedColor(cor);
+      m_color = cor;
     else if(title == "Deselected")
-      m_op->setDeselectedColor(cor);
+      m_op->setDefaultColor(cor);
     else if(title == "Pointed")
       m_op->setPointedColor(cor);
     else if(title == "Queried")

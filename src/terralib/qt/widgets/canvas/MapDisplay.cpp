@@ -31,7 +31,6 @@
 #include "../../../maptools.h"
 
 #include "MapDisplay.h"
-//#include "DistanceMeter.h"
 
 // Qt
 #include <QtGui/QResizeEvent>
@@ -44,7 +43,7 @@ te::qt::widgets::MapDisplay::MapDisplay(int w, int h, QWidget* parent, Qt::Windo
   : te::map::MapDisplay(),
     QWidget(parent, f),
     m_displayPixmap(0),
-    m_eventHandler(0),
+    m_backgroundColor(Qt::white),
     m_repaint(true),
     m_resize(false),
     m_hAlign(te::map::Center),
@@ -57,55 +56,22 @@ te::qt::widgets::MapDisplay::MapDisplay(int w, int h, QWidget* parent, Qt::Windo
   m_displayPixmap = new QPixmap(w, h);
 
   m_menu = new QMenu(this);
+
   m_srsAction = new QAction("&Set SRID", m_menu);
   m_menu->addAction(m_srsAction);
-  connect(m_srsAction, SIGNAL(triggered()), this, SLOT(setSRID()));
+  connect(m_srsAction, SIGNAL(triggered()), this, SLOT(setSRIDSlot()));
 
   m_fitAllLayersAction = new QAction("&Fit All Layers", m_menu);
   m_menu->addAction(m_fitAllLayersAction);
-  connect(m_fitAllLayersAction, SIGNAL(triggered()), this, SLOT(fitAllLayers()));
-
-  if(m_eventHandler)
-    m_zoomAndPan = new ZoomAndPan(m_eventHandler);
-  else
-    m_zoomAndPan = new ZoomAndPan(this);
-
-  connect(m_zoomAndPan, SIGNAL(execZoomArea(QRect)), this, SLOT(execZoomArea(QRect)));
-  connect(m_zoomAndPan, SIGNAL(execZoomIn(QPoint)), this, SLOT(execZoomIn(QPoint)));
-  connect(m_zoomAndPan, SIGNAL(execZoomOut(QPoint)), this, SLOT(execZoomOut(QPoint)));
-  connect(m_zoomAndPan, SIGNAL(execPan(QPoint, QPoint)), this, SLOT(execPan(QPoint, QPoint)));
-
-  //m_zoomAndPan->show();
-
-  //m_zoomAndPanShowAction = new QAction("&Zoom And Pan Enable", m_menu);
-  //m_menu->addAction(m_zoomAndPanShowAction);
-  //connect(m_zoomAndPanShowAction, SIGNAL(triggered()), this, SLOT(zoomAndPanShow()));
-
-  //m_zoomAndPanHideAction = new QAction("Zoom And Pan &Disable", m_menu);
-  //m_menu->addAction(m_zoomAndPanHideAction);
-  //connect(m_zoomAndPanHideAction, SIGNAL(triggered()), this, SLOT(zoomAndPanHide()));
-
-  //m_distanceShowAction = new QAction("Distance &Meter Enable", m_menu);
-  //m_menu->addAction(m_distanceShowAction);
-  //connect(m_distanceShowAction, SIGNAL(triggered()), this, SLOT(distanceMeterShow()));
-
-  //m_distanceHideAction = new QAction("Distance Meter D&isable", m_menu);
-  //m_menu->addAction(m_distanceHideAction);
-  //connect(m_distanceHideAction, SIGNAL(triggered()), this, SLOT(distanceMeterHide()));
-
+  connect(m_fitAllLayersAction, SIGNAL(triggered()), this, SLOT(fitAllLayersSlot()));
 }
 
 te::qt::widgets::MapDisplay::~MapDisplay()
 {
-  //delete m_extent;
   delete m_displayPixmap;
   te::common::FreeContents(m_layerCanvasMap);
   delete m_srsAction;
   delete m_fitAllLayersAction;
-  //delete m_zoomAndPanShowAction;
-  //delete m_zoomAndPanHideAction;
-  //delete m_distanceShowAction;
-  //delete m_distanceHideAction;
   delete m_menu;
 }
 
@@ -115,22 +81,13 @@ void te::qt::widgets::MapDisplay::setAlign(const te::map::AlignType& h, const te
   m_hAlign = h;
   m_vAlign = v;
   setExtent(m_envelope);
-
-  //std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
-
-  //for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
-  //{
-  //  te::qt::widgets::Canvas *c = it->second;
-  //  c->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
-  //  c->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
-  //}
+  draw();
 }
 
 void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
 {
   m_envelope = e;
   te::map::MapDisplay::setExtent(e);
-  m_layerDrawMap.clear();
 
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
 
@@ -142,7 +99,7 @@ void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
     c->clear();
   }
 
-  draw();
+//  draw();
 }
 
 void te::qt::widgets::MapDisplay::draw()
@@ -151,7 +108,7 @@ void te::qt::widgets::MapDisplay::draw()
   {
     if(m_displayPixmap)
     {
-      m_displayPixmap->fill();
+      m_displayPixmap->fill(m_backgroundColor);
 
       if(m_layerTree) // Use the tree if it exists, otherwise use the list of layers.
       {
@@ -176,9 +133,10 @@ void te::qt::widgets::MapDisplay::draw(std::list<te::map::AbstractLayer*>& layer
     QPainter painter(m_displayPixmap);
     std::list<te::map::AbstractLayer*>::iterator it;
  
-    if(m_extent == 0)
+    if(m_srid == -1 || m_extent == 0)
     {
-      m_extent = new te::gm::Envelope();
+      if(m_extent == 0)
+        m_extent = new te::gm::Envelope();
       for(it = layerList.begin(); it != layerList.end(); ++it)
       {
         te::gm::Envelope env = getLayerExtent(*it);
@@ -207,8 +165,6 @@ void te::qt::widgets::MapDisplay::draw(std::list<te::map::AbstractLayer*>& layer
       te::qt::widgets::Canvas *c = getCanvas(*it);
       if(c == 0)
       {
-        //c = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height());
-        //m_layerCanvasMap[*it] = c;
         setCanvas(*it);
         c = getCanvas(*it);
         c->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
@@ -231,25 +187,18 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* al)
 {
   try
   {
+    setWaitCursor();
     te::map::Layer* layer = (te::map::Layer*)al;
-    if(m_layerDrawMap.find(layer) == m_layerDrawMap.end())
-      m_layerDrawMap[layer] = true;
+    te::qt::widgets::Canvas* canvas = getCanvas(layer);
+    canvas->clear();
 
-    if(m_layerDrawMap[layer])
+    if(layer->getRenderer() == 0)
     {
-      setWaitCursor();
-      te::qt::widgets::Canvas* canvas = getCanvas(layer);
-      canvas->clear();
-
-      if(layer->getRenderer() == 0)
-      {
-        te::map::LayerRenderer* renderer = new te::map::LayerRenderer();
-        layer->setRenderer(renderer);
-      }
-      layer->draw(canvas, *m_extent, m_srid);
-      m_layerDrawMap[layer] = false;
-      unsetWaitCursor();
+      te::map::LayerRenderer* renderer = new te::map::LayerRenderer();
+      layer->setRenderer(renderer);
     }
+    layer->draw(canvas, *m_extent, m_srid);
+    unsetWaitCursor();
   }
   catch(te::common::Exception& e)
   {
@@ -319,7 +268,6 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
     return;
 
   double w, h, nw, nh, sw, sh;
-  QRect rec, wrec;
   QMatrix m;
   QPointF p1, p2;
   te::qt::widgets::Canvas *c = 0;
@@ -333,7 +281,7 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
       painter.drawPixmap(rec, *m_displayPixmap, rec);
     }
   }
-  else
+  else // fazendo resize do display
   {
     if(m_layerCanvasMap.begin() != m_layerCanvasMap.end())
       c = m_layerCanvasMap.begin()->second;
@@ -345,18 +293,21 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
 
     p1 = m.map(QPointF(m_envelope.getLowerLeftX(), m_envelope.getLowerLeftY()));
     p2 = m.map(QPointF(m_envelope.getUpperRightX(), m_envelope.getUpperRightY()));
-    wrec = QRect(QPoint(p1.x(), p2.y()), QPoint(p2.x(), p1.y()));
+    m_resizeWRec = QRect(QPoint(p1.x(), p2.y()), QPoint(p2.x(), p1.y()));
+    nw = m_resizeWRec.width();
+    nh = m_resizeWRec.height();
 
     QPainter painter(this);
-    rec = rect();
+    m_resizeRec = rect();
+    w = m_resizeRec.width();
+    h = m_resizeRec.height();
 
-    w = rec.width();
-    h = rec.height();
-    nw = wrec.width();
-    nh = wrec.height();
+    QPixmap pix(w, h);
+    pix.fill();
+    painter.drawPixmap(0, 0, pix);
 
-    sh = h/wrec.height();
-    sw = w/wrec.width();
+    sh = h/m_resizeWRec.height();
+    sw = w/m_resizeWRec.width();
     if(sw < sh)
     {
       nw *= sw;
@@ -370,25 +321,25 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
 
     if(m_hAlign == te::map::Center)
     {
-      rec.setLeft((w - nw) / 2);
-      rec.setRight(rec.left() + nw);
+      m_resizeRec.setLeft((w - nw) / 2);
+      m_resizeRec.setRight(m_resizeRec.left() + nw);
     }
     else if(m_hAlign == te::map::Left)
-      rec.setRight(nw);
+      m_resizeRec.setRight(nw);
     else if(m_hAlign == te::map::Right)
-      rec.setLeft(rec.width() - nw);
+      m_resizeRec.setLeft(m_resizeRec.width() - nw);
 
     if(m_vAlign == te::map::Center)
     {
-      rec.setTop((h - nh) / 2);
-      rec.setBottom(rec.top() + nh);
+      m_resizeRec.setTop((h - nh) / 2);
+      m_resizeRec.setBottom(m_resizeRec.top() + nh);
     }
     else if(m_vAlign == te::map::Top)
-      rec.setBottom(nh);
+      m_resizeRec.setBottom(nh);
     else if(m_vAlign == te::map::Bottom)
-      rec.setTop(rec.height() - nh);
+      m_resizeRec.setTop(m_resizeRec.height() - nh);
 
-    painter.drawPixmap(rec, *m_displayPixmap, wrec);
+    painter.drawPixmap(m_resizeRec, *m_displayPixmap, m_resizeWRec);
   }
 }
 
@@ -405,10 +356,10 @@ void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
   m_timer = new QTimer;
   m_timer->setSingleShot(true);
   m_timer->start(500);
-  connect(m_timer, SIGNAL(timeout()), this, SLOT(drawTimer()));
+  connect(m_timer, SIGNAL(timeout()), this, SLOT(drawTimerSlot()));
 }
 
-void te::qt::widgets::MapDisplay::drawTimer()
+void te::qt::widgets::MapDisplay::drawTimerSlot()
 {
   m_resize = false;
   if(m_displayPixmap)
@@ -434,35 +385,12 @@ void te::qt::widgets::MapDisplay::drawTimer()
   if(m_extent && env.contains(*m_extent))
     m_envelope = *m_extent;
 
-  m_layerDrawMap.clear();
   draw();
   emit sizeChanged(QSize(w, h));
 }
 
 void te::qt::widgets::MapDisplay::contextMenuEvent(QContextMenuEvent* c)
 {
-  //if(m_zoomAndPan)
-  //{
-  //  m_zoomAndPanShowAction->setEnabled(false);
-  //  m_zoomAndPanHideAction->setEnabled(true);
-  //}
-  //else
-  //{
-  //  m_zoomAndPanShowAction->setEnabled(true);
-  //  m_zoomAndPanHideAction->setEnabled(false);
-  //}
-
-  if(m_eventHandler)
-  {
-    //m_distanceShowAction->setEnabled(false);
-    //m_distanceHideAction->setEnabled(true);
-  }
-  else
-  {
-    //m_distanceShowAction->setEnabled(true);
-    //m_distanceHideAction->setEnabled(false);
-  }
-
   m_menu->exec(c->globalPos());
 }
 
@@ -521,8 +449,13 @@ te::gm::Envelope te::qt::widgets::MapDisplay::getAllExtent(std::list<te::map::Ab
       te::gm::Envelope env = getLayerExtent(*it);
 
       int srid = (*it)->getSRID();
-      if(srid > 0 && srid != m_srid)
-        env.transform(srid, m_srid);
+      if(srid > 0)
+      {
+        if(m_srid == -1)
+          m_srid = srid;
+        if(srid != m_srid)
+          env.transform(srid, m_srid);
+      }
 
       extent.Union(env);
     }
@@ -534,7 +467,7 @@ te::gm::Envelope te::qt::widgets::MapDisplay::getAllExtent(std::list<te::map::Ab
   }
 }
 
-void te::qt::widgets::MapDisplay::fitAllLayers()
+void te::qt::widgets::MapDisplay::fitAllLayersSlot()
 {
   try
   {
@@ -577,6 +510,7 @@ void te::qt::widgets::MapDisplay::fit(std::list<te::map::AbstractLayer*>& layerL
       m_extent->Union(env);
     }
     setExtent(*m_extent);
+    draw();
   }
   catch(te::common::Exception& e)
   {
@@ -584,200 +518,22 @@ void te::qt::widgets::MapDisplay::fit(std::list<te::map::AbstractLayer*>& layerL
   }
 }
 
-void te::qt::widgets::MapDisplay::zoomAndPanShow()
-{
-  //if(m_zoomAndPan == 0)
-  //{
-  //  if(m_eventHandler)
-  //    m_zoomAndPan = new ZoomAndPan(m_eventHandler);
-  //  else
-  //    m_zoomAndPan = new ZoomAndPan(this);
-
-  //  connect(m_zoomAndPan, SIGNAL(execZoomArea(QRect)), this, SLOT(execZoomArea(QRect)));
-  //  connect(m_zoomAndPan, SIGNAL(execZoomIn(QPoint)), this, SLOT(execZoomIn(QPoint)));
-  //  connect(m_zoomAndPan, SIGNAL(execZoomOut(QPoint)), this, SLOT(execZoomOut(QPoint)));
-  //  connect(m_zoomAndPan, SIGNAL(execPan(QPoint, QPoint)), this, SLOT(execPan(QPoint, QPoint)));
-  //}
-
-  //m_zoomAndPan->show();
-
-  //zoomAndPanHide();
-  //if(m_eventHandler)
-  //  m_zoomAndPan = new ZoomAndPan(m_eventHandler);
-  //else
-  //  m_zoomAndPan = new ZoomAndPan(this);
-
-  //connect(m_zoomAndPan, SIGNAL(execZoomArea(QRect)), this, SLOT(execZoomArea(QRect)));
-  //connect(m_zoomAndPan, SIGNAL(execZoomIn(QPoint)), this, SLOT(execZoomIn(QPoint)));
-  //connect(m_zoomAndPan, SIGNAL(execZoomOut(QPoint)), this, SLOT(execZoomOut(QPoint)));
-  //connect(m_zoomAndPan, SIGNAL(execPan(QPoint, QPoint)), this, SLOT(execPan(QPoint, QPoint)));
-
-  //m_zoomAndPan->show();
-}
-
-void te::qt::widgets::MapDisplay::zoomAndPanHide()
-{
-  //if(m_zoomAndPan)
-  //{
-  //  m_zoomAndPan->disconnect();
-  //  m_zoomAndPan->hide();
-  //  delete m_zoomAndPan;
-  //  m_zoomAndPan = 0;
-  //}
-}
-
-void te::qt::widgets::MapDisplay::execZoomArea(const QRect& rec)
-{
-  try
-  {
-    te::qt::widgets::Canvas *canvas = m_layerCanvasMap.begin()->second;
-    if(canvas == NULL)
-      return;
-
-    QPointF pll(rec.left(), rec.bottom());
-    QPointF pur(rec.right(), rec.top());
-
-    pll = canvas->getMatrix().inverted().map(pll);
-    pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
-
-    setExtent(envelope);
-
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
-  }
-  catch(te::common::Exception& e)
-  {
-    throw(te::common::Exception(e.what()));
-  }
-}
-
-void te::qt::widgets::MapDisplay::execZoomIn(const QPoint& p)
-{
-  try
-  {
-    te::qt::widgets::Canvas *canvas = m_layerCanvasMap.begin()->second;
-    if(canvas == NULL)
-      return;
-
-    QRect r(0, 0, canvas->getWidth(), canvas->getHeight());
-    r.setWidth(r.width() / 2);
-    r.setHeight(r.height() / 2);
-    r.moveCenter(p);
-    QPointF pll(r.left(), r.bottom());
-    QPointF pur(r.right(), r.top());
-
-    pll = canvas->getMatrix().inverted().map(pll);
-    pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
-
-    setExtent(envelope);
-
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
-  }
-  catch(te::common::Exception& e)
-  {
-    throw(te::common::Exception(e.what()));
-  }
-}
-
-void te::qt::widgets::MapDisplay::execZoomOut(const QPoint& p)
-{
-  try
-  {
-    te::qt::widgets::Canvas *canvas = m_layerCanvasMap.begin()->second;
-    if(canvas == NULL)
-      return;
-
-    QRect rec(0, 0, canvas->getWidth(), canvas->getHeight());
-    rec.setWidth(rec.width() * 2);
-    rec.moveCenter(p);
-    QPointF pll(rec.left(), rec.bottom());
-    QPointF pur(rec.right(), rec.top());
-
-    pll = canvas->getMatrix().inverted().map(pll);
-    pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
-    setExtent(envelope);
-
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
-  }
-  catch(te::common::Exception& e)
-  {
-    throw(te::common::Exception(e.what()));
-  }
-}
-
-void te::qt::widgets::MapDisplay::execPan(const QPoint& from, const QPoint& to)
-{
-  try
-  {
-    te::qt::widgets::Canvas *canvas = m_layerCanvasMap.begin()->second;
-    if(canvas == NULL)
-      return;
-  
-    QPoint p = to - from;
-    QRect rec(0, 0, canvas->getWidth(), canvas->getHeight());
-    QPoint c = rec.center();
-    c -= p;
-    rec.moveCenter(c);
-    QPointF pll(rec.left(), rec.bottom());
-    QPointF pur(rec.right(), rec.top());
-
-    pll = canvas->getMatrix().inverted().map(pll);
-    pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
-    setExtent(envelope);
-
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
-  }
-  catch(te::common::Exception& e)
-  {
-    throw(te::common::Exception(e.what()));
-  }
-}
-
-//void te::qt::widgets::MapDisplay::distanceMeterShow()
-//{
-//  zoomAndPanHide();
-//  distanceMeterHide();
-//  m_eventHandler = new DistanceMeter(this);
-//  m_eventHandler->show();
-//}
-//
-//void te::qt::widgets::MapDisplay::distanceMeterHide()
-//{
-//  zoomAndPanHide();
-//  if(m_eventHandler)
-//  {
-//    m_eventHandler->disconnect();
-//    m_eventHandler->hide();
-//    delete m_eventHandler;
-//    m_eventHandler = 0;
-//  }
-//}
-
-void te::qt::widgets::MapDisplay::setSRID(const int&)
+void te::qt::widgets::MapDisplay::setSRIDSlot()
 {
   int a = getSRID();
   QString sid;
   sid.setNum(a);
 
   QStringList items;
-  //items << "4326" << "29181" << "29101" << "3031";
+  //items << "4326" << "29181" << "29183" << "29101" << "3031";
 
   items.append(sid);
   if(sid != "4326")
     items.append("4326");
   if(sid != "29181")
     items.append("29181");
+  if(sid != "29183")
+    items.append("29183");
   if(sid != "29101")
     items.append("29101");
   if(sid != "3031")
@@ -790,24 +546,5 @@ void te::qt::widgets::MapDisplay::setSRID(const int&)
   {
     int srid = atoi(item.toStdString().c_str());
     te::map::MapDisplay::setSRID(srid);
-    //int oldsr = m_srid;
-    //m_srid = atoi(item.toStdString().c_str());
-    //m_extent->transform(oldsr, m_srid);
-    //setExtent(*m_extent);
   }
-}
-
-void te::qt::widgets::MapDisplay::layerStyleChanged(te::map::AbstractLayer* al, bool b)
-{
-  m_layerDrawMap[al] = b;
-}
-
-te::qt::widgets::ZoomAndPan* te::qt::widgets::MapDisplay::getZoomAndPan() //lauro
-{
-  return m_zoomAndPan;
-}
-
-QMenu* te::qt::widgets::MapDisplay::getMenu() //lauro
-{
-  return m_menu;
 }

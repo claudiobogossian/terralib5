@@ -25,32 +25,32 @@
 
 // TerraLib
 #include "DisplayEventHandler.h"
-#include "MapDisplay.h"
+#include <terralib/qt/widgets/canvas/MapDisplay.h>
 
 // Qt
 #include <QtGui/QResizeEvent>
 
 
-QPixmap* te::qt::widgets::DisplayEventHandler::getDisplayPixmap()
+QPixmap* DisplayEventHandler::getDisplayPixmap()
 {
   QWidget* p = (QWidget*)parent();
   while(p)
   {
     if(p->objectName() == "MapDisplay")
-      return ((MapDisplay*)p)->getDisplayPixmap();
+      return ((te::qt::widgets::MapDisplay*)p)->getDisplayPixmap();
     p = (QWidget*)p->parent();
   }
   return NULL;
 }
 
-void te::qt::widgets::DisplayEventHandler::setRepaint(bool s)
+void DisplayEventHandler::setRepaint(bool s)
 {
   QWidget* p = (QWidget*)parent();
   while(p)
   {
     if(p->objectName() == "MapDisplay")
     {
-      ((MapDisplay*)p)->setRepaint(s);
+      ((te::qt::widgets::MapDisplay*)p)->setRepaint(s);
       break;
     }
     p = (QWidget*)p->parent();

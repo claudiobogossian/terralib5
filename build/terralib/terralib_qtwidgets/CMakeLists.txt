@@ -200,7 +200,6 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/RenameProperty.h
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
 	 ${SRCDIR}/widgets/canvas/MapDisplay.h
-	 ${SRCDIR}/widgets/canvas/ZoomAndPan.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerBar.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
 	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h

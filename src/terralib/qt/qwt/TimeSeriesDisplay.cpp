@@ -24,11 +24,14 @@
 //TerraLib
 #include "../../color.h"
 
-te::qt::qwt::TimeSeriesDisplay::TimeSeriesDisplay(const TimeSeries& ts, QWidget* parent):
+te::qt::qwt::TimeSeriesDisplay::TimeSeriesDisplay(const TimeSeries& ts, std::vector<std::pair<std::string, int> > cols, int xCol, QWidget* parent):
   Plot("TIMESERIES", 0, parent),
   m_legendMenu(0)
 {
-  setTitle("Time Series");
+  m_xCol = xCol;
+  std::vector<std::pair<std::string, int> >::iterator vit;
+  for(vit = cols.begin(); vit != cols.end(); ++vit)
+    m_columns.insert(vit->second);
 
   m_xStringScaleDraw = new te::qt::qwt::StringScaleDraw();
 
@@ -285,3 +288,9 @@ void te::qt::qwt::TimeSeriesDisplay::legendColorSlot()
     replot();
   }
 }
+
+std::set<int> te::qt::qwt::TimeSeriesDisplay::getColumns()
+{
+  return m_columns;
+}
+ 

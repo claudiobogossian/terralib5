@@ -222,11 +222,11 @@ namespace te
 
           void setPointColor(const te::color::RGBAColor& color);
 
+          void setPointWidth(int w);
+
           void setPointPattern(te::color::RGBAColor** pattern, int ncols, int nrows);
 
           void setPointPattern(char* pattern, std::size_t size, te::map::ImageType t);
-
-          void setPointPatternWidth(int w);
 
           void setPointPatternRotation(const double& angle);
           
@@ -237,8 +237,6 @@ namespace te
           void setLinePattern(te::color::RGBAColor** pattern, int ncols, int nrows);
 
           void setLinePattern(char* pattern, std::size_t size, te::map::ImageType t);
-
-          void setLinePatternWidth(int w);
 
           void setLinePatternRotation(const double& angle);
 
@@ -272,7 +270,7 @@ namespace te
 
           void setPolygonContourPattern(char* pattern, std::size_t size, te::map::ImageType t);
 
-          void setPolygonContourPatternWidth(int w);
+          void setPolygonContourWidth(int w);
 
           void setPolygonContourPatternRotation(const double& angle);
 
@@ -286,7 +284,10 @@ namespace te
 
           void setPolygonContourJoinStyle(te::map::LineJoinStyle style);
 
-          void setPolygonContourWidth(int w);
+          void setEraseMode();
+
+          void setNormalMode();
+
 
           //@}
 
@@ -414,37 +415,66 @@ namespace te
            */
           void updateAlpha(QImage& img, const int& opacity);
 
+          /*!
+            \brief It creates two patterns. A pattern used to draw selected objects and 
+                   the other used to erase this pattern.
+           */
+          void createPointPatterns();
+
+          /*!
+            \brief It draw the polygon contour.
+           */
+          void drawContour(const te::gm::LineString* line);
+
+
           //@}
 
         private:
 
-          QMatrix m_matrix;                       //!< Matrix that transforms the world coordinate to device coordinate.
+          QMatrix m_matrix;         //!< Matrix that transforms the world coordinate to device coordinate.
 
-          QPainter m_painter;                     //!< The painter used to draw geometric objects.
+          QPainter m_painter;       //!< The painter used to draw geometric objects.
 
-          bool m_isDeviceOwner;                   //!< Tells if canvas is the owner of the paint device.
+          bool m_isDeviceOwner;     //!< Tells if canvas is the owner of the paint device.
+                    
+          QColor m_bgColor;         //!< Canvas background color. Defaults: white fully transparent.
 
-          QColor m_bgColor;                       //!< Canvas background color. Default: white fully transparent.
+          bool m_erase;                             //!< used for erase operation.
+          QPen m_ptPen;                             //!< The pen used to draw points.
+          QPointF m_pt;                             //!< Point buffer to avoid creating another point instance.
+          int m_ptWidth;                            //!< The width for point markers and point pattern.
+          QColor m_ptColor;                         //!< The color used to draw point (pixel) or marker. 
+          QColor m_ptColorFrom;                     //!< Indicates the color that originated the pattern that shows the status of selection. Used for optmization
+          QImage* m_ptImg;                          //!< The marker or pattern used to point.
+          QImage* m_ptImgRotated;                   //!< The marker or pattern already with rotation used to draw points.
+          QImage* m_ptSelectionPatternImg;          //!< The marker or pattern used to show selection status. The color is mixed with point pattern.
+          QImage* m_ptClearPatternImg;              //!< The marker or pattern used to clear (erase point).
+          double m_ptRotation;                      //!< The point pattern rotation.
+          int m_ptVOffset;                          //!< Vertical offset in pixels (in device coordinate) applied to point pattern or marker.
+          int m_ptHOffset;                          //!< Horizontal offset in pixels (in device coordinate) applied to point pattern or marker.
 
-          QPointF m_point;                        //!< Auxiliary point buffer to avoid creating another point instance.
-          QColor m_pointColor;                    //!< The color used to draw point.
-          QImage* m_pointPattern;                 //!< The pattern used to draw points.
-          int m_pointVOffset;                     //!< Vertical offset in pixels (device coordinate) applied to point pattern.
-          int m_pointHOffset;                     //!< Horizontal offset in pixels (device coordinate) applied to point pattern.
+          QColor m_lnColor; //!< The color used to draw lines. 
+          QPen m_lnPen;     //!< The pen used to draw lines.
 
-          QPen m_linePen;                         //!< The pen used to draw lines.
+          QColor m_polyContourColor;            //!< The color used to draw polygon contour. 
+          QPen m_polyContourPen;                //!< The pen used to draw contour polygon.
 
-          QPen m_polygonPen;                      //!< The pen used to draw polygons.
-          QBrush m_polygonBrush;                  //!< The brush used to draw polygons.
+          QColor m_polyColor;                   //!< The color used to fill polygon (solid, marker or pattern). 
+          QColor m_polyColorFrom;               //!< Indicates the color that originated the pattern that shows the status of selection.
+          QBrush m_polyBrush;                   //!< The brush used to fill polygon.
+          int m_polyPatternWidth;               //!< The width used to draw marker or pattern.
+          QColor m_polyFillMarkerColor;  //!< Indicates the color that originated the pattern that shows the status of selection.
 
-          QPen m_txtContourPen;                   //!< The pen used to draw the text contour.
-          bool m_txtContourEnabled;               //!< The flag indicates whether the outline of the text should be drawn.
-          QBrush m_txtBrush;                      //!< The brush used to draw texts.
-          QFont m_font;                           //!< The text font.
-          int m_txtLetterSpacing;                 //!< Text letter spacing.
-          int m_txtWordSpacing;                   //!< Text word spacing.
-          //int m_txtLineJustification;           //!< Text multi line justification.
-          int m_txtLineSpacing;                   //!< Text multi line spacing.
+          QPen m_txtContourPen;         //!< The pen used to draw the text contour.
+          bool m_txtContourEnabled;     //!< The flag indicates whether the outline of the text should be drawn.
+          QBrush m_txtBrush;            //!< The brush used to draw texts.
+          QFont m_font;                 //!< The text font.
+          int m_txtLetterSpacing;       //!< Text letter spacing.
+          int m_txtWordSpacing;         //!< Text word spacing.
+          //int m_txtLineJustification;   //!< Text multi line justification.
+          int m_txtLineSpacing;         //!< Text multi line spacing.
+
+          std::map<std::string, QPixmap*> m_patterns; //!< The pixmap styles used to draw patterns.
       }; 
     } // end namespace widgets
   }   // end namespace qt

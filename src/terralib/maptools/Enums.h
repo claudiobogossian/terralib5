@@ -70,7 +70,7 @@ namespace te
       */
       enum LineCapStyle
       {
-        ButtCap   = 0x00,   /*!< A square line end that does not cover the end point of the line. */
+        FlatCap   = 0x00,   /*!< A square line end that does not cover the end point of the line. */
         SquareCap = 0x10,   /*!< A square line end that covers the end point and extends beyond it by half the line width. */
         RoundCap  = 0x20    /*!< A rounded line end. */
       };
@@ -112,7 +112,8 @@ namespace te
         MarkerX = 15,                   /*!< ???? */
         MarkerDash = 16,                /*!< ???? */
         MarkerDot = 17,                 /*!< ???? */
-        MarkerPixel = 18                /*!< ???? */
+        MarkerPixel = 18,                /*!< ???? */
+        MarkerPattern = 19              /**< icon marker */
       };
 
       /*!
