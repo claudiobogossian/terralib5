@@ -61,22 +61,49 @@ namespace te
 
         public:
 
+          /** @name Initializer Methods
+           *  Methods related to instantiation and destruction.
+           */
+          //@{
+
+          /*! \brief Constructs a basic fill widget which is a child of parent, with widget flags set to f. */
           BasicFillWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*! \brief Destructor. */
           ~BasicFillWidget();
+
+          //@}
 
         public:
 
+          /*!
+            \brief Sets a fill element to this widget.
+
+            \param fill A valid fill element.
+
+            \note The widget will NOT take the ownership of the given fill.
+            \note The widget form will be update based on given fill parameters.
+          */
           void setFill(const te::se::Fill* fill);
 
+          /*!
+            \brief Gets the configured fill element.
+
+            \return The configured fill element.
+            
+            \note The caller will take the ownership of the returned fill.
+          */
           te::se::Fill* getFill() const;
 
         protected:
 
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
           void initialize();
 
+          /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
+          /*! \brief Updates the widget form element used to visualize the fill color. */
           void updateUiFillColor();
 
         protected slots:
@@ -87,15 +114,14 @@ namespace te
 
         signals:
 
+          /*! This signal is emitted when the internal fill element is changed. */
           void fillChanged();
 
         private:
 
-          std::auto_ptr<Ui::BasicFillWidgetForm> m_ui;
-
-          QColor m_color;
-
-          te::se::Fill* m_fill;
+          std::auto_ptr<Ui::BasicFillWidgetForm> m_ui; //!< Widget form.
+          QColor m_color;                              //!< Auxiliary color attribute.
+          te::se::Fill* m_fill;                        //!< Fill element that will be configured by this widget.
       };
 
     } // end namespace widgets

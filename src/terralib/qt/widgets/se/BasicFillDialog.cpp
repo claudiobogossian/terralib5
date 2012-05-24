@@ -18,51 +18,53 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/MarkDialog.cpp
+  \file terralib/qt/widgets/se/BasicFillDialog.cpp
 
-  \brief A dialog used to build a mark element.
+  \brief A dialog used to build a basic fill element.
 */
 
 // TerraLib
-#include "ui_MarkDialogForm.h"
-#include "MarkDialog.h"
-#include "MarkWidget.h"
+#include "../../../se/Fill.h"
+#include "BasicFillDialog.h"
+#include "BasicFillWidget.h"
+#include "ui_BasicFillDialogForm.h"
 
-te::qt::widgets::MarkDialog::MarkDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::BasicFillDialog::BasicFillDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::MarkDialogForm)
+    m_ui(new Ui::BasicFillDialogForm)
 {
   m_ui->setupUi(this);
 
-  // Mark Widget
-  m_markWidget = new te::qt::widgets::MarkWidget(this);
+  // Fill Widget
+  m_fillWidget = new te::qt::widgets::BasicFillWidget(this);
 
   // Adjusting...
-  QGridLayout* markLayout = new QGridLayout(m_ui->m_markWidgetFrame);
-  markLayout->addWidget(m_markWidget);
+  QGridLayout* layout = new QGridLayout(m_ui->m_fillWidgetFrame);
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->addWidget(m_fillWidget);
 }
 
-te::qt::widgets::MarkDialog::~MarkDialog()
+te::qt::widgets::BasicFillDialog::~BasicFillDialog()
 {
 }
 
-te::se::Mark* te::qt::widgets::MarkDialog::getMark(const te::se::Mark* initial, QWidget* parent, const QString& title)
+te::se::Fill* te::qt::widgets::BasicFillDialog::getFill(const te::se::Fill* initial, QWidget* parent, const QString& title)
 {
-  MarkDialog dlg(parent);
+  BasicFillDialog dlg(parent);
   
   if(!title.isEmpty())
     dlg.setWindowTitle(title);
   
   if(initial)
-    dlg.m_markWidget->setMark(initial);
+    dlg.m_fillWidget->setFill(initial);
   
   if(dlg.exec() == QDialog::Accepted)
-    return dlg.getMark();
+    return dlg.getFill();
   
   return 0;
 }
 
-te::se::Mark* te::qt::widgets::MarkDialog::getMark() const
+te::se::Fill* te::qt::widgets::BasicFillDialog::getFill() const
 {
-  return m_markWidget->getMark();
+  return m_fillWidget->getFill();
 }

@@ -47,15 +47,15 @@ te::qt::widgets::BasicStrokeDialog::~BasicStrokeDialog()
 {
 }
 
-te::se::Stroke* te::qt::widgets::BasicStrokeDialog::getStroke(const te::se::Stroke* initialStroke, QWidget* parent, const QString& title)
+te::se::Stroke* te::qt::widgets::BasicStrokeDialog::getStroke(const te::se::Stroke* initial, QWidget* parent, const QString& title)
 {
   BasicStrokeDialog dlg(parent);
   
   if(!title.isEmpty())
     dlg.setWindowTitle(title);
   
-  if(initialStroke)
-    dlg.m_strokeWidget->setStroke(initialStroke);
+  if(initial)
+    dlg.m_strokeWidget->setStroke(initial);
   
   if(dlg.exec() == QDialog::Accepted)
     return dlg.getStroke();
