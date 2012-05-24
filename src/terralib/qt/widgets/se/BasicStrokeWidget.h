@@ -64,30 +64,73 @@ namespace te
 
         public:
 
+          /** @name Initializer Methods
+           *  Methods related to instantiation and destruction.
+           */
+          //@{
+
+          /*! \brief Constructs a basic stroke widget which is a child of parent, with widget flags set to f. */
           BasicStrokeWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*! \brief Destructor. */
           ~BasicStrokeWidget();
+
+          //@}
 
         public:
 
+          /*!
+            \brief Sets a stroke element to this widget.
+
+            \param stroke A valid stroke element.
+
+            \note The widget will NOT take the ownership of the given stroke.
+            \note The widget form will be update based on given stroke parameters.
+          */
           void setStroke(const te::se::Stroke* stroke);
 
+          /*!
+            \brief Gets the configured stroke element.
+
+            \return The configured stroke element.
+            
+            \note The caller will take the ownership of the returned stroke.
+          */
           te::se::Stroke* getStroke() const;
 
         protected:
 
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
           void initialize();
 
+          /*! \brief Updates the widget form based on internal stroke element. */
           void updateUi();
 
+          /*! \brief Updates the widget form element used to visualize the stroke color. */
           void updateUiStrokeColor();
 
+          /*! 
+            \brief Updates the widget form element used to visualize the stroke dash style. 
+
+            \param pattern The stroke dash style pattern.
+          */
           void updateUiDashStyle(const std::string& pattern);
 
+          /*!
+            \brief Updates the widget form element used to visualize the stroke join style.
+
+            \param style The stroke join style type.
+          */
           void updateUiJoinStyle(const std::string& style);
 
+          /*!
+            \brief Updates the widget form element used to visualize the stroke cap style.
+
+            \param style The stroke cap style type.
+          */
           void updateUiCapStyle(const std::string& style);
 
+          /*! \brief Fills the widget form element used to visualize the stroke cap style. */
           void fillStrokeDashStyleComboBox();
 
         protected slots:
@@ -106,20 +149,17 @@ namespace te
 
         signals:
 
+          /*! This signal is emitted when the internal stroke element is changed. */
           void strokeChanged();
 
         private:
 
-          std::auto_ptr<Ui::BasicStrokeWidgetForm> m_ui;
-
-          QButtonGroup* m_strokeJoinStyleButtonGroup;
-          QButtonGroup* m_strokeCapStyleButtonGroup;
-
-          QColor m_color;
-
-          te::se::Stroke* m_stroke;
-
-          std::vector<std::string> m_dashes;
+          std::auto_ptr<Ui::BasicStrokeWidgetForm> m_ui; //!< Widget form.
+          QButtonGroup* m_strokeJoinStyleButtonGroup;    //!< Button group used to control the join styles.
+          QButtonGroup* m_strokeCapStyleButtonGroup;     //!< Button group used to control the cap styles.
+          QColor m_color;                                //!< Auxiliary color attribute.
+          te::se::Stroke* m_stroke;                      //!< Stroke element that will be configured by this widget.
+          std::vector<std::string> m_dashes;             //!< Predefined dash styles. TODO: it can be filled out, based on a file, etc (?)
       }; 
 
     } // end namespace widgets

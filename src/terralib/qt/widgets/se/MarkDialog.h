@@ -59,6 +59,13 @@ namespace te
         \class MarkDialog
 
         \brief A dialog used to build a mark element.
+               If you want to use this dialog, you can use commands like:
+               <code>
+               te::se::Mark* m = te::qt::widgets::MarkDialog::getMark(0, parent, "Title");
+               te::se::Mark* m = te::qt::widgets::MarkDialog::getMark(initialMark, parent, "Title");
+               ...
+               delete m;
+               </code>
       */
       class TEQTWIDGETSEXPORT MarkDialog : public QDialog
       {
@@ -66,22 +73,50 @@ namespace te
 
         public:
 
+          /** @name Initializer Methods
+           *  Methods related to instantiation and destruction.
+           */
+          //@{
+
+          /*! \brief Constructs a mark dialog which is a child of parent, with widget flags set to f. */
           MarkDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*! \brief Destructor. */
           ~MarkDialog();
+
+          //@}
 
         public:
 
-          static te::se::Mark* getMark(const te::se::Mark* initialMark, QWidget* parent = 0, const QString& title = "");
+          /*!
+            \brief Pops up a modal mark dialog with the given window title, lets the user configure the mark, 
+                   and returns that mark. The mark is initially set to initial. The dialog is a child of parent. 
 
+            \param initial A initial mark element that will be used.
+                           The dialog form will be update based on mark element parameters. It can be NULL.
+            \param parent Dialog parent.
+            \param title  Dialog title.
+
+            \note The dialog will NOT take the ownership of the given initial mark.
+            \note The caller will take the ownership of the returned mark.
+            \note It returns a NULL mark element if the user cancels the dialog.
+          */
+          static te::se::Mark* getMark(const te::se::Mark* initial, QWidget* parent = 0, const QString& title = "");
+
+          /*!
+            \brief Gets the configured mark element.
+
+            \return The configured mark element.
+            
+            \note The caller will take the ownership of the returned mark.
+          */
           te::se::Mark* getMark() const;
 
         private:
 
-          std::auto_ptr<Ui::MarkDialogForm> m_ui;
-
-          te::qt::widgets::MarkWidget* m_markWidget;
-      }; 
+          std::auto_ptr<Ui::MarkDialogForm> m_ui;    //!< Dialog form.
+          te::qt::widgets::MarkWidget* m_markWidget; //!< Mark Widget used to configure the mak element.
+      };
 
     } // end namespace widgets
   }   // end namespace qt

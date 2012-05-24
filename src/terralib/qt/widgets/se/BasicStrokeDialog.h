@@ -57,6 +57,13 @@ namespace te
         \class BasicStrokeDialog
 
         \brief A dialog used to build a basic stroke element.
+               If you want to use this dialog, you can use commands like:
+               <code>
+               te::se::Stroke* s = te::qt::widgets::BasicStrokeDialog::getStroke(0, parent, "Title");
+               te::se::Stroke* s = te::qt::widgets::BasicStrokeDialog::getStroke(initialStroke, parent, "Title");
+               ...
+               delete s;
+               </code>
       */
       class TEQTWIDGETSEXPORT BasicStrokeDialog : public QDialog
       {
@@ -64,21 +71,49 @@ namespace te
 
         public:
 
+          /** @name Initializer Methods
+           *  Methods related to instantiation and destruction.
+           */
+          //@{
+
+          /*! \brief Constructs a basic stroke dialog which is a child of parent, with widget flags set to f. */
           BasicStrokeDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*! \brief Destructor. */
           ~BasicStrokeDialog();
+
+          //@}
 
         public:
 
-          static te::se::Stroke* getStroke(const te::se::Stroke* initialStroke, QWidget* parent = 0, const QString& title = "");
+          /*!
+            \brief Pops up a modal basic stroke dialog with the given window title, lets the user configure the stroke, 
+                   and returns that stroke. The stroke is initially set to initial. The dialog is a child of parent. 
 
+            \param initial A initial stroke element that will be used.
+                           The dialog form will be update based on stroke element parameters. It can be NULL.
+            \param parent Dialog parent.
+            \param title  Dialog title.
+
+            \note The dialog will NOT take the ownership of the given initial stroke.
+            \note The caller will take the ownership of the returned stroke.
+            \note It returns a NULL stroke element if the user cancels the dialog.
+          */
+          static te::se::Stroke* getStroke(const te::se::Stroke* initial, QWidget* parent = 0, const QString& title = "");
+
+          /*!
+            \brief Gets the configured stroke element.
+
+            \return The configured stroke element.
+            
+            \note The caller will take the ownership of the returned stroke.
+          */
           te::se::Stroke* getStroke() const;
 
         private:
 
-          std::auto_ptr<Ui::BasicStrokeDialogForm> m_ui;
-
-          te::qt::widgets::BasicStrokeWidget* m_strokeWidget;
+          std::auto_ptr<Ui::BasicStrokeDialogForm> m_ui;      //!< Dialog form.
+          te::qt::widgets::BasicStrokeWidget* m_strokeWidget; //!< Basic Stroke Widget used to configure the stroke element.
       }; 
 
     } // end namespace widgets

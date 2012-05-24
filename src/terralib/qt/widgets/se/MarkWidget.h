@@ -68,20 +68,46 @@ namespace te
 
         public:
 
+          /** @name Initializer Methods
+           *  Methods related to instantiation and destruction.
+           */
+          //@{
+
+          /*! \brief Constructs a mark widget which is a child of parent, with widget flags set to f. */
           MarkWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
+          /*! \brief Destructor. */
           ~MarkWidget();
+
+          //@}
 
         public:
 
+          /*!
+            \brief Sets a mark element to this widget.
+
+            \param mark A valid mark element.
+
+            \note The widget will NOT take the ownership of the given mark.
+            \note The widget form will be update based on given mark parameters.
+          */
           void setMark(const te::se::Mark* mark);
 
+          /*!
+            \brief Gets the configured mark element.
+
+            \return The configured mark element.
+            
+            \note The caller will take the ownership of the returned mark.
+          */
           te::se::Mark* getMark() const;
 
         protected:
 
+          /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
+          /*! \brief Updates the icon used to represents the marks. */
           void updateMarkIcons();
 
         protected slots:
@@ -98,17 +124,12 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::MarkWidgetForm> m_ui;
-
-          te::qt::widgets::BasicFillWidget* m_fillWidget;
-
-          te::qt::widgets::BasicStrokeWidget* m_strokeWidget;
-
-          QListWidget* m_contentsMarkWidget;
-
-          te::se::Mark* m_mark;
-
-          std::vector<std::string> m_supportedMarks;
+          std::auto_ptr<Ui::MarkWidgetForm> m_ui;             //!< Widget form.
+          te::qt::widgets::BasicFillWidget* m_fillWidget;     //!< Basic Fill Widget used to configure the mark fill element.
+          te::qt::widgets::BasicStrokeWidget* m_strokeWidget; //!< Basic Stroke Widget used to configure the mark stroke element.
+          QListWidget* m_contentsMarkWidget;                  //!< Widget used to represent the marks graphical patterns.
+          te::se::Mark* m_mark;                               //!< Mark element that will be configured by this widget.
+          std::vector<std::string> m_supportedMarks;          //!< Names of supported marks.
       }; 
 
     } // end namespace widgets
