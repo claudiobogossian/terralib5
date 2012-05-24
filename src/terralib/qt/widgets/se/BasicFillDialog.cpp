@@ -40,7 +40,6 @@ te::qt::widgets::BasicFillDialog::BasicFillDialog(QWidget* parent, Qt::WindowFla
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_fillWidgetFrame);
-  layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(m_fillWidget);
 }
 
