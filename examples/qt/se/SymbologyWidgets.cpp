@@ -2,6 +2,7 @@
 
 // TerraLib
 #include <terralib/se.h>
+#include <terralib/qt/widgets/se/BasicFillDialog.h>
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
 #include <terralib/qt/widgets/se/MarkDialog.h>
 
@@ -24,6 +25,16 @@ void SymbologyWidgets()
   stroke = te::qt::widgets::BasicStrokeDialog::getStroke(initialStroke, 0, title);
   delete stroke;
   delete initialStroke;
+
+  // Create a new Fill
+  te::se::Fill* fill = te::qt::widgets::BasicFillDialog::getFill(0, 0, title);
+  delete fill;
+
+  // Creates a new fill based on pre-existed
+  te::se::Fill* initialFill = te::se::CreateFill("#00FF00", "0.5");
+  fill = te::qt::widgets::BasicFillDialog::getFill(initialFill, 0, title);
+  delete fill;
+  delete initialFill;
 
   // Creates a new mark
   te::se::Mark* mark = te::qt::widgets::MarkDialog::getMark(0, 0, title);
