@@ -40,7 +40,6 @@ te::qt::widgets::BasicStrokeDialog::BasicStrokeDialog(QWidget* parent, Qt::Windo
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_strokeWidgetFrame);
-  layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(m_strokeWidget);
 }
 

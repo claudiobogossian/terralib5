@@ -31,7 +31,7 @@
 te::common::ProgressTimer::ProgressTimer(int totalSteps)
   : m_totalSteps(totalSteps),
     m_count(0),
-    m_startTime(NULL),
+    m_startTime(0),
     m_remainingTime(0.),
     m_speedTime(0.)
 {

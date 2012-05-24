@@ -63,6 +63,18 @@ Ui::DoubleListWidgetForm* te::qt::widgets::DoubleListWidget::getForm() const
 
 void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
 {
+  int count = m_ui->m_leftListWidget->count();
+
+  for(int i = 0; i < count; ++i)
+  {
+    if(m_ui->m_leftListWidget->item(i)->isSelected())
+    {
+      QListWidgetItem* item = m_ui->m_leftListWidget->takeItem(i);
+
+      m_ui->m_rightListWidget->addItem(item);
+    }
+  }
+
   if(m_ui->m_leftListWidget->count() == 0)
   {
     m_ui->m_addToolButton->setEnabled(false);
@@ -72,12 +84,33 @@ void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
 
 void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
 {
+  int count = m_ui->m_leftListWidget->count();
+
+  for(int i = 0; i < count; ++i)
+  {
+    QListWidgetItem* item = m_ui->m_leftListWidget->takeItem(i);
+
+    m_ui->m_rightListWidget->addItem(item);
+  }
+
   m_ui->m_addToolButton->setEnabled(false);
   m_ui->m_addAllToolButton->setEnabled(false);
 }
 
 void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
 {
+  int count = m_ui->m_rightListWidget->count();
+
+  for(int i = 0; i < count; ++i)
+  {
+    if(m_ui->m_rightListWidget->item(i)->isSelected())
+    {
+      QListWidgetItem* item = m_ui->m_rightListWidget->takeItem(i);
+
+      m_ui->m_leftListWidget->addItem(item);
+    }
+  }
+
   if(m_ui->m_rightListWidget->count() == 0)
   {
     m_ui->m_removeToolButton->setEnabled(false);
@@ -87,19 +120,34 @@ void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
 
 void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
 {
+  int count = m_ui->m_rightListWidget->count();
+
+  for(int i = 0; i < count; ++i)
+  {
+    QListWidgetItem* item = m_ui->m_rightListWidget->takeItem(i);
+
+    m_ui->m_leftListWidget->addItem(item);
+  }
+
   m_ui->m_removeToolButton->setEnabled(false);
   m_ui->m_removeAllToolButton->setEnabled(false);
 }
 
-void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* /*item*/)
+void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* item)
 {
-  m_ui->m_addToolButton->setEnabled(true);
-  m_ui->m_addAllToolButton->setEnabled(true);
+  if(item)
+  {
+    m_ui->m_addToolButton->setEnabled(true);
+    m_ui->m_addAllToolButton->setEnabled(true);
+  }
 }
 
-void te::qt::widgets::DoubleListWidget::onRightListPressed(QListWidgetItem* /*item*/)
+void te::qt::widgets::DoubleListWidget::onRightListPressed(QListWidgetItem* item)
 {
-  m_ui->m_removeToolButton->setEnabled(true);
-  m_ui->m_removeAllToolButton->setEnabled(true);
+  if(item)
+  {
+    m_ui->m_removeToolButton->setEnabled(true);
+    m_ui->m_removeAllToolButton->setEnabled(true);
+  }
 }
 
