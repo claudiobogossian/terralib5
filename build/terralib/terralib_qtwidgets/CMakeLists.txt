@@ -209,6 +209,7 @@ file(GLOB HDRS_TO_MOC
      ${SRCDIR}/widgets/help/HelpPushButton.h
 	 ${SRCDIR}/widgets/help/HelpToolButton.h
 	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
+	 ${SRCDIR}/widgets/utils/ListWidget.h
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
