@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
 #include "../../../maptools/AbstractMarkFactory.h"
 #include "../../../se/Mark.h"
 #include "../Utils.h"
@@ -105,7 +106,7 @@ te::qt::widgets::MarkWidget::~MarkWidget()
   delete m_mark;
 }
 
-void te::qt::widgets::MarkWidget::setMark(te::se::Mark* mark)
+void te::qt::widgets::MarkWidget::setMark(const te::se::Mark* mark)
 {
   assert(mark);
 
@@ -123,6 +124,15 @@ te::se::Mark* te::qt::widgets::MarkWidget::getMark() const
 
 void te::qt::widgets::MarkWidget::updateUi()
 {
+  const std::string* name = m_mark->getWellKnownName();
+  if(name)
+  {
+    QString qName(name->c_str());
+    QList<QListWidgetItem*> itens = m_contentsMarkWidget->findItems(qName, Qt::MatchFixedString);
+    assert(!itens.empty());
+    m_contentsMarkWidget->setCurrentItem(itens[0]);
+  }
+
   const te::se::Stroke* stroke = m_mark->getStroke();
   if(stroke)
   {
@@ -161,10 +171,7 @@ void te::qt::widgets::MarkWidget::updateMarkIcons()
 
     delete img;
 
-    // TODO: Move to common! FreeArray(T** a, std::size_t dim)
-    for(std::size_t i = 0; i != size; ++i)
-      delete [] (rgba[i]);
-    delete [] rgba;
+    te::common::Free(rgba, size);
 
     delete temporaryMark;
   }

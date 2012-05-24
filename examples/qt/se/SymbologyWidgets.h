@@ -18,31 +18,15 @@
  */
 
 /*!
-  \file appleunittestplatformdefines.h
+  \file SymbologyWidgets.h
 
-  \brief Apple Configuration flags for TerraLib Unittest.
- */
+  \brief Several examples declarations.
+*/
 
-#ifndef __TERRALIB_APPLEUNITTESTPLATFORMDEFINES_H
-#define __TERRALIB_APPLEUNITTESTPLATFORMDEFINES_H
+#ifndef __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
+#define __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
 
-/** @name Flags for Unittest
- *  Flags for TerraLib Unittest
- */
-//@{
+/*! \brief It shows a set of widgets related with Symbology Encondig. */
+void SymbologyWidgets();
 
-/*!
-  \def TE_DATA_UNITTEST_LOCALE
-
-  \brief This flag tells where is the base folder for the data used in Unittests.
- */
-#ifndef
-#define TE_DATA_UNITTEST_LOCALE "."
-#endif
-
-//@}
-
-
-#endif  // __TERRALIB_APPLEUNITTESTPLATFORMDEFINES_H
-
-
+#endif  // __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H

@@ -47,6 +47,22 @@ te::qt::widgets::MarkDialog::~MarkDialog()
 {
 }
 
+te::se::Mark* te::qt::widgets::MarkDialog::getMark(const te::se::Mark* initialMark, QWidget* parent, const QString& title)
+{
+  MarkDialog dlg(parent);
+  
+  if(!title.isEmpty())
+    dlg.setWindowTitle(title);
+  
+  if(initialMark)
+    dlg.m_markWidget->setMark(initialMark);
+  
+  if(dlg.exec() == QDialog::Accepted)
+    return dlg.getMark();
+  
+  return 0;
+}
+
 te::se::Mark* te::qt::widgets::MarkDialog::getMark() const
 {
   return m_markWidget->getMark();

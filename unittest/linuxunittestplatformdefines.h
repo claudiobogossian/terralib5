@@ -72,7 +72,9 @@
 #define STDC_HEADERS 1
 
 /* This flag tells where is the base folder for the data used in Unittests */
+#ifndef TE_DATA_UNITTEST_LOCALE
 #define TE_DATA_UNITTEST_LOCALE "../"
+#endif
 
 /* Version number of package */
 #define VERSION "5.0.0"

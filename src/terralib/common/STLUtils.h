@@ -152,6 +152,20 @@ namespace te
     }
 
     /*!
+      \brief It releases the given array.
+
+      \param a The array that will be released.
+      \param s The array size.
+    */
+    template<class T> inline void Free(T** a, std::size_t s)
+    {
+      for(std::size_t i = 0; i < s; ++i)
+        delete [] (a[i]);
+
+      delete [] a;
+    }
+
+    /*!
       \brief It finds for a given key in the map and returns a pointer if something is found or NULL otherwise.
 
       \param m The map of pointers where the key will be searched.
