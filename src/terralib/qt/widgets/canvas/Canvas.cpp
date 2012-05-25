@@ -67,8 +67,9 @@ te::qt::widgets::Canvas::Canvas(int w, int h)
     m_polyContourColor(Qt::transparent),
     m_polyContourPen(Qt::gray),
     m_polyColor(Qt::red),
-    m_polyColorFrom(m_polyColor),
     m_polyBrush(Qt::magenta),
+    m_polyImage(0),
+    m_polyRotatedImage(0),
     m_polyPatternWidth(16),
     m_txtContourPen(Qt::black),
     m_txtContourEnabled(false),
@@ -479,12 +480,6 @@ void te::qt::widgets::Canvas::draw(const te::gm::MultiLineString* mline)
 
 void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 {
-//const te::gm::Envelope* envelope = poly->getMBR();
-//QRectF recf(envelope->m_llx, envelope->m_lly, envelope->getWidth(), envelope->getHeight());
-//QRect rec(m_matrix.mapRect(recf).toRect());
-//int transx = rec.topLeft().x();
-//int transy = rec.topLeft().y();
-
   const std::size_t nRings = poly->getNumRings();
 
   assert(nRings > 0);
@@ -518,17 +513,35 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
   else
   {
     // fill polygon
-    m_painter.setBrush(Qt::NoBrush);
     m_painter.setPen(Qt::NoPen);
-    if(m_polyBrush.style() == Qt::TexturePattern && m_polyColor.alpha() != 255)
+    if(m_polyImage && m_polyColor.alpha() != 255)
     {
-//double scale = (double)m_polyPatternWidth / m_polyBrush.textureImage().width();
-//QMatrix matrix;
-//matrix.scale(scale, scale);
-//transx = transx % m_polyBrush.textureImage().width();
-//transy = transy % m_polyBrush.textureImage().height();
-//matrix.translate(transx, -transy);
-//
+      const te::gm::Envelope* envelope = poly->getMBR();
+      QRectF recf(envelope->m_llx, envelope->m_lly, envelope->getWidth(), envelope->getHeight());
+      QPointF pc = m_matrix.map(recf.center());
+      int transx = pc.toPoint().x();
+      int transy = pc.toPoint().y();
+
+      QMatrix matrix = m_matrix.inverted();
+      double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(m_polyImage->width());
+      matrix.scale(scale, scale);
+      if(m_polyRotatedImage)
+      {
+        transx = transx % m_polyRotatedImage->width();
+        transy = transy % m_polyRotatedImage->height();
+        matrix.translate(transx, transy);
+        m_polyBrush.setMatrix(matrix);
+        m_polyBrush.setTextureImage(*m_polyRotatedImage);
+      }
+      else
+      {
+        transx = transx % m_polyImage->width();
+        transy = transy % m_polyImage->height();
+        matrix.translate(transx, transy);
+        m_polyBrush.setMatrix(matrix);
+        m_polyBrush.setTextureImage(*m_polyImage);
+      }
+
       m_painter.setBrush(m_polyBrush);
       m_painter.drawPath(path);
     }
@@ -1543,21 +1556,31 @@ void te::qt::widgets::Canvas::setPolygonFillPattern(te::color::RGBAColor** patte
   if(pattern == 0)
   {
     m_polyBrush.setStyle(Qt::NoBrush);
+    delete m_polyImage;
+    delete m_polyRotatedImage;
+    m_polyImage = 0;
+    m_polyRotatedImage = 0;
     return;
   }
-
-  QImage* img = GetImage(pattern, ncols, nrows);
-
-  if(img->isNull() == false)
+  m_polyImage = GetImage(pattern, ncols, nrows);
+  if(m_polyImage->isNull())
   {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img->width());
-    matrix.scale(scale, scale);
-    m_polyBrush.setStyle(Qt::TexturePattern);
-    m_polyBrush.setMatrix(matrix);
-    m_polyBrush.setTextureImage(*img);
+    delete m_polyImage;
+    m_polyImage = 0;
   }
-  delete img;
+
+  //QImage* img = GetImage(pattern, ncols, nrows);
+
+  //if(img->isNull() == false)
+  //{
+  //  //QMatrix matrix = m_matrix.inverted();
+  //  //double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img->width());
+  //  //matrix.scale(scale, scale);
+  //  //m_polyBrush.setStyle(Qt::TexturePattern);
+  //  //m_polyBrush.setMatrix(matrix);
+  //  //m_polyBrush.setTextureImage(*img);
+  //}
+  //delete img;
 }
 
 void te::qt::widgets::Canvas::setPolygonFillPattern(char* pattern, std::size_t size, te::map::ImageType t)
@@ -1565,24 +1588,37 @@ void te::qt::widgets::Canvas::setPolygonFillPattern(char* pattern, std::size_t s
   if(pattern == 0)
   {
     m_polyBrush.setStyle(Qt::NoBrush);
+    delete m_polyImage;
+    delete m_polyRotatedImage;
+    m_polyImage = 0;
+    m_polyRotatedImage = 0;
     return;
   }
 
-  QImage img;
-
+  m_polyImage = new QImage();
   const char* format = te::qt::widgets::GetFormat(t);
-
-  bool result = img.loadFromData((const uchar*)pattern, size, format);
-
-  if(result && img.isNull() == false)
+  bool result = m_polyImage->loadFromData((const uchar*)pattern, size, format);
+  if(result == false)
   {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
-    matrix.scale(scale, scale);
-    m_polyBrush.setStyle(Qt::TexturePattern);
-    m_polyBrush.setMatrix(matrix);
-    m_polyBrush.setTextureImage(img);
+    delete m_polyImage;
+    m_polyImage = 0;
   }
+
+  //QImage img;
+
+  //const char* format = te::qt::widgets::GetFormat(t);
+
+  //bool result = img.loadFromData((const uchar*)pattern, size, format);
+
+  //if(result && img.isNull() == false)
+  //{
+  //  QMatrix matrix = m_matrix.inverted();
+  //  double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
+  //  matrix.scale(scale, scale);
+  //  m_polyBrush.setStyle(Qt::TexturePattern);
+  //  m_polyBrush.setMatrix(matrix);
+  //  m_polyBrush.setTextureImage(img);
+  //}
 }
 
 void te::qt::widgets::Canvas::setPolygonPatternWidth(int w)
@@ -1592,30 +1628,29 @@ void te::qt::widgets::Canvas::setPolygonPatternWidth(int w)
   if(m_polyPatternWidth == 0.)
     m_polyPatternWidth = 1.;
 
-  QImage img = m_polyBrush.textureImage();
+  //QImage img = m_polyBrush.textureImage();
 
-  if(img.isNull() == false)
-  {
-    QMatrix matrix = m_matrix.inverted();
-    double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
-    matrix.scale(scale, scale);
-    m_polyBrush.setMatrix(matrix);
-  }
+  //if(img.isNull() == false)
+  //{
+  //  QMatrix matrix = m_matrix.inverted();
+  //  double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
+  //  matrix.scale(scale, scale);
+  //  m_polyBrush.setMatrix(matrix);
+  //}
 }
 
 void te::qt::widgets::Canvas::setPolygonPatternRotation(const double& angle)
 {
-  QImage img = m_polyBrush.textureImage();
-  if(img.isNull())
-    return;
+  if(m_polyImage)
+  {
+    QMatrix matrix;
+    matrix.translate((double)m_polyImage->width()/2., (double)m_polyImage->height()/2.);
+    matrix.rotate(angle);
 
-  QMatrix matrix = m_matrix.inverted();
-  double scale = static_cast<double>(m_polyPatternWidth) / static_cast<double>(img.width());
-  matrix.translate(img.width()/2, img.height()/2);
-  matrix.rotate(angle);
-  matrix.scale(scale, scale);
-  m_polyBrush.setMatrix(matrix);
-
+    if(m_polyRotatedImage == 0)
+      m_polyRotatedImage = new QImage();
+    *m_polyRotatedImage = m_polyImage->transformed(matrix);
+  }
 }
 
 void te::qt::widgets::Canvas::setPolygonPatternOpacity(int opacity)
@@ -1625,9 +1660,12 @@ void te::qt::widgets::Canvas::setPolygonPatternOpacity(int opacity)
     return;
 
   // Updates the alpha channel
-  updateAlpha(img, opacity);
+  if(m_polyImage)
+    updateAlpha(*m_polyImage, opacity);
+  if(m_polyRotatedImage)
+    updateAlpha(*m_polyRotatedImage, opacity);
 
-  m_polyBrush.setTextureImage(img);
+  //m_polyBrush.setTextureImage(img);
 }
 
 void te::qt::widgets::Canvas::setPolygonContourColor(const te::color::RGBAColor& color)

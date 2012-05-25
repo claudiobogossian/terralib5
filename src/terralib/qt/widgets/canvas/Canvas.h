@@ -460,10 +460,10 @@ namespace te
           QPen m_polyContourPen;                //!< The pen used to draw contour polygon.
 
           QColor m_polyColor;                   //!< The color used to fill polygon (solid, marker or pattern). 
-          QColor m_polyColorFrom;               //!< Indicates the color that originated the pattern that shows the status of selection.
           QBrush m_polyBrush;                   //!< The brush used to fill polygon.
+          QImage* m_polyImage;                  //!< The pattern image used to fill polygon.
+          QImage* m_polyRotatedImage;           //!< The pattern rotated image used to fill polygon.
           int m_polyPatternWidth;               //!< The width used to draw marker or pattern.
-          QColor m_polyFillMarkerColor;  //!< Indicates the color that originated the pattern that shows the status of selection.
 
           QPen m_txtContourPen;         //!< The pen used to draw the text contour.
           bool m_txtContourEnabled;     //!< The flag indicates whether the outline of the text should be drawn.
