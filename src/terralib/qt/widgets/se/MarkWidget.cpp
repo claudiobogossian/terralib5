@@ -61,38 +61,18 @@ te::qt::widgets::MarkWidget::MarkWidget(QWidget* parent, Qt::WindowFlags f)
   QGridLayout* strokeLayout = new QGridLayout(m_ui->m_strokeGroupBox);
   strokeLayout->addWidget(m_strokeWidget);
 
-  // Mark Contents
-  m_contentsMarkWidget = new QListWidget(this);
-  m_contentsMarkWidget->setViewMode(QListView::IconMode);
-  m_contentsMarkWidget->setIconSize(QSize(32, 32));
-  m_contentsMarkWidget->setResizeMode(QListWidget::Adjust);
-
   // Gets supported marks
   te::map::AbstractMarkFactory::SupportedMarks(m_supportedMarks);
+  for(std::size_t i = 0; i < m_supportedMarks.size(); ++i)
+    m_ui->m_markTypeComboBox->addItem(m_supportedMarks[i].c_str());
 
   // Setups initial mark
   m_mark->setWellKnownName(new std::string(m_supportedMarks[0]));
   m_mark->setFill(m_fillWidget->getFill());
   m_mark->setStroke(m_strokeWidget->getStroke());
 
-  // Creates mark itens
-  for(std::size_t i = 0; i < m_supportedMarks.size(); ++i)
-  {
-    QListWidgetItem* markItem = new QListWidgetItem(m_contentsMarkWidget);
-    markItem->setText(m_supportedMarks[i].c_str());
-    markItem->setTextAlignment(Qt::AlignHCenter);
-    markItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-  }
-  updateMarkIcons();
-  m_contentsMarkWidget->setCurrentRow(0);
-
-  // Adjusting...
-  QGridLayout* contentsLayout = new QGridLayout(m_ui->m_markTypeGroupBox);
-  contentsLayout->addWidget(m_contentsMarkWidget);
-  m_ui->m_markTypeGroupBox->setMaximumWidth(128);
-
   // Signals & slots
-  connect(m_contentsMarkWidget, SIGNAL(currentTextChanged(const QString&)), this, SLOT(onMarkTypeChanged(const QString&)));
+  connect(m_ui->m_markTypeComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(onMarkTypeComboBoxCurrentIndexChanged(const QString&)));
   connect(m_fillWidget, SIGNAL(fillChanged()), SLOT(onFillChanged()));
   connect(m_ui->m_fillGroupBox, SIGNAL(toggled(bool)), this, SLOT(onFillGroupBoxToggled(bool)));
   connect(m_strokeWidget, SIGNAL(strokeChanged()), SLOT(onStrokeChanged()));
@@ -123,13 +103,12 @@ te::se::Mark* te::qt::widgets::MarkWidget::getMark() const
 void te::qt::widgets::MarkWidget::updateUi()
 {
   const std::string* name = m_mark->getWellKnownName();
-  if(name)
-  {
-    QString qName(name->c_str());
-    QList<QListWidgetItem*> itens = m_contentsMarkWidget->findItems(qName, Qt::MatchFixedString);
-    assert(!itens.empty());
-    m_contentsMarkWidget->setCurrentItem(itens[0]);
-  }
+  assert(name); // TODO: Exception?
+
+  QString qName(name->c_str());
+  int index = m_ui->m_markTypeComboBox->findText(qName, Qt::MatchFixedString);
+  assert(index != -1); // TODO: Exception?
+  m_ui->m_markTypeComboBox->setCurrentIndex(index);
 
   const te::se::Stroke* stroke = m_mark->getStroke();
   if(stroke)
@@ -148,34 +127,9 @@ void te::qt::widgets::MarkWidget::updateUi()
   }
   else
     m_ui->m_fillGroupBox->setChecked(false);
-
-  updateMarkIcons();
 }
 
-void te::qt::widgets::MarkWidget::updateMarkIcons()
-{
-  for(std::size_t i = 0; i < m_supportedMarks.size(); ++i)
-  {
-    te::se::Mark* temporaryMark = m_mark->clone();
-    temporaryMark->setWellKnownName(new std::string(m_supportedMarks[i]));
-
-    // Getting mark graphical representation
-    std::size_t size = 32;
-    te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(temporaryMark, size);
-    QImage* img = te::qt::widgets::GetImage(rgba, size, size);
-
-    QListWidgetItem* markItem = m_contentsMarkWidget->item(i);
-    markItem->setIcon(QPixmap::fromImage(*img));
-
-    delete img;
-
-    te::common::Free(rgba, size);
-
-    delete temporaryMark;
-  }
-}
-
-void te::qt::widgets::MarkWidget::onMarkTypeChanged(const QString& currentText)
+void te::qt::widgets::MarkWidget::onMarkTypeComboBoxCurrentIndexChanged(const QString& currentText)
 {
   m_mark->setWellKnownName(new std::string(currentText.toStdString()));
 }
@@ -183,8 +137,6 @@ void te::qt::widgets::MarkWidget::onMarkTypeChanged(const QString& currentText)
 void te::qt::widgets::MarkWidget::onStrokeChanged()
 {
   m_mark->setStroke(m_strokeWidget->getStroke());
-
-  updateMarkIcons();
 }
 
 void te::qt::widgets::MarkWidget::onStrokeGroupBoxToggled(bool on)
@@ -193,15 +145,11 @@ void te::qt::widgets::MarkWidget::onStrokeGroupBoxToggled(bool on)
     m_mark->setStroke(0);
   else
     m_mark->setStroke(m_strokeWidget->getStroke());
-
-  updateMarkIcons();
 }
 
 void te::qt::widgets::MarkWidget::onFillChanged()
 {
   m_mark->setFill(m_fillWidget->getFill());
-
-  updateMarkIcons();
 }
 
 void te::qt::widgets::MarkWidget::onFillGroupBoxToggled(bool on)
@@ -210,6 +158,4 @@ void te::qt::widgets::MarkWidget::onFillGroupBoxToggled(bool on)
     m_mark->setFill(0);
   else
     m_mark->setFill(m_fillWidget->getFill());
-
-  updateMarkIcons();
 }

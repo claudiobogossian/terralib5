@@ -6,58 +6,65 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>94</width>
-    <height>36</height>
+    <width>106</width>
+    <height>62</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_3">
+  <layout class="QGridLayout" name="gridLayout_2">
    <property name="margin">
     <number>0</number>
    </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_2">
+    <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
-      <widget class="QGroupBox" name="m_markTypeGroupBox">
-       <property name="title">
-        <string>Type</string>
-       </property>
-       <property name="flat">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="QGroupBox" name="m_fillGroupBox">
-         <property name="title">
-          <string>Fill</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="m_markTypeLabel">
+         <property name="text">
+          <string>Type:</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="m_strokeGroupBox">
-         <property name="title">
-          <string>Stroke</string>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-         <property name="checkable">
-          <bool>true</bool>
+       <item>
+        <widget class="QComboBox" name="m_markTypeComboBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="m_fillGroupBox">
+       <property name="title">
+        <string>Fill</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="m_strokeGroupBox">
+       <property name="title">
+        <string>Stroke</string>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
