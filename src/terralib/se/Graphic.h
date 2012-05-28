@@ -98,10 +98,16 @@ namespace te
         */
         void add(ExternalGraphic* g);
 
+        void setExternalGraphic(std::size_t index, ExternalGraphic* g);
+
+        const std::vector<ExternalGraphic*> getExternalGraphics() const;
+
         /*!
           \brief
         */
         void add(Mark* m);
+
+        void setMark(std::size_t index, Mark* m);
 
         const std::vector<Mark*> getMarks() const;
 
@@ -166,7 +172,11 @@ namespace te
 
         void setAnchorPoint(AnchorPoint* value);
 
+        const AnchorPoint* getAnchorPoint() const;
+
         void setDisplacement(Displacement* value);
+
+        const Displacement* getDisplacement() const;
 
         //@}
 

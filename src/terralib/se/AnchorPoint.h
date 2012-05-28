@@ -84,7 +84,11 @@ namespace te
 
         void setAnchorPointX(ParameterValue* x);
 
+        const ParameterValue* getAnchorPointX() const;
+
         void setAnchorPointY(ParameterValue* y);
+
+        const ParameterValue* getAnchorPointY() const;
 
         //@}
 
