@@ -185,17 +185,6 @@ namespace te
         */
         void draw(QImage* img, QPainterPath& path);
 
-        /*!
-          \brief Auxiliary method that converts the given QImage to a array of te::color::RGBAColor.
-
-          \param img The image that will be converted.
-          
-          \return A array of te::color::RGBAColor that represents the same image.
-
-          \note The caller will take the ownership of the returned array.
-        */
-        te::color::RGBAColor** convert(QImage* img);
-
         //@}
 
         /** @name Internal methods to Symbology Enconding elements.
