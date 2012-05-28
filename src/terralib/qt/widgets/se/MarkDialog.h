@@ -69,8 +69,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT MarkDialog : public QDialog
       {
-        Q_OBJECT
-
         public:
 
           /** @name Initializer Methods
