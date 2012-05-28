@@ -32,8 +32,6 @@
 
 namespace te
 {
-  namespace common { class UnitOfMeasure; }
-
 	namespace srs
 	{
     /*!
