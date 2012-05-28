@@ -20,7 +20,7 @@
 /*!
   \file terralib/geometry/AffineGT.h
 
-  \brief 2D Affine Geometric transformation base class.
+  \brief 2D Affine Geometric transformation.
 */
 
 #ifndef __TERRALIB_GEOMETRY_INTERNAL_AFFINEGT_H
@@ -41,7 +41,7 @@ namespace te
     /*!
       \class AffineGT
       
-      \brief 2D Affine Geometric transformation base class.
+      \brief 2D Affine Geometric transformation.
       
       \note The transformation parameters (inside GTParameters::m_directParameters) are disposed on the following form:
       
@@ -113,13 +113,13 @@ GTParameters::m_directParameters = [ a b c d e f ]
 
       \brief 2D Affine Geometric transformation factory.
     */
-    class TEGEOMEXPORT GTAffineFactory : public GTFactory
+    class TEGEOMEXPORT AffineGTFactory : public GTFactory
     {
       public:
 
-        ~GTAffineFactory();
+        ~AffineGTFactory();
 
-        GTAffineFactory();
+        AffineGTFactory();
         
         GeometricTransformation* build();
     };

@@ -47,6 +47,7 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
 
 // It registers the class methods as Test Cases belonging to the suit 
   CPPUNIT_TEST( tcAffine );
+  CPPUNIT_TEST( tcSecondDegreePolynomialGT );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -61,12 +62,12 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
   protected:
     
     /*! \brief Direct mapping test. */
-    static bool testDirectMapping( te::gm::GeometricTransformation const * transfPtr,
+    static void testDirectMapping( te::gm::GeometricTransformation const * transfPtr,
       const te::gm::Coord2D& pt1, const te::gm::Coord2D& pt2, 
       const double& maxError );
 
     /*! \brief Inverse mapping test. */  
-    static bool testInverseMapping( te::gm::GeometricTransformation const * transfPtr,
+    static void testInverseMapping( te::gm::GeometricTransformation const * transfPtr,
       const te::gm::Coord2D& pt1, const te::gm::Coord2D& pt2, 
       const double& maxError );
       
@@ -74,6 +75,9 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: Affine transformation. */
     void tcAffine();
+    
+    /*! \brief Test Case: Second degree polynomial transformation. */
+    void tcSecondDegreePolynomialGT();
 
 };
 

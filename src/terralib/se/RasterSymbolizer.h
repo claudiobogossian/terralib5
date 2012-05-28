@@ -41,7 +41,7 @@ namespace te
     class ContrastEnhancement;
     class ImageOutline;
     class ParameterValue;
-    class ShadedRelief;    
+    class ShadedRelief;
 
     /*!
       \class RasterSymbolizer
@@ -89,6 +89,13 @@ namespace te
         /*! \brief It initializes a new RasterSymbolizer. */
         RasterSymbolizer();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other raster symbolizer.
+        */
+        RasterSymbolizer(const RasterSymbolizer& rhs);
+
         /*! \brief Destructor. */
         ~RasterSymbolizer();
 
@@ -100,18 +107,31 @@ namespace te
         //@{
 
         void setGeometry(te::fe::PropertyName* g);
+
         void setOpacity(ParameterValue* p);
+
         void setChannelSelection(ChannelSelection* c);
+
         te::se::ChannelSelection* getChannelSelection() { return m_channelSelection; }
+
         void setOverlapBehavior(OverlapBehavior b);
+
         void setColorMap(ColorMap* c);
+
         te::se::ColorMap* getColorMap() { return m_colorMap; }
+
         void setContrastEnhancement(ContrastEnhancement* c);
+
         te::se::ContrastEnhancement* getContrastEnhancement() { return m_contrastEnhancement; }
+
         void setShadedRelief(ShadedRelief* s);
+
         void setImageOutline(ImageOutline* i);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Symbolizer* clone() const;
 
       private:
 

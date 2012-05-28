@@ -47,6 +47,7 @@ public:
   void clearLastPointMap();
   int getTimerId();
   void killTimer();
+  void startTimer(int);
   void backToInit();
 
   public slots:

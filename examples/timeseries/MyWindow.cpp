@@ -5,6 +5,9 @@
 #include "PlotTemporalDistance.h"
 #include "RasterExamples.h"
 #include "STExamples.h"
+#include "LineStyle.h"
+#include "PointStyle.h"
+#include "PolygonStyle.h"
 
 // TerraLib
 #include <terralib/common.h>
@@ -30,6 +33,7 @@
 #include <QDir>
 #include <QImage>
 #include <QCloseEvent>
+#include <QColorDialog>
 
 //STL
 #include <string>
@@ -41,18 +45,18 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_temporalLoop(false)
 
 {
-  setWindowTitle("My Window");
+  setWindowTitle("My Main Window - Display: Root Folder");
 
-  m_ds = te::da::DataSourceFactory::make("PostGIS");
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
   std::string dsInfo("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
-  m_ds->open(dsInfo);
+  ds->open(dsInfo);
 
-  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+  te::da::DataSourceCatalog* catalog = ds->getCatalog();
+  te::da::DataSourceTransactor* transactor = ds->getTransactor();
   te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
 //--------------------------------------------------------------------------------
 // create the root layer
-  m_rootFolderLayer = new te::map::FolderLayer("0", "Layers");
+  m_rootFolderLayer = new te::map::FolderLayer("Root Folder", "Root Folder");
 
 // create the folders
   te::map::FolderLayer *brFolderLayer = new te::map::FolderLayer("Brasil", "Brasil", m_rootFolderLayer);
@@ -76,7 +80,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
       MyLayer* f = new MyLayer(id, id, brFolderLayer);
-      f->setDataSource(m_ds);
+      f->setDataSource(ds);
       f->setSRID(gp->getSRID());
 
     }
@@ -87,7 +91,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
       MyLayer* f = new MyLayer(id, id, rjFolderLayer);
-      f->setDataSource(m_ds);
+      f->setDataSource(ds);
       f->setSRID(gp->getSRID());
     }
     else if(id.find("public.mg_") != std::string::npos)
@@ -97,7 +101,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
       MyLayer* f = new MyLayer(id, id, mgFolderLayer);
-      f->setDataSource(m_ds);
+      f->setDataSource(ds);
       f->setSRID(gp->getSRID());
     }
     else if(id.find("public.goias_") != std::string::npos)
@@ -107,7 +111,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
       MyLayer* f = new MyLayer(id, id, goFolderLayer);
-      f->setDataSource(m_ds);
+      f->setDataSource(ds);
       f->setSRID(gp->getSRID());
     }
     else if(id.find("public.sp_") != std::string::npos)
@@ -117,7 +121,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
       MyLayer* f = new MyLayer(id, id, spFolderLayer);
-      f->setDataSource(m_ds);
+      f->setDataSource(ds);
       f->setSRID(gp->getSRID());
     }
   }
@@ -126,7 +130,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   te::map::FolderLayer *movingObjectsFolderLayer = new te::map::FolderLayer("MovingObjects", "MovingObjects", m_rootFolderLayer);
 
 // Create MovingObjects layer 40 and 41
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
+  ds = te::da::DataSourceFactory::make("OGR");
   ds->open("connection_string=./data/kml/t_40_41.kml");
   catalog = ds->getCatalog();
   transactor = ds->getTransactor();
@@ -224,18 +228,23 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_layerExplorer->setMinimumWidth(100);
   m_layerExplorer->setMaximumWidth(250);
 
-  m_displayBox = new QGroupBox;
-  QVBoxLayout *displayLayout = new QVBoxLayout(m_displayBox);
+  m_displayBox = new QGroupBox(this);
+  QBoxLayout *displayLayout = new QVBoxLayout(m_displayBox);
+  //QVBoxLayout *displayLayout = new QVBoxLayout(m_displayBox);
   m_splitter = new QSplitter;
-  MyDisplay* display = new MyDisplay(650, 600, m_splitter);
+  displayLayout->addWidget(m_splitter);
+  MyDisplay* display = new MyDisplay(650, 600, m_rootFolderLayer, m_splitter);
   m_mapDisplayVec.push_back(display);
+
   display->setMinimumWidth(300);
   display->setMinimumHeight(200);
   display->setLayerTree(m_rootFolderLayer);
+  //faca conexao para atualizacao de grid operation
+  QObject::connect(display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
 
   m_timeSlider = new TimeSlider(Qt::Horizontal);
   m_timeSlider->setMapDisplay(display);
-  displayLayout->addWidget(m_splitter);
   displayLayout->addWidget(m_timeSlider);
 
   m_timeSlider->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -249,7 +258,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   connect(autoDrawingAction, SIGNAL(triggered()), this, SLOT(autoDrawingSlot()));
   connect(manualDrawingAction, SIGNAL(triggered()), this, SLOT(manualDrawingSlot()));
   connect(configDrawingAction, SIGNAL(triggered()), this, SLOT(configDrawingSlot()));
-  connect(m_timeSlider, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenuSlot(const QPoint&)));
+  connect(m_timeSlider, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenu(const QPoint&)));
   m_timeSlider->loadMovingObjects();
   display->setTimeSlider(m_timeSlider);
 
@@ -259,15 +268,11 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
   setLayout(horizontalLayout);
 
-  connect(m_layerExplorer, SIGNAL(contextMenuPressed(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuPressedSlot(const QModelIndex&, const QPoint&)));
-  connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChangedSlot(const QModelIndex&)));
-  connect(m_layerExplorerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)), this, SLOT(layerItemMovedSlot(const QModelIndex&, const QModelIndex&)));
+  connect(m_layerExplorer, SIGNAL(contextMenuPressed(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuPressed(const QModelIndex&, const QPoint&)));
+  connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChanged(const QModelIndex&)));
+  connect(m_layerExplorerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)), this, SLOT(layerItemMoved(const QModelIndex&, const QModelIndex&)));
 
   m_treeMenu = new QMenu(this);
-  m_styleAction = new QAction("&Set Style...", m_treeMenu);
-  m_treeMenu->addAction(m_styleAction);
-  connect(m_styleAction, SIGNAL(triggered()), this, SLOT(setStyleSlot()));
-
   m_openNewMapDisplayAction = new QAction("&Open New MapDisplay...", m_treeMenu);
   m_treeMenu->addAction(m_openNewMapDisplayAction);
   connect(m_openNewMapDisplayAction, SIGNAL(triggered()), this, SLOT(openNewMapDisplaySlot()));
@@ -275,6 +280,31 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_openGridAction = new QAction("Open &Grid...", m_treeMenu);
   m_treeMenu->addAction(m_openGridAction);
   connect(m_openGridAction, SIGNAL(triggered()), this, SLOT(openGridSlot()));
+
+  m_changeColorMenu = m_treeMenu->addMenu("Change Color");
+  m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeColorMenu);
+  m_changeColorMenu->addAction(m_changeDefaultColorAction);
+  connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
+  m_changePointedColorAction = new QAction("Change Pointed Color...", m_changeColorMenu);
+  m_changeColorMenu->addAction(m_changePointedColorAction);
+  connect(m_changePointedColorAction, SIGNAL(triggered()), this, SLOT(changePointedColorSlot()));
+  m_changeQueriedColorAction = new QAction("Change Queried Color...", m_changeColorMenu);
+  m_changeColorMenu->addAction(m_changeQueriedColorAction);
+  connect(m_changeQueriedColorAction, SIGNAL(triggered()), this, SLOT(changeQueriedColorSlot()));
+  m_changePointedAndQueriedColorAction = new QAction("Change Pointed And Queried Color...", m_changeColorMenu);
+  m_changeColorMenu->addAction(m_changePointedAndQueriedColorAction);
+  connect(m_changePointedAndQueriedColorAction, SIGNAL(triggered()), this, SLOT(changePointedAndQueriedColorSlot()));
+
+  m_changeStyleMenu = m_treeMenu->addMenu("Change Style");
+  m_changePointStyleAction = new QAction("Change Point Style...", m_changeStyleMenu);
+  m_changeStyleMenu->addAction(m_changePointStyleAction);
+  connect(m_changePointStyleAction, SIGNAL(triggered()), this, SLOT(changePointStyleSlot()));
+  m_changeLineStyleAction = new QAction("Change Line Style...", m_changeStyleMenu);
+  m_changeStyleMenu->addAction(m_changeLineStyleAction);
+  connect(m_changeLineStyleAction, SIGNAL(triggered()), this, SLOT(changeLineStyleSlot()));
+  m_changePolygonStyleAction = new QAction("Change Polygon Style...", m_changeStyleMenu);
+  m_changeStyleMenu->addAction(m_changePolygonStyleAction);
+  connect(m_changePolygonStyleAction, SIGNAL(triggered()), this, SLOT(changePolygonStyleSlot()));
 
   m_renameAction = new QAction("Re&name...", m_treeMenu);
   m_treeMenu->addAction(m_renameAction);
@@ -292,6 +322,11 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_removeAction);
   connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeSlot()));
 
+  m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
+  m_keepOnMemoryAction->setCheckable(true);
+  m_treeMenu->addAction(m_keepOnMemoryAction);
+  connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
+
   m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
   m_treeMenu->addAction(m_plotTemporalDistanceAction);
   connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
@@ -301,20 +336,16 @@ MyWindow::~MyWindow()
 {
 // delete m_rootFolderLayer; //como deletar isto???????
 // acho que o LayerExplorer deveria fazer isso, mas, vou varrer a arvore e fazer aqui...
+  std::set<te::da::DataSource*> dataSources;
   std::vector<te::map::AbstractLayer*> layers;
-  getLayers(m_rootFolderLayer, layers);  // so pega o tipo LAYER
+  getLayers(m_rootFolderLayer, layers);
   std::vector<te::map::AbstractLayer*>::iterator lit;
   for(lit = layers.begin(); lit != layers.end(); ++lit)
   {
     MyLayer* layer = (MyLayer*)(*lit);
-    te::map::DataGridOperation* op = layer->getDataGridOperation();
-    if(op)
-    {
-      delete op->getDataSet()->getTransactor();
-      delete op->getDataSet();
-      delete op;
-    }
-    layer->setDataGridOperation(0);
+    dataSources.insert(layer->getDataSource());
+    delete layer; // already delete grid, plots, and dataSet
+
   }
 
 // delete map displays
@@ -322,25 +353,10 @@ MyWindow::~MyWindow()
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     delete (*it);
 
-// delete grids and plots
-  std::map<std::string, MyGrid*>::iterator git;
-  for(git = m_gridMap.begin(); git != m_gridMap.end(); ++git)
-  {
-    // delete todos os plots do grid
-    std::map<std::string, std::vector<QwtPlot*> >::iterator pit = m_plotMap.find(git->first);
-    if(pit != m_plotMap.end())
-    {
-      std::vector<QwtPlot*>& plots = pit->second;
-      std::vector<QwtPlot*>::iterator vit;
-      for(vit = plots.begin(); vit != plots.end(); ++vit)
-        delete *vit;
-    }
+  std::set<te::da::DataSource*>::iterator di;
+  for(di = dataSources.begin(); di != dataSources.end(); ++di)
+    delete *di;
 
-    // delete grid
-    delete git->second;
-  }
-
-  delete m_ds;
   delete m_splitter;
 }
 
@@ -481,65 +497,70 @@ void MyWindow::generatePNGs(std::vector<MyLayer*>& layers)
 }
 
 
-void MyWindow::layerVisibilityChangedSlot(const QModelIndex& mi)
+void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
 {
   try
   {
     te::qt::widgets::AbstractLayerItem* childItem = static_cast<te::qt::widgets::AbstractLayerItem*>(mi.internalPointer());
     te::map::AbstractLayer* al = childItem->getRefLayer();
+    if(al->getType() == "FOLDERLAYER")
+    {
+      std::vector<te::map::AbstractLayer*> layers;
+      getLayers(al, layers);
+      if(layers.empty())
+      {
+        if(al->getVisibility() == 1)
+          QMessageBox::information(this, tr("Folder is empty"), tr("EMPTY FOLDER"));
+        al->setVisibility(te::map::NOT_VISIBLE);
+        m_layerExplorer->update();
+        return; // nao ha' layer debaixo do folder
+      }
+      al = *layers.begin();
+    }
 
-    std::vector<te::map::AbstractLayer*> changedLayers;
-    getLayers(al, changedLayers);  // so pega o tipo LAYER
-
-    // veja quais displays estao usando estes changedLayers e atualize o mapa de gridoperation
-    std::set<te::map::MapDisplay*> displaySet;
+    //redesenhar os displays afetados
+    std::set<te::map::MapDisplay*> displays;
     std::vector<te::map::MapDisplay*>::iterator it;
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
-      MyDisplay* display = (MyDisplay*)*it;
-      te::map::AbstractLayer* ald = display->getLayerTree();
       std::vector<te::map::AbstractLayer*> layers;
-      getLayers(ald, layers);  // so pega o tipo LAYER
-      std::vector<te::map::AbstractLayer*>::iterator lit, cit;
+      getLayers((*it)->getLayerTree(), layers);
+      std::vector<te::map::AbstractLayer*>::iterator lit;
       for(lit = layers.begin(); lit != layers.end(); ++lit)
       {
-        MyLayer* layer = (MyLayer*)*lit;
-        if(layer->isTemporal())
-          continue;
-
-        for(cit = changedLayers.begin(); cit != changedLayers.end(); ++cit)
+        if(al == *lit)
         {
-          if(*lit == *cit)
-          {
-            // atualiza o display porque ele usa o layer (ou desenha ou apaga o layer)
-            displaySet.insert(display);
-
-            // mudou para
-            int visible = al->getVisibility(); // NOT_VISIBLE, VISIBLE, PARTIALLY_VISIBLE
-
-            te::map::DataGridOperation* op = layer->getDataGridOperation();
-            if(op == 0)
-            {
-              createGridOperation(layer);
-              op = layer->getDataGridOperation();
-
-              // para novo grid operation, o canvas deve ser totalamente repintado.
-              layer->setRenderer(0);
-            }
-            if(visible == 1) // ficou visible
-              insertGridOperation(op, display);
-            else if(visible == 0)
-              removeGridOperation(op, display);
-            break;
-          }
+          displays.insert(*it);
+          break;
         }
       }
     }
+
     std::set<te::map::MapDisplay*>::iterator sit;
-    for(sit = displaySet.begin(); sit != displaySet.end(); ++sit)
+    for(sit = displays.begin(); sit != displays.end(); ++sit)
     {
       ((MyDisplay*)(*sit))->draw();
       ((MyDisplay*)(*sit))->update();
+    }
+
+    // acabou de mudar para (0 = not visible, 1 = visible, 2 = meio visible)
+    int visible = al->getVisibility();
+    if(visible == 0)
+    {
+      // todos os layers abaixo deste abstract layer ficaram nao visivel
+      // verifique se esses layers nao estao sendo usados.
+      // Delete grid operation dos layers que nao estao sendo utilizados
+      std::vector<te::map::AbstractLayer*> layers;
+      getLayers(al, layers);
+      std::vector<te::map::AbstractLayer*>::iterator lit;
+      for(lit = layers.begin(); lit != layers.end(); ++lit)
+      {
+        MyLayer* mlayer = (MyLayer*)(*lit);
+        // este display deixou de usar este layer (apagou o desenho do layer)
+        // se nenhum widget mais estiver usando este layer delete grid operation
+        if(isUsed(mlayer) == false)
+          deleteGridOperation(mlayer);
+      }
     }
 
     //parar o desenho dos layers temporais e reinicializar o vector de layers temporais no time Slider
@@ -566,177 +587,64 @@ void MyWindow::layerVisibilityChangedSlot(const QModelIndex& mi)
   }
 }
 
-void MyWindow::insertGridOperation(te::map::DataGridOperation* op, QWidget* w)
+void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
 {
-  std::map<te::map::DataGridOperation*, std::set<QWidget*> >::iterator it = m_operationMap.find(op);
-  if(it == m_operationMap.end())
-  {
-    std::set<QWidget*> s;
-    s.insert(w);
-    m_operationMap[op] = s;
-  }
-  else
-  {
-    if(it->second.find(w) == it->second.end())
-      it->second.insert(w);
-  }
-}
+  te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(mi.internalPointer());
+  te::map::AbstractLayer* al = item->getRefLayer();
+  if(al->getVisibility() == 0)
+    return;
 
-void MyWindow::removeGridOperation(te::map::DataGridOperation* op, QWidget* w)
-{
-  std::map<te::map::DataGridOperation*, std::set<QWidget*> >::iterator it = m_operationMap.find(op);
-  if(it != m_operationMap.end())
-  {
-    std::set<QWidget*>& widgets = it->second;
-    std::set<QWidget*>::iterator sit = widgets.find(w);
-    if(sit != widgets.end())
-      widgets.erase(sit);
+  te::map::AbstractLayer* parent = (te::map::AbstractLayer*)al->getParent();
 
-    if(widgets.empty())
+  bool modif = false;
+  int ini = mi.row();
+  int fim = mf.row();
+  int inc = 1;
+  if(ini > fim)
+    inc = -1;
+  for(int i = ini; i != fim; i += inc)
+  {
+    te::map::AbstractLayer* l = (te::map::AbstractLayer*)parent->getChild(i);
+    if(l->getVisibility() != 0)
     {
-      // remova do mapa
-      m_operationMap.erase(it);
-
-      // nenhum widget usa este gridoperation, entao,
-      // ache o layer que usa este gridoperation
-      std::vector<te::map::AbstractLayer*> layers;
-      getLayers(m_rootFolderLayer, layers); // so pega o tipo LAYER
-      std::vector<te::map::AbstractLayer*>::iterator lit;
-      for(lit = layers.begin(); lit != layers.end(); ++lit)
-      {
-        MyLayer* layer = (MyLayer*)(*lit);
-        te::map::DataGridOperation* layerop = layer->getDataGridOperation();
-        if(layerop == op)
-        {
-          // libere memoria (remova gridoperation do layer)
-          delete op->getDataSet()->getTransactor();
-          delete op->getDataSet();
-          delete op;
-          layer->setDataGridOperation(0);
-
-          // delete os canvas que usavam este layer
-          std::vector<te::map::MapDisplay*>::iterator cit;
-          for(cit = m_mapDisplayVec.begin(); cit != m_mapDisplayVec.end(); ++cit)
-            ((MyDisplay*)(*cit))->deleteCanvas(layer);
-
-          break;
-        }
-      }
+      modif = true;
+      break;
     }
   }
-}
+  if(modif == false)
+    return;
 
-void MyWindow::createGridOperation(MyLayer* layer)
-{
-  if(layer->getDataGridOperation() == 0)
-  {
-    std::string name = layer->getId();
-    te::da::DataSource* ds = layer->getDataSource();
-    te::da::DataSourceTransactor* t = ds->getTransactor();
-    assert(t);
-
-    te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-    assert(loader);
-
-    te::da::DataSetType* dsType = loader->getDataSetType(name, true);
-    dsType->setCatalog(ds->getCatalog());
-    assert(dsType);
-    delete loader;
-
-    te::da::DataSet* dataSet = t->getDataSet(name);
-    assert(dataSet);
-    if(dsType->getPrimaryKey())
-    {
-      te::map::DataGridOperation* operation = new te::map::DataGridOperation();
-      operation->init(dsType, dataSet);
-      layer->setDataGridOperation(operation);
-    }
-  }
-}
-
-void MyWindow::insertPlot(std::string gridName, QwtPlot* p)
-{
-  // esqueca grid operation
-  std::map<std::string, std::vector<QwtPlot*> >::iterator it = m_plotMap.find(gridName);
-  if(it != m_plotMap.end())
-  {
-    std::vector<QwtPlot*>& plots = it->second;
-    std::vector<QwtPlot*>::iterator vit;
-    for(vit = plots.begin(); vit != plots.end(); ++vit)
-    {
-      if(*vit == p)
-        break;
-    }
-    if(vit == plots.end())
-      plots.push_back(p);
-  }
-  else
-  {
-    std::vector<QwtPlot*> plots;
-    plots.push_back(p);
-    m_plotMap[gridName] = plots;
-  }
-}
-
-void MyWindow::removePlot(std::string gridName, QwtPlot* p)
-{
-  // esqueca grid operation
-  std::map<std::string, std::vector<QwtPlot*> >::iterator it = m_plotMap.find(gridName);
-  if(it != m_plotMap.end())
-  {
-    std::vector<QwtPlot*>& plots = it->second;
-    std::vector<QwtPlot*>::iterator vit;
-    for(vit = plots.begin(); vit != plots.end(); ++vit)
-    {
-      if(*vit == p)
-      {
-        plots.erase(vit);
-        break;
-      }
-    }
-
-    if(plots.empty())
-      m_plotMap.erase(it);
-  }
-}
-
-QwtPlot* MyWindow::getPlot(std::string gridName, std::string plotTitle)
-{
-  std::map<std::string, std::vector<QwtPlot*> >::iterator it;
-  for(it = m_plotMap.begin(); it != m_plotMap.end(); ++it)
-  {
-    std::vector<QwtPlot*>& plots = it->second;
-    std::vector<QwtPlot*>::iterator vit;
-    for(vit = plots.begin(); vit != plots.end(); ++vit)
-    {
-      if(((te::qt::qwt::Plot*)(*vit))->windowTitle().toStdString() == plotTitle)
-        return *vit;
-    }
-  }
-  return 0;
-}
-
-std::vector<QwtPlot*> MyWindow::getPlots(std::string gridName)
-{
-  std::map<std::string, std::vector<QwtPlot*> >::iterator it = m_plotMap.find(gridName);
-  if(it != m_plotMap.end())
-    return it->second;
-
-  std::vector<QwtPlot*> plots;
-  return plots;
-}
-
-void MyWindow::layerItemMovedSlot(const QModelIndex&, const QModelIndex&)
-{
+  //redesenhar os displays afetados
+  std::set<te::map::MapDisplay*> displays;
   std::vector<te::map::MapDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
-    ((MyDisplay*)(*it))->draw();
-    ((MyDisplay*)(*it))->update();
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers((*it)->getLayerTree(), layers);
+    std::vector<te::map::AbstractLayer*>::iterator lit, lit2;
+    for(lit = layers.begin(); lit != layers.end(); ++lit)
+    {
+      if(al == *lit)
+      {
+        displays.insert(*it);
+        break;
+      }
+    }
+  }
+
+  std::set<te::map::MapDisplay*>::iterator sit;
+  for(sit = displays.begin(); sit != displays.end(); ++sit)
+  {
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers((*sit)->getLayerTree(), layers);
+    MyDisplay* display = (MyDisplay*)*sit;
+    display->reorderDrawing(layers);
+    //((MyDisplay*)(*sit))->draw();
+    ((MyDisplay*)(*sit))->update();
   }
 }
 
-void MyWindow::timeSliderContextMenuSlot(const QPoint& pos)
+void MyWindow::timeSliderContextMenu(const QPoint& pos)
 {
   QPoint p = mapToGlobal(m_displayBox->pos()) + m_timeSlider->pos() + pos;
   m_timeSliderMenu->exec(p);
@@ -800,11 +708,9 @@ void MyWindow::timeSliderValueChangedSlot(int)
 
 }
 
-void MyWindow::contextMenuPressedSlot(const QModelIndex& mi, const QPoint& pos)
+void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
 {
   //teste m_styleAction->setEnabled(false);
-  m_styleAction->setEnabled(true);
-
   m_parentModelIndex = mi.parent();
   te::qt::widgets::AbstractLayerItem* childItem = static_cast<te::qt::widgets::AbstractLayerItem*>(mi.internalPointer());
   m_selectedLayer = childItem->getRefLayer();
@@ -821,15 +727,71 @@ void MyWindow::contextMenuPressedSlot(const QModelIndex& mi, const QPoint& pos)
   else
     m_plotTemporalDistanceAction->setEnabled(false);
 
-  if(title.toUpper() == "MOVINGOBJECTS" || title2.toUpper() == "MOVINGOBJECTS")
+  if(title.toUpper() == "MOVINGOBJECTS" || title2.toUpper() == "MOVINGOBJECTS" || 
+     title.toUpper() == "TEMPORALIMAGES" || title2.toUpper() == "TEMPORALIMAGES")
   {
     m_openNewMapDisplayAction->setEnabled(false);
     m_addFolderAction->setEnabled(false);
+    m_keepOnMemoryAction->setEnabled(false);
+    m_keepOnMemoryAction->setChecked(false);
   }
   else
   {
     m_openNewMapDisplayAction->setEnabled(true);
-    m_addFolderAction->setEnabled(true);
+
+    if(m_selectedLayer->getType() == "FOLDERLAYER")
+    {
+      m_keepOnMemoryAction->setEnabled(false);
+      m_keepOnMemoryAction->setChecked(false);
+      m_addFolderAction->setEnabled(true);
+      m_changeColorMenu->setEnabled(false);
+      m_changeStyleMenu->setEnabled(false);
+    }
+    else
+    {
+      MyLayer* layer = (MyLayer*)m_selectedLayer;
+      m_keepOnMemoryAction->setEnabled(true);
+      m_keepOnMemoryAction->setChecked(layer->isKeepOnMemory());
+      m_addFolderAction->setEnabled(false);
+      te::map::DataGridOperation* op = layer->getDataGridOperation();
+      if(op)
+      {
+        m_changeColorMenu->setEnabled(true);
+        m_changeStyleMenu->setEnabled(true);
+        QColor qcor;
+        QIcon icon;
+        QPixmap p(20,15);
+        te::color::RGBAColor cor;
+        cor = op->getDefaultColor();
+        qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+        p.fill(qcor);
+        icon = QIcon(p);
+        m_changeDefaultColorAction->setIcon(icon);
+
+        cor = op->getPointedColor();
+        qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+        p.fill(qcor);
+        icon = QIcon(p);
+        m_changePointedColorAction->setIcon(icon);
+
+        cor = op->getQueriedColor();
+        qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+        p.fill(qcor);
+        icon = QIcon(p);
+        m_changeQueriedColorAction->setIcon(icon);
+
+        cor = op->getPointedAndQueriedColor();
+        qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+        p.fill(qcor);
+        icon = QIcon(p);
+        m_changePointedAndQueriedColorAction->setIcon(icon);
+      }
+      else
+      {
+        m_changeColorMenu->setEnabled(false);
+        m_changeStyleMenu->setEnabled(false);
+      }
+    }
   }
   
   m_treeMenu->exec(pos);
@@ -960,72 +922,41 @@ void MyWindow::setStyleSlot()
 
 void MyWindow::openNewMapDisplaySlot()
 {
-/////////////////////////////////////////////////////
-  // resolver o problema de layer temporais......
-  // ainda nao faz nada com temporais.....
-////////////////////////////////////////////////////
-  MyDisplay *md = new MyDisplay(300, 250);
+  MyDisplay *md = new MyDisplay(300, 250, m_rootFolderLayer);
+  QString wtitle = "Display: ";
+  wtitle += m_selectedLayer->getTitle().c_str();
+  md->setWindowTitle(wtitle);
   md->setMinimumWidth(300);
   md->setMinimumHeight(250);
   md->setLayerTree(m_selectedLayer);
+  m_mapDisplayVec.push_back(md);
 
-  std::vector<te::map::AbstractLayer*> layers;
-  getLayers(m_selectedLayer, layers); // so pega o tipo LAYER
-  std::vector<te::map::AbstractLayer*>::iterator lit;
-  for(lit = layers.begin(); lit != layers.end(); ++lit)
-  {
-    te::map::AbstractLayer* item = *lit;
-    if(item->getVisibility() == te::map::VISIBLE)
-    {
-      MyLayer* layer = (MyLayer*)item;
-      createGridOperation(layer);
-      te::map::DataGridOperation* op = layer->getDataGridOperation();
-      //add this display to operation map
-      insertGridOperation(op, md);
-    }
-  }
+  //faca conexao para atualizacao de grid operation
+  QObject::connect(md, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), md, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
 
-//faca conexao deste com os map display existentes
-  std::vector<te::map::MapDisplay*>::iterator it;
-  for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
-  {
-    MyDisplay* display = (MyDisplay*)*it;
-    QObject::connect(md, SIGNAL(selectionChanged(te::map::DataGridOperation*)), display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-    QObject::connect(display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), md, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-  }
-
-//faca conexao deste com os grids existentes
-  std::map<std::string, MyGrid*>::iterator git;
-  for(git = m_gridMap.begin(); git != m_gridMap.end(); ++git)
-  {
-    MyGrid* grid = git->second;
-    QObject::connect(md, SIGNAL(selectionChanged(te::map::DataGridOperation*)), grid, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-    QObject::connect(grid, SIGNAL(selectionChanged(te::map::DataGridOperation*)), md, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-  }
-
-//faca conexao deste com os plots existentes
-  std::map<std::string, std::vector<QwtPlot*> >::iterator pit; 
-  for(pit = m_plotMap.begin(); pit != m_plotMap.end(); ++pit)
-  {
-    std::vector<QwtPlot*>& plots = pit->second;
-    std::vector<QwtPlot*>::iterator vit;
-    for(vit = plots.begin(); vit != plots.end(); ++vit)
-    {
-      QObject::connect(md, SIGNAL(selectionChanged(te::map::DataGridOperation*)), *vit, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-      QObject::connect(*vit, SIGNAL(selectionChanged(te::map::DataGridOperation*)), md, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-    }
-  }
-
-//faca conexao para remover o display do m_mapDisplayVec quando ele for closed
+  //faca conexao para remover o display do m_mapDisplayVec quando ele for closed
   QObject::connect(md, SIGNAL(closed(MyDisplay*)), this, SLOT(removeDisplaySlot(MyDisplay*)));
 
-  m_mapDisplayVec.push_back(md);
   md->show();
   ((te::qt::widgets::MapDisplay*)md)->draw();
 }
 
 void MyWindow::removeDisplaySlot(MyDisplay* d)
 {
+  // quais sao os layers que estavam sendo visualizados
+  std::vector<te::map::AbstractLayer*>layers;
+  getLayers(d->getLayerTree(), layers);
+  std::vector<te::map::AbstractLayer*>::iterator lit;
+  for(lit = layers.begin(); lit != layers.end(); ++lit)
+  {
+    MyLayer* layer = (MyLayer*)(*lit);
+    //layer esta' sendo usado? grid operation pode ser deletado?
+    if(isUsed(layer) == false)
+      deleteGridOperation(layer);
+  }
+
+  // remova do mapa
   std::vector<te::map::MapDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
@@ -1036,174 +967,44 @@ void MyWindow::removeDisplaySlot(MyDisplay* d)
       break;
     }
   }
-
-  te::map::AbstractLayer* al = d->getLayerTree();
-  if(al && al->getVisibility() != te::map::NOT_VISIBLE)
-  {
-    std::vector<te::map::AbstractLayer*> layers;
-    getLayers(al, layers); // so pega o tipo LAYER
-    std::vector<te::map::AbstractLayer*>::iterator lit;
-    for(lit = layers.begin(); lit != layers.end(); ++lit)
-    {
-      MyLayer* layer = (MyLayer*)*lit;
-      if(layer->isTemporal())
-        continue;
-      if(layer->getVisibility() == te::map::VISIBLE)
-      {
-        // Neste caso estou supondo que layer é folha (nao tem filhos)
-        removeGridOperation(layer->getDataGridOperation(), d);
-
-        // verifique se ha outro display usando este Layer.
-        if(isDrawnOnTheDisplay(layer) == false)
-        {
-          // nenhum display usa este layer
-          // set layer para nao visivel --- como ?????????????????
-          // Bom! Talves este codigo nao seja necessario porque sempre vai existir
-          // um display que e' da janela principal
-          //??????????????????????????????????????????????????????????
-          //??????????????????????????????????????????????????????????
-          //??????????????????????????????????????????????????????????
-          //??????????????????????????????????????????????????????????
-          //??????????????????????????????????????????????????????????
-          //??????????????????????????????????????????????????????????
-        }
-      }
-    }
-  }
-}
-
-bool MyWindow::isDrawnOnTheDisplay(te::map::Layer* layer)
-{
-  if(layer->getVisibility() == false || ((MyLayer*)(layer))->isTemporal())
-    return false;
-
-  // verifica se tem algum display visualizando o layer
-  std::vector<te::map::MapDisplay*>::iterator it;
-  for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
-  {
-    MyDisplay* display = (MyDisplay*)*it;
-    te::map::AbstractLayer* al = display->getLayerTree();
-    if(al && al->getVisibility() != te::map::NOT_VISIBLE)
-    {
-      std::vector<te::map::AbstractLayer*> layers;
-      getLayers(al, layers); // so pega o tipo LAYER
-      std::vector<te::map::AbstractLayer*>::iterator lit;
-      for(lit = layers.begin(); lit != layers.end(); ++lit)
-      {
-        te::map::AbstractLayer* item = *lit;
-        if(item == layer)
-          return true;
-      }
-    }
-  }
-  return false;
 }
 
 void MyWindow::openGridSlot()
 {
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-  MyLayer* layer = (MyLayer*)m_selectedLayer;
-  std::string name = m_selectedLayer->getId();
-  if((layer->getType() == "LAYER") == false)
+  if((m_selectedLayer->getType() == "LAYER") == false)
   {
     QMessageBox::information(this, tr("Open Grid..."), tr("ERROR: It is not a layer!"));
-    QApplication::restoreOverrideCursor();
-    return;
-  }
-  if(layer->isTemporal())
-  {
-    QMessageBox::information(this, tr("Open Grid..."), tr("ERROR: The layer is temporal!"));
     QApplication::restoreOverrideCursor();
     return;
   }
 
   try
   {
-    m_ds = layer->getDataSource();
-    if(m_gridMap.find(name) == m_gridMap.end())
+    MyLayer* layer = (MyLayer*)m_selectedLayer;
+    MyGrid* grid = layer->getGrid();
+
+    if(grid == 0)
     {
-      // abra um novo grid
-      MyGrid* grid = new MyGrid(&m_mapDisplayVec, this);
-      m_gridMap[name] = grid;
+      layer->createGrid();
+      QString wtitle = "Grid: ";
+      wtitle += m_selectedLayer->getTitle().c_str();
+      grid = layer->getGrid();
+      grid->setWindowTitle(wtitle);
+      connect(grid, SIGNAL(plotHistogram(MyGrid*)), this, SLOT(plotHistogramSlot(MyGrid*)));
+      connect(grid, SIGNAL(plotScatter(MyGrid*)), this, SLOT(plotScatterSlot(MyGrid*)));
+      connect(grid, SIGNAL(plotTimeSeries(MyGrid*)), this, SLOT(plotTimeSeriesSlot(MyGrid*)));
 
-      te::da::DataSourceTransactor* t = m_ds->getTransactor();
-      assert(t);
+      //faca conexao para atualizacao de grid operation
+      QObject::connect(grid, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+      QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), grid, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
 
-      te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-      assert(loader);
-
-      te::da::DataSetType* dsType = loader->getDataSetType(name, true);
-      dsType->setCatalog(m_ds->getCatalog());
-      assert(dsType);
-      delete loader;
-
-      grid->setWindowTitle(name.c_str());
-
-      // If the data set type has geometry, get the position of the geometry column
-      size_t geometryColumn;
-
-      if(dsType->hasGeom() == true)
-        geometryColumn = dsType->getDefaultGeomPropertyPos();
-
-      te::da::DataSet* dataSet;
-      te::map::DataGridOperation* operation = layer->getDataGridOperation();
-      if(operation == 0)
-      {
-        // ninguem está usando o layer (este widget é o primeiro a usar)
-        dataSet = t->getDataSet(name);
-        assert(dataSet);
-        if(dsType->getPrimaryKey())
-        {
-          operation = new te::map::DataGridOperation();
-          operation->init(dsType, dataSet);
-          layer->setDataGridOperation(operation);
-        }
-      }
-      else
-      {
-        // ja tem algum widget usando este layer
-        dataSet = operation->getDataSet();
-
-        // verifique se tem algum plot usando este layer
-        std::vector<QwtPlot*> plots = getPlots(name);
-        if(plots.empty() == false)
-        {
-          // isto significa que um outro grid deste layer ja foi aberto e, por sua vez,
-          // este antigo grid, criou plots que ficaram abertos, entao,
-          // faca conexao entre este grid e os plots
-          std::vector<QwtPlot*>::iterator it;
-          for(it = plots.begin(); it != plots.end(); ++it)
-          {
-            QwtPlot* plot = *it;
-            QObject::connect(grid, SIGNAL(selectionChanged(te::map::DataGridOperation*)), plot, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-            QObject::connect(plot, SIGNAL(selectionChanged(te::map::DataGridOperation*)), grid, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-          }
-        }
-      }
-      te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(dsType, dataSet, operation);
-
-      //faca conexao para remover o grid do m_gridMap quando ele for closed
-      QObject::connect(grid, SIGNAL(closed(MyGrid*)), this, SLOT(removeGridSlot(MyGrid*)));
-
-      //add this grid to operation multimap
-      insertGridOperation(operation, grid);
-
-      grid->setVisible(true);
-      grid->setModel(gridModel);
-      grid->hideColumn(geometryColumn);
-      grid->viewport()->update();
-      grid->show();  
-  //    delete t;
+      //faca conexao para remover este grid quando ele for closed
+      connect(grid, SIGNAL(closed(MyGrid*)), this, SLOT(removeGridSlot(MyGrid*)));
     }
     else
-    {
-      // grid ja aberto, antao, de show apenas
-      MyGrid* grid = m_gridMap.find(name)->second;
-      if(grid->isMinimized())
-        grid->showNormal();
-      else
-        grid->show();  
-    }
+      grid->raise();  
+
     QApplication::restoreOverrideCursor();
   }
   catch(std::exception& e)
@@ -1216,27 +1017,358 @@ void MyWindow::openGridSlot()
 
 void MyWindow::removeGridSlot(MyGrid* g)
 {
-  std::map<std::string, MyGrid*>::iterator it;
-  for(it = m_gridMap.begin(); it != m_gridMap.end(); ++it)
+  MyLayer* layer = g->getLayer();
+  layer->deleteGrid(false);
+
+  if(isUsed(layer) == false)
+    deleteGridOperation(layer);
+}
+
+void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
+{
+  MyLayer* layer = (MyLayer*)l;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op && layer->isKeepOnMemory() == false)
   {
-    if(g == it->second)
+    delete op->getDataSet()->getTransactor();
+    delete op->getDataSet();
+    delete op;
+    layer->setDataGridOperation(0);
+
+    std::vector<te::map::MapDisplay*>::iterator it;
+    for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
-      m_gridMap.erase(it);
-      break;
+      std::vector<te::map::AbstractLayer*> layers;
+      getLayers((*it)->getLayerTree(), layers);
+      std::vector<te::map::AbstractLayer*>::iterator lit;
+      for(lit = layers.begin(); lit != layers.end(); ++lit)
+      {
+        if(layer == *lit)
+        {
+          ((MyDisplay*)(*it))->removeDrawOnlyChanged(layer);
+          break;
+        }
+      }
+    }
+  }
+}
+
+bool MyWindow::isUsed(te::map::AbstractLayer* l)
+{
+  MyLayer* layer = (MyLayer*)l;
+  if(layer->getVisibility() == 0 && layer->getGrid() == 0)
+  {
+    std::set<QwtPlot*> plots = layer->getPlots();
+    if(plots.empty())
+      return false;
+    else
+    {
+      std::set<QwtPlot*>::iterator it;
+      for(it = plots.begin(); it != plots.end(); ++it)
+      {
+        te::qt::qwt::Plot* p = (te::qt::qwt::Plot*)(*it);
+        if(p->getType() != "TIMESERIES")
+          return true;
+      }
+      return false;
+    }
+  }
+  return true;
+}
+
+void MyWindow::plotHistogramSlot(MyGrid* grid)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  MyLayer* layer = grid->getLayer();
+  te::map::DataGridOperation* operation = layer->getDataGridOperation();
+  te::qt::widgets::HeaderView* header = (te::qt::widgets::HeaderView*)grid->getHorizontalHeaderView();
+  int visCol = header->getContextVisualColumnClicked();
+  int col = operation->getLogicalColumn(visCol);
+
+  // verifique se um plot com esse parametro ja esta aberto
+  std::set<QwtPlot*> plots = layer->getPlots();
+  std::set<QwtPlot*>::iterator it;
+  for(it = plots.begin(); it != plots.end(); ++it)
+  {
+    te::qt::qwt::Plot* plot = (te::qt::qwt::Plot*)(*it);
+    if(plot->getType() == "HISTOGRAM")
+    {
+      if(plot->getXCol() == col) 
+      {
+        // histograma ja aberto (apenas update)
+        plot->update();
+        plot->raise();
+        break;
+      }
+    }
+  }
+    
+  if(it == plots.end()) // criar novo plot (histograma)
+  {
+    te::qt::qwt::HistogramDisplay* h = new te::qt::qwt::HistogramDisplay(col, operation);
+    if(h->getNumberOfBars() == 0) // histogram nao pode ser criado
+    {
+      delete h;
+      return;
+    }
+
+    te::da::DataSetType* dsType = operation->getDataSetType();
+    te::dt::Property *prop = dsType->getProperty(col);
+    std::string propName = prop->getName();
+    std::string wtitle = "Histogram: " + propName;
+
+    h->setWindowTitle(wtitle.c_str());
+    h->show();
+
+    //faca conexao para atualizacao de grid operation
+    QObject::connect(h, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+    QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), h, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+
+    //faca conexao para remover este HistogramDisplay* quando ele for closed
+    QObject::connect(h, SIGNAL(closed(QwtPlot*)), this, SLOT(removePlotSlot(QwtPlot*)));
+
+    layer->insertPlot(h);
+  }
+  QApplication::restoreOverrideCursor();
+}
+
+void MyWindow::plotScatterSlot(MyGrid* grid)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  MyLayer* layer = grid->getLayer();
+  te::map::DataGridOperation* operation = layer->getDataGridOperation();
+  te::da::DataSetType* dsType = operation->getDataSetType();
+
+  std::vector<int> selectedColumns = operation->getSelectedColumns();
+  if(selectedColumns.size() < 2)
+  {
+    QMessageBox::information(this, tr("Scatter Plot"), tr("Select 2 columns in the grid to be plotted!"));
+    QApplication::restoreOverrideCursor();
+    return;
+  }
+
+  int logicalColumnX = operation->getLogicalColumn(selectedColumns[0]);
+  std::string colNameX = dsType->getProperty(logicalColumnX)->getName();
+
+  int logicalColumnY = operation->getLogicalColumn(selectedColumns[1]);
+  std::string colNameY = dsType->getProperty(logicalColumnY)->getName();
+
+  std::string name = dsType->getName();
+  std::string scatname = colNameX + " vs " + colNameY;
+
+  // verifique se um plot com esses parametros ja esta aberto
+  std::set<QwtPlot*> plots = layer->getPlots();
+  std::set<QwtPlot*>::iterator it;
+  for(it = plots.begin(); it != plots.end(); ++it)
+  {
+    te::qt::qwt::Plot* plot = (te::qt::qwt::Plot*)(*it);
+    if(plot->getType() == "SCATTER")
+    {
+      if(plot->getXCol() == logicalColumnX && plot->getYCol() == logicalColumnY) 
+      {
+        // scatter ja aberto (apenas update)
+        plot->update();
+        plot->raise();
+        break;
+      }
+    }
+  }
+    
+  if(it == plots.end()) // criar novo plot (scatter)
+  {
+    te::qt::qwt::ScatterDisplay* esc = new te::qt::qwt::ScatterDisplay(logicalColumnX, logicalColumnY, operation);
+    if(esc->getLegend() == 0) // scatter nao pode ser criado
+    {
+      delete esc;
+      return;
+    }
+    std::string wtitle = "Scatter: " + scatname;
+    esc->setWindowTitle(wtitle.c_str());
+    esc->show();
+
+    //faca conexao para atualizacao de grid operation
+    QObject::connect(esc, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+    QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), esc, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+
+    //faca conexao para remover este ScatterDisplay* quando ele for closed
+    QObject::connect(esc, SIGNAL(closed(QwtPlot*)), this, SLOT(removePlotSlot(QwtPlot*)));
+
+    layer->insertPlot(esc);
+  }
+  QApplication::restoreOverrideCursor();
+}
+
+void MyWindow::plotTimeSeriesSlot(MyGrid* grid)
+{
+  QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+  MyLayer* layer = grid->getLayer();
+  te::map::DataGridOperation* operation = layer->getDataGridOperation();
+  te::da::DataSet* dataSet = operation->getDataSet();
+  te::da::DataSetType* dsType = operation->getDataSetType();
+
+  std::vector<int> selectedColumns = operation->getSelectedColumns();
+  if(selectedColumns.size() < 2)
+  {
+    QMessageBox::information(this, tr("Time Series Plot"), tr("Select 2 columns or more to be plotted!"));
+    QApplication::restoreOverrideCursor();
+    return;
+  }
+
+  int i, xTimeType, xType, logicalColumnX = -1;
+  std::string colNameX;
+  std::vector<std::pair<std::string, int> >logicalColumns;
+
+  // verifique se existe uma coluna do tipo date time
+  for(i = 0; i < (int)selectedColumns.size(); ++i)
+  {
+    int col = operation->getLogicalColumn(selectedColumns[i]);
+    std::string colName = dsType->getProperty(col)->getName();
+
+    te::dt::Property *prop = dsType->getProperty(col);
+    int type = prop->getType();
+    if(logicalColumnX == -1 && type == te::dt::DATETIME_TYPE)
+    {
+      logicalColumnX = col;
+      xType = type;
+      colNameX = colName;
+      dataSet->moveBeforeFirst();
+      while(dataSet->moveNext())
+      {
+        if(dataSet->isNull(logicalColumnX))
+          continue;
+        te::dt::DateTime* t = dataSet->getDateTime(logicalColumnX);
+        xTimeType = t->getDateTimeType();
+        break;
+      }
+      continue;
+    }
+    logicalColumns.push_back(std::pair<std::string, int>(colName, col));
+  }
+  if(logicalColumnX == -1)
+  {
+    QMessageBox::information(this, tr("Time Series Plot Error"), tr("One of the columns must be of type date time!"));
+    QApplication::restoreOverrideCursor();
+    return;
+  }
+  if(selectedColumns.size() == 0)
+  {
+    QMessageBox::information(this, tr("Time Series Plot Error"), tr("Select columns to be ploted!"));
+    QApplication::restoreOverrideCursor();
+    return;
+  }
+  else
+  {
+    while(++i < (int)selectedColumns.size())
+    {
+      int a = operation->getLogicalColumn(selectedColumns[i]);
+      std::string s = dsType->getProperty(a)->getName();
+      logicalColumns.push_back(std::pair<std::string, int>(s, a));
+      ++i;
     }
   }
 
-  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)g->model();
-  te::map::DataGridOperation* op = model->getDataGridOperation();
-  removeGridOperation(op, g);
+  // verifique se um plot com esses parametros ja esta aberto
+  std::set<QwtPlot*> plots = layer->getPlots();
+  std::set<QwtPlot*>::iterator it;
+  for(it = plots.begin(); it != plots.end(); ++it)
+  {
+    te::qt::qwt::Plot* plot = (te::qt::qwt::Plot*)(*it);
+    if(plot->getType() == "TIMESERIES")
+    {
+      if(plot->getXCol() != logicalColumnX)
+        continue;
+      te::qt::qwt::TimeSeriesDisplay* t = (te::qt::qwt::TimeSeriesDisplay*)plot;
+      std::set<int> cols = t->getColumns();
+      std::vector<std::pair<std::string, int> >::iterator vit;
+      if(cols.size() == logicalColumns.size())
+      {
+        for(vit = logicalColumns.begin(); vit != logicalColumns.end(); ++vit)
+        {
+          if(cols.find(vit->second) == cols.end())
+            break;
+        }
+        if(vit == logicalColumns.end())
+        {
+          // scatter ja aberto (apenas update)
+          t->update();
+          t->raise();
+          break;
+        }
+      }
+    }
+  }
+
+  if(it == plots.end())
+  {
+    //criar nova serie temporal
+    std::vector<std::pair<std::string, int> >::iterator cit;
+    te::qt::qwt::TimeSeries ts(xTimeType);
+    for(cit = logicalColumns.begin(); cit != logicalColumns.end(); ++cit)
+    {
+      int logicalColumnY = cit->second;
+      std::string colNameY = cit->first;
+      std::string name = colNameX + " vs " + colNameY;
+
+      std::vector<std::pair<te::dt::DateTime*, double> > values;
+      double vy;
+      dataSet->moveBeforeFirst();
+      while(dataSet->moveNext())
+      {
+        if(dataSet->isNull(logicalColumnX) || dataSet->isNull(logicalColumnY))
+          continue;
+
+        te::dt::DateTime* t = dataSet->getDateTime(logicalColumnX);
+        QString s = dataSet->getAsString(logicalColumnY).c_str();
+        vy = s.toDouble();
+        values.push_back(std::pair<te::dt::DateTime*, double> (t, vy));
+      }
+      srand(time(NULL)/vy);
+      ts.insertCurve(values, name, QColor(rand()%256, rand()%256, rand()%256), true);
+      std::vector<std::pair<te::dt::DateTime*, double> >::iterator it;
+      for(it = values.begin(); it != values.end(); ++it)
+        delete it->first;
+    }
+
+    //exibir as series temporais
+    te::qt::qwt::TimeSeriesDisplay* tsd = new te::qt::qwt::TimeSeriesDisplay(ts, logicalColumns, logicalColumnX);
+    tsd->setWindowTitle("Time Series");
+    tsd->show();
+
+    //faca conexao para remover este TimeSeriesDisplay* quando ele for closed
+    QObject::connect(tsd, SIGNAL(closed(QwtPlot*)), this, SLOT(removePlotSlot(QwtPlot*)));
+
+    layer->insertPlot(tsd);
+  }
+  QApplication::restoreOverrideCursor();
 }
 
-void MyWindow::removePlotSlot(QwtPlot* plot)
+void MyWindow::removePlotSlot(QwtPlot* p)
 {
-  te::map::DataGridOperation* op = ((te::qt::qwt::Plot*)(plot))->getDataGridOperation();
-  std::string layerName = op->getDataSetType()->getName();
-  removePlot(layerName, plot);
-  removeGridOperation(op, plot);
+  std::vector<te::map::AbstractLayer*> layers;
+  getLayers(m_rootFolderLayer, layers);
+  std::vector<te::map::AbstractLayer*>::iterator lit;
+  for(lit = layers.begin(); lit != layers.end(); ++lit)
+  {
+    MyLayer* layer = (MyLayer*)(*lit);
+    std::set<QwtPlot*> plots = layer->getPlots();
+    if(plots.find(p) != plots.end())
+    {
+      layer->removePlot(p);
+      if(isUsed(layer) == false)
+        deleteGridOperation(layer);
+      break;
+    }
+  }
+}
+
+void MyWindow::keepOnMemorySlot()
+{
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  bool b = m_keepOnMemoryAction->isChecked();
+  layer->setKeepOnMemory(b);
 }
 
 void MyWindow::renameSlot()
@@ -1251,20 +1383,13 @@ void MyWindow::renameSlot()
 
 void MyWindow::removeSlot()
 {
-///////////////////////////////////////////////////////////////////////////
-  // este metodo ainda deve ser ajustado para redesenhar os displays afetados
-  // deve tambem acertar o gridoperation e remover todas as interfaces que
-  // dependem deste layer (histogram, scaterr, grid, etc
-///////////////////////////////////////////////////////////////////////////////
-
-
   size_t ind = m_selectedLayer->getIndex();
   // este metodo ja remove da interface e da memoria - TreeItem
-  m_layerExplorerModel->removeRows(ind, 1, m_parentModelIndex); 
+//  m_layerExplorerModel->removeRowForced(ind, m_parentModelIndex); 
 
   // delete todos os DataSets e Transactors abaixo de m_selectedLayer
   std::vector<te::map::AbstractLayer*> layers;
-  getLayers(m_selectedLayer, layers);  // so pega o tipo LAYER
+  getLayers(m_selectedLayer, layers);
   std::vector<te::map::AbstractLayer*>::iterator lit;
   for(lit = layers.begin(); lit != layers.end(); ++lit)
   {
@@ -1276,21 +1401,14 @@ void MyWindow::removeSlot()
       delete op->getDataSet();
     }
     layer->setDataGridOperation(0);
-
-    //delete o grid relacionado ao layer
-    std::string name = layer->getId();
-    if(m_gridMap.find(name) != m_gridMap.end())
-    {
-      m_gridMap.find(name)->second->close();
-      delete m_gridMap.find(name)->second;
-    }
+    layer->deleteGrid();
 
     //delete o mapDisplay relacionado ao layer
     std::vector<te::map::MapDisplay*>::iterator it;
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
       MyDisplay* md = (MyDisplay*)(*it);
-      if(md->getLayerTree() == layer)
+      if(md->parent() == 0 && md->getLayerTree() == layer)
       {
         md->disconnect();
         md->close();
@@ -1338,7 +1456,27 @@ void MyWindow::addFolderSlot()
 
 void MyWindow::addLayerSlot()
 {
-  SelectLayer* sel = new SelectLayer(m_ds, this);
+  QString folderName;
+  te::map::FolderLayer* folderLayer;
+  te::da::DataSource* ds = 0;
+  if(m_selectedLayer->getType() == "LAYER")
+  {
+    ds = ((te::map::Layer*)m_selectedLayer)->getDataSource();
+    folderLayer = (te::map::FolderLayer*)m_selectedLayer->getParent();
+    folderName = folderLayer->getId().c_str();
+  }
+  else
+  {
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers(m_rootFolderLayer, layers);
+    if(layers.begin() != layers.end())
+      ds = ((te::map::Layer*)(*layers.begin()))->getDataSource();
+    folderLayer = (te::map::FolderLayer*)m_selectedLayer;
+    folderName = folderLayer->getId().c_str();
+
+  }
+
+  SelectLayer* sel = new SelectLayer(ds, this);
   if(sel->exec() == QDialog::Rejected)
     return;
 
@@ -1350,36 +1488,43 @@ void MyWindow::addLayerSlot()
   std::string dstype = sel->m_dataSourceTypeComboBox->currentText().toStdString();
   std::string conInfo = sel->m_connectionStringLineEdit->text().toStdString();
   std::string lname = sel->m_layerNameComboBox->currentText().toStdString();
+  std::string tname = sel->m_titleNameLineEdit->text().toStdString();
 
   delete sel;
 
-  m_ds = te::da::DataSourceFactory::make(dstype);
+  ds = te::da::DataSourceFactory::make(dstype);
 
   std::string dsInfo;
+  //if(dstype == "GDAL")
+  //  dsInfo = "URI=" + conInfo;
+  //else
+  //dsInfo = "connection_string=" + conInfo;
   if(dstype == "GDAL")
-    dsInfo = "URI=" + conInfo;
-  else
-  dsInfo = "connection_string=" + conInfo;
-  m_ds->open(dsInfo);
+  {
+    int p = conInfo.find("host=");
+    if(p != std::string::npos)
+      conInfo.replace(p, 5, "URI=");
+  }
+  dsInfo = conInfo;
+  ds->open(dsInfo);
 
-  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
-  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+  te::da::DataSourceCatalog* catalog = ds->getCatalog();
+  te::da::DataSourceTransactor* transactor = ds->getTransactor();
   te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
 
   te::da::DataSetType* dst = loader->getDataSetType(lname, true);
   if(catalog->getDataSetType(lname) == 0)
     catalog->add(dst);
-  MyLayer* layer = new MyLayer(lname, lname, m_selectedLayer);
+  MyLayer* layer = new MyLayer(lname, tname, folderLayer);
 
-  QString folderName = m_selectedLayer->getTitle().c_str();
   if(folderName.toUpper() == "MOVINGOBJECTS" || folderName.toUpper() == "TEMPORALIMAGES")
     layer->setTemporal(true);
 
-  layer->setDataSource(m_ds);
+  layer->setDataSource(ds);
 
   if(dstype == "GDAL")
   {
-    te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+    te::da::DataSourceTransactor* transactor = ds->getTransactor();
     te::da::DataSet* dataSet = transactor->getDataSet(lname);
     te::rst::Raster* raster = dataSet->getRaster();
     int srid = raster->getSRID();
@@ -1399,73 +1544,54 @@ void MyWindow::addLayerSlot()
   }
 
   QModelIndex itemIndex = m_layerExplorer->currentIndex();
+  QModelIndex parentIndex = itemIndex.parent();
   te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(itemIndex.internalPointer());
-  
-  size_t ind = m_layerExplorerModel->rowCount(itemIndex);
-  te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
-  layerItem->setParent(item);
-  std::vector<te::qt::widgets::AbstractLayerItem*> layerItems;
-  layerItems.push_back(layerItem);
 
-  m_layerExplorerModel->setItemsToBeInserted(layerItems);
-  m_layerExplorerModel->insertRows(ind, 1, itemIndex);
+  if(item->getRefLayer()->getType() == "LAYER")
+  {
+    // insert abaixo do layer current
+    size_t ind = itemIndex.row() + 1;
+    te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
+    layerItem->setParent(item->parent());
+    std::vector<te::qt::widgets::AbstractLayerItem*> layerItems;
+    layerItems.push_back(layerItem);
+    m_layerExplorerModel->setItemsToBeInserted(layerItems);
+    m_layerExplorerModel->insertRows(ind, 1, parentIndex);
+  }
+  else
+  {
+    // insert no fim do folder
+    size_t ind = m_layerExplorerModel->rowCount(itemIndex);
+    te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
+    layerItem->setParent(item);
+    std::vector<te::qt::widgets::AbstractLayerItem*> layerItems;
+    layerItems.push_back(layerItem);
 
+    m_layerExplorerModel->setItemsToBeInserted(layerItems);
+    m_layerExplorerModel->insertRows(ind, 1, itemIndex);
 
+    if(item->getRefLayer()->getVisibility() == 1)
+    {
+      std::map<te::map::AbstractLayer*, te::map::Visibility> mapv;
+      std::vector<te::map::AbstractLayer*> layers;
+      getLayers(item->getRefLayer(), layers);
+      std::vector<te::map::AbstractLayer*>::iterator it;
+      for(it = layers.begin(); it != layers.end(); ++it)
+      {
+        te::map::Visibility v = (*it)->getVisibility();
+        mapv[*it] = v;
+      }
 
+      item->getRefLayer()->setVisibility(te::map::PARTIALLY_VISIBLE); // este comando deixa todos os filhos do tipos layer no estado
+                                                                      // PARTIALLY_VISIBLE, entao, o codigo abaixo acerta a visbilidade
+                                                                      // de seus filhos (LAYERS) na arvore
+      std::map<te::map::AbstractLayer*, te::map::Visibility>::iterator mt;
+      for(mt = mapv.begin(); mt != mapv.end(); ++mt)
+        mt->first->setVisibility(mt->second);
 
-
-
-  //try
-  //{
-  //  te::da::DataSourceCatalog* catalog = m_ds->getCatalog();
-  //  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
-  //  te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
-  //  std::vector<std::string*> names;
-  //  loader->getDataSets(names);
-  //  int size = names.size();
-  //  QStringList items;
-  //  for(int i = 0; i < size; ++i)
-  //  {
-  //    std::string& id = (*names[i]);
-  //    QString s = id.c_str();
-  //    items.insert(i, s);
-  //  }
-  //  bool ok;
-  //  QString item = QInputDialog::getItem(this, tr("QInputDialog::getItem()"),
-  //                                        tr("DataSet:"), items, 0, false, &ok);
-  //  if (ok && !item.isEmpty())
-  //  {
-  //    std::string name = item.toStdString();
-
-  //    te::da::DataSetType* dst = loader->getDataSetType(name, true);
-  //    if(catalog->getDataSetType(name) == 0)
-  //      catalog->add(dst);
-  //    te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-  //    MyLayer* layer = new MyLayer(name, name, m_selectedLayer);
-  //    layer->setDataSource(m_ds);
-  //    layer->setSRID(gp->getSRID());
-
-  //    QModelIndex itemIndex = m_layerExplorer->currentIndex();
-  //    te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(itemIndex.internalPointer());
-  //  
-  //    size_t ind = m_layerExplorerModel->rowCount(itemIndex);
-  //    te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
-  //    layerItem->setParent(item);
-  //    std::vector<te::qt::widgets::AbstractLayerItem*> layerItems;
-  //    layerItems.push_back(layerItem);
-
-  //    m_layerExplorerModel->setItemsToBeInserted(layerItems);
-  //    m_layerExplorerModel->insertRows(ind, 1, itemIndex);
-  //  }
-  //  delete loader;
-  //  delete transactor;
-  //}
-  //catch(std::exception& e)
-  //{
-  //  QApplication::restoreOverrideCursor();
-  //  QMessageBox::information(this, tr("Error Add Layer..."), tr(e.what()));
-  //  return;
-  //}
+      m_layerExplorer->update();
+    }
+  }
 }
 
 void MyWindow::getLayers(te::map::AbstractLayer* al, std::vector<te::map::AbstractLayer*>& layers)
@@ -1506,4 +1632,397 @@ void MyWindow::plotTemporalDistanceSlot()
   }
 
    PlotMovingObjectDistance(ob1, ob2);
+}
+
+void MyWindow::selectionChangedSlot(te::map::DataGridOperation* op)
+{
+  Q_EMIT selectionChanged(op);
+}
+
+void MyWindow::changeDefaultColorSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  te::color::RGBAColor cor = op->getDefaultColor();
+  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+
+  color = QColorDialog::getColor(oldColor, this, "Select Default Color", QColorDialog::ShowAlphaChannel);
+  if (color.isValid()) 
+  {
+    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+    op->setDefaultColor(cor);
+    //selectionChangedSlot(op);
+    updateDisplays(layer);
+  }
+}
+
+void MyWindow::changePointedColorSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  te::color::RGBAColor cor = op->getPointedColor();
+  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+
+  color = QColorDialog::getColor(oldColor, this, "Select Pointed Color", QColorDialog::ShowAlphaChannel);
+  if (color.isValid()) 
+  {
+    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+    op->setPointedColor(cor);
+    //selectionChangedSlot(op);
+    updateDisplays(layer);
+  }
+}
+
+void MyWindow::changeQueriedColorSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  te::color::RGBAColor cor = op->getQueriedColor();
+  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+
+  color = QColorDialog::getColor(oldColor, this, "Select Queried Color", QColorDialog::ShowAlphaChannel);
+  if (color.isValid()) 
+  {
+    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+    op->setQueriedColor(cor);
+    //selectionChangedSlot(op);
+    updateDisplays(layer);
+  }
+}
+
+void MyWindow::changePointedAndQueriedColorSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  te::color::RGBAColor cor = op->getPointedAndQueriedColor();
+  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+
+  color = QColorDialog::getColor(oldColor, this, "Select Pointed And Queried Color", QColorDialog::ShowAlphaChannel);
+  if (color.isValid()) 
+  {
+    cor.setColor(color.red(), color.green(), color.blue(), 255);
+    op->setPointedAndQueriedColor(cor);
+    //selectionChangedSlot(op);
+    updateDisplays(layer);
+  }
+}
+
+void MyWindow::changePointStyleSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  PointStyle w(op, this);
+  if(w.exec() == QDialog::Rejected)
+    return;
+
+  int mindex = w.m_pointMarkComboBox->currentIndex();
+  te::map::PtMarkerType markerType = (te::map::PtMarkerType)mindex;
+  op->setPointMarkerType(markerType);
+
+  QString width = w.m_pointWidthComboBox->currentText();
+  int pointWidth = width.toInt();
+  op->setPointWidth(pointWidth);
+
+  QString icon = w.m_pointIconLineEdit->text();
+  if(icon.isEmpty() == false && markerType == te::map::MarkerPattern)
+  {
+    QFileInfo file(icon);
+    QString fileName = file.filePath();
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+    fseek(fp , 0 , SEEK_END);
+    int pointIconSize = (int)ftell(fp);
+    rewind(fp);
+    char* pointIcon = new char[pointIconSize];
+    fread(pointIcon, sizeof(char), pointIconSize, fp);
+    fclose(fp);
+
+    te::map::ImageType imaType;
+    if(fileName.contains("PNG", Qt::CaseInsensitive))
+      imaType = te::map::PNG;
+    else if(fileName.contains("BMP", Qt::CaseInsensitive))
+      imaType = te::map::BMP;
+    else if(fileName.contains("JPG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("GIF", Qt::CaseInsensitive))
+      imaType = te::map::GIF;
+    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
+    //  imaType = te::map::PBM;
+    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
+    //  imaType = te::map::PGM;
+    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
+    //  imaType = te::map::PPM;
+    else if(fileName.contains("XBM", Qt::CaseInsensitive))
+      imaType = te::map::XBM;
+    else if(fileName.contains("XPM", Qt::CaseInsensitive))
+      imaType = te::map::XPM;
+
+    op->setPointIcon(pointIcon);
+    op->setPointIconSize(pointIconSize);
+    op->setPointIconImageType(imaType);
+  }
+
+  updateDisplays(layer);
+}
+
+void MyWindow::changeLineStyleSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  LineStyle w(op, this);
+  if(w.exec() == QDialog::Rejected)
+    return;
+
+  op->setLineColor(w.m_lineColor);
+
+  QString width = w.m_lineWidthComboBox->currentText();
+  int lineWidth = width.toInt();
+  op->setLineWidth(lineWidth);
+
+  QString icon = w.m_lineIconLineEdit->text();
+  if(icon.isEmpty() == false)
+  {
+    QFileInfo file(icon);
+    QString fileName = file.filePath();
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+    fseek(fp , 0 , SEEK_END);
+    int lineIconSize = (int)ftell(fp);
+    rewind(fp);
+    char* lineIcon = new char[lineIconSize];
+    fread(lineIcon, sizeof(char), lineIconSize, fp);
+    fclose(fp);
+
+    te::map::ImageType imaType;
+    if(fileName.contains("PNG", Qt::CaseInsensitive))
+      imaType = te::map::PNG;
+    else if(fileName.contains("BMP", Qt::CaseInsensitive))
+      imaType = te::map::BMP;
+    else if(fileName.contains("JPG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("GIF", Qt::CaseInsensitive))
+      imaType = te::map::GIF;
+    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
+    //  imaType = te::map::PBM;
+    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
+    //  imaType = te::map::PGM;
+    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
+    //  imaType = te::map::PPM;
+    else if(fileName.contains("XBM", Qt::CaseInsensitive))
+      imaType = te::map::XBM;
+    else if(fileName.contains("XPM", Qt::CaseInsensitive))
+      imaType = te::map::XPM;
+
+    op->setLinePatternIcon(lineIcon);
+    op->setLinePatternIconSize(lineIconSize);
+    op->setLinePatternIconImageType(imaType);
+  }
+  else
+  {
+    op->setPolygonContourPatternIcon(0);
+    op->setPolygonContourPatternIconSize(0);
+  }
+
+  updateDisplays(layer);
+}
+
+void MyWindow::changePolygonStyleSlot()
+{
+  if(m_selectedLayer->getType() != "LAYER")
+    return;
+
+  MyLayer* layer = (MyLayer*)m_selectedLayer;
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+
+  PolygonStyle w(op, this);
+  if(w.exec() == QDialog::Rejected)
+    return;
+
+  //polygon contour
+  op->setPolygonContourColor(w.m_polygonContourColor);
+
+  QString width = w.m_polygonContourWidthComboBox->currentText();
+  int contourWidth = width.toInt();
+  op->setPolygonContourWidth(contourWidth);
+
+  QString icon = w.m_polygonContourIconLineEdit->text();
+  if(icon.isEmpty() == false)
+  {
+    QFileInfo file(icon);
+    QString fileName = file.filePath();
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+    fseek(fp , 0 , SEEK_END);
+    int contourIconSize = (int)ftell(fp);
+    rewind(fp);
+    char* contourIcon = new char[contourIconSize];
+    fread(contourIcon, sizeof(char), contourIconSize, fp);
+    fclose(fp);
+
+    te::map::ImageType imaType;
+    if(fileName.contains("PNG", Qt::CaseInsensitive))
+      imaType = te::map::PNG;
+    else if(fileName.contains("BMP", Qt::CaseInsensitive))
+      imaType = te::map::BMP;
+    else if(fileName.contains("JPG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("GIF", Qt::CaseInsensitive))
+      imaType = te::map::GIF;
+    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
+    //  imaType = te::map::PBM;
+    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
+    //  imaType = te::map::PGM;
+    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
+    //  imaType = te::map::PPM;
+    else if(fileName.contains("XBM", Qt::CaseInsensitive))
+      imaType = te::map::XBM;
+    else if(fileName.contains("XPM", Qt::CaseInsensitive))
+      imaType = te::map::XPM;
+
+    op->setPolygonContourPatternIcon(contourIcon);
+    op->setPolygonContourPatternIconSize(contourIconSize);
+    op->setPolygonContourPatternIconImageType(imaType);
+  }
+  else
+  {
+    op->setPolygonContourPatternIcon(0);
+    op->setPolygonContourPatternIconSize(0);
+  }
+
+  //polygon fill
+  op->setPolygonFillColor(w.m_polygonFillColor);
+  width = w.m_polygonFillPatternWidthComboBox->currentText();
+  int patternWidth = width.toInt();
+  op->setPolygonPatternWidth(patternWidth);
+
+  int findex = w.m_polygonFillMarkComboBox->currentIndex();
+  te::map::PtMarkerType markerType = (te::map::PtMarkerType)findex;
+  op->setPolygonMarkerType(markerType);
+  op->setPolygonFillMarkerColor(w.m_polygonFillMarkColor);
+
+  icon = w.m_polygonFillPatternIconLineEdit->text();
+  if(icon.isEmpty() == false)
+  {
+    QFileInfo file(icon);
+    QString fileName = file.filePath();
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+    fseek(fp , 0 , SEEK_END);
+    int patternIconSize = (int)ftell(fp);
+    rewind(fp);
+    char* patternIcon = new char[patternIconSize];
+    fread(patternIcon, sizeof(char), patternIconSize, fp);
+    fclose(fp);
+
+    te::map::ImageType imaType;
+    if(fileName.contains("PNG", Qt::CaseInsensitive))
+      imaType = te::map::PNG;
+    else if(fileName.contains("BMP", Qt::CaseInsensitive))
+      imaType = te::map::BMP;
+    else if(fileName.contains("JPG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
+      imaType = te::map::JPEG;
+    else if(fileName.contains("GIF", Qt::CaseInsensitive))
+      imaType = te::map::GIF;
+    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
+    //  imaType = te::map::PBM;
+    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
+    //  imaType = te::map::PGM;
+    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
+    //  imaType = te::map::PPM;
+    else if(fileName.contains("XBM", Qt::CaseInsensitive))
+      imaType = te::map::XBM;
+    else if(fileName.contains("XPM", Qt::CaseInsensitive))
+      imaType = te::map::XPM;
+
+    op->setPolygonPatternIcon(patternIcon);
+    op->setPolygonPatternIconSize(patternIconSize);
+    op->setPolygonPatternIconImageType(imaType);
+  }
+  else
+  {
+    op->setPolygonPatternIcon(0);
+    op->setPolygonPatternIconSize(0);
+  }
+
+  updateDisplays(layer);
+}
+
+void MyWindow::updateDisplays(MyLayer* layer)
+{
+  //redesenhar os displays afetados
+  std::set<te::map::MapDisplay*> displays;
+  std::vector<te::map::MapDisplay*>::iterator it;
+  for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
+  {
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers((*it)->getLayerTree(), layers);
+    std::vector<te::map::AbstractLayer*>::iterator lit;
+    for(lit = layers.begin(); lit != layers.end(); ++lit)
+    {
+      if(layer == *lit)
+      {
+        displays.insert(*it);
+        break;
+      }
+    }
+  }
+
+  std::set<te::map::MapDisplay*>::iterator sit;
+  for(sit = displays.begin(); sit != displays.end(); ++sit)
+  {
+    MyDisplay* display = (MyDisplay*)*sit;
+    display->removeDrawOnlyChanged(layer);
+    display->draw(layer);
+
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers(display->getLayerTree(), layers);
+    display->reorderDrawing(layers);
+    ((MyDisplay*)(*sit))->update();
+  }
 }

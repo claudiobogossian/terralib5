@@ -41,8 +41,9 @@ namespace te
   namespace gm
   {
 // Forward declaration
-    class Coord2D;
     class GTParameters;
+
+    struct Coord2D;
 
     /*!
       \class GeometricTransformation
@@ -96,7 +97,7 @@ namespace te
           
           \return A reference of the current internal transformation parameters.
         */
-        const GTParameters& getParameters()
+        const GTParameters& getParameters() const
         {
           return m_internalParameters;
         };
@@ -105,9 +106,7 @@ namespace te
           \brief Direct mapping ( from pt1 space into pt2 space ).
 
           \param params Transformation parameters.
-
           \param pt1 pt1 coordinate.
-
           \param pt2 pt2 coordinate.
         */
         virtual void directMap( const GTParameters& params, const Coord2D& pt1, Coord2D& pt2 ) const = 0;
@@ -116,7 +115,6 @@ namespace te
           \brief Direct mapping ( from pt1 space into pt2 space ).
 
           \param pt1 pt1 coordinate.
-
           \param pt2 pt2 coordinate.
         */
         void directMap( const Coord2D& pt1, Coord2D& pt2 ) const
@@ -130,9 +128,7 @@ namespace te
           \brief Inverse mapping ( from pt2 space into pt1 space ).
 
           \param params Transformation parameters.
-
           \param pt2 pt2 coordinate.
-
           \param pt1 pt1 coordinate.
         */
         virtual void inverseMap( const GTParameters& params, const Coord2D& pt2, Coord2D& pt1 ) const = 0;
@@ -141,7 +137,6 @@ namespace te
           \brief Inverse mapping ( from pt2 space into pt1 space ).
 
           \param pt2 pt2 coordinate.
-
           \param pt1 pt1 coordinate.
         */
         void inverseMap( const Coord2D& pt2, Coord2D& pt1 ) const

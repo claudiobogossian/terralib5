@@ -72,3 +72,13 @@ te::fe::Expression* te::fe::BinaryOperator::getSecond() const
   return m_second;
 }
 
+te::fe::Expression* te::fe::BinaryOperator::clone() const
+{
+  te::fe::Expression* arg1;
+  m_first ? arg1 = m_first->clone() : arg1 = 0;
+  
+  te::fe::Expression* arg2;
+  m_second ? arg2 = m_second->clone() : arg2 = 0;
+
+  return new BinaryOperator(m_opName, arg1, arg2);
+}

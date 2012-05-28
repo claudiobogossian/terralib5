@@ -36,7 +36,9 @@
 
   \brief This flag tells where is the base folder for the data used in Unittests.
  */
+#ifndef
 #define TE_DATA_UNITTEST_LOCALE "."
+#endif
 
 //@}
 

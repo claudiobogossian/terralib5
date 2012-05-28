@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/common/progress/ProgressTimer.h
- 
+
   \brief The ProgressTimer is a util class used to calculate the estimated time to finish loop job.
 */
 
@@ -47,53 +47,53 @@ namespace te
 
       public:
 
-      /*! \brief It initializes a ProgressTimer. */
-      ProgressTimer(int totalSteps);
+        /*! \brief It initializes a ProgressTimer. */
+        ProgressTimer(int totalSteps);
 
-      /*! \brief Destructor */
-      ~ProgressTimer();
+        /*! \brief Destructor. */
+        ~ProgressTimer();
 
-      /*! \brief Start the internal timer */
-      void start();
+        /*! \brief Start the internal timer. */
+        void start();
 
-      /*! 
-        \brief Define a new step process evolution
+        /*! 
+          \brief Define a new step process evolution.
 
-        \note Each tick a new value for remaining time and speed time is generated.
-      */
-      void tick();
+          \note Each tick a new value for remaining time and speed time is generated.
+        */
+        void tick();
 
-      /*! \brief Set the total steps*/
-      void setTotalSteps(const int& totalSteps);
+        /*! \brief Set the total steps. */
+        void setTotalSteps(const int& totalSteps);
 
-      /*!
-        \brief Function used to get the remaining time to end the process
+        /*!
+          \brief Function used to get the remaining time to end the process.
 
-        \return Dobule value, the remaingin time in minutes
-      */
-      double getRemainingTimeInMin();
+          \return Dobule value, the remaingin time in minutes.
+        */
+        double getRemainingTimeInMin();
 
-      /*!
-        \brief Function used to get the speed time.
+        /*!
+          \brief Function used to get the speed time.
 
-        \return Double value, the spped time in seconds
-      */
-      double getSpeedTimeInSec();
+          \return Double value, the spped time in seconds.
+        */
+        double getSpeedTimeInSec();
 
-      /*!
-        \brief Get the information about the evolution of the process.
+        /*!
+          \brief Get the information about the evolution of the process.
 
-        \return String with the information about remaining and speed time
-      */
-      std::string getMessage();
+          \return String with the information about remaining and speed time.
+        */
+        std::string getMessage();
 
       private:
 
-      int m_totalSteps;         //!< Total steps.
-      int m_count;              //!< Internal counter.
-      time_t m_startTime;       //!< Initial time.
-      double m_remainingTime;   //!< Remaining time in minutes.
-      double m_speedTime;       //!< Speed time in seconds.
+        int m_totalSteps;         //!< Total steps.
+        int m_count;              //!< Internal counter.
+        time_t m_startTime;       //!< Initial time.
+        double m_remainingTime;   //!< Remaining time in minutes.
+        double m_speedTime;       //!< Speed time in seconds.
     };
 
   } // end namespace common

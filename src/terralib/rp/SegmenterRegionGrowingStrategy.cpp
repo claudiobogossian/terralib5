@@ -56,21 +56,15 @@ namespace te
     {
     }    
     
-    const SegmenterStrategyParameters& 
+    const SegmenterRegionGrowingStrategy::Parameters& 
     SegmenterRegionGrowingStrategy::Parameters::operator=( 
-      const SegmenterStrategyParameters& params )
+      const SegmenterRegionGrowingStrategy::Parameters& params )
     {
       reset();
       
-      SegmenterRegionGrowingStrategy::Parameters const* paramsPtr = 
-        dynamic_cast< SegmenterRegionGrowingStrategy::Parameters const* >(&params );
-        
-      if( paramsPtr )
-      {
-        m_minSegmentSize = paramsPtr->m_minSegmentSize;
-        m_segmentsSimilarityThreshold = paramsPtr->m_segmentsSimilarityThreshold;
-        m_segmentFeatures = paramsPtr->m_segmentFeatures;
-      }
+      m_minSegmentSize = params.m_minSegmentSize;
+      m_segmentsSimilarityThreshold = params.m_segmentsSimilarityThreshold;
+      m_segmentFeatures = params.m_segmentFeatures;
       
       return *this;      
     }

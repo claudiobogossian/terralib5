@@ -275,14 +275,14 @@ namespace te
 
           \return The color of the deselected rows.
          */
-        const te::color::RGBAColor& getDeselectedColor() const;
+        const te::color::RGBAColor& getDefaultColor() const;
 
         /*!
           \brief It sets the color of the deselected rows.
 
           \param color The color of the deselected rows.
          */
-        void setDeselectedColor(const te::color::RGBAColor& color);
+        void setDefaultColor(const te::color::RGBAColor& color);
 
         /*!
           \brief It returns the color of the pointed rows.
@@ -494,18 +494,495 @@ namespace te
          */
         void addToChanged(std::string ob);
 
-        // os metodos abaixo  vao ser substituidos por style  (POR ENQUANTO FICA ASSIM PARA TESTES)
-        void setLineWidth(int);
+        /*!
+          \brief Sets the point marker type.
+
+          \param t The point marker type.
+        */
+        void setPointMarkerType(PtMarkerType t);
+
+        /*!
+          \brief Gets the point marker type.
+
+          \param The point marker type.
+        */
+        PtMarkerType getPointMarkerType();
+
+        /*!
+          \brief Sets the point icon.
+
+          \param icon The point icon.
+        */
+        void setPointIcon(char* icon);
+
+        /*!
+          \brief Gets the point icon.
+
+          \return The point icon.
+        */
+        char* getPointIcon();
+
+        /*!
+          \brief Sets the point icon size.
+
+          \param s The point icon size.
+        */
+        void setPointIconSize(int s);
+
+        /*!
+          \brief Gets the point icon size.
+
+          \return The point icon size.
+        */
+        int getPointIconSize();
+
+        /*!
+          \brief Sets the point icon image type.
+
+          \param t The point icon image type.
+        */
+        void setPointIconImageType(ImageType t);
+
+        /*!
+          \brief Gets the point icon image type.
+
+          \return The point icon image type.
+        */
+        ImageType getPointIconImageType();
+
+        /*!
+          \brief Sets the point width.
+
+          \param w The point width.
+        */
+        void setPointWidth(int w);
+
+        /*!
+          \brief Sets the point color.
+
+          \param cor The point color.
+        */
+        void setPointColor(const te::color::RGBAColor& cor);
+
+        /*!
+          \brief Gets the point color.
+
+          \return The point color.
+        */
+        te::color::RGBAColor getPointColor();
+
+        /*!
+          \brief Gets the point width.
+
+          \return The point width.
+        */
+        int getPointWidth();
+
+        /*!
+          \brief Sets the point pattern RGBA colors.
+
+          \param patternRGBA The RGBA colors.
+        */
+        void setPointPatternRGBA(te::color::RGBAColor** patternRGBA);
+
+        /*!
+          \brief Gets the point pattern RGBA colors.
+
+          \return The RGBA colors.
+        */
+        te::color::RGBAColor** getPointPatternRBGA();
+
+        /*!
+          \brief Sets the point pattern RGBA number of columns.
+
+          \param n The point pattern RGBA number of columns.
+        */
+        void setPointPatternRGBANCols(int n);
+
+        /*!
+          \brief Gets the point pattern RGBA number of columns.
+
+          \return The point pattern RGBA number of columns.
+        */
+        int getPointPatternRGBANCols();
+
+        /*!
+          \brief Sets the point pattern RGBA number of rows.
+
+          \param n The point pattern RGBA number of rows.
+        */
+        void setPointPatternRGBANRows(int n);
+
+        /*!
+          \brief Gets the point pattern RGBA number of rows.
+
+          \return The point pattern RGBA number of rows.
+        */
+        int getPointPatternRGBANRows();
+
+        /*!
+          \brief Sets the line width.
+
+          \param w The line width.
+         */
+        void setLineWidth(int w);
+
+        /*!
+          \brief Gets the line width.
+
+          \return The line width.
+         */
         int getLineWidth();
-        void setContourWidth(int);
-        void setContourColor(const te::color::RGBAColor&);
-        te::color::RGBAColor getContourColor();
-        int getContourWidth();
-        void setPtMarkerType(PtMarkerType);
-        PtMarkerType getPtMarkerType();
-        void setPtWidth(int);
-        int getPtWidth();
-        void setPolygonOpacity(int);
+
+        /*!
+          \brief Sets the line color.
+
+          \param cor The line color.
+        */
+        void setLineColor(const te::color::RGBAColor& cor);
+
+        /*!
+          \brief Gets the line color.
+
+          \return The line color.
+        */
+        te::color::RGBAColor getLineColor();
+
+        /*!
+          \brief Sets the line pattern icon.
+
+          \param icon The line pattern icon.
+        */
+        void setLinePatternIcon(char* icon);
+
+        /*!
+          \brief Gets the line pattern icon.
+
+          \return The line pattern icon.
+        */
+        char* getLinePatternIcon();
+
+        /*!
+          \brief Sets the line pattern icon size.
+
+          \param s The line pattern icon size.
+        */
+        void setLinePatternIconSize(int s);
+
+        /*!
+          \brief Gets the line pattern icon size.
+
+          \return The line pattern icon size.
+        */
+        int getLinePatternIconSize();
+
+        /*!
+          \brief Sets the line pattern icon image type.
+
+          \param t The line pattern icon image type.
+        */
+        void setLinePatternIconImageType(ImageType t);
+
+        /*!
+          \brief Gets the line pattern image type.
+
+          \return The line pattern image type.
+        */
+        ImageType getLinePatternIconImageType();
+
+        /*!
+          \brief Sets the line pattern RGBA colors.
+
+          \param patternRGBA The RGBA colors.
+        */
+        void setLinePatternRGBA(te::color::RGBAColor** patternRGBA);
+
+        /*!
+          \brief Gets the line pattern RGBA colors.
+
+          \return The RGBA colors.
+        */
+        te::color::RGBAColor** getLinePatternRBGA();
+
+        /*!
+          \brief Sets the line pattern RGBA number of columns.
+
+          \param n The line pattern RGBA number of columns.
+        */
+        void setLinePatternRGBANCols(int n);
+
+        /*!
+          \brief Gets the line pattern RGBA number of columns.
+
+          \return The line pattern RGBA number of columns.
+        */
+        int getLinePatternRGBANCols();
+
+        /*!
+          \brief Sets the line pattern RGBA number of rows.
+
+          \param n The line pattern RGBA number of rows.
+        */
+        void setLinePatternRGBANRows(int n);
+
+        /*!
+          \brief Gets the line pattern RGBA number of rows.
+
+          \return The line pattern RGBA number of rows.
+        */
+        int getLinePatternRGBANRows();
+
+        /*!
+          \brief Sets the polygon contour width.
+
+          \param w The polygon contour width.
+        */
+        void setPolygonContourWidth(int w);
+ 
+        /*!
+          \brief Gets the polygon contour width.
+
+          \return The polygon contour width.
+         */
+        int getPolygonContourWidth();
+
+        /*!
+          \brief Sets the polygon contour color.
+
+          \param cor The polygon contour color.
+        */
+        void setPolygonContourColor(const te::color::RGBAColor& cor);
+
+        /*!
+          \brief Gets the polygon contour color.
+
+          \return The polygon contour color.
+        */
+        te::color::RGBAColor getPolygonContourColor();
+
+        /*!
+          \brief Sets the polygon contour pattern icon image type.
+
+          \param t The polygon contour pattern icon image type.
+        */
+        void setPolygonContourPatternIconImageType(ImageType t);
+
+        /*!
+          \brief Gets the polygon contour pattern icon image type.
+
+          \return The polygon contour pattern icon image type.
+        */
+        ImageType getPolygonContourPatternIconImageType();
+
+        /*!
+          \brief Sets the polygon contour pattern icon.
+
+          \param icon The polygon contour pattern icon.
+        */
+        void setPolygonContourPatternIcon(char* icon);
+
+        /*!
+          \brief Gets the polygon contour pattern icon.
+
+          \return The polygon contour pattern icon.
+        */
+        char* getPolygonContourPatternIcon();
+
+        /*!
+          \brief Sets the polygon contour image type.
+
+          \param s The polygon contour icon size.
+        */
+        void setPolygonContourPatternIconSize(int s);
+
+        /*!
+          \brief Gets the polygon contour pattern icon size.
+
+          \return The polygon contour pattern icon size.
+        */
+        int getPolygonContourPatternIconSize();
+
+        /*!
+          \brief Sets the polygon contour pattern RGBA colors.
+
+          \param patternColors The polygon contour Pattern RGBA colors.
+        */
+        void setPolygonContourPatternRGBA(te::color::RGBAColor** patternColors);
+
+        /*!
+          \brief Gets the polygon contour pattern RGBA.
+
+          \return The polygon contour Pattern RGBA colors.
+        */
+        te::color::RGBAColor** getPolygonContourPatternRGBA();
+
+        /*!
+          \brief Sets the polygon contour pattern RGBA number of columns.
+
+          \param n The polygon contour pattern RGBA number of columns.
+        */
+        void setPolygonContourPatternRGBANCols(int n);
+
+        /*!
+          \brief Gets the polygon contour pattern RGBA number of columns.
+
+          \return The polygon contour pattern RGBA number of columns.
+        */
+        int getPolygonContourPatternRGBANCols();
+
+        /*!
+          \brief Sets the polygon contour pattern RGBA number of rows.
+
+          \param n The polygon contour pattern RGBA number of rows.
+        */
+        void setPolygonContourPatternRGBANRows(int n);
+
+        /*!
+          \brief Gets the polygon contour pattern RGBA number of rows.
+
+          \return The polygon contour pattern RGBA number of rows.
+        */
+        int getPolygonContourPatternRGBANRows();
+
+        /*!
+          \brief Sets the polygon fill color.
+
+          \param cor The polygon fill color.
+        */
+        void setPolygonFillColor(const te::color::RGBAColor& cor);
+
+        /*!
+          \brief Gets the polygon fill color.
+
+          \return The polygon fill color.
+        */
+        te::color::RGBAColor getPolygonFillColor();
+
+        /*!
+          \brief Sets the polygon fill marker type.
+
+          \param t The polygon fill marker type.
+        */
+        void setPolygonMarkerType(PtMarkerType t);
+
+        /*!
+          \brief Gets the polygon fill marker type.
+
+          \param The polygon fill marker type.
+        */
+        PtMarkerType getPolygonMarkerType();
+
+        /*!
+          \brief Sets the polygon fill marker color.
+
+          \param cor The polygon fill marker color.
+        */
+        void setPolygonFillMarkerColor(const te::color::RGBAColor& cor);
+
+        /*!
+          \brief Gets the polygon fill marker color.
+
+          \param The polygon fill marker color.
+        */
+        te::color::RGBAColor getPolygonFillMarkerColor();
+
+        /*!
+          \brief Sets the polygon fill pattern icon.
+
+          \param icon The polygon fill pattern icon.
+        */
+        void setPolygonPatternIcon(char* icon);
+
+        /*!
+          \brief Gets the polygon fill pattern icon.
+
+          \return The polygon fill pattern icon.
+        */
+        char* getPolygonPatternIcon();
+
+        /*!
+          \brief Sets the polygon fill pattern icon size.
+
+          \param s The polygon fill pattern icon size.
+        */
+        void setPolygonPatternIconSize(int s);
+
+        /*!
+          \brief Gets the polygon fill pattern icon size.
+
+          \return The polygon fill pattern icon size.
+        */
+        int getPolygonPatternIconSize();
+
+        /*!
+          \brief Sets the polygon fill pattern icon image type.
+
+          \param t The polygon fill pattern icon image type.
+        */
+        void setPolygonPatternIconImageType(ImageType t);
+
+        /*!
+          \brief Gets the polygon fill pattern icon image type.
+
+          \return The polygon fill pattern icon image type.
+        */
+        ImageType getPolygonPatternIconImageType();
+
+        /*!
+          \brief Sets the polygon fill pattern width.
+
+          \param w The polygon fill pattern width.
+        */
+        void setPolygonPatternWidth(int w);
+
+        /*!
+          \brief Gets the polygon fill pattern width.
+
+          \return The polygon fill pattern width.
+        */
+        int getPolygonPatternWidth();
+
+        /*!
+          \brief Sets the polygon fill pattern RGBA colors.
+
+          \param patternRGBA The RGBA colors.
+        */
+        void setPolygonPatternRGBA(te::color::RGBAColor** patternRGBA);
+
+        /*!
+          \brief Gets the polygon fill pattern RGBA colors.
+
+          \return The RGBA colors.
+        */
+        te::color::RGBAColor** getPolygonPatternRBGA();
+
+        /*!
+          \brief Sets the polygon fill pattern RGBA number of columns.
+
+          \param n The polygon fill pattern RGBA number of columns.
+        */
+        void setPolygonPatternRGBANCols(int n);
+
+        /*!
+          \brief Gets the polygon fill pattern RGBA number of columns.
+
+          \return The polygon fill pattern RGBA number of columns.
+        */
+        int getPolygonPatternRGBANCols();
+
+        /*!
+          \brief Sets the polygon fill pattern RGBA number of rows.
+
+          \param n The polygon fill pattern RGBA number of rows.
+        */
+        void setPolygonPatternRGBANRows(int n);
+
+        /*!
+          \brief Gets the polygon fill pattern RGBA number of rows.
+
+          \return The polygon fill pattern RGBA number of rows.
+        */
+        int getPolygonPatternRGBANRows();
 
         //@}
 
@@ -564,17 +1041,49 @@ namespace te
 
         std::set<std::string> m_theChanged;             //!< The last changed objects.
 
-        // as variaveis abaixo vao ser substituidos por style (POR ENQUANTO FICA ASSIM PARA TESTES)
-        te::color::RGBAColor m_deselectedColor;         //!< The color cell when it is deselected.
+        te::color::RGBAColor m_defaultColor;            //!< The color cell when it is deselected.
         te::color::RGBAColor m_pointedColor;            //!< The color cell when it is pointed.
         te::color::RGBAColor m_queriedColor;            //!< The color cell when it is queried.
-        te::color::RGBAColor m_PointedAndQueriedColor;  //!< The color cell when it is pointed and queried.
-        int m_lineWidth;
-        int m_contourWidth;
-        te::color::RGBAColor m_contourColor;
-        PtMarkerType m_ptMarkerType;
-        int m_ptWidth;
-        int m_polygonOpacity;
+        te::color::RGBAColor m_pointedAndQueriedColor;  //!< The color cell when it is pointed and queried.
+
+        PtMarkerType m_pointMarkerType;            //!< Point marker type.
+        char* m_pointIcon;                         //!< Point pattern icon.
+        std::size_t m_pointIconSize;               //!< Point pattern icon size.
+        ImageType m_pointIconImageType;            //!< Point pattern icon image type.
+        int m_pointWidth;                          //!< Point width.
+        te::color::RGBAColor m_pointColor;         //!< Point color.
+        te::color::RGBAColor** m_pointPatternRGBA; //!< Point pattern RGBA.
+        int m_pointPatternRGBANCols;               //!< Point pattern RGBA number of columns.
+        int m_pointPatternRGBANRows;               //!< Point pattern RGBA number of rows.
+
+        int m_lineWidth;                          //!< Line width.
+        te::color::RGBAColor m_lineColor;         //!< Line color.
+        char* m_linePatternIcon;                  //!< Line icon.
+        std::size_t m_linePatternIconSize;        //!< Line icon size.
+        ImageType m_linePatternIconImageType;     //!< Line icon image type.
+        te::color::RGBAColor** m_linePatternRGBA; //!< Line pattern RGBA.
+        int m_linePatternRGBANCols;               //!< Line pattern RGBA number of columns.
+        int m_linePatternRGBANRows;               //!< Line pattern RGBA number of rows.
+
+        int m_polygonContourWidth;                          //!< Polygon contour width.
+        te::color::RGBAColor m_polygonContourColor;         //!< Polygon contour color.
+        ImageType m_polygonContourPatternIconImageType;     //!< Polygon contour pattern icon image type.
+        char* m_polygonContourPatternIcon;                  //!< Polygon contour pattern icon.
+        std::size_t m_polygonContourPatternIconSize;        //!< Polygon contour pattern icon size.
+        te::color::RGBAColor** m_polygonContourPatternRGBA; //!< Polygon contour pattern RGBA.
+        int m_polygonContourPatternRGBANCols;               //!< Polygon contour pattern RGBA number of columns.
+        int m_polygonContourPatternRGBANRows;               //!< Polygon contour pattern RGBA number of rows.
+
+        te::color::RGBAColor m_polygonFillColor;            //!< Polygon contour color.
+        PtMarkerType m_polygonMarkerType;                   //!< Polygon fill mark.
+        te::color::RGBAColor m_polygonFillMarkerColor;      //!< Polygon fill marker color.
+        char* m_polygonPatternIcon;                         //!< Polygon fill pattern icon.
+        std::size_t m_polygonPatternIconSize;               //!< Polygon fill pattern icon size.
+        ImageType m_polygonPatternIconImageType;            //!< Polygon fill pattern icon image type.
+        int m_polygonPatternWidth;                          //!< Polygon fill pattern icon width or mark width.
+        te::color::RGBAColor** m_polygonPatternRGBA;        //!< Polygon fill pattern pattern RGBA.
+        int m_polygonPatternRGBANCols;                      //!< Polygon fill pattern pattern RGBA number of columns.
+        int m_polygonPatternRGBANRows;                      //!< Polygon fill pattern pattern RGBA number of rows.
     };
 
   } // end namespace map

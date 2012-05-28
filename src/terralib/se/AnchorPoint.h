@@ -83,9 +83,13 @@ namespace te
         //@{
 
         void setAnchorPointX(ParameterValue* x);
+
         void setAnchorPointY(ParameterValue* y);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        AnchorPoint* clone() const;
 
       private:
 

@@ -83,7 +83,9 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed Graphic pointer.
         */
         void setGraphic(Graphic* g);
+
         const Graphic* getGraphic() const;
+
         void removeGraphic();
 
         /*!
@@ -94,6 +96,7 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
         */
         void setInitialGap(ParameterValue* initialGap);
+
         const ParameterValue* getInitialGap() const;
 
         /*!
@@ -104,9 +107,13 @@ namespace te
           \note The GraphicStroke object will take the ownership of the informed ParameterValue pointer.
         */
         void setGap(ParameterValue* gap);
+
         const ParameterValue* getGap() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        GraphicStroke* clone() const;
 
       private:
 

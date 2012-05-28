@@ -60,7 +60,7 @@ link_libraries(${DEP_LIBS})
 
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
-file(GLOB HDRS${SRCDIR}/*.h)
+file(GLOB HDRS ${SRCDIR}/*.h)
  
 # Select the include directories
 include_directories(${DEP_INCLUDES})

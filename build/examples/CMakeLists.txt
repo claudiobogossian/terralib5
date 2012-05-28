@@ -24,4 +24,5 @@ add_subdirectory(terralib_example_timeseries)
 add_subdirectory(terralib_example_URL)
 add_subdirectory(terralib_example_xerces)
 add_subdirectory(terralib_example_help)
-
+add_subdirectory(terralib_example_qt/se)
+add_subdirectory(terralib_example_qt/utils)

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+﻿/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -736,6 +736,13 @@ namespace te
         virtual void setPointColor(const te::color::RGBAColor& color) = 0;
 
         /*!
+          \brief It sets the point width. If point has a patterns, this pattern is scaled to width.
+
+          \param w The width used to draw point.
+        */
+        virtual void setPointWidth(int w) = 0;
+
+        /*!
           \brief It sets the point pattern.
 
           The pattern is a matrix of int's, and each position corresponds to a RGBA color.
@@ -756,14 +763,7 @@ namespace te
         virtual void setPointPattern(char* pattern, std::size_t size, ImageType t) = 0;
 
         /*!
-          \brief It sets the point pattern width.
-
-          \param w The pattern width.
-        */
-        virtual void setPointPatternWidth(int w) = 0;
-
-        /*!
-          \brief It sets the point pattern rotation.
+          \brief It sets the point pattern rotation. Rotation is made ​​from the center of the pattern.
 
           \param angle The rotation angle in degress.
         */
@@ -806,14 +806,7 @@ namespace te
         virtual void setLinePattern(char* pattern, std::size_t size, ImageType t) = 0;
 
         /*!
-          \brief It sets the line pattern width.
-
-          \param w The pattern width.
-        */
-        virtual void setLinePatternWidth(int w) = 0;
-
-        /*!
-          \brief It sets the line pattern rotation.
+          \brief It sets the line pattern rotation. Rotation is made ​​from the center of the pattern.
 
           \param angle The rotation angle in degress.
         */
@@ -825,6 +818,13 @@ namespace te
           \param opacity The pattern opacity.
         */
         virtual void setLinePatternOpacity(int opacity) = 0;
+
+        /*!
+          \brief It sets the line width.
+
+          \param w The line width.
+        */
+        virtual void setLineWidth(int w) = 0;
 
         /*!
           \brief It sets the line dash style.
@@ -856,13 +856,6 @@ namespace te
           \param style The line join style.
         */
         virtual void setLineJoinStyle(LineJoinStyle style) = 0;
-
-        /*!
-          \brief It sets the line width.
-
-          \param w The line width.
-        */
-        virtual void setLineWidth(int w) = 0;
 
         /*!
           \brief It sets the color used to fill the draw of polygon geometries.
@@ -940,11 +933,11 @@ namespace te
         virtual void setPolygonContourPattern(char* pattern, std::size_t size, ImageType t) = 0;
 
         /*!
-          \brief It sets the polygon contour pattern width.
+          \brief It sets the polygon contour width.
 
-          \param w The pattern width.
+          \param w The contour width.
         */
-        virtual void setPolygonContourPatternWidth(int w) = 0;
+        virtual void setPolygonContourWidth(int w) = 0;
 
         /*!
           \brief It sets the polygon contour pattern rotation.
@@ -992,11 +985,14 @@ namespace te
         virtual void setPolygonContourJoinStyle(LineJoinStyle style) = 0;
 
         /*!
-          \brief It sets the polygon contour width.
-
-          \param w The contour width.
+          \brief It sets the painter to erase mode.
         */
-        virtual void setPolygonContourWidth(int w) = 0;
+        virtual void setEraseMode() = 0;
+
+        /*!
+          \brief It sets the painter to normal copy source to destination mode.
+        */
+        virtual void setNormalMode() = 0;
 
         //@}
     };

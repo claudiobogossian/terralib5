@@ -112,20 +112,30 @@ namespace te
         void add(SvgParameter* p);
 
         void setFamily(const std::string& family);
+
         void setStyle(const FontStyleType& style);
+
         void setWeight(const FontWeightType& weight);
+
         void setSize(const std::string& size);
 
         const SvgParameter* getFamily() const;
+
         const SvgParameter* getStyle() const;
+
         const SvgParameter* getWeight() const;
+
         const SvgParameter* getSize() const;
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        Font* clone() const;
+
       private:
 
         void setParameter(const std::string& name, const std::string& value);
+        
         const SvgParameter* getParameter(const std::string& name) const;
 
       private:

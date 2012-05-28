@@ -95,6 +95,9 @@ namespace te
 
         //@}
 
+        /*! \brief It creates a new copy of this object. */
+        InlineContent* clone() const;
+
       private:
 
         std::string m_data;      //!< The inlined data. (Optional)

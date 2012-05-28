@@ -61,6 +61,13 @@ namespace te
         /*! \brief It initializes a new PointSymbolizer. */
         PointSymbolizer();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other point symbolizer.
+        */
+        PointSymbolizer(const PointSymbolizer& rhs);
+
         /*! \brief Destructor */
         ~PointSymbolizer();
 
@@ -80,6 +87,9 @@ namespace te
         const Graphic* getGraphic() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Symbolizer* clone() const;
 
       private:
 

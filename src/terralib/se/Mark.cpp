@@ -106,3 +106,30 @@ const te::se::Stroke* te::se::Mark::getStroke() const
 {
   return m_stroke;
 }
+
+te::se::Mark* te::se::Mark::clone() const
+{
+  Mark* mark = new Mark;
+
+  mark->setMarkIndex(m_markIndex);
+
+  if(m_wellKnownName)
+    mark->setWellKnownName(new std::string(*m_wellKnownName));
+  
+  if(m_stroke)
+    mark->setStroke(m_stroke->clone());
+
+  if(m_fill)
+    mark->setFill(m_fill->clone());
+
+  if(m_onlineResource)
+    mark->setOnlineResource(new te::xl::SimpleLink(*m_onlineResource));
+
+  if(m_inlineContent)
+    mark->setInlineContent(m_inlineContent->clone());
+
+  if(m_format)
+    mark->setFormat(new std::string(*m_format));
+
+  return mark;
+}

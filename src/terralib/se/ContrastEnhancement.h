@@ -104,11 +104,17 @@ namespace te
         //@{
 
         void setContrastEnhancementType(ContrastEnhancementType t);
+
         ContrastEnhancementType getContrastEnhancementType() { return m_contrast; } 
+
         void setGammaValue(const double& v);
+
         double getGammaValue() { return m_gammaValue; }
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        ContrastEnhancement* clone() const;
 
       private:
 

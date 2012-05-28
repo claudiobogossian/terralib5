@@ -30,6 +30,7 @@
 #include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../Utils.h"
 #include "MarkFactory.h"
 
 // STL
@@ -124,7 +125,7 @@ te::color::RGBAColor** te::qt::MarkFactory::create(const te::se::Mark* mark, std
   }
 
   // Converts QImage to te::color::RGBA**
-  te::color::RGBAColor** rgba = convert(img);
+  te::color::RGBAColor** rgba = te::qt::widgets::GetImage(img);
 
   delete img;
 
@@ -225,8 +226,8 @@ void te::qt::MarkFactory::setup(QImage* img)
 void te::qt::MarkFactory::end()
 {
   m_painter.end();
-  m_pen = QPen(Qt::black);
-  m_brush = QBrush(Qt::lightGray, Qt::SolidPattern);
+  m_pen = QPen(QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
+  m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
 void te::qt::MarkFactory::setPenColor(const QColor& color)
@@ -267,7 +268,7 @@ void te::qt::MarkFactory::draw(QImage* img, QPainterPath& path)
   setup(img);
 
   // Transformation parameters
-  double s = img->width() - m_pen.width();
+  double s = img->width() - m_pen.width() - 1;
   double t = img->width() * 0.5;
 
   QTransform transform;
@@ -278,23 +279,6 @@ void te::qt::MarkFactory::draw(QImage* img, QPainterPath& path)
   end();
 }
 
-te::color::RGBAColor** te::qt::MarkFactory::convert(QImage* img)
-{
-  int size = img->width();
-  te::color::RGBAColor** rgba = new te::color::RGBAColor*[size];
-  for(int i = 0; i < size; ++i)
-  {
-    te::color::RGBAColor* s = new te::color::RGBAColor[size];
-
-    for(int j = 0; j < size; ++j)
-      s[j] = img->pixel(j, i);
-
-    rgba[i] = s;
-  }
-
-  return rgba;
-}
-
 void te::qt::MarkFactory::config(const te::se::Stroke* stroke)
 {
   if(stroke == 0)
@@ -303,21 +287,11 @@ void te::qt::MarkFactory::config(const te::se::Stroke* stroke)
     return;
   }
 
-  // Line Color Alpha
-  int alpha = 255;
-  const te::se::SvgParameter* opacity = stroke->getOpacity();
-  if(opacity)
-    alpha = (int)(te::map::GetDouble(opacity) * 255);
-
-  // Line Color
-  const te::se::SvgParameter* color = stroke->getColor();
-  if(color)
-  {
-    te::color::RGBAColor rgba = te::map::GetColor(color);
-    QColor qrgba(rgba.getRgba());
-    qrgba.setAlpha(alpha);
-    setPenColor(qrgba);
-  }
+  te::color::RGBAColor rgba(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
+  te::map::GetColor(stroke, rgba);
+  QColor qrgba(rgba.getRgba());
+  qrgba.setAlpha(rgba.getAlpha());
+  setPenColor(qrgba);
 
   // Line Width
   const te::se::SvgParameter* width = stroke->getWidth();
@@ -363,25 +337,18 @@ void te::qt::MarkFactory::config(const te::se::Fill* fill)
     return;
   }
 
-  int alpha = 255;
-  const te::se::SvgParameter* opacity = fill->getOpacity();
-  if(opacity)
-    alpha = (int)(te::map::GetDouble(opacity) * 255);
-
-  const te::se::SvgParameter* color = fill->getColor();
-  if(color)
-  {
-    te::color::RGBAColor rgba = te::map::GetColor(color);
-    QColor qrgba(rgba.getRgba());
-    qrgba.setAlpha(alpha);
-    setBrushColor(qrgba);
-  }
+  te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
+  te::map::GetColor(fill, rgba);
+  QColor qrgba(rgba.getRgba());
+  qrgba.setAlpha(rgba.getAlpha());
+  setBrushColor(qrgba);
 }
 
 te::qt::MarkFactory::MarkFactory()
   : te::map::AbstractMarkFactory(sm_markFactoryKey)
 {
   m_brush.setStyle(Qt::SolidPattern);
+  m_brush.setColor(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR));
   buildMaps();
   buildPaths();
 }

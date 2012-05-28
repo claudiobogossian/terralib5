@@ -81,13 +81,21 @@ namespace te
         //@{
 
         void setPerpendicularOffset(ParameterValue* p);
+
         void setIsRepeated(bool i);
+
         void setInitialGap(ParameterValue* p);
+
         void setGap(ParameterValue* p);
+
         void setIsAligned(bool i);
+
         void setGeneralizeLine(bool g);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        LinePlacement* clone() const;
 
       private:
 

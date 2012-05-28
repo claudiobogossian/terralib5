@@ -45,6 +45,39 @@ te::se::RasterSymbolizer::RasterSymbolizer()
 {
 }
 
+te::se::RasterSymbolizer::RasterSymbolizer(const te::se::RasterSymbolizer& rhs)
+  : te::se::Symbolizer(rhs),
+    m_geometry(0),
+    m_opacity(0),
+    m_channelSelection(0),
+    m_overlapBehavior(rhs.m_overlapBehavior),
+    m_colorMap(0),
+    m_contrastEnhancement(0),
+    m_shadedRelief(0),
+    m_imageOutline(0)
+{
+  if(rhs.m_geometry)
+    m_geometry = new te::fe::PropertyName(rhs.m_geometry->getName());
+
+  if(rhs.m_opacity)
+    m_opacity = rhs.m_opacity->clone();
+
+  if(rhs.m_channelSelection)
+    m_channelSelection = rhs.m_channelSelection->clone();
+
+  //if(rhs.m_colorMap)
+    //m_colorMap = rhs.m_colorMap->clone();
+
+  if(rhs.m_contrastEnhancement)
+    m_contrastEnhancement = rhs.m_contrastEnhancement->clone();
+
+  if(rhs.m_shadedRelief)
+    m_shadedRelief = rhs.m_shadedRelief->clone();
+
+  if(rhs.m_imageOutline)
+    m_imageOutline = rhs.m_imageOutline->clone();
+}
+
 te::se::RasterSymbolizer::~RasterSymbolizer()
 {
   delete m_geometry;
@@ -101,4 +134,9 @@ void te::se::RasterSymbolizer::setImageOutline(ImageOutline* i)
 {
   delete m_imageOutline;
   m_imageOutline = i;
+}
+
+te::se::Symbolizer* te::se::RasterSymbolizer::clone() const
+{
+  return new RasterSymbolizer(*this);
 }

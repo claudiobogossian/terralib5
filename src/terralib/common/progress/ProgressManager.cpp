@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,176 +20,152 @@
 /*!
   \file terralib/common/progress/ProgressManager.cpp
 
-  \brief Implementation of the singleton to keep a progress interface instance.
+  \brief A class that defines the singleton to manager tasks and viewers.
 */
 
 // TerraLib
-#include "../Exception.h"
-#include "../Translator.h"
-#include "AbstractProgress.h"
+#include "AbstractProgressViewer.h"
 #include "ProgressManager.h"
 
-void te::common::ProgressManager::setMainProgress(AbstractProgress* pi)
+int te::common::ProgressManager::addViewer(AbstractProgressViewer* apv)
 {
-  m_progressMap.insert(std::map<int, AbstractProgress*>::value_type(-1, pi));
-}
+  int id = generateViewerId();
 
-te::common::AbstractProgress* te::common::ProgressManager::getMainProgress()
-{
-  return getProgress(-1);
-}
+  m_viewers.insert(std::map<int, AbstractProgressViewer*>::value_type(id, apv));
 
-int te::common::ProgressManager::setProgress(AbstractProgress* pi)
-{
-  int id = getProgressId();
+  //add current tasks into viewer
+  std::map<int, TaskProgress*>::iterator it = m_tasks.begin();
 
-  m_progressMap.insert(std::map<int, AbstractProgress*>::value_type(id, pi));
+  while(it != m_tasks.end())
+  {
+    apv->addTask(it->second, it->first);
+    ++it;
+  }
 
   return id;
 }
 
-te::common::AbstractProgress* te::common::ProgressManager::getProgress(const int& id)
+void te::common::ProgressManager::removeViewer(int viewerId)
 {
-  std::map<int, AbstractProgress*>::iterator it = m_progressMap.find(id);
+  std::map<int, AbstractProgressViewer*>::iterator it = m_viewers.find(viewerId);
 
-  if(it == m_progressMap.end())
+  if(it != m_viewers.end())
   {
-    throw te::common::Exception(TR_COMMON("Progress not found!"));
+    m_viewers.erase(it);
+  }
+}
+
+int te::common::ProgressManager::addTask(TaskProgress* tp)
+{
+  int id = generateTaskId();
+
+  m_tasks.insert(std::map<int, TaskProgress*>::value_type(id, tp));
+
+  //add task in viewers
+  std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
+
+  while(itV != m_viewers.end())
+  {
+    itV->second->addTask(tp, id);
+
+    ++itV;
   }
 
-  return it->second;
+  return id;
 }
 
-void te::common::ProgressManager::setTotalSteps(const int& value, const int& id)
+void te::common::ProgressManager::removeTask(int taskId)
 {
-    AbstractProgress* ap = getProgress(id);
+  std::map<int, TaskProgress*>::iterator it = m_tasks.find(taskId);
 
-    ap->setTotalSteps(value);
+  if(it != m_tasks.end())
+  {
+    //remove task from viewers
+    std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
+
+    while(itV != m_viewers.end())
+    {
+      itV->second->removeTask(taskId);
+
+      ++itV;
+    }
+
+    m_tasks.erase(it);
+  }
 }
 
-void te::common::ProgressManager::setCurrentStep(const int& step, const int& id)
+void te::common::ProgressManager::cancelTask(int taskId)
 {
-  AbstractProgress* ap = getProgress(id);
+  std::map<int, TaskProgress*>::iterator it = m_tasks.find(taskId);
 
-  ap->setCurrentStep(step);
+  if(it != m_tasks.end())
+  {
+    //remove task from viewers
+    std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
+
+    while(itV != m_viewers.end())
+    {
+      itV->second->cancelTask(taskId);
+
+      ++itV;
+    }
+  }
 }
 
-int te::common::ProgressManager::getCurrentStep(const int& id)
+void te::common::ProgressManager::setTotalValues(int taskId)
 {
-  AbstractProgress* ap = getProgress(id);
+  std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
-  return ap->getCurrentStep();
+  while(itV != m_viewers.end())
+  {
+    itV->second->setTotalValues(taskId);
+
+    ++itV;
+  }
 }
 
-int te::common::ProgressManager::getCurrentProportionalStep(const int& id)
+void te::common::ProgressManager::updateValue(int taskId)
 {
-  AbstractProgress* ap = getProgress(id);
+  std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
-  return ap->getCurrentProportionalStep();
+  while(itV != m_viewers.end())
+  {
+    itV->second->updateValue(taskId);
+
+    ++itV;
+  }
 }
-     
-void te::common::ProgressManager::setMessage(const std::string& message, const int& id)
+
+void te::common::ProgressManager::updateMessage(int taskId)
 {
-  AbstractProgress* ap = getProgress(id);
+  std::map<int, AbstractProgressViewer*>::iterator itV = m_viewers.begin();
 
-  ap->setMessage(message);
+  while(itV != m_viewers.end())
+  {
+    itV->second->updateMessage(taskId);
+
+    ++itV;
+  }
 }
 
-std::string te::common::ProgressManager::getMessage(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  return ap->getMessage();
-}
-
-void te::common::ProgressManager::setTitle(const std::string& title, const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->setTitle(title);
-}
-
-void te::common::ProgressManager::setActive(const bool& status, const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->setActive(status);
-}
-
-bool te::common::ProgressManager::isActive(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  return ap->isActive();
-}
-
-void te::common::ProgressManager::reset(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->reset();
-}
-        
-bool te::common::ProgressManager::hasToUpdate(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  return ap->hasToUpdate();
-}
-
-void te::common::ProgressManager::pulse(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->pulse();
-}
-        
-void te::common::ProgressManager::cancel(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->cancel();
-}
-
-void te::common::ProgressManager::setModal(const bool& flag, const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->setModal(flag);
-}
-
-void te::common::ProgressManager::setMultiThreadProgress(const bool& flag, const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->setMultiThreadProgress(flag);
-}
-      
-void te::common::ProgressManager::useProgressTimer(const bool& flag, const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->useProgressTimer(flag);
-}
-
-void te::common::ProgressManager::startTimer(const int& id)
-{
-  AbstractProgress* ap = getProgress(id);
-
-  ap->startTimer();
-}
-
-te::common::ProgressManager::ProgressManager():
-m_progressCounter(0)
+te::common::ProgressManager::ProgressManager(): 
+  m_taskCounter(0),
+  m_viewerCounter(0)
 {
 }
 
 te::common::ProgressManager::~ProgressManager()
 {
-  m_progressMap.clear();
+  m_viewers.clear();
+  m_tasks.clear();
 }
 
-int te::common::ProgressManager::getProgressId()
+int te::common::ProgressManager::generateViewerId()
 {
-  return m_progressCounter++;
+  return m_viewerCounter++;
+}
+
+int te::common::ProgressManager::generateTaskId()
+{
+  return m_taskCounter++;
 }

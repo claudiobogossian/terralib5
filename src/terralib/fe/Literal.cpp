@@ -45,3 +45,7 @@ void te::fe::Literal::setValue(const std::string& v)
   m_value = v;
 }
 
+te::fe::Expression* te::fe::Literal::clone() const
+{
+  return new Literal(m_value);
+}

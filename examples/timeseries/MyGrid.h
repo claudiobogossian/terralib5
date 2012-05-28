@@ -7,35 +7,39 @@
 #include <terralib/qt/qwt/ScatterDisplay.h>
 #include <terralib/qt/qwt/TimeSeriesDisplay.h>
 
+class MyLayer;
+
 class MyGrid : public te::qt::widgets::DataGridView
 {
   Q_OBJECT
 
   public:
-  MyGrid(std::vector<te::map::MapDisplay*>*, QWidget* w, QWidget* parent = 0);
+  MyGrid(MyLayer*, QWidget* parent = 0);
 
   // o destrutor faz o disconnect com os MapDisplays e deleta todos os graficos relacionados a este grid
   ~MyGrid();
-  void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent*);
 
   public slots:
     void plotHistogram();
     void plotScatter();
     void plotTimeSeries();
     void selectionChangedSlot(te::map::DataGridOperation*);
+    MyLayer* getLayer();
 
   Q_SIGNALS:
     void selectionChanged(te::map::DataGridOperation*);
     void closed(MyGrid*);
+    void plotHistogram(MyGrid*);
+    void plotScatter(MyGrid*);
+    void plotTimeSeries(MyGrid*);
 
   protected slots:
     virtual void rowClicked(int clickedVisualRow);
     virtual void removeAllSelections();
 
   private:
-//    std::multimap<std::string, QwtPlot*> m_plotMMap;
-    std::vector<te::map::MapDisplay*>* m_mapDisplayVec;
-    QWidget* m_mainControlWidget;
+    MyLayer* m_layer;
 };
 
 #endif

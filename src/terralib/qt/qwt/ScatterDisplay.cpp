@@ -147,9 +147,11 @@ te::qt::qwt::ScatterDisplay::ScatterDisplay(int colx, int coly, te::map::DataGri
   m_selectionCursor->setRubberBandPen( QColor( Qt::magenta ) );
   m_selectionCursor->setTrackerPen( QColor( Qt::black ) );
   m_selectionCursor->setMousePattern( QwtEventPattern::MouseSelect1, Qt::LeftButton);
-  m_selectionCursor->setRubberBand(QwtPicker::RectRubberBand);
+  //m_selectionCursor->setRubberBand(QwtPicker::RectRubberBand);
+  m_selectionCursor->setRubberBand(QwtPicker::PolygonRubberBand);
   m_selectionCursor->setTrackerMode(QwtPicker::AlwaysOff);
-  QwtPickerClickRectMachine* mac = new QwtPickerClickRectMachine();
+  //QwtPickerClickRectMachine* mac = new QwtPickerClickRectMachine();
+  QwtPickerPolygonMachine* mac = new QwtPickerPolygonMachine();
   m_selectionCursor->setStateMachine(mac);
   QObject::connect(m_selectionCursor, SIGNAL(select(QRect)), this, SLOT(selectSlot(QRect)));
 
@@ -209,6 +211,14 @@ te::qt::qwt::ScatterDisplay::~ScatterDisplay()
     delete m_xStringScaleDraw;
   if(axisScaleDraw(QwtPlot::yLeft) != m_yStringScaleDraw)
     delete m_yStringScaleDraw;
+}
+
+
+void te::qt::qwt::ScatterDisplay::closeEvent(QCloseEvent *event)
+{
+  setAttribute(Qt::WA_DeleteOnClose);
+  Q_EMIT closed(this);
+  event->accept();
 }
 
 bool te::qt::qwt::ScatterDisplay::createScatters()
@@ -387,19 +397,18 @@ bool te::qt::qwt::ScatterDisplay::createScatters()
 
   adjustScatterLabels();
 
-  te::color::RGBAColor cor(100, 100, 100, 255);
-  QColor qcor(cor.getRed(), cor.getGreen(), cor.getBlue(), 200);
+  QColor qcor(m_color.getRed(), m_color.getGreen(), m_color.getBlue(), 200);
   if(m_allScatter == 0)
     m_allScatter = new Scatter("All");
   m_allScatter->setValues(allValues);
   m_allScatter->setColor(qcor);
 
-  cor = m_op->getDeselectedColor();
+  te::color::RGBAColor cor = m_op->getDefaultColor();
   qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), 200);
   if(m_deselectedScatter == 0)
     m_deselectedScatter = new Scatter("Deselected");
   m_deselectedScatter->setValues(deselectedValues);
-  m_allScatter->setColor(qcor);
+  m_deselectedScatter->setColor(qcor);
 
   cor = m_op->getPointedColor();
   qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), 200);
@@ -522,9 +531,9 @@ void te::qt::qwt::ScatterDisplay::legendMenuSlot(QPoint& p, QWidget* w)
     m_legendMenu->addAction(action);
     connect(action, SIGNAL(triggered()), this, SLOT(legendToBackSlot()));
 
-    action = new QAction("&Color...", m_legendMenu);
-    m_legendMenu->addAction(action);
-    connect(action, SIGNAL(triggered()), this, SLOT(legendColorSlot()));
+    //action = new QAction("&Color...", m_legendMenu);
+    //m_legendMenu->addAction(action);
+    //connect(action, SIGNAL(triggered()), this, SLOT(legendColorSlot()));
   }
   m_legendMenu->exec(p);
 }
@@ -611,9 +620,9 @@ void te::qt::qwt::ScatterDisplay::legendColorSlot()
   Scatter* hitem = (Scatter*)m_legend->find(m_legendWidget);
   QString title = hitem->title().text();
   if(title == "All")
-    cor = m_op->getDeselectedColor();
+    cor = m_color;
   else if(title == "Deselected")
-    cor = m_op->getDeselectedColor();
+    cor = m_op->getDefaultColor();
   else if(title == "Pointed")
     cor = m_op->getPointedColor();
   else if(title == "Queried")
@@ -628,11 +637,11 @@ void te::qt::qwt::ScatterDisplay::legendColorSlot()
   {
     hitem->setColor(color);
 
-    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+    cor.setColor(color.red(), color.green(), color.blue(), 200);
     if(title == "All")
-      m_op->setDeselectedColor(cor);
+      m_color = cor;
     else if(title == "Deselected")
-      m_op->setDeselectedColor(cor);
+      m_op->setDefaultColor(cor);
     else if(title == "Pointed")
       m_op->setPointedColor(cor);
     else if(title == "Queried")
@@ -671,18 +680,18 @@ void te::qt::qwt::ScatterDisplay::drawItems( QPainter *painter, const QRectF &ca
   for(int i = size-1; i >= 0; --i)
   {
     QwtPlotItem *item = itmList[i];
-    if ( item && item->isVisible() )
+    if(item && item->isVisible() )
     {
-        painter->save();
+      painter->save();
 
-        painter->setRenderHint( QPainter::Antialiasing,
-            item->testRenderHint( QwtPlotItem::RenderAntialiased ) );
+      painter->setRenderHint( QPainter::Antialiasing,
+        item->testRenderHint( QwtPlotItem::RenderAntialiased ) );
 
-        item->draw( painter,
-            map[item->xAxis()], map[item->yAxis()],
-            canvasRect );
+      item->draw( painter,
+        map[item->xAxis()], map[item->yAxis()],
+        canvasRect );
 
-        painter->restore();
+      painter->restore();
     }
   }
 }
@@ -857,7 +866,8 @@ void te::qt::qwt::ScatterDisplay::buttonClickedSlot(QAbstractButton* button)
     m_panner->setMouseButton(Qt::LeftButton);
     m_zoomer->setMousePattern( QwtEventPattern::MouseSelect1, Qt::LeftButton, Qt::ControlModifier );
 
-    canvas()->setCursor(Qt::OpenHandCursor);
+    //canvas()->setCursor(Qt::OpenHandCursor);
+    canvas()->setCursor(*m_panCursor);
   }
 
   if(m_selectionMode == ZOOM || m_selectionMode == PAN)

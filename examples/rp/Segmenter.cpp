@@ -21,7 +21,7 @@ void Segmenter()
 {
   try
   {
-    std::cout << "Segmentation example using Raster Processing module." << std::endl << std::endl;
+    std::cout << "Region growing Segmentation example using Raster Processing module." << std::endl << std::endl;
 
 // open input raster
     std::map<std::string, std::string> rinfo;
@@ -41,41 +41,35 @@ void Segmenter()
     te::rst::Raster* rout = te::rst::RasterFactory::make(ogrid, obands, orinfo);
 
 // define segmentation parameters
+
+// input parameters
+    te::rp::Segmenter::InputParameters algoInputParameters;
+    algoInputParameters.m_inRasterPtr = rin;
+    algoInputParameters.m_inRasterBands.push_back( 0 );
+    algoInputParameters.m_inRasterBands.push_back( 1 );
+    algoInputParameters.m_inRasterBands.push_back( 2 );
+    
+// link specific parameters with chosen implementation
 // strategy specific parameters (m_minSegmentSize: size of the smallest segment to be created; m_segmentsSimilarityThreshold: similarity between neighboring segments to merge them or not)
     te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
     segparameters.m_minSegmentSize = 50;
     segparameters.m_segmentsSimilarityThreshold = 30;
 
-// inputs/outputs
-    te::rp::Segmenter::Parameters algoparameters;
-    algoparameters.m_inRasterPtr = rin;
-    algoparameters.m_inRasterBands.push_back( 0 );
-    algoparameters.m_inRasterBands.push_back( 1 );
-    algoparameters.m_inRasterBands.push_back( 2 );
+    algoInputParameters.m_strategyName = "RegionGrowing";
+    algoInputParameters.setSegStrategyParams(segparameters);    
+    
+// output parameters    
 // the output can be a previously created raster (in this case, rout)
-    algoparameters.m_outRasterPtr = rout;
-    algoparameters.m_outRasterBand = 0;
-// or a previously opened data source (in this case, 0)
-    algoparameters.m_outDataSourcePtr = 0;
-    algoparameters.m_outDataSetName = "";
 
-// parameters to use threaded processing
-    algoparameters.m_enableThreadedProcessing = false;
-    algoparameters.m_maxSegThreads = 0;
-// divide the image into blocks for segmentation
-    algoparameters.m_enableBlockProcessing = false;
-    algoparameters.m_enableBlockMerging = false;
-    algoparameters.m_maxBlockSize = 0;
-
-// link specific parameters with chosen implementation
-    algoparameters.m_strategyName = "RegionGrowing";
-    algoparameters.setSegStrategyParams(segparameters);
+    te::rp::Segmenter::OutputParameters algoOutputParameters;
+    algoOutputParameters.m_outRasterPtr = rout;
+    algoOutputParameters.m_outRasterBand = 0;
 
 // execute the algorithm
     te::rp::Segmenter seginstance;
 
-    seginstance.initialize(algoparameters);
-    seginstance.execute();
+    if( ! seginstance.initialize(algoInputParameters, algoOutputParameters) ) throw;
+    if( ! seginstance.execute() ) throw;
 
 // export the segmentation into shapefile
     std::vector<te::gm::Geometry*> geometries;

@@ -35,16 +35,15 @@
 #include "SegmenterSegmentsBlock.h"
 #include "SegmenterIdsManager.h"
 #include "Algorithm.h"
-#include "AlgorithmParameters.h"
 #include "Matrix.h"
 #include "Config.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
+//#include <boost/thread/thread.hpp>
+//#include <boost/thread/mutex.hpp>
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace te
 {
@@ -83,26 +82,16 @@ namespace te
       public:
         
         /*!
-          \class Parameters
-          \brief Segmenter Parameters
+          \class InputParameters
+          \brief Segmenter Input Parameters
          */        
-        class TERPEXPORT Parameters : public AlgorithmParameters
+        class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
             
-            te::rst::Raster* m_inRasterPtr; //!< Input raster.
+            te::rst::Raster* m_inputRasterPtr; //!< Input raster.
             
-            std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
-            
-            te::rst::Raster* m_outRasterPtr; //!< Output raster (generated label image).
-            
-            unsigned int m_outRasterBand; //!< Band where the data will be written to the output raster (generated label image).
-            
-            te::da::DataSource* m_outDataSourcePtr; //!< The data source where the output raster (generated label image) will be stored.
-            
-            std::string m_outDataSetName; //!< The data set name related to the output raster (generated label image).
-            
-            boost::shared_ptr< RasterHandler > m_outRasterHandlerPtr; //!< A handler for the generated output raster (generated label image).
+            std::vector< unsigned int > m_inputRasterBands; //!< Bands to be processed from the input raster.
             
             bool m_enableThreadedProcessing; //!< If true, threaded processing will be performed (best with  multi-core or multi-processor systems (default:false).
             
@@ -116,9 +105,11 @@ namespace te
             
             std::string m_strategyName; //!< The segmenter strategy name see each te::rp::SegmenterStrategyFactory inherited classes documentation for reference.
             
-            Parameters();
+            InputParameters();
             
-            ~Parameters();
+            InputParameters( const InputParameters& other );
+            
+            ~InputParameters();
             
             /*!
               \brief Set specific segmenter strategy parameters.
@@ -138,7 +129,7 @@ namespace te
             void reset() throw( te::rp::Exception );
             
             //overload
-            const AlgorithmParameters& operator=( const AlgorithmParameters& params );
+            const Segmenter::InputParameters& operator=( const Segmenter::InputParameters& params );
             
             //overload
             AbstractParameters* clone() const;   
@@ -151,20 +142,52 @@ namespace te
             */               
             SegmenterStrategyParameters* m_segStratParamsPtr;
         };
+        
+        /*!
+          \class OutputParameters
+          \brief Segmenter Output Parameters
+         */        
+        class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
+        {
+          public:
+            
+            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
+            
+            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory). 
+            
+            mutable std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< A pointer the ge generated output raster (label image).
+            
+            OutputParameters();
+            
+            OutputParameters( const OutputParameters& other );
+            
+            ~OutputParameters();
+            
+            //overload
+            void reset() throw( te::rp::Exception );
+            
+            //overload
+            const Segmenter::OutputParameters& operator=( const Segmenter::OutputParameters& params );
+            
+            //overload
+            AbstractParameters* clone() const;   
+        };        
 
         Segmenter();
         
         ~Segmenter();
        
         //overload
-        bool execute() throw( te::rp::Exception );          
+        bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );          
         
         //overload
         void reset() throw( te::rp::Exception );        
         
         //overload
-        bool initialize( AlgorithmParameters& params ) 
+        bool initialize( const AlgorithmInputParameters& inputParams ) 
           throw( te::rp::Exception );
+          
+        bool isInitialized() const;
           
       protected :
         
@@ -177,8 +200,11 @@ namespace te
         class SegmenterThreadEntryParams
         {
           public :
-            //! A pointer to the global segmenter execution parameters (default:0). */
-            Segmenter::Parameters const* m_parametersPtr; //!< Segmenter execution parameters.
+            //! A pointer to the global segmenter input execution parameters (default:0). */
+            Segmenter::InputParameters const* m_inputParametersPtr;
+            
+            //! A pointer to the global segmenter input execution parameters (default:0). */
+            Segmenter::OutputParameters* m_outputParametersPtr;
             
             /*! Pointer to the segments blocks matrix (default:0)*/
             SegmentsBlocksMatrixT* m_segsBlocksMatrixPtr;
@@ -214,7 +240,7 @@ namespace te
         
         bool m_instanceInitialized; //"< Is this instance already initialized ?
         
-        Segmenter::Parameters m_parameters; //!< Segmenter execution parameters.
+        Segmenter::InputParameters m_inputParameters; //!< Segmenter execution parameters.
         
         /*! 
           \brief Calc the best sub-image block size for each thread to

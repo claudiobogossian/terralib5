@@ -47,3 +47,14 @@ void te::se::SelectedChannel::setContrastEnhancement(ContrastEnhancement* c)
   delete m_contrastEnhancement;
   m_contrastEnhancement = c;
 }
+
+te::se::SelectedChannel* te::se::SelectedChannel::clone() const
+{
+  SelectedChannel* sc = new SelectedChannel;
+  sc->setSourceChannelName(m_sourceChannelName);
+
+  if(m_contrastEnhancement)
+    sc->setContrastEnhancement(m_contrastEnhancement->clone());
+
+  return sc;
+}

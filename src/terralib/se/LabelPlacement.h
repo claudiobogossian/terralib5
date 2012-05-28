@@ -70,9 +70,13 @@ namespace te
         //@{
 
         void setPointPlacement(PointPlacement* p);
+
         void setLinePlacement(LinePlacement* l);
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        LabelPlacement* clone() const;
 
       private:
 

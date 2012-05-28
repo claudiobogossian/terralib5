@@ -32,7 +32,7 @@
 
 te::se::ExternalGraphic::ExternalGraphic()
   : m_onlineResource(0),
-    m_inlineContent(0)           
+    m_inlineContent(0)
 {
 }
 
@@ -66,3 +66,19 @@ void te::se::ExternalGraphic::add(Recode* r)
   m_colorReplacements.push_back(r);
 }
 
+te::se::ExternalGraphic* te::se::ExternalGraphic::clone() const
+{
+  ExternalGraphic* externalGraphic = new ExternalGraphic;
+
+  externalGraphic->setFormat(m_format);
+
+  if(m_onlineResource)
+    externalGraphic->setOnlineResource(new te::xl::SimpleLink(*m_onlineResource));
+
+  if(m_inlineContent)
+    externalGraphic->setInlineContent(m_inlineContent->clone());
+
+  // TODO: std::vector<Recode*>
+
+  return externalGraphic;
+}

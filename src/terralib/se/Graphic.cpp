@@ -118,3 +118,38 @@ void te::se::Graphic::setDisplacement(Displacement* value)
   m_displacement = value;
 }
 
+te::se::Graphic* te::se::Graphic::clone() const
+{
+  Graphic* graphic = new Graphic;
+
+  for(std::size_t i = 0; i < m_externalGraphics.size(); ++i)
+  {
+    const ExternalGraphic* eg = m_externalGraphics[i];
+    if(eg)
+      graphic->add(eg->clone());
+  }
+
+  for(std::size_t i = 0; i < m_marks.size(); ++i)
+  {
+    const Mark* m = m_marks[i];
+    if(m)
+      graphic->add(m->clone());
+  }
+
+  if(m_opacity)
+    graphic->setOpacity(new ParameterValue(*m_opacity));
+  
+  if(m_size)
+    graphic->setSize(new ParameterValue(*m_size));
+
+  if(m_rotation)
+    graphic->setRotation(new ParameterValue(*m_rotation));
+
+  if(m_anchorPoint)
+    graphic->setAnchorPoint(m_anchorPoint->clone());
+
+  if(m_displacement)
+    graphic->setDisplacement(m_displacement->clone());
+
+  return graphic;
+}

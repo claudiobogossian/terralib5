@@ -55,3 +55,11 @@ te::se::InlineContent::EncodingType te::se::InlineContent::getEncoding() const
   return m_encoding;
 }
 
+te::se::InlineContent* te::se::InlineContent::clone() const
+{
+  InlineContent* ic = new InlineContent(m_encoding);
+  ic->setData(m_data);
+
+  return ic;
+}
+

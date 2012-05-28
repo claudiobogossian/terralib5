@@ -17,6 +17,17 @@ te::qt::qwt::HistogramSeletionCursor::HistogramSeletionCursor(RubberBand rubberB
 {
 }
 
+void te::qt::qwt::HistogramSeletionCursor::widgetMouseReleaseEvent(QMouseEvent* e)
+{
+  QwtPicker::widgetMouseReleaseEvent(e);
+
+  //QMouseEvent* m = new QMouseEvent(QEvent::MouseButtonPress, e->pos(), e->button(), e->buttons(), e->modifiers());
+  //QwtPicker::widgetMousePressEvent(m);
+  QMouseEvent m(QEvent::MouseButtonPress, e->pos(), e->button(), e->buttons(), e->modifiers());
+  QwtPicker::widgetMousePressEvent(&m);
+  QwtPicker::widgetMouseReleaseEvent(e);
+}
+
 void te::qt::qwt::HistogramSeletionCursor::drawRubberBand(QPainter* painter) const
 {
   if ( !isActive() || rubberBand() == NoRubberBand ||

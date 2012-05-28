@@ -3,7 +3,6 @@
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 #include <terralib/maptools.h>
-#include <terralib/maptools/PtMarker.h>
 #include <terralib/qt/widgets.h>
 
 #include <QMatrix>
@@ -27,6 +26,9 @@ MyLayerRenderer::~MyLayerRenderer()
 void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
      const te::gm::Envelope& e, int srid)
 {
+  if(m_useChanged == false)
+    canvas->clear();
+
   MyLayer* layer =  (MyLayer*)al;
   te::map::DataGridOperation* op = layer->getDataGridOperation();
 
@@ -41,21 +43,63 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     int pkPos = dsType->getPropertyPosition(pkName);
     std::string pkv;
     int status = -1;
+    te::color::RGBAColor defaultColor;
     te::color::RGBAColor cor;
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
     te::gm::GeometryProperty* gProp = dsType->getDefaultGeomProperty();
     int gtype = gProp->getGeometryType();
+    int width = 0, ptMark = 0;
 
-    canvas->setPolygonContourColor(op->getContourColor());
-    canvas->setPolygonContourWidth(op->getContourWidth());
-    //canvas->setPointWidth(op->getPtWidth());
-    //canvas->setPointMarker(op->getPtMarkerType());
-    te::color::RGBAColor** mark = te::map::CreateMarker(op->getPtMarkerType(), op->getPtWidth(), op->getDeselectedColor());
-    canvas->setPointPattern(mark, op->getPtWidth(), op->getPtWidth());
-    canvas->setLineWidth(op->getLineWidth());
-    canvas->setPolygonFillColor(op->getDeselectedColor());
-    canvas->setLineColor(op->getDeselectedColor());
-    //canvas->setPointColor(op->getDeselectedColor());
+    if(gtype == te::gm::PointType || gtype == te::gm::PointZType || gtype == te::gm::PointMType || gtype == te::gm::PointZMType)
+    {
+      defaultColor = op->getPointColor();
+      canvas->setPointColor(defaultColor);
+      if(op->getPointMarkerType() == te::map::MarkerPattern && op->getPointIcon())
+      {
+        canvas->setPointPattern(op->getPointIcon(), op->getPointIconSize(), op->getPointIconImageType());
+        canvas->setPointWidth(op->getPointWidth());
+      }
+      else
+      {
+        canvas->setPointWidth(op->getPointWidth());
+        //canvas->setPointMarker(op->getPointMarkerType());
+      }
+    }
+    else if(gtype == te::gm::LineStringType || gtype == te::gm::LineStringZType || gtype == te::gm::LineStringMType || gtype == te::gm::LineStringZMType ||
+      gtype == te::gm::MultiLineStringType || gtype == te::gm::MultiLineStringZType || gtype == te::gm::MultiLineStringMType || gtype == te::gm::MultiLineStringZMType)
+    {
+      defaultColor = op->getLineColor();
+      if(op->getLinePatternIcon())
+        canvas->setLinePattern(op->getLinePatternIcon(), op->getLinePatternIconSize(), op->getLinePatternIconImageType());
+      canvas->setLineWidth(op->getLineWidth());
+      canvas->setLineColor(op->getLineColor());
+      //((te::qt::widgets::Canvas*)canvas)->setLineStyle(Qt::SolidLine);
+    }
+    else
+    {
+      // polygon fill style
+      defaultColor = op->getPolygonFillColor();
+      canvas->setPolygonFillColor(defaultColor);
+      if(op->getPolygonPatternIcon())
+      {
+        canvas->setPolygonFillPattern(op->getPolygonPatternIcon(), op->getPolygonPatternIconSize(), op->getPolygonPatternIconImageType());
+        canvas->setPolygonPatternWidth(op->getPolygonPatternWidth());
+      }
+      else if(op->getPolygonMarkerType() != te::map::MarkerNone && op->getPolygonMarkerType() != te::map::MarkerPattern)
+      {
+        //canvas->setPolygonFillMarkerColor(op->getPolygonFillMarkerColor());
+        //canvas->setPolygonFillMarker(op->getPolygonMarkerType());
+      }
+      else
+        canvas->setPolygonFillPattern(0, 0, 0);
+
+      // polygon contour style
+      canvas->setPolygonContourColor(op->getPolygonContourColor());
+      //((te::qt::widgets::Canvas*)canvas)->setPolygonContourStyle(Qt::SolidLine);
+      canvas->setPolygonContourWidth(op->getPolygonContourWidth());
+      if(op->getPolygonContourPatternIcon())
+        canvas->setPolygonContourPattern(op->getPolygonContourPatternIcon(), op->getPolygonContourPatternIconSize(), op->getPolygonContourPatternIconImageType());
+    }
 
     size_t size = changeds.size();
 
@@ -65,6 +109,9 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     QRectF deviceRect(0, 0, w, h);
     QRectF worldRect = matrix.inverted().mapRect(deviceRect);
 
+    te::gm::Geometry* g;
+    std::vector<te::gm::Geometry*> geoms, tgeoms;
+    std::vector<te::color::RGBAColor> colors, tcolors;
     dataSet->moveBeforeFirst();
     while(dataSet->moveNext())
     {
@@ -76,10 +123,11 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
           break;
         if(changeds.find(pkv) == changeds.end())
           continue;
+
+        --size;
       }
 
-      --size;
-      te::gm::Geometry* g = dataSet->getGeometry(gPos);
+      g = dataSet->getGeometry(gPos);
       if(g == 0)
         continue;
 
@@ -87,7 +135,15 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
       const te::gm::Envelope* env = g->getMBR();
       QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
 
-      if(gtype == te::gm::MultiPolygonType || gtype == te::gm::PolygonType || gtype == te::gm::MultiLineStringType || gtype == te::gm::LineStringType)
+      if(env->getWidth() == 0 && env->getHeight() == 0)
+      {
+        if(worldRect.contains(env->m_llx, env->m_lly) == false)
+        {
+          delete g;
+          continue;
+        }
+      }
+      else
       {
         if(r.intersects(worldRect) == false)
         {
@@ -98,43 +154,95 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
 
       status = op->getDataSetSelectionStatus(pkv);
       if(!(status == te::map::DataGridOperation::POINTED || status == te::map::DataGridOperation::QUERIED))
-        cor = op->getDeselectedColor();
-      else if(status == te::map::DataGridOperation::POINTED)
+        cor = op->getDefaultColor();
+
+      cor = defaultColor;
+      if(status == te::map::DataGridOperation::POINTED)
         cor = op->getPointedColor();
       else if(status == te::map::DataGridOperation::QUERIED)
         cor = op->getQueriedColor();
       else if(status == te::map::DataGridOperation::POINTED_AND_QUERIED)
         cor = op->getPointedAndQueriedColor();
 
-      switch( gProp->getGeometryType())
+      if(m_useChanged == false)
       {
-        case te::gm::MultiPolygonType:
-        case te::gm::PolygonType:
+        draw(canvas, g, cor);
+        delete g;
+      }
+      else
+      {
+        if(cor.getAlpha() == 255)
         {
-          canvas->setPolygonFillColor(cor);
+          geoms.push_back(g);
+          colors.push_back(cor);
         }
-        break;
-    
-        case te::gm::MultiLineStringType:
-        case te::gm::LineStringType:
+        else
         {
-          canvas->setLineColor(cor);
-        }
-        break;
-  
-        default:
-        {
-          //canvas->setPointMarkerColor(cor);
-          te::color::RGBAColor** mark = te::map::CreateMarker(op->getPtMarkerType(), op->getPtWidth(), cor);
-          canvas->setPointPattern(mark, op->getPtWidth(), op->getPtWidth());
+          tgeoms.push_back(g);
+          tcolors.push_back(cor);
         }
       }
+    }
+    
+    if(m_useChanged)
+    {
+      std::vector<te::gm::Geometry*>::iterator git;
+      std::vector<te::color::RGBAColor>::iterator cit;
+      
+      // erase transparent geometries
+      ((te::qt::widgets::Canvas*)(canvas))->setEraseMode();
+      for(git = tgeoms.begin(), cit = tcolors.begin(); git != tgeoms.end(); ++git, ++cit)
+      {
+        g = *git;
+        cor = *cit;
+        draw(canvas, g, cor);
+      }
+      ((te::qt::widgets::Canvas*)(canvas))->setNormalMode();
 
-      canvas->draw(g);
+      // draw opaque geometries
+      for(git = geoms.begin(), cit = colors.begin(); git != geoms.end(); ++git, ++cit)
+      {
+        g = *git;
+        cor = *cit;
+        draw(canvas, g, cor);
+        delete g;
+      }
 
-      delete g;
+      // draw transparent geometries
+      for(git = tgeoms.begin(), cit = tcolors.begin(); git != tgeoms.end(); ++git, ++cit)
+      {
+        g = *git;
+        cor = *cit;
+        draw(canvas, g, cor);
+        delete g;
+      }
     }
   }
   else
     te::map::LayerRenderer::draw(al, canvas, e, srid);
+}
+
+void MyLayerRenderer::draw(te::map::Canvas* canvas, const te::gm::Geometry* g, const te::color::RGBAColor& cor)
+{
+  int gtype = g->getGeomTypeId();
+  switch(gtype)
+  {
+    case te::gm::MultiPolygonType:
+    case te::gm::PolygonType:
+    {
+      canvas->setPolygonFillColor(cor);
+    }
+    break;
+    
+    case te::gm::MultiLineStringType:
+    case te::gm::LineStringType:
+    {
+      canvas->setLineColor(cor);
+    }
+    break;
+  
+    default:
+      canvas->setPointColor(cor);
+  }
+  canvas->draw(g);
 }

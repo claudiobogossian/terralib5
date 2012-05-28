@@ -21,10 +21,15 @@ namespace te
           ScatterSelectionCursor(QWidget *parent);
           ScatterSelectionCursor(RubberBand, DisplayMode, QWidget*);
 
+          virtual void widgetMouseReleaseEvent(QMouseEvent*);
+          virtual void drawRubberBand(QPainter*) const;
           virtual bool end(bool ok);
 
         Q_SIGNALS:
           void select(QRect rec);
+
+        private:
+          bool m_press;
       };
     }
   }

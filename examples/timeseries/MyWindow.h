@@ -33,20 +33,17 @@ class MyWindow : public QWidget
 
   void getLayers(te::map::AbstractLayer*, std::vector<te::map::AbstractLayer*>& layers);
   void closeEvent(QCloseEvent*);
-  void insertGridOperation(te::map::DataGridOperation*, QWidget*);
-  void removeGridOperation(te::map::DataGridOperation*, QWidget*);
-  void createGridOperation(MyLayer*);
-  void insertPlot(std::string, QwtPlot*); //gridName or layerId
-  void removePlot(std::string, QwtPlot*); //gridName or layerId
-  QwtPlot* getPlot(std::string, std::string); //gridName or layerId, plot window title
-  std::vector<QwtPlot*> getPlots(std::string); //gridName or layerId
-  bool isDrawnOnTheDisplay(te::map::Layer*);
+  void deleteGridOperation(te::map::AbstractLayer*);
+  bool isUsed(te::map::AbstractLayer*);
+  void updateDisplays(MyLayer*);
+
+  Q_SIGNALS:
+    void selectionChanged(te::map::DataGridOperation*);
 
 protected slots:
-  void layerVisibilityChangedSlot(const QModelIndex&);
-  void layerItemMovedSlot(const QModelIndex&, const QModelIndex&);
-  void contextMenuPressedSlot(const QModelIndex& mi, const QPoint& pos);
-  void timeSliderContextMenuSlot(const QPoint&);
+  void layerVisibilityChanged(const QModelIndex&);
+  void layerItemMoved(const QModelIndex&, const QModelIndex&);
+  void contextMenuPressed(const QModelIndex& mi, const QPoint& pos);
   void setStyleSlot();
   void openNewMapDisplaySlot();
   void openGridSlot();
@@ -55,45 +52,37 @@ protected slots:
   void addFolderSlot();
   void addLayerSlot();
   void plotTemporalDistanceSlot();
+  void timeSliderContextMenu(const QPoint&);
   void autoDrawingSlot();
   void manualDrawingSlot();
   void configDrawingSlot();
   void timeSliderValueChangedSlot(int);
   void removeDisplaySlot(MyDisplay*);
   void removeGridSlot(MyGrid*);
+  void plotHistogramSlot(MyGrid*);
+  void plotScatterSlot(MyGrid*);
+  void plotTimeSeriesSlot(MyGrid*);
   void removePlotSlot(QwtPlot*);
+  void keepOnMemorySlot();
+  void selectionChangedSlot(te::map::DataGridOperation*);
+  void changeDefaultColorSlot();
+  void changePointedColorSlot();
+  void changeQueriedColorSlot();
+  void changePointedAndQueriedColorSlot();
+  void changePointStyleSlot();
+  void changeLineStyleSlot();
+  void changePolygonStyleSlot();
 
 private:
   void generatePNGs(std::vector<MyLayer*>&);
 
 private:
-  te::da::DataSource* m_ds;
   te::map::FolderLayer* m_rootFolderLayer;
   te::qt::widgets::LayerExplorerModel* m_layerExplorerModel;
   te::qt::widgets::LayerExplorer* m_layerExplorer;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-  // O data grid operation custa caro porque precisa do DataSet e Transactor.
-  // Entao, vamos usar somente quando estiver precisando. Ou seja, quando ele estiver
-  // sendo usado pelo display (que tem forte ligacao com a arvore) ou pelo grid ou por algum plot.
-  // Quando ele deixar de ser usado, vamos deletar o data grip operation (e tambem os DataSet e Transactor).
-  std::map<te::map::DataGridOperation*, std::set<QWidget*> > m_operationMap;
-
-  // Todos os plos, displays e grids tem que se conectarem para fazer a correta visualizacao.
-  // Entao, os seguintes mapas e vetores serao criados:
   std::vector<te::map::MapDisplay*> m_mapDisplayVec;
-
-  // Cada layer pode ter apenas um grid.
-  // Se tentar abrir um novo grid e o layerr ja tem um grid, nao e' criado um novo,
-  // apenas e' dado um show no grid ja existente.
-  std::map<std::string, MyGrid*> m_gridMap; // primeiro parametro e' o gridName or layerId
-
-  // Os plots sao abertos atraves do grid.
-  // O grid e' deletado quando ele e' fechado, mas, os plots nao sao.
-  // O mapa abaixo serve para que um novo grid aberto faca conexao com os plots ja abertos deste layer.
-  std::map<std::string, std::vector<QwtPlot*> > m_plotMap; // primeiro parametro e' o gridName or layerId 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+//  std::map<MyLayer*, MyGrid*> m_gridMap; // para que cada layer tenha apenas um unico grid correspondente
+                                         // se o grid ja foi aberto nao cria outro DataSet - apenas da' show
   te::map::AbstractLayer* m_selectedLayer;
   QModelIndex m_parentModelIndex;
   QGroupBox* m_displayBox;
@@ -107,7 +96,18 @@ private:
   QAction* m_addFolderAction;
   QAction* m_addLayerAction;
   QAction* m_plotTemporalDistanceAction;
+  QAction* m_keepOnMemoryAction;
+  QAction* m_changeDefaultColorAction;
+  QAction* m_changePointedColorAction;
+  QAction* m_changeQueriedColorAction;
+  QAction* m_changePointedAndQueriedColorAction;
+  QAction* m_changePointStyleAction;
+  QAction* m_changeLineStyleAction;
+  QAction* m_changePolygonStyleAction;
+
   QMenu* m_treeMenu;
+  QMenu* m_changeColorMenu;
+  QMenu* m_changeStyleMenu;
   QMenu* m_timeSliderMenu;
   ConfigStyle* m_configStyle;
   TemporalDrawingConfig* m_temporalDrawingConfig;

@@ -26,12 +26,12 @@
 #define __TERRALIB_RP_INTERNAL_CONTRAST_H
 
 #include "Algorithm.h"
-#include "AlgorithmParameters.h"
 
 #include <boost/shared_ptr.hpp>
 
 #include <vector>
 #include <string>
+#include <map>
 
 namespace te
 {
@@ -48,12 +48,10 @@ namespace te
 
   namespace rp
   {
-    // Forward declarations
-    class RasterHandler;
-
     /*!
       \class Contrast
       \brief Contrast enhancement.
+      \details Apply contrast enhencement on the selected bands.
       \ingroup RPAlgorithms
      */
     class TERPEXPORT Contrast : public Algorithm
@@ -61,16 +59,10 @@ namespace te
       public:
         
         /*!
-          \class Parameters
-          \brief Contrast Parameters
-          \details Apply contrast enhencement on the selected bands. The result
-          will be written to the raster instance pointed by m_outRasterPtr (in 
-          this case the output bands must also be passed by m_outRasterBands ); or
-          written to a new raster instance created inside the given data source
-          pointed by m_outDataSourcePtr (in this case the data set name must
-          be supplied - m_outDataSetName ).
+          \class InputParameters
+          \brief Contrast input parameters
          */        
-        class TERPEXPORT Parameters : public AlgorithmParameters
+        class TERPEXPORT InputParameters : public AlgorithmInputParameters
         {
           public:
             
@@ -85,55 +77,85 @@ namespace te
 
             ContrastType m_type; //!< The contrast type to be applied.
             
-            double m_minInput; //!< The contrast minimum input greyscale value.
+            double m_lCMinInput; //!< The contrast minimum input greyscale value.
             
-            double m_maxInput; //!< The contrast maximum input greyscale value.
+            double m_lCMaxInput; //!< The contrast maximum input greyscale value.
             
-            double m_meanInput; //!< The mean to be applied in the contrast image.
-
-            double m_stdInput; //!< The standard deviation to be applied in the contrast image.
+            double m_hECMaxInput; //!<  The contrast maximum input greyscale value.
+            
+            double m_sMASCMeanInput; //!<  The mean greyscale to be applied in the contrast image.
+            
+            double m_sMASCStdInput; //!< The standard deviation to be applied in the contrast image.
 
             te::rst::Raster* m_inRasterPtr; //!< Input raster.
             
             std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
-            
-            te::rst::Raster* m_outRasterPtr; //!< A pointer to a valid (initialized ) output raster instance.
-            
-            std::vector< unsigned int > m_outRasterBands; //!< Bands to be processed from the output raster.
-            
-            te::da::DataSource* m_outDataSourcePtr; //!< The data source where the output raster will be stored.
-            
-            std::string m_outDataSetName; //!< The data set name related to the output raster.
-            
-            boost::shared_ptr< RasterHandler > m_outRasterHandlerPtr; //!< A handler for the generated output raster.
           
-            Parameters();
+            InputParameters();
             
-            ~Parameters();
+            ~InputParameters();
             
             //overload
             void reset() throw( te::rp::Exception );
             
             //overload
-            const AlgorithmParameters& operator=( const AlgorithmParameters& params );
+            const  InputParameters& operator=( const InputParameters& params );
             
             //overload
             AbstractParameters* clone() const;
         };
+        
+        /*!
+          \class OutputParameters
+          \brief Contrast output parameters
+          \details The result will be written to the raster instance pointed 
+          by m_outRasterPtr (in this case the output bands must also be 
+          passed by m_outRasterBands ); or written to a new raster instance 
+          created inside the given data source pointed by m_outDataSourcePtr 
+          (in this case the data set name must be supplied - m_outDataSetName ).
+         */        
+        class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
+        {
+          public:
+            
+            mutable std::auto_ptr< te::rst::Raster > m_outRasterPtr; //!< A pointer to a valid (initialized ) output raster instance or an empty pointer.
+            
+            std::vector< unsigned int > m_outRasterBands; //!< Bands to be processed from the output raster.
+            
+            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
+            
+            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory). 
+          
+            OutputParameters();
+            
+            OutputParameters( const OutputParameters& );
+            
+            ~OutputParameters();
+            
+            //overload
+            void reset() throw( te::rp::Exception );
+            
+            //overload
+            const  OutputParameters& operator=( const OutputParameters& params );
+            
+            //overload
+            AbstractParameters* clone() const;
+        };        
 
         Contrast();
         
         ~Contrast();
        
         //overload
-        bool execute() throw( te::rp::Exception );
+        bool execute( AlgorithmOutputParameters& outputParams ) throw( te::rp::Exception );
         
         //overload
         void reset() throw( te::rp::Exception );
         
         //overload
-        bool initialize( AlgorithmParameters& params )
-          throw( te::rp::Exception );
+        bool initialize( const AlgorithmInputParameters& inputParams ) throw( te::rp::Exception );
+        
+        bool isInitialized() const;
 
       protected:
         
@@ -143,7 +165,10 @@ namespace te
         typedef void (Contrast::*RemapFuncPtrT)( const double& inValue, 
           double& outValue );
 
-        Contrast::Parameters m_parameters; //!< Contrast execution parameters.
+        Contrast::InputParameters m_inputParameters; //!< Contrast input execution parameters.
+        Contrast::OutputParameters* m_outputParametersPtr; //!< Contrast input execution parameters.
+        
+        bool m_isInitialized; //!< Tells if this instance is initialized.
 
         /*!
           \brief Execute a linear contrast following the internal parameters

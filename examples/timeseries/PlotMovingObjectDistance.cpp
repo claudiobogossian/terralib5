@@ -45,11 +45,16 @@ void PlotMovingObjectDistance(te::st::MovingObject* mo1, te::st::MovingObject* m
   }
 
   te::qt::qwt::TimeSeries ts(date->getDateTimeType());
-  ts.insertCurve(values, "distance", QColor(255, 0, 0));
+  std::string nameCurve = mo1->getId() + " - " + mo2->getId();
+  ts.insertCurve(values, nameCurve, QColor(255, 0, 0));
   delete distance;
 
-  te::qt::qwt::TimeSeriesDisplay* tsd = new te::qt::qwt::TimeSeriesDisplay(ts);
-  tsd->setWindowTitle("Time Series");
+  std::vector<std::pair<std::string, int> > v;
+  v.push_back(std::pair<std::string, int>(mo1->getId(), 0));
+  v.push_back(std::pair<std::string, int>(mo2->getId(), 1));
+  te::qt::qwt::TimeSeriesDisplay* tsd = new te::qt::qwt::TimeSeriesDisplay(ts, v);
   tsd->show();
+  tsd->setWindowTitle("Time Series");
+  tsd->setTitle("Distance Between Moving Objects");
 }
 

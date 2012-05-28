@@ -46,14 +46,14 @@ namespace te
     {
       /*!
         \brief It sets the check state for the children of a item.
-       */
+      */
       TEQTWIDGETSEXPORT void SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state);
 
       /*!
         \brief It returns the file format as a NULL terminated string.
 
         \return The file format as a NULL terminated string.
-       */
+      */
       inline const char* GetFormat(te::map::ImageType t)
       {
         switch(t)
@@ -81,37 +81,32 @@ namespace te
         };
       }
 
-      ///*!
-      //  \brief It create a QImage from agg buffer.
-
-      //  \param buf Agg buffer.
-      //  \param width Buffer width.
-      //  \param height Buffer height.
-
-      //  \return The Pointer to QImage.
-
-      //  \note The caller of this method will take the ownership of the returned pointer.
-      // */
-      //TEQTWIDGETSEXPORT QImage* createQImageFromAggBuffer(const unsigned char* buf, const int& width, const int& height);
-
       /*!
         \brief It creates a QImage from an RGBA color array.
 
-        \param img    The image: a square matrix of int's where each position corresponds to a RGBA color.
+        \param img    Image - a square matrix of int's where each position corresponds to a RGBA color.
         \param width  The image width.
         \param height The image height.
 
         \return A pointer to a QImage.
 
         \note The caller of this method will take the ownership of the returned pointer.
-       */
+      */
       TEQTWIDGETSEXPORT QImage* GetImage(te::color::RGBAColor** img, int width, int height);
 
-      
+      /*!
+        \brief It creates a RGBA color array from a QImage.
+
+        \param img QImage that will be converted.
+
+        \return Image - a square matrix of int's where each position corresponds to a RGBA color.
+
+        \note The caller of this method will take the ownership of the returned pointer.
+      */
+      TEQTWIDGETSEXPORT te::color::RGBAColor** GetImage(QImage* img);
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
 #endif  // __TERRALIB_QTWIDGETS_INTERNAL_UTILS_H
-

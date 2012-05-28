@@ -132,10 +132,14 @@ file(GLOB HDRS_TO_MOC
      ${SRCDIR}/MyWindow.h
 	 ${SRCDIR}/MyDisplay.h
 	 ${SRCDIR}/MyGrid.h
+	 ${SRCDIR}/LineStyle.h
+	 ${SRCDIR}/PointStyle.h
+	 ${SRCDIR}/polygonStyle.h
 	 ${SRCDIR}/SelectLayer.h
 	 ${SRCDIR}/PlotTemporalDistance.h
 	 ${SRCDIR}/TimeSlider.h
-	 ${SRCDIR}/TemporalDrawingConfig.h)
+	 ${SRCDIR}/TemporalDrawingConfig.h
+	 ${SRCDIR}/MouseHandler.h)
  
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS ${QT_DEFINITIONS})

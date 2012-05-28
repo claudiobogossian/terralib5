@@ -35,6 +35,7 @@ namespace te
 
         ScatterDisplay(int colx, int coly, te::map::DataGridOperation* op, QWidget * = NULL);
         ~ScatterDisplay();
+        void closeEvent(QCloseEvent*);
 
         void updateVisibity();
 
@@ -48,6 +49,7 @@ namespace te
 
       Q_SIGNALS:
         void selectionChanged(te::map::DataGridOperation*);
+        void closed(QwtPlot*);
 
       protected:
         void select(QRectF rec, std::vector<int>& visRows);

@@ -66,7 +66,7 @@ void te::fe::Function::setArgument(size_t i, Expression* argument)
 {
   assert(i < m_argumentList.size());
   delete m_argumentList[i];
-  m_argumentList[i] = argument;        
+  m_argumentList[i] = argument;
 }
 
 void te::fe::Function::removeArgument(size_t i)
@@ -76,3 +76,15 @@ void te::fe::Function::removeArgument(size_t i)
   m_argumentList.erase(m_argumentList.begin() + i);
 }
 
+te::fe::Expression* te::fe::Function::clone() const
+{
+  te::fe::Function* f = new te::fe::Function(m_name);
+  for(std::size_t i = 0; i < m_argumentList.size(); ++i)
+  {
+    te::fe::Expression* e = m_argumentList[i];
+    if(e)
+      f->add(e->clone());
+  }
+
+  return f;
+}

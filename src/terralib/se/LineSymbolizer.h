@@ -60,6 +60,13 @@ namespace te
         /*! \brief It initializes a new LineSymbolizer. */
         LineSymbolizer();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other line symbolizer.
+        */
+        LineSymbolizer(const LineSymbolizer& rhs);
+
         /*! \brief Destructor. */
         ~LineSymbolizer();
 
@@ -91,6 +98,7 @@ namespace te
                 coverage-area outline is used for the line, rendered with no end caps.
         */
         void setGeometry(te::fe::PropertyName* geometry);
+
         const te::fe::PropertyName* getGeometry() const;
 
         /*!
@@ -102,6 +110,7 @@ namespace te
           stroke is to be rendered.
         */
         void setStroke(Stroke* stroke);
+
         const Stroke* getStroke() const;
 
         /*!
@@ -118,9 +127,13 @@ namespace te
           mean right. The default offset is 0.
         */
         void setPerpendicularOffset(ParameterValue* perpendicularOffset);
+
         const ParameterValue* getPerpendicularOffset() const;
 
         //@}
+
+        /*! \brief It creates a new copy of this object. */
+        Symbolizer* clone() const;
 
       private:
 
