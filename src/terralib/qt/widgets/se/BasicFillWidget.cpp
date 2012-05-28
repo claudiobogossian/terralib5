@@ -52,6 +52,7 @@ te::qt::widgets::BasicFillWidget::BasicFillWidget(QWidget* parent, Qt::WindowFla
 
 te::qt::widgets::BasicFillWidget::~BasicFillWidget()
 {
+  delete m_fill;
 }
 
 void te::qt::widgets::BasicFillWidget::setFill(const te::se::Fill* fill)
