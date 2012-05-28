@@ -151,7 +151,6 @@ void TimeSlider::timerEvent(QTimerEvent* e)
   boost::posix_time::ptime time2 = time1 + timedurinterval;
   te::dt::TimeInstant* tFinal = new te::dt::TimeInstant(time2);
 
-  m_timerId = e->timerId();
   draw(tInitial, tFinal);
 
   int fvalue = ivalue + m_minuteInterval;
@@ -384,6 +383,11 @@ void TimeSlider::clearLastPointMap()
 std::vector<te::map::AbstractLayer*>  TimeSlider::getLayers()
 {
   return m_layers;
+}
+
+void TimeSlider::startTimer(int interval)
+{
+  m_timerId = QSlider::startTimer(interval);
 }
 
 void TimeSlider::killTimer()

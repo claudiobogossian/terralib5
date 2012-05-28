@@ -46,7 +46,6 @@ void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Q
   }
 }
 
-
 QImage* te::qt::widgets::GetImage(te::color::RGBAColor** img, int width, int height)
 {
   QImage* qimg = new QImage(width, height, QImage::Format_ARGB32);
@@ -67,4 +66,18 @@ QImage* te::qt::widgets::GetImage(te::color::RGBAColor** img, int width, int hei
   return qimg;
 }
 
+te::color::RGBAColor** te::qt::widgets::GetImage(QImage* img)
+{
+  te::color::RGBAColor** rgba = new te::color::RGBAColor*[img->height()];
+  for(int i = 0; i < img->height(); ++i)
+  {
+    te::color::RGBAColor* s = new te::color::RGBAColor[img->width()];
 
+    for(int j = 0; j < img->width(); ++j)
+      s[j] = img->pixel(j, i);
+
+    rgba[i] = s;
+  }
+
+  return rgba;
+}

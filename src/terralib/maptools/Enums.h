@@ -112,7 +112,8 @@ namespace te
         MarkerX = 15,                   /*!< ???? */
         MarkerDash = 16,                /*!< ???? */
         MarkerDot = 17,                 /*!< ???? */
-        MarkerPixel = 18                /*!< ???? */
+        MarkerPixel = 18,               /*!< ???? */
+        MarkerPattern = 19              /*!< icon marker */
       };
 
       /*!

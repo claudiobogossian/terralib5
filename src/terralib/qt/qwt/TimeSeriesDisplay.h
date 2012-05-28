@@ -33,12 +33,14 @@ namespace te
 
       public:
 
-        TimeSeriesDisplay(const TimeSeries& ts, QWidget* = NULL);
+        TimeSeriesDisplay(const TimeSeries&, std::vector<std::pair<std::string, int> >, int xCol = 0, QWidget* = NULL);
         ~TimeSeriesDisplay();
 
         void createCurves(const TimeSeries& ts);
         void updateVisibity();
         void drawItems(QPainter*, const QRectF&, const QwtScaleMap map[axisCnt] ) const;
+        void setColumns(std::vector<int>);
+        std::set<int> getColumns();
 
       protected Q_SLOTS:
         void showTimeSeriesSlot(QwtPlotItem* , bool);
@@ -50,6 +52,7 @@ namespace te
       private:
         std::vector<Curve*> m_curveVec; // para controlar a ordem de desenho dos curvess
         std::map<Curve*, bool> m_curveMap; // para controlar a visibilidade dos curvess
+        std::set<int> m_columns;
         QRadioButton* m_radioButton;
         QWidget* m_legendWidget; // para informar qual curve vai para toFront ou toBack
         QMenu* m_legendMenu; // para colocar menu: toFront e toBack

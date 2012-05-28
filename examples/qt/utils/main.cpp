@@ -18,41 +18,52 @@
  */
 
 /*!
-  \file MapDisplay.cpp
+  \file main.cpp
 
-  \brief A widget to control the display of a set of layers.
+  \brief A list of examples for the TerraLib Widgets.
  */
 
 // TerraLib
-#include "DisplayEventHandler.h"
-#include "MapDisplay.h"
+#include <terralib/common.h>
+#include "UtilsWidgets.h"
 
-// Qt
-#include <QtGui/QResizeEvent>
+// STL
+#include <exception>
+#include <iostream>
 
-
-QPixmap* te::qt::widgets::DisplayEventHandler::getDisplayPixmap()
+int main(int /*argc*/, char** /*argv*/)
 {
-  QWidget* p = (QWidget*)parent();
-  while(p)
-  {
-    if(p->objectName() == "MapDisplay")
-      return ((MapDisplay*)p)->getDisplayPixmap();
-    p = (QWidget*)p->parent();
-  }
-  return NULL;
-}
+// initialize Terralib support
+  TerraLib::getInstance().initialize();
 
-void te::qt::widgets::DisplayEventHandler::setRepaint(bool s)
-{
-  QWidget* p = (QWidget*)parent();
-  while(p)
+  try
   {
-    if(p->objectName() == "MapDisplay")
-    {
-      ((MapDisplay*)p)->setRepaint(s);
-      break;
-    }
-    p = (QWidget*)p->parent();
+    UtilsWidgets();
   }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
+
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+
+    return EXIT_FAILURE;
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+
+    return EXIT_FAILURE;
+  }
+
+// finalize Terralib support
+  TerraLib::getInstance().finalize();
+
+  std::cout << "Press Enter to exit..." << std::endl;
+  std::cin.get();
+
+  return EXIT_SUCCESS;
 }

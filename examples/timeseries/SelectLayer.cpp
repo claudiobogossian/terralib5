@@ -36,22 +36,31 @@ SelectLayer::SelectLayer(te::da::DataSource* ds, QWidget* parent, Qt::WindowFlag
 
   QLabel* label3 = new QLabel("Layer Name:", this);
   m_layerNameComboBox = new QComboBox(this);
-  m_layerNameComboBox->setMinimumWidth(100);
+  m_layerNameComboBox->setMinimumWidth(200);
   QHBoxLayout* layout3 = new QHBoxLayout(this);
   layout3->addWidget(label3);
   layout3->addWidget(m_layerNameComboBox);
   layout3->addStretch();
   vlayout->addLayout(layout3);
 
+  QLabel* label4 = new QLabel("Title Name:", this);
+  m_titleNameLineEdit = new QLineEdit(this);
+  m_titleNameLineEdit->setMinimumWidth(100);
+  QHBoxLayout* layout4 = new QHBoxLayout(this);
+  layout4->addWidget(label4);
+  layout4->addWidget(m_titleNameLineEdit);
+  layout4->addStretch();
+  vlayout->addLayout(layout4);
+
   QGroupBox* gb = new QGroupBox(this);
   m_okPushButton = new QPushButton("Ok", gb);
   m_cancelPushButton = new QPushButton("Cancel", gb);
-  QHBoxLayout* layout4 = new QHBoxLayout(gb);
-  layout4->addStretch();
-  layout4->addWidget(m_okPushButton);
-  layout4->addStretch();
-  layout4->addWidget(m_cancelPushButton);
-  layout4->addStretch();
+  QHBoxLayout* layout5 = new QHBoxLayout(gb);
+  layout5->addStretch();
+  layout5->addWidget(m_okPushButton);
+  layout5->addStretch();
+  layout5->addWidget(m_cancelPushButton);
+  layout5->addStretch();
   vlayout->addWidget(gb);
 
   setLayout(vlayout);
@@ -95,8 +104,9 @@ void SelectLayer::populeWidgets(te::da::DataSource* ds)
     int ind = m_dataSourceTypeComboBox->findText(type);
     m_dataSourceTypeComboBox->setCurrentIndex(ind);
 
-    QString s = ds->getConnectionStr().c_str();
-    m_connectionStringLineEdit->setText(s);
+//    QString s = ds->getConnectionStr().c_str();
+//    m_connectionStringLineEdit->setText(s);
+    m_connectionStringLineEdit->setText("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
 
     te::da::DataSourceCatalog* catalog = ds->getCatalog();
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
@@ -134,10 +144,17 @@ void SelectLayer::connectionStringEditedSlot()
     std::string cs = m_connectionStringLineEdit->text().toStdString();
 
     std::string dsInfo;
+    //if(dstype == "GDAL")
+    //  dsInfo = "URI=" + cs;
+    //else
+    //dsInfo = "connection_string=" + cs;
     if(dstype == "GDAL")
-      dsInfo = "URI=" + cs;
-    else
-    dsInfo = "connection_string=" + cs;
+    {
+      int p = cs.find("host=");
+      if(p != std::string::npos)
+        cs.replace(p, 5, "URI=");
+    }
+    dsInfo = cs;
     ds->open(dsInfo);
 
     te::da::DataSourceCatalog* catalog = ds->getCatalog();
@@ -167,6 +184,11 @@ void SelectLayer::connectionStringEditedSlot()
 
 void SelectLayer::okSlot()
 {
+  if(m_titleNameLineEdit->text().isEmpty())
+  {
+    QMessageBox::information(this, tr("Title Name is empty"), tr("Type Title Name and Continue"));
+    return;
+  }
   accept();
   hide();
 }

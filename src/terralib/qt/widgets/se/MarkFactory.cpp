@@ -30,6 +30,7 @@
 #include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../Utils.h"
 #include "MarkFactory.h"
 
 // STL
@@ -124,7 +125,7 @@ te::color::RGBAColor** te::qt::MarkFactory::create(const te::se::Mark* mark, std
   }
 
   // Converts QImage to te::color::RGBA**
-  te::color::RGBAColor** rgba = convert(img);
+  te::color::RGBAColor** rgba = te::qt::widgets::GetImage(img);
 
   delete img;
 
@@ -276,23 +277,6 @@ void te::qt::MarkFactory::draw(QImage* img, QPainterPath& path)
   m_painter.drawPath(transformedPath);
 
   end();
-}
-
-te::color::RGBAColor** te::qt::MarkFactory::convert(QImage* img)
-{
-  int size = img->width();
-  te::color::RGBAColor** rgba = new te::color::RGBAColor*[size];
-  for(int i = 0; i < size; ++i)
-  {
-    te::color::RGBAColor* s = new te::color::RGBAColor[size];
-
-    for(int j = 0; j < size; ++j)
-      s[j] = img->pixel(j, i);
-
-    rgba[i] = s;
-  }
-
-  return rgba;
 }
 
 void te::qt::MarkFactory::config(const te::se::Stroke* stroke)

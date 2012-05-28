@@ -82,10 +82,18 @@ const te::gm::Envelope* te::map::MapDisplay::getExtent() const
 
 void te::map::MapDisplay::setExtent(const te::gm::Envelope& e)
 {
-  if(m_extent == 0)
-    m_extent = new te::gm::Envelope(e);
+  if(e.isValid())
+  {
+    if(m_extent == 0)
+      m_extent = new te::gm::Envelope(e);
+    else
+      *m_extent = e;
+  }
   else
-    *m_extent = e;
+  {
+    delete m_extent;
+    m_extent = 0;
+  }
 }
 
 int te::map::MapDisplay::getSRID() const

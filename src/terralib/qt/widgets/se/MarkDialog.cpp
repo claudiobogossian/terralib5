@@ -39,7 +39,6 @@ te::qt::widgets::MarkDialog::MarkDialog(QWidget* parent, Qt::WindowFlags f)
 
   // Adjusting...
   QGridLayout* markLayout = new QGridLayout(m_ui->m_markWidgetFrame);
-  markLayout->setContentsMargins(0, 0, 0, 0);
   markLayout->addWidget(m_markWidget);
 }
 

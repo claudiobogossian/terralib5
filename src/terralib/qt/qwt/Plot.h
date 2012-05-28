@@ -48,9 +48,17 @@ namespace te
         void adjustHistogramHorizontalAxis();
         void adjustScatterLabels();
         void setTableChanged(bool);
+        QString getType();
+        int getXCol();
+        int getYCol();
+        te::color::RGBAColor getColor();
+        void setColor(te::color::RGBAColor);
         te::map::DataGridOperation* getDataGridOperation();
 
         Legend* getLegend();
+
+        void mousePressEvent(QMouseEvent*);
+        void mouseReleaseEvent(QMouseEvent*);
 
       protected Q_SLOTS:
         void zoomedSlot(const QRectF&);
@@ -83,6 +91,7 @@ namespace te
         te::qt::qwt::StringScaleDraw* m_xStringScaleDraw;
         te::qt::qwt::StringScaleDraw* m_yStringScaleDraw;
         te::map::DataGridOperation* m_op;
+        te::color::RGBAColor m_color;
         QwtPlotZoomer* m_zoomer;
         QwtPlotPanner* m_panner;
         SelectionMode m_selectionMode;
@@ -90,6 +99,7 @@ namespace te
         QString m_type;
 
         QCursor* m_zoomCursor;
+        QCursor* m_panCursor;
       };
     }
   }

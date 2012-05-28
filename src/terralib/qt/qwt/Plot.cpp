@@ -1,6 +1,6 @@
 #include "Plot.h"
-#include <zoom_in_cursor.xpm>
-#include <zoom_in_cursor_mask.xpm>
+//#include <ZoomInCursor.xpm>
+//#include <ZoomInMaskCursor.xpm>
 
 //QWT
 #include <qwt_scale_div.h>
@@ -10,7 +10,9 @@
 #include "../../datatype.h"
 
 //QT
+#include <QMouseEvent>
 #include <QBitmap>
+#include <QDir>
 
 te::qt::qwt::Plot::Plot(QString type, te::map::DataGridOperation* op, QWidget *parent):
   QwtPlot(parent),
@@ -25,6 +27,7 @@ te::qt::qwt::Plot::Plot(QString type, te::map::DataGridOperation* op, QWidget *p
   m_panner(0),
   m_zoomCursor(0),
   m_legend(0),
+  m_color(100, 100, 100, 255),
   m_maxNumberOfHorizontalLabels(30)
 {
   m_xMin = m_XMIN = m_yMin = m_YMIN = std::numeric_limits<double>::max();
@@ -45,14 +48,26 @@ te::qt::qwt::Plot::~Plot()
 
 void te::qt::qwt::Plot::init()
 {
+  QDir dir;
+  if(dir.cd("../../../../images") == false)
+  {
+    if(dir.cd("images") == false)
+      dir.cd("../../images");
+  }
+
+  QPixmap zoomInPixmap(dir.absolutePath() + "/zoomInCursor.png");
+  m_zoomCursor = new QCursor(zoomInPixmap, 9, 9);
+  QPixmap panPixmap(dir.absolutePath() + "/panCursor.png");
+  m_panCursor = new QCursor(panPixmap, 9, 9);
+
   //QBitmap zoom("../../../../images/zoom_in_cursor.bmp");
   //QBitmap zoomMask("../../../../images/zoom_in_cursor_mask.bmp");
 
-  QPixmap pz((const char**)zoom_in_cursor);
-  QPixmap pzm((const char**)zoom_in_cursor_mask);
-  QBitmap bz(pz);
-  QBitmap bzm(pzm);
-  m_zoomCursor = new QCursor(bz, bzm, 12, 12);
+  //QPixmap pz((const char**)ZoomInCursor);
+  //QPixmap pzm((const char**)ZoomInMaskCursor);
+  //QBitmap bz(pz);
+  //QBitmap bzm(pzm);
+  //m_zoomCursor = new QCursor(bz, bzm, 12, 12);
 
   //zoom
   m_zoomer = new QwtPlotZoomer(canvas());
@@ -113,6 +128,38 @@ void te::qt::qwt::Plot::init()
 
   //Quando da' pan e' preciso ajustar a quantidade de labels do eixo x
   QObject::connect(m_panner, SIGNAL(panned(int, int)), this, SLOT(pannedSlot(int, int)));  
+}
+
+void te::qt::qwt::Plot::mousePressEvent(QMouseEvent* e)
+{
+  if(e->button() == Qt::MidButton)
+  {
+    if(m_selectionMode == ZOOM)
+      canvas()->setCursor(*m_panCursor);
+  }
+}
+
+void te::qt::qwt::Plot::mouseReleaseEvent(QMouseEvent* e)
+{
+  if(e->button() == Qt::MidButton)
+  {
+    if(m_selectionMode == ZOOM)
+      canvas()->setCursor(*m_zoomCursor);
+  }
+}
+
+QString te::qt::qwt::Plot::getType()
+{
+  return m_type;
+}
+int te::qt::qwt::Plot::getXCol()
+{
+  return m_xCol;
+}
+
+int te::qt::qwt::Plot::getYCol()
+{
+  return m_yCol;
 }
 
 void te::qt::qwt::Plot::setVerticalTitle(QString title)
@@ -242,3 +289,14 @@ te::qt::qwt::Legend* te::qt::qwt::Plot::getLegend()
 {
   return m_legend;
 }
+
+te::color::RGBAColor te::qt::qwt::Plot::getColor()
+{
+  return m_color;
+}
+
+void te::qt::qwt::Plot::setColor(te::color::RGBAColor c)
+{
+  m_color = c;
+}
+

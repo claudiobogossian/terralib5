@@ -107,12 +107,9 @@ namespace te
           /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
-          /*! \brief Updates the icon used to represents the marks. */
-          void updateMarkIcons();
-
         protected slots:
 
-          void onMarkTypeChanged(const QString& currentText);
+          void onMarkTypeComboBoxCurrentIndexChanged(const QString& currentText);
 
           void onStrokeChanged();
 
@@ -127,7 +124,6 @@ namespace te
           std::auto_ptr<Ui::MarkWidgetForm> m_ui;             //!< Widget form.
           te::qt::widgets::BasicFillWidget* m_fillWidget;     //!< Basic Fill Widget used to configure the mark fill element.
           te::qt::widgets::BasicStrokeWidget* m_strokeWidget; //!< Basic Stroke Widget used to configure the mark stroke element.
-          QListWidget* m_contentsMarkWidget;                  //!< Widget used to represent the marks graphical patterns.
           te::se::Mark* m_mark;                               //!< Mark element that will be configured by this widget.
           std::vector<std::string> m_supportedMarks;          //!< Names of supported marks.
       }; 

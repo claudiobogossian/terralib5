@@ -21,6 +21,7 @@ namespace te
         HistogramSeletionCursor(QWidget *parent);
         HistogramSeletionCursor(RubberBand, DisplayMode, QWidget*);
 
+        virtual void widgetMouseReleaseEvent(QMouseEvent*);
         virtual void drawRubberBand(QPainter*) const;
         virtual bool end(bool ok);
         virtual bool eventFilter(QObject*, QEvent*);
