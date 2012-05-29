@@ -212,11 +212,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
-	 ${SRCDIR}/widgets/se/BasicFillDialog.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
-	 ${SRCDIR}/widgets/se/BasicStrokeDialog.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
-	 ${SRCDIR}/widgets/se/MarkDialog.h
 	 ${SRCDIR}/widgets/se/MarkWidget.h)
 
 
