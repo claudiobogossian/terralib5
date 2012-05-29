@@ -22,7 +22,7 @@
      <item row="0" column="0">
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="m_label">
          <property name="text">
           <string>TextLabel</string>
          </property>

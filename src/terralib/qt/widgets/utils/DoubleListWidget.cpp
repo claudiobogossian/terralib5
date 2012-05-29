@@ -43,6 +43,10 @@ te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowF
   m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("go-previous"));
   m_ui->m_removeAllToolButton->setIcon(QIcon::fromTheme("go-first"));
 
+// set selection mode
+  m_ui->m_leftListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+  m_ui->m_rightListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+
 // connect signals and slots
   connect(m_ui->m_addToolButton, SIGNAL(pressed()), this, SLOT(onAddToolButtonPressed()));
   connect(m_ui->m_addAllToolButton, SIGNAL(pressed()), this, SLOT(onAddAllToolButtonPressed()));
@@ -61,18 +65,51 @@ Ui::DoubleListWidgetForm* te::qt::widgets::DoubleListWidget::getForm() const
   return m_ui.get();
 }
 
-void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
+void te::qt::widgets::DoubleListWidget::setInputValues(std::vector<std::string> values)
 {
-  int count = m_ui->m_leftListWidget->count();
+  m_ui->m_leftListWidget->clear();
+
+  for(size_t i = 0; i < values.size(); ++i)
+  {
+    m_ui->m_leftListWidget->addItem(values[i].c_str());
+  }
+}
+
+void te::qt::widgets::DoubleListWidget::setLeftLabel(std::string value)
+{
+  m_ui->m_leftItemsLabel->setText(value.c_str());
+}
+
+void te::qt::widgets::DoubleListWidget::setRightLabel(std::string value)
+{
+  m_ui->m_rightItemsLabel->setText(value.c_str());
+}
+
+std::vector<std::string> te::qt::widgets::DoubleListWidget::getOutputValues()
+{
+  std::vector<std::string> vec;
+
+  int count = m_ui->m_rightListWidget->count();
 
   for(int i = 0; i < count; ++i)
   {
-    if(m_ui->m_leftListWidget->item(i)->isSelected())
-    {
-      QListWidgetItem* item = m_ui->m_leftListWidget->takeItem(i);
+    vec.push_back(m_ui->m_rightListWidget->item(i)->text().toLatin1().data());
+  }
 
-      m_ui->m_rightListWidget->addItem(item);
-    }
+  return vec;
+}
+
+void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
+{
+  QList<QListWidgetItem*> list = m_ui->m_leftListWidget->selectedItems();
+
+  for(int i = 0; i < list.size(); ++i)
+  {
+    int row = m_ui->m_leftListWidget->row(list[i]);
+
+    QListWidgetItem* item = m_ui->m_leftListWidget->takeItem(row);
+
+    m_ui->m_rightListWidget->addItem(item);
   }
 
   if(m_ui->m_leftListWidget->count() == 0)
@@ -84,11 +121,15 @@ void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
 
 void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
 {
-  int count = m_ui->m_leftListWidget->count();
+  m_ui->m_leftListWidget->selectAll();
 
-  for(int i = 0; i < count; ++i)
+  QList<QListWidgetItem*> list = m_ui->m_leftListWidget->selectedItems();
+
+  for(int i = 0; i < list.size(); ++i)
   {
-    QListWidgetItem* item = m_ui->m_leftListWidget->takeItem(i);
+    int row = m_ui->m_leftListWidget->row(list[i]);
+
+    QListWidgetItem* item = m_ui->m_leftListWidget->takeItem(row);
 
     m_ui->m_rightListWidget->addItem(item);
   }
@@ -99,16 +140,15 @@ void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
 
 void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
 {
-  int count = m_ui->m_rightListWidget->count();
+  QList<QListWidgetItem*> list = m_ui->m_rightListWidget->selectedItems();
 
-  for(int i = 0; i < count; ++i)
+  for(int i = 0; i < list.size(); ++i)
   {
-    if(m_ui->m_rightListWidget->item(i)->isSelected())
-    {
-      QListWidgetItem* item = m_ui->m_rightListWidget->takeItem(i);
+    int row = m_ui->m_rightListWidget->row(list[i]);
 
-      m_ui->m_leftListWidget->addItem(item);
-    }
+    QListWidgetItem* item = m_ui->m_rightListWidget->takeItem(row);
+
+    m_ui->m_leftListWidget->addItem(item);
   }
 
   if(m_ui->m_rightListWidget->count() == 0)
@@ -120,11 +160,15 @@ void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
 
 void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
 {
-  int count = m_ui->m_rightListWidget->count();
+  m_ui->m_rightListWidget->selectAll();
 
-  for(int i = 0; i < count; ++i)
+  QList<QListWidgetItem*> list = m_ui->m_rightListWidget->selectedItems();
+
+  for(int i = 0; i < list.size(); ++i)
   {
-    QListWidgetItem* item = m_ui->m_rightListWidget->takeItem(i);
+    int row = m_ui->m_rightListWidget->row(list[i]);
+
+    QListWidgetItem* item = m_ui->m_rightListWidget->takeItem(row);
 
     m_ui->m_leftListWidget->addItem(item);
   }

@@ -62,6 +62,10 @@ namespace te
 
           Ui::ListWidgetForm* getForm() const;
 
+          void setLabel(std::string value);
+
+          std::vector<std::string> getValues();
+
         protected slots:
 
           void onAddToolButtonPressed();
