@@ -29,25 +29,18 @@ void Segmenter()
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
-// create output raster
+// create output raster info
     std::map<std::string, std::string> orinfo;
     orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
-
-    te::rst::Grid* ogrid = new te::rst::Grid(*rin->getGrid());
-
-    std::vector<te::rst::BandProperty*> obands;
-    obands.push_back(new te::rst::BandProperty(0, te::dt::DOUBLE_TYPE, "segmented band"));
-
-    te::rst::Raster* rout = te::rst::RasterFactory::make(ogrid, obands, orinfo);
 
 // define segmentation parameters
 
 // input parameters
     te::rp::Segmenter::InputParameters algoInputParameters;
-    algoInputParameters.m_inRasterPtr = rin;
-    algoInputParameters.m_inRasterBands.push_back( 0 );
-    algoInputParameters.m_inRasterBands.push_back( 1 );
-    algoInputParameters.m_inRasterBands.push_back( 2 );
+    algoInputParameters.m_inputRasterPtr = rin;
+    algoInputParameters.m_inputRasterBands.push_back( 0 );
+    algoInputParameters.m_inputRasterBands.push_back( 1 );
+    algoInputParameters.m_inputRasterBands.push_back( 2 );
     
 // link specific parameters with chosen implementation
 // strategy specific parameters (m_minSegmentSize: size of the smallest segment to be created; m_segmentsSimilarityThreshold: similarity between neighboring segments to merge them or not)
@@ -62,18 +55,19 @@ void Segmenter()
 // the output can be a previously created raster (in this case, rout)
 
     te::rp::Segmenter::OutputParameters algoOutputParameters;
-    algoOutputParameters.m_outRasterPtr = rout;
-    algoOutputParameters.m_outRasterBand = 0;
+    algoOutputParameters.m_rInfo = orinfo;
+    algoOutputParameters.m_rType = "GDAL";
 
 // execute the algorithm
     te::rp::Segmenter seginstance;
 
-    if( ! seginstance.initialize(algoInputParameters, algoOutputParameters) ) throw;
-    if( ! seginstance.execute() ) throw;
+    if( ! seginstance.initialize(algoInputParameters) ) throw;
+    if( ! seginstance.execute( algoOutputParameters ) ) throw;
 
 // export the segmentation into shapefile
     std::vector<te::gm::Geometry*> geometries;
-    te::gdal::Vectorize(((te::gdal::Raster*) rout)->getGDALDataset()->GetRasterBand(1), geometries);
+    te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get() 
+      )->getGDALDataset()->GetRasterBand(1), geometries);
 
     te::da::DataSetType* dst = new te::da::DataSetType("objects from segmentation");
 
@@ -112,7 +106,6 @@ void Segmenter()
 
 // clean up
     delete rin;
-    delete rout;
 
     std::cout << "Done!" << std::endl << std::endl;
   }
