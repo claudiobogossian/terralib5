@@ -132,11 +132,13 @@ void te::qt::widgets::MarkWidget::updateUi()
 void te::qt::widgets::MarkWidget::onMarkTypeComboBoxCurrentIndexChanged(const QString& currentText)
 {
   m_mark->setWellKnownName(new std::string(currentText.toStdString()));
+  emit markChanged();
 }
 
 void te::qt::widgets::MarkWidget::onStrokeChanged()
 {
   m_mark->setStroke(m_strokeWidget->getStroke());
+  emit markChanged();
 }
 
 void te::qt::widgets::MarkWidget::onStrokeGroupBoxToggled(bool on)
@@ -145,11 +147,13 @@ void te::qt::widgets::MarkWidget::onStrokeGroupBoxToggled(bool on)
     m_mark->setStroke(0);
   else
     m_mark->setStroke(m_strokeWidget->getStroke());
+  emit markChanged();
 }
 
 void te::qt::widgets::MarkWidget::onFillChanged()
 {
   m_mark->setFill(m_fillWidget->getFill());
+  emit markChanged();
 }
 
 void te::qt::widgets::MarkWidget::onFillGroupBoxToggled(bool on)
@@ -158,4 +162,5 @@ void te::qt::widgets::MarkWidget::onFillGroupBoxToggled(bool on)
     m_mark->setFill(0);
   else
     m_mark->setFill(m_fillWidget->getFill());
+  emit markChanged();
 }

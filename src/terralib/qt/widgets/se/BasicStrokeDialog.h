@@ -67,8 +67,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT BasicStrokeDialog : public QDialog
       {
-        Q_OBJECT
-
         public:
 
           /** @name Initializer Methods

@@ -119,6 +119,11 @@ namespace te
 
           void onFillGroupBoxToggled(bool on);
 
+        signals:
+
+          /*! This signal is emitted when the internal mark element is changed. */
+          void markChanged();
+
         private:
 
           std::auto_ptr<Ui::MarkWidgetForm> m_ui;             //!< Widget form.

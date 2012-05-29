@@ -45,10 +45,20 @@ void te::se::Displacement::setDisplacementX(ParameterValue* x)
   m_x = x;
 }
 
+const te::se::ParameterValue* te::se::Displacement::getDisplacementX() const
+{
+  return m_x;
+}
+
 void te::se::Displacement::setDisplacementY(ParameterValue* y)
 {
   delete m_y;
   m_y = y;
+}
+
+const te::se::ParameterValue* te::se::Displacement::getDisplacementY() const
+{
+  return m_y;
 }
 
 te::se::Displacement* te::se::Displacement::clone() const

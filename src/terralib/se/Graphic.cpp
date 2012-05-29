@@ -62,10 +62,37 @@ void te::se::Graphic::add(ExternalGraphic* g)
   m_externalGraphics.push_back(g);
 }
 
+void te::se::Graphic::setExternalGraphic(std::size_t index, ExternalGraphic* g)
+{
+  assert(index < m_externalGraphics.size());
+
+  assert(g);
+
+  delete m_externalGraphics[index];
+
+  m_externalGraphics[index] = g;
+}
+
+const std::vector<te::se::ExternalGraphic*> te::se::Graphic::getExternalGraphics() const
+{
+  return m_externalGraphics;
+}
+
 void te::se::Graphic::add(Mark* m)
 {
   assert(m);
   m_marks.push_back(m);
+}
+
+void te::se::Graphic::setMark(std::size_t index, Mark* m)
+{
+  assert(index < m_marks.size());
+
+  assert(m);
+
+  delete m_marks[index];
+
+  m_marks[index] = m;
 }
 
 const std::vector<te::se::Mark*> te::se::Graphic::getMarks() const
@@ -112,10 +139,20 @@ void te::se::Graphic::setAnchorPoint(AnchorPoint* value)
   m_anchorPoint = value;
 }
 
+const te::se::AnchorPoint* te::se::Graphic::getAnchorPoint() const
+{
+  return m_anchorPoint;
+}
+
 void te::se::Graphic::setDisplacement(Displacement* value)
 {
   delete m_displacement;
   m_displacement = value;
+}
+
+const te::se::Displacement* te::se::Graphic::getDisplacement() const
+{
+  return m_displacement;
 }
 
 te::se::Graphic* te::se::Graphic::clone() const
