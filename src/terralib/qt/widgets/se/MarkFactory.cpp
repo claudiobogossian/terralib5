@@ -28,6 +28,7 @@
 #include "../../../fe/Literal.h"
 #include "../../../maptools//Utils.h"
 #include "../../../se/Fill.h"
+#include "../../../se/Mark.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
 #include "../Utils.h"
@@ -39,42 +40,42 @@
 #include <vector>
 
 // Factory key
-std::string te::qt::MarkFactory::sm_markFactoryKey("DefaultMarkFactory");
+std::string te::qt::widgets::MarkFactory::sm_markFactoryKey("DefaultMarkFactory");
 
 // Global Qt4 mark factory.
-te::qt::MarkFactory* te::qt::MarkFactory::sm_factory(0);
+te::qt::widgets::MarkFactory* te::qt::widgets::MarkFactory::sm_factory(0);
 
 // MarkMap::<name->MarkType>
-std::map<std::string, te::qt::MarkFactory::MarkType> te::qt::MarkFactory::sm_markMap;
+std::map<std::string, te::qt::widgets::MarkFactory::MarkType> te::qt::widgets::MarkFactory::sm_markMap;
 
 // PenCapMap::<type->Qt::PenCapStyle>
-std::map<std::string, Qt::PenCapStyle> te::qt::MarkFactory::sm_penCapMap;
+std::map<std::string, Qt::PenCapStyle> te::qt::widgets::MarkFactory::sm_penCapMap;
 
 // PenJoinMap::<type->Qt::PenJoinStyle>
-std::map<std::string, Qt::PenJoinStyle> te::qt::MarkFactory::sm_penJoinMap;
+std::map<std::string, Qt::PenJoinStyle> te::qt::widgets::MarkFactory::sm_penJoinMap;
 
-void te::qt::MarkFactory::initialize()
+void te::qt::widgets::MarkFactory::initialize()
 {
   finalize();
   sm_factory = new MarkFactory;
 }
 
-void te::qt::MarkFactory::finalize()
+void te::qt::widgets::MarkFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-te::qt::MarkFactory::~MarkFactory()
+te::qt::widgets::MarkFactory::~MarkFactory()
 {
 }
 
-te::map::AbstractMarkFactory* te::qt::MarkFactory::build()
+te::map::AbstractMarkFactory* te::qt::widgets::MarkFactory::build()
 {
   return sm_factory;
 }
 
-te::color::RGBAColor** te::qt::MarkFactory::create(const te::se::Mark* mark, std::size_t size)
+te::color::RGBAColor** te::qt::widgets::MarkFactory::create(const te::se::Mark* mark, std::size_t size)
 {
   assert(mark);
 
@@ -99,27 +100,27 @@ te::color::RGBAColor** te::qt::MarkFactory::create(const te::se::Mark* mark, std
   // Let's draw the mark!
   switch(markType)
   {
-    case te::qt::MarkFactory::Square:
+    case te::qt::widgets::MarkFactory::Square:
       draw(img, m_squarePath);
     break;
 
-    case te::qt::MarkFactory::Circle:
+    case te::qt::widgets::MarkFactory::Circle:
       draw(img, m_circlePath);
     break;
 
-    case te::qt::MarkFactory::Triangle:
+    case te::qt::widgets::MarkFactory::Triangle:
       draw(img, m_trianglePath);
     break;
 
-    case te::qt::MarkFactory::Star:
+    case te::qt::widgets::MarkFactory::Star:
       draw(img, m_starPath);
     break;
 
-    case te::qt::MarkFactory::Cross:
+    case te::qt::widgets::MarkFactory::Cross:
       draw(img, m_crossPath);
     break;
 
-    case te::qt::MarkFactory::X:
+    case te::qt::widgets::MarkFactory::X:
       draw(img, m_xPath);
     break;
   }
@@ -132,22 +133,22 @@ te::color::RGBAColor** te::qt::MarkFactory::create(const te::se::Mark* mark, std
   return rgba;
 }
 
-void te::qt::MarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
+void te::qt::widgets::MarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
 {
   std::map<std::string, MarkType>::const_iterator it;
   for(it = sm_markMap.begin(); it != sm_markMap.end(); ++it)
     marks.push_back(it->first);
 }
 
-void te::qt::MarkFactory::buildMaps()
+void te::qt::widgets::MarkFactory::buildMaps()
 {
   // MarkMap
-  sm_markMap["square"  ] = te::qt::MarkFactory::Square;
-  sm_markMap["circle"  ] = te::qt::MarkFactory::Circle;
-  sm_markMap["triangle"] = te::qt::MarkFactory::Triangle;
-  sm_markMap["star"    ] = te::qt::MarkFactory::Star;
-  sm_markMap["cross"   ] = te::qt::MarkFactory::Cross;
-  sm_markMap["x"       ] = te::qt::MarkFactory::X;
+  sm_markMap["square"  ] = te::qt::widgets::MarkFactory::Square;
+  sm_markMap["circle"  ] = te::qt::widgets::MarkFactory::Circle;
+  sm_markMap["triangle"] = te::qt::widgets::MarkFactory::Triangle;
+  sm_markMap["star"    ] = te::qt::widgets::MarkFactory::Star;
+  sm_markMap["cross"   ] = te::qt::widgets::MarkFactory::Cross;
+  sm_markMap["x"       ] = te::qt::widgets::MarkFactory::X;
 
   // PenCapMap
   sm_penCapMap[TE_SE_BUTT_CAP  ] = Qt::FlatCap;
@@ -160,7 +161,7 @@ void te::qt::MarkFactory::buildMaps()
   sm_penJoinMap[TE_SE_BEVEL_JOIN] = Qt::BevelJoin;
 }
 
-void te::qt::MarkFactory::buildPaths()
+void te::qt::widgets::MarkFactory::buildPaths()
 {
   // Local transformation matrix
   QTransform transform;
@@ -215,7 +216,7 @@ void te::qt::MarkFactory::buildPaths()
   m_xPath = transform.rotate(-45).map(m_crossPath);
 }
 
-void te::qt::MarkFactory::setup(QImage* img)
+void te::qt::widgets::MarkFactory::setup(QImage* img)
 {
   m_painter.begin(img);
   m_painter.setRenderHints(QPainter::Antialiasing);
@@ -223,24 +224,24 @@ void te::qt::MarkFactory::setup(QImage* img)
   m_painter.setBrush(m_brush);
 }
 
-void te::qt::MarkFactory::end()
+void te::qt::widgets::MarkFactory::end()
 {
   m_painter.end();
   m_pen = QPen(QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
   m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
-void te::qt::MarkFactory::setPenColor(const QColor& color)
+void te::qt::widgets::MarkFactory::setPenColor(const QColor& color)
 {
   m_pen.setColor(color);
 }
 
-void te::qt::MarkFactory::setPenWidth(const unsigned int& width)
+void te::qt::widgets::MarkFactory::setPenWidth(const unsigned int& width)
 {
   m_pen.setWidth(width);
 }
 
-void te::qt::MarkFactory::setPenStyle(const std::vector<double>& pattern)
+void te::qt::widgets::MarkFactory::setPenStyle(const std::vector<double>& pattern)
 {
   QVector<qreal> dasharray;
   for(std::size_t i = 0; i < pattern.size(); ++i)
@@ -248,22 +249,22 @@ void te::qt::MarkFactory::setPenStyle(const std::vector<double>& pattern)
   m_pen.setDashPattern(dasharray);
 }
 
-void te::qt::MarkFactory::setPenCapStyle(const Qt::PenCapStyle& cap)
+void te::qt::widgets::MarkFactory::setPenCapStyle(const Qt::PenCapStyle& cap)
 {
   m_pen.setCapStyle(cap);
 }
 
-void te::qt::MarkFactory::setPenJoinStyle(const Qt::PenJoinStyle& join)
+void te::qt::widgets::MarkFactory::setPenJoinStyle(const Qt::PenJoinStyle& join)
 {
   m_pen.setJoinStyle(join);
 }
 
-void te::qt::MarkFactory::setBrushColor(const QColor& color)
+void te::qt::widgets::MarkFactory::setBrushColor(const QColor& color)
 {
   m_brush.setColor(color);
 }
 
-void te::qt::MarkFactory::draw(QImage* img, QPainterPath& path)
+void te::qt::widgets::MarkFactory::draw(QImage* img, QPainterPath& path)
 {
   setup(img);
 
@@ -279,7 +280,7 @@ void te::qt::MarkFactory::draw(QImage* img, QPainterPath& path)
   end();
 }
 
-void te::qt::MarkFactory::config(const te::se::Stroke* stroke)
+void te::qt::widgets::MarkFactory::config(const te::se::Stroke* stroke)
 {
   if(stroke == 0)
   {
@@ -329,7 +330,7 @@ void te::qt::MarkFactory::config(const te::se::Stroke* stroke)
   /* TODO: Is necessary verify stroke-dashoffset, Graphic Stroke and Graphic Fill elements here?! */
 }
 
-void te::qt::MarkFactory::config(const te::se::Fill* fill)
+void te::qt::widgets::MarkFactory::config(const te::se::Fill* fill)
 {
   if(fill == 0)
   {
@@ -344,7 +345,7 @@ void te::qt::MarkFactory::config(const te::se::Fill* fill)
   setBrushColor(qrgba);
 }
 
-te::qt::MarkFactory::MarkFactory()
+te::qt::widgets::MarkFactory::MarkFactory()
   : te::map::AbstractMarkFactory(sm_markFactoryKey)
 {
   m_brush.setStyle(Qt::SolidPattern);
