@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "../../../maptools/AbstractMarkFactory.h"
-#include "../../../maptools/Enums.h"
 #include "../Config.h"
 
 // Qt
