@@ -10,6 +10,10 @@
 #include <QtGui/QApplication>
 #include <QtGui/QDialog>
 #include <QtGui/QGridLayout>
+#include <QtGui/QFrame>
+
+// STL
+#include <iostream>
 
 void UtilsWidgets()
 {
@@ -30,13 +34,31 @@ void UtilsWidgets()
   te::qt::widgets::DoubleListWidget* dlW = new te::qt::widgets::DoubleListWidget(&d);
   layout->addWidget(dlW, 0, 0);
 
+  dlW->setLeftLabel("Input Values");
+  dlW->setRightLabel("Output Values");
+
+  std::vector<std::string> inputValues;
+  inputValues.push_back("TerraView");
+  inputValues.push_back("TerraLib");
+  inputValues.push_back("INPE");
+
+  dlW->setInputValues(inputValues);
+
+  //add line separator
+  QFrame* line = new QFrame(&d);
+  line->setFrameShape(QFrame::VLine);
+  line->setFrameShadow(QFrame::Sunken);
+  layout->addWidget(line, 0, 1);
+  
   //add ListWidget
   te::qt::widgets::ListWidget* lW = new te::qt::widgets::ListWidget(&d);
-  layout->addWidget(lW, 0, 1);
+  layout->addWidget(lW, 0, 2);
+
+  lW->setLabel("Values");
 
   //add ListWidget
   te::qt::widgets::ParameterTableWidget* ptW = new te::qt::widgets::ParameterTableWidget(&d);
-  layout->addWidget(ptW, 1, 0, 1, 2);
+  layout->addWidget(ptW, 1, 0, 1, 3);
 
   d.exec();
 }

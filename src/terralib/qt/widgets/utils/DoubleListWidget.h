@@ -62,6 +62,14 @@ namespace te
 
           Ui::DoubleListWidgetForm* getForm() const;
 
+          void setLeftLabel(std::string value);
+
+          void setRightLabel(std::string value);
+
+          void setInputValues(std::vector<std::string> values);
+
+          std::vector<std::string> getOutputValues();
+
         protected slots:
 
           void onAddToolButtonPressed();

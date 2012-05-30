@@ -79,7 +79,11 @@ namespace te
 
         void setDisplacementX(ParameterValue* x);
 
+        const ParameterValue* getDisplacementX() const;
+
         void setDisplacementY(ParameterValue* y);
+
+        const ParameterValue* getDisplacementY() const;
 
         //@}
 

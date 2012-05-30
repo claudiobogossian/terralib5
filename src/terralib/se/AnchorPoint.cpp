@@ -45,10 +45,20 @@ void te::se::AnchorPoint::setAnchorPointX(ParameterValue* x)
   m_x = x;
 }
 
+const te::se::ParameterValue* te::se::AnchorPoint::getAnchorPointX() const
+{
+  return m_x;
+}
+
 void te::se::AnchorPoint::setAnchorPointY(ParameterValue* y)
 {
   delete m_y;
   m_y = y;
+}
+
+const te::se::ParameterValue* te::se::AnchorPoint::getAnchorPointY() const
+{
+  return m_y;
 }
 
 te::se::AnchorPoint* te::se::AnchorPoint::clone() const
