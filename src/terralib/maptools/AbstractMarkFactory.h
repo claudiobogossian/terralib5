@@ -27,13 +27,18 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMARKFACTORY_H
 
 // TerraLib
-#include "Config.h"
 #include "../color/RGBAColor.h"
 #include "../common/AbstractFactory.h"
-#include "../se/Mark.h"
+#include "Config.h"
 
 namespace te
 {
+// Forward declarations
+  namespace se
+  {
+    class Mark;
+  }
+
   namespace map
   {
     /*!
@@ -149,5 +154,3 @@ namespace te
 
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMARKFACTORY_H
-
-
