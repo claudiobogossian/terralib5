@@ -33,6 +33,7 @@
 #include "../../../se/SvgParameter.h"
 #include "../Utils.h"
 #include "MarkFactory.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -47,12 +48,6 @@ te::qt::widgets::MarkFactory* te::qt::widgets::MarkFactory::sm_factory(0);
 
 // MarkMap::<name->MarkType>
 std::map<std::string, te::qt::widgets::MarkFactory::MarkType> te::qt::widgets::MarkFactory::sm_markMap;
-
-// PenCapMap::<type->Qt::PenCapStyle>
-std::map<std::string, Qt::PenCapStyle> te::qt::widgets::MarkFactory::sm_penCapMap;
-
-// PenJoinMap::<type->Qt::PenJoinStyle>
-std::map<std::string, Qt::PenJoinStyle> te::qt::widgets::MarkFactory::sm_penJoinMap;
 
 void te::qt::widgets::MarkFactory::initialize()
 {
@@ -94,8 +89,8 @@ te::color::RGBAColor** te::qt::widgets::MarkFactory::create(const te::se::Mark* 
   img->fill(Qt::transparent);
 
   // Configuring visual...
-  config(mark->getStroke());
-  config(mark->getFill());
+  te::qt::widgets::Config(m_pen, mark->getStroke());
+  te::qt::widgets::Config(m_brush, mark->getFill());
 
   // Let's draw the mark!
   switch(markType)
@@ -149,16 +144,6 @@ void te::qt::widgets::MarkFactory::buildMaps()
   sm_markMap["star"    ] = te::qt::widgets::MarkFactory::Star;
   sm_markMap["cross"   ] = te::qt::widgets::MarkFactory::Cross;
   sm_markMap["x"       ] = te::qt::widgets::MarkFactory::X;
-
-  // PenCapMap
-  sm_penCapMap[TE_SE_BUTT_CAP  ] = Qt::FlatCap;
-  sm_penCapMap[TE_SE_ROUND_CAP ] = Qt::RoundCap;
-  sm_penCapMap[TE_SE_SQUARE_CAP] = Qt::SquareCap;
-
-  // PenJoinMap
-  sm_penJoinMap[TE_SE_MITRE_JOIN] = Qt::MiterJoin;
-  sm_penJoinMap[TE_SE_ROUND_JOIN] = Qt::RoundJoin;
-  sm_penJoinMap[TE_SE_BEVEL_JOIN] = Qt::BevelJoin;
 }
 
 void te::qt::widgets::MarkFactory::buildPaths()
@@ -231,39 +216,6 @@ void te::qt::widgets::MarkFactory::end()
   m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
-void te::qt::widgets::MarkFactory::setPenColor(const QColor& color)
-{
-  m_pen.setColor(color);
-}
-
-void te::qt::widgets::MarkFactory::setPenWidth(const unsigned int& width)
-{
-  m_pen.setWidth(width);
-}
-
-void te::qt::widgets::MarkFactory::setPenStyle(const std::vector<double>& pattern)
-{
-  QVector<qreal> dasharray;
-  for(std::size_t i = 0; i < pattern.size(); ++i)
-    dasharray << pattern[i];
-  m_pen.setDashPattern(dasharray);
-}
-
-void te::qt::widgets::MarkFactory::setPenCapStyle(const Qt::PenCapStyle& cap)
-{
-  m_pen.setCapStyle(cap);
-}
-
-void te::qt::widgets::MarkFactory::setPenJoinStyle(const Qt::PenJoinStyle& join)
-{
-  m_pen.setJoinStyle(join);
-}
-
-void te::qt::widgets::MarkFactory::setBrushColor(const QColor& color)
-{
-  m_brush.setColor(color);
-}
-
 void te::qt::widgets::MarkFactory::draw(QImage* img, QPainterPath& path)
 {
   setup(img);
@@ -278,71 +230,6 @@ void te::qt::widgets::MarkFactory::draw(QImage* img, QPainterPath& path)
   m_painter.drawPath(transformedPath);
 
   end();
-}
-
-void te::qt::widgets::MarkFactory::config(const te::se::Stroke* stroke)
-{
-  if(stroke == 0)
-  {
-    setPenColor(Qt::transparent); // no stroke
-    return;
-  }
-
-  te::color::RGBAColor rgba(TE_SE_DEFAULT_STROKE_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(stroke, rgba);
-  QColor qrgba(rgba.getRgba());
-  qrgba.setAlpha(rgba.getAlpha());
-  setPenColor(qrgba);
-
-  // Line Width
-  const te::se::SvgParameter* width = stroke->getWidth();
-  if(width)
-    setPenWidth(te::map::GetInt(width));
-
-  // Line Cap Style
-  const te::se::SvgParameter* linecap = stroke->getLineCap();
-  if(linecap)
-  {
-    std::map<std::string, Qt::PenCapStyle>::iterator it = sm_penCapMap.find(te::map::GetString(linecap));
-    if(it != sm_penCapMap.end())
-      setPenCapStyle(it->second);
-  }
-  
-  // Line Join Style
-  const te::se::SvgParameter* linejoin = stroke->getLineJoin();
-  if(linejoin)
-  {
-    std::map<std::string, Qt::PenJoinStyle>::iterator it = sm_penJoinMap.find(te::map::GetString(linejoin));
-    if(it != sm_penJoinMap.end())
-      setPenJoinStyle(it->second);
-  }
-
-  // Line Dash Style
-  const te::se::SvgParameter* dasharray = stroke->getDashArray();
-  if(dasharray)
-  {
-    std::string value = te::map::GetString(dasharray);
-    std::vector<double> pattern;
-    te::map::GetDashStyle(value, pattern);
-    setPenStyle(pattern);
-  }
-
-  /* TODO: Is necessary verify stroke-dashoffset, Graphic Stroke and Graphic Fill elements here?! */
-}
-
-void te::qt::widgets::MarkFactory::config(const te::se::Fill* fill)
-{
-  if(fill == 0)
-  {
-    setBrushColor(Qt::transparent);
-    return;
-  }
-
-  te::color::RGBAColor rgba(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE);
-  te::map::GetColor(fill, rgba);
-  QColor qrgba(rgba.getRgba());
-  qrgba.setAlpha(rgba.getAlpha());
-  setBrushColor(qrgba);
 }
 
 te::qt::widgets::MarkFactory::MarkFactory()

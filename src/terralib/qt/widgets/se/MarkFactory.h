@@ -138,75 +138,12 @@ namespace te
           void end();
 
           /*!
-            \brief Adjusts the internal pen to use the given color.
-
-            \param color The color that will be used to draw contours.
-          */
-          void setPenColor(const QColor& color);
-
-          /*!
-            \brief Adjusts the internal pen width.
-
-            \param width The width that will be used to draw contours.
-          */
-          void setPenWidth(const unsigned int& width);
-
-          /*!
-            \brief Adjusts the internal pen dash style.
-
-            \param pattern The dash style that will be used to draw contours.
-          */
-          void setPenStyle(const std::vector<double>& pattern);
-
-          /*!
-            \brief Adjusts the internal pen cap style.
-
-            \param cap The cap style that will be used to draw contours.
-          */
-          void setPenCapStyle(const Qt::PenCapStyle& cap);
-
-          /*!
-            \brief Adjusts the internal pen join style.
-
-            \param join The join style that will be used to draw contours.
-          */
-          void setPenJoinStyle(const Qt::PenJoinStyle& join);
-
-          /*!
-            \brief Adjusts the internal brush to use the given color.
-
-            \param color The color that will be used to fill areas.
-          */
-          void setBrushColor(const QColor& color);
-
-          /*!
             \brief Draw the given path on the the given image using the internal pen and brush.
 
             \param img The image where the path will be drawn.
             \param path The path that will be drawn.
           */
           void draw(QImage* img, QPainterPath& path);
-
-          //@}
-
-          /** @name Internal methods to Symbology Enconding elements.
-            *  Methods that manipulate concepts like te::se::Stroke, te::se::Fill, etc and converts to Qt concepts.
-            */
-          //@{
-
-          /*!
-            \brief Configs the internal pen based on Symbology Enconding Stroke element.
-
-            \param stroke The Symbology Enconding Stroke element.
-          */
-          void config(const te::se::Stroke* stroke);
-
-          /*!
-            \brief Configs the internal brush based on Symbology Enconding Fill element.
-
-            \param fill The Symbology Enconding Fill element.
-          */
-          void config(const te::se::Fill* fill);
 
           //@}
 
@@ -228,23 +165,21 @@ namespace te
 
         private:
 
-          static std::string sm_markFactoryKey;                            //!< The Qt4 mark factory key.
-          static MarkFactory* sm_factory;                                  //!< A pointer to the global Qt4 mark factory.
-          
-          static std::map<std::string, MarkType> sm_markMap;               //!< A map that associates a mark name to the correct mark type.
-          static std::map<std::string, Qt::PenCapStyle> sm_penCapMap;      //!< A map that associates stroke-linecap type to the correct Qt::PenCapStyle.
-          static std::map<std::string, Qt::PenJoinStyle> sm_penJoinMap;    //!< A map that associates stroke-linejoin type to the correct Qt::PenJoinStyle.
+          static std::string sm_markFactoryKey;               //!< The Qt4 mark factory key.
+          static MarkFactory* sm_factory;                     //!< A pointer to the global Qt4 mark factory.
 
-          QPainter m_painter;                                               //!< The painter used to draw the mark patterns.
-          QPen m_pen;                                                       //!< The pen used to draw the mark patterns.
-          QBrush m_brush;                                                   //!< The pen used to draw the mark patterns.
+          static std::map<std::string, MarkType> sm_markMap;  //!< A map that associates a mark name to the correct mark type.
 
-          QPainterPath m_squarePath;                                        //!< Pre-defined path to square mark.
-          QPainterPath m_circlePath;                                        //!< Pre-defined path to circle mark.
-          QPainterPath m_trianglePath;                                      //!< Pre-defined path to triangle mark.
-          QPainterPath m_starPath;                                          //!< Pre-defined path to star mark.
-          QPainterPath m_crossPath;                                         //!< Pre-defined path to cross mark.
-          QPainterPath m_xPath;                                             //!< Pre-defined path to x mark.
+          QPainter m_painter;                                 //!< The painter used to draw the mark patterns.
+          QPen m_pen;                                         //!< The pen used to draw the mark patterns.
+          QBrush m_brush;                                     //!< The pen used to draw the mark patterns.
+
+          QPainterPath m_squarePath;                          //!< Pre-defined path to square mark.
+          QPainterPath m_circlePath;                          //!< Pre-defined path to circle mark.
+          QPainterPath m_trianglePath;                        //!< Pre-defined path to triangle mark.
+          QPainterPath m_starPath;                            //!< Pre-defined path to star mark.
+          QPainterPath m_crossPath;                           //!< Pre-defined path to cross mark.
+          QPainterPath m_xPath;                               //!< Pre-defined path to x mark.
       };
 
     } // end namespace widgets
