@@ -214,7 +214,14 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
-	 ${SRCDIR}/widgets/se/MarkWidget.h)
+	 ${SRCDIR}/widgets/se/MarkWidget.h
+	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
+	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
+	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
+	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
+	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
+	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
+	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h)
 
 
 # Select the FORMS widgets     
