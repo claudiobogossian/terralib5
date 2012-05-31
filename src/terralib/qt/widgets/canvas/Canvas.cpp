@@ -317,7 +317,6 @@ void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
   QPointF p1;
   QPointF p2;
   bool drawed = false;
-  int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment
 
   te::gm::Coord2D* coords = line->getCoordinates();
   std::size_t size = line->getNPoints();
@@ -331,14 +330,28 @@ void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
   {    
     p2.setX(coords[i].x);
     p2.setY(coords[i].y);
-    
-    if(m_lnPen.brush().style() != Qt::TexturePattern)
+
+	if(m_erase)
+	{
+	  QPen pen(m_lnPen);
+	  pen.setColor(Qt::red);
+	  if(m_lnPen.brush().style() == Qt::TexturePattern)
+		pen.setCapStyle(Qt::FlatCap); // Qt::RoundCap Qt::FlatCap Qt::SquareCap
+	  m_painter.setPen(pen);
+	  m_painter.setBrush(Qt::NoBrush);
+      m_painter.drawLine(p1, p2);
+      drawed = true;
+	}
+    else if(m_lnPen.brush().style() != Qt::TexturePattern)
     {
+	  m_lnPen.setColor(m_lnColor);
+      m_painter.setPen(m_lnPen);
       m_painter.drawLine(p1, p2);
       drawed = true;
     }
     else
     {
+	  int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment using pattern
       double alfa;
       QPoint dp1 = m_matrix.map(p1).toPoint();
       QPoint dp2 = m_matrix.map(p2).toPoint();
