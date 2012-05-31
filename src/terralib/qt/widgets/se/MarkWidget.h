@@ -38,7 +38,6 @@
 #include <vector>
 
 // Forward declaraion
-class QListWidget;
 namespace Ui { class MarkWidgetForm; }
 
 namespace te

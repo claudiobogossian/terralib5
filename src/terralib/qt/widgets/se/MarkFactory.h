@@ -38,15 +38,6 @@
 
 namespace te
 {
-// Forward declarations
-  namespace se
-  {
-    class Fill;
-    class Mark;
-    class Stroke;
-    class SvgParameter;
-  }
-
   namespace qt
   {
     namespace widgets

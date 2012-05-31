@@ -25,12 +25,8 @@
 
 // TerraLib
 #include "../../../common/StringUtils.h"
-#include "../../../fe/Literal.h"
-#include "../../../maptools//Utils.h"
-#include "../../../se/Fill.h"
+#include "../../../maptools/Utils.h"
 #include "../../../se/Mark.h"
-#include "../../../se/Stroke.h"
-#include "../../../se/SvgParameter.h"
 #include "../Utils.h"
 #include "MarkFactory.h"
 #include "Utils.h"
