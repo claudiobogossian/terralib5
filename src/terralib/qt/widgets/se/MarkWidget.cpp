@@ -24,18 +24,12 @@
 */
 
 // TerraLib
-#include "../../../common/STLUtils.h"
 #include "../../../maptools/AbstractMarkFactory.h"
 #include "../../../se/Mark.h"
-#include "../Utils.h"
 #include "BasicFillWidget.h"
 #include "BasicStrokeWidget.h"
 #include "ui_MarkWidgetForm.h"
 #include "MarkWidget.h"
-
-// Qt
-#include <QtGui/QImage>
-#include <QtGui/QListWidget>
 
 // STL
 #include <cassert>

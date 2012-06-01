@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ImageOutlineWidgetForm</class>
+ <widget class="QWidget" name="ImageOutlineWidgetForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>135</width>
+    <height>96</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Image Outline</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetDefaultConstraint</enum>
+   </property>
+   <property name="margin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Image Outline</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButton_3">
+        <property name="text">
+         <string>None</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QRadioButton" name="radioButton">
+        <property name="text">
+         <string>Line Symbolizer</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QRadioButton" name="radioButton_2">
+        <property name="text">
+         <string>Polygon Symbolizer</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>radioButton_3</tabstop>
+  <tabstop>radioButton</tabstop>
+  <tabstop>radioButton_2</tabstop>
+ </tabstops>
+ <resources/>
+ <connections/>
+</ui>

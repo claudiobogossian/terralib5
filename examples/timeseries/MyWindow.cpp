@@ -1859,8 +1859,8 @@ void MyWindow::changeLineStyleSlot()
   }
   else
   {
-    op->setPolygonContourPatternIcon(0);
-    op->setPolygonContourPatternIconSize(0);
+    op->setLinePatternIcon(0);
+    op->setLinePatternIconSize(0);
   }
 
   updateDisplays(layer);

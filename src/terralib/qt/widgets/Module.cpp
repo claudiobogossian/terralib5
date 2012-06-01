@@ -29,7 +29,7 @@
 #include "../../common/Translator.h"
 #include "layer/FolderLayerItemFactory.h"
 #include "layer/LayerItemFactory.h"
-#include "se/MarkFactory.h"
+#include "se/WellKnownMarkFactory.h"
 #include "Config.h"
 #include "Module.h"
 
@@ -96,8 +96,8 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::FolderLayerItemFactory::initialize();
   te::qt::widgets::LayerItemFactory::initialize();
 
-// It initializes the mark factory
-  te::qt::MarkFactory::initialize();
+// It initializes the well-known mark factory
+  te::qt::widgets::WellKnownMarkFactory::initialize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
@@ -108,8 +108,8 @@ void te::qt::widgets::Module::finalize()
   te::qt::widgets::FolderLayerItemFactory::finalize();
   te::qt::widgets::LayerItemFactory::finalize();
 
-// It finalizes the mark factory
-  te::qt::MarkFactory::finalize();
+// It finalizes the well-known mark factory
+  te::qt::widgets::WellKnownMarkFactory::finalize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
 }

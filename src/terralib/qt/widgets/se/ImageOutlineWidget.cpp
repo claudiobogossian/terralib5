@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,18 +18,36 @@
  */
 
 /*!
-  \file SymbologyWidgets.h
+  \file terralib/qt/widgets/se/ImageOutlineWidget.cpp
 
-  \brief Several examples declarations.
+  \brief A dialog used to build a Symbolizer element.
 */
 
-#ifndef __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
-#define __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
+// TerraLib
+#include "../../../common/STLUtils.h"
+#include "ImageOutlineWidget.h"
+#include "ui_ImageOutlineWidgetForm.h"
 
-/*! \brief It shows a set of widgets related with Symbology Encondig. */
-void SymbologyWidgets();
+// Qt
 
-/*! \brief It shows a set of widgets related with Raster Symbology Encondig. */
-void RasterSymbologyWidgets();
 
-#endif  // __TERRALIB_EXAMPLES_QT_STMBOLOGY_INTERNAL_SYMBOLOGY_WIDGETS_H
+// STL
+
+
+te::qt::widgets::ImageOutlineWidget::ImageOutlineWidget(QWidget* parent, Qt::WindowFlags f)
+  : QWidget(parent, f),
+    m_ui(new Ui::ImageOutlineWidgetForm)
+{
+  m_ui->setupUi(this);
+
+}
+
+te::qt::widgets::ImageOutlineWidget::~ImageOutlineWidget()
+{
+
+}
+
+void te::qt::widgets::ImageOutlineWidget::updateUi()
+{
+  
+}
