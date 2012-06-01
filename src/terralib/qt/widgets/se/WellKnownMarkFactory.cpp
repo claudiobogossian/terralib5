@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/MarkFactory.cpp
+  \file terralib/qt/widgets/WellKnownMarkFactory.cpp
 
   \brief This is the concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
  */
@@ -28,48 +28,44 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Mark.h"
 #include "../Utils.h"
-#include "MarkFactory.h"
+#include "WellKnownMarkFactory.h"
 #include "Utils.h"
 
 // STL
-#include <cassert>
-#include <cstdlib>
 #include <vector>
 
 // Factory key
-std::string te::qt::widgets::MarkFactory::sm_markFactoryKey("DefaultMarkFactory");
+std::string te::qt::widgets::WellKnownMarkFactory::sm_factoryKey(""); // Default Mark Factory
 
-// Global Qt4 mark factory.
-te::qt::widgets::MarkFactory* te::qt::widgets::MarkFactory::sm_factory(0);
+// Global factory.
+te::qt::widgets::WellKnownMarkFactory* te::qt::widgets::WellKnownMarkFactory::sm_factory(0);
 
 // MarkMap::<name->MarkType>
-std::map<std::string, te::qt::widgets::MarkFactory::MarkType> te::qt::widgets::MarkFactory::sm_markMap;
+std::map<std::string, te::qt::widgets::WellKnownMarkFactory::MarkType> te::qt::widgets::WellKnownMarkFactory::sm_markMap;
 
-void te::qt::widgets::MarkFactory::initialize()
+void te::qt::widgets::WellKnownMarkFactory::initialize()
 {
   finalize();
-  sm_factory = new MarkFactory;
+  sm_factory = new WellKnownMarkFactory;
 }
 
-void te::qt::widgets::MarkFactory::finalize()
+void te::qt::widgets::WellKnownMarkFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-te::qt::widgets::MarkFactory::~MarkFactory()
+te::qt::widgets::WellKnownMarkFactory::~WellKnownMarkFactory()
 {
 }
 
-te::map::AbstractMarkFactory* te::qt::widgets::MarkFactory::build()
+te::map::AbstractMarkFactory* te::qt::widgets::WellKnownMarkFactory::build()
 {
   return sm_factory;
 }
 
-te::color::RGBAColor** te::qt::widgets::MarkFactory::create(const te::se::Mark* mark, std::size_t size)
+te::color::RGBAColor** te::qt::widgets::WellKnownMarkFactory::create(const te::se::Mark* mark, std::size_t size)
 {
-  assert(mark);
-
   // Supports the mark?
   const std::string* name = mark->getWellKnownName();
   std::string lname = te::common::Convert2LCase(*name);
@@ -91,27 +87,27 @@ te::color::RGBAColor** te::qt::widgets::MarkFactory::create(const te::se::Mark* 
   // Let's draw the mark!
   switch(markType)
   {
-    case te::qt::widgets::MarkFactory::Square:
+    case te::qt::widgets::WellKnownMarkFactory::Square:
       draw(img, m_squarePath);
     break;
 
-    case te::qt::widgets::MarkFactory::Circle:
+    case te::qt::widgets::WellKnownMarkFactory::Circle:
       draw(img, m_circlePath);
     break;
 
-    case te::qt::widgets::MarkFactory::Triangle:
+    case te::qt::widgets::WellKnownMarkFactory::Triangle:
       draw(img, m_trianglePath);
     break;
 
-    case te::qt::widgets::MarkFactory::Star:
+    case te::qt::widgets::WellKnownMarkFactory::Star:
       draw(img, m_starPath);
     break;
 
-    case te::qt::widgets::MarkFactory::Cross:
+    case te::qt::widgets::WellKnownMarkFactory::Cross:
       draw(img, m_crossPath);
     break;
 
-    case te::qt::widgets::MarkFactory::X:
+    case te::qt::widgets::WellKnownMarkFactory::X:
       draw(img, m_xPath);
     break;
   }
@@ -124,25 +120,25 @@ te::color::RGBAColor** te::qt::widgets::MarkFactory::create(const te::se::Mark* 
   return rgba;
 }
 
-void te::qt::widgets::MarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
+void te::qt::widgets::WellKnownMarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
 {
   std::map<std::string, MarkType>::const_iterator it;
   for(it = sm_markMap.begin(); it != sm_markMap.end(); ++it)
     marks.push_back(it->first);
 }
 
-void te::qt::widgets::MarkFactory::buildMaps()
+void te::qt::widgets::WellKnownMarkFactory::buildMaps()
 {
   // MarkMap
-  sm_markMap["square"  ] = te::qt::widgets::MarkFactory::Square;
-  sm_markMap["circle"  ] = te::qt::widgets::MarkFactory::Circle;
-  sm_markMap["triangle"] = te::qt::widgets::MarkFactory::Triangle;
-  sm_markMap["star"    ] = te::qt::widgets::MarkFactory::Star;
-  sm_markMap["cross"   ] = te::qt::widgets::MarkFactory::Cross;
-  sm_markMap["x"       ] = te::qt::widgets::MarkFactory::X;
+  sm_markMap["square"  ] = te::qt::widgets::WellKnownMarkFactory::Square;
+  sm_markMap["circle"  ] = te::qt::widgets::WellKnownMarkFactory::Circle;
+  sm_markMap["triangle"] = te::qt::widgets::WellKnownMarkFactory::Triangle;
+  sm_markMap["star"    ] = te::qt::widgets::WellKnownMarkFactory::Star;
+  sm_markMap["cross"   ] = te::qt::widgets::WellKnownMarkFactory::Cross;
+  sm_markMap["x"       ] = te::qt::widgets::WellKnownMarkFactory::X;
 }
 
-void te::qt::widgets::MarkFactory::buildPaths()
+void te::qt::widgets::WellKnownMarkFactory::buildPaths()
 {
   // Local transformation matrix
   QTransform transform;
@@ -197,7 +193,7 @@ void te::qt::widgets::MarkFactory::buildPaths()
   m_xPath = transform.rotate(-45).map(m_crossPath);
 }
 
-void te::qt::widgets::MarkFactory::setup(QImage* img)
+void te::qt::widgets::WellKnownMarkFactory::setup(QImage* img)
 {
   m_painter.begin(img);
   m_painter.setRenderHints(QPainter::Antialiasing);
@@ -205,14 +201,14 @@ void te::qt::widgets::MarkFactory::setup(QImage* img)
   m_painter.setBrush(m_brush);
 }
 
-void te::qt::widgets::MarkFactory::end()
+void te::qt::widgets::WellKnownMarkFactory::end()
 {
   m_painter.end();
   m_pen = QPen(QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
   m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
-void te::qt::widgets::MarkFactory::draw(QImage* img, QPainterPath& path)
+void te::qt::widgets::WellKnownMarkFactory::draw(QImage* img, QPainterPath& path)
 {
   setup(img);
 
@@ -228,8 +224,8 @@ void te::qt::widgets::MarkFactory::draw(QImage* img, QPainterPath& path)
   end();
 }
 
-te::qt::widgets::MarkFactory::MarkFactory()
-  : te::map::AbstractMarkFactory(sm_markFactoryKey)
+te::qt::widgets::WellKnownMarkFactory::WellKnownMarkFactory()
+  : te::map::AbstractMarkFactory(sm_factoryKey)
 {
   m_brush.setStyle(Qt::SolidPattern);
   m_brush.setColor(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR));

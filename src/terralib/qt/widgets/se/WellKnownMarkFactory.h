@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/MarkFactory.h
+  \file terralib/qt/widgets/se/WellKnownMarkFactory.h
 
   \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKFACTORY_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKFACTORY_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKFACTORY_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKFACTORY_H
 
 // TerraLib
 #include "../../../maptools/AbstractMarkFactory.h"
@@ -43,13 +43,14 @@ namespace te
     namespace widgets
     {
       /*!
-        \class MarkFactory
+        \class WellKnownMarkFactory
 
         \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+               It considers basic marks defined on Symbology Enconding Specification: "square", "circle", "triangle", "star", "cross", and "x".
 
         \sa AbstractMarkFactory, AbstractFactory
       */
-      class TEQTWIDGETSEXPORT MarkFactory : public te::map::AbstractMarkFactory
+      class TEQTWIDGETSEXPORT WellKnownMarkFactory : public te::map::AbstractMarkFactory
       {
         public:
 
@@ -91,7 +92,7 @@ namespace te
 
             \note It will automatically unregister the factory from the dictionary.
           */
-          ~MarkFactory();
+          ~WellKnownMarkFactory();
 
           //@} 
 
@@ -145,20 +146,20 @@ namespace te
           /*!
             \brief It creates the factory.
 
-            The key of a MarkFactory is a string.
+            The key of a WellKnownMarkFactory is a string.
 
             \param factoryKey The key that identifies the factory.
           */
-          MarkFactory();
+          WellKnownMarkFactory();
 
           //@}
 
         private:
 
-          static std::string sm_markFactoryKey;               //!< The Qt4 mark factory key.
-          static MarkFactory* sm_factory;                     //!< A pointer to the global Qt4 mark factory.
+          static std::string sm_factoryKey;                   //!< The factory key.
+          static WellKnownMarkFactory* sm_factory;            //!< A pointer to the global factory.
 
-          static std::map<std::string, MarkType> sm_markMap;  //!< A map that associates a mark name to the correct mark type.
+          static std::map<std::string, MarkType> sm_markMap;  //!< A map that associates a well-known mark name to the correct mark type.
 
           QPainter m_painter;                                 //!< The painter used to draw the mark patterns.
           QPen m_pen;                                         //!< The pen used to draw the mark patterns.
@@ -176,5 +177,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKFACTORY_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKFACTORY_H

@@ -55,7 +55,7 @@ te::color::RGBAColor** te::map::AbstractMarkFactory::make(const te::se::Mark* ma
   te::common::Tokenize(*name, tokens, "://");
 
   // Default
-  std::string factoryKey = "DefaultMarkFactory";
+  std::string factoryKey("");
 
   if(tokens.size() > 1)
     factoryKey = tokens[0];
