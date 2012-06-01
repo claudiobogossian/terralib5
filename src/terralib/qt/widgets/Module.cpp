@@ -97,7 +97,7 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::LayerItemFactory::initialize();
 
 // It initializes the mark factory
-  te::qt::MarkFactory::initialize();
+  te::qt::widgets::MarkFactory::initialize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
@@ -109,7 +109,7 @@ void te::qt::widgets::Module::finalize()
   te::qt::widgets::LayerItemFactory::finalize();
 
 // It finalizes the mark factory
-  te::qt::MarkFactory::finalize();
+  te::qt::widgets::MarkFactory::finalize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
 }
