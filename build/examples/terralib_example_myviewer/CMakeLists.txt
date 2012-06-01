@@ -88,9 +88,7 @@ endif(WIN32)
 #Set the TerraLib modules to be linked
 if(WIN32)
   link_directories(${ROOT}/lib32/msvc2010)
-elseif(APPLE)
-  link_directories(${ROOT}/lib32/Release ${ROOT}/lib32/Debug)
-elseif(UNIX)
+else(WIN32)
   link_directories(${ROOT}/lib32)
 endif(WIN32)
 
