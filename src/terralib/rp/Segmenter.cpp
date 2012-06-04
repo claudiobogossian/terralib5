@@ -727,7 +727,7 @@ namespace te
       boost::shared_ptr< RasterHandler > tempOutRasterHandlerPtr(
         new RasterHandler );
       
-      te::rst::Raster* currentInRasterPtr = 0;
+      te::rst::Raster const* currentInRasterPtr = 0;
       te::rst::Raster* currentOutRasterPtr = 0;
       
       std::vector< unsigned int > currentInRasterBands;
@@ -796,7 +796,7 @@ namespace te
                       inRasterBandsIdx ).getProperty() ) ) );
                   }
                   
-                  te::rst::Grid* oldGridPtr = 
+                  te::rst::Grid const* oldGridPtr =
                     paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
                   te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
                     segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
@@ -898,7 +898,7 @@ namespace te
                   std::vector< te::rst::BandProperty* > newBandProperties;
                   newBandProperties.push_back( newBandPropertyPtr );
                   
-                  te::rst::Grid* oldGridPtr = 
+                  te::rst::Grid const* oldGridPtr = 
                     paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
                   te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
                     segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
