@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MarkDialogForm</class>
- <widget class="QDialog" name="MarkDialogForm">
+ <class>WellKnownMarkDialogForm</class>
+ <widget class="QDialog" name="WellKnownMarkDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -82,7 +82,7 @@
   <connection>
    <sender>m_okPushButton</sender>
    <signal>pressed()</signal>
-   <receiver>MarkDialogForm</receiver>
+   <receiver>WellKnownMarkDialogForm</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -98,7 +98,7 @@
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>pressed()</signal>
-   <receiver>MarkDialogForm</receiver>
+   <receiver>WellKnownMarkDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

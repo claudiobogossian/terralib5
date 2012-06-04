@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/MarkWidget.h
+  \file terralib/qt/widgets/se/WellKnownMarkWidget.h
 
-  \brief A widget used to build a mark element.
+  \brief A widget used to build a well known mark element.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKWIDGET_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKWIDGET_H
 
 // TerraLib
 #include "../Config.h"
@@ -38,7 +38,7 @@
 #include <vector>
 
 // Forward declaraion
-namespace Ui { class MarkWidgetForm; }
+namespace Ui { class WellKnownMarkWidgetForm; }
 
 namespace te
 {
@@ -57,11 +57,11 @@ namespace te
       class BasicStrokeWidget;
 
       /*!
-        \class MarkWidget
+        \class WellKnownMarkWidget
 
-        \brief A widget used to build a mark element.
+        \brief A widget used to build a well known mark element.
       */
-      class TEQTWIDGETSEXPORT MarkWidget : public QWidget
+      class TEQTWIDGETSEXPORT WellKnownMarkWidget : public QWidget
       {
         Q_OBJECT
 
@@ -72,11 +72,11 @@ namespace te
            */
           //@{
 
-          /*! \brief Constructs a mark widget which is a child of parent, with widget flags set to f. */
-          MarkWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          /*! \brief Constructs a well known mark widget which is a child of parent, with widget flags set to f. */
+          WellKnownMarkWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          ~MarkWidget();
+          ~WellKnownMarkWidget();
 
           //@}
 
@@ -125,7 +125,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::MarkWidgetForm> m_ui;             //!< Widget form.
+          std::auto_ptr<Ui::WellKnownMarkWidgetForm> m_ui;    //!< Widget form.
           te::qt::widgets::BasicFillWidget* m_fillWidget;     //!< Basic Fill Widget used to configure the mark fill element.
           te::qt::widgets::BasicStrokeWidget* m_strokeWidget; //!< Basic Stroke Widget used to configure the mark stroke element.
           te::se::Mark* m_mark;                               //!< Mark element that will be configured by this widget.
@@ -136,4 +136,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKWIDGET_H

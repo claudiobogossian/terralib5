@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/MarkDialog.h
+  \file terralib/qt/widgets/se/WellKnownMarkDialog.h
 
-  \brief A dialog used to build a mark element.
+  \brief A dialog used to build a well known mark element.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKDIALOG_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKDIALOG_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKDIALOG_H
 
 // TerraLib
 #include "../Config.h"
@@ -38,7 +38,7 @@
 #include <vector>
 
 // Forward declaraion
-namespace Ui { class MarkDialogForm; }
+namespace Ui { class WellKnownMarkDialogForm; }
 
 namespace te
 {
@@ -53,12 +53,12 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class MarkWidget;
+      class WellKnownMarkWidget;
 
       /*!
-        \class MarkDialog
+        \class WellKnownMarkDialog
 
-        \brief A dialog used to build a mark element.
+        \brief A dialog used to build a well known mark element.
                If you want to use this dialog, you can use commands like:
                <code>
                te::se::Mark* m = te::qt::widgets::MarkDialog::getMark(0, parent, "Title");
@@ -67,7 +67,7 @@ namespace te
                delete m;
                </code>
       */
-      class TEQTWIDGETSEXPORT MarkDialog : public QDialog
+      class TEQTWIDGETSEXPORT WellKnownMarkDialog : public QDialog
       {
         public:
 
@@ -76,11 +76,11 @@ namespace te
            */
           //@{
 
-          /*! \brief Constructs a mark dialog which is a child of parent, with widget flags set to f. */
-          MarkDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          /*! \brief Constructs a well known mark dialog which is a child of parent, with widget flags set to f. */
+          WellKnownMarkDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          ~MarkDialog();
+          ~WellKnownMarkDialog();
 
           //@}
 
@@ -112,12 +112,12 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::MarkDialogForm> m_ui;    //!< Dialog form.
-          te::qt::widgets::MarkWidget* m_markWidget; //!< Mark Widget used to configure the mak element.
+          std::auto_ptr<Ui::WellKnownMarkDialogForm> m_ui;    //!< Dialog form.
+          te::qt::widgets::WellKnownMarkWidget* m_markWidget; //!< Well Known Mark Widget used to configure the mak element.
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_MARKDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKDIALOG_H
