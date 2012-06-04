@@ -44,11 +44,6 @@ namespace te
      The use of a unit of measure is meant to encompass the means by which a 
      measured value is tied explicitly to its unit of measure.
      
-     According to the International System of Units (SI), a unit can be a base 
-     unit, meaning a well-defined unit which by convention are regarded as 
-     dimensionally idependent. Derived units are those formed by combining base 
-     units according to the algebraic relations linking the corresponding quantities.
-     
      Units of measure can be Base or Derived. Base units are well-defined units 
      which by convention are regarded as dimensionally independent. There is only 
      one Base Unit per type of measure.
