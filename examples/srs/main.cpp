@@ -39,34 +39,6 @@
 int main(int /*argc*/, char** /*argv*/)
 {
 // initialize Terralib support
-  te::common::UnitOfMeasure* m = new te::common::UnitOfMeasure(0,te::common::UnitOfMeasure::LengthMeasure);
-  m->setName("METER");
-  m->setSymbol("m");
-  std::vector<std::string> mNames;
-  mNames.push_back("METRE");  
-  te::common::UnitsOfMeasureManager::getInstance().insert(m,mNames);  
-
-  te::common::UnitOfMeasure* km = new te::common::UnitOfMeasure(1,te::common::UnitOfMeasure::LengthMeasure);
-  km->setName("KILOMETER");
-  km->setSymbol("km");
-  std::vector<std::string> kmNames;
-  kmNames.push_back("KILOMETRE");
-  km->setBaseUnitId(0);
-  km->setConversionFactors(0.001);
-  te::common::UnitsOfMeasureManager::getInstance().insert(km,kmNames);  
-
-  te::common::UnitOfMeasure* rad = new te::common::UnitOfMeasure(2,te::common::UnitOfMeasure::AngleMeasure);
-  rad->setName("RADIAN");
-  rad->setSymbol("rad");
-  te::common::UnitsOfMeasureManager::getInstance().insert(rad);  
-
-  te::common::UnitOfMeasure* deg = new te::common::UnitOfMeasure(3,te::common::UnitOfMeasure::AngleMeasure);
-  deg->setName("DEGREE");
-  deg->setSymbol("deg");
-  deg->setBaseUnitId(2);
-  deg->setConversionFactors(.0174532925199432958); 
-  te::common::UnitsOfMeasureManager::getInstance().insert(deg);  
-
 // It initializes all the data source drivers (see LoadModule.cpp)
   try
   {

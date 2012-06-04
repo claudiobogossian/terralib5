@@ -24,19 +24,39 @@
  */
 
 // TerraLib
-#include "UnitOfMeasure.h"
 #include "StringUtils.h"
+#include "UnitOfMeasure.h"
 
 // STL
+#include <cassert>
 #include <sstream> 
 
-te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, 
-                                         te::common::UnitOfMeasure::Type type)
-  : 
-    m_id(id),
-    m_type(type),
-    m_baseUnitId(id)
+te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol,
+                                         te::common::MeasureType type, const std::string& description):
+  m_id(id),  
+  m_symbol(symbol),
+  m_type(type),
+  m_description(description),
+  m_baseUnitId(id)
 {
+  m_name = te::common::Convert2UCase(name);
+}
+
+te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol, te::common::MeasureType type,
+                                         unsigned int baseUnitid,
+                                         double A, double B, double C , double D, const std::string& description):
+  m_id(id),
+  m_symbol(symbol),
+  m_type(type),
+  m_description(description),
+  m_baseUnitId(baseUnitid),
+  m_a(A),
+  m_b(B),
+  m_c(C),
+  m_d(D)
+{
+  assert((m_c+m_d) != 0);
+  m_name = te::common::Convert2UCase(name);
 }
 
 te::common::UnitOfMeasure::~UnitOfMeasure()
@@ -46,11 +66,6 @@ te::common::UnitOfMeasure::~UnitOfMeasure()
 unsigned int te::common::UnitOfMeasure::getId() const
 {
   return m_id;
-}
-
-void te::common::UnitOfMeasure::setName(const std::string& name)
-{
-  m_name = te::common::Convert2UCase(name);
 }
 
 const std::string& te::common::UnitOfMeasure::getName() const
@@ -68,79 +83,52 @@ const std::string& te::common::UnitOfMeasure::getDescription() const
   return m_description;
 }
 
-void te::common::UnitOfMeasure::setSymbol(const std::string& s)
-{
-  m_symbol = s;
-}
-
 const std::string& te::common::UnitOfMeasure::getSymbol() const
 {
   return m_symbol;
 }
 
-void te::common::UnitOfMeasure::setType(te::common::UnitOfMeasure::Type t)
-{
-  m_type = t;
-}
-
-te::common::UnitOfMeasure::Type te::common::UnitOfMeasure::getType() const
+te::common::MeasureType te::common::UnitOfMeasure::getType() const
 {
   return m_type;
 }
-
 
 bool te::common::UnitOfMeasure::isBaseUnit() const
 {
   return (m_id == m_baseUnitId);
 }
 
-void te::common::UnitOfMeasure::setBaseUnitId(unsigned int baseUnitId)
-{
-  m_baseUnitId = baseUnitId;
-}
 
 const unsigned int te::common::UnitOfMeasure::getBaseUnitId() const
 {
   return m_baseUnitId;
 }
 
-void te::common::UnitOfMeasure::setConversionFactors(double A, double B, double C, double D)
+
+void te::common::UnitOfMeasure::getConversionFactors(double& A, double& B, double& C, double& D)
 {
-  m_conversionFactors.resize(4);
-  m_conversionFactors[0] = A;
-  m_conversionFactors[1] = B;
-  m_conversionFactors[2] = C;
-  m_conversionFactors[3] = D;
+  A = m_a;
+  B = m_b;
+  C = m_c;
+  D = m_d;
 }
 
-bool te::common::UnitOfMeasure::getConversionFactors(double& A, double& B, double& C, double& D)
+double te::common::UnitOfMeasure::getConversionValue()
 {
-  if (!m_conversionFactors.empty())
-  {
-    A = m_conversionFactors[0];
-    B = m_conversionFactors[1];
-    C = m_conversionFactors[2];
-    D = m_conversionFactors[3];
-    return true;
-  }
-  return false;
+  return ((m_a+m_b)/(m_c+m_d));
 }
 
 std::string te::common::UnitOfMeasure::getWKT() const
 {
+  double convf = (m_a + m_b)/(m_c + m_d);
   std::string wkt;
   wkt = "UNIT[\"";
   wkt += this->getName();
   wkt += "\", ";
-  if (m_id != m_baseUnitId)
-  {
-    std::ostringstream sstr;
-    sstr.precision(10);
-    sstr << m_conversionFactors[0];
-    wkt += sstr.str();
-  }
-  else
-    wkt += "1";
+  std::ostringstream sstr;
+  sstr.precision(10);
+  sstr << convf;  
+  wkt += sstr.str();  
   wkt += "]";
   return wkt;
 }

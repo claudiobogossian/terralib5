@@ -33,11 +33,16 @@
 
 // STL
 #include <cassert>
+#include <algorithm>
 
 void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom)
 {
   assert(uom);
 
+  std::vector<UnitOfMeasure*>::const_iterator it = std::find(m_uoms.begin(),m_uoms.end(),uom);
+  if (it != m_uoms.end())
+    throw Exception(TR_COMMON("Unit already exists in the manager."));
+  
   m_uoms.push_back(uom);
   m_uomsIdxByName.insert(std::map<std::string, UnitOfMeasure*>::value_type(uom->getName(), uom));
 }
@@ -47,13 +52,20 @@ void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom,
 {
   assert(uom);
 
+  std::vector<UnitOfMeasure*>::const_iterator it = std::find(m_uoms.begin(),m_uoms.end(),uom);
+  if (it != m_uoms.end())
+    throw Exception(TR_COMMON("Unit already exists in the manager."));
+  
   m_uoms.push_back(uom);
   m_uomsIdxByName.insert(std::map<std::string, UnitOfMeasure*>::value_type(uom->getName(), uom));
 
   size_t size = alternativeNames.size();
 
   for(size_t i = 0; i < size; ++i)
-    m_uomsIdxByAlternativeName.insert(std::map<std::string, UnitOfMeasure*>::value_type(alternativeNames[i], uom));
+  {
+    std::string upName = te::common::Convert2UCase(alternativeNames[i]);
+    m_uomsIdxByAlternativeName.insert(std::map<std::string, UnitOfMeasure*>::value_type(upName, uom));
+  }
 }
 
 void te::common::UnitsOfMeasureManager::remove(UnitOfMeasure* uom)
@@ -64,7 +76,7 @@ void te::common::UnitsOfMeasureManager::remove(UnitOfMeasure* uom)
   std::map<std::string, UnitOfMeasure*>::iterator itIdxByName = m_uomsIdxByName.find(uom->getName());
 
   if(itIdxByName == m_uomsIdxByName.end())
-    throw Exception(TR_COMMON("Could not find the informed unit-of-measurement in the index by name."));
+    throw Exception(TR_COMMON("Could not find the informed unit of measure searching by its name."));
 
   m_uomsIdxByName.erase(itIdxByName);
 
@@ -99,7 +111,7 @@ void te::common::UnitsOfMeasureManager::remove(UnitOfMeasure* uom)
       return;
     }
 
-  throw Exception(TR_COMMON("Could not find the informed unit-of-measurement in the unit-of-measurement list."));
+  throw Exception(TR_COMMON("Could not find the informed unit of measure."));
 }
 
 te::common::UnitOfMeasure*
@@ -184,3 +196,41 @@ te::common::UnitsOfMeasureManager::UnitsOfMeasureManager()
 {
 }
 
+void te::common::UnitsOfMeasureManager::getAlternativeNames(UnitOfMeasure* uom,
+                                        std::vector<std::string>& altNames) const
+{
+  assert(uom);
+  std::map<std::string, UnitOfMeasure*>::const_iterator it = m_uomsIdxByAlternativeName.begin();
+  while (it != m_uomsIdxByAlternativeName.end()) 
+  {
+    if (it->second == uom) 
+      altNames.push_back(it->first);
+    ++it;
+  }
+}
+
+double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitFromName, 
+                                                        const std::string& unitToName) const
+{
+  assert(unitFromName.empty() == false);
+  assert(unitToName.empty() == false);
+  
+  UnitOfMeasure* uFrom = this->find(unitFromName);
+  UnitOfMeasure* uTo = this->find(unitToName);
+  
+  if (uFrom->getType() != uTo->getType())
+    throw Exception(TR_COMMON("There is not conversion between units for different types of measures."));
+
+  if (uFrom->getBaseUnitId() == uTo->getId()) // converting from derived to base
+  {
+    return (uFrom->getConversionValue());
+  }
+  else if (uTo->getBaseUnitId() == uFrom->getId())  // converting from base to derived
+  {
+    double a, b, c, d;
+    
+    uTo->getConversionFactors(a,b,c,d);
+    return ((b-d)/(c-a));
+  }
+  throw Exception(TR_COMMON("There is no known conversion."));
+}

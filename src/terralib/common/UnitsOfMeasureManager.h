@@ -27,8 +27,8 @@
 #define __TERRALIB_COMMON_INTERNAL_UNITSOFMEASUREMANAGER_H
 
 // TerraLib
+
 #include "Singleton.h"
-#include "Config.h"
 
 // STL
 #include <map>
@@ -39,17 +39,16 @@ namespace te
 {
   namespace common
   {
-// Forward declaration
     class UnitOfMeasure;
 
     /*!
       \class UnitsOfMeasureManager
 
-      \brief A singleton class for dealing with units-of-measurement.
+      \brief A singleton class for dealing with units of measure in the TerraLib environment.
       
-      Use this class to keep the loaded catalogs of Unit-of-measurements.
+      This class manages a unique catalogue of known units of measure within the TerraLib environment.
  
-      \sa UnitOfMeasure, BaseUnitOfMeasure
+      \sa UnitOfMeasure
      */
     class TECOMMONEXPORT UnitsOfMeasureManager : public te::common::Singleton<UnitsOfMeasureManager>
     {
@@ -57,160 +56,118 @@ namespace te
 
       public:
 
-        /** @name Accessor methods
-         *  Method used to access the data stored in this manager.
-         */
-        //@{
+      /*!
+        \brief Inserts a new unit of measure to be managed.
+        \param uom Pointer to unit of measure to be managed. Shouldn't be null. The manager takes the pointer ownership.
+        \exception Exception If the unit is already managed.
+      */
+      void insert(UnitOfMeasure* uom);
 
-        /*!
-          \brief It inserts a new unit-of-measurement that will be managed by UnitsOfMeasureManager.
+      /*!
+        \brief Inserts a new unit of measure to be managed and its alternative names.
+        \param uom              Pointer to unit of measure to be managed. Shouldn't be null. The manager takes the pointer ownership.
+        \param alternativeNames The list of alternative (or auxiliary) names for identifying an unit of measure.
+        \exception Exception If the unit is already managed.
+      */
+      void insert(UnitOfMeasure* uom, const std::vector<std::string>& alternativeNames);
 
-          \param uom The unit-of-measurement to be managed by this manager.
+      /*!
+        \brief Removes a unit of measure from the manager.
+        \param uom Pointer to unit of measure to be managed. Shouldn't be null. The manager will delete the pointer.
+        \exception te::common::Exception If the unit is unknown to the manager.
+      */
+      void remove(UnitOfMeasure* uom);
 
-          \exception Exception If the unit-of-measurement already exists it will raises an exception.
+      /*!
+        \brief Returns a unit of measure identified by its identificaton.
+        \param id The unit identification.
+        \return A pointer unit of measure if found; null pointer otherwise.
+        \note The manager maintains the ownership of the returned pointer.
+      */
+      UnitOfMeasure* findById(unsigned int id) const;
 
-          \note Don't free the resources used by the unit-of-measurement, the manager will take the ownership of it.
+      /*!
+        \brief Returns a unit of measure identified by its name.
+        \param id The unit identification.
+        \return A pointer unit of measure if found; null pointer otherwise.
+        \note The manager maintains the ownership of the returned pointer.
+      */
+      UnitOfMeasure* findByName(const std::string& name) const;
+      
+      /*!
+       \brief Returns a unit of measure identified by one of its alternative names.
+       \param id The unit identification.
+       \return A pointer unit of measure if located; null pointer otherwise.\note The manager maintains the ownership of the returned pointer.
+      */
+      UnitOfMeasure* findByAlternativeName(const std::string& name) const;
 
-          \note Don't inform a NULL pointer.
-         */
-        void insert(UnitOfMeasure* uom);
+      /*!
+       \brief Returns a unit of measure identified by its official name or one of its alternative names.
+       \param id The unit identification.
+       \return A pointer unit of measure if located; null pointer otherwise.
+       \note The manager maintains the ownership of the returned pointer.
+      */
+      UnitOfMeasure* find(const std::string& name) const;
 
-        /*!
-          \brief It inserts a new unit-of-measurement that will be managed by UnitsOfMeasureManager.
+      /*!
+       \brief Returns a pair of iterators over the managed units of measure.
+       \return A pair of iterators over the unit of measure of this manager where pair.first will be
+              the beginning and pair.second will be the end iterator.
+      */
+      std::pair<std::vector<UnitOfMeasure*>::const_iterator,
+                std::vector<UnitOfMeasure*>::const_iterator> getIterator() const;
 
-          It also builds an auxiliary index for the unit-of-measurement based on
-          its auxiliary (or alternative) names.
+      /*! \brief Removes all units from the catalogue. */
+      void clear();
 
-          \param uom              The unit-of-measurement to be managed by this manager.
-          \param alternativeNames The list of alternative names (or auxiliary) for identifying an unit-of-measurement.
-
-          \exception Exception If the unit-of-measurement already exists it will raises an exception.
-
-          \note Don't free the resources used by the unit-of-measurement, the manager will take the ownership of it.
-
-          \note Don't inform a NULL pointer.
-         */
-        void insert(UnitOfMeasure* uom, const std::vector<std::string>& alternativeNames);
-
-        /*!
-          \brief It removes the unit-of-measurement from the system.
-
-          \param uom The unit-of-measurement to be removed.
-
-          \exception Exception If the unit-of-measurement doesn't exist it will raises an exception.
-
-          \note The memory pointed by the unit-of-measurement(uom) will be deallocated. Don't reference it anymore.
-
-          \note Don't inform a NULL pointer.
-         */
-        void remove(UnitOfMeasure* uom);
-
-        /*!
-          \brief It returns the unit-of-measurement identified by id.
-
-          \param id The id of the unit-of-measurement we are looking for.
-
-          \return A pointer to an unit-of-measurement (don't free the pointer).
-
-          \note It doesn't check the index range.
-         */
-        UnitOfMeasure* findById(unsigned int id) const;
-
-        /*!
-          \brief It returns the unit-of-measurement identified by a given name, or NULL if none is found.
-
-          \param name The name of the unit-of-measurement we are looking for.
-
-          \return A pointer to an unit-of-measurement (don't free the pointer), or NULL if none is found.
-         */
-        UnitOfMeasure* findByName(const std::string& name) const;
-
-        /*!
-          \brief It returns the unit-of-measurement identified by an alternative name, or NULL if none is found.
-
-          \param name The alternative name of the unit-of-measurement we are looking for.
-
-          \return A pointer to an unit-of-measurement (don't free the pointer) or NULL if none is found.
-         */
-        UnitOfMeasure* findByAlternativeName(const std::string& name) const;
-
-        /*!
-          \brief It returns the unit-of-measurement identified by a given name that can be the official name, or an alternative name, or it returns NULL if none is found.
-
-          \param name The official name, or the alternative name of the unit-of-measurement we are looking for.
-
-          \return A pointer to an unit-of-measurement (don't free the pointer) or NULL if none is found.
-         */
-        UnitOfMeasure* find(const std::string& name) const;
-
-        /*!
-          \brief It returns a pair of iterators over the unit-of-measurement of this manager.
-
-          \return A pair of iterators over the unit-of-measurement of this manager where pair.first will be
-                  the beginning and pair.second will be the end iterator.
-         */
-        std::pair<std::vector<UnitOfMeasure*>::const_iterator,
-                  std::vector<UnitOfMeasure*>::const_iterator> getIterator() const;
-
-        /*! \brief It unloads all unit-of-measurement managed by UnitsOfMeasureManager. */
-        void clear();
-
-        //@}
-
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
-        /*! \brief Destructor. */
-        ~UnitsOfMeasureManager();
-
-        //@}
+      /*! \brief Destructor. */
+      ~UnitsOfMeasureManager();
+      
+      /*!
+       \brief Retrieves the alternative names for a unit of measure.
+       \param uom Pointer to the unit of measure. Shouldn't be null;
+       \param altNames Reference to a vector of strings to return the alternative names (output).
+       */
+      void getAlternativeNames(UnitOfMeasure* uom,std::vector<std::string>& altNames) const;
+      
+      /*!
+       \brief Calculates a multiplicative factor to convert from a given unit to its base unit and vice-versa.
+       \param unitFromName  A unit of measure name.
+       \param unitToName    The name of unit to be converted to.
+       \returns A multiplicative factor to convert from a given unit to another.
+       \exception Exception If the conversion is not possible.
+       */
+      double getConversion(const std::string& unitFromName, const std::string& unitToName) const;
 
       protected:
-
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
-        /*! \brief It initializes the Singleton. */
-        UnitsOfMeasureManager();
-
-        //@}
+      
+      /*! \brief It initializes the Singleton. */
+      UnitsOfMeasureManager();
 
       private:
 
-        /** @name Copy Constructor and Assignment Operator
-         *  Copy constructor and assignment operator not allowed.
-         */
-        //@{
+      /*!
+       \brief Copy constructor not allowed.
+       
+       \param rhs The right-hand-side copy that would be used to copy from.
+      */
+      UnitsOfMeasureManager(const UnitsOfMeasureManager& rhs);
 
-        /*!
-          \brief Copy constructor not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-         */
-        UnitsOfMeasureManager(const UnitsOfMeasureManager& rhs);
-
-        /*!
-          \brief Assignment operator not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-
-          \return A reference to this object.
-         */
-        UnitsOfMeasureManager& operator=(const UnitsOfMeasureManager& rhs);
-
-        //@}
+      /*!
+       \brief Assignment operator not allowed.
+       
+       \param rhs The right-hand-side copy that would be used to copy from.
+       
+       \return A reference to this object.
+      */
+      UnitsOfMeasureManager& operator=(const UnitsOfMeasureManager& rhs);
 
       private:
 
-        std::vector<UnitOfMeasure*> m_uoms;                                 //!< This is the list of all system's unit-of-measurement loaded.
-        std::map<std::string, UnitOfMeasure*> m_uomsIdxByName;              //!< An index from unit-of-measurement's name to unit-of-measurement instance (note: we can not have duplicated names).
-        std::map<std::string, UnitOfMeasure*> m_uomsIdxByAlternativeName;   //!< An index from unit-of-measurement's alternative name to unit-of-measurement instance (note: we can not have duplicated alternative names).
-    };
-
+        std::vector<UnitOfMeasure*> m_uoms;                                 //!< This is the list of all system's unit of measure loaded.
+        std::map<std::string, UnitOfMeasure*> m_uomsIdxByName;              //!< An index from unit of measure's name to unit of measure instance (note: we can not have duplicated names).
+        std::map<std::string, UnitOfMeasure*> m_uomsIdxByAlternativeName;   //!< An index from unit of measure's alternative name to unit of measure instance (note: we can not have duplicated alternative names).
+    }; 
   } // end namespace common
 }   // end namespace te
 
