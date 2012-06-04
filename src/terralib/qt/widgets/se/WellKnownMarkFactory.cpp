@@ -21,7 +21,7 @@
   \file terralib/qt/widgets/WellKnownMarkFactory.cpp
 
   \brief This is the concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
- */
+*/
 
 // TerraLib
 #include "../../../common/StringUtils.h"
@@ -37,7 +37,7 @@
 // Factory key
 std::string te::qt::widgets::WellKnownMarkFactory::sm_factoryKey(""); // Default Mark Factory
 
-// Global factory.
+// Global factory
 te::qt::widgets::WellKnownMarkFactory* te::qt::widgets::WellKnownMarkFactory::sm_factory(0);
 
 // MarkMap::<name->MarkType>
