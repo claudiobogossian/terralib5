@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/MarkWidget.cpp
+  \file terralib/qt/widgets/se/WellKnownMarkWidget.cpp
 
-  \brief A widget used to build a mark element.
+  \brief A widget used to build a well known mark element.
 */
 
 // TerraLib
@@ -28,15 +28,15 @@
 #include "../../../se/Mark.h"
 #include "BasicFillWidget.h"
 #include "BasicStrokeWidget.h"
-#include "ui_MarkWidgetForm.h"
-#include "MarkWidget.h"
+#include "ui_WellKnownMarkWidgetForm.h"
+#include "WellKnownMarkWidget.h"
 
 // STL
 #include <cassert>
 
-te::qt::widgets::MarkWidget::MarkWidget(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::WellKnownMarkWidget::WellKnownMarkWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::MarkWidgetForm),
+    m_ui(new Ui::WellKnownMarkWidgetForm),
     m_mark(new te::se::Mark)
 {
   m_ui->setupUi(this);
@@ -73,12 +73,12 @@ te::qt::widgets::MarkWidget::MarkWidget(QWidget* parent, Qt::WindowFlags f)
   connect(m_ui->m_strokeGroupBox, SIGNAL(toggled(bool)), this, SLOT(onStrokeGroupBoxToggled(bool)));
 }
 
-te::qt::widgets::MarkWidget::~MarkWidget()
+te::qt::widgets::WellKnownMarkWidget::~WellKnownMarkWidget()
 {
   delete m_mark;
 }
 
-void te::qt::widgets::MarkWidget::setMark(const te::se::Mark* mark)
+void te::qt::widgets::WellKnownMarkWidget::setMark(const te::se::Mark* mark)
 {
   assert(mark);
 
@@ -89,12 +89,12 @@ void te::qt::widgets::MarkWidget::setMark(const te::se::Mark* mark)
   updateUi();
 }
 
-te::se::Mark* te::qt::widgets::MarkWidget::getMark() const
+te::se::Mark* te::qt::widgets::WellKnownMarkWidget::getMark() const
 {
   return m_mark->clone();
 }
 
-void te::qt::widgets::MarkWidget::updateUi()
+void te::qt::widgets::WellKnownMarkWidget::updateUi()
 {
   const std::string* name = m_mark->getWellKnownName();
   assert(name); // TODO: Exception?
@@ -123,19 +123,19 @@ void te::qt::widgets::MarkWidget::updateUi()
     m_ui->m_fillGroupBox->setChecked(false);
 }
 
-void te::qt::widgets::MarkWidget::onMarkTypeComboBoxCurrentIndexChanged(const QString& currentText)
+void te::qt::widgets::WellKnownMarkWidget::onMarkTypeComboBoxCurrentIndexChanged(const QString& currentText)
 {
   m_mark->setWellKnownName(new std::string(currentText.toStdString()));
   emit markChanged();
 }
 
-void te::qt::widgets::MarkWidget::onStrokeChanged()
+void te::qt::widgets::WellKnownMarkWidget::onStrokeChanged()
 {
   m_mark->setStroke(m_strokeWidget->getStroke());
   emit markChanged();
 }
 
-void te::qt::widgets::MarkWidget::onStrokeGroupBoxToggled(bool on)
+void te::qt::widgets::WellKnownMarkWidget::onStrokeGroupBoxToggled(bool on)
 {
   if(on == false)
     m_mark->setStroke(0);
@@ -144,13 +144,13 @@ void te::qt::widgets::MarkWidget::onStrokeGroupBoxToggled(bool on)
   emit markChanged();
 }
 
-void te::qt::widgets::MarkWidget::onFillChanged()
+void te::qt::widgets::WellKnownMarkWidget::onFillChanged()
 {
   m_mark->setFill(m_fillWidget->getFill());
   emit markChanged();
 }
 
-void te::qt::widgets::MarkWidget::onFillGroupBoxToggled(bool on)
+void te::qt::widgets::WellKnownMarkWidget::onFillGroupBoxToggled(bool on)
 {
   if(on == false)
     m_mark->setFill(0);

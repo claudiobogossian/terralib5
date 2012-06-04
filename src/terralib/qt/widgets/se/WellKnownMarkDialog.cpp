@@ -18,37 +18,37 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/MarkDialog.cpp
+  \file terralib/qt/widgets/se/WellKnownMarkDialog.cpp
 
-  \brief A dialog used to build a mark element.
+  \brief A dialog used to build a well known mark element.
 */
 
 // TerraLib
-#include "ui_MarkDialogForm.h"
-#include "MarkDialog.h"
-#include "MarkWidget.h"
+#include "ui_WellKnownMarkDialogForm.h"
+#include "WellKnownMarkDialog.h"
+#include "WellKnownMarkWidget.h"
 
-te::qt::widgets::MarkDialog::MarkDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::WellKnownMarkDialog::WellKnownMarkDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::MarkDialogForm)
+    m_ui(new Ui::WellKnownMarkDialogForm)
 {
   m_ui->setupUi(this);
 
   // Mark Widget
-  m_markWidget = new te::qt::widgets::MarkWidget(this);
+  m_markWidget = new te::qt::widgets::WellKnownMarkWidget(this);
 
   // Adjusting...
   QGridLayout* markLayout = new QGridLayout(m_ui->m_markWidgetFrame);
   markLayout->addWidget(m_markWidget);
 }
 
-te::qt::widgets::MarkDialog::~MarkDialog()
+te::qt::widgets::WellKnownMarkDialog::~WellKnownMarkDialog()
 {
 }
 
-te::se::Mark* te::qt::widgets::MarkDialog::getMark(const te::se::Mark* initial, QWidget* parent, const QString& title)
+te::se::Mark* te::qt::widgets::WellKnownMarkDialog::getMark(const te::se::Mark* initial, QWidget* parent, const QString& title)
 {
-  MarkDialog dlg(parent);
+  WellKnownMarkDialog dlg(parent);
   
   if(!title.isEmpty())
     dlg.setWindowTitle(title);
@@ -62,7 +62,7 @@ te::se::Mark* te::qt::widgets::MarkDialog::getMark(const te::se::Mark* initial, 
   return 0;
 }
 
-te::se::Mark* te::qt::widgets::MarkDialog::getMark() const
+te::se::Mark* te::qt::widgets::WellKnownMarkDialog::getMark() const
 {
   return m_markWidget->getMark();
 }

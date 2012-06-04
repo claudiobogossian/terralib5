@@ -109,6 +109,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		optimized terralib_raster
 		optimized terralib_se
 		optimized terralib_srs
+		optimized terralib_rp
 		optimized terralib_xlink
 		debug     terralib_annotationtext_d
 		debug     terralib_color_d
@@ -121,6 +122,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		debug     terralib_raster_d
 		debug     terralib_se_d
 		debug     terralib_srs_d
+		debug     terralib_rp_d
 		debug     terralib_xlink_d)
 	
 link_libraries(${DEP_LIBS})
@@ -134,7 +136,7 @@ file(GLOB DATASET_SRCS  ${SRCDIR}/widgets/dataset/*.cpp)
 file(GLOB LAYER_SRCS    ${SRCDIR}/widgets/layer/*.cpp)
 file(GLOB PROGRESS_SRCS ${SRCDIR}/widgets/progress/*.cpp)
 file(GLOB PROPERTY_SRCS ${SRCDIR}/widgets/property/*.cpp)
-file(GLOB RP_SRCS ${SRCDIR}/widgets/rp/*.cpp)
+file(GLOB RP_SRCS 		${SRCDIR}/widgets/rp/*.cpp)
 file(GLOB SE_SRCS  		${SRCDIR}/widgets/se/*.cpp)
 file(GLOB HELP_SRCS 	${SRCDIR}/widgets/help/*.cpp)
 file(GLOB UTILS_SRCS 	${SRCDIR}/widgets/utils/*.cpp)
@@ -148,7 +150,7 @@ file(GLOB DATASET_HDRS  ${SRCDIR}/widgets/dataset/*.h)
 file(GLOB LAYER_HDRS    ${SRCDIR}/widgets/layer/*.h)
 file(GLOB PROGRESS_HDRS ${SRCDIR}/widgets/progress/*.h)
 file(GLOB PROPERTY_HDRS ${SRCDIR}/widgets/property/*.h)
-file(GLOB RP_HDRS ${SRCDIR}/widgets/rp/*.h)
+file(GLOB RP_HDRS 		${SRCDIR}/widgets/rp/*.h)
 file(GLOB SE_HDRS       ${SRCDIR}/widgets/se/*.h)
 file(GLOB HELP_HDRS 	${SRCDIR}/widgets/help/*.h)
 file(GLOB UTILS_HDRS 	${SRCDIR}/widgets/utils/*.h)
@@ -162,7 +164,7 @@ source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
 source_group("widgets\\progress\\Source Files" FILES ${PROGRESS_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
-source_group("widgets\\rp\\Source Files" FILES ${PRP_SRCS})
+source_group("widgets\\rp\\Source Files" 	   FILES ${RP_SRCS})
 source_group("widgets\\se\\Source Files"       FILES ${SE_SRCS})
 source_group("widgets\\help\\Source Files"	   FILES ${HELP_SRCS})
 source_group("widgets\\utils\\Source Files"	   FILES ${UTILS_SRCS})
@@ -174,7 +176,7 @@ source_group("widgets\\dataset\\Header Files"  FILES ${DATASET_HDRS})
 source_group("widgets\\layer\\Header Files"    FILES ${LAYER_HDRS})
 source_group("widgets\\progress\\Header Files" FILES ${PROGRESS_HDRS})
 source_group("widgets\\property\\Header Files" FILES ${PROPERTY_HDRS})
-source_group("widgets\\rp\\Header Files" FILES ${RP_HDRS})
+source_group("widgets\\rp\\Header Files"       FILES ${RP_HDRS})
 source_group("widgets\\se\\Header Files"       FILES ${SE_HDRS})
 source_group("widgets\\help\\Header Files" 	   FILES ${HELP_HDRS})
 source_group("widgets\\utils\\Header Files"    FILES ${UTILS_HDRS})
@@ -216,10 +218,10 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
-   ${SRCDIR}/widgets/rp/SegmenterDialog.h
+     ${SRCDIR}/widgets/rp/SegmenterDialog.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
-	 ${SRCDIR}/widgets/se/MarkWidget.h
+	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
@@ -227,7 +229,6 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
 	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h)
-
 
 # Select the FORMS widgets     
 file(GLOB FORMS
@@ -238,7 +239,7 @@ file(GLOB FORMS
      ${SRCDIR}/widgets/layer/*.ui
      ${SRCDIR}/widgets/property/*.ui
 	 ${SRCDIR}/widgets/utils/ui/*.ui
-   ${SRCDIR}/widgets/rp/ui/*.ui
+	 ${SRCDIR}/widgets/rp/ui/*.ui
 	 ${SRCDIR}/widgets/se/ui/*.ui)
 
 list(REMOVE_ITEM WIDGETS_HDRS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
@@ -271,7 +272,7 @@ add_library(${LIB_NAME} SHARED
             ${LAYER_SRCS}    ${LAYER_HDRS}
 			${PROGRESS_SRCS} ${PROGRESS_HDRS}
             ${PROPERTY_SRCS} ${PROPERTY_HDRS}
-            ${RP_SRCS} ${RP_HDRS}
+            ${RP_SRCS}       ${RP_HDRS}
 			${SE_SRCS}  	 ${SE_HDRS}
             ${HELP_SRCS}     ${HELP_HDRS}
 			${UTILS_SRCS}    ${UTILS_HDRS}
@@ -291,6 +292,7 @@ add_dependencies(${PROJ_NAME}
 	               terralib_raster
 				   terralib_se
                    terralib_srs
+				   terralib_rp
 	               terralib_xlink)
                  
 if(WIN32)
