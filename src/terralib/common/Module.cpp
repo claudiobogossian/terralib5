@@ -24,11 +24,13 @@
 */
 
 // TerraLib
+#include "Enums.h"
 #include "LibraryManager.h"
 #include "Logger.h"
 #include "Module.h"
 #include "TerraLib.h"
 #include "Translator.h"
+#include "UnitOfMeasure.h"
 #include "UnitsOfMeasureManager.h"
 
 // STL
@@ -108,6 +110,24 @@ te::common::Module::Module()
 
 // initialize the singleton UnitsOfMeasureManager
   UnitsOfMeasureManager::getInstance();
+  std::vector<std::string> altnames;
+  altnames.push_back("meter");
+  altnames.push_back("metro");
+  te::common::UnitOfMeasure* umeter = new te::common::UnitOfMeasure(te::common::UOM_Metre,"metre","m",te::common::Length,"SI standard unit for linear measures");
+  te::common::UnitsOfMeasureManager::getInstance().insert(umeter, altnames);
+  
+  te::common::UnitOfMeasure* ukmeter = new te::common::UnitOfMeasure(te::common::UOM_Kilometre,"kilometre","km",te::common::Length, te::common::UOM_Metre,1000);
+  te::common::UnitsOfMeasureManager::getInstance().insert(ukmeter);
+  
+  te::common::UnitOfMeasure* uradian = new te::common::UnitOfMeasure(te::common::UOM_Radian,"radian","rad",te::common::Angle,"SI standard unit for angular measures");
+  te::common::UnitsOfMeasureManager::getInstance().insert(uradian);
+  
+  te::common::UnitOfMeasure* udegree = new te::common::UnitOfMeasure(te::common::UOM_Degree,"degree","deg",te::common::Angle,te::common::UOM_Radian,3.141592653589,0,0,180);
+  te::common::UnitsOfMeasureManager::getInstance().insert(udegree);
+  
+  te::common::UnitOfMeasure* uunity = new te::common::UnitOfMeasure(te::common::UOM_Unity,"unity","unity",te::common::Scale,"EPSG standard unit for scale measures");
+  te::common::UnitsOfMeasureManager::getInstance().insert(uunity);
+  
 
 // let's start the logger if the developer wants TerraLib to make it automatically during static initialization
 #if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && TE_LOGGER_DO_STATIC_INITIALIZATION
