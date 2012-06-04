@@ -4,7 +4,7 @@
 #include <terralib/se.h>
 #include <terralib/qt/widgets/se/BasicFillDialog.h>
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
-#include <terralib/qt/widgets/se/MarkDialog.h>
+#include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
 
 // Qt
 #include <QtGui/QApplication>
@@ -36,15 +36,15 @@ void SymbologyWidgets()
   delete fill;
   delete initialFill;
 
-  // Creates a new mark
-  te::se::Mark* mark = te::qt::widgets::MarkDialog::getMark(0, 0, title);
+  // Creates a new well known mark
+  te::se::Mark* mark = te::qt::widgets::WellKnownMarkDialog::getMark(0, 0, title);
   delete mark;
 
   // Creates a new mark based on pre-existed
   te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "3", "0.5");
   te::se::Fill* markFill = te::se::CreateFill("#FFFF00", "1.0");
   te::se::Mark* initialMark = te::se::CreateMark("star", markStroke, markFill);
-  mark = te::qt::widgets::MarkDialog::getMark(initialMark, 0, title);
+  mark = te::qt::widgets::WellKnownMarkDialog::getMark(initialMark, 0, title);
   delete mark;
   delete initialMark;
 }

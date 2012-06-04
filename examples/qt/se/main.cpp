@@ -38,9 +38,9 @@ int main(int /*argc*/, char** /*argv*/)
 
   try
   {
-    RasterSymbologyWidgets();
+    SymbologyWidgets();
 
-    //SymbologyWidgets();
+    RasterSymbologyWidgets();
   }
   catch(const std::exception& e)
   {

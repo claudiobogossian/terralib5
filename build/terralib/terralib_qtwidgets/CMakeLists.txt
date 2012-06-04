@@ -221,7 +221,7 @@ file(GLOB HDRS_TO_MOC
      ${SRCDIR}/widgets/rp/SegmenterDialog.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
-	 ${SRCDIR}/widgets/se/MarkWidget.h
+	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
