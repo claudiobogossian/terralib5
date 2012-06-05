@@ -20,22 +20,26 @@
 /*!
   \file Config.h
 
-  \brief Global configuration flags for the TerraLib Examples module.
+  \brief Global configuration flags for the TerraLib QT RP Examples.
  */
 
-#ifndef __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
-#define __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_EXAMPLES_QT_RP_INTERNAL_CONFIG_H
+#define __TERRALIB_EXAMPLES_QT_RP_INTERNAL_CONFIG_H
 
-// TerraLib
-#include <terralib/Config.h>
+#include "../../Config.h"
 
-/*!
-  \def TE_DATA_EXAMPLE_LOCALE
-
-  \brief This flag tells where is the base folder for the data used in the examples.
- */
-#ifndef TE_DATA_EXAMPLE_LOCALE
-  #define TE_DATA_EXAMPLE_LOCALE "."
+#if TE_USE_GDAL
+#define TE_EXAMPLE_USE_GDAL 1
 #endif
 
-#endif  // __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
+#if TE_USE_OGR
+#define TE_EXAMPLE_USE_OGR 1
+#endif
+
+#if TE_USE_GRIB
+#define TE_EXAMPLE_USE_GRIB 0
+#endif
+
+#define TE_EXAMPLE_USE_MEMORY 1
+
+#endif

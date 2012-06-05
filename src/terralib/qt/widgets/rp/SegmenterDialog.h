@@ -30,8 +30,6 @@
 #include "../Config.h"
 #include "../../../raster/Raster.h"
 
-#include "ui_SegmenterForm.h"
-
 // Qt
 #include <QtGui/QDialog>
 
@@ -42,10 +40,16 @@
 
 // Boost
 #include <boost/shared_ptr.hpp>
+#include <terralib/qt/widgets/se/BasicFillDialog.h>
+
+// Forward user interface declaration
+namespace Ui
+{
+  class SegmenterForm;
+}
 
 namespace te
 {
-
   namespace qt
   {
     namespace widgets
@@ -55,7 +59,7 @@ namespace te
 
         \brief A dialog used to execute image segmentation.
       */
-      class TEQTWIDGETSEXPORT SegmenterDialog : public QDialog, Ui::SegmenterForm
+      class TEQTWIDGETSEXPORT SegmenterDialog : public QDialog
       {
         Q_OBJECT
         
@@ -92,6 +96,7 @@ namespace te
 
         private:
 
+          Ui::SegmenterForm* m_uiPtr; //! User interface.
           te::rst::Raster const* m_inputRasterPtr; //! Input raster pointer.
           std::string m_outpuRasterDSType; //! Output raster data source type (as described in te::raster::RasterFactory ).
           std::map< std::string, std::string > m_outpuRasterInfo; //! The necessary information to create the raster (as described in te::raster::RasterFactory). 

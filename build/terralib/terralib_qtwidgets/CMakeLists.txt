@@ -164,7 +164,7 @@ source_group("widgets\\dataset\\Source Files"  FILES ${DATASET_SRCS})
 source_group("widgets\\layer\\Source Files"    FILES ${LAYER_SRCS})
 source_group("widgets\\progress\\Source Files" FILES ${PROGRESS_SRCS})
 source_group("widgets\\property\\Source Files" FILES ${PROPERTY_SRCS})
-source_group("widgets\\rp\\Source Files" 	   FILES ${RP_SRCS})
+source_group("widgets\\rp\\Source Files" 	     FILES ${RP_SRCS})
 source_group("widgets\\se\\Source Files"       FILES ${SE_SRCS})
 source_group("widgets\\help\\Source Files"	   FILES ${HELP_SRCS})
 source_group("widgets\\utils\\Source Files"	   FILES ${UTILS_SRCS})
@@ -218,7 +218,7 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
-     ${SRCDIR}/widgets/rp/SegmenterDialog.h
+   ${SRCDIR}/widgets/rp/SegmenterDialog.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
