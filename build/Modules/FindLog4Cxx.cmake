@@ -25,10 +25,11 @@
 # LOG4CXX_LIBRARY_DEBUG - log4cxx debug library
 # LOG4CXX_LIBRARY_RELEASE - log4cxx release library
 
-find_path(LOG4CXX_INCLUDE_DIR log4cxx/logger.h
+find_path(LOG4CXX_INCLUDE_DIR NAMES log4cxx.h 
           PATHS /include/log4cxx /usr/include /usr/include/log4cxx
       	        /usr/local/include/log4cxx
-                "$ENV{TERRALIB_DEP_MSVC2010}/log4cxx/include")
+          PATH_SUFFIXES log4cxx log4cxx/include/log4cxx
+          )
                 
 if(WIN32)
   find_library(LOG4CXX_LIBRARY_DEBUG
@@ -39,26 +40,25 @@ if(WIN32)
                NAMES log4cxx
                PATHS "$ENV{TERRALIB_DEP_MSVC2010}/log4cxx/win32/release")
                
-  if(LOG4CXX_LIBRARY_DEBUG AND LOG4CXX_LIBRARY_RELEASE)
-    set(LOG4CXX_LIBRARY TRUE)
-  endif(LOG4CXX_LIBRARY_DEBUG AND LOG4CXX_LIBRARY_RELEASE)
+  checkLibNames("LOG4CXX")
+
 else(WIN32)
   find_library(LOG4CXX_LIBRARY
                NAMES log4cxx
                PATHS /usr/local/lib /lib /usr/lib)
 endif(WIN32)                   
 
+set(Log4cxx_FOUND FALSE)
+
 if(LOG4CXX_INCLUDE_DIR AND LOG4CXX_LIBRARY)
   set(Log4cxx_FOUND TRUE)
-  #remove last /log4cxx string
-  #STRING(REGEX REPLACE "/log4cxx" "" LOG4CXX_INCLUDE_DIR_SUP_LEVEL ${LOG4CXX_INCLUDE_DIR})
-  #SET (LOG4CXX_INCLUDE_DIR ${LOG4CXX_INCLUDE_DIR_SUP_LEVEL} ${LOG4CXX_INCLUDE_DIR} )
-  if(NOT Log4cxx_FIND_QUIETLY)
-   message(STATUS "Found log4cxx: ${LOG4CXX_LIBRARY_DEBUG},${LOG4CXX_LIBRARY_RELEASE}")
-  endif(NOT Log4cxx_FIND_QUIETLY)
-else(LOG4CXX_INCLUDE_DIR AND LOG4CXX_LIBRARY)
-  set(Log4cxx_FOUND FALSE CACHE BOOL "Not found log4cxx library")
-  message(STATUS "NOT Found log4cxx, disabling it")
+  message(STATUS "-- Found log4cxx library")
+else()
+  if(Log4cxx_FIND_REQUIRED)
+    message(FATAL_ERROR "-- Error: log4cxx required but NOT found.")
+  else()
+    message(STATUS "-- NOT Found log4cxx, disabling it")
+  endif()
 endif(LOG4CXX_INCLUDE_DIR AND LOG4CXX_LIBRARY)
 
-mark_as_advanced(LOG4CXX_INCLUDE_DIR LOG4CXX_LIBRARY_DEBUG LOG4CXX_LIBRARY_RELEASE LOG4CXX_LIBRARY)
+mark_as_advanced(LOG4CXX_INCLUDE_DIR LOG4CXX_LIBRARY)

@@ -11,23 +11,21 @@
 # Find path - tries to find *.h in paths hard-coded by the script
 find_path(PROJ4_INCLUDE_DIR org_proj4_Projections.h
           PATHS "$ENV{TERRALIB_DEP_MSVC2010}/proj4/include"
-          "/usr/local/include" "/usr/include")
+          "/usr/local/include" "/usr/include" 
+          PATH_SUFFIXES "proj4")
 
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 if(WIN32)
   find_library(PROJ4_LIBRARY_RELEASE
                NAMES proj_i
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/proj4/lib/win32/release")
+               )
 
   find_library(PROJ4_LIBRARY_DEBUG
                NAMES proj_i
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/proj4/lib/win32/debug")       
+               )
 
-  if(PROJ4_LIBRARY_RELEASE AND PROJ4_LIBRARY_DEBUG)
-    set(PROJ4_LIBRARY 
-	      optimized ${PROJ4_LIBRARY_RELEASE}	
-	      debug     ${PROJ4_LIBRARY_DEBUG})
-  endif(PROJ4_LIBRARY_RELEASE AND PROJ4_LIBRARY_DEBUG)
+  checkLibNames("PROJ4")
+  
 else(WIN32)
   find_library(PROJ4_LIBRARY
                NAME proj
@@ -37,9 +35,13 @@ endif(WIN32)
 # Export include and library path for linking with other libraries
 if(PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY)
   set(PROJ4_FOUND TRUE)
-  message(STATUS "Found Proj4 library")
+  message(STATUS "-- Found Proj4 library")
 else(PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY)
-	message(FATAL_ERROR "Could NOT find PROJ4 library")
+  if(Proj4_FIND_REQUIRED)
+    message(FATAL_ERROR "-- Error: PROJ4 required but NOT found.")
+  else()
+    message(STATUS "-- Could NOT find PROJ4 library.")
+  endif()
 endif(PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY)
 
-mark_as_advanced(PROJ4_FOUND PROJ4_INCLUDE_DIR PROJ4_LIBRARY PROJ4_LIBRARY_RELEASE PROJ4_LIBRARY_DEBUG)
+mark_as_advanced(PROJ4_INCLUDE_DIR PROJ4_LIBRARY_RELEASE PROJ4_LIBRARY_DEBUG)

@@ -16,14 +16,17 @@ find_library(CSQL_LIBRARY
              PATHS "$ENV{TERRALIB_DEP_MSVC2010}/csql"
              /usr/local/lib/csql /lib /usr/lib)
                               
-if(CSQL_INCLUDE_DIR AND CSQL_LIBRARY)
-   set(CSQL_FOUND TRUE)
-endif(CSQL_INCLUDE_DIR AND CSQL_LIBRARY)
+set(CSQL_FOUND FALSE)
 
-if(CSQL_FOUND)
-    message(STATUS "Found CSQL")
-else(CSQL_FOUND)
-    message(FATAL_ERROR "Could not find CSQL")
-endif(CSQL_FOUND)
+if(CSQL_INCLUDE_DIR AND CSQL_LIBRARY)
+  set(CSQL_FOUND TRUE)
+  message(STATUS "-- Found CSQL.")
+else()
+  if(CSQL_FIND_REQUIRED)
+    message(FATAL_ERROR "-- Error: CSQL required but NOT found.")
+  else()
+    message(STATUS "-- Could not find CSQL")
+  endif()
+endif()
 
 mark_as_advanced(CSQL_INCLUDE_DIR CSQL_LIBRARY)

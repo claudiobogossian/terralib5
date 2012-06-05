@@ -11,7 +11,9 @@
 find_path(QWT_INCLUDE_DIR qwt.h
           PATHS "$ENV{TERRALIB_DEP_MSVC2010}/qwt/include"
                 /usr/local/qwt/include /usr/local/include
-                /usr/include/qwt /usr/include)
+                /usr/include/qwt /usr/include
+          PATH_SUFFIXES "qwt"
+          )
                 
 if(WIN32)
   find_library(QWT_LIBRARY_DEBUG
@@ -21,10 +23,9 @@ if(WIN32)
   find_library(QWT_LIBRARY_RELEASE
                NAME qwt
                PATHS "$ENV{TERRALIB_DEP_MSVC2010}/qwt/lib/win32")
-               
-  if(QWT_LIBRARY_DEBUG AND QWT_LIBRARY_RELEASE)
-    set(QWT_LIBRARY TRUE)
-  endif(QWT_LIBRARY_DEBUG AND QWT_LIBRARY_RELEASE)
+       
+  checkLibNames("QWT")
+  
 else(WIN32)
   find_library(QWT_LIBRARY
                NAME qwt
@@ -37,9 +38,13 @@ if(QWT_INCLUDE_DIR AND QWT_LIBRARY)
 endif(QWT_INCLUDE_DIR AND QWT_LIBRARY)
 
 if(QWT_FOUND)
-    message(STATUS "Found Qwt")
+    message(STATUS "-- Found Qwt")
 else(QWT_FOUND)
-    message(FATAL_ERROR "Could not find Qwt")
+  if(QWT_find_REQUIRED)
+    message(FATAL_ERROR "-- Error: Qwt required but NOT found.")
+  else ()
+    message(STATUS "-- Could not find Qwt")
+  endif()
 endif(QWT_FOUND)
 
-mark_as_advanced(QWT_INCLUDE_DIR QWT_LIBRARY QWT_LIBRARY_DEBUG QWT_LIBRARY_RELEASE)
+mark_as_advanced(QWT_INCLUDE_DIR QWT_LIBRARY_DEBUG QWT_LIBRARY_RELEASE)

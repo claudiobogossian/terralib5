@@ -21,23 +21,26 @@ if(WIN32)
                NAME cppunit_dll
                PATHS "$ENV{TERRALIB_DEP_MSVC2010}/cppunit/src/cppunit/x86/ReleaseDll")
                
-  if(CPPUNIT_LIBRARY_DEBUG AND CPPUNIT_LIBRARY_RELEASE)
-    set(CPPUNIT_LIBRARY TRUE)
-  endif(CPPUNIT_LIBRARY_DEBUG AND CPPUNIT_LIBRARY_RELEASE)
+               
+  checkLibNames("CPPUNIT")
+  
 else(WIN32)
   find_library(CPPUNIT_LIBRARY
                NAME cppunit
                PATHS /usr/local/lib /lib /usr/lib)
 endif(WIN32)                
+
+set (CPPUNIT_FOUND FALSE)
  
 if(CPPUNIT_INCLUDE_DIR AND CPPUNIT_LIBRARY)
-   set(CPPUNIT_FOUND TRUE)
-endif(CPPUNIT_INCLUDE_DIR AND CPPUNIT_LIBRARY)
+  set(CPPUNIT_FOUND TRUE)
+  message(STATUS "-- Found CppUnit.")
+else()
+  if(CppUnit_FIND_REQUIRED)
+    message (FATAL_ERROR "-- Error: CppUnit required but NOT found.")
+  else()
+    message (STATUS "-- Could NOT found CppUnit.")
+  endif()
+endif()
 
-if(CPPUNIT_FOUND)
-    message(STATUS "Found CppUnit")
-else(CPPUNIT_FOUND)
-    message(FATAL_ERROR "Could not find CppUnit")
-endif(CPPUNIT_FOUND)
-
-mark_as_advanced(CPPUNIT_INCLUDE_DIR CPPUNIT_LIBRARY CPPUNIT_LIBRARY_DEBUG CPPUNIT_LIBRARY_RELEASE)
+mark_as_advanced(CPPUNIT_INCLUDE_DIR CPPUNIT_LIBRARY_DEBUG CPPUNIT_LIBRARY_RELEASE)

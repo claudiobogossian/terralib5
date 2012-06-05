@@ -16,14 +16,19 @@ if(UNIX)
 				 NAMES dl libdl
 				 HINTS /usr/lib /usr/lib/i386-linux-gnu/)
 		  
+  set(DL_FOUND FALSE)
+  
 # Export include and library path for linking with other libraries
 	if(DL_INCLUDE_DIR AND DL_LIBRARY)
-		set(DL_FOUND TRUE)
-		message(STATUS "Found DL library")
-	else(DL_INCLUDE_DIR AND DL_LIBRARY)
-		message(FATAL_ERROR "Could NOT find DL library")
-	endif(DL_INCLUDE_DIR AND DL_LIBRARY)
+		message(STATUS "-- Found DL library")
+	else()
+    if(DL_FIND_REQUIRED)
+      message(FATAL_ERROR "-- Error: DL required but NOT found.")
+    else()
+      message(STATUS "-- Could NOT find DL library")
+    endif()
+	endif()
 
-	mark_as_advanced(DL_FOUND DL_INCLUDE_DIR DL_LIBRARY)
+	mark_as_advanced(DL_INCLUDE_DIR DL_LIBRARY)
 	
 endif(UNIX)	

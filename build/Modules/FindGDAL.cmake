@@ -4,26 +4,26 @@ if(WIN32)
   find_path(GDAL_INCLUDE_ALG
             gdal_alg.h
             PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
-            PATH_SUFFIXES alg)
+            PATH_SUFFIXES "alg" "gdal/alg")
     
   find_path(GDAL_INCLUDE_GCORE
             gdal.h
             PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
-            PATH_SUFFIXES gcore)
+            PATH_SUFFIXES "gcore" "gdal/gcore" )
             
   find_path(GDAL_INCLUDE_OGR
             ogr_core.h
             PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
-            PATH_SUFFIXES ogr)
+            PATH_SUFFIXES "ogr" "gdal/ogr")
             
   find_path(GDAL_INCLUDE_PORT
             cpl_config.h
             PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
-            PATH_SUFFIXES port)
+            PATH_SUFFIXES "port" "gdal/port")
 
   find_path(GDAL_INCLUDE_OGRSF ogrsf_frmts.h
             PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal/ogr"
-            PATH_SUFFIXES ogrsf_frmts)
+            PATH_SUFFIXES "ogrsf_frmts" "gdal/ogr" "gdal/ogr/ogrsf_frmts")
             
   set(GDAL_INCLUDE_DIR
        ${GDAL_INCLUDE_ALG}
@@ -39,10 +39,8 @@ if(WIN32)
   find_library(GDAL_LIBRARY_DEBUG 
                NAMES gdal_i.lib 
                HINTS "$ENV{TERRALIB_DEP_MSVC2010}/gdal/win32/debug")
-
-  set(GDAL_LIBRARY
-      optimized ${GDAL_LIBRARY_RELEASE}
-      debug     ${GDAL_LIBRARY_DEBUG})
+          
+  checkLibNames("GDAL")
        
 else(WIN32)
   find_path(GDAL_INCLUDE_DIR
@@ -56,14 +54,17 @@ endif(WIN32)
           
 # Export include and library path for linking with other libraries
 
+set(GDAL_FOUND FALSE)
+
 if(GDAL_INCLUDE_DIR AND GDAL_LIBRARY)
   set(GDAL_FOUND TRUE)
   message("-- Found GDAL library")
-else(GDAL_INCLUDE_DIR AND GDAL_LIBRARY)
-	message("Could NOT find GDAL library")
-	set(GDAL_FOUND FALSE)
-endif(GDAL_INCLUDE_DIR AND GDAL_LIBRARY)
+else()
+  if(GDAL_FIND_REQUIRED)
+    message(FATAL_ERROR "-- Error: GDAL required but NOT found.")
+  else()
+    message(STATUS "-- Could not find GDAL.")
+  endif()
+endif()
 
-set(GDAL_LIBS ${GDAL_LIBRARY} )
-	
 MARK_AS_ADVANCED( GDAL_LIBRARY GDAL_INCLUDE_DIR)
