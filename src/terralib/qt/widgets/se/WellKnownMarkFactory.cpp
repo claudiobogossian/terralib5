@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/WellKnownMarkFactory.cpp
 
-  \brief This is the concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+  \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
 // TerraLib

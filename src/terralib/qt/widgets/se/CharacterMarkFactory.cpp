@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/CharacterMarkFactory.cpp
 
-  \brief This is the concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+  \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
 // TerraLib
@@ -52,6 +52,36 @@ void te::qt::widgets::CharacterMarkFactory::finalize()
   sm_factory = 0;
 }
 
+QString te::qt::widgets::CharacterMarkFactory::encode(const QString& font, const int& charCode)
+{
+  QString result = QString::fromStdString(sm_factoryKey);
+  result += "://" + font + "#0x" + QString::number(charCode, 16);
+  return result;
+}
+
+void te::qt::widgets::CharacterMarkFactory::decode(QString& name, QString& font, QChar& charCode)
+{
+  // Extract the part important to this factory!
+  QString pattern = name.remove(0, sm_factoryKey.size());
+  if(!pattern.contains("#"))
+    return; // TODO: Exception: Bad format.
+
+  // Tokenizes based on '#" separator. The first value is the font and the second is the char code...
+  QStringList myParams = pattern.split("#", QString::SkipEmptyParts);
+  if(myParams.size() < 2)
+    return; // TODO: Exception: Bad format.
+
+  // Getting char
+  bool wasConverted = false;
+  // Base 0: if the string begins with "0x", base 16 is used; if the string begins with "0", base 8 is used; otherwise, base 10 is used.
+  charCode = myParams[1].toInt(&wasConverted, 0);
+  if(!wasConverted)
+    return; // TODO: Exception: Invalid char code.
+
+  // The font name
+  font = myParams[0];
+}
+
 te::qt::widgets::CharacterMarkFactory::~CharacterMarkFactory()
 {
 }
@@ -63,36 +93,25 @@ te::map::AbstractMarkFactory* te::qt::widgets::CharacterMarkFactory::build()
 
 te::color::RGBAColor** te::qt::widgets::CharacterMarkFactory::create(const te::se::Mark* mark, std::size_t size)
 {
-  // Gets mark name
+  // Decoding...
+  QChar ch;
+  QString fontName;
   QString name(mark->getWellKnownName()->c_str());
-  // Extract the part important to this factory!
-  QString pattern = name.remove(0, 6); // 6 is the size of "ttf://" prefix size
-  if(!pattern.contains("#"))
-    return 0; // TODO: Exception: Bad format
-
-  // Tokenizes based on '#" separator. The first value is the font and the second is the char code...
-  QStringList myParams = pattern.split("#", QString::SkipEmptyParts);
-  if(myParams.size() < 2)
-    return 0; // TODO: Exception: Bad format
+  te::qt::widgets::CharacterMarkFactory::decode(name, fontName, ch); // Can throw exceptions!
 
   // Configuring the font
   QFont font;
-  font.setFamily(myParams[0]);
+  font.setFamily(fontName);
   font.setPixelSize(size);
-
-  // Getting char
-  QChar ch;
-  if(!getChar(myParams[1], ch))
-    return 0; // TODO: Exception: Invalid char code
 
   // Bulding the character path
   QPainterPath charPath;
-  charPath.addText(0.0, 0.0,font, ch);
+  charPath.addText(0.0, 0.0, font, ch);
    // Adjusting...
   QRectF bounds = charPath.boundingRect();
-  double max = std::max(bounds.width(), bounds.height());
+  double invMax =  1 / std::max(bounds.width(), bounds.height());
   QTransform t;
-  t.scale(1 / max, 1 / max);
+  t.scale(invMax, invMax);
   t.translate(-bounds.center().x(), -bounds.center().y());
   charPath = t.map(charPath);
 
