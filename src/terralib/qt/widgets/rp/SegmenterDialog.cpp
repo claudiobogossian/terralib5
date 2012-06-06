@@ -48,7 +48,7 @@ te::qt::widgets::SegmenterDialog::SegmenterDialog(
   m_uiPtr->setupUi(this);
   
   // Signals & slots
-  connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(onOkButtongClicked()));   
+  connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));   
   
   // initializing the input raster bands combo
   
@@ -79,7 +79,7 @@ bool te::qt::widgets::SegmenterDialog::getOutputRaster(
   }
 }
 
-void te::qt::widgets::SegmenterDialog::onOkButtongClicked()
+void te::qt::widgets::SegmenterDialog::on_okPushButton_clicked()
 {
   m_outputRasterPtr.reset();
   
