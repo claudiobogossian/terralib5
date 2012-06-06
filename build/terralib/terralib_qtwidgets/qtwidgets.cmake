@@ -150,11 +150,18 @@ endif()
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
 qt4_wrap_ui(UI ${FORMS})
 
+install (
+  FILES ${UI}
+  DESTINATION terralib/qt/ui
+  COMPONENT HEADERS
+)
+
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}" "${ROOT}/images")
+list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 
 list (APPEND SRCS "${MOC}" "${UI}")

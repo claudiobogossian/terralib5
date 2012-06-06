@@ -3,46 +3,157 @@ cmake_minimum_required(VERSION 2.8)
 project(all)
 
 ############### Get the data used for testing the example ###############
+set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
-set(BUILD_DIR_DATA_EXISTS FALSE)
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-  set(BUILD_DIR_DATA_EXISTS TRUE)
-endif(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-
-if(NOT BUILD_DIR_DATA_EXISTS)
-  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.tar.gz"  ${CMAKE_CURRENT_BINARY_DIR}/data.tar.gz)
+if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
+  message (STATUS "-- Installing data for examples.")
+  
+  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.tar.gz" ${DATA_DIR}/data.tar.gz)
                   
   execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.tar.gz
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-endif(NOT BUILD_DIR_DATA_EXISTS)
+                  WORKING_DIRECTORY ${DATA_DIR})
 
-set(TE_DATA_EXAMPLE_LOCALE "${CMAKE_CURRENT_BINARY_DIR}/data")
-ADD_DEFINITIONS( -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}/" )
+  message (STATUS "-- Data files installed.")
+endif()
+
+set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}/data")
+
+add_definitions( -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" )
+
+find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
+  gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
+  symbology xerces xlink xml REQUIRED)
+  
+include (${T5_MODULEPATH}/GeneralConfig.cmake)
+
+option (EXAMPLE_COLORBAR "Build colorbar example." ON)  
+option (EXAMPLE_COMMON "Build common example." ON)  
+option (EXAMPLE_PLUGIN_HELLOWORLD "Build plugin hello world example." ON)  
+option (EXAMPLE_DATAACCESS "Build data access example." ON)  
+option (EXAMPLE_DATAGRID "Build data grid example." ON)  
+option (EXAMPLE_DATASETMANAGEMENT "Build data set management example." ON)  
+option (EXAMPLE_FACTORY "Build factory example." ON)  
+option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
+option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." ON)  
+option (EXAMPLE_MAPTOOLS "Build map tools example." ON)  
+option (EXAMPLE_MYVIEWER "Build my viewer example." ON)  
+option (EXAMPLE_PROPERTYMANAGEMENT "Build property management example." ON)  
+option (EXAMPLE_QTCANVAS "Build qt canvas example." ON)  
+option (EXAMPLE_RASTER "Build raster example." ON)  
+option (EXAMPLE_RP "Build rp example." ON)  
+option (EXAMPLE_SAM "Build sam example." ON)  
+option (EXAMPLE_SRS "Build srs example." ON)  
+option (EXAMPLE_ST "Build st example." ON)  
+option (EXAMPLE_TIMESERIES "Build time series example." ON)  
+option (EXAMPLE_URL "Build URL example." ON)  
+option (EXAMPLE_XERCES "Build xerces example." ON)  
+option (EXAMPLE_HELP "Build help example." ON)  
+option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
+option (EXAMPLE_QT_SE "Build qt/se example." ON)  
+option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
+  
+# Go into sub-directories
+if(EXAMPLE_COLORBAR)
+  add_subdirectory(terralib_example_colorbar)
+endif()
 
 # Go into sub-directories
+if(EXAMPLE_COMMON)
+  add_subdirectory(terralib_example_common)
+endif()
 
-add_subdirectory(terralib_example_colorbar)
-add_subdirectory(terralib_example_cppplugin_helloworld)
-add_subdirectory(terralib_example_dataaccess)
-add_subdirectory(terralib_example_datagrid)
-add_subdirectory(terralib_example_datasetmanagement)
-add_subdirectory(terralib_example_factory)
-add_subdirectory(terralib_example_geometry)
-add_subdirectory(terralib_example_layerexplorer)
-add_subdirectory(terralib_example_maptools)
-add_subdirectory(terralib_example_myviewer)
-add_subdirectory(terralib_example_progress)
-add_subdirectory(terralib_example_propertymanagement)
-add_subdirectory(terralib_example_qtcanvas)
-add_subdirectory(terralib_example_raster)
-add_subdirectory(terralib_example_rp)
-add_subdirectory(terralib_example_sam)
-add_subdirectory(terralib_example_srs)
-add_subdirectory(terralib_example_st)
-add_subdirectory(terralib_example_timeseries)
-add_subdirectory(terralib_example_URL)
-add_subdirectory(terralib_example_xerces)
-add_subdirectory(terralib_example_help)
-add_subdirectory(terralib_example_qt/rp)
-add_subdirectory(terralib_example_qt/se)
-add_subdirectory(terralib_example_qt/utils)
+if(EXAMPLE_PLUGIN_HELLOWORLD)
+  add_subdirectory(terralib_example_cppplugin_helloworld)
+endif()
+
+if(EXAMPLE_DATAACCESS)
+  add_subdirectory(terralib_example_dataaccess)
+endif()
+
+if(EXAMPLE_DATAGRID)
+  add_subdirectory(terralib_example_datagrid)
+endif()
+
+if(EXAMPLE_DATASETMANAGEMENT)
+  add_subdirectory(terralib_example_datasetmanagement)
+endif()  
+ 
+if(EXAMPLE_FACTORY)
+  add_subdirectory(terralib_example_factory)
+endif()
+
+if(EXAMPLE_GEOMETRY)
+  add_subdirectory(terralib_example_geometry)
+endif()
+
+if(EXAMPLE_LAYEREXPLORER)
+  add_subdirectory(terralib_example_layerexplorer)
+endif()
+
+if(EXAMPLE_MAPTOOLS)
+  add_subdirectory(terralib_example_maptools)
+endif()
+
+if(EXAMPLE_MYVIEWER)
+  add_subdirectory(terralib_example_myviewer)
+endif()
+
+if(EXAMPLE_PROGRESS)
+  add_subdirectory(terralib_example_progress)
+endif()
+  
+if(EXAMPLE_PROPERTYMANAGENT)
+  add_subdirectory(terralib_example_propertymanagement)
+endif()
+
+if(EXAMPLE_QTCANVAS)
+  add_subdirectory(terralib_example_qtcanvas)
+endif()
+
+if(EXAMPLE_RASTER)
+  add_subdirectory(terralib_example_raster)
+endif()
+
+if(EXAMPLE_RP)
+  add_subdirectory(terralib_example_rp)
+endif()
+
+if(EXAMPLE_SAM)
+  add_subdirectory(terralib_example_sam)
+endif()
+
+if(EXAMPLE_SRS)
+  add_subdirectory(terralib_example_srs)
+endif()
+
+if(EXAMPLE_ST)
+  add_subdirectory(terralib_example_st)
+endif()
+
+if(EXAMPLE_TIMESERIES)
+  add_subdirectory(terralib_example_timeseries)
+endif()
+
+if(EXAMPLE_URL)
+  add_subdirectory(terralib_example_URL)
+endif()
+
+if(EXAMPLE_XERCES)
+  add_subdirectory(terralib_example_xerces)
+endif()
+
+if(EXAMPLE_HELP)
+  add_subdirectory(terralib_example_help)
+endif()
+
+if(EXAMPLE_QT_RP)
+  add_subdirectory(terralib_example_qt/rp)
+endif()
+
+if(EXAMPLE_QT_SE)
+  add_subdirectory(terralib_example_qt/se)
+endif()
+
+if(EXAMPLE_QT_UTILS)
+  add_subdirectory(terralib_example_qt/utils)
+endif()

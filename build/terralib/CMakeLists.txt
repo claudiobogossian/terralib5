@@ -47,113 +47,159 @@ endif()
 
 IF(BUILD_ANNOTATIONTEXT)
 	add_subdirectory(terralib_annotationtext)
-endif(BUILD_ANNOTATIONTEXT)
+endif()
 
 IF(BUILD_COLOR)
 	add_subdirectory(terralib_color)
-endif(BUILD_COLOR)
+endif()
 
 IF(BUILD_COMMON)
 	add_subdirectory(terralib_common)
-endif(BUILD_COMMON)
+endif()
 
 IF(BUILD_DATAACCESS)
 	add_subdirectory(terralib_dataaccess)
-endif(BUILD_DATAACCESS)
+endif()
 
 IF(BUILD_DATATYPE)
 	add_subdirectory(terralib_datatype)
-endif(BUILD_DATATYPE)
+endif()
 
 IF(BUILD_FILTER)
 	add_subdirectory(terralib_filter)
-endif(BUILD_FILTER)
+endif()
 
 IF(BUILD_GDAL)
 	add_subdirectory(terralib_gdal)
-endif(BUILD_GDAL)
+endif()
 
 IF(BUILD_GEOMETRY)
 	add_subdirectory(terralib_geometry)
-endif(BUILD_GEOMETRY)
+endif()
 
 IF(BUILD_GML)
 	add_subdirectory(terralib_gml)
-endif(BUILD_GML)
+endif()
 
 IF(BUILD_MAPTOOLS)
 	add_subdirectory(terralib_maptools)
-endif(BUILD_MAPTOOLS)
+endif()
 
 IF(BUILD_MEMORY)
 	add_subdirectory(terralib_memory)
-endif(BUILD_MEMORY)
+endif()
 
 IF(BUILD_OGR)
 	add_subdirectory(terralib_ogr)
-endif(BUILD_OGR)
+endif()
 
 IF(BUILD_PLUGIN)
 	add_subdirectory(terralib_plugin)
-endif(BUILD_PLUGIN)
+endif()
 
 IF(BUILD_POSTGIS)
 	add_subdirectory(terralib_postgis)
-endif(BUILD_POSTGIS)
+endif()
 
 IF(BUILD_QTWIDGETS)
 	add_subdirectory(terralib_qtwidgets)
-endif(BUILD_QTWIDGETS)
+endif()
 
 IF(BUILD_RASTER)
 	add_subdirectory(terralib_raster)
-endif(BUILD_RASTER)
+endif()
 
 IF(BUILD_RP)
 	add_subdirectory(terralib_rp)
-endif(BUILD_RP)
+endif()
 
 IF(BUILD_SAM)
 	add_subdirectory(terralib_sam)
-endif(BUILD_SAM)
+endif()
 
 IF(BUILD_SRS)
 	add_subdirectory(terralib_srs)
-endif(BUILD_SRS)
+endif()
 
 IF(BUILD_ST)
 	add_subdirectory(terralib_st)
-endif(BUILD_ST)
+endif()
 
 IF(BUILD_STLOADER)
 	add_subdirectory(terralib_stloader)
-endif(BUILD_STLOADER)
+endif()
 
 IF(BUILD_SYMBOLOGY)
 	add_subdirectory(terralib_symbology)
-endif(BUILD_SYMBOLOGY)
+endif()
 
 IF(BUILD_XERCES)
 	add_subdirectory(terralib_xerces)
-endif(BUILD_XERCES)
+endif()
 
 IF(BUILD_XLINK)
 	add_subdirectory(terralib_xlink)
-endif(BUILD_XLINK)
+endif()
 
 IF(BUILD_XML)
 	add_subdirectory(terralib_xml)
-endif(BUILD_XML)
+endif()
 
 IF(BUILD_GRIB)
   add_subdirectory(terralib_grib)
-endif(BUILD_GRIB)
+endif()
 
-# Generating configuration files
+# Generating cmake configuration files
 message(STATUS "-- Generating configuration files.")
 
 get_cmake_property(TE_3DS PACKAGES_FOUND)
+set (_TE_INCLUDE_DIRS ${ROOT}/src "${_TE_INCLUDE_DIRS}")
 
 configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake @ONLY)
 configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake @ONLY)
 configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
+
+# Installing CMake files
+# Exporting targets.
+export( TARGETS ${_TE_LIBRARIES} FILE "${PROJECT_BINARY_DIR}/teDepends.cmake")
+export( PACKAGE terralib )
+
+install (
+  EXPORT teDepends 
+  DESTINATION Modules
+  COMPONENT CMAKE
+)
+  
+# CMake util files
+FILE ( GLOB cmake_files "${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake")
+install ( 
+  FILES ${cmake_files}
+  DESTINATION Modules
+  COMPONENT CMAKE
+)
+
+install ( 
+  DIRECTORY ${T5_MODULES_PATH}
+  DESTINATION .
+  COMPONENT CMAKE
+  PATTERN "*Package*" EXCLUDE
+)
+
+# Installing TerraLib remaining header files
+FILE ( GLOB h_files ${ROOT}/src/*.h )
+
+install ( 
+  FILES ${h_files}
+  DESTINATION .
+  COMPONENT HEADERS
+)
+
+FILE ( GLOB h_files ${ROOT}/src/terralib/*.h )
+
+install ( 
+  FILES ${h_files}
+  DESTINATION terralib
+  COMPONENT HEADERS
+)
+
+include (${T5_MODULES_PATH}/Package.cmake)
