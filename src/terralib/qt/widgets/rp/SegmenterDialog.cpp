@@ -28,6 +28,7 @@
 
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
+#include <ui_SegmenterForm.h>
 
 #include <QtGui/QMessageBox>
 #include <QtGui/QListWidgetItem>
@@ -38,20 +39,30 @@ te::qt::widgets::SegmenterDialog::SegmenterDialog(
   te::rst::Raster const* inputRasterPtr, const std::string& outpuRasterDSType, 
   const std::map< std::string, std::string >& outpuRasterInfo, 
   QWidget* parent, Qt::WindowFlags f)
-  : QDialog( parent, f ), SegmenterForm(),
+  : QDialog( parent, f ),
     m_inputRasterPtr( inputRasterPtr ),
     m_outpuRasterDSType( outpuRasterDSType ),
     m_outpuRasterInfo( outpuRasterInfo )
 {
-  setupUi(this);
+  m_uiPtr = new Ui::SegmenterForm;
+  m_uiPtr->setupUi(this);
   
   // Signals & slots
-  connect(m_okPushButton, SIGNAL(clicked()), SLOT(onOkButtongClicked()));
-   
+  connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(onOkButtongClicked()));   
+  
+  // initializing the input raster bands combo
+  
+  for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
+    inputRasterPtr->getNumberOfBands() ; ++inRasterBandsIdx )
+  {
+    m_uiPtr->m_inputRasterBandsListWidget->addItem( 
+      QString::number( inRasterBandsIdx ) );
+  }  
 }
 
 te::qt::widgets::SegmenterDialog::~SegmenterDialog()
 {
+  delete m_uiPtr;
 }
 
 bool te::qt::widgets::SegmenterDialog::getOutputRaster( 
@@ -70,6 +81,8 @@ bool te::qt::widgets::SegmenterDialog::getOutputRaster(
 
 void te::qt::widgets::SegmenterDialog::onOkButtongClicked()
 {
+  m_outputRasterPtr.reset();
+  
   if( m_inputRasterPtr )
   {
     // Creating the algorithm parameters
@@ -79,35 +92,68 @@ void te::qt::widgets::SegmenterDialog::onOkButtongClicked()
     algoInputParams.m_inputRasterPtr = m_inputRasterPtr;
     
     QList<QListWidgetItem *> selectedBands = 
-      m_inputRasterBandsListWidget->selectedItems();
-    QList<QListWidgetItem *>::const_iterator itBegin = selectedBands.begin();
-    QList<QListWidgetItem *>::const_iterator itEnd = selectedBands.end();
-    while( itBegin != itEnd )
-    {
-      algoInputParams.m_inputRasterBands.push_back( (*itBegin)->text().toUInt() );
-      ++itBegin;
-    }
+      m_uiPtr->m_inputRasterBandsListWidget->selectedItems();
       
-    algoInputParams.m_enableThreadedProcessing = 
-      m_enableThreadedProcessingcheckBox->isChecked();
-    algoInputParams.m_maxSegThreads = m_maximumThreadsNumberLineEdit->text().toUInt();
-    algoInputParams.m_enableBlockProcessing = 
-      m_enableBlockProcessingcheckBox->isChecked();
-    algoInputParams.m_enableBlockMerging = 
-      m_enableBlockMergingCheckBox->isChecked();
-    algoInputParams.m_maxBlockSize = m_maximumBlockSizeLineEdit->text().toUInt();
-    
-    
-    algoInputParams.m_strategyName = m_segmenterStrategyComboBox->currentText().toStdString();
-    
-    if( algoInputParams.m_strategyName == "RegionGrowing" )
+    if( selectedBands.size() > 0 )
     {
-      te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
-      strategyParameters.m_minSegmentSize = 
-        m_minimumSegmentSizeRGLineEdit->text().toUInt();
-      strategyParameters.m_segmentsSimilarityThreshold = 
-        m_segmentsSimilarityThresholdRGLineEdit->text().toDouble();
-      algoInputParams.setSegStrategyParams( strategyParameters );
+      QList<QListWidgetItem *>::const_iterator itBegin = selectedBands.begin();
+      QList<QListWidgetItem *>::const_iterator itEnd = selectedBands.end();
+      while( itBegin != itEnd )
+      {
+        algoInputParams.m_inputRasterBands.push_back( (*itBegin)->text().toUInt() );
+        ++itBegin;
+      }
+        
+      algoInputParams.m_enableThreadedProcessing = 
+        m_uiPtr->m_enableThreadedProcessingcheckBox->isChecked();
+      algoInputParams.m_maxSegThreads = m_uiPtr->m_maximumThreadsNumberLineEdit->text().toUInt();
+      algoInputParams.m_enableBlockProcessing = 
+        m_uiPtr->m_enableBlockProcessingcheckBox->isChecked();
+      algoInputParams.m_enableBlockMerging = 
+        m_uiPtr->m_enableBlockMergingCheckBox->isChecked();
+      algoInputParams.m_maxBlockSize = m_uiPtr->m_maximumBlockSizeLineEdit->text().toUInt();
+      
+      
+      algoInputParams.m_strategyName = m_uiPtr->m_segmenterStrategyComboBox->currentText().toStdString();
+      
+      if( algoInputParams.m_strategyName == "RegionGrowing" )
+      {
+        te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+        strategyParameters.m_minSegmentSize = 
+          m_uiPtr->m_minimumSegmentSizeRGLineEdit->text().toUInt();
+        strategyParameters.m_segmentsSimilarityThreshold = 
+          m_uiPtr->m_segmentsSimilarityThresholdRGLineEdit->text().toDouble();
+        algoInputParams.setSegStrategyParams( strategyParameters );
+      }
+      
+      te::rp::Segmenter::OutputParameters algoOutputParams;
+      algoOutputParams.m_rInfo = m_outpuRasterInfo;
+      algoOutputParams.m_rType = m_outpuRasterDSType;
+      
+      // Executing the algorithm
+      
+      te::rp::Segmenter algorithmInstance;
+      
+      if( algorithmInstance.initialize( algoInputParams ) )
+      {
+        if( algorithmInstance.execute( algoOutputParams ) )
+        {
+          m_outputRasterPtr.reset( algoOutputParams.m_outputRasterPtr.release() );
+          QMessageBox::information(this, "", tr("Segmentation ended sucessfully"));
+        }
+        else
+        {
+          QMessageBox::critical(this, "", tr("Segmentation execution error"));
+        }
+      }
+      else
+      {
+        QMessageBox::critical(this, "", tr("Segmentation initialization error"));
+      }
+    }
+    else
+    {
+      QMessageBox::critical(this, "", tr("Invalid number of bands"));
     }
   }
   else

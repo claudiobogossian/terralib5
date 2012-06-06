@@ -623,6 +623,9 @@ namespace te
         inputParamsPtr->m_inputRasterPtr->getAccessPolicy() & te::common::RAccess, 
         "Invalid raster" );
         
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inputRasterBands.size() > 0,
+        "Invalid raster bands number" );
+        
       for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
         inputParamsPtr->m_inputRasterBands.size() ; ++inRasterBandsIdx )
       {

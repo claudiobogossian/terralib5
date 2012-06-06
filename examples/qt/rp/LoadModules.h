@@ -18,24 +18,15 @@
  */
 
 /*!
-  \file Config.h
+  \file LoadModules.h
 
-  \brief Global configuration flags for the TerraLib Examples module.
+  \brief Load the required runtime modules.
  */
 
-#ifndef __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
-#define __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_EXAMPLES_QT_RP_LOADMODULES_H
+#define __TERRALIB_EXAMPLES_QT_RP_LOADMODULES_H
 
-// TerraLib
-#include <terralib/Config.h>
+/*! \brief Load the required runtime modules. */
+void LoadModules();
 
-/*!
-  \def TE_DATA_EXAMPLE_LOCALE
-
-  \brief This flag tells where is the base folder for the data used in the examples.
- */
-#ifndef TE_DATA_EXAMPLE_LOCALE
-  #define TE_DATA_EXAMPLE_LOCALE "."
 #endif
-
-#endif  // __TERRALIB_EXAMPLES_INTERNAL_CONFIG_H

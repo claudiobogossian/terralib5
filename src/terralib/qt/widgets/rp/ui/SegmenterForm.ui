@@ -283,7 +283,7 @@
     <string>&amp;Help</string>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>4</x>
@@ -393,5 +393,22 @@
   </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_CancelPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SegmenterForm</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>361</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>224</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
