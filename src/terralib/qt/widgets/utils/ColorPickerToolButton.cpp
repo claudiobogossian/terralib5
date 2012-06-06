@@ -18,27 +18,23 @@
  */
 
 /*!
-  \file terralib/qt/widgets/utils/ColorPickerToolButton.h
+  \file terralib/qt/widgets/utils/ColorPickerToolButton.cpp
 
   \brief Custom widget used to pick a color.
 */
 
-//TerraLib
+// TerraLib
 #include "ColorPickerToolButton.h"
 
-//Qt
-#include <QtGui/QPainter>
-#include <QtGui/QStyleOptionButton>
-
-te::qt::widgets::ColorPickerToolButton::ColorPickerToolButton(QWidget *parent) : QToolButton( parent )
+te::qt::widgets::ColorPickerToolButton::ColorPickerToolButton(QWidget* parent) : QToolButton(parent)
 {
-  this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-  this->setPopupMode(QToolButton::MenuButtonPopup);
-  this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-  this->setText(TR_QT_WIDGETS( "Color" ));
+  setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+  setPopupMode(QToolButton::MenuButtonPopup);
+  setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+  setText(tr("Color"));
 
-  m_popup = new ColorPickerPopup( 0 );
-  m_popup->setObjectName( "popup" );
+  m_popup = new ColorPickerPopup;
+  m_popup->setObjectName("popup");
   m_popup->setFrameShape(QFrame::StyledPanel);
   m_popup->setFrameShadow(QFrame::Plain);
 
@@ -49,22 +45,19 @@ te::qt::widgets::ColorPickerToolButton::ColorPickerToolButton(QWidget *parent) :
   m_selectedColor = Qt::black;
 }
 
-void te::qt::widgets::ColorPickerToolButton::setColor( QColor c )
+void te::qt::widgets::ColorPickerToolButton::setColor(const QColor& color)
 {
-  m_selectedColor = c;
-
+  m_selectedColor = color;
   updateIcon();
 }
 
-
-void te::qt::widgets::ColorPickerToolButton::mouseReleaseEvent ( QMouseEvent * )
+void te::qt::widgets::ColorPickerToolButton::mouseReleaseEvent(QMouseEvent* /*e*/)
 {
-  m_popup->move(  this->mapToGlobal( QPoint(0, this->height()) ) );
-  m_popup->setWindowFlags( Qt::Popup );
+  m_popup->move(mapToGlobal(QPoint(0, height())));
   m_popup->show();
 }
 
-void te::qt::widgets::ColorPickerToolButton::onPopupSelected( QColor color )
+void te::qt::widgets::ColorPickerToolButton::onPopupSelected(const QColor& color)
 {
   setColor(color);
 
@@ -84,4 +77,3 @@ void te::qt::widgets::ColorPickerToolButton::updateIcon()
   pix.fill(m_selectedColor);
   setIcon(pix);
 }
-
