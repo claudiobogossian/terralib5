@@ -3,8 +3,8 @@ find_package(Boost 1.47 REQUIRED)
 set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 
 find_package(Xerces REQUIRED)
-list (APPEND DEP_INCLUDES ${XERCESC_INCLUDE_DIR})
-set (DEP_LIBS ${XERCESC_LIBRARY})  
+list (APPEND DEP_INCLUDES ${XERCES_INCLUDE_DIR})
+set (DEP_LIBS ${XERCES_LIBRARY})  
 
 #Definitions for windows compiling
 if(WIN32)

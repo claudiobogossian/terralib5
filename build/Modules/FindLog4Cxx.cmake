@@ -19,7 +19,7 @@
 # - Try to find the liblog4cxx libraries
 # Once done this will define
 #
-# Log4cxx_FOUND - system has liblog4cxx
+# LOG4CXX_FOUND - system has liblog4cxx
 # LOG4CXX_INCLUDE_DIR - the log4cxx include directory
 # LOG4CXX_LIBRARY -log4cxx library
 # LOG4CXX_LIBRARY_DEBUG - log4cxx debug library
@@ -48,10 +48,10 @@ else(WIN32)
                PATHS /usr/local/lib /lib /usr/lib)
 endif(WIN32)                   
 
-set(Log4cxx_FOUND FALSE)
+set(LOG4CXX_FOUND FALSE)
 
 if(LOG4CXX_INCLUDE_DIR AND LOG4CXX_LIBRARY)
-  set(Log4cxx_FOUND TRUE)
+  set(LOG4CXX_FOUND TRUE)
   message(STATUS "-- Found log4cxx library")
 else()
   if(Log4cxx_FIND_REQUIRED)
@@ -59,6 +59,6 @@ else()
   else()
     message(STATUS "-- NOT Found log4cxx, disabling it")
   endif()
-endif(LOG4CXX_INCLUDE_DIR AND LOG4CXX_LIBRARY)
+endif()
 
 mark_as_advanced(LOG4CXX_INCLUDE_DIR LOG4CXX_LIBRARY)

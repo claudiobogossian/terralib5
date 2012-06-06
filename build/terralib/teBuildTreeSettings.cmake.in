@@ -1,0 +1,29 @@
+# Compiled modules include path.
+set( TE_INCLUDE_DIRS @_TE_INCLUDE_DIRS@)
+
+# Modules directory
+set (T5_MODULEPATH @T5_MODULES_PATH@ )
+list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
+
+#TerraLib dependencies dir
+if(WIN32)
+  set (TE_DPS @TE_DEPENDENCIES_DIR@ )
+  if( NOT "${TE_DPS}" STREQUAL "")
+    set ( CMAKE_FIND_ROOT_PATH  "${TE_DPS}" )
+  endif()
+endif()
+
+# Configuration files folder.
+set (TE_CONF_FILES_DIR @_TE_CONF_FILES_DIR@)
+
+# Include paths for the 3rd party.
+set (TE_3DS @_TE_3DS@)
+
+# Compiled modules
+set (TE_LIBRARIES @_TE_LIBRARIES@)
+
+# Include utilities function file
+include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
+
+# Include the dependencies. 
+include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )

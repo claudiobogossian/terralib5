@@ -7,9 +7,9 @@ set (DEP_INCLUDES "")   #include paths needed by common module.
 # 3rd-party definitions.
 # -------------------------------------------------- 
 find_package(Log4Cxx)
-if(Log4cxx_FOUND)
+if(LOG4CXX_FOUND)
   set(DEP_INCLUDES ${LOG4CXX_INCLUDE_DIR})
-  set(DEP_LIBS ${DEP_LIBS} ${LOG4CXX_LIBRARY})	
+  set(DEP_LIBS ${LOG4CXX_LIBRARY})	
 endif()
 
 find_package(Boost 1.47 COMPONENTS filesystem system REQUIRED)
@@ -47,13 +47,15 @@ set (
 )
 
 # Files in build tree
-appPrefix (${SRCDIR} ${_DIRS} COMMON_INC_DIRS)
+appPrefix (${SRCDIR} "${_DIRS}" COMMON_INC_DIRS)
 
 # Files in build tree
-appPrefix ("common" ${_DIRS} COMMON_INC_INST_DIRS)
+appPrefix ("common" "${_DIRS}" COMMON_INC_INST_DIRS)
 
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
+
+list (APPEND DEP_INCLUDES "${COMMON_INC_DIRS}")
 
 #exporting module information
 exportModuleInformation("common" "${COMMON_INC_DIRS}" "${COMMON_INC_INST_DIRS}")

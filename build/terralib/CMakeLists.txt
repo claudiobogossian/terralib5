@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(all)
 
+set (TE_VERSION "5.0.0")
 set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Modules")
 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}")
@@ -147,3 +148,12 @@ endif(BUILD_XML)
 IF(BUILD_GRIB)
   add_subdirectory(terralib_grib)
 endif(BUILD_GRIB)
+
+# Generating configuration files
+message(STATUS "-- Generating configuration files.")
+
+get_cmake_property(TE_3DS PACKAGES_FOUND)
+
+configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake @ONLY)
+configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake @ONLY)
+configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)

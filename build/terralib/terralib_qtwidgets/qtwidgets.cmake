@@ -160,6 +160,6 @@ list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 list (APPEND SRCS "${MOC}" "${UI}")
 
 #exporting module information
-exportModuleInformation("qt" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
+exportModuleInformation("qtwidgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
   
                 

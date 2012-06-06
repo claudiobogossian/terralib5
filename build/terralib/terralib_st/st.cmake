@@ -29,10 +29,10 @@ set (
 )
 
 # Files in build tree
-appPrefix (${SRCDIR} ${_DIRS} ST_INC_DIRS)
+appPrefix (${SRCDIR} "${_DIRS}" ST_INC_DIRS)
 
 # Files in build tree
-appPrefix ("st" ${_DIRS} ST_INC_INST_DIRS)
+appPrefix ("st" "${_DIRS}" ST_INC_INST_DIRS)
 
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")

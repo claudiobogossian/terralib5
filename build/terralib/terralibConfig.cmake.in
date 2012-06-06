@@ -1,0 +1,88 @@
+# - Config file for the terralib package
+# It defines the following variables
+#  TE_INCLUDE_DIRS - include directories for Terralib.
+#  TE_LIBRARIES    - libraries to link against.
+#  TE_MODULE_PATH  - cmake scripts location.
+#  TE_3DS          - 3rd-party include directories.
+		
+# Usage:
+#	- In your cmake project use "find_package ( terralib )" command.
+# 	- Terralib may also be required with specific modules using "find_package (terralib COMPONENTS shp spl ...) command.
+#	- Note that if a module is required and NOT available (was not compiled) an exeception will be raised to cmake.
+#
+# 	- Components that can be required:
+#     - annotationtext
+#     - color
+#     - common
+#     - csql
+#     - dataaccess
+#     - datatype
+#     - filter
+#     - gdal
+#     - geometry
+#     - gml
+#     - grib
+#     - maptools
+#     - memory
+#     - mysql
+#     - ogr
+#     - plugin
+#     - qtwidgets
+#     - raster
+#     - rp
+#     - srs
+#     - st
+#     - stloader
+#     - symbology
+#     - xerces
+#     - xlink
+#     - xml
+ 
+# Compute paths
+get_filename_component(TERRALIB_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+if(EXISTS "${TERRALIB_CMAKE_DIR}/CMakeCache.txt")
+   # In build tree
+   include("${TERRALIB_CMAKE_DIR}/teBuildTreeSettings.cmake")
+else()
+	set ( TE_DIRS @_TE_INST_INCLUDE_DIRS@ )	
+  set ( TE_ROOT_INC "${TERRALIB_CMAKE_DIR}/.." )
+	set ( TE_INCLUDE_DIRS "${TE_ROOT_INC}" )
+	
+	foreach( TDIR ${TE_DIRS} )
+		list ( APPEND TE_INCLUDE_DIRS "${TE_ROOT_INC}/terralib/${TDIR}")
+	endforeach()
+
+  set (T5_MODULEPATH "${TERRALIB_CMAKE_DIR}")
+  list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
+	include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
+  include ( ${T5_MODULEPATH}/teDepends.cmake )
+  
+  set (DEPS @TE_3DS@)
+  
+  foreach(DEP ${DEPS})
+    find_package(${DEP} REQUIRED)
+  endforeach()
+endif()
+ 
+# These are IMPORTED targets created by teLibraryDepends.cmake
+set ( TE_LIBRARIES @_TE_LIBRARIES@ )
+
+# Modules compiled 
+# This code is used to verify the compiled components.
+set ( TE_MODULES @_TE_MODULES@ )
+
+IF( terralib_FIND_COMPONENTS )
+  FOREACH( comp ${terralib_FIND_COMPONENTS} )
+	list ( FIND TE_MODULES ${comp} cmp_found )
+    if( cmp_found EQUAL "-1" )
+      SET(terralib_${comp}_FOUND 0)
+      IF(terralib_FIND_REQUIRED_${comp})
+        MESSAGE(SEND_ERROR "TerraLib ${comp} not available.")
+      ENDIF()
+    ELSE()
+      SET(terralib_${comp}_FOUND 1)
+	  MESSAGE("TerraLib module ${comp} available.")
+    ENDIF()
+  ENDFOREACH()
+ENDIF() 
+
