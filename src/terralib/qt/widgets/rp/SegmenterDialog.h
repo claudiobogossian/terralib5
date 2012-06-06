@@ -92,7 +92,7 @@ namespace te
           
         protected slots:
 
-          void onOkButtongClicked();
+          void on_okPushButton_clicked();
 
         private:
 
