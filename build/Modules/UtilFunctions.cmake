@@ -196,6 +196,7 @@ ENDMACRO (configureLibraryOutput)
 MACRO(makeProject proj_name root_h_dir root_src_dir)
   configureProject("terralib_${proj_name}" "${root_h_dir}" "${root_src_dir}")
   include ("${proj_name}.cmake")
+  
   configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
   
   # installing libraries
