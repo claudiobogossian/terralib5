@@ -1,7 +1,7 @@
 #include "UtilsWidgets.h"
 
 // TerraLib
-#include <terralib/se.h>
+#include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
 #include <terralib/qt/widgets/utils/DoubleListWidget.h>
 #include <terralib/qt/widgets/utils/ListWidget.h>
 #include <terralib/qt/widgets/utils/ParameterTableWidget.h>
@@ -9,11 +9,8 @@
 // Qt
 #include <QtGui/QApplication>
 #include <QtGui/QDialog>
-#include <QtGui/QGridLayout>
 #include <QtGui/QFrame>
-
-// STL
-#include <iostream>
+#include <QtGui/QGridLayout>
 
 void UtilsWidgets()
 {
@@ -22,7 +19,6 @@ void UtilsWidgets()
   //crate application
   QApplication app(argc, 0);
   QString title("Testing Utils Widgets");
-  
 
   //create dummy dialog
   QDialog d(NULL);
@@ -59,6 +55,11 @@ void UtilsWidgets()
   //add ListWidget
   te::qt::widgets::ParameterTableWidget* ptW = new te::qt::widgets::ParameterTableWidget(&d);
   layout->addWidget(ptW, 1, 0, 1, 3);
+
+  //add ColorPickerToolButton
+  te::qt::widgets::ColorPickerToolButton* cp = new te::qt::widgets::ColorPickerToolButton(&d);
+  cp->setFixedSize(70, 24);
+  layout->addWidget(cp, 2, 0, 1, 3);
 
   d.exec();
 }

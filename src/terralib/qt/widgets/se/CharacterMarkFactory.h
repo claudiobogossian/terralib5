@@ -70,6 +70,27 @@ namespace te
 
           //@}
 
+          /*! 
+            \brief Encodes the given parameters to a format known by this factory.
+
+            \param font      The font name. e.g. "Times".
+            \param charCoder The decimal char code.
+
+            \return A string that represents the format known by this factory. e.g. "ttf://Times#0x12".
+
+            \note The given char code will be enconded in hexadecimal.
+          */
+          static QString encode(const QString& font, const int& charCode);
+
+          /*! 
+            \brief Decodes the given name extracting the parameters known by this factory.
+
+            \param name      The name dealt by this factory. e.g. "ttf://Times#0x12".
+            \param font      The font name that will be extracted from name.
+            \param charCoder The char code that will be extracted from name.
+          */
+          static void decode(QString& name, QString& font, QChar& charCode);
+
           /** @name Public Destructor
             *  Destructor.
             */
