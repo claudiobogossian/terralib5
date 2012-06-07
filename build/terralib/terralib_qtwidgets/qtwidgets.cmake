@@ -127,7 +127,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
-	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h)
+	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
