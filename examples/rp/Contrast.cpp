@@ -16,6 +16,7 @@
 // STL
 #include <string>
 #include <map>
+#include <iostream>
 
 void Contrast()
 {

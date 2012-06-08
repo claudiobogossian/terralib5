@@ -16,12 +16,6 @@ else()
   set (TE_DEPENDENCIES_DIR "" CACHE PATH ${DPS_DIR_COMMENT})
 endif()
 
-if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
-  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
-else ()
-  message (WARNING "If not set TE_DEPENDENCIES_DIR variable, CMake may not find Terralib 5 dependencies.")
-endif()
-
 #if(MSVC)
 #  set (
 #    paths_2_search
@@ -44,5 +38,3 @@ endif()
 #    message ("-- Could not found dumpbin.exe")
 #  endif()
 #endif()
-
-include (${CMAKE_ROOT}/Modules/GetPrerequisites.cmake)

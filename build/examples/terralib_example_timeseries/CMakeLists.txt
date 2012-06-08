@@ -61,7 +61,7 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/MyGrid.h
 	 ${SRCDIR}/LineStyle.h
 	 ${SRCDIR}/PointStyle.h
-	 ${SRCDIR}/polygonStyle.h
+	 ${SRCDIR}/PolygonStyle.h
 	 ${SRCDIR}/SelectLayer.h
 	 ${SRCDIR}/PlotTemporalDistance.h
 	 ${SRCDIR}/TimeSlider.h
