@@ -3,21 +3,30 @@ cmake_minimum_required(VERSION 2.8)
 project(all)
 
 ############### Get the data used for testing the example ###############
+set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
-set(BUILD_DIR_DATA_EXISTS FALSE)
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-  set(BUILD_DIR_DATA_EXISTS TRUE)
-endif(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/data)
-
-if(NOT BUILD_DIR_DATA_EXISTS)
-  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.tar.gz"  ${CMAKE_CURRENT_BINARY_DIR}/data.tar.gz)
+if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
+  message (STATUS "-- Installing data for examples.")
+  
+  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.tar.gz" ${DATA_DIR}/data.tar.gz)
                   
   execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.tar.gz
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-endif(NOT BUILD_DIR_DATA_EXISTS)
+                  WORKING_DIRECTORY ${DATA_DIR})
 
-set(TE_DATA_UNITTEST_LOCALE "${CMAKE_CURRENT_BINARY_DIR}/data")
-ADD_DEFINITIONS( -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}/" )
+  message (STATUS "-- Data files installed.")
+endif()
+
+set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}/data")
+
+add_definitions( -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" )
+
+find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
+  gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
+  symbology xerces xlink xml REQUIRED)
+  
+find_package (CppUnit REQUIRED)
+
+include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
 # Go into sub-directories
 
