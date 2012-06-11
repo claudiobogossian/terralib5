@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(all)
+set (PROJ_NAME "all")
+project(${PROJ_NAME})
 
 ############### Get the data used for testing the example ###############
 set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
@@ -38,3 +39,8 @@ add_subdirectory(terralib_unittest_qtwidgets)
 add_subdirectory(terralib_unittest_rp)
 add_subdirectory(terralib_unittest_sam)
 add_subdirectory(terralib_unittest_srs)
+
+if(WIN32)
+  message (STATUS "-- Generating run batch file.")
+  generateRunningBatch(runme.bat)
+endif()

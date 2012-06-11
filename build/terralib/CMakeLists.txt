@@ -14,6 +14,8 @@ if(WIN32)
   include (${T5_MODULES_PATH}/WinConfig.cmake)
 endif()
 
+add_definitions (-DBOOST_FILESYSTEM_VERSION=3)
+
 #-----------------------------------------------------------------------
 option (BUILD_ANNOTATIONTEXT "Build annotation text module?" ON)
 option (BUILD_COLOR "Build color module?" ON)
