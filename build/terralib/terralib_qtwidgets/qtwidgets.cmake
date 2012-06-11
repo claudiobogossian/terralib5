@@ -1,5 +1,5 @@
 
-find_package(Qt4 COMPONENTS QtCore QtGui QtAxContainer REQUIRED)
+find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 include (${QT_USE_FILE})
 add_definitions (${QT_DEFINITIONS})
 
