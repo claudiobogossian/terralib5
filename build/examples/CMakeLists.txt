@@ -36,7 +36,6 @@ option (EXAMPLE_FACTORY "Build factory example." ON)
 option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
 option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." ON)  
 option (EXAMPLE_MAPTOOLS "Build map tools example." ON)  
-option (EXAMPLE_MYVIEWER "Build my viewer example." ON)  
 option (EXAMPLE_PROPERTYMANAGEMENT "Build property management example." ON)  
 option (EXAMPLE_QTCANVAS "Build qt canvas example." ON)  
 option (EXAMPLE_RASTER "Build raster example." ON)  
@@ -92,10 +91,6 @@ endif()
 
 if(EXAMPLE_MAPTOOLS)
   add_subdirectory(terralib_example_maptools)
-endif()
-
-if(EXAMPLE_MYVIEWER)
-  add_subdirectory(terralib_example_myviewer)
 endif()
 
 if(EXAMPLE_PROGRESS)
