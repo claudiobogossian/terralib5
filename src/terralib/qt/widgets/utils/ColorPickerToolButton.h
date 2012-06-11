@@ -90,7 +90,7 @@ namespace te
             setFrameShadow(QFrame::Plain);
             setStyleSheet("QFrame{background-color: rgb(255, 255, 255);border-color: rgb(0, 0, 0);}");
 
-            // Create default collors
+            // Create default colors
             int i = 0; 
             for(int g = 0; g < 4; ++g)
               for(int r = 0;  r < 4; ++r)
@@ -107,20 +107,11 @@ namespace te
             setMouseTracking(true);
           }
 
-          void paintButton(QPainter* painter, QRectF rc, QString text, bool hover)
+          void paintButton(QPainter* painter, const QRectF& rc, const QString& text, bool hover)
           {
-            if(!hover)
-            {
-              painter->setPen(Qt::black);
-              painter->fillRect(rc, Qt::lightGray);
-            }
-            else
-            {
-              painter->setPen(Qt::black);
-              painter->fillRect(rc, Qt::gray);
-            }
-
+            !hover ? painter->setBrush(Qt::lightGray) : painter->setBrush(Qt::gray);
             painter->drawRect(rc);
+            painter->setPen(Qt::black);
             painter->drawText(rc, text, Qt::AlignHCenter | Qt::AlignVCenter);
           }
 
@@ -132,9 +123,8 @@ namespace te
             painter.drawText(QRect(10, 1, this->width(), 19), tr("Basic Colors"), Qt::AlignLeft | Qt::AlignVCenter);
 
             int col, row;
-
             m_colorInfos.clear();
-
+            painter.setPen(Qt::darkGray);
             for(int i = 0; i < 48; ++i)
             {
               QRectF rc;
@@ -148,7 +138,8 @@ namespace te
               rc.setHeight(COLORSIZE - SPACE);
 
               QColor color(m_stdrgb[i]);
-              painter.fillRect(rc, color);
+              painter.setBrush(color);
+              painter.drawRect(rc);
               m_colorInfos.append(ColorKeyInfo(color, rc));
             }
 
@@ -156,24 +147,24 @@ namespace te
 
             m_buttonKeyRect = QRect(SPACE, (row + 1) * COLORSIZE + SPACE + MARGINY + 5, width() - 2 * SPACE, 20);
             
-            paintButton(&painter, m_buttonKeyRect, tr("Custom Colors..."), m_buttonKeyRect.contains(mousePos));
+            paintButton(&painter, m_buttonKeyRect, tr("More Colors..."), m_buttonKeyRect.contains(mousePos));
 
             for(int i = 0; i < m_colorInfos.count(); ++i)
             {
               if(m_colorInfos[i].m_rect.contains(mousePos))
               {
-                QPainter painter(this);
-
                 m_hoverColor = m_colorInfos[i].m_color;
-                QRectF rc = m_colorInfos[i].m_rect;
 
+                QRectF rc = m_colorInfos[i].m_rect;
                 rc.setTop(rc.top() - 2);
                 rc.setLeft(rc.left() - 2);
                 rc.setBottom(rc.bottom() + 2);
                 rc.setRight(rc.right() + 2);
 
-                painter.setPen(QPen(Qt::black, 2));
+                painter.setBrush(m_hoverColor);
                 painter.drawRect(rc);
+
+                break;
               }
             }
           }
@@ -239,17 +230,21 @@ namespace te
 
           ColorPickerToolButton(QWidget* parent = 0);
 
-          void mouseReleaseEvent(QMouseEvent* e);
+          ~ColorPickerToolButton();
 
           void setColor(const QColor& color);
 
-          QColor color() const { return m_selectedColor; }
+          QColor getColor() const;
+
+        protected:
 
           void resizeEvent(QResizeEvent* e);
 
+          void mousePressEvent(QMouseEvent* e);
+
           void updateIcon();
 
-        public slots:
+        protected slots:
 
           void onPopupSelected(const QColor& color);
 

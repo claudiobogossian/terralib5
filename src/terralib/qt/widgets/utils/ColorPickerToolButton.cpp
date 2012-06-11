@@ -26,23 +26,23 @@
 // TerraLib
 #include "ColorPickerToolButton.h"
 
-te::qt::widgets::ColorPickerToolButton::ColorPickerToolButton(QWidget* parent) : QToolButton(parent)
+te::qt::widgets::ColorPickerToolButton::ColorPickerToolButton(QWidget* parent)
+  : QToolButton(parent),
+    m_popup(new ColorPickerPopup)
 {
   setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
   setPopupMode(QToolButton::MenuButtonPopup);
   setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
   setText(tr("Color"));
-
-  m_popup = new ColorPickerPopup;
-  m_popup->setObjectName("popup");
-  m_popup->setFrameShape(QFrame::StyledPanel);
-  m_popup->setFrameShadow(QFrame::Plain);
-
   setIconSize(QSize(16, 16));
+  setColor(Qt::black);
+  
+  // Signals & slots
+  connect(m_popup, SIGNAL(selected(const QColor&)), this, SLOT(onPopupSelected(const QColor&)));
+}
 
-  connect(m_popup, SIGNAL(selected(QColor)), this, SLOT(onPopupSelected(QColor)));
-
-  m_selectedColor = Qt::black;
+te::qt::widgets::ColorPickerToolButton::~ColorPickerToolButton()
+{
 }
 
 void te::qt::widgets::ColorPickerToolButton::setColor(const QColor& color)
@@ -51,29 +51,35 @@ void te::qt::widgets::ColorPickerToolButton::setColor(const QColor& color)
   updateIcon();
 }
 
-void te::qt::widgets::ColorPickerToolButton::mouseReleaseEvent(QMouseEvent* /*e*/)
+QColor te::qt::widgets::ColorPickerToolButton::getColor() const
 {
-  m_popup->move(mapToGlobal(QPoint(0, height())));
-  m_popup->show();
-}
-
-void te::qt::widgets::ColorPickerToolButton::onPopupSelected(const QColor& color)
-{
-  setColor(color);
-
-  emit colorChanged();
+  return m_selectedColor;
 }
 
 void te::qt::widgets::ColorPickerToolButton::resizeEvent(QResizeEvent* e)
 {
   QToolButton::resizeEvent(e);
-  //setIconSize(QSize(e->size().width() - 20, e->size().height() - 6));
   updateIcon();
+}
+
+void te::qt::widgets::ColorPickerToolButton::mousePressEvent(QMouseEvent* /*e*/)
+{
+  m_popup->move(mapToGlobal(QPoint(0, height())));
+  m_popup->show();
 }
 
 void te::qt::widgets::ColorPickerToolButton::updateIcon()
 {
   QPixmap pix(iconSize());
   pix.fill(m_selectedColor);
+  QPainter p(&pix);
+  p.setPen(QPen(Qt::darkGray, 2));
+  p.drawRect(pix.rect());
   setIcon(pix);
+}
+
+void te::qt::widgets::ColorPickerToolButton::onPopupSelected(const QColor& color)
+{
+  setColor(color);
+  emit colorChanged();
 }
