@@ -27,9 +27,10 @@
 #include "LoadModules.h"
 
 // TerraLib
-#include "../../../src/terralib/common.h"
-#include "../../../src/terralib/raster/RasterFactory.h"
-#include "../../../src/terralib/qt/widgets/rp/SegmenterDialog.h"
+#include <terralib/common.h>
+#include <terralib/raster/RasterFactory.h>
+#include <terralib/qt/widgets/rp/SegmenterDialog.h>
+#include <terralib/qt/widgets/rp/ContrastDialog.h>
 
 // QT
 #include <QtGui/QApplication>
@@ -70,6 +71,38 @@ void SegmenterDialogExample( int argc, char** argv )
   dialogInstance.getOutputRaster( outputRasterPtr );
 }
 
+void ContrastDialogExample( int argc, char** argv )
+{
+  // open the input raster
+  
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/rasters/cbers2b_rgb342_crop.tif";
+  
+  std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
+  
+  // Defining the output raster info
+  
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE 
+    "/rasters/terralib_example_qt_rp_ContrastDialog.tif";  
+  
+  // Executing the dialog
+  
+  QApplication app(argc, argv);
+  
+  te::qt::widgets::ContrastDialog dialogInstance( inputRasterPointer.get(),
+    "GDAL", outputRasterInfo, 0, 0 );
+    
+  dialogInstance.exec();
+  
+  dialogInstance.hide();
+  
+  // Getting the result
+  
+  boost::shared_ptr< te::rst::Raster > outputRasterPtr;
+  dialogInstance.getOutputRaster( outputRasterPtr );
+}
+
 int main(int argc, char** argv)
 {
   try
@@ -79,6 +112,7 @@ int main(int argc, char** argv)
     LoadModules();
     
     SegmenterDialogExample( argc, argv );
+    ContrastDialogExample( argc, argv );
   }
   catch(const std::exception& e)
   {

@@ -51,8 +51,8 @@ void Contrast()
       {
         contInputParameters.m_inRasterBands.push_back(b);
       }
-      contOutputParameters.m_rInfo = orinfo;
-      contOutputParameters.m_rType = "GDAL";
+      contOutputParameters.m_createdOutRasterInfo = orinfo;
+      contOutputParameters.m_createdOutRasterDSType = "GDAL";
 
 // execute the algorithm
       te::rp::Contrast continstance;

@@ -3,26 +3,21 @@ cmake_minimum_required(VERSION 2.8)
 if(WIN32)
   find_path(GDAL_INCLUDE_ALG
             gdal_alg.h
-            PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
             PATH_SUFFIXES "alg" "gdal/alg")
     
   find_path(GDAL_INCLUDE_GCORE
             gdal.h
-            PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
             PATH_SUFFIXES "gcore" "gdal/gcore" )
             
   find_path(GDAL_INCLUDE_OGR
             ogr_core.h
-            PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
             PATH_SUFFIXES "ogr" "gdal/ogr")
             
   find_path(GDAL_INCLUDE_PORT
             cpl_config.h
-            PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal"
             PATH_SUFFIXES "port" "gdal/port")
 
   find_path(GDAL_INCLUDE_OGRSF ogrsf_frmts.h
-            PATHS "$ENV{TERRALIB_DEP_MSVC2010}/gdal/ogr"
             PATH_SUFFIXES "ogrsf_frmts" "gdal/ogr" "gdal/ogr/ogrsf_frmts")
             
   set(GDAL_INCLUDE_DIR
@@ -34,11 +29,11 @@ if(WIN32)
        
   find_library(GDAL_LIBRARY_RELEASE 
                NAMES gdal_i.lib
-               HINTS "$ENV{TERRALIB_DEP_MSVC2010}/gdal/win32/release")
+               )
 
   find_library(GDAL_LIBRARY_DEBUG 
-               NAMES gdal_i.lib 
-               HINTS "$ENV{TERRALIB_DEP_MSVC2010}/gdal/win32/debug")
+               NAMES gdal_i.lib
+               )
           
   checkLibNames("GDAL")
        

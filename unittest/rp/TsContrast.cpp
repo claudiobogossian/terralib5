@@ -64,8 +64,8 @@ void TsContrast::LinearContrast()
   algoInputParams.m_inRasterBands.push_back( 0 );
   algoInputParams.m_inRasterBands.push_back( 1 );
   algoInputParams.m_inRasterBands.push_back( 2 );
-  algoOutputParams.m_rInfo = outputRasterInfo;
-  algoOutputParams.m_rType =  "GDAL";
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType =  "GDAL";
 
   // Executing the algorithm
 
@@ -102,8 +102,8 @@ void TsContrast::HistogramEqualizationContrast()
   algoInputParams.m_inRasterBands.push_back( 0 );
   algoInputParams.m_inRasterBands.push_back( 1 );
   algoInputParams.m_inRasterBands.push_back( 2 );
-  algoOutputParams.m_rInfo = outputRasterInfo;
-  algoOutputParams.m_rType = "GDAL";
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType = "GDAL";
 
   // Executing the algorithm
 
@@ -141,8 +141,8 @@ void TsContrast::SetMeanAndStdContrast()
   algoInputParams.m_inRasterBands.push_back( 0 );
   algoInputParams.m_inRasterBands.push_back( 1 );
   algoInputParams.m_inRasterBands.push_back( 2 );
-  algoOutputParams.m_rInfo = outputRasterInfo;
-  algoOutputParams.m_rType = "GDAL";
+  algoOutputParams.m_createdOutRasterInfo = outputRasterInfo;
+  algoOutputParams.m_createdOutRasterDSType = "GDAL";
 
   // Executing the algorithm
 
