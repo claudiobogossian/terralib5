@@ -192,16 +192,13 @@ namespace te
             if(m_buttonKeyRect.contains(e->posF()))
             {
               // Show original color dialog
-              QColorDialog* dialog = new QColorDialog(this);
-              dialog->setOptions(QColorDialog::ShowAlphaChannel);
+              QColor color = QColorDialog::getColor(Qt::white, this, "", QColorDialog::ShowAlphaChannel);
+              if(!color.isValid())
+                return;
 
-              if(dialog->exec())
-              {
-                m_hoverColor = dialog->selectedColor();
-                delete dialog;
-                emit selected(m_hoverColor);
-                close();
-              }
+              m_hoverColor = color;
+              emit selected(m_hoverColor);
+              close();
             }
           }
 

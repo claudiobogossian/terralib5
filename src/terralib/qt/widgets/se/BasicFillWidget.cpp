@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../maptools/Utils.h"
 #include "../../../se/Fill.h"
+#include "../utils/ColorPickerToolButton.h"
 #include "BasicFillWidget.h"
 #include "ui_BasicFillWidgetForm.h"
 
@@ -43,10 +44,20 @@ te::qt::widgets::BasicFillWidget::BasicFillWidget(QWidget* parent, Qt::WindowFla
 {
   m_ui->setupUi(this);
 
+  // Color Picker
+  m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
+  m_colorPicker->setFixedSize(70, 24);
+
+  // Adjusting...
+  QGridLayout* layout = new QGridLayout(m_ui->m_colorPickerFrame);
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addWidget(m_colorPicker);
+
   initialize();
 
   // Signals & slots
-  connect(m_ui->m_fillColorPushButton, SIGNAL(clicked()), SLOT(onFillColorPushButtonClicked()));
+  connect(m_colorPicker, SIGNAL(colorChanged()), SLOT(onColorChanged()));
   connect(m_ui->m_fillOpacitySlider, SIGNAL(valueChanged(int)), SLOT(onFillOpacitySliderValueChanged(int)));
 }
 
@@ -93,36 +104,31 @@ void te::qt::widgets::BasicFillWidget::updateUi()
 
 void te::qt::widgets::BasicFillWidget::updateUiFillColor()
 {
-  QPalette pallete;
-  pallete.setColor(QPalette::Background, m_color);
-  m_ui->m_fillColorLabel->setPalette(pallete);
+  m_colorPicker->setColor(m_color);
 }
 
-void te::qt::widgets::BasicFillWidget::onFillColorPushButtonClicked()
+void te::qt::widgets::BasicFillWidget::onColorChanged()
 {
-  QColor color = QColorDialog::getColor(m_color, this);
-  if(!color.isValid())
-    return;
-
   // The new fill color
-  m_color.setRgb(color.red(), color.green(), color.blue(), m_color.alpha());
+  QColor selectedColor = m_colorPicker->getColor();
+  // Updating opacity
+  m_color.setRgb(selectedColor.red(), selectedColor.green(), selectedColor.blue(), m_color.alpha());
+
+  updateUiFillColor();
 
   // Updating fill color
   m_fill->setColor(m_color.name().toStdString());
   emit fillChanged();
-
-  updateUiFillColor();
 }
 
 void te::qt::widgets::BasicFillWidget::onFillOpacitySliderValueChanged(int value)
 {
   double opacity = value / 100.0;
 
+  m_color.setAlpha(opacity * 255);
+  updateUiFillColor();
+
   // Updating fill opacity
   m_fill->setOpacity(QString::number(opacity, 'g', 2).toStdString());
   emit fillChanged();
-
-  m_color.setAlpha(opacity * 255);
-
-  updateUiFillColor();
 }

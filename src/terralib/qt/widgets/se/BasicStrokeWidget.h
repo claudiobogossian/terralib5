@@ -53,6 +53,9 @@ namespace te
   {
     namespace widgets
     {
+// Forward declarations
+      class ColorPickerToolButton;
+
       /*!
         \class BasicStrokeWidget
 
@@ -135,7 +138,7 @@ namespace te
 
         protected slots:
 
-          void onStrokeColorPushButtonClicked();
+          void onColorChanged();
 
           void onStrokeOpacitySliderValueChanged(int value);
 
@@ -155,6 +158,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::BasicStrokeWidgetForm> m_ui; //!< Widget form.
+          ColorPickerToolButton* m_colorPicker;          //!< Widget used to pick a color.
           QButtonGroup* m_strokeJoinStyleButtonGroup;    //!< Button group used to control the join styles.
           QButtonGroup* m_strokeCapStyleButtonGroup;     //!< Button group used to control the cap styles.
           QColor m_color;                                //!< Auxiliary color attribute.
