@@ -108,10 +108,11 @@ namespace te
     
     void Contrast::OutputParameters::reset() throw( te::rp::Exception )
     {
-      m_outRasterPtr.reset();
+      m_outRasterPtr = 0;
+      m_createdOutRasterPtr.reset();
       m_outRasterBands.clear();
-      m_rType.clear();
-      m_rInfo.clear();
+      m_createdOutRasterDSType.clear();
+      m_createdOutRasterInfo.clear();
     }
     
     const Contrast::OutputParameters& Contrast::OutputParameters::operator=( 
@@ -120,9 +121,10 @@ namespace te
       reset();
         
       m_outRasterPtr = params.m_outRasterPtr;
+      m_createdOutRasterPtr = params.m_createdOutRasterPtr;
       m_outRasterBands = params.m_outRasterBands;
-      m_rType = params.m_rType;
-      m_rInfo = params.m_rInfo;
+      m_createdOutRasterDSType = params.m_createdOutRasterDSType;
+      m_createdOutRasterInfo = params.m_createdOutRasterInfo;
       
       return *this;
     }
@@ -152,7 +154,7 @@ namespace te
         Contrast::OutputParameters* >( &outputParams );          
       TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr, "Invalid parameters" );      
       
-      if( m_outputParametersPtr->m_outRasterPtr.get() == 0 )
+      if( m_outputParametersPtr->m_outRasterPtr == 0 )
       {
         m_outputParametersPtr->m_outRasterBands.clear();
 
@@ -171,16 +173,19 @@ namespace te
           m_outputParametersPtr->m_outRasterBands.push_back( inRasterBandsIdx );
         }
         
-        m_outputParametersPtr->m_outRasterPtr.reset( 
+        m_outputParametersPtr->m_createdOutRasterPtr.reset( 
           te::rst::RasterFactory::make(
-            m_outputParametersPtr->m_rType, 
+            m_outputParametersPtr->m_createdOutRasterDSType, 
             new te::rst::Grid( *( m_inputParameters.m_inRasterPtr->getGrid() ) ),
             bandsProperties,
-            m_outputParametersPtr->m_rInfo,
+            m_outputParametersPtr->m_createdOutRasterInfo,
             0,
             0 ) );
-        TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr->m_outRasterPtr.get(),
+        TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr->m_createdOutRasterPtr.get(),
           "Output raster creation error" );
+          
+        m_outputParametersPtr->m_outRasterPtr = 
+          m_outputParametersPtr->m_createdOutRasterPtr.get();
       }
       else
       {
@@ -277,12 +282,12 @@ namespace te
     bool Contrast::execLinearContrast()
     {
       assert( m_inputParameters.m_inRasterPtr );
-      assert( m_outputParametersPtr->m_outRasterPtr.get() );
+      assert( m_outputParametersPtr->m_outRasterPtr );
       
       for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
         m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
       {
-        te::rst::Band* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand( 
+        te::rst::Band const* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand( 
           m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] );
         te::rst::Band* outRasterBandPtr =m_outputParametersPtr->m_outRasterPtr->getBand( 
          m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] );
@@ -315,7 +320,7 @@ namespace te
     bool Contrast::execHistogramEqualizationContrast()
     {
       assert( m_inputParameters.m_inRasterPtr );
-      assert(m_outputParametersPtr->m_outRasterPtr.get() );
+      assert(m_outputParametersPtr->m_outRasterPtr );
 
 // ensure maxInput has a value, to normalize resultant image
       if(m_inputParameters.m_hECMaxInput == ( -1.0 * DBL_MAX ))
@@ -337,11 +342,13 @@ namespace te
         unsigned int niband = m_inputParameters.m_inRasterBands[b];
         unsigned int noband =m_outputParametersPtr->m_outRasterBands[b];
 
-        te::rst::Band* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
+        te::rst::Band const* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
         te::rst::Band* oband =m_outputParametersPtr->m_outRasterPtr->getBand(noband);
 
-        te::rst::BandIterator<double> ibandit = te::rst::BandIterator<double>::begin(iband);
-        te::rst::BandIterator<double> ibanditend = te::rst::BandIterator<double>::end(iband);
+        te::rst::BandIterator<double> ibandit = 
+          te::rst::BandIterator<double>::begin((te::rst::Band*)iband);
+        te::rst::BandIterator<double> ibanditend = 
+          te::rst::BandIterator<double>::end((te::rst::Band*)iband);
 
         std::map<double, double> lut;
         const double minp = rsummary->at(niband).m_minVal->real();
@@ -368,7 +375,7 @@ namespace te
     bool Contrast::execSetMeanAndStdContrast()
     {
       assert( m_inputParameters.m_inRasterPtr );
-      assert(m_outputParametersPtr->m_outRasterPtr.get() );
+      assert(m_outputParametersPtr->m_outRasterPtr );
 
       const te::rst::RasterSummary* rsummary = 
         te::rst::RasterSummaryManager::getInstance().get(
@@ -380,11 +387,13 @@ namespace te
         unsigned int niband = m_inputParameters.m_inRasterBands[b];
         unsigned int noband =m_outputParametersPtr->m_outRasterBands[b];
 
-        te::rst::Band* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
+        te::rst::Band const* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
         te::rst::Band* oband =m_outputParametersPtr->m_outRasterPtr->getBand(noband);
 
-        te::rst::BandIterator<double> ibandit = te::rst::BandIterator<double>::begin(iband);
-        te::rst::BandIterator<double> ibanditend = te::rst::BandIterator<double>::end(iband);
+        te::rst::BandIterator<double> ibandit = 
+          te::rst::BandIterator<double>::begin((te::rst::Band*)iband);
+        te::rst::BandIterator<double> ibanditend = 
+          te::rst::BandIterator<double>::end((te::rst::Band*)iband);
 
         const double meanp = rsummary->at(niband).m_meanVal->real();
         const double stdp = rsummary->at(niband).m_stdVal->real();
@@ -407,7 +416,7 @@ namespace te
       return true;
     }
 
-    bool Contrast::remapBandLevels( te::rst::Band& inRasterBand,
+    bool Contrast::remapBandLevels( const te::rst::Band& inRasterBand,
       te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr )
     {
       const unsigned int inBlkWidthPixels = inRasterBand.getProperty()->m_blkw;

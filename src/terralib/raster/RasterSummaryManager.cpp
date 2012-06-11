@@ -32,7 +32,7 @@
 // STL
 #include <complex>
 
-void te::rst::RasterSummaryManager::add(Raster* raster, RasterSummary* summary)
+void te::rst::RasterSummaryManager::add(Raster const* raster, RasterSummary* summary)
 {
   if (m_rasterSummaries.find(raster) != m_rasterSummaries.end())
     m_rasterSummaries.erase(raster);
@@ -40,7 +40,7 @@ void te::rst::RasterSummaryManager::add(Raster* raster, RasterSummary* summary)
   m_rasterSummaries.insert(raster, summary);
 }
 
-const te::rst::RasterSummary* te::rst::RasterSummaryManager::find(Raster* raster) const
+const te::rst::RasterSummary* te::rst::RasterSummaryManager::find(Raster const* raster) const
 {
   if (m_rasterSummaries.find(raster) == m_rasterSummaries.end())
     return 0;
@@ -48,14 +48,14 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::find(Raster* raster
   return &m_rasterSummaries.at(raster);
 }
 
-void te::rst::RasterSummaryManager::remove(Raster* raster)
+void te::rst::RasterSummaryManager::remove(Raster const* raster)
 {
   m_rasterSummaries.erase(raster);
 }
 
-const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(Raster* raster, const SummaryTypes types)
+const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(Raster const* raster, const SummaryTypes types)
 {
-  boost::ptr_map<Raster*, RasterSummary>::iterator it = m_rasterSummaries.find(raster);
+  boost::ptr_map<Raster const*, RasterSummary>::iterator it = m_rasterSummaries.find(raster);
 
   te::rst::RasterSummary* rs = 0;
 

@@ -87,7 +87,7 @@ namespace te
             
             double m_sMASCStdInput; //!< The standard deviation to be applied in the contrast image.
 
-            te::rst::Raster* m_inRasterPtr; //!< Input raster.
+            te::rst::Raster const* m_inRasterPtr; //!< Input raster.
             
             std::vector< unsigned int > m_inRasterBands; //!< Bands to be processed from the input raster.
           
@@ -118,13 +118,15 @@ namespace te
         {
           public:
             
-            mutable std::auto_ptr< te::rst::Raster > m_outRasterPtr; //!< A pointer to a valid (initialized ) output raster instance or an empty pointer.
+            te::rst::Raster* m_outRasterPtr; //!< A pointer to a valid initiated raster instance where the result must be written, leave NULL to create a new instance(in this case the other output parameters must be used).
+            
+            boost::shared_ptr< te::rst::Raster > m_createdOutRasterPtr; //!< A pointer to the created output raster instance, or an empty pointer empty if the result must be written to the raster pointed m_outRasterPtr.
             
             std::vector< unsigned int > m_outRasterBands; //!< Bands to be processed from the output raster.
             
-            std::string m_rType; //!< Output raster data source type (as described in te::raster::RasterFactory ).
+            std::string m_createdOutRasterDSType; //!< Output raster data source type (as described in te::raster::RasterFactory ), leave empty if the result must be written to the raster pointed m_outRasterPtr.
             
-            std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory). 
+            std::map< std::string, std::string > m_createdOutRasterInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory), leave empty if the result must be written to the raster pointed m_outRasterPtr.
           
             OutputParameters();
             
@@ -195,7 +197,7 @@ namespace te
           \param remapFuncPtr The remap function pointer used.
           \return true if OK, false on errors.
          */        
-        bool remapBandLevels( te::rst::Band& inRasterBand,
+        bool remapBandLevels( const te::rst::Band& inRasterBand,
           te::rst::Band& outRasterBand, RemapFuncPtrT remapFuncPtr );
           
         // Variables used by offSetGainRemap

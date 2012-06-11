@@ -219,7 +219,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
-     ${SRCDIR}/widgets/rp/SegmenterDialog.h
+   ${SRCDIR}/widgets/rp/ContrastDialog.h
+   ${SRCDIR}/widgets/rp/SegmenterDialog.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
