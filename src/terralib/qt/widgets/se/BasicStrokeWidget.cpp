@@ -28,11 +28,13 @@
 #include "../../../maptools/Enums.h"
 #include "../../../se/Stroke.h"
 #include "../../../se/SvgParameter.h"
+#include "../utils/ColorPickerToolButton.h"
 #include "BasicStrokeWidget.h"
 #include "ui_BasicStrokeWidgetForm.h"
 
 // Qt
 #include <QtGui/QColorDialog>
+#include <QtGui/QGridLayout>
 #include <QtGui/QPainter>
 
 // STL
@@ -45,10 +47,20 @@ te::qt::widgets::BasicStrokeWidget::BasicStrokeWidget(QWidget* parent, Qt::Windo
 {
   m_ui->setupUi(this);
 
+  // Color Picker
+  m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
+  m_colorPicker->setFixedSize(70, 24);
+
+  // Adjusting...
+  QGridLayout* layout = new QGridLayout(m_ui->m_colorPickerFrame);
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addWidget(m_colorPicker);
+
   initialize();
 
   // Signals & slots
-  connect(m_ui->m_strokeColorPushButton, SIGNAL(clicked()), SLOT(onStrokeColorPushButtonClicked()));
+  connect(m_colorPicker, SIGNAL(colorChanged()), SLOT(onColorChanged()));
   connect(m_ui->m_strokeOpacitySlider, SIGNAL(valueChanged(int)), SLOT(onStrokeOpacitySliderValueChanged(int)));
   connect(m_ui->m_strokeWidthDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(onStrokeWidthDoubleSpinBoxValueChanged(const QString&)));
   connect(m_ui->m_strokeDashComboBox, SIGNAL(currentIndexChanged(int)), SLOT(onStrokeDashComboBoxCurrentIndexChanged(int)));
@@ -90,9 +102,6 @@ void te::qt::widgets::BasicStrokeWidget::initialize()
   // Default stroke color
   m_color = QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR);
   updateUiStrokeColor();
-
-  // Width uoms
-  m_ui->m_strokeUomComboBox->addItem("px");
 
   // Dash styles selection
   fillStrokeDashStyleComboBox();
@@ -154,9 +163,7 @@ void te::qt::widgets::BasicStrokeWidget::updateUi()
 
 void te::qt::widgets::BasicStrokeWidget::updateUiStrokeColor()
 {
-  QPalette pallete;
-  pallete.setColor(QPalette::Background, m_color);
-  m_ui->m_strokeColorLabel->setPalette(pallete);
+  m_colorPicker->setColor(m_color);
 }
 
 void te::qt::widgets::BasicStrokeWidget::updateUiDashStyle(const std::string& pattern)
@@ -205,7 +212,7 @@ void te::qt::widgets::BasicStrokeWidget::fillStrokeDashStyleComboBox()
   m_ui->m_strokeDashComboBox->clear();
 
   // Dash graphical representation size
-  QSize size(200, 5);
+  QSize size(150, 5);
 
   // Adjusts the dash combo box to comport the graphical representation
   m_ui->m_strokeDashComboBox->setIconSize(size);
@@ -236,37 +243,35 @@ void te::qt::widgets::BasicStrokeWidget::fillStrokeDashStyleComboBox()
     painter.setPen(pen);
     painter.drawLine(line);
     
-    m_ui->m_strokeDashComboBox->addItem(pixmap, pattern.c_str());
+    m_ui->m_strokeDashComboBox->addItem(pixmap, "");
+    //m_ui->m_strokeDashComboBox->addItem(pixmap, pattern.c_str());
   }
 }
 
-void te::qt::widgets::BasicStrokeWidget::onStrokeColorPushButtonClicked()
+void te::qt::widgets::BasicStrokeWidget::onColorChanged()
 {
-  QColor color = QColorDialog::getColor(m_color, this);
-  if(!color.isValid())
-    return;
+  // The new fill color
+  QColor selectedColor = m_colorPicker->getColor();
+  // Updating opacity
+  m_color.setRgb(selectedColor.red(), selectedColor.green(), selectedColor.blue(), m_color.alpha());
 
-  // The new stroke color
-  m_color.setRgb(color.red(), color.green(), color.blue(), m_color.alpha());
+  updateUiStrokeColor();
 
   // Updating stroke color
   m_stroke->setColor(m_color.name().toStdString());
   emit strokeChanged();
-
-  updateUiStrokeColor();
 }
 
 void te::qt::widgets::BasicStrokeWidget::onStrokeOpacitySliderValueChanged(int value)
 {
   double opacity = value / 100.0;
 
+  m_color.setAlpha(opacity * 255);
+  updateUiStrokeColor();
+
   // Updating stroke opacity
   m_stroke->setOpacity(QString::number(opacity, 'g', 2).toStdString());
   emit strokeChanged();
-
-  m_color.setAlpha(opacity * 255);
-
-  updateUiStrokeColor();
 }
 
 void te::qt::widgets::BasicStrokeWidget::onStrokeWidthDoubleSpinBoxValueChanged(const QString& text)

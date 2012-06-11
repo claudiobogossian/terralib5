@@ -50,6 +50,9 @@ namespace te
   {
     namespace widgets
     {
+// Forward declarations
+      class ColorPickerToolButton;
+
       /*!
         \class BasicFillWidget
 
@@ -108,7 +111,7 @@ namespace te
 
         protected slots:
 
-          void onFillColorPushButtonClicked();
+          void onColorChanged();
 
           void onFillOpacitySliderValueChanged(int value);
 
@@ -120,6 +123,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::BasicFillWidgetForm> m_ui; //!< Widget form.
+          ColorPickerToolButton* m_colorPicker;        //!< Widget used to pick a color.
           QColor m_color;                              //!< Auxiliary color attribute.
           te::se::Fill* m_fill;                        //!< Fill element that will be configured by this widget.
       };
