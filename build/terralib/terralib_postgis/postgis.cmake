@@ -3,11 +3,9 @@ find_package(Boost 1.47 COMPONENTS filesystem system REQUIRED)
 set (DEP_LIBS ${Boost_LIBRARIES})
 set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 
-find_package(PostgreSQL)
-if(PostgreSQL_FOUND)
-	list (APPEND DEP_LIBS ${PostgreSQL_LIBRARY})
-	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
-endif()
+find_package(PostgreSQL REQUIRED)
+list (APPEND DEP_LIBS ${PostgreSQL_LIBRARY})
+list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
 
 #Definitions for windows compiling
 if(WIN32)
