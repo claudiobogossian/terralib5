@@ -25,6 +25,10 @@ include ( ${T5_MODULEPATH}/UtilFunctions.cmake )
 # Include the dependencies. 
 include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
 
+if(WIN32)
+  include (${T5_MODULEPATH}/WinConfig.cmake)
+endif()
+
 set (DEPS @TE_3DS@)
 
 foreach(DEP ${DEPS})
