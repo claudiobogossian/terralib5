@@ -5,7 +5,7 @@
 // TerraLib
 #include "DisplayEventHandler.h"
 #include <terralib/qt/widgets/canvas/Canvas.h>
-#include <terralib/geometry/geometry.h>
+#include <terralib/geometry/Geometry.h>
 
 //Qt
 #include <QtGui/QPixmap>
