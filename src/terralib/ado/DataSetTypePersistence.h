@@ -74,8 +74,10 @@ namespace te
         
         void drop(te::da::UniqueKey* uk);
         
-        void add(te::da::DataSetType* dt, te::da::Index* index); 
-        
+        void add(te::da::DataSetType* dt, te::da::Index* index);
+
+        void add(te::da::DataSetType* dt, te::da::Index* index, const std::map<std::string, std::string>& options);
+
         void drop(te::da::Index* index);
 
         void add(te::da::DataSetType* dt, te::da::ForeignKey* fk);
