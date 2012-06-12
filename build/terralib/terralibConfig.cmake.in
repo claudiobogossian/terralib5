@@ -61,6 +61,9 @@ else()
     include (${T5_MODULEPATH}/WinConfig.cmake)
   endif()
 
+  # Configuration files folder.
+  set (DEFAULT_LOGCONF_FILE ${TE_ROOT_INC}/log/te-log.conf)
+  
   set (DEPS @TE_3DS@)
   
   foreach(DEP ${DEPS})

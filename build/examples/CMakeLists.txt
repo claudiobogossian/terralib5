@@ -3,28 +3,40 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "all")
 project(${PROJ_NAME})
 
+find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
+  gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
+  symbology xerces xlink xml REQUIRED)
+  
 ############### Get the data used for testing the example ###############
+set (DEFAULT_LOGFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to the folder that contains \"conf/te-log.conf\" file.")
 set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
 if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   message (STATUS "-- Installing data for examples.")
   
-  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.tar.gz" ${DATA_DIR}/data.tar.gz)
+  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${DATA_DIR}/data.zip)
                   
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.tar.gz
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.zip
                   WORKING_DIRECTORY ${DATA_DIR})
 
+  file (REMOVE ${DATA_DIR}/data.zip)
   message (STATUS "-- Data files installed.")
 endif()
 
+if(NOT EXISTS ${DEFAULT_LOGFILE_DIR}/conf/te-log.conf)
+  message (STATUS "-- Copying ${DEFAULT_LOGCONF_FILE}.")
+  configure_file(${DEFAULT_LOGCONF_FILE} "${DEFAULT_LOGFILE_DIR}/conf/te-log.conf" COPYONLY)
+  message (STATUS "-- te-log.conf copied in \"${DEFAULT_LOGFILE_DIR}/conf\".")
+endif()
+
 set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}/data")
+set(TE_LOGGER_DEFAULT_CONFIGURATION_FILE "${DEFAULT_LOGFILE_DIR}/conf/te-log.conf")
 
-add_definitions( -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" )
+add_definitions( 
+  -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
+  -DTE_LOGGER_DEFAULT_CONFIGURATION_FILE="${TE_LOGGER_DEFAULT_CONFIGURATION_FILE}"
+)
 
-find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
-  gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
-  symbology xerces xlink xml REQUIRED)
-  
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
 option (EXAMPLE_COLORBAR "Build colorbar example." ON)  

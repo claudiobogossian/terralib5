@@ -118,7 +118,7 @@ int main(int /*argc*/, char** /*argv*/)
 // Printing testResults in XML file   
   CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_xml.xml");
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet( "report.xsl" ); //it is found at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl
+  xml.setStyleSheet( TE_DATA_EXAMPLE_LOCALE"/report.xsl" ); //it is found at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl
   xml.write();
   file2.close();
 

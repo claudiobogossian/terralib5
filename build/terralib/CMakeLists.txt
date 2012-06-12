@@ -187,6 +187,12 @@ install (
   PATTERN "*Package*" EXCLUDE
 )
 
+install ( 
+  DIRECTORY ${ROOT}/log
+  DESTINATION .
+  COMPONENT HEADERS
+)
+
 # Installing TerraLib remaining header files
 FILE ( GLOB h_files ${ROOT}/src/*.h )
 
