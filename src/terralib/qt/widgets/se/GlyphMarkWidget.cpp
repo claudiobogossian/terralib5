@@ -69,7 +69,7 @@ te::qt::widgets::GlyphMarkWidget::GlyphMarkWidget(QWidget* parent, Qt::WindowFla
   // Signals & slots
   connect(m_ui->m_fontComboBox, SIGNAL(currentFontChanged(const QFont&)), m_charMapWidget, SLOT(updateFont(const QFont&)));
   connect(m_ui->m_fontComboBox, SIGNAL(currentFontChanged(const QFont&)), SLOT(onCurrentFontChanged(const QFont&)));
-  connect(m_charMapWidget, SIGNAL(characterSelected(const unsigned int&)), SLOT(onCharacterSelected(const unsigned int&)));
+  connect(m_charMapWidget, SIGNAL(charSelected(const unsigned int&)), SLOT(onCharSelected(const unsigned int&)));
   connect(m_fillWidget, SIGNAL(fillChanged()), SLOT(onFillChanged()));
   connect(m_ui->m_fillGroupBox, SIGNAL(toggled(bool)), this, SLOT(onFillGroupBoxToggled(bool)));
   connect(m_strokeWidget, SIGNAL(strokeChanged()), SLOT(onStrokeChanged()));
@@ -147,7 +147,7 @@ void te::qt::widgets::GlyphMarkWidget::onCurrentFontChanged(const QFont& /*font*
   updateMarkName();
 }
 
-void te::qt::widgets::GlyphMarkWidget::onCharacterSelected(const unsigned int& /*charCode*/)
+void te::qt::widgets::GlyphMarkWidget::onCharSelected(const unsigned int& /*charCode*/)
 {
   updateMarkName();
 }

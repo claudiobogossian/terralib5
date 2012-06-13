@@ -113,7 +113,7 @@ namespace te
 
           void onCurrentFontChanged(const QFont& font);
 
-          void onCharacterSelected(const unsigned int& charCode);
+          void onCharSelected(const unsigned int& charCode);
 
           void onStrokeChanged();
 
