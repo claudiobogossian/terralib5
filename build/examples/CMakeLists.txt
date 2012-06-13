@@ -8,7 +8,6 @@ find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess dat
   symbology xerces xlink xml REQUIRED)
   
 ############### Get the data used for testing the example ###############
-set (DEFAULT_LOGFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to the folder that contains \"conf/te-log.conf\" file.")
 set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
 if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
@@ -23,18 +22,10 @@ if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   message (STATUS "-- Data files installed.")
 endif()
 
-if(NOT EXISTS ${DEFAULT_LOGFILE_DIR}/conf/te-log.conf)
-  message (STATUS "-- Copying ${DEFAULT_LOGCONF_FILE}.")
-  configure_file(${DEFAULT_LOGCONF_FILE} "${DEFAULT_LOGFILE_DIR}/conf/te-log.conf" COPYONLY)
-  message (STATUS "-- te-log.conf copied in \"${DEFAULT_LOGFILE_DIR}/conf\".")
-endif()
-
 set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}/data")
-set(TE_LOGGER_DEFAULT_CONFIGURATION_FILE "${DEFAULT_LOGFILE_DIR}/conf/te-log.conf")
 
 add_definitions( 
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
-  -DTE_LOGGER_DEFAULT_CONFIGURATION_FILE="${TE_LOGGER_DEFAULT_CONFIGURATION_FILE}"
 )
 
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
@@ -166,7 +157,24 @@ if(EXAMPLE_QT_UTILS)
   add_subdirectory(terralib_example_qt/utils)
 endif()
 
+# Verifying if some packag was not found.
+get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
+
+if(_NOTFOUND)
+  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+endif()
+
+find_path ( 
+  GDAL_DATADIR NAME compdcs.csv 
+  PATH ${TE_DEPENDENCIES_DIR} 
+  PATH_SUFFIXES gdal/data 
+  DOC "Path to where the gdal data directory is located."
+  )
+  
 if(WIN32)
   message (STATUS "-- Generating run batch file.")
+  if(_NOTFOUND)
+    message (WARNING "Batch file may not contain paths to all searched dlls.")
+  endif()
   generateRunningBatch(runme.bat)
 endif()

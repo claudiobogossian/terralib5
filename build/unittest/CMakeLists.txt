@@ -58,7 +58,17 @@ add_subdirectory(terralib_unittest_rp)
 add_subdirectory(terralib_unittest_sam)
 add_subdirectory(terralib_unittest_srs)
 
+# Verifying if some packag was not found.
+get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
+
+if(_NOTFOUND)
+  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+endif()
+
 if(WIN32)
   message (STATUS "-- Generating run batch file.")
+  if(_NOTFOUND)
+    message (WARNING "Batch file may not contain paths to all searched dlls.")
+  endif()
   generateRunningBatch(runme.bat)
 endif()

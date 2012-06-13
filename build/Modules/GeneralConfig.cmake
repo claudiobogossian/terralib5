@@ -20,6 +20,4 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${_binOutdir}")
 
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
-else ()
-  message (WARNING "Set TE_DEPENDENCIES_DIR to search before in this Path.")
 endif()

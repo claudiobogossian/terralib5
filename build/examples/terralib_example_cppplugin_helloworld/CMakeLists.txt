@@ -40,3 +40,5 @@ set(CMAKE_DEBUG_POSTFIX _d)
 add_library(${LIB_NAME} SHARED ${SRCS} ${HDRS})
 
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
+
+copyLogFiles(${CMAKE_CURRENT_BINARY_DIR})

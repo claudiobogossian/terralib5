@@ -268,6 +268,11 @@ MACRO(exportModuleInformation mod_name dirs inst_dirs)
   set (_TE_3DS ${_TE_3DS} PARENT_SCOPE)
 ENDMACRO(exportModuleInformation)
 
+# Macro generateRunningBatch
+#
+# brief
+#
+# param[input] fileName
 MACRO(generateRunningBatch fileName)
   if(WIN32)
     get_filename_component (TE_QT_DIR ${QT_QMAKE_EXECUTABLE} PATH)
@@ -280,3 +285,15 @@ MACRO(generateRunningBatch fileName)
     configure_file (runme.bat.in ${CMAKE_CURRENT_BINARY_DIR}/${fileName})
   endif()
 ENDMACRO(generateRunningBatch)
+
+# Macro copyLogFile
+#
+# brief
+# param[input] logDir
+MACRO(copyLogFiles logDir)
+  if(NOT EXISTS ${logDir}/conf/te-log.conf)
+    message (STATUS "-- Copying ${DEFAULT_LOGCONF_FILE}.")
+    configure_file(${DEFAULT_LOGCONF_FILE} "${logDir}/conf/te-log.conf" COPYONLY)
+    message (STATUS "-- te-log.conf copied to \"${logDir}/conf\".")
+  endif()
+ENDMACRO()

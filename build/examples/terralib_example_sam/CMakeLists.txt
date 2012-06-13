@@ -42,4 +42,6 @@ add_executable(${PROJ_NAME} ${SRCS} ${HDRS})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
  
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
-                
+             
+copyLogFiles(${CMAKE_CURRENT_BINARY_DIR})
+             

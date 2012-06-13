@@ -3,7 +3,7 @@ set( TE_INCLUDE_DIRS @_TE_INCLUDE_DIRS@)
 
 # Modules directory
 set (T5_MODULEPATH @T5_MODULES_PATH@ )
-set (TE_DEPENDENCIES_DIR @TE_DEPENDENCIES_DIR@)
+set (TE_DEPENDENCIES_DIR "@TE_DEPENDENCIES_DIR@" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
 
 #TerraLib dependencies dir

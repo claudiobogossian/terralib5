@@ -75,6 +75,8 @@ else()
   if(HAS_QT4)
     include (${QT_USE_FILE})
   endif()
+  
+  set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 endif()
  
 # These are IMPORTED targets created by teLibraryDepends.cmake
