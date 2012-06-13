@@ -47,6 +47,10 @@ if(UNIX)
   option (BUILD_GRIB "Build GRIB module?" ON)
 endif()
 
+if(WIN32)
+  option (BUILD_ADO "Build ADO module?" ON)
+endif()
+
 IF(BUILD_ANNOTATIONTEXT)
 	add_subdirectory(terralib_annotationtext)
 endif()
@@ -149,6 +153,10 @@ endif()
 
 IF(BUILD_GRIB)
   add_subdirectory(terralib_grib)
+endif()
+
+IF(BUILD_ADO)
+  add_subdirectory(terralib_ado)
 endif()
 
 # Generating cmake configuration files
