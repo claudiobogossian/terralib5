@@ -41,8 +41,8 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
-    "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -51,8 +51,8 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
-    "/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
   
   // Creating the algorithm parameters
   
@@ -90,7 +90,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -99,8 +99,8 @@ void TsSegmenter::BlockProcessingWithMerging()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
-    "/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
   
   // Creating the algorithm parameters
   
@@ -138,7 +138,7 @@ void TsSegmenter::ThreadedProcessing()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -147,8 +147,8 @@ void TsSegmenter::ThreadedProcessing()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
-    "/rasters/terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
   
   // Creating the algorithm parameters
   
@@ -186,7 +186,7 @@ void TsSegmenter::RegionGrowingStrategy()
   // open input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
   
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -195,8 +195,8 @@ void TsSegmenter::RegionGrowingStrategy()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE 
-    "/rasters/terralib_unittest_rp_Segmenter_RegionGrowingStrategy_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/terralib_unittest_rp_Segmenter_RegionGrowingStrategy_Test.tif";
   
   // Creating the algorithm parameters
   
