@@ -96,16 +96,16 @@ void TsManagerGdal::initialize()
   sm_datasource->getCapabilities(sm_capabilit);
 
 // let´s give the minimal datasource connection information used to connect
-  sm_connInfo["URI"] = ""TE_DATA_UNITTEST_LOCALE"\\data\\rasters" ;
+  sm_connInfo["URI"] = ""TE_DATA_LOCALE"\\data\\rasters" ;
  
 // Other static memory variables used to check datasource recovered data
   sm_dsType = te::gdal::Platform::sm_driverIdentifier;
 
 // Minimal datasource connection information used to Create a new GDAL 
-  sm_connInfoNewDs["URI"] = ""TE_DATA_UNITTEST_LOCALE"\\data\\rasters\\dataNew" ;  
+  sm_connInfoNewDs["URI"] = ""TE_DATA_LOCALE"\\data\\rasters\\dataNew" ;  
 
 // Minimal datasource connection information used to Drop a GDAL 
-  sm_connInfoDropDs["URI"] = ""TE_DATA_UNITTEST_LOCALE"\\data\\rasters\\dataNew" ;  
+  sm_connInfoDropDs["URI"] = ""TE_DATA_LOCALE"\\data\\rasters\\dataNew" ;  
 
 // Specific variables to use in DataSetTypePersistence tests
   sm_newDataSetType = "teste_created.tif";
@@ -140,7 +140,7 @@ void TsManagerGdal::initialize()
   sm_newdt3->add(rstp3);
 
 // Server connection information used to check get methods after connection
-  std::string sm_dsInfoChkStr("SOURCE="TE_DATA_UNITTEST_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
+  std::string sm_dsInfoChkStr("SOURCE="TE_DATA_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
 
 
 // Defining sm_* to check DataSourceCatalog in test cases...
