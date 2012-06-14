@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set (PROJ_NAME "unittests")
+set (PROJ_NAME "terralib")
 project(${PROJ_NAME})
 
 set (TE_VERSION "5.0.0")
