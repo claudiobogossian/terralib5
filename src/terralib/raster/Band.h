@@ -274,6 +274,7 @@ namespace te
           \param cs The starting column.
           \param rf The final row.
           \param cf The final column.
+          \param b  The number of bins (intervals from minimum pixel to maximum). When b = 0, the histogram will be divided according to all pixel values.
 
           \note This method without parameters will compute for the entire raster band.
 
@@ -281,7 +282,7 @@ namespace te
 
           \return The histogram of the occurring values (real part) in the window.
         */
-        virtual std::map<double, unsigned> getHistogramR(unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0) const;
+        virtual std::map<double, unsigned> getHistogramR(unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0, unsigned int b = 0) const;
 
         /*!
           \brief It computes and returns the histogram occurring values (imaginary part) in a window of the band.
@@ -290,6 +291,7 @@ namespace te
           \param cs The starting column.
           \param rf The final row.
           \param cf The final column.
+          \param b  The number of bins (intervals from minimum pixel to maximum). When b = 0, the histogram will be divided according to all pixel values.
 
           \note This method without parameters will compute for the entire raster band.
 
@@ -297,7 +299,7 @@ namespace te
 
           \return The histogram of the occurring values (imaginary part) in the window.
         */
-        virtual std::map<double, unsigned> getHistogramI(unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0) const;
+        virtual std::map<double, unsigned> getHistogramI(unsigned int rs = 0, unsigned int cs = 0, unsigned int rf = 0, unsigned int cf = 0, unsigned int b = 0) const;
 
         /*! \brief It returns the scale values (real and imaginary) to be applied to the band. */
         std::complex<double> getScaleValue() const;
