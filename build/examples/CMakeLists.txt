@@ -22,7 +22,7 @@ if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   message (STATUS "-- Data files installed.")
 endif()
 
-set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}/data")
+set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}")
 
 add_definitions( 
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
