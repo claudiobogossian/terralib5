@@ -26,7 +26,7 @@ if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   message (STATUS "-- Data files installed.")
 endif()
 
-set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}")
+set(TE_DATA_LOCALE "${DATA_DIR}")
 set(TE_DATA_UNITTEST_LOCALE ${TE_OUTPUT_REPORT_DIR})
 
 if(NOT EXISTS ${TE_DATA_UNITTEST_LOCALE})
@@ -34,7 +34,7 @@ if(NOT EXISTS ${TE_DATA_UNITTEST_LOCALE})
 endif()
 
 add_definitions( 
-  -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
+  -DTE_DATA_LOCALE="${TE_DATA_LOCALE}" 
   -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}" 
 )
 
@@ -70,5 +70,5 @@ if(WIN32)
   if(_NOTFOUND)
     message (WARNING "Batch file may not contain paths to all searched dlls.")
   endif()
-  generateRunningBatch(runme.bat)
+  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.bat)
 endif()
