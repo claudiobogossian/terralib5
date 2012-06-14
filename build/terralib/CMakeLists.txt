@@ -47,6 +47,10 @@ if(UNIX)
   option (BUILD_GRIB "Build GRIB module?" ON)
 endif()
 
+if(WIN32)
+  option (BUILD_ADO "Build ADO module?" ON)
+endif()
+
 IF(BUILD_ANNOTATIONTEXT)
 	add_subdirectory(terralib_annotationtext)
 endif()
@@ -151,6 +155,17 @@ IF(BUILD_GRIB)
   add_subdirectory(terralib_grib)
 endif()
 
+IF(BUILD_ADO)
+  add_subdirectory(terralib_ado)
+endif()
+
+# Verifying if some packag was not found.
+get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
+
+if(_NOTFOUND)
+  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+endif()
+
 # Generating cmake configuration files
 message(STATUS "-- Generating configuration files.")
 
@@ -185,6 +200,12 @@ install (
   DESTINATION .
   COMPONENT CMAKE
   PATTERN "*Package*" EXCLUDE
+)
+
+install ( 
+  DIRECTORY ${ROOT}/log
+  DESTINATION .
+  COMPONENT HEADERS
 )
 
 # Installing TerraLib remaining header files

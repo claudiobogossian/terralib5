@@ -4,10 +4,14 @@
 #include <terralib/se.h>
 #include <terralib/qt/widgets/se/BasicFillDialog.h>
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
+#include <terralib/qt/widgets/se/GlyphMarkDialog.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
 
 // Qt
 #include <QtGui/QApplication>
+
+// STL
+#include <iostream>
 
 void SymbologyWidgets()
 {
@@ -47,4 +51,10 @@ void SymbologyWidgets()
   mark = te::qt::widgets::WellKnownMarkDialog::getMark(initialMark, 0, title);
   delete mark;
   delete initialMark;
+
+  // Create a new glyph mark
+  te::se::Mark* glyphMark = te::qt::widgets::GlyphMarkDialog::getMark(0, 0, title);
+  if(glyphMark)
+    std::cout << glyphMark->getWellKnownName()->c_str() << std::endl;
+  delete glyphMark;
 }

@@ -3,18 +3,19 @@ set( TE_INCLUDE_DIRS @_TE_INCLUDE_DIRS@)
 
 # Modules directory
 set (T5_MODULEPATH @T5_MODULES_PATH@ )
+set (TE_DEPENDENCIES_DIR "@TE_DEPENDENCIES_DIR@" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
 
 #TerraLib dependencies dir
 if(WIN32)
-  set (TE_DPS @TE_DEPENDENCIES_DIR@ )
+  set (TE_DPS ${TE_DEPENDENCIES_DIR} )
   if( NOT "${TE_DPS}" STREQUAL "")
     set ( CMAKE_FIND_ROOT_PATH  "${TE_DPS}" )
   endif()
 endif()
 
 # Configuration files folder.
-set (TE_CONF_FILES_DIR @_TE_CONF_FILES_DIR@)
+set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 
 # Compiled modules
 set (TE_LIBRARIES @_TE_LIBRARIES@)

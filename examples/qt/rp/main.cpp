@@ -44,7 +44,7 @@ void SegmenterDialogExample( int argc, char** argv )
   // open the input raster
   
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
   
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
   
@@ -52,7 +52,7 @@ void SegmenterDialogExample( int argc, char** argv )
   
   std::map<std::string, std::string> outputRasterInfo;
   outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE 
-    "/rasters/terralib_example_qt_rp_SegmenterDialog.tif";  
+    "/data/rasters/terralib_example_qt_rp_SegmenterDialog.tif";  
   
   // Executing the dialog
   
@@ -76,7 +76,7 @@ void ContrastDialogExample( int argc, char** argv )
   // open the input raster
   
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
   
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
   
@@ -84,7 +84,7 @@ void ContrastDialogExample( int argc, char** argv )
   
   std::map<std::string, std::string> outputRasterInfo;
   outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE 
-    "/rasters/terralib_example_qt_rp_ContrastDialog.tif";  
+    "/data/rasters/terralib_example_qt_rp_ContrastDialog.tif";  
   
   // Executing the dialog
   

@@ -66,7 +66,7 @@ namespace te
       boost::numeric::ublas::permutation_matrix<std::size_t> pm( A.size1() );
       
       // perform LU-factorization
-      if( boost::numeric::ublas::lu_factorize( A, pm ) )
+      if( boost::numeric::ublas::lu_factorize( A, pm ) != 0 )
       {
         return false;
       }
@@ -76,7 +76,14 @@ namespace te
         outputMatrix = boost::numeric::ublas::identity_matrix<T>( A.size1() );
 
         // backsubstitute to get the inverse
-        boost::numeric::ublas::lu_substitute(A, pm, outputMatrix );
+        try
+        {          
+          boost::numeric::ublas::lu_substitute( A, pm, outputMatrix );
+        }
+        catch(...)
+        {
+          return false;
+        }
       
         return true;
       }
@@ -90,29 +97,59 @@ namespace te
       \param inputMatrix Input matrix.
       
       \param outputMatrix Output matrix.
-
+      
       \return true if ok, false on errors.
+      
+      \note A* = inv(trasnp(A) * A) * transp(A)    (i>j)
+      \note A* = transp(A) * inv(A * trasnp(A))    (i<j)
     */
     template<class T>
     bool getPseudoInverseMatrix(const boost::numeric::ublas::matrix<T>& inputMatrix,
                           boost::numeric::ublas::matrix<T>& outputMatrix)
     {
-      boost::numeric::ublas::matrix<T> trans( boost::numeric::ublas::trans( 
-        inputMatrix ) );
-      
-      boost::numeric::ublas::matrix<T> aux1( boost::numeric::ublas::prod( trans, 
-        inputMatrix ) );
-        
-      boost::numeric::ublas::matrix<T> aux1Inv;
-      
-      if( getInverseMatrix( aux1, aux1Inv ) )
+      if( inputMatrix.size1() > inputMatrix.size2() )
       {
-        outputMatrix = boost::numeric::ublas::prod( aux1Inv, trans );
-        return true;
+        boost::numeric::ublas::matrix<T> trans( boost::numeric::ublas::trans( 
+          inputMatrix ) );
+        
+        boost::numeric::ublas::matrix<T> aux1( boost::numeric::ublas::prod( trans, 
+          inputMatrix ) );
+          
+        boost::numeric::ublas::matrix<T> aux1Inv;
+        
+        if( getInverseMatrix( aux1, aux1Inv ) )
+        {
+          outputMatrix = boost::numeric::ublas::prod( aux1Inv, trans );
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      else if( inputMatrix.size1() < inputMatrix.size2() )
+      {
+        boost::numeric::ublas::matrix<T> trans( boost::numeric::ublas::trans( 
+          inputMatrix ) );
+        
+        boost::numeric::ublas::matrix<T> aux1( boost::numeric::ublas::prod( 
+          inputMatrix, trans ) );
+          
+        boost::numeric::ublas::matrix<T> aux1Inv;
+        
+        if( getInverseMatrix( aux1, aux1Inv ) )
+        {
+          outputMatrix = boost::numeric::ublas::prod( trans, aux1Inv );
+          return true;
+        }
+        else
+        {
+          return false;
+        }
       }
       else
       {
-        return false;
+        return getInverseMatrix( inputMatrix, outputMatrix );
       }
     }
 

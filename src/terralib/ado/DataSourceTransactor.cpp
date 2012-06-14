@@ -25,9 +25,12 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
+#include "DataSetTypePersistence.h"
+#include "DataSetPersistence.h"
 #include "Exception.h"
 
 // ADO
@@ -141,12 +144,12 @@ te::da::DataSourceCatalogLoader* te::ado::DataSourceTransactor::getCatalogLoader
 
 te::da::DataSetTypePersistence* te::ado::DataSourceTransactor::getDataSetTypePersistence()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return new DataSetTypePersistence(this);
 }
 
 te::da::DataSetPersistence* te::ado::DataSourceTransactor::getDataSetPersistence()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return new DataSetPersistence(this);
 }
 
 void te::ado::DataSourceTransactor::cancel()

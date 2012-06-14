@@ -54,7 +54,7 @@ int main(int /*argc*/, char** /*argv*/)
   // in order to be able use a web-browser to see the testResult.   
   CPPUNIT_NS::OFileStream file2( TE_DATA_UNITTEST_LOCALE "/testsResult_srs_xml.xml" );
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet( "report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
+  xml.setStyleSheet( TE_DATA_EXAMPLE_LOCALE"/data/report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
   xml.write();
   file2.close();
 
