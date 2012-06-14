@@ -26,13 +26,7 @@ if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   message (STATUS "-- Data files installed.")
 endif()
 
-if(NOT EXISTS ${DEFAULT_LOGFILE_DIR}/conf/te-log.conf)
-  message (STATUS "-- Copying ${DEFAULT_LOGCONF_FILE}.")
-  configure_file(${DEFAULT_LOGCONF_FILE} "${DEFAULT_LOGFILE_DIR}/conf/te-log.conf" COPYONLY)
-  message (STATUS "-- te-log.conf copied in \"${DEFAULT_LOGFILE_DIR}/conf\".")
-endif()
-
-set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}/data")
+set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}")
 set(TE_DATA_UNITTEST_LOCALE ${TE_OUTPUT_REPORT_DIR})
 
 if(NOT EXISTS ${TE_DATA_UNITTEST_LOCALE})
@@ -42,7 +36,6 @@ endif()
 add_definitions( 
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
   -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}" 
-  -DTE_LOGGER_DEFAULT_CONFIGURATION_FILE="${DEFAULT_LOGFILE_DIR}/conf/te-log.conf"
 )
 
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
@@ -65,6 +58,13 @@ if(_NOTFOUND)
   message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
 endif()
 
+find_path ( 
+  GDAL_DATADIR NAME compdcs.csv 
+  PATH ${TE_DEPENDENCIES_DIR} 
+  PATH_SUFFIXES gdal/data 
+  DOC "Path to where the gdal data directory is located."
+  )
+  
 if(WIN32)
   message (STATUS "-- Generating run batch file.")
   if(_NOTFOUND)
