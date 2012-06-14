@@ -34,6 +34,8 @@
 #include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../datatype/SimpleProperty.h"
+#include "../datatype/StringProperty.h"
 #include "../datatype/DataType.h"
 #include "Utils.h"
 #include "DataSet.h"
@@ -52,6 +54,12 @@
 // Boost
 #include <boost/format.hpp>
 
+inline void TESTHR(HRESULT x)
+{
+  if FAILED(x)
+    _com_issue_error(x);
+};
+
 te::ado::DataSetTypePersistence::DataSetTypePersistence(DataSourceTransactor* parent)
   : m_t(parent)
 {
@@ -63,88 +71,115 @@ te::ado::DataSetTypePersistence::~DataSetTypePersistence()
 
 void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-  DataSourceCatalogLoader* loader = dynamic_cast<DataSourceCatalogLoader*>(m_t->getCatalogLoader());
+  try
+  {
+    m_t->begin();
+    
+    _ConnectionPtr adoConn = m_t->getADOConnection();
+    DataSourceCatalogLoader* loader = dynamic_cast<DataSourceCatalogLoader*>(m_t->getCatalogLoader());
 
-  ADOX::_TablePtr pTable = 0;
+    ADOX::_TablePtr pTable = 0;
+    ADOX::_CatalogPtr pCatalog = 0;
+
+    pTable.CreateInstance(__uuidof (ADOX::Table));
+    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+    pTable->Name = dt->getName().c_str();
+
+    TESTHR(pCatalog->Tables->Append(_variant_t((IDispatch*)pTable)));
+
+    std::size_t ncols = dt->size();
+    for(std::size_t i = 0; i < ncols; ++i)
+      add(dt, dt->getProperty(i));
+
+    /*
+    if(dt->getPrimaryKey())
+      add(dt, dt->getPrimaryKey());
+
+    std::size_t nukeys = dt->getNumberOfUniqueKeys();
+    for(std::size_t i = 0; i < nukeys; ++i)
+      add(dt, dt->getUniqueKey(i));
+
+    std::size_t nidxs = dt->getNumberOfIndexes();
+    for(std::size_t i = 0; i < nidxs; ++i)
+        add(dt, dt->getIndex(i));
+
+    std::size_t nfks = dt->getNumberOfForeignKeys();
+    for(std::size_t i = 0; i < nfks; ++i)
+      add(dt, dt->getForeignKey(i));
+
+    std::size_t nccs = dt->getNumberOfCheckConstraints();
+    for(std::size_t i = 0; i < nccs; ++i)
+      add(dt, dt->getCheckConstraint(i));
+
+    loader->getIndexes(dt);
+    loader->getCheckConstraints(dt);
+    */
+
+    m_t->commit();
+
+    pCatalog->Tables->Refresh();
+
+  }catch(_com_error &e)
+  {
+    std::string description(e.Description()); 
+    m_t->rollBack();
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
+  }
+
+}
+
+void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
+{
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pTable.CreateInstance(__uuidof (ADOX::Table));
   pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
-  pCatalog->Tables->Append(_variant_t((IDispatch*)pTable));
-
-  pTable->ParentCatalog = pCatalog;
-
-  pTable->Name = dt->getName().c_str();
-
-  pCatalog->Tables->Refresh();
-
-  std::size_t ncols = dt->size();
-
-  for(std::size_t i = 0; i < ncols; ++i)
-    add(dt, dt->getProperty(i));
-
-  if(dt->getPrimaryKey())
-    add(dt, dt->getPrimaryKey());
-
-// add unique keys
-  std::size_t nukeys = dt->getNumberOfUniqueKeys();
-
-  for(std::size_t i = 0; i < nukeys; ++i)
-    add(dt, dt->getUniqueKey(i));
-
-// add indexes... just if no primary key or unique key with the same name exists!
-  std::size_t nidxs = dt->getNumberOfIndexes();
-
-  for(std::size_t i = 0; i < nidxs; ++i)
-      add(dt, dt->getIndex(i));
-
-// add fks
-  std::size_t nfks = dt->getNumberOfForeignKeys();
-
-  for(std::size_t i = 0; i < nfks; ++i)
-    add(dt, dt->getForeignKey(i));
-
-// add constraints
-  std::size_t nccs = dt->getNumberOfCheckConstraints();
-
-  for(std::size_t i = 0; i < nccs; ++i)
-    add(dt, dt->getCheckConstraint(i));
-  
-  loader->getIndexes(dt);
-  loader->getCheckConstraints(dt);
-
+  pCatalog->Tables->Delete(dt->getName().c_str());
 }
 
-void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* /*dt*/)
+void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
+  _ConnectionPtr adoConn = m_t->getADOConnection();
 
-void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* /*dt*/, const std::string& /*newName*/)
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+
+  pCatalog->Tables->GetItem(dt->getName().c_str())->PutName(newName.c_str());
 }
 
 void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Property* p)
 {
-
   _ConnectionPtr adoConn = m_t->getADOConnection();
 
+  ADOX::_CatalogPtr pCatalog = 0;
   ADOX::_TablePtr pTable = 0;
-  ADOX::_KeyPtr pKey = 0;
-  
-  pTable.CreateInstance(__uuidof (ADOX::Table));
-  
-  pTable->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256);
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  pTable = pCatalog->Tables->GetItem(dt->getName().c_str());
+
+  addAdoPropertyFromTerralib(pTable, p);
 
 }
 
-void te::ado::DataSetTypePersistence::drop(te::dt::Property* /*p*/)
+void te::ado::DataSetTypePersistence::drop(te::dt::Property* p)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
+
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+
+  
 }
 
 void te::ado::DataSetTypePersistence::rename(te::dt::Property* /*p*/, const std::string& /*newName*/) 
@@ -164,7 +199,6 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Prima
   vOptional.scode = DISP_E_PARAMNOTFOUND;
 
   _ConnectionPtr adoConn = m_t->getADOConnection();
-  
 
   ADOX::_KeyPtr pKey = 0;
   ADOX::_TablePtr pTable = 0;
@@ -179,20 +213,17 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Prima
 
   for(size_t i = 0; i < pk->getProperties().size(); i++)
   {
-
     te::dt::Property* p = pk->getProperties()[i];
-
     pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256);
 
   }
 
   pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L"");
-
   pCatalog->Tables->Refresh();
 
 }
 
-void te::ado::DataSetTypePersistence::drop(te::da::PrimaryKey* /*pk*/)
+void te::ado::DataSetTypePersistence::drop(te::da::PrimaryKey* pk)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -235,6 +266,12 @@ void te::ado::DataSetTypePersistence::drop(te::da::UniqueKey* /*uk*/)
 }
 
 void te::ado::DataSetTypePersistence::add(te::da::DataSetType* /*dt*/, te::da::Index* /*index*/) 
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+void te::ado::DataSetTypePersistence::add(te::da::DataSetType* /*dt*/, te::da::Index* /*index*/, 
+  const std::map<std::string, std::string>& /*options*/)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }

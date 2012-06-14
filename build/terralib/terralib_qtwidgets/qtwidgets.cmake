@@ -109,27 +109,29 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
 	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
-   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
-   ${SRCDIR}/widgets/help/HelpPushButton.h
+     ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
+     ${SRCDIR}/widgets/help/HelpPushButton.h
 	 ${SRCDIR}/widgets/help/HelpToolButton.h
 	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
 	 ${SRCDIR}/widgets/utils/ListWidget.h
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
 	 ${SRCDIR}/widgets/utils/ScopedCursor.h
-   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
-   ${SRCDIR}/widgets/rp/SegmenterDialog.h
-   ${SRCDIR}/widgets/rp/ContrastDialog.h
+     ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
+     ${SRCDIR}/widgets/rp/SegmenterDialog.h
+     ${SRCDIR}/widgets/rp/ContrastDialog.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
-	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
+	 ${SRCDIR}/widgets/se/CharMapWidget.h
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
+	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
 	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
-	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h)
+	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS

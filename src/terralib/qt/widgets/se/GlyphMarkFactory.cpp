@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/CharacterMarkFactory.cpp
+  \file terralib/qt/widgets/GlyphMarkFactory.cpp
 
   \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
@@ -28,38 +28,38 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Mark.h"
 #include "../Utils.h"
-#include "CharacterMarkFactory.h"
+#include "GlyphMarkFactory.h"
 #include "Utils.h"
 
 // STL
 #include <algorithm>
 
 // Factory key
-std::string te::qt::widgets::CharacterMarkFactory::sm_factoryKey("ttf");
+std::string te::qt::widgets::GlyphMarkFactory::sm_factoryKey("ttf");
 
 // Global factory
-te::qt::widgets::CharacterMarkFactory* te::qt::widgets::CharacterMarkFactory::sm_factory(0);
+te::qt::widgets::GlyphMarkFactory* te::qt::widgets::GlyphMarkFactory::sm_factory(0);
 
-void te::qt::widgets::CharacterMarkFactory::initialize()
+void te::qt::widgets::GlyphMarkFactory::initialize()
 {
   finalize();
-  sm_factory = new CharacterMarkFactory;
+  sm_factory = new GlyphMarkFactory;
 }
 
-void te::qt::widgets::CharacterMarkFactory::finalize()
+void te::qt::widgets::GlyphMarkFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-QString te::qt::widgets::CharacterMarkFactory::encode(const QString& font, const int& charCode)
+QString te::qt::widgets::GlyphMarkFactory::encode(const QString& font, const int& charCode)
 {
   QString result = QString::fromStdString(sm_factoryKey);
   result += "://" + font + "#0x" + QString::number(charCode, 16);
   return result;
 }
 
-void te::qt::widgets::CharacterMarkFactory::decode(QString& name, QString& font, QChar& charCode)
+void te::qt::widgets::GlyphMarkFactory::decode(QString& name, QString& font, QChar& charCode)
 {
   // Extract the part important to this factory!
   QString pattern = name.remove(0, sm_factoryKey.size());
@@ -82,22 +82,22 @@ void te::qt::widgets::CharacterMarkFactory::decode(QString& name, QString& font,
   font = myParams[0];
 }
 
-te::qt::widgets::CharacterMarkFactory::~CharacterMarkFactory()
+te::qt::widgets::GlyphMarkFactory::~GlyphMarkFactory()
 {
 }
 
-te::map::AbstractMarkFactory* te::qt::widgets::CharacterMarkFactory::build()
+te::map::AbstractMarkFactory* te::qt::widgets::GlyphMarkFactory::build()
 {
   return sm_factory;
 }
 
-te::color::RGBAColor** te::qt::widgets::CharacterMarkFactory::create(const te::se::Mark* mark, std::size_t size)
+te::color::RGBAColor** te::qt::widgets::GlyphMarkFactory::create(const te::se::Mark* mark, std::size_t size)
 {
   // Decoding...
   QChar ch;
   QString fontName;
   QString name(mark->getWellKnownName()->c_str());
-  te::qt::widgets::CharacterMarkFactory::decode(name, fontName, ch); // Can throw exceptions!
+  te::qt::widgets::GlyphMarkFactory::decode(name, fontName, ch); // TODO: Can throw exceptions!
 
   // Configuring the font
   QFont font;
@@ -134,11 +134,11 @@ te::color::RGBAColor** te::qt::widgets::CharacterMarkFactory::create(const te::s
   return rgba;
 }
 
-void te::qt::widgets::CharacterMarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
+void te::qt::widgets::GlyphMarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
 {
 }
 
-void te::qt::widgets::CharacterMarkFactory::setup(QImage* img)
+void te::qt::widgets::GlyphMarkFactory::setup(QImage* img)
 {
   m_painter.begin(img);
   m_painter.setRenderHints(QPainter::Antialiasing);
@@ -146,14 +146,14 @@ void te::qt::widgets::CharacterMarkFactory::setup(QImage* img)
   m_painter.setBrush(m_brush);
 }
 
-void te::qt::widgets::CharacterMarkFactory::end()
+void te::qt::widgets::GlyphMarkFactory::end()
 {
   m_painter.end();
   m_pen = QPen(QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
   m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
-void te::qt::widgets::CharacterMarkFactory::draw(QImage* img, QPainterPath& path)
+void te::qt::widgets::GlyphMarkFactory::draw(QImage* img, QPainterPath& path)
 {
   setup(img);
 
@@ -169,7 +169,7 @@ void te::qt::widgets::CharacterMarkFactory::draw(QImage* img, QPainterPath& path
   end();
 }
 
-bool te::qt::widgets::CharacterMarkFactory::getChar(QString& charCode, QChar& ch)
+bool te::qt::widgets::GlyphMarkFactory::getChar(QString& charCode, QChar& ch)
 {
   bool isOk = false;
   // Base 0: if the string begins with "0x", base 16 is used; if the string begins with "0", base 8 is used; otherwise, base 10 is used.
@@ -177,7 +177,7 @@ bool te::qt::widgets::CharacterMarkFactory::getChar(QString& charCode, QChar& ch
   return isOk;
 }
 
-te::qt::widgets::CharacterMarkFactory::CharacterMarkFactory()
+te::qt::widgets::GlyphMarkFactory::GlyphMarkFactory()
   : te::map::AbstractMarkFactory(sm_factoryKey)
 {
   m_brush.setStyle(Qt::SolidPattern);

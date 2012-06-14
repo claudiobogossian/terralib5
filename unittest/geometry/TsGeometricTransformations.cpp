@@ -97,7 +97,7 @@ void TsGeometricTransformations::tcAffine()
 
   CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
   
-  CPPUNIT_ASSERT( transfPtr->getName() == "affine" );
+  CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   
   testDirectMapping( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
     te::gm::Coord2D( 0, 0 ), 0.0000001 );
@@ -197,5 +197,81 @@ void TsGeometricTransformations::tcSecondDegreePolynomialGT()
   testInverseMapping( transfPtr.get(), te::gm::Coord2D( 5, 10 ), 
     te::gm::Coord2D( 5, 10 ), 0.0000001 );    
    
+}
+
+void TsGeometricTransformations::tcThirdDegreePolynomialGT()
+{
+  std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+    te::gm::GTFactory::make( "ThirdDegreePolynomial" ) );
+  CPPUNIT_ASSERT( transfPtr.get() != 0 );
+    
+  te::gm::GTParameters transfParams;
+  
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 0, 0 ), te::gm::Coord2D( 0, 0 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 10, 0 ), te::gm::Coord2D( 20, 0 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 0, 3 ), te::gm::Coord2D( 0, 6 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 11, 11 ), te::gm::Coord2D( 22, 22 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 5, 0 ), te::gm::Coord2D( 10, 0 ) ) );    
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 9, 10 ), te::gm::Coord2D( 18, 20 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 3, 14 ), te::gm::Coord2D( 6, 28 ) ) );    
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 4, 11 ), te::gm::Coord2D( 8, 22 ) ) );    
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 50, 14), te::gm::Coord2D( 100, 28 ) ) );    
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 50, 200), te::gm::Coord2D( 100, 400 ) ) );    
+
+  CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+  
+  CPPUNIT_ASSERT( transfPtr->getName() == "ThirdDegreePolynomial" );
+  
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
+    te::gm::Coord2D( 0, 0 ), 0.0000001 );
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 10, 0 ), 
+    te::gm::Coord2D( 20, 0 ), 0.0000001 );        
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 0, 3 ), 
+    te::gm::Coord2D( 0, 6 ), 0.0000001 );    
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 11, 11 ), 
+    te::gm::Coord2D( 22, 22 ), 0.0000001 );    
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 5, 0 ), 
+    te::gm::Coord2D( 10, 0 ), 0.0000001 );    
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 9, 10 ), 
+    te::gm::Coord2D( 18, 20 ), 0.0000001 );      
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 3, 14 ), 
+    te::gm::Coord2D( 6, 28 ), 0.0000001 ); 
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 4, 11 ), 
+    te::gm::Coord2D( 8, 22 ), 0.0000001 ); 
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 50, 14 ), 
+    te::gm::Coord2D( 100, 28 ), 0.0000001 ); 
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 50, 200 ), 
+    te::gm::Coord2D( 100, 400 ), 0.0000001 );    
+    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
+    te::gm::Coord2D( 0, 0 ), 0.0000001 );
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 10, 0 ), 
+    te::gm::Coord2D( 20, 0 ), 0.0000001 );        
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 0, 3 ), 
+    te::gm::Coord2D( 0, 6 ), 0.0000001 );    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 11, 11 ), 
+    te::gm::Coord2D( 22, 22 ), 0.0000001 );    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 5, 0 ), 
+    te::gm::Coord2D( 10, 0 ), 0.0000001 );    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 9, 10 ), 
+    te::gm::Coord2D( 18, 20 ), 0.0000001 );      
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 3, 14 ), 
+    te::gm::Coord2D( 6, 28 ), 0.0000001 ); 
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 4, 11 ), 
+    te::gm::Coord2D( 8, 22 ), 0.0000001 ); 
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 50, 14 ), 
+    te::gm::Coord2D( 100, 28 ), 0.0000001 ); 
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 50, 200 ), 
+    te::gm::Coord2D( 100, 400 ), 0.0000001 );     
 }
 

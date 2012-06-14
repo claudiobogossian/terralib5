@@ -48,6 +48,7 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
 // It registers the class methods as Test Cases belonging to the suit 
   CPPUNIT_TEST( tcAffine );
   CPPUNIT_TEST( tcSecondDegreePolynomialGT );
+  CPPUNIT_TEST( tcThirdDegreePolynomialGT );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -78,6 +79,9 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
     
     /*! \brief Test Case: Second degree polynomial transformation. */
     void tcSecondDegreePolynomialGT();
+    
+    /*! \brief Test Case: Third degree polynomial transformation. */
+    void tcThirdDegreePolynomialGT();    
 
 };
 

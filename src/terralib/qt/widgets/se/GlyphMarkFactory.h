@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/CharacterMarkFactory.h
+  \file terralib/qt/widgets/se/GlyphMarkFactory.h
 
   \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_CHARACTERMARKFACTORY_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_CHARACTERMARKFACTORY_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_GLYPHMARKFACTORY_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GLYPHMARKFACTORY_H
 
 // TerraLib
 #include "../../../maptools/AbstractMarkFactory.h"
@@ -43,7 +43,7 @@ namespace te
     namespace widgets
     {
       /*!
-        \class CharacterMarkFactory
+        \class GlyphMarkFactory
 
         \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
                It is a extension that considers marks with well-known name in the format: "ttf://font#code".
@@ -53,7 +53,7 @@ namespace te
 
         \sa AbstractMarkFactory, AbstractFactory
       */
-      class TEQTWIDGETSEXPORT CharacterMarkFactory : public te::map::AbstractMarkFactory
+      class TEQTWIDGETSEXPORT GlyphMarkFactory : public te::map::AbstractMarkFactory
       {
         public:
 
@@ -101,7 +101,7 @@ namespace te
 
             \note It will automatically unregister the factory from the dictionary.
           */
-          ~CharacterMarkFactory();
+          ~GlyphMarkFactory();
 
           //@} 
 
@@ -159,18 +159,18 @@ namespace te
           /*!
             \brief It creates the factory.
 
-            The key of a CharacterMarkFactory is a string.
+            The key of a GlyphMarkFactory is a string.
 
             \param factoryKey The key that identifies the factory.
           */
-          CharacterMarkFactory();
+          GlyphMarkFactory();
 
           //@}
 
         private:
 
           static std::string sm_factoryKey;           //!< The factory key.
-          static CharacterMarkFactory* sm_factory;    //!< A pointer to the global factory.
+          static GlyphMarkFactory* sm_factory;        //!< A pointer to the global factory.
 
           QPainter m_painter;                         //!< The painter used to draw the mark patterns.
           QPen m_pen;                                 //!< The pen used to draw the mark patterns.
@@ -181,4 +181,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_CHARACTERMARKFACTORY_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_GLYPHMARKFACTORY_H

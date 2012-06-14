@@ -49,6 +49,8 @@ namespace te
     te::da::UniqueKey* getUniqueKeyFromADO(ADOX::_KeyPtr key);
     void setPrimaryKey(te::da::DataSetType* dt, ADOX::_KeyPtr key);
 
+    void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
+
     te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
     te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
     std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);

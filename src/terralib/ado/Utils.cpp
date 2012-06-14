@@ -40,44 +40,80 @@ namespace te
     int ado2Terralib(ADOX::DataTypeEnum adoType)
     {
 
+      int res;
+
       switch(adoType)
       {
-        case ADOX::adBigInt:
-        case ADOX::adBinary:
         case ADOX::adBoolean:
-        case ADOX::adBSTR:
-        case ADOX::adChapter:
-        case ADOX::adChar:
-        case ADOX::adCurrency:
-        case ADOX::adDate:
-        case ADOX::adDBDate:
-        case ADOX::adDBTime:
-        case ADOX::adDBTimeStamp:
-        case ADOX::adDecimal:
-        case ADOX::adDouble:
+          res = te::dt::BOOLEAN_TYPE;
+          break;
+
         case ADOX::adEmpty:
-        case ADOX::adError:
-        case ADOX::adFileTime:
-        case ADOX::adGUID:
-        case ADOX::adInteger:
-        case ADOX::adLongVarBinary:
-        case ADOX::adLongVarChar:
-        case ADOX::adLongVarWChar:
-        case ADOX::adNumeric:
-        case ADOX::adPropVariant:
-        case ADOX::adSingle:
-        case ADOX::adSmallInt:
-        case ADOX::adTinyInt:
-        case ADOX::adUnsignedBigInt:
-        case ADOX::adUnsignedInt:
-        case ADOX::adUnsignedSmallInt:
-        case ADOX::adUnsignedTinyInt:
-        case ADOX::adUserDefined:
+          te::dt::VOID_TYPE;
+          break;
+
+        case ADOX::adBinary:
         case ADOX::adVarBinary:
-        case ADOX::adVarChar:
-        case ADOX::adVarNumeric:
+        case ADOX::adLongVarBinary:
+          res = te::dt::BYTE_ARRAY_TYPE;
+          break;
+
         case ADOX::adVarWChar:
         case ADOX::adWChar:
+        case ADOX::adVarChar:
+        case ADOX::adLongVarChar:
+        case ADOX::adLongVarWChar:
+        case ADOX::adBSTR:
+        case ADOX::adChar:
+          res = te::dt::STRING_TYPE;
+          break;
+
+        case ADOX::adBigInt:
+          res = te::dt::INT16_TYPE;
+          break;
+
+        case ADOX::adDouble:
+          te::dt::DOUBLE_TYPE;
+          break;
+
+        case ADOX::adInteger:
+        te::dt::INT32_TYPE;
+        break;
+
+        case ADOX::adTinyInt:
+        case ADOX::adSmallInt:
+          te::dt::INT16_TYPE;
+          break;
+
+        case ADOX::adUnsignedBigInt:
+          te::dt::UINT64_TYPE;
+          break;
+
+        case ADOX::adUnsignedInt:
+          te::dt::UINT32_TYPE;
+          break;
+
+        case ADOX::adUnsignedSmallInt:
+        case ADOX::adUnsignedTinyInt:
+          te::dt::UINT16_TYPE;
+          break;
+
+        //case ADOX::adDate:
+        //case ADOX::adDBDate:
+        //case ADOX::adDBTime:
+        //case ADOX::adDBTimeStamp:
+
+        //case ADOX::adGUID:
+        //case ADOX::adError:
+        //case ADOX::adSingle:
+        //case ADOX::adDecimal:
+        //case ADOX::adNumeric:
+        //case ADOX::adChapter:
+        //case ADOX::adVarNumeric:
+        //case ADOX::adCurrency:
+        //case ADOX::adFileTime:
+        //case ADOX::adPropVariant:
+        //case ADOX::adUserDefined:
 
         default:
           throw te::ado::Exception(TR_ADO("The informed type could not be mapped to TerraLib type system!"));
@@ -95,10 +131,9 @@ namespace te
       switch(terralib)
       {
         case te::dt::CHAR_TYPE:
+        case te::dt::UCHAR_TYPE:
           res = ADOX::adWChar;
           break;
-
-        //case te::dt::UCHAR_TYPE:
 
         case te::dt::INT16_TYPE:
           res = ADOX::adInteger;
@@ -114,8 +149,8 @@ namespace te
 
         //case te::dt::NUMERIC_TYPE:
         //case te::dt::DATETIME_TYPE:
-        //case te::dt::FLOAT_TYPE:
 
+        case te::dt::FLOAT_TYPE:
         case te::dt::DOUBLE_TYPE:
           res = ADOX::adDouble;
           break;
@@ -133,17 +168,8 @@ namespace te
           break;
 
         //case te::dt::GEOMETRY_TYPE:
-        //case te::dt::ARRAY_TYPE:
-        case te::dt::StringType::FIXED_STRING:
-          res = ADOX::adLongVarWChar;
-          break;
-
-        case te::dt::StringType::STRING:
-          res = ADOX::adLongVarWChar;
-          break;
-
-        case te::dt::StringType::VAR_STRING:
-          res = ADOX::adLongVarWChar;
+        case te::dt::ARRAY_TYPE:
+          res = ADOX::adLongVarBinary;
           break;
 
         default:
@@ -154,6 +180,48 @@ namespace te
       return res;
     }
 
+    void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop)
+    {
+      int pType = prop->getType();
+
+      switch(pType)
+      {
+        case te::dt::CHAR_TYPE:
+        case te::dt::UCHAR_TYPE:
+        case te::dt::INT16_TYPE:
+        case te::dt::INT32_TYPE:
+        case te::dt::INT64_TYPE:
+        case te::dt::FLOAT_TYPE:
+        case te::dt::DOUBLE_TYPE:
+        case te::dt::BOOLEAN_TYPE:
+        case te::dt::BYTE_ARRAY_TYPE:
+          table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+          break;
+
+        case te::dt::STRING_TYPE:
+        {
+          te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
+          table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), p->size());
+          break;
+        }
+
+        //case te::dt::NUMERIC_TYPE:
+        //case te::dt::DATETIME_TYPE:
+        
+        case te::dt::GEOMETRY_TYPE:
+          table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+          break;
+          
+        case te::dt::ARRAY_TYPE:
+          table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+          break;
+
+        default:
+          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+        break;
+      }
+    }
+
     te::dt::Property* getPropertyFromADO(ADOX::_ColumnPtr column)
     {
       te::dt::Property* resProp;
@@ -162,20 +230,30 @@ namespace te
       ADOX::DataTypeEnum cType = column->GetType();
       int size = column->GetDefinedSize();
 
-      if(cType == ADOX::adLongVarWChar || cType == ADOX::adVarWChar)
+      if(cType == ADOX::adDate)
       {
-        resProp = new te::dt::StringProperty(std::string(cName), te::dt::StringType::STRING, size);
+        ADOX::Properties** porps;
+        column->get_Properties(porps);
       }
-      else if(cType == ADOX::adInteger || cType == ADOX::adDouble)
+
+      switch(cType)
       {
-        resProp = new te::dt::SimpleProperty(std::string(cName), te::dt::INT64_TYPE);
+        case ADOX::adVarWChar:
+          resProp = new te::dt::StringProperty(std::string(cName), te::dt::StringType::STRING, size);
+          break;
+
+        case ADOX::adInteger:
+        case ADOX::adDouble:
+          resProp = new te::dt::SimpleProperty(std::string(cName), te::dt::INT64_TYPE);
+          break;
+
+        case ADOX::adLongVarBinary:
+          resProp = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), te::dt::BYTE_ARRAY_TYPE));
+          break;
+          
+        default:
+          throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
       }
-      else if(cType == ADOX::adLongVarWChar)
-      {
-        resProp = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), te::dt::BYTE_ARRAY_TYPE));
-      }
-      else
-        throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
 
       return resProp;
 
@@ -245,21 +323,25 @@ namespace te
       _bstr_t cName = column->GetName();
       ADOX::DataTypeEnum cType = column->GetType();
       long cSize = column->GetDefinedSize();
+      
+      switch(cType)
+      {
+        case ADOX::adVarWChar:
+          prop = new te::dt::StringProperty(std::string(cName), te::dt::StringType::STRING, cSize);
+          break;
 
-      if(cType == ADOX::adLongVarWChar || cType == ADOX::adVarWChar)
-      {
-        prop = new te::dt::StringProperty(std::string(cName), te::dt::StringType::STRING, cSize);
+        case ADOX::adInteger:
+        case ADOX::adDouble:
+          prop = new te::dt::SimpleProperty(std::string(cName), te::dt::INT64_TYPE);
+          break;
+
+        case ADOX::adLongVarBinary:
+          prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), te::dt::BYTE_ARRAY_TYPE));
+          break;
+          
+        default:
+          throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
       }
-      else if(cType == ADOX::adInteger || cType == ADOX::adDouble)
-      {
-        prop = new te::dt::SimpleProperty(std::string(cName), te::dt::INT64_TYPE);
-      }
-      else if(cType == ADOX::adLongVarWChar)
-      {
-        prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), te::dt::BYTE_ARRAY_TYPE));
-      }
-      else
-        throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
 
       return prop;
     }
