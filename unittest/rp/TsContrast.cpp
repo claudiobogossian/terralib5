@@ -127,7 +127,7 @@ void TsContrast::SetMeanAndStdContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_UNITTEST_LOCALE "/data/rasters/terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
 
   // Creating the algorithm parameters
 

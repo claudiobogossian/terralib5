@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-set (PROJ_NAME "all")
+set (PROJ_NAME "examples")
 project(${PROJ_NAME})
 
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 

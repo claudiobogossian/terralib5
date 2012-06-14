@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(all)
+set (PROJ_NAME "unittests")
+project(${PROJ_NAME})
 
 set (TE_VERSION "5.0.0")
 set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Modules")
