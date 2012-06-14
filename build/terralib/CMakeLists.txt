@@ -6,7 +6,9 @@ project(${PROJ_NAME})
 set (TE_VERSION "5.0.0")
 set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Modules")
 
-list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}")
+list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}" )
+
+set (TE_DEPENDENCIES_DIR "$ENV{TE_DEPENDENCIES_DIR}" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 
 include (${T5_MODULES_PATH}/GeneralConfig.cmake)
 include (${T5_MODULES_PATH}/UtilFunctions.cmake)
