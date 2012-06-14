@@ -166,7 +166,7 @@ endif()
 get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
 
 if(_NOTFOUND)
-  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+  message (WARNING "Packages not found [${_NOTFOUND}]. Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
 endif()
 
 # Generating cmake configuration files

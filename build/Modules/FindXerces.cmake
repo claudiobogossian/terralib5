@@ -28,7 +28,7 @@ if(WIN32)
 else(WIN32)
   find_library(XERCES_LIBRARY
                NAMES xerces-c
-               /usr/local/lib /usr/lib)  
+               PATHS /usr/local/lib /usr/lib)  
 endif(WIN32)
 
 set(XERCES_FOUND FALSE)

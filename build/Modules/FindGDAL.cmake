@@ -40,11 +40,13 @@ if(WIN32)
 else(WIN32)
   find_path(GDAL_INCLUDE_DIR
             NAMES gdal.h
-            PATHS /usr/local/include /usr/local/include/gdal /usr/include/gdal)
+            PATHS /usr/local/include /usr/local/include/gdal /usr/include/gdal
+  )
             
   find_library(GDAL_LIBRARY
-               NAMES gdal
-               /usr/local/lib /usr/lib) 
+               NAMES gdal libgdal1.6.0.so
+               PATHS /usr/local/lib /usr/lib
+  ) 
 endif(WIN32)
           
 # Export include and library path for linking with other libraries
