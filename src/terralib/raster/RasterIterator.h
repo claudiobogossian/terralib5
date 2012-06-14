@@ -47,7 +47,7 @@ namespace te
 
       \sa te::rst::Raster
     */
-    template<class T> class  RasterIterator
+    template<class T> class RasterIterator
     {
       public:
 
@@ -85,10 +85,10 @@ namespace te
 
           \return The real value in current position.
         */
-        T getValue(const std::size_t i) const;
+        T operator[](const std::size_t i) const;
 
         /*! \brief Returns a vector with real values from all bands in current position (column, row) from iterator. */
-        std::vector<T> getValues() const;
+        std::vector<T> operator*() const;
 
         /*!
           \brief Gets the values from all bands in current position (column, row) from iterator.
@@ -104,8 +104,6 @@ namespace te
 
         /*! \brief Returns to the previous position. */
         void operator--();
-
-        RasterIterator operator*();
 
         /*!
           \brief Assignment operator.
@@ -182,12 +180,12 @@ namespace te
       return m_it[0].getCol();
     }
 
-    template<class T> T te::rst::RasterIterator<T>::getValue(const std::size_t i) const
+    template<class T> T te::rst::RasterIterator<T>::operator[](const std::size_t i) const
     {
-      return m_it[i].getValue();
+      return *m_it[i];
     }
 
-    template<class T> std::vector<T> te::rst::RasterIterator<T>::getValues() const
+    template<class T> std::vector<T> te::rst::RasterIterator<T>::operator*() const
     {
       std::vector<T> values;
 
@@ -199,7 +197,7 @@ namespace te
     template<class T> void te::rst::RasterIterator<T>::getValues(std::vector<T>& v) const
     {
       for (std::size_t b = 0; b < m_b.size(); b++)
-        v[b] = m_it[b].getValue();
+        v.push_back(*m_it[b]);
     }
 
     template<class T> void te::rst::RasterIterator<T>::operator++()
@@ -212,11 +210,6 @@ namespace te
     {
       for (std::size_t b = 0; b < m_b.size(); b++)
         --m_it[b];
-    }
-
-    template<class T> te::rst::RasterIterator<T> te::rst::RasterIterator<T>::operator*()
-    {
-      return *this;
     }
 
     template<class T> te::rst::RasterIterator<T>& te::rst::RasterIterator<T>::operator=(const te::rst::RasterIterator<T>& rhs)

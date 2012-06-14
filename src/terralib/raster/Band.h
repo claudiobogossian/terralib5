@@ -407,7 +407,7 @@ namespace te
       protected:
 
         BandProperty* m_property;      //!< The band information.
-        std::size_t m_idx;             //!< The band index.
+        std::size_t m_idx;            //!< The band index.
     };
 
   } // end namespace rst

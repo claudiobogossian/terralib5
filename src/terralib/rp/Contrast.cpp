@@ -48,12 +48,12 @@ namespace te
     {
       reset();
     }
-    
+
     Contrast::InputParameters::~InputParameters()
     {
       reset();
     }
-    
+
     void Contrast::InputParameters::reset() throw( te::rp::Exception )
     {
       m_type = InputParameters::InvalidContrastT;
@@ -62,50 +62,50 @@ namespace te
       m_hECMaxInput = 0;
       m_sMASCMeanInput = 0;
       m_sMASCStdInput = 0;
-      
+
       m_inRasterPtr = 0;
       m_inRasterBands.clear();
     }
-    
-    const Contrast::InputParameters& Contrast::InputParameters::operator=( 
+
+    const Contrast::InputParameters& Contrast::InputParameters::operator=(
       const Contrast::InputParameters& params )
     {
       reset();
-        
+
       m_type = params.m_type;
       m_lCMinInput = params.m_lCMinInput;
       m_lCMaxInput = params.m_lCMaxInput;
       m_hECMaxInput = params.m_hECMaxInput;
       m_sMASCMeanInput = params.m_sMASCMeanInput;
       m_sMASCStdInput = params.m_sMASCStdInput;
-      
+
       m_inRasterPtr = params.m_inRasterPtr;
       m_inRasterBands = params.m_inRasterBands;
-      
+
       return *this;
     }
-    
+
     te::common::AbstractParameters* Contrast::InputParameters::clone() const
     {
       return new InputParameters( *this );
     }
-    
+
     Contrast::OutputParameters::OutputParameters()
     {
       reset();
     }
-    
+
     Contrast::OutputParameters::OutputParameters( const OutputParameters& other )
     {
       reset();
       operator=( other );
     }
-    
+
     Contrast::OutputParameters::~OutputParameters()
     {
       reset();
     }
-    
+
     void Contrast::OutputParameters::reset() throw( te::rp::Exception )
     {
       m_outRasterPtr = 0;
@@ -114,25 +114,25 @@ namespace te
       m_createdOutRasterDSType.clear();
       m_createdOutRasterInfo.clear();
     }
-    
-    const Contrast::OutputParameters& Contrast::OutputParameters::operator=( 
+
+    const Contrast::OutputParameters& Contrast::OutputParameters::operator=(
       const Contrast::OutputParameters& params )
     {
       reset();
-        
+
       m_outRasterPtr = params.m_outRasterPtr;
       m_createdOutRasterPtr = params.m_createdOutRasterPtr;
       m_outRasterBands = params.m_outRasterBands;
       m_createdOutRasterDSType = params.m_createdOutRasterDSType;
       m_createdOutRasterInfo = params.m_createdOutRasterInfo;
-      
+
       return *this;
     }
-    
+
     te::common::AbstractParameters* Contrast::OutputParameters::clone() const
     {
       return new OutputParameters( *this );
-    }    
+    }
 
     Contrast::Contrast()
     {
@@ -143,39 +143,39 @@ namespace te
     {
     }
 
-    bool Contrast::execute( AlgorithmOutputParameters& outputParams ) 
+    bool Contrast::execute( AlgorithmOutputParameters& outputParams )
       throw( te::rp::Exception )
     {
       TERP_TRUE_OR_RETURN_FALSE( m_isInitialized, "Algoritm not initialized" );
-      
+
       // Initializing the output raster
-      
-      m_outputParametersPtr = dynamic_cast< 
-        Contrast::OutputParameters* >( &outputParams );          
-      TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr, "Invalid parameters" );      
-      
+
+      m_outputParametersPtr = dynamic_cast<
+        Contrast::OutputParameters* >( &outputParams );
+      TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr, "Invalid parameters" );
+
       if( m_outputParametersPtr->m_outRasterPtr == 0 )
       {
         m_outputParametersPtr->m_outRasterBands.clear();
 
         std::vector< te::rst::BandProperty* > bandsProperties;
-        for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
+        for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
           m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
         {
-          assert( m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] < 
+          assert( m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] <
             m_inputParameters.m_inRasterPtr->getNumberOfBands() );
-            
+
           bandsProperties.push_back( new te::rst::BandProperty(
-            *( m_inputParameters.m_inRasterPtr->getBand( 
-            m_inputParameters.m_inRasterBands[ 
-            inRasterBandsIdx ] )->getProperty() ) ) );  
+            *( m_inputParameters.m_inRasterPtr->getBand(
+            m_inputParameters.m_inRasterBands[
+            inRasterBandsIdx ] )->getProperty() ) ) );
 
           m_outputParametersPtr->m_outRasterBands.push_back( inRasterBandsIdx );
         }
-        
-        m_outputParametersPtr->m_createdOutRasterPtr.reset( 
+
+        m_outputParametersPtr->m_createdOutRasterPtr.reset(
           te::rst::RasterFactory::make(
-            m_outputParametersPtr->m_createdOutRasterDSType, 
+            m_outputParametersPtr->m_createdOutRasterDSType,
             new te::rst::Grid( *( m_inputParameters.m_inRasterPtr->getGrid() ) ),
             bandsProperties,
             m_outputParametersPtr->m_createdOutRasterInfo,
@@ -183,8 +183,8 @@ namespace te
             0 ) );
         TERP_TRUE_OR_RETURN_FALSE( m_outputParametersPtr->m_createdOutRasterPtr.get(),
           "Output raster creation error" );
-          
-        m_outputParametersPtr->m_outRasterPtr = 
+
+        m_outputParametersPtr->m_outRasterPtr =
           m_outputParametersPtr->m_createdOutRasterPtr.get();
       }
       else
@@ -198,7 +198,7 @@ namespace te
           for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
             m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
           {
-            TERP_TRUE_OR_RETURN_FALSE( 
+            TERP_TRUE_OR_RETURN_FALSE(
               m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] <
               m_outputParametersPtr->m_outRasterPtr->getNumberOfBands(),
               "Invalid output raster band" )
@@ -209,7 +209,7 @@ namespace te
           TERP_LOG_AND_RETURN_FALSE( "Invalid output raster" );
         }
       }
-      
+
       // Executing the contrast on the selected bands
 
       switch( m_inputParameters.m_type )
@@ -244,36 +244,36 @@ namespace te
       m_isInitialized = false;
     }
 
-    bool Contrast::initialize( const AlgorithmInputParameters& inputParams ) 
+    bool Contrast::initialize( const AlgorithmInputParameters& inputParams )
       throw( te::rp::Exception )
     {
       reset();
 
-      Contrast::InputParameters const* inputParamsPtr = dynamic_cast< 
+      Contrast::InputParameters const* inputParamsPtr = dynamic_cast<
         Contrast::InputParameters const* >( &inputParams );
       TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr, "Invalid parameters" );
-      
-      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterPtr, 
+
+      TERP_TRUE_OR_RETURN_FALSE( inputParamsPtr->m_inRasterPtr,
         "Invalid raster pointer" );
-      TERP_TRUE_OR_RETURN_FALSE( 
-        inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess, 
-        "Invalid raster" );   
-        
-      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
+      TERP_TRUE_OR_RETURN_FALSE(
+        inputParamsPtr->m_inRasterPtr->getAccessPolicy() & te::common::RAccess,
+        "Invalid raster" );
+
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
         inputParamsPtr->m_inRasterBands.size() ; ++inRasterBandsIdx )
       {
-        TERP_TRUE_OR_RETURN_FALSE( 
-          inputParamsPtr->m_inRasterBands[ inRasterBandsIdx ] < 
+        TERP_TRUE_OR_RETURN_FALSE(
+          inputParamsPtr->m_inRasterBands[ inRasterBandsIdx ] <
           inputParamsPtr->m_inRasterPtr->getNumberOfBands(),
           "Invalid input raster band" );
-      }        
+      }
 
       m_inputParameters = *inputParamsPtr;
       m_isInitialized = true;
 
       return true;
     }
-    
+
     bool Contrast::isInitialized() const
     {
       return m_isInitialized;
@@ -283,22 +283,22 @@ namespace te
     {
       assert( m_inputParameters.m_inRasterPtr );
       assert( m_outputParametersPtr->m_outRasterPtr );
-      
-      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx < 
+
+      for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
         m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
       {
-        te::rst::Band const* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand( 
+        te::rst::Band const* inRasterBandPtr = m_inputParameters.m_inRasterPtr->getBand(
           m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] );
-        te::rst::Band* outRasterBandPtr =m_outputParametersPtr->m_outRasterPtr->getBand( 
+        te::rst::Band* outRasterBandPtr =m_outputParametersPtr->m_outRasterPtr->getBand(
          m_outputParametersPtr->m_outRasterBands[ inRasterBandsIdx ] );
-        
+
         double outRangeMin = 0.0;
         double outRangeMax = 0.0;
-        getDataTypeRange( outRasterBandPtr->getProperty()->getType(), 
+        getDataTypeRange( outRasterBandPtr->getProperty()->getType(),
           outRangeMin, outRangeMax );
         const double outRasterRange = outRangeMax - outRangeMin;
-        
-        const double inRasterRange = m_inputParameters.m_lCMaxInput - 
+
+        const double inRasterRange = m_inputParameters.m_lCMaxInput -
           m_inputParameters.m_lCMinInput;
 
         if( ( outRasterRange != 0.0 ) && ( inRasterRange != 0.0 ) )
@@ -306,14 +306,14 @@ namespace te
           m_offSetGainRemap_gain = outRasterRange / inRasterRange;
           m_offSetGainRemap_offset = outRangeMin - m_inputParameters.m_lCMinInput;
         }
-        
+
         if( ! remapBandLevels( *inRasterBandPtr, *outRasterBandPtr,
           &Contrast::offSetGainRemap ) )
         {
           return false;
         }
       }
-      
+
       return true;
     }
 
@@ -326,29 +326,29 @@ namespace te
       if(m_inputParameters.m_hECMaxInput == ( -1.0 * DBL_MAX ))
         m_inputParameters.m_hECMaxInput = 255;
 
-      const te::rst::RasterSummary* rsummary = 
+      const te::rst::RasterSummary* rsummary =
         te::rst::RasterSummaryManager::getInstance().get(
         m_inputParameters.m_inRasterPtr, te::rst::SUMMARY_R_HISTOGRAM);
 
       double value;
       double newvalue;
-      unsigned int N = m_inputParameters.m_inRasterPtr->getNumberOfRows() * 
+      unsigned int N = m_inputParameters.m_inRasterPtr->getNumberOfRows() *
         m_inputParameters.m_inRasterPtr->getNumberOfColumns();
-      const double lutfactor = 
+      const double lutfactor =
         m_inputParameters.m_hECMaxInput / (double) N;
 
       for( unsigned int b = 0 ; b < m_inputParameters.m_inRasterBands.size() ; b++ )
       {
         unsigned int niband = m_inputParameters.m_inRasterBands[b];
-        unsigned int noband =m_outputParametersPtr->m_outRasterBands[b];
+        unsigned int noband = m_outputParametersPtr->m_outRasterBands[b];
 
-        te::rst::Band const* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
-        te::rst::Band* oband =m_outputParametersPtr->m_outRasterPtr->getBand(noband);
+        const te::rst::Band* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
+        te::rst::Band* oband = m_outputParametersPtr->m_outRasterPtr->getBand(noband);
 
-        te::rst::BandIterator<double> ibandit = 
-          te::rst::BandIterator<double>::begin((te::rst::Band*)iband);
-        te::rst::BandIterator<double> ibanditend = 
-          te::rst::BandIterator<double>::end((te::rst::Band*)iband);
+        te::rst::ConstBandIterator<double> ibandit =
+          te::rst::ConstBandIterator<double>::begin(iband);
+        te::rst::ConstBandIterator<double> ibanditend =
+          te::rst::ConstBandIterator<double>::end(iband);
 
         std::map<double, double> lut;
         const double minp = rsummary->at(niband).m_minVal->real();
@@ -363,7 +363,7 @@ namespace te
 
         while (ibandit != ibanditend)
         {
-          value = ibandit.getValue();
+          value = *ibandit;
           oband->setValue(ibandit.getCol(), ibandit.getRow(), lut[value]);
           ++ibandit;
         }
@@ -377,23 +377,23 @@ namespace te
       assert( m_inputParameters.m_inRasterPtr );
       assert(m_outputParametersPtr->m_outRasterPtr );
 
-      const te::rst::RasterSummary* rsummary = 
+      const te::rst::RasterSummary* rsummary =
         te::rst::RasterSummaryManager::getInstance().get(
-        m_inputParameters.m_inRasterPtr, 
+        m_inputParameters.m_inRasterPtr,
         (te::rst::SummaryTypes) (te::rst::SUMMARY_MEAN | te::rst::SUMMARY_STD));
 
       for( unsigned int b = 0 ; b < m_inputParameters.m_inRasterBands.size() ; b++ )
       {
         unsigned int niband = m_inputParameters.m_inRasterBands[b];
-        unsigned int noband =m_outputParametersPtr->m_outRasterBands[b];
+        unsigned int noband = m_outputParametersPtr->m_outRasterBands[b];
 
-        te::rst::Band const* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
-        te::rst::Band* oband =m_outputParametersPtr->m_outRasterPtr->getBand(noband);
+        const te::rst::Band* iband = m_inputParameters.m_inRasterPtr->getBand(niband);
+        te::rst::Band* oband = m_outputParametersPtr->m_outRasterPtr->getBand(noband);
 
-        te::rst::BandIterator<double> ibandit = 
-          te::rst::BandIterator<double>::begin((te::rst::Band*)iband);
-        te::rst::BandIterator<double> ibanditend = 
-          te::rst::BandIterator<double>::end((te::rst::Band*)iband);
+        te::rst::ConstBandIterator<double> ibandit =
+          te::rst::ConstBandIterator<double>::begin(iband);
+        te::rst::ConstBandIterator<double> ibanditend =
+          te::rst::ConstBandIterator<double>::end(iband);
 
         const double meanp = rsummary->at(niband).m_meanVal->real();
         const double stdp = rsummary->at(niband).m_stdVal->real();
@@ -425,14 +425,14 @@ namespace te
       const unsigned int outBlkHeightPixels = outRasterBand.getProperty()->m_blkh;
       double outRangeMin = 0.0;
       double outRangeMax = 0.0;
-      getDataTypeRange( outRasterBand.getProperty()->getType(), 
+      getDataTypeRange( outRasterBand.getProperty()->getType(),
         outRangeMin, outRangeMax );
 
-      if( ( inBlkWidthPixels == outBlkWidthPixels ) && 
+      if( ( inBlkWidthPixels == outBlkWidthPixels ) &&
         ( inBlkHeightPixels == outBlkHeightPixels ) )
       { // block version
-        const unsigned int blockSizePixels = inBlkWidthPixels * 
-          inBlkHeightPixels;      
+        const unsigned int blockSizePixels = inBlkWidthPixels *
+          inBlkHeightPixels;
         const unsigned int xBlocksNmb = inRasterBand.getProperty()->m_nblocksx;
         const unsigned int yBlocksNmb = inRasterBand.getProperty()->m_nblocksy;
         unsigned char* inputBuffer = new unsigned char[ inRasterBand.getBlockSize() ];
@@ -445,26 +445,26 @@ namespace te
         unsigned int blockOffset = 0;
         double outValue = 0;
 
-        for( unsigned int blockYIndex = 0 ; blockYIndex < yBlocksNmb ; 
+        for( unsigned int blockYIndex = 0 ; blockYIndex < yBlocksNmb ;
           ++blockYIndex )
         {
-          for( blockXIndex = 0 ; blockXIndex < xBlocksNmb ; 
+          for( blockXIndex = 0 ; blockXIndex < xBlocksNmb ;
             ++blockXIndex )
           {
             inRasterBand.read( blockXIndex, blockYIndex, inputBuffer );
 
-            convert2DoublesVector( inputBuffer, inputVectorDataType, 
+            convert2DoublesVector( inputBuffer, inputVectorDataType,
               blockSizePixels, inDoublesBuffer );
 
             for( blockOffset = 0 ; blockOffset < blockSizePixels ; ++blockOffset )
             {
-              (this->*remapFuncPtr)( inDoublesBuffer[blockOffset], 
+              (this->*remapFuncPtr)( inDoublesBuffer[blockOffset],
                 outValue);
-              outDoublesBuffer[blockOffset] = std::max( outRangeMin, std::min( 
+              outDoublesBuffer[blockOffset] = std::max( outRangeMin, std::min(
                 outRangeMax, outValue ) );
             }
 
-            convertDoublesVector( outDoublesBuffer, blockSizePixels, 
+            convertDoublesVector( outDoublesBuffer, blockSizePixels,
               outputVectorDataType, outputBuffer );
 
             outRasterBand.write( blockXIndex, blockYIndex, outputBuffer );
@@ -491,7 +491,7 @@ namespace te
           {
             inRasterBand.getValue( col, line, inputValue );
             (this->*remapFuncPtr)( inputValue, outputValue );
-            outRasterBand.setValue( col, line, std::max( outRangeMin, std::min( 
+            outRasterBand.setValue( col, line, std::max( outRangeMin, std::min(
               outRangeMax, outputValue ) ) );
           }
         }

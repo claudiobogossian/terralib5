@@ -20,7 +20,7 @@ void ExemplifyBandIterator()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -32,6 +32,61 @@ void ExemplifyBandIterator()
 
   te::rst::BandIterator<unsigned char> itend = te::rst::BandIterator<unsigned char>::end(band);
 
+  double max = std::numeric_limits<unsigned char>::min();
+
+  double value;
+
+  while (it != itend)
+  {
+// using iterator
+    value = *it;
+
+    if (value > max)
+      max = value;
+
+    ++it;
+  }
+
+  std::cout << std::endl;
+  std::cout << "  using iterator" << std::endl;
+  std::cout << "    the maximum value for band 0 is " << max << std::endl;
+
+  max = std::numeric_limits<double>::min();
+
+  for (unsigned r = 0; r < inraster->getNumberOfRows(); r++)
+    for (unsigned c = 0; c < inraster->getNumberOfColumns(); c++)
+    {
+      inraster->getValue(c, r, value, 0);
+
+      if (value > max)
+        max = value;
+    }
+
+  std::cout << "  not using iterator" << std::endl;
+  std::cout << "    the maximum value for band 0 is " << max << std::endl << std::endl;
+
+  delete inraster;
+}
+
+void ExemplifyConstBandIterator()
+{
+  std::cout << "Example of ConstBandIterator" << std::endl;
+
+// define raster info
+  std::map<std::string, std::string> rinfo;
+
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
+
+// open raster from disk
+  te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
+
+  const te::rst::Band* band = inraster->getBand(0);
+
+// create iterators for band 0
+  te::rst::ConstBandIterator<unsigned char> it = te::rst::ConstBandIterator<unsigned char>::begin(band);
+
+  te::rst::ConstBandIterator<unsigned char> itend = te::rst::ConstBandIterator<unsigned char>::end(band);
+
   double max = std::numeric_limits<double>::min();
 
   double value;
@@ -39,7 +94,7 @@ void ExemplifyBandIterator()
   while (it != itend)
   {
 // using iterator
-    value = it.getValue();
+    value = *it;
 
     if (value > max)
       max = value;
@@ -74,25 +129,23 @@ void ExemplifyRasterIterator()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
-// create iterators for bands 2 and 1
+// create iterators for bands 0 and 1
   std::vector<std::size_t> bands;
 
-  bands.push_back(2);
-
+  bands.push_back(0);
   bands.push_back(1);
 
   te::rst::RasterIterator<unsigned char> it = te::rst::RasterIterator<unsigned char>::begin(inraster, bands);
 
   te::rst::RasterIterator<unsigned char> itend = te::rst::RasterIterator<unsigned char>::end(inraster, bands);
 
-// this example will compute the mean values for bands 2 and 1
+// this example will compute the mean values for bands 0 and 1
   double mean0 = 0.0;
-
   double mean1 = 0.0;
 
   int N = 0;
@@ -100,13 +153,11 @@ void ExemplifyRasterIterator()
   while (it != itend)
   {
 // using iterator
-    mean0 += it.getValue(0);
-
-    mean1 += it.getValue(1);
+    mean0 += (*it)[0];
+    mean1 += (*it)[1];
+    ++N;
 
     ++it;
-
-    ++N;
   }
 
   std::cout << std::endl;
@@ -123,7 +174,7 @@ void ExemplifyBandIteratorWindow()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -131,7 +182,7 @@ void ExemplifyBandIteratorWindow()
 // define output raster info
   std::map<std::string, std::string> orinfo;
 
-  orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_band3_crop_median_5x5.tif";
+  orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_band3_crop_median_5x5.tif";
 
   te::rst::Grid* grid = new te::rst::Grid(*inraster->getGrid());
 
@@ -192,7 +243,7 @@ void ExemplifyRasterIteratorWindow()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -207,6 +258,8 @@ void ExemplifyIterators()
     std::cout << "This test creates iterators over Bands, Windows, and Rasters." << std::endl << std::endl;
 
     ExemplifyBandIterator();
+
+    ExemplifyConstBandIterator();
 
     ExemplifyRasterIterator();
 
