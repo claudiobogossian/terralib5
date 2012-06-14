@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  set (path_prefix "$ENV{ProgramFiles(x86)}")
+  if("$ENV{ProgramFiles(x86)}")
+	set (path_prefix "$ENV{ProgramFiles(x86)}")
+  else()
+    set (path_prefix "$ENV{ProgramFiles}")
+  endif()
 else()
   set (path_prefix "$ENV{ProgramFiles}")
 endif()
