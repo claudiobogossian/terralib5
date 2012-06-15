@@ -134,13 +134,22 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
 
 void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 {
-  _ConnectionPtr adoConn = m_t->getADOConnection();
+  try
+  {
+    _ConnectionPtr adoConn = m_t->getADOConnection();
 
-  ADOX::_CatalogPtr pCatalog = 0;
+    ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
-  pCatalog->Tables->Delete(dt->getName().c_str());
+    pCatalog->Tables->Delete(dt->getName().c_str());
+
+  }
+  catch(_com_error &e)
+  {
+    std::string description(e.Description()); 
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
+  }
 }
 
 void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)

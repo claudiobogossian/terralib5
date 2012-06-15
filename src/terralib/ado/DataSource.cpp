@@ -47,7 +47,6 @@ te::ado::DataSource::DataSource()
 te::ado::DataSource::~DataSource()
 {
   ::CoUninitialize();
-  delete m_conn;
 }
 
 const std::string& te::ado::DataSource::getType() const
@@ -105,6 +104,8 @@ void te::ado::DataSource::open()
 
 void te::ado::DataSource::close()
 {
+  if(m_conn != 0)
+    m_conn->Close();
   m_conn = 0;
 }
 
@@ -134,7 +135,8 @@ te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
   }
   catch(_com_error &e)
   {
-
+    std::string description(e.Description()); 
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
   }
   catch(...)
   {
@@ -153,27 +155,38 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  // let's have a connection to the auxiliary database
-  std::auto_ptr<DataSource> ds(new DataSource());
+  try
+  {
+    m_connectionInfo = dsInfo;
 
-  ds->setConnectionInfo(dsInfo);
+    std::string info = "provider="+m_connectionInfo["provider"]+
+    ";Data Source="+m_connectionInfo["dbname"]+
+    ";User Id=;Password=";
 
-  ADOX::_CatalogPtr pCatalog = 0;
+    m_strCnn = info.c_str();
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+    // let's have a connection to the auxiliary database
+    std::auto_ptr<DataSource> ds(new DataSource());
 
-  pCatalog->Create(m_strCnn);
+    ds->setConnectionInfo(dsInfo);
 
-  ds->open();
+    ADOX::_CatalogPtr pCatalog = 0;
 
-  std::auto_ptr<te::da::DataSetType> geom_dst(new te::da::DataSetType("geometry_columns"));
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
-  te::dt::StringProperty* f_catalog = new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256);
+    pCatalog->Create(m_strCnn);
 
-  te::da::DataSetTypePersistence* dstPersistence = transactor->getDataSetTypePersistence();
-
-  dstPersistence->add(geom_dst.release(), f_catalog);
+    ds->open();
+  }
+  catch(_com_error &e)
+  {
+    std::string description(e.Description()); 
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
+  }
+  catch(...)
+  {
+    
+  }
 
 }
 
