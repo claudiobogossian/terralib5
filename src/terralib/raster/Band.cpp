@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/Band.cpp
- 
+
   \brief It gives access to values in one band (dimension) of a raster.
 */
 
@@ -199,7 +199,7 @@ std::complex<double> te::rst::Band::getMeanValue(unsigned int rs, unsigned int c
   return std::complex<double> (sumValue.real() / n, sumValue.imag() / n);
 }
 
-std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf) const
+std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf, unsigned int b) const
 {
   if ((rf == cf) && (rf  == 0))
   {
@@ -212,18 +212,69 @@ std::map<double, unsigned> te::rst::Band::getHistogramR(unsigned int rs, unsigne
 
   double pixel;
 
-  for (unsigned r = rs; r <= rf; r++)
-    for (unsigned c = cs; c <= cf; c++)
-    {
-      getValue(c, r, pixel);
+  if (b == 0)
+    for (unsigned r = rs; r <= rf; r++)
+      for (unsigned c = cs; c <= cf; c++)
+      {
+        getValue(c, r, pixel);
 
-      hist[pixel]++;
+        hist[pixel]++;
+      }
+  else
+  {
+// find limits to divide into bins
+    double pmin = std::numeric_limits<double>::max();
+
+    double pmax = std::numeric_limits<double>::min();
+
+    for (unsigned r = rs; r <= rf; r++)
+      for (unsigned c = cs; c <= cf; c++)
+      {
+        getValue(c, r, pixel);
+
+        if (pixel > pmax)
+          pmax = pixel;
+
+        if (pixel < pmin)
+          pmin = pixel;
+      }
+
+// create histogram with bins
+    double delta = (pmax * 1.000001 - pmin) / b;
+
+    std::map<std::size_t, double> binsLocations;
+
+    std::size_t location = 0;
+
+    for (double bins = pmin; bins < pmax; bins += delta)
+    {
+      hist[bins] = 0;
+
+      binsLocations[location++] = bins;
     }
+
+// fill histogram
+    for (unsigned r = rs; r <= rf; r++)
+      for (unsigned c = cs; c <= cf; c++)
+      {
+        getValue(c, r, pixel);
+
+        location = (std::size_t) ((pixel - pmin) / delta);
+
+        hist[binsLocations[location]]++;
+      }
+
+// removing empty bins from histogram
+    for (double bins = pmin; bins < pmax; bins += delta)
+      if(hist[bins] == 0)
+        hist.erase(bins);
+
+  }
 
   return hist;
 }
 
-std::map<double, unsigned> te::rst::Band::getHistogramI(unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf) const
+std::map<double, unsigned> te::rst::Band::getHistogramI(unsigned int rs, unsigned int cs, unsigned int rf, unsigned int cf, unsigned int b) const
 {
   if ((rf == cf) && (rf  == 0))
   {
@@ -236,13 +287,64 @@ std::map<double, unsigned> te::rst::Band::getHistogramI(unsigned int rs, unsigne
 
   double pixel;
 
-  for (unsigned r = rs; r <= rf; r++)
-    for (unsigned c = cs; c <= cf; c++)
-    {
-      getIValue(c, r, pixel);
+  if (b == 0)
+    for (unsigned r = rs; r <= rf; r++)
+      for (unsigned c = cs; c <= cf; c++)
+      {
+        getIValue(c, r, pixel);
 
-      hist[pixel]++;
+        hist[pixel]++;
+      }
+  else
+  {
+// find limits to divide into bins
+    double pmin = std::numeric_limits<double>::max();
+
+    double pmax = std::numeric_limits<double>::min();
+
+    for (unsigned r = rs; r <= rf; r++)
+      for (unsigned c = cs; c <= cf; c++)
+      {
+        getIValue(c, r, pixel);
+
+        if (pixel > pmax)
+          pmax = pixel;
+
+        if (pixel < pmin)
+          pmin = pixel;
+      }
+
+// create histogram with bins
+    double delta = (pmax * 1.000001 - pmin) / b;
+
+    std::map<std::size_t, double> binsLocations;
+
+    std::size_t location = 0;
+
+    for (double bins = pmin; bins < pmax; bins += delta)
+    {
+      hist[bins] = 0;
+
+      binsLocations[location++] = bins;
     }
+
+// fill histogram
+    for (unsigned r = rs; r <= rf; r++)
+      for (unsigned c = cs; c <= cf; c++)
+      {
+        getIValue(c, r, pixel);
+
+        location = (std::size_t) ((pixel - pmin) / delta);
+
+        hist[binsLocations[location]]++;
+      }
+
+// removing empty bins from histogram
+    for (double bins = pmin; bins < pmax; bins += delta)
+      if(hist[bins] == 0)
+        hist.erase(bins);
+
+  }
 
   return hist;
 }
