@@ -162,13 +162,6 @@ IF(BUILD_ADO)
   add_subdirectory(terralib_ado)
 endif()
 
-# Verifying if some packag was not found.
-get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
-
-if(_NOTFOUND)
-  message (WARNING "Packages not found [${_NOTFOUND}]. Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
-endif()
-
 # Generating cmake configuration files
 message(STATUS "-- Generating configuration files.")
 
