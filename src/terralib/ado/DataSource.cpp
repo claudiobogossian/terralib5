@@ -130,8 +130,7 @@ te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
   try
   {
     newConn.CreateInstance(__uuidof(Connection));
-    HRESULT hr  = newConn->Open (m_strCnn,"","",-1);
-    TESTHR( hr );
+    TESTHR(newConn->Open (m_strCnn,"","",-1));
   }
   catch(_com_error &e)
   {
@@ -142,9 +141,9 @@ te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
     
   }
 
-  te::da::DataSourceTransactor* transactor = new DataSourceTransactor(this, newConn);
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(new DataSourceTransactor(this, newConn));
 
-  return transactor;
+  return transactor.release();
 }
 
 void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
@@ -167,25 +166,14 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 
   ds->open();
 
-  te::da::DataSetType* geom_dst = new te::da::DataSetType("geometry_columns");
+  std::auto_ptr<te::da::DataSetType> geom_dst(new te::da::DataSetType("geometry_columns"));
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
 
   te::dt::StringProperty* f_catalog = new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256);
 
   te::da::DataSetTypePersistence* dstPersistence = transactor->getDataSetTypePersistence();
 
-  
-
-  dstPersistence->add(geom_dst, f_catalog);
-
-
-  /*pTable->Columns->Append("f_table_catalog", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("f_table_schema", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("f_table_name", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("f_geometry_column", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("coord_dimension", ADOX::adInteger,0);
-  pTable->Columns->Append("srid",ADOX::adInteger,0);
-  pTable->Columns->Append("type", ADOX::adVarWChar,30);*/
+  dstPersistence->add(geom_dst.release(), f_catalog);
 
 }
 
@@ -198,4 +186,3 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& /*dsI
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
-
