@@ -91,6 +91,8 @@ public Q_SLOTS:
   void setMouseOperationToAddObjectSelectionSlot();
   void setMouseOperationToToggleObjectSelectionSlot();
   void showRootFolderSlot();
+  void printSlot();
+  void printFileSlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -99,6 +101,7 @@ Q_SIGNALS:
 protected:
   virtual te::qt::widgets::Canvas* getCanvas(te::map::AbstractLayer* layer);
   virtual void setCanvas(te::map::AbstractLayer* layer);
+  void print(QPrinter*);
 
 private:
   MouseHandler* m_mouseHandler;
@@ -111,6 +114,8 @@ private:
   QAction* m_mouseSelectionAction;
   QAction* m_mouseAddSelectionAction;
   QAction* m_mouseToggleSelectionAction;
+  QAction* printAction;
+  QAction* printFileAction;
 
   QRect m_rec;
   bool m_init; // flag para indicar que o display esta' sendo inicializado (evitar que desenhe 2 vezes no inicio)

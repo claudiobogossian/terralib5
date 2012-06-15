@@ -324,34 +324,33 @@ void te::qt::widgets::Canvas::draw(const te::gm::LineString* line)
   p1.setX(coords[0].x);
   p1.setY(coords[0].y);
 
-  m_painter.setPen(m_lnPen);
-
   for(register std::size_t i = 1; i != size; ++i)
   {    
     p2.setX(coords[i].x);
     p2.setY(coords[i].y);
 
-	if(m_erase)
-	{
-	  QPen pen(m_lnPen);
-	  pen.setColor(Qt::red);
-	  if(m_lnPen.brush().style() == Qt::TexturePattern)
-		pen.setCapStyle(Qt::FlatCap); // Qt::RoundCap Qt::FlatCap Qt::SquareCap
-	  m_painter.setPen(pen);
-	  m_painter.setBrush(Qt::NoBrush);
-      m_painter.drawLine(p1, p2);
-      drawed = true;
-	}
+	  if(m_erase)
+	  {
+	    QPen pen(m_lnPen);
+	    pen.setColor(Qt::red);
+	    if(m_lnPen.brush().style() == Qt::TexturePattern)
+		  pen.setCapStyle(Qt::FlatCap); // Qt::RoundCap Qt::FlatCap Qt::SquareCap
+	    m_painter.setPen(pen);
+	    m_painter.setBrush(Qt::NoBrush);
+        m_painter.drawLine(p1, p2);
+        drawed = true;
+	  }
     else if(m_lnPen.brush().style() != Qt::TexturePattern)
     {
-	  m_lnPen.setColor(m_lnColor);
-      m_painter.setPen(m_lnPen);
+      QPen pen(m_lnPen);
+      pen.setColor(m_lnColor);
+      m_painter.setPen(pen);
       m_painter.drawLine(p1, p2);
       drawed = true;
     }
     else
     {
-	  int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment using pattern
+	    int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment using pattern
       double alfa;
       QPoint dp1 = m_matrix.map(p1).toPoint();
       QPoint dp2 = m_matrix.map(p2).toPoint();
@@ -1140,7 +1139,7 @@ void te::qt::widgets::Canvas::draw(const te::at::Text* txt)
       }
       else if(decoration == te::at::Overline)
         m_font.setOverline(true);
-      else if(style == te::at::Underline)
+      else if(decoration == te::at::Underline)
         m_font.setUnderline(true);
       else
         m_font.setStrikeOut(true);
@@ -1450,12 +1449,12 @@ void te::qt::widgets::Canvas::setLineColor(const te::color::RGBAColor& color)
   QColor cor(color.getRgba());
   cor.setAlpha(qAlpha(color.getRgba()));
 
-  if(cor.alpha() == 255)
-  {
-    m_lnPen.setColor(cor);
-    m_lnColor = QColor(0, 0, 0, 0);
-  }
-  else
+  //if(cor.alpha() == 255)
+  //{
+  //  m_lnPen.setColor(cor);
+  //  m_lnColor = QColor(0, 0, 0, 0);
+  //}
+  //else
     m_lnColor = cor;
 }
 
@@ -1575,6 +1574,10 @@ void te::qt::widgets::Canvas::setPolygonFillPattern(te::color::RGBAColor** patte
     m_polyRotatedImage = 0;
     return;
   }
+
+  if(m_polyImage)
+    delete m_polyImage;
+
   m_polyImage = GetImage(pattern, ncols, nrows);
   if(m_polyImage->isNull())
   {
@@ -1607,6 +1610,7 @@ void te::qt::widgets::Canvas::setPolygonFillPattern(char* pattern, std::size_t s
     m_polyRotatedImage = 0;
     return;
   }
+  delete m_polyImage;
 
   m_polyImage = new QImage();
   const char* format = te::qt::widgets::GetFormat(t);

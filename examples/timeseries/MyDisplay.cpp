@@ -1,6 +1,8 @@
 #include "MyDisplay.h"
 #include "MyLayer.h"
 #include "MyLayerRenderer.h"
+#include "PrintInFile.h"
+#include <terralib/common/PlatformUtils.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
 #include <terralib/raster.h>
@@ -14,6 +16,9 @@
 #include <QString>
 #include <QMatrix>
 #include <QRectF>
+#include <QPrintDialog>
+#include <QPrinter>
+#include <QPaintEngine>
 
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(w, h, parent, f),
@@ -75,6 +80,14 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   QAction* showRootFolderAction = new QAction("Show Root Folder", m_menu);
   m_menu->addAction(showRootFolderAction);
   connect(showRootFolderAction, SIGNAL(triggered()), this, SLOT(showRootFolderSlot()));
+
+  QAction* printAction = new QAction("Print...", m_menu);
+  m_menu->addAction(printAction);
+  connect(printAction, SIGNAL(triggered()), this, SLOT(printSlot()));
+
+  QAction* printFileAction = new QAction("Print In File...", m_menu);
+  m_menu->addAction(printFileAction);
+  connect(printFileAction, SIGNAL(triggered()), this, SLOT(printFileSlot()));
 
   m_mouseHandler = new MouseHandler(this);
 
@@ -1015,4 +1028,241 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
 void MyDisplay::setTimeSlider(TimeSlider* t)
 {
   m_timeSlider = t;
+}
+
+void MyDisplay::printSlot()
+{
+  QPrintDialog w(this);
+  
+  if(w.exec() ==  QDialog::Rejected)
+    return;
+
+  QPrinter* printer = w.printer();
+
+  int fx = printer->physicalDpiX();
+  int fy = printer->physicalDpiY();
+  printer->setResolution(fx);  // precisa fazer isto para que a impressora tenha a resolucao configurada
+                               // na interface. Caso contrario a resolucao sempre sera´ 96 dpi.
+  print(printer);
+}
+
+void MyDisplay::printFileSlot()
+{
+  PrintInFile w(this);
+  if(w.exec() ==  QDialog::Rejected)
+    return;
+
+  QPrinter printer(QPrinter::HighResolution);
+  printer.setOutputFileName(w.m_fileLineEdit->text());
+
+  if(w.m_fileFormatComboBox->currentText() == "PDF")
+    printer.setOutputFormat(QPrinter::PdfFormat);
+  else
+    printer.setOutputFormat(QPrinter::PostScriptFormat);
+
+  double width = w.m_paperWidthLineEdit->text().toDouble();
+  double height = w.m_paperHeightLineEdit->text().toDouble();
+  QSizeF paperSize(width, height);     
+  printer.setPaperSize(paperSize, QPrinter::Millimeter);
+  double left = w.m_leftMarginSpinBox->text().toDouble();
+  double top = w.m_rightMarginSpinBox->text().toDouble();
+  double right = w.m_topMarginSpinBox->text().toDouble();
+  double bottom = w.m_bottomMarginSpinBox->text().toDouble();
+  printer.setPageMargins(left, top, right, bottom, QPrinter::Millimeter);
+
+  int resolution = w.m_resolutionComboBox->currentText().toInt();
+  printer.setResolution(resolution);
+  int r = printer.resolution();
+
+  if(w.m_paperOrientationComboBox->currentText() == "Portrait")
+    printer.setOrientation(QPrinter::Portrait);
+  else
+    printer.setOrientation(QPrinter::Landscape);
+
+  QString file = w.m_fileLineEdit->text();
+  printer.setOutputFileName(file);
+
+  print(&printer);
+}
+
+void MyDisplay::print(QPrinter* printer)
+{
+  setWaitCursor();
+  QSizeF paperSizeMM = printer->paperSize(QPrinter::Millimeter);
+
+  int resolution = printer->resolution();
+  QPainter painter(printer); // so pode inicializar painter depois de configurar a resolucao da impressora
+
+  QPrinter::Orientation orientation = printer->orientation();
+  int width, height;
+
+  int pwidth = (double)printer->widthMM() * (double)resolution / 25.4;
+  int pheight = (double)printer->heightMM() * (double)resolution / 25.4;
+
+  double left, top, right, bottom;
+  printer->getPageMargins (&left, &top, &right, &bottom, QPrinter::Millimeter);
+  left = (double)left * (double)resolution / 25.4;
+  top = (double)top * (double)resolution / 25.4;
+  right = (double)right * (double)resolution / 25.4;
+  bottom = (double)bottom * (double)resolution / 25.4;
+
+  pwidth -= (left + right);
+  pheight -= (top + bottom);
+
+  int mwidth = m_displayPixmap->width();
+  int mheight = m_displayPixmap->height();
+
+  double a = (double)mwidth / (double)mheight;
+  double b = (double)pwidth / (double)pheight;
+  
+  if(a < b)
+  {
+    width = (int)((double)pheight * a + .5);
+    height = pheight;
+  }
+  else
+  {
+    height = (int)((double)pwidth / a + .5);
+    width = pwidth;
+  }
+
+  left = (pwidth - width) / 2;
+  top = (pheight - height) / 2;
+
+  //unsigned long memAvailable = te::common::GetFreePhysicalMemory();
+
+  int n = 1;
+  te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(width, height/n);
+  while(canvas->getWidth() == 0 || canvas->getHeight() == 0)
+  {
+    delete canvas;
+    ++n;
+    canvas = new te::qt::widgets::Canvas(width, height/n);
+  }
+
+  if(n == 1)
+  {
+    te::gm::Envelope e(*m_extent);
+    canvas->calcAspectRatio(e.m_llx, e.m_lly, e.m_urx, e.m_ury, m_hAlign, m_vAlign);
+    canvas->setWindow(e.m_llx, e.m_lly, e.m_urx, e.m_ury);
+
+    std::list<te::map::AbstractLayer*> layerList;
+    std::list<te::map::AbstractLayer*>::iterator it;
+    mountLayerList(m_layerTree, layerList);
+
+    for(it = layerList.begin(); it != layerList.end(); ++it)
+    {
+      MyLayer* layer =  (MyLayer*)(*it);
+      MyLayerRenderer* renderer = new MyLayerRenderer(false);
+      layer->setRenderer(renderer);
+      layer->draw(canvas, e, m_srid);
+
+      painter.drawPixmap(left, top, *(canvas->getPixmap()));
+    }
+  }
+  else
+  {
+    // 4096 x 4096 pixels
+    int w = 4096;
+    int h = 4096;
+    int wn = (int)((double)width / (double)w + 1.);
+    n =  (int)((double)height / (double)h + 1.);
+
+    double y1, y2;
+    double x1 = m_extent->getLowerLeftX();
+    double x2 = m_extent->getUpperRightX();
+
+    delete canvas;
+    canvas = new te::qt::widgets::Canvas(w, h);
+    QPixmap pix(w, h);
+    QPainter painterAux; 
+    te::gm::Envelope env(*m_extent);
+    double eh = m_extent->getHeight() / (double)n;
+    double ew = m_extent->getWidth() / (double)wn;
+
+    y2 = m_extent->getUpperRightY();
+    y1 = y2 - eh;
+    x1 = m_extent->getLowerLeftX();
+    x2 = x1 + ew;
+    canvas->setWindow(x1, y1, x2, y2);
+    canvas->calcAspectRatio(x1, y1, x2, y2, m_hAlign, m_vAlign);
+    double x1ini = x1;
+    eh = y2 - y1;
+    ew = x2 - x1;
+    double wmin = ew / (double)w;
+    double hmin = eh / (double)h;
+
+    double d = (m_extent->getUpperRightY() - y1) / (y2 - y1);
+    double ssy = h - (int)(d * (double)h + .5);
+    d = (m_extent->getLowerLeftX() - x1) / (x2 - x1);
+    double ssx = (int)(d * (double)w + .5);
+
+    int yini = top;
+    while((y1 + eh) > m_extent->getLowerLeftY())
+    {
+      int xini = left;
+      x1 = x1ini;
+      while(x1 < m_extent->getUpperRightX())
+      {
+        canvas->setWindow(x1, y1, x1+ew, y1+eh);
+        env.init(x1, y1, x1+ew, y1+eh);
+        pix.fill(QColor(0, 0, 0, 0));
+        painterAux.begin(&pix);
+
+        std::list<te::map::AbstractLayer*> layerList;
+        std::list<te::map::AbstractLayer*>::iterator it;
+        mountLayerList(m_layerTree, layerList);
+
+        for(it = layerList.begin(); it != layerList.end(); ++it)
+        {
+          MyLayer* layer =  (MyLayer*)(*it);
+          MyLayerRenderer* renderer = new MyLayerRenderer(false); // clear canvas
+          layer->setRenderer(renderer);
+          layer->draw(canvas, env, m_srid);
+
+          int sx = 0;
+          int sy = 0;
+          int dx = w;
+          int dy = h;
+          if(yini == (int)top)
+          {
+            sy = ssy;
+            dy = 0;
+          }
+          if(xini == (int)left)
+          {
+            sx = ssx;
+            dx = 0;
+          }
+          if((x1 + ew) > m_extent->getUpperRightX())
+          {
+            QPointF pf(m_extent->getUpperRightX(), m_extent->getUpperRightY());
+            QPoint p(canvas->getMatrix().map(pf).toPoint());
+            dx = p.x();
+          }
+          if(y1 < m_extent->getLowerLeftY())
+          {
+            QPointF pf(m_extent->getLowerLeftX(), m_extent->getLowerLeftY());
+            QPoint p(canvas->getMatrix().map(pf).toPoint());
+            dy = p.y();
+          }
+
+          painterAux.drawPixmap(sx, sy, *canvas->getPixmap(), sx, sy, dx, dy);
+        }
+
+        painterAux.end();
+        painter.drawPixmap(xini, yini, pix);
+
+        xini += w;
+        x1 += (ew + wmin);
+      }
+
+      yini += h;
+      y1 -= (eh + hmin);
+    }
+  }
+  painter.end();
+  delete canvas;
+
+  unsetWaitCursor();
 }
