@@ -63,9 +63,9 @@ void te::common::ProgressTimer::tick()
 
   int remainingSteps = m_totalSteps - m_count;
 
-  m_speedTime = ((double)m_count / diffInSec);
+  m_speedTime = (static_cast<double>(m_count) / diffInSec);
 
-  double remainingTimeInSec = ((double)remainingSteps / m_speedTime);
+  double remainingTimeInSec = (static_cast<double>(remainingSteps) / m_speedTime);
 
   m_remainingTime = remainingTimeInSec / 60.;
 }
