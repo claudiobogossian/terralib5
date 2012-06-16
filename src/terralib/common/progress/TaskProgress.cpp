@@ -29,10 +29,10 @@
 #include "TaskProgress.h"
 
 te::common::TaskProgress::TaskProgress()
-  : m_totalSteps(0),
+  : m_id(-1),
+    m_totalSteps(0),
     m_currentStep(0),
     m_currentPropStep(0),
-    m_message(""),
     m_hasToUpdate(false),
     m_isActive(true),
     m_isMultiThread(false),
@@ -67,7 +67,7 @@ void te::common::TaskProgress::setTotalSteps(int value)
   if(m_timer)
   {
     m_timer->setTotalSteps(m_totalSteps);
-    
+
     //reset timer clock
     m_timer->start();
   }
