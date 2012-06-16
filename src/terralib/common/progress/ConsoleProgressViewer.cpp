@@ -35,8 +35,7 @@ te::common::ConsoleProgressViewer::ConsoleProgressViewer()
   : AbstractProgressViewer(),
     m_totalSteps(0),
     m_currentStep(0),
-    m_propStep(0),
-    m_message("")
+    m_propStep(0)
 {
 }
 
