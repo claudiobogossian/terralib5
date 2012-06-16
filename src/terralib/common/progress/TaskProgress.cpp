@@ -91,7 +91,7 @@ void te::common::TaskProgress::setCurrentStep(int value)
   {
     m_currentStep = value;
 
-    double aux = (double) m_currentStep / (double) m_totalSteps;
+    double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
     int val = int (100. * aux);
 
