@@ -43,20 +43,15 @@ namespace te
 
       \sa TaskProgress
     */
-    class TECOMMONEXPORT AbstractProgressViewer
+    class AbstractProgressViewer
     {
       public:
 
         /*! \brief Default constructor. */
-        AbstractProgressViewer(){}
+        AbstractProgressViewer() { }
 
         /*! \brief Virtual destructor. */
-        virtual ~AbstractProgressViewer(){}
-
-        /** @name AbstractProgressViewer Methods
-         *  Methods for 
-         */
-        //@{
+        virtual ~AbstractProgressViewer() { }
 
         /*!
           \brief Insert a new taks to progress viewer container.
@@ -100,8 +95,6 @@ namespace te
           \param taskId Task identifier.
         */
         virtual void updateMessage(int taskId) = 0;
-
-        //@}
     };
 
   } // end namespace common
