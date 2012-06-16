@@ -55,6 +55,7 @@ source_group("Generated Files" FILES ${MOC} ${UI})
 # Select the include directories
 include_directories(
     ${TE_INCLUDE_DIRS}
+	${Boost_INCLUDE_DIRS}
     ${DEP_INCLUDES}
 )
                            
