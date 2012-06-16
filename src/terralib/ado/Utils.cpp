@@ -232,14 +232,14 @@ namespace te
 
       if(cType == ADOX::adDate)
       {
-        ADOX::Properties** porps;
-        column->get_Properties(porps);
+        //ADOX::Properties** porps;
+        //column->get_Properties(porps);
       }
 
       switch(cType)
       {
         case ADOX::adVarWChar:
-          resProp = new te::dt::StringProperty(std::string(cName), te::dt::StringType::STRING, size);
+            resProp = new te::dt::StringProperty(std::string(cName), te::dt::StringType::VAR_STRING, size);
           break;
 
         case ADOX::adInteger:
@@ -268,9 +268,7 @@ namespace te
   
       pk->setName(std::string(cName));
 
-      VARIANT i;
-      i.vt = VT_I2;
-      for(i.intVal = 0; i.intVal < cols->GetCount(); i.intVal++)
+      for(long i = 0; i < cols->GetCount(); i++)
       {
         ADOX::_ColumnPtr c = cols->GetItem(i);
 
@@ -287,16 +285,13 @@ namespace te
       _bstr_t cName = key->GetName();
       ADOX::ColumnsPtr cols = key->GetColumns();
 
-      VARIANT i;
-      i.vt = VT_I2;
-      for(i.intVal = 0; i.intVal < cols->GetCount(); i.intVal++)
+      for(long i = 0; i < cols->GetCount(); i++)
       {
         ADOX::_ColumnPtr c = cols->GetItem(i);
 
         //te::dt::Property* refP = getPropertyFromADO(refCol);
 
       }
-
 
       return fk;
     }
@@ -306,9 +301,7 @@ namespace te
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(std::string(key->GetName()), dt);
       ADOX::ColumnsPtr cols = key->GetColumns();
 
-      VARIANT i;
-      i.vt = VT_I2;
-      for(i.intVal = 0; i.intVal < cols->GetCount(); i.intVal++)
+     for(long i = 0; i < cols->GetCount(); i++)
       {
         ADOX::_ColumnPtr c = cols->GetItem(i);
 
@@ -327,7 +320,7 @@ namespace te
       switch(cType)
       {
         case ADOX::adVarWChar:
-          prop = new te::dt::StringProperty(std::string(cName), te::dt::StringType::STRING, cSize);
+          prop = new te::dt::StringProperty(std::string(cName), te::dt::StringType::VAR_STRING, cSize);
           break;
 
         case ADOX::adInteger:
@@ -350,9 +343,7 @@ namespace te
     {
       std::vector<te::dt::Property*> properties;
 
-      VARIANT i;
-      i.vt = VT_I2;
-      for(i.intVal = 0; i.intVal < columns->GetCount(); i.intVal++)
+      for(long i = 0; i < columns->GetCount(); i++)
         properties.push_back(Convert2Terralib(columns->GetItem(i)));
 
       return properties;
@@ -379,7 +370,12 @@ namespace te
       {
         te::da::UniqueKey* con = new te::da::UniqueKey(std::string(key->GetName()));
         con->setProperties(Convert2Terralib(key->GetColumns()));
+
+        return con;
       }
+      else
+        throw te::ado::Exception(TR_ADO("Unknown type!"));
+
 
     }
   }

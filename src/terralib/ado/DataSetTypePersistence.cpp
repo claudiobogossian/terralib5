@@ -94,13 +94,14 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
     for(std::size_t i = 0; i < ncols; ++i)
       add(dt, dt->getProperty(i));
 
-    /*
     if(dt->getPrimaryKey())
       add(dt, dt->getPrimaryKey());
 
+    /*
     std::size_t nukeys = dt->getNumberOfUniqueKeys();
     for(std::size_t i = 0; i < nukeys; ++i)
       add(dt, dt->getUniqueKey(i));
+
 
     std::size_t nidxs = dt->getNumberOfIndexes();
     for(std::size_t i = 0; i < nidxs; ++i)
@@ -133,13 +134,22 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
 
 void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 {
-  _ConnectionPtr adoConn = m_t->getADOConnection();
+  try
+  {
+    _ConnectionPtr adoConn = m_t->getADOConnection();
 
-  ADOX::_CatalogPtr pCatalog = 0;
+    ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
-  pCatalog->Tables->Delete(dt->getName().c_str());
+    pCatalog->Tables->Delete(dt->getName().c_str());
+
+  }
+  catch(_com_error &e)
+  {
+    std::string description(e.Description()); 
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
+  }
 }
 
 void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)
@@ -203,6 +213,9 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Prima
   ADOX::_KeyPtr pKey = 0;
   ADOX::_TablePtr pTable = 0;
   ADOX::_CatalogPtr pCatalog = 0;
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  pKey.CreateInstance(__uuidof(ADOX::Key));
   
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -239,7 +252,10 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Uniqu
   ADOX::_KeyPtr pKey = 0;
   ADOX::_TablePtr pTable = 0;
   ADOX::_CatalogPtr pCatalog = 0;
-  
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  pKey.CreateInstance(__uuidof(ADOX::Key));
+
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
   pTable = pCatalog->Tables->GetItem(dt->getName().c_str());
@@ -249,9 +265,8 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Uniqu
 
   for(size_t i = 0; i < uk->getProperties().size(); i++)
   {
-
     te::dt::Property* p = uk->getProperties()[i];
-    
+
     pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256);
   }
 
@@ -347,4 +362,3 @@ te::da::DataSourceTransactor* te::ado::DataSetTypePersistence::getTransactor() c
 {
   return m_t;
 }
-

@@ -85,7 +85,11 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
 {
-  add(dt, d->getItem());
+  do
+  {
+    add(dt, d->getItem());
+  }
+  while(d->moveNext());
 }
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
@@ -131,7 +135,9 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
         //case te::dt::NUMERIC_TYPE:
         //case te::dt::DATETIME_TYPE:
-        //case te::dt::FLOAT_TYPE:
+        case te::dt::FLOAT_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
+          break;
 
         case te::dt::DOUBLE_TYPE:
           recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());

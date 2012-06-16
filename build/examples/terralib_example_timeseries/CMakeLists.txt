@@ -62,6 +62,7 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/LineStyle.h
 	 ${SRCDIR}/PointStyle.h
 	 ${SRCDIR}/PolygonStyle.h
+	 ${SRCDIR}/PrintInFile.h
 	 ${SRCDIR}/SelectLayer.h
 	 ${SRCDIR}/PlotTemporalDistance.h
 	 ${SRCDIR}/TimeSlider.h

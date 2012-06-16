@@ -88,12 +88,10 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
   dt->setTitle(datasetName);
 
   std::vector<te::dt::Property*> properties;
-
-  VARIANT vIntegerType;
-  vIntegerType.vt = VT_I2;
-  for(vIntegerType.intVal = 0; vIntegerType.intVal < cols->Count; vIntegerType.intVal++)
+  
+  for(long i = 0; i < cols->Count; i++)
   {
-    ADOX::_ColumnPtr c = cols->GetItem(vIntegerType);
+    ADOX::_ColumnPtr c = cols->GetItem(i);
 
     te::dt::Property* prop = te::ado::Convert2Terralib(c);
 
@@ -124,9 +122,7 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 
   ADOX::_KeyPtr pk = 0;
 
-  VARIANT i;
-  i.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < keys->Count; i.intVal++)
+  for(long i = 0; i < keys->Count; i++)
   {
     if(keys->GetItem(i)->GetType() == ADOX::adKeyPrimary)
       pk = keys->GetItem(i);
@@ -134,14 +130,14 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 
   ADOX::ColumnsPtr cols = pk->GetColumns();
 
-  te::da::PrimaryKey* tlPk = new te::da::PrimaryKey(std::string(pk->GetName()), dt);
+  std::auto_ptr<te::da::PrimaryKey> tlPk( new te::da::PrimaryKey(std::string(pk->GetName()), dt));
 
-  for(i.intVal = 0; i.intVal < cols->GetCount(); i.intVal++)
+  for(long i = 0; i < cols->GetCount(); i++)
   {
     tlPk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
   }
 
-  dt->add(tlPk);
+  dt->add(tlPk.release());
 
 }
 
@@ -161,23 +157,20 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
 
   ADOX::KeysPtr keys = t->GetKeys();  
 
-  VARIANT i, j;
-  i.vt = VT_I2;
-  j.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < keys->Count; i.intVal++)
+  for(long i = 0; i < keys->Count; i++)
   {
     if(keys->GetItem(i)->GetType() == ADOX::adKeyUnique)
     {
       ADOX::_KeyPtr uk = keys->GetItem(i);
       
-      te::da::UniqueKey* tlUk = new te::da::UniqueKey(std::string(uk->GetName()), dt);
+      std::auto_ptr<te::da::UniqueKey> tlUk( new te::da::UniqueKey(std::string(uk->GetName()), dt));
 
       ADOX::ColumnsPtr cols = uk->GetColumns();
 
-      for(j.intVal = 0; j.intVal < cols->Count; j.intVal++)
+      for(long j = 0; j < cols->Count; j++)
         tlUk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
 
-      dt->add(tlUk);
+	  dt->add(tlUk.release());
 
     }
   }
@@ -209,7 +202,7 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
 
   ADOX::IndexesPtr idxs = t->GetIndexes();
 
-  te::da::Index* tlIdx = new te::da::Index();
+  //te::da::Index* tlIdx = new te::da::Index();
   
 }
 
@@ -250,9 +243,7 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
-  VARIANT i;
-  i.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < tables->Count; i.intVal++)
+  for(long i = 0; i < tables->Count; i++)
   {
     ADOX::_TablePtr tab = tables->GetItem(i);
 
@@ -275,17 +266,13 @@ bool te::ado::DataSourceCatalogLoader::primarykeyExists(const std::string& name)
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
-  VARIANT i;
-  i.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < tables->Count; i.intVal++)
+  for(long i = 0; i < tables->Count; i++)
   {
     ADOX::_TablePtr tab = tables->GetItem(i);
 
     ADOX::KeysPtr keys = tab->GetKeys();
 
-    VARIANT j; 
-    j.vt = VT_I2;
-    for(j.intVal = 0; j.intVal < keys->Count; j.intVal++)
+    for(long j = 0; j < keys->Count; j++)
     {
       ADOX::_KeyPtr key = keys->GetItem(j);
       if(key->GetType() == ADOX::adKeyPrimary && std::string(key->GetName()) == name.c_str())
@@ -308,17 +295,13 @@ bool te::ado::DataSourceCatalogLoader::uniquekeyExists(const std::string& name)
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
-  VARIANT i;
-  i.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < tables->Count; i.intVal++)
+  for(long i = 0; i < tables->Count; i++)
   {
     ADOX::_TablePtr tab = tables->GetItem(i);
 
     ADOX::KeysPtr keys = tab->GetKeys();
 
-    VARIANT j; 
-    j.vt = VT_I2;
-    for(j.intVal = 0; j.intVal < keys->Count; j.intVal++)
+    for(long j = 0; j < keys->Count; j++)
     {
       ADOX::_KeyPtr key = keys->GetItem(j);
       if(key->GetType() == ADOX::adKeyUnique && std::string(key->GetName()) == name.c_str())
@@ -341,17 +324,13 @@ bool te::ado::DataSourceCatalogLoader::foreignkeyExists(const std::string& name)
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
-  VARIANT i;
-  i.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < tables->Count; i.intVal++)
+  for(long i = 0; i < tables->Count; i++)
   {
     ADOX::_TablePtr tab = tables->GetItem(i);
 
     ADOX::KeysPtr keys = tab->GetKeys();
 
-    VARIANT j; 
-    j.vt = VT_I2;
-    for(j.intVal = 0; j.intVal < keys->Count; j.intVal++)
+    for(long j = 0; j < keys->Count; j++)
     {
       ADOX::_KeyPtr key = keys->GetItem(j);
       if(key->GetType() == ADOX::adKeyForeign && std::string(key->GetName()) == name.c_str())
@@ -379,17 +358,13 @@ bool te::ado::DataSourceCatalogLoader::indexExists(const std::string& name)
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
-  VARIANT i;
-  i.vt = VT_I2;
-  for(i.intVal = 0; i.intVal < tables->Count; i.intVal++)
+  for(long i = 0; i < tables->Count; i++)
   {
     ADOX::_TablePtr tab = tables->GetItem(i);
 
     ADOX::IndexesPtr idxs = tab->GetIndexes();
 
-    VARIANT j; 
-    j.vt = VT_I2;
-    for(j.intVal = 0; j.intVal < idxs->Count; j.intVal++)
+    for(long j = 0; j < idxs->Count; j++)
     {
       ADOX::_IndexPtr idx = idxs->GetItem(j);
       if(std::string(idx->GetName()) == name.c_str())

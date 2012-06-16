@@ -116,7 +116,6 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/utils/ListWidget.h
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
-	 ${SRCDIR}/widgets/utils/ScopedCursor.h
      ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
      ${SRCDIR}/widgets/rp/SegmenterDialog.h
      ${SRCDIR}/widgets/rp/ContrastDialog.h

@@ -47,7 +47,6 @@ te::ado::DataSource::DataSource()
 te::ado::DataSource::~DataSource()
 {
   ::CoUninitialize();
-  delete m_conn;
 }
 
 const std::string& te::ado::DataSource::getType() const
@@ -105,6 +104,8 @@ void te::ado::DataSource::open()
 
 void te::ado::DataSource::close()
 {
+  if(m_conn != 0)
+    m_conn->Close();
   m_conn = 0;
 }
 
@@ -130,21 +131,21 @@ te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
   try
   {
     newConn.CreateInstance(__uuidof(Connection));
-    HRESULT hr  = newConn->Open (m_strCnn,"","",-1);
-    TESTHR( hr );
+    TESTHR(newConn->Open (m_strCnn,"","",-1));
   }
   catch(_com_error &e)
   {
-
+    std::string description(e.Description()); 
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
   }
   catch(...)
   {
     
   }
 
-  te::da::DataSourceTransactor* transactor = new DataSourceTransactor(this, newConn);
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(new DataSourceTransactor(this, newConn));
 
-  return transactor;
+  return transactor.release();
 }
 
 void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
@@ -154,38 +155,38 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  // let's have a connection to the auxiliary database
-  std::auto_ptr<DataSource> ds(new DataSource());
+  try
+  {
+    m_connectionInfo = dsInfo;
 
-  ds->setConnectionInfo(dsInfo);
+    std::string info = "provider="+m_connectionInfo["provider"]+
+    ";Data Source="+m_connectionInfo["dbname"]+
+    ";User Id=;Password=";
 
-  ADOX::_CatalogPtr pCatalog = 0;
+    m_strCnn = info.c_str();
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+    // let's have a connection to the auxiliary database
+    std::auto_ptr<DataSource> ds(new DataSource());
 
-  pCatalog->Create(m_strCnn);
+    ds->setConnectionInfo(dsInfo);
 
-  ds->open();
+    ADOX::_CatalogPtr pCatalog = 0;
 
-  te::da::DataSetType* geom_dst = new te::da::DataSetType("geometry_columns");
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
-  te::dt::StringProperty* f_catalog = new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256);
+    pCatalog->Create(m_strCnn);
 
-  te::da::DataSetTypePersistence* dstPersistence = transactor->getDataSetTypePersistence();
-
-  
-
-  dstPersistence->add(geom_dst, f_catalog);
-
-
-  /*pTable->Columns->Append("f_table_catalog", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("f_table_schema", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("f_table_name", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("f_geometry_column", ADOX::adLongVarWChar,256);
-  pTable->Columns->Append("coord_dimension", ADOX::adInteger,0);
-  pTable->Columns->Append("srid",ADOX::adInteger,0);
-  pTable->Columns->Append("type", ADOX::adVarWChar,30);*/
+    ds->open();
+  }
+  catch(_com_error &e)
+  {
+    std::string description(e.Description()); 
+    throw Exception(TR_ADO("ADO Driver Error: " + description));
+  }
+  catch(...)
+  {
+    
+  }
 
 }
 
@@ -198,4 +199,3 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& /*dsI
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
-

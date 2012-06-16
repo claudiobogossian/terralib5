@@ -109,6 +109,11 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     QRectF deviceRect(0, 0, w, h);
     QRectF worldRect = matrix.inverted().mapRect(deviceRect);
 
+    // increase the rectangle to verify geometries of type point. 
+    double delta = 50.; 
+    QRectF pointDeviceRect(-delta, -delta, w + 2 * delta, h + 2 * delta);
+    QRectF pointWorldRect = matrix.inverted().mapRect(pointDeviceRect);
+
     te::gm::Geometry* g;
     std::vector<te::gm::Geometry*> geoms, tgeoms;
     std::vector<te::color::RGBAColor> colors, tcolors;
@@ -137,7 +142,7 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
 
       if(env->getWidth() == 0 && env->getHeight() == 0)
       {
-        if(worldRect.contains(env->m_llx, env->m_lly) == false)
+        if(pointWorldRect.contains(env->m_llx, env->m_lly) == false)
         {
           delete g;
           continue;
