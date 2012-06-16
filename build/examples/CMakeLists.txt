@@ -3,10 +3,16 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "examples")
 project(${PROJ_NAME})
 
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
+endif()
+
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
   gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
-  
+ 
+include (${T5_MODULEPATH}/GeneralConfig.cmake)
+
 ############### Get the data used for testing the example ###############
 set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
@@ -27,8 +33,6 @@ set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}")
 add_definitions( 
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
 )
-
-include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
 option (EXAMPLE_COLORBAR "Build colorbar example." ON)  
 option (EXAMPLE_COMMON "Build common example." ON)  

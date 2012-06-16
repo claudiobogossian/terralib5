@@ -19,6 +19,10 @@ endif()
 
 add_definitions (-DBOOST_FILESYSTEM_VERSION=3)
 
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
+endif()
+
 #-----------------------------------------------------------------------
 option (BUILD_ANNOTATIONTEXT "Build annotation text module?" ON)
 option (BUILD_COLOR "Build color module?" ON)
@@ -196,6 +200,7 @@ install (
   DESTINATION .
   COMPONENT CMAKE
   PATTERN "*Package*" EXCLUDE
+  PATTERN "GenerateDox.cmake" EXCLUDE
 )
 
 install ( 
@@ -222,3 +227,4 @@ install (
 )
 
 include (${T5_MODULES_PATH}/Package.cmake)
+include (${T5_MODULES_PATH}/GenerateDox.cmake)

@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "unittests")
 project(${PROJ_NAME})
 
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
+endif()
+
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
   gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
