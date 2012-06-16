@@ -78,9 +78,9 @@ void te::common::ConsoleProgressViewer::cancelTask(int taskId)
     m_totalSteps -= it->second->getTotalSteps();
     m_currentStep -= it->second->getCurrentStep();
 
-    double aux = (double) m_currentStep / (double) m_totalSteps;
+    double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-    m_propStep = int (100. * aux);
+    m_propStep = static_cast<int>(100. * aux);
   }
 }
 
@@ -93,11 +93,11 @@ void te::common::ConsoleProgressViewer::updateValue(int /*taskId*/)
 {
   m_currentStep++;
 
-  double aux = (double) m_currentStep / (double) m_totalSteps;
+  double aux = static_cast<double>(m_currentStep) / static_cast<double>(m_totalSteps);
 
-  int val = int (100. * aux);
+  int val = static_cast<int>(100. * aux);
 
-  if(val != m_propStep && val >= 0.)
+  if((val != m_propStep) && (val >= 0))
   {
     m_propStep = val;
 
