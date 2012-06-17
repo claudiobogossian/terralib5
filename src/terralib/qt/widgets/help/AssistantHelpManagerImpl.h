@@ -32,11 +32,11 @@
 // Boost
 #include <boost/noncopyable.hpp>
 
-//Qt
-#include <QObject>
-#include <QStringList>
+// Qt
+#include <QtCore/QObject>
+#include <QtCore/QStringList>
 
-//Forward declarations
+// Forward declarations
 class QProcess;
 
 namespace te
@@ -61,14 +61,22 @@ namespace te
 
             \param parent Used by QObject constructor.
           */
-          AssistantHelpManagerImpl(QObject* parent=0);
+          AssistantHelpManagerImpl(const QString& collectionFile, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~AssistantHelpManagerImpl();
 
+          /*!
+            \brief It starts the Qt assistant help process pointing out to the given collection file.
+
+            \param proc           A Qt process object to be used to launch the Assistant.
+            \param collectionFile The collection file to be opened by Qt Assistant.
+          */
+          static void initAssistant(QProcess* proc, const QString& collectionFile);
+
         public slots:
 
-          void showHelp (const QString& htmRef);
+          void showHelp(const QString& htmRef);
 
           void appendDoc(const QString& docRef);
 
@@ -76,10 +84,12 @@ namespace te
 
           QProcess* m_proc;
           QStringList m_regDocs;
+          QString m_collectionFile;
       };
-    }
-  }
-}
+
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
 
 #endif //__TERRALIB_QT_WIDGETS_HELP_INTERNAL_ASSISTANTHELPMANAGERIMPL_H
 
