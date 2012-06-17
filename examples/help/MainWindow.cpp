@@ -14,8 +14,8 @@ MainWindow::MainWindow(QWidget* parent) :
 QMainWindow(parent),
   m_ui(new Ui::MainWindow)
 {
-  m_impl = new te::qt::widgets::AssistantHelpManagerImpl(this);
-  te::qt::widgets::HelpManager::getInstance().setMgerImpl(m_impl);
+  m_impl = new te::qt::widgets::AssistantHelpManagerImpl("terraview.qhc", this);
+  te::qt::widgets::HelpManager::getInstance().setImpl(m_impl);
 
   m_ui->setupUi(this);
 }
