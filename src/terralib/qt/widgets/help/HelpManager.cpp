@@ -27,12 +27,12 @@
 #include "HelpManager.h"
 #include "HelpManagerImpl.h"
 
-void te::qt::widgets::HelpManager::setMgerImpl(HelpManagerImpl* impl)
+void te::qt::widgets::HelpManager::setImpl(HelpManagerImpl* impl)
 {
   m_impl = impl;
 }
 
-te::qt::widgets::HelpManagerImpl* te::qt::widgets::HelpManager::getMgerImpl() const
+te::qt::widgets::HelpManagerImpl* te::qt::widgets::HelpManager::getImpl() const
 {
   return m_impl;
 }
@@ -54,5 +54,4 @@ te::qt::widgets::HelpManager::HelpManager()
     m_impl(0)
 {
 }
-
 

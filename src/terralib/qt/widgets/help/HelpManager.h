@@ -23,16 +23,15 @@
   \brief A singleton that contains a pointer to a help manager implementation.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HELPMANAGER_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HELPMANAGER_H
-
+#ifndef __TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPMANAGER_H
+#define __TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPMANAGER_H
 
 //TerraLib
-#include <terralib/qt/widgets/Config.h>
-#include <terralib/common/Singleton.h>
+#include "../../../common/Singleton.h"
+#include "../Config.h"
 
 //Qt
-#include <QString>
+#include <QtCore/QString>
 
 namespace te
 {
@@ -64,10 +63,10 @@ namespace te
           \note The client must ensure that the pointer of the HelpManagerImpl will be valid until the application has finished. If, for some reason, the client of this class needs to delete the pointer, it MUST 
                 use this method to set NULL or 0 to the HelpManagerImpl to be used (a null pointer means no operation to be executed), otherwise it can take to an unhandled exception of invalid pointer.
         */
-        void setMgerImpl (HelpManagerImpl* impl);
+        void setImpl(HelpManagerImpl* impl);
 
         /*! \brief Returns the pointer to the HelpManagerImpl object being used. */
-        HelpManagerImpl* getMgerImpl() const;
+        HelpManagerImpl* getImpl() const;
 
         /** @name Facade methods
          *  Facade for the te::qt::widgets::HelpManagerImpl API.
@@ -99,9 +98,10 @@ namespace te
 
         HelpManagerImpl* m_impl;    //!< Pointer to HelpManagerImpl to be used.
       };
-    }
-  }
-}
 
-#endif //__TERRALIB_QT_WIDGETS_INTERNAL_HELPMANAGER_H
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
+
+#endif //__TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPMANAGER_H
 
