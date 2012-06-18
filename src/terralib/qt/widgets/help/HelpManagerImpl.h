@@ -21,15 +21,15 @@
   \file terralib/qt/widgets/help/HelpManagerImpl.h
 
   \brief An interface for a help manager implementation.
- */
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HELPMANAGERIMPL_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HELPMANAGERIMPL_H
+*/
+#ifndef __TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPMANAGERIMPL_H
+#define __TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPMANAGERIMPL_H
 
 //TerraLib
-#include <terralib/qt/widgets/Config.h>
+#include "../Config.h"
 
 //Qt
-#include <QString>
+#include <QtCore/QString>
 
 namespace te
 {
@@ -45,11 +45,6 @@ namespace te
       class TEQTWIDGETSEXPORT HelpManagerImpl
       {
         public:
-
-          /** @name Accessor Methods
-           *  Methods used to access internal attributes.
-           */
-          //@{
 
           /*!
             \brief Opens the help on the selected page.
@@ -71,11 +66,10 @@ namespace te
             \note The docRef argument refers to an existing Qt Help project file. See Qt documentation for details on how to create these kind of files. 
           */
           virtual void appendDoc(const QString& docRef) = 0;
-
-          //@}
       };
-    }
-  }
-}
 
-#endif //__TERRALIB_QT_WIDGETS_INTERNAL_HELPMANAGERIMPL_H
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
+
+#endif //__TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPMANAGERIMPL_H

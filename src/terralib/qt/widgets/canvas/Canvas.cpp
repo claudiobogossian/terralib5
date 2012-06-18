@@ -81,6 +81,7 @@ te::qt::widgets::Canvas::Canvas(int w, int h)
   QPixmap* pixmap = new QPixmap(w, h);
   pixmap->fill(m_bgColor);
   m_painter.begin(pixmap);
+  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
 
   m_ptPen.setColor(m_ptColor);
 }
@@ -185,6 +186,7 @@ void te::qt::widgets::Canvas::clear()
   m_painter.end();
   static_cast<QPixmap*>(dev)->fill(m_bgColor);
   m_painter.begin(dev);
+  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
   m_painter.setMatrix(m_matrix);
 
   m_ptPen.setColor(m_ptColor);
@@ -210,6 +212,7 @@ void te::qt::widgets::Canvas::resize(int w, int h)
   pixmap->fill(m_bgColor);
 
   m_painter.begin(pixmap);
+  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
 }
 
 int te::qt::widgets::Canvas::getWidth() const
@@ -1921,6 +1924,7 @@ void te::qt::widgets::Canvas::setDevice(QPaintDevice* device, bool takeOwnerShip
 
   m_isDeviceOwner = takeOwnerShip;
   m_painter.begin(device);
+  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
 }
 
 int te::qt::widgets::Canvas::getResolution()

@@ -545,6 +545,8 @@ void te::qt::widgets::MapDisplay::setSRIDSlot()
   if(ok && !items.isEmpty())
   {
     int srid = atoi(item.toStdString().c_str());
-    te::map::MapDisplay::setSRID(srid);
+    setSRID(srid);
+    //te::map::MapDisplay::setSRID(srid);
+    draw();
   }
 }

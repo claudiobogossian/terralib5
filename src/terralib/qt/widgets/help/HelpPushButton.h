@@ -23,14 +23,14 @@
   \brief A specialized button that uses terralib help managers.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HELPPUSHBUTTON_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HELPPUSHBUTTON_H
+#ifndef __TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPPUSHBUTTON_H
+#define __TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPPUSHBUTTON_H
 
 // TerraLib
-#include <terralib/qt/widgets/Config.h>
+#include "../Config.h"
 
 //Qt 
-#include <QPushButton>
+#include <QtGui/QPushButton>
 
 namespace te
 {
@@ -56,7 +56,7 @@ namespace te
 
             \param parent Parent widget, used by Qt.
           */
-          HelpPushButton(QWidget* parent=0);
+          HelpPushButton(QWidget* parent = 0);
 
           /*!
             \brief Sets the documentation page reference. 
@@ -84,4 +84,5 @@ namespace te
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_INTERNAL_HELPPUSHBUTTON_H
+#endif //__TERRALIB_QT_WIDGETS_HELP_INTERNAL_HELPPUSHBUTTON_H
+

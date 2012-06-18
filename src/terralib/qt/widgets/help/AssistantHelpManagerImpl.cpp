@@ -27,16 +27,51 @@
 #include "AssistantHelpManagerImpl.h"
 
 // STL
-#include <iostream>
+#include <cassert>
 
 // Qt
-#include <QDir>
-#include <QLibraryInfo>
-#include <QMessageBox>
-#include <QProcess>
+#include <QtCore/QDir>
+#include <QtCore/QProcess>
+#include <QtGui/QMessageBox>
 
-void TeInitAssistant(QProcess* proc, const QString& qHFileName)
+
+te::qt::widgets::AssistantHelpManagerImpl::AssistantHelpManagerImpl(const QString& collectionFile, QObject* parent)
+  : QObject(parent),
+    m_proc(0),
+    m_collectionFile(collectionFile)
 {
+}
+
+te::qt::widgets::AssistantHelpManagerImpl::~AssistantHelpManagerImpl()
+{
+  if(m_proc != 0)
+  {
+    QByteArray ba;
+
+    bool tag = m_regDocs.size() > 1;
+
+    for(int i = 0; i < m_regDocs.size();i++)
+    {
+      ba.append("unregister " + m_regDocs.value(i));
+
+      if(tag)
+        ba.append((i == (m_regDocs.size()-1)) ? "\n" : ";"); 
+      else
+        ba.append('\n');
+    }
+
+    m_proc->write(ba);
+
+    m_proc->close();
+
+    delete m_proc;
+  }
+}
+
+void te::qt::widgets::AssistantHelpManagerImpl::initAssistant(QProcess* proc, const QString& collectionFile)
+{
+  assert(proc);
+
   QStringList args;
   QString app;
 
@@ -47,60 +82,28 @@ void TeInitAssistant(QProcess* proc, const QString& qHFileName)
 #endif
 
   args << QLatin1String("-collectionFile")
-       << qHFileName.toLatin1().data()
+       << collectionFile
        << QLatin1String("-enableRemoteControl");
 
   proc->start(app, args);
 
-  if (!proc->waitForStarted())
+  if(!proc->waitForStarted())
     QMessageBox::critical(0, QObject::tr("Remote Control"), QObject::tr("Could not start Qt Assistant from local \"%1\".").arg(app));
 }
 
-
-te::qt::widgets::AssistantHelpManagerImpl::AssistantHelpManagerImpl(QObject* parent, const QString& qtHFileName) :
-QObject(parent),
-  m_proc(0),
-  m_qHFileName(qtHFileName)
-{
-}
-
-te::qt::widgets::AssistantHelpManagerImpl::~AssistantHelpManagerImpl()
-{
-  if(m_proc != 0)
-  {
-    QByteArray ba;
-    bool tag = m_regDocs.size() > 1;
-
-    for(int i = 0; i < m_regDocs.size();i++)
-    {
-      ba.append("unregister " + m_regDocs.value(i));
-
-      if(tag)
-          ba.append((i == (m_regDocs.size()-1)) ? "\n" : ";"); 
-      else
-        ba.append('\n');
-    }
-
-    m_proc->write(ba);
-
-    m_proc->close();
-  }
-
-  delete m_proc;
-}
-
-void te::qt::widgets::AssistantHelpManagerImpl::showHelp (const QString& htmRef)
+void te::qt::widgets::AssistantHelpManagerImpl::showHelp(const QString& htmRef)
 {
   if(m_proc == 0)
     m_proc = new QProcess;
 
   QByteArray ba;
+
   QStringList::iterator it;
 
   switch(m_proc->state())
   {
     case QProcess::NotRunning:
-      TeInitAssistant(m_proc, m_qHFileName);
+      initAssistant(m_proc, m_collectionFile);
 
       ba.append("setSource " + htmRef.toLocal8Bit() + "\n");
       m_proc->write(ba);
@@ -129,24 +132,13 @@ void te::qt::widgets::AssistantHelpManagerImpl::appendDoc(const QString& docRef)
   QString app;
   QStringList args;
   QByteArray ba;
-  int r;
 
-  if ((m_proc == 0) || m_proc->state() == QProcess::NotRunning)
+  if(m_proc == 0)
+    m_proc = new QProcess;
+
+  if(m_proc->state() == QProcess::NotRunning)
   {
-  #if !defined(Q_OS_MAC)
-    app += QLatin1String("assistant");
-  #else
-    app += QLatin1String("Assistant.app/Contents/MacOS/Assistant");
-  #endif
-
-    args << QLatin1String("-collectionFile")
-      << m_qHFileName.toLatin1().data();
-
-    args << QLatin1String("-register")
-         << docRef
-         << QLatin1String("-quiet");
-
-    r = QProcess::execute(app, args);
+    initAssistant(m_proc, m_collectionFile);
   }
   else if(m_proc->state() == QProcess::Running)
   {
