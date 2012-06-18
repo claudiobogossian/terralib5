@@ -35,7 +35,7 @@
 #include <QMessageBox>
 #include <QProcess>
 
-void TeInitAssistant(QProcess* proc)
+void TeInitAssistant(QProcess* proc, const QString& qHFileName)
 {
   QStringList args;
   QString app;
@@ -47,7 +47,7 @@ void TeInitAssistant(QProcess* proc)
 #endif
 
   args << QLatin1String("-collectionFile")
-       << QLatin1String("terraview.qhc")
+       << qHFileName.toLatin1().data()
        << QLatin1String("-enableRemoteControl");
 
   proc->start(app, args);
@@ -57,9 +57,10 @@ void TeInitAssistant(QProcess* proc)
 }
 
 
-te::qt::widgets::AssistantHelpManagerImpl::AssistantHelpManagerImpl(QObject* parent) :
+te::qt::widgets::AssistantHelpManagerImpl::AssistantHelpManagerImpl(QObject* parent, const QString& qtHFileName) :
 QObject(parent),
-  m_proc(0)
+  m_proc(0),
+  m_qHFileName(qtHFileName)
 {
 }
 
@@ -99,7 +100,7 @@ void te::qt::widgets::AssistantHelpManagerImpl::showHelp (const QString& htmRef)
   switch(m_proc->state())
   {
     case QProcess::NotRunning:
-      TeInitAssistant(m_proc);
+      TeInitAssistant(m_proc, m_qHFileName);
 
       ba.append("setSource " + htmRef.toLocal8Bit() + "\n");
       m_proc->write(ba);
@@ -139,7 +140,7 @@ void te::qt::widgets::AssistantHelpManagerImpl::appendDoc(const QString& docRef)
   #endif
 
     args << QLatin1String("-collectionFile")
-         << QLatin1String("terraview.qhc");
+      << m_qHFileName.toLatin1().data();
 
     args << QLatin1String("-register")
          << docRef

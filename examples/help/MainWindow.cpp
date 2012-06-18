@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget* parent) :
 QMainWindow(parent),
   m_ui(new Ui::MainWindow)
 {
-  m_impl = new te::qt::widgets::AssistantHelpManagerImpl(this);
+  m_impl = new te::qt::widgets::AssistantHelpManagerImpl(this, "help.qhc");
   te::qt::widgets::HelpManager::getInstance().setMgerImpl(m_impl);
 
   m_ui->setupUi(this);

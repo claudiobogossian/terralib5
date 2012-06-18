@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+    <assistant>
+      <title>Example Help</title>
+      <startPage></startPage>
+      <currentFilter>help</currentFilter>
+      <applicationIcon>../../../images/png/128x128/terralib_logo_128x128.png</applicationIcon>
+      <enableFilterFunctionality>false</enableFilterFunctionality>
+      <enableDocumentationManager>false</enableDocumentationManager>
+      <enableAddressBar visible="true">false</enableAddressBar>
+      <cacheDirectory base="collection"></cacheDirectory>
+      <aboutMenuText>
+         <text>About help example ... </text>
+         <text language="pt">Sobre o exemplo de ajuda ...</text>
+      </aboutMenuText>
+      <aboutDialog>
+         <file>about.txt</file>
+         <file language="en">sobre.txt</file>
+         <icon>../../../images/png/128x128/terralib_logo_128x128.png</icon>
+      </aboutDialog>
+    </assistant>
+    <docFiles>
+      <generate>
+        <file>
+          <input>doc.qhp</input>
+          <output>doc.qch</output>
+        </file>
+      </generate>
+      <register>
+        <file>doc.qch</file>
+      </register>
+    </docFiles>
+</QHelpCollectionProject>

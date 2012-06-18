@@ -12,9 +12,9 @@ Plugin::Plugin(QWidget* parent) :
 QWidget(parent, Qt::Dialog)
 {
   m_help_btn = new te::qt::widgets::HelpPushButton(this);
-  m_help_btn->setPageReference("qthelp://plugintest.terraview.5.0/doc/createTable.htm");
+  m_help_btn->setPageReference("qthelp://dpi.inpe.br.help_example_plugin/doc/teste3.htm");
 
-  m_help_btn->setText("Plug-in test");
+//  m_help_btn->setText("Plug-in test");
 
   te::qt::widgets::HelpManager::getInstance().appendDoc("docplugin.qch");
 }

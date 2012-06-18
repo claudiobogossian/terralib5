@@ -61,7 +61,7 @@ namespace te
 
             \param parent Used by QObject constructor.
           */
-          AssistantHelpManagerImpl(QObject* parent=0);
+          AssistantHelpManagerImpl(QObject* parent=0, const QString& qtHFileName="terraview.qhc");
 
           /*! \brief Destructor. */
           ~AssistantHelpManagerImpl();
@@ -76,6 +76,7 @@ namespace te
 
           QProcess* m_proc;
           QStringList m_regDocs;
+          QString m_qHFileName;    //!< Name of the qt help collection file.
       };
     }
   }

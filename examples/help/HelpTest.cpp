@@ -10,9 +10,9 @@ HelpTest::HelpTest(QWidget* parent) :
 QWidget(parent, Qt::Dialog)
 {
   m_help_btn = new te::qt::widgets::HelpPushButton(this);
-  m_help_btn->setPageReference("qthelp://dpi.inpe.br.terraview.5.0/doc/associando_arquivos_sites.htm");
+  m_help_btn->setPageReference("qthelp://dpi.inpe.br.help_example/doc/teste1.htm");
 
-  m_help_btn->setText("Associando arquivos");
+//  m_help_btn->setText("Teste 1");
 
   createGUI();
 }
