@@ -124,12 +124,16 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
 	 ${SRCDIR}/widgets/se/CharMapWidget.h
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
+	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
 	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
+	 ${SRCDIR}/widgets/se/GraphicDialog.h
+	 ${SRCDIR}/widgets/se/GraphicWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
 	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
 	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+	 ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h)
 
 # Select the FORMS widgets     
