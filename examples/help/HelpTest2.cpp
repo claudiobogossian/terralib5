@@ -10,9 +10,9 @@ HelpTest2::HelpTest2(QWidget* parent) :
 QWidget(parent, Qt::Dialog)
 {
   m_help_btn = new te::qt::widgets::HelpPushButton(this);
-  m_help_btn->setPageReference("qthelp://dpi.inpe.br.terraview.5.0/doc/animation.htm");
+  m_help_btn->setPageReference("qthelp://dpi.inpe.br.help_example/doc/teste2.htm");
 
-  m_help_btn->setText("Animação");
+//  m_help_btn->setText("Teste 2");
 
   createGUI();
 }

@@ -296,4 +296,61 @@ MACRO(copyLogFiles logDir)
     configure_file(${DEFAULT_LOGCONF_FILE} "${logDir}/conf/te-log.conf" COPYONLY)
     message (STATUS "-- te-log.conf copied to \"${logDir}/conf\".")
   endif()
-ENDMACRO()
+ENDMACRO(copyLogFiles)
+
+# Macro makeQHelp
+#
+# brief
+# param[input] input
+# param[input] output
+MACRO(makeQHelpProject input output)
+  message ("Creating Qt help project file...")
+  
+  get_filename_component (_qtbindir ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} PATH)
+  
+  execute_process(
+    COMMAND ${_qtbindir}/qhelpgenerator ${input} -o ${output}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    RESULT_VARIABLE res
+    ERROR_FILE error.log
+  )
+  
+  if(res EQUAL 0)
+    message ("Qt Help project file created successfully!")
+  else()
+    message ("Error generating Qt Help project file. See error.log for details.")
+  endif()
+  
+ENDMACRO(makeQHelpProject)
+
+# Macro makeQHelp
+#
+# brief
+# param[input] input
+# param[input] output
+MACRO(makeQHelp input output)
+  message ("Creating Qt help files...")
+  
+  execute_process(
+    COMMAND ${QT_QCOLLECTIONGENERATOR_EXECUTABLE} ${input} -o ${output}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    RESULT_VARIABLE res
+    ERROR_FILE error.log
+  )
+  
+  if(res EQUAL 0)
+    message ("Qt Help file created successfully!")
+  else()
+    message ("Error generating Qt Help file. See error.log for details.")
+  endif()
+ENDMACRO(makeQHelp)
+
+# Macro removeFileIfExists
+#
+# brief
+# param[input] fileName
+MACRO (removeFileIfExists fileName)
+  if(EXISTS ${fileName})
+    file (REMOVE ${fileName})
+  endif()
+ENDMACRO (removeFileIfExists)

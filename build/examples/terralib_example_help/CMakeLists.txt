@@ -75,3 +75,11 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 
 copyLogFiles(${CMAKE_CURRENT_BINARY_DIR})
+
+removeFileIfExists(${CMAKE_CURRENT_BINARY_DIR}/help.qhc)
+removeFileIfExists(${CMAKE_CURRENT_BINARY_DIR}/docplugin.qch)
+removeFileIfExists(${CMAKE_CURRENT_BINARY_DIR}/error.log)
+removeFileIfExists(${SRCDIR}/help/doc.qch)
+
+makeQHelp(${SRCDIR}/help/help.qhcp ${CMAKE_CURRENT_BINARY_DIR}/help.qhc)
+makeQHelpProject(${SRCDIR}/help/docplugin.qhp ${CMAKE_CURRENT_BINARY_DIR}/docplugin.qch)

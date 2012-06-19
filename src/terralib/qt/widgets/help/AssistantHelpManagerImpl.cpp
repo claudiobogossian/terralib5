@@ -140,10 +140,8 @@ void te::qt::widgets::AssistantHelpManagerImpl::appendDoc(const QString& docRef)
   {
     initAssistant(m_proc, m_collectionFile);
   }
-  else if(m_proc->state() == QProcess::Running)
-  {
-    ba.append(QLatin1String("register ") + docRef.toLocal8Bit() + '\n');
-    m_proc->write(ba);
-  }
+
+  ba.append(QLatin1String("register ") + docRef.toLocal8Bit() + '\n');
+  m_proc->write(ba);
 }
 
