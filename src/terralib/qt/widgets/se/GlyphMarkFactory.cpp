@@ -62,7 +62,8 @@ QString te::qt::widgets::GlyphMarkFactory::encode(const QString& font, const int
 void te::qt::widgets::GlyphMarkFactory::decode(QString& name, QString& font, QChar& charCode)
 {
   // Extract the part important to this factory!
-  QString pattern = name.remove(0, sm_factoryKey.size());
+  QString pattern(name);
+  pattern.remove(0, sm_factoryKey.size() + 3); // removing "ttf://"
   if(!pattern.contains("#"))
     return; // TODO: Exception: Bad format.
 
