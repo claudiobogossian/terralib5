@@ -143,8 +143,6 @@ void PointStyle::drawRenderArea()
   QPoint pc = rec.center();
 
   int w = m_widthComboBox->currentIndex() + 1;
-  QRect tamRect(0, 0, w, w);
-  tamRect.moveCenter(pc);
 
   double alfa = m_rotationSpinBox->value();
 
@@ -191,6 +189,10 @@ void PointStyle::drawRenderArea()
     bool result = ima.loadFromData((const uchar*)m_pattern, m_patternSize, te::qt::widgets::GetFormat(m_imageType));
     if(result)
     {
+      int h = (int)((double)w * (double)ima.height() / (double)ima.width());
+      QRect tamRect(0, 0, w, h);
+      tamRect.moveCenter(pc);
+
       QMatrix m;
       if(alfa != 0)
       {

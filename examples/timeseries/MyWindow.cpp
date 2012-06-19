@@ -1748,6 +1748,7 @@ void MyWindow::changePointStyleSlot()
   QString width = w.m_widthComboBox->currentText();
   int pointWidth = width.toInt();
   op->setPointWidth(pointWidth);
+  op->setPointColor(w.m_color);
   op->setPointIcon(w.m_pattern);
   op->setPointIconSize(w.m_patternSize);
   op->setPointIconImageType(w.m_imageType);
