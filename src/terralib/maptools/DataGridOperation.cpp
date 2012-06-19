@@ -886,7 +886,8 @@ te::map::PtMarkerType te::map::DataGridOperation::getPointMarkerType()
 
 void te::map::DataGridOperation::setPointIcon(char* icon)
 {
-  delete []m_pointIcon;
+  if(m_pointIcon != icon)
+    delete []m_pointIcon;
   m_pointIcon = icon;
 
   m_pointMarkerType = te::map::MarkerPattern;
@@ -938,9 +939,12 @@ te::color::RGBAColor te::map::DataGridOperation::getPointColor()
 
 void te::map::DataGridOperation::setPointPatternRGBA(te::color::RGBAColor** patternRGBA)
 {
-  for(int i = 0; i < m_pointPatternRGBANRows; ++i)
-    delete []m_pointPatternRGBA[i];
-  delete []m_pointPatternRGBA;
+  if(m_pointPatternRGBA != patternRGBA)
+  {
+    for(int i = 0; i < m_pointPatternRGBANRows; ++i)
+      delete []m_pointPatternRGBA[i];
+    delete []m_pointPatternRGBA;
+  }
 
   m_pointPatternRGBA = patternRGBA;
 }
@@ -992,7 +996,8 @@ te::color::RGBAColor te::map::DataGridOperation::getLineColor()
 
 void te::map::DataGridOperation::setLinePatternIcon(char* icon)
 {
-  delete []m_linePatternIcon;
+  if(m_linePatternIcon != icon)
+    delete []m_linePatternIcon;
   m_linePatternIcon = icon;
 }
 
@@ -1023,9 +1028,12 @@ te::map::ImageType te::map::DataGridOperation::getLinePatternIconImageType()
 
 void te::map::DataGridOperation::setLinePatternRGBA(te::color::RGBAColor** patternRGBA)
 {
-  for(int i = 0; i < m_linePatternRGBANRows; ++i)
-    delete []m_linePatternRGBA[i];
-  delete []m_linePatternRGBA;
+  if(m_linePatternRGBA != patternRGBA)
+  {
+    for(int i = 0; i < m_linePatternRGBANRows; ++i)
+      delete []m_linePatternRGBA[i];
+    delete []m_linePatternRGBA;
+  }
 
   m_linePatternRGBA = patternRGBA;
 }
@@ -1087,7 +1095,8 @@ te::map::ImageType te::map::DataGridOperation::getPolygonContourPatternIconImage
 
 void te::map::DataGridOperation::setPolygonContourPatternIcon(char* icon)
 {
-  delete []m_polygonContourPatternIcon;
+  if(m_polygonContourPatternIcon != icon)
+    delete []m_polygonContourPatternIcon;
   m_polygonContourPatternIcon = icon;
 }
 
@@ -1108,9 +1117,12 @@ int te::map::DataGridOperation::getPolygonContourPatternIconSize()
 
 void te::map::DataGridOperation::setPolygonContourPatternRGBA(te::color::RGBAColor** patternColors)
 {
-  for(int i = 0; i < m_polygonContourPatternRGBANRows; ++i)
-    delete []m_polygonContourPatternRGBA[i];
-  delete []m_polygonContourPatternRGBA;
+  if(m_polygonContourPatternRGBA != patternColors)
+  {
+    for(int i = 0; i < m_polygonContourPatternRGBANRows; ++i)
+      delete []m_polygonContourPatternRGBA[i];
+    delete []m_polygonContourPatternRGBA;
+  }
 
   m_polygonContourPatternRGBA = patternColors;
 }
@@ -1171,7 +1183,8 @@ te::color::RGBAColor te::map::DataGridOperation::getPolygonFillMarkerColor()
 
 void te::map::DataGridOperation::setPolygonPatternIcon(char* icon)
 {
-  delete []m_polygonPatternIcon;
+  if(m_polygonPatternIcon != icon)
+    delete []m_polygonPatternIcon;
   m_polygonPatternIcon = icon;
 }
 
@@ -1212,9 +1225,12 @@ int te::map::DataGridOperation::getPolygonPatternWidth()
 
 void te::map::DataGridOperation::setPolygonPatternRGBA(te::color::RGBAColor** patternRGBA)
 {
-  for(int i = 0; i < m_polygonPatternRGBANRows; ++i)
-    delete []m_polygonPatternRGBA[i];
-  delete []m_polygonPatternRGBA;
+  if(m_polygonPatternRGBA != patternRGBA)
+  {
+    for(int i = 0; i < m_polygonPatternRGBANRows; ++i)
+      delete []m_polygonPatternRGBA[i];
+    delete []m_polygonPatternRGBA;
+  }
 
   m_polygonPatternRGBA = patternRGBA;
 }

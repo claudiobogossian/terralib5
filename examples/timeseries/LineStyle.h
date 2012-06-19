@@ -1,5 +1,8 @@
 #ifndef __LINE_STYLE_H_
 #define __LINE_STYLE_H_
+
+#include "RenderArea.h"
+
 // QT
 #include <QDialog>
 #include <QLabel>
@@ -27,19 +30,33 @@ public:
 
 protected:
   void paintEvent(QPaintEvent *event);
+  void drawRenderArea();
 
 protected slots:
-  void lineColorClickedSlot(bool);
-  void iconClickedSlot(bool);
-  void applyClickedSlot(bool);
-  void cancelClickedSlot(bool);
+  void onWidthComboBoxActivated(int);
+  void onColorPushButtonClicked(bool);
+  void onIconPushButtonClicked(bool);
+  void onNoIconPushButtonClicked(bool);
+  void onOkPushButtonClicked(bool);
+  void onCancelPushButtonClicked(bool);
 
 public:
-  QComboBox* m_lineWidthComboBox;
-  QPushButton* m_lineColorPushButton;
-  te::color::RGBAColor m_lineColor;
-  QLineEdit* m_lineIconLineEdit;
-  QPushButton* m_applyPushButton;
+  QComboBox* m_widthComboBox;
+  QPushButton* m_colorPushButton;
+  QPushButton* m_iconPushButton;
+  QPushButton* m_noIconPushButton;
+  te::color::RGBAColor m_color;
+
+  QString m_patternIconFileName;
+  char* m_pattern;
+  unsigned int m_patternSize;
+  te::map::ImageType m_imageType;
+
+  QPushButton* m_okPushButton;
   QPushButton* m_cancelPushButton;
+
+  RenderArea* m_lineRenderArea;
+
+  te::map::DataGridOperation* m_op;
 };
 #endif

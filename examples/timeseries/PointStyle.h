@@ -1,5 +1,8 @@
 #ifndef __POINT_STYLE_H_
 #define __POINT_STYLE_H_
+
+#include "RenderArea.h"
+
 // QT
 #include <QDialog>
 #include <QLabel>
@@ -11,6 +14,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QCloseEvent>
+#include <QSpinBox>
 
 // TerraLib
 #include <terralib/maptools.h>
@@ -27,18 +31,35 @@ public:
 
 protected:
   void paintEvent(QPaintEvent *event);
+  void drawRenderArea();
 
 protected slots:
-  void iconClickedSlot(bool);
-  void markClickedSlot(bool);
-  void applyClickedSlot(bool);
-  void cancelClickedSlot(bool);
+  void onWidthComboBoxActivated(int);
+  void onRotationSpinBoxValueChanged(int);
+  void onIconPushButtonClicked(bool);
+  void onNoIconPushButtonClicked(bool);
+  void onColorPushButtonClicked(bool);
+  void onOkPushButtonClicked(bool);
+  void onCancelPushButtonClicked(bool);
 
 public:
-  QComboBox* m_pointWidthComboBox;
-  QComboBox* m_pointMarkComboBox;
-  QLineEdit* m_pointIconLineEdit;
-  QPushButton* m_applyPushButton;
+  QComboBox* m_widthComboBox;
+  QSpinBox* m_rotationSpinBox;
+  QPushButton* m_iconPushButton;
+  QPushButton* m_noIconPushButton;
+  QPushButton* m_colorPushButton;
+  te::color::RGBAColor m_color;
+
+  QString m_patternIconFileName;
+  char* m_pattern;
+  unsigned int m_patternSize;
+  te::map::ImageType m_imageType;
+
+  QPushButton* m_okPushButton;
   QPushButton* m_cancelPushButton;
+
+  RenderArea* m_pointRenderArea;
+
+  te::map::DataGridOperation* m_op;
 };
 #endif

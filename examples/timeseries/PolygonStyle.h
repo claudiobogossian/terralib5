@@ -1,5 +1,8 @@
 #ifndef __POLYGON_STYLE_H_
 #define __POLYGON_STYLE_H_
+
+#include "RenderArea.h"
+
 // QT
 #include <QDialog>
 #include <QLabel>
@@ -27,37 +30,48 @@ public:
 
 protected:
   void paintEvent(QPaintEvent *event);
+  void drawRenderArea();
 
 protected slots:
-  void contourColorClickedSlot(bool); 
-  void contourIconClickedSlot(bool); 
-  void contourMarkClickedSlot();
+  void onPolygonContourColorPushButtonClicked(bool); 
+  void onPolygonContourIconPushButtonClicked(bool); 
+  void onPolygonContourNoIconPushButtonClicked(bool); 
+  void onPolygonContourWidthComboBoxActivated(int);
 
-  void fillPatternIconClickedSlot(bool); 
-  void fillMarkClickedSlot();
-  void fillColorClickedSlot(bool); 
-  void polygonFillMarkColorSlot(bool);
+  void onPolygonFillColorPushButtonClicked(bool); 
+  void onPolygonFillPatternIconPushButtonClicked(bool);
+  void onPolygonFillPatternNoIconPushButtonClicked(bool);
+  void onPolygonFillPatternWidthComboBoxActivated(int);
 
-  void applyClickedSlot(bool);
-  void cancelClickedSlot(bool);
+  void onOkPushButtonClicked(bool);
+  void onCancelPushButtonClicked(bool);
 
 public:
   QPushButton* m_polygonContourColorPushButton;
   te::color::RGBAColor m_polygonContourColor;
   QComboBox* m_polygonContourWidthComboBox;
-  QComboBox* m_polygonContourMarkComboBox;
-  QLineEdit* m_polygonContourIconLineEdit;
+  QString m_polygonContourIconFileName;
   QPushButton* m_polygonContourIconPushButton;
+  QPushButton* m_polygonContourNoIconPushButton;
+  char* m_contourPattern;
+  unsigned int m_contourSize;
+  te::map::ImageType m_contourImageType;
 
   QPushButton* m_polygonFillColorPushButton;
   te::color::RGBAColor m_polygonFillColor;
   QComboBox* m_polygonFillPatternWidthComboBox;
-  QLineEdit* m_polygonFillPatternIconLineEdit;
+  QString m_polygonFillPatternIconFileName;
   QPushButton* m_polygonFillPatternIconPushButton;
-  te::color::RGBAColor m_polygonFillMarkColor;
-  QComboBox* m_polygonFillMarkComboBox;
-  QPushButton* m_polygonFillMarkColorPushButton;
-  QPushButton* m_applyPushButton;
+  QPushButton* m_polygonFillPatternNoIconPushButton;
+  char* m_fillPattern;
+  unsigned int m_fillSize;
+  te::map::ImageType m_fillImageType;
+
+  QPushButton* m_okPushButton;
   QPushButton* m_cancelPushButton;
+
+  RenderArea* m_polygonFillRenderArea;
+
+  te::map::DataGridOperation* m_op;
 };
 #endif

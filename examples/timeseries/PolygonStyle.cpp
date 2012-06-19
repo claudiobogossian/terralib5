@@ -2,28 +2,35 @@
 
 //QT
 #include <QColorDialog>
+#include <QImage>
+#include <QPainter>
 
 // TerraLib
 #include <terralib/maptools.h>
+#include <terralib/qt/widgets/Utils.h>
+#include <terralib/dataaccess.h>
 
 PolygonStyle::PolygonStyle(te::map::DataGridOperation* op, QWidget* parent) : QDialog(parent)
 {
-  QVBoxLayout* vbox = new QVBoxLayout(this);
+  QString title = op->getDataSetType()->getTitle().c_str();
+  title += ": Default Style";
+  setWindowTitle(title);
+  m_op = op;
+
+  m_contourPattern = m_op->getPolygonContourPatternIcon();
+  m_contourImageType = m_op->getPolygonContourPatternIconImageType();
+  m_contourSize = m_op->getPolygonContourPatternIconSize();
 
   // polygon contour
   QGroupBox* contourGroupBox = new QGroupBox("Polygon Contour:", this);
-  QVBoxLayout* contourLayout = new QVBoxLayout(contourGroupBox);
 
   m_polygonContourColor = op->getPolygonContourColor();
-  QGroupBox* gb = new QGroupBox("Contour Color:", contourGroupBox); 
-  m_polygonContourColorPushButton = new QPushButton("Color...", gb);
-  QHBoxLayout* hbox = new QHBoxLayout(gb);
-  hbox->addSpacing(150);
+  m_polygonContourColorPushButton = new QPushButton("Color...", contourGroupBox);
+  QHBoxLayout* hbox = new QHBoxLayout(contourGroupBox);
   hbox->addWidget(m_polygonContourColorPushButton);
-  hbox->addSpacing(150);
+  hbox->addStretch();
 
-  QGroupBox* gb1 = new QGroupBox("Contour Width:", contourGroupBox); 
-  m_polygonContourWidthComboBox = new QComboBox(gb1);
+  m_polygonContourWidthComboBox = new QComboBox(contourGroupBox);
   for(int i = 0; i < 32; ++i)
   {
     QString s;
@@ -32,63 +39,30 @@ PolygonStyle::PolygonStyle(te::map::DataGridOperation* op, QWidget* parent) : QD
   }
   int width = op->getPolygonContourWidth();
   m_polygonContourWidthComboBox->setCurrentIndex(width - 1);
-  QHBoxLayout* hbox1 = new QHBoxLayout(gb1);
-  hbox1->addWidget(m_polygonContourWidthComboBox);
+  hbox->addWidget(m_polygonContourWidthComboBox);
+  hbox->addStretch();
 
-  QGroupBox* gb2 = new QGroupBox("Contour Icon:", contourGroupBox); 
-  m_polygonContourIconLineEdit = new QLineEdit(gb2);
-  m_polygonContourIconPushButton = new QPushButton("Icon...", gb2);
-  QHBoxLayout* hbox2 = new QHBoxLayout(gb2);
-  hbox2->addWidget(m_polygonContourIconLineEdit);
-  hbox2->addWidget(m_polygonContourIconPushButton);
+  m_polygonContourIconPushButton = new QPushButton("Icon...", contourGroupBox);
+  hbox->addWidget(m_polygonContourIconPushButton);
+  hbox->addStretch();
 
-  QGroupBox* gb21 = new QGroupBox("Contour Mark:", contourGroupBox); 
-  m_polygonContourMarkComboBox = new QComboBox(gb21);
-  m_polygonContourMarkComboBox->addItem("MarkerNone");
-  m_polygonContourMarkComboBox->addItem("MarkerSquare");
-  m_polygonContourMarkComboBox->addItem("MarkerDiamond");
-  m_polygonContourMarkComboBox->addItem("MarkerCircle");
-  m_polygonContourMarkComboBox->addItem("MarkerCrossedCircle");
-  m_polygonContourMarkComboBox->addItem("MarkerSemiEllipseLeft");
-  m_polygonContourMarkComboBox->addItem("MarkerSemiEllipseRight");
-  m_polygonContourMarkComboBox->addItem("MarkerSemiEllipseUp");
-  m_polygonContourMarkComboBox->addItem("MarkerSemiEllipseDown");
-  m_polygonContourMarkComboBox->addItem("MarkerTriangleLeft");
-  m_polygonContourMarkComboBox->addItem("MarkerTriangleRight");
-  m_polygonContourMarkComboBox->addItem("MarkerTriangleUp");
-  m_polygonContourMarkComboBox->addItem("MarkerTriangleDown");
-  m_polygonContourMarkComboBox->addItem("MarkerFourRays");
-  m_polygonContourMarkComboBox->addItem("MarkerCross");
-  m_polygonContourMarkComboBox->addItem("MarkerX");
-  m_polygonContourMarkComboBox->addItem("MarkerDash");
-  m_polygonContourMarkComboBox->addItem("MarkerDot");
-  m_polygonContourMarkComboBox->addItem("MarkerPixel");
-  m_polygonContourMarkComboBox->addItem("MarkerPattern");
-
-  int t = op->getPolygonContourPatternIconImageType();
-  m_polygonContourMarkComboBox->setCurrentIndex(t);
-  QHBoxLayout* hbox21 = new QHBoxLayout(gb21);
-  hbox21->addWidget(m_polygonContourMarkComboBox);
-
-  contourLayout->addWidget(gb);
-  contourLayout->addWidget(gb1);
-  contourLayout->addWidget(gb2);
-  contourLayout->addWidget(gb21);
+  m_polygonContourNoIconPushButton = new QPushButton("No Icon", contourGroupBox);
+  hbox->addWidget(m_polygonContourNoIconPushButton);
 
   //polygon fill
+  m_fillPattern = m_op->getPolygonPatternIcon();
+  m_fillImageType = m_op->getPolygonPatternIconImageType();
+  m_fillSize = m_op->getPolygonPatternIconSize();
+
   QGroupBox* polygonGroupBox = new QGroupBox("Polygon Fill:", this);
-  QVBoxLayout* polygonLayout = new QVBoxLayout(polygonGroupBox);
 
   m_polygonFillColor = op->getPolygonFillColor();
-  QGroupBox* gb30 = new QGroupBox("Fill Color:", contourGroupBox); 
-  m_polygonFillColorPushButton = new QPushButton("Color...", gb30);
-  QHBoxLayout* hbox30 = new QHBoxLayout(gb30);
-  hbox30->addSpacing(150);
-  hbox30->addWidget(m_polygonFillColorPushButton);
-  hbox30->addSpacing(150);
+  m_polygonFillColorPushButton = new QPushButton("Color...", polygonGroupBox);
+  QHBoxLayout* hbox2 = new QHBoxLayout(polygonGroupBox);
+  hbox2->addWidget(m_polygonFillColorPushButton);
+  hbox2->addStretch();
 
-  QGroupBox* gb3 = new QGroupBox("Fill Pattern Width:", polygonGroupBox); 
-  m_polygonFillPatternWidthComboBox = new QComboBox(gb3);
+  m_polygonFillPatternWidthComboBox = new QComboBox(polygonGroupBox);
   for(int i = 0; i < 64; ++i)
   {
     QString s;
@@ -97,133 +71,314 @@ PolygonStyle::PolygonStyle(te::map::DataGridOperation* op, QWidget* parent) : QD
   }
   int pwidth = op->getPolygonPatternWidth();
   m_polygonFillPatternWidthComboBox->setCurrentIndex(pwidth - 1);
-  QHBoxLayout* hbox3 = new QHBoxLayout(gb3);
-  hbox3->addWidget(m_polygonFillPatternWidthComboBox);
+  hbox2->addWidget(m_polygonFillPatternWidthComboBox);
+  hbox2->addStretch();
 
-  QGroupBox* gb4 = new QGroupBox("Fill Icon:", polygonGroupBox); 
-  m_polygonFillPatternIconLineEdit = new QLineEdit(gb4);
-  m_polygonFillPatternIconPushButton = new QPushButton("Icon...", gb4);
-  QHBoxLayout* hbox4 = new QHBoxLayout(gb4);
-  hbox4->addWidget(m_polygonFillPatternIconLineEdit);
-  hbox4->addWidget(m_polygonFillPatternIconPushButton);
+  m_polygonFillPatternIconPushButton = new QPushButton("Icon...", polygonGroupBox);
+  hbox2->addWidget(m_polygonFillPatternIconPushButton);
+  hbox2->addStretch();
 
-  QGroupBox* gb41 = new QGroupBox("Fill Mark:", polygonGroupBox); 
-  m_polygonFillMarkComboBox = new QComboBox(gb41);
-  m_polygonFillMarkComboBox->addItem("MarkerNone");
-  m_polygonFillMarkComboBox->addItem("MarkerSquare");
-  m_polygonFillMarkComboBox->addItem("MarkerDiamond");
-  m_polygonFillMarkComboBox->addItem("MarkerCircle");
-  m_polygonFillMarkComboBox->addItem("MarkerCrossedCircle");
-  m_polygonFillMarkComboBox->addItem("MarkerSemiEllipseLeft");
-  m_polygonFillMarkComboBox->addItem("MarkerSemiEllipseRight");
-  m_polygonFillMarkComboBox->addItem("MarkerSemiEllipseUp");
-  m_polygonFillMarkComboBox->addItem("MarkerSemiEllipseDown");
-  m_polygonFillMarkComboBox->addItem("MarkerTriangleLeft");
-  m_polygonFillMarkComboBox->addItem("MarkerTriangleRight");
-  m_polygonFillMarkComboBox->addItem("MarkerTriangleUp");
-  m_polygonFillMarkComboBox->addItem("MarkerTriangleDown");
-  m_polygonFillMarkComboBox->addItem("MarkerFourRays");
-  m_polygonFillMarkComboBox->addItem("MarkerCross");
-  m_polygonFillMarkComboBox->addItem("MarkerX");
-  m_polygonFillMarkComboBox->addItem("MarkerDash");
-  m_polygonFillMarkComboBox->addItem("MarkerDot");
-  m_polygonFillMarkComboBox->addItem("MarkerPixel");
-  m_polygonFillMarkComboBox->addItem("MarkerPattern");
+  m_polygonFillPatternNoIconPushButton = new QPushButton("No Icon", polygonGroupBox);
+  hbox2->addWidget(m_polygonFillPatternNoIconPushButton);
 
-  t = op->getPolygonMarkerType();
-  m_polygonFillMarkComboBox->setCurrentIndex(t);
+  //render area
+  QGroupBox* renderAreaGroupBox = new QGroupBox("", this);
+  m_polygonFillRenderArea = new RenderArea(renderAreaGroupBox);
+  QHBoxLayout* hbox3 = new QHBoxLayout(renderAreaGroupBox);
+  hbox3->addStretch();
+  hbox3->addWidget(m_polygonFillRenderArea);
+  hbox3->addStretch();
 
-  m_polygonFillMarkColor = op->getPolygonFillMarkerColor();
-  m_polygonFillMarkColorPushButton = new QPushButton("Marker Color...", gb41);
-  m_polygonFillMarkColorPushButton->setMaximumWidth(100);
+  QGroupBox* gb = new QGroupBox(this); 
+  m_okPushButton = new QPushButton("Ok", gb);
+  m_cancelPushButton = new QPushButton("Cancel", gb);
+  QHBoxLayout* hbox4 = new QHBoxLayout(gb);
+  hbox4->addStretch();
+  hbox4->addWidget(m_okPushButton);
+  hbox4->addStretch();
+  hbox4->addWidget(m_cancelPushButton);
+  hbox4->addStretch();
 
-  QHBoxLayout* hbox41 = new QHBoxLayout(gb41);
-  hbox41->addWidget(m_polygonFillMarkComboBox);
-  hbox41->addWidget(m_polygonFillMarkColorPushButton);
+  QVBoxLayout* polygonLayout = new QVBoxLayout(this);
+  polygonLayout->addWidget(contourGroupBox);
+  polygonLayout->addWidget(polygonGroupBox);
+  polygonLayout->addWidget(renderAreaGroupBox);
+  polygonLayout->addWidget(gb);
 
-  polygonLayout->addWidget(gb30);
-  polygonLayout->addWidget(gb3);
-  polygonLayout->addWidget(gb4);
-  polygonLayout->addWidget(gb41);
+  QObject::connect(m_polygonContourColorPushButton, SIGNAL(clicked(bool)), this, SLOT(onPolygonContourColorPushButtonClicked(bool))); 
+  QObject::connect(m_polygonContourIconPushButton, SIGNAL(clicked(bool)), this, SLOT(onPolygonContourIconPushButtonClicked(bool))); 
+  QObject::connect(m_polygonContourNoIconPushButton, SIGNAL(clicked(bool)), this, SLOT(onPolygonContourNoIconPushButtonClicked(bool))); 
+  QObject::connect(m_polygonContourWidthComboBox, SIGNAL(activated(int)), this, SLOT(onPolygonContourWidthComboBoxActivated(int))); 
 
-  QGroupBox* gb5 = new QGroupBox(this); 
-  m_applyPushButton = new QPushButton("Apply", gb5);
-  m_cancelPushButton = new QPushButton("Cancel", gb5);
-  QHBoxLayout* hbox5 = new QHBoxLayout(gb5);
-  hbox5->addSpacing(200);
-  hbox5->addWidget(m_applyPushButton);
-  hbox5->addSpacing(50);
-  hbox5->addWidget(m_cancelPushButton);
+  QObject::connect(m_polygonFillColorPushButton, SIGNAL(clicked(bool)), this, SLOT(onPolygonFillColorPushButtonClicked(bool))); 
+  QObject::connect(m_polygonFillPatternIconPushButton, SIGNAL(clicked(bool)), this, SLOT(onPolygonFillPatternIconPushButtonClicked(bool))); 
+  QObject::connect(m_polygonFillPatternNoIconPushButton, SIGNAL(clicked(bool)), this, SLOT(onPolygonFillPatternNoIconPushButtonClicked(bool))); 
+  QObject::connect(m_polygonFillPatternWidthComboBox, SIGNAL(activated(int)), this, SLOT(onPolygonFillPatternWidthComboBoxActivated(int))); 
 
-  vbox->addWidget(contourGroupBox);
-  vbox->addSpacing(40);
-  vbox->addWidget(polygonGroupBox);
-  vbox->addSpacing(40);
-  vbox->addWidget(gb5);
+  QObject::connect(m_okPushButton, SIGNAL(clicked(bool)), this, SLOT(onOkPushButtonClicked(bool))); 
+  QObject::connect(m_cancelPushButton, SIGNAL(clicked(bool)), this, SLOT(onCancelPushButtonClicked(bool))); 
 
-  QObject::connect(m_polygonContourMarkComboBox, SIGNAL(clicked(bool)), this, SLOT(contourMarkClickedSlot(bool))); 
-  QObject::connect(m_polygonFillMarkComboBox, SIGNAL(clicked(bool)), this, SLOT(fillMarkClickedSlot(bool))); 
-  QObject::connect(m_polygonContourColorPushButton, SIGNAL(clicked(bool)), this, SLOT(contourColorClickedSlot(bool))); 
-  QObject::connect(m_polygonContourIconPushButton, SIGNAL(clicked(bool)), this, SLOT(contourIconClickedSlot(bool))); 
-
-  QObject::connect(m_polygonFillColorPushButton, SIGNAL(clicked(bool)), this, SLOT(fillColorClickedSlot(bool))); 
-  QObject::connect(m_polygonFillPatternIconPushButton, SIGNAL(clicked(bool)), this, SLOT(fillPatternIconClickedSlot(bool))); 
-  QObject::connect(m_polygonFillMarkColorPushButton, SIGNAL(clicked(bool)), this, SLOT(polygonFillMarkColorSlot(bool))); 
-
-  QObject::connect(m_applyPushButton, SIGNAL(clicked(bool)), this, SLOT(applyClickedSlot(bool))); 
-  QObject::connect(m_cancelPushButton, SIGNAL(clicked(bool)), this, SLOT(cancelClickedSlot(bool))); 
-
-  setLayout(vbox);
+  setLayout(polygonLayout);
 }
 
 PolygonStyle::~PolygonStyle()
 {
 }
 
-void PolygonStyle::paintEvent(QPaintEvent*)
+void PolygonStyle::paintEvent(QPaintEvent* e)
 {
+  QWidget::paintEvent(e);
+  drawRenderArea();
 }
 
-void PolygonStyle::contourColorClickedSlot(bool)
+void PolygonStyle::onPolygonContourColorPushButtonClicked(bool)
 {
   QColor color, oldColor(m_polygonContourColor.getRed(), m_polygonContourColor.getGreen(), m_polygonContourColor.getBlue(), m_polygonContourColor.getAlpha());
 
   color = QColorDialog::getColor(oldColor, this, "Select Polygon Contour Color", QColorDialog::ShowAlphaChannel);
   if (color.isValid()) 
+  {
     m_polygonContourColor.setColor(color.red(), color.green(), color.blue(), color.alpha());
-}
-
-void PolygonStyle::contourIconClickedSlot(bool)
-{
-  QString fileName = QFileDialog::getOpenFileName(this,
-     tr("Open Image"), "C:/lixo", tr("Image Files (*.png *.jpg *.bmp)"));
-
-  if(fileName.isEmpty() == false)
-  {
-    m_polygonContourIconLineEdit->setText(fileName);
-    m_polygonContourMarkComboBox->setCurrentIndex(19);
+    update();
   }
 }
 
-void PolygonStyle::fillPatternIconClickedSlot(bool)
+void PolygonStyle::onPolygonContourIconPushButtonClicked(bool)
 {
-  QString fileName = QFileDialog::getOpenFileName(this,
+  m_polygonContourIconFileName = QFileDialog::getOpenFileName(this,
      tr("Open Image"), "C:/lixo", tr("Image Files (*.png *.jpg *.bmp)"));
+  update();
+}
 
-  if(fileName.isEmpty() == false)
+void PolygonStyle::onPolygonContourNoIconPushButtonClicked(bool)
+{
+  m_polygonContourIconFileName = "";
+  m_contourPattern = 0;
+  m_contourSize = 0;
+  update();
+}
+
+void PolygonStyle::onPolygonContourWidthComboBoxActivated(int)
+{
+  update();
+}
+
+void PolygonStyle::onPolygonFillColorPushButtonClicked(bool)
+{
+  QColor color, oldColor(m_polygonFillColor.getRed(), m_polygonFillColor.getGreen(), m_polygonFillColor.getBlue(), m_polygonFillColor.getAlpha());
+
+  color = QColorDialog::getColor(oldColor, this, "Select Polygon Fill Color", QColorDialog::ShowAlphaChannel);
+  if (color.isValid()) 
   {
-    m_polygonFillPatternIconLineEdit->setText(fileName);
-    m_polygonFillMarkComboBox->setCurrentIndex(19);
+    m_polygonFillColor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+    update();
   }
 }
 
-void PolygonStyle::applyClickedSlot(bool)
+void PolygonStyle::onPolygonFillPatternIconPushButtonClicked(bool)
+{
+  m_polygonFillPatternIconFileName = QFileDialog::getOpenFileName(this,
+     tr("Open Image"), "C:/lixo", tr("Image Files (*.png *.jpg *.bmp)"));
+
+  update();
+}
+
+void PolygonStyle::onPolygonFillPatternNoIconPushButtonClicked(bool)
+{
+  m_polygonFillPatternIconFileName = "";
+  m_fillPattern = 0;
+  m_fillSize = 0;
+  update();
+}
+
+void PolygonStyle::onPolygonFillPatternWidthComboBoxActivated(int)
+{
+  update();
+}
+
+void PolygonStyle::drawRenderArea()
+{
+  QPixmap* pix = m_polygonFillRenderArea->m_pixmap;
+  pix->fill(Qt::white);
+  QPainter painter(pix);
+
+  QRect rec = pix->rect();
+  QPoint pc = rec.center();
+  int w = rec.width() * 4 / 5;
+  int h = rec.height() * 4 / 5;
+  rec.setWidth(w);
+  rec.setHeight(h);
+  rec.moveCenter(pc);
+
+  // fill Polygon
+  painter.setPen(Qt::NoPen);
+  if(m_polygonFillPatternIconFileName.isEmpty() == false)
+  {
+    QFileInfo file(m_polygonFillPatternIconFileName);
+    QString fileName = file.filePath();
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+    fseek(fp , 0 , SEEK_END);
+    m_fillSize = (int)ftell(fp);
+    rewind(fp);
+    //if(m_fillPattern)
+    //  delete []m_fillPattern;
+    m_fillPattern = new char[m_fillSize];
+    fread(m_fillPattern, sizeof(char), m_fillSize, fp);
+    fclose(fp);
+
+    if(fileName.contains("PNG", Qt::CaseInsensitive))
+      m_fillImageType = te::map::PNG;
+    else if(fileName.contains("BMP", Qt::CaseInsensitive))
+      m_fillImageType = te::map::BMP;
+    else if(fileName.contains("JPG", Qt::CaseInsensitive))
+      m_fillImageType = te::map::JPEG;
+    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
+      m_fillImageType = te::map::JPEG;
+    else if(fileName.contains("GIF", Qt::CaseInsensitive))
+      m_fillImageType = te::map::GIF;
+    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
+    //  m_fillImageType = te::map::PBM;
+    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
+    //  m_fillImageType = te::map::PGM;
+    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
+    //  m_fillImageType = te::map::PPM;
+    else if(fileName.contains("XBM", Qt::CaseInsensitive))
+      m_fillImageType = te::map::XBM;
+    else if(fileName.contains("XPM", Qt::CaseInsensitive))
+      m_fillImageType = te::map::XPM;
+  }
+
+  if(m_fillPattern)
+  {
+    QImage ima;
+    bool result = ima.loadFromData((const uchar*)m_fillPattern, m_fillSize, te::qt::widgets::GetFormat(m_fillImageType));
+    if(result)
+    {
+      QBrush b;
+      b.setTextureImage(ima);
+
+      int h = m_polygonFillPatternWidthComboBox->currentIndex() + 1;
+      QMatrix m;
+      double s = (double)h / (double)ima.height();
+      m.scale(s, s);
+      b.setMatrix(m);
+      painter.setBrush(b);
+      painter.drawRect(rec);
+    }
+  }
+
+  if(m_polygonFillColor.getAlpha() != 0)
+  {
+    QColor color(m_polygonFillColor.getRed(), m_polygonFillColor.getGreen(), m_polygonFillColor.getBlue(), m_polygonFillColor.getAlpha());
+    QBrush b(color);
+    painter.setBrush(b);
+    painter.drawRect(rec);
+  }    
+
+  // draw contour
+  painter.setBrush(Qt::NoBrush);
+  QPen p;
+  if(m_polygonContourIconFileName.isEmpty() == false)
+  {
+    QFileInfo file(m_polygonContourIconFileName);
+    QString fileName = file.filePath();
+
+    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
+    fseek(fp , 0 , SEEK_END);
+    m_contourSize = (int)ftell(fp);
+    rewind(fp);
+    //if(m_contourPattern)
+    //  delete []m_contourPattern;
+    m_contourPattern = new char[m_contourSize];
+    fread(m_contourPattern, sizeof(char), m_contourSize, fp);
+    fclose(fp);
+
+    if(fileName.contains("PNG", Qt::CaseInsensitive))
+      m_contourImageType = te::map::PNG;
+    else if(fileName.contains("BMP", Qt::CaseInsensitive))
+      m_contourImageType = te::map::BMP;
+    else if(fileName.contains("JPG", Qt::CaseInsensitive))
+      m_contourImageType = te::map::JPEG;
+    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
+      m_contourImageType = te::map::JPEG;
+    else if(fileName.contains("GIF", Qt::CaseInsensitive))
+      m_contourImageType = te::map::GIF;
+    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
+    //  m_contourImageType = te::map::PBM;
+    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
+    //  m_contourImageType = te::map::PGM;
+    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
+    //  m_contourImageType = te::map::PPM;
+    else if(fileName.contains("XBM", Qt::CaseInsensitive))
+      m_contourImageType = te::map::XBM;
+    else if(fileName.contains("XPM", Qt::CaseInsensitive))
+      m_contourImageType = te::map::XPM;
+  }
+
+  if(m_contourPattern)
+  {
+    QImage ima;
+    bool result = ima.loadFromData((const uchar*)m_contourPattern, m_contourSize, te::qt::widgets::GetFormat(m_contourImageType));
+    if(result)
+    {
+      QBrush b;
+      b.setTextureImage(ima);
+
+      int h = m_polygonContourWidthComboBox->currentIndex() + 1;
+      p.setWidth(h);
+      QMatrix m;
+      double s = (double)h / (double)ima.height();
+      m.scale(s, s);
+      m.translate((double)ima.width()/2., (double)ima.height()/2.);
+      b.setMatrix(m);
+      p.setBrush(b);
+      painter.setPen(p);
+
+      painter.save();
+      painter.translate(rec.topLeft());
+      painter.drawLine(QPoint(0, 0), QPoint(rec.width()-1, 0));
+      painter.restore();
+
+      painter.save();
+      painter.translate(rec.bottomLeft());
+      painter.drawLine(QPoint(0, 0), QPoint(rec.width()-1, 0));
+      painter.restore();
+
+      painter.save();
+      painter.translate(rec.bottomLeft());
+      painter.rotate(-90);
+      painter.drawLine(QPoint(0, 0), QPoint(rec.height()-1, 0));
+      painter.restore();
+
+      painter.save();
+      painter.translate(rec.bottomRight());
+      painter.rotate(-90);
+      painter.drawLine(QPoint(0, 0), QPoint(rec.height()-1, 0));
+      painter.restore();
+    }
+  }
+
+  if(m_polygonContourColor.getAlpha() != 0)
+  {
+    p.setBrush(Qt::NoBrush);
+    QColor color(m_polygonContourColor.getRed(), m_polygonContourColor.getGreen(), m_polygonContourColor.getBlue(), m_polygonContourColor.getAlpha());
+    p.setColor(color);
+
+    int w = m_polygonContourWidthComboBox->currentIndex() + 1;
+    p.setWidth(w);
+    painter.setPen(p);
+    painter.drawRect(rec);
+  }
+}
+
+void PolygonStyle::onOkPushButtonClicked(bool)
 {
   accept();
   hide();
 }
 
-void PolygonStyle::cancelClickedSlot(bool)
+void PolygonStyle::onCancelPushButtonClicked(bool)
 {
   reject();
   hide();
@@ -232,35 +387,5 @@ void PolygonStyle::cancelClickedSlot(bool)
 void PolygonStyle::closeEvent(QCloseEvent *event)
 {
   event->accept();
-  cancelClickedSlot(true);
-}
-
-void PolygonStyle::contourMarkClickedSlot()
-{
-  if(m_polygonContourMarkComboBox->currentIndex() != 19)
-    m_polygonContourIconLineEdit->setText("");
-}
-
-void PolygonStyle::fillMarkClickedSlot()
-{
-  if(m_polygonFillMarkComboBox->currentIndex() != 19)
-    m_polygonFillPatternIconLineEdit->setText("");
-}
-
-void PolygonStyle::fillColorClickedSlot(bool)
-{
-  QColor color, oldColor(m_polygonFillColor.getRed(), m_polygonFillColor.getGreen(), m_polygonFillColor.getBlue(), m_polygonFillColor.getAlpha());
-
-  color = QColorDialog::getColor(oldColor, this, "Select Polygon Fill Color", QColorDialog::ShowAlphaChannel);
-  if (color.isValid()) 
-    m_polygonFillColor.setColor(color.red(), color.green(), color.blue(), color.alpha());
-}
-
-void PolygonStyle::polygonFillMarkColorSlot(bool)
-{
-  QColor color, oldColor(m_polygonFillMarkColor.getRed(), m_polygonFillMarkColor.getGreen(), m_polygonFillMarkColor.getBlue(), m_polygonFillMarkColor.getAlpha());
-
-  color = QColorDialog::getColor(oldColor, this, "Select Polygon Fill Color", QColorDialog::ShowAlphaChannel);
-  if (color.isValid()) 
-    m_polygonFillMarkColor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+  onCancelPushButtonClicked(true);
 }
