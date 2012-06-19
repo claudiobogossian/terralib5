@@ -97,6 +97,11 @@ te::se::Mark* te::qt::widgets::GlyphMarkWidget::getMark() const
   return m_mark->clone();
 }
 
+Ui::GlyphMarkWidgetForm* te::qt::widgets::GlyphMarkWidget::getForm() const
+{
+  return m_ui.get();
+}
+
 void te::qt::widgets::GlyphMarkWidget::updateUi()
 {
   const std::string* name = m_mark->getWellKnownName();
@@ -140,6 +145,7 @@ void te::qt::widgets::GlyphMarkWidget::updateMarkName()
 {
   QString name = te::qt::widgets::GlyphMarkFactory::encode(m_ui->m_fontComboBox->currentFont().family(), m_charMapWidget->getCurrentChar());
   m_mark->setWellKnownName(new std::string(name.toStdString()));
+  emit markChanged();
 }
 
 void te::qt::widgets::GlyphMarkWidget::onCurrentFontChanged(const QFont& /*font*/)
