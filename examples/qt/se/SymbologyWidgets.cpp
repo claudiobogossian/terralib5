@@ -5,6 +5,7 @@
 #include <terralib/qt/widgets/se/BasicFillDialog.h>
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
 #include <terralib/qt/widgets/se/GlyphMarkDialog.h>
+#include <terralib/qt/widgets/se/GraphicDialog.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
 
 // Qt
@@ -57,4 +58,8 @@ void SymbologyWidgets()
   if(glyphMark)
     std::cout << glyphMark->getWellKnownName()->c_str() << std::endl;
   delete glyphMark;
+
+  // Creates a new graphic
+  te::se::Graphic* graphic = te::qt::widgets::GraphicDialog::getGraphic(0, 0, "");
+  delete graphic;
 }
