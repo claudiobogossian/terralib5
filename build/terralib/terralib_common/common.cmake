@@ -12,7 +12,7 @@ if(LOG4CXX_FOUND)
   set(DEP_LIBS ${LOG4CXX_LIBRARY})	
 endif()
 
-find_package(Boost 1.47 COMPONENTS filesystem system REQUIRED)
+find_package(Boost 1.46 COMPONENTS filesystem system REQUIRED)
 list (APPEND DEP_LIBS ${Boost_LIBRARIES})
 list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 

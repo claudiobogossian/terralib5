@@ -6,7 +6,7 @@ add_definitions (${QT_DEFINITIONS})
 set (DEP_INCLUDES ${QT_INCLUDE_DIR})
 set (DEP_LIBS ${QT_LIBRARIES})
 
-find_package(Boost 1.47 COMPONENTS date_time REQUIRED)
+find_package(Boost 1.46 COMPONENTS date_time REQUIRED)
 list (APPEND DEP_LIBS ${Boost_LIBRARIES})
 list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 

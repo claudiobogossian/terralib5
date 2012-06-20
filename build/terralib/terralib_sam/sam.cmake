@@ -5,7 +5,7 @@ if(MSVC)
 	set(CMAKE_SHARED_LINKER_FLAGS_DEBUG "/INCREMENTAL:NO ${replacementFlags}")
 endif(MSVC)
 
-find_package(Boost 1.47 REQUIRED)
+find_package(Boost 1.46 REQUIRED)
 set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 
 set (DEP_LIBS terralib_common)
