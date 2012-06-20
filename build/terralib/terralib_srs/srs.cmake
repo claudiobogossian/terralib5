@@ -1,5 +1,5 @@
 
-find_package(Boost 1.47 REQUIRED)
+find_package(Boost 1.46 REQUIRED)
 set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 
 find_package(Proj4)
