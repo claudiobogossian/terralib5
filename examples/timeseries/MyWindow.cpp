@@ -281,29 +281,29 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_openGridAction);
   connect(m_openGridAction, SIGNAL(triggered()), this, SLOT(openGridSlot()));
 
-  m_changeColorMenu = m_treeMenu->addMenu("Change Color");
-  m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changeDefaultColorAction);
-  connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
-  m_changePointedColorAction = new QAction("Change Pointed Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changePointedColorAction);
+  m_changeStatusColorMenu = m_treeMenu->addMenu("Change Color");
+  //m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeStatusColorMenu);
+  //m_changeStatusColorMenu->addAction(m_changeDefaultColorAction);
+  //connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
+  m_changePointedColorAction = new QAction("Pointed Color...", m_changeStatusColorMenu);
+  m_changeStatusColorMenu->addAction(m_changePointedColorAction);
   connect(m_changePointedColorAction, SIGNAL(triggered()), this, SLOT(changePointedColorSlot()));
-  m_changeQueriedColorAction = new QAction("Change Queried Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changeQueriedColorAction);
+  m_changeQueriedColorAction = new QAction("Queried Color...", m_changeStatusColorMenu);
+  m_changeStatusColorMenu->addAction(m_changeQueriedColorAction);
   connect(m_changeQueriedColorAction, SIGNAL(triggered()), this, SLOT(changeQueriedColorSlot()));
-  m_changePointedAndQueriedColorAction = new QAction("Change Pointed And Queried Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changePointedAndQueriedColorAction);
+  m_changePointedAndQueriedColorAction = new QAction("Pointed And Queried Color...", m_changeStatusColorMenu);
+  m_changeStatusColorMenu->addAction(m_changePointedAndQueriedColorAction);
   connect(m_changePointedAndQueriedColorAction, SIGNAL(triggered()), this, SLOT(changePointedAndQueriedColorSlot()));
 
-  m_changeStyleMenu = m_treeMenu->addMenu("Change Style");
-  m_changePointStyleAction = new QAction("Change Point Style...", m_changeStyleMenu);
-  m_changeStyleMenu->addAction(m_changePointStyleAction);
+  m_changeDefaultStyleMenu = m_treeMenu->addMenu("Change Default Style");
+  m_changePointStyleAction = new QAction("Point Style...", m_changeDefaultStyleMenu);
+  m_changeDefaultStyleMenu->addAction(m_changePointStyleAction);
   connect(m_changePointStyleAction, SIGNAL(triggered()), this, SLOT(changePointStyleSlot()));
-  m_changeLineStyleAction = new QAction("Change Line Style...", m_changeStyleMenu);
-  m_changeStyleMenu->addAction(m_changeLineStyleAction);
+  m_changeLineStyleAction = new QAction("Line Style...", m_changeDefaultStyleMenu);
+  m_changeDefaultStyleMenu->addAction(m_changeLineStyleAction);
   connect(m_changeLineStyleAction, SIGNAL(triggered()), this, SLOT(changeLineStyleSlot()));
-  m_changePolygonStyleAction = new QAction("Change Polygon Style...", m_changeStyleMenu);
-  m_changeStyleMenu->addAction(m_changePolygonStyleAction);
+  m_changePolygonStyleAction = new QAction("Polygon Style...", m_changeDefaultStyleMenu);
+  m_changeDefaultStyleMenu->addAction(m_changePolygonStyleAction);
   connect(m_changePolygonStyleAction, SIGNAL(triggered()), this, SLOT(changePolygonStyleSlot()));
 
   m_renameAction = new QAction("Re&name...", m_treeMenu);
@@ -744,8 +744,8 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
       m_keepOnMemoryAction->setEnabled(false);
       m_keepOnMemoryAction->setChecked(false);
       m_addFolderAction->setEnabled(true);
-      m_changeColorMenu->setEnabled(false);
-      m_changeStyleMenu->setEnabled(false);
+      m_changeStatusColorMenu->setEnabled(false);
+      m_changeDefaultStyleMenu->setEnabled(false);
     }
     else
     {
@@ -756,8 +756,8 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
       te::map::DataGridOperation* op = layer->getDataGridOperation();
       if(op)
       {
-        m_changeColorMenu->setEnabled(true);
-        m_changeStyleMenu->setEnabled(true);
+        m_changeStatusColorMenu->setEnabled(true);
+        m_changeDefaultStyleMenu->setEnabled(true);
         QColor qcor;
         QIcon icon;
         QPixmap p(20,15);
@@ -766,7 +766,7 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
         qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
         p.fill(qcor);
         icon = QIcon(p);
-        m_changeDefaultColorAction->setIcon(icon);
+        //m_changeDefaultColorAction->setIcon(icon);
 
         cor = op->getPointedColor();
         qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
@@ -788,8 +788,8 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
       }
       else
       {
-        m_changeColorMenu->setEnabled(false);
-        m_changeStyleMenu->setEnabled(false);
+        m_changeStatusColorMenu->setEnabled(false);
+        m_changeDefaultStyleMenu->setEnabled(false);
       }
     }
   }
@@ -1639,28 +1639,28 @@ void MyWindow::selectionChangedSlot(te::map::DataGridOperation* op)
   Q_EMIT selectionChanged(op);
 }
 
-void MyWindow::changeDefaultColorSlot()
-{
-  if(m_selectedLayer->getType() != "LAYER")
-    return;
-
-  MyLayer* layer = (MyLayer*)m_selectedLayer;
-  te::map::DataGridOperation* op = layer->getDataGridOperation();
-  if(op == 0)
-    return;
-
-  te::color::RGBAColor cor = op->getDefaultColor();
-  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
-
-  color = QColorDialog::getColor(oldColor, this, "Select Default Color", QColorDialog::ShowAlphaChannel);
-  if (color.isValid()) 
-  {
-    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
-    op->setDefaultColor(cor);
-    //selectionChangedSlot(op);
-    updateDisplays(layer);
-  }
-}
+//void MyWindow::changeDefaultColorSlot()
+//{
+//  if(m_selectedLayer->getType() != "LAYER")
+//    return;
+//
+//  MyLayer* layer = (MyLayer*)m_selectedLayer;
+//  te::map::DataGridOperation* op = layer->getDataGridOperation();
+//  if(op == 0)
+//    return;
+//
+//  te::color::RGBAColor cor = op->getDefaultColor();
+//  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+//
+//  color = QColorDialog::getColor(oldColor, this, "Select Default Color", QColorDialog::ShowAlphaChannel);
+//  if (color.isValid()) 
+//  {
+//    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+//    op->setDefaultColor(cor);
+//    //selectionChangedSlot(op);
+//    updateDisplays(layer);
+//  }
+//}
 
 void MyWindow::changePointedColorSlot()
 {

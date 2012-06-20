@@ -46,18 +46,17 @@ PointStyle::PointStyle(te::map::DataGridOperation* op, QWidget* parent) : QDialo
   hbox1->addWidget(m_noIconPushButton);
   hbox1->addStretch();
 
-  QLabel* label = new QLabel("Rotation:", gb1);
-  m_rotationSpinBox = new QSpinBox(gb1);
-  m_rotationSpinBox->setRange(-359, 359);
-  m_rotationSpinBox->setValue(0);
-  m_rotationSpinBox->setEnabled(false);
-  hbox1->addWidget(label);
-  hbox1->addWidget(m_rotationSpinBox);
-  hbox1->addStretch();
+  //QLabel* label = new QLabel("Rotation:", gb1);
+  //m_rotationSpinBox = new QSpinBox(gb1);
+  //m_rotationSpinBox->setRange(-359, 359);
+  //m_rotationSpinBox->setValue(0);
+  //m_rotationSpinBox->setEnabled(false);
+  //hbox1->addWidget(label);
+  //hbox1->addWidget(m_rotationSpinBox);
+  //hbox1->addStretch();
 
   m_colorPushButton = new QPushButton("Color...", gb1);
   hbox1->addWidget(m_colorPushButton);
-  hbox1->addStretch();
 
   //render area
   QGroupBox* renderAreaGroupBox = new QGroupBox("", this);
@@ -71,10 +70,11 @@ PointStyle::PointStyle(te::map::DataGridOperation* op, QWidget* parent) : QDialo
   m_okPushButton = new QPushButton("Ok", gb3);
   m_cancelPushButton = new QPushButton("Cancel", gb3);
   QHBoxLayout* hbox3 = new QHBoxLayout(gb3);
-  hbox3->addSpacing(100);
+  hbox3->addStretch();
   hbox3->addWidget(m_okPushButton);
-  hbox3->addSpacing(50);
+  hbox3->addStretch();
   hbox3->addWidget(m_cancelPushButton);
+  hbox3->addStretch();
 
   vbox->addWidget(gb1);
   vbox->addWidget(renderAreaGroupBox);
@@ -84,7 +84,7 @@ PointStyle::PointStyle(te::map::DataGridOperation* op, QWidget* parent) : QDialo
   QObject::connect(m_iconPushButton, SIGNAL(clicked(bool)), this, SLOT(onIconPushButtonClicked(bool))); 
   QObject::connect(m_noIconPushButton, SIGNAL(clicked(bool)), this, SLOT(onNoIconPushButtonClicked(bool))); 
   QObject::connect(m_colorPushButton, SIGNAL(clicked(bool)), this, SLOT(onColorPushButtonClicked(bool))); 
-  QObject::connect(m_rotationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onRotationSpinBoxValueChanged(int))); 
+  //QObject::connect(m_rotationSpinBox, SIGNAL(valueChanged(int)), this, SLOT(onRotationSpinBoxValueChanged(int))); 
   QObject::connect(m_okPushButton, SIGNAL(clicked(bool)), this, SLOT(onOkPushButtonClicked(bool))); 
   QObject::connect(m_cancelPushButton, SIGNAL(clicked(bool)), this, SLOT(onCancelPushButtonClicked(bool))); 
 
@@ -127,11 +127,11 @@ void PointStyle::onWidthComboBoxActivated(int)
 {
   update();
 }
-
-void PointStyle::onRotationSpinBoxValueChanged(int)
-{
-  update();
-}
+//
+//void PointStyle::onRotationSpinBoxValueChanged(int)
+//{
+//  update();
+//}
 
 void PointStyle::drawRenderArea()
 {
@@ -144,7 +144,8 @@ void PointStyle::drawRenderArea()
 
   int w = m_widthComboBox->currentIndex() + 1;
 
-  double alfa = m_rotationSpinBox->value();
+  //double alfa = m_rotationSpinBox->value();
+  double alfa = 0.;
 
   if(m_patternIconFileName.isEmpty() == false)
   {

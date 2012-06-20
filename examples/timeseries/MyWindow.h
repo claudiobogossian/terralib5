@@ -65,7 +65,7 @@ protected slots:
   void removePlotSlot(QwtPlot*);
   void keepOnMemorySlot();
   void selectionChangedSlot(te::map::DataGridOperation*);
-  void changeDefaultColorSlot();
+  //void changeDefaultColorSlot();
   void changePointedColorSlot();
   void changeQueriedColorSlot();
   void changePointedAndQueriedColorSlot();
@@ -97,7 +97,7 @@ private:
   QAction* m_addLayerAction;
   QAction* m_plotTemporalDistanceAction;
   QAction* m_keepOnMemoryAction;
-  QAction* m_changeDefaultColorAction;
+  //QAction* m_changeDefaultColorAction;
   QAction* m_changePointedColorAction;
   QAction* m_changeQueriedColorAction;
   QAction* m_changePointedAndQueriedColorAction;
@@ -106,8 +106,8 @@ private:
   QAction* m_changePolygonStyleAction;
 
   QMenu* m_treeMenu;
-  QMenu* m_changeColorMenu;
-  QMenu* m_changeStyleMenu;
+  QMenu* m_changeStatusColorMenu;
+  QMenu* m_changeDefaultStyleMenu;
   QMenu* m_timeSliderMenu;
   ConfigStyle* m_configStyle;
   TemporalDrawingConfig* m_temporalDrawingConfig;
