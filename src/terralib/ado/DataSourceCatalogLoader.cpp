@@ -29,6 +29,7 @@
 #include "../datatype/SimpleProperty.h"
 #include "../dataaccess/dataset/Constraint.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
+#include "../dataaccess/dataset/ForeignKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/dataset/Index.h"
 #include "DataSourceCatalogLoader.h"
@@ -170,7 +171,7 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
       for(long j = 0; j < cols->Count; j++)
         tlUk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
 
-	  dt->add(tlUk.release());
+      dt->add(tlUk.release());
 
     }
   }
@@ -178,12 +179,76 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
 
 void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, std::vector<std::string>& fkNames, std::vector<std::string>& rdts)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  ADOX::TablesPtr tables = pCatalog->GetTables();
+
+  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+
+  ADOX::KeysPtr keys = t->GetKeys();  
+
+  for(long i = 0; i < keys->Count; i++)
+  {
+    if(keys->GetItem(i)->GetType() == ADOX::adKeyForeign)
+    {
+      ADOX::_KeyPtr fk = keys->GetItem(i);
+
+      fkNames.push_back(std::string(fk->GetName()));
+      rdts.push_back(std::string(fk->GetRelatedTable()));
+    }
+  }
+
+
 }
 
 te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::string& fkName, te::da::DataSetType* dt, te::da::DataSetType* rdt)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  ADOX::TablesPtr tables = pCatalog->GetTables();
+
+  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+
+  ADOX::KeysPtr keys = t->GetKeys();
+
+  ADOX::_KeyPtr adofk = keys->GetItem(fkName.c_str());
+
+  if(std::string(adofk->GetRelatedTable()) == rdt->getName())
+    throw Exception(TR_ADO("Foreign Key not found!"));
+
+  te::da::ForeignKey* fk = new te::da::ForeignKey(fkName);
+  fk->setDataSetType(dt);
+  fk->setReferencedDataSetType(rdt);
+
+  std::vector<te::dt::Property*> props;
+  std::vector<te::dt::Property*> rProps;
+
+  for(long i = 0; i < adofk->GetColumns()->GetCount(); i++)
+  {
+    ADOX::_ColumnPtr col = adofk->GetColumns()->GetItem(i);
+
+    props.push_back(dt->getProperty(std::string(col->GetName())));
+    rProps.push_back(rdt->getProperty(std::string(col->GetRelatedColumn())));
+  }
+
+  fk->setProperties(props);
+
+  fk->setReferencedProperties(rProps);
+
+  return fk;
+
 }
 
 void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
@@ -241,17 +306,14 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
-  ADOX::TablesPtr tables = pCatalog->GetTables();
+  ADOX::_TablePtr table = 0;
 
-  for(long i = 0; i < tables->Count; i++)
-  {
-    ADOX::_TablePtr tab = tables->GetItem(i);
+  table = pCatalog->GetTables()->GetItem(name.c_str());
 
-    if(std::string(tab->GetName()) == name)
-      return true;
-  }
+  if(table = 0)
+    return false;
 
-  return false;
+  return true;
 }
 
 bool te::ado::DataSourceCatalogLoader::primarykeyExists(const std::string& name)

@@ -80,9 +80,9 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
 
     ADOX::_TablePtr pTable = 0;
     ADOX::_CatalogPtr pCatalog = 0;
-
-    pTable.CreateInstance(__uuidof (ADOX::Table));
-    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+    
+    TESTHR(pTable.CreateInstance(__uuidof (ADOX::Table)));
+    TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
     pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -140,9 +140,9 @@ void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 
     ADOX::_CatalogPtr pCatalog = 0;
 
-    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+    TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-    pCatalog->Tables->Delete(dt->getName().c_str());
+    TESTHR(pCatalog->Tables->Delete(dt->getName().c_str()));
 
   }
   catch(_com_error &e)
@@ -158,7 +158,7 @@ void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std:
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->Tables->GetItem(dt->getName().c_str())->PutName(newName.c_str());
 }
@@ -170,7 +170,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Prope
   ADOX::_CatalogPtr pCatalog = 0;
   ADOX::_TablePtr pTable = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
   pTable = pCatalog->Tables->GetItem(dt->getName().c_str());
@@ -187,7 +187,7 @@ void te::ado::DataSetTypePersistence::drop(te::dt::Property* p)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   
 }
@@ -214,8 +214,8 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Prima
   ADOX::_TablePtr pTable = 0;
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
-  pKey.CreateInstance(__uuidof(ADOX::Key));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  TESTHR(pKey.CreateInstance(__uuidof(ADOX::Key)));
   
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -227,11 +227,11 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Prima
   for(size_t i = 0; i < pk->getProperties().size(); i++)
   {
     te::dt::Property* p = pk->getProperties()[i];
-    pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256);
+    TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
 
   }
 
-  pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L"");
+  TESTHR(pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L""));
   pCatalog->Tables->Refresh();
 
 }
@@ -253,8 +253,8 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Uniqu
   ADOX::_TablePtr pTable = 0;
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
-  pKey.CreateInstance(__uuidof(ADOX::Key));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  TESTHR(pKey.CreateInstance(__uuidof(ADOX::Key)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -267,10 +267,10 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Uniqu
   {
     te::dt::Property* p = uk->getProperties()[i];
 
-    pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256);
+    TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
   }
 
-  pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L"");
+  TESTHR(pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L""));
 
   pCatalog->Tables->Refresh();
 }
@@ -280,9 +280,35 @@ void te::ado::DataSetTypePersistence::drop(te::da::UniqueKey* /*uk*/)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
-void te::ado::DataSetTypePersistence::add(te::da::DataSetType* /*dt*/, te::da::Index* /*index*/) 
+void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Index* index) 
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_IndexPtr pIndex = 0;
+  ADOX::_TablePtr pTable = 0;
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  TESTHR(pIndex.CreateInstance(__uuidof(ADOX::Index)));
+
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  pTable = pCatalog->Tables->GetItem(dt->getName().c_str());
+
+  pIndex->Name = index->getName().c_str();
+
+  std::vector<te::dt::Property*> idxProps = index->getProperties();
+  for(size_t i = 0; i < idxProps.size(); i++)
+  {
+    long size = 0;
+    if(idxProps[i]->getType() == te::dt::STRING_TYPE)
+      size = (long)((te::dt::StringProperty*)idxProps[i])->size();
+
+    TESTHR(pIndex->Columns->Append(idxProps[i]->getName().c_str(), te::ado::terralib2Ado(idxProps[i]->getType()), size));
+  }
+
+  TESTHR(pTable->Indexes->Append(_variant_t((IDispatch *)pIndex)));
+
 }
 
 void te::ado::DataSetTypePersistence::add(te::da::DataSetType* /*dt*/, te::da::Index* /*index*/, 
@@ -312,7 +338,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Forei
 
   pTable = pCatalog->Tables->GetItem(dt->getName().c_str());
 
-  pKey.CreateInstance(__uuidof(ADOX::Key));
+  TESTHR(pKey.CreateInstance(__uuidof(ADOX::Key)));
 
   pKey->Name = pTable->Name + "_uk";
   pKey->Type = ADOX::adKeyForeign;
@@ -323,12 +349,12 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Forei
 
     te::dt::Property* p = fk->getProperties()[i];
 
-    pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256);
+    TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
     //pKey->Columns->GetItem(p->getName().c_str())->RelatedColumn = 
 
   }
 
-  pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L"");
+  TESTHR(pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyPrimary,vOptional,L"",L""));
 
   pCatalog->Tables->Refresh();
 }

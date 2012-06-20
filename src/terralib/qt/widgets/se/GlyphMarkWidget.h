@@ -102,6 +102,8 @@ namespace te
           */
           te::se::Mark* getMark() const;
 
+          Ui::GlyphMarkWidgetForm* getForm() const;
+
         protected:
 
           /*! \brief Updates the widget form based on internal mark element. */

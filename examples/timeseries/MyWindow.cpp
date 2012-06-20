@@ -281,29 +281,29 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_openGridAction);
   connect(m_openGridAction, SIGNAL(triggered()), this, SLOT(openGridSlot()));
 
-  m_changeColorMenu = m_treeMenu->addMenu("Change Color");
-  m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changeDefaultColorAction);
-  connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
-  m_changePointedColorAction = new QAction("Change Pointed Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changePointedColorAction);
+  m_changeStatusColorMenu = m_treeMenu->addMenu("Change Color");
+  //m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeStatusColorMenu);
+  //m_changeStatusColorMenu->addAction(m_changeDefaultColorAction);
+  //connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
+  m_changePointedColorAction = new QAction("Pointed Color...", m_changeStatusColorMenu);
+  m_changeStatusColorMenu->addAction(m_changePointedColorAction);
   connect(m_changePointedColorAction, SIGNAL(triggered()), this, SLOT(changePointedColorSlot()));
-  m_changeQueriedColorAction = new QAction("Change Queried Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changeQueriedColorAction);
+  m_changeQueriedColorAction = new QAction("Queried Color...", m_changeStatusColorMenu);
+  m_changeStatusColorMenu->addAction(m_changeQueriedColorAction);
   connect(m_changeQueriedColorAction, SIGNAL(triggered()), this, SLOT(changeQueriedColorSlot()));
-  m_changePointedAndQueriedColorAction = new QAction("Change Pointed And Queried Color...", m_changeColorMenu);
-  m_changeColorMenu->addAction(m_changePointedAndQueriedColorAction);
+  m_changePointedAndQueriedColorAction = new QAction("Pointed And Queried Color...", m_changeStatusColorMenu);
+  m_changeStatusColorMenu->addAction(m_changePointedAndQueriedColorAction);
   connect(m_changePointedAndQueriedColorAction, SIGNAL(triggered()), this, SLOT(changePointedAndQueriedColorSlot()));
 
-  m_changeStyleMenu = m_treeMenu->addMenu("Change Style");
-  m_changePointStyleAction = new QAction("Change Point Style...", m_changeStyleMenu);
-  m_changeStyleMenu->addAction(m_changePointStyleAction);
+  m_changeDefaultStyleMenu = m_treeMenu->addMenu("Change Default Style");
+  m_changePointStyleAction = new QAction("Point Style...", m_changeDefaultStyleMenu);
+  m_changeDefaultStyleMenu->addAction(m_changePointStyleAction);
   connect(m_changePointStyleAction, SIGNAL(triggered()), this, SLOT(changePointStyleSlot()));
-  m_changeLineStyleAction = new QAction("Change Line Style...", m_changeStyleMenu);
-  m_changeStyleMenu->addAction(m_changeLineStyleAction);
+  m_changeLineStyleAction = new QAction("Line Style...", m_changeDefaultStyleMenu);
+  m_changeDefaultStyleMenu->addAction(m_changeLineStyleAction);
   connect(m_changeLineStyleAction, SIGNAL(triggered()), this, SLOT(changeLineStyleSlot()));
-  m_changePolygonStyleAction = new QAction("Change Polygon Style...", m_changeStyleMenu);
-  m_changeStyleMenu->addAction(m_changePolygonStyleAction);
+  m_changePolygonStyleAction = new QAction("Polygon Style...", m_changeDefaultStyleMenu);
+  m_changeDefaultStyleMenu->addAction(m_changePolygonStyleAction);
   connect(m_changePolygonStyleAction, SIGNAL(triggered()), this, SLOT(changePolygonStyleSlot()));
 
   m_renameAction = new QAction("Re&name...", m_treeMenu);
@@ -744,8 +744,8 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
       m_keepOnMemoryAction->setEnabled(false);
       m_keepOnMemoryAction->setChecked(false);
       m_addFolderAction->setEnabled(true);
-      m_changeColorMenu->setEnabled(false);
-      m_changeStyleMenu->setEnabled(false);
+      m_changeStatusColorMenu->setEnabled(false);
+      m_changeDefaultStyleMenu->setEnabled(false);
     }
     else
     {
@@ -756,8 +756,8 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
       te::map::DataGridOperation* op = layer->getDataGridOperation();
       if(op)
       {
-        m_changeColorMenu->setEnabled(true);
-        m_changeStyleMenu->setEnabled(true);
+        m_changeStatusColorMenu->setEnabled(true);
+        m_changeDefaultStyleMenu->setEnabled(true);
         QColor qcor;
         QIcon icon;
         QPixmap p(20,15);
@@ -766,7 +766,7 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
         qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
         p.fill(qcor);
         icon = QIcon(p);
-        m_changeDefaultColorAction->setIcon(icon);
+        //m_changeDefaultColorAction->setIcon(icon);
 
         cor = op->getPointedColor();
         qcor = QColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
@@ -788,8 +788,8 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
       }
       else
       {
-        m_changeColorMenu->setEnabled(false);
-        m_changeStyleMenu->setEnabled(false);
+        m_changeStatusColorMenu->setEnabled(false);
+        m_changeDefaultStyleMenu->setEnabled(false);
       }
     }
   }
@@ -1639,28 +1639,28 @@ void MyWindow::selectionChangedSlot(te::map::DataGridOperation* op)
   Q_EMIT selectionChanged(op);
 }
 
-void MyWindow::changeDefaultColorSlot()
-{
-  if(m_selectedLayer->getType() != "LAYER")
-    return;
-
-  MyLayer* layer = (MyLayer*)m_selectedLayer;
-  te::map::DataGridOperation* op = layer->getDataGridOperation();
-  if(op == 0)
-    return;
-
-  te::color::RGBAColor cor = op->getDefaultColor();
-  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
-
-  color = QColorDialog::getColor(oldColor, this, "Select Default Color", QColorDialog::ShowAlphaChannel);
-  if (color.isValid()) 
-  {
-    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
-    op->setDefaultColor(cor);
-    //selectionChangedSlot(op);
-    updateDisplays(layer);
-  }
-}
+//void MyWindow::changeDefaultColorSlot()
+//{
+//  if(m_selectedLayer->getType() != "LAYER")
+//    return;
+//
+//  MyLayer* layer = (MyLayer*)m_selectedLayer;
+//  te::map::DataGridOperation* op = layer->getDataGridOperation();
+//  if(op == 0)
+//    return;
+//
+//  te::color::RGBAColor cor = op->getDefaultColor();
+//  QColor color, oldColor(cor.getRed(), cor.getGreen(), cor.getBlue(), cor.getAlpha());
+//
+//  color = QColorDialog::getColor(oldColor, this, "Select Default Color", QColorDialog::ShowAlphaChannel);
+//  if (color.isValid()) 
+//  {
+//    cor.setColor(color.red(), color.green(), color.blue(), color.alpha());
+//    op->setDefaultColor(cor);
+//    //selectionChangedSlot(op);
+//    updateDisplays(layer);
+//  }
+//}
 
 void MyWindow::changePointedColorSlot()
 {
@@ -1745,54 +1745,13 @@ void MyWindow::changePointStyleSlot()
   if(w.exec() == QDialog::Rejected)
     return;
 
-  int mindex = w.m_pointMarkComboBox->currentIndex();
-  te::map::PtMarkerType markerType = (te::map::PtMarkerType)mindex;
-  op->setPointMarkerType(markerType);
-
-  QString width = w.m_pointWidthComboBox->currentText();
+  QString width = w.m_widthComboBox->currentText();
   int pointWidth = width.toInt();
   op->setPointWidth(pointWidth);
-
-  QString icon = w.m_pointIconLineEdit->text();
-  if(icon.isEmpty() == false && markerType == te::map::MarkerPattern)
-  {
-    QFileInfo file(icon);
-    QString fileName = file.filePath();
-
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-    fseek(fp , 0 , SEEK_END);
-    int pointIconSize = (int)ftell(fp);
-    rewind(fp);
-    char* pointIcon = new char[pointIconSize];
-    fread(pointIcon, sizeof(char), pointIconSize, fp);
-    fclose(fp);
-
-    te::map::ImageType imaType;
-    if(fileName.contains("PNG", Qt::CaseInsensitive))
-      imaType = te::map::PNG;
-    else if(fileName.contains("BMP", Qt::CaseInsensitive))
-      imaType = te::map::BMP;
-    else if(fileName.contains("JPG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("GIF", Qt::CaseInsensitive))
-      imaType = te::map::GIF;
-    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
-    //  imaType = te::map::PBM;
-    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
-    //  imaType = te::map::PGM;
-    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
-    //  imaType = te::map::PPM;
-    else if(fileName.contains("XBM", Qt::CaseInsensitive))
-      imaType = te::map::XBM;
-    else if(fileName.contains("XPM", Qt::CaseInsensitive))
-      imaType = te::map::XPM;
-
-    op->setPointIcon(pointIcon);
-    op->setPointIconSize(pointIconSize);
-    op->setPointIconImageType(imaType);
-  }
+  op->setPointColor(w.m_color);
+  op->setPointIcon(w.m_pattern);
+  op->setPointIconSize(w.m_patternSize);
+  op->setPointIconImageType(w.m_imageType);
 
   updateDisplays(layer);
 }
@@ -1811,57 +1770,15 @@ void MyWindow::changeLineStyleSlot()
   if(w.exec() == QDialog::Rejected)
     return;
 
-  op->setLineColor(w.m_lineColor);
+  op->setLineColor(w.m_color);
 
-  QString width = w.m_lineWidthComboBox->currentText();
+  QString width = w.m_widthComboBox->currentText();
   int lineWidth = width.toInt();
   op->setLineWidth(lineWidth);
 
-  QString icon = w.m_lineIconLineEdit->text();
-  if(icon.isEmpty() == false)
-  {
-    QFileInfo file(icon);
-    QString fileName = file.filePath();
-
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-    fseek(fp , 0 , SEEK_END);
-    int lineIconSize = (int)ftell(fp);
-    rewind(fp);
-    char* lineIcon = new char[lineIconSize];
-    fread(lineIcon, sizeof(char), lineIconSize, fp);
-    fclose(fp);
-
-    te::map::ImageType imaType;
-    if(fileName.contains("PNG", Qt::CaseInsensitive))
-      imaType = te::map::PNG;
-    else if(fileName.contains("BMP", Qt::CaseInsensitive))
-      imaType = te::map::BMP;
-    else if(fileName.contains("JPG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("GIF", Qt::CaseInsensitive))
-      imaType = te::map::GIF;
-    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
-    //  imaType = te::map::PBM;
-    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
-    //  imaType = te::map::PGM;
-    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
-    //  imaType = te::map::PPM;
-    else if(fileName.contains("XBM", Qt::CaseInsensitive))
-      imaType = te::map::XBM;
-    else if(fileName.contains("XPM", Qt::CaseInsensitive))
-      imaType = te::map::XPM;
-
-    op->setLinePatternIcon(lineIcon);
-    op->setLinePatternIconSize(lineIconSize);
-    op->setLinePatternIconImageType(imaType);
-  }
-  else
-  {
-    op->setLinePatternIcon(0);
-    op->setLinePatternIconSize(0);
-  }
+  op->setLinePatternIcon(w.m_pattern);
+  op->setLinePatternIconSize(w.m_patternSize);
+  op->setLinePatternIconImageType(w.m_imageType);
 
   updateDisplays(layer);
 }
@@ -1886,109 +1803,24 @@ void MyWindow::changePolygonStyleSlot()
   QString width = w.m_polygonContourWidthComboBox->currentText();
   int contourWidth = width.toInt();
   op->setPolygonContourWidth(contourWidth);
-
-  QString icon = w.m_polygonContourIconLineEdit->text();
-  if(icon.isEmpty() == false)
-  {
-    QFileInfo file(icon);
-    QString fileName = file.filePath();
-
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-    fseek(fp , 0 , SEEK_END);
-    int contourIconSize = (int)ftell(fp);
-    rewind(fp);
-    char* contourIcon = new char[contourIconSize];
-    fread(contourIcon, sizeof(char), contourIconSize, fp);
-    fclose(fp);
-
-    te::map::ImageType imaType;
-    if(fileName.contains("PNG", Qt::CaseInsensitive))
-      imaType = te::map::PNG;
-    else if(fileName.contains("BMP", Qt::CaseInsensitive))
-      imaType = te::map::BMP;
-    else if(fileName.contains("JPG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("GIF", Qt::CaseInsensitive))
-      imaType = te::map::GIF;
-    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
-    //  imaType = te::map::PBM;
-    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
-    //  imaType = te::map::PGM;
-    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
-    //  imaType = te::map::PPM;
-    else if(fileName.contains("XBM", Qt::CaseInsensitive))
-      imaType = te::map::XBM;
-    else if(fileName.contains("XPM", Qt::CaseInsensitive))
-      imaType = te::map::XPM;
-
-    op->setPolygonContourPatternIcon(contourIcon);
-    op->setPolygonContourPatternIconSize(contourIconSize);
-    op->setPolygonContourPatternIconImageType(imaType);
-  }
-  else
-  {
-    op->setPolygonContourPatternIcon(0);
-    op->setPolygonContourPatternIconSize(0);
-  }
+  op->setPolygonContourPatternIcon(w.m_contourPattern);
+  op->setPolygonContourPatternIconSize(w.m_contourSize);
+  op->setPolygonContourPatternIconImageType(w.m_contourImageType);
 
   //polygon fill
   op->setPolygonFillColor(w.m_polygonFillColor);
   width = w.m_polygonFillPatternWidthComboBox->currentText();
   int patternWidth = width.toInt();
   op->setPolygonPatternWidth(patternWidth);
+  op->setPolygonPatternIcon(w.m_fillPattern);
+  op->setPolygonPatternIconSize(w.m_fillSize);
+  op->setPolygonPatternIconImageType(w.m_fillImageType);
 
-  int findex = w.m_polygonFillMarkComboBox->currentIndex();
-  te::map::PtMarkerType markerType = (te::map::PtMarkerType)findex;
-  op->setPolygonMarkerType(markerType);
-  op->setPolygonFillMarkerColor(w.m_polygonFillMarkColor);
+  //int findex = w.m_polygonFillMarkComboBox->currentIndex();
+  //te::map::PtMarkerType markerType = (te::map::PtMarkerType)findex;
+  //op->setPolygonMarkerType(markerType);
+  //op->setPolygonFillMarkerColor(w.m_polygonFillMarkColor);
 
-  icon = w.m_polygonFillPatternIconLineEdit->text();
-  if(icon.isEmpty() == false)
-  {
-    QFileInfo file(icon);
-    QString fileName = file.filePath();
-
-    FILE* fp = fopen(fileName.toStdString().c_str(), "rb");
-    fseek(fp , 0 , SEEK_END);
-    int patternIconSize = (int)ftell(fp);
-    rewind(fp);
-    char* patternIcon = new char[patternIconSize];
-    fread(patternIcon, sizeof(char), patternIconSize, fp);
-    fclose(fp);
-
-    te::map::ImageType imaType;
-    if(fileName.contains("PNG", Qt::CaseInsensitive))
-      imaType = te::map::PNG;
-    else if(fileName.contains("BMP", Qt::CaseInsensitive))
-      imaType = te::map::BMP;
-    else if(fileName.contains("JPG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("JPEG", Qt::CaseInsensitive))
-      imaType = te::map::JPEG;
-    else if(fileName.contains("GIF", Qt::CaseInsensitive))
-      imaType = te::map::GIF;
-    //else if(fileName.contains("PBM", Qt::CaseInsensitive))
-    //  imaType = te::map::PBM;
-    //else if(fileName.contains("PGM", Qt::CaseInsensitive))
-    //  imaType = te::map::PGM;
-    //else if(fileName.contains("PPM", Qt::CaseInsensitive))
-    //  imaType = te::map::PPM;
-    else if(fileName.contains("XBM", Qt::CaseInsensitive))
-      imaType = te::map::XBM;
-    else if(fileName.contains("XPM", Qt::CaseInsensitive))
-      imaType = te::map::XPM;
-
-    op->setPolygonPatternIcon(patternIcon);
-    op->setPolygonPatternIconSize(patternIconSize);
-    op->setPolygonPatternIconImageType(imaType);
-  }
-  else
-  {
-    op->setPolygonPatternIcon(0);
-    op->setPolygonPatternIconSize(0);
-  }
 
   updateDisplays(layer);
 }
