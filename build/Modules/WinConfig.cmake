@@ -8,14 +8,6 @@ else()
   set (path_prefix "$ENV{ProgramFiles}")
 endif()
 
-set (DPS_DIR_COMMENT "Find the directory containing terralib5 3rd-party dependencies.")
-
-if(DEFINED ENV{TERRALIB_DEP_MSVC2010})
-  set (TE_DEPENDENCIES_DIR "$ENV{TERRALIB_DEP_MSVC2010}" CACHE PATH ${DPS_DIR_COMMENT})
-else()
-  set (TE_DEPENDENCIES_DIR "" CACHE PATH ${DPS_DIR_COMMENT})
-endif()
-
 #if(MSVC)
 #  set (
 #    paths_2_search
