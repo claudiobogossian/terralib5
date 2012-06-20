@@ -34,6 +34,7 @@
 #include <QImage>
 #include <QCloseEvent>
 #include <QColorDialog>
+#include <QScrollBar>
 
 //STL
 #include <string>

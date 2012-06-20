@@ -40,6 +40,7 @@ class MyGrid : public te::qt::widgets::DataGridView
 
   private:
     MyLayer* m_layer;
+    bool m_localSelection;
 };
 
 #endif

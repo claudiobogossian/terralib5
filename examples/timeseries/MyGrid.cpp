@@ -5,10 +5,12 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QCloseEvent>
+#include <QScrollBar>
 
 MyGrid::MyGrid(MyLayer* layer, QWidget* parent) :
   te::qt::widgets::DataGridView(parent),
-  m_layer(layer)
+  m_layer(layer),
+  m_localSelection(false)
 {
   // Set the actions for the menu of the vertical header of the grid
   QAction* promotePointedRowsAction = new QAction(QObject::tr("Promote the Pointed Rows"), this);
@@ -104,10 +106,33 @@ void MyGrid::plotTimeSeries()
 void MyGrid::selectionChangedSlot(te::map::DataGridOperation*)
 {
   updateTableViewSelectionStatus();
+
+  if(m_localSelection)
+  {
+    m_localSelection = false;
+    return;
+  }
+
+  QAbstractItemModel* item = model();
+  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
+  te::map::DataGridOperation* op = model->getDataGridOperation();
+
+  int i;
+  int rows = op->getNumberOfRows();
+  for(i = 0; i < rows; ++i)
+  {
+    if(op->getVisualRowStatus(i) != te::map::DataGridOperation::DESELECTED)
+    {
+      verticalScrollBar()->setValue(i);
+      break;
+    }
+  }
 }
 
 void MyGrid::rowClicked(int clickedVisualRow)
 {
+  m_localSelection = true;
+
   DataGridView::rowClicked(clickedVisualRow);
   QAbstractItemModel* item = model();
   te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
@@ -117,6 +142,8 @@ void MyGrid::rowClicked(int clickedVisualRow)
 
 void MyGrid::removeAllSelections()
 {
+  m_localSelection = true;
+
   DataGridView::removeAllSelections();
   QAbstractItemModel* item = model();
   te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
