@@ -45,6 +45,12 @@
 
 #include <vector>
 
+inline void TESTHR(HRESULT x)
+{
+  if FAILED(x)
+    _com_issue_error(x);
+};
+
 te::ado::DataSetPersistence::DataSetPersistence(DataSourceTransactor* parent)
   : m_t(parent)
 {
@@ -94,7 +100,6 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
 {
-
   try
   {
     _ConnectionPtr adoConn = m_t->getADOConnection();
@@ -102,12 +107,12 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
     std::vector<te::dt::Property*> props = dt->getProperties();
 
     _RecordsetPtr recset;
-    recset.CreateInstance(__uuidof(Recordset));
+    TESTHR(recset.CreateInstance(__uuidof(Recordset)));
   
-    recset->Open(_bstr_t(dt->getName().c_str()),
-    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable);
+    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
 
-    recset->AddNew();
+    TESTHR(recset->AddNew());
 
     for(size_t i = 0; i < props.size(); i++)
     {
@@ -196,6 +201,11 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
   {
     std::string description(e.Description());
     throw Exception(TR_ADO("ADO Driver Error: " + description));
+  }
+  catch(const std::exception& e)
+  {
+    std::string description(e.what());
+    throw Exception(TR_ADO("ADO Driver Error: " +  description));
   }
 }
 
