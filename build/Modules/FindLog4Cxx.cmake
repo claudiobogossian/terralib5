@@ -34,11 +34,11 @@ find_path(LOG4CXX_INCLUDE_DIR NAMES log4cxx.h
 if(WIN32)
   find_library(LOG4CXX_LIBRARY_DEBUG
                NAMES log4cxx_d
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/log4cxx/win32/debug")
+               )
                
   find_library(LOG4CXX_LIBRARY_RELEASE
                NAMES log4cxx
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/log4cxx/win32/release")
+               )
                
   checkLibNames("LOG4CXX")
 

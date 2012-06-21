@@ -9,19 +9,18 @@ cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
 find_path(GEOS_INCLUDE_DIR geos.h
-          PATHS "$ENV{TERRALIB_DEP_MSVC2010}/geos/include"
-          /usr/local/include /usr/include
-          PATH_SUFFIXES "geos" )
+          PATHS /usr/local/include /usr/include
+          PATH_SUFFIXES "geos" 
+          )
 
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 if(WIN32)
   find_library(GEOS_LIBRARY_RELEASE
-               NAMES geos
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/geos/lib/win32")
+               NAMES geos)
                
   find_library(GEOS_LIBRARY_DEBUG
                NAMES geos_d
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/geos/lib/win32")
+               )
            
   checkLibNames("GEOS")
   

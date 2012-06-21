@@ -9,8 +9,7 @@
 # QWT_LIBRARY_RELEASE - The Qwt release library
 
 find_path(QWT_INCLUDE_DIR qwt.h
-          PATHS "$ENV{TERRALIB_DEP_MSVC2010}/qwt/include"
-                /usr/local/qwt/include /usr/local/include
+          PATHS /usr/local/qwt/include /usr/local/include
                 /usr/include/qwt /usr/include
           PATH_SUFFIXES "qwt"
           )
@@ -18,11 +17,12 @@ find_path(QWT_INCLUDE_DIR qwt.h
 if(WIN32)
   find_library(QWT_LIBRARY_DEBUG
                NAMES qwtd
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/qwt/lib/win32")
+               PATHS 
+               )
                               
   find_library(QWT_LIBRARY_RELEASE
                NAME qwt
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/qwt/lib/win32")
+               )
        
   checkLibNames("QWT")
   

@@ -9,19 +9,18 @@ cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
 find_path(XERCES_INCLUDE_DIR xercesc/util/XercesVersion.hpp
-          PATHS "$ENV{TERRALIB_DEP_MSVC2010}/xerces/include"
-          /usr/local/include /usr/include
+          PATHS /usr/local/include /usr/include
           PATH_SUFFIXES "xerces")
           
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 if(WIN32)
   find_library(XERCES_LIBRARY_RELEASE
                NAMES xerces-c
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/xerces/lib/win32")
+               )
                
   find_library(XERCES_LIBRARY_DEBUG
                NAMES xerces-c_d
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/xerces/lib/win32")
+               )
                
   checkLibNames("XERCES")
 

@@ -16,17 +16,14 @@ find_path( GNU_INCLUDE_DIR NAMES libintl.h
 find_library(GNU_GETTEXTPO_LIBRARY_RELEASE
              NAMES gettextpo.lib 
              )
-#             HINTS "$ENV{TERRALIB_DEP_MSVC2010}/gnuWin32/lib")
              
 find_library(GNU_GETTEXTPO_LIBRARY_DEBUG
              NAMES gettextpo_d.lib 
              )
-#             HINTS "$ENV{TERRALIB_DEP_MSVC2010}/gnuWin32/lib")
 
 find_library(GNU_INTL_LIBRARY_RELEASE
              NAMES intl.lib
              )
-#             HINTS "$ENV{TERRALIB_DEP_MSVC2010}/gnuWin32/lib")
              
 find_library(GNU_INTL_LIBRARY_DEBUG
              NAMES intl_d.lib )
