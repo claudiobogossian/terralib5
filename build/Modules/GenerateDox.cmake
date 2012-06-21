@@ -20,7 +20,7 @@ if(DOXYGEN_FOUND)
   )
   
   add_custom_target (
-    DOC
+    doc
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOX_IN} 
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Building API Documentation..."

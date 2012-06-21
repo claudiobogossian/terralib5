@@ -1,4 +1,4 @@
-find_package(Boost 1.47 REQUIRED)
+find_package(Boost 1.46 REQUIRED)
 set(DEP_INCLUDES ${DEP_INCLUDES} ${Boost_INCLUDE_DIRS})
 
 #Definitions for windows compiling

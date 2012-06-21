@@ -1,4 +1,4 @@
-find_package(Boost 1.47 COMPONENTS filesystem system REQUIRED)
+find_package(Boost 1.46 COMPONENTS filesystem system REQUIRED)
 set (DEP_LIBS ${Boost_LIBRARIES})
 set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 

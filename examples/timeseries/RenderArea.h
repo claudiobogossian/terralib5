@@ -1,8 +1,8 @@
 #ifndef __RENDER_AREA_H_
 #define __RENDER_AREA_H_
 
-#include <QWidget.h>
-#include <QPixmap.h>
+#include <QWidget>
+#include <QPixmap>
 
 class RenderArea : public QWidget
 {

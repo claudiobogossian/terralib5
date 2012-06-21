@@ -35,7 +35,7 @@ protected:
 
 protected slots:
   void onWidthComboBoxActivated(int);
-  void onRotationSpinBoxValueChanged(int);
+  //void onRotationSpinBoxValueChanged(int);
   void onIconPushButtonClicked(bool);
   void onNoIconPushButtonClicked(bool);
   void onColorPushButtonClicked(bool);
@@ -44,7 +44,7 @@ protected slots:
 
 public:
   QComboBox* m_widthComboBox;
-  QSpinBox* m_rotationSpinBox;
+  //QSpinBox* m_rotationSpinBox;
   QPushButton* m_iconPushButton;
   QPushButton* m_noIconPushButton;
   QPushButton* m_colorPushButton;

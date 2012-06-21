@@ -26,7 +26,10 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
 #include "DataSource.h"
+#include "../dataaccess/dataset/DataSetType.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
 #include "DataSetTypePersistence.h"
@@ -80,7 +83,117 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
                                                                 te::common::TraverseType travType, 
                                                                 te::common::AccessPolicy rwRole)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  te::da::DataSourceCatalogLoader* loader = getCatalogLoader();
+  te::da::DataSetType* dt = 0;
+  dt = loader->getDataSetType(name);
+
+  if(dt == 0)
+    throw Exception(TR_ADO("Data Set not found!"));
+
+  _RecordsetPtr recset;
+  recset.CreateInstance(__uuidof(Recordset));
+
+  recset->CursorType = adOpenStatic;
+
+  
+  recset->CursorLocation = adUseClient;
+
+  recset->Open(_bstr_t(name.c_str()),
+    _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable);
+
+  te::mem::DataSet* ds = new te::mem::DataSet(dt);
+
+  long fieldCount = recset->GetFields()->GetCount();
+
+  
+  while(!recset->EndOfFile)
+  {
+    te::mem::DataSetItem* item = new te::mem::DataSetItem(dt);
+    for(long i = 0; i < fieldCount; i++)
+    {
+      Field15Ptr field = recset->GetFields()->GetItem(i);
+      std::string fieldName = field->GetName();
+
+      ::DataTypeEnum pType = field->GetType();
+
+      switch(pType)
+      {
+        case ::adBoolean:
+          item->setBool(fieldName, field->Value);
+          break;
+
+        //case ADOX::adBinary: ?
+        //case ADOX::adVarBinary: ?
+        //case ADOX::adLongVarBinary: 
+
+        case ::adVarWChar:
+        case ::adWChar:
+        case ::adVarChar:
+        case ::adLongVarChar:
+        case ::adLongVarWChar:
+        case ::adBSTR:
+        case ::adChar:
+          item->setString(fieldName, (LPCSTR)(_bstr_t)field->Value);
+          break;
+
+        case ::adBigInt:
+          item->setInt64(fieldName, (int64_t)field->Value);
+          break;
+
+        case ::adDouble:
+          item->setDouble(fieldName, (double)field->Value);
+          break;
+
+        case ::adInteger:
+          item->setInt32(fieldName, (int32_t)field->Value);
+          break;
+
+        case ::adTinyInt:
+        case ::adSmallInt:
+          item->setInt16(fieldName, (int16_t)field->Value);
+          break;
+
+        case ::adUnsignedBigInt:
+          item->setInt64(fieldName, (uint64_t)field->Value);
+          break;
+
+        case ::adUnsignedInt:
+          item->setInt32(fieldName, (uint32_t)field->Value);
+          break;
+
+        case ::adUnsignedSmallInt:
+        case ::adUnsignedTinyInt:
+          item->setInt16(fieldName, (uint16_t)field->Value);
+          break;
+
+        //case ADOX::adDate:
+        //case ADOX::adDBDate:
+        //case ADOX::adDBTime:
+        //case ADOX::adDBTimeStamp:
+
+        //case ADOX::adGUID:
+        //case ADOX::adError:
+        //case ADOX::adSingle:
+        //case ADOX::adDecimal:
+        //case ADOX::adNumeric:
+        //case ADOX::adChapter:
+        //case ADOX::adVarNumeric:
+        //case ADOX::adCurrency:
+        //case ADOX::adFileTime:
+        //case ADOX::adPropVariant:
+        //case ADOX::adUserDefined:
+
+        default:
+          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to TerraLib type system!"));
+        break;
+      }
+    }
+
+    ds->add(item);
+    recset->MoveNext();
+  }
+
+  return ds;
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name,
@@ -124,7 +237,14 @@ void te::ado::DataSourceTransactor::execute(const te::da::Query& command)
 
 void te::ado::DataSourceTransactor::execute(const std::string& command)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  try
+  {
+    m_conn->Execute(_bstr_t(command.c_str()),0, adCmdText);
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO("Execute command error!"));
+  }
 }
 
 te::da::PreparedQuery* te::ado::DataSourceTransactor::getPrepared(const std::string& qName)

@@ -167,7 +167,7 @@ namespace te
           res = ADOX::adLongVarBinary;
           break;
 
-        //case te::dt::GEOMETRY_TYPE:
+        case te::dt::GEOMETRY_TYPE:
         case te::dt::ARRAY_TYPE:
           res = ADOX::adLongVarBinary;
           break;
