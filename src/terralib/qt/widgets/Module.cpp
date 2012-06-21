@@ -31,6 +31,7 @@
 #include "layer/LayerItemFactory.h"
 #include "se/GlyphGraphicWidgetFactory.h"
 #include "se/GlyphMarkFactory.h"
+#include "se/LocalGraphicWidgetFactory.h"
 #include "se/WellKnownGraphicWidgetFactory.h"
 #include "se/WellKnownMarkFactory.h"
 #include "Config.h"
@@ -108,6 +109,7 @@ void te::qt::widgets::Module::initialize()
 // It initializes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::initialize();
   te::qt::widgets::GlyphGraphicWidgetFactory::initialize();
+  te::qt::widgets::LocalGraphicWidgetFactory::initialize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
@@ -127,6 +129,7 @@ void te::qt::widgets::Module::finalize()
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();
   te::qt::widgets::GlyphGraphicWidgetFactory::finalize();
+  te::qt::widgets::LocalGraphicWidgetFactory::finalize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
 }

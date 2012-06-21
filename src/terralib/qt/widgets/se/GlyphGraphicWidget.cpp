@@ -46,7 +46,8 @@ te::qt::widgets::GlyphGraphicWidget::GlyphGraphicWidget(QWidget* parent, Qt::Win
   // Character
   QWidget* charWidget = new QWidget(this);
   QGridLayout* charLayout = new QGridLayout(charWidget);
-  charLayout->addWidget(m_glyphMarkWidget->getForm()->m_charGroupBox);
+  charLayout->setContentsMargins(0, 0, 0, 0);
+  charLayout->addWidget(m_glyphMarkWidget->getForm()->m_charFrame);
   m_ui->m_graphicTabWidget->addTab(charWidget, tr("&Character"));
 
   // Fill and Stroke
