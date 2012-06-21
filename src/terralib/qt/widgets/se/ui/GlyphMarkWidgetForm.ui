@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>306</width>
-    <height>134</height>
+    <height>121</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,33 +20,16 @@
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_5">
      <item row="0" column="0">
-      <widget class="QGroupBox" name="m_charGroupBox">
-       <property name="title">
-        <string>Character</string>
+      <widget class="QFrame" name="m_charFrame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
        </property>
        <layout class="QGridLayout" name="gridLayout_3">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_2">
-          <item row="1" column="0">
-           <widget class="QScrollArea" name="m_charMapScrollArea">
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="widgetResizable">
-             <bool>false</bool>
-            </property>
-            <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>0</y>
-               <width>185</width>
-               <height>69</height>
-              </rect>
-             </property>
-            </widget>
-           </widget>
-          </item>
           <item row="0" column="0">
            <layout class="QGridLayout" name="gridLayout">
             <item row="0" column="0">
@@ -67,6 +50,26 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item row="1" column="0">
+           <widget class="QScrollArea" name="m_charMapScrollArea">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>false</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>185</width>
+               <height>69</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
           </item>
          </layout>
         </item>
