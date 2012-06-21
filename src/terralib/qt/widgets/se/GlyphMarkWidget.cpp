@@ -59,7 +59,7 @@ te::qt::widgets::GlyphMarkWidget::GlyphMarkWidget(QWidget* parent, Qt::WindowFla
   // Char Map Widget
   m_charMapWidget = new te::qt::widgets::CharMapWidget;
   m_ui->m_charMapScrollArea->setWidget(m_charMapWidget);
-  m_ui->m_charGroupBox->setFixedWidth(m_charMapWidget->width() + 38);
+  m_ui->m_charFrame->setFixedWidth(m_charMapWidget->width() + 38);
 
   // Setups initial mark
   updateMarkName();

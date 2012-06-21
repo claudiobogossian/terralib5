@@ -56,8 +56,8 @@ te::qt::widgets::GraphicDialog::GraphicDialog(QWidget* parent, const bool noButt
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_graphicWidgetFrame);
-  layout->addWidget(m_graphicWidgets);
   layout->setContentsMargins(0, 0, 0, 0);
+  layout->addWidget(m_graphicWidgets);
 
   if(noButtons)
   {

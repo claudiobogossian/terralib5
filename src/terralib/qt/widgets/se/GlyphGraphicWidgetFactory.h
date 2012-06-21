@@ -95,7 +95,7 @@ namespace te
           /*!
             \brief It creates the factory.
 
-            The key of a WellKnownGraphicWidgetFactory is a string.
+            The key of a GlyphGraphicWidgetFactory is a string.
 
             \param factoryKey The key that identifies the factory.
           */
