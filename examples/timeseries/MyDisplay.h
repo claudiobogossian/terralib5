@@ -41,6 +41,7 @@ public Q_SLOTS:
   void drawAllPointedsSlot();
   void drawAllQueriedsSlot();
   void drawAllPointedsAndQueriedsSlot();
+  void mouseTooltipSlot(QPoint);
   /*!            
     \brief Executes zoom area.
 
@@ -118,7 +119,6 @@ private:
   QAction* printFileAction;
 
   QRect m_rec;
-  bool m_init; // flag para indicar que o display esta' sendo inicializado (evitar que desenhe 2 vezes no inicio)
   QPixmap* m_temporalVectorialDisplayPixmap;     //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible vectorial layers.
   QPixmap* m_temporalImageDisplayPixmap;         //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible image layers.
   TimeSlider* m_timeSlider;

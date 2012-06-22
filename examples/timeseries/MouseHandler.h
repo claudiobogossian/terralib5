@@ -16,7 +16,16 @@ class MouseHandler : public DisplayEventHandler
   Q_OBJECT
 
 public:
-  enum MouseMode{ZoomInMode, ZoomOutMode, PanMode, SelectionMode, AddSelectionMode, ToggleSelectionMode};
+  enum MouseMode{
+    ZoomInMode, 
+    ZoomOutMode, 
+    PanMode, 
+    SelectionMode, 
+    AddSelectionMode, 
+    ToggleSelectionMode,
+    DeselectionMode,
+    TooltipMode,
+  };
 
   MouseHandler(QWidget* parent = 0);
   ~MouseHandler();
@@ -32,13 +41,14 @@ signals:
 
     \param rec The new rect. 
   */
-  void execZoomArea(QRect rec);
-  void execZoomIn(QPoint p);
-  void execZoomOut(QPoint p);
-  void execPan(QPoint p, QPoint);
+  void execZoomArea(QRect);
+  void execZoomIn(QPoint);
+  void execZoomOut(QPoint);
+  void execPan(QPoint, QPoint);
   void execSelection(QRect);
   void execAddSelection(QRect);
   void execToggleSelection(QRect);
+  void execTooltip(QPoint);
 
 protected:
   void mouseMoveEvent(QMouseEvent*);
