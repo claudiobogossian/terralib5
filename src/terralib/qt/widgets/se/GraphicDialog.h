@@ -107,6 +107,13 @@ namespace te
           */
           static te::se::Graphic* getGraphic(const te::se::Graphic* initial, QWidget* parent = 0, const QString& title = "");
 
+          /*!
+            \brief Sets the graphic element.
+
+            \return The graphic element.
+            
+            \note The caller will NOT take the ownership of the given graphic.
+          */
           void setGraphic(const te::se::Graphic* graphic);
 
           /*!
@@ -117,6 +124,15 @@ namespace te
             \note The caller will take the ownership of the returned graphic.
           */
           te::se::Graphic* getGraphic() const;
+
+          /*!
+            \brief Gets the current graphic icon.
+
+            \param size The icon size that will be generated.
+
+            \return An icon that represents the graphic. i.e. a simple preview.
+          */
+          QIcon getGraphicIcon(const QSize& size);
 
         protected slots:
 

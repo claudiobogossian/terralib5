@@ -69,6 +69,8 @@ namespace te
 
           QString getGraphicType() const;
 
+          QIcon getGraphicIcon(const QSize& size) const;
+
         protected slots:
 
           void onMarkChanged();

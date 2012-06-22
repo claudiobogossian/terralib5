@@ -95,6 +95,28 @@ QString te::qt::widgets::LocalGraphicWidget::getGraphicType() const
   return tr("Local Image");
 }
 
+QIcon te::qt::widgets::LocalGraphicWidget::getGraphicIcon(const QSize& size) const
+{
+  const std::vector<te::se::ExternalGraphic*> extGraphics = m_graphic->getExternalGraphics();
+  if(extGraphics.empty())
+    return QIcon();
+
+  te::se::ExternalGraphic* g = extGraphics[0];
+  const te::xl::SimpleLink* link = g->getOnlineResource();
+  if(link == 0)
+    return QIcon();
+
+  const std::string href = link->getHref();
+  if(href.empty())
+    return QIcon();
+
+  QImage img;
+  if(!img.load(href.c_str()))
+    return QIcon();
+
+  return QIcon(QPixmap::fromImage(img.scaledToWidth(size.width(),Qt::SmoothTransformation)));
+}
+
 void te::qt::widgets::LocalGraphicWidget::onExternalGraphicChanged(const QSize& size)
 {
   m_graphic->setExternalGraphic(0, m_localImageWidget->getExternalGraphic());

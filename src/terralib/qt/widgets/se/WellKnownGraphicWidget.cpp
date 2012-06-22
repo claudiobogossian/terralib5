@@ -24,8 +24,11 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
+#include "../../../maptools/AbstractMarkFactory.h"
 #include "../../../se/Graphic.h"
 #include "../../../se/Mark.h"
+#include "../Utils.h"
 #include "WellKnownGraphicWidget.h"
 #include "WellKnownMarkWidget.h"
 #include "ui_GraphicWidgetForm.h"
@@ -70,6 +73,9 @@ bool te::qt::widgets::WellKnownGraphicWidget::setGraphic(const te::se::Graphic* 
     return false;
 
   te::se::Mark* mark = marks[0];
+  if(mark == 0)
+    return false;
+
   const std::string* name = mark->getWellKnownName();
   if(name == 0)
     return false;
@@ -87,6 +93,23 @@ bool te::qt::widgets::WellKnownGraphicWidget::setGraphic(const te::se::Graphic* 
 QString te::qt::widgets::WellKnownGraphicWidget::getGraphicType() const
 {
   return tr("Well Known Marker");
+}
+
+QIcon te::qt::widgets::WellKnownGraphicWidget::getGraphicIcon(const QSize& size) const
+{
+  te::se::Mark* mark = m_markWidget->getMark();
+
+  int dimension = size.width();
+  te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(mark, dimension);
+  QImage* img = te::qt::widgets::GetImage(rgba, dimension, dimension);
+
+  QIcon icon = QIcon(QPixmap::fromImage(img->scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+
+  delete img;
+  te::common::Free(rgba, dimension);
+  delete mark;
+
+  return icon;
 }
 
 void te::qt::widgets::WellKnownGraphicWidget::onMarkChanged()

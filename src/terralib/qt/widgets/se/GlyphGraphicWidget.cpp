@@ -24,8 +24,11 @@
 */
 
 // TerraLib
+#include "../../../common/STLUtils.h"
+#include "../../../maptools/AbstractMarkFactory.h"
 #include "../../../se/Graphic.h"
 #include "../../../se/Mark.h"
+#include "../Utils.h"
 #include "GlyphGraphicWidget.h"
 #include "GlyphMarkWidget.h"
 #include "ui_GlyphMarkWidgetForm.h"
@@ -96,6 +99,23 @@ bool te::qt::widgets::GlyphGraphicWidget::setGraphic(const te::se::Graphic* grap
 QString te::qt::widgets::GlyphGraphicWidget::getGraphicType() const
 {
   return tr("Glyph Marker");
+}
+
+QIcon te::qt::widgets::GlyphGraphicWidget::getGraphicIcon(const QSize& size) const
+{
+  te::se::Mark* mark = m_glyphMarkWidget->getMark();
+
+  int dimension = size.width();
+  te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(mark, dimension);
+  QImage* img = te::qt::widgets::GetImage(rgba, dimension, dimension);
+
+  QIcon icon = QIcon(QPixmap::fromImage(img->scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));
+
+  delete img;
+  te::common::Free(rgba, dimension);
+  delete mark;
+
+  return icon;
 }
 
 void te::qt::widgets::GlyphGraphicWidget::onMarkChanged()

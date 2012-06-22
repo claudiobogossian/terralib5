@@ -46,9 +46,10 @@ te::qt::widgets::GraphicDialog::GraphicDialog(QWidget* parent, const bool noButt
   // Gets registered graphic widgets
   std::vector<std::string> keys;
   te::qt::widgets::AbstractGraphicWidgetFactory::RegisteredWidgets(keys);
-  for(std::size_t i = 0; i < keys.size(); ++i)
+  std::vector<std::string>::reverse_iterator it;
+  for(it = keys.rbegin(); it != keys.rend(); ++it)
   {
-    te::qt::widgets::GraphicWidget* gw = te::qt::widgets::AbstractGraphicWidgetFactory::make(keys[i]);
+    te::qt::widgets::GraphicWidget* gw = te::qt::widgets::AbstractGraphicWidgetFactory::make(*it);
     gw->setParent(this);
     m_ui->m_graphicTypeComboBox->addItem(gw->getGraphicType());
     m_graphicWidgets->addWidget(gw);
@@ -111,6 +112,12 @@ te::se::Graphic* te::qt::widgets::GraphicDialog::getGraphic() const
 {
   te::qt::widgets::GraphicWidget* g = static_cast<te::qt::widgets::GraphicWidget*>(m_graphicWidgets->currentWidget());
   return g->getGraphic();
+}
+
+QIcon te::qt::widgets::GraphicDialog::getGraphicIcon(const QSize& size)
+{
+  te::qt::widgets::GraphicWidget* g = static_cast<te::qt::widgets::GraphicWidget*>(m_graphicWidgets->currentWidget());
+  return g->getGraphicIcon(size);
 }
 
 void te::qt::widgets::GraphicDialog::onGraphicChanged()

@@ -88,6 +88,9 @@ namespace te
           */
           virtual QString getGraphicType() const = 0;
 
+          /*! \brief Pure virtual method that should return a QIcon that represents the graphic. i.e. a simple preview. */
+          virtual QIcon getGraphicIcon(const QSize& size) const = 0;
+
         protected:
 
           /*! \brief Updates the widget form based on internal graphic element. */
