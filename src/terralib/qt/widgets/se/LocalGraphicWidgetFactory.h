@@ -18,13 +18,14 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/GlyphGraphicWidgetFactory.h
+  \file terralib/qt/widgets/se/LocalGraphicWidgetFactory.h
 
-  \brief A concrete factory that builds a graphic widget used to configure a graphic associate with a glyph mark element.
+  \brief A concrete factory that builds a graphic widget used to configure a graphic associate with an external graphic element 
+         that references a local image. e.g. a SVG file, a PNG file, etc.
 */
 
-#ifndef __TERRALIB_QT_SE_INTERNAL_GLYPHGRAPHICWIDGETFACTORY_H
-#define __TERRALIB_QT_SE_INTERNAL_GLYPHGRAPHICWIDGETFACTORY_H
+#ifndef __TERRALIB_QT_SE_INTERNAL_LOCALGRAPHICWIDGETFACTORY_H
+#define __TERRALIB_QT_SE_INTERNAL_LOCALGRAPHICWIDGETFACTORY_H
 
 // TerraLib
 #include "../Config.h"
@@ -37,13 +38,14 @@ namespace te
     namespace widgets
     {
       /*!
-        \class GlyphGraphicWidgetFactory
+        \class LocalGraphicWidgetFactory
 
-        \brief A concrete factory that builds a graphic widget used to configure a graphic associate with a glyph mark element.
+        \brief A concrete factory that builds a graphic widget used to configure a graphic associate with an external graphic element 
+               that references a local image. e.g. a SVG file, a PNG file, etc.
 
         \sa AbstractGraphicWidgetFactory
       */
-      class TEQTWIDGETSEXPORT GlyphGraphicWidgetFactory : public AbstractGraphicWidgetFactory
+      class TEQTWIDGETSEXPORT LocalGraphicWidgetFactory : public AbstractGraphicWidgetFactory
       {
         public:
 
@@ -70,7 +72,7 @@ namespace te
 
             \note It will automatically unregister the factory from the dictionary.
           */
-          ~GlyphGraphicWidgetFactory();
+          ~LocalGraphicWidgetFactory();
 
           //@} 
 
@@ -95,22 +97,22 @@ namespace te
           /*!
             \brief It creates the factory.
 
-            The key of a GlyphGraphicWidgetFactory is a string.
+            The key of a LocalGraphicWidgetFactory is a string.
 
             \param factoryKey The key that identifies the factory.
           */
-          GlyphGraphicWidgetFactory();
+          LocalGraphicWidgetFactory();
 
           //@}
 
         private:
 
           static std::string sm_factoryKey;                 //!< The factory key.
-          static GlyphGraphicWidgetFactory* sm_factory;     //!< A pointer to the global factory.
+          static LocalGraphicWidgetFactory* sm_factory;     //!< A pointer to the global factory.
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_SE_INTERNAL_GLYPHGRAPHICWIDGETFACTORY_H
+#endif  // __TERRALIB_QT_SE_INTERNAL_LOCALGRAPHICWIDGETFACTORY_H

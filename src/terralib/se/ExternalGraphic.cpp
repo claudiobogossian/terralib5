@@ -50,6 +50,11 @@ void te::se::ExternalGraphic::setOnlineResource(te::xl::SimpleLink* onlineResour
   m_onlineResource = onlineResource;
 }
 
+const te::xl::SimpleLink* te::se::ExternalGraphic::getOnlineResource()
+{
+  return m_onlineResource;
+}
+
 void te::se::ExternalGraphic::setInlineContent(InlineContent* inlineContent)
 {
   delete m_inlineContent;
