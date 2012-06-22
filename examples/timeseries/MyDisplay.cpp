@@ -23,7 +23,6 @@
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(w, h, parent, f),
   m_rootFolderLayer(root),
-  m_init(true),
   m_timeSlider(0)
 {
   setAcceptDrops(true);
@@ -98,8 +97,11 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   connect(m_mouseHandler, SIGNAL(execSelection(QRect)), this, SLOT(mouseSelectionSlot(QRect)));
   connect(m_mouseHandler, SIGNAL(execAddSelection(QRect)), this, SLOT(mouseAddSelectionSlot(QRect)));
   connect(m_mouseHandler, SIGNAL(execToggleSelection(QRect)), this, SLOT(mouseToggleSelectionSlot(QRect)));
+  connect(m_mouseHandler, SIGNAL(execTooltip(QPoint)), this, SLOT(mouseTooltipSlot(QPoint)));
 
   m_mouseHandler->setCursor();
+
+  sizeHint();
 }
 
 MyDisplay::~MyDisplay()
@@ -341,11 +343,6 @@ void MyDisplay::setCanvas(te::map::AbstractLayer* layer)
 
 void MyDisplay::draw()
 {
-  if(m_init)
-  {
-    m_init = false;
-    return;
-  }
   te::qt::widgets::MapDisplay::draw();
 }
 
@@ -846,6 +843,11 @@ void MyDisplay::mouseAddSelectionSlot(QRect rec)
 void MyDisplay::mouseToggleSelectionSlot(QRect rec)
 {
   changeObjectStatus(rec, "TOGGLEPOINTING");
+}
+
+void MyDisplay::mouseTooltipSlot(QPoint p)
+{
+
 }
 
 void MyDisplay::drawAllPointedsSlot()

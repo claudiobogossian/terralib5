@@ -140,7 +140,7 @@ void MouseHandler::mouseMoveEvent(QMouseEvent* e)
       m_rect = QRect();
       setRepaint(true);
     }
-    else // draw area for zoom in or object (add/toggle) selection
+    else // resizing area. Used for zoom in and object selection (add/toggle) 
     {
       int w = abs(m_point.x() - m_pressPoint.x()) + 1;
       int h = abs(m_point.y() - m_pressPoint.y()) + 1;
@@ -154,6 +154,13 @@ void MouseHandler::mouseMoveEvent(QMouseEvent* e)
         m_rect.setRect(m_point.x(), m_pressPoint.y(), w, h);
       setRepaint(true);
       drawCursor();
+    }
+  }
+  else if(e->buttons() == Qt::NoButton)
+  {
+    if(m_mouseMode == TooltipMode)
+    {
+      emit execTooltip(m_point);
     }
   }
 }
