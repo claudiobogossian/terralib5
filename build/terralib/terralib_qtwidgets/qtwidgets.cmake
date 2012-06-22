@@ -127,6 +127,7 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
 	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
 	 ${SRCDIR}/widgets/se/GraphicDialog.h
+	 ${SRCDIR}/widgets/se/GraphicFillWidget.h
 	 ${SRCDIR}/widgets/se/GraphicWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
 	 ${SRCDIR}/widgets/se/LocalGraphicWidget.h
