@@ -30,10 +30,6 @@
 #include "BasicFillWidget.h"
 #include "ui_BasicFillWidgetForm.h"
 
-// Qt
-#include <QtGui/QColorDialog>
-#include <QtGui/QPainter>
-
 // STL
 #include <cassert>
 
