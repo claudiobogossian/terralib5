@@ -53,6 +53,7 @@ void te::ado::DataSourceFactory::getConnectionParameters(std::vector<std::string
   params.push_back("MaxPoolSize");
   params.push_back("MaxIdleTime");
   params.push_back("CLIENT_ENCODING");
+  params.push_back("provider");
 }
 
 te::ado::DataSourceFactory::~DataSourceFactory()

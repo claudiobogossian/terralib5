@@ -36,6 +36,15 @@ namespace te
   namespace da
   {
     class DataSetType;
+    class PrimaryKey;
+    class ForeignKey;
+    class UniqueKey;
+    class Constraint;
+  }
+
+  namespace dt
+  {
+    class Property;
   }
 
   namespace ado
