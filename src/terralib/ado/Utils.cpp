@@ -36,7 +36,6 @@ namespace te
 {
   namespace ado
   {
-
     int ado2Terralib(ADOX::DataTypeEnum adoType)
     {
 
@@ -65,7 +64,7 @@ namespace te
         case ADOX::adLongVarWChar:
         case ADOX::adBSTR:
         case ADOX::adChar:
-          res = te::dt::STRING_TYPE;
+          res = te::dt::StringType::VAR_STRING;
           break;
 
         case ADOX::adBigInt:
@@ -73,29 +72,29 @@ namespace te
           break;
 
         case ADOX::adDouble:
-          te::dt::DOUBLE_TYPE;
+          res = te::dt::DOUBLE_TYPE;
           break;
 
         case ADOX::adInteger:
-        te::dt::INT32_TYPE;
+          res = te::dt::INT32_TYPE;
         break;
 
         case ADOX::adTinyInt:
         case ADOX::adSmallInt:
-          te::dt::INT16_TYPE;
+          res = te::dt::INT16_TYPE;
           break;
 
         case ADOX::adUnsignedBigInt:
-          te::dt::UINT64_TYPE;
+          res = te::dt::UINT64_TYPE;
           break;
 
         case ADOX::adUnsignedInt:
-          te::dt::UINT32_TYPE;
+          res = te::dt::UINT32_TYPE;
           break;
 
         case ADOX::adUnsignedSmallInt:
         case ADOX::adUnsignedTinyInt:
-          te::dt::UINT16_TYPE;
+          res = te::dt::UINT16_TYPE;
           break;
 
         //case ADOX::adDate:
@@ -120,7 +119,7 @@ namespace te
         break;
       }
 
-      return 0;
+      return res;
     }
 
     ADOX::DataTypeEnum terralib2Ado(int terralib)
@@ -280,7 +279,7 @@ namespace te
 
     te::da::ForeignKey* getForeignKeyFromADO(ADOX::_KeyPtr key)
     {
-      te::da::ForeignKey* fk;
+      te::da::ForeignKey* fk = 0;
 
       _bstr_t cName = key->GetName();
       ADOX::ColumnsPtr cols = key->GetColumns();
@@ -319,17 +318,52 @@ namespace te
       
       switch(cType)
       {
-        case ADOX::adVarWChar:
-          prop = new te::dt::StringProperty(std::string(cName), te::dt::StringType::VAR_STRING, cSize);
+        case ::adBoolean:
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+          break;
+
+        case ::adVarWChar:
+        case ::adWChar:
+        case ::adVarChar:
+        case ::adLongVarChar:
+        case ::adLongVarWChar:
+        case ::adBSTR:
+        case ::adChar:
+          prop = new te::dt::StringProperty(std::string(cName), (te::dt::StringType)ado2Terralib(cType), cSize);
+          break;
+
+        case ADOX::adTinyInt:
+        case ADOX::adSmallInt:
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
           break;
 
         case ADOX::adInteger:
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+          break;
+
+        case ADOX::adBigInt:
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+          break;
+
         case ADOX::adDouble:
-          prop = new te::dt::SimpleProperty(std::string(cName), te::dt::INT64_TYPE);
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+          break;
+
+        case ::adUnsignedBigInt:
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+          break;
+
+        case ::adUnsignedInt:
+          prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+          break;
+
+        case ::adUnsignedSmallInt:
+        case ::adUnsignedTinyInt:
+          prop = new te::dt::SimpleProperty(std::string(cName),ado2Terralib(cType));
           break;
 
         case ADOX::adLongVarBinary:
-          prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), te::dt::BYTE_ARRAY_TYPE));
+          prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType)));
           break;
           
         default:

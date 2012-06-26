@@ -45,6 +45,12 @@
 #include <conio.h>
 #include "icrsint.h"
 
+inline void TESTHR(HRESULT x)
+{
+  if FAILED(x)
+    _com_issue_error(x);
+};
+
 te::ado::DataSourceTransactor::DataSourceTransactor(DataSource* parent, _ConnectionPtr conn)
   : m_ds(parent),
   m_conn(conn),
@@ -76,7 +82,7 @@ void te::ado::DataSourceTransactor::rollBack()
 
 bool te::ado::DataSourceTransactor::isInTransaction() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_isInTransaction;
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name, 
@@ -91,15 +97,15 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
     throw Exception(TR_ADO("Data Set not found!"));
 
   _RecordsetPtr recset;
-  recset.CreateInstance(__uuidof(Recordset));
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
 
   recset->CursorType = adOpenStatic;
 
   
   recset->CursorLocation = adUseClient;
 
-  recset->Open(_bstr_t(name.c_str()),
-    _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable);
+  TESTHR(recset->Open(_bstr_t(name.c_str()),
+    _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
 
   te::mem::DataSet* ds = new te::mem::DataSet(dt);
 
@@ -190,7 +196,7 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
     }
 
     ds->add(item);
-    recset->MoveNext();
+    TESTHR(recset->MoveNext());
   }
 
   return ds;
@@ -241,9 +247,9 @@ void te::ado::DataSourceTransactor::execute(const std::string& command)
   {
     m_conn->Execute(_bstr_t(command.c_str()),0, adCmdText);
   }
-  catch(_com_error &e)
+  catch(_com_error& e)
   {
-    throw Exception(TR_ADO("Execute command error!"));
+    throw Exception(TR_ADO(e.Description()));
   }
 }
 
