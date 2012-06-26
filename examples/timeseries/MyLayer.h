@@ -25,11 +25,14 @@ public:
   void removePlot(QwtPlot*);
   void setKeepOnMemory(bool);
   bool isKeepOnMemory();
+  void setTooltipColumn(int);
+  int getTooltipColumn();
 
 private:
   MyGrid* m_grid;
   std::set<QwtPlot*>   m_plots;
   te::map::DataGridOperation* m_op; // pode nao ter grid e ter um grid operation (ou pode ter ambos).
+  int m_tooltipColumn;
   bool m_temporal;
   bool m_keepOnMemory; // true: mantem DataGridOperation em memoria, false: deleta DataGridOperation quando este layer nao esta em uso
 };

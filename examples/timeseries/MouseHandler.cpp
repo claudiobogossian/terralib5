@@ -109,6 +109,8 @@ void MouseHandler::setCursor()
     cursor = new QCursor(*m_addSelectionPixmap, 4, 5);
   else if(m_mouseMode == ToggleSelectionMode) // toggle selection
     cursor = new QCursor(*m_toggleSelectionPixmap, 4, 5);
+  else if(m_mouseMode == TooltipMode) // tooltip
+    cursor = new QCursor(Qt::PointingHandCursor);
   DisplayEventHandler::setCursor(*cursor);
   delete cursor;
 }

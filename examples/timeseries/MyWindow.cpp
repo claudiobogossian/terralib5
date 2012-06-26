@@ -995,6 +995,7 @@ void MyWindow::openGridSlot()
       connect(grid, SIGNAL(plotHistogram(MyGrid*)), this, SLOT(plotHistogramSlot(MyGrid*)));
       connect(grid, SIGNAL(plotScatter(MyGrid*)), this, SLOT(plotScatterSlot(MyGrid*)));
       connect(grid, SIGNAL(plotTimeSeries(MyGrid*)), this, SLOT(plotTimeSeriesSlot(MyGrid*)));
+      connect(grid, SIGNAL(tooltip(MyGrid*)), this, SLOT(tooltipSlot(MyGrid*)));
 
       //faca conexao para atualizacao de grid operation
       QObject::connect(grid, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
@@ -1344,6 +1345,32 @@ void MyWindow::plotTimeSeriesSlot(MyGrid* grid)
     layer->insertPlot(tsd);
   }
   QApplication::restoreOverrideCursor();
+}
+
+void MyWindow::tooltipSlot(MyGrid* grid)
+{
+  std::vector<te::map::AbstractLayer*> layers;
+  getLayers(m_rootFolderLayer, layers);
+  std::vector<te::map::AbstractLayer*>::iterator lit;
+  for(lit = layers.begin(); lit != layers.end(); ++lit)
+  {
+    MyLayer* layer = (MyLayer*)(*lit);
+    layer->setTooltipColumn(-1);
+  }
+
+  MyLayer* layer = grid->getLayer();
+  te::map::DataGridOperation* operation = layer->getDataGridOperation();
+  te::qt::widgets::HeaderView* header = (te::qt::widgets::HeaderView*)grid->getHorizontalHeaderView();
+  int visCol = header->getContextVisualColumnClicked();
+  int col = operation->getLogicalColumn(visCol);
+  layer->setTooltipColumn(col);
+
+  std::vector<te::map::MapDisplay*>::  iterator it;
+  for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
+  {
+    MyDisplay* d = (MyDisplay*)(*it);
+    d->setMouseOperationToTooltipSlot();
+  }
 }
 
 void MyWindow::removePlotSlot(QwtPlot* p)

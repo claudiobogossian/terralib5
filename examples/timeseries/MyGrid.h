@@ -24,6 +24,7 @@ class MyGrid : public te::qt::widgets::DataGridView
     void plotHistogram();
     void plotScatter();
     void plotTimeSeries();
+    void tooltip();
     void selectionChangedSlot(te::map::DataGridOperation*);
     MyLayer* getLayer();
 
@@ -33,6 +34,7 @@ class MyGrid : public te::qt::widgets::DataGridView
     void plotHistogram(MyGrid*);
     void plotScatter(MyGrid*);
     void plotTimeSeries(MyGrid*);
+    void tooltip(MyGrid*);
 
   protected slots:
     virtual void rowClicked(int clickedVisualRow);

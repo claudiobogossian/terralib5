@@ -91,6 +91,7 @@ public Q_SLOTS:
   void setMouseOperationToObjectSelectionSlot();
   void setMouseOperationToAddObjectSelectionSlot();
   void setMouseOperationToToggleObjectSelectionSlot();
+  void setMouseOperationToTooltipSlot();
   void showRootFolderSlot();
   void printSlot();
   void printFileSlot();
@@ -115,10 +116,13 @@ private:
   QAction* m_mouseSelectionAction;
   QAction* m_mouseAddSelectionAction;
   QAction* m_mouseToggleSelectionAction;
+  QAction* m_mouseTooltipAction;
   QAction* printAction;
   QAction* printFileAction;
 
-  QRect m_rec;
+  QPixmap* m_tooltipDisplayPixmap;               //!< tootip display pixmap
+  QRect    m_tooltipRect;                        //!< tootip rect
+
   QPixmap* m_temporalVectorialDisplayPixmap;     //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible vectorial layers.
   QPixmap* m_temporalImageDisplayPixmap;         //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible image layers.
   TimeSlider* m_timeSlider;

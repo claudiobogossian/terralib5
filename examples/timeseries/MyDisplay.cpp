@@ -27,8 +27,12 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 {
   setAcceptDrops(true);
 
+  m_tooltipDisplayPixmap = new QPixmap(w, h);
+  m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
+
   m_temporalVectorialDisplayPixmap = new QPixmap(w, h);
   m_temporalVectorialDisplayPixmap->fill(QColor(255, 255, 255, 0));
+
   m_temporalImageDisplayPixmap = new QPixmap(w, h);
   m_temporalImageDisplayPixmap->fill(QColor(255, 255, 255, 0));
 
@@ -63,6 +67,11 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   m_mouseToggleSelectionAction->setCheckable(true);
   m_mouseOperationMenu->addAction(m_mouseToggleSelectionAction);
   connect(m_mouseToggleSelectionAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToToggleObjectSelectionSlot()));
+
+  m_mouseTooltipAction = new QAction("Tooltip", m_mouseOperationMenu);
+  m_mouseTooltipAction->setCheckable(true);
+  m_mouseOperationMenu->addAction(m_mouseTooltipAction);
+  connect(m_mouseTooltipAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToTooltipSlot()));
 
   QAction* drawAllPointedsAction = new QAction("Fit All &Pointeds", m_menu);
   m_menu->addAction(drawAllPointedsAction);
@@ -222,6 +231,7 @@ void MyDisplay::contextMenuEvent(QContextMenuEvent* c)
   m_mouseSelectionAction->setChecked(false);
   m_mouseAddSelectionAction->setChecked(false);
   m_mouseToggleSelectionAction->setChecked(false);
+  m_mouseTooltipAction->setChecked(false);
 
   MouseHandler::MouseMode mode = m_mouseHandler->getMode();
   if(mode == MouseHandler::ZoomInMode)
@@ -236,6 +246,8 @@ void MyDisplay::contextMenuEvent(QContextMenuEvent* c)
     m_mouseAddSelectionAction->setChecked(true);
   else if(mode == MouseHandler::ToggleSelectionMode)
     m_mouseToggleSelectionAction->setChecked(true);
+  else if(mode == MouseHandler::TooltipMode)
+    m_mouseTooltipAction->setChecked(true);
 
   m_menu->exec(c->globalPos());
 }
@@ -255,6 +267,20 @@ void MyDisplay::setMouseOperationToAddObjectSelectionSlot()
 void MyDisplay::setMouseOperationToToggleObjectSelectionSlot()
 {
   m_mouseHandler->setMode(MouseHandler::ToggleSelectionMode);
+  m_mouseHandler->setCursor();
+}
+
+void MyDisplay::setMouseOperationToTooltipSlot()
+{
+  m_mouseZoomInAction->setChecked(false);
+  m_mouseZoomOutAction->setChecked(false);
+  m_mousePanAction->setChecked(false);
+  m_mouseSelectionAction->setChecked(false);
+  m_mouseAddSelectionAction->setChecked(false);
+  m_mouseToggleSelectionAction->setChecked(false);
+  m_mouseTooltipAction->setChecked(true);
+
+  m_mouseHandler->setMode(MouseHandler::TooltipMode);
   m_mouseHandler->setCursor();
 }
 
@@ -589,6 +615,7 @@ void MyDisplay::paintEvent(QPaintEvent* e)
       QRect rec = e->rect();
       painter.drawPixmap(rec, *m_temporalVectorialDisplayPixmap, rec);
       painter.drawPixmap(rec, *m_temporalImageDisplayPixmap, rec);
+      painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
     }
   }
   else // fazendo resize do display com os pixmaps temporais
@@ -602,6 +629,7 @@ void MyDisplay::paintEvent(QPaintEvent* e)
     QPainter painter(this);
     painter.drawPixmap(m_resizeRec, *m_temporalVectorialDisplayPixmap, m_resizeWRec);
     painter.drawPixmap(m_resizeRec, *m_temporalImageDisplayPixmap, m_resizeWRec);
+    painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
   }
 }
 
@@ -675,19 +703,43 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
           break;
         }
       }
-      else if(!(gtype == te::gm::PointType || gtype == te::gm::PointMType || gtype == te::gm::PointKdType || gtype == te::gm::PointZType || gtype == te::gm::PointZMType))
+      else if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
       {
-        const te::gm::Envelope* env = g->getMBR();
-        QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
-        if(recWorld.intersects(r))
+        QPointF pg(((te::gm::Point*)g)->getX(), ((te::gm::Point*)g)->getY());
+        if(recWorld.contains(pg))
           visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
       }
-      else
-      {
-        const te::gm::Envelope* env = g->getMBR();
-        QPointF pf(env->m_llx, env->m_lly);
-        if(recWorld.contains(pf))
+      else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
+      { 
+        te::gm::Polygon* polyRec = new te::gm::Polygon(0, te::gm::PolygonType);
+        te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+
+        line->setPoint(0, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // lower left
+        line->setPoint(1, recWorld.topLeft().x(), recWorld.topLeft().y()); // upper left
+        line->setPoint(2, recWorld.topRight().x(), recWorld.topRight().y()); // upper rigth
+        line->setPoint(3, recWorld.bottomRight().x(), recWorld.bottomRight().y()); // lower rigth
+        line->setPoint(4, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // closing
+
+        polyRec->push_back(line);
+        if(g->crosses(polyRec))
           visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        delete polyRec;
+      }
+      else if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
+      {
+        te::gm::Polygon* polyRec = new te::gm::Polygon(0, te::gm::PolygonType);
+        te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+
+        line->setPoint(0, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // lower left
+        line->setPoint(1, recWorld.topLeft().x(), recWorld.topLeft().y()); // upper left
+        line->setPoint(2, recWorld.topRight().x(), recWorld.topRight().y()); // upper rigth
+        line->setPoint(3, recWorld.bottomRight().x(), recWorld.bottomRight().y()); // lower rigth
+        line->setPoint(4, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // closing
+
+        polyRec->push_back(line);
+        if(g->intersects(polyRec))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        delete polyRec;
       }
 
       delete g;
@@ -847,7 +899,135 @@ void MyDisplay::mouseToggleSelectionSlot(QRect rec)
 
 void MyDisplay::mouseTooltipSlot(QPoint p)
 {
+  std::list<te::map::AbstractLayer*> layerList;
+  mountLayerList(m_layerTree, layerList);
 
+  std::list<te::map::AbstractLayer*>::iterator it;
+  if(layerList.size() == 0)
+    return;
+
+  for(it = layerList.begin(); it != layerList.end(); ++it)
+  {
+    MyLayer* layer = (MyLayer*)*it;
+    te::map::DataGridOperation* op = layer->getDataGridOperation();
+    if(op == 0)
+      continue;
+
+    int tooltipColumn = layer->getTooltipColumn();
+    if(tooltipColumn == -1)
+      continue;
+    
+    te::qt::widgets::Canvas* canvas = getCanvas(layer);
+   
+    te::da::DataSet* dataSet = op->getDataSet();
+    te::da::DataSetType* dsType = op->getDataSetType();
+    te::da::PrimaryKey *pk = dsType->getPrimaryKey();
+    const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
+    std::string pkName = pkProps[0]->getName();
+    int pkPos = dsType->getPropertyPosition(pkName);
+    std::string pkv;
+    std::size_t gPos = dsType->getDefaultGeomPropertyPos();
+    te::gm::GeomType gtype = dsType->getDefaultGeomProperty()->getGeometryType();
+
+    QString value;
+    std::vector<int> visRows;
+    dataSet->moveBeforeFirst();
+    while(dataSet->moveNext())
+    {
+      pkv = dataSet->getAsString(pkPos);
+
+      te::gm::Geometry* g = dataSet->getGeometry(gPos);
+      if(g == 0)
+        continue;
+
+      g->transform(m_srid);
+      if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
+      {
+        QPointF pw = canvas->getMatrix().inverted().map(p);
+        te::gm::Point mouseWPos(pw.x(), pw.y());
+        if(g->contains(&mouseWPos))
+        {
+          delete g;
+          if(dataSet->isNull(tooltipColumn) == false)
+            value = dataSet->getAsString(tooltipColumn).c_str();
+          break;
+        }
+      }
+      else if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
+      {
+        QRect mouseRect(0, 0, 5, 5);
+        mouseRect.moveCenter(p);     
+        QPointF gwp(static_cast<const te::gm::Point*>(g)->getX(), static_cast<const te::gm::Point*>(g)->getY());
+        QPoint gdp(canvas->getMatrix().map(gwp).toPoint());
+
+        if(mouseRect.contains(gdp))
+        {
+          delete g;
+          if(dataSet->isNull(tooltipColumn) == false)
+            value = dataSet->getAsString(tooltipColumn).c_str();
+          break;
+        }
+      }
+      else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
+      {
+        QRectF mouseRectF(0., 0., 5., 5.);
+        mouseRectF.moveCenter(p);     
+        mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
+        te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
+        te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+
+        line->setPoint(0, mouseRectF.bottomLeft().x(), mouseRectF.bottomLeft().y()); // lower left
+        line->setPoint(1, mouseRectF.topLeft().x(), mouseRectF.topLeft().y()); // upper left
+        line->setPoint(2, mouseRectF.topRight().x(), mouseRectF.topRight().y()); // upper rigth
+        line->setPoint(3, mouseRectF.bottomRight().x(), mouseRectF.bottomRight().y()); // lower rigth
+        line->setPoint(4, mouseRectF.bottomLeft().x(), mouseRectF.bottomLeft().y()); // closing
+
+        poly->push_back(line);
+        if(g->crosses(poly))
+        {
+          delete g;
+          delete poly;
+          if(dataSet->isNull(tooltipColumn) == false)
+            value = dataSet->getAsString(tooltipColumn).c_str();
+          break;
+        }
+        delete poly;
+      }
+      delete g;
+    }
+
+    int w = m_displayPixmap->width();
+    int h = m_displayPixmap->height();
+    if(m_tooltipDisplayPixmap->width() != w || m_tooltipDisplayPixmap->height() != h)
+    {
+      delete m_tooltipDisplayPixmap;
+      m_tooltipDisplayPixmap = new QPixmap(w, h);
+      m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
+      m_tooltipRect = QRect();
+    }
+
+    QPainter painter(m_tooltipDisplayPixmap);
+    if(m_tooltipRect.isValid())
+    {
+      painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+      painter.setPen(Qt::black);
+      painter.setBrush(Qt::black);
+      painter.drawRect(m_tooltipRect);
+      painter.setCompositionMode(QPainter::CompositionMode_Source);
+      m_tooltipRect = QRect();
+    }
+
+    if(value.isEmpty() == false)
+    {
+      QRect rect(0, 0, 1000, 40);
+      QPoint pp(p.x(), p.y() + 7);
+      rect.moveCenter(pp);
+      painter.drawText(rect, Qt::AlignHCenter, value, &m_tooltipRect);
+      m_tooltipRect.setLeft(m_tooltipRect.left() - 2);
+      m_tooltipRect.setWidth(m_tooltipRect.width() + 3);
+    }
+    repaint();
+  }
 }
 
 void MyDisplay::drawAllPointedsSlot()

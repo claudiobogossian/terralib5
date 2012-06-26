@@ -11,7 +11,8 @@ MyLayer::MyLayer(const std::string& id, const std::string& title, AbstractLayer*
   m_grid(0),
   m_op(0),
   m_temporal(false),
-  m_keepOnMemory(false)
+  m_keepOnMemory(false),
+  m_tooltipColumn(-1)
 {
 }
 
@@ -151,4 +152,14 @@ void MyLayer::setKeepOnMemory(bool b)
 bool MyLayer::isKeepOnMemory()
 {
   return m_keepOnMemory;
+}
+
+void MyLayer::setTooltipColumn(int c)
+{
+  m_tooltipColumn = c;
+}
+
+int MyLayer::getTooltipColumn()
+{
+  return m_tooltipColumn;
 }
