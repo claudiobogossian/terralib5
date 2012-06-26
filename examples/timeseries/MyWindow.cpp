@@ -132,7 +132,8 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
 // Create MovingObjects layer 40 and 41
   ds = te::da::DataSourceFactory::make("OGR");
-  ds->open("connection_string=./data/kml/t_40_41.kml");
+//  ds->open("connection_string=./data/kml/t_40_41.kml");
+  ds->open("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/kml/t_40_41.kml");
   catalog = ds->getCatalog();
   transactor = ds->getTransactor();
   loader = transactor->getCatalogLoader();

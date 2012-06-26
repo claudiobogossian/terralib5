@@ -221,6 +221,8 @@ void TimeSlider::draw(te::dt::DateTime* tini, te::dt::DateTime* tfim)
       te::st::SpatioTemporalObservationSet* obs = m_mObs[i]->getObservationSet();
       std::vector<te::st::Observation*> result;
       obs->during(tInitial, tFinal, result);
+      if(result.empty())
+        continue;
 
       int n = 0;
       te::gm::PointZ* p = 0;

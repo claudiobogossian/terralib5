@@ -522,6 +522,8 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
   {
     if(drawLines)
     {
+      canvas->setLinePattern(0, 0, 0);
+      canvas->setLineWidth(1);
       if(layer->getId() == "40: locations")
         canvas->setLineColor(te::color::RGBAColor(220, 220, 0, 255));
       else
@@ -529,15 +531,19 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
     }
     else
     {
+      canvas->setPointPattern(0, 0, 0);
+      canvas->setPointWidth(1);
       if(layer->getId() == "40: locations")
       {
         //canvas->setPointMarker(te::map::MarkerPixel);
         //canvas->setPointMarkerColor(te::color::RGBAColor(220 ,0, 0, 255));
+        canvas->setPointColor(te::color::RGBAColor(220 ,0, 0, 255));
       }
       else
       {
         //canvas->setPointMarker(te::map::MarkerPixel);
         //canvas->setPointMarkerColor(te::color::RGBAColor(0, 220, 0, 255));
+        canvas->setPointColor(te::color::RGBAColor(0 , 220, 0, 255));
       }
     }
 
