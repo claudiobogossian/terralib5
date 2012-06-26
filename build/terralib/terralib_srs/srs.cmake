@@ -1,8 +1,10 @@
 
-find_package(Boost 1.46 REQUIRED)
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} REQUIRED)
+if(Boost_FOUND)
+  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
-find_package(Proj4)
+find_package(Proj4 ${_Proj4_VERSION})
 if(PROJ4_FOUND)
 	set(DEP_LIBS ${PROJ4_LIBRARY})
 	list (APPEND DEP_INCLUDES ${PROJ4_INCLUDE_DIR})

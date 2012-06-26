@@ -12,6 +12,7 @@ set (TE_DEPENDENCIES_DIR "$ENV{TE_DEPENDENCIES_DIR}" CACHE PATH "Find the direct
 
 include (${T5_MODULES_PATH}/GeneralConfig.cmake)
 include (${T5_MODULES_PATH}/UtilFunctions.cmake)
+include (${T5_MODULES_PATH}/Deps_versions.cmake)
 
 if(WIN32)
   include (${T5_MODULES_PATH}/WinConfig.cmake)

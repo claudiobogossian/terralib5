@@ -20,20 +20,16 @@ set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 # Compiled modules
 set (TE_LIBRARIES @_TE_LIBRARIES@)
 
-# Include utilities function file
-include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
-
 # Include the dependencies. 
 include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
 
-if(WIN32)
-  include (${T5_MODULEPATH}/WinConfig.cmake)
-endif()
-
 set (DEPS @TE_3DS@)
 
+include ( ${T5_MODULEPATH}/Deps_versions.cmake )	
+include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
+
 foreach(DEP ${DEPS})
-  find_package(${DEP} REQUIRED)
+  find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
 endforeach()
 
 list (FIND DEPS "Qt4" HAS_QT4)

@@ -7,16 +7,29 @@ set ( CPACK_PACKAGE_VERSION_MAJOR "5" )
 set ( CPACK_PACKAGE_VERSION_MINOR "0" )
 set ( CPACK_PACKAGE_VERSION_PATCH "0" )
 set ( CPACK_PACKAGE_CONTACT "terralib-devel@dpi.inpe.br" )
-set ( CPACK_PACKAGE_NAME "terralib-${CPACK_PACKAGE_VERSION}" )
+set ( CPACK_PACKAGE_NAME "terralib" )
 set ( CPACK_PACKAGE_INSTALL_DIRECTORY "terralib-${CPACK_PACKAGE_VERSION}" )
-set ( CPACK_PACKAGE_FILE_NAME "terralib-${CPACK_PACKAGE_VERSION}" )
-set ( CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/../../images/bmp/logo\\\\terralib_installer_logo_150x57.bmp")
+set ( CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/../../images/bmp/logo\\\\terralib_installer_logo_150x57.bmp" )
 
+getPackageName(pname)
+set ( CPACK_PACKAGE_FILE_NAME ${pname} )
+
+#set ( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM}" )
+
+#set (packName "")
+#getPackageName(packName)
+
+#message ("pack: ${packName}")
+ 
 if(WIN32)
   include (${T5_MODULES_PATH}/NSISPackage.cmake)
 else ()
   set (CPACK_STRIP_FILES "")
   set (CPACK_SOURCE_STRIP_FILES "")
+  
+  if(UNIX AND NOT APPLE)
+    include (${T5_MODULES_PATH}/DEBPackage.cmake)
+  endif()
 endif()
 
 set ( CPACK_COMPONENT_GROUP_TLIB_DESCRIPTION "Terralib files." )

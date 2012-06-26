@@ -30,11 +30,11 @@ else(WIN32)
                PATHS /usr/local/lib /usr/lib)  
 endif(WIN32)
 
-set(XERCES_FOUND FALSE)
+set(Xerces_FOUND FALSE)
 
 # Set the XERCESC_FOUND variable
 if(XERCES_INCLUDE_DIR AND XERCES_LIBRARY)
-	set(XERCES_FOUND TRUE)
+	set(Xerces_FOUND TRUE)
   message("-- Found Xerces library")
 else()
   if(Xerces_FIND_REQUIRED)

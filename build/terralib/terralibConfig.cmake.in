@@ -44,6 +44,7 @@ if(EXISTS "${TERRALIB_CMAKE_DIR}/CMakeCache.txt")
    # In build tree
    include("${TERRALIB_CMAKE_DIR}/teBuildTreeSettings.cmake")
 else()
+  set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 	set ( TE_DIRS @_TE_INST_INCLUDE_DIRS@ )	
   set ( TE_ROOT_INC "${TERRALIB_CMAKE_DIR}/.." )
 	set ( TE_INCLUDE_DIRS "${TE_ROOT_INC}" )
@@ -54,20 +55,17 @@ else()
 
   set (T5_MODULEPATH "${TERRALIB_CMAKE_DIR}")
   list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
-	include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
   include ( ${T5_MODULEPATH}/teDepends.cmake )
   
-  if(WIN32)
-    include (${T5_MODULEPATH}/WinConfig.cmake)
-  endif()
-
   # Configuration files folder.
   set (DEFAULT_LOGCONF_FILE ${TE_ROOT_INC}/log/te-log.conf)
   
   set (DEPS @TE_3DS@)
+  include ( ${T5_MODULEPATH}/Deps_versions.cmake )	
+  include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
   
   foreach(DEP ${DEPS})
-    find_package(${DEP} REQUIRED)
+    find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
   endforeach()
   
   list (FIND DEPS "Qt4" HAS_QT4)
@@ -75,10 +73,12 @@ else()
   if(HAS_QT4)
     include (${QT_USE_FILE})
   endif()
-  
-  set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 endif()
  
+if(WIN32)
+  include (${T5_MODULEPATH}/WinConfig.cmake)
+endif()
+
 # These are IMPORTED targets created by teLibraryDepends.cmake
 set ( TE_LIBRARIES @_TE_LIBRARIES@ )
 
