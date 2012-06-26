@@ -413,4 +413,18 @@ namespace te
 
     }
   }
+
+  int getAdoColumnId(ADOX::_TablePtr table, std::string& name)
+  {
+    ADOX::ColumnsPtr cols = table->GetColumns();
+
+    for(long i = 0; i < cols->GetCount(); i++)
+    {
+      if(std::string(cols->GetItem(i)->GetName()) == name)
+        return i;
+    }
+
+    return -1;
+  }
 }
+

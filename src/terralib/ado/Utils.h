@@ -60,6 +60,8 @@ namespace te
 
     void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
 
+    int getAdoColumnId(ADOX::_TablePtr table, std::string& name);
+
     te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
     te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
     std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);

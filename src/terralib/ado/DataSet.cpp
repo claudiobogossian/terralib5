@@ -25,8 +25,28 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../memory/DataSetItem.h"
+#include "DataSourceTransactor.h"
 #include "DataSet.h"
 #include "Exception.h"
+#include "Utils.h"
+
+te::ado::DataSet::DataSet(te::da::DataSetType* dt, _RecordsetPtr result, DataSourceTransactor* transactor) :
+  m_i(-1),
+  m_result(result),
+  m_dt(dt),
+  m_t(transactor),
+  m_name(0),
+  m_geomFilter(0),
+  m_mbrFilter(0),
+  m_relation(te::gm::UNKNOWN_SPATIAL_RELATION)
+
+{
+  m_size = m_result->GetCacheSize();
+  m_ncols = m_result->GetFields()->GetCount();
+}
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
 {
@@ -40,17 +60,17 @@ te::common::AccessPolicy te::ado::DataSet::getAccessPolicy() const
 
 te::da::DataSetType* te::ado::DataSet::getType()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_dt;
 }
 
 const te::da::DataSetType* te::ado::DataSet::getType() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_dt;
 }
 
 te::da::DataSourceTransactor* te::ado::DataSet::getTransactor() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_t;
 }
 
 void te::ado::DataSet::loadTypeInfo()
@@ -60,7 +80,7 @@ void te::ado::DataSet::loadTypeInfo()
 
 te::da::DataSet* te::ado::DataSet::getParent() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return 0;
 }
 
 te::gm::Envelope* te::ado::DataSet::getExtent(const te::dt::Property* p)
@@ -84,7 +104,7 @@ void te::ado::DataSet::setFilter(te::dt::Property* p,
 
 te::da::DataSetItem* te::ado::DataSet::getItem() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return new te::mem::DataSetItem(this);
 }
 
 void te::ado::DataSet::add(te::da::DataSetItem* item)
@@ -94,70 +114,82 @@ void te::ado::DataSet::add(te::da::DataSetItem* item)
 
 bool te::ado::DataSet::isEmpty() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return (m_size == 0);
 }
 
 std::size_t te::ado::DataSet::size() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_size;
 }
 
 bool te::ado::DataSet::moveNext()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  ++m_i;  
+  return (m_i < m_size);
 }
 
 bool te::ado::DataSet::movePrevious()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  --m_i;
+  return (m_i > -1);
 }
 
 bool te::ado::DataSet::moveFirst()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_i = 0;
+  return m_size != 0;
 }
 
 bool te::ado::DataSet::moveBeforeFirst()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_i = -1;
+  return m_size != 0;
 }
 
 bool te::ado::DataSet::moveLast()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+   m_i = m_size - 1;
+  return (m_i < m_size);
 }
 
 bool te::ado::DataSet::moveAfterLast()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_i = m_size;
+  return m_size != 0;
 }
 
 bool te::ado::DataSet::move(std::size_t i)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_i = static_cast<int>(i);
+  return (m_i < m_size);
 }
 
 bool te::ado::DataSet::isAtBegin() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_i == 0;
 }
 
 bool te::ado::DataSet::isBeforeBegin() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_i < 0;
 }
 
 bool te::ado::DataSet::isAtEnd() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_i == (m_size - 1);
 }
 
 bool te::ado::DataSet::isAfterEnd() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_i >= m_size;
 }
 
 char te::ado::DataSet::getChar(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+char te::ado::DataSet::getChar(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -167,7 +199,17 @@ void te::ado::DataSet::setChar(int i, char value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+void te::ado::DataSet::setChar(const std::string& name, char value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 unsigned char te::ado::DataSet::getUChar(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+unsigned char te::ado::DataSet::getUChar(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -177,67 +219,149 @@ void te::ado::DataSet::setUChar(int i, unsigned char value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
-boost::int16_t te::ado::DataSet::getInt16(int i) const
+void te::ado::DataSet::setUChar(const std::string& name, unsigned char value)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+boost::int16_t te::ado::DataSet::getInt16(int i) const
+{
+  int16_t ival = (int16_t)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+boost::int16_t te::ado::DataSet::getInt16(const std::string& name) const
+{
+  int16_t ival = (int16_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setInt16(int i, boost::int16_t value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+}
+
+void te::ado::DataSet::setInt16(const std::string& name, boost::int16_t value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 boost::int32_t te::ado::DataSet::getInt32(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  int32_t ival = (int32_t)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+boost::int32_t te::ado::DataSet::getInt32(const std::string& name) const
+{
+  int32_t ival = (int32_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setInt32(int i, boost::int32_t value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+}
+
+void te::ado::DataSet::setInt32(const std::string& name, boost::int32_t value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 boost::int64_t te::ado::DataSet::getInt64(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  int64_t ival = (int64_t)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+boost::int64_t te::ado::DataSet::getInt64(const std::string& name) const
+{
+  int64_t ival = (int64_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setInt64(int i, boost::int64_t value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+}
+
+void te::ado::DataSet::setInt64(const std::string& name, boost::int64_t value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 bool te::ado::DataSet::getBool(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  bool ival = (bool)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+bool te::ado::DataSet::getBool(const std::string& name) const
+{
+  bool ival = (bool)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setBool(int i, bool value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+}
+
+void te::ado::DataSet::setBool(const std::string& name, bool value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 float te::ado::DataSet::getFloat(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  float ival = (float)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+float te::ado::DataSet::getFloat(const std::string& name) const
+{
+  float ival = (float)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setFloat(int i, float value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+}
+
+void te::ado::DataSet::setFloat(const std::string& name, float value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 double te::ado::DataSet::getDouble(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  double ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+double te::ado::DataSet::getDouble(const std::string& name) const
+{
+  double ival = (double)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setDouble(int i, double value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+}
+
+void te::ado::DataSet::setDouble(const std::string& name, double value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 std::string te::ado::DataSet::getNumeric(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+std::string te::ado::DataSet::getNumeric(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -247,17 +371,39 @@ void te::ado::DataSet::setNumeric(int i, const std::string& value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
-std::string te::ado::DataSet::getString(int i) const
+void te::ado::DataSet::setNumeric(const std::string& name, const std::string& value)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+std::string te::ado::DataSet::getString(int i) const
+{
+  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
+}
+
+std::string te::ado::DataSet::getString(const std::string& name) const
+{
+  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setString(int i, const std::string& value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_bstr_t)value.c_str());
+}
+
+void te::ado::DataSet::setString(const std::string& name, const std::string& value)
+{
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_bstr_t)value.c_str());
 }
 
 te::dt::ByteArray* te::ado::DataSet::getByteArray(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -267,7 +413,17 @@ void te::ado::DataSet::setByteArray(int i, const te::dt::ByteArray& value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+void te::ado::DataSet::setByteArray(const std::string& name, const te::dt::ByteArray& value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -277,7 +433,17 @@ void te::ado::DataSet::setGeometry(int i, const te::gm::Geometry& value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+void te::ado::DataSet::setGeometry(const std::string& name, const te::gm::Geometry& value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 te::rst::Raster* te::ado::DataSet::getRaster(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+te::rst::Raster* te::ado::DataSet::getRaster(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -287,7 +453,17 @@ void te::ado::DataSet::setRaster(int i, const te::rst::Raster& value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+void te::ado::DataSet::setRaster(const std::string& name, const te::rst::Raster& value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 te::dt::DateTime* te::ado::DataSet::getDateTime(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+te::dt::DateTime* te::ado::DataSet::getDateTime(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -297,12 +473,27 @@ void te::ado::DataSet::setDateTime(int i, const te::dt::DateTime& value)
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+void te::ado::DataSet::setDateTime(const std::string& name, const te::dt::DateTime& value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 void te::ado::DataSet::getArray(int i, std::vector<boost::int16_t>& a) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+void te::ado::DataSet::getArray(const std::string& name, std::vector<boost::int16_t>& a) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 const unsigned char* te::ado::DataSet::getWKB(int i) const
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+const unsigned char* te::ado::DataSet::getWKB(const std::string& name) const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
