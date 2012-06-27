@@ -30,6 +30,7 @@
 #include "common/AbstractFactory.h"
 #include "common/BaseVisitable.h"
 #include "common/BaseVisitor.h"
+#include "common/BoostUtils.h"
 #include "common/ByteSwapUtils.h"
 #include "common/Comparators.h"
 #include "common/Config.h"
