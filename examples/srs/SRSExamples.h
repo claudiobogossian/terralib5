@@ -28,8 +28,8 @@
 
 #include "Config.h"
 
-/*! \brief This example shows how to build Coordinate Systems from identifiers. */
-void CoordinateSystemFactory();
+/*! \brief This example shows how to use the Spatial Reference Systems Manager. */
+void SpatialReferenceSystemManager();
 
 /*! \brief This example shows how Coordinate Systems from identifiers are recognized by the converter. */
 void RecognizeSRIDs();
