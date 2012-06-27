@@ -33,7 +33,7 @@ namespace te
   {
 	class Converter;
 	class CoordinateSystem;
-	class CoordinateSystemFactory;
+	class CoordinateSystemManager;
 	class Datum;
 	class Ellipsoid;
 	class GeographicCoordinateSystem;

@@ -25,6 +25,8 @@
 */
 
 // TerraLib
+#include "Datum.h"
+#include "Ellipsoid.h"
 #include "GeographicCoordinateSystem.h"
 #include "ProjectedCoordinateSystem.h"
 #include "WKTActions.h"
@@ -193,15 +195,13 @@ void te::srs::WKTActions::setParameterValue(const double& value)
 
 void te::srs::WKTActions::endSpheroid()
 {
-  m_datum->setEllipsoid(*m_ellps);
-  delete m_ellps;
+  m_datum->setEllipsoid(m_ellps);
   m_ellps = 0;
 }
 
 void te::srs::WKTActions::endDatum()
 {
-  m_geoCS->setDatum(*m_datum);
-  delete m_datum;
+  m_geoCS->setDatum(m_datum);
   m_datum = 0;
 }
 
@@ -209,7 +209,7 @@ void te::srs::WKTActions::endGeographicCoordinateSystem()
 {
   if(!m_authorityName.empty() && !m_authorityCode.empty()) // The parser read AUTHORITY[name, code]?
   {
-    m_geoCS->setId(atoi(m_authorityCode.c_str()), m_authorityName);
+    m_geoCS->setSRID(atoi(m_authorityCode.c_str()), m_authorityName);
 
 // clears authority to the next element use it
     m_authorityName.clear();
@@ -223,8 +223,6 @@ void te::srs::WKTActions::endGeographicCoordinateSystem()
   }
 
   m_projCS->setGeographicCoordinateSystem(m_geoCS);
-  /*delete m_geoCS;
-  m_geoCS = 0;*/
   m_srs = m_projCS;
 }
 
@@ -232,7 +230,7 @@ void te::srs::WKTActions::endProjectedCoordinateSystem()
 {
   if(!m_authorityName.empty() && !m_authorityCode.empty()) // The parser read AUTHORITY[name, code]?
   {
-    m_projCS->setId(atoi(m_authorityCode.c_str()), m_authorityName);
+    m_projCS->setSRID(atoi(m_authorityCode.c_str()), m_authorityName);
     // Clears authority to the next element use it
     m_authorityName.clear();
     m_authorityCode.clear();
@@ -242,7 +240,7 @@ void te::srs::WKTActions::endProjectedCoordinateSystem()
   m_projCS = 0; // The reference is now only in m_srs
 }
 
-te::srs::CoordinateSystem* te::srs::WKTActions::getSRS()
+te::srs::SpatialReferenceSystem* te::srs::WKTActions::getSRS()
 {
   return m_srs;
 }

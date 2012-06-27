@@ -27,10 +27,7 @@
 #define __TERRALIB_SRS_INTERNAL_PROJECTED_COORDINATE_SYSTEM_H
 
 #include "Config.h"
-#include "GeographicCoordinateSystem.h"
-#include "Datum.h"
-
-#include "../common/UnitOfMeasure.h"
+#include "SpatialReferenceSystem.h"
 
 #include <string>
 #include <map>
@@ -39,78 +36,73 @@ namespace te
 {
 	namespace srs
 	{
+    class GeographicCoordinateSystem;
     /*!
      \class ProjectedCoordinateSystem
      \brief A Projected Coordinate System (PROJCS).
       A coordinate reference system that is based on a geographic CRS and then 
       uses a map projection to convert the coordinates to a plane.
     */
-    class TESRSEXPORT ProjectedCoordinateSystem : public CoordinateSystem
+    class TESRSEXPORT ProjectedCoordinateSystem : public SpatialReferenceSystem
     {
     
     public:
 
-      //! Default constructor.
-      ProjectedCoordinateSystem();
-
       /*!
-        \brief Constructor from parameters.
-
-        \param name   Projected coordinate system name.
-        \param unit   The name of the linear unit associated to the PROJCS 
-        (default value is "METER").
+       \brief Constructor.
+       \param name       Projected coordinate system name (default empty string).
+       \param unitName   The name of the linear unit associated to the PROJCS (default empty string).
+       \param geogcs     Pointer to the underlying geographic coordinate system (default null). Class takes pointer ownership.
+       \param projName   The name of the map projection (default empty string).       
       */
-      ProjectedCoordinateSystem(const std::string& name, 
-                                const std::string& unitName="METER");
+      ProjectedCoordinateSystem(const std::string& name = "", 
+                                const std::string& unitName = "",
+                                GeographicCoordinateSystem* geogcs=0,
+                                const std::string& projName = "");
    
-      //! Destructor.
-      ~ProjectedCoordinateSystem();
-
-      /*!
-        \brief Sets the the Geographic Coordinate Reference System.
-        \param geogcs The Geographic Coordinate Reference System.
-        \note This object will take the ownership of the pointer.
-       */
-      void setGeographicCoordinateSystem(GeographicCoordinateSystem* geogcs) 
-        { m_geogcs = geogcs; }      
+      /*! Destructor. */
+      ~ProjectedCoordinateSystem();   
       
       /*!
-        \brief It returns the Geographic Coordinate Reference System.
-        \return The Geographic Coordinate Reference System.
+       \brief Sets the underlying Geographic Coordinate Reference System.
+       \param geogcs A pointer to Geographic Coordinate Reference System. Do not pass null. Class takes pointer ownership.
        */
-      const GeographicCoordinateSystem* getGeographicCoordinateSystem() const 
-        { return m_geogcs; }
-
+      void setGeographicCoordinateSystem(GeographicCoordinateSystem* geogcs);
+      
       /*!
-        \brief Sets the name of a projection from geographic coordinates to 
-               projected coordinates.
-        \param proj The name of a projection.
+        \brief Returns the underlying Geographic Coordinate Reference System.
+        \return A pointer to Geographic Coordinate Reference System. Class maintains pointer ownership.
        */
-      void setProjection(const std::string& proj) { m_projection = proj; } 
+      const GeographicCoordinateSystem* getGeographicCoordinateSystem() const;
+      
+      /* 
+       \brief Sets the map projection name.
+       \param projname The map projection name.
+       */
+      void setProjection(const std::string& projname); 
 
       /* 
-        \brief Returns the name of a projection from geographic coordinates to 
-               projected coordinates.
+       \brief Returns the map projection name.
+       \return The map projection name.
       */
-      const std::string& getProjection() const { return m_projection; } 
+      const std::string& getProjection() const;
 
       /*!
         \brief Sets the projection parameters.
         \param params The projection parameters.
        */
-      void setParameters(const std::map<std::string, double>& params) 
-      { m_params = params; }
+      void setParameters(const std::map<std::string, double>& params);
 
-      //! Access (for reading only) the set of parameters.
-      const std::map<std::string, double>& getParameters() const 
-      { return m_params; }
+      /*! 
+       \brief Returns the list of projection parameters.
+       \returns The list of projection parameters and its current values. Read only.
+       */
+      const std::map<std::string, double>& getParameters() const;
       
-      //! Returns a WKT string that represent the PROJCS.
       std::string getWKT() const;
 
-      bool isGeographic() const
-      { return false; }
-
+      bool isGeographic() const;
+      
     private:
 
       GeographicCoordinateSystem*   m_geogcs;	      
