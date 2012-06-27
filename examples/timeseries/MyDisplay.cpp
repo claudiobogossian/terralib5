@@ -727,7 +727,7 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
         line->setPoint(4, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // closing
 
         polyRec->push_back(line);
-        if(g->crosses(polyRec))
+        if(g->intersects(polyRec))
           visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
         delete polyRec;
       }
