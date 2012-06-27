@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../common/Translator.h"
-#include "../json/DataSetReader.h"
+#include "../json/cpp/DataSetReader.h"
 #include "DataSource.h"
 //#include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
@@ -96,7 +96,7 @@ te::da::DataSet* te::couchdb::DataSourceTransactor::getDataSet(const std::string
   if(doc.isMember("error"))
     throw Exception((boost::format(TR_COUCHDB("Failed to retrieve dataset %1%. Error: %2%. Reason: %3%.")) % name % doc["error"].asString() % doc["reason"].asString()).str());
 
-  return te::json::DataSetReader::read(name, doc);
+  return te::json::cpp::DataSetReader::read(name, doc);
 }
 
 te::da::DataSet* te::couchdb::DataSourceTransactor::getDataSet(const std::string& /*name*/,
