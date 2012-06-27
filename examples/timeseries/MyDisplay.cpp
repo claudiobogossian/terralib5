@@ -919,29 +919,24 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
     if(op == 0)
       continue;
 
-    int tooltipColumn = layer->getTooltipColumn();
-    if(tooltipColumn == -1)
+    std::vector<int> tooltipColumns = layer->getTooltipColumns();
+    if(tooltipColumns.empty())
       continue;
     
     te::qt::widgets::Canvas* canvas = getCanvas(layer);
    
     te::da::DataSet* dataSet = op->getDataSet();
     te::da::DataSetType* dsType = op->getDataSetType();
-    te::da::PrimaryKey *pk = dsType->getPrimaryKey();
-    const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
-    std::string pkName = pkProps[0]->getName();
-    int pkPos = dsType->getPropertyPosition(pkName);
-    std::string pkv;
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
     te::gm::GeomType gtype = dsType->getDefaultGeomProperty()->getGeometryType();
 
-    QString value;
-    std::vector<int> visRows;
+    QString val;
+    std::vector<QString> values;
+    std::vector<QString>::reverse_iterator its;
+    std::vector<int>::iterator it;
     dataSet->moveBeforeFirst();
     while(dataSet->moveNext())
     {
-      pkv = dataSet->getAsString(pkPos);
-
       te::gm::Geometry* g = dataSet->getGeometry(gPos);
       if(g == 0)
         continue;
@@ -954,8 +949,14 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
         if(g->contains(&mouseWPos))
         {
           delete g;
-          if(dataSet->isNull(tooltipColumn) == false)
-            value = dataSet->getAsString(tooltipColumn).c_str();
+          for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
+          {
+            val = dsType->getProperty(*it)->getName().c_str();
+            val += ": ";
+            if(dataSet->isNull(*it) == false)
+              val += dataSet->getAsString(*it).c_str();
+            values.push_back(val);
+          }
           break;
         }
       }
@@ -969,8 +970,14 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
         if(mouseRect.contains(gdp))
         {
           delete g;
-          if(dataSet->isNull(tooltipColumn) == false)
-            value = dataSet->getAsString(tooltipColumn).c_str();
+          for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
+          {
+            val = dsType->getProperty(*it)->getName().c_str();
+            val += ": ";
+            if(dataSet->isNull(*it) == false)
+              val += dataSet->getAsString(*it).c_str();
+            values.push_back(val);
+          }
           break;
         }
       }
@@ -993,8 +1000,14 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
         {
           delete g;
           delete poly;
-          if(dataSet->isNull(tooltipColumn) == false)
-            value = dataSet->getAsString(tooltipColumn).c_str();
+          for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
+          {
+            val = dsType->getProperty(*it)->getName().c_str();
+            val += ": ";
+            if(dataSet->isNull(*it) == false)
+              val += dataSet->getAsString(*it).c_str();
+            values.push_back(val);
+          }
           break;
         }
         delete poly;
@@ -1023,14 +1036,21 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       m_tooltipRect = QRect();
     }
 
-    if(value.isEmpty() == false)
+    if(values.empty() == false)
     {
-      QRect rect(0, 0, 1000, 40);
-      QPoint pp(p.x(), p.y() + 7);
-      rect.moveCenter(pp);
-      painter.drawText(rect, Qt::AlignHCenter, value, &m_tooltipRect);
-      m_tooltipRect.setLeft(m_tooltipRect.left() - 2);
-      m_tooltipRect.setWidth(m_tooltipRect.width() + 3);
+      QPoint mp(p);
+      for(its = values.rbegin(); its != values.rend(); ++its)
+      {
+        QRect trect;
+        QRect rect(0, 0, 1000, 40);
+        QPoint pp(mp.x(), mp.y() + 7);
+        rect.moveCenter(pp);
+        painter.drawText(rect, Qt::AlignHCenter, *its, &trect);
+        trect.setLeft(trect.left() - 2);
+        trect.setWidth(trect.width() + 3);
+        m_tooltipRect = m_tooltipRect.united(trect);
+        mp.setY(mp.y() - trect.height());
+      }
     }
     repaint();
   }

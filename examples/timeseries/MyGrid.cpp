@@ -49,9 +49,17 @@ MyGrid::MyGrid(MyLayer* layer, QWidget* parent) :
   plotTimeSeriesAction->setStatusTip(QObject::tr("Plot Time Series"));
   QObject::connect(plotTimeSeriesAction, SIGNAL(triggered()), this, SLOT(plotTimeSeries()));
 
-  QAction* tooltipAction = new QAction(QObject::tr("Tooltip"), this);
-  tooltipAction->setStatusTip(QObject::tr("Tooltip"));
-  QObject::connect(tooltipAction, SIGNAL(triggered()), this, SLOT(tooltip()));
+  QAction* addTooltipAction = new QAction(QObject::tr("Add Tooltip"), this);
+  addTooltipAction->setStatusTip(QObject::tr("Add Tooltip"));
+  QObject::connect(addTooltipAction, SIGNAL(triggered()), this, SLOT(addTooltip()));
+
+  QAction* clearTooltipAction = new QAction(QObject::tr("Clear Tooltip"), this);
+  clearTooltipAction->setStatusTip(QObject::tr("Clear Tooltip"));
+  QObject::connect(clearTooltipAction, SIGNAL(triggered()), this, SLOT(clearTooltip()));
+
+  QMenu* tooltipMenu = new QMenu("Tooltip", this);
+  tooltipMenu->addAction(addTooltipAction);
+  tooltipMenu->addAction(clearTooltipAction);
 
   te::qt::widgets::HeaderView* horizHeaderView = getHorizontalHeaderView();
   QMenu* horizHeaderMenu = new QMenu(horizHeaderView);
@@ -60,7 +68,7 @@ MyGrid::MyGrid(MyLayer* layer, QWidget* parent) :
   horizHeaderMenu->addAction(plotHistogramAction);
   horizHeaderMenu->addAction(plotScatterAction);
   horizHeaderMenu->addAction(plotTimeSeriesAction);
-  horizHeaderMenu->addAction(tooltipAction);
+  horizHeaderMenu->addMenu(tooltipMenu);
 
   horizHeaderView->setHorizontalHeaderMenu(horizHeaderMenu);
 
@@ -108,9 +116,14 @@ void MyGrid::plotTimeSeries()
   Q_EMIT plotTimeSeries(this);
 }
 
-void MyGrid::tooltip()
+void MyGrid::addTooltip()
 {
-  Q_EMIT tooltip(this);
+  Q_EMIT addTooltip(this);
+}
+
+void MyGrid::clearTooltip()
+{
+  Q_EMIT clearTooltip(this);
 }
 
 void MyGrid::selectionChangedSlot(te::map::DataGridOperation*)

@@ -996,7 +996,8 @@ void MyWindow::openGridSlot()
       connect(grid, SIGNAL(plotHistogram(MyGrid*)), this, SLOT(plotHistogramSlot(MyGrid*)));
       connect(grid, SIGNAL(plotScatter(MyGrid*)), this, SLOT(plotScatterSlot(MyGrid*)));
       connect(grid, SIGNAL(plotTimeSeries(MyGrid*)), this, SLOT(plotTimeSeriesSlot(MyGrid*)));
-      connect(grid, SIGNAL(tooltip(MyGrid*)), this, SLOT(tooltipSlot(MyGrid*)));
+      connect(grid, SIGNAL(addTooltip(MyGrid*)), this, SLOT(addTooltipSlot(MyGrid*)));
+      connect(grid, SIGNAL(clearTooltip(MyGrid*)), this, SLOT(clearTooltipSlot(MyGrid*)));
 
       //faca conexao para atualizacao de grid operation
       QObject::connect(grid, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
@@ -1348,23 +1349,24 @@ void MyWindow::plotTimeSeriesSlot(MyGrid* grid)
   QApplication::restoreOverrideCursor();
 }
 
-void MyWindow::tooltipSlot(MyGrid* grid)
+void MyWindow::addTooltipSlot(MyGrid* grid)
 {
+  MyLayer* glayer = grid->getLayer();
   std::vector<te::map::AbstractLayer*> layers;
   getLayers(m_rootFolderLayer, layers);
   std::vector<te::map::AbstractLayer*>::iterator lit;
   for(lit = layers.begin(); lit != layers.end(); ++lit)
   {
     MyLayer* layer = (MyLayer*)(*lit);
-    layer->setTooltipColumn(-1);
+    if(glayer != layer)
+      layer->clearTooltipColumns();
   }
 
-  MyLayer* layer = grid->getLayer();
-  te::map::DataGridOperation* operation = layer->getDataGridOperation();
+  te::map::DataGridOperation* operation = glayer->getDataGridOperation();
   te::qt::widgets::HeaderView* header = (te::qt::widgets::HeaderView*)grid->getHorizontalHeaderView();
   int visCol = header->getContextVisualColumnClicked();
   int col = operation->getLogicalColumn(visCol);
-  layer->setTooltipColumn(col);
+  glayer->addToTooltipColumns(col);
 
   std::vector<te::map::MapDisplay*>::  iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
@@ -1372,6 +1374,19 @@ void MyWindow::tooltipSlot(MyGrid* grid)
     MyDisplay* d = (MyDisplay*)(*it);
     d->setMouseOperationToTooltipSlot();
   }
+}
+
+void MyWindow::clearTooltipSlot(MyGrid* grid)
+{
+  MyLayer* glayer = grid->getLayer();
+  glayer->clearTooltipColumns();
+
+  //std::vector<te::map::MapDisplay*>::  iterator it;
+  //for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
+  //{
+  //  MyDisplay* d = (MyDisplay*)(*it);
+  //  d->setMouseOperationToTooltipSlot();
+  //}
 }
 
 void MyWindow::removePlotSlot(QwtPlot* p)

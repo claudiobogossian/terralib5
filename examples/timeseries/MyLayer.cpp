@@ -11,8 +11,7 @@ MyLayer::MyLayer(const std::string& id, const std::string& title, AbstractLayer*
   m_grid(0),
   m_op(0),
   m_temporal(false),
-  m_keepOnMemory(false),
-  m_tooltipColumn(-1)
+  m_keepOnMemory(false)
 {
 }
 
@@ -154,12 +153,24 @@ bool MyLayer::isKeepOnMemory()
   return m_keepOnMemory;
 }
 
-void MyLayer::setTooltipColumn(int c)
+void MyLayer::addToTooltipColumns(int c)
 {
-  m_tooltipColumn = c;
+  std::vector<int>::iterator it;
+  for(it = m_tooltipColumns.begin(); it != m_tooltipColumns.end(); ++it)
+  {
+    if(c == *it)
+      break;
+  }
+  if(it == m_tooltipColumns.end())
+    m_tooltipColumns.push_back(c);
 }
 
-int MyLayer::getTooltipColumn()
+std::vector<int> MyLayer::getTooltipColumns()
 {
-  return m_tooltipColumn;
+  return m_tooltipColumns;
+}
+
+void MyLayer::clearTooltipColumns()
+{
+  m_tooltipColumns.clear();
 }
