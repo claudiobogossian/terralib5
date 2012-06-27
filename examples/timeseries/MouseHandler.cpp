@@ -20,7 +20,7 @@ MouseHandler::MouseHandler(QWidget* parent) : DisplayEventHandler(parent),
   resize(w, h);
 
   QDir dir;
-  if(dir.cd("images") == false)
+  if(dir.cd(""TE_DATA_EXAMPLE_LOCALE"/data/cursorShapes") == false)
       dir.cd("../../images");
 
   QString s = dir.absolutePath() + "/zoomInCursor.png";
