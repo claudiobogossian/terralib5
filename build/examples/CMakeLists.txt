@@ -58,6 +58,7 @@ option (EXAMPLE_XERCES "Build xerces example." ON)
 option (EXAMPLE_HELP "Build help example." ON)  
 option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
 option (EXAMPLE_QT_SE "Build qt/se example." ON)  
+option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
   
 # Go into sub-directories
@@ -156,6 +157,10 @@ endif()
 
 if(EXAMPLE_QT_SE)
   add_subdirectory(terralib_example_qt/se)
+endif()
+
+if(EXAMPLE_QT_SRS)
+  add_subdirectory(terralib_example_qt/srs)
 endif()
 
 if(EXAMPLE_QT_UTILS)
