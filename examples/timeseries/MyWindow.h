@@ -62,7 +62,8 @@ protected slots:
   void plotHistogramSlot(MyGrid*);
   void plotScatterSlot(MyGrid*);
   void plotTimeSeriesSlot(MyGrid*);
-  void tooltipSlot(MyGrid*);
+  void addTooltipSlot(MyGrid*);
+  void clearTooltipSlot(MyGrid*);
   void removePlotSlot(QwtPlot*);
   void keepOnMemorySlot();
   void selectionChangedSlot(te::map::DataGridOperation*);
