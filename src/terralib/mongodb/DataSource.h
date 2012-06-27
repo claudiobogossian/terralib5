@@ -76,6 +76,16 @@ namespace te
 
         void optimize(const std::map<std::string, std::string>& opInfo);
 
+        /*!
+          \note MongoDB driver extended method.
+        */
+        const std::string& getDB() const;
+
+        /*!
+          \note MongoDB driver extended method.
+        */
+        mongo::DBClientConnection* getConn() const;
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
@@ -87,8 +97,19 @@ namespace te
       private:
 
         std::map<std::string, std::string> m_dsInfo;
+        std::string m_db;
         mongo::DBClientConnection* m_conn;
     };
+
+    inline const std::string& DataSource::getDB() const
+    {
+      return m_db;
+    }
+
+    inline mongo::DBClientConnection* DataSource::getConn() const
+    {
+      return m_conn;
+    }
 
   } // end namespace mongodb
 }   // end namespace te

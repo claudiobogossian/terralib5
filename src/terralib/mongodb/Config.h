@@ -88,14 +88,14 @@
 /*!
   \def MONGODB_DRIVER_IDENTIFIER
 
-  \brief The MyDriver driver identifier string.
+  \brief The MongoDB driver identifier string.
 */
 #define MONGODB_DRIVER_IDENTIFIER "MONGODB"
 
 /*!
   \def MONGODB_PLUGIN_NAME
 
-  \brief The MyDriver plugin identifier string.
+  \brief The MongoDB plugin identifier string.
 */
 #define MONGODB_PLUGIN_NAME "te.da.mongodb"
 
@@ -109,7 +109,7 @@
 /*!
   \def TE_MONGODB_TEXT_DOMAIN
 
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib MyDriver driver implementation.
+  \brief It contains the name of the text domain used in the translation of messages in TerraLib MongoDB driver implementation.
 */
 #define TE_MONGODB_TEXT_DOMAIN "temongodb"
 

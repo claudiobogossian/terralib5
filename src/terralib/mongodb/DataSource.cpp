@@ -20,13 +20,18 @@
 /*!
   \file terralib/mongodb/DataSource.cpp
 
-  \brief Implements the DataSource class for MyDriver.
+  \brief Implements the DataSource class for MongoDB.
 */
 
 // TerraLib
 #include "../common/Translator.h"
 #include "DataSource.h"
+#include "DataSourceTransactor.h"
 #include "Exception.h"
+#include "Globals.h"
+
+// STL
+#include <algorithm>
 
 // Boost
 #include <boost/format.hpp>
@@ -46,12 +51,12 @@ te::mongodb::DataSource::~DataSource()
 
 const std::string& te::mongodb::DataSource::getType() const
 {
-  throw Exception(TR_MONGODB("Not implemented yet!"));
+  return Globals::sm_driverIdentifier;
 }
 
 const std::map<std::string, std::string>& te::mongodb::DataSource::getConnectionInfo() const
 {
-  throw Exception(TR_MONGODB("Not implemented yet!"));
+  return m_dsInfo;
 }
 
 void te::mongodb::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -75,16 +80,16 @@ void te::mongodb::DataSource::open()
   close();
 
 // get db parameters
-  std::map<std::string, std::string>::const_iterator it = m_dsInfo.find("MONGODB_URI");
-
-  std::string uri = (it != m_dsInfo.end()) ? it->second : std::string(MONGODB_DEFAULT_URI);
-
-  it = m_dsInfo.find("MONGODB_DB_NAME");
+  std::map<std::string, std::string>::const_iterator it = m_dsInfo.find("MONGODB_DB_NAME");
 
   if(it == m_dsInfo.end())
     throw Exception(TR_MONGODB("Missing database name parameter!"));
 
-  uri = uri + "/" + it->second;
+  m_db = it->second;
+
+  it = m_dsInfo.find("MONGODB_URI");
+
+  std::string uri = (it != m_dsInfo.end()) ? it->second : std::string(MONGODB_DEFAULT_URI);
 
 // open connection
   try
@@ -109,6 +114,8 @@ void te::mongodb::DataSource::close()
 
   delete m_conn;
   m_conn = 0;
+
+  m_db.clear();
 }
 
 bool te::mongodb::DataSource::isOpened() const
@@ -128,7 +135,7 @@ te::da::DataSourceCatalog* te::mongodb::DataSource::getCatalog() const
 
 te::da::DataSourceTransactor* te::mongodb::DataSource::getTransactor()
 {
-  throw Exception(TR_MONGODB("Not implemented yet!"));
+  return new DataSourceTransactor(this);
 }
 
 void te::mongodb::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
@@ -136,9 +143,14 @@ void te::mongodb::DataSource::optimize(const std::map<std::string, std::string>&
   throw Exception(TR_MONGODB("Not implemented yet!"));
 }
 
-void te::mongodb::DataSource::create(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::mongodb::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-// don't apply to mongodb!
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("MONGODB_DB_NAME");
+
+  if(it == dsInfo.end())
+    throw Exception(TR_MONGODB("Missing database name parameter!"));
+
+  m_dsInfo = dsInfo;
 }
 
 void te::mongodb::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
@@ -156,16 +168,14 @@ void te::mongodb::DataSource::drop(const std::map<std::string, std::string>& dsI
 
   try
   {
-    mongo::DBClientConnection m_conn;
+    mongo::DBClientConnection conn;
 
-    m_conn.connect(uri);
+    conn.connect(uri);
 
     mongo::BSONObj info;
 
-    m_conn.dropDatabase(db_name, &info);
-
-    if(!info["ok"].boolean())
-      throw Exception((boost::format(TR_MONGODB("Erro dropping MongoDB database %1%: %2%")) % db_name % info.toString()).str());
+    if(!conn.dropDatabase(db_name, &info))
+      throw Exception((boost::format(TR_MONGODB("Erro dropping MongoDB database %1%: %2%")) % db_name % conn.getLastError()).str());
   }
   catch(const mongo::DBException& e)
   {
@@ -192,9 +202,13 @@ bool te::mongodb::DataSource::exists(const std::map<std::string, std::string>& d
 
   try
   {
-    mongo::DBClientConnection m_conn;
-    m_conn.connect(uri);
-    return m_conn.exists(db_name);
+    mongo::DBClientConnection conn;
+
+    conn.connect(uri);
+
+    std::list<std::string> dbs = conn.getDatabaseNames();
+
+    return std::find(dbs.begin(), dbs.end(), db_name) != dbs.end();
   }
   catch(const mongo::DBException& e)
   {
