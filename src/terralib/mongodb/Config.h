@@ -34,6 +34,8 @@
  */
 //@{
 
+#define MONGODB_DEFAULT_URI "localhost"
+
 /*!
   \def MONGODB_DEFAULT_INITIAL_POOL_SIZE
   
@@ -124,13 +126,6 @@
   \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
 */
 #define TR_MONGODB(message) TR(message, TE_MONGODB_TEXT_DOMAIN)
-
-/*!
-  \def TR_PLURAL_MONGODB
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the MyDriver module of TerraLib. 
-*/
-#define TR_PLURAL_MONGODB(message1, message2, n) TR_PLURAL(TE_MONGODB_TEXT_DOMAIN, message1, message2, n)
 
 //@}
 
