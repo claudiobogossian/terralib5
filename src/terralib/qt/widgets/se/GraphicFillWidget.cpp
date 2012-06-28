@@ -33,7 +33,7 @@
 #include <cassert>
 
 te::qt::widgets::GraphicFillWidget::GraphicFillWidget(QWidget* parent, Qt::WindowFlags f)
-  : QWidget(parent, f),
+  : AbstractFillWidget(parent, f),
     m_ui(new Ui::GraphicFillWidgetForm),
     m_graphicDialog(new GraphicDialog),
     m_fill(new te::se::Fill)
@@ -54,12 +54,14 @@ te::qt::widgets::GraphicFillWidget::~GraphicFillWidget()
   delete m_fill;
 }
 
-void te::qt::widgets::GraphicFillWidget::setFill(const te::se::Fill* fill)
+bool te::qt::widgets::GraphicFillWidget::setFill(const te::se::Fill* fill)
 {
   assert(fill);
 
+  // Verifying if this widget can deal with the given fill...
   const te::se::Graphic* g = fill->getGraphicFill();
-  assert(g);
+  if(g == 0)
+    return false;
 
   delete m_fill;
 
@@ -68,11 +70,18 @@ void te::qt::widgets::GraphicFillWidget::setFill(const te::se::Fill* fill)
   m_graphicDialog->setGraphic(g);
 
   updateUi();
+
+  return true;
 }
 
 te::se::Fill* te::qt::widgets::GraphicFillWidget::getFill() const
 {
   return m_fill->clone();
+}
+
+QString te::qt::widgets::GraphicFillWidget::getFillType() const
+{
+  return tr("Graphic Fill");
 }
 
 void te::qt::widgets::GraphicFillWidget::updateUi()
@@ -89,6 +98,7 @@ void te::qt::widgets::GraphicFillWidget::onGraphicToolButtonPressed()
 
   // Updating fill
   m_fill->setGraphicFill(m_graphicDialog->getGraphic());
+  emit fillChanged();
   
   updateUi();
 }

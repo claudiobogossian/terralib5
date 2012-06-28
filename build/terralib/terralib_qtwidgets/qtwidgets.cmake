@@ -134,6 +134,7 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/LocalGraphicWidget.h
 	 ${SRCDIR}/widgets/se/LocalImageWidget.h
 	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
+	 ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
 	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h

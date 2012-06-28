@@ -75,10 +75,6 @@ namespace te
           \warning Not thread safe!
         */
         void shutdown();
-
-      private:
-
-        bool m_initialized;
     };
 
   } // end namespace couchdb

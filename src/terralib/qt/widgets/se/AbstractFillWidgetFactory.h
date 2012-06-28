@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/AbstractGraphicWidgetFactory.h
+  \file terralib/qt/widgets/se/AbstractFillWidgetFactory.h
 
-  \brief The abstract factory of widgets used to configure Symbology Enconding Graphic element.
+  \brief The abstract factory of widgets used to configure Symbology Enconding Fill element.
 */
 
-#ifndef __TERRALIB_QT_SE_INTERNAL_ABSTRACTGRAPHICWIDGETFACTORY_H
-#define __TERRALIB_QT_SE_INTERNAL_ABSTRACTGRAPHICWIDGETFACTORY_H
+#ifndef __TERRALIB_QT_SE_INTERNAL_ABSTRACTFILLWIDGETFACTORY_H
+#define __TERRALIB_QT_SE_INTERNAL_ABSTRACTFILLWIDGETFACTORY_H
 
 // TerraLib
 #include "../../../common/AbstractFactory.h"
@@ -41,16 +41,16 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class GraphicWidget;
+      class AbstractFillWidget;
 
       /*!
-        \class AbstractGraphicWidgetFactory
+        \class AbstractFillWidgetFactory
 
-        \brief The abstract factory of widgets used to configure Symbology Enconding Graphic element.
+        \brief The abstract factory of widgets used to configure Symbology Enconding Fill element.
 
         \sa AbstractFactory
       */
-      class TEQTWIDGETSEXPORT AbstractGraphicWidgetFactory : public te::common::AbstractFactory<GraphicWidget, std::string>
+      class TEQTWIDGETSEXPORT AbstractFillWidgetFactory : public te::common::AbstractFactory<AbstractFillWidget, std::string>
       {
         public:
 
@@ -64,14 +64,14 @@ namespace te
 
             \note It will automatically unregister the factory from the dictionary.
           */
-          virtual ~AbstractGraphicWidgetFactory();
+          virtual ~AbstractFillWidgetFactory();
 
           //@}
 
         /*!
-          \brief It informs the key of each registered graphic widget factory.
+          \brief It informs the key of each registered fill widget factory.
 
-          \param keys A pre-created vector of string that will be filled with the keys of each registered graphic widget factory.
+          \param keys A pre-created vector of string that will be filled with the keys of each registered fill widget factory.
 
           \note All registered factories will be consulted.
         */
@@ -87,11 +87,11 @@ namespace te
           /*!
             \brief It creates the factory.
 
-            The key of a AbstractGraphicWidgetFactory is a string.
+            The key of a AbstractFillWidgetFactory is a string.
 
             \param factoryKey The key that identifies the factory.
           */
-          AbstractGraphicWidgetFactory(const std::string& factoryKey);
+          AbstractFillWidgetFactory(const std::string& factoryKey);
 
           //@}
       };
@@ -100,4 +100,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_SE_INTERNAL_ABSTRACTGRAPHICWIDGETFACTORY_H
+#endif  // __TERRALIB_QT_SE_INTERNAL_ABSTRACTFILLWIDGETFACTORY_H

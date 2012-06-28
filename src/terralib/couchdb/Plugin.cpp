@@ -37,8 +37,7 @@
 #include <curl/curl.h>
 
 te::couchdb::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::Plugin(pluginInfo),
-    m_initialized(false)
+  : te::plugin::Plugin(pluginInfo)
 {
 }
 
