@@ -54,7 +54,7 @@ namespace te
       public:
 
         /*! \brief Default constructor. */
-        DataSet(te::da::DataSetType* dt, _RecordsetPtr result, DataSourceTransactor* transactor);
+        DataSet(te::da::DataSetType* dt, _RecordsetPtr result, te::da::DataSourceTransactor* transactor);
 
         /*! \brief Destructor. */
         ~DataSet() {}
@@ -218,7 +218,7 @@ namespace te
         long m_ncols;                        //!< The number of columns.
         _RecordsetPtr m_result;             //!< The internal buffer with the result query.
         mutable te::da::DataSetType* m_dt;  //!< DataSetType.
-        DataSourceTransactor* m_t;          //!< The ADO transactor associated to this dataset.
+        te::da::DataSourceTransactor* m_t;          //!< The ADO transactor associated to this dataset.
         std::string* m_name;                //!< The dataset name if one exists.
         te::gm::Geometry* m_geomFilter;     //!< The geometric filter.
         te::gm::Envelope* m_mbrFilter;      //!< The MBR filter.

@@ -6,16 +6,14 @@
 
 #include <iostream>
 
-void CoordinateSystemFactory()
-{
-  std::cout << "Showing how to use the Coordinate System Factory - begin" << std::endl;
-
-  std::vector<int> epsgs;
+void SpatialReferenceSystemManager()
+{  
+  std::vector<unsigned int> epsgs;
 
   // test codes to the main CS used in Brazil:
   
-  // Geographic CS: Corrego Alegre, WGS84, SIRGAS 2000 and SAD69
-  //  epsgs.push_back(TE_SRS_CORREGO_ALEGRE); epsgs.push_back(TE_SRS_WGS84); epsgs.push_back(TE_SRS_SIRGAS2000); epsgs.push_back(TE_SRS_SAD69);
+    //Geographic CS: Corrego Alegre, WGS84, SIRGAS 2000 and SAD69
+  epsgs.push_back(TE_SRS_CORREGO_ALEGRE); epsgs.push_back(TE_SRS_WGS84); epsgs.push_back(TE_SRS_SIRGAS2000); epsgs.push_back(TE_SRS_SAD69);
   
   // UTM SAD69 North
   for (size_t i=TE_SRS_SAD69_UTM_ZONE_18N; i<=TE_SRS_SAD69_UTM_ZONE_22N; epsgs.push_back(i), ++i);
@@ -40,33 +38,41 @@ void CoordinateSystemFactory()
   
   // Antartic Polar Stereographic WGS84
   epsgs.push_back(TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC);
-
+  
+  std::cout << "Describing coordinate systems by ID - begin" << std::endl;
+  std::string name;
   std::string wkt;
-  te::srs::CoordinateSystem* cs = 0;
+  std::string p4txt;
+  std::pair<std::string,unsigned int> srid;
   for (size_t i=0; i<epsgs.size();++i)
   {
-    // build a CS from an EPSG identifier
-    cs = te::srs::CoordinateSystemFactory::make("EPSG",epsgs[i]);
-    if (!cs)
-    {
-      std::cout << std::endl << "EPSG " << epsgs[i] << ": Couldn't obtain a valid coordinate system for the identifier" << std:: endl;
-    }
+    std::cout << "\n -- " << epsgs[i] << " -- \n";
+    name = te::srs::SpatialReferenceSystemManager::getInstance().getName(epsgs[i]);
+    std::cout << "  Name:  " << name;
+    srid = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromName(name);
+    if (srid.second == epsgs[i])
+      std::cout << ". Id from name OK" << std::endl;
     else 
-    {
-      std::cout << std::endl << "EPSG " << epsgs[i] << ": " << cs->getName();
-      std::string wkt = cs->getWKT();
-      delete cs;
-      
-        // try to reconstruct it from the its own generated wkt
-      cs = te::srs::CoordinateSystemFactory::make("WKT",wkt);
-      if (!cs)
-        std::cout << ": couldn't obtain a valid coordinate system for the wkt" << std:: endl;
-      else
-        std::cout << ": reconstruction from WKT valid" << std:: endl;
-      delete cs;
-    }
+      std::cout << ". Id from name NOT OK" << std::endl;
+ 
+    wkt = te::srs::SpatialReferenceSystemManager::getInstance().getWkt(epsgs[i]);
+    std::cout << "  WKT:   " << wkt.substr(0,60) << "... ";
+    srid = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromWkt(wkt);
+    if (srid.second == epsgs[i])
+      std::cout << ". Id from wkt OK" << std::endl;
+    else 
+      std::cout << " Id from wkt NOT OK" << std::endl; 
+    
+    p4txt = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(epsgs[i]);
+    std::cout << "  PROJ4: " << p4txt.substr(0,60) << "... ";
+    srid = te::srs::SpatialReferenceSystemManager::getInstance().getIdFromP4Txt(p4txt);
+    if (srid.second == epsgs[i])
+      std::cout << ". Id from PROJ4 txt OK" << std::endl;
+    else 
+      std::cout << ". Id from PROJ4 txt NOT OK" << std::endl;
   }
-  std::cout << "Showing how to use the Coordinate System Factory - end " << std::endl << std::endl;
+  std::cout << "\nDescribing coordinate systems by ID - end " << std::endl << std::endl;
+  
 }
 
 
@@ -182,12 +188,12 @@ void ConvertCoordinates()
   delete ys;
 
   std::cout << std::endl;
-  std::cout << "Converting a coordinate after include a new ID and definition to PROJ4 dictionary: " << std::endl;
+  std::cout << "Converting a coordinate after include a CS to the Manager: " << std::endl;
 
   // 
-  int usercode = te::srs::CoordinateSystemFactory::add("PROJ4","+proj=utm +zone=23 +south +ellps=WGS84 +datum=WGS84 +units=km +no_defs");
-  converter->setSourceSRID(usercode);
-  converter->setTargetSRID(TE_SRS_WGS84);
+  //  int usercode = te::srs::CoordinateSystemFactory::add("PROJ4","+proj=utm +zone=23 +south +ellps=WGS84 +datum=WGS84 +units=km +no_defs");
+  //converter->setSourceSRID(usercode);
+  //converter->setTargetSRID(TE_SRS_WGS84);
 
   xyX = 500000 * 0.001;   // meter to kilometer
 	xyY = 10000000 * 0.001; // meter to kilometer

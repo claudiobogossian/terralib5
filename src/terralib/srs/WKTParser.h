@@ -77,7 +77,7 @@ namespace te
 
           // Initializing all rules
           initTags();
-          initCoordinateSystems();
+          initSpatialReferenceSystems();
           initDatum();
           initToWGS84();
           initProjection();
@@ -114,7 +114,7 @@ namespace te
           authorityTag = "AUTHORITY";
         }
 
-        void initCoordinateSystems()
+        void initSpatialReferenceSystems()
         {
           projectedCS = (projectedCSTag[boost::bind(&WKTActions::createProjectedCoordinateSystem, &m_a)]
                         >> leftDelimiter
@@ -257,7 +257,7 @@ namespace te
 
           \note The caller of this method will take the ownership of the SRS.
          */
-        CoordinateSystem* getSRS() { return m_a.getSRS(); }
+        SpatialReferenceSystem* getSRS() { return m_a.getSRS(); }
         
         //@}
 

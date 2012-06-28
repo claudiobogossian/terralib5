@@ -28,46 +28,8 @@
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
 #include "Config.h"
-#include "CoordinateSystemEPSGFactory.h"
-#ifdef TE_USE_PROJ4
-#include "CoordinateSystemProj4Factory.h"
-#endif
-#include "CoordinateSystemWKTFactory.h"
+#include "SpatialReferenceSystemManager.h"
 #include "Module.h"
-
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib SRS module is loaded.
-//
-//  \note This function doesn't perform operations for this module.
-// */
-//static void TeSRSInitialize()
-//{
-//  te::srs::CoordinateSystemEPSGFactory::initialize();
-//  te::srs::CoordinateSystemWKTFactory::initialize();
-//
-//#ifdef TE_USE_PROJ4
-//  te::srs::CoordinateSystemProj4Factory::initialize();
-//#endif
-//
-//  TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
-//}
-
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib SRS module is unloaded.
-//
-//  \note This function doesn't perform operations for this module.
-// */
-//static void TeSRSFinalize()
-//{
-//#ifdef TE_USE_PROJ4
-//  te::srs::CoordinateSystemProj4Factory::finalize();
-//#endif
-//
-//  te::srs::CoordinateSystemWKTFactory::finalize();
-//  te::srs::CoordinateSystemEPSGFactory::finalize();
-//
-//  TE_LOG_TRACE(TR_SRS("TerraLib SRS Finalized!"));
-//}
 
 const te::srs::Module& sm_module = te::srs::Module::getInstance();
 
@@ -92,31 +54,18 @@ te::srs::Module::~Module()
 
 void te::srs::Module::initialize()
 {
-  te::srs::CoordinateSystemEPSGFactory::initialize();
-  te::srs::CoordinateSystemWKTFactory::initialize();
 
-#ifdef TE_USE_PROJ4
-  te::srs::CoordinateSystemProj4Factory::initialize();
-#endif
-
+#include "SRSDefinitions.h"
+  
   TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
 }
 
 void te::srs::Module::finalize()
 {
-#ifdef TE_USE_PROJ4
-  te::srs::CoordinateSystemProj4Factory::finalize();
-#endif
-
-  te::srs::CoordinateSystemWKTFactory::finalize();
-  te::srs::CoordinateSystemEPSGFactory::finalize();
-
+  
   TE_LOG_TRACE(TR_SRS("TerraLib SRS Finalized!"));
 }
 
-//// TerraLib
-//#include "../common/ModuleUtils.h"
-//
-//TE_REGISTER_MODULE(TE_SRS_MODULE_NAME, TeSRSInitialize, TeSRSFinalize)
+
 
 
