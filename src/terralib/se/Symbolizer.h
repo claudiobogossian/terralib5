@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/BaseVisitable.h"
 #include "Config.h"
+#include "Enums.h"
 #include "Visitor.h"
 
 // STL
@@ -86,7 +87,7 @@ namespace te
         //@{
 
         /*! \brief It initializes a new Symbolizer. */
-        Symbolizer();
+        Symbolizer(const SymbolizerType& type);
 
         /*!
           \brief Copy constructor.
@@ -142,6 +143,8 @@ namespace te
 
         const te::common::BaseUnitOfMeasure* getUom() const;
 
+        SymbolizerType getType() const;
+
         //@}
 
          /*! \brief It creates a new copy of this object. */
@@ -154,6 +157,7 @@ namespace te
         te::xl::SimpleLink* m_baseSymbolizer;       //!< A BaseSymbolizer (an OnlineResource) defines the default properties of a Symbolizer to be those of an external Symbolizer, which will frequently be inside of an OGC Symbolizer repository. The Symbolizer properties given in-line override the base-Symbolizer properties. (Optional)
         std::string m_version;                      //!< The version is an optional attribute on the FeatureType Style element that identifies the SE version number that the FeatureTypeStyle corresponds to. For now, the only allowed value is 1.1.0. (Mandatory)
         const te::common::BaseUnitOfMeasure* m_uom; //!< Unit of measurement. If no uom is set inside of Symbolizer, all units are measured in pixel. (Mandatory)
+        SymbolizerType m_type;                      //!< Symbolizer type.
     };    
 
   } // end namespace se

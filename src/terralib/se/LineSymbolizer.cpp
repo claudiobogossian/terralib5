@@ -30,7 +30,8 @@
 #include "Stroke.h"
 
 te::se::LineSymbolizer::LineSymbolizer()
-  : m_geometry(0),
+  : te::se::Symbolizer(te::se::LINE_SYMBOLIZER),
+    m_geometry(0),
     m_stroke(0),
     m_perpendicularOffset(0)
 {
