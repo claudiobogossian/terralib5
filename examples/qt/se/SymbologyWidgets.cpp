@@ -7,6 +7,8 @@
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
 #include <terralib/qt/widgets/se/GlyphMarkDialog.h>
 #include <terralib/qt/widgets/se/GraphicDialog.h>
+#include <terralib/qt/widgets/se/LineSymbolizerWidget.h>
+#include <terralib/qt/widgets/se/PointSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/PolygonSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerPreviewWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerTableWidget.h>
@@ -14,22 +16,36 @@
 
 // Qt
 #include <QtGui/QApplication>
+#include <QtGui/QCleanlookSstyle>
 #include <QtGui/QDialog>
 #include <QtGui/QGridLayout>
 #include <QtGui/QGroupBox>
+#include <QtGui/QToolBox>
 
 void SymbolizerWidgets()
 {
   QDialog dlg;
-  dlg.setWindowTitle("Symbolizer Builder");
+  dlg.setWindowTitle("Symbolizer Widgets Example");
 
   // Polygon Symbolizer Widget
   te::qt::widgets::PolygonSymbolizerWidget* ps = new te::qt::widgets::PolygonSymbolizerWidget(&dlg);
 
+  // Line Symbolizer Widget
+  te::qt::widgets::LineSymbolizerWidget* ls = new te::qt::widgets::LineSymbolizerWidget(&dlg);
+
+  // Point Symbolizer Widget
+  te::qt::widgets::PointSymbolizerWidget* pts = new te::qt::widgets::PointSymbolizerWidget(&dlg);
+
+  // Grouping...
+  QToolBox* box = new QToolBox(&dlg);
+  box->addItem(ps, "&Polygon Symbolyzer");
+  box->addItem(ls, "&Line Symbolyzer");
+  box->addItem(pts, "P&oint Symbolyzer");
+
   // Adjusting...
   QGridLayout* layout = new QGridLayout(&dlg);
   layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addWidget(ps, 0, 0);
+  layout->addWidget(box);
 
   dlg.exec();
 }
@@ -45,11 +61,11 @@ void PreviewWidgets()
   dlg.setWindowTitle("Symbolizer Preview Example");
 
   // Preview
-  te::qt::widgets::SymbolizerPreviewWidget* preview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(150, 150), te::gm::LineStringType, &dlg);
+  te::qt::widgets::SymbolizerPreviewWidget* preview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(150, 150), te::se::LINE_SYMBOLIZER, &dlg);
   preview->updatePreview(symbs);
 
   // Table preview
-  te::qt::widgets::SymbolizerTableWidget* table = new te::qt::widgets::SymbolizerTableWidget(QSize(150, 32), te::gm::LineStringType, &dlg);
+  te::qt::widgets::SymbolizerTableWidget* table = new te::qt::widgets::SymbolizerTableWidget(QSize(150, 32), te::se::LINE_SYMBOLIZER, &dlg);
   table->updatePreview(symbs);
   table->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
@@ -113,6 +129,7 @@ void BasicWidgets()
 {
   int argc = 1;
   QApplication app(argc, 0);
+  app.setStyle(new QCleanlooksStyle);
 
   SymbolizerWidgets();
 
