@@ -7,6 +7,7 @@
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
 #include <terralib/qt/widgets/se/GlyphMarkDialog.h>
 #include <terralib/qt/widgets/se/GraphicDialog.h>
+#include <terralib/qt/widgets/se/PolygonSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerPreviewWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerTableWidget.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
@@ -17,8 +18,21 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QGroupBox>
 
-// STL
-#include <iostream>
+void SymbolizerWidgets()
+{
+  QDialog dlg;
+  dlg.setWindowTitle("Symbolizer Builder");
+
+  // Polygon Symbolizer Widget
+  te::qt::widgets::PolygonSymbolizerWidget* ps = new te::qt::widgets::PolygonSymbolizerWidget(&dlg);
+
+  // Adjusting...
+  QGridLayout* layout = new QGridLayout(&dlg);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addWidget(ps, 0, 0);
+
+  dlg.exec();
+}
 
 void PreviewWidgets()
 {
@@ -99,6 +113,8 @@ void BasicWidgets()
 {
   int argc = 1;
   QApplication app(argc, 0);
+
+  SymbolizerWidgets();
 
   PreviewWidgets();
 

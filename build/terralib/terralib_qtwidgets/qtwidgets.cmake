@@ -67,6 +67,7 @@ set (
   widgets/property
   widgets/rp
   widgets/se
+  widgets/srs
   widgets/help
   widgets/utils
 )
@@ -133,11 +134,14 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/LocalGraphicWidget.h
 	 ${SRCDIR}/widgets/se/LocalImageWidget.h
 	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
+	 ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
 	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
-	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h)
+	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
+	 ${SRCDIR}/widgets/srs/SRSDialog.h
+	 ${SRCDIR}/widgets/srs/SRSManagerDialog.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
@@ -149,7 +153,8 @@ file(GLOB FORMS
      ${SRCDIR}/widgets/property/*.ui
 	 ${SRCDIR}/widgets/utils/ui/*.ui
 	 ${SRCDIR}/widgets/rp/ui/*.ui
-	 ${SRCDIR}/widgets/se/ui/*.ui)
+	 ${SRCDIR}/widgets/se/ui/*.ui
+	 ${SRCDIR}/widgets/srs/ui/*.ui)
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	

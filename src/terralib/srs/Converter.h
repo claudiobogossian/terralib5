@@ -58,7 +58,7 @@ namespace te
       \brief Constructor with parameters.
 			\param sourceSRID source SRS identifier (input).
 			\param targetSRID target SRS identifier (input).
-      \exception te::common::Exception source or input SRS identifiers are not recognized.
+      \exception te::srs::Exception source or input SRS identifiers are not recognized.
 		*/
     Converter(int sourceSRID, int targetSRID);
 
@@ -68,7 +68,7 @@ namespace te
 		/*!
       \brief Sets the source SRS identifier.
 			\param sourceSRID the source SRS identifier (input).
-			\exception te::common::Exception source SRS identifier not recognized.
+			\exception te::srs::Exception source SRS identifier not recognized.
 		*/
 		void setSourceSRID(int sourceSRID);
 
@@ -81,7 +81,7 @@ namespace te
 		/*!
      \brief Sets the target SRS identifier.
      \param targetSRID the target SRS identifier (input).
-     \exception te::common::Exception target SRS identifier not recognized.
+     \exception te::srs::Exception target SRS identifier not recognized.
      */
 		void setTargetSRID(int targetSRID);
 

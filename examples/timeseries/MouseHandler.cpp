@@ -1,4 +1,5 @@
 #include "MouseHandler.h"
+#include "MyDisplay.h"
 #include <terralib/geometry/Geometry.h>
 #include <terralib/geometry/LinearRing.h>
 #include <terralib/geometry/Polygon.h>
@@ -90,7 +91,10 @@ MouseHandler::MouseMode MouseHandler::getMode()
 
 void MouseHandler::setMode(MouseMode m)
 {
-    m_mouseMode = m;
+  MyDisplay* mydisplay = (MyDisplay*)parent();
+  mydisplay->clearTooltipPixmap();
+  mydisplay->update();
+  m_mouseMode = m;
 }
 
 void MouseHandler::setCursor()
@@ -144,18 +148,21 @@ void MouseHandler::mouseMoveEvent(QMouseEvent* e)
     }
     else // resizing area. Used for zoom in and object selection (add/toggle) 
     {
-      int w = abs(m_point.x() - m_pressPoint.x()) + 1;
-      int h = abs(m_point.y() - m_pressPoint.y()) + 1;
-      if(m_point.x() > m_pressPoint.x() && m_point.y() > m_pressPoint.y())
-        m_rect.setRect(m_pressPoint.x(), m_pressPoint.y(), w, h);
-      else if(m_point.x() > m_pressPoint.x() && m_point.y() < m_pressPoint.y())
-        m_rect.setRect(m_pressPoint.x(), m_point.y(), w, h);
-      else if(m_point.x() < m_pressPoint.x() && m_point.y() < m_pressPoint.y())
-        m_rect.setRect(m_point.x(), m_point.y(), w, h);
-      else
-        m_rect.setRect(m_point.x(), m_pressPoint.y(), w, h);
-      setRepaint(true);
-      drawCursor();
+      if(m_mouseMode != TooltipMode)
+      {
+        int w = abs(m_point.x() - m_pressPoint.x()) + 1;
+        int h = abs(m_point.y() - m_pressPoint.y()) + 1;
+        if(m_point.x() > m_pressPoint.x() && m_point.y() > m_pressPoint.y())
+          m_rect.setRect(m_pressPoint.x(), m_pressPoint.y(), w, h);
+        else if(m_point.x() > m_pressPoint.x() && m_point.y() < m_pressPoint.y())
+          m_rect.setRect(m_pressPoint.x(), m_point.y(), w, h);
+        else if(m_point.x() < m_pressPoint.x() && m_point.y() < m_pressPoint.y())
+          m_rect.setRect(m_point.x(), m_point.y(), w, h);
+        else
+          m_rect.setRect(m_point.x(), m_pressPoint.y(), w, h);
+        setRepaint(true);
+        drawCursor();
+      }
     }
   }
   else if(e->buttons() == Qt::NoButton)
@@ -220,36 +227,39 @@ void MouseHandler::mouseReleaseEvent(QMouseEvent* e)
 
 void MouseHandler::keyPressEvent(QKeyEvent* e)
 {
-  MouseMode mode = m_mouseMode;
+  MouseMode newMode;
 
   if(e->key() == Qt::Key_Control)
   {
     if(m_mouseMode != ZoomInMode && m_mouseMode != ZoomOutMode && m_mouseMode != PanMode)
     {
       m_mouseOldMode = m_mouseMode;
-      m_mouseMode = ZoomInMode;
+      newMode = ZoomInMode;
     }
     else
-      m_mouseMode = m_mouseOldMode;
+      newMode = m_mouseOldMode;
   }
   if(e->key() == Qt::Key_Alt)
   {
     if(m_mouseMode == ZoomInMode)
-      setMode(ZoomOutMode);
+      newMode = ZoomOutMode;
     else if(m_mouseMode == ZoomOutMode)
-      setMode(PanMode);
+      newMode = PanMode;
     else if(m_mouseMode == PanMode)
-      setMode(ZoomInMode);
+      newMode = ZoomInMode;
 
     if(m_mouseMode == SelectionMode)
-      setMode(AddSelectionMode);
+      newMode = AddSelectionMode;
     else if(m_mouseMode == AddSelectionMode)
-      setMode(ToggleSelectionMode);
+      newMode = ToggleSelectionMode;
     else if(m_mouseMode == ToggleSelectionMode)
-      setMode(SelectionMode);
+      newMode = TooltipMode;
+    else if(m_mouseMode == TooltipMode)
+      newMode = SelectionMode;
   }
-  if(mode != m_mouseMode)
+  if(newMode != m_mouseMode)
   {
+    setMode(newMode);
     m_panEnd = true;
     setCursor();
   }

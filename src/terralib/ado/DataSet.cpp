@@ -33,7 +33,7 @@
 #include "Exception.h"
 #include "Utils.h"
 
-te::ado::DataSet::DataSet(te::da::DataSetType* dt, _RecordsetPtr result, DataSourceTransactor* transactor) :
+te::ado::DataSet::DataSet(te::da::DataSetType* dt, _RecordsetPtr result, te::da::DataSourceTransactor* transactor) :
   m_i(-1),
   m_result(result),
   m_dt(dt),
@@ -44,7 +44,7 @@ te::ado::DataSet::DataSet(te::da::DataSetType* dt, _RecordsetPtr result, DataSou
   m_relation(te::gm::UNKNOWN_SPATIAL_RELATION)
 
 {
-  m_size = m_result->GetCacheSize();
+  m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
 }
 
@@ -124,42 +124,53 @@ std::size_t te::ado::DataSet::size() const
 
 bool te::ado::DataSet::moveNext()
 {
-  ++m_i;  
+  if(m_i != -1)
+    m_result->MoveNext();
+  
+  ++m_i;
   return (m_i < m_size);
 }
 
 bool te::ado::DataSet::movePrevious()
 {
+  if(m_i != m_size)
+    m_result->MovePrevious();
+
   --m_i;
   return (m_i > -1);
 }
 
 bool te::ado::DataSet::moveFirst()
 {
+  m_result->MoveFirst();
   m_i = 0;
   return m_size != 0;
 }
 
 bool te::ado::DataSet::moveBeforeFirst()
 {
+  m_result->MoveFirst();
   m_i = -1;
   return m_size != 0;
 }
 
 bool te::ado::DataSet::moveLast()
 {
-   m_i = m_size - 1;
+  m_result->MoveLast();
+  m_i = m_size - 1;
   return (m_i < m_size);
 }
 
 bool te::ado::DataSet::moveAfterLast()
 {
+  m_result->MoveLast();
   m_i = m_size;
   return m_size != 0;
 }
 
 bool te::ado::DataSet::move(std::size_t i)
 {
+  m_result->Move((long)i);
   m_i = static_cast<int>(i);
   return (m_i < m_size);
 }
@@ -186,22 +197,24 @@ bool te::ado::DataSet::isAfterEnd() const
 
 char te::ado::DataSet::getChar(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  char ival = (char)m_result->GetFields()->GetItem(i)->GetValue();
+  return ival;
 }
 
 char te::ado::DataSet::getChar(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  char ival = (char)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  return ival;
 }
 
 void te::ado::DataSet::setChar(int i, char value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
 }
 
 void te::ado::DataSet::setChar(const std::string& name, char value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
 }
 
 unsigned char te::ado::DataSet::getUChar(int i) const

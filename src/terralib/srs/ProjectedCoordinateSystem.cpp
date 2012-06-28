@@ -1,40 +1,81 @@
 #include "Module.h"
 #include "ProjectedCoordinateSystem.h"
+#include "GeographicCoordinateSystem.h"
 
+#include "../common/UnitOfMeasure.h"
 #include "../common/UnitsOfMeasureManager.h"
 #include "../common/Translator.h"
 #include "../common/Exception.h"
 
 #include <sstream> 
-
-te::srs::ProjectedCoordinateSystem::ProjectedCoordinateSystem() :
-  te::srs::CoordinateSystem("","METER"),
-  m_geogcs(0)
-{}
+#include <assert.h>
 
 te::srs::ProjectedCoordinateSystem::ProjectedCoordinateSystem(const std::string& name, 
-                                                              const std::string& unitName):
-  te::srs::CoordinateSystem(name,unitName),
-  m_geogcs(0)
+                                                              const std::string& unitName,
+                                                              te::srs::GeographicCoordinateSystem* geogcs,
+                                                              const std::string& projName):
+  te::srs::SpatialReferenceSystem(name,unitName),
+  m_geogcs(geogcs),
+  m_projection(projName)
 {}
 
 te::srs::ProjectedCoordinateSystem::~ProjectedCoordinateSystem()
 {
-  if (m_geogcs)
-    delete m_geogcs;
+  delete m_geogcs;
+}
+
+void 
+te::srs::ProjectedCoordinateSystem::setGeographicCoordinateSystem(te::srs::GeographicCoordinateSystem* geogcs) 
+{ 
+  assert(geogcs);
+  
+  delete geogcs;
+  m_geogcs = geogcs; 
+}
+
+const te::srs::GeographicCoordinateSystem* 
+te::srs::ProjectedCoordinateSystem::getGeographicCoordinateSystem() const 
+{ 
+  return m_geogcs; 
+}
+
+void 
+te::srs::ProjectedCoordinateSystem::setProjection(const std::string& projname)  
+{ 
+  m_projection = projname; 
+} 
+
+const std::string& 
+te::srs::ProjectedCoordinateSystem::getProjection() const 
+{ 
+  return m_projection; 
+} 
+
+void 
+te::srs::ProjectedCoordinateSystem::setParameters(const std::map<std::string, double>& params) 
+{ 
+  m_params = params; 
+}
+
+const std::map<std::string, double>& 
+te::srs::ProjectedCoordinateSystem::getParameters() const 
+{ 
+  return m_params; 
 }
 
 std::string
 te::srs::ProjectedCoordinateSystem::getWKT() const
 {
-  if (!m_geogcs)
-  {
-		throw te::common::Exception(TR_SRS("Projected Coordinate System don't have the corresponding Geographic Coordinate System."));
-  }
+  std::ostringstream sstr;
+  sstr.precision(10);
+
   std::string wkt = "PROJCS[\"";
  	wkt += m_name;
-	wkt += "\",";
-	wkt += m_geogcs->getWKT();
+  if (m_geogcs)
+  {
+	  wkt += "\",";
+	  wkt += m_geogcs->getWKT();
+  }
 	wkt += ",PROJECTION[\"";
 	wkt += m_projection;
 	wkt += "\"]";
@@ -59,16 +100,22 @@ te::srs::ProjectedCoordinateSystem::getWKT() const
 	  wkt += ", ";
 	  wkt += unit->getWKT();
   }
-  if (!m_authority.empty())
+  if (m_srid.first > 0 && !m_srid.second.empty())
   {
-    std::ostringstream sstr;
     wkt += ",AUTHORITY[\"";
-    wkt += m_authority;
+    wkt += m_srid.second;
     wkt += "\",\"";
-    sstr << m_id;
+    sstr.str("");
+    sstr << m_srid.first;
    	wkt += sstr.str();
     wkt += "\"]";
   }
 	wkt += "]";
 	return wkt;
+}
+
+bool 
+te::srs::ProjectedCoordinateSystem::isGeographic() const
+{ 
+  return false; 
 }

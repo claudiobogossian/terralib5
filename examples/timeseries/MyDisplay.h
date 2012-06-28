@@ -92,6 +92,7 @@ public Q_SLOTS:
   void setMouseOperationToAddObjectSelectionSlot();
   void setMouseOperationToToggleObjectSelectionSlot();
   void setMouseOperationToTooltipSlot();
+  void clearTooltipPixmap();
   void showRootFolderSlot();
   void printSlot();
   void printFileSlot();

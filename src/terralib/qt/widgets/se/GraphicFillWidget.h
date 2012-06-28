@@ -28,9 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
-
-// Qt
-#include <QtGui/QWidget>
+#include "AbstractFillWidget.h"
 
 // STL
 #include <memory>
@@ -57,8 +55,10 @@ namespace te
         \class GraphicFillWidget
 
         \brief A widget used to build a fill element associated with a graphic.
+
+        \sa AbstractFillWidget, BasicFillWidget
       */
-      class TEQTWIDGETSEXPORT GraphicFillWidget : public QWidget
+      class TEQTWIDGETSEXPORT GraphicFillWidget : public AbstractFillWidget
       {
         Q_OBJECT
 
@@ -79,24 +79,18 @@ namespace te
 
         public:
 
-          /*!
-            \brief Sets a fill element to this widget.
-
-            \param fill A valid fill element.
-
-            \note The widget will NOT take the ownership of the given fill.
-            \note The widget form will be update based on given fill parameters.
+          /** @name Re-implementation of Pure Virtual Method
+          *  AbstractFillWidget methods.
           */
-          void setFill(const te::se::Fill* fill);
+          //@{
 
-          /*!
-            \brief Gets the configured fill element.
+          bool setFill(const te::se::Fill* fill);
 
-            \return The configured fill element.
-            
-            \note The caller will take the ownership of the returned fill.
-          */
           te::se::Fill* getFill() const;
+
+          QString getFillType() const;
+
+          //@}
 
         protected:
 

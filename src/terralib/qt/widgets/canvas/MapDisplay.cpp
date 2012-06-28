@@ -27,6 +27,7 @@
 #include "../../../common/STLUtils.h"
 #include "../../../common/TreeItem.h"
 #include "../../../geometry/Envelope.h"
+#include "../../../srs/Config.h"
 #include "../../../dataaccess.h"
 #include "../../../maptools.h"
 
@@ -520,33 +521,125 @@ void te::qt::widgets::MapDisplay::fit(std::list<te::map::AbstractLayer*>& layerL
 
 void te::qt::widgets::MapDisplay::setSRIDSlot()
 {
-  int a = getSRID();
-  QString sid;
-  sid.setNum(a);
+  //int a = getSRID();
+  //QString sid;
+  //sid.setNum(a);
+
+  //QStringList items;
+  ////items << "4326" << "29181" << "29183" << "29101" << "3031";
+
+  //items.append(sid);
+  //if(sid != "4326")
+  //  items.append("4326");
+  //if(sid != "29181")
+  //  items.append("29181");
+  //if(sid != "29183")
+  //  items.append("29183");
+  //if(sid != "29101")
+  //  items.append("29101");
+  //if(sid != "3031")
+  //  items.append("3031");
+
+  //bool ok;
+  //QString item = QInputDialog::getItem(this, "Config SRID", "SRID:", items, 0, false, &ok);
+
+  //if(ok && !items.isEmpty())
+  //{
+  //  int srid = atoi(item.toStdString().c_str());
+  //  setSRID(srid);
+  //  //te::map::MapDisplay::setSRID(srid);
+  //  draw();
+  //}
+
+  int srid = getSRID();
+  std::map<int, QString> sridMap;
+  std::map<int, QString>::iterator it;
+
+  sridMap[TE_SRS_SAD69] = "TE_SRS_SAD69";
+  sridMap[TE_SRS_CORREGO_ALEGRE] = "TE_SRS_CORREGO_ALEGRE";
+  sridMap[TE_SRS_WGS84] = "TE_SRS_WGS84";
+  sridMap[TE_SRS_SIRGAS2000] = "TE_SRS_SIRGAS2000";
+  sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_21S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_21S";
+  sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_22S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_22S";
+  sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_23S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_23S";
+  sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_24S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_24S";
+  sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_25S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_25S";
+  sridMap[TE_SRS_SAD69_POLYCONIC] = "TE_SRS_SAD69_POLYCONIC";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_18N] = "TE_SRS_SAD69_UTM_ZONE_18N";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_19N] = "TE_SRS_SAD69_UTM_ZONE_19N";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_20N] = "TE_SRS_SAD69_UTM_ZONE_20N";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_21N] = "TE_SRS_SAD69_UTM_ZONE_21N";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_22N] = "TE_SRS_SAD69_UTM_ZONE_22N";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_17S] = "TE_SRS_SAD69_UTM_ZONE_17S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_18S] = "TE_SRS_SAD69_UTM_ZONE_18S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_19S] = "TE_SRS_SAD69_UTM_ZONE_19S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_20S] = "TE_SRS_SAD69_UTM_ZONE_20S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_21S] = "TE_SRS_SAD69_UTM_ZONE_21S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_22S] = "TE_SRS_SAD69_UTM_ZONE_22S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_23S] = "TE_SRS_SAD69_UTM_ZONE_23S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_24S] = "TE_SRS_SAD69_UTM_ZONE_24S";
+  sridMap[TE_SRS_SAD69_UTM_ZONE_25S] = "TE_SRS_SAD69_UTM_ZONE_25S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_17N] = "TE_SRS_SIRGAS2000_UTM_ZONE_17N";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_18N] = "TE_SRS_SIRGAS2000_UTM_ZONE_18N";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_19N] = "TE_SRS_SIRGAS2000_UTM_ZONE_19N";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_20N] = "TE_SRS_SIRGAS2000_UTM_ZONE_20N";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_21N] = "TE_SRS_SIRGAS2000_UTM_ZONE_21N";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_22N] = "TE_SRS_SIRGAS2000_UTM_ZONE_22N";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_17S] = "TE_SRS_SIRGAS2000_UTM_ZONE_17S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_18S] = "TE_SRS_SIRGAS2000_UTM_ZONE_18S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_19S] = "TE_SRS_SIRGAS2000_UTM_ZONE_19S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_20S] = "TE_SRS_SIRGAS2000_UTM_ZONE_20S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_21S] = "TE_SRS_SIRGAS2000_UTM_ZONE_21S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_22S] = "TE_SRS_SIRGAS2000_UTM_ZONE_22S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_23S] = "TE_SRS_SIRGAS2000_UTM_ZONE_23S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_24S] = "TE_SRS_SIRGAS2000_UTM_ZONE_24S";
+  sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_25S] = "TE_SRS_SIRGAS2000_UTM_ZONE_25S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_18N] = "TE_SRS_WGS84_UTM_ZONE_18N";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_19N] = "TE_SRS_WGS84_UTM_ZONE_19N";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_20N] = "TE_SRS_WGS84_UTM_ZONE_20N";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_21N] = "TE_SRS_WGS84_UTM_ZONE_21N";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_22N] = "TE_SRS_WGS84_UTM_ZONE_22N";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_17S] = "TE_SRS_WGS84_UTM_ZONE_17S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_18S] = "TE_SRS_WGS84_UTM_ZONE_18S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_19S] = "TE_SRS_WGS84_UTM_ZONE_19S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_20S] = "TE_SRS_WGS84_UTM_ZONE_20S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_21S] = "TE_SRS_WGS84_UTM_ZONE_21S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_22S] = "TE_SRS_WGS84_UTM_ZONE_22S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_23S] = "TE_SRS_WGS84_UTM_ZONE_23S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_24S] = "TE_SRS_WGS84_UTM_ZONE_24S";
+  sridMap[TE_SRS_WGS84_UTM_ZONE_25S] = "TE_SRS_WGS84_UTM_ZONE_25S";
+  sridMap[TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC] = "TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC";
 
   QStringList items;
-  //items << "4326" << "29181" << "29183" << "29101" << "3031";
+  for(it = sridMap.begin(); it != sridMap.end(); ++it)
+  {
+    if(it->first == srid)
+    {
+      items.append(it->second);
+      break;
+    }
+  }
 
-  items.append(sid);
-  if(sid != "4326")
-    items.append("4326");
-  if(sid != "29181")
-    items.append("29181");
-  if(sid != "29183")
-    items.append("29183");
-  if(sid != "29101")
-    items.append("29101");
-  if(sid != "3031")
-    items.append("3031");
+  for(it = sridMap.begin(); it != sridMap.end(); ++it)
+  {
+    if(it->first != srid)
+      items.append(it->second);
+  }
 
   bool ok;
   QString item = QInputDialog::getItem(this, "Config SRID", "SRID:", items, 0, false, &ok);
 
   if(ok && !items.isEmpty())
   {
-    int srid = atoi(item.toStdString().c_str());
-    setSRID(srid);
-    //te::map::MapDisplay::setSRID(srid);
-    draw();
+    for(it = sridMap.begin(); it != sridMap.end(); ++it)
+    {
+      if(item == it->second)
+      {
+        srid = it->first;
+        setSRID(srid);
+        draw();
+        break;
+      }
+    }
   }
 }
