@@ -28,7 +28,7 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   setAcceptDrops(true);
 
   m_tooltipDisplayPixmap = new QPixmap(w, h);
-  m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
+  clearTooltipPixmap();
 
   m_temporalVectorialDisplayPixmap = new QPixmap(w, h);
   m_temporalVectorialDisplayPixmap->fill(QColor(255, 255, 255, 0));
@@ -646,6 +646,7 @@ void MyDisplay::setExtent(const te::gm::Envelope& e)
   te::qt::widgets::MapDisplay::setExtent(e);
   //if(e.isValid())
   //  m_useChanged = true;
+  clearTooltipPixmap();
   if(m_timeSlider)
     clearTemporalPixmaps(m_timeSlider->getLayers());
 }
@@ -675,8 +676,29 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     te::map::DataGridOperation* op = layer->getDataGridOperation();
     if(op == 0)
       continue;
+
     te::qt::widgets::Canvas* canvas = getCanvas(layer);
     recWorld = canvas->getMatrix().inverted().mapRect(recDev);
+    if(recWorld.isValid() == false)
+      continue;
+
+    te::gm::Envelope mouseEnv(recWorld.bottomLeft().x(), recWorld.topRight().y(), recWorld.topRight().x(), recWorld.bottomLeft().y());
+    if(layer->getExtent())
+    {
+      te::gm::Envelope layerEnv(*layer->getExtent());
+      layerEnv.transform(layer->getSRID(), m_srid);
+      if(layerEnv.intersects(mouseEnv) == false)
+        continue;
+    }
+
+    te::gm::Polygon* mousePolyRec = new te::gm::Polygon(0, te::gm::PolygonType);
+    te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+    line->setPoint(0, recWorld.bottomLeft().x(), recWorld.topRight().y()); // lower left
+    line->setPoint(1, recWorld.topLeft().x(), recWorld.bottomLeft().y()); // upper left
+    line->setPoint(2, recWorld.topRight().x(), recWorld.bottomRight().y()); // upper rigth
+    line->setPoint(3, recWorld.bottomRight().x(), recWorld.topRight().y()); // lower rigth
+    line->setPoint(4, recWorld.bottomLeft().x(), recWorld.topRight().y()); // closing
+    mousePolyRec->push_back(line);
    
     te::da::DataSet* dataSet = op->getDataSet();
     te::da::DataSetType* dsType = op->getDataSetType();
@@ -717,39 +739,19 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
       }
       else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
       { 
-        te::gm::Polygon* polyRec = new te::gm::Polygon(0, te::gm::PolygonType);
-        te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
-
-        line->setPoint(0, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // lower left
-        line->setPoint(1, recWorld.topLeft().x(), recWorld.topLeft().y()); // upper left
-        line->setPoint(2, recWorld.topRight().x(), recWorld.topRight().y()); // upper rigth
-        line->setPoint(3, recWorld.bottomRight().x(), recWorld.bottomRight().y()); // lower rigth
-        line->setPoint(4, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // closing
-
-        polyRec->push_back(line);
-        if(g->intersects(polyRec))
+        if(g->intersects(mousePolyRec))
           visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        delete polyRec;
       }
       else if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
       {
-        te::gm::Polygon* polyRec = new te::gm::Polygon(0, te::gm::PolygonType);
-        te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
-
-        line->setPoint(0, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // lower left
-        line->setPoint(1, recWorld.topLeft().x(), recWorld.topLeft().y()); // upper left
-        line->setPoint(2, recWorld.topRight().x(), recWorld.topRight().y()); // upper rigth
-        line->setPoint(3, recWorld.bottomRight().x(), recWorld.bottomRight().y()); // lower rigth
-        line->setPoint(4, recWorld.bottomLeft().x(), recWorld.bottomLeft().y()); // closing
-
-        polyRec->push_back(line);
-        if(g->intersects(polyRec))
+        if(g->intersects(mousePolyRec))
           visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        delete polyRec;
       }
 
       delete g;
     }
+    delete mousePolyRec;
+
     if(visRows.empty())
       continue;
 
@@ -924,6 +926,21 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       continue;
     
     te::qt::widgets::Canvas* canvas = getCanvas(layer);
+    if(canvas == 0)
+      continue;
+
+    QRectF mouseRectF(0., 0., 5., 5.);
+    mouseRectF.moveCenter(p);     
+    mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
+    te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
+    te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+
+    line->setPoint(0, mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y()); // lower left
+    line->setPoint(1, mouseRectF.topLeft().x(), mouseRectF.bottomLeft().y()); // upper left
+    line->setPoint(2, mouseRectF.topRight().x(), mouseRectF.bottomRight().y()); // upper rigth
+    line->setPoint(3, mouseRectF.bottomRight().x(), mouseRectF.topRight().y()); // lower rigth
+    line->setPoint(4, mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y()); // closing
+    poly->push_back(line);
    
     te::da::DataSet* dataSet = op->getDataSet();
     te::da::DataSetType* dsType = op->getDataSetType();
@@ -983,23 +1000,9 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       }
       else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
       {
-        QRectF mouseRectF(0., 0., 5., 5.);
-        mouseRectF.moveCenter(p);     
-        mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
-        te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
-        te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
-
-        line->setPoint(0, mouseRectF.bottomLeft().x(), mouseRectF.bottomLeft().y()); // lower left
-        line->setPoint(1, mouseRectF.topLeft().x(), mouseRectF.topLeft().y()); // upper left
-        line->setPoint(2, mouseRectF.topRight().x(), mouseRectF.topRight().y()); // upper rigth
-        line->setPoint(3, mouseRectF.bottomRight().x(), mouseRectF.bottomRight().y()); // lower rigth
-        line->setPoint(4, mouseRectF.bottomLeft().x(), mouseRectF.bottomLeft().y()); // closing
-
-        poly->push_back(line);
         if(g->crosses(poly))
         {
           delete g;
-          delete poly;
           for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
           {
             val = dsType->getProperty(*it)->getName().c_str();
@@ -1010,10 +1013,10 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
           }
           break;
         }
-        delete poly;
       }
       delete g;
     }
+    delete poly;
 
     int w = m_displayPixmap->width();
     int h = m_displayPixmap->height();
@@ -1021,7 +1024,7 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
     {
       delete m_tooltipDisplayPixmap;
       m_tooltipDisplayPixmap = new QPixmap(w, h);
-      m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
+      clearTooltipPixmap();
       m_tooltipRect = QRect();
     }
 
@@ -1473,4 +1476,9 @@ void MyDisplay::print(QPrinter* printer)
   delete canvas;
 
   unsetWaitCursor();
+}
+
+void MyDisplay::clearTooltipPixmap()
+{
+  m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
 }
