@@ -36,12 +36,6 @@
 
 namespace te
 {
-// Forward declarations
-  namespace se
-  {
-    class Graphic;
-  }
-
   namespace qt
   {
     namespace widgets
