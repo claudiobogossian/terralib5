@@ -29,8 +29,10 @@
 #include "../../common/Translator.h"
 #include "layer/FolderLayerItemFactory.h"
 #include "layer/LayerItemFactory.h"
+#include "se/BasicFillWidgetFactory.h"
 #include "se/GlyphGraphicWidgetFactory.h"
 #include "se/GlyphMarkFactory.h"
+#include "se/GraphicFillWidgetFactory.h"
 #include "se/LocalGraphicWidgetFactory.h"
 #include "se/WellKnownGraphicWidgetFactory.h"
 #include "se/WellKnownMarkFactory.h"
@@ -111,6 +113,10 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::GlyphGraphicWidgetFactory::initialize();
   te::qt::widgets::LocalGraphicWidgetFactory::initialize();
 
+// It initializes the fill widgets factories
+  te::qt::widgets::BasicFillWidgetFactory::initialize();
+  te::qt::widgets::GraphicFillWidgetFactory::initialize();
+
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
 
@@ -130,6 +136,10 @@ void te::qt::widgets::Module::finalize()
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();
   te::qt::widgets::GlyphGraphicWidgetFactory::finalize();
   te::qt::widgets::LocalGraphicWidgetFactory::finalize();
+
+// It finalizes the fill widgets factories
+  te::qt::widgets::BasicFillWidgetFactory::finalize();
+  te::qt::widgets::GraphicFillWidgetFactory::finalize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
 }
