@@ -18,18 +18,21 @@
  */
 
 /*!
- \file SpatialReferenceSystemManager.cpp
+ \file terralib/srs/SpatialReferenceSystemManager.cpp
  
  \brief A singleton to manage Coordinate Systems representations.  
- */
+*/
 
+// TerraLib
+#include "../common/Translator.h"
+#include "Exception.h"
 #include "SpatialReferenceSystem.h"
 #include "SpatialReferenceSystemManager.h"
-#include "Exception.h"
 #include "WKTReader.h"
 
-#include <cassert>
+// STL
 #include <algorithm>
+#include <cassert>
 
 te::srs::SpatialReferenceSystemManager::SpatialReferenceSystemManager()
 {
