@@ -41,13 +41,13 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::SymbolizerPreviewWidget::SymbolizerPreviewWidget(const QSize& size, const te::gm::GeomType& type, QWidget* parent)
+te::qt::widgets::SymbolizerPreviewWidget::SymbolizerPreviewWidget(const QSize& size, const te::se::SymbolizerType& type, QWidget* parent)
   : QWidget(parent),
     m_geom(0),
     m_size(size)
 {
   // Building the geometry to preview
-  setGeometryType(type);
+  setSymbolizerType(type);
 
   // Label preview
   m_previewLabel = new QLabel(this);
@@ -75,7 +75,7 @@ void te::qt::widgets::SymbolizerPreviewWidget::updatePreview(const std::vector<t
   m_previewLabel->setPixmap(te::qt::widgets::StylePreview::build(symbs, m_geom, m_size));
 }
 
-void te::qt::widgets::SymbolizerPreviewWidget::setGeometryType(const te::gm::GeomType& type)
+void te::qt::widgets::SymbolizerPreviewWidget::setSymbolizerType(const te::se::SymbolizerType& type)
 {
   delete m_geom;
 
@@ -85,11 +85,11 @@ void te::qt::widgets::SymbolizerPreviewWidget::setGeometryType(const te::gm::Geo
   // Building...
   switch(type)
   {
-    case te::gm::PointType:
+    case te::se::POINT_SYMBOLIZER:
       m_geom = new te::gm::Point(m_size.width() * 0.5, m_size.height() * 0.5);
     break;
 
-    case te::gm::LineStringType:
+    case te::se::LINE_SYMBOLIZER:
     {
       te::gm::LineString* line = new te::gm::LineString(4, te::gm::LineStringType);
       line->setPoint(0, offset, offset);
@@ -100,7 +100,7 @@ void te::qt::widgets::SymbolizerPreviewWidget::setGeometryType(const te::gm::Geo
     }
     break;
 
-    case te::gm::PolygonType:
+    case te::se::POLYGON_SYMBOLIZER:
     {
       te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
       te::gm::LinearRing* ring = new te::gm::LinearRing(5, te::gm::LineStringType);
@@ -111,11 +111,6 @@ void te::qt::widgets::SymbolizerPreviewWidget::setGeometryType(const te::gm::Geo
       ring->setPoint(4, offset, offset);
       polygon->setRingN(0, ring);
       m_geom = polygon;
-    }
-
-    default:
-    {
-       // Unsupported geometry type to this widget.
     }
   }
 }

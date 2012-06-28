@@ -42,13 +42,13 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::SymbolizerTableWidget::SymbolizerTableWidget(const QSize& size, const te::gm::GeomType& type, QWidget* parent)
+te::qt::widgets::SymbolizerTableWidget::SymbolizerTableWidget(const QSize& size, const te::se::SymbolizerType& type, QWidget* parent)
   : QWidget(parent),
     m_geom(0),
     m_size(size)
 {
   // Building the geometry to preview
-  setGeometryType(type);
+  setSymbolizerType(type);
 
   // Table preview
   m_previewTable = new QTableWidget(this);
@@ -83,7 +83,7 @@ void te::qt::widgets::SymbolizerTableWidget::updatePreview(const std::vector<te:
   }
 }
 
-void te::qt::widgets::SymbolizerTableWidget::setGeometryType(const te::gm::GeomType& type)
+void te::qt::widgets::SymbolizerTableWidget::setSymbolizerType(const te::se::SymbolizerType& type)
 {
   delete m_geom;
 
@@ -93,11 +93,11 @@ void te::qt::widgets::SymbolizerTableWidget::setGeometryType(const te::gm::GeomT
   // Building...
   switch(type)
   {
-    case te::gm::PointType:
+    case te::se::POINT_SYMBOLIZER:
       m_geom = new te::gm::Point(m_size.width() * 0.5, m_size.height() * 0.5);
     break;
 
-    case te::gm::LineStringType:
+    case te::se::LINE_SYMBOLIZER:
     {
       te::gm::LineString* line = new te::gm::LineString(2, te::gm::LineStringType);
       line->setPoint(0, offset, m_size.height() * 0.5);
@@ -106,7 +106,7 @@ void te::qt::widgets::SymbolizerTableWidget::setGeometryType(const te::gm::GeomT
     }
     break;
 
-    case te::gm::PolygonType:
+    case te::se::POLYGON_SYMBOLIZER:
     {
       te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
       te::gm::LinearRing* ring = new te::gm::LinearRing(5, te::gm::LineStringType);
@@ -117,11 +117,6 @@ void te::qt::widgets::SymbolizerTableWidget::setGeometryType(const te::gm::GeomT
       ring->setPoint(4, offset, offset);
       polygon->setRingN(0, ring);
       m_geom = polygon;
-    }
-
-    default:
-    {
-       // TODO: Unsupported geometry type.
     }
   }
 }
