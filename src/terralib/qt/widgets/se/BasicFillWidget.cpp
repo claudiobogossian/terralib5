@@ -34,7 +34,7 @@
 #include <cassert>
 
 te::qt::widgets::BasicFillWidget::BasicFillWidget(QWidget* parent, Qt::WindowFlags f)
-  : QWidget(parent, f),
+  : AbstractFillWidget(parent, f),
     m_ui(new Ui::BasicFillWidgetForm),
     m_fill(new te::se::Fill)
 {
@@ -62,20 +62,32 @@ te::qt::widgets::BasicFillWidget::~BasicFillWidget()
   delete m_fill;
 }
 
-void te::qt::widgets::BasicFillWidget::setFill(const te::se::Fill* fill)
+bool te::qt::widgets::BasicFillWidget::setFill(const te::se::Fill* fill)
 {
   assert(fill);
+
+  // Verifying if this widget can deal with the given fill...
+  const te::se::Graphic* g = fill->getGraphicFill();
+  if(g != 0)
+    return false;
 
   delete m_fill;
 
   m_fill = fill->clone();
 
   updateUi();
+
+  return true;
 }
 
 te::se::Fill* te::qt::widgets::BasicFillWidget::getFill() const
 {
   return m_fill->clone();
+}
+
+QString te::qt::widgets::BasicFillWidget::getFillType() const
+{
+  return tr("Basic Fill");
 }
 
 void te::qt::widgets::BasicFillWidget::initialize()
