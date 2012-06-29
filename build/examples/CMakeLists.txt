@@ -140,7 +140,7 @@ if(EXAMPLE_TIMESERIES)
   add_subdirectory(terralib_example_timeseries)
 endif()
 
-if(EXAMPLE_MYEVIWER)
+if(EXAMPLE_MYVIEWER)
   add_subdirectory(terralib_example_myviewer)
 endif()
 
