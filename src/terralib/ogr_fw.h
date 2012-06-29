@@ -21,7 +21,7 @@
   \file org_fw.h
 
   \brief This file contains forward declarations for the OGR Driver Implementation of TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_FW_INTERNAL_OGR_FW_H
 #define __TERRALIB_FW_INTERNAL_OGR_FW_H
@@ -36,8 +36,9 @@ namespace te
     class DataSourceFactory;
     class DataSourceTransactor;
     class Platform;
-  } 
-}
+
+  } // end namespace org
+}   // end namespace te
 
 #endif  // __TERRALIB_FW_INTERNAL_OGR_FW_H
 
