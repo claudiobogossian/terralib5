@@ -73,7 +73,7 @@ namespace te
         
       protected slots:
         
-        void onSRSTreeWidgetItemActivated(QTreeWidgetItem* , int);
+        void onSRSTreeWidgetItemClicked(QTreeWidgetItem* , int);
         void onMoreInfoToolButtonClicked();
         void onAddSRSToolButtonClicked();
         void onOkPushButtonClicked();
