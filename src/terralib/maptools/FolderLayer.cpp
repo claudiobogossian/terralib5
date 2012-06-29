@@ -33,8 +33,8 @@ te::map::FolderLayer::FolderLayer(const std::string& id,
                                   const std::string& title,
                                   AbstractLayer* parent)
   : te::map::AbstractLayer(id, title, parent),
-    m_mbr(0),
-    m_srid(-1)
+    m_srid(-1),
+    m_mbr(0)
 {}
 
 te::map::FolderLayer::~FolderLayer()

@@ -28,7 +28,7 @@
 #include "Exception.h"
 #include "WKTReader.h"
 
-te::srs::CoordinateSystem* te::srs::WKTReader::read(const char* wkt)
+te::srs::SpatialReferenceSystem* te::srs::WKTReader::read(const char* wkt)
 {
   WKTParser<std::string::const_iterator> parser;
 
@@ -42,7 +42,7 @@ te::srs::CoordinateSystem* te::srs::WKTReader::read(const char* wkt)
   if(!isValid)
     throw Exception(TR_SRS("Invalid SRS WKT - parsing failed!"));
 
-  te::srs::CoordinateSystem* srs = parser.getSRS();
+  te::srs::SpatialReferenceSystem* srs = parser.getSRS();
 
   return srs;
 }

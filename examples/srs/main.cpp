@@ -36,16 +36,18 @@
 #include <exception>
 #include <iostream>
 
-int main(int /*argc*/, char** /*argv*/)
+int main(int argc, char** argv)
 {
 // initialize Terralib support
 // It initializes all the data source drivers (see LoadModule.cpp)
   try
   {
     TerraLib::getInstance().initialize();
-    CoordinateSystemFactory();
-    RecognizeSRIDs();
-    ConvertCoordinates();
+
+      SpatialReferenceSystemManager();
+      RecognizeSRIDs();
+      ConvertCoordinates();
+  
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

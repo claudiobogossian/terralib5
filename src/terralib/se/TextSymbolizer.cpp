@@ -33,7 +33,8 @@
 #include "TextSymbolizer.h"
 
 te::se::TextSymbolizer::TextSymbolizer()
-  : m_geometry(0),
+  : te::se::Symbolizer(te::se::TEXT_SYMBOLIZER),
+    m_geometry(0),
     m_label(0),
     m_font(0),
     m_labelPlacement(0),

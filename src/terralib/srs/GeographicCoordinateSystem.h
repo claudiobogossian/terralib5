@@ -27,10 +27,7 @@
 #define __TERRALIB_SRS_INTERNAL_GEOGRAPHIC_COORDINATE_SYSTEM_H
 
 #include "Config.h"
-#include "CoordinateSystem.h"
-#include "Datum.h"
-
-#include "../common/UnitOfMeasure.h"
+#include "SpatialReferenceSystem.h"
 
 #include <string>
 
@@ -38,58 +35,60 @@ namespace te
 {
 	namespace srs
 	{
+    class Datum;
     /*!
      \class GeographicCoordinateSystem
      \brief A Geographic Coordinate System (GEOGCS).
       A Geographic Coordinate System is a coordinate system based on latitude and longitude.
     */
-    class TESRSEXPORT GeographicCoordinateSystem: public CoordinateSystem
+    class TESRSEXPORT GeographicCoordinateSystem: public SpatialReferenceSystem
     {
       public:
+      
+      /*!
+        \brief Constructor.        
+        \param name     The geographic coordinate system name.
+        \param unitName The name of the angular unit for this GEOGCS.
+        \param primem   The meridian used to take longitude measurements from.
+      */
+      GeographicCoordinateSystem(const std::string& name="", const std::string unitName="degree", double primem=0.0);
+      
+      /*! \brief Destructor */
+      ~GeographicCoordinateSystem();
+      
+      /*! 
+       \brief Sets the associated Datum. 
+       \param datum Pointer to GEOGCS datum. Do not pass null. Class takes the pointer ownership.
+       */
+      void setDatum(Datum* datum);
 
-        //! Default constructor.
-        GeographicCoordinateSystem();
+      /*! 
+       \brief Returns the associated Datum. 
+       \return A pointer to the GEOGCS datum. Class maintains the pointer ownership.
+       */
+      const Datum* getDatum() const;
 
-        /*!
-          \brief Constructor from parameters.
-          
-          \param name The geographic coordinate system name.
-          \param datum The horizontal datum which corresponds to the procedure used to measure positions on the surface of the Earth.
-          \param primem The meridian used to take longitude measurements from.
-          \param angUnit The name of the angular unit for this GEOGCS (default value is "DEGREE").
-        */
-        GeographicCoordinateSystem(const std::string& name, const Datum& datum, 
-                                   double primem=0.0, const std::string& unitName="DEGREE");
+      /*! 
+       \brief Returns the meridian used to take longitude measurements from.
+       \return The meridian used to take longitude measurements from.
+       */
+      double getPrimem() const; 
+      
+      /*! 
+       \brief Sets the meridian used to take longitude measurements from.
+       \param primen The meridian used to take longitude measurements from.
+       */
+      void setPrimem(double primen); 
 
-        //! Returns the associated Datum.
-        const te::srs::Datum& getDatum() const { return m_datum; }
+      std::string getWKT() const;
 
-        /*!
-          \brief Sets the associated Datum.
-          \param datum The Datum that will be associated to the Geographic Coordinate System.
-         */
-        void setDatum(const Datum& datum) { m_datum = datum; }
+      bool isGeographic() const;
 
-        //! Returns the meridian used to take longitude measurements from.
-        double getPrimem() const { return m_primem; } 
+    private:
 
-        /*!
-          \brief Sets the meridian used to take longitude measurements from.
-          \param primem The meridian used to take longitude measurements from.
-         */
-        void setPrimem(const double& primem) { m_primem = primem; }
-
-        //! Returns a WKT string that represent the GCRS.
-        std::string getWKT() const;
-
-        bool isGeographic() const
-        { return true; }
-
-      private:
-
-        Datum m_datum;    //!< Datum.
-        double m_primem;  //!< The meridian used to take longitude measurements from.
-    };
-  }
+      Datum* m_datum;    //!< Datum.
+      double m_primem;  //!< The meridian used to take longitude measurements from.
+  };
+}
 }
 #endif //__TERRALIB_SRS_INTERNAL_GEOGRAPHIC_COORDINATE_SYSTEM_H

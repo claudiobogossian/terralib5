@@ -36,7 +36,6 @@
 #include "../raster/RasterFactory.h"
 #include "../raster/Utils.h"
 #include "../srs/Converter.h"
-#include "../srs/CoordinateSystemFactory.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"

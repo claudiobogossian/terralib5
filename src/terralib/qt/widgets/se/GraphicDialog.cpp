@@ -50,8 +50,8 @@ te::qt::widgets::GraphicDialog::GraphicDialog(QWidget* parent, const bool noButt
   for(it = keys.rbegin(); it != keys.rend(); ++it)
   {
     te::qt::widgets::GraphicWidget* gw = te::qt::widgets::AbstractGraphicWidgetFactory::make(*it);
-    gw->setParent(this);
     m_ui->m_graphicTypeComboBox->addItem(gw->getGraphicType());
+    connect(gw, SIGNAL(graphicChanged()), SLOT(onGraphicChanged()));
     m_graphicWidgets->addWidget(gw);
   }
 

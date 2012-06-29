@@ -46,11 +46,11 @@ namespace te
     public:
 
       /*!
-        \brief Initializes a new Ellipsoid from parameters.
+        \brief Constructor.
 
-        \param name Ellipsoid name.
-        \param rad  Semi-major axis
-        \param invflat Inverse flattening.
+        \param name Ellipsoid name (default empty string).
+        \param rad  Semi-major axis (default 0.0);
+        \param invflat Inverse flattening (default 0.0).
       */
       Ellipsoid(const std::string& name = "", double rad = 0.0, double invflat = 0.0);
 
@@ -58,37 +58,37 @@ namespace te
         \brief Returns the Ellipsoid name.
         \return  Ellipsoid name.
        */
-      const std::string& getName() const { return m_name; }
+      const std::string& getName() const;
       
       /*!
         \brief Sets the Ellipsoid name.        
         \param name Ellipsoid name.
        */
-      void setName(const std::string& name) { m_name = name; }
+      void setName(const std::string& name);
 
       /*!
         \brief Returns the Ellipsoid radium.
         \return Ellipsoid radium.
        */
-      double getRadium() const { return m_radium; }
+      double getRadium() const;
 
       /*!
         \brief Sets the Ellipsoid radium.        
         \param rad Ellipsoid radium.
        */
-      void setRadium(const double& rad) { m_radium = rad; }
+      void setRadium(const double& rad);
 
       /*!
         \brief Returns the Ellipsoid inverse flattening.
         \return  Ellipsoid inverse flattening.
        */
-      double getInverseFlattening() const { return m_invFlattening; }
+      double getInverseFlattening() const;
 
       /*!
         \brief Sets the Ellipsoid inverse flattening.
         \param invflat  Ellipsoid inverse flattening.
        */
-      void setInverseFlattening(const double& invflat) { m_invFlattening = invflat; }
+      void setInverseFlattening(const double& invflat);
 
       //! Returns a WKT string that represent the ellipsoid.
       std::string getWKT() const;

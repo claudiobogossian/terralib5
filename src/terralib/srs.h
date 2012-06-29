@@ -28,12 +28,12 @@
 // TerraLib
 #include "srs/Config.h"
 #include "srs/Converter.h"
-#include "srs/CoordinateSystem.h"
+#include "srs/SpatialReferenceSystem.h"
 #include "srs/Datum.h"
 #include "srs/Ellipsoid.h"
 #include "srs/GeographicCoordinateSystem.h"
 #include "srs/ProjectedCoordinateSystem.h"
-#include "srs/CoordinateSystemFactory.h"
+#include "srs/SpatialReferenceSystemManager.h"
 
 namespace te
 {

@@ -29,7 +29,8 @@
 #include "PointSymbolizer.h"
 
 te::se::PointSymbolizer::PointSymbolizer()
-  : m_geometry(0),
+  : te::se::Symbolizer(te::se::POINT_SYMBOLIZER),
+    m_geometry(0),
     m_graphic(0)
 {
 }
