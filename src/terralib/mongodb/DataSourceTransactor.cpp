@@ -29,6 +29,13 @@
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
 #include "Exception.h"
+#include "FwDataSet.h"
+
+// STL
+#include <memory>
+
+// MongoDB
+#include <mongo/client/dbclient.h>
 
 te::mongodb::DataSourceTransactor::DataSourceTransactor(DataSource* parent)
   : m_ds(parent)
@@ -63,7 +70,11 @@ te::da::DataSet* te::mongodb::DataSourceTransactor::getDataSet(const std::string
                                                                te::common::TraverseType travType, 
                                                                te::common::AccessPolicy rwRole)
 {
-  throw Exception(TR_MONGODB("Not implemented yet!"));
+  std::string dataset_name = m_ds->getDB() + "." + name;
+
+  std::auto_ptr<mongo::DBClientCursor> cursor(m_ds->getConn()->query(dataset_name, mongo::BSONObj()));
+
+  return new FwDataSet(cursor.release());
 }
 
 te::da::DataSet* te::mongodb::DataSourceTransactor::getDataSet(const std::string& name,

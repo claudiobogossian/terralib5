@@ -34,7 +34,8 @@
 #include "ShadedRelief.h"
 
 te::se::RasterSymbolizer::RasterSymbolizer()
-  : m_geometry(0),
+  : te::se::Symbolizer(te::se::RASTER_SYMBOLIZER),
+    m_geometry(0),
     m_opacity(0),
     m_channelSelection(0),
     m_overlapBehavior(NO_BEHAVIOR),

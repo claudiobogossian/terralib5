@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../geometry/Enums.h"
+#include "../../../se/Enums.h"
 #include "../Config.h"
 
 // Qt
@@ -46,7 +47,7 @@ namespace te
   {
     class Geometry;
   }
-  
+
   namespace se
   {
     class Symbolizer;
@@ -74,10 +75,10 @@ namespace te
             \brief Constructs a symbolizer table widget with fixed size, which is a child of parent, with widget flags set to f. 
 
             \param size The preview size.
-            \param type The geometry type that will be used to visualize the preview: {PointType | LineStringType | PolygonType}
+            \param type The symbolizer type that will be visualized on preview.
             \param parent The widget's parent.
           */
-          SymbolizerTableWidget(const QSize& size, const te::gm::GeomType& type, QWidget* parent = 0);
+          SymbolizerTableWidget(const QSize& size, const te::se::SymbolizerType& type, QWidget* parent = 0);
 
           /*! \brief Destructor. */
           ~SymbolizerTableWidget();
@@ -96,11 +97,11 @@ namespace te
           void updatePreview(const std::vector<te::se::Symbolizer*>& symbs);
 
           /*!
-            \brief Sets the geometry type that will be used to visualize the preview.
+            \brief Sets the symbolizer type that will be visualized on preview.
 
-            \param type The geometry type. {PointType | LineStringType | PolygonType}
+            \param type The symbolizer type.
           */
-          void setGeometryType(const te::gm::GeomType& type);
+          void setSymbolizerType(const te::se::SymbolizerType& type);
 
           QSize sizeHint() const;
 

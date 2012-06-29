@@ -23,8 +23,8 @@
  \brief A class to manage Coordinate Systems representations.
  */
 
-#ifndef __TERRALIB_SRS_INTERNAL_SpatialReferenceSystemMANAGER_H
-#define __TERRALIB_SRS_INTERNAL_SpatialReferenceSystemMANAGER_H
+#ifndef __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
+#define __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
 
 #include "Config.h"
 
@@ -198,4 +198,4 @@ namespace te
     };
   }
 }
-#endif;      
+#endif; // __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
