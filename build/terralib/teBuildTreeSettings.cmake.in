@@ -7,11 +7,8 @@ set (TE_DEPENDENCIES_DIR "@TE_DEPENDENCIES_DIR@" CACHE PATH "Find the directory 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
 
 #TerraLib dependencies dir
-if(WIN32)
-  set (TE_DPS ${TE_DEPENDENCIES_DIR} )
-  if( NOT "${TE_DPS}" STREQUAL "")
-    set ( CMAKE_FIND_ROOT_PATH  "${TE_DPS}" )
-  endif()
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}")
 endif()
 
 # Configuration files folder.

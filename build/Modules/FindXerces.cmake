@@ -8,27 +8,28 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
-find_path(XERCES_INCLUDE_DIR xercesc/util/XercesVersion.hpp
-          PATHS /usr/local/include /usr/include
-          PATH_SUFFIXES "xerces")
+find_path(
+  XERCES_INCLUDE_DIR xercesc/util/XercesVersion.hpp
+  PATHS /usr/local/include /usr/include
+  PATH_SUFFIXES "xerces" "xerces/include" "include/xerces"
+)
           
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
-if(WIN32)
-  find_library(XERCES_LIBRARY_RELEASE
-               NAMES xerces-c
-               )
-               
-  find_library(XERCES_LIBRARY_DEBUG
-               NAMES xerces-c_d
-               )
-               
-  checkLibNames("XERCES")
-
-else(WIN32)
-  find_library(XERCES_LIBRARY
-               NAMES xerces-c
-               PATHS /usr/local/lib /usr/lib)  
-endif(WIN32)
+find_library(
+  XERCES_LIBRARY_RELEASE
+  NAMES xerces-c
+  PATHS /usr/local/lib /usr/lib
+  PATH_SUFFIXES "xerces/lib"
+)
+             
+find_library(
+  XERCES_LIBRARY_DEBUG
+  NAMES xerces-c_d
+  PATHS /usr/local/lib /usr/lib
+  PATH_SUFFIXES "xerces/lib"
+)
+             
+checkLibNames("XERCES")
 
 set(Xerces_FOUND FALSE)
 

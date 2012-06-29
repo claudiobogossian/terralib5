@@ -8,31 +8,29 @@
 # QWT_LIBRARY_DEBUG   - The Qwt debug library
 # QWT_LIBRARY_RELEASE - The Qwt release library
 
-find_path(QWT_INCLUDE_DIR qwt.h
-          PATHS /usr/local/qwt/include /usr/local/include
-                /usr/include/qwt /usr/include
-          PATH_SUFFIXES "qwt"
-          )
-                
-if(WIN32)
-  find_library(QWT_LIBRARY_DEBUG
-               NAMES qwtd
-               PATHS 
-               )
-                              
-  find_library(QWT_LIBRARY_RELEASE
-               NAME qwt
-               )
+find_path(
+  QWT_INCLUDE_DIR 
+  NAMES qwt.h
+  PATHS /usr/local/include/qwt /usr/local/include /usr/include/qwt /include /usr/include 
+  PATH_SUFFIXES qwt/include include/qwt
+)
+
+find_library(
+  QWT_LIBRARY_DEBUG
+  NAMES qwtd
+  PATHS /usr/local/qwt/lib /usr/local/lib /usr/lib/qwt /lib /usr/lib
+  PATH_SUFFIXES "/qwt/lib"
+)
+                        
+find_library(
+  QWT_LIBRARY_RELEASE
+  NAME qwt
+  PATHS /usr/local/qwt/lib /usr/local/lib /usr/lib/qwt /lib /usr/lib
+  PATH_SUFFIXES "/qwt/lib"
+)
        
-  checkLibNames("QWT")
+checkLibNames("QWT")
   
-else(WIN32)
-  find_library(QWT_LIBRARY
-               NAME qwt
-               PATHS /usr/local/qwt/lib /usr/local/lib
-                     /usr/lib/qwt /lib /usr/lib)
-endif(WIN32)                
- 
 set(Qwt_FOUND FALSE)
 
 if(QWT_INCLUDE_DIR AND QWT_LIBRARY)

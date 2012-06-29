@@ -5,7 +5,7 @@ if(Boost_FOUND)
   set (DEP_INCLUDES ${DEP_INCLUDES} ${Boost_INCLUDE_DIRS})
 endif()
 
-find_package(Grib)
+find_package(Grib REQUIRED)
 if(GRIB_FOUND)
   list (APPEND DEP_LIBS ${GRIB_LIBRARY})
   list (APPEND DEP_INCLUDES ${GRIB_INCLUDE_DIR})

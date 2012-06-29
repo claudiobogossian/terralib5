@@ -9,28 +9,29 @@
 # PROJ4_LIBRARY_RELEASE - The Proj4 release library
 
 # Find path - tries to find *.h in paths hard-coded by the script
-find_path(PROJ4_INCLUDE_DIR org_proj4_Projections.h
-          PATHS "/usr/local/include" "/usr/include" 
-          PATH_SUFFIXES "proj4")
+find_path(
+  PROJ4_INCLUDE_DIR org_proj4_Projections.h
+  PATHS "/usr/local/include" "/usr/include" 
+  PATH_SUFFIXES "proj4" "proj4/include" "include/proj4"
+)
 
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
-if(WIN32)
-  find_library(PROJ4_LIBRARY_RELEASE
-               NAMES proj_i
-               )
+find_library(
+  PROJ4_LIBRARY_RELEASE
+  NAMES proj_i proj
+  PATHS /usr/local/lib /lib /usr/lib
+  PATH_SUFFIXES "proj4/lib"
+)
 
-  find_library(PROJ4_LIBRARY_DEBUG
-               NAMES proj_i
-               )
+find_library(
+  PROJ4_LIBRARY_DEBUG
+  NAMES proj_i proj
+  PATHS /usr/local/lib /lib /usr/lib
+  PATH_SUFFIXES "proj4/lib"
+)
 
-  checkLibNames("PROJ4")
+checkLibNames("PROJ4")
   
-else(WIN32)
-  find_library(PROJ4_LIBRARY
-               NAME proj
-               PATHS /usr/local/lib /lib /usr/lib)
-endif(WIN32)
-             
 # Export include and library path for linking with other libraries
 if(PROJ4_INCLUDE_DIR AND PROJ4_LIBRARY)
   set(PROJ4_FOUND TRUE)

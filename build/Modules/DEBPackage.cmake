@@ -8,33 +8,14 @@ GET_PROPERTY(
 )
 
 foreach (dep ${deps})
-  set (_libs "${dep}_LIBRARIES")
-  
-  message ("dep: ${dep}, libs: ${_libs}")
-  message ("boost: ${Boost_LIBRARIES}")
-  
-  foreach(_lib ${libs})
-    set (_req ", ${_lib}" )
-    
-    if(NOT "${_${dep}_VERSION}" STREQUAL "")
-      set (_req "${_req} (>=_${dep}_VERSION)")
-    endif()
-    message ("req: ${_req}")
-    set (p_deps ${p_deps}${_req})
-  endforeach()
+  getLibrariesNames( ${dep} _libs )
+  set (p_deps "${p_deps},${_libs}")
 endforeach()
 
-message ("pack: ${pname}")
-message ("deps: ${p_deps}")
-
-#if()
-#  set (p_deps "libstdc++ (>=6), libc (>=6), gcc (>=4.5.2), liblog4cxx, libboost_filesystem (>=1.46), libboost_system (>=1.46)")
-#endif()
-
-set (CPACK_DEBIAN_PACKAGE_NAME ${pname})
+#set (CPACK_DEBIAN_PACKAGE_NAME ${pname})
 set (CPACK_DEBIAN_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
 # CPACK_DEBIAN_PACKAGE_ARCHITECTURE)
-#set (CPACK_DEBIAN_PACKAGE_DEPENDS "${p_deps}")
+set (CPACK_DEBIAN_PACKAGE_DEPENDS "${p_deps}")
 set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Frederico A. Bede <frederico.bede@funcate.org.br>")
 set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Terralib 5 package for Linux users.")
 # CPACK_DEBIAN_PACKAGE_SECTION
@@ -48,3 +29,5 @@ set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 # CPACK_DEBIAN_PACKAGE_CONFLICTS
 # CPACK_DEBIAN_PACKAGE_PROVIDES
 # CPACK_DEBIAN_PACKAGE_REPLACES
+
+message ("pack: ${CPACK_PACKAGE_FILE_NAME}")

@@ -25,36 +25,35 @@
 # LOG4CXX_LIBRARY_DEBUG - log4cxx debug library
 # LOG4CXX_LIBRARY_RELEASE - log4cxx release library
 
-find_path(LOG4CXX_INCLUDE_DIR NAMES log4cxx.h 
-          PATHS /include/log4cxx /usr/include /usr/include/log4cxx
-      	        /usr/local/include/log4cxx
-          PATH_SUFFIXES log4cxx log4cxx/include/log4cxx
-          )
+find_path(
+  LOG4CXX_INCLUDE_DIR NAMES log4cxx.h 
+  PATHS /include/log4cxx /usr/include /usr/include/log4cxx /usr/local/include/log4cxx
+  PATH_SUFFIXES log4cxx log4cxx/include/log4cxx log4cxx/include
+)
                 
-if(WIN32)
-  find_library(LOG4CXX_LIBRARY_DEBUG
-               NAMES log4cxx_d
-               )
+find_library(
+  LOG4CXX_LIBRARY_DEBUG
+  NAMES log4cxx_d
+  PATHS /usr/local/lib /lib /usr/lib
+  PATH_SUFFIXES log4cxx/lib
+)
+             
+find_library(
+  LOG4CXX_LIBRARY_RELEASE
+  NAMES log4cxx
+  PATHS /usr/local/lib /lib /usr/lib
+  PATH_SUFFIXES log4cxx/lib
+)
                
-  find_library(LOG4CXX_LIBRARY_RELEASE
-               NAMES log4cxx
-               )
-               
-  checkLibNames("LOG4CXX")
+checkLibNames("LOG4CXX")
 
-else(WIN32)
-  find_library(LOG4CXX_LIBRARY
-               NAMES log4cxx
-               PATHS /usr/local/lib /lib /usr/lib)
-endif(WIN32)                   
-
-set(LOG4CXX_FOUND FALSE)
+set(Log4Cxx_FOUND FALSE)
 
 if(LOG4CXX_INCLUDE_DIR AND LOG4CXX_LIBRARY)
-  set(LOG4CXX_FOUND TRUE)
+  set(Log4Cxx_FOUND TRUE)
   message(STATUS "-- Found log4cxx library")
 else()
-  if(Log4cxx_FIND_REQUIRED)
+  if(Log4Cxx_FIND_REQUIRED)
     message(FATAL_ERROR "-- Error: log4cxx required but NOT found.")
   else()
     message(STATUS "-- NOT Found log4cxx, disabling it")

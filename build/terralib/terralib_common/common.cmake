@@ -6,8 +6,8 @@ set (DEP_INCLUDES "")   #include paths needed by common module.
 
 # 3rd-party definitions.
 # -------------------------------------------------- 
-find_package(Log4Cxx)
-if(LOG4CXX_FOUND)
+find_package(Log4Cxx REQUIRED)
+if(Log4Cxx_FOUND)
   set(DEP_INCLUDES ${LOG4CXX_INCLUDE_DIR})
   set(DEP_LIBS ${LOG4CXX_LIBRARY})	
 endif()

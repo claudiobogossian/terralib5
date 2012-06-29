@@ -45,6 +45,11 @@ if(EXISTS "${TERRALIB_CMAKE_DIR}/CMakeCache.txt")
    include("${TERRALIB_CMAKE_DIR}/teBuildTreeSettings.cmake")
 else()
   set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
+  
+  if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+    list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}")
+  endif()
+  
 	set ( TE_DIRS @_TE_INST_INCLUDE_DIRS@ )	
   set ( TE_ROOT_INC "${TERRALIB_CMAKE_DIR}/.." )
 	set ( TE_INCLUDE_DIRS "${TE_ROOT_INC}" )
