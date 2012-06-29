@@ -1,17 +1,17 @@
-# This script builds the myviwer example
+# This script builds the myviewer example
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")  # the terralib root directory (change it if it is in another directory)
-set(SRCDIR ${ROOT}/examples/myviwer)           # directory where the source files of the myviwer example are located
-set(INCLDIR ${SRCDIR})                            # directory where the header files of the myviwer example are located
+set(SRCDIR ${ROOT}/examples/myviewer)           # directory where the source files of the myviewer example are located
+set(INCLDIR ${SRCDIR})                            # directory where the header files of the myviewer example are located
 
 # Set the project name
-set(PROJ_NAME "terralib_example_myviwer")
-project(${PROJ_NAME})         # the project name is terralib_example_myviwer
-SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_myviwer
+set(PROJ_NAME "terralib_example_myviewer")
+project(${PROJ_NAME})         # the project name is terralib_example_myviewer
+SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_myviewer
 
 #Definitions for Windows compiling
 if(WIN32)
