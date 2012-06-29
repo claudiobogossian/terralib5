@@ -42,7 +42,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   m_selSrsId.second = "";
   
   // Signals & slots
-  connect(m_ui->m_SRSTreeWidget, SIGNAL(itemActivated(QTreeWidgetItem*, int)), SLOT(onSRSTreeWidgetItemActivated(QTreeWidgetItem* , int)));
+  connect(m_ui->m_SRSTreeWidget, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onSRSTreeWidgetItemClicked(QTreeWidgetItem* , int)));
   connect(m_ui->m_moreInfoToolButton, SIGNAL(clicked()), SLOT(onMoreInfoToolButtonClicked())); 
   connect(m_ui->m_addSRSToolButton, SIGNAL(clicked()), SLOT(onAddSRSToolButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), SLOT(onOkPushButtonClicked()));
@@ -153,22 +153,30 @@ void te::qt::widgets::SRSManagerDialog::onAddSRSToolButtonClicked()
   }
 }
 
-void te::qt::widgets::SRSManagerDialog::onSRSTreeWidgetItemActivated(QTreeWidgetItem * item, int /*column*/)
+void te::qt::widgets::SRSManagerDialog::onSRSTreeWidgetItemClicked(QTreeWidgetItem * item, int /*column*/)
 {
   if (!item || item->text(1).isEmpty()) 
+  {
+    m_selSrsId.first = -1;  
+    m_selSrsId.second = "";
     return;
-  
+  }
   m_selSrsId.first = item->text(1).toUInt();  
   m_selSrsId.second = std::string(item->text(2).toLatin1());
 }
 
 void te::qt::widgets::SRSManagerDialog::onOkPushButtonClicked()
 {
-  accept();
+  if (m_selSrsId.first == -1)
+    reject();
+  else 
+    accept();
 }
 
 void te::qt::widgets::SRSManagerDialog::onCancelPushButtonClicked()
 {
+  m_selSrsId.first = -1;  
+  m_selSrsId.second = "";
   reject();
 }
 
