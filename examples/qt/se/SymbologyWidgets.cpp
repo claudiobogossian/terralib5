@@ -10,17 +10,37 @@
 #include <terralib/qt/widgets/se/LineSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/PointSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/PolygonSymbolizerWidget.h>
+#include <terralib/qt/widgets/se/SymbolEditorWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerPreviewWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerTableWidget.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
 
 // Qt
 #include <QtGui/QApplication>
-#include <QtGui/QCleanlookSstyle>
 #include <QtGui/QDialog>
 #include <QtGui/QGridLayout>
 #include <QtGui/QGroupBox>
+#include <QtGui/QMdiArea>
+#include <QtGui/QMdiSubWindow>
 #include <QtGui/QToolBox>
+
+void SymbolEditor()
+{
+  // Widgets for symbol edition...
+  te::qt::widgets::SymbolEditorWidget* editPointSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::POINT_SYMBOLIZER);
+  te::qt::widgets::SymbolEditorWidget* editLineSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::LINE_SYMBOLIZER);
+  te::qt::widgets::SymbolEditorWidget* editPolygonSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::POLYGON_SYMBOLIZER);
+
+  // Grouping to show!
+  QMdiArea mainWidget;
+  mainWidget.setWindowTitle("Symbol Editors");
+  mainWidget.addSubWindow(editPointSymbolizer)->setWindowTitle("Point Symbol");
+  mainWidget.addSubWindow(editLineSymbolizer)->setWindowTitle("Line Symbol");
+  mainWidget.addSubWindow(editPolygonSymbolizer)->setWindowTitle("Polygon Symbol");
+  mainWidget.show();
+
+  qApp->exec();
+}
 
 void SymbolizerWidgets()
 {
@@ -129,7 +149,8 @@ void BasicWidgets()
 {
   int argc = 1;
   QApplication app(argc, 0);
-  app.setStyle(new QCleanlooksStyle);
+
+  SymbolEditor();
 
   SymbolizerWidgets();
 
