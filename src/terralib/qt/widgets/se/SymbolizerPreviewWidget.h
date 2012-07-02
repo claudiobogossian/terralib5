@@ -27,7 +27,6 @@
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERPREVIEWWIDGET_H
 
 // TerraLib
-#include "../../../geometry/Enums.h"
 #include "../../../se/Enums.h"
 #include "../Config.h"
 

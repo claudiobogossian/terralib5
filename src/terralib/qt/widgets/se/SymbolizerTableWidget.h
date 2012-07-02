@@ -27,7 +27,6 @@
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERTABLEWIDGET_H
 
 // TerraLib
-#include "../../../geometry/Enums.h"
 #include "../../../se/Enums.h"
 #include "../Config.h"
 
@@ -64,6 +63,8 @@ namespace te
       */
       class TEQTWIDGETSEXPORT SymbolizerTableWidget : public QWidget
       {
+        Q_OBJECT
+
         public:
 
           /** @name Initializer Methods
@@ -103,7 +104,27 @@ namespace te
           */
           void setSymbolizerType(const te::se::SymbolizerType& type);
 
+          void selectSymbolizer(const int& index);
+
+          /*!
+            \brief Return the size hint to this widget.
+
+            \return The size hint.
+          */
           QSize sizeHint() const;
+
+        protected slots:
+
+          void onPreviewTableItemSelectionChanged();
+
+        signals:
+
+          /*!
+            \brief This signal is emitted when a symbolizer is clicked.
+
+            \param index The symbolizer index.
+          */
+          void symbolizerClicked(int index);
 
         private:
 

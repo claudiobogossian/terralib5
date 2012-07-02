@@ -25,36 +25,46 @@
 */
 
 // TerraLib
+#include "../../../maptools/Utils.h"
 #include "../../../se/ExternalGraphic.h"
+#include "../../../se/AnchorPoint.h"
+#include "../../../se/Displacement.h"
 #include "../../../se/Graphic.h"
 #include "../../../xlink/SimpleLink.h"
 #include "LocalGraphicWidget.h"
 #include "LocalImageWidget.h"
-#include "ui_GraphicWidgetForm.h"
+#include "ui_LocalGraphicWidgetForm.h"
 
 // Qt
 #include <QtGui/QGridLayout>
 
+// STL
+#include <cassert>
+
 te::qt::widgets::LocalGraphicWidget::LocalGraphicWidget(QWidget* parent, Qt::WindowFlags f)
-  : GraphicWidget(parent, f)
+  : AbstractGraphicWidget(parent, f),
+    m_ui(new Ui::LocalGraphicWidgetForm)
 {
+  m_ui->setupUi(this);
+
   // Local Image Widget
   m_localImageWidget = new te::qt::widgets::LocalImageWidget(this);
 
-  // Image Page
-  QWidget* imagePage = new QWidget(this);
-  
   // Adjusting...
-  QGridLayout* layout = new QGridLayout(imagePage);
+  QGridLayout* layout = new QGridLayout(m_ui->m_imageGroupBox);
   layout->addWidget(m_localImageWidget);
-
-  // Adding on graphic tab...
-  m_ui->m_graphicTabWidget->addTab(imagePage, tr("&Image"));
 
   // Setups initial graphic
   m_graphic->add(m_localImageWidget->getExternalGraphic());
 
   // Signals & slots
+  connect(m_ui->m_graphicSizeDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(setGraphicSize(const QString&)));
+  connect(m_ui->m_graphicAngleDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(setGraphicAngle(const QString&)));
+  connect(m_ui->m_graphicOpacitySlider, SIGNAL(valueChanged(int)), SLOT(setGraphicOpacity(int)));
+  connect(m_ui->m_displacementXDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(onGraphicDisplacementChanged(const QString&)));
+  connect(m_ui->m_displacementYDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(onGraphicDisplacementChanged(const QString&)));
+  connect(m_ui->m_anchorPointXDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(onGraphicAnchorPointChanged(const QString&)));
+  connect(m_ui->m_anchorPointYDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(onGraphicAnchorPointChanged(const QString&)));
   connect(m_localImageWidget, SIGNAL(externalGraphicChanged(const QSize&)), SLOT(onExternalGraphicChanged(const QSize&)));
 }
 
@@ -64,7 +74,11 @@ te::qt::widgets::LocalGraphicWidget::~LocalGraphicWidget()
 
 bool te::qt::widgets::LocalGraphicWidget::setGraphic(const te::se::Graphic* graphic)
 {
-  GraphicWidget::setGraphic(graphic);
+  assert(graphic);
+
+  delete m_graphic;
+
+  m_graphic = graphic->clone();
 
   // Verifying if this widget can deal with the given graphic...
   const std::vector<te::se::ExternalGraphic*> extGraphics = m_graphic->getExternalGraphics();
@@ -86,6 +100,8 @@ bool te::qt::widgets::LocalGraphicWidget::setGraphic(const te::se::Graphic* grap
 
   // I know it!
   m_localImageWidget->setExternalGraphic(g);
+
+  updateUi();
 
   return true;
 }
@@ -121,5 +137,59 @@ void te::qt::widgets::LocalGraphicWidget::onExternalGraphicChanged(const QSize& 
 {
   m_graphic->setExternalGraphic(0, m_localImageWidget->getExternalGraphic());
   // Updating graphic size
-  m_ui->m_graphicSizeDoubleSpinBox->setValue(size.height()); // It will emit graphicChanged() signal;
+  m_ui->m_graphicSizeDoubleSpinBox->setValue(size.height());
+}
+
+void te::qt::widgets::LocalGraphicWidget::onGraphicDisplacementChanged(const QString& /*text*/)
+{
+  setGraphicDisplacement(m_ui->m_displacementXDoubleSpinBox->text(), m_ui->m_displacementXDoubleSpinBox->text());
+}
+
+void te::qt::widgets::LocalGraphicWidget::onGraphicAnchorPointChanged(const QString& /*text*/)
+{
+  setGraphicAnchorPoint(m_ui->m_anchorPointXDoubleSpinBox->text(), m_ui->m_anchorPointYDoubleSpinBox->text());
+}
+
+void te::qt::widgets::LocalGraphicWidget::updateUi()
+{
+  // Size
+  const te::se::ParameterValue* size = m_graphic->getSize();
+  if(size)
+    m_ui->m_graphicSizeDoubleSpinBox->setValue(te::map::GetDouble(size));
+
+  // Rotation
+  const te::se::ParameterValue* rotation = m_graphic->getRotation();
+  if(rotation)
+    m_ui->m_graphicAngleDoubleSpinBox->setValue(te::map::GetDouble(rotation));
+
+  // Opacity
+  const te::se::ParameterValue* opacity = m_graphic->getOpacity();
+  if(opacity)
+    m_ui->m_graphicOpacitySlider->setValue(te::map::GetDouble(opacity) * 100);
+
+  // Displacement
+  const te::se::Displacement* disp = m_graphic->getDisplacement();
+  if(disp)
+  {
+    const te::se::ParameterValue* dispx = disp->getDisplacementX();
+    if(dispx)
+      m_ui->m_displacementXDoubleSpinBox->setValue(te::map::GetDouble(dispx));
+    
+    const te::se::ParameterValue* dispy = disp->getDisplacementY();
+    if(dispy)
+      m_ui->m_displacementYDoubleSpinBox->setValue(te::map::GetDouble(dispy));
+  }
+
+  // Anchor Point
+  const te::se::AnchorPoint* ac = m_graphic->getAnchorPoint();
+  if(ac)
+  {
+    const te::se::ParameterValue* acx = ac->getAnchorPointX();
+    if(acx)
+      m_ui->m_anchorPointXDoubleSpinBox->setValue(te::map::GetDouble(acx));
+
+    const te::se::ParameterValue* acy = ac->getAnchorPointY();
+    if(acy)
+      m_ui->m_anchorPointYDoubleSpinBox->setValue(te::map::GetDouble(acy));
+  }
 }

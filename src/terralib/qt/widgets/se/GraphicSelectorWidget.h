@@ -18,19 +18,19 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/GraphicDialog.h
+  \file terralib/qt/widgets/se/GraphicSelectorWidget.h
 
-  \brief A dialog used to build a graphic element.
+  \brief A widget used to select a graphic element.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICDIALOG_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICSELECTORWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICSELECTORWIDGET_H
 
 // TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QtGui/QWidget>
 
 // STL
 #include <memory>
@@ -38,7 +38,8 @@
 #include <vector>
 
 // Forward declaraion
-namespace Ui { class GraphicDialogForm; }
+class QStackedWidget;
+namespace Ui { class GraphicSelectorWidgetForm; }
 
 namespace te
 {
@@ -52,22 +53,15 @@ namespace te
   {
     namespace widgets
     {
-// Forward declarations
-      class GraphicSelectorWidget;
-
       /*!
-        \class GraphicDialog
+        \class GraphicSelectorWidget
 
-        \brief A dialog used to build a graphic element.
-               If you want to use this dialog, you can use commands like:
-               <code>
-               te::se::Graphic* g = te::qt::widgets::GraphicDialog::getGraphic(0, parent, "Title");
-               ...
-               delete g;
-               </code>
+        \brief A widget used to select a graphic element.
       */
-      class TEQTWIDGETSEXPORT GraphicDialog : public QDialog
+      class TEQTWIDGETSEXPORT GraphicSelectorWidget : public QWidget
       {
+        Q_OBJECT
+
         public:
 
           /** @name Initializer Methods
@@ -75,37 +69,22 @@ namespace te
            */
           //@{
 
-          /*! \brief Constructs a graphic dialog which is a child of parent, with widget flags set to f. */
-          GraphicDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          /*! \brief Constructs a graphic selector widget dialog which is a child of parent, with widget flags set to f.  */
+          GraphicSelectorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          ~GraphicDialog();
+          ~GraphicSelectorWidget();
 
           //@}
 
         public:
 
           /*!
-            \brief Pops up a modal graphic dialog with the given window title, lets the user configure the graphic, 
-                   and returns that graphic. The graphic is initially set to initial. The dialog is a child of parent. 
-
-            \param initial A initial graphic element that will be used.
-                           The dialog form will be update based on graphic element parameters. It can be NULL.
-            \param parent Dialog parent.
-            \param title  Dialog title.
-
-            \note The dialog will NOT take the ownership of the given initial graphic.
-            \note The caller will take the ownership of the returned graphic.
-            \note It returns a NULL graphic element if the user cancels the dialog.
-          */
-          static te::se::Graphic* getGraphic(const te::se::Graphic* initial, QWidget* parent = 0, const QString& title = "");
-
-          /*!
             \brief Sets the graphic element.
 
             \return The graphic element.
             
-            \note The dialog will NOT take the ownership of the given graphic.
+            \note The widget will NOT take the ownership of the given graphic.
           */
           void setGraphic(const te::se::Graphic* graphic);
 
@@ -127,14 +106,25 @@ namespace te
           */
           QIcon getGraphicIcon(const QSize& size);
 
+        protected slots:
+
+          void onGraphicTypeComboBoxCurrentIndexChanged(int index);
+
+          void onGraphicChanged();
+
+        signals:
+
+          /*! This signal is emitted when the graphic element is changed. */
+          void graphicChanged();
+
         private:
 
-          std::auto_ptr<Ui::GraphicDialogForm> m_ui; //!< Dialog form.
-          GraphicSelectorWidget* m_graphicSelector;  //!< Graphic selector widget used to select the graphic.
+          std::auto_ptr<Ui::GraphicSelectorWidgetForm> m_ui; //!< Widget form.
+          QStackedWidget* m_graphicWidgets;                  //!< Set of Graphic Widgets that can be used to configure the graphic element.
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICDIALOG_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICSELECTORWIDGET_H

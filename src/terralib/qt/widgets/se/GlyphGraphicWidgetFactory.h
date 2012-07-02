@@ -81,7 +81,7 @@ namespace te
           */
           //@{
 
-          GraphicWidget* build();
+          AbstractGraphicWidget* build();
 
           //@}
 

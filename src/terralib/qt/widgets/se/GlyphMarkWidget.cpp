@@ -46,34 +46,24 @@ te::qt::widgets::GlyphMarkWidget::GlyphMarkWidget(QWidget* parent, Qt::WindowFla
   m_fillWidget = new te::qt::widgets::BasicFillWidget(this);
 
   // Adjusting...
-  QGridLayout* fillLayout = new QGridLayout(m_ui->m_fillGroupBox);
+  QGridLayout* fillLayout = new QGridLayout(m_ui->m_fillFrame);
   fillLayout->addWidget(m_fillWidget);
-
-  // Stroke Widget
-  m_strokeWidget = new te::qt::widgets::BasicStrokeWidget(this);
-
-  // Adjusting...
-  QGridLayout* strokeLayout = new QGridLayout(m_ui->m_strokeGroupBox);
-  strokeLayout->addWidget(m_strokeWidget);
 
   // Char Map Widget
   m_charMapWidget = new te::qt::widgets::CharMapWidget;
   m_ui->m_charMapScrollArea->setWidget(m_charMapWidget);
-  m_ui->m_charFrame->setFixedWidth(m_charMapWidget->width() + 38);
+  m_ui->m_charMapScrollArea->setFixedWidth(m_charMapWidget->width() + 18);
+  m_ui->m_charMapScrollArea->setFixedHeight(m_charMapWidget->width() * 0.85);
 
   // Setups initial mark
   updateMarkName();
   m_mark->setFill(m_fillWidget->getFill());
-  m_mark->setStroke(m_strokeWidget->getStroke());
 
   // Signals & slots
   connect(m_ui->m_fontComboBox, SIGNAL(currentFontChanged(const QFont&)), m_charMapWidget, SLOT(updateFont(const QFont&)));
   connect(m_ui->m_fontComboBox, SIGNAL(currentFontChanged(const QFont&)), SLOT(onCurrentFontChanged(const QFont&)));
   connect(m_charMapWidget, SIGNAL(charSelected(const unsigned int&)), SLOT(onCharSelected(const unsigned int&)));
   connect(m_fillWidget, SIGNAL(fillChanged()), SLOT(onFillChanged()));
-  connect(m_ui->m_fillGroupBox, SIGNAL(toggled(bool)), this, SLOT(onFillGroupBoxToggled(bool)));
-  connect(m_strokeWidget, SIGNAL(strokeChanged()), SLOT(onStrokeChanged()));
-  connect(m_ui->m_strokeGroupBox, SIGNAL(toggled(bool)), this, SLOT(onStrokeGroupBoxToggled(bool)));
 }
 
 te::qt::widgets::GlyphMarkWidget::~GlyphMarkWidget()
@@ -97,11 +87,6 @@ te::se::Mark* te::qt::widgets::GlyphMarkWidget::getMark() const
   return m_mark->clone();
 }
 
-Ui::GlyphMarkWidgetForm* te::qt::widgets::GlyphMarkWidget::getForm() const
-{
-  return m_ui.get();
-}
-
 void te::qt::widgets::GlyphMarkWidget::updateUi()
 {
   const std::string* name = m_mark->getWellKnownName();
@@ -122,23 +107,9 @@ void te::qt::widgets::GlyphMarkWidget::updateUi()
   m_ui->m_fontComboBox->setCurrentFont(font);
   // TODO: select the char on character map
 
-  const te::se::Stroke* stroke = m_mark->getStroke();
-  if(stroke)
-  {
-    m_strokeWidget->setStroke(stroke);
-    m_ui->m_strokeGroupBox->setChecked(true);
-  }
-  else
-    m_ui->m_strokeGroupBox->setChecked(false);
-
   const te::se::Fill* fill = m_mark->getFill();
   if(fill)
-  {
     m_fillWidget->setFill(fill);
-    m_ui->m_fillGroupBox->setChecked(true);
-  }
-  else
-    m_ui->m_fillGroupBox->setChecked(false);
 }
 
 void te::qt::widgets::GlyphMarkWidget::updateMarkName()
@@ -158,32 +129,8 @@ void te::qt::widgets::GlyphMarkWidget::onCharSelected(const unsigned int& /*char
   updateMarkName();
 }
 
-void te::qt::widgets::GlyphMarkWidget::onStrokeChanged()
-{
-  m_mark->setStroke(m_strokeWidget->getStroke());
-  emit markChanged();
-}
-
-void te::qt::widgets::GlyphMarkWidget::onStrokeGroupBoxToggled(bool on)
-{
-  if(on == false)
-    m_mark->setStroke(0);
-  else
-    m_mark->setStroke(m_strokeWidget->getStroke());
-  emit markChanged();
-}
-
 void te::qt::widgets::GlyphMarkWidget::onFillChanged()
 {
   m_mark->setFill(m_fillWidget->getFill());
-  emit markChanged();
-}
-
-void te::qt::widgets::GlyphMarkWidget::onFillGroupBoxToggled(bool on)
-{
-  if(on == false)
-    m_mark->setFill(0);
-  else
-    m_mark->setFill(m_fillWidget->getFill());
   emit markChanged();
 }

@@ -155,14 +155,14 @@ void te::qt::widgets::PolygonSymbolizerWidget::onPolygonSymbolizerTypeComboBoxCu
   te::qt::widgets::AbstractFillWidget* w = static_cast<te::qt::widgets::AbstractFillWidget*>(m_fillWidgets->currentWidget());
   m_symb->setFill(w->getFill());
 
-  emit polygonSymbolizerChanged();
+  emit symbolizerChanged();
 }
 
 void te::qt::widgets::PolygonSymbolizerWidget::onStrokeChanged()
 {
   m_symb->setStroke(m_strokeWidget->getStroke());
 
-  emit polygonSymbolizerChanged();
+  emit symbolizerChanged();
 }
 
 void te::qt::widgets::PolygonSymbolizerWidget::onStrokeGroupBoxToggled(bool on)
@@ -172,7 +172,7 @@ void te::qt::widgets::PolygonSymbolizerWidget::onStrokeGroupBoxToggled(bool on)
   else
     m_symb->setStroke(m_strokeWidget->getStroke());
 
-  emit polygonSymbolizerChanged();
+  emit symbolizerChanged();
 }
 
 void te::qt::widgets::PolygonSymbolizerWidget::onFillChanged()
@@ -180,7 +180,7 @@ void te::qt::widgets::PolygonSymbolizerWidget::onFillChanged()
   te::qt::widgets::AbstractFillWidget* w = static_cast<te::qt::widgets::AbstractFillWidget*>(m_fillWidgets->currentWidget());
   m_symb->setFill(w->getFill());
 
-  emit polygonSymbolizerChanged();
+  emit symbolizerChanged();
 }
 
 void te::qt::widgets::PolygonSymbolizerWidget::onFillGroupBoxToggled(bool on)
@@ -193,5 +193,5 @@ void te::qt::widgets::PolygonSymbolizerWidget::onFillGroupBoxToggled(bool on)
     m_symb->setFill(w->getFill());
   }
 
-  emit polygonSymbolizerChanged();
+  emit symbolizerChanged();
 }

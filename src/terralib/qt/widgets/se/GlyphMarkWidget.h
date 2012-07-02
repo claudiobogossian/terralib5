@@ -54,7 +54,6 @@ namespace te
     {
 // Forward declarations
       class BasicFillWidget;
-      class BasicStrokeWidget;
       class CharMapWidget;
 
       /*!
@@ -102,8 +101,6 @@ namespace te
           */
           te::se::Mark* getMark() const;
 
-          Ui::GlyphMarkWidgetForm* getForm() const;
-
         protected:
 
           /*! \brief Updates the widget form based on internal mark element. */
@@ -117,13 +114,7 @@ namespace te
 
           void onCharSelected(const unsigned int& charCode);
 
-          void onStrokeChanged();
-
-          void onStrokeGroupBoxToggled(bool on);
-
           void onFillChanged();
-
-          void onFillGroupBoxToggled(bool on);
 
         signals:
 
@@ -134,7 +125,6 @@ namespace te
 
           std::auto_ptr<Ui::GlyphMarkWidgetForm> m_ui;          //!< Widget form.
           te::qt::widgets::BasicFillWidget* m_fillWidget;       //!< Basic Fill Widget used to configure the mark fill element.
-          te::qt::widgets::BasicStrokeWidget* m_strokeWidget;   //!< Basic Stroke Widget used to configure the mark stroke element.
           te::qt::widgets::CharMapWidget* m_charMapWidget;      //!< Character map widget.
           te::se::Mark* m_mark;                                 //!< Mark element that will be configured by this widget.
       }; 

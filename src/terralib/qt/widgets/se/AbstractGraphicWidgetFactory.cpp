@@ -32,13 +32,13 @@ te::qt::widgets::AbstractGraphicWidgetFactory::~AbstractGraphicWidgetFactory()
 
 void te::qt::widgets::AbstractGraphicWidgetFactory::RegisteredWidgets(std::vector<std::string>& keys)
 {
-  te::common::AbstractFactory<GraphicWidget, std::string>::dictionary_type& dic =  te::common::AbstractFactory<GraphicWidget, std::string>::getDictionary();
-  std::map<std::string, te::common::AbstractFactory<GraphicWidget, std::string>*>::const_iterator it;
+  te::common::AbstractFactory<AbstractGraphicWidget, std::string>::dictionary_type& dic =  te::common::AbstractFactory<AbstractGraphicWidget, std::string>::getDictionary();
+  std::map<std::string, te::common::AbstractFactory<AbstractGraphicWidget, std::string>*>::const_iterator it;
   for(it = dic.begin(); it != dic.end(); ++it) // for each factory
     keys.push_back(it->second->getKey());
 }
 
 te::qt::widgets::AbstractGraphicWidgetFactory::AbstractGraphicWidgetFactory(const std::string& factoryKey)
-  : te::common::AbstractFactory<te::qt::widgets::GraphicWidget, std::string>(factoryKey)
+  : te::common::AbstractFactory<te::qt::widgets::AbstractGraphicWidget, std::string>(factoryKey)
 {
 }

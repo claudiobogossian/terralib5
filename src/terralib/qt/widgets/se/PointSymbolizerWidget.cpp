@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../se/PointSymbolizer.h"
-#include "GraphicDialog.h"
+#include "GraphicSelectorWidget.h"
 #include "PointSymbolizerWidget.h"
 
 // Qt
@@ -39,19 +39,18 @@ te::qt::widgets::PointSymbolizerWidget::PointSymbolizerWidget(QWidget* parent, Q
     m_symb(new te::se::PointSymbolizer)
 {
   // Graphic dialog
-  m_graphicDialog = new te::qt::widgets::GraphicDialog(0, true);
-  m_graphicDialog->setParent(this); // to reset window flag Qt::Dialog
+  m_graphicSelector = new GraphicSelectorWidget(this);
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(this);
   layout->setContentsMargins(0, 0, 0, 0);
-  layout->addWidget(m_graphicDialog);
+  layout->addWidget(m_graphicSelector);
 
   // Setups initial point symbolizer
-  m_symb->setGraphic(m_graphicDialog->getGraphic());
+  m_symb->setGraphic(m_graphicSelector->getGraphic());
 
   // Signals & slots
-  connect(m_graphicDialog, SIGNAL(graphicChanged()), SLOT(onGraphicChanged()));
+  connect(m_graphicSelector, SIGNAL(graphicChanged()), SLOT(onGraphicChanged()));
 }
 
 te::qt::widgets::PointSymbolizerWidget::~PointSymbolizerWidget()
@@ -80,11 +79,11 @@ void te::qt::widgets::PointSymbolizerWidget::updateUi()
   const te::se::Graphic* g = m_symb->getGraphic();
   assert(g);
 
-  m_graphicDialog->setGraphic(g);
+  m_graphicSelector->setGraphic(g);
 }
 
 void te::qt::widgets::PointSymbolizerWidget::onGraphicChanged()
 {
-  m_symb->setGraphic(m_graphicDialog->getGraphic());
-  emit pointSymbolizerChanged();
+  m_symb->setGraphic(m_graphicSelector->getGraphic());
+  emit symbolizerChanged();
 }

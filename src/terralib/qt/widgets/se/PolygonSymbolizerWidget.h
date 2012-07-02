@@ -120,7 +120,7 @@ namespace te
         signals:
 
           /*! This signal is emitted when the internal polygon symbolizer element is changed. */
-          void polygonSymbolizerChanged();
+          void symbolizerChanged();
 
         private:
 
