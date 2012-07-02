@@ -28,6 +28,11 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../memory/DataSetItem.h"
+#include "../geometry/WKBWriter.h"
+#include "../geometry/WKBReader.h"
+#include "../geometry/Geometry.h"
+#include "../datatype/SimpleProperty.h"
+#include "../datatype/ByteArrayProperty.h"
 #include "DataSourceTransactor.h"
 #include "DataSet.h"
 #include "Exception.h"
@@ -46,6 +51,13 @@ te::ado::DataSet::DataSet(te::da::DataSetType* dt, _RecordsetPtr result, te::da:
 {
   m_size = m_result->GetRecordCount();
   m_ncols = m_result->GetFields()->GetCount();
+}
+
+te::ado::DataSet::~DataSet()
+{
+  delete m_dt;
+  delete m_geomFilter;
+  delete m_mbrFilter;
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
@@ -433,22 +445,32 @@ void te::ado::DataSet::setByteArray(const std::string& name, const te::dt::ByteA
 
 te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  char* wkb = (char*)(LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(i)->GetValue();
+
+  return te::gm::WKBReader::read(wkb);
 }
 
 te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  char* wkb = (char*)(LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+
+  return te::gm::WKBReader::read(wkb);
 }
 
 void te::ado::DataSet::setGeometry(int i, const te::gm::Geometry& value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  char* wkb = new char[value.getWkbSize()];
+  te::gm::WKBWriter::write(&value, wkb);
+
+  m_result->GetFields()->GetItem(i)->PutValue((_bstr_t)wkb);
 }
 
 void te::ado::DataSet::setGeometry(const std::string& name, const te::gm::Geometry& value)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  char* wkb = new char[value.getWkbSize()];
+  te::gm::WKBWriter::write(&value, wkb);
+
+  m_result->GetFields()->GetItem(name.c_str())->PutValue((_bstr_t)wkb);
 }
 
 te::rst::Raster* te::ado::DataSet::getRaster(int i) const

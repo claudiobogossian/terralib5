@@ -67,7 +67,6 @@ namespace te
 
         static DataSourceFactory* sm_factory; //!< A pointer to the global ADO data source factory.
 
-      friend class Module;
     };
 
   } // end namespace ado

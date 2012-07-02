@@ -96,8 +96,8 @@ namespace te
 
       private:
 
-        _ConnectionPtr m_conn;
-        _bstr_t m_strCnn;
+        _ConnectionPtr m_conn;                                  //!< ADO connection
+        _bstr_t m_strCnn;                                       //!< Connection String
         std::map<std::string, std::string> m_connectionInfo;    //!< Connection information.
     };
 

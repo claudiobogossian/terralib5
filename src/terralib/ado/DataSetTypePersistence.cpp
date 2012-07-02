@@ -100,28 +100,6 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
   if(dt->getPrimaryKey())
     add(dt, dt->getPrimaryKey());
 
-  /*
-  std::size_t nukeys = dt->getNumberOfUniqueKeys();
-  for(std::size_t i = 0; i < nukeys; ++i)
-    add(dt, dt->getUniqueKey(i));
-
-
-  std::size_t nidxs = dt->getNumberOfIndexes();
-  for(std::size_t i = 0; i < nidxs; ++i)
-      add(dt, dt->getIndex(i));
-
-  std::size_t nfks = dt->getNumberOfForeignKeys();
-  for(std::size_t i = 0; i < nfks; ++i)
-    add(dt, dt->getForeignKey(i));
-
-  std::size_t nccs = dt->getNumberOfCheckConstraints();
-  for(std::size_t i = 0; i < nccs; ++i)
-    add(dt, dt->getCheckConstraint(i));
-
-  loader->getIndexes(dt);
-  loader->getCheckConstraints(dt);
-  */
-
   if(isInLocalTransaction)
     m_t->commit();
 
