@@ -98,6 +98,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
 
 te::qt::widgets::SRSManagerDialog::~SRSManagerDialog()
 {
+  delete m_ui;
 }
 
 const std::pair<int, std::string>& te::qt::widgets::SRSManagerDialog::getSelectedSRS() const

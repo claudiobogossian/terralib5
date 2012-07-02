@@ -89,7 +89,7 @@ namespace te
         
       private:
         
-        std::auto_ptr<Ui::SRSDialogForm> m_ui;   //!< Dialog form. 
+        Ui::SRSDialogForm* m_ui;   //!< Dialog form. 
         bool m_addMode;
       }; 
       

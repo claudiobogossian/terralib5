@@ -82,7 +82,7 @@ namespace te
         
       private:
         
-        std::auto_ptr<Ui::SRSManagerDialogForm> m_ui;   //!< Dialog form.   
+        Ui::SRSManagerDialogForm* m_ui;   //!< Dialog form.   
         te::qt::widgets::SRSDialog* m_srsDiag;          //!< A single SRS dialog.   
         std::pair<int, std::string> m_selSrsId;         //!< The selected SRS
       }; 

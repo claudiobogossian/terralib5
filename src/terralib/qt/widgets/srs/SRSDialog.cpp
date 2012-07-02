@@ -43,7 +43,8 @@ te::qt::widgets::SRSDialog::SRSDialog(QWidget* parent, Qt::WindowFlags f):
 }
 
 te::qt::widgets::SRSDialog::~SRSDialog()
-{  
+{
+  delete m_ui;
 }
 
 void te::qt::widgets::SRSDialog::clear()
