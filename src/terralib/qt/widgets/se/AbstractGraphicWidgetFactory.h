@@ -41,7 +41,7 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class GraphicWidget;
+      class AbstractGraphicWidget;
 
       /*!
         \class AbstractGraphicWidgetFactory
@@ -50,7 +50,7 @@ namespace te
 
         \sa AbstractFactory
       */
-      class TEQTWIDGETSEXPORT AbstractGraphicWidgetFactory : public te::common::AbstractFactory<GraphicWidget, std::string>
+      class TEQTWIDGETSEXPORT AbstractGraphicWidgetFactory : public te::common::AbstractFactory<AbstractGraphicWidget, std::string>
       {
         public:
 

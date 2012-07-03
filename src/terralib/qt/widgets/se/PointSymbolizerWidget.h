@@ -46,7 +46,7 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class GraphicDialog;
+      class GraphicSelectorWidget;
 
       /*!
         \class PointSymbolizerWidget
@@ -105,12 +105,12 @@ namespace te
         signals:
 
           /*! This signal is emitted when the internal point symbolizer element is changed. */
-          void pointSymbolizerChanged();
+          void symbolizerChanged();
 
         private:
 
-          GraphicDialog* m_graphicDialog;  //!< Graphic dialog use to build the point symbolizer graphic element.
-          te::se::PointSymbolizer* m_symb; //!< Point symbolizer element that will be configured by this widget.
+          GraphicSelectorWidget* m_graphicSelector;  //!< Graphic selector use to select the point symbolizer graphic element.
+          te::se::PointSymbolizer* m_symb;           //!< Point symbolizer element that will be configured by this widget.
       }; 
 
     } // end namespace widgets

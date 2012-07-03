@@ -59,12 +59,16 @@ te::qt::widgets::SymbolizerTableWidget::SymbolizerTableWidget(const QSize& size,
   m_previewTable->verticalHeader()->setResizeMode(QHeaderView::Fixed);
   m_previewTable->verticalHeader()->setDefaultSectionSize(m_size.height());
   m_previewTable->setSelectionMode(QAbstractItemView::SingleSelection);
+  m_previewTable->setSelectionBehavior(QAbstractItemView::SelectRows);
   m_previewTable->setIconSize(m_size);
 
   // Adjusting...
   QGridLayout* layout = new QGridLayout(this);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->addWidget(m_previewTable);
+
+  // Signals & slots
+  connect(m_previewTable, SIGNAL(itemSelectionChanged()), SLOT(onPreviewTableItemSelectionChanged()));
 }
 
 te::qt::widgets::SymbolizerTableWidget::~SymbolizerTableWidget()
@@ -74,7 +78,8 @@ te::qt::widgets::SymbolizerTableWidget::~SymbolizerTableWidget()
 
 void te::qt::widgets::SymbolizerTableWidget::updatePreview(const std::vector<te::se::Symbolizer*>& symbs)
 {
-  m_previewTable->clear();
+  assert(!symbs.empty());
+
   m_previewTable->setRowCount(symbs.size());
   for(std::size_t i = 0; i < symbs.size(); ++i)
   {
@@ -121,7 +126,17 @@ void te::qt::widgets::SymbolizerTableWidget::setSymbolizerType(const te::se::Sym
   }
 }
 
+void te::qt::widgets::SymbolizerTableWidget::selectSymbolizer(const int& index)
+{
+  m_previewTable->selectRow(index);
+}
+
 QSize te::qt::widgets::SymbolizerTableWidget::sizeHint() const
 {
-  return QSize(m_size.width() + m_previewTable->verticalHeader()->size().width(), m_size.height() * 6);
+  return QSize(m_size.width() + m_previewTable->verticalHeader()->size().width(), m_size.height() * 4);
+}
+
+void te::qt::widgets::SymbolizerTableWidget::onPreviewTableItemSelectionChanged()
+{
+  emit symbolizerClicked(m_previewTable->currentRow());
 }

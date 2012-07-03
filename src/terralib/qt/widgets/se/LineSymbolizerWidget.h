@@ -113,7 +113,7 @@ namespace te
         signals:
 
           /*! This signal is emitted when the internal line symbolizer element is changed. */
-          void lineSymbolizerChanged();
+          void symbolizerChanged();
 
         private:
 

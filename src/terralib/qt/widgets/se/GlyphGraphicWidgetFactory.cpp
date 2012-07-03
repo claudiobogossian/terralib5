@@ -49,7 +49,7 @@ te::qt::widgets::GlyphGraphicWidgetFactory::~GlyphGraphicWidgetFactory()
 {
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::GlyphGraphicWidgetFactory::build()
+te::qt::widgets::AbstractGraphicWidget* te::qt::widgets::GlyphGraphicWidgetFactory::build()
 {
   return new GlyphGraphicWidget;
 }

@@ -120,6 +120,7 @@ file(GLOB HDRS_TO_MOC
      ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
      ${SRCDIR}/widgets/rp/SegmenterDialog.h
      ${SRCDIR}/widgets/rp/ContrastDialog.h
+	 ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
@@ -127,9 +128,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
 	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
 	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
-	 ${SRCDIR}/widgets/se/GraphicDialog.h
 	 ${SRCDIR}/widgets/se/GraphicFillWidget.h
-	 ${SRCDIR}/widgets/se/GraphicWidget.h
+	 ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
 	 ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
 	 ${SRCDIR}/widgets/se/LocalGraphicWidget.h
@@ -140,6 +140,8 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
 	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+	 ${SRCDIR}/widgets/se/SymbolEditorWidget.h
+	 ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
 	 ${SRCDIR}/widgets/srs/SRSDialog.h

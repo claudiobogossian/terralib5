@@ -104,7 +104,7 @@ void te::qt::widgets::LineSymbolizerWidget::onStrokeChanged()
 {
   m_symb->setStroke(m_strokeWidget->getStroke());
 
-  emit lineSymbolizerChanged();
+  emit symbolizerChanged();
 }
 
 void te::qt::widgets::LineSymbolizerWidget::onStrokeGroupBoxToggled(bool on)
@@ -114,5 +114,5 @@ void te::qt::widgets::LineSymbolizerWidget::onStrokeGroupBoxToggled(bool on)
   else
     m_symb->setStroke(m_strokeWidget->getStroke());
 
-  emit lineSymbolizerChanged();
+  emit symbolizerChanged();
 }

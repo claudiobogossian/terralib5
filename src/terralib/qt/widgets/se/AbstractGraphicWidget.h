@@ -18,25 +18,19 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/GraphicWidget.h
+  \file terralib/qt/widgets/se/AbstractGraphicWidget.h
 
   \brief A base widget used to configure a graphic.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICWIDGET_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_ABSTRACTGRAPHICWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_ABSTRACTGRAPHICWIDGET_H
 
 // TerraLib
 #include "../Config.h"
 
 // Qt
 #include <QtGui/QWidget>
-
-// STL
-#include <memory>
-
-// Forward declaraion
-namespace Ui { class GraphicWidgetForm; }
 
 namespace te
 {
@@ -51,13 +45,13 @@ namespace te
     namespace widgets
     {
       /*!
-        \class GraphicWidget
+        \class AbstractGraphicWidget
 
         \brief A base widget used to configure a graphic.
 
         \sa ExternalGraphicWidget, GlyphGraphicWidget, WellKnownGraphicWidget
       */
-      class TEQTWIDGETSEXPORT GraphicWidget : public QWidget
+      class TEQTWIDGETSEXPORT AbstractGraphicWidget : public QWidget
       {
         Q_OBJECT
 
@@ -69,44 +63,36 @@ namespace te
           //@{
 
           /*! \brief Constructs a graphic widget which is a child of parent, with widget flags set to f. */
-          GraphicWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          AbstractGraphicWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          virtual ~GraphicWidget();
+          virtual ~AbstractGraphicWidget();
 
           //@}
 
         public:
 
-          virtual bool setGraphic(const te::se::Graphic* graphic);
-
           te::se::Graphic* getGraphic() const;
 
-          /*!
-            \brief Pure virtual method that should return a "user friendly" string
-                   that informs the graphic type that can be built by the widget.
-          */
+          virtual bool setGraphic(const te::se::Graphic* graphic) = 0;
+
+          /*! \brief Pure virtual method that should return a "user friendly" string that informs the graphic type that can be built by the widget. */
           virtual QString getGraphicType() const = 0;
 
           /*! \brief Pure virtual method that should return a QIcon that represents the graphic. i.e. a simple preview. */
           virtual QIcon getGraphicIcon(const QSize& size) const = 0;
 
-        protected:
-
-          /*! \brief Updates the widget form based on internal graphic element. */
-          virtual void updateUi();
-
         protected slots:
 
-          void onGraphicSizeDoubleSpinBoxValueChanged(const QString& text);
+          void setGraphicSize(const QString& size);
 
-          void onGraphicAngleDoubleSpinBoxValueChanged(const QString& text);
+          void setGraphicAngle(const QString& angle);
 
-          void onGraphicOpacitySliderValueChanged(int value);
+          void setGraphicOpacity(int value);
 
-          void onGraphicDisplacementChanged(const QString& text);
+          void setGraphicDisplacement(const QString& dx, const QString& dy);
 
-          void onGraphicAnchorPointChanged(const QString& text);
+          void setGraphicAnchorPoint(const QString& ax, const QString& ay);
 
         signals:
 
@@ -115,12 +101,11 @@ namespace te
 
         protected:
 
-          std::auto_ptr<Ui::GraphicWidgetForm> m_ui; //!< Widget form.
-          te::se::Graphic* m_graphic;                //!< Graphic element that will be configured by this widget.
+          te::se::Graphic* m_graphic; //!< Graphic element that will be configured by this widget.
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_GRAPHICWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_ABSTRACTGRAPHICWIDGET_H
