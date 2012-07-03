@@ -49,6 +49,7 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcAffine );
   CPPUNIT_TEST( tcSecondDegreePolynomialGT );
   CPPUNIT_TEST( tcThirdDegreePolynomialGT );
+  CPPUNIT_TEST( tcProjectiveGT );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -82,7 +83,9 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
     
     /*! \brief Test Case: Third degree polynomial transformation. */
     void tcThirdDegreePolynomialGT();    
-
+    
+    /*! \brief Test Case: Projective transformation. */
+    void tcProjectiveGT();
 };
 
 #endif  // __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_GEOMETRY_H
