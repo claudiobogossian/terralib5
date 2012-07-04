@@ -71,11 +71,18 @@ namespace te
 
         public:
 
+          /** @name Re-implementation of Pure Virtual Method
+          *   AbstractGraphicWidget methods.
+          */
+          //@{
+
           bool setGraphic(const te::se::Graphic* graphic);
 
           QString getGraphicType() const;
 
           QIcon getGraphicIcon(const QSize& size) const;
+
+          //@}
 
         protected slots:
 

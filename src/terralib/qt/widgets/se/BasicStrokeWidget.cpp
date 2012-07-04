@@ -33,8 +33,6 @@
 #include "ui_BasicStrokeWidgetForm.h"
 
 // Qt
-#include <QtGui/QColorDialog>
-#include <QtGui/QGridLayout>
 #include <QtGui/QPainter>
 
 // STL
@@ -244,13 +242,12 @@ void te::qt::widgets::BasicStrokeWidget::fillStrokeDashStyleComboBox()
     painter.drawLine(line);
     
     m_ui->m_strokeDashComboBox->addItem(pixmap, "");
-    //m_ui->m_strokeDashComboBox->addItem(pixmap, pattern.c_str());
   }
 }
 
 void te::qt::widgets::BasicStrokeWidget::onColorChanged()
 {
-  // The new fill color
+  // The new stroke color
   QColor selectedColor = m_colorPicker->getColor();
   // Updating opacity
   m_color.setRgb(selectedColor.red(), selectedColor.green(), selectedColor.blue(), m_color.alpha());

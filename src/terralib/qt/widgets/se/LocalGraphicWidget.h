@@ -20,8 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/LocalGraphicWidget.h
 
-  \brief A widget used to build a graphic associated with an external graphic element 
-         that references a local image. e.g. a SVG file, a PNG file, etc.
+  \brief A widget used to build a graphic associated with an external graphic element that references a local image. e.g. a SVG file, a PNG file, etc.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_LOCALGRAPHICWIDGET_H
@@ -49,8 +48,7 @@ namespace te
       /*!
         \class LocalGraphicWidget
 
-        \brief A widget used to build a graphic associate with an external graphic element 
-               that references a local image. e.g. a SVG file, a PNG file, etc.
+        \brief A widget used to build a graphic associate with an external graphic element that references a local image. e.g. a SVG file, a PNG file, etc.
       */
       class TEQTWIDGETSEXPORT LocalGraphicWidget : public AbstractGraphicWidget
       {
@@ -73,11 +71,18 @@ namespace te
 
         public:
 
+          /** @name Re-implementation of Pure Virtual Method
+          *   AbstractGraphicWidget methods.
+          */
+          //@{
+
           bool setGraphic(const te::se::Graphic* graphic);
 
           QString getGraphicType() const;
 
           QIcon getGraphicIcon(const QSize& size) const;
+
+          //@}
 
         protected slots:
 

@@ -80,7 +80,7 @@ namespace te
         public:
 
           /** @name Re-implementation of Pure Virtual Method
-          *  AbstractFillWidget methods.
+          *   AbstractFillWidget methods.
           */
           //@{
 

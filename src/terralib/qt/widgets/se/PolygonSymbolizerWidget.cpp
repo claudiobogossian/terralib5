@@ -30,8 +30,8 @@
 #include "AbstractFillWidget.h"
 #include "AbstractFillWidgetFactory.h"
 #include "BasicStrokeWidget.h"
-#include "ui_PolygonSymbolizerWidgetForm.h"
 #include "PolygonSymbolizerWidget.h"
+#include "ui_PolygonSymbolizerWidgetForm.h"
 
 // Qt
 #include <QtGui/QStackedWidget>
@@ -161,7 +161,6 @@ void te::qt::widgets::PolygonSymbolizerWidget::onPolygonSymbolizerTypeComboBoxCu
 void te::qt::widgets::PolygonSymbolizerWidget::onStrokeChanged()
 {
   m_symb->setStroke(m_strokeWidget->getStroke());
-
   emit symbolizerChanged();
 }
 

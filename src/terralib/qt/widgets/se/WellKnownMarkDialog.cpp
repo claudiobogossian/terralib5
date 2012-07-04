@@ -38,8 +38,8 @@ te::qt::widgets::WellKnownMarkDialog::WellKnownMarkDialog(QWidget* parent, Qt::W
   m_markWidget = new te::qt::widgets::WellKnownMarkWidget(this);
 
   // Adjusting...
-  QGridLayout* markLayout = new QGridLayout(m_ui->m_markWidgetFrame);
-  markLayout->addWidget(m_markWidget);
+  QGridLayout* layout = new QGridLayout(m_ui->m_markWidgetFrame);
+  layout->addWidget(m_markWidget);
 }
 
 te::qt::widgets::WellKnownMarkDialog::~WellKnownMarkDialog()

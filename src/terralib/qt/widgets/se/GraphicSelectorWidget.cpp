@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "AbstractGraphicWidgetFactory.h"
 #include "AbstractGraphicWidget.h"
+#include "AbstractGraphicWidgetFactory.h"
 #include "GraphicSelectorWidget.h"
 #include "ui_GraphicSelectorWidgetForm.h"
 

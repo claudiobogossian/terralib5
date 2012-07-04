@@ -26,8 +26,8 @@
 // TerraLib
 #include "../../../se/ExternalGraphic.h"
 #include "../../../xlink/SimpleLink.h"
-#include "ui_LocalImageWidgetForm.h"
 #include "LocalImageWidget.h"
+#include "ui_LocalImageWidgetForm.h"
 
 // Qt
 #include <QtGui/QFileDialog>

@@ -20,11 +20,10 @@
 /*!
   \file terralib/qt/widgets/se/AbstractGraphicWidget.cpp
 
-  \brief A base widget used to configure a graphic.
+  \brief Abstract class that represents a widget that can be used to build a graphic element.
 */
 
 // TerraLib
-#include "../../../maptools/Utils.h"
 #include "../../../se/AnchorPoint.h"
 #include "../../../se/Displacement.h"
 #include "../../../se/ParameterValue.h"

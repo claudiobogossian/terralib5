@@ -28,9 +28,6 @@
 #include "GraphicSelectorWidget.h"
 #include "ui_GraphicDialogForm.h"
 
-// Qt
-#include <QtGui/QStackedWidget>
-
 te::qt::widgets::GraphicDialog::GraphicDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::GraphicDialogForm)

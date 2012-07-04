@@ -36,9 +36,6 @@
 #include "GlyphMarkWidget.h"
 #include "ui_GlyphGraphicWidgetForm.h"
 
-// Qt
-#include <QtGui/QGridLayout>
-
 // STL
 #include <cassert>
 

@@ -106,6 +106,7 @@ namespace te
           /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
+          /*! \brief Updates the mark well-known name enconding selected font and selected character. */
           void updateMarkName();
 
         protected slots:

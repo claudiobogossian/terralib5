@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../../../se/Stroke.h"
 #include "BasicStrokeDialog.h"
 #include "BasicStrokeWidget.h"
 #include "ui_BasicStrokeDialogForm.h"

@@ -86,10 +86,10 @@ namespace te
 
         private:
 
-          QFont m_font;
-          unsigned int m_currentChar;
-          int m_columns;
-          int m_squareSize;
+          QFont m_font;                //!< Current font.
+          unsigned int m_currentChar;  //!< Current selected char.
+          int m_columns;               //!< Character map number of column.
+          int m_squareSize;            //!< Cell size of character map.
       };
 
     } // end namespace widgets

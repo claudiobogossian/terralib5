@@ -94,8 +94,10 @@ namespace te
           /*! \brief Updates the widget form based on internal symbolizers elements. */
           void updateUi();
 
+          /*! \brief Creates a new symbolizer element. */
           void createNewSymbolizer();
 
+          /*! \brief Swap two internal symbolizers. */
           void swapSymbolizers(const int& indexFirst, const int& indexSecond);
 
         protected slots:

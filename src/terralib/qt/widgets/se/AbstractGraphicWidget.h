@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/AbstractGraphicWidget.h
 
-  \brief A base widget used to configure a graphic.
+  \brief Abstract class that represents a widget that can be used to build a graphic element.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_ABSTRACTGRAPHICWIDGET_H
@@ -47,7 +47,7 @@ namespace te
       /*!
         \class AbstractGraphicWidget
 
-        \brief A base widget used to configure a graphic.
+        \brief Abstract class that represents a widget that can be used to build a graphic element.
 
         \sa ExternalGraphicWidget, GlyphGraphicWidget, WellKnownGraphicWidget
       */
@@ -72,8 +72,25 @@ namespace te
 
         public:
 
+          /*!
+            \brief Gets the configured graphic element.
+
+            \return The configured graphic element.
+            
+            \note The caller will take the ownership of the returned graphic.
+          */
           te::se::Graphic* getGraphic() const;
 
+          /*!
+            \brief Sets a graphic element to this widget.
+
+            \param graphic A valid graphic element.
+
+            \return It return true if the widget can deal with the given graphic. Otherwise, it returns false.
+
+            \note The widget will NOT take the ownership of the given graphic.
+            \note The widget form will be update based on given graphic parameters.
+          */
           virtual bool setGraphic(const te::se::Graphic* graphic) = 0;
 
           /*! \brief Pure virtual method that should return a "user friendly" string that informs the graphic type that can be built by the widget. */

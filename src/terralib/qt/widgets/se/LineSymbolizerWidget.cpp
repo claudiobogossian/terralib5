@@ -28,8 +28,8 @@
 #include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../se/LineSymbolizer.h"
 #include "BasicStrokeWidget.h"
-#include "ui_LineSymbolizerWidgetForm.h"
 #include "LineSymbolizerWidget.h"
+#include "ui_LineSymbolizerWidgetForm.h"
 
 // STL
 #include <cassert>
@@ -50,8 +50,8 @@ te::qt::widgets::LineSymbolizerWidget::LineSymbolizerWidget(QWidget* parent, Qt:
   m_strokeWidget = new te::qt::widgets::BasicStrokeWidget(this);
 
   // Adjusting...
-  QGridLayout* strokeLayout = new QGridLayout(m_ui->m_strokeGroupBox);
-  strokeLayout->addWidget(m_strokeWidget);
+  QGridLayout* layout = new QGridLayout(m_ui->m_strokeGroupBox);
+  layout->addWidget(m_strokeWidget);
 
   // UOM
   std::vector<te::common::UnitOfMeasure*>::const_iterator uomIt;
@@ -103,7 +103,6 @@ void te::qt::widgets::LineSymbolizerWidget::updateUi()
 void te::qt::widgets::LineSymbolizerWidget::onStrokeChanged()
 {
   m_symb->setStroke(m_strokeWidget->getStroke());
-
   emit symbolizerChanged();
 }
 

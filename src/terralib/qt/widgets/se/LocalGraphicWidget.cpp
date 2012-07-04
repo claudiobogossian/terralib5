@@ -20,8 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/LocalGraphicWidget.cpp
 
-  \brief A widget used to build a graphic associated with an external graphic element 
-         that references a local image. e.g. a SVG file, a PNG file, etc.
+  \brief A widget used to build a graphic associated with an external graphic element that references a local image. e.g. a SVG file, a PNG file, etc.
 */
 
 // TerraLib
@@ -34,9 +33,6 @@
 #include "LocalGraphicWidget.h"
 #include "LocalImageWidget.h"
 #include "ui_LocalGraphicWidgetForm.h"
-
-// Qt
-#include <QtGui/QGridLayout>
 
 // STL
 #include <cassert>
@@ -130,7 +126,7 @@ QIcon te::qt::widgets::LocalGraphicWidget::getGraphicIcon(const QSize& size) con
   if(!img.load(href.c_str()))
     return QIcon();
 
-  return QIcon(QPixmap::fromImage(img.scaledToWidth(size.width(),Qt::SmoothTransformation)));
+  return QIcon(QPixmap::fromImage(img.scaledToWidth(size.width(), Qt::SmoothTransformation)));
 }
 
 void te::qt::widgets::LocalGraphicWidget::onExternalGraphicChanged(const QSize& size)

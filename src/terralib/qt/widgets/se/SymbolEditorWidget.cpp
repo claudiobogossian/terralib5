@@ -35,7 +35,6 @@
 #include "ui_SymbolEditorWidgetForm.h"
 
 // Qt
-#include <QtGui/QGridLayout>
 #include <QtGui/QStackedWidget>
 
 // STL
@@ -56,7 +55,7 @@ te::qt::widgets::SymbolEditorWidget::SymbolEditorWidget(const te::se::Symbolizer
   previewLayout->addWidget(m_preview);
 
   // Layers
-  m_symbolTable = new SymbolizerTableWidget(QSize(120, 32), type, this);
+  m_symbolTable = new SymbolizerTableWidget(QSize(120, 42), type, this);
   m_symbolTable->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
   // Adjusting...

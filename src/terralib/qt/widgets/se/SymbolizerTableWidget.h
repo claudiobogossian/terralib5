@@ -104,6 +104,11 @@ namespace te
           */
           void setSymbolizerType(const te::se::SymbolizerType& type);
 
+          /*!
+            \brief Selects the given index on symbolizer visual table layer.
+
+            \param index The symbolizer index.
+          */
           void selectSymbolizer(const int& index);
 
           /*!

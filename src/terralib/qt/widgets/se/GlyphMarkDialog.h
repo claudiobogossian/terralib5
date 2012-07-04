@@ -87,8 +87,8 @@ namespace te
         public:
 
           /*!
-            \brief Pops up a modal mark dialog with the given window title, lets the user configure the mark, 
-                   and returns that mark. The mark is initially set to initial. The dialog is a child of parent. 
+            \brief Pops up a modal mark dialog with the given window title, lets the user configure the mark,
+                   and returns that mark. The mark is initially set to initial. The dialog is a child of parent.
 
             \param initial A initial mark element that will be used.
                            The dialog form will be update based on mark element parameters. It can be NULL.

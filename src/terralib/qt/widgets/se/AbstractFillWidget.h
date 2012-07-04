@@ -57,7 +57,7 @@ namespace te
             */
           //@{
 
-          /*! \brief Default constructor. */
+          /*! \brief Constructs a widget which is a child of parent, with widget flags set to f. */
           AbstractFillWidget(QWidget* parent = 0, Qt::WindowFlags f = 0) : QWidget(parent, f) { }
 
           /*! \brief Virtual destructor. */
@@ -86,10 +86,7 @@ namespace te
           */
           virtual te::se::Fill* getFill() const = 0;
 
-          /*!
-            \brief Pure virtual method that should return a "user friendly" string
-                   that informs the fill type that can be built by the widget.
-          */
+          /*! \brief Pure virtual method that should return a "user friendly" string that informs the fill type that can be built by the widget. */
           virtual QString getFillType() const = 0;
       };
 
