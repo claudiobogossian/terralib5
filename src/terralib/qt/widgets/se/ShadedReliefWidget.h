@@ -79,16 +79,23 @@ namespace te
 
         public:
 
+          void setShadedRelief(const te::se::ShadedRelief* sr);
 
+          te::se::ShadedRelief* getShadedRelief() const;
 
         protected:
 
-          /*! \brief Updates the widget form based on internal mark element. */
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
+          void initialize();
+
+          /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
         protected slots:
 
+          void onBrightnessToggled(bool flag);
 
+          void onFactorChanged(double value);
 
         signals:
 
@@ -97,6 +104,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ShadedReliefWidgetForm> m_ui;             //!< Dialog form.
+          te::se::ShadedRelief* m_sr;                                 //!< SE Shaded relief element.
 
       };
 

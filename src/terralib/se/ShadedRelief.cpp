@@ -41,9 +41,19 @@ void te::se::ShadedRelief::setBrightnessOnly(bool b)
   m_brightnessOnly = b;
 }
 
+bool te::se::ShadedRelief::isBrightnessOnly() const
+{
+  return m_brightnessOnly;
+}
+
 void te::se::ShadedRelief::setReliefFactor(const double& rf)
 {
   m_reliefFactor = rf;
+}
+
+double te::se::ShadedRelief::getReliefFactor() const
+{
+  return m_reliefFactor;
 }
 
 te::se::ShadedRelief* te::se::ShadedRelief::clone() const

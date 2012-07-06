@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../se.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -79,15 +80,23 @@ namespace te
 
         public:
 
+          void setContrastEnhancement(te::se::ContrastEnhancement* ce);
 
+          te::se::ContrastEnhancement* getContrastEnhancement() const;
 
         protected:
 
-          /*! \brief Updates the widget form based on internal mark element. */
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
+          void initialize();
+
+          /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
         protected slots:
 
+          void onGammaValueChanged(double value);
+
+          void onTypeChanged(QString value);
 
 
         signals:
@@ -96,7 +105,11 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ContrastEnhancementWidgetForm> m_ui;             //!< Dialog form.
+          std::auto_ptr<Ui::ContrastEnhancementWidgetForm> m_ui;              //!< Dialog form.
+
+          te::se::ContrastEnhancement* m_contrast;                            //!< SE Contrast element
+
+          std::map<te::se::ContrastEnhancement::ContrastEnhancementType, QString> m_ceNames;  //!< Contrast Types Names
 
       };
 
