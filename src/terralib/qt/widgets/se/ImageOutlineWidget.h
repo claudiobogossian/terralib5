@@ -31,6 +31,7 @@
 
 // Qt
 #include <QtGui/QWidget>
+#include <QtGui/QGridLayout> 
 
 // STL
 #include <memory>
@@ -46,12 +47,16 @@ namespace te
   namespace se
   {
     class Symbolizer;
+    class ImageOutline;
   }
 
   namespace qt
   {
     namespace widgets
     {
+      class LineSymbolizerWidget;
+      class PolygonSymbolizerWidget;
+      class SymbolizerPreviewWidget;
 
       /*!
         \class ImageOutlineWidget
@@ -79,16 +84,24 @@ namespace te
 
         public:
 
-
-
         protected:
 
           /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
+          void deleteInterfaces();
+
         protected slots:
 
+          void onNoneSymbolizerClicked();
 
+          void onLineSymbolizerClicked();
+
+          void onPolygonSymbolizerClicked();
+
+          void onLineSymbolizerCreated();
+
+          void onPolygonSymbolizerCreated();
 
         signals:
 
@@ -97,6 +110,14 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ImageOutlineWidgetForm> m_ui;             //!< Dialog form.
+
+          te::qt::widgets::LineSymbolizerWidget* m_lsWidget;          //!< Line Symbolizer UI.
+          te::qt::widgets::PolygonSymbolizerWidget* m_psWidget;       //!< Polygon Symbolizer UI.
+          te::qt::widgets::SymbolizerPreviewWidget* m_preview;        //!< Preview Widget used to visualize the symbol.
+
+          QGridLayout* m_layout;                                      //!< Qt Layout object
+
+          te::se::ImageOutline* m_io;                                 //!< SE Image Outline element.
 
       };
 

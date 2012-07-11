@@ -37,6 +37,7 @@
 #include "se/CoverageStyle.h"
 #include "se/Description.h"
 #include "se/Displacement.h"
+#include "se/Enums.h"
 #include "se/ExternalGraphic.h"
 #include "se/FeatureTypeStyle.h"
 #include "se/Fill.h"
