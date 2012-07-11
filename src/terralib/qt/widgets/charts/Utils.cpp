@@ -25,11 +25,138 @@
 
 // TerraLib
 #include "../../../se.h"
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../datatype.h"
 #include "Utils.h"
+#include "Scatter.h"
 
 //QT
 #include <QPen>
 
+double te::qt::widgets::getDouble(const std::string& value, std::vector<std::string>& sVector)
+{
+  //verify if it exists 
+  double result = 0.;
+  for(std::size_t i=0;i<sVector.size();++i)
+  {
+    if(value==sVector[i])
+      return (double)i;
+  }
+
+  sVector.push_back(value);
+  return (double)sVector.size()-1;
+}
+
+double te::qt::widgets::getDouble(te::dt::DateTime* dateTime)
+{
+  if(dateTime->getTypeCode() == te::dt::TIME_INSTANT)
+  {
+    te::dt::TimeInstant* ti = (te::dt::TimeInstant*)dateTime;
+    boost::gregorian::date basedate(1400, 01, 01);
+    boost::gregorian::date_duration days = ti->getDate().getDate() - basedate;
+    long long int seconds = ti->getTime().getTimeDuration().total_seconds();
+    long long int dias = days.days();
+    double v = (double) dias * 86400 + seconds;
+    return v;
+  }
+  else if(dateTime->getTypeCode() == te::dt::DATE)
+  {
+    te::dt::Date* d = (te::dt::Date*)dateTime;
+    boost::gregorian::date basedate(1400, 01, 01);
+    boost::gregorian::date_duration days = d->getDate() - basedate;
+    double v = days.days();
+    return v;
+  }
+  return 0.;
+}
+
+te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, int propX, int propY)
+{
+  te::qt::widgets::Scatter* newScatter = new te::qt::widgets::Scatter();
+  int xType = dataset->getType()->getProperty(propX)->getType();
+  int yType = dataset->getType()->getProperty(propY)->getType();
+
+  while(dataset->moveNext())
+  {
+    double x_doubleValue = 0.;
+    double y_doubleValue = 0.;
+
+    //====== treat the X value
+    if(xType == te::dt::STRING_TYPE)
+    {
+      std::string sValue;
+      if(dataset->isNull(propX))
+        sValue = " null value";
+      else
+        sValue = dataset->getString(propX);
+      x_doubleValue = getDouble(sValue, newScatter->getXString());  
+    }
+    else if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
+      xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
+      xType == te::dt::NUMERIC_TYPE)
+    {
+      if(dataset->isNull(propX))
+        continue;
+
+      x_doubleValue = dataset->getDouble(propX);
+    }
+    else if(xType == te::dt::DATETIME_TYPE)
+    {
+      if(dataset->isNull(propX))
+        continue;
+
+      te::dt::DateTime* dateTime = dataset->getDateTime(propX);
+      x_doubleValue = getDouble(dateTime);
+      delete dateTime;
+    }
+
+    //======treat the Y value
+    if(yType == te::dt::STRING_TYPE)
+    {
+      std::string sValue;
+      if(dataset->isNull(propY) == false)
+        sValue = dataset->getString(propY);
+      else
+        sValue = " null value";
+      y_doubleValue = getDouble(sValue, newScatter->getYString());   
+    }
+    else if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
+      yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
+      yType == te::dt::NUMERIC_TYPE)
+    {
+      if(dataset->isNull(propY))
+        continue;
+      y_doubleValue = dataset->getDouble(propY);
+    }
+    else if(yType == te::dt::DATETIME_TYPE)
+    {
+      if(dataset->isNull(propY))
+        continue;
+
+      te::dt::DateTime* dateTime = dataset->getDateTime(propY);
+      y_doubleValue = getDouble(dateTime);
+      delete dateTime;
+    }
+
+    //insert values into the vectors
+
+    newScatter->addX(x_doubleValue);
+    newScatter->addY(y_doubleValue);
+
+    //calculate range
+    if(x_doubleValue<newScatter->getMinX())
+      newScatter->setMinX(x_doubleValue);
+    if(x_doubleValue>newScatter->getMaxX())
+      newScatter->setMaxX(x_doubleValue);
+
+    if(y_doubleValue<newScatter->getMinY())
+      newScatter->setMinY(y_doubleValue);
+    if(y_doubleValue>newScatter->getMaxY())
+      newScatter->setMaxY(y_doubleValue);
+  } //end of the data set
+  return newScatter;
+}
 
 QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text)
 {

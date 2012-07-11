@@ -61,6 +61,7 @@ option (EXAMPLE_QT_RP "Build qt/rp example." ON)
 option (EXAMPLE_QT_SE "Build qt/se example." ON)  
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
+option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
   
 # Go into sub-directories
 if(EXAMPLE_COLORBAR)
@@ -170,6 +171,10 @@ endif()
 
 if(EXAMPLE_QT_UTILS)
   add_subdirectory(terralib_example_qt/utils)
+endif()
+
+if(EXAMPLE_QT_CHARTS)
+  add_subdirectory(terralib_example_qt/charts)
 endif()
 
 # Verifying if some packag was not found.

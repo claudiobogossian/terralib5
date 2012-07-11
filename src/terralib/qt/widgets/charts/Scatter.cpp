@@ -23,171 +23,49 @@
   \brief A class to represent a scatter. 
 */
 
-// TerraLib
-#include "../../../dataaccess/dataset/DataSet.h"
-#include "../../../dataaccess/dataset/DataSetType.h"
-#include "../../../datatype.h"
-
 #include "Scatter.h"
-
-double getDouble(const std::string& value, std::vector<std::string>& sVector)
-{
-  //verify if it exists 
-  double result = 0.;
-  for(std::size_t i=0;i<sVector.size();++i)
-  {
-    if(value==sVector[i])
-      return (double)i;
-  }
-
-  sVector.push_back(value);
-  return (double)sVector.size()-1;
-}
-
-double getDouble(te::dt::DateTime* dateTime)
-{
-  if(dateTime->getTypeCode() == te::dt::TIME_INSTANT)
-  {
-    te::dt::TimeInstant* ti = (te::dt::TimeInstant*)dateTime;
-    boost::gregorian::date basedate(1400, 01, 01);
-    boost::gregorian::date_duration days = ti->getDate().getDate() - basedate;
-    long long int seconds = ti->getTime().getTimeDuration().total_seconds();
-    long long int dias = days.days();
-    double v = (double) dias * 86400 + seconds;
-    return v;
-  }
-  else if(dateTime->getTypeCode() == te::dt::DATE)
-  {
-    te::dt::Date* d = (te::dt::Date*)dateTime;
-    boost::gregorian::date basedate(1400, 01, 01);
-    boost::gregorian::date_duration days = d->getDate() - basedate;
-    double v = days.days();
-    return v;
-  }
-  return 0.;
-}
-
-te::qt::widgets::Scatter::Scatter(te::da::DataSet* dataset, int propX, int propY)
-  : m_minX(std::numeric_limits<double>::max()),
-    m_maxX(-std::numeric_limits<double>::max()),
-    m_minY(std::numeric_limits<double>::max()),
-    m_maxY(-std::numeric_limits<double>::max())
-{
-   createScatter(dataset, propX, propY);
-}
 
 te::qt::widgets::Scatter::Scatter(const std::vector<double>& axisX, const std::vector<double>& axisY)
   : m_minX(std::numeric_limits<double>::max()),
     m_maxX(-std::numeric_limits<double>::max()),
     m_minY(std::numeric_limits<double>::max()),
-    m_maxY(-std::numeric_limits<double>::max())
+    m_maxY(-std::numeric_limits<double>::max()),
+    m_xValues(axisX),
+    m_yValues(axisY)
+
 {
-  std::vector<double>::const_iterator itx = axisX.begin();
-  std::vector<double>::const_iterator ity = axisY.begin();
-  while(itx!=axisX.end())
+  
+}
+
+te::qt::widgets::Scatter::Scatter()
+  : m_minX(std::numeric_limits<double>::max()),
+  m_maxX(-std::numeric_limits<double>::max()),
+  m_minY(std::numeric_limits<double>::max()),
+  m_maxY(-std::numeric_limits<double>::max())
+{
+}
+
+void te::qt::widgets::Scatter::calculateMinMaxValues()
+{
+  std::vector<double>::const_iterator itx = m_xValues.begin();
+  std::vector<double>::const_iterator ity = m_yValues.begin();
+  while(itx!=m_xValues.end())
   {
     if(*itx < m_minX)
       m_minX = *itx;
     if(*itx > m_maxX)
       m_maxX = *itx; 
-    m_xValues.push_back(*itx);
     ++itx;
   }
 
-  while(ity!=axisY.end())
+  while(ity!=m_yValues.end())
   {
     if(*ity < m_minY)
       m_minY = *ity;
     if(*ity > m_maxY)
       m_maxY = *ity; 
-    m_yValues.push_back(*ity);
     ++ity;
   }
-}
-
-void
-te::qt::widgets::Scatter::createScatter(te::da::DataSet* dataset, int propX, int propY)
-{
-   int xType = dataset->getType()->getProperty(propX)->getType();
-   int yType = dataset->getType()->getProperty(propY)->getType();
-
-   while(dataset->moveNext())
-   {
-      double x_doubleValue = 0.;
-      double y_doubleValue = 0.;
-      
-      //====== treat the X value
-      if(xType == te::dt::STRING_TYPE)
-      {
-        std::string sValue;
-        if(dataset->isNull(propX))
-          sValue = " null value";
-        else
-          sValue = dataset->getString(propX);
-        x_doubleValue = getDouble(sValue, m_xString);  
-      }
-      else if((xType >= te::dt::INT16_TYPE && xType <= te::dt::UINT64_TYPE) || 
-              xType == te::dt::FLOAT_TYPE || xType == te::dt::DOUBLE_TYPE || 
-              xType == te::dt::NUMERIC_TYPE)
-      {
-        if(dataset->isNull(propX))
-          continue;
-
-        x_doubleValue = dataset->getDouble(propX);
-      }
-      else if(xType == te::dt::DATETIME_TYPE)
-      {
-        if(dataset->isNull(propX))
-          continue;
-
-        te::dt::DateTime* dateTime = dataset->getDateTime(propX);
-        x_doubleValue = getDouble(dateTime);
-        delete dateTime;
-      }
-
-      //======treat the Y value
-      if(yType == te::dt::STRING_TYPE)
-      {
-        std::string sValue;
-        if(dataset->isNull(propY) == false)
-          sValue = dataset->getString(propY);
-        else
-          sValue = " null value";
-        y_doubleValue = getDouble(sValue, m_yString);   
-      }
-      else if((yType >= te::dt::INT16_TYPE && yType <= te::dt::UINT64_TYPE) || 
-              yType == te::dt::FLOAT_TYPE || yType == te::dt::DOUBLE_TYPE || 
-              yType == te::dt::NUMERIC_TYPE)
-      {
-        if(dataset->isNull(propY))
-          continue;
-        y_doubleValue = dataset->getDouble(propY);
-      }
-      else if(yType == te::dt::DATETIME_TYPE)
-      {
-        if(dataset->isNull(propY))
-          continue;
-
-        te::dt::DateTime* dateTime = dataset->getDateTime(propY);
-        y_doubleValue = getDouble(dateTime);
-        delete dateTime;
-      }
-
-      //insert values into the vectors
-      m_xValues.push_back(x_doubleValue);
-      m_yValues.push_back(y_doubleValue);
-
-      //calculate range
-      if(x_doubleValue<m_minX)
-        m_minX=x_doubleValue;
-      if(x_doubleValue>m_maxX)
-        m_maxX=x_doubleValue;
-
-      if(y_doubleValue<m_minY)
-        m_minY=y_doubleValue;
-      if(y_doubleValue>m_maxY)
-        m_maxY=y_doubleValue;
-   } //end of the data set
 }
 
 std::size_t te::qt::widgets::Scatter::size()
@@ -215,6 +93,16 @@ double* te::qt::widgets::Scatter::getY()
   return &m_yValues[0];
 }
 
+std::vector<std::string>& te::qt::widgets::Scatter::getXString()
+{
+  return m_xString;
+}
+
+std::vector<std::string>& te::qt::widgets::Scatter::getYString()
+{
+  return m_yString;
+}
+
 double te::qt::widgets::Scatter::getMinX()
 {
   return m_minX;
@@ -233,6 +121,36 @@ double te::qt::widgets::Scatter::getMinY()
 double te::qt::widgets::Scatter::getMaxY()
 {
   return m_maxY;
+}
+
+void te::qt::widgets::Scatter::setMinX(double& new_minX)
+{
+   m_minX = new_minX;
+}
+
+void te::qt::widgets::Scatter::setMaxX(double& new_maxX)
+{
+  m_maxX = new_maxX;
+}
+
+void te::qt::widgets::Scatter::setMinY(double& new_minY)
+{
+  m_minY = new_minY;
+}
+
+void te::qt::widgets::Scatter::setMaxY(double& new_maxY)
+{
+  m_maxY = new_maxY;
+}
+
+void te::qt::widgets::Scatter::addX(double& xValue)
+{
+  m_xValues.push_back(xValue);
+}
+
+void te::qt::widgets::Scatter::addY(double& yValue)
+{
+  m_yValues.push_back(yValue);
 }
 
 te::qt::widgets::Scatter::~Scatter()

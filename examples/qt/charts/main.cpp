@@ -28,6 +28,9 @@
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
 
+//Utils
+#include <terralib/qt/widgets/charts/Utils.h>
+
 // Qt Chart
 #include <terralib/qt/widgets/charts/Scatter.h>
 #include <terralib/qt/widgets/charts/ScatterChart.h>
@@ -57,7 +60,7 @@ int main(int /*argc*/, char** /*argv*/)
     //========
     
     //pegar um data set
-    std::string ogrInfo("connection_string=C:/tmp/data/shp");
+    std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Solutions/examples/data/data-charts");
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionStr(ogrInfo);
@@ -84,8 +87,8 @@ int main(int /*argc*/, char** /*argv*/)
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
-           
-    te::qt::widgets::Scatter* scatter = new te::qt::widgets::Scatter(dataset, rendaIdx, anosestIdx);
+    
+	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
 
     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
 

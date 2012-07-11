@@ -60,6 +60,7 @@ set (
   qwt
   widgets
   widgets/canvas
+  widgets/charts
   widgets/datagrid
   widgets/dataset
   widgets/layer
@@ -151,6 +152,7 @@ file(GLOB HDRS_TO_MOC
 file(GLOB FORMS
 	 ${SRCDIR}/widgets/*.ui
      ${SRCDIR}/widgets/canvas/*.ui
+	 ${SRCDIR}/widgets/charts/*.ui
      ${SRCDIR}/widgets/datagrid/*.ui
      ${SRCDIR}/widgets/dataset/*.ui
      ${SRCDIR}/widgets/layer/*.ui
