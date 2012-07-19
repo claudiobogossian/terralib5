@@ -34,6 +34,8 @@
 // Qt Chart
 #include <terralib/qt/widgets/charts/Scatter.h>
 #include <terralib/qt/widgets/charts/ScatterChart.h>
+#include <terralib/qt/widgets/charts/Histogram.h>
+#include <terralib/qt/widgets/charts/HistogramChart.h>
 #include <terralib/qt/widgets/charts/ChartDisplay.h>
 
 // Qt
@@ -87,25 +89,49 @@ int main(int /*argc*/, char** /*argv*/)
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
+
+    std::map<double, int> values;
+    values[1.0] = 5;
+    values[2.0] = 10;
+    values[3.0] = 15;
+    values[4.0] = 20;
+    values[5.0] = 25;
+    values[6.0] = 30;
+    double minValue = 1.0;
+
+    te::qt::widgets::Histogram* histogram = new te::qt::widgets::Histogram(values, minValue);
+
+    //criar os QwtInterval, samples, etc, etc
+
+    te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram, 1.0);
     
-	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
-
-    te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
-
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
-    chartDisplay->show();
 
-    scatterChart->attach(chartDisplay);
+    histogramChart->attach(chartDisplay);
+
     chartDisplay->show();
 
     chartDisplay->replot();
+
+
+// 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
+// 
+//     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
+// 
+//     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
+//     chartDisplay->show();
+// 
+//     scatterChart->attach(chartDisplay);
+//     chartDisplay->show();
+// 
+//     chartDisplay->replot();
 
     int ret = app.exec();
 
 	  //delete pointers
     //delete chartDisplay; // quando attacha não precisa deletar!!!! => ele cai!
-    delete scatterChart;
-    delete scatter;
+    //delete scatterChart;
+    //delete scatter;
     delete dataset;
     delete transactor;
     delete ds;
