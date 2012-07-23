@@ -12,6 +12,7 @@ endif()
 #Definitions for windows compiling
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEADODLL -DBOOST_ALL_NO_LIB)
+  remove_definitions( /MP )
 endif(WIN32)
 
 list (APPEND DEP_LIBS terralib_common terralib_dataaccess terralib_datatype terralib_plugin terralib_geometry terralib_memory)

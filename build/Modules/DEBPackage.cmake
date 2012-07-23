@@ -1,6 +1,6 @@
 # Configurations for packaging using DEB
 
-set (p_deps "libstdc++ (>=6), libc (>=6), gcc (>=4.5.2)")
+set (p_deps "libstdc++ | libstdc++6 (>=4.5.2), gcc (>=4.5.2)")
 
 GET_PROPERTY(
   deps GLOBAL
@@ -9,7 +9,7 @@ GET_PROPERTY(
 
 foreach (dep ${deps})
   getLibrariesNames( ${dep} _libs )
-  set (p_deps "${p_deps},${_libs}")
+  set (p_deps "${p_deps}, ${_libs}")
 endforeach()
 
 #set (CPACK_DEBIAN_PACKAGE_NAME ${pname})

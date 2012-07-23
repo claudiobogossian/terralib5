@@ -9,6 +9,7 @@ list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
 #TerraLib dependencies dir
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}")
+  set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}")
 endif()
 
 # Configuration files folder.

@@ -8,6 +8,10 @@ else()
   set (path_prefix "$ENV{ProgramFiles}")
 endif()
 
+if( MSVC_IDE AND ( MSVC90 OR MSVC10 ) )
+  add_definitions( /MP )
+endif()
+
 #if(MSVC)
 #  set (
 #    paths_2_search

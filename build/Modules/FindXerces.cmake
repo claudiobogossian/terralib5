@@ -17,14 +17,14 @@ find_path(
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 find_library(
   XERCES_LIBRARY_RELEASE
-  NAMES xerces-c
+  NAMES xerces-c xerces-c_3
   PATHS /usr/local/lib /usr/lib
   PATH_SUFFIXES "xerces/lib"
 )
              
 find_library(
   XERCES_LIBRARY_DEBUG
-  NAMES xerces-c_d
+  NAMES xerces-c_d  xerces-c_3D
   PATHS /usr/local/lib /usr/lib
   PATH_SUFFIXES "xerces/lib"
 )

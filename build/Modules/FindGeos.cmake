@@ -16,14 +16,14 @@ find_path(
 
 find_library(
   GEOS_LIBRARY_RELEASE
-  NAMES geos
+  NAMES geos geos_i
   PATHS /usr/local/lib /usr/lib  
   PATH_SUFFIXES "geos/lib"
 )
              
 find_library(
   GEOS_LIBRARY_DEBUG
-  NAMES geos_d
+  NAMES geos_d geos_i_d
   PATHS /usr/local/lib /usr/lib  
   PATH_SUFFIXES "geos/lib"
 )
