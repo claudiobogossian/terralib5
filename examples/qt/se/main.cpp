@@ -38,7 +38,7 @@ int main(int /*argc*/, char** /*argv*/)
 
   try
   {
-    SymbologyWidgets();
+    //SymbologyWidgets();
 
     RasterSymbologyWidgets();
   }

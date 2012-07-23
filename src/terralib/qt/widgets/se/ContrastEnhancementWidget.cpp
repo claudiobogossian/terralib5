@@ -111,6 +111,8 @@ void te::qt::widgets::ContrastEnhancementWidget::updateUi()
 void te::qt::widgets::ContrastEnhancementWidget::onGammaValueChanged(double value)
 {
   m_contrast->setGammaValue(value);
+
+  emit contrastEnhancementChanged();
 }
 
 void te::qt::widgets::ContrastEnhancementWidget::onTypeChanged(QString value)
@@ -127,5 +129,7 @@ void te::qt::widgets::ContrastEnhancementWidget::onTypeChanged(QString value)
 
     ++it;
   }
+
+  emit contrastEnhancementChanged();
 }
 

@@ -37,6 +37,7 @@ set (DEP_LIBS
 		terralib_dataaccess
 		terralib_datatype
 		terralib_filter
+		terralib_gdal
 		terralib_geometry
 		terralib_gml
 		terralib_maptools

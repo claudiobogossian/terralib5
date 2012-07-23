@@ -84,6 +84,10 @@ namespace te
 
         public:
 
+          void setImageOutline(const te::se::ImageOutline* io);
+
+          te::se::ImageOutline* getImageOutline() const;
+
         protected:
 
           /*! \brief Updates the widget form based on internal mark element. */
