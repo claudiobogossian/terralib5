@@ -28,45 +28,142 @@
 #include "ChannelSelectionWidget.h"
 #include "SelectedChannelWidget.h"
 #include "ui_ChannelSelectionWidgetForm.h"
+#include "../../../raster.h"
+#include "../../../se.h"
 
 // Qt
 
 
 // STL
-
+#include <cassert>
 
 te::qt::widgets::ChannelSelectionWidget::ChannelSelectionWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::ChannelSelectionWidgetForm)
+    m_ui(new Ui::ChannelSelectionWidgetForm),
+    m_cs(new te::se::ChannelSelection),
+    m_scRed(new te::se::SelectedChannel),
+    m_scGreen(new te::se::SelectedChannel),
+    m_scBlue(new te::se::SelectedChannel),
+    m_scMono(new te::se::SelectedChannel)
 {
   m_ui->setupUi(this);
 
   //Selected Channel Widget
-  m_redSCWidget = new te::qt::widgets::SelectedChannelWidget(this);
-  m_greenSCWidget = new te::qt::widgets::SelectedChannelWidget(this);
-  m_blueSCWidget = new te::qt::widgets::SelectedChannelWidget(this);
-  m_monoSCWidget = new te::qt::widgets::SelectedChannelWidget(this);
-
+  m_sCWidget = new te::qt::widgets::SelectedChannelWidget(this);
+  
   // Adjusting...
-  QGridLayout* layoutRed = new QGridLayout(m_ui->m_rFrame);
-  layoutRed->addWidget(m_redSCWidget);
+  QGridLayout* layout = new QGridLayout(m_ui->m_frame);
+  layout->addWidget(m_sCWidget);
+  m_sCWidget->show();
 
-  QGridLayout* layoutGreen = new QGridLayout(m_ui->m_gFrame);
-  layoutGreen->addWidget(m_greenSCWidget);
+  // Signals & slots
+  connect(m_ui->m_redRadioButton, SIGNAL(clicked()), SLOT(onRedChannelSelected()));
+  connect(m_ui->m_greenRadioButton, SIGNAL(clicked()), SLOT(onGreenChannelSelected()));
+  connect(m_ui->m_blueRadioButton, SIGNAL(clicked()), SLOT(onBlueChannelSelected()));
+  connect(m_ui->m_monoRadioButton, SIGNAL(clicked()), SLOT(onMonoChannelSelected()));
 
-  QGridLayout* layoutBlue = new QGridLayout(m_ui->m_bFrame);
-  layoutBlue->addWidget(m_blueSCWidget);
+  connect(m_sCWidget, SIGNAL(selectedChannelChanged()), SLOT(onSelectedChannelChanged()));
 
-  QGridLayout* layoutMono = new QGridLayout(m_ui->m_mFrame);
-  layoutMono->addWidget(m_monoSCWidget);
+  initialize();
 }
 
 te::qt::widgets::ChannelSelectionWidget::~ChannelSelectionWidget()
 {
+  delete m_cs;
+}
 
+void te::qt::widgets::ChannelSelectionWidget::setChannelSelection(const te::se::ChannelSelection* cs)
+{
+  assert(cs);
+
+  delete m_cs;
+
+  m_cs = cs->clone();
+}
+
+te::se::ChannelSelection* te::qt::widgets::ChannelSelectionWidget::getChannelSelection() const
+{
+  return m_cs->clone();
+}
+
+void te::qt::widgets::ChannelSelectionWidget::setProperty(std::vector<te::rst::BandProperty*>& p)
+{
+  m_bands = p;
+
+  updateUi();
+}
+
+void te::qt::widgets::ChannelSelectionWidget::initialize()
+{
+  m_cs->setRedChannel(m_scRed);
+  m_cs->setGreenChannel(m_scGreen);
+  m_cs->setBlueChannel(m_scBlue);
+  m_cs->setGrayChannel(m_scMono);
 }
 
 void te::qt::widgets::ChannelSelectionWidget::updateUi()
 {
-  
+  QStringList bandNames;
+
+  for(size_t i = 0; i < m_bands.size(); ++i)
+  {
+    // if the band property does not have the description information
+    // we must used the index information.
+    if(m_bands[i]->m_description.empty())
+    {
+      QString bandInfo;
+      bandInfo.setNum(m_bands[i]->m_idx);
+
+      bandNames.push_back(bandInfo);
+    }
+    else
+    {
+      bandNames.push_back(m_bands[i]->m_description.c_str());
+    }
+  }
+
+  if(m_sCWidget)
+  {
+    m_sCWidget->setChannelNames(bandNames);
+  }
+}
+
+void te::qt::widgets::ChannelSelectionWidget::onRedChannelSelected()
+{
+  m_sCWidget->setSelectedChannel(m_scRed);
+}
+
+void te::qt::widgets::ChannelSelectionWidget::onGreenChannelSelected()
+{
+  m_sCWidget->setSelectedChannel(m_scGreen);
+}
+
+void te::qt::widgets::ChannelSelectionWidget::onBlueChannelSelected()
+{
+  m_sCWidget->setSelectedChannel(m_scBlue);
+}
+
+void te::qt::widgets::ChannelSelectionWidget::onMonoChannelSelected()
+{
+  m_sCWidget->setSelectedChannel(m_scMono);
+}
+
+void te::qt::widgets::ChannelSelectionWidget::onSelectedChannelChanged()
+{
+  if(m_ui->m_redRadioButton->isChecked())
+  {
+    m_scRed = m_sCWidget->getSelectedChannel();
+  }
+  else if(m_ui->m_greenRadioButton->isChecked())
+  {
+    m_scGreen = m_sCWidget->getSelectedChannel();
+  }
+  else if(m_ui->m_blueRadioButton->isChecked())
+  {
+    m_scBlue = m_sCWidget->getSelectedChannel();
+  }
+  else if(m_ui->m_monoRadioButton->isChecked())
+  {
+    m_scMono = m_sCWidget->getSelectedChannel();
+  }
 }

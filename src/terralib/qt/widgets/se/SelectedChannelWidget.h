@@ -100,8 +100,12 @@ namespace te
 
           void onChannelNameChanged(QString value);
 
+          void onContrastEnhancementChanged();
+
 
         signals:
+
+          void selectedChannelChanged();
 
 
         private:

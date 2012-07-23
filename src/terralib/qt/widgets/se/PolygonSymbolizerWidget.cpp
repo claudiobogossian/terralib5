@@ -48,8 +48,15 @@ te::qt::widgets::PolygonSymbolizerWidget::PolygonSymbolizerWidget(QWidget* paren
 {
   m_ui->setupUi(this);
 
+  m_ui->m_mainLayout->setAlignment(Qt::AlignTop);
+
   // Stack of Fill Widgets
   m_fillWidgets = new QStackedWidget(this);
+
+  // Adjusting...
+  QGridLayout* fillLayout = new QGridLayout(m_ui->m_fillGroupBox);
+  fillLayout->addWidget(m_fillWidgets);
+  fillLayout->setAlignment(Qt::AlignTop);
 
   // Gets registered fill widgets
   std::vector<std::string> keys;
@@ -63,16 +70,13 @@ te::qt::widgets::PolygonSymbolizerWidget::PolygonSymbolizerWidget(QWidget* paren
     m_fillWidgets->addWidget(fw);
   }
 
-  // Adjusting...
-  QGridLayout* fillLayout = new QGridLayout(m_ui->m_fillGroupBox);
-  fillLayout->addWidget(m_fillWidgets);
-
   // Stroke Widget
   m_strokeWidget = new te::qt::widgets::BasicStrokeWidget(this);
 
   // Adjusting...
   QGridLayout* strokeLayout = new QGridLayout(m_ui->m_strokeGroupBox);
   strokeLayout->addWidget(m_strokeWidget);
+  strokeLayout->setAlignment(Qt::AlignTop);
 
   // UOM
   std::vector<te::common::UnitOfMeasure*>::const_iterator uomIt;

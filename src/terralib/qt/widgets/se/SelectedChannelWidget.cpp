@@ -53,6 +53,7 @@ te::qt::widgets::SelectedChannelWidget::SelectedChannelWidget(QWidget* parent, Q
 
   // Signals & slots
   connect(m_ui->m_channelNameComboBox, SIGNAL(activated(QString)), SLOT(onChannelNameChanged(QString)));
+  connect(m_contrastWidget, SIGNAL(contrastEnhancementChanged()), SLOT(onContrastEnhancementChanged()));
 
   initialize();
 }
@@ -115,10 +116,22 @@ void te::qt::widgets::SelectedChannelWidget::updateUi()
     m_ui->m_channelNameComboBox->setCurrentIndex(m_ui->m_channelNameComboBox->count() - 1);
   }
 
-  m_contrastWidget->setContrastEnhancement(m_se->getContrastEnhancement());
+  if(m_se->getContrastEnhancement())
+  {
+    m_contrastWidget->setContrastEnhancement(m_se->getContrastEnhancement());
+  }
 }
 
 void te::qt::widgets::SelectedChannelWidget::onChannelNameChanged(QString value)
 {
   m_se->setSourceChannelName(value.toLatin1().data());
+
+  emit selectedChannelChanged();
+}
+
+void te::qt::widgets::SelectedChannelWidget::onContrastEnhancementChanged()
+{
+  m_se->setContrastEnhancement(m_contrastWidget->getContrastEnhancement());
+
+  emit selectedChannelChanged();
 }

@@ -36,7 +36,7 @@
 
 
 // STL
-
+#include <cassert>
 
 te::qt::widgets::ImageOutlineWidget::ImageOutlineWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -48,13 +48,16 @@ te::qt::widgets::ImageOutlineWidget::ImageOutlineWidget(QWidget* parent, Qt::Win
   m_ui->setupUi(this);
 
   //adjust interface
-  m_layout = new QGridLayout(m_ui->m_widget);
+  m_layout = new QGridLayout(m_ui->m_scrollArea);
+
+  m_ui->m_previewGroupBox->setVisible(false);
 
   // Preview
   QGridLayout* l = new QGridLayout(m_ui->m_previewWidget);
   l->setContentsMargins(0,0,0,0);
+  l->setAlignment(Qt::AlignTop);
   
-  m_preview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(120, 120), te::se::SymbolizerType::RASTER_SYMBOLIZER, m_ui->m_previewWidget);
+  m_preview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(120, 120), te::se::RASTER_SYMBOLIZER, m_ui->m_previewWidget);
 
   l->addWidget(m_preview);
 
@@ -69,11 +72,27 @@ te::qt::widgets::ImageOutlineWidget::~ImageOutlineWidget()
   delete m_io;
 }
 
+void te::qt::widgets::ImageOutlineWidget::setImageOutline(const te::se::ImageOutline* io)
+{
+  assert(io);
+
+  delete m_io;
+
+  m_io = io->clone();
+
+  updateUi();
+}
+
+te::se::ImageOutline* te::qt::widgets::ImageOutlineWidget::getImageOutline() const
+{
+  return m_io->clone();
+}
+
 void te::qt::widgets::ImageOutlineWidget::updateUi()
 {
   te::se::Symbolizer* s = m_io->getSymbolizer();
 
-  m_preview->setVisible(true);
+  m_ui->m_previewGroupBox->setVisible(true);
 
   m_preview->updatePreview(s);
 
@@ -87,8 +106,6 @@ void te::qt::widgets::ImageOutlineWidget::deleteInterfaces()
 
   delete m_psWidget;
   m_psWidget = 0;
-
-  this->adjustSize();
 }
 
 void te::qt::widgets::ImageOutlineWidget::onNoneSymbolizerClicked()
@@ -97,16 +114,14 @@ void te::qt::widgets::ImageOutlineWidget::onNoneSymbolizerClicked()
 
   m_io->setSymbolizer(0);
 
-  this->adjustSize();
-
-  m_preview->setVisible(false);
+  m_ui->m_previewGroupBox->setVisible(false);
 }
 
 void te::qt::widgets::ImageOutlineWidget::onLineSymbolizerClicked()
 {
   deleteInterfaces();
 
-  m_lsWidget = new te::qt::widgets::LineSymbolizerWidget(m_ui->m_widget);
+  m_lsWidget = new te::qt::widgets::LineSymbolizerWidget(m_ui->m_scrollArea);
 
   connect(m_lsWidget, SIGNAL(symbolizerChanged()), SLOT(onLineSymbolizerCreated()));
 
@@ -116,9 +131,7 @@ void te::qt::widgets::ImageOutlineWidget::onLineSymbolizerClicked()
   
   m_lsWidget->show();
 
-  m_preview->setSymbolizerType(te::se::SymbolizerType::LINE_SYMBOLIZER);
-
-  this->adjustSize();
+  m_preview->setSymbolizerType(te::se::LINE_SYMBOLIZER);
 
   updateUi();
 }
@@ -127,7 +140,7 @@ void te::qt::widgets::ImageOutlineWidget::onPolygonSymbolizerClicked()
 {
   deleteInterfaces();
 
-  m_psWidget = new te::qt::widgets::PolygonSymbolizerWidget(m_ui->m_widget);
+  m_psWidget = new te::qt::widgets::PolygonSymbolizerWidget(m_ui->m_scrollArea);
 
   connect(m_psWidget, SIGNAL(symbolizerChanged()), SLOT(onPolygonSymbolizerCreated()));
 
@@ -137,9 +150,7 @@ void te::qt::widgets::ImageOutlineWidget::onPolygonSymbolizerClicked()
   
   m_psWidget->show();
 
-  m_preview->setSymbolizerType(te::se::SymbolizerType::POLYGON_SYMBOLIZER);
-
-  this->adjustSize();
+  m_preview->setSymbolizerType(te::se::POLYGON_SYMBOLIZER);
 
   updateUi();
 }

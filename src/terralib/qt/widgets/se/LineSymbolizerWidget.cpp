@@ -52,6 +52,7 @@ te::qt::widgets::LineSymbolizerWidget::LineSymbolizerWidget(QWidget* parent, Qt:
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_strokeGroupBox);
   layout->addWidget(m_strokeWidget);
+  layout->setAlignment(Qt::AlignTop);
 
   // UOM
   std::vector<te::common::UnitOfMeasure*>::const_iterator uomIt;

@@ -5,6 +5,7 @@
 #include <terralib/qt/widgets/utils/DoubleListWidget.h>
 #include <terralib/qt/widgets/utils/ListWidget.h>
 #include <terralib/qt/widgets/utils/ParameterTableWidget.h>
+#include <terralib/qt/widgets/utils/HorizontalSliderWidget.h>
 
 // Qt
 #include <QtGui/QApplication>
@@ -59,7 +60,11 @@ void UtilsWidgets()
   //add ColorPickerToolButton
   te::qt::widgets::ColorPickerToolButton* cp = new te::qt::widgets::ColorPickerToolButton(&d);
   cp->setFixedSize(70, 24);
-  layout->addWidget(cp, 2, 0, 1, 3);
+  layout->addWidget(cp, 2, 0);
+
+  //add HorizontalSliderWidget
+  te::qt::widgets::HorizontalSliderWidget* hs = new te::qt::widgets::HorizontalSliderWidget(&d);
+  layout->addWidget(hs, 2, 1, 1, 2);
 
   d.exec();
 }
