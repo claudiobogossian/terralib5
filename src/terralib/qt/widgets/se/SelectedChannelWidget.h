@@ -82,25 +82,34 @@ namespace te
 
         public:
 
+          void setSelectedChannel(const te::se::SelectedChannel* sc);
 
+          te::se::SelectedChannel* getSelectedChannel() const;
+
+          void setChannelNames(const QStringList& list);
 
         protected:
 
-          /*! \brief Updates the widget form based on internal mark element. */
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
+          void initialize();
+
+          /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
         protected slots:
 
+          void onChannelNameChanged(QString value);
 
 
         signals:
-
 
 
         private:
 
           std::auto_ptr<Ui::SelectedChannelWidgetForm> m_ui;             //!< Dialog form.
           te::qt::widgets::ContrastEnhancementWidget* m_contrastWidget;  //!< Constrast Widget form.
+
+          te::se::SelectedChannel* m_se;                                  //!< SE Selected Channel element.
       };
 
     } // end namespace widgets

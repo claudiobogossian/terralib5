@@ -24,49 +24,23 @@
 */
 
 // TerraLib
-#include "AbstractGraphicWidgetFactory.h"
-#include "GlyphGraphicWidget.h"
 #include "GraphicDialog.h"
-#include "GraphicWidget.h"
+#include "GraphicSelectorWidget.h"
 #include "ui_GraphicDialogForm.h"
-#include "WellKnownGraphicWidget.h"
 
-// Qt
-#include <QtGui/QStackedWidget>
-
-te::qt::widgets::GraphicDialog::GraphicDialog(QWidget* parent, const bool noButtons, Qt::WindowFlags f)
+te::qt::widgets::GraphicDialog::GraphicDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::GraphicDialogForm)
 {
   m_ui->setupUi(this);
 
-  // Graphic Widgets
-  m_graphicWidgets = new QStackedWidget(this);
-
-  // Gets registered graphic widgets
-  std::vector<std::string> keys;
-  te::qt::widgets::AbstractGraphicWidgetFactory::RegisteredWidgets(keys);
-  for(std::size_t i = 0; i < keys.size(); ++i)
-  {
-    te::qt::widgets::GraphicWidget* gw = te::qt::widgets::AbstractGraphicWidgetFactory::make(keys[i]);
-    gw->setParent(this);
-    m_ui->m_graphicTypeComboBox->addItem(gw->getGraphicType());
-    m_graphicWidgets->addWidget(gw);
-  }
+  // Graphic Selector
+  m_graphicSelector = new GraphicSelectorWidget(this);
 
   // Adjusting...
-  QGridLayout* layout = new QGridLayout(m_ui->m_graphicWidgetFrame);
-  layout->setContentsMargins(0, 0, 0, 0);
-  layout->addWidget(m_graphicWidgets);
-
-  if(noButtons)
-  {
-    m_ui->m_okPushButton->setVisible(false);
-    m_ui->m_cancelPushButton->setVisible(false);
-  }
-
-  // Signals & slots
-  connect(m_ui->m_graphicTypeComboBox, SIGNAL(activated(int)), m_graphicWidgets, SLOT(setCurrentIndex(int)));
+  QGridLayout* layout = new QGridLayout(m_ui->m_graphicSelectorFrame);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addWidget(m_graphicSelector);
 }
 
 te::qt::widgets::GraphicDialog::~GraphicDialog()
@@ -81,7 +55,7 @@ te::se::Graphic* te::qt::widgets::GraphicDialog::getGraphic(const te::se::Graphi
     dlg.setWindowTitle(title);
 
   if(initial)
-    dlg.setGraphic(initial);
+    dlg.m_graphicSelector->setGraphic(initial);
 
   if(dlg.exec() == QDialog::Accepted)
     return dlg.getGraphic();
@@ -91,30 +65,15 @@ te::se::Graphic* te::qt::widgets::GraphicDialog::getGraphic(const te::se::Graphi
 
 void te::qt::widgets::GraphicDialog::setGraphic(const te::se::Graphic* graphic)
 {
-  int i;
-  for(i = 0; i < m_graphicWidgets->count(); ++i)
-  {
-    te::qt::widgets::GraphicWidget* gw = static_cast<te::qt::widgets::GraphicWidget*>(m_graphicWidgets->widget(i));
-    if(gw->setGraphic(graphic))
-      break;
-  }
-
-  if(i == m_graphicWidgets->count())
-    return; // TODO: Exception! The given graphic cannot be dealt by any registered graphic widgets.
-
-  // Updating Ui
-  m_ui->m_graphicTypeComboBox->setCurrentIndex(i);
-  m_graphicWidgets->setCurrentIndex(i);
+  m_graphicSelector->setGraphic(graphic);
 }
 
 te::se::Graphic* te::qt::widgets::GraphicDialog::getGraphic() const
 {
-  te::qt::widgets::GraphicWidget* g = static_cast<te::qt::widgets::GraphicWidget*>(m_graphicWidgets->currentWidget());
-  return g->getGraphic();
+  return m_graphicSelector->getGraphic();
 }
 
-void te::qt::widgets::GraphicDialog::onGraphicChanged()
+QIcon te::qt::widgets::GraphicDialog::getGraphicIcon(const QSize& size)
 {
-  // Propagates the signal
-  emit graphicChanged();
+  return m_graphicSelector->getGraphicIcon(size);
 }

@@ -28,7 +28,13 @@
 
 // TerraLib
 #include "../Config.h"
-#include "GraphicWidget.h"
+#include "AbstractGraphicWidget.h"
+
+// STL
+#include <memory>
+
+// Forward declaraion
+namespace Ui { class GlyphGraphicWidgetForm; }
 
 namespace te
 {
@@ -44,7 +50,7 @@ namespace te
 
         \brief A widget used to build a graphic associate with a glyph mark element.
       */
-      class TEQTWIDGETSEXPORT GlyphGraphicWidget : public GraphicWidget
+      class TEQTWIDGETSEXPORT GlyphGraphicWidget : public AbstractGraphicWidget
       {
         Q_OBJECT
 
@@ -65,16 +71,35 @@ namespace te
 
         public:
 
+          /** @name Re-implementation of Pure Virtual Method
+          *   AbstractGraphicWidget methods.
+          */
+          //@{
+
           bool setGraphic(const te::se::Graphic* graphic);
 
           QString getGraphicType() const;
+
+          QIcon getGraphicIcon(const QSize& size) const;
+
+          //@}
 
         protected slots:
 
           void onMarkChanged();
 
+          void onGraphicDisplacementChanged(const QString& text);
+
+          void onGraphicAnchorPointChanged(const QString& text);
+
         private:
 
+          /*! \brief Updates the widget form based on internal graphic element. */
+          void updateUi();
+
+        private:
+
+          std::auto_ptr<Ui::GlyphGraphicWidgetForm> m_ui;      //!< Widget form.
           te::qt::widgets::GlyphMarkWidget* m_glyphMarkWidget; //!< Glyph mark widget used to configure the glyph mark element.
       };
 

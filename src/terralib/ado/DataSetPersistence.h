@@ -46,11 +46,14 @@ namespace te
     {
       public:
 
+        /*!
+          \brief Constructor.
+
+          \param t The ADO DataSourceTransactor from wich this persistence belongs.
+        */
         DataSetPersistence(DataSourceTransactor* parent);
 
         ~DataSetPersistence();
-
-        //void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options = std::map<std::string, std::string>());
 
         void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
 
@@ -90,7 +93,7 @@ namespace te
                  
       private:
 
-        DataSourceTransactor* m_t;
+        DataSourceTransactor* m_t; //!< The DataSourceTransactor associated to the persistence object.
     };
 
   } // end namespace ado

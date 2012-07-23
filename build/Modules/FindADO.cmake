@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 2.8)
 
 if( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-  if("$ENV{ProgramFiles(x86)}")
-	set (path_prefix "$ENV{ProgramFiles(x86)}")
+  if(NOT "$ENV{CommonProgramFiles(x86)}")
+    set (path_prefix "$ENV{CommonProgramFiles}")
   else()
-    set (path_prefix "$ENV{ProgramFiles}")
+    set (path_prefix "$ENV{CommonProgramFiles(x86)}")
   endif()
 else()
-  set (path_prefix "$ENV{ProgramFiles}")
+  set (path_prefix "$ENV{CommonProgramFiles}")
 endif()
 
 # Find path - tries to find *.h in paths hard-coded by the script
 FIND_PATH (ADO_INCLUDE_DIR msado15.dll
-           PATHS ${path_prefix}"/Common Files/System/ado")
+           PATHS ${path_prefix}"/System/ado")
 		   
 # Export include 
 

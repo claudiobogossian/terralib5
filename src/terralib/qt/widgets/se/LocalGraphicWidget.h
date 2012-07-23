@@ -20,8 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/LocalGraphicWidget.h
 
-  \brief A widget used to build a graphic associated with an external graphic element 
-         that references a local image. e.g. a SVG file, a PNG file, etc.
+  \brief A widget used to build a graphic associated with an external graphic element that references a local image. e.g. a SVG file, a PNG file, etc.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_LOCALGRAPHICWIDGET_H
@@ -29,7 +28,13 @@
 
 // TerraLib
 #include "../Config.h"
-#include "GraphicWidget.h"
+#include "AbstractGraphicWidget.h"
+
+// STL
+#include <memory>
+
+// Forward declaraion
+namespace Ui { class LocalGraphicWidgetForm; }
 
 namespace te
 {
@@ -43,10 +48,9 @@ namespace te
       /*!
         \class LocalGraphicWidget
 
-        \brief A widget used to build a graphic associate with an external graphic element 
-               that references a local image. e.g. a SVG file, a PNG file, etc.
+        \brief A widget used to build a graphic associate with an external graphic element that references a local image. e.g. a SVG file, a PNG file, etc.
       */
-      class TEQTWIDGETSEXPORT LocalGraphicWidget : public GraphicWidget
+      class TEQTWIDGETSEXPORT LocalGraphicWidget : public AbstractGraphicWidget
       {
         Q_OBJECT
 
@@ -67,16 +71,35 @@ namespace te
 
         public:
 
+          /** @name Re-implementation of Pure Virtual Method
+          *   AbstractGraphicWidget methods.
+          */
+          //@{
+
           bool setGraphic(const te::se::Graphic* graphic);
 
           QString getGraphicType() const;
+
+          QIcon getGraphicIcon(const QSize& size) const;
+
+          //@}
 
         protected slots:
 
           void onExternalGraphicChanged(const QSize& size);
 
+          void onGraphicDisplacementChanged(const QString& text);
+
+          void onGraphicAnchorPointChanged(const QString& text);
+
         private:
 
+          /*! \brief Updates the widget form based on internal graphic element. */
+          void updateUi();
+
+        private:
+
+          std::auto_ptr<Ui::LocalGraphicWidgetForm> m_ui;        //!< Widget form.
           te::qt::widgets::LocalImageWidget* m_localImageWidget; //!< Local image widget used to configure the external graphic element.
       };
 

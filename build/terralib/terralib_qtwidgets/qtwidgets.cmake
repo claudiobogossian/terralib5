@@ -73,6 +73,7 @@ set (
   widgets/property
   widgets/rp
   widgets/se
+  widgets/srs
   widgets/help
   widgets/utils
 )
@@ -125,6 +126,7 @@ file(GLOB HDRS_TO_MOC
      ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
      ${SRCDIR}/widgets/rp/SegmenterDialog.h
      ${SRCDIR}/widgets/rp/ContrastDialog.h
+	 ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
@@ -132,17 +134,24 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
 	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
 	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
-	 ${SRCDIR}/widgets/se/GraphicDialog.h
-	 ${SRCDIR}/widgets/se/GraphicWidget.h
+	 ${SRCDIR}/widgets/se/GraphicFillWidget.h
+	 ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
 	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
+	 ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
 	 ${SRCDIR}/widgets/se/LocalGraphicWidget.h
 	 ${SRCDIR}/widgets/se/LocalImageWidget.h
 	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
+	 ${SRCDIR}/widgets/se/PointSymbolizerWidget.h
+	 ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
 	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
 	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
 	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+	 ${SRCDIR}/widgets/se/SymbolEditorWidget.h
+	 ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
 	 ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
-	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h)
+	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
+	 ${SRCDIR}/widgets/srs/SRSDialog.h
+	 ${SRCDIR}/widgets/srs/SRSManagerDialog.h)
 
 # Select the FORMS widgets     
 file(GLOB FORMS
@@ -154,7 +163,8 @@ file(GLOB FORMS
      ${SRCDIR}/widgets/property/*.ui
 	 ${SRCDIR}/widgets/utils/ui/*.ui
 	 ${SRCDIR}/widgets/rp/ui/*.ui
-	 ${SRCDIR}/widgets/se/ui/*.ui)
+	 ${SRCDIR}/widgets/se/ui/*.ui
+	 ${SRCDIR}/widgets/srs/ui/*.ui)
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	

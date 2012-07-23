@@ -39,7 +39,7 @@ namespace te
   namespace srs
   {
 // Forward declarations
-    class CoordinateSystem;
+    class SpatialReferenceSystem;
 
     /*!
       \class WKTReader
@@ -61,7 +61,7 @@ namespace te
 
           \note The caller of this method will take the ownership of the returned SRS.
         */
-        static CoordinateSystem* read(const char* wkt);
+        static SpatialReferenceSystem* read(const char* wkt);
     };
 
   } // namespace srs

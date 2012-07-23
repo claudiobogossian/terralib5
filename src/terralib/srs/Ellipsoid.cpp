@@ -10,6 +10,36 @@ te::srs::Ellipsoid::Ellipsoid(const std::string& name, double rad, double invfla
   m_invFlattening(invflat)
 {}
   
+const std::string& te::srs::Ellipsoid::getName() const 
+{ 
+  return m_name; 
+}
+
+void te::srs::Ellipsoid::setName(const std::string& name) 
+{ 
+  m_name = name; 
+}
+
+double te::srs::Ellipsoid::getRadium() const 
+{ 
+  return m_radium; 
+}
+
+void te::srs::Ellipsoid::setRadium(const double& rad) 
+{ 
+  m_radium = rad; 
+}
+
+double te::srs::Ellipsoid::getInverseFlattening() const 
+{ 
+  return m_invFlattening; 
+}
+
+void te::srs::Ellipsoid::setInverseFlattening(const double& invflat) 
+{ 
+  m_invFlattening = invflat; 
+}
+
 std::string 
 te::srs::Ellipsoid::getWKT() const
 {

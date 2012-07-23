@@ -86,10 +86,10 @@ namespace te
 
           /*!
             \brief Pops up a modal basic fill dialog with the given window title, lets the user configure the fill, 
-                   and returns that fill. The fill is initially set to initial. The dialog is a child of parent. 
+                   and returns that fill. The fill is initially set to initial. The dialog is a child of parent.
 
-            \param initial A initial fill element that will be used.
-                           The dialog form will be update based on fill element parameters. It can be NULL.
+            \param initial A initial fill element that will be used. The dialog form will be update based on
+                           fill element parameters. It can be NULL.
             \param parent Dialog parent.
             \param title  Dialog title.
 

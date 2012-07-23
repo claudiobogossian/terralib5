@@ -40,8 +40,8 @@ te::map::Layer::Layer(const std::string& id,
     m_ds(0),
     m_mbr(0),
     m_style(0),
-    m_renderer(0),
-    m_srid(-1)
+    m_srid(-1),
+    m_renderer(0)
 {
 }
 

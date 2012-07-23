@@ -28,6 +28,8 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetItem.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
+#include "../dataaccess/dataset/UniqueKey.h"
 #include "../datatype/ByteArray.h"
 #include "../memory/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
@@ -69,11 +71,27 @@ void te::ado::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSe
   add(dt, d);
 }
 
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/)
+void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  recset->CursorLocation = adUseClient;
+  recset->CursorType = adOpenStatic;
+  recset->LockType = adLockBatchOptimistic;
+
+  TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+  _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+
+  TESTHR(recset->Delete(adAffectCurrent));
+
+  te::da::DataSet* ds = m_t->getDataSet(dt->getName());
+
 }
-       
+
 void te::ado::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
@@ -100,113 +118,101 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
 {
-  try
-  {
-    _ConnectionPtr adoConn = m_t->getADOConnection();
+  _ConnectionPtr adoConn = m_t->getADOConnection();
 
-    std::vector<te::dt::Property*> props = dt->getProperties();
+  std::vector<te::dt::Property*> props = dt->getProperties();
 
-    _RecordsetPtr recset;
-    TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
   
-    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
-    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+  TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+  _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
 
-    TESTHR(recset->AddNew());
+  TESTHR(recset->AddNew());
 
-    for(size_t i = 0; i < props.size(); i++)
+  for(size_t i = 0; i < props.size(); i++)
+  {
+    int pType = props[i]->getType();
+
+    switch(pType)
     {
-      int pType = props[i]->getType();
+      case te::dt::CHAR_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
+        break;
 
-      switch(pType)
+      //case te::dt::UCHAR_TYPE:
+
+      case te::dt::INT16_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
+        break;
+
+      case te::dt::INT32_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
+        break;
+
+      case te::dt::INT64_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
+        break;
+
+      //case te::dt::NUMERIC_TYPE:
+      //case te::dt::DATETIME_TYPE:
+      case te::dt::FLOAT_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
+        break;
+
+      case te::dt::DOUBLE_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
+        break;
+
+      case te::dt::STRING_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
+        break;
+
+      case te::dt::BOOLEAN_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
+        break;
+
+      case te::dt::BYTE_ARRAY_TYPE:
       {
-        case te::dt::CHAR_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
-          break;
+        std::string value = "";
+        value = ((te::dt::ByteArray*)props[i])->toString();
 
-        //case te::dt::UCHAR_TYPE:
+        BYTE *pByte;
+        VARIANT var;
 
-        case te::dt::INT16_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
-          break;
+        SAFEARRAY FAR* psa;
+        SAFEARRAYBOUND rgsabound[1];
+        rgsabound[0].lLbound = 0;	
+        rgsabound[0].cElements =  value.size();
 
-        case te::dt::INT32_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
-          break;
+        // create a single dimensional byte array
+        psa = SafeArrayCreate(VT_I1, 1, rgsabound);
 
-        case te::dt::INT64_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
-          break;
+        // set the data of the array with data in the edit box
+        if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
+          memcpy((LPVOID)pByte,(LPVOID)(char*)value.c_str(), value.size() * sizeof(char));
+        SafeArrayUnaccessData(psa);
+        var.vt = VT_ARRAY | VT_UI1;
+        var.parray = psa;
 
-        //case te::dt::NUMERIC_TYPE:
-        //case te::dt::DATETIME_TYPE:
-        case te::dt::FLOAT_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
-          break;
-
-        case te::dt::DOUBLE_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
-          break;
-
-        case te::dt::STRING_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
-          break;
-
-        case te::dt::BOOLEAN_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
-          break;
-
-        case te::dt::BYTE_ARRAY_TYPE:
-        {
-          std::string value = "";
-          value = ((te::dt::ByteArray*)props[i])->toString();
-
-          BYTE *pByte;
-          VARIANT var;
-
-          SAFEARRAY FAR* psa;
-          SAFEARRAYBOUND rgsabound[1];
-          rgsabound[0].lLbound = 0;	
-          rgsabound[0].cElements =  value.size();
-
-          // create a single dimensional byte array
-          psa = SafeArrayCreate(VT_I1, 1, rgsabound);
-
-          // set the data of the array with data in the edit box
-          if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-            memcpy((LPVOID)pByte,(LPVOID)(char*)value.c_str(), value.size() * sizeof(char));
-          SafeArrayUnaccessData(psa);
-          var.vt = VT_ARRAY | VT_UI1;
-          var.parray = psa;
-
-          recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-          SafeArrayDestroy (var.parray);
+        recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+        SafeArrayDestroy (var.parray);
         
-          break;
-        }
-
-        //case te::dt::GEOMETRY_TYPE:
-        //case te::dt::ARRAY_TYPE:
-     
-        default:
-          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
         break;
       }
 
+      //case te::dt::GEOMETRY_TYPE:
+      //case te::dt::ARRAY_TYPE:
+     
+      default:
+        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+      break;
     }
 
-    recset->Update();
   }
-  catch(_com_error &e)
-  {
-    std::string description(e.Description());
-    throw Exception(TR_ADO("ADO Driver Error: " + description));
-  }
-  catch(const std::exception& e)
-  {
-    std::string description(e.what());
-    throw Exception(TR_ADO("ADO Driver Error: " +  description));
-  }
+
+  recset->Update();
+
 }
 
 void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,

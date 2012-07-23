@@ -50,7 +50,7 @@ te::qt::widgets::LocalGraphicWidgetFactory::~LocalGraphicWidgetFactory()
 {
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::LocalGraphicWidgetFactory::build()
+te::qt::widgets::AbstractGraphicWidget* te::qt::widgets::LocalGraphicWidgetFactory::build()
 {
   return new LocalGraphicWidget;
 }

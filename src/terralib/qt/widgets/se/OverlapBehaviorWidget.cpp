@@ -27,6 +27,7 @@
 #include "../../../common/STLUtils.h"
 #include "OverlapBehaviorWidget.h"
 #include "ui_OverlapBehaviorWidgetForm.h"
+#include "../../../se.h"
 
 // Qt
 
@@ -40,14 +41,79 @@ te::qt::widgets::OverlapBehaviorWidget::OverlapBehaviorWidget(QWidget* parent, Q
 {
   m_ui->setupUi(this);
 
+  initialize();
+
+  // Signals & slots
+  connect(m_ui->m_comboBox, SIGNAL(activated(QString)), SLOT(onValueChanged(QString)));
 }
 
 te::qt::widgets::OverlapBehaviorWidget::~OverlapBehaviorWidget()
 {
+  m_obNames.clear();
+}
 
+void te::qt::widgets::OverlapBehaviorWidget::setOverlapBehavior(te::se::RasterSymbolizer::OverlapBehavior value)
+{
+  m_ob = value;
+
+  updateUi();
+}
+
+te::se::RasterSymbolizer::OverlapBehavior te::qt::widgets::OverlapBehaviorWidget::getOverlapBehavior() const
+{
+  return m_ob;
+}
+
+void te::qt::widgets::OverlapBehaviorWidget::initialize()
+{
+  //define the Overlap Behavior names
+  m_obNames.clear();
+
+  m_obNames.insert(std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::value_type
+    (te::se::RasterSymbolizer::LATEST_ON_TOP, tr("Latest on Top")));
+  m_obNames.insert(std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::value_type
+    (te::se::RasterSymbolizer::EARLIEST_ON_TOP, tr("Earliest on Top")));
+  m_obNames.insert(std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::value_type
+    (te::se::RasterSymbolizer::AVERAGE, tr("Average")));
+  m_obNames.insert(std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::value_type
+    (te::se::RasterSymbolizer::RANDOM, tr("Random")));
+  m_obNames.insert(std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::value_type
+    (te::se::RasterSymbolizer::NO_BEHAVIOR, tr("No Behavior")));
+
+
+  //fill the combo box with this names
+  std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::iterator it = m_obNames.begin();
+
+  while(it != m_obNames.end())
+  {
+    m_ui->m_comboBox->addItem(it->second);
+
+    ++it;
+  }
+
+  //set default value
+  m_ob = te::se::RasterSymbolizer::NO_BEHAVIOR;
+
+  updateUi();
 }
 
 void te::qt::widgets::OverlapBehaviorWidget::updateUi()
 {
-  
+  m_ui->m_comboBox->setCurrentIndex(m_ui->m_comboBox->findText(m_obNames[m_ob]));
+}
+
+void te::qt::widgets::OverlapBehaviorWidget::onValueChanged(QString value)
+{
+  std::map<te::se::RasterSymbolizer::OverlapBehavior, QString>::iterator it = m_obNames.begin();
+
+  while(it != m_obNames.end())
+  {
+    if(it->second == value)
+    {
+      m_ob = it->first;
+      break;
+    }
+
+    ++it;
+  }
 }

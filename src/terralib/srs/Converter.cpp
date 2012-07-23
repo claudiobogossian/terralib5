@@ -24,11 +24,11 @@
 */
 
 // TerraLib
-#include "../common/Exception.h"
 #include "../common/Translator.h"
 #include "Config.h"
 #include "Converter.h"
-#include "CoordinateSystemFactory.h"
+#include "SpatialReferenceSystemManager.h"
+#include "Exception.h"
 #include "Module.h"
 
 #ifdef TE_USE_PROJ4
@@ -55,9 +55,9 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
   m_targetPj4Handler(0)
 {
 #ifdef TE_USE_PROJ4  
-  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",sourceSRID);
+  std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(sourceSRID);
   if (description.empty())
-    throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+    throw te::srs::Exception(TR_SRS("Source SRS ID not recognized."));
 
   m_sourcePj4Handler = pj_init_plus(description.c_str());
   if (!m_sourcePj4Handler)
@@ -65,12 +65,12 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
     std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
-    throw te::common::Exception(exceptionTxt);
+    throw te::srs::Exception(exceptionTxt);
   }  
   
-  description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",targetSRID);
+  description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(targetSRID);
   if ( description.empty())
-      throw te::common::Exception(TR_SRS("Target SRS ID not recognized."));
+      throw te::srs::Exception(TR_SRS("Target SRS ID not recognized."));
 
   m_targetPj4Handler = pj_init_plus(description.c_str());
   if (!m_targetPj4Handler)
@@ -78,7 +78,7 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
     std::string exceptionTxt = TR_SRS("srs Target SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
-    throw te::common::Exception(exceptionTxt);
+    throw te::srs::Exception(exceptionTxt);
   }
 #endif
 }
@@ -106,9 +106,9 @@ te::srs::Converter::setSourceSRID(int sourceSRID)
     m_sourcePj4Handler = 0;
   }
 
-  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",sourceSRID);
+  std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(sourceSRID);
   if ( description.empty())
-      throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+      throw te::srs::Exception(TR_SRS("Source SRS ID not recognized."));
 
   m_sourcePj4Handler = pj_init_plus(description.c_str());
   if (!m_sourcePj4Handler)
@@ -116,7 +116,7 @@ te::srs::Converter::setSourceSRID(int sourceSRID)
     std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
-    throw te::common::Exception(exceptionTxt);
+    throw te::srs::Exception(exceptionTxt);
   }
 #endif
   m_sourceSRID = sourceSRID;  
@@ -138,9 +138,9 @@ te::srs::Converter::setTargetSRID(int targetSRID)
     m_targetPj4Handler = 0;
   }
 
-  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",targetSRID);
+  std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(targetSRID);
   if ( description.empty())
-      throw te::common::Exception(TR_SRS("Target SRS ID not recognized."));
+      throw te::srs::Exception(TR_SRS("Target SRS ID not recognized."));
 
   m_targetPj4Handler = pj_init_plus(description.c_str());
   if (!m_targetPj4Handler)
@@ -148,7 +148,7 @@ te::srs::Converter::setTargetSRID(int targetSRID)
     std::string exceptionTxt = TR_SRS("srs Target SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
-    throw te::common::Exception(exceptionTxt);
+    throw te::srs::Exception(exceptionTxt);
   }
 #endif
   m_targetSRID = targetSRID;  
@@ -180,7 +180,7 @@ te::srs::Converter::convert(double *xIn, double *yIn, double *xOut, double* yOut
 
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -201,7 +201,7 @@ te::srs::Converter::convert(double *x, double* y, long numCoord, int coordOffset
 
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -230,7 +230,7 @@ te::srs::Converter::convert(const double xIn, const double yIn, double &xOut, do
   }
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -256,7 +256,7 @@ te::srs::Converter::convert(double &x, double &y) const
   }
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -280,7 +280,7 @@ te::srs::Converter::invert(double *xIn, double *yIn, double *xOut, double* yOut,
 
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -301,7 +301,7 @@ te::srs::Converter::invert(double *x, double* y, long numCoord, int coordOffset)
 
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -331,7 +331,7 @@ te::srs::Converter::invert(const double xIn, const double yIn, double &xOut, dou
   
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
@@ -358,7 +358,7 @@ te::srs::Converter::invert(double &x, double &y) const
 
   return (res == 0);
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinates conversion."));
 #endif
 }
 
@@ -368,7 +368,7 @@ te::srs::Converter::convertToGeographic(double &x, double &y, int SRID) const
 {
 #ifdef TE_USE_PROJ4 
 
-  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",SRID);
+  std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(SRID);
   if (description.empty())
     throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
   
@@ -400,16 +400,16 @@ te::srs::Converter::convertToGeographic(double &x, double &y, int SRID) const
   }
   return false;
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 }
 
 bool te::srs::Converter::convertToProjected(double &lon, double &lat, int SRID) const
 {
 #ifdef TE_USE_PROJ4 
-  std::string description = te::srs::CoordinateSystemFactory::getDescription("PROJ4",SRID);
+  std::string description = te::srs::SpatialReferenceSystemManager::getInstance().getP4Txt(SRID);
   if (description.empty())
-    throw te::common::Exception(TR_SRS("Source SRS ID not recognized."));
+    throw te::srs::Exception(TR_SRS("Source SRS ID not recognized."));
   
   projPJ pjhProj = pj_init_plus(description.c_str());
   if (!pjhProj)
@@ -430,7 +430,7 @@ bool te::srs::Converter::convertToProjected(double &lon, double &lat, int SRID) 
   return (res == 0);
 
 #else
-  throw te::common::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
+  throw te::srs::Exception(TR_SRS("PROJ4 library has to be enabled in order to support coordinate conversion."));
 #endif
 
 }

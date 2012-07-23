@@ -21,7 +21,7 @@
   \file org.h
 
   \brief This file contains include headers for the OGR Driver Implementation of TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_INTERNAL_ORG_H
 #define __TERRALIB_INTERNAL_ORG_H
@@ -37,12 +37,10 @@
 
 namespace te
 {
-  /*!
-    \brief Namespace for the OGR Driver Implementation of TerraLib.
-   */
+  /*! \brief Namespace for the OGR Driver Implementation of TerraLib. */
   namespace org
   {
-  }	// end namespace org
+  } // end namespace org
 }   // end namespace te
 
 #endif  // __TERRALIB_INTERNAL_ORG_H

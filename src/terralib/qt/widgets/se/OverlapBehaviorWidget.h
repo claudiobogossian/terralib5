@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../se.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -45,7 +46,7 @@ namespace te
 // Forward declarations
   namespace se
   {
-    class OverlapBehavior;
+    class RasterSymbolizer;
   }
 
   namespace qt
@@ -79,25 +80,28 @@ namespace te
 
         public:
 
+          void setOverlapBehavior(te::se::RasterSymbolizer::OverlapBehavior value);
 
+          te::se::RasterSymbolizer::OverlapBehavior getOverlapBehavior() const;
 
         protected:
 
-          /*! \brief Updates the widget form based on internal mark element. */
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
+          void initialize();
+
+          /*! \brief Updates the widget form based on internal element. */
           void updateUi();
 
         protected slots:
 
-
-
-        signals:
-
-
+          void onValueChanged(QString value);
 
         private:
 
           std::auto_ptr<Ui::OverlapBehaviorWidgetForm> m_ui;             //!< Dialog form.
+          std::map<te::se::RasterSymbolizer::OverlapBehavior, QString> m_obNames;
 
+          te::se::RasterSymbolizer::OverlapBehavior m_ob;
       };
 
     } // end namespace widgets

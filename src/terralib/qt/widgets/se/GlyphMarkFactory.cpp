@@ -108,7 +108,7 @@ te::color::RGBAColor** te::qt::widgets::GlyphMarkFactory::create(const te::se::M
   // Bulding the character path
   QPainterPath charPath;
   charPath.addText(0.0, 0.0, font, ch);
-   // Adjusting...
+  // Adjusting...
   QRectF bounds = charPath.boundingRect();
   double invMax =  1 / std::max(bounds.width(), bounds.height());
   QTransform t;

@@ -71,89 +71,58 @@ te::ado::DataSetTypePersistence::~DataSetTypePersistence()
 
 void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
-  try
+  bool isInLocalTransaction = false;
+  if(!m_t->isInTransaction())
   {
+    isInLocalTransaction = true;
     m_t->begin();
-    
-    _ConnectionPtr adoConn = m_t->getADOConnection();
-    DataSourceCatalogLoader* loader = dynamic_cast<DataSourceCatalogLoader*>(m_t->getCatalogLoader());
-
-    ADOX::_TablePtr pTable = 0;
-    ADOX::_CatalogPtr pCatalog = 0;
-    
-    TESTHR(pTable.CreateInstance(__uuidof (ADOX::Table)));
-    TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
-
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
-
-    pTable->Name = dt->getName().c_str();
-
-    TESTHR(pCatalog->Tables->Append(_variant_t((IDispatch*)pTable)));
-
-    std::size_t ncols = dt->size();
-    for(std::size_t i = 0; i < ncols; ++i)
-      add(dt, dt->getProperty(i));
-
-    if(dt->getPrimaryKey())
-      add(dt, dt->getPrimaryKey());
-
-    /*
-    std::size_t nukeys = dt->getNumberOfUniqueKeys();
-    for(std::size_t i = 0; i < nukeys; ++i)
-      add(dt, dt->getUniqueKey(i));
-
-
-    std::size_t nidxs = dt->getNumberOfIndexes();
-    for(std::size_t i = 0; i < nidxs; ++i)
-        add(dt, dt->getIndex(i));
-
-    std::size_t nfks = dt->getNumberOfForeignKeys();
-    for(std::size_t i = 0; i < nfks; ++i)
-      add(dt, dt->getForeignKey(i));
-
-    std::size_t nccs = dt->getNumberOfCheckConstraints();
-    for(std::size_t i = 0; i < nccs; ++i)
-      add(dt, dt->getCheckConstraint(i));
-
-    loader->getIndexes(dt);
-    loader->getCheckConstraints(dt);
-    */
-
-    m_t->commit();
-
-    pCatalog->Tables->Refresh();
-
-  }catch(_com_error &e)
-  {
-    std::string description(e.Description()); 
-    m_t->rollBack();
-    throw Exception(TR_ADO("ADO Driver Error: " + description));
   }
+
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+  DataSourceCatalogLoader* loader = dynamic_cast<DataSourceCatalogLoader*>(m_t->getCatalogLoader());
+
+  ADOX::_TablePtr pTable = 0;
+  ADOX::_CatalogPtr pCatalog = 0;
+    
+  TESTHR(pTable.CreateInstance(__uuidof (ADOX::Table)));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  pTable->Name = dt->getName().c_str();
+
+  TESTHR(pCatalog->Tables->Append(_variant_t((IDispatch*)pTable)));
+
+  std::size_t ncols = dt->size();
+  for(std::size_t i = 0; i < ncols; ++i)
+    add(dt, dt->getProperty(i));
+
+  if(dt->getPrimaryKey())
+    add(dt, dt->getPrimaryKey());
+
+  if(isInLocalTransaction)
+    m_t->commit();
 
 }
 
 void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 {
-  try
-  {
-    _ConnectionPtr adoConn = m_t->getADOConnection();
 
-    ADOX::_CatalogPtr pCatalog = 0;
+  _ConnectionPtr adoConn = m_t->getADOConnection();
 
-    TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  ADOX::_CatalogPtr pCatalog = 0;
 
-    TESTHR(pCatalog->Tables->Delete(dt->getName().c_str()));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  }
-  catch(_com_error &e)
-  {
-    std::string description(e.Description()); 
-    throw Exception(TR_ADO("ADO Driver Error: " + description));
-  }
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  TESTHR(pCatalog->Tables->Delete(dt->getName().c_str()));
+
 }
 
 void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)
 {
+
   _ConnectionPtr adoConn = m_t->getADOConnection();
 
   ADOX::_CatalogPtr pCatalog = 0;
@@ -161,10 +130,12 @@ void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std:
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->Tables->GetItem(dt->getName().c_str())->PutName(newName.c_str());
+
 }
 
 void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Property* p)
 {
+
   _ConnectionPtr adoConn = m_t->getADOConnection();
 
   ADOX::_CatalogPtr pCatalog = 0;
@@ -181,20 +152,34 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Prope
 
 void te::ado::DataSetTypePersistence::drop(te::dt::Property* p)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
 
   _ConnectionPtr adoConn = m_t->getADOConnection();
 
   ADOX::_CatalogPtr pCatalog = 0;
+  ADOX::_TablePtr pTable = 0;
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
-  
+  pTable = pCatalog->Tables->GetItem(p->getParent()->getName().c_str());
+  TESTHR(pTable->GetColumns()->Delete(p->getName().c_str()));
+
 }
 
-void te::ado::DataSetTypePersistence::rename(te::dt::Property* /*p*/, const std::string& /*newName*/) 
+void te::ado::DataSetTypePersistence::rename(te::dt::Property* p, const std::string& newName) 
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+  ADOX::_TablePtr pTable = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+  pTable = pCatalog->Tables->GetItem(p->getParent()->getName().c_str());
+  ADOX::_ColumnPtr col = pTable->GetColumns()->GetItem(p->getName().c_str());
+  
+  col->PutName(newName.c_str());
 }
 
 void te::ado::DataSetTypePersistence::update(te::dt::Property* /*oldP*/, te::dt::Property* /*newP*/)
@@ -340,17 +325,17 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Forei
 
   TESTHR(pKey.CreateInstance(__uuidof(ADOX::Key)));
 
-  pKey->Name = pTable->Name + "_uk";
+  pKey->Name = pTable->Name + "_fk";
   pKey->Type = ADOX::adKeyForeign;
-  pKey->RelatedTable = fk->getDataSetType()->getName().c_str();
-  
+  pKey->RelatedTable = fk->getReferencedDataSetType()->getName().c_str();  
+
   for(size_t i = 0; i < fk->getProperties().size(); i++)
   {
 
     te::dt::Property* p = fk->getProperties()[i];
 
     TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
-    //pKey->Columns->GetItem(p->getName().c_str())->RelatedColumn = 
+    pKey->Columns->GetItem(p->getName().c_str())->RelatedColumn = fk->getReferencedProperties()[i]->getName().c_str();
 
   }
 

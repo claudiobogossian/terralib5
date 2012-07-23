@@ -49,7 +49,7 @@ te::qt::widgets::WellKnownGraphicWidgetFactory::~WellKnownGraphicWidgetFactory()
 {
 }
 
-te::qt::widgets::GraphicWidget* te::qt::widgets::WellKnownGraphicWidgetFactory::build()
+te::qt::widgets::AbstractGraphicWidget* te::qt::widgets::WellKnownGraphicWidgetFactory::build()
 {
   return new WellKnownGraphicWidget;
 }

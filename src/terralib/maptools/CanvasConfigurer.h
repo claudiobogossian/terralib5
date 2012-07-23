@@ -27,9 +27,10 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_CANVASCONFIGURER_H
 
 // TerraLib
-#include "Config.h"
 #include "../color/RGBAColor.h"
 #include "../se/Visitor.h"
+#include "Config.h"
+#include "Enums.h"
 
 // STL
 #include <map>

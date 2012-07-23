@@ -24,9 +24,9 @@
 */
 
 // TerraLib
-#include "ui_GlyphMarkDialogForm.h"
 #include "GlyphMarkDialog.h"
 #include "GlyphMarkWidget.h"
+#include "ui_GlyphMarkDialogForm.h"
 
 te::qt::widgets::GlyphMarkDialog::GlyphMarkDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -38,8 +38,8 @@ te::qt::widgets::GlyphMarkDialog::GlyphMarkDialog(QWidget* parent, Qt::WindowFla
   m_glyphMarkWidget = new te::qt::widgets::GlyphMarkWidget(this);
 
   // Adjusting...
-  QGridLayout* markLayout = new QGridLayout(m_ui->m_glyphMarkWidgetFrame);
-  markLayout->addWidget(m_glyphMarkWidget);
+  QGridLayout* layout = new QGridLayout(m_ui->m_glyphMarkWidgetFrame);
+  layout->addWidget(m_glyphMarkWidget);
 }
 
 te::qt::widgets::GlyphMarkDialog::~GlyphMarkDialog()

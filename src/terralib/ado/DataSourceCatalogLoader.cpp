@@ -42,6 +42,12 @@
     no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
+inline void TESTHR(HRESULT x)
+{
+  if FAILED(x)
+    _com_issue_error(x);
+};
+
 te::ado::DataSourceCatalogLoader::DataSourceCatalogLoader(DataSourceTransactor* parent)
   : m_t(parent)
 {
@@ -75,7 +81,7 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -111,7 +117,7 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -127,6 +133,12 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
   {
     if(keys->GetItem(i)->GetType() == ADOX::adKeyPrimary)
       pk = keys->GetItem(i);
+  }
+
+  if(pk == 0)
+  {
+    dt->setPrimaryKey(0);
+    return;
   }
 
   ADOX::ColumnsPtr cols = pk->GetColumns();
@@ -148,7 +160,7 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -183,7 +195,7 @@ void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, s
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -213,7 +225,7 @@ te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::s
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -257,7 +269,7 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR((pCatalog.CreateInstance(__uuidof(ADOX::Catalog))));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -302,7 +314,7 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -322,7 +334,7 @@ bool te::ado::DataSourceCatalogLoader::primarykeyExists(const std::string& name)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -351,7 +363,7 @@ bool te::ado::DataSourceCatalogLoader::uniquekeyExists(const std::string& name)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -380,7 +392,7 @@ bool te::ado::DataSourceCatalogLoader::foreignkeyExists(const std::string& name)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
@@ -414,7 +426,7 @@ bool te::ado::DataSourceCatalogLoader::indexExists(const std::string& name)
 
   ADOX::_CatalogPtr pCatalog = 0;
 
-  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
   pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 

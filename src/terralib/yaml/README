@@ -1,0 +1,32 @@
+          TerraLib 5 - YAML Module
+          ========================
+          
+This folder contains the implementation of Data Access classes
+for YAML documents, YAML geometry format and several utility routines.
+
+Driver Dependencies:
+--------------------
+
+This driver requires the following modules in order to be built:
+1. Common Runtime
+2. Data Type
+3. Geometry
+4. Data Access
+
+The third-party software needed:
+1. ... TO BE DONE
+
+More Information:
+-----------------
+
+The TerraLib 5 wiki contains a complete explanation about
+the internals of this driver:
+http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:yaml
+
+
+      ---------------------------------------------------------
+             TerraLib Team <terralib-team@dpi.inpe.br>
+            National Institute For Space Research - INPE
+      P. BOX 515 - Sao Jose dos Campos - SP - Brazil, 12201-970
+                            01/02/2012
+							

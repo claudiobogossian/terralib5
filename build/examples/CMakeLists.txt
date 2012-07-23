@@ -53,11 +53,13 @@ option (EXAMPLE_SAM "Build sam example." ON)
 option (EXAMPLE_SRS "Build srs example." ON)  
 option (EXAMPLE_ST "Build st example." ON)  
 option (EXAMPLE_TIMESERIES "Build time series example." ON)  
+option (EXAMPLE_MYVIEWER "Build my viewer example." ON)  
 option (EXAMPLE_URL "Build URL example." ON)  
 option (EXAMPLE_XERCES "Build xerces example." ON)  
 option (EXAMPLE_HELP "Build help example." ON)  
 option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
 option (EXAMPLE_QT_SE "Build qt/se example." ON)  
+option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
   
 # Go into sub-directories
@@ -138,6 +140,10 @@ if(EXAMPLE_TIMESERIES)
   add_subdirectory(terralib_example_timeseries)
 endif()
 
+if(EXAMPLE_MYVIEWER)
+  add_subdirectory(terralib_example_myviewer)
+endif()
+
 if(EXAMPLE_URL)
   add_subdirectory(terralib_example_URL)
 endif()
@@ -156,6 +162,10 @@ endif()
 
 if(EXAMPLE_QT_SE)
   add_subdirectory(terralib_example_qt/se)
+endif()
+
+if(EXAMPLE_QT_SRS)
+  add_subdirectory(terralib_example_qt/srs)
 endif()
 
 if(EXAMPLE_QT_UTILS)

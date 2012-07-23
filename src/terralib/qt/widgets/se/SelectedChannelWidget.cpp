@@ -28,16 +28,19 @@
 #include "ContrastEnhancementWidget.h"
 #include "SelectedChannelWidget.h"
 #include "ui_SelectedChannelWidgetForm.h"
+#include "../../../se.h"
 
 // Qt
 
 
 // STL
+#include <cassert>
 
 
 te::qt::widgets::SelectedChannelWidget::SelectedChannelWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::SelectedChannelWidgetForm)
+    m_ui(new Ui::SelectedChannelWidgetForm),
+    m_se(new te::se::SelectedChannel)
 {
   m_ui->setupUi(this);
 
@@ -47,14 +50,75 @@ te::qt::widgets::SelectedChannelWidget::SelectedChannelWidget(QWidget* parent, Q
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_contrastEnhancementFrame);
   layout->addWidget(m_contrastWidget);
+
+  // Signals & slots
+  connect(m_ui->m_channelNameComboBox, SIGNAL(activated(QString)), SLOT(onChannelNameChanged(QString)));
+
+  initialize();
 }
 
 te::qt::widgets::SelectedChannelWidget::~SelectedChannelWidget()
 {
+  delete m_se;
+}
 
+void te::qt::widgets::SelectedChannelWidget::setSelectedChannel(const te::se::SelectedChannel* sc)
+{
+  assert(sc);
+
+  delete m_se;
+
+  m_se = sc->clone();
+
+  updateUi();
+}
+
+te::se::SelectedChannel* te::qt::widgets::SelectedChannelWidget::getSelectedChannel() const
+{
+  m_se->setContrastEnhancement(m_contrastWidget->getContrastEnhancement());
+
+  return m_se->clone();
+}
+
+void te::qt::widgets::SelectedChannelWidget::setChannelNames(const QStringList& list)
+{
+  m_ui->m_channelNameComboBox->clear();
+  m_ui->m_channelNameComboBox->addItems(list);
+
+  m_se->setSourceChannelName(m_ui->m_channelNameComboBox->currentText().toLatin1().data());
+}
+
+void te::qt::widgets::SelectedChannelWidget::initialize()
+{
 }
 
 void te::qt::widgets::SelectedChannelWidget::updateUi()
 {
-  
+  // update the channel name
+  QString name = m_se->getSourceChannelName().c_str();
+
+  bool found = false;
+
+  for(int i = 0; i < m_ui->m_channelNameComboBox->count(); ++i)
+  {
+    if(m_ui->m_channelNameComboBox->itemText(i) == name)
+    {
+      m_ui->m_channelNameComboBox->setCurrentIndex(i);
+      found = true;
+      break;
+    }
+  }
+
+  if(!found)
+  {
+    m_ui->m_channelNameComboBox->addItem(m_se->getSourceChannelName().c_str());
+    m_ui->m_channelNameComboBox->setCurrentIndex(m_ui->m_channelNameComboBox->count() - 1);
+  }
+
+  m_contrastWidget->setContrastEnhancement(m_se->getContrastEnhancement());
+}
+
+void te::qt::widgets::SelectedChannelWidget::onChannelNameChanged(QString value)
+{
+  m_se->setSourceChannelName(value.toLatin1().data());
 }

@@ -32,7 +32,8 @@
 #include "Stroke.h"
 
 te::se::PolygonSymbolizer::PolygonSymbolizer()
-  : m_geometry(0),
+  : te::se::Symbolizer(te::se::POLYGON_SYMBOLIZER),
+    m_geometry(0),
     m_fill(0),
     m_stroke(0),
     m_displacement(0),

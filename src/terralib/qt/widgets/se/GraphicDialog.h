@@ -38,7 +38,6 @@
 #include <vector>
 
 // Forward declaraion
-class QStackedWidget;
 namespace Ui { class GraphicDialogForm; }
 
 namespace te
@@ -54,7 +53,7 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class GraphicWidget;
+      class GraphicSelectorWidget;
 
       /*!
         \class GraphicDialog
@@ -69,8 +68,6 @@ namespace te
       */
       class TEQTWIDGETSEXPORT GraphicDialog : public QDialog
       {
-        Q_OBJECT
-
         public:
 
           /** @name Initializer Methods
@@ -78,12 +75,8 @@ namespace te
            */
           //@{
 
-          /*!
-            \brief Constructs a graphic dialog which is a child of parent, with widget flags set to f. 
-
-            \param noButtons Do not display OK and Cancel buttons. (Useful for "live dialogs".)
-          */
-          GraphicDialog(QWidget* parent = 0, const bool noButtons = false, Qt::WindowFlags f = 0);
+          /*! \brief Constructs a graphic dialog which is a child of parent, with widget flags set to f. */
+          GraphicDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
           ~GraphicDialog();
@@ -107,6 +100,13 @@ namespace te
           */
           static te::se::Graphic* getGraphic(const te::se::Graphic* initial, QWidget* parent = 0, const QString& title = "");
 
+          /*!
+            \brief Sets the graphic element.
+
+            \return The graphic element.
+            
+            \note The dialog will NOT take the ownership of the given graphic.
+          */
           void setGraphic(const te::se::Graphic* graphic);
 
           /*!
@@ -118,19 +118,19 @@ namespace te
           */
           te::se::Graphic* getGraphic() const;
 
-        protected slots:
+          /*!
+            \brief Gets the current graphic icon.
 
-          void onGraphicChanged();
+            \param size The icon size that will be generated.
 
-        signals:
-
-          /*! This signal is emitted when the graphic element is changed. */
-          void graphicChanged();
+            \return An icon that represents the graphic. i.e. a simple preview.
+          */
+          QIcon getGraphicIcon(const QSize& size);
 
         private:
 
           std::auto_ptr<Ui::GraphicDialogForm> m_ui; //!< Dialog form.
-          QStackedWidget* m_graphicWidgets;          //!< Set of Graphic Widgets that can be used to configure the graphic element.
+          GraphicSelectorWidget* m_graphicSelector;  //!< Graphic selector widget used to select the graphic.
       };
 
     } // end namespace widgets

@@ -86,20 +86,9 @@ void te::ado::DataSource::open()
 
   m_strCnn = info.c_str();
 
-  try
-  {
-    m_conn.CreateInstance(__uuidof(Connection));
-    HRESULT hr  = m_conn->Open (m_strCnn,"","",-1);
-		TESTHR( hr );
-  }
-  catch(_com_error &e)
-	{
-    throw Exception(TR_ADO(e.ErrorMessage()));
-	}
-  catch(...)
-  {
-    throw Exception(TR_ADO("Unknown Error..."));
-  }
+  m_conn.CreateInstance(__uuidof(Connection));
+  TESTHR(m_conn->Open (m_strCnn,"","",-1));
+
 }
 
 void te::ado::DataSource::close()
@@ -128,20 +117,8 @@ te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
 {
   _ConnectionPtr newConn = 0;
 
-  try
-  {
-    newConn.CreateInstance(__uuidof(Connection));
-    TESTHR(newConn->Open (m_strCnn,"","",-1));
-  }
-  catch(_com_error &e)
-  {
-    std::string description(e.Description()); 
-    throw Exception(TR_ADO("ADO Driver Error: " + description));
-  }
-  catch(...)
-  {
-    
-  }
+  newConn.CreateInstance(__uuidof(Connection));
+  TESTHR(newConn->Open (m_strCnn,"","",-1));
 
   std::auto_ptr<te::da::DataSourceTransactor> transactor(new DataSourceTransactor(this, newConn));
 
@@ -155,38 +132,27 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  try
-  {
-    m_connectionInfo = dsInfo;
 
-    std::string info = "provider="+m_connectionInfo["provider"]+
-    ";Data Source="+m_connectionInfo["dbname"]+
-    ";User Id=;Password=";
+  m_connectionInfo = dsInfo;
 
-    m_strCnn = info.c_str();
+  std::string info = "provider="+m_connectionInfo["provider"]+
+  ";Data Source="+m_connectionInfo["dbname"]+
+  ";User Id=;Password=";
 
-    // let's have a connection to the auxiliary database
-    std::auto_ptr<DataSource> ds(new DataSource());
+  m_strCnn = info.c_str();
 
-    ds->setConnectionInfo(dsInfo);
+  // let's have a connection to the auxiliary database
+  std::auto_ptr<DataSource> ds(new DataSource());
 
-    ADOX::_CatalogPtr pCatalog = 0;
+  ds->setConnectionInfo(dsInfo);
 
-    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+  ADOX::_CatalogPtr pCatalog = 0;
 
-    pCatalog->Create(m_strCnn);
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
-    ds->open();
-  }
-  catch(_com_error &e)
-  {
-    std::string description(e.Description()); 
-    throw Exception(TR_ADO("ADO Driver Error: " + description));
-  }
-  catch(...)
-  {
-    
-  }
+  pCatalog->Create(m_strCnn);
+
+  ds->open();
 
 }
 

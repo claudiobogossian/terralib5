@@ -77,9 +77,17 @@ namespace te
          */
         //@{
         
+        /*! \Set brigtness parameter. */
         void setBrightnessOnly(bool b);
 
+        /*! \Get brigtness parameter. */
+        bool isBrightnessOnly() const;
+
+        /*! \Set relief factor parameter. */
         void setReliefFactor(const double& rf);
+
+        /*! \Get relief factor parameter. */
+        double getReliefFactor() const;
         
         //@}
 

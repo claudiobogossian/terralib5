@@ -36,6 +36,15 @@ namespace te
   namespace da
   {
     class DataSetType;
+    class PrimaryKey;
+    class ForeignKey;
+    class UniqueKey;
+    class Constraint;
+  }
+
+  namespace dt
+  {
+    class Property;
   }
 
   namespace ado
@@ -50,6 +59,8 @@ namespace te
     void setPrimaryKey(te::da::DataSetType* dt, ADOX::_KeyPtr key);
 
     void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
+
+    int getAdoColumnId(ADOX::_TablePtr table, std::string& name);
 
     te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
     te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
