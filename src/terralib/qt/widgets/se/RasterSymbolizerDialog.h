@@ -46,6 +46,12 @@ namespace te
   namespace se
   {
     class RasterSymbolizer;
+    class Symbolizer;
+  }
+
+  namespace rst
+  {
+    class RasterProperty;
   }
 
   namespace qt
@@ -58,6 +64,7 @@ namespace te
       class ContrastEnhancementWidget;
       class ShadedReliefWidget;
       class ImageOutlineWidget;
+      class HorizontalSliderWidget;
 
 
       /*!
@@ -86,7 +93,18 @@ namespace te
 
         public:
 
+          /*! 
+            \brief Sets the raster information
 
+            \param p Raster property
+
+            \note The class will NOT take the ownership of the pointer.
+          */
+          void setProperty(te::rst::RasterProperty* p);
+
+          void setRasterSymbolizer(const te::se::RasterSymbolizer* rs);
+
+          te::se::Symbolizer* getRasterSymbolizer() const;
 
         protected:
 
@@ -95,6 +113,7 @@ namespace te
 
         protected slots:
 
+          void onOpacityClicked();
           void onChannelSelectionClicked();
           void onContrastEnhancementClicked();
           void onImageOutlineClicked();
@@ -107,12 +126,17 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::RasterSymbolizerDialogForm> m_ui;             //!< Dialog form.
-          te::qt::widgets::ChannelSelectionWidget* m_channelSelectionWidget;  //!< Constrast Widget form.
-          te::qt::widgets::OverlapBehaviorWidget* m_overlapBehaviorWidget;  //!< Constrast Widget form.
-          te::qt::widgets::ContrastEnhancementWidget* m_contrastWidget;  //!< Constrast Widget form.
-          te::qt::widgets::ShadedReliefWidget* m_shadedReliefWidget;  //!< Constrast Widget form.
-          te::qt::widgets::ImageOutlineWidget* m_imageOutlineWidget;  //!< Constrast Widget form.
+          std::auto_ptr<Ui::RasterSymbolizerDialogForm> m_ui;                   //!< Dialog form.
+          te::qt::widgets::ChannelSelectionWidget* m_channelSelectionWidget;    //!< Channel Selection Widget form.
+          te::qt::widgets::OverlapBehaviorWidget* m_overlapBehaviorWidget;      //!< Overlap Behavior Widget form.
+          te::qt::widgets::ContrastEnhancementWidget* m_contrastWidget;         //!< Constrast Widget form.
+          te::qt::widgets::ShadedReliefWidget* m_shadedReliefWidget;            //!< Shaded Relief Widget form.
+          te::qt::widgets::ImageOutlineWidget* m_imageOutlineWidget;            //!< Image Outline Widget form.
+          te::qt::widgets::HorizontalSliderWidget* m_sliderWidget;              //!< Slider widget used for opacity information.
+
+          te::se::RasterSymbolizer* m_symbolizer;                               //!< SE Raster Symbolizer element.
+
+          te::rst::RasterProperty* m_property;                                  //!< Raster Property object.
       };
 
     } // end namespace widgets

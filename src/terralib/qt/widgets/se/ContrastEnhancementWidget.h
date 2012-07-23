@@ -101,7 +101,7 @@ namespace te
 
         signals:
 
-
+          void contrastEnhancementChanged();
 
         private:
 

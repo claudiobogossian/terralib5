@@ -25,6 +25,9 @@
      <property name="title">
       <string>Contrast Enhancement</string>
      </property>
+     <property name="flat">
+      <bool>false</bool>
+     </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
        <layout class="QGridLayout" name="gridLayout_3">
