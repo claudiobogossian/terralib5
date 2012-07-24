@@ -1,8 +1,10 @@
 
-find_package(Boost 1.46 REQUIRED)
-set(DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} REQUIRED)
+if(Boost_FOUND)
+  set(DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
-find_package(Geos)
+find_package(Geos ${_Geos_VERSION})
 if(GEOS_FOUND)
 	list (APPEND DEP_INCLUDES ${GEOS_INCLUDE_DIR})
 	set(DEP_LIBS ${GEOS_LIBRARY})

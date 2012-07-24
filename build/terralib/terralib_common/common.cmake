@@ -6,15 +6,17 @@ set (DEP_INCLUDES "")   #include paths needed by common module.
 
 # 3rd-party definitions.
 # -------------------------------------------------- 
-find_package(Log4Cxx)
-if(LOG4CXX_FOUND)
+find_package(Log4Cxx REQUIRED)
+if(Log4Cxx_FOUND)
   set(DEP_INCLUDES ${LOG4CXX_INCLUDE_DIR})
   set(DEP_LIBS ${LOG4CXX_LIBRARY})	
 endif()
 
-find_package(Boost 1.46 COMPONENTS filesystem system REQUIRED)
-list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system REQUIRED)
+if(Boost_FOUND)
+  list (APPEND DEP_LIBS ${Boost_LIBRARIES})
+  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
 if(WIN32)
   find_package(GNU)

@@ -12,6 +12,7 @@ set (TE_DEPENDENCIES_DIR "$ENV{TE_DEPENDENCIES_DIR}" CACHE PATH "Find the direct
 
 include (${T5_MODULES_PATH}/GeneralConfig.cmake)
 include (${T5_MODULES_PATH}/UtilFunctions.cmake)
+include (${T5_MODULES_PATH}/Deps_versions.cmake)
 
 if(WIN32)
   include (${T5_MODULES_PATH}/WinConfig.cmake)
@@ -20,7 +21,8 @@ endif()
 add_definitions (-DBOOST_FILESYSTEM_VERSION=3)
 
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
-  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
+  set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}")
+  list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}")
 endif()
 
 #-----------------------------------------------------------------------

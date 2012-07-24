@@ -1,23 +1,29 @@
 
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-include (${QT_USE_FILE})
-add_definitions (${QT_DEFINITIONS})
+find_package(Qt4 ${_Qt4_VERSION} COMPONENTS QtCore QtGui REQUIRED)
+if(QT4_FOUND)
+  include (${QT_USE_FILE})
+  add_definitions (${QT_DEFINITIONS})
 
-set (DEP_INCLUDES ${QT_INCLUDE_DIR})
-set (DEP_LIBS ${QT_LIBRARIES})
+  set (DEP_INCLUDES ${QT_INCLUDE_DIR})
+  set (DEP_LIBS ${QT_LIBRARIES})
+endif()
 
-find_package(Boost 1.46 COMPONENTS date_time REQUIRED)
-list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} COMPONENTS date_time REQUIRED)
+if(Boost_FOUND)
+  list (APPEND DEP_LIBS ${Boost_LIBRARIES})
+  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
-find_package(PostgreSQL)
+find_package(PostgreSQL ${_PostgreSQL_VERSION})
 if(PostgreSQL_FOUND)
 	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
 endif()
 
-find_package(Qwt REQUIRED )
-list (APPEND DEP_LIBS ${QWT_LIBRARY})
-list (APPEND DEP_INCLUDES ${QWT_INCLUDE_DIR})
+find_package(Qwt ${_Qwt_VERSION} REQUIRED)
+if(Qwt_FOUND)
+  list (APPEND DEP_LIBS ${QWT_LIBRARY})
+  list (APPEND DEP_INCLUDES ${QWT_INCLUDE_DIR})
+endif()
 
 #Definitions for Windows compiling
 if(WIN32)

@@ -8,13 +8,11 @@
 
 
 find_path(CSQL_INCLUDE_DIR sql.h
-          PATHS "$ENV{TERRALIB_DEP_MSVC2010}/csql"
-                /usr/local/include/csql /usr/include/csql)
+          PATHS /usr/local/include/csql /usr/include/csql)
                 
 find_library(CSQL_LIBRARY
              NAMES csqlsql csqlsqlnw
-             PATHS "$ENV{TERRALIB_DEP_MSVC2010}/csql"
-             /usr/local/lib/csql /lib /usr/lib)
+             PATHS /usr/local/lib/csql /lib /usr/lib)
                               
 set(CSQL_FOUND FALSE)
 

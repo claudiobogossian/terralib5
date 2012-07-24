@@ -8,34 +8,34 @@
 cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
-find_path(XERCES_INCLUDE_DIR xercesc/util/XercesVersion.hpp
-          PATHS "$ENV{TERRALIB_DEP_MSVC2010}/xerces/include"
-          /usr/local/include /usr/include
-          PATH_SUFFIXES "xerces")
+find_path(
+  XERCES_INCLUDE_DIR xercesc/util/XercesVersion.hpp
+  PATHS /usr/local/include /usr/include
+  PATH_SUFFIXES "xerces" "xerces/include" "include/xerces"
+)
           
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
-if(WIN32)
-  find_library(XERCES_LIBRARY_RELEASE
-               NAMES xerces-c
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/xerces/lib/win32")
-               
-  find_library(XERCES_LIBRARY_DEBUG
-               NAMES xerces-c_d
-               PATHS "$ENV{TERRALIB_DEP_MSVC2010}/xerces/lib/win32")
-               
-  checkLibNames("XERCES")
+find_library(
+  XERCES_LIBRARY_RELEASE
+  NAMES xerces-c xerces-c_3
+  PATHS /usr/local/lib /usr/lib
+  PATH_SUFFIXES "xerces/lib"
+)
+             
+find_library(
+  XERCES_LIBRARY_DEBUG
+  NAMES xerces-c_d  xerces-c_3D
+  PATHS /usr/local/lib /usr/lib
+  PATH_SUFFIXES "xerces/lib"
+)
+             
+checkLibNames("XERCES")
 
-else(WIN32)
-  find_library(XERCES_LIBRARY
-               NAMES xerces-c
-               PATHS /usr/local/lib /usr/lib)  
-endif(WIN32)
-
-set(XERCES_FOUND FALSE)
+set(Xerces_FOUND FALSE)
 
 # Set the XERCESC_FOUND variable
 if(XERCES_INCLUDE_DIR AND XERCES_LIBRARY)
-	set(XERCES_FOUND TRUE)
+	set(Xerces_FOUND TRUE)
   message("-- Found Xerces library")
 else()
   if(Xerces_FIND_REQUIRED)

@@ -1,6 +1,8 @@
 
-find_package(Boost 1.46 REQUIRED)
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} REQUIRED)
+if(Boost_FOUND)
+  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
 #Definitions for windows compiling
 if(WIN32)

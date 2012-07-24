@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "examples")
 project(${PROJ_NAME})
 
-if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
-  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
-endif()
-
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
   gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
  
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
+endif()
+
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
 ############### Get the data used for testing the example ###############
@@ -181,7 +181,7 @@ endif()
 get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
 
 if(_NOTFOUND)
-  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+  message (WARNING "${_NOTFOUND}. Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
 endif()
 
 find_path ( 
