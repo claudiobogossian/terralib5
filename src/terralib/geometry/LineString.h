@@ -188,7 +188,7 @@ namespace te
 
           \note TerraLib extended method.
         */
-        std::size_t getNPoints() const throw() { return m_nPts; }        
+        std::size_t getNPoints() const throw() { return m_nPts; }
 
         /*!
           \brief It returns a derived geometry collection value according to the range of coordinate values inclusively.
@@ -200,7 +200,7 @@ namespace te
 
           \note The caller of this method will take the ownership of geometry.
         */
-        Geometry* locateBetween(const double& mStart, const double& mEnd) throw(Exception);
+        Geometry* locateBetween(const double& mStart, const double& mEnd) const throw(Exception);
 
         //@}
 
