@@ -28,7 +28,7 @@
 #include "DataGridItemDelegate.h"
 
 te::qt::widgets::DataGridItemDelegate::DataGridItemDelegate(QObject* parent)
-  : m_dataGridOp(0), QItemDelegate(parent)
+  : QItemDelegate(parent), m_dataGridOp(0)
 {
 }
 

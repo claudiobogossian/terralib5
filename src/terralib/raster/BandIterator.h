@@ -274,11 +274,11 @@ namespace te
         m_i(0),
         m_blkx(0),
         m_blky(0),
+        m_blksize(b->getBlockSize()),
         m_getBuff(0),
         m_getBuffI(0),
         m_setBuff(0),
-        m_setBuffI(0),
-        m_blksize(b->getBlockSize())
+        m_setBuffI(0)
     {
       m_lastblksize = m_npxlsblk - ((m_npxlsblk * m_nblocksx * m_nblocksy) -
                                     (b->getRaster()->getNumberOfColumns() * b->getRaster()->getNumberOfRows()));
