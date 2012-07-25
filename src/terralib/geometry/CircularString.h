@@ -196,7 +196,7 @@ namespace te
 
           \note The caller of this method will take the ownership of geometry.
         */
-        Geometry* locateBetween(const double& mStart, const double& mEnd) throw(Exception);
+        Geometry* locateBetween(const double& mStart, const double& mEnd) const throw(Exception);
 
         //@}
 
