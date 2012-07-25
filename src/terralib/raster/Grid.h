@@ -252,7 +252,7 @@ namespace te
 
     inline bool Grid::isPointInGrid(unsigned int col, unsigned int row) const
     {
-      return ((col >= 0 && col < m_nCols) && (row >= 0 && row < m_nRows));
+      return (col < m_nCols) && (row < m_nRows);
     }
 
   } // end namespace rst

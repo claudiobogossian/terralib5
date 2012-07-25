@@ -29,6 +29,9 @@
 // TerraLib
 #include "Config.h"
 
+// STL
+#include <cstring>
+
 // Boost
 #include <boost/cstdint.hpp>
 

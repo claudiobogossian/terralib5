@@ -179,7 +179,7 @@ void te::gm::LineString::computeMBR(bool /*cascade*/) const throw()
   m_mbr->m_ury = maxy;
 }
 
-te::gm::Geometry* te::gm::LineString::locateBetween(const double& /*mStart*/, const double& /*mEnd*/) throw(Exception)
+te::gm::Geometry* te::gm::LineString::locateBetween(const double& /*mStart*/, const double& /*mEnd*/) const throw(Exception)
 {
   return 0;
 }
