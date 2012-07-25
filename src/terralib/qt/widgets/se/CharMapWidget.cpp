@@ -33,9 +33,9 @@
 
 te::qt::widgets::CharMapWidget::CharMapWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_squareSize(24),
+    m_currentChar(0),
     m_columns(11),
-    m_currentChar(0)
+    m_squareSize(24)
 {
   m_font.setPointSize(12);
   setMouseTracking(true);

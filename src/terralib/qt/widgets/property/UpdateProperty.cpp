@@ -36,8 +36,8 @@
 #include "UpdateProperty.h"
 
 te::qt::widgets::UpdateProperty::UpdateProperty(te::da::DataSource* ds, QWidget* parent)
-  : m_ds(ds), m_transactor(0), m_catalogLoader(0), m_oldProperty(0),
-    m_updatedProperty(0), m_propertyParent(0), QDialog(parent)
+  : QDialog(parent), m_ds(ds), m_transactor(0), m_catalogLoader(0), m_oldProperty(0),
+    m_updatedProperty(0), m_propertyParent(0)
 {
   if (m_ds == 0)
     QMessageBox::critical(this, tr("Missing a Valid Data Source"), tr("Provide a valid data source!"));
@@ -1220,7 +1220,7 @@ te::dt::Property* te::qt::widgets::UpdateProperty::buildUpdatedUcharProperty()
     bool ok;
 
     unsigned int val = defaultValueLineEdit->text().toUShort(&ok);
-    if(ok == false || val < 0 || val > 255)
+    if(ok == false || val > 255)
     {
       QMessageBox::warning(this, tr("Default Value Error"), 
         tr("The default value must be an unsigned char value!"));

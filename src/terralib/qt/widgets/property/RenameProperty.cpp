@@ -28,7 +28,7 @@
 #include "RenameProperty.h"
 
 te::qt::widgets::RenameProperty::RenameProperty(te::da::DataSource* ds, QWidget* parent)
-  : m_ds(ds), m_transactor(0), m_catalogLoader(0), m_property(0), m_propertyParent(0), QDialog(parent)
+  : QDialog(parent), m_ds(ds), m_transactor(0), m_catalogLoader(0), m_property(0), m_propertyParent(0)
 {
   if (m_ds == 0)
     QMessageBox::critical(this, tr("Missing a Valid Data Source"), tr("Provide a valid data source!"));

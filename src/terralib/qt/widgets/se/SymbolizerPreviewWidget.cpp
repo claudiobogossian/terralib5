@@ -112,5 +112,11 @@ void te::qt::widgets::SymbolizerPreviewWidget::setSymbolizerType(const te::se::S
       polygon->setRingN(0, ring);
       m_geom = polygon;
     }
+    break;
+      
+    case te::se::RASTER_SYMBOLIZER:
+    case te::se::TEXT_SYMBOLIZER:
+    {}
+    break;
   }
 }

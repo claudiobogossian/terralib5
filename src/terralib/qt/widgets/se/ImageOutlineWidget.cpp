@@ -41,9 +41,9 @@
 te::qt::widgets::ImageOutlineWidget::ImageOutlineWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::ImageOutlineWidgetForm),
-    m_io(new te::se::ImageOutline),
     m_lsWidget(0),
-    m_psWidget(0)
+    m_psWidget(0),
+    m_io(new te::se::ImageOutline)
 {
   m_ui->setupUi(this);
 

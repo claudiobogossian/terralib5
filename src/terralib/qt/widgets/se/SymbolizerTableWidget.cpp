@@ -123,6 +123,12 @@ void te::qt::widgets::SymbolizerTableWidget::setSymbolizerType(const te::se::Sym
       polygon->setRingN(0, ring);
       m_geom = polygon;
     }
+    break;
+    
+    case te::se::TEXT_SYMBOLIZER:
+    case te::se::RASTER_SYMBOLIZER:
+    {
+    }
   }
 }
 

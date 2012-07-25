@@ -40,10 +40,11 @@
 #include <QtGui/QMessageBox>
 
 te::qt::widgets::DataGridView::DataGridView(QWidget* parent)
-  : m_dataGridOp(0),
+  : QTableView(parent),
+    m_dataGridOp(0),
     m_itemDelegate(0),
-    m_viewportMenu(0),
-    QTableView(parent)
+    m_viewportMenu(0)
+    
 {
   // Set the grid selection mode to MultiSelection
   setSelectionMode(QAbstractItemView::MultiSelection);

@@ -37,10 +37,10 @@ te::map::Layer::Layer(const std::string& id,
                       const std::string& title,
                       AbstractLayer* parent)
   : te::map::AbstractLayer(id, title, parent),
+    m_srid(-1),
     m_ds(0),
     m_mbr(0),
     m_style(0),
-    m_srid(-1),
     m_renderer(0)
 {
 }

@@ -40,11 +40,11 @@
 te::qt::widgets::ChannelSelectionWidget::ChannelSelectionWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::ChannelSelectionWidgetForm),
-    m_cs(new te::se::ChannelSelection),
     m_scRed(new te::se::SelectedChannel),
     m_scGreen(new te::se::SelectedChannel),
     m_scBlue(new te::se::SelectedChannel),
-    m_scMono(new te::se::SelectedChannel)
+    m_scMono(new te::se::SelectedChannel),
+    m_cs(new te::se::ChannelSelection)
 {
   m_ui->setupUi(this);
 

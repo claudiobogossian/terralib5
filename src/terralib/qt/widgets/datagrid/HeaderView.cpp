@@ -38,13 +38,13 @@
 #include <QtGui/QMouseEvent>
 
 te::qt::widgets::HeaderView::HeaderView(Qt::Orientation orientation, QWidget * parent)
-  : m_dataGridOp(0),
+:   QHeaderView(orientation, parent),
+    m_dataGridOp(0),
     m_resized(false),
     m_visualColumnPressed(-1),
     m_contextVisualColumnClicked(-1),
     m_horizHeaderMenu(0),
-    m_vertHeaderMenu(0),
-    QHeaderView(orientation, parent)
+    m_vertHeaderMenu(0)
 {
   QHeaderView* headerView = static_cast<QHeaderView*>(this);
   connect(headerView, SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResized(int, int, int)));

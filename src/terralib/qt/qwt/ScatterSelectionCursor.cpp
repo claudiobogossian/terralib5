@@ -47,7 +47,6 @@ void te::qt::qwt::ScatterSelectionCursor::drawRubberBand(QPainter* painter) cons
   {
     if(pa.count() < 2)
       return;
-    int h = 4;
     QPoint p0 = pa.point(0);
     QPoint p1 = pa.point(1);
     QRect rect(p0, p1);

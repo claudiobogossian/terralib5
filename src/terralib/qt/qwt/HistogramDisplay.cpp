@@ -31,13 +31,13 @@
 
 te::qt::qwt::HistogramDisplay::HistogramDisplay(int col, te::map::DataGridOperation* op, QWidget *parent):
   Plot("HISTOGRAM", op, parent),
-  m_legendMenu(0),
   m_allHistogram(0),
   m_deselectedHistogram(0),
   m_pointedHistogram(0),
   m_queriedHistogram(0),
   m_pointedAndQueriedHistogram(0),
-  m_selectionCursor(0)
+  m_selectionCursor(0),
+  m_legendMenu(0)
 {
   if(m_op == 0)
     return;
@@ -975,8 +975,6 @@ void te::qt::qwt::HistogramDisplay::setNumberOfBars(int n)
 
     if(m_numberOfBars < 2)
       m_numberOfBars = 2;
-
-    double labelInterval = m_barInterval;
 
     adjustHistogramHorizontalAxis();
     updateHistograms();

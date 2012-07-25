@@ -130,6 +130,12 @@ void te::qt::widgets::SymbolEditorWidget::createNewSymbolizer()
       m_symbs.push_back(ps->getSymbolizer());
       symbolizerWidget = ps;
     }
+    break;
+    
+    case te::se::RASTER_SYMBOLIZER:
+    case te::se::TEXT_SYMBOLIZER:
+    {
+    }
   }
   // Adding on stack
   m_symbolizersStackedWidget->addWidget(symbolizerWidget);
@@ -254,6 +260,11 @@ void te::qt::widgets::SymbolEditorWidget::onSymbolizerChanged()
 
     case te::se::POLYGON_SYMBOLIZER:
       m_symbs[index] = static_cast<PolygonSymbolizerWidget*>(w)->getSymbolizer();
+    break;
+    
+    case te::se::TEXT_SYMBOLIZER:
+    case te::se::RASTER_SYMBOLIZER:
+    {}
   }
   updateUi();
 }

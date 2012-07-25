@@ -26,13 +26,13 @@
 
 te::qt::qwt::ScatterDisplay::ScatterDisplay(int colx, int coly, te::map::DataGridOperation* op, QWidget *parent):
   Plot("SCATTER", op, parent),
-  m_legendMenu(0),
   m_allScatter(0),
   m_deselectedScatter(0),
   m_pointedScatter(0),
   m_queriedScatter(0),
   m_pointedAndQueriedScatter(0),
-  m_selectionCursor(0)
+  m_selectionCursor(0),
+  m_legendMenu(0)
 {
   m_xCol = colx;
   m_yCol = coly;
