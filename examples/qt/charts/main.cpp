@@ -90,20 +90,9 @@ int main(int /*argc*/, char** /*argv*/)
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    std::map<double, int> values;
-    values[1.0] = 5;
-    values[2.0] = 10;
-    values[3.0] = 15;
-    values[4.0] = 20;
-    values[5.0] = 25;
-    values[6.0] = 30;
-    double minValue = 1.0;
-
-    te::qt::widgets::Histogram* histogram = new te::qt::widgets::Histogram(values, minValue);
-
-    //criar os QwtInterval, samples, etc, etc
-
-    te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram, 1.0);
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, rendaIdx, 10 );
+    
+    te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
     
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
 

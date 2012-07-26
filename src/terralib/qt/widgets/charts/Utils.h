@@ -45,7 +45,8 @@ namespace te
     {      
 
 		class Scatter;
-    
+    class Histogram;
+
     double getDouble(const std::string& value, std::vector<std::string>& sVector);
     
     double getDouble(te::dt::DateTime* dateTime);
@@ -58,6 +59,14 @@ namespace te
     */
 		TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, int propX, int propY);
 		
+        /*!
+            \brief Histogram Creator
+
+            \note It will traverse the data set, using the moveNext() method
+            \note It will not take the ownership of the DataSet pointer. 
+    */
+		TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId, int slices);
+
 		/*!
         \function Terralib2Qwt
 
