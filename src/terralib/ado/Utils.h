@@ -47,6 +47,11 @@ namespace te
     class Property;
   }
 
+  namespace gm
+  {
+    class GeometryProperty;
+  }
+
   namespace ado
   {
 
@@ -56,6 +61,7 @@ namespace te
     te::da::PrimaryKey* getPrimaryKeyFromADO(ADOX::_KeyPtr key);
     te::da::ForeignKey* getForeignKeyFromADO(ADOX::_KeyPtr key);
     te::da::UniqueKey* getUniqueKeyFromADO(ADOX::_KeyPtr key);
+    te::gm::GeometryProperty* getDefaultGeomProperty(te::da::DataSetType* dt, _ConnectionPtr adoConn);
     void setPrimaryKey(te::da::DataSetType* dt, ADOX::_KeyPtr key);
 
     void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
@@ -65,6 +71,13 @@ namespace te
     te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
     te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
     std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);
+
+    bool isZProperty(te::gm::GeomType type);
+    bool isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName);
+
+    std::string getOGCType(te::gm::GeomType type);
+
+    void createGeometryColumns(_ConnectionPtr adoConn);
 
   } // end namespace ado
 }   // end namespace te

@@ -30,6 +30,10 @@
 #include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
+#include "../geometry/WKBReader.h"
+#include "../geometry/WKBWriter.h"
+#include "../geometry/Geometry.h"
+#include "../geometry/GeometryProperty.h"
 #include "../datatype/ByteArray.h"
 #include "../memory/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
@@ -132,6 +136,42 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
   for(size_t i = 0; i < props.size(); i++)
   {
+
+    te::gm::GeometryProperty* geomProp = 0;
+    geomProp = dt->getDefaultGeomProperty();
+
+    if(geomProp && geomProp->getName() == props[i]->getName())
+    {
+      te::gm::Geometry* geo = item->getGeometry(props[i]->getName());
+
+      long size = geo->getWkbSize();
+
+      char* wkb = new char[size];
+
+      te::gm::WKBWriter::write(geo, wkb);
+
+      VARIANT var;
+      BYTE *pByte;
+
+      SAFEARRAY FAR* psa;
+      SAFEARRAYBOUND rgsabound[1];
+      rgsabound[0].lLbound = 0;
+      rgsabound[0].cElements = size;
+
+      psa = SafeArrayCreate(VT_I1, 1, rgsabound);
+
+      if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
+        memcpy((LPVOID)pByte,(LPVOID)wkb,size);
+      SafeArrayUnaccessData(psa);
+
+      var.vt = VT_ARRAY | VT_UI1;
+      var.parray = psa;
+
+      recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+
+      continue;
+    }
+
     int pType = props[i]->getType();
 
     switch(pType)
@@ -174,34 +214,31 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
       case te::dt::BYTE_ARRAY_TYPE:
       {
-        std::string value = "";
-        value = ((te::dt::ByteArray*)props[i])->toString();
+        char * data = ((te::dt::ByteArray*)props[i])->getData();
 
-        BYTE *pByte;
         VARIANT var;
+        BYTE *pByte;
+        long size = sizeof(data);
 
         SAFEARRAY FAR* psa;
         SAFEARRAYBOUND rgsabound[1];
-        rgsabound[0].lLbound = 0;	
-        rgsabound[0].cElements =  value.size();
+        rgsabound[0].lLbound = 0;
+        rgsabound[0].cElements = size;
 
-        // create a single dimensional byte array
         psa = SafeArrayCreate(VT_I1, 1, rgsabound);
 
-        // set the data of the array with data in the edit box
         if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-          memcpy((LPVOID)pByte,(LPVOID)(char*)value.c_str(), value.size() * sizeof(char));
+          memcpy((LPVOID)pByte,(LPVOID)data,size);
         SafeArrayUnaccessData(psa);
+
         var.vt = VT_ARRAY | VT_UI1;
         var.parray = psa;
 
         recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-        SafeArrayDestroy (var.parray);
-        
+
         break;
       }
 
-      //case te::dt::GEOMETRY_TYPE:
       //case te::dt::ARRAY_TYPE:
      
       default:
