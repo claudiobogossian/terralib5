@@ -37,6 +37,8 @@
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/StringProperty.h"
 #include "../datatype/DataType.h"
+#include "../geometry/GeometryProperty.h"
+#include "../geometry/Enums.h"
 #include "Utils.h"
 #include "DataSet.h"
 #include "Exception.h"
@@ -71,37 +73,75 @@ te::ado::DataSetTypePersistence::~DataSetTypePersistence()
 
 void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std::map<std::string, std::string>& /*options*/)
 {
-  bool isInLocalTransaction = false;
-  if(!m_t->isInTransaction())
+  try
   {
-    isInLocalTransaction = true;
-    m_t->begin();
-  }
+    bool isInLocalTransaction = false;
+    if(!m_t->isInTransaction())
+    {
+      isInLocalTransaction = true;
+      m_t->begin();
+    }
 
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-  DataSourceCatalogLoader* loader = dynamic_cast<DataSourceCatalogLoader*>(m_t->getCatalogLoader());
+    _ConnectionPtr adoConn = m_t->getADOConnection();
+    DataSourceCatalogLoader* loader = dynamic_cast<DataSourceCatalogLoader*>(m_t->getCatalogLoader());
 
-  ADOX::_TablePtr pTable = 0;
-  ADOX::_CatalogPtr pCatalog = 0;
+    ADOX::_TablePtr pTable = 0;
+    ADOX::_CatalogPtr pCatalog = 0;
     
-  TESTHR(pTable.CreateInstance(__uuidof (ADOX::Table)));
-  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+    TESTHR(pTable.CreateInstance(__uuidof (ADOX::Table)));
+    TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
-  pTable->Name = dt->getName().c_str();
+    pTable->Name = dt->getName().c_str();
 
-  TESTHR(pCatalog->Tables->Append(_variant_t((IDispatch*)pTable)));
+    TESTHR(pCatalog->Tables->Append(_variant_t((IDispatch*)pTable)));
 
-  std::size_t ncols = dt->size();
-  for(std::size_t i = 0; i < ncols; ++i)
-    add(dt, dt->getProperty(i));
+    std::size_t ncols = dt->size();
+    for(std::size_t i = 0; i < ncols; ++i)
+      add(dt, dt->getProperty(i));
 
-  if(dt->getPrimaryKey())
-    add(dt, dt->getPrimaryKey());
+    if(dt->getPrimaryKey())
+      add(dt, dt->getPrimaryKey());
+  
+    te::gm::GeometryProperty* geomProp = 0;
+    geomProp = dt->getDefaultGeomProperty();
+    if(geomProp)
+    {
+      int coord_dimension = 2;
+      ADOX::_TablePtr geomCols = pCatalog->GetTables()->GetItem("geometry_columns");
 
-  if(isInLocalTransaction)
-    m_t->commit();
+      if(te::ado::isZProperty(geomProp->getGeometryType()))
+        coord_dimension = 3;
+
+      _RecordsetPtr recset;
+      TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  
+      TESTHR(recset->Open(_bstr_t("geometry_columns"),
+      _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+      
+      TESTHR(recset->AddNew());
+
+      recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
+      recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
+      recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)dt->getName().c_str();
+      recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
+      recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
+      recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
+      recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::getOGCType(geomProp->getGeometryType()).c_str();
+
+      recset->Update();
+
+    }
+
+    if(isInLocalTransaction)
+      m_t->commit();
+  }
+  catch(_com_error &e)
+  {
+    std::string ssss = e.Description();
+    int a = 0;
+  }
 
 }
 

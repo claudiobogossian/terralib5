@@ -103,8 +103,11 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
     te::dt::Property* prop = te::ado::Convert2Terralib(c);
 
     dt->add(prop);
+    
+    if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
+      dt->setDefaultGeomProperty((te::gm::GeometryProperty*)prop);
   }
-
+  
   getPrimaryKey(dt.get());
   getUniqueKeys(dt.get());
 
@@ -320,12 +323,11 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
 
   ADOX::_TablePtr table = 0;
 
-  table = pCatalog->GetTables()->GetItem(name.c_str());
+  for(long i = 0; i < pCatalog->GetTables()->Count; i++)
+    if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == name)
+      return true;
 
-  if(table = 0)
-    return false;
-
-  return true;
+  return false;
 }
 
 bool te::ado::DataSourceCatalogLoader::primarykeyExists(const std::string& name)
