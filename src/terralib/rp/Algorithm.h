@@ -60,16 +60,14 @@ namespace te
         virtual bool initialize( const AlgorithmInputParameters& inputParams ) throw( te::rp::Exception ) = 0;
         
         /*!
-          \brief Initialize the algorithm instance making it ready for execution.
+          \brief Returns true if the algorithm instance is initialized and ready for execution.
           
-          \param inputParams Input parameters.
-          
-          \return true if OK, false on errors.
+          \return true if the algorithm instance is initialized and ready for execution.
          */        
         virtual bool isInitialized() const = 0;
         
         /*!
-          \brief Executes the algorithm using the current internal parameters.
+          \brief Executes the algorithm using the supplied parameters.
           
           \param outputParams Output parameters.
           
