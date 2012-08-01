@@ -40,7 +40,7 @@
       /*!
           \class SegmenterIdsManager
           \brief Segmenter segments IDs manager.
-          \ingroup SegmenterAlgorithm
+          \ingroup SegmentationAlgorithms
       */
       class TERPEXPORT SegmenterIdsManager
       {

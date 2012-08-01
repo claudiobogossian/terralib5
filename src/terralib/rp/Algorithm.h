@@ -18,11 +18,6 @@
  */
 
 /*!
- \defgroup RPAlgorithms Raster processing algorithms.
- \ingroup RPModule
- */ 
-
-/*!
   \file terralib/rp/Algorithm.h
   \brief Raster Processing algorithm base interface class.
  */

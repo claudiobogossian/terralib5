@@ -37,7 +37,7 @@
       /*!
           \class SegmenterSegmentsBlock
           \brief Segmenter segments block description class.
-          \ingroup SegmenterAlgorithm
+          \ingroup SegmentationAlgorithms
       */
       class TERPEXPORT SegmenterSegmentsBlock
       {
