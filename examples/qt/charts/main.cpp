@@ -82,16 +82,18 @@ int main(int /*argc*/, char** /*argv*/)
 	  //criar um scatter do data set
     std::string renda = "RENDA_FAM";
     std::string anosest = "ANOS_EST";
+    std::string idademed = "IDADE_MED";
     te::da::DataSetType* type = dataset->getType();
     int rendaIdx = type->getPropertyPosition(renda);
     int anosestIdx = type->getPropertyPosition(anosest);
+    int idademedIdx = type->getPropertyPosition(idademed);
     
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, rendaIdx, 10 );
-    
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, idademedIdx, 10 );
+
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
     
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
@@ -101,8 +103,7 @@ int main(int /*argc*/, char** /*argv*/)
     chartDisplay->show();
 
     chartDisplay->replot();
-
-
+    
 // 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
 // 
 //     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);

@@ -23,6 +23,7 @@
   \brief A class to represent a histogram. 
 */
 
+//terralib
 #include "Histogram.h"
 
 

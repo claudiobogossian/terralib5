@@ -195,14 +195,14 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      }
 
      //Adjusting the histogram's intervals
-     for (double i = minValue; i <=maxValue; i+=newHistogram->getInterval())
+     for (double i = minValue; i <(maxValue+newHistogram->getInterval()); i+=newHistogram->getInterval())
      {
        intervals.push_back(i);
      }
 
      values.resize(intervals.size(), 0);
     
-     dataset->move(0);
+     dataset->moveBeforeFirst();
 
      //Adjusting the Histogram's values
      while(dataset->moveNext())
@@ -212,9 +212,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
        for (int i= 0; i<intervals.size(); i++)
        {
          if((currentValue > intervals[i]) && (currentValue < intervals[i+1]))
-         {
            values[i] =  values[i]+1;
-         }
        }
       }
 

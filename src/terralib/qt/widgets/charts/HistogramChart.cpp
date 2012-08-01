@@ -25,12 +25,11 @@
 
 //QWT
 #include <qwt_plot_histogram.h>
+#include <qwt_column_symbol.h>
+
+//Terralib
 #include "HistogramChart.h"
 #include "Histogram.h"
-
-//exemplo
-#include <qpen.h>
-#include <qwt_column_symbol.h>
 
 te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   QwtPlotHistogram(),
