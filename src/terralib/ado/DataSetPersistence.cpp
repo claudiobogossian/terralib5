@@ -150,18 +150,28 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
       te::gm::WKBWriter::write(geo, wkb);
 
+      unsigned int newWkbSize = size+4;
+
+      char* newWkb = new char[newWkbSize];
+
+      memcpy(newWkb, wkb, size);
+
+      unsigned int srid = geo->getSRID();
+
+      memcpy(newWkb+size, &srid, 4);
+
       VARIANT var;
       BYTE *pByte;
 
       SAFEARRAY FAR* psa;
       SAFEARRAYBOUND rgsabound[1];
       rgsabound[0].lLbound = 0;
-      rgsabound[0].cElements = size;
+      rgsabound[0].cElements = newWkbSize;
 
       psa = SafeArrayCreate(VT_I1, 1, rgsabound);
 
       if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-        memcpy((LPVOID)pByte,(LPVOID)wkb,size);
+        memcpy((LPVOID)pByte,(LPVOID)newWkb,newWkbSize);
       SafeArrayUnaccessData(psa);
 
       var.vt = VT_ARRAY | VT_UI1;
