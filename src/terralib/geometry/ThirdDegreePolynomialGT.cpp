@@ -125,6 +125,7 @@ bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) 
   // Creating the equation system parameters
   
   const unsigned int tiepointsSize = params.m_tiePoints.size();
+  if( tiepointsSize < 10 ) return false;
   
   boost::numeric::ublas::matrix< double > W( tiepointsSize, 10 );
   boost::numeric::ublas::matrix< double > WI( tiepointsSize, 10 );
