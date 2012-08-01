@@ -445,32 +445,64 @@ void te::ado::DataSet::setByteArray(const std::string& name, const te::dt::ByteA
 
 te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
 {
-  char* wkb = (char*)(LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t	varBLOB;
+  char		*cdata = 0;
+  long size;
+  char* data;
 
-  return te::gm::WKBReader::read(wkb);
+  size = m_result->GetFields()->GetItem(i)->ActualSize;
+  if(size > 0)
+  {
+    VariantInit(&varBLOB);
+
+    varBLOB = m_result->GetFields()->GetItem(i)->GetChunk(size);
+
+    if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+    {
+      SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
+      data = new char[size];
+      memcpy(data, cdata, size * sizeof(char));
+      SafeArrayUnaccessData(varBLOB.parray);
+    }
+  }
+
+  return te::gm::WKBReader::read(data);
 }
 
 te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
 {
-  char* wkb = (char*)(LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  _variant_t	varBLOB;
+  char		*cdata = 0;
+  long size;
+  char* data;
 
-  return te::gm::WKBReader::read(wkb);
+  size = m_result->GetFields()->GetItem(name.c_str())->ActualSize;
+  if(size > 0)
+  {
+    VariantInit(&varBLOB);
+
+    varBLOB = m_result->GetFields()->GetItem(name.c_str())->GetChunk(size);
+
+    if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+    {
+      SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
+      data = new char[size];
+      memcpy(data, cdata, size * sizeof(char));
+      SafeArrayUnaccessData(varBLOB.parray);
+    }
+  }
+
+  return te::gm::WKBReader::read(data);
 }
 
 void te::ado::DataSet::setGeometry(int i, const te::gm::Geometry& value)
 {
-  char* wkb = new char[value.getWkbSize()];
-  te::gm::WKBWriter::write(&value, wkb);
-
-  m_result->GetFields()->GetItem(i)->PutValue((_bstr_t)wkb);
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSet::setGeometry(const std::string& name, const te::gm::Geometry& value)
 {
-  char* wkb = new char[value.getWkbSize()];
-  te::gm::WKBWriter::write(&value, wkb);
-
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_bstr_t)wkb);
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 te::rst::Raster* te::ado::DataSet::getRaster(int i) const

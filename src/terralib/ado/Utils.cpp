@@ -27,10 +27,17 @@
 #include "../common/Translator.h"
 #include "../datatype.h"
 #include "../dataaccess.h"
+#include "../geometry/GeometryProperty.h"
+#include "../geometry/Enums.h"
 #include "Config.h"
 #include "Utils.h"
 #include "Exception.h"
 #include "Globals.h"
+
+inline void TESTHR( HRESULT hr )
+{
+	if( FAILED(hr) ) _com_issue_error( hr );
+}
 
 namespace te
 {
@@ -299,7 +306,7 @@ namespace te
     {
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(std::string(key->GetName()), dt);
       ADOX::ColumnsPtr cols = key->GetColumns();
-
+      
      for(long i = 0; i < cols->GetCount(); i++)
       {
         ADOX::_ColumnPtr c = cols->GetItem(i);
@@ -412,19 +419,253 @@ namespace te
 
 
     }
-  }
+  
 
-  int getAdoColumnId(ADOX::_TablePtr table, std::string& name)
-  {
-    ADOX::ColumnsPtr cols = table->GetColumns();
-
-    for(long i = 0; i < cols->GetCount(); i++)
+    int getAdoColumnId(ADOX::_TablePtr table, std::string& name)
     {
-      if(std::string(cols->GetItem(i)->GetName()) == name)
-        return i;
+      ADOX::ColumnsPtr cols = table->GetColumns();
+
+      for(long i = 0; i < cols->GetCount(); i++)
+      {
+        if(std::string(cols->GetItem(i)->GetName()) == name)
+          return i;
+      }
+
+      return -1;
     }
 
-    return -1;
+    bool isZProperty(te::gm::GeomType type)
+    {
+      if( (type >= 1000 && type < 2000) || (type >= 3000 && type < 4000) )
+        return true;
+      return false;
+    }
+
+    std::string getOGCType(te::gm::GeomType type)
+    {
+      std::string res = "";
+
+      switch(type)
+      {
+        case te::gm::GeomType::GeometryType:
+          res = "GEOMETRY";
+          break;
+
+        case te::gm::GeomType::PointType:
+          res = "POINT";
+          break;
+
+        case te::gm::GeomType::LineStringType:
+          res = "LINESTRING";
+          break;
+
+        case te::gm::GeomType::PolygonType:
+          res = "POLYGON";
+          break;
+
+        case te::gm::GeomType::MultiPointType:
+          res = "MULTIPOINT";
+          break;
+
+        case te::gm::GeomType::MultiLineStringType:
+          res = "MULTILINESTRING";
+          break;
+
+        case te::gm::GeomType::MultiPolygonType:
+          res = "MULTIPOLYGON";
+          break;
+
+        case te::gm::GeomType::CurvePolygonType:
+          res = "CURVE";
+          break;
+
+        case te::gm::GeomType::PolyhedralSurfaceType:
+          res = "POLYHEDRALSURFACE";
+          break;
+        
+        case te::gm::GeomType::GeometryZType:
+          res = "GEOMETRYZ";
+          break;
+
+        case te::gm::GeomType::PointZType:
+          res = "POINTZ";
+          break;
+
+        case te::gm::GeomType::LineStringZType:
+          res = "LINESTRINGZ";
+          break;
+
+        case te::gm::GeomType::PolygonZType:
+          res = "POLYGONZ";
+          break;
+
+        case te::gm::GeomType::MultiPointZType:
+          res = "MULTIPOINTZ";
+          break;
+
+        case te::gm::GeomType::MultiLineStringZType:
+          res = "MULTILINESTRINGZ";
+          break;
+
+        case te::gm::GeomType::MultiPolygonZType:
+          res = "MULTIPOLYGONZ";
+          break;
+
+        case te::gm::GeomType::CurvePolygonZType:
+          res = "CURVEZ";
+          break;
+
+        case te::gm::GeomType::PolyhedralSurfaceZType:
+          res = "POLYHEDRALSURFACEZ";
+          break;
+        
+        case te::gm::GeomType::GeometryMType:
+          res = "GEOMETRYM";
+          break;
+
+        case te::gm::GeomType::PointMType:
+          res = "POINTM";
+          break;
+
+        case te::gm::GeomType::LineStringMType:
+          res = "LINESTRINGM";
+          break;
+
+        case te::gm::GeomType::PolygonMType:
+          res = "POLYGONM";
+          break;
+
+        case te::gm::GeomType::MultiPointMType:
+          res = "MULTIPOINTM";
+          break;
+
+        case te::gm::GeomType::MultiLineStringMType:
+          res = "MULTILINESTRINGM";
+          break;
+
+        case te::gm::GeomType::MultiPolygonMType:
+          res = "MULTIPOLYGONM";
+          break;
+
+        case te::gm::GeomType::CurvePolygonMType:
+          res = "CURVEM";
+          break;
+
+        case te::gm::GeomType::PolyhedralSurfaceMType:
+          res = "POLYHEDRALSURFACEM";
+          break;
+
+        case te::gm::GeomType::GeometryZMType:
+          res = "GEOMETRYZM";
+          break;
+
+        case te::gm::GeomType::PointZMType:
+          res = "POINTZM";
+          break;
+
+        case te::gm::GeomType::LineStringZMType:
+          res = "LINESTRINGZM";
+          break;
+
+        case te::gm::GeomType::PolygonZMType:
+          res = "POLYGONZM";
+          break;
+
+        case te::gm::GeomType::MultiPointZMType:
+          res = "MULTIPOINTZM";
+          break;
+
+        case te::gm::GeomType::MultiLineStringZMType:
+          res = "MULTILINESTRINGZM";
+          break;
+
+        case te::gm::GeomType::MultiPolygonZMType:
+          res = "MultiPolygonZM";
+          break;
+
+        case te::gm::GeomType::CurvePolygonZMType:
+          res = "CURVEZM";
+          break;
+
+        case te::gm::GeomType::PolyhedralSurfaceZMType:
+          res = "POLYHEDRALSURFACEZM";
+          break;
+
+        default:
+          throw te::ado::Exception(TR_ADO("The informed geometry type could not be mapped to OGC Type!"));
+
+      }
+
+      return res;
+    }
+
+    void createGeometryColumns(_ConnectionPtr adoConn)
+    {
+
+      try
+      {
+        ADOX::_CatalogPtr pCatalog;
+
+        TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+        pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+            
+        ADOX::_TablePtr pTable = 0;
+      
+        TESTHR(pTable.CreateInstance(__uuidof (ADOX::Table)));
+
+        pTable->Name = "geometry_columns";
+
+        pTable->Columns->Append("f_table_catalog", ADOX::adVarWChar, 256);
+        pTable->Columns->Append("f_table_schema", ADOX::adVarWChar, 256);
+        pTable->Columns->Append("f_table_name", ADOX::adVarWChar, 256);
+        pTable->Columns->Append("f_geometry_column", ADOX::adVarWChar, 256);
+        pTable->Columns->Append("coord_dimension", ADOX::adInteger, 0);
+        pTable->Columns->Append("srid", ADOX::adInteger, 0);
+        pTable->Columns->Append("type", ADOX::adVarWChar, 30);
+
+        TESTHR(pCatalog->Tables->Append(_variant_t((IDispatch*)pTable)));
+
+      }
+      catch(_com_error &e)
+      {
+        throw Exception(TR_ADO(e.ErrorMessage()));
+      }
+
+    }
+
+    bool isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName)
+    {
+      ADOX::_CatalogPtr pCatalog;
+
+      TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+      pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+      for(long i = 0; i < pCatalog->GetTables()->Count; i++)
+      {
+        std::string t1 = std::string(pCatalog->GetTables()->GetItem(i)->GetName());
+        if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == "geometry_columns")
+        {
+          _RecordsetPtr recset;
+          TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  
+          TESTHR(recset->Open(_bstr_t("geometry_columns"),
+          _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+
+          while(!recset->EndOfFile)
+          {
+            std::string t2 = std::string((_bstr_t)recset->Fields->GetItem("f_table_name")->Value);
+            std::string t3 = std::string((_bstr_t)recset->Fields->GetItem("f_geometry_column")->Value);
+            if(std::string((_bstr_t)recset->Fields->GetItem("f_table_name")->Value) == tableName
+              && std::string((_bstr_t)recset->Fields->GetItem("f_geometry_column")->Value) == columnName)
+              return true;
+
+            recset->MoveNext();
+          }
+        }
+      }
+
+      return false;
+    }
   }
 }
 
