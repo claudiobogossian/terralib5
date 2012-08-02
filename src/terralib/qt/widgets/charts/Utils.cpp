@@ -211,7 +211,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 
        for (int i= 0; i<intervals.size(); i++)
        {
-         if((currentValue > intervals[i]) && (currentValue < intervals[i+1]))
+         if((currentValue >= intervals[i]) && (currentValue < intervals[i+1]))
            values[i] =  values[i]+1;
        }
       }
@@ -225,6 +225,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
    }
    newHistogram->setValues(histogramValues);
    newHistogram->setMinValue(minValue);
+   dataset->moveBeforeFirst();
    return newHistogram;
 }
 

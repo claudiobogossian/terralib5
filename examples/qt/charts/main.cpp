@@ -36,6 +36,7 @@
 #include <terralib/qt/widgets/charts/ScatterChart.h>
 #include <terralib/qt/widgets/charts/Histogram.h>
 #include <terralib/qt/widgets/charts/HistogramChart.h>
+#include <terralib/qt/widgets/charts/MultiHistogramChart.h>
 #include <terralib/qt/widgets/charts/ChartDisplay.h>
 
 // Qt
@@ -93,12 +94,25 @@ int main(int /*argc*/, char** /*argv*/)
     QString title("Testing Chart Widgets");
 
     te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, idademedIdx, 10 );
+    te::qt::widgets::Histogram* histogram1 = te::qt::widgets::createHistogram(dataset, anosestIdx, 10 );
+    //te::qt::widgets::Histogram* histogram2 = te::qt::widgets::createHistogram(dataset, rendaIdx, 10 );
 
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
-    
+    te::qt::widgets::HistogramChart* histogramChart1 = new te::qt::widgets::HistogramChart(histogram1);
+   // te::qt::widgets::HistogramChart* histogramChart2 = new te::qt::widgets::HistogramChart(histogram2);
+
+    std::vector<te::qt::widgets::HistogramChart*> charts;
+    charts.push_back(histogramChart);
+    charts.push_back(histogramChart1);
+    //charts.push_back(histogramChart2);
+
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
 
-    histogramChart->attach(chartDisplay);
+    te::qt::widgets::MultiHistogramChart* MultiChart = new te::qt::widgets::MultiHistogramChart();
+
+    MultiChart->setCharts(charts);
+
+    MultiChart->attach(charts, chartDisplay);
 
     chartDisplay->show();
 

@@ -27,6 +27,7 @@
 
 #include "MultiHistogramChart.h"
 #include "HistogramChart.h"
+#include "ChartDisplay.h"
 
 te::qt::widgets::MultiHistogramChart::MultiHistogramChart():
 QwtPlotHistogram()
@@ -34,5 +35,24 @@ QwtPlotHistogram()
 }
 
 te::qt::widgets::MultiHistogramChart::~MultiHistogramChart()
-{  
+{
+
+}
+
+std::vector<te::qt::widgets::HistogramChart*>& te::qt::widgets::MultiHistogramChart::getCharts()
+{
+  return m_histogramCharts;
+}
+
+void te::qt::widgets::MultiHistogramChart::setCharts(std::vector<te::qt::widgets::HistogramChart*> new_Charts)
+{
+  m_histogramCharts = new_Charts;
+}
+
+void te::qt::widgets::MultiHistogramChart::attach(std::vector<te::qt::widgets::HistogramChart*>& charts,  te::qt::widgets::ChartDisplay* display)
+{
+  for(int i = 0; i <charts.size(); i++)
+  {
+    charts[i]->attach(display);
+  }
 }

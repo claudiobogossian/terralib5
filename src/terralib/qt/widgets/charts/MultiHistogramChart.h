@@ -40,6 +40,7 @@ namespace te
     {
       // Forward declarations
       class HistogramChart;
+      class ChartDisplay;
 
       /*!
         \class HidtogramChart
@@ -67,7 +68,7 @@ namespace te
             it overwrites the default behavior of the attach function
             */
 
-          void attach();
+          void attach(std::vector<te::qt::widgets::HistogramChart*>& charts, te::qt::widgets::ChartDisplay* display);
 
           /*!            
             \brief It returns the vector containing the histogram charts. 
@@ -77,7 +78,7 @@ namespace te
             \note The caller will not have the ownership of the returned pointer. 
           */
 
-          std::vector<te::qt::widgets::HistogramChart>& getCharts();
+          std::vector<te::qt::widgets::HistogramChart*>& getCharts();
       
           /*!            
             \brief It sets the histogram's interval. 
@@ -85,11 +86,11 @@ namespace te
             \param new_values The new histogram's interval.
           */
 
-          void setCharts(std::vector< te::qt::widgets::HistogramChart> new_Charts);
+          void setCharts(std::vector<te::qt::widgets::HistogramChart*> new_Charts);
 
          private:
 
-           std::vector< te::qt::widgets::HistogramChart> m_histogramCharts;
+           std::vector<te::qt::widgets::HistogramChart*> m_histogramCharts;
 
       };
     } // end namespace widgets
