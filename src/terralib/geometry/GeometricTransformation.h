@@ -42,7 +42,7 @@ namespace te
   {
 // Forward declaration
     class GTParameters;
-
+    class GTFilter;
     struct Coord2D;
 
     /*!
@@ -52,6 +52,8 @@ namespace te
     */
     class TEGEOMEXPORT GeometricTransformation : public boost::noncopyable
     {
+      friend class GTFilter;
+      
       public:
 
         /*! \brief Virtual destructor. */
@@ -291,7 +293,7 @@ namespace te
 
         /*! \brief Default constructor. */
         GeometricTransformation();
-
+        
         /*!
           \brief Calculate the transformation parameters following the new supplied tie-points.
 
@@ -299,7 +301,7 @@ namespace te
 
           \return true if OK, false on errors.
         */
-        virtual bool computeParameters( GTParameters& params ) const = 0;
+        virtual bool computeParameters( GTParameters& params ) const = 0;        
 
       private:
 

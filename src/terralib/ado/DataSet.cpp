@@ -31,6 +31,7 @@
 #include "../geometry/WKBWriter.h"
 #include "../geometry/WKBReader.h"
 #include "../geometry/Geometry.h"
+#include "../datatype/ByteArray.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/ByteArrayProperty.h"
 #include "DataSourceTransactor.h"
@@ -425,28 +426,8 @@ void te::ado::DataSet::setString(const std::string& name, const std::string& val
 
 te::dt::ByteArray* te::ado::DataSet::getByteArray(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
-
-te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
-
-void te::ado::DataSet::setByteArray(int i, const te::dt::ByteArray& value)
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
-
-void te::ado::DataSet::setByteArray(const std::string& name, const te::dt::ByteArray& value)
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
-
-te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
-{
-  _variant_t	varBLOB;
-  char		*cdata = 0;
+  _variant_t varBLOB;
+  char *cdata = 0;
   long size;
   char* data;
 
@@ -466,13 +447,13 @@ te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
     }
   }
 
-  return te::gm::WKBReader::read(data);
+  return new te::dt::ByteArray(data, size);
 }
 
-te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
+te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
 {
-  _variant_t	varBLOB;
-  char		*cdata = 0;
+  _variant_t varBLOB;
+  char *cdata = 0;
   long size;
   char* data;
 
@@ -492,7 +473,45 @@ te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
     }
   }
 
-  return te::gm::WKBReader::read(data);
+  return new te::dt::ByteArray(data, size);
+}
+
+void te::ado::DataSet::setByteArray(int i, const te::dt::ByteArray& value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+void te::ado::DataSet::setByteArray(const std::string& name, const te::dt::ByteArray& value)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
+{
+  te::dt::ByteArray* ba = getByteArray(i);
+
+  te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
+
+  std::size_t wkb_size = geom->getWkbSize();
+
+  if(ba->bytesUsed() - wkb_size >= 4)
+    geom->setSRID(*((int*)(ba->getData() + wkb_size)));
+
+  return geom;
+}
+
+te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
+{
+  te::dt::ByteArray* ba = getByteArray(name);
+
+  te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
+
+  std::size_t wkb_size = geom->getWkbSize();
+
+  if(ba->bytesUsed() - wkb_size >= 4)
+    geom->setSRID(*((int*)(ba->getData() + wkb_size)));
+
+  return geom;
 }
 
 void te::ado::DataSet::setGeometry(int i, const te::gm::Geometry& value)
