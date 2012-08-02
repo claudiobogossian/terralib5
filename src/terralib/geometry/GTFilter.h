@@ -56,6 +56,14 @@ namespace te
           
           \param inputParams Input transformation parameters.
           
+          \param maxDMapError The maximum allowed direct mapping error.
+          
+          \param maxIMapError The maximum allowed inverse mapping error.
+          
+          \param maxDMapRmse The maximum allowed direct mapping root mean square error.
+          
+          \param maxIMapRmse The maximum allowed inverse mapping root mean square error.
+          
           \param outTransf The generated output transformation.
           
           \param tiePointsWeights Optional tie-points weights.
