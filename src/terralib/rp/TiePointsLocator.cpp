@@ -43,9 +43,27 @@ namespace te
     {
       m_interesPointsLocationStrategy = InputParameters::InvalidStrategyT;
       m_inRaster1Ptr = 0;
-      m_inRaster2Ptr = 0;
+      m_inMaskRaster1Ptr = 0;
       m_inRaster1Bands.clear();
+      m_raster1TargetAreaLineStart = 0;
+      m_raster1TargetAreaColStart = 0;
+      m_raster1TargetAreaWidth = 0;
+      m_raster1TargetAreaHeight = 0;
+      m_inRaster2Ptr = 0;
+      m_inMaskRaster2Ptr = 0;
       m_inRaster2Bands.clear();
+      m_raster2TargetAreaLineStart = 0;
+      m_raster2TargetAreaColStart = 0;
+      m_raster2TargetAreaWidth = 0;
+      m_raster2TargetAreaHeight = 0;
+      m_enableMultiThread = true;
+      m_maxTiePoints = 0;
+      m_pixelSizeXRelation = 1;
+      m_pixelSizeYRelation = 1;
+      m_geomTransfName = "Affine";
+      m_geomTransfMaxError = 1;
+      m_correlationWindowWidth = 21;
+      m_moravecWindowWidth = 11;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -112,6 +130,7 @@ namespace te
     bool TiePointsLocator::execute( AlgorithmOutputParameters& outputParams )
       throw( te::rp::Exception )
     {
+      return true;
     }
 
     void TiePointsLocator::reset() throw( te::rp::Exception )

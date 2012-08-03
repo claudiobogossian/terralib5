@@ -93,7 +93,7 @@ namespace te
             
             bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
             
-            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=1000).
+            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=0).
             
             double m_pixelSizeXRelation; //!< The pixel resolution relation m_pixelSizeXRelation = raster1_pixel_res_x / raster2_pixel_res_x (default=1.0).
             
