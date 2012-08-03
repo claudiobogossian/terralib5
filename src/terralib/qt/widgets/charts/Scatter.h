@@ -28,6 +28,7 @@
 
 //STL
 #include <vector>
+#include <string>
 
 //TerraLib
 #include "../Config.h"
@@ -63,7 +64,7 @@ namespace te
           /*!            
             \brief Calculates the minimum and maximum values for both the X and Y axis
           */
-          void te::qt::widgets::Scatter::calculateMinMaxValues();
+          void calculateMinMaxValues();
           
           /*!            
             \brief It returns the size of the scatter.

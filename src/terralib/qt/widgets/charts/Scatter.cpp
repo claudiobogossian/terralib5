@@ -25,6 +25,8 @@
 
 #include "Scatter.h"
 
+#include <limits>
+
 te::qt::widgets::Scatter::Scatter(const std::vector<double>& axisX, const std::vector<double>& axisY)
   : m_minX(std::numeric_limits<double>::max()),
     m_maxX(-std::numeric_limits<double>::max()),
