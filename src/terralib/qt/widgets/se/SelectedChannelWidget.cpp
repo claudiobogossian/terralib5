@@ -60,16 +60,16 @@ te::qt::widgets::SelectedChannelWidget::SelectedChannelWidget(QWidget* parent, Q
 
 te::qt::widgets::SelectedChannelWidget::~SelectedChannelWidget()
 {
-  delete m_se;
+//  delete m_se;
 }
 
-void te::qt::widgets::SelectedChannelWidget::setSelectedChannel(const te::se::SelectedChannel* sc)
+void te::qt::widgets::SelectedChannelWidget::setSelectedChannel( te::se::SelectedChannel* sc)
 {
   assert(sc);
 
-  delete m_se;
+  //delete m_se;
 
-  m_se = sc->clone();
+  m_se = sc;//->clone();
 
   updateUi();
 }
@@ -78,7 +78,7 @@ te::se::SelectedChannel* te::qt::widgets::SelectedChannelWidget::getSelectedChan
 {
   m_se->setContrastEnhancement(m_contrastWidget->getContrastEnhancement());
 
-  return m_se->clone();
+  return m_se;//->clone();
 }
 
 void te::qt::widgets::SelectedChannelWidget::setChannelNames(const QStringList& list)
