@@ -37,12 +37,37 @@ namespace te
   // Forward declarations
   namespace color { class RGBAColor; }
   namespace se    { class Font; class Fill; class Stroke; }
- 
+  namespace da    { class DataSet; }
+  namespace dt    { class DateTime; }
   namespace qt
   {
     namespace widgets
     {      
-      /*!
+
+		class Scatter;
+    class Histogram;
+
+    double getDouble(const std::string& value, std::vector<std::string>& sVector);
+    
+    double getDouble(te::dt::DateTime* dateTime);
+
+    /*!
+            \brief Scatter Creator
+
+            \note It will traverse the data set, using the moveNext() method
+            \note It will not take the ownership of the DataSet pointer. 
+    */
+		TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, int propX, int propY);
+		
+        /*!
+            \brief Histogram Creator
+
+            \note It will traverse the data set, using the moveNext() method
+            \note It will not take the ownership of the DataSet pointer. 
+    */
+		TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId, int slices);
+
+		/*!
         \function Terralib2Qwt
 
         This function returns a default QwtText.
@@ -53,7 +78,7 @@ namespace te
 
         \note The caller will take the ownership of the returned pointer.
       */
-      QwtText* Terralib2Qwt(const std::string& title);
+      TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& title);
       
       
       /*!
@@ -68,7 +93,7 @@ namespace te
         \note The caller will take the ownership of the returned pointer.
         \note It will not take the ownership of the symbol pointer.
       */
-      QwtText* Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
+      TEQTWIDGETSEXPORT QwtText* Terralib2Qwt(const std::string& text,  te::color::RGBAColor* color, 
                    te::se::Font*  font, te::se::Fill* backFill, 
                    te::se::Stroke* backStroke);
                     
