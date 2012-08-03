@@ -41,7 +41,7 @@ namespace te
 
     void TiePointsLocator::InputParameters::reset() throw( te::rp::Exception )
     {
-      m_strategyType = InputParameters::InvalidStrategyT;
+      m_interesPointsLocationStrategy = InputParameters::InvalidStrategyT;
       m_inRaster1Ptr = 0;
       m_inRaster2Ptr = 0;
       m_inRaster1Bands.clear();
@@ -53,7 +53,7 @@ namespace te
     {
       reset();
 
-      m_strategyType = params.m_strategyType;
+      m_interesPointsLocationStrategy = params.m_interesPointsLocationStrategy;
       m_inRaster1Ptr = params.m_inRaster1Ptr;
       m_inRaster2Ptr = params.m_inRaster2Ptr;
       m_inRaster1Bands = params.m_inRaster1Bands;

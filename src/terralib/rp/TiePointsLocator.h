@@ -27,6 +27,10 @@
 
 #include "Algorithm.h"
 #include "../raster/Raster.h"
+#include "../geometry/GTParameters.h"
+
+#include <vector>
+#include <string>
 
 namespace te
 {
@@ -51,21 +55,57 @@ namespace te
           public:
             
             /*! \enum The strategy used to locate tie points.*/
-            enum StrategyType
+            enum InteresPointsLocationStrategyType
             {
-              InvalidStrategyT = 0, /*!< Invalid contrast. */
-              MoravecStrategyT = 1, /*!< The histogram range will be changed to the supplied min/max range ( linear function ). */
+              InvalidStrategyT = 0, /*!< Invalid strategy. */
+              MoravecStrategyT = 1, /*!<  Modified Moravec Interest Operator based image area matching. */
             };
 
-            StrategyType m_strategyType; //!< The strategy used to locate tie points.
+            InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:MoravecStrategyT).
             
-            te::rst::Raster const* m_inRaster1Ptr; //!< Input raster.
+            te::rst::Raster const* m_inRaster1Ptr; //!< Input raster 1.
             
-            te::rst::Raster const* m_inRaster2Ptr; //!< Input raster.
+            te::rst::Raster const* m_inMaskRaster1Ptr; //!< Optional input mask raster 1 (tie-points will not be generated inside mask image areas marked with zeroes).
             
             std::vector< unsigned int > m_inRaster1Bands; //!< Bands to be used from the input raster 1.
             
+            unsigned int m_raster1TargetAreaLineStart; //!< The first target rectangle line (default:0 - The entire raster will be considered).
+            
+            unsigned int m_raster1TargetAreaColStart; //!< The first target rectangle column (default:0 - The entire raster will be considered).
+
+            unsigned int m_raster1TargetAreaWidth; //!< The target rectangle width (default:0 - The entire raster will be considered).
+            
+            unsigned int m_raster1TargetAreaHeight; //!< The target rectangle height (default:0 - The entire raster will be considered).
+            
+            te::rst::Raster const* m_inRaster2Ptr; //!< Input raster 2.
+            
+            te::rst::Raster const* m_inMaskRaster2Ptr; //!< Optional input mask raster 2 (tie-points will not be generated inside mask image areas marked with zeroes).
+            
             std::vector< unsigned int > m_inRaster2Bands; //!< Bands to be used from the input raster 2.
+            
+            unsigned int m_raster2TargetAreaLineStart; //!< The first target rectangle line (default:0 - The entire raster will be considered).
+            
+            unsigned int m_raster2TargetAreaColStart; //!< The first target rectangle column (default:0 - The entire raster will be considered).
+
+            unsigned int m_raster2TargetAreaWidth; //!< The target rectangle width (default:0 - The entire raster will be considered).
+            
+            unsigned int m_raster2TargetAreaHeight; //!< The target rectangle height (default:0 - The entire raster will be considered).
+            
+            bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
+            
+            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=1000).
+            
+            double m_pixelSizeXRelation; //!< The pixel resolution relation m_pixelSizeXRelation = raster1_pixel_res_x / raster2_pixel_res_x (default=1.0).
+            
+            double m_pixelSizeYRelation; //!< The pixel resolution relation m_pixelSizeYRelation = raster1_pixel_res_y / raster2_pixel_res_y (default=1.0).
+            
+            std::string m_geomTransfName; //!< The name of the geometric transformation used to ensure tie-points consistency (default:Affine).
+            
+            double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:1).
+            
+            unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (Must be an odd number, minimum 3, default: 21).
+            
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (Must be an odd number, minimum 11, default: 11 ).
           
             InputParameters();
             
@@ -88,6 +128,8 @@ namespace te
         class TERPEXPORT OutputParameters : public AlgorithmOutputParameters
         {
           public:
+            
+            std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< The generated tie-pionts (te::gm::GTParameters::TiePoint::first are raster 1 line/column indexes, te::gm::GTParameters::TiePoint::second are raster 2 line/column indexes).
             
             OutputParameters();
             
