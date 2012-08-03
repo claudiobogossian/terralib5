@@ -45,6 +45,7 @@ set(DEP_LIBS
 		terralib_symbology
 		terralib_srs
 		terralib_xlink
+	${QWT_LIBRARY}
     ${QT_LIBRARIES}
     )  
 

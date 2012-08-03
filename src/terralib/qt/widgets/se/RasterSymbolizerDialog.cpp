@@ -95,7 +95,7 @@ te::se::Symbolizer* te::qt::widgets::RasterSymbolizerDialog::getRasterSymbolizer
 {
   if(m_sliderWidget)
   {
-    // se opacity value is betwen 0 and 1. The value used from slider must be
+    // if opacity value is betwen 0 and 1. The value used from slider must be
     // changed to this range.
     int opacity = m_sliderWidget->getValue();
     double seOpacity = opacity / 100.;
