@@ -197,9 +197,9 @@ namespace te
           
           unsigned int m_maxInterestPoints; //!< The maximum number of points to find.
           
-          Matrix< double > const* m_rasterDataPtr;
+          Matrix< double > const* m_rasterDataPtr; //!< The loaded raster data.
           
-          Matrix< double > const* m_maskRasterDataPtr;
+          Matrix< unsigned char > const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
           
           IPListT* m_interestPointsPtr;
           
@@ -258,7 +258,7 @@ namespace te
           const double rescaleFactorX,
           const double rescaleFactorY,
           std::vector< Matrix< double > >& loadedRasterData,
-          Matrix< double >& loadedMaskRasterData );
+          Matrix< unsigned char >& loadedMaskRasterData );
           
         /*!
           \brief Moravec interest points locator.
@@ -283,12 +283,12 @@ namespace te
         */             
         bool locateMoravecInterestPoints( 
           const Matrix< double >& raster1Data,
-          Matrix< double > const* maskRaster1DataPtr,
+          Matrix< unsigned char > const* maskRaster1DataPtr,
           const unsigned int raster1MoravecWindowWidth,
           const unsigned int raster1MaxInterestPoints,
           IPListT& raster1InterestPoints,
           const Matrix< double >& raster2Data,
-          Matrix< double > const* maskRaster2DataPtr,
+          Matrix< unsigned char > const* maskRaster2DataPtr,
           const unsigned int raster2MoravecWindowWidth,
           const unsigned int raster2MaxInterestPoints,
           IPListT& raster2InterestPoints );

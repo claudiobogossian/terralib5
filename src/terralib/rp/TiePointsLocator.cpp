@@ -223,9 +223,9 @@ namespace te
       // Loading image data
       
       std::vector< Matrix< double > > raster1Data;
-      Matrix< double > maskRaster1Data;
+      Matrix< unsigned char > maskRaster1Data;
       std::vector< Matrix< double > > raster2Data;
-      Matrix< double > maskRaster2Data;
+      Matrix< unsigned char > maskRaster2Data;
       
       TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
         m_inputParameters.m_inRaster1Ptr,
@@ -538,7 +538,7 @@ namespace te
       const double rescaleFactorX,
       const double rescaleFactorY,
       std::vector< Matrix< double > >& loadedRasterData,
-      Matrix< double >& loadedMaskRasterData )
+      Matrix< unsigned char >& loadedMaskRasterData )
     {
       loadedRasterData.clear();
       
@@ -558,7 +558,7 @@ namespace te
         {
           TERP_TRUE_OR_RETURN_FALSE( loadedMaskRasterData.reset( 
             rescaledNLines, rescaledNCols,
-            Matrix< double >::AutoMemPol, maxTmpFileSize,
+            Matrix< unsigned char >::AutoMemPol, maxTmpFileSize,
             maxMemPercentUsagePerMatrix ),
             "Cannot allocate image 1 mask matrix" );          
         }
@@ -581,11 +581,12 @@ namespace te
         te::rst::Band const* inMaskRasterBand = maskRasterPtr->getBand( maskRasterBand );
         assert( inMaskRasterBand );
         
-        double* outMaskLinePtr = 0;
+        unsigned char* outMaskLinePtr = 0;
         unsigned int outLine = 0;
         unsigned int outCol = 0;
         unsigned int inLine = 0;
-        unsigned int inCol = 0;        
+        unsigned int inCol = 0;
+        double value = 0;
         
         for( outLine = 0 ; outLine < rescaledNLines ; ++outLine ) 
         {
@@ -599,7 +600,12 @@ namespace te
             inCol = (unsigned int)( ( ( (double)outCol ) / 
                 rescaleFactorX ) + ( (double)rasterTargetAreaColStart ) );        
                 
-            inMaskRasterBand->getValue( inCol, inLine, outMaskLinePtr[ outCol ] );
+            inMaskRasterBand->getValue( inCol, inLine, value );
+            
+            if( value == 0 )
+              outMaskLinePtr[ outCol ] = 0;
+            else
+              outMaskLinePtr[ outCol ] = 255;
           }
         }
       }
@@ -642,12 +648,12 @@ namespace te
     
     bool TiePointsLocator::locateMoravecInterestPoints( 
       const Matrix< double >& raster1Data,
-      Matrix< double > const* maskRaster1DataPtr,
+      Matrix< unsigned char > const* maskRaster1DataPtr,
       const unsigned int raster1MoravecWindowWidth,
       const unsigned int raster1MaxInterestPoints,
       IPListT& raster1InterestPoints,
       const Matrix< double >& raster2Data,
-      Matrix< double > const* maskRaster2DataPtr,
+      Matrix< unsigned char > const* maskRaster2DataPtr,
       const unsigned int raster2MoravecWindowWidth,
       const unsigned int raster2MaxInterestPoints,
       IPListT& raster2InterestPoints )
@@ -755,16 +761,19 @@ namespace te
     void TiePointsLocator::moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr)
     {
       // Allocating the internal raster data buffer
+      // and the mask raster buffer
       
       paramsPtr->m_rastaDataAccessMutexPtr->lock();
       
+      const unsigned int raster1MoravecWindowRadius = paramsPtr->m_moravecWindowWidth
+        / 2;
       const unsigned int rasterLinesBlocksNumber = 
         paramsPtr->m_rasterDataPtr->getLinesNumber() / 
         paramsPtr->m_maxRasterLinesBlockMaxSize;
       const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
-      const unsigned int bufferLines = paramsPtr->m_moravecWindowWidth + 
-        ( paramsPtr->m_moravecWindowWidth / 2 );
+      const unsigned int bufferLines = paramsPtr->m_moravecWindowWidth;
       const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
+      const unsigned int bufferLineSizeBytes = sizeof( double ) * bufferCols;
       
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         
@@ -780,6 +789,28 @@ namespace te
       }
       
       double** rasterBufferPtr = rasterBufferHandler.get();
+      
+      // Allocating the mask raster buffer      
+      
+      Matrix< double > maskRasterBufferDataHandler;
+      
+      boost::scoped_array< double* > maskRasterBufferHandler( new double*[ bufferLines ] );
+      
+      double** maskRasterBufferPtr = 0;
+      
+      if( paramsPtr->m_maskRasterDataPtr )
+      {
+        maskRasterBufferDataHandler.reset( bufferLines, bufferCols, Matrix< double >::RAMMemPol );
+        
+        for( unsigned int maskRasterBufferDataHandlerLine = 0 ; maskRasterBufferDataHandlerLine < 
+          bufferLines ; ++maskRasterBufferDataHandlerLine )
+        {
+          maskRasterBufferHandler[ maskRasterBufferDataHandlerLine ] = maskRasterBufferDataHandler[ 
+            maskRasterBufferDataHandlerLine ];
+        }
+        
+        maskRasterBufferPtr = maskRasterBufferHandler.get();      
+      }      
       
       // Allocating the internal maximas values data buffer
         
@@ -817,19 +848,38 @@ namespace te
           {
             for( bufferCol = 0 ; bufferCol < bufferCols ; ++bufferCol )
             {
-              maximasBufferPtr[ bufferLine ][ bufferCol ] = -1.0 * DBL_MAX;
+              maximasBufferPtr[ bufferLine ][ bufferCol ] = 0;
             }
           }
 
-          // Reading each raster line from the current block into the last
-          // buffer line
+          // Processing each raster line from the current block
           
-          const unsigned int rasterLinesStart = std::min( rasterLinesBlockIdx * 
-            paramsPtr->m_maxRasterLinesBlockMaxSize, rasterLines ); 
-          const unsigned int rasterLinesBound = std::min( rasterLinesStart + 
-            paramsPtr->m_maxRasterLinesBlockMaxSize, rasterLines );            
+          const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
+            (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
+            (int)raster1MoravecWindowRadius ); 
+          const unsigned int rasterLinesEndBound = std::min( rasterLinesStart + 
+            paramsPtr->m_maxRasterLinesBlockMaxSize + raster1MoravecWindowRadius, 
+            rasterLines - raster1MoravecWindowRadius);
+          const unsigned int varianceCalcStartRasterLineBound = rasterLinesStart + 
+            raster1MoravecWindowRadius - 1;
+          const unsigned int varianceCalcEndRasterLineBound = rasterLinesEndBound - 
+            raster1MoravecWindowRadius;            
+          const unsigned int maximasCalcStartRasterLineBound = rasterLinesStart + 
+            paramsPtr->m_moravecWindowWidth;
+          const unsigned int maximasCalcEndRasterLineBound = rasterLinesEndBound - 
+            paramsPtr->m_moravecWindowWidth;            
+            
+          unsigned int windowStartBufCol = 0;
+          const unsigned int windowEndBufColsBound = bufferCols - 
+            raster1MoravecWindowRadius;
+          unsigned int windowStartBufOffset = 0;
+          double horVar = 0;
+          double verVar = 0;
+          double diagVar = 0;
+          double adiagVar = 0;
+          double diffValue = 0;
                    
-          for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesBound ;
+          for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
             ++rasterLine )
           {
             // roll up on buffers
@@ -837,12 +887,73 @@ namespace te
               rasterBufferPtr + bufferLines - 2); 
             std::rotate( maximasBufferPtr, maximasBufferPtr + bufferLines - 1, 
               maximasBufferPtr + bufferLines - 2); 
+            if( paramsPtr->m_maskRasterDataPtr )
+              std::rotate( maskRasterBufferPtr, maskRasterBufferPtr + bufferLines - 1, 
+                maskRasterBufferPtr + bufferLines - 2); 
               
+            // read a new raster line into the last raster buffer line
+            paramsPtr->m_rastaDataAccessMutexPtr->lock();
+            memcpy( rasterBufferPtr[ bufferLines - 1 ], 
+              paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
+              bufferLineSizeBytes );
+            if( paramsPtr->m_maskRasterDataPtr )
+              memcpy( maskRasterBufferPtr[ bufferLines - 1 ], 
+                paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
+                bufferLineSizeBytes );
+            paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+            
+            // calc the diretional variance for the buffer center line
+            if( ( rasterLine > varianceCalcStartRasterLineBound ) &&
+              ( rasterLine < varianceCalcEndRasterLineBound ) )
+            {
+              for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
+                ++windowStartBufCol )
+              {
+                const double& windowCenterPixelValue = rasterBufferPtr[
+                  raster1MoravecWindowRadius ][ windowStartBufCol + 
+                  raster1MoravecWindowRadius ];
+                horVar = 0;
+                verVar = 0;
+                diagVar = 0;
+                adiagVar = 0;                  
+                
+                for( windowStartBufOffset = 0 ; windowStartBufOffset < 
+                  bufferLines ; ++windowStartBufOffset )
+                {
+                  diffValue = windowCenterPixelValue - rasterBufferPtr[ 
+                    raster1MoravecWindowRadius ][ windowStartBufCol + 
+                    windowStartBufOffset ];
+                  horVar += diffValue * diffValue;
+                    
+                  diffValue = windowCenterPixelValue - rasterBufferPtr[ 
+                    windowStartBufOffset ][ windowStartBufCol +
+                    raster1MoravecWindowRadius ];
+                  verVar += diffValue * diffValue;
+                  
+                  diffValue = windowCenterPixelValue - rasterBufferPtr[ 
+                    windowStartBufOffset ][ windowStartBufCol +
+                    windowStartBufOffset ];
+                  diagVar += diffValue * diffValue;
+                  
+                  diffValue = windowCenterPixelValue - rasterBufferPtr[ 
+                    bufferLines - 1 - windowStartBufOffset ][ windowStartBufCol +
+                    windowStartBufOffset ];
+                  adiagVar += diffValue * diffValue;                  
+                }
+                
+                maximasBufferPtr[ raster1MoravecWindowRadius ][ windowStartBufCol +
+                  raster1MoravecWindowRadius ] = std::min( horVar, std::min(
+                  verVar, std::min( diagVar, adiagVar ) ) );
+              }
+            }
+            
+            // find the local maxima points inside the maximas buffer.
+            if( ( rasterLine > maximasCalcStartRasterLineBound ) &&
+              ( rasterLine < maximasCalcEndRasterLineBound ) )
+            {
+
+            }
           }
-          
-          
-
-
         }
         else
         {
