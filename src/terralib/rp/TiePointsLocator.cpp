@@ -296,8 +296,8 @@ namespace te
       
       // locating interest points
       
-      IPListT raster1InterestPoints;
-      IPListT raster2InterestPoints;      
+      InterestPointsContainerT raster1InterestPoints;
+      InterestPointsContainerT raster2InterestPoints;      
       
       switch( m_inputParameters.m_interesPointsLocationStrategy )
       {
@@ -305,16 +305,20 @@ namespace te
         {
           TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
             raster1Data[ 0 ], 
-            maskRaster1Data.getLinesNumber() ? &maskRaster1Data : 0, 
+            maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
             raster1MoravecWindowWidth,
             raster1MaxInterestPoints,
-            raster1InterestPoints,
+            m_inputParameters.m_enableMultiThread,
+            raster1InterestPoints ),
+            "Error locating raster 1 interest points" );
+          TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
             raster2Data[ 0 ], 
-            maskRaster2Data.getLinesNumber() ? &maskRaster2Data : 0, 
+            maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
             raster2MoravecWindowWidth,
             raster2MaxInterestPoints,
+            m_inputParameters.m_enableMultiThread,
             raster2InterestPoints ),
-            "Error locating interest points" );          
+            "Error locating raster 2 interest points" );             
           break;
         }
         default :
@@ -385,17 +389,29 @@ namespace te
         m_inputParameters.m_inRaster1Ptr->getNumberOfColumns(),
         "Invalid m_raster1TargetAreaColStart" );     
         
-      m_inputParameters.m_raster1TargetAreaWidth = std::min( 
-        m_inputParameters.m_raster1TargetAreaWidth,
-        ( ( unsigned int ) m_inputParameters.m_inRaster1Ptr->getNumberOfColumns() )
-        - m_inputParameters.m_raster1TargetAreaColStart );
+      if( m_inputParameters.m_raster1TargetAreaWidth ||
+        m_inputParameters.m_raster1TargetAreaHeight )
+      {
+        m_inputParameters.m_raster1TargetAreaWidth = std::min( 
+          m_inputParameters.m_raster1TargetAreaWidth,
+          ( ( unsigned int ) m_inputParameters.m_inRaster1Ptr->getNumberOfColumns() )
+          - m_inputParameters.m_raster1TargetAreaColStart );
+          
+        m_inputParameters.m_raster1TargetAreaHeight = std::min(
+          m_inputParameters.m_raster1TargetAreaHeight,
+          ( ( unsigned int ) m_inputParameters.m_inRaster1Ptr->getNumberOfRows() )
+          - m_inputParameters.m_raster1TargetAreaLineStart );                                                     
+      }
+      else
+      {
+        m_inputParameters.m_raster1TargetAreaWidth =
+          m_inputParameters.m_inRaster1Ptr->getNumberOfColumns();
+        m_inputParameters.m_raster1TargetAreaHeight = 
+          m_inputParameters.m_inRaster1Ptr->getNumberOfRows();
+      }
+
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_raster1TargetAreaWidth,
         "Invalid m_raster1TargetAreaWidth" );
-        
-      m_inputParameters.m_raster1TargetAreaHeight = std::min(
-        m_inputParameters.m_raster1TargetAreaHeight,
-        ( ( unsigned int ) m_inputParameters.m_inRaster1Ptr->getNumberOfRows() )
-        - m_inputParameters.m_raster1TargetAreaLineStart );                                                     
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_raster1TargetAreaHeight ,
         "Invalid m_raster1TargetAreaHeight" );
         
@@ -466,17 +482,29 @@ namespace te
         m_inputParameters.m_inRaster2Ptr->getNumberOfColumns(),
         "Invalid m_raster2TargetAreaColStart" );
         
-      m_inputParameters.m_raster2TargetAreaWidth = std::min( 
-        m_inputParameters.m_raster2TargetAreaWidth,
-        ( ( unsigned int ) m_inputParameters.m_inRaster2Ptr->getNumberOfColumns() )
-        - m_inputParameters.m_raster2TargetAreaColStart );
-      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_raster2TargetAreaWidth,
-        "Invalid m_raster2TargetAreaWidth" );
+      if( m_inputParameters.m_raster2TargetAreaWidth ||
+        m_inputParameters.m_raster2TargetAreaHeight )
+      {
+        m_inputParameters.m_raster2TargetAreaWidth = std::min( 
+          m_inputParameters.m_raster2TargetAreaWidth,
+          ( ( unsigned int ) m_inputParameters.m_inRaster2Ptr->getNumberOfColumns() )
+          - m_inputParameters.m_raster2TargetAreaColStart );
+          
+        m_inputParameters.m_raster2TargetAreaHeight = std::min(
+          m_inputParameters.m_raster2TargetAreaHeight,
+          ( ( unsigned int ) m_inputParameters.m_inRaster2Ptr->getNumberOfRows() )
+          - m_inputParameters.m_raster2TargetAreaLineStart );
+      }
+      else
+      {
+        m_inputParameters.m_raster2TargetAreaWidth =
+          m_inputParameters.m_inRaster2Ptr->getNumberOfColumns();
+        m_inputParameters.m_raster2TargetAreaHeight =
+          m_inputParameters.m_inRaster2Ptr->getNumberOfRows();
+      }
         
-      m_inputParameters.m_raster2TargetAreaHeight = std::min(
-        m_inputParameters.m_raster2TargetAreaHeight,
-        ( ( unsigned int ) m_inputParameters.m_inRaster2Ptr->getNumberOfRows() )
-        - m_inputParameters.m_raster2TargetAreaLineStart );                                                     
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_raster2TargetAreaWidth,
+        "Invalid m_raster2TargetAreaWidth" );        
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_raster2TargetAreaHeight ,
         "Invalid m_raster2TargetAreaHeight" );
         
@@ -516,6 +544,10 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_moravecWindowWidth > 2,
         "Invalid m_moravecWindowWidth" );
         
+      TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFactory::find( 
+        m_inputParameters.m_geomTransfName ),
+        "Invalid m_geomTransfName" );
+        
       m_isInitialized = true;
 
       return true;
@@ -540,8 +572,6 @@ namespace te
       std::vector< Matrix< double > >& loadedRasterData,
       Matrix< unsigned char >& loadedMaskRasterData )
     {
-      loadedRasterData.clear();
-      
       // Allocating the output matrixes
       
       const unsigned int rescaledNLines = (unsigned int)(
@@ -562,6 +592,8 @@ namespace te
             maxMemPercentUsagePerMatrix ),
             "Cannot allocate image 1 mask matrix" );          
         }
+        
+        loadedRasterData.resize( rasterBands.size() );
         
         for( unsigned int rasterBandsIdx = 0 ; rasterBandsIdx < rasterBands.size() ;
           ++rasterBandsIdx )
@@ -647,30 +679,21 @@ namespace te
     }
     
     bool TiePointsLocator::locateMoravecInterestPoints( 
-      const Matrix< double >& raster1Data,
-      Matrix< unsigned char > const* maskRaster1DataPtr,
-      const unsigned int raster1MoravecWindowWidth,
-      const unsigned int raster1MaxInterestPoints,
-      IPListT& raster1InterestPoints,
-      const Matrix< double >& raster2Data,
-      Matrix< unsigned char > const* maskRaster2DataPtr,
-      const unsigned int raster2MoravecWindowWidth,
-      const unsigned int raster2MaxInterestPoints,
-      IPListT& raster2InterestPoints )
+      const Matrix< double >& rasterData,
+      Matrix< unsigned char > const* maskRasterDataPtr,
+      const unsigned int moravecWindowWidth,
+      const unsigned int maxInterestPoints,
+      const unsigned int enableMultiThread,
+      InterestPointsContainerT& interestPoints )
     {
-      raster1InterestPoints.clear();
-      raster2InterestPoints.clear();
+      interestPoints.clear();
 
-      const unsigned int minRaster1WidthAndHeight = raster1MoravecWindowWidth + 
-        ( raster1MoravecWindowWidth / 2 );      
-      const unsigned int minRaster2WidthAndHeight = raster2MoravecWindowWidth + 
-        ( raster2MoravecWindowWidth / 2 );              
+      const unsigned int minRasterWidthAndHeight = moravecWindowWidth + 
+        ( moravecWindowWidth / 2 );      
       
       // There is not enough data to look for interest points!
-      if( raster1Data.getColumnsNumber() < minRaster1WidthAndHeight ) return true;
-      if( raster1Data.getLinesNumber() < minRaster1WidthAndHeight ) return true;
-      if( raster2Data.getColumnsNumber() < minRaster2WidthAndHeight ) return true;
-      if( raster2Data.getLinesNumber() < minRaster2WidthAndHeight ) return true;
+      if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
+      if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
       
       bool returnValue = true;
       boost::mutex rastaDataAccessMutex;
@@ -683,21 +706,19 @@ namespace te
       threadParams.m_interestPointsAccessMutexPtr = &interestPointsAccessMutex;
       threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
         &nextRasterLinesBlockToProcess;
+      threadParams.m_interestPointsPtr = &interestPoints;
+      threadParams.m_maxInterestPoints = maxInterestPoints;
+      threadParams.m_rasterDataPtr = &rasterData;
+      threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
+      threadParams.m_moravecWindowWidth = moravecWindowWidth;        
       
-      if( m_inputParameters.m_enableMultiThread )
+      if( enableMultiThread )
       {
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         
         {
-          nextRasterLinesBlockToProcess = 0;
-          
-          threadParams.m_interestPointsPtr = &raster1InterestPoints;
-          threadParams.m_maxInterestPoints = raster1MaxInterestPoints;
-          threadParams.m_rasterDataPtr = &raster1Data;
-          threadParams.m_maskRasterDataPtr = maskRaster1DataPtr;
-          threadParams.m_moravecWindowWidth = raster1MoravecWindowWidth;
           threadParams.m_maxRasterLinesBlockMaxSize = std::max( 3u, 
-            raster1Data.getLinesNumber() / procsNumber );
+            rasterData.getLinesNumber() / procsNumber );
           
           boost::thread_group threads;
           
@@ -710,48 +731,10 @@ namespace te
           
           threads.join_all();
         }
-        
-        {
-          nextRasterLinesBlockToProcess = 0;
-          
-          threadParams.m_interestPointsPtr = &raster2InterestPoints;
-          threadParams.m_maxInterestPoints = raster2MaxInterestPoints;
-          threadParams.m_rasterDataPtr = &raster2Data;
-          threadParams.m_maskRasterDataPtr = maskRaster2DataPtr;
-          threadParams.m_moravecWindowWidth = raster2MoravecWindowWidth;
-          threadParams.m_maxRasterLinesBlockMaxSize = std::max( 3u, 
-            raster2Data.getLinesNumber() / procsNumber );          
-          
-          boost::thread_group threads;
-          
-          for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
-            ++threadIdx )
-          {
-            threads.add_thread( new boost::thread( moravecLocatorThreadEntry, 
-              &threadParams ) );
-          }
-          
-          threads.join_all();
-        }        
       }
       else
       {
-        nextRasterLinesBlockToProcess = 0;
-        threadParams.m_interestPointsPtr = &raster1InterestPoints;
-        threadParams.m_maxInterestPoints = raster1MaxInterestPoints;
-        threadParams.m_rasterDataPtr = &raster1Data;
-        threadParams.m_maskRasterDataPtr = maskRaster1DataPtr;
-        threadParams.m_moravecWindowWidth = raster1MoravecWindowWidth;
-        threadParams.m_maxRasterLinesBlockMaxSize = raster1Data.getLinesNumber();
-        moravecLocatorThreadEntry( &threadParams );
-        
-        nextRasterLinesBlockToProcess = 0;
-        threadParams.m_interestPointsPtr = &raster2InterestPoints;
-        threadParams.m_maxInterestPoints = raster2MaxInterestPoints;
-        threadParams.m_rasterDataPtr = &raster2Data;
-        threadParams.m_maskRasterDataPtr = maskRaster2DataPtr;
-        threadParams.m_moravecWindowWidth = raster2MoravecWindowWidth;
-        threadParams.m_maxRasterLinesBlockMaxSize = raster2Data.getLinesNumber();
+        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber();
         moravecLocatorThreadEntry( &threadParams );
       }
      
@@ -760,18 +743,31 @@ namespace te
     
     void TiePointsLocator::moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr)
     {
+      assert( paramsPtr );
+      assert( paramsPtr->m_returnValuePtr );
+      assert( paramsPtr->m_moravecWindowWidth > 2 );
+      assert( paramsPtr->m_rasterDataPtr );
+      assert( paramsPtr->m_interestPointsPtr );
+      assert( paramsPtr->m_rastaDataAccessMutexPtr );
+      assert( paramsPtr->m_interestPointsAccessMutexPtr );
+      assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
+      assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
+      
+      const unsigned int moravecWindowWidth = paramsPtr->m_moravecWindowWidth;
+      const unsigned int moravecWindowRadius = moravecWindowWidth / 2;   
+      
       // Allocating the internal raster data buffer
       // and the mask raster buffer
       
       paramsPtr->m_rastaDataAccessMutexPtr->lock();
       
-      const unsigned int raster1MoravecWindowRadius = paramsPtr->m_moravecWindowWidth
-        / 2;
       const unsigned int rasterLinesBlocksNumber = 
         paramsPtr->m_rasterDataPtr->getLinesNumber() / 
         paramsPtr->m_maxRasterLinesBlockMaxSize;
+      const unsigned int maxInterestPointsPerblock = 
+        paramsPtr->m_maxInterestPoints / rasterLinesBlocksNumber;
       const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
-      const unsigned int bufferLines = paramsPtr->m_moravecWindowWidth;
+      const unsigned int bufferLines = moravecWindowWidth;
       const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
       const unsigned int bufferLineSizeBytes = sizeof( double ) * bufferCols;
       
@@ -832,6 +828,8 @@ namespace te
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
         rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
+        InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
+        
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
          
         if( rasterLinesBlockIdx == ( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) ) )
@@ -856,28 +854,26 @@ namespace te
           
           const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
             (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
-            (int)raster1MoravecWindowRadius ); 
+            (int)moravecWindowRadius ); 
           const unsigned int rasterLinesEndBound = std::min( rasterLinesStart + 
-            paramsPtr->m_maxRasterLinesBlockMaxSize + raster1MoravecWindowRadius, 
-            rasterLines - raster1MoravecWindowRadius);
+            paramsPtr->m_maxRasterLinesBlockMaxSize + moravecWindowRadius, 
+            rasterLines - moravecWindowRadius);
           const unsigned int varianceCalcStartRasterLineBound = rasterLinesStart + 
-            raster1MoravecWindowRadius - 1;
-          const unsigned int varianceCalcEndRasterLineBound = rasterLinesEndBound - 
-            raster1MoravecWindowRadius;            
-          const unsigned int maximasCalcStartRasterLineBound = rasterLinesStart + 
-            paramsPtr->m_moravecWindowWidth;
-          const unsigned int maximasCalcEndRasterLineBound = rasterLinesEndBound - 
-            paramsPtr->m_moravecWindowWidth;            
-            
+            moravecWindowWidth - 1;
+          const unsigned int maximasLocationStartRasterLineBound = 
+            varianceCalcStartRasterLineBound + moravecWindowRadius;
           unsigned int windowStartBufCol = 0;
           const unsigned int windowEndBufColsBound = bufferCols - 
-            raster1MoravecWindowRadius;
+            moravecWindowRadius;
           unsigned int windowStartBufOffset = 0;
+          unsigned int windowStartBufXOffset = 0;
+          unsigned int windowStartBufYOffset = 0;
           double horVar = 0;
           double verVar = 0;
           double diagVar = 0;
           double adiagVar = 0;
           double diffValue = 0;
+          bool isLocalMaxima = false;          
                    
           for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
             ++rasterLine )
@@ -903,15 +899,14 @@ namespace te
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
             // calc the diretional variance for the buffer center line
-            if( ( rasterLine > varianceCalcStartRasterLineBound ) &&
-              ( rasterLine < varianceCalcEndRasterLineBound ) )
+            if( rasterLine > varianceCalcStartRasterLineBound )
             {
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )
               {
                 const double& windowCenterPixelValue = rasterBufferPtr[
-                  raster1MoravecWindowRadius ][ windowStartBufCol + 
-                  raster1MoravecWindowRadius ];
+                  moravecWindowRadius ][ windowStartBufCol + 
+                  moravecWindowRadius ];
                 horVar = 0;
                 verVar = 0;
                 diagVar = 0;
@@ -921,13 +916,13 @@ namespace te
                   bufferLines ; ++windowStartBufOffset )
                 {
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
-                    raster1MoravecWindowRadius ][ windowStartBufCol + 
+                    moravecWindowRadius ][ windowStartBufCol + 
                     windowStartBufOffset ];
                   horVar += diffValue * diffValue;
                     
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
                     windowStartBufOffset ][ windowStartBufCol +
-                    raster1MoravecWindowRadius ];
+                    moravecWindowRadius ];
                   verVar += diffValue * diffValue;
                   
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
@@ -941,19 +936,83 @@ namespace te
                   adiagVar += diffValue * diffValue;                  
                 }
                 
-                maximasBufferPtr[ raster1MoravecWindowRadius ][ windowStartBufCol +
-                  raster1MoravecWindowRadius ] = std::min( horVar, std::min(
+                maximasBufferPtr[ bufferLines - 1 ][ windowStartBufCol +
+                  moravecWindowRadius ] = std::min( horVar, std::min(
                   verVar, std::min( diagVar, adiagVar ) ) );
               }
             }
             
             // find the local maxima points inside the maximas buffer.
-            if( ( rasterLine > maximasCalcStartRasterLineBound ) &&
-              ( rasterLine < maximasCalcEndRasterLineBound ) )
+            if( rasterLine > maximasLocationStartRasterLineBound )
             {
-
+              for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
+                ++windowStartBufCol )
+              {
+                isLocalMaxima = true;
+                const double& windowCenterPixelValue = maximasBufferPtr[
+                  moravecWindowRadius ][ windowStartBufCol + 
+                  moravecWindowRadius ];                
+                
+                for( windowStartBufYOffset = 0 ; windowStartBufYOffset < 
+                  bufferLines ; ++windowStartBufYOffset )
+                {
+                  for( windowStartBufXOffset = 0 ; windowStartBufXOffset < 
+                    bufferLines ; ++windowStartBufXOffset )
+                  {
+                    if( windowCenterPixelValue < maximasBufferPtr[
+                      windowStartBufYOffset ][ windowStartBufCol + 
+                      windowStartBufXOffset ] )
+                    {
+                      isLocalMaxima = false;
+                      windowStartBufYOffset = bufferLines;
+                      break;
+                    }
+                  }
+                }
+                
+                if( isLocalMaxima )
+                {
+                  if( maskRasterBufferPtr )
+                  {
+                    if( maskRasterBufferPtr[ moravecWindowRadius ][ 
+                      windowStartBufCol + moravecWindowRadius ] )
+                    {
+                      blockMaximas.insert( InterestPointT( rasterLine - 
+                        moravecWindowRadius, windowStartBufCol + 
+                        moravecWindowRadius, windowCenterPixelValue ) );
+                    }
+                  }
+                  else
+                  {
+                    blockMaximas.insert( InterestPointT( rasterLine - 
+                      moravecWindowRadius, windowStartBufCol + 
+                      moravecWindowRadius, windowCenterPixelValue ) );
+                  }
+                }
+              }
             }
           }
+          
+          // Copying the best found block maximas to the external maximas container
+          
+          paramsPtr->m_interestPointsAccessMutexPtr->lock();
+          
+          unsigned int pointsToAdd = std::min( maxInterestPointsPerblock, 
+            (unsigned int)blockMaximas.size() );
+          InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
+            blockMaximas.rbegin();
+          const InterestPointsContainerT::const_reverse_iterator blockMaximasItEnd =
+            blockMaximas.rend();
+            
+          while( pointsToAdd && ( blockMaximasIt != blockMaximasItEnd ) )
+          {
+            paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
+           
+            ++blockMaximasIt;
+            --pointsToAdd;
+          }
+          
+          paramsPtr->m_interestPointsAccessMutexPtr->unlock();          
         }
         else
         {

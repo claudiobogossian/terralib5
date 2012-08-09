@@ -31,7 +31,7 @@
 #include "../geometry/GTParameters.h"
 
 #include <vector>
-#include <list>
+#include <set>
 #include <string>
 
 #include <boost/thread.hpp>
@@ -173,18 +173,40 @@ namespace te
       protected:
         
         /*! Interest point type */
-        struct InterestPointT
+        class InterestPointT
         {
-          unsigned int m_x; //!< Point X coord.
+          public :
+            unsigned int m_x; //!< Point X coord.
 
-          unsigned int m_y; //!< Point Y coord.
+            unsigned int m_y; //!< Point Y coord.
 
-          double m_featureValue_; //!< Interest point feature value.
+            double m_featureValue; //!< Interest point feature value.
+            
+            InterestPointT() {};
+            
+            InterestPointT( const unsigned int& x, const unsigned int& y,
+              const double& featureValue ) : m_x( x ), m_y( y ),
+              m_featureValue( featureValue) {};
+            
+            ~InterestPointT() {};
+            
+            bool operator<( const InterestPointT& other ) const
+            {
+              return ( m_featureValue < other.m_featureValue );
+            };
+            
+            const InterestPointT& operator=( const InterestPointT& other )
+            {
+              m_x = other.m_x;
+              m_y = other.m_y;
+              m_featureValue = other.m_featureValue;
+              return other;
+            };            
         };
         
-        /*! Interest points list type 
+        /*! Interest points container type 
         */
-        typedef std::list< InterestPointT > IPListT;  
+        typedef std::multiset< InterestPointT > InterestPointsContainerT;  
         
         /*! 
           \brief The parameters passed to the moravecLocatorThreadEntry method.
@@ -201,15 +223,15 @@ namespace te
           
           Matrix< unsigned char > const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
           
-          IPListT* m_interestPointsPtr;
+          InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
           
-          boost::mutex* m_rastaDataAccessMutexPtr;
+          boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
           
-          boost::mutex* m_interestPointsAccessMutexPtr;
+          boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
           
-          unsigned int m_maxRasterLinesBlockMaxSize;
+          unsigned int m_maxRasterLinesBlockMaxSize; //! The maximum lines number of each raster block processed by each thread.
           
-          unsigned int* m_nextRasterLinesBlockToProcessValuePtr;
+          unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //! A pointer to a valid counter to control the blocks processing sequence.
         };              
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
@@ -263,35 +285,27 @@ namespace te
         /*!
           \brief Moravec interest points locator.
           
-          \param raster1Data The loaded raster 1 data.
+          \param rasterData The loaded raster data.
           
-          \param maskRaster1DataPtr The loaded mask raster 1 data pointer (or zero if no mask is avaliable).
+          \param maskRasterDataPtr The loaded mask raster 1 data pointer (or zero if no mask is avaliable).
           
-          \param raster1MaxInterestPoints The maximum number of interest points to find over raster 1.
+          \param moravecWindowWidth Moravec window width.
           
-          \param raster1InterestPoints The found raster 1 interest points (coords related to rasterData lines/cols).          
+          \param maxInterestPoints The maximum number of interest points to find over raster 1.
           
-          \param raster2Data The loaded raster 2 data.
+          \param enableMultiThread Enable/disable multi-thread.
           
-          \param maskRaster2DataPtr The loaded mask raster 2 data pointer (or zero if no mask is avaliable).
-          
-          \param raster2MaxInterestPoints The maximum number of interest points to find over raster 2.
-          
-          \param raster2InterestPoints The found raster 2 interest points (coords related to rasterData lines/cols).          
+          \param interestPoints The found raster 1 interest points (coords related to rasterData lines/cols).          
 
           \return true if ok, false on errors.
         */             
-        bool locateMoravecInterestPoints( 
-          const Matrix< double >& raster1Data,
-          Matrix< unsigned char > const* maskRaster1DataPtr,
-          const unsigned int raster1MoravecWindowWidth,
-          const unsigned int raster1MaxInterestPoints,
-          IPListT& raster1InterestPoints,
-          const Matrix< double >& raster2Data,
-          Matrix< unsigned char > const* maskRaster2DataPtr,
-          const unsigned int raster2MoravecWindowWidth,
-          const unsigned int raster2MaxInterestPoints,
-          IPListT& raster2InterestPoints );
+        static bool locateMoravecInterestPoints( 
+          const Matrix< double >& rasterData,
+          Matrix< unsigned char > const* maskRasterDataPtr,
+          const unsigned int moravecWindowWidth,
+          const unsigned int maxInterestPoints,
+          const unsigned int enableMultiThread,
+          InterestPointsContainerT& interestPoints );
           
         /*! 
           \brief Movavec locator thread entry.
