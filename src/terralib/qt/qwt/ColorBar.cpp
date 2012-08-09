@@ -11,8 +11,8 @@
 
 // QWT
 #include <qwt/qwt_color_map.h>
-#include <qwt_interval.h>
-#include <qwt_scale_engine.h>
+#include <qwt/qwt_interval.h>
+#include <qwt/qwt_scale_engine.h>
 
 te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::BottomScale, parent),
   m_colorBar(0)

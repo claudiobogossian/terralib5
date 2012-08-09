@@ -60,6 +60,7 @@ namespace te
     {
 // Forward declarations
       class ChannelSelectionWidget;
+      class ColorMapWidget;
       class OverlapBehaviorWidget;
       class ContrastEnhancementWidget;
       class ShadedReliefWidget;
@@ -115,6 +116,7 @@ namespace te
 
           void onOpacityClicked();
           void onChannelSelectionClicked();
+          void onColorMapClicked();
           void onContrastEnhancementClicked();
           void onImageOutlineClicked();
           void onOverlapBehaviorClicked();
@@ -128,6 +130,7 @@ namespace te
 
           std::auto_ptr<Ui::RasterSymbolizerDialogForm> m_ui;                   //!< Dialog form.
           te::qt::widgets::ChannelSelectionWidget* m_channelSelectionWidget;    //!< Channel Selection Widget form.
+          te::qt::widgets::ColorMapWidget* m_colorMapWidget;                    //!< Color Map Widget form.
           te::qt::widgets::OverlapBehaviorWidget* m_overlapBehaviorWidget;      //!< Overlap Behavior Widget form.
           te::qt::widgets::ContrastEnhancementWidget* m_contrastWidget;         //!< Constrast Widget form.
           te::qt::widgets::ShadedReliefWidget* m_shadedReliefWidget;            //!< Shaded Relief Widget form.

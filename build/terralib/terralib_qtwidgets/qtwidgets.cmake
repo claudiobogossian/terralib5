@@ -133,6 +133,7 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
 	 ${SRCDIR}/widgets/se/CharMapWidget.h
+	 ${SRCDIR}/widgets/se/ColorMapWidget.h
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
 	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
 	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
