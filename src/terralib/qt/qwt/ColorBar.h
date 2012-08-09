@@ -3,7 +3,7 @@
 
 //QWT
 
-#include <qwt/qwt_scale_widget.h>
+#include <qwt_scale_widget.h>
 
 //STL
 #include <map>
