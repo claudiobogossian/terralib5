@@ -327,9 +327,45 @@ namespace te
           
         /*! 
           \brief Movavec locator thread entry.
+          
           \param paramsPtr A pointer to the thread parameters.
         */      
-        static void moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr);          
+        static void moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr);
+        
+        /*! 
+          \brief RoolUp a buffer of lines.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param bufferLinesNumber Buffer lines number.
+        */         
+        template< typename BufferElementT >
+        static void roolUpBuffer( BufferElementT** bufferPtr, 
+          const unsigned int& bufferLinesNumber )
+        {
+          BufferElementT* auxLinePtr = bufferPtr[ 0 ];
+          
+          for( unsigned int idx = bufferLinesNumber - 1 ; idx  ; --idx )
+          {
+            bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
+          };
+          
+          bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
+        };
+        
+        /*!
+          \brief Moravec interest points locator.
+          
+          \param rasterData The loaded raster data.
+          
+          \param interestPoints The found raster 1 interest points (coords related to rasterData lines/cols).          
+
+          \param tifFileName Tif file name.
+        */             
+        static void createInterestPointsTif( 
+          const Matrix< double >& rasterData,
+          const InterestPointsContainerT& interestPoints,
+          const std::string& tifFileName );
     };
 
   } // end namespace rp

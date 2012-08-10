@@ -28,6 +28,10 @@
 #include "../common/progress/TaskProgress.h"
 #include "../common/PlatformUtils.h"
 #include "../raster/Band.h"
+#include "../raster/Grid.h"
+#include "../raster/BandProperty.h"
+#include "../raster/RasterFactory.h"
+#include "../datatype/Enums.h"
 
 #include <boost/scoped_array.hpp>
 
@@ -327,6 +331,11 @@ namespace te
           break;
         }
       };
+      
+      createInterestPointsTif( raster1Data[ 0 ], raster1InterestPoints, 
+        "raster1InterestPoints");
+      createInterestPointsTif( raster2Data[ 0 ], raster2InterestPoints, 
+        "raster2InterestPoints");
         
       return true;
     }
@@ -903,19 +912,17 @@ namespace te
           double diagVar = 0;
           double adiagVar = 0;
           double diffValue = 0;
-          bool isLocalMaxima = false;          
+          bool isLocalMaxima = false;
+          InterestPointT auxInterestPoint;
                    
           for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
             ++rasterLine )
           {
             // roll up on buffers
-            std::rotate( rasterBufferPtr, rasterBufferPtr + bufferLines - 1, 
-              rasterBufferPtr + bufferLines - 2); 
-            std::rotate( maximasBufferPtr, maximasBufferPtr + bufferLines - 1, 
-              maximasBufferPtr + bufferLines - 2); 
+            roolUpBuffer( rasterBufferPtr, bufferLines ); 
+            roolUpBuffer( maximasBufferPtr, bufferLines ); 
             if( paramsPtr->m_maskRasterDataPtr )
-              std::rotate( maskRasterBufferPtr, maskRasterBufferPtr + bufferLines - 1, 
-                maskRasterBufferPtr + bufferLines - 2); 
+              roolUpBuffer( maskRasterBufferPtr, bufferLines ); 
               
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
@@ -943,7 +950,7 @@ namespace te
                 adiagVar = 0;                  
                 
                 for( windowStartBufOffset = 0 ; windowStartBufOffset < 
-                  bufferLines ; ++windowStartBufOffset )
+                  moravecWindowWidth ; ++windowStartBufOffset )
                 {
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
                     moravecWindowRadius ][ windowStartBufCol + 
@@ -961,12 +968,12 @@ namespace te
                   diagVar += diffValue * diffValue;
                   
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
-                    bufferLines - 1 - windowStartBufOffset ][ windowStartBufCol +
+                    moravecWindowWidth - 1 - windowStartBufOffset ][ windowStartBufCol +
                     windowStartBufOffset ];
-                  adiagVar += diffValue * diffValue;                  
+                  adiagVar += diffValue * diffValue;
                 }
                 
-                maximasBufferPtr[ bufferLines - 1 ][ windowStartBufCol +
+                maximasBufferPtr[ moravecWindowRadius ][ windowStartBufCol + 
                   moravecWindowRadius ] = std::min( horVar, std::min(
                   verVar, std::min( diagVar, adiagVar ) ) );
               }
@@ -984,17 +991,17 @@ namespace te
                   moravecWindowRadius ];                
                 
                 for( windowStartBufYOffset = 0 ; windowStartBufYOffset < 
-                  bufferLines ; ++windowStartBufYOffset )
+                  moravecWindowWidth ; ++windowStartBufYOffset )
                 {
                   for( windowStartBufXOffset = 0 ; windowStartBufXOffset < 
-                    bufferLines ; ++windowStartBufXOffset )
+                    moravecWindowWidth ; ++windowStartBufXOffset )
                   {
                     if( windowCenterPixelValue < maximasBufferPtr[
                       windowStartBufYOffset ][ windowStartBufCol + 
                       windowStartBufXOffset ] )
                     {
                       isLocalMaxima = false;
-                      windowStartBufYOffset = bufferLines;
+                      windowStartBufYOffset = moravecWindowWidth;
                       break;
                     }
                   }
@@ -1002,21 +1009,27 @@ namespace te
                 
                 if( isLocalMaxima )
                 {
+                  auxInterestPoint.m_x = windowStartBufCol + 
+                    moravecWindowRadius;
+                  auxInterestPoint.m_y = rasterLine - moravecWindowRadius, 
+                    windowCenterPixelValue;
+                  auxInterestPoint.m_featureValue = windowCenterPixelValue;
+                  assert( auxInterestPoint.m_x < 
+                    paramsPtr->m_rasterDataPtr->getColumnsNumber() );
+                  assert( auxInterestPoint.m_y < 
+                    paramsPtr->m_rasterDataPtr->getLinesNumber() );  
+                  
                   if( maskRasterBufferPtr )
                   {
                     if( maskRasterBufferPtr[ moravecWindowRadius ][ 
-                      windowStartBufCol + moravecWindowRadius ] )
+                      auxInterestPoint.m_x ] )
                     {
-                      blockMaximas.insert( InterestPointT( rasterLine - 
-                        moravecWindowRadius, windowStartBufCol + 
-                        moravecWindowRadius, windowCenterPixelValue ) );
+                      blockMaximas.insert( auxInterestPoint);
                     }
                   }
                   else
                   {
-                    blockMaximas.insert( InterestPointT( rasterLine - 
-                      moravecWindowRadius, windowStartBufCol + 
-                      moravecWindowRadius, windowCenterPixelValue ) );
+                    blockMaximas.insert( auxInterestPoint );
                   }
                 }
               }
@@ -1051,6 +1064,56 @@ namespace te
         }
       }
     }
+    
+    void TiePointsLocator::createInterestPointsTif( 
+      const Matrix< double >& rasterData,
+      const InterestPointsContainerT& interestPoints,
+      const std::string& tifFileName )
+    {
+      std::map<std::string, std::string> rInfo;
+      rInfo["URI"] = tifFileName + ".tif";
+      
+      std::vector<te::rst::BandProperty*> bandsProperties;
+      bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
+      bandsProperties[0]->m_colorInterp = te::rst::RedCInt;
+      bandsProperties[0]->m_noDataValue = 0;
+      bandsProperties.push_back(new te::rst::BandProperty( *bandsProperties[0] ));
+      bandsProperties[1]->m_colorInterp = te::rst::GreenCInt;
+      bandsProperties.push_back(new te::rst::BandProperty( *bandsProperties[0] ));
+      bandsProperties[2]->m_colorInterp = te::rst::BlueCInt;
+
+      te::rst::Grid* newgrid = new te::rst::Grid( rasterData.getColumnsNumber(),
+        rasterData.getLinesNumber(), 0, -1 );
+
+      std::auto_ptr< te::rst::Raster > outputRasterPtr(
+        te::rst::RasterFactory::make( "GDAL", newgrid, bandsProperties, rInfo, 0, 0));
+      TERP_TRUE_OR_THROW( outputRasterPtr.get(), "Output raster creation error");
+          
+      unsigned int line = 0;
+      unsigned int col = 0;
+      const unsigned int nLines = rasterData.getLinesNumber();
+      const unsigned int nCols = rasterData.getColumnsNumber();
+      
+      for( line = 0 ; line < nLines ; ++line )
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          outputRasterPtr->setValue( col, line, rasterData[ line ][ col ], 0 );
+          outputRasterPtr->setValue( col, line, rasterData[ line ][ col ], 1 );
+          outputRasterPtr->setValue( col, line, rasterData[ line ][ col ], 2 );
+        }
+        
+      InterestPointsContainerT::const_iterator itB = interestPoints.begin();
+      InterestPointsContainerT::const_iterator itE = interestPoints.end();
+      
+      while( itB != itE )
+      {
+        outputRasterPtr->setValue( itB->m_x, itB->m_y, 255, 0 );
+        
+        ++itB;
+      }
+    }
+    
+    
 
   } // end namespace rp
 }   // end namespace te
