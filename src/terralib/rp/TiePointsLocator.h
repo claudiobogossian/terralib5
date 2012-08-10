@@ -211,27 +211,45 @@ namespace te
         /*! 
           \brief The parameters passed to the moravecLocatorThreadEntry method.
         */     
-        struct MoravecLocatorThreadParams
+        class MoravecLocatorThreadParams
         {
-          bool* m_returnValuePtr; //! Thread return value pointer.
-          
-          unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
-          
-          unsigned int m_maxInterestPoints; //!< The maximum number of points to find.
-          
-          Matrix< double > const* m_rasterDataPtr; //!< The loaded raster data.
-          
-          Matrix< unsigned char > const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
-          
-          InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
-          
-          boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
-          
-          boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
-          
-          unsigned int m_maxRasterLinesBlockMaxSize; //! The maximum lines number of each raster block processed by each thread.
-          
-          unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //! A pointer to a valid counter to control the blocks processing sequence.
+          public :
+            
+            /*!
+            \brief Raster data container type.
+            */          
+            typedef Matrix< double > RasterDataContainerT;
+            
+            /*!
+            \brief Mask raster data container type.
+            */          
+            typedef Matrix< unsigned char > MaskRasterDataContainerT;            
+            
+            bool* m_returnValuePtr; //! Thread return value pointer.
+            
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
+            
+            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
+            
+            RasterDataContainerT const* m_rasterDataPtr; //!< The loaded raster data.
+            
+            MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            
+            InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            
+            boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
+            
+            boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
+            
+            unsigned int m_maxRasterLinesBlockMaxSize; //! The maximum lines number of each raster block processed by each thread.
+            
+            unsigned int m_rasterLinesBlocksNumber; //! The number of raster blocks.
+            
+            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //! A pointer to a valid counter to control the blocks processing sequence.
+            
+            MoravecLocatorThreadParams() {};
+            
+            ~MoravecLocatorThreadParams() {};
         };              
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.

@@ -48,6 +48,11 @@
         public :
           
           /*!
+          \brief Public matrix element type definition.
+          */          
+          typedef ElementType ElementTypeT;
+          
+          /*!
           \brief Memory polycy.
           */
           enum MemoryPolicy 

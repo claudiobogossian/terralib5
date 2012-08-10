@@ -707,7 +707,7 @@ namespace te
       threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
         &nextRasterLinesBlockToProcess;
       threadParams.m_interestPointsPtr = &interestPoints;
-      threadParams.m_maxInterestPoints = maxInterestPoints;
+      
       threadParams.m_rasterDataPtr = &rasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
       threadParams.m_moravecWindowWidth = moravecWindowWidth;        
@@ -717,8 +717,14 @@ namespace te
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         
         {
-          threadParams.m_maxRasterLinesBlockMaxSize = std::max( 3u, 
+          threadParams.m_maxRasterLinesBlockMaxSize = std::max( 
+            moravecWindowWidth + ( moravecWindowWidth / 2 ), 
             rasterData.getLinesNumber() / procsNumber );
+          threadParams.m_rasterLinesBlocksNumber = (unsigned int)std::ceil(
+            ((double)rasterData.getLinesNumber()) / 
+            ((double)threadParams.m_maxRasterLinesBlockMaxSize) );
+          threadParams.m_maxInterestPointsPerRasterLinesBlock =
+            maxInterestPoints / threadParams.m_rasterLinesBlocksNumber;
           
           boost::thread_group threads;
           
@@ -735,6 +741,8 @@ namespace te
       else
       {
         threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber();
+        threadParams.m_rasterLinesBlocksNumber = 1;
+        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
         moravecLocatorThreadEntry( &threadParams );
       }
      
@@ -751,6 +759,7 @@ namespace te
       assert( paramsPtr->m_rastaDataAccessMutexPtr );
       assert( paramsPtr->m_interestPointsAccessMutexPtr );
       assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
+      assert( paramsPtr->m_rasterLinesBlocksNumber );
       assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
       
       const unsigned int moravecWindowWidth = paramsPtr->m_moravecWindowWidth;
@@ -761,20 +770,27 @@ namespace te
       
       paramsPtr->m_rastaDataAccessMutexPtr->lock();
       
-      const unsigned int rasterLinesBlocksNumber = 
-        paramsPtr->m_rasterDataPtr->getLinesNumber() / 
-        paramsPtr->m_maxRasterLinesBlockMaxSize;
-      const unsigned int maxInterestPointsPerblock = 
-        paramsPtr->m_maxInterestPoints / rasterLinesBlocksNumber;
       const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
       const unsigned int bufferLines = moravecWindowWidth;
       const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
-      const unsigned int bufferLineSizeBytes = sizeof( double ) * bufferCols;
+      const unsigned int rasterBufferLineSizeBytes = sizeof( 
+        MoravecLocatorThreadParams::RasterDataContainerT::ElementTypeT ) * 
+        bufferCols;
+      const unsigned int maskRasterBufferLineSizeBytes = sizeof(
+        MoravecLocatorThreadParams::MaskRasterDataContainerT::ElementTypeT ) * 
+        bufferCols;
       
       paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         
       Matrix< double > rasterBufferDataHandler;
-      rasterBufferDataHandler.reset( bufferLines, bufferCols, Matrix< double >::RAMMemPol );
+      if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
+        Matrix< double >::RAMMemPol ) )
+      {
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+        paramsPtr->m_returnValuePtr = false;
+        paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        return;
+      }
       
       boost::scoped_array< double* > rasterBufferHandler( new double*[ bufferLines ] );
       for( unsigned int rasterBufferDataHandlerLine = 0 ; rasterBufferDataHandlerLine < 
@@ -796,7 +812,14 @@ namespace te
       
       if( paramsPtr->m_maskRasterDataPtr )
       {
-        maskRasterBufferDataHandler.reset( bufferLines, bufferCols, Matrix< double >::RAMMemPol );
+        if( ! maskRasterBufferDataHandler.reset( bufferLines, bufferCols, 
+          Matrix< double >::RAMMemPol ) )
+        {
+          paramsPtr->m_rastaDataAccessMutexPtr->lock();
+          paramsPtr->m_returnValuePtr = false;
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+          return;
+        }        
         
         for( unsigned int maskRasterBufferDataHandlerLine = 0 ; maskRasterBufferDataHandlerLine < 
           bufferLines ; ++maskRasterBufferDataHandlerLine )
@@ -811,7 +834,14 @@ namespace te
       // Allocating the internal maximas values data buffer
         
       Matrix< double > maximasBufferDataHandler;
-      maximasBufferDataHandler.reset( bufferLines, bufferCols, Matrix< double >::RAMMemPol );
+      if( ! maximasBufferDataHandler.reset( bufferLines, bufferCols, 
+        Matrix< double >::RAMMemPol ) )
+      {
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+        paramsPtr->m_returnValuePtr = false;
+        paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        return;
+      }
       
       boost::scoped_array< double* > maximasBufferHandler( new double*[ bufferLines ] );
       for( unsigned int maximasBufferDataHandlerLine = 0 ; maximasBufferDataHandlerLine < 
@@ -826,7 +856,7 @@ namespace te
       // Pick the next block to process
         
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
-        rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
+        paramsPtr->m_rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
         InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
         
@@ -857,7 +887,7 @@ namespace te
             (int)moravecWindowRadius ); 
           const unsigned int rasterLinesEndBound = std::min( rasterLinesStart + 
             paramsPtr->m_maxRasterLinesBlockMaxSize + moravecWindowRadius, 
-            rasterLines - moravecWindowRadius);
+            rasterLines );
           const unsigned int varianceCalcStartRasterLineBound = rasterLinesStart + 
             moravecWindowWidth - 1;
           const unsigned int maximasLocationStartRasterLineBound = 
@@ -891,11 +921,11 @@ namespace te
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
             memcpy( rasterBufferPtr[ bufferLines - 1 ], 
               paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
-              bufferLineSizeBytes );
+              rasterBufferLineSizeBytes );
             if( paramsPtr->m_maskRasterDataPtr )
               memcpy( maskRasterBufferPtr[ bufferLines - 1 ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
-                bufferLineSizeBytes );
+                maskRasterBufferLineSizeBytes );
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
             // calc the diretional variance for the buffer center line
@@ -997,7 +1027,8 @@ namespace te
           
           paramsPtr->m_interestPointsAccessMutexPtr->lock();
           
-          unsigned int pointsToAdd = std::min( maxInterestPointsPerblock, 
+          unsigned int pointsToAdd = std::min( 
+            paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
             (unsigned int)blockMaximas.size() );
           InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
             blockMaximas.rbegin();
