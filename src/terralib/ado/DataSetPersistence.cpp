@@ -140,7 +140,7 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
     te::gm::GeometryProperty* geomProp = 0;
     geomProp = dt->getDefaultGeomProperty();
 
-    if(geomProp && geomProp->getName() == props[i]->getName())
+    if(geomProp && (geomProp->getName() == props[i]->getName()))
     {
       te::gm::Geometry* geo = item->getGeometry(props[i]->getName());
 

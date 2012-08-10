@@ -210,7 +210,11 @@ bool te::ado::DataSet::isAfterEnd() const
 
 char te::ado::DataSet::getChar(int i) const
 {
-  char ival = (char)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  char ival = (char)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   return ival;
 }
 
@@ -232,12 +236,12 @@ void te::ado::DataSet::setChar(const std::string& name, char value)
 
 unsigned char te::ado::DataSet::getUChar(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return (unsigned char)getChar(i);
 }
 
 unsigned char te::ado::DataSet::getUChar(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return (unsigned char)getChar(name);
 }
 
 void te::ado::DataSet::setUChar(int i, unsigned char value)
@@ -252,7 +256,11 @@ void te::ado::DataSet::setUChar(const std::string& name, unsigned char value)
 
 boost::int16_t te::ado::DataSet::getInt16(int i) const
 {
-  int16_t ival = (int16_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  int16_t ival = (int16_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   return ival;
 }
 
@@ -274,7 +282,12 @@ void te::ado::DataSet::setInt16(const std::string& name, boost::int16_t value)
 
 boost::int32_t te::ado::DataSet::getInt32(int i) const
 {
-  int32_t ival = (int32_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  int32_t ival = (int32_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+
   return ival;
 }
 
@@ -296,7 +309,11 @@ void te::ado::DataSet::setInt32(const std::string& name, boost::int32_t value)
 
 boost::int64_t te::ado::DataSet::getInt64(int i) const
 {
-  int64_t ival = (int64_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  int64_t ival = (int64_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   return ival;
 }
 
@@ -318,7 +335,11 @@ void te::ado::DataSet::setInt64(const std::string& name, boost::int64_t value)
 
 bool te::ado::DataSet::getBool(int i) const
 {
-  bool ival = (bool)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  bool ival = (bool)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   return ival;
 }
 
@@ -352,7 +373,11 @@ float te::ado::DataSet::getFloat(const std::string& name) const
 
 void te::ado::DataSet::setFloat(int i, float value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
 }
 
 void te::ado::DataSet::setFloat(const std::string& name, float value)
@@ -374,7 +399,11 @@ double te::ado::DataSet::getDouble(const std::string& name) const
 
 void te::ado::DataSet::setDouble(int i, double value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
 }
 
 void te::ado::DataSet::setDouble(const std::string& name, double value)
@@ -404,7 +433,11 @@ void te::ado::DataSet::setNumeric(const std::string& name, const std::string& va
 
 std::string te::ado::DataSet::getString(int i) const
 {
-  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   return ival;
 }
 
@@ -416,27 +449,33 @@ std::string te::ado::DataSet::getString(const std::string& name) const
 
 void te::ado::DataSet::setString(int i, const std::string& value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_bstr_t)value.c_str());
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSet::setString(const std::string& name, const std::string& value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_bstr_t)value.c_str());
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 te::dt::ByteArray* te::ado::DataSet::getByteArray(int i) const
 {
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+  
   _variant_t varBLOB;
   char *cdata = 0;
   long size;
   char* data;
 
-  size = m_result->GetFields()->GetItem(i)->ActualSize;
+  ::Field15Ptr field = m_result->GetFields()->GetItem(vtIndex);
+
+  size = field->ActualSize;
   if(size > 0)
   {
     VariantInit(&varBLOB);
 
-    varBLOB = m_result->GetFields()->GetItem(i)->GetChunk(size);
+    varBLOB = field->GetChunk(size);
 
     if(varBLOB.vt == (VT_ARRAY | VT_UI1))
     {
@@ -503,7 +542,7 @@ te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
 te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
 {
   te::dt::ByteArray* ba = getByteArray(name);
-
+  
   te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
 
   std::size_t wkb_size = geom->getWkbSize();
@@ -576,12 +615,16 @@ void te::ado::DataSet::getArray(const std::string& name, std::vector<boost::int1
 
 const unsigned char* te::ado::DataSet::getWKB(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  te::dt::ByteArray* ba = getByteArray(i);
+
+  return (unsigned char*)ba->getData();
 }
 
 const unsigned char* te::ado::DataSet::getWKB(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  te::dt::ByteArray* ba = getByteArray(name);
+
+  return (unsigned char*)ba->getData();
 }
 
 te::da::DataSet* te::ado::DataSet::getDataSet(int i)
