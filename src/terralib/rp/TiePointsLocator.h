@@ -35,6 +35,7 @@
 #include <string>
 
 #include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -295,7 +296,7 @@ namespace te
           const unsigned int rasterTargetAreaHeight,
           const double rescaleFactorX,
           const double rescaleFactorY,
-          std::vector< Matrix< double > >& loadedRasterData,
+          std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
           Matrix< unsigned char >& loadedMaskRasterData );
           
         /*!
@@ -360,10 +361,26 @@ namespace te
 
           \param tifFileName Tif file name.
         */             
-        static void createInterestPointsTif( 
+        static void createTifFromMatrix( 
           const Matrix< double >& rasterData,
           const InterestPointsContainerT& interestPoints,
           const std::string& tifFileName );
+          
+        /*!
+          \brief Moravec interest points locator.
+          
+          \param inputData The input data.
+          
+          \param outputData The output data.
+          
+          \param iterationsNumber The number of filter iterations.
+
+          \return true if ok, false on errors.
+        */             
+        static bool applyGaussianFilter( 
+          const Matrix< double >& inputData,
+          Matrix< double >& outputData,
+          const unsigned int iterationsNumber );          
     };
 
   } // end namespace rp

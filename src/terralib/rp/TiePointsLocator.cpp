@@ -226,9 +226,9 @@ namespace te
       
       // Loading image data
       
-      std::vector< Matrix< double > > raster1Data;
+      std::vector< boost::shared_ptr< Matrix< double > > > raster1Data;
       Matrix< unsigned char > maskRaster1Data;
-      std::vector< Matrix< double > > raster2Data;
+      std::vector< boost::shared_ptr< Matrix< double > > > raster2Data;
       Matrix< unsigned char > maskRaster2Data;
       
       TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
@@ -279,10 +279,10 @@ namespace te
       unsigned int raster1MaxInterestPoints = m_inputParameters.m_maxTiePoints;
       unsigned int raster2MaxInterestPoints = m_inputParameters.m_maxTiePoints;
       {
-        double rescRaster1Area = (double)( raster1Data[ 0 ].getColumnsNumber() *
-          raster1Data[ 0 ].getLinesNumber() );
-        double rescRaster2Area = (double)( raster2Data[ 0 ].getColumnsNumber() *
-          raster2Data[ 0 ].getLinesNumber() );
+        double rescRaster1Area = (double)( raster1Data[ 0 ]->getColumnsNumber() *
+          raster1Data[ 0 ]->getLinesNumber() );
+        double rescRaster2Area = (double)( raster2Data[ 0 ]->getColumnsNumber() *
+          raster2Data[ 0 ]->getLinesNumber() );
           
         if( rescRaster1Area > rescRaster2Area )
         {
@@ -296,7 +296,50 @@ namespace te
             rescRaster2Area / 
             ( rescRaster1Area / ( (double)m_inputParameters.m_maxTiePoints ) ) ); 
         }
-      }      
+      }
+      
+      // applying the gaussian filter
+      
+      switch( m_inputParameters.m_interesPointsLocationStrategy )
+      {
+        case InputParameters::MoravecStrategyT :
+        {
+          boost::shared_ptr< Matrix< double > > tempMatrix( 
+            new Matrix< double > );
+          TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+            0, 0,
+            Matrix< double >::AutoMemPol, 
+            raster1Data[ 0 ]->getMaxTmpFileSize(),
+            raster1Data[ 0 ]->getMaxMemPercentUsage() ),
+            "Cannot allocate image matrix" );
+          
+          TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
+            *(raster1Data[ 0 ]), 
+            *tempMatrix, 1 ),
+            "Gaussian filter error" );
+
+          raster1Data[ 0 ] = tempMatrix;
+          
+          TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
+            *(raster2Data[ 0 ]), 
+            *tempMatrix, 1 ),
+            "Gaussian filter error" );
+
+          raster2Data[ 0 ] = tempMatrix;          
+          
+          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), 
+            "raster1Gaussian");
+          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), 
+            "raster2Gaussian");          
+          
+          break;
+        }
+        default :
+        {
+          return false;
+          break;
+        }
+      };
       
       // locating interest points
       
@@ -308,7 +351,7 @@ namespace te
         case InputParameters::MoravecStrategyT :
         {
           TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
-            raster1Data[ 0 ], 
+            *(raster1Data[ 0 ]), 
             maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
             raster1MoravecWindowWidth,
             raster1MaxInterestPoints,
@@ -316,7 +359,7 @@ namespace te
             raster1InterestPoints ),
             "Error locating raster 1 interest points" );
           TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
-            raster2Data[ 0 ], 
+            *(raster2Data[ 0 ]), 
             maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
             raster2MoravecWindowWidth,
             raster2MaxInterestPoints,
@@ -332,9 +375,9 @@ namespace te
         }
       };
       
-      createInterestPointsTif( raster1Data[ 0 ], raster1InterestPoints, 
+      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, 
         "raster1InterestPoints");
-      createInterestPointsTif( raster2Data[ 0 ], raster2InterestPoints, 
+      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, 
         "raster2InterestPoints");
         
       return true;
@@ -578,7 +621,7 @@ namespace te
       const unsigned int rasterTargetAreaHeight,
       const double rescaleFactorX,
       const double rescaleFactorY,
-      std::vector< Matrix< double > >& loadedRasterData,
+      std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
       Matrix< unsigned char >& loadedMaskRasterData )
     {
       // Allocating the output matrixes
@@ -607,7 +650,8 @@ namespace te
         for( unsigned int rasterBandsIdx = 0 ; rasterBandsIdx < rasterBands.size() ;
           ++rasterBandsIdx )
         {
-          TERP_TRUE_OR_RETURN_FALSE( loadedRasterData[ rasterBandsIdx ].reset( 
+          loadedRasterData[ rasterBandsIdx ].reset( new Matrix< double > );
+          TERP_TRUE_OR_RETURN_FALSE( loadedRasterData[ rasterBandsIdx ]->reset( 
             rescaledNLines, rescaledNCols,
             Matrix< double >::AutoMemPol, maxTmpFileSize,
             maxMemPercentUsagePerMatrix ),
@@ -671,7 +715,7 @@ namespace te
             inLine = (unsigned int)( ( ( (double)outLine ) / 
               rescaleFactorY ) + ( (double)rasterTargetAreaLineStart ) );      
               
-            outLinePtr = loadedRasterData[ rasterBandsIdx ][ outLine ];
+            outLinePtr = loadedRasterData[ rasterBandsIdx ]->operator[]( outLine  );
             
             for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
             {          
@@ -1080,7 +1124,7 @@ namespace te
       }
     }
     
-    void TiePointsLocator::createInterestPointsTif( 
+    void TiePointsLocator::createTifFromMatrix( 
       const Matrix< double >& rasterData,
       const InterestPointsContainerT& interestPoints,
       const std::string& tifFileName )
@@ -1128,7 +1172,92 @@ namespace te
       }
     }
     
+    bool TiePointsLocator::applyGaussianFilter( const Matrix< double >& inputData,
+      Matrix< double >& outputData, const unsigned int iterationsNumber )
+    {
+      if( iterationsNumber == 0 ) return false;
+      
+      TERP_TRUE_OR_RETURN_FALSE( outputData.reset( inputData.getLinesNumber(),
+        inputData.getColumnsNumber() ), "Cannot allocate image matrix" );
     
+      const unsigned int nLines = inputData.getLinesNumber();
+      const unsigned int nCols = inputData.getColumnsNumber();
+      const unsigned int lastLineIndex = nLines - 1;
+      const unsigned int lastColIndex = nCols - 1;  
+      unsigned int currLine = 0;
+      unsigned int currCol = 0;  
+      
+      // internal temp matrixes
+      
+      Matrix< double > tempMatrix;
+      
+      if( iterationsNumber > 1 )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( tempMatrix.reset( nLines, nCols,
+          Matrix< double >::AutoMemPol ),
+          "Cannot allocate image matrix" );
+      }
+      
+      /* Fill borders with zero */
+      
+      for( currLine = 0 ; currLine < nLines ; ++currLine ) {
+        outputData( currLine, 0 ) = 0.0;
+        outputData( currLine, lastColIndex ) = 0.0;
+      }
+      
+      for( currCol = 0 ; currCol < nCols ; ++currCol ) {
+        outputData( 0, currCol ) = 0.0;
+        outputData( lastLineIndex, currCol ) = 0.0;
+      }  
+      
+      /* Smoothing */
+      
+      Matrix< double > const* inputPtr = 0;
+      Matrix< double >* outputPtr = 0;
+      Matrix< double > const* auxPtr = 0;
+      
+      for( unsigned int iteration = 0 ; iteration < iterationsNumber ;
+        ++iteration )
+      {
+        if( iteration == 0 )
+        {
+          inputPtr = &inputData;
+          
+          if( iterationsNumber > 1 )
+            outputPtr = &tempMatrix;
+          else
+            outputPtr = &outputData;
+        }
+        else if( iteration == iterationsNumber - 1 )
+        {
+          inputPtr = outputPtr;
+          outputPtr = &outputData;
+        }
+        else
+        {
+          auxPtr = inputPtr;
+          inputPtr = outputPtr;
+          outputPtr = (Matrix< double >*)auxPtr;
+        }
+        
+        for( currLine = 1 ; currLine < lastLineIndex ; ++currLine ) 
+        {
+          for( currCol = 1 ; currCol < lastColIndex ; ++currCol ) 
+          {
+            outputPtr->operator()( currLine, currCol ) = 
+              ( 
+                inputPtr->operator()( currLine - 1, currCol ) +
+                ( 4.0 * inputData( currLine, currCol ) ) +
+                inputPtr->operator()( currLine + 1, currCol ) +
+                inputPtr->operator()( currLine, currCol - 1 ) +
+                inputPtr->operator()( currLine, currCol + 1 )        
+              ) / 8.0;
+          }
+        }
+      }
+      
+      return true;
+    }
 
   } // end namespace rp
 }   // end namespace te
