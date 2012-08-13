@@ -725,33 +725,39 @@ namespace te
       {
         const unsigned int procsNumber = te::common::GetPhysProcNumber();
         
+        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
+          minRasterWidthAndHeight, rasterData.getLinesNumber() / procsNumber );
+          
+        const unsigned int rasterLinesBlocksNumber = 
+          ( rasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
+          ( ( rasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+
+        threadParams.m_maxInterestPointsPerRasterLinesBlock =
+          maxInterestPoints / rasterLinesBlocksNumber;
+        
+        boost::thread_group threads;
+        
+        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
+          ++threadIdx )
         {
-          threadParams.m_maxRasterLinesBlockMaxSize = std::max( 
-            moravecWindowWidth + ( moravecWindowWidth / 2 ), 
-            rasterData.getLinesNumber() / procsNumber );
-          threadParams.m_rasterLinesBlocksNumber = (unsigned int)std::ceil(
-            ((double)rasterData.getLinesNumber()) / 
-            ((double)threadParams.m_maxRasterLinesBlockMaxSize) );
-          threadParams.m_maxInterestPointsPerRasterLinesBlock =
-            maxInterestPoints / threadParams.m_rasterLinesBlocksNumber;
-          
-          boost::thread_group threads;
-          
-          for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
-            ++threadIdx )
-          {
-            threads.add_thread( new boost::thread( moravecLocatorThreadEntry, 
-              &threadParams ) );
-          }
-          
-          threads.join_all();
+          threads.add_thread( new boost::thread( moravecLocatorThreadEntry, 
+            &threadParams ) );
         }
+        
+        threads.join_all();
       }
       else
       {
-        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber();
-        threadParams.m_rasterLinesBlocksNumber = 1;
-        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
+        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
+          minRasterWidthAndHeight, rasterData.getLinesNumber() / 4 );
+          
+        const unsigned int rasterLinesBlocksNumber = 
+          ( rasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
+          ( ( rasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+
+        threadParams.m_maxInterestPointsPerRasterLinesBlock =
+          maxInterestPoints / rasterLinesBlocksNumber;        
+        
         moravecLocatorThreadEntry( &threadParams );
       }
      
@@ -768,7 +774,6 @@ namespace te
       assert( paramsPtr->m_rastaDataAccessMutexPtr );
       assert( paramsPtr->m_interestPointsAccessMutexPtr );
       assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
-      assert( paramsPtr->m_rasterLinesBlocksNumber );
       assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
       
       const unsigned int moravecWindowWidth = paramsPtr->m_moravecWindowWidth;
@@ -863,9 +868,13 @@ namespace te
       double** maximasBufferPtr = maximasBufferHandler.get();      
       
       // Pick the next block to process
+      
+      const unsigned int rasterLinesBlocksNumber = 
+        ( rasterLines / paramsPtr->m_maxRasterLinesBlockMaxSize ) +
+        ( ( rasterLines % paramsPtr->m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
         
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
-        paramsPtr->m_rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
+        rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
         InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
         
@@ -903,7 +912,7 @@ namespace te
             varianceCalcStartRasterLineBound + moravecWindowRadius;
           unsigned int windowStartBufCol = 0;
           const unsigned int windowEndBufColsBound = bufferCols - 
-            moravecWindowRadius;
+            moravecWindowWidth;
           unsigned int windowStartBufOffset = 0;
           unsigned int windowStartBufXOffset = 0;
           unsigned int windowStartBufYOffset = 0;
@@ -996,13 +1005,17 @@ namespace te
                   for( windowStartBufXOffset = 0 ; windowStartBufXOffset < 
                     moravecWindowWidth ; ++windowStartBufXOffset )
                   {
-                    if( windowCenterPixelValue < maximasBufferPtr[
-                      windowStartBufYOffset ][ windowStartBufCol + 
-                      windowStartBufXOffset ] )
+                    if( ( windowStartBufYOffset != moravecWindowRadius ) &&
+                      ( windowStartBufXOffset != moravecWindowRadius ) )
                     {
-                      isLocalMaxima = false;
-                      windowStartBufYOffset = moravecWindowWidth;
-                      break;
+                      if( windowCenterPixelValue <= maximasBufferPtr[
+                        windowStartBufYOffset ][ windowStartBufCol + 
+                        windowStartBufXOffset ] )
+                      {
+                        isLocalMaxima = false;
+                        windowStartBufYOffset = moravecWindowWidth;
+                        break;
+                      }
                     }
                   }
                 }
@@ -1011,8 +1024,7 @@ namespace te
                 {
                   auxInterestPoint.m_x = windowStartBufCol + 
                     moravecWindowRadius;
-                  auxInterestPoint.m_y = rasterLine - moravecWindowRadius, 
-                    windowCenterPixelValue;
+                  auxInterestPoint.m_y = rasterLine - moravecWindowRadius;
                   auxInterestPoint.m_featureValue = windowCenterPixelValue;
                   assert( auxInterestPoint.m_x < 
                     paramsPtr->m_rasterDataPtr->getColumnsNumber() );
@@ -1050,6 +1062,9 @@ namespace te
             
           while( pointsToAdd && ( blockMaximasIt != blockMaximasItEnd ) )
           {
+//            std::cout << std::endl << blockMaximasIt->m_featureValue
+//              << std::endl;
+              
             paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
            
             ++blockMaximasIt;
