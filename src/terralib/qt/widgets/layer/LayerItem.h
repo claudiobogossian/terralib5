@@ -27,23 +27,29 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_LAYERITEM_H
 
 // TerraLib
-#include "AbstractLayerItem.h"
+#include "AbstractTreeItem.h"
+
+//STL
+#include <vector>
 
 namespace te
 {
 // Forward declarations
-  namespace map { class Layer; }
+  namespace map { class AbstractLayer; }
 
   namespace qt
   {
     namespace widgets
     {
+      // Foward declarations
+      class LegendItem;
+
       /*!
         \class LayerItem
 
         \brief A widget designed to show the information of a Layer in a tree oriented way.
        */
-      class TEQTWIDGETSEXPORT LayerItem : public AbstractLayerItem
+      class TEQTWIDGETSEXPORT LayerItem : public AbstractTreeItem
       {
         Q_OBJECT
 
@@ -70,10 +76,6 @@ namespace te
 
           //@}
 
-          /** @name Pure Virtual Methods
-           *  Methods that subclasses must implement.
-           */
-          //@{
 
           /*!
             \brief It returns the data stored under the given role for the item referred by this layer.
@@ -95,7 +97,10 @@ namespace te
            */
           QMenu* getMenu(QWidget* parent = 0) const;
 
-          //@}
+          /*!
+            \brief It sets the legend associated to this layer item.
+           */
+          void setLegend(); 
        };
 
     } // end namespace widgets
