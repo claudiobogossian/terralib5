@@ -104,6 +104,11 @@ void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
   }
 }
 
+bool te::map::AbstractLayer::hasLegend()
+{
+  return false;
+}
+
 void te::map::AbstractLayer::setAscendantsVisibility()
 {
   if(m_parent == 0)
