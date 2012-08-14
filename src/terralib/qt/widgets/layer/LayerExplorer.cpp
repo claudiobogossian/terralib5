@@ -25,16 +25,21 @@
 
 // TerraLib
 #include "LayerExplorer.h"
+
+//Qt
+#include <QtGui/QApplication>
+#include <QtGui/QMenu>
 #include <QtGui/QContextMenuEvent>
+#include <QtGui/QDragMoveEvent>
 
 #include "../../../maptools/AbstractLayer.h"
-#include "AbstractLayerItem.h"
+#include "AbstractTreeItem.h"
+#include "LayerExplorerModel.h"
 
 te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent)
   : QTreeView(parent),
     m_previousCurrentIndex(QModelIndex()),
-    m_checkBoxWasClicked(false),
-    m_prevPressedItemCheckState(Qt::Unchecked)
+    m_leftMouseButtonWasPressed(false)
 {
   connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
   connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(clickedItem(const QModelIndex&)));
@@ -44,42 +49,9 @@ te::qt::widgets::LayerExplorer::~LayerExplorer()
 {
 }
 
-void te::qt::widgets::LayerExplorer::pressedItem(const QModelIndex& index)
+void te::qt::widgets::LayerExplorer::setActionsList(const QList<QAction*> actionsList)
 {
-  if(m_mouseButton == Qt::RightButton)
-    emit contextMenuPressed(index, m_mousePos);
-
-  m_checkBoxWasClicked = false;
-  m_prevPressedItemCheckState = static_cast<Qt::CheckState>(model()->data(index, Qt::CheckStateRole).toInt());
-}
-
-void te::qt::widgets::LayerExplorer::clickedItem(const QModelIndex& index)
-{
-  if (model()->data(index, Qt::CheckStateRole) != m_prevPressedItemCheckState)
-  {
-    m_checkBoxWasClicked = true;
-    emit checkBoxWasClicked(index);
-  }
-
-  if (index == m_previousCurrentIndex)
-  {
-    if (m_checkBoxWasClicked == false)
-      selectionModel()->select(index, QItemSelectionModel::Select);
-  }
-  else
-  {
-    if (m_checkBoxWasClicked == true)
-    {
-      selectionModel()->select(index, QItemSelectionModel::Deselect);
-      selectionModel()->setCurrentIndex(m_previousCurrentIndex, QItemSelectionModel::Select);
-    }
-    else
-    {
-      selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Deselect);
-      selectionModel()->select(index, QItemSelectionModel::Select);
-      m_previousCurrentIndex = index;
-    }
-  }
+  m_actionsList = actionsList;
 }
 
 void te::qt::widgets::LayerExplorer::updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
@@ -87,14 +59,81 @@ void te::qt::widgets::LayerExplorer::updateCurrentIndex(const QModelIndex& dragI
   setCurrentIndex(dropIndex);
 }
 
-//void te::qt::widgets::LayerExplorer::contextMenuEvent(QContextMenuEvent *e)
-//{
-//  QPoint p = e->pos();
-//}
+void te::qt::widgets::LayerExplorer::pressedItem(const QModelIndex& index)
+{
+  if(m_mouseButton == Qt::RightButton)
+  {
+    emit contextMenuPressed(index, m_mousePos);
+    m_leftMouseButtonWasPressed = false;
+  }
+  else
+    m_leftMouseButtonWasPressed = true;
+}
+
+void te::qt::widgets::LayerExplorer::clickedItem(const QModelIndex& index)
+{
+  if(m_leftMouseButtonWasPressed == false)
+  {
+    if(index != m_previousCurrentIndex)
+    {
+      selectionModel()->select(index, QItemSelectionModel::Deselect);
+      selectionModel()->setCurrentIndex(m_previousCurrentIndex, QItemSelectionModel::Select);
+    }
+
+    emit checkBoxWasClicked(index); // The checkbox of the item was clicked
+  }
+  else
+  {
+    // The item was pressed, its checkbox was not clicked
+    if(index == m_previousCurrentIndex)
+      selectionModel()->select(index, QItemSelectionModel::Select);
+    else
+    {
+      selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Deselect);
+      selectionModel()->select(index, QItemSelectionModel::Select);
+      m_previousCurrentIndex = index;
+    }
+
+    m_leftMouseButtonWasPressed = false;
+  }
+}
+
+void te::qt::widgets::LayerExplorer::contextMenuEvent(QContextMenuEvent *e)
+{
+  QModelIndex index = indexAt(e->pos());
+  if(index.isValid() == false)
+    return;
+
+  QMenu* menu = new QMenu(this);
+  for(int i = 0; i < m_actionsList.count(); ++i)
+    menu->addAction(m_actionsList[i]);
+
+  menu->exec(QCursor::pos());
+}
 
 void te::qt::widgets::LayerExplorer::mousePressEvent(QMouseEvent *e)
 {
   m_mouseButton = e->button();
   m_mousePos = e->globalPos();
   QTreeView::mousePressEvent(e);
+}
+
+void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent * e)
+{
+  if(e->possibleActions() == (Qt::MoveAction | Qt::CopyAction))
+  {
+    Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
+    if(keyboardModifiers == Qt::ControlModifier)
+      e->setDropAction(Qt::CopyAction);
+    else
+      e->setDropAction(Qt::MoveAction);
+
+    e->accept();
+  }
+}
+
+void te::qt::widgets::LayerExplorer::dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
+{
+  setCurrentIndex(dropIndex);
+  m_leftMouseButtonWasPressed = false;
 }
