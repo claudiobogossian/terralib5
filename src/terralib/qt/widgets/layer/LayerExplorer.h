@@ -32,6 +32,9 @@
 // Qt
 #include <QtGui/QTreeView>
 
+class QAction;
+class QDragMoveEvent;
+
 namespace te
 {
   namespace qt
@@ -61,12 +64,44 @@ namespace te
           /*! \brief Destructor. */
           ~LayerExplorer();
 
+          /*!
+            \brief It sets the list of actions to be performed on the context menu.
+
+            \param actionsList The list of actions
+          */
+          void setActionsList(const QList<QAction*> actionsList);
+
+         /*!
+            \brief If the dragged item was the current one, the dropped item will be set to be the current item.
+
+            \param dragIndex The index of the dragged item.
+            \param dropIndex The index of the dropped item.
+          */
+          void updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+
         protected:
-        //  void contextMenuEvent(QContextMenuEvent *e);
-          void mousePressEvent(QMouseEvent *e);
+         /*!
+            \brief The event handler that receives widget context menu events.
+
+            \param e The context menu event.
+          */
+          void contextMenuEvent(QContextMenuEvent* e);
+
+         /*!
+            \brief The event handler that receives mouse events.
+
+            \param e The mouse event.
+          */
+          void mousePressEvent(QMouseEvent* e);
+
+         /*!
+            \brief The event handler that receives an event which is sent while a drag and drop action is in progress.
+
+            \param e Event which is sent while a drag and drop action is in progress.
+          */
+          void dragMoveEvent(QDragMoveEvent* e);
 
         protected slots:
-
           /*!
             \brief This slot is called when a mouse button is pressed.
                    The item the mouse was pressed on is specified by index.
@@ -91,24 +126,18 @@ namespace te
             \param dragIndex The index of the dragged item.
             \param dropIndex The index of the dropped item.
           */
-          void updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+          void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
 
         signals:
           void checkBoxWasClicked(const QModelIndex& index);
           void contextMenuPressed(const QModelIndex& index, const QPoint& pos);
 
         private:
-
           QModelIndex m_previousCurrentIndex;         //!< It stores the previous current index.
-
-          bool m_checkBoxWasClicked;                  //!< It indicates if the check box of the item was clicked.
-
-          Qt::CheckState m_prevPressedItemCheckState; //!< It stores the previous check state of the pressed item.
-
+          bool m_leftMouseButtonWasPressed;           //!< It indicates that a item was pressed with the left mouse button.
           Qt::MouseButton m_mouseButton;              //!< It stores the pressed button.
-
           QPoint m_mousePos;                          //!< It stores the pressed position.
-
+          QList<QAction*> m_actionsList;              //!< The list of actions associated to the context menu
       }; 
     } // end namespace widgets
   }   // end namespace qt

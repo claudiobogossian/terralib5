@@ -45,7 +45,7 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class AbstractLayerItem;
+      class AbstractTreeItem;
 
       /*!
         \class LayerExplorerModel
@@ -61,10 +61,10 @@ namespace te
           /*!
             \brief It constructs an item model with the given parent.
 
-            \param layer  The layer to be explored. It must be the root of a set of layers.
-            \param parent The parent object.
+            \param rootLayer The layer to be explored. It must be the root of a set of layers.
+            \param parent    The parent object.
            */
-          LayerExplorerModel(te::map::AbstractLayer* layer, QObject* parent = 0);
+          LayerExplorerModel(te::map::AbstractLayer* rootLayer, QObject* parent = 0);
 
           /*! Destructor */
           ~LayerExplorerModel();
@@ -219,18 +219,23 @@ namespace te
           bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
 
           /*!
-            \brief Get the item associated to the given index.
+            \brief Get the item associated to the given item index.
 
             \param index The item index.
 
             \return It returns the item associated to the given index.              
            */
-          te::qt::widgets::AbstractLayerItem* getItem(const QModelIndex& index);
+          te::qt::widgets::AbstractTreeItem* getItem(const QModelIndex& index);
 
           /*! \brief It resets the model to its original state in any attached views. */
           void resetModel();
 
-          void setItemsToBeInserted(std::vector<te::qt::widgets::AbstractLayerItem*> items); //Lauro
+          /*!
+            \brief It sets the items to be inserted.
+
+            \param items The list of items to be inserted.
+           */
+          void setItemsToBeInserted(std::vector<te::qt::widgets::AbstractTreeItem*> items);
 
         signals:
 
@@ -247,11 +252,12 @@ namespace te
 
         private:
 
-          te::qt::widgets::AbstractLayerItem* m_rootItem;            //!< The pointer to the root item.
-          mutable QModelIndex m_dragIndex;                           //!< The index of the dragged item
-          bool m_dndOperation;                                       //!< Flag indicating drag and drop operation.
+          te::qt::widgets::AbstractTreeItem* m_rootItem;          //!< The pointer to the root item.
+          te::qt::widgets::AbstractTreeItem* m_dragItem;  //!< The index of the dragged item
+          mutable QModelIndex m_dragIndex;                        //!< The dragged item
+          bool m_dndOperation;                                    //!< Flag indicating drag and drop operation.
 
-          std::vector<te::qt::widgets::AbstractLayerItem*> m_childItemsToBeInserted;  //!< A vector of the children items to be inserted.
+          std::vector<te::qt::widgets::AbstractTreeItem*> m_childItemsToBeInserted;  //!< A vector of the children items to be inserted.
       };
 
     } // end namespace widgets

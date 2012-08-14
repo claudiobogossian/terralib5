@@ -51,7 +51,7 @@ void te::qt::widgets::MultiHistogramChart::setCharts(std::vector<te::qt::widgets
 
 void te::qt::widgets::MultiHistogramChart::attach(std::vector<te::qt::widgets::HistogramChart*>& charts,  te::qt::widgets::ChartDisplay* display)
 {
-  for(int i = 0; i <charts.size(); i++)
+  for(unsigned int i = 0; i <charts.size(); i++)
   {
     charts[i]->attach(display);
   }

@@ -209,7 +209,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      {
        double currentValue = dataset->getDouble(propId);
 
-       for (int i= 0; i<intervals.size(); i++)
+       for (unsigned int i= 0; i<intervals.size(); i++)
        {
          if((currentValue >= intervals[i]) && (currentValue < intervals[i+1]))
            values[i] =  values[i]+1;
@@ -217,7 +217,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
       }
 
      //With both the intervals and values ready, the map can be populated
-     for (int i= 0; i<intervals.size(); i++)
+     for (unsigned int i= 0; i<intervals.size(); i++)
      {
        std::pair<double, int> new_pair(intervals[i], values[i]);
        histogramValues.insert(new_pair);

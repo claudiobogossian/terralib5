@@ -97,10 +97,12 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/qwt/ScatterDisplay.h
 	 ${SRCDIR}/qwt/ScatterSelectionCursor.h
 	 ${SRCDIR}/qwt/TimeSeriesDisplay.h
-	 ${SRCDIR}/widgets/layer/AbstractLayerItem.h
+	 ${SRCDIR}/widgets/canvas/MapDisplay.h
+	 ${SRCDIR}/widgets/layer/AbstractTreeItem.h
 	 ${SRCDIR}/widgets/layer/LayerExplorer.h
 	 ${SRCDIR}/widgets/layer/LayerExplorerModel.h
 	 ${SRCDIR}/widgets/layer/LayerItem.h
+	 ${SRCDIR}/widgets/layer/Legend.h
 	 ${SRCDIR}/widgets/layer/LegendItem.h
 	 ${SRCDIR}/widgets/layer/FolderLayerItem.h	
 	 ${SRCDIR}/widgets/dataset/CreateDataSet.h
@@ -112,22 +114,21 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/RemoveProperty.h
 	 ${SRCDIR}/widgets/property/RenameProperty.h
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
-	 ${SRCDIR}/widgets/canvas/MapDisplay.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerBar.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
 	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
-     ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
-     ${SRCDIR}/widgets/help/HelpPushButton.h
+   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
+   ${SRCDIR}/widgets/help/HelpPushButton.h
 	 ${SRCDIR}/widgets/help/HelpToolButton.h
 	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
 	 ${SRCDIR}/widgets/utils/HorizontalSliderWidget.h
 	 ${SRCDIR}/widgets/utils/ListWidget.h
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
-     ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
-     ${SRCDIR}/widgets/rp/SegmenterDialog.h
-     ${SRCDIR}/widgets/rp/ContrastDialog.h
+   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
+   ${SRCDIR}/widgets/rp/SegmenterDialog.h
+   ${SRCDIR}/widgets/rp/ContrastDialog.h
 	 ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
@@ -159,12 +160,12 @@ file(GLOB HDRS_TO_MOC
 # Select the FORMS widgets     
 file(GLOB FORMS
 	 ${SRCDIR}/widgets/*.ui
-     ${SRCDIR}/widgets/canvas/*.ui
+   ${SRCDIR}/widgets/canvas/*.ui
 	 ${SRCDIR}/widgets/charts/*.ui
-     ${SRCDIR}/widgets/datagrid/*.ui
-     ${SRCDIR}/widgets/dataset/*.ui
-     ${SRCDIR}/widgets/layer/*.ui
-     ${SRCDIR}/widgets/property/*.ui
+   ${SRCDIR}/widgets/datagrid/*.ui
+   ${SRCDIR}/widgets/dataset/*.ui
+   ${SRCDIR}/widgets/layer/ui/*.ui
+   ${SRCDIR}/widgets/property/*.ui
 	 ${SRCDIR}/widgets/utils/ui/*.ui
 	 ${SRCDIR}/widgets/rp/ui/*.ui
 	 ${SRCDIR}/widgets/se/ui/*.ui

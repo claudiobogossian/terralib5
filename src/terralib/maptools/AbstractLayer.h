@@ -234,6 +234,13 @@ namespace te
         */
         virtual void setSRID(int srid) = 0;
 
+        /*!
+          \brief It checks if this layer has an associated legend.
+
+          \output It returns true if the layer has an legend associated to this layer.
+        */
+        virtual bool hasLegend();
+
       protected:
 
         /*!
