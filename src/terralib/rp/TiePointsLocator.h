@@ -304,7 +304,7 @@ namespace te
           
           \param rasterData The loaded raster data.
           
-          \param maskRasterDataPtr The loaded mask raster 1 data pointer (or zero if no mask is avaliable).
+          \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
           
           \param moravecWindowWidth Moravec window width.
           
@@ -312,7 +312,7 @@ namespace te
           
           \param enableMultiThread Enable/disable multi-thread.
           
-          \param interestPoints The found raster 1 interest points (coords related to rasterData lines/cols).          
+          \param interestPoints The found interest points (coords related to rasterData lines/cols).          
 
           \return true if ok, false on errors.
         */             
@@ -367,7 +367,7 @@ namespace te
           const std::string& tifFileName );
           
         /*!
-          \brief Moravec interest points locator.
+          \brief Gaussian Filter.
           
           \param inputData The input data.
           
@@ -380,7 +380,31 @@ namespace te
         static bool applyGaussianFilter( 
           const Matrix< double >& inputData,
           Matrix< double >& outputData,
-          const unsigned int iterationsNumber );          
+          const unsigned int iterationsNumber );
+          
+        /*!
+          \brief Generate a features matrix for the given interes points.
+          
+          \param interestPoints The interest points (coords related to rasterData lines/cols).
+          
+          \param correlationWindowWidth The correlation window width used to correlate points between the images.
+          
+          \param rasterData The loaded raster data.
+          
+          \param normalize Normalize features values by subtracting its mean and dividing by its standard deviation.
+          
+          \param features The generated features matrix (one feature per line, one feature per interes point).
+          
+          \note Interest points outside the valid raster area will have all features with zero values.
+
+          \return true if ok, false on errors.
+        */             
+        static bool generateCorrelationFeatures( 
+          const InterestPointsContainerT& interestPoints,
+          const unsigned int correlationWindowWidth,
+          const Matrix< double >& rasterData,
+          const bool normalize,
+          Matrix< double >& features );
     };
 
   } // end namespace rp

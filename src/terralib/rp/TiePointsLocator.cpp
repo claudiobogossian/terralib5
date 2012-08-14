@@ -40,6 +40,7 @@
 #include <climits>
 #include <cfloat>
 #include <cstdio>
+#include <cmath>
 
 namespace te
 {
@@ -186,15 +187,12 @@ namespace te
       }
       
       /* Calculating the rescale factors 
-        factor = rescaled_orignal_image / original_image 
-        and the new moravec window widths */
+        factor = rescaled_orignal_image / original_image  */
       
       double raster1XRescFact = 1.0;
       double raster1YRescFact = 1.0;
       double raster2XRescFact = 1.0;
       double raster2YRescFact = 1.0;
-      unsigned int raster1MoravecWindowWidth = m_inputParameters.m_moravecWindowWidth;
-      unsigned int raster2MoravecWindowWidth = m_inputParameters.m_moravecWindowWidth;      
       {
         const double meanPixelRelation = ( m_inputParameters.m_pixelSizeXRelation
           + m_inputParameters.m_pixelSizeYRelation ) /
@@ -207,9 +205,6 @@ namespace te
           
           raster2XRescFact = 1.0 / m_inputParameters.m_pixelSizeXRelation;
           raster2YRescFact = 1.0 / m_inputParameters.m_pixelSizeYRelation;
-          raster2MoravecWindowWidth = (unsigned int)MAX( 3.0, 
-             ((double)m_inputParameters.m_moravecWindowWidth) / 
-             meanPixelRelation );
         } 
         else if( meanPixelRelation < 1.0 ) 
         {
@@ -218,9 +213,6 @@ namespace te
           
           raster1XRescFact = m_inputParameters.m_pixelSizeXRelation;
           raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
-          raster1MoravecWindowWidth = (unsigned int)MAX( 3.0, 
-             ((double)m_inputParameters.m_moravecWindowWidth) / 
-             meanPixelRelation );          
         }
       }        
       
@@ -336,7 +328,7 @@ namespace te
         }
         default :
         {
-          return false;
+          TERP_LOG_AND_THROW( "Invalid strategy" );
           break;
         }
       };
@@ -353,7 +345,7 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
             *(raster1Data[ 0 ]), 
             maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
-            raster1MoravecWindowWidth,
+            m_inputParameters.m_moravecWindowWidth,
             raster1MaxInterestPoints,
             m_inputParameters.m_enableMultiThread,
             raster1InterestPoints ),
@@ -361,7 +353,7 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
             *(raster2Data[ 0 ]), 
             maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
-            raster2MoravecWindowWidth,
+            m_inputParameters.m_moravecWindowWidth,
             raster2MaxInterestPoints,
             m_inputParameters.m_enableMultiThread,
             raster2InterestPoints ),
@@ -370,7 +362,7 @@ namespace te
         }
         default :
         {
-          return false;
+          TERP_LOG_AND_THROW( "Invalid strategy" );
           break;
         }
       };
@@ -379,6 +371,39 @@ namespace te
         "raster1InterestPoints");
       createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, 
         "raster2InterestPoints");
+        
+      // Generting features (one feature per line)
+      
+      Matrix< double > raster1Features;
+      Matrix< double > raster2Features;
+      
+      switch( m_inputParameters.m_interesPointsLocationStrategy )
+      {
+        case InputParameters::MoravecStrategyT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
+            raster1InterestPoints,
+            m_inputParameters.m_correlationWindowWidth,
+            *(raster1Data[ 0 ]),
+            true,
+            raster1Features ),
+            "Error generating raster 1 features" );
+          TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
+            raster2InterestPoints,
+            m_inputParameters.m_correlationWindowWidth,
+            *(raster2Data[ 0 ]),
+            true,
+            raster2Features ),
+            "Error generating raster 2 features" );
+            
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid strategy" );
+          break;
+        }
+      };      
         
       return true;
     }
@@ -741,8 +766,7 @@ namespace te
     {
       interestPoints.clear();
 
-      const unsigned int minRasterWidthAndHeight = moravecWindowWidth + 
-        ( moravecWindowWidth / 2 );      
+      const unsigned int minRasterWidthAndHeight = 2 * moravecWindowWidth;      
       
       // There is not enough data to look for interest points!
       if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
@@ -792,15 +816,8 @@ namespace te
       }
       else
       {
-        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
-          minRasterWidthAndHeight, rasterData.getLinesNumber() / 4 );
-          
-        const unsigned int rasterLinesBlocksNumber = 
-          ( rasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
-          ( ( rasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
-
-        threadParams.m_maxInterestPointsPerRasterLinesBlock =
-          maxInterestPoints / rasterLinesBlocksNumber;        
+        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber() / 1;
+        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
         
         moravecLocatorThreadEntry( &threadParams );
       }
@@ -946,14 +963,15 @@ namespace te
           
           const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
             (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
-            (int)moravecWindowRadius ); 
-          const unsigned int rasterLinesEndBound = std::min( rasterLinesStart + 
-            paramsPtr->m_maxRasterLinesBlockMaxSize + moravecWindowRadius, 
-            rasterLines );
-          const unsigned int varianceCalcStartRasterLineBound = rasterLinesStart + 
+            (int)( 2 * moravecWindowRadius ) ); 
+          const unsigned int rasterLinesEndBound = std::min( 1 +
+            (rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) + 
+            paramsPtr->m_maxRasterLinesBlockMaxSize + 
+            ( 2 * moravecWindowRadius ), rasterLines );
+          const unsigned int varianceCalcStartRasterLineStart = rasterLinesStart + 
             moravecWindowWidth - 1;
-          const unsigned int maximasLocationStartRasterLineBound = 
-            varianceCalcStartRasterLineBound + moravecWindowRadius;
+          const unsigned int maximasLocationStartRasterLineStart = 
+            varianceCalcStartRasterLineStart + moravecWindowRadius;
           unsigned int windowStartBufCol = 0;
           const unsigned int windowEndBufColsBound = bufferCols - 
             moravecWindowWidth;
@@ -989,7 +1007,7 @@ namespace te
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
             // calc the diretional variance for the buffer center line
-            if( rasterLine > varianceCalcStartRasterLineBound )
+            if( rasterLine >= varianceCalcStartRasterLineStart )
             {
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )
@@ -1033,7 +1051,7 @@ namespace te
             }
             
             // find the local maxima points inside the maximas buffer.
-            if( rasterLine > maximasLocationStartRasterLineBound )
+            if( rasterLine >= maximasLocationStartRasterLineStart )
             {
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )
@@ -1049,17 +1067,13 @@ namespace te
                   for( windowStartBufXOffset = 0 ; windowStartBufXOffset < 
                     moravecWindowWidth ; ++windowStartBufXOffset )
                   {
-                    if( ( windowStartBufYOffset != moravecWindowRadius ) &&
-                      ( windowStartBufXOffset != moravecWindowRadius ) )
+                    if( windowCenterPixelValue < maximasBufferPtr[
+                      windowStartBufYOffset ][ windowStartBufCol + 
+                      windowStartBufXOffset ] )
                     {
-                      if( windowCenterPixelValue <= maximasBufferPtr[
-                        windowStartBufYOffset ][ windowStartBufCol + 
-                        windowStartBufXOffset ] )
-                      {
-                        isLocalMaxima = false;
-                        windowStartBufYOffset = moravecWindowWidth;
-                        break;
-                      }
+                      isLocalMaxima = false;
+                      windowStartBufYOffset = moravecWindowWidth;
+                      break;
                     }
                   }
                 }
@@ -1068,7 +1082,7 @@ namespace te
                 {
                   auxInterestPoint.m_x = windowStartBufCol + 
                     moravecWindowRadius;
-                  auxInterestPoint.m_y = rasterLine - moravecWindowRadius;
+                  auxInterestPoint.m_y = rasterLine - moravecWindowWidth + 1;
                   auxInterestPoint.m_featureValue = windowCenterPixelValue;
                   assert( auxInterestPoint.m_x < 
                     paramsPtr->m_rasterDataPtr->getColumnsNumber() );
@@ -1256,6 +1270,304 @@ namespace te
         }
       }
       
+      return true;
+    }
+    
+    bool TiePointsLocator::generateCorrelationFeatures( 
+      const InterestPointsContainerT& interestPoints,
+      const unsigned int correlationWindowWidth,
+      const Matrix< double >& rasterData,
+      const bool normalize,
+      Matrix< double >& features )
+    {
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( 
+        interestPoints.size(), correlationWindowWidth * correlationWindowWidth ),
+        "Cannot allocate features matrix" );
+        
+      // finding the interest points limits inside the raster area 
+      
+      /* The radius of a feature window rotated by 90 degrees. 
+      * over the input image */
+      const unsigned int rotated90CorralationWindowRadius = (unsigned int)
+        (
+          std::ceil( 
+            sqrt( 
+              2 
+              * 
+              ( 
+                ( (double)correlationWindowWidth ) 
+                *
+                ( (double)correlationWindowWidth )
+              )
+            ) / 2.0
+          )
+        );
+        
+      const unsigned int rasterDataCols = rasterData.getColumnsNumber();
+      const unsigned int rasterDataLines = rasterData.getLinesNumber();
+      const unsigned int firstValidInterestPointX = rotated90CorralationWindowRadius;
+      const unsigned int lastValidInterestPointX = rasterDataCols
+        - rotated90CorralationWindowRadius - 1;
+      const unsigned int firstValidInterestPointY = rotated90CorralationWindowRadius;
+      const unsigned int lastValidInterestPointY = rasterDataLines
+        - rotated90CorralationWindowRadius - 1;
+        
+      /* variables related to the current window over the hole image */
+      unsigned int curr_window_x_start = 0;
+      unsigned int curr_window_y_start = 0;
+      unsigned int curr_window_x_center = 0;
+      unsigned int curr_window_y_center = 0;
+      unsigned int curr_window_x_bound = 0;
+      unsigned int curr_window_y_bound = 0;
+      
+      /*used on the rotation calcule */
+
+      const unsigned int wind_radius = correlationWindowWidth / 2;
+      // output window radius
+      const double wind_radius_double = (double)wind_radius;
+
+//      const unsigned int img_features_matrix_cols = 
+//        features.getColumnsNumber();
+//      const unsigned int img_features_matrix_lines = 
+//        features.getLinesNumber();        
+      unsigned int curr_x = 0;
+      unsigned int curr_y = 0;
+      double curr_x_minus_radius = 0;
+      double curr_y_minus_radius = 0;
+      unsigned int curr_offset = 0;
+      double int_x_dir = 0;
+      double int_y_dir = 0;
+      double int_norm = 0;
+      double rotated_curr_x = 0;/* rotaded coord - window ref */
+      double rotated_curr_y = 0;/* rotaded coord - window ref */
+      
+      /* the found rotation parameters */
+      double rot_cos = 0;
+      double rot_sin = 0;
+      
+      /* the coords rotated but in the hole image reference */
+      int rotated_curr_x_img = 0;
+      int rotated_curr_y_img = 0;
+      
+      /* current window mean and standart deviation */
+      double curr_wind_mean = 0.0;
+      double curr_wind_stddev = 0.0;
+      double curr_wind_stddev_aux = 0.0;
+      
+      // used on intensity vector calcule
+      double imgMatrixValue1 = 0;
+//      double imgMatrixValue2 = 0;
+      
+      double* featuresLinePtr = 0;
+      const unsigned int img_features_matrix_cols = 
+        features.getColumnsNumber();
+      const unsigned int img_features_matrix_lines = 
+        features.getLinesNumber();
+      unsigned int features_matrix_col = 0;
+        
+      InterestPointsContainerT::const_iterator iPointsIt = interestPoints.begin();
+      InterestPointsContainerT::const_iterator iPointsItEnd = interestPoints.end();
+      unsigned int currentInterestPointIndex = 0;
+      
+      while( iPointsIt != iPointsItEnd )
+      {
+        /* Calculating the current window position */
+      
+        curr_window_x_center = iPointsIt->m_x;
+        curr_window_y_center = iPointsIt->m_y;
+        
+        if( ( curr_window_x_center < firstValidInterestPointX ) ||
+          ( curr_window_x_center > lastValidInterestPointX ) ||
+          ( curr_window_y_center < firstValidInterestPointY ) ||
+          ( curr_window_y_center > lastValidInterestPointY ) )
+        { // the interest point is outside the valid raster area
+          featuresLinePtr = features[ currentInterestPointIndex ];
+          
+          for( features_matrix_col = 0 ; features_matrix_col < 
+            img_features_matrix_cols ; ++features_matrix_col )
+          {
+            featuresLinePtr[ features_matrix_col ] = 0;
+          }
+        }
+        else
+        { // the interest point is inside the valid raster area
+          curr_window_x_start = curr_window_x_center - wind_radius;
+          curr_window_y_start = curr_window_y_center - wind_radius;
+          curr_window_x_bound = curr_window_x_start + correlationWindowWidth;
+          curr_window_y_bound = curr_window_y_start + correlationWindowWidth;
+            
+          /* Estimating the intensity vector X direction */
+          
+          int_x_dir = 0;
+          
+          for( curr_offset = 0 ; curr_offset < wind_radius ;
+            ++curr_offset ) 
+          {      
+            for( curr_y = curr_window_y_start ; curr_y < curr_window_y_bound ; 
+              ++curr_y ) 
+            {
+              int_x_dir += rasterData[ curr_y, curr_window_x_bound - 1 - curr_offset ] -
+                rasterData[ curr_y, curr_window_x_start + curr_offset ];
+            }
+          }
+          
+          int_x_dir /= ( 2.0 * wind_radius_double );
+          
+          /* Estimating the intensity vector y direction */
+          
+          int_y_dir = 0;
+          
+          for( curr_offset = 0 ; curr_offset < wind_radius ;
+            ++curr_offset ) {      
+
+            for( curr_x = curr_window_x_start ; 
+              curr_x < curr_window_x_bound ;
+              ++curr_x ) 
+            {
+              int_y_dir += rasterData[ curr_window_y_start + curr_offset, curr_x ] - 
+                rasterData[ curr_window_y_bound - 1 - curr_offset, curr_x ];
+            }
+          }      
+          
+          int_y_dir /= ( 2.0 * ( (double) wind_radius ) );
+          
+          /* Calculating the rotation parameters - 
+            counterclockwise rotation 
+            
+            | u |    |cos  -sin|   |X|
+            | v | == |sin   cos| x |Y|
+          */
+          int_norm = sqrt( ( int_x_dir * int_x_dir ) + 
+            ( int_y_dir * int_y_dir ) );
+          
+          if( int_norm != 0.0 ) {
+            rot_cos = int_x_dir / int_norm;
+            rot_sin = int_y_dir / int_norm;
+          } else {
+            /* No rotation */
+            rot_cos = 1.0;
+            rot_sin = 0.0;
+          }
+          
+          /* Generating the rotated window data and inserting it into 
+            the img_features_matrix by setting the intensity vector
+            to the direction (1,0) by a clockwise rotation
+            using the inverse matrix 
+          
+            | u |    |cos   sin|   |X|
+            | v | == |-sin  cos| x |Y|
+          */
+            
+          for( curr_y = 0 ; curr_y < correlationWindowWidth ; ++curr_y ) 
+          {
+            for( curr_x = 0 ; curr_x < correlationWindowWidth ; ++curr_x ) 
+            {
+              /* briging the window to the coord system center */
+              
+              curr_x_minus_radius = ((double)curr_x) - 
+                wind_radius_double;
+              curr_y_minus_radius = ((double)curr_y) - 
+                wind_radius_double;
+              
+              /* rotating the centered window */
+              
+              rotated_curr_x = 
+                ( ( rot_cos * curr_x_minus_radius ) + 
+                ( rot_sin * curr_y_minus_radius ) );
+              
+              rotated_curr_y =
+                ( ( -1.0 * rot_sin * curr_x_minus_radius ) + 
+                ( rot_cos * curr_y_minus_radius ) );
+                
+              /* bringing the window back to its original
+                location with the correct new scale */ 
+                
+              rotated_curr_x += wind_radius_double;
+              rotated_curr_y += wind_radius_double;
+              
+              /* copy the new rotated window to the output vector */
+                
+              rotated_curr_x_img = curr_window_x_start +
+                (int)ROUND( rotated_curr_x );
+              rotated_curr_y_img = curr_window_y_start +
+                (int)ROUND( rotated_curr_y );                        
+              
+              if( ( rotated_curr_x_img > 0 ) &&  
+                ( rotated_curr_x_img < (int)rasterDataCols ) &&
+                ( rotated_curr_y_img > 0 ) &&
+                ( rotated_curr_y_img < (int)rasterDataLines ) )
+              {
+                imgMatrixValue1 = rasterData[ rotated_curr_y_img ][ 
+                  rotated_curr_x_img ];
+              }
+              else
+              {
+                imgMatrixValue1 = 0;
+              }
+                
+              features[ currentInterestPointIndex ][ ( curr_y * 
+                correlationWindowWidth ) + curr_x ] = imgMatrixValue1;
+            }
+          }
+          
+          /* Normalizing the generated window by subtracting its mean
+            and dividing by its standard deviation */      
+          
+          if( normalize )
+          {
+            curr_wind_mean = 0.0;
+            
+            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+              ++curr_x ) 
+            {
+              
+              curr_wind_mean += features[ currentInterestPointIndex ][
+                curr_x ];
+            }
+            
+            curr_wind_mean /= ( (double)img_features_matrix_cols  );
+            
+            curr_wind_stddev = 0.0;  
+            
+            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+              ++curr_x ) 
+            {
+              curr_wind_stddev_aux = features[ currentInterestPointIndex ][ 
+                curr_x ] - curr_wind_mean;
+                
+              curr_wind_stddev += ( curr_wind_stddev_aux *
+                curr_wind_stddev_aux );
+            }      
+            
+            curr_wind_stddev /= ( (double)img_features_matrix_cols  );
+            curr_wind_stddev = std::sqrt( curr_wind_stddev );
+            
+            if( curr_wind_stddev == 0.0 ) {
+              for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+                ++curr_x ) {
+                
+                double& curr_value = features[ currentInterestPointIndex ][
+                  curr_x ];
+                
+                curr_value -= curr_wind_mean;
+              } 
+            } else {
+              for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+                ++curr_x ) {
+                
+                double& curr_value = features[ currentInterestPointIndex ][ curr_x ];
+                
+                curr_value -= curr_wind_mean;
+                curr_value /= curr_wind_stddev;
+              }
+            }
+          }        
+        }
+       
+        ++currentInterestPointIndex;
+        ++iPointsIt;
+      }
+     
       return true;
     }
 

@@ -53,7 +53,8 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 1 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxTiePoints = 50;
+  algoInputParams.m_moravecWindowWidth = 5;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
