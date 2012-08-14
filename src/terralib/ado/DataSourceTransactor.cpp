@@ -100,9 +100,6 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
 
-  recset->CursorType = adOpenStatic;  
-  recset->CursorLocation = adUseClient;
-
   TESTHR(recset->Open(_bstr_t(name.c_str()),
     _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
 
@@ -140,7 +137,8 @@ te::da::DataSet* te::ado::DataSourceTransactor::query(const std::string& query,
                                                            te::common::TraverseType travType, 
                                                            te::common::AccessPolicy rwRole)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _RecordsetPtr rs = m_conn->Execute(_bstr_t(query.c_str()),0, adCmdText);
+  return new DataSet(0, rs, this); 
 }
 
 void te::ado::DataSourceTransactor::execute(const te::da::Query& command)

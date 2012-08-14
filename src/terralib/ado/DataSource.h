@@ -45,6 +45,11 @@
 
 namespace te
 {
+  namespace da
+  {
+    class DataSourceCatalog;
+  }
+
   namespace ado
   {
     /*!
@@ -97,6 +102,7 @@ namespace te
       private:
 
         _ConnectionPtr m_conn;                                  //!< ADO connection
+        te::da::DataSourceCatalog* m_catalog;                   //!< The main system catalog.
         _bstr_t m_strCnn;                                       //!< Connection String
         std::map<std::string, std::string> m_connectionInfo;    //!< Connection information.
     };

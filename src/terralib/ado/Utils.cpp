@@ -372,6 +372,13 @@ namespace te
         case ADOX::adLongVarBinary:
           prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType)));
           break;
+
+        case ADOX::adDate:
+        case ADOX::adDBDate:
+        case ADOX::adDBTime:
+        case ADOX::adDBTimeStamp:
+          prop = new te::dt::DateTimeProperty(std::string(cName), te::dt::DateTimeType::TIME_INSTANT);
+          break;
           
         default:
           throw te::ado::Exception(TR_ADO("The informed column could not be mapped to TerraLib Data Set Type!"));
@@ -418,20 +425,6 @@ namespace te
         throw te::ado::Exception(TR_ADO("Unknown type!"));
 
 
-    }
-  
-
-    int getAdoColumnId(ADOX::_TablePtr table, std::string& name)
-    {
-      ADOX::ColumnsPtr cols = table->GetColumns();
-
-      for(long i = 0; i < cols->GetCount(); i++)
-      {
-        if(std::string(cols->GetItem(i)->GetName()) == name)
-          return i;
-      }
-
-      return -1;
     }
 
     bool isZProperty(te::gm::GeomType type)
@@ -642,7 +635,6 @@ namespace te
 
       for(long i = 0; i < pCatalog->GetTables()->Count; i++)
       {
-        std::string t1 = std::string(pCatalog->GetTables()->GetItem(i)->GetName());
         if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == "geometry_columns")
         {
           _RecordsetPtr recset;
@@ -653,8 +645,6 @@ namespace te
 
           while(!recset->EndOfFile)
           {
-            std::string t2 = std::string((_bstr_t)recset->Fields->GetItem("f_table_name")->Value);
-            std::string t3 = std::string((_bstr_t)recset->Fields->GetItem("f_geometry_column")->Value);
             if(std::string((_bstr_t)recset->Fields->GetItem("f_table_name")->Value) == tableName
               && std::string((_bstr_t)recset->Fields->GetItem("f_geometry_column")->Value) == columnName)
               return true;

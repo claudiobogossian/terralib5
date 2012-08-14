@@ -12,9 +12,10 @@ endif()
 
 list (APPEND DEP_LIBS
     terralib_common
-		terralib_dataaccess
-		terralib_datatype
-		terralib_raster
+    terralib_dataaccess
+    terralib_datatype
+    terralib_geometry
+    terralib_raster
     )
 	
 # Select the source and header files

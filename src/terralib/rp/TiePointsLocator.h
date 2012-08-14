@@ -26,11 +26,16 @@
 #define __TERRALIB_RP_INTERNAL_TIEPOINTSLOCATOR_H
 
 #include "Algorithm.h"
+#include "Matrix.h"
 #include "../raster/Raster.h"
 #include "../geometry/GTParameters.h"
 
 #include <vector>
+#include <set>
 #include <string>
+
+#include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -65,7 +70,7 @@ namespace te
             
             te::rst::Raster const* m_inRaster1Ptr; //!< Input raster 1.
             
-            te::rst::Raster const* m_inMaskRaster1Ptr; //!< Optional input mask raster 1 (tie-points will not be generated inside mask image areas marked with zeroes).
+            te::rst::Raster const* m_inMaskRaster1Ptr; //!< Optional one band input mask raster 1 (tie-points will not be generated inside mask image areas marked with zeroes).
             
             std::vector< unsigned int > m_inRaster1Bands; //!< Bands to be used from the input raster 1.
             
@@ -79,7 +84,7 @@ namespace te
             
             te::rst::Raster const* m_inRaster2Ptr; //!< Input raster 2.
             
-            te::rst::Raster const* m_inMaskRaster2Ptr; //!< Optional input mask raster 2 (tie-points will not be generated inside mask image areas marked with zeroes).
+            te::rst::Raster const* m_inMaskRaster2Ptr; //!< Optional one band input mask raster 2 (tie-points will not be generated inside mask image areas marked with zeroes).
             
             std::vector< unsigned int > m_inRaster2Bands; //!< Bands to be used from the input raster 2.
             
@@ -93,21 +98,25 @@ namespace te
             
             bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
             
+            bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
+            
             unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=0).
             
             double m_pixelSizeXRelation; //!< The pixel resolution relation m_pixelSizeXRelation = raster1_pixel_res_x / raster2_pixel_res_x (default=1.0).
             
             double m_pixelSizeYRelation; //!< The pixel resolution relation m_pixelSizeYRelation = raster1_pixel_res_y / raster2_pixel_res_y (default=1.0).
             
-            std::string m_geomTransfName; //!< The name of the geometric transformation used to ensure tie-points consistency (default:Affine).
+            std::string m_geomTransfName; //!< The name of the geometric transformation used to ensure tie-points consistency (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
             
             double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:1).
             
-            unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (Must be an odd number, minimum 3, default: 21).
+            unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21).
             
-            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (Must be an odd number, minimum 11, default: 11 ).
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
           
             InputParameters();
+            
+            InputParameters( const InputParameters& );
             
             ~InputParameters();
             
@@ -164,11 +173,214 @@ namespace te
 
       protected:
         
+        /*! Interest point type */
+        class InterestPointT
+        {
+          public :
+            unsigned int m_x; //!< Point X coord.
+
+            unsigned int m_y; //!< Point Y coord.
+
+            double m_featureValue; //!< Interest point feature value.
+            
+            InterestPointT() {};
+            
+            InterestPointT( const unsigned int& x, const unsigned int& y,
+              const double& featureValue ) : m_x( x ), m_y( y ),
+              m_featureValue( featureValue) {};
+            
+            ~InterestPointT() {};
+            
+            bool operator<( const InterestPointT& other ) const
+            {
+              return ( m_featureValue < other.m_featureValue );
+            };
+            
+            const InterestPointT& operator=( const InterestPointT& other )
+            {
+              m_x = other.m_x;
+              m_y = other.m_y;
+              m_featureValue = other.m_featureValue;
+              return other;
+            };            
+        };
+        
+        /*! Interest points container type 
+        */
+        typedef std::multiset< InterestPointT > InterestPointsContainerT;  
+        
+        /*! 
+          \brief The parameters passed to the moravecLocatorThreadEntry method.
+        */     
+        class MoravecLocatorThreadParams
+        {
+          public :
+            
+            /*!
+            \brief Raster data container type.
+            */          
+            typedef Matrix< double > RasterDataContainerT;
+            
+            /*!
+            \brief Mask raster data container type.
+            */          
+            typedef Matrix< unsigned char > MaskRasterDataContainerT;            
+            
+            bool* m_returnValuePtr; //! Thread return value pointer.
+            
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
+            
+            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
+            
+            RasterDataContainerT const* m_rasterDataPtr; //!< The loaded raster data.
+            
+            MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            
+            InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            
+            boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
+            
+            boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
+            
+            unsigned int m_maxRasterLinesBlockMaxSize; //! The maximum lines number of each raster block to process.
+            
+            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //! A pointer to a valid counter to control the blocks processing sequence.
+            
+            MoravecLocatorThreadParams() {};
+            
+            ~MoravecLocatorThreadParams() {};
+        };              
+        
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
         TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        /*!
+          \brief Load rasters data.
+          
+          \param rasterPtr Input raster pointer.
+          
+          \param rasterBands Input raster bands.
+          
+          \param maskRasterPtr The related input mask raster pointer (or zero, if no mask raster is avaliable).
+          
+          \param maskRasterBand The input mask raster band to use.
+          
+          \param rasterTargetAreaLineStart The raster target area initial line.
+          
+          \param rasterTargetAreaColStart The raster target area initial column.
+          
+          \param rasterTargetAreaWidth The raster target area width.
+          
+          \param rasterTargetAreaHeight The raster target area height.
+          
+          \param rescaleFactorX Scale factor to be applied on the loaded data.
+          
+          \param rescaleFactorY Scale factor to be applied on the loaded data.
+          
+          \param loadedRasterData The loaded raster data.
+          
+          \param loadedMaskRasterData The loaded mask raster data.
 
+          \return true if ok, false on errors.
+        */             
+        bool loadRasterData( 
+          te::rst::Raster const* rasterPtr,
+          const std::vector< unsigned int >& rasterBands,
+          te::rst::Raster const* maskRasterPtr,
+          const unsigned int maskRasterBand,
+          const unsigned int rasterTargetAreaLineStart,
+          const unsigned int rasterTargetAreaColStart,
+          const unsigned int rasterTargetAreaWidth,
+          const unsigned int rasterTargetAreaHeight,
+          const double rescaleFactorX,
+          const double rescaleFactorY,
+          std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
+          Matrix< unsigned char >& loadedMaskRasterData );
+          
+        /*!
+          \brief Moravec interest points locator.
+          
+          \param rasterData The loaded raster data.
+          
+          \param maskRasterDataPtr The loaded mask raster 1 data pointer (or zero if no mask is avaliable).
+          
+          \param moravecWindowWidth Moravec window width.
+          
+          \param maxInterestPoints The maximum number of interest points to find over raster 1.
+          
+          \param enableMultiThread Enable/disable multi-thread.
+          
+          \param interestPoints The found raster 1 interest points (coords related to rasterData lines/cols).          
+
+          \return true if ok, false on errors.
+        */             
+        static bool locateMoravecInterestPoints( 
+          const Matrix< double >& rasterData,
+          Matrix< unsigned char > const* maskRasterDataPtr,
+          const unsigned int moravecWindowWidth,
+          const unsigned int maxInterestPoints,
+          const unsigned int enableMultiThread,
+          InterestPointsContainerT& interestPoints );
+          
+        /*! 
+          \brief Movavec locator thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr);
+        
+        /*! 
+          \brief RoolUp a buffer of lines.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param bufferLinesNumber Buffer lines number.
+        */         
+        template< typename BufferElementT >
+        static void roolUpBuffer( BufferElementT** bufferPtr, 
+          const unsigned int& bufferLinesNumber )
+        {
+          BufferElementT* auxLinePtr = bufferPtr[ 0 ];
+          
+          for( unsigned int idx = bufferLinesNumber - 1 ; idx  ; --idx )
+          {
+            bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
+          };
+          
+          bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
+        };
+        
+        /*!
+          \brief Moravec interest points locator.
+          
+          \param rasterData The loaded raster data.
+          
+          \param interestPoints The found raster 1 interest points (coords related to rasterData lines/cols).          
+
+          \param tifFileName Tif file name.
+        */             
+        static void createTifFromMatrix( 
+          const Matrix< double >& rasterData,
+          const InterestPointsContainerT& interestPoints,
+          const std::string& tifFileName );
+          
+        /*!
+          \brief Moravec interest points locator.
+          
+          \param inputData The input data.
+          
+          \param outputData The output data.
+          
+          \param iterationsNumber The number of filter iterations.
+
+          \return true if ok, false on errors.
+        */             
+        static bool applyGaussianFilter( 
+          const Matrix< double >& inputData,
+          Matrix< double >& outputData,
+          const unsigned int iterationsNumber );          
     };
 
   } // end namespace rp

@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../datatype/StringProperty.h"
 #include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
@@ -35,20 +36,27 @@
 #include "Exception.h"
 #include "Utils.h"
 
+#include <boost/filesystem.hpp>
+
 inline void TESTHR( HRESULT hr )
 {
 	if( FAILED(hr) ) _com_issue_error( hr );
 }
 
 te::ado::DataSource::DataSource()
-  : m_conn(0)
+  : m_conn(0),
+  m_catalog(0)
 {
   ::CoInitialize(0);
+  m_catalog = new te::da::DataSourceCatalog;
+  m_catalog->setDataSource(this);
 }
 
 te::ado::DataSource::~DataSource()
 {
   ::CoUninitialize();
+  delete m_catalog;
+  delete m_conn;
 }
 
 const std::string& te::ado::DataSource::getType() const
@@ -58,7 +66,7 @@ const std::string& te::ado::DataSource::getType() const
 
 const std::map<std::string, std::string>& te::ado::DataSource::getConnectionInfo() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_connectionInfo;
 }
 
 void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
@@ -95,14 +103,16 @@ void te::ado::DataSource::open()
 
 void te::ado::DataSource::close()
 {
-  if(m_conn != 0)
+  if(m_conn != 0 && m_conn->State == adStateOpen)
     m_conn->Close();
   m_conn = 0;
 }
 
 bool te::ado::DataSource::isOpened() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  if(m_conn != 0 && m_conn->State == adStateOpen)
+    return true;
+  return false;
 }
 
 bool te::ado::DataSource::isValid() const
@@ -112,7 +122,7 @@ bool te::ado::DataSource::isValid() const
 
 te::da::DataSourceCatalog* te::ado::DataSource::getCatalog() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return m_catalog;
 }
 
 te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
@@ -161,13 +171,13 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
     {
       te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
 
-      geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::StringType::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::StringType::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::StringType::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::StringType::VAR_STRING, 256));
+      geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
+      geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
+      geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
+      geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
       geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
       geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
-      geomColsDt->add(new te::dt::StringProperty("type", te::dt::StringType::VAR_STRING, 30));
+      geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
 
       getTransactor()->getDataSetTypePersistence()->create(geomColsDt);
     }
@@ -179,12 +189,22 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
   }
 }
 
-void te::ado::DataSource::drop(const std::map<std::string, std::string>& /*dsInfo*/)
+void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  if(!exists(dsInfo))
+    throw Exception(TR_ADO("Data Source not exists!"));
+
+  std::map<std::string, std::string> dataSource = dsInfo;
+  
+  boost::filesystem3::path path(dataSource["dbname"]);
+  if(boost::filesystem3::remove(path))
+    throw Exception(TR_ADO("Data Source could not be dropped!"));
 }
 
-bool te::ado::DataSource::exists(const std::map<std::string, std::string>& /*dsInfo*/)
+bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  std::map<std::string, std::string> dataSource = dsInfo;
+
+  boost::filesystem3::path path(dataSource["dbname"]);
+  return boost::filesystem3::exists(path);
 }

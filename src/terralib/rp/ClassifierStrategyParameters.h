@@ -18,44 +18,41 @@
  */
 
 /*!
-  \file TsMatrix.h
- 
-  \brief A test suit for the Matrix Class.
+  \file terralib/rp/ClassifierStrategyParameters.h
+
+  \brief Raster classifier strategy parameters base class.
  */
 
-#ifndef __TERRALIB_UNITTEST_RP_Matrix_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_Matrix_INTERNAL_H
+#ifndef __TERRALIB_RP_INTERNAL_CLASSIFIERSTRATEGYPARAMETERS_H
+#define __TERRALIB_RP_INTERNAL_CLASSIFIERSTRATEGYPARAMETERS_H
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
+#include "../common/AbstractParameters.h"
+#include "Config.h"
 
-/*!
-  \class TsMatrix
-
-  \brief A test suit for the Matrix class interface.
-
-  ....
-  <br>
-  This test suite will check the Matrix class
-  </ul>
- */
-class TsMatrix : public CPPUNIT_NS::TestFixture 
+namespace te
 {
-  CPPUNIT_TEST_SUITE( TsMatrix );
+  namespace rp
+  {
+    /*!
+      \class ClassifierStrategyParameters
+      \brief Classifier Strategy Parameters
+    */
 
-  CPPUNIT_TEST( genericTests );
-  CPPUNIT_TEST( rAMMemPolTest );
-  CPPUNIT_TEST( diskMemPolTest );
-  CPPUNIT_TEST( autoMemPolTest );
+    class TERPEXPORT ClassifierStrategyParameters : public te::common::AbstractParameters
+    {
+      public:
 
-  CPPUNIT_TEST_SUITE_END();
+        virtual ~ClassifierStrategyParameters();
 
-protected :
+      protected :
 
-  void genericTests();
-  void rAMMemPolTest();
-  void diskMemPolTest();
-  void autoMemPolTest();
-};
+        ClassifierStrategyParameters();
 
-#endif
+        ClassifierStrategyParameters(const ClassifierStrategyParameters&);
+
+    };
+  } // end namespace rp
+}   // end namespace te
+
+#endif  // __TERRALIB_RP_INTERNAL_CLASSIFIERSTRATEGYPARAMETERS_H
+

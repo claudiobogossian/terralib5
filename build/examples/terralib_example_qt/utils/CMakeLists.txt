@@ -62,6 +62,7 @@ include_directories(
     ${TE_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     ${QT_INCLUDE_DIR}
+	${QWT_INCLUDE_DIR}
 )
 		      
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})

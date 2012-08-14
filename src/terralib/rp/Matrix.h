@@ -48,6 +48,11 @@
         public :
           
           /*!
+          \brief Public matrix element type definition.
+          */          
+          typedef ElementType ElementTypeT;
+          
+          /*!
           \brief Memory polycy.
           */
           enum MemoryPolicy 
@@ -244,6 +249,12 @@
           \return Returns the current maximum temporary disk file size.
           */            
           unsigned long int getMaxTmpFileSize() const; 
+          
+          /*!
+          \brief Returns the max amount of free memory to use when necessary.
+          \return Returns the max amount of free memory to use when necessary.
+          */
+          unsigned char getMaxMemPercentUsage() const;
                 
         protected :
         
@@ -691,7 +702,13 @@
       unsigned long int Matrix< ElementType >::getMaxTmpFileSize() const
       {
         return maxTmpFileSize_;
-      }    
+      }
+      
+      template< class ElementType >
+      unsigned char Matrix< ElementType >::getMaxMemPercentUsage() const
+      {
+        return maxMemPercentUsage_;
+      }
       
       template< class ElementType >
       bool Matrix< ElementType >::allocateDiskLines( unsigned int startingLineIdx )

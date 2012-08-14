@@ -53,14 +53,19 @@ te::qt::widgets::ChannelSelectionWidget::ChannelSelectionWidget(QWidget* parent,
   
   // Adjusting...
   QGridLayout* layout = new QGridLayout(m_ui->m_frame);
+  layout->setContentsMargins(0,0,0,0);
   layout->addWidget(m_sCWidget);
   m_sCWidget->show();
 
   // Signals & slots
+  connect(m_ui->m_rgbColorRadioButton, SIGNAL(clicked()), SLOT(onRGBColorSelected()));
+  connect(m_ui->m_grayScaleRadioButton, SIGNAL(clicked()), SLOT(onGrayScalelSelected()));
+
   connect(m_ui->m_redRadioButton, SIGNAL(clicked()), SLOT(onRedChannelSelected()));
   connect(m_ui->m_greenRadioButton, SIGNAL(clicked()), SLOT(onGreenChannelSelected()));
   connect(m_ui->m_blueRadioButton, SIGNAL(clicked()), SLOT(onBlueChannelSelected()));
-  connect(m_ui->m_monoRadioButton, SIGNAL(clicked()), SLOT(onMonoChannelSelected()));
+  connect(m_ui->m_monoRadioButton, SIGNAL(clicked()), SLOT(onGrayScalelSelected()));
+   
 
   connect(m_sCWidget, SIGNAL(selectedChannelChanged()), SLOT(onSelectedChannelChanged()));
 
@@ -128,24 +133,59 @@ void te::qt::widgets::ChannelSelectionWidget::updateUi()
   }
 }
 
+void te::qt::widgets::ChannelSelectionWidget::onRGBColorSelected()
+{
+  m_ui->m_redRadioButton->setEnabled(true);
+  m_ui->m_greenRadioButton->setEnabled(true);
+  m_ui->m_blueRadioButton->setEnabled(true);
+  m_ui->m_monoRadioButton->setEnabled(false);
+
+  m_ui->m_redRadioButton->setChecked(true);
+  onRedChannelSelected();
+}
+
+void te::qt::widgets::ChannelSelectionWidget::onGrayScalelSelected()
+{
+  m_ui->m_redRadioButton->setEnabled(false);
+  m_ui->m_greenRadioButton->setEnabled(false);
+  m_ui->m_blueRadioButton->setEnabled(false);
+  m_ui->m_monoRadioButton->setEnabled(true);
+
+  m_ui->m_monoRadioButton->setChecked(true);
+
+
+  m_sCWidget->setSelectedChannel(m_scMono);
+}
+
 void te::qt::widgets::ChannelSelectionWidget::onRedChannelSelected()
 {
-  m_sCWidget->setSelectedChannel(m_scRed);
+  if(m_ui->m_redRadioButton->isChecked())
+  {
+    m_sCWidget->setSelectedChannel(m_scRed);
+  }
 }
 
 void te::qt::widgets::ChannelSelectionWidget::onGreenChannelSelected()
 {
-  m_sCWidget->setSelectedChannel(m_scGreen);
+  if(m_ui->m_greenRadioButton->isChecked())
+  {
+    m_sCWidget->setSelectedChannel(m_scGreen);
+  }
 }
 
 void te::qt::widgets::ChannelSelectionWidget::onBlueChannelSelected()
 {
-  m_sCWidget->setSelectedChannel(m_scBlue);
+  if(m_ui->m_blueRadioButton->isChecked())
+  {
+    m_sCWidget->setSelectedChannel(m_scBlue);
+  }
 }
-
 void te::qt::widgets::ChannelSelectionWidget::onMonoChannelSelected()
 {
-  m_sCWidget->setSelectedChannel(m_scMono);
+  if(m_ui->m_monoRadioButton->isChecked())
+  {
+    m_sCWidget->setSelectedChannel(m_scMono);
+  }
 }
 
 void te::qt::widgets::ChannelSelectionWidget::onSelectedChannelChanged()

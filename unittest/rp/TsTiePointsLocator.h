@@ -18,44 +18,33 @@
  */
 
 /*!
-  \file TsMatrix.h
+  \file TsTiePointsLocator.h
  
-  \brief A test suit for the Matrix Class.
+  \brief A test suit for the TiePointsLocator Class.
  */
 
-#ifndef __TERRALIB_UNITTEST_RP_Matrix_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_Matrix_INTERNAL_H
+#ifndef __TERRALIB_UNITTEST_RP_TiePoints_INTERNAL_H
+#define __TERRALIB_UNITTEST_RP_TiePoints_INTERNAL_H
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
 /*!
-  \class TsMatrix
+  \class TsTiePointsLocator
 
-  \brief A test suit for the Matrix class interface.
-
-  ....
-  <br>
-  This test suite will check the Matrix class
-  </ul>
+  \brief A test suit for the TiePointsLocator class interface.
  */
-class TsMatrix : public CPPUNIT_NS::TestFixture 
+class TsTiePointsLocator : public CPPUNIT_NS::TestFixture 
 {
-  CPPUNIT_TEST_SUITE( TsMatrix );
+  CPPUNIT_TEST_SUITE( TsTiePointsLocator );
 
-  CPPUNIT_TEST( genericTests );
-  CPPUNIT_TEST( rAMMemPolTest );
-  CPPUNIT_TEST( diskMemPolTest );
-  CPPUNIT_TEST( autoMemPolTest );
+  CPPUNIT_TEST( MoravecStrategySameImage );
 
   CPPUNIT_TEST_SUITE_END();
 
 protected :
 
-  void genericTests();
-  void rAMMemPolTest();
-  void diskMemPolTest();
-  void autoMemPolTest();
+  void MoravecStrategySameImage();
 };
 
 #endif

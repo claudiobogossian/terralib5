@@ -10,7 +10,7 @@
 #include <QtGui/QColorDialog>
 
 // QWT
-#include <qwt/qwt_color_map.h>
+#include <qwt_color_map.h>
 #include <qwt_interval.h>
 #include <qwt_scale_engine.h>
 

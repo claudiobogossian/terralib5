@@ -18,44 +18,18 @@
  */
 
 /*!
-  \file TsMatrix.h
- 
-  \brief A test suit for the Matrix Class.
- */
+  \file terralib/rp/ClassifierStrategy.cpp
 
-#ifndef __TERRALIB_UNITTEST_RP_Matrix_INTERNAL_H
-#define __TERRALIB_UNITTEST_RP_Matrix_INTERNAL_H
+  \brief Raster classifier strategy base class.
+*/
 
-// cppUnit
-#include <cppunit/extensions/HelperMacros.h>
+#include "ClassifierStrategyFactory.h"
 
-/*!
-  \class TsMatrix
-
-  \brief A test suit for the Matrix class interface.
-
-  ....
-  <br>
-  This test suite will check the Matrix class
-  </ul>
- */
-class TsMatrix : public CPPUNIT_NS::TestFixture 
+te::rp::ClassifierStrategyFactory::ClassifierStrategyFactory(const std::string& factoryKey)
+  : te::common::AbstractFactory<te::rp::ClassifierStrategy, std::string, std::less<std::string> >(factoryKey)
 {
-  CPPUNIT_TEST_SUITE( TsMatrix );
+}
 
-  CPPUNIT_TEST( genericTests );
-  CPPUNIT_TEST( rAMMemPolTest );
-  CPPUNIT_TEST( diskMemPolTest );
-  CPPUNIT_TEST( autoMemPolTest );
-
-  CPPUNIT_TEST_SUITE_END();
-
-protected :
-
-  void genericTests();
-  void rAMMemPolTest();
-  void diskMemPolTest();
-  void autoMemPolTest();
-};
-
-#endif
+te::rp::ClassifierStrategyFactory::~ClassifierStrategyFactory()
+{
+}
