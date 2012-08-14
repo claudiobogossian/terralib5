@@ -20,7 +20,7 @@
 /*!
   \file Enums.h
 
-  \brief Declaration of enums for MapTools module.
+  \brief Declaration of enums for the MapTools module.
 */
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_ENUMS_H
@@ -123,7 +123,7 @@ namespace te
       */
       enum AlignType
       {
-        Top    = 1,   /*!< Top.     */
+        Top = 1,      /*!< Top.     */
         Center = 2,   /*!< Center.  */
         Bottom = 3,   /*!< Bottom.  */
         Left   = 4,   /*!< Left.    */
@@ -140,6 +140,20 @@ namespace te
         NOT_VISIBLE,       /*!< If the layer is not visible and if it has children layers and they are not visible too. */
         VISIBLE,           /*!< If the layer is visible or all its children are visible too.                            */
         PARTIALLY_VISIBLE  /*!< If some of the children layer are visible and some are not.                             */
+      };
+
+      /*!
+        \enum GroupingType
+
+        \brief The grouping type associated to this layer.
+      */
+      enum GroupingType
+      {
+        NOT_GROUPED,       /*!< If there is no grouping associated to this layer.                                       */
+        UNIQUE_VALUE,      /*!< If the legend was generated using the unique value algorithm.                           */
+        EQUAL_STEPS,       /*!< If the legend was generated using the equal steps algorithm.                            */
+        QUANTIL,           /*!< If the legend was generated using the quantil algorithm.                                */
+        STD_DEVIATION      /*!< If the legend was generated using the standard deviation algorithm.                     */
       };
 
   }   // end namespace map
