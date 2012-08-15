@@ -30,6 +30,7 @@
 #include "Config.h"
 #include "Enums.h"
 
+#include <cstdlib>
 
 namespace te
 {
