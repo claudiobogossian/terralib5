@@ -209,6 +209,50 @@ namespace te
         */
         typedef std::multiset< InterestPointT > InterestPointsContainerT;  
         
+        /*! Interest point type */
+        class MatchedInterestPointsT
+        {
+          public :
+            unsigned int m_x1; //!< Point X1 coord.
+
+            unsigned int m_y1; //!< Point Y2 coord.
+            
+            unsigned int m_x2; //!< Point X1 coord.
+
+            unsigned int m_y2; //!< Point Y2 coord.
+
+            double m_matchingValue; //!< Interest points matching value.
+            
+            MatchedInterestPointsT() {};
+            
+            MatchedInterestPointsT( const unsigned int& x1, const unsigned int& y1,
+              const unsigned int& x2, const unsigned int& y2,
+              const double& matchingValue ) : m_x1( x1 ), m_y1( y1 ),
+              m_x2( x2 ), m_y2( y2 ),
+              m_matchingValue( matchingValue ) {};
+            
+            ~MatchedInterestPointsT() {};
+            
+            bool operator<( const MatchedInterestPointsT& other ) const
+            {
+              return ( m_matchingValue < other.m_matchingValue );
+            };
+            
+            const MatchedInterestPointsT& operator=( const MatchedInterestPointsT& other )
+            {
+              m_x1 = other.m_x1;
+              m_y1 = other.m_y1;
+              m_x2 = other.m_x2;
+              m_y2 = other.m_y2;
+              m_matchingValue = other.m_matchingValue;
+              return other;
+            };            
+        };        
+        
+        /*! Matched interest points container type 
+        */
+        typedef std::multiset< MatchedInterestPointsT > MatchedInterestPointsContainerT;         
+        
         /*! 
           \brief The parameters passed to the moravecLocatorThreadEntry method.
         */     
@@ -250,6 +294,36 @@ namespace te
             
             ~MoravecLocatorThreadParams() {};
         };              
+        
+        /*! 
+          \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
+        */     
+        class MatchCorrelationEuclideanThreadParams
+        {
+          public :
+            
+            Matrix< double > const* m_featuresSet1Ptr;
+            
+            Matrix< double > const* m_featuresSet2Ptr;
+            
+            InterestPointT const* m_interestPointsSet1Ptr;
+            
+            InterestPointT const* m_interestPointsSet2Ptr;
+            
+            unsigned int* m_nextFeatureIdx1ToProcessPtr;
+            
+            MatchedInterestPointsContainerT* m_matchedPointsPtr;
+            
+            bool* m_returnValuePtr;
+            
+            Matrix< double >* m_corrMatrixPtr;
+            
+            boost::mutex* m_syncMutexPtr;
+            
+            MatchCorrelationEuclideanThreadParams() {};
+            
+            ~MatchCorrelationEuclideanThreadParams() {};
+        };        
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
         TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
@@ -383,7 +457,7 @@ namespace te
           const unsigned int iterationsNumber );
           
         /*!
-          \brief Generate a features matrix for the given interes points.
+          \brief Generate a correlation features matrix for the given interes points.
           
           \param interestPoints The interest points (coords related to rasterData lines/cols).
           
@@ -395,6 +469,8 @@ namespace te
           
           \param features The generated features matrix (one feature per line, one feature per interes point).
           
+          \param validInteresPoints The valid interest pionts related to each feature inside the features matrix (some interest points may be invalid and are removed).
+          
           \note Interest points outside the valid raster area will have all features with zero values.
 
           \return true if ok, false on errors.
@@ -404,7 +480,47 @@ namespace te
           const unsigned int correlationWindowWidth,
           const Matrix< double >& rasterData,
           const bool normalize,
-          Matrix< double >& features );
+          Matrix< double >& features,
+          InterestPointsContainerT& validInteresPoints );
+          
+        /*!
+          \brief Save the generated features to tif files.
+          
+          \param features The features to be saved.
+          
+          \param validInteresPoints The interest pionts related to each feature inside the features matrix.
+          
+          \param fileNameStart The output file name beginning.
+        */          
+        static void features2Tiff( 
+          const Matrix< double >& features,
+          const InterestPointsContainerT& interestPoints,
+          const std::string& fileNameBeginning );
+          
+        /*!
+          \brief Match each feature using correlation and eucliean distance.
+          
+          \param features The features to be saved.
+          
+          \param validInteresPoints The interest pionts related to each feature inside the features matrix.
+          
+          \param fileNameStart The output file name beginning.
+        */          
+        static bool matchCorrelationEuclidean( 
+          const Matrix< double >& featuresSet1,
+          const Matrix< double >& featuresSet2,
+          const InterestPointsContainerT& interestPointsSet1,
+          const InterestPointsContainerT& interestPointsSet2,
+          const unsigned int enableMultiThread,
+          MatchedInterestPointsContainerT& matchedPoints );
+          
+        /*! 
+          \brief Correlation/Euclidean match thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void matchCorrelationEuclideanThreadEntry(
+          MatchCorrelationEuclideanThreadParams* paramsPtr);          
     };
 
   } // end namespace rp

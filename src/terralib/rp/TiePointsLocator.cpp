@@ -27,6 +27,7 @@
 #include "../geometry/GTFactory.h"
 #include "../common/progress/TaskProgress.h"
 #include "../common/PlatformUtils.h"
+#include "../common/StringUtils.h"
 #include "../raster/Band.h"
 #include "../raster/Grid.h"
 #include "../raster/BandProperty.h"
@@ -375,27 +376,38 @@ namespace te
       // Generting features (one feature per line)
       
       Matrix< double > raster1Features;
+      raster1Features.reset( Matrix< double >::RAMMemPol );
       Matrix< double > raster2Features;
+      raster2Features.reset( Matrix< double >::RAMMemPol );
       
       switch( m_inputParameters.m_interesPointsLocationStrategy )
       {
         case InputParameters::MoravecStrategyT :
         {
+          InterestPointsContainerT auxInterestPoints;
+          
           TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
             raster1InterestPoints,
             m_inputParameters.m_correlationWindowWidth,
             *(raster1Data[ 0 ]),
             true,
-            raster1Features ),
+            raster1Features,
+            auxInterestPoints ),
             "Error generating raster 1 features" );
+            
+          raster1InterestPoints = auxInterestPoints;
+          
           TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
             raster2InterestPoints,
             m_inputParameters.m_correlationWindowWidth,
             *(raster2Data[ 0 ]),
             true,
-            raster2Features ),
+            raster2Features,
+            auxInterestPoints ),
             "Error generating raster 2 features" );
             
+          raster2InterestPoints = auxInterestPoints;
+          
           break;
         }
         default :
@@ -403,7 +415,42 @@ namespace te
           TERP_LOG_AND_THROW( "Invalid strategy" );
           break;
         }
-      };      
+      };
+      
+//      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );
+//      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );
+
+      // Clean unused data
+      
+      raster1Data.clear();
+      maskRaster1Data.clear();
+      raster2Data.clear();
+      maskRaster2Data.clear();
+
+      // Matching features
+      
+      MatchedInterestPointsContainerT matchedPoints;
+      
+      switch( m_inputParameters.m_interesPointsLocationStrategy )
+      {
+        case InputParameters::MoravecStrategyT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( matchCorrelationEuclidean( 
+            raster1Features,
+            raster2Features,
+            raster1InterestPoints,
+            raster2InterestPoints,
+            m_inputParameters.m_enableMultiThread,
+            matchedPoints ),
+            "Error matching features" );
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid strategy" );
+          break;
+        }
+      };
         
       return true;
     }
@@ -1278,13 +1325,12 @@ namespace te
       const unsigned int correlationWindowWidth,
       const Matrix< double >& rasterData,
       const bool normalize,
-      Matrix< double >& features )
+      Matrix< double >& features,
+      InterestPointsContainerT& validInteresPoints )
     {
-      TERP_TRUE_OR_RETURN_FALSE( features.reset( 
-        interestPoints.size(), correlationWindowWidth * correlationWindowWidth ),
-        "Cannot allocate features matrix" );
-        
-      // finding the interest points limits inside the raster area 
+      // Locating the the valid interest points
+      
+      validInteresPoints.clear();
       
       /* The radius of a feature window rotated by 90 degrees. 
       * over the input image */
@@ -1305,13 +1351,39 @@ namespace te
         
       const unsigned int rasterDataCols = rasterData.getColumnsNumber();
       const unsigned int rasterDataLines = rasterData.getLinesNumber();
-      const unsigned int firstValidInterestPointX = rotated90CorralationWindowRadius;
+      const unsigned int firstValidInterestPointX = 
+        rotated90CorralationWindowRadius + 1;
       const unsigned int lastValidInterestPointX = rasterDataCols
-        - rotated90CorralationWindowRadius - 1;
-      const unsigned int firstValidInterestPointY = rotated90CorralationWindowRadius;
+        - rotated90CorralationWindowRadius - 2; 
+      const unsigned int firstValidInterestPointY = 
+        rotated90CorralationWindowRadius + 1;
       const unsigned int lastValidInterestPointY = rasterDataLines
-        - rotated90CorralationWindowRadius - 1;
+        - rotated90CorralationWindowRadius - 2;        
+      
+      {
+        InterestPointsContainerT::const_iterator iPointsIt = interestPoints.begin();
+        const InterestPointsContainerT::const_iterator iPointsItEnd = interestPoints.end();        
         
+        while( iPointsIt != iPointsItEnd )
+        {
+          if( ( iPointsIt->m_x >= firstValidInterestPointX ) &&
+            ( iPointsIt->m_x <= lastValidInterestPointX ) &&
+            ( iPointsIt->m_y >= firstValidInterestPointY ) &&
+            ( iPointsIt->m_y <= lastValidInterestPointY ) )
+          {
+            validInteresPoints.insert( *iPointsIt );
+          }
+          
+          ++iPointsIt;
+        }
+      }
+      
+      // Allocating the features matrix
+      
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( 
+        validInteresPoints.size(), correlationWindowWidth * correlationWindowWidth ),
+        "Cannot allocate features matrix" );      
+      
       /* variables related to the current window over the hole image */
       unsigned int curr_window_x_start = 0;
       unsigned int curr_window_y_start = 0;
@@ -1364,211 +1436,429 @@ namespace te
       const unsigned int img_features_matrix_lines = 
         features.getLinesNumber();
       unsigned int features_matrix_col = 0;
-        
-      InterestPointsContainerT::const_iterator iPointsIt = interestPoints.begin();
-      InterestPointsContainerT::const_iterator iPointsItEnd = interestPoints.end();
-      unsigned int currentInterestPointIndex = 0;
       
-      while( iPointsIt != iPointsItEnd )
+      InterestPointsContainerT::const_iterator viPointsIt = validInteresPoints.begin();
+      const InterestPointsContainerT::const_iterator viPointsItEnd = validInteresPoints.end();      
+      unsigned int validInteresPointsIndex = 0 ;
+      
+      while( viPointsIt != viPointsItEnd )
       {
         /* Calculating the current window position */
       
-        curr_window_x_center = iPointsIt->m_x;
-        curr_window_y_center = iPointsIt->m_y;
+        curr_window_x_center = viPointsIt->m_x;
+        curr_window_y_center = viPointsIt->m_y;
+        assert( curr_window_x_center >= firstValidInterestPointX );
+        assert( curr_window_x_center <= lastValidInterestPointX );
+        assert( curr_window_y_center >= firstValidInterestPointY );
+        assert( curr_window_y_center <= lastValidInterestPointY );
         
-        if( ( curr_window_x_center < firstValidInterestPointX ) ||
-          ( curr_window_x_center > lastValidInterestPointX ) ||
-          ( curr_window_y_center < firstValidInterestPointY ) ||
-          ( curr_window_y_center > lastValidInterestPointY ) )
-        { // the interest point is outside the valid raster area
-          featuresLinePtr = features[ currentInterestPointIndex ];
+        curr_window_x_start = curr_window_x_center - wind_radius;
+        curr_window_y_start = curr_window_y_center - wind_radius;
+        curr_window_x_bound = curr_window_x_start + correlationWindowWidth;
+        curr_window_y_bound = curr_window_y_start + correlationWindowWidth;
           
-          for( features_matrix_col = 0 ; features_matrix_col < 
-            img_features_matrix_cols ; ++features_matrix_col )
+        /* Estimating the intensity vector X direction */
+        
+        int_x_dir = 0;
+        
+        for( curr_offset = 0 ; curr_offset < wind_radius ;
+          ++curr_offset ) 
+        {      
+          for( curr_y = curr_window_y_start ; curr_y < curr_window_y_bound ; 
+            ++curr_y ) 
           {
-            featuresLinePtr[ features_matrix_col ] = 0;
+            int_x_dir += rasterData( curr_y, curr_window_x_bound - 1 - curr_offset ) -
+              rasterData( curr_y, curr_window_x_start + curr_offset );
           }
         }
-        else
-        { // the interest point is inside the valid raster area
-          curr_window_x_start = curr_window_x_center - wind_radius;
-          curr_window_y_start = curr_window_y_center - wind_radius;
-          curr_window_x_bound = curr_window_x_start + correlationWindowWidth;
-          curr_window_y_bound = curr_window_y_start + correlationWindowWidth;
+        
+        int_x_dir /= ( 2.0 * wind_radius_double );
+        
+        /* Estimating the intensity vector y direction */
+        
+        int_y_dir = 0;
+        
+        for( curr_offset = 0 ; curr_offset < wind_radius ;
+          ++curr_offset ) {      
+
+          for( curr_x = curr_window_x_start ; 
+            curr_x < curr_window_x_bound ;
+            ++curr_x ) 
+          {
+            int_y_dir += rasterData( curr_window_y_start + curr_offset, curr_x ) - 
+              rasterData( curr_window_y_bound - 1 - curr_offset, curr_x );
+          }
+        }      
+        
+        int_y_dir /= ( 2.0 * ( (double) wind_radius ) );
+        
+        /* Calculating the rotation parameters - 
+          counterclockwise rotation 
+          
+          | u |    |cos  -sin|   |X|
+          | v | == |sin   cos| x |Y|
+        */
+        int_norm = sqrt( ( int_x_dir * int_x_dir ) + 
+          ( int_y_dir * int_y_dir ) );
+        
+        if( int_norm != 0.0 ) {
+          rot_cos = int_x_dir / int_norm;
+          rot_sin = int_y_dir / int_norm;
+        } else {
+          /* No rotation */
+          rot_cos = 1.0;
+          rot_sin = 0.0;
+        }
+        
+        /* Generating the rotated window data and inserting it into 
+          the img_features_matrix by setting the intensity vector
+          to the direction (1,0) by a clockwise rotation
+          using the inverse matrix 
+        
+          | u |    |cos   sin|   |X|
+          | v | == |-sin  cos| x |Y|
+        */
+          
+        for( curr_y = 0 ; curr_y < correlationWindowWidth ; ++curr_y ) 
+        {
+          for( curr_x = 0 ; curr_x < correlationWindowWidth ; ++curr_x ) 
+          {
+            /* briging the window to the coord system center */
             
-          /* Estimating the intensity vector X direction */
-          
-          int_x_dir = 0;
-          
-          for( curr_offset = 0 ; curr_offset < wind_radius ;
-            ++curr_offset ) 
-          {      
-            for( curr_y = curr_window_y_start ; curr_y < curr_window_y_bound ; 
-              ++curr_y ) 
+            curr_x_minus_radius = ((double)curr_x) - 
+              wind_radius_double;
+            curr_y_minus_radius = ((double)curr_y) - 
+              wind_radius_double;
+            
+            /* rotating the centered window */
+            
+            rotated_curr_x = 
+              ( ( rot_cos * curr_x_minus_radius ) + 
+              ( rot_sin * curr_y_minus_radius ) );
+            
+            rotated_curr_y =
+              ( ( -1.0 * rot_sin * curr_x_minus_radius ) + 
+              ( rot_cos * curr_y_minus_radius ) );
+              
+            /* bringing the window back to its original
+              location with the correct new scale */ 
+              
+            rotated_curr_x += wind_radius_double;
+            rotated_curr_y += wind_radius_double;
+            
+            /* copy the new rotated window to the output vector */
+              
+            rotated_curr_x_img = curr_window_x_start +
+              (int)ROUND( rotated_curr_x );
+            rotated_curr_y_img = curr_window_y_start +
+              (int)ROUND( rotated_curr_y );                        
+            
+            if( ( rotated_curr_x_img > 0 ) &&  
+              ( rotated_curr_x_img < (int)rasterDataCols ) &&
+              ( rotated_curr_y_img > 0 ) &&
+              ( rotated_curr_y_img < (int)rasterDataLines ) )
             {
-              int_x_dir += rasterData[ curr_y, curr_window_x_bound - 1 - curr_offset ] -
-                rasterData[ curr_y, curr_window_x_start + curr_offset ];
+              imgMatrixValue1 = rasterData( rotated_curr_y_img,
+                rotated_curr_x_img );
             }
+            else
+            {
+              imgMatrixValue1 = 0;
+            }
+              
+            features( validInteresPointsIndex, ( curr_y * 
+              correlationWindowWidth ) + curr_x ) = imgMatrixValue1;
+          }
+        }
+        
+        /* Normalizing the generated window by subtracting its mean
+          and dividing by its standard deviation */      
+        
+        if( normalize )
+        {
+          curr_wind_mean = 0.0;
+          
+          for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+            ++curr_x ) 
+          {
+            
+            curr_wind_mean += features( validInteresPointsIndex,
+              curr_x );
           }
           
-          int_x_dir /= ( 2.0 * wind_radius_double );
+          curr_wind_mean /= ( (double)img_features_matrix_cols  );
           
-          /* Estimating the intensity vector y direction */
+          curr_wind_stddev = 0.0;  
           
-          int_y_dir = 0;
-          
-          for( curr_offset = 0 ; curr_offset < wind_radius ;
-            ++curr_offset ) {      
-
-            for( curr_x = curr_window_x_start ; 
-              curr_x < curr_window_x_bound ;
-              ++curr_x ) 
-            {
-              int_y_dir += rasterData[ curr_window_y_start + curr_offset, curr_x ] - 
-                rasterData[ curr_window_y_bound - 1 - curr_offset, curr_x ];
-            }
+          for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+            ++curr_x ) 
+          {
+            curr_wind_stddev_aux = features( validInteresPointsIndex,
+              curr_x ) - curr_wind_mean;
+              
+            curr_wind_stddev += ( curr_wind_stddev_aux *
+              curr_wind_stddev_aux );
           }      
           
-          int_y_dir /= ( 2.0 * ( (double) wind_radius ) );
+          curr_wind_stddev /= ( (double)img_features_matrix_cols  );
+          curr_wind_stddev = std::sqrt( curr_wind_stddev );
           
-          /* Calculating the rotation parameters - 
-            counterclockwise rotation 
-            
-            | u |    |cos  -sin|   |X|
-            | v | == |sin   cos| x |Y|
-          */
-          int_norm = sqrt( ( int_x_dir * int_x_dir ) + 
-            ( int_y_dir * int_y_dir ) );
-          
-          if( int_norm != 0.0 ) {
-            rot_cos = int_x_dir / int_norm;
-            rot_sin = int_y_dir / int_norm;
+          if( curr_wind_stddev == 0.0 ) {
+            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+              ++curr_x ) {
+              
+              double& curr_value = features( validInteresPointsIndex,
+                curr_x );
+              
+              curr_value -= curr_wind_mean;
+            } 
           } else {
-            /* No rotation */
-            rot_cos = 1.0;
-            rot_sin = 0.0;
-          }
-          
-          /* Generating the rotated window data and inserting it into 
-            the img_features_matrix by setting the intensity vector
-            to the direction (1,0) by a clockwise rotation
-            using the inverse matrix 
-          
-            | u |    |cos   sin|   |X|
-            | v | == |-sin  cos| x |Y|
-          */
-            
-          for( curr_y = 0 ; curr_y < correlationWindowWidth ; ++curr_y ) 
-          {
-            for( curr_x = 0 ; curr_x < correlationWindowWidth ; ++curr_x ) 
-            {
-              /* briging the window to the coord system center */
+            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
+              ++curr_x ) {
               
-              curr_x_minus_radius = ((double)curr_x) - 
-                wind_radius_double;
-              curr_y_minus_radius = ((double)curr_y) - 
-                wind_radius_double;
+              double& curr_value = features( validInteresPointsIndex, curr_x );
               
-              /* rotating the centered window */
-              
-              rotated_curr_x = 
-                ( ( rot_cos * curr_x_minus_radius ) + 
-                ( rot_sin * curr_y_minus_radius ) );
-              
-              rotated_curr_y =
-                ( ( -1.0 * rot_sin * curr_x_minus_radius ) + 
-                ( rot_cos * curr_y_minus_radius ) );
-                
-              /* bringing the window back to its original
-                location with the correct new scale */ 
-                
-              rotated_curr_x += wind_radius_double;
-              rotated_curr_y += wind_radius_double;
-              
-              /* copy the new rotated window to the output vector */
-                
-              rotated_curr_x_img = curr_window_x_start +
-                (int)ROUND( rotated_curr_x );
-              rotated_curr_y_img = curr_window_y_start +
-                (int)ROUND( rotated_curr_y );                        
-              
-              if( ( rotated_curr_x_img > 0 ) &&  
-                ( rotated_curr_x_img < (int)rasterDataCols ) &&
-                ( rotated_curr_y_img > 0 ) &&
-                ( rotated_curr_y_img < (int)rasterDataLines ) )
-              {
-                imgMatrixValue1 = rasterData[ rotated_curr_y_img ][ 
-                  rotated_curr_x_img ];
-              }
-              else
-              {
-                imgMatrixValue1 = 0;
-              }
-                
-              features[ currentInterestPointIndex ][ ( curr_y * 
-                correlationWindowWidth ) + curr_x ] = imgMatrixValue1;
+              curr_value -= curr_wind_mean;
+              curr_value /= curr_wind_stddev;
             }
           }
-          
-          /* Normalizing the generated window by subtracting its mean
-            and dividing by its standard deviation */      
-          
-          if( normalize )
-          {
-            curr_wind_mean = 0.0;
-            
-            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-              ++curr_x ) 
-            {
-              
-              curr_wind_mean += features[ currentInterestPointIndex ][
-                curr_x ];
-            }
-            
-            curr_wind_mean /= ( (double)img_features_matrix_cols  );
-            
-            curr_wind_stddev = 0.0;  
-            
-            for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-              ++curr_x ) 
-            {
-              curr_wind_stddev_aux = features[ currentInterestPointIndex ][ 
-                curr_x ] - curr_wind_mean;
-                
-              curr_wind_stddev += ( curr_wind_stddev_aux *
-                curr_wind_stddev_aux );
-            }      
-            
-            curr_wind_stddev /= ( (double)img_features_matrix_cols  );
-            curr_wind_stddev = std::sqrt( curr_wind_stddev );
-            
-            if( curr_wind_stddev == 0.0 ) {
-              for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-                ++curr_x ) {
-                
-                double& curr_value = features[ currentInterestPointIndex ][
-                  curr_x ];
-                
-                curr_value -= curr_wind_mean;
-              } 
-            } else {
-              for( curr_x = 0 ; curr_x < img_features_matrix_cols ; 
-                ++curr_x ) {
-                
-                double& curr_value = features[ currentInterestPointIndex ][ curr_x ];
-                
-                curr_value -= curr_wind_mean;
-                curr_value /= curr_wind_stddev;
-              }
-            }
-          }        
-        }
-       
-        ++currentInterestPointIndex;
-        ++iPointsIt;
+        }        
+        
+        ++validInteresPointsIndex;
+        ++viPointsIt;
       }
      
       return true;
+    }
+    
+    void TiePointsLocator::features2Tiff( const Matrix< double >& features,
+      const InterestPointsContainerT& interestPoints,
+      const std::string& fileNameBeginning )
+    {
+      const unsigned int tifLinesNumber = (unsigned int)std::sqrt( (double)
+        features.getColumnsNumber() );
+      const unsigned int featuresColsNumber = features.getColumnsNumber();
+      
+      double const* featureLinePtr = 0;
+      
+      InterestPointsContainerT::const_iterator iIt = interestPoints.begin();
+
+      for( unsigned int featuresIdx = 0 ; featuresIdx < features.getLinesNumber() ;
+        ++featuresIdx )
+      {
+        featureLinePtr = features[ featuresIdx ];
+        
+        std::vector<te::rst::BandProperty*> bandsProperties;
+        bandsProperties.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
+        bandsProperties[0]->m_colorInterp = te::rst::RedCInt;
+        bandsProperties[0]->m_noDataValue = 0;
+        
+        std::map<std::string, std::string> rInfo;
+        rInfo["URI"] = fileNameBeginning + "_" + te::common::Convert2String( iIt->m_x ) 
+          + "_" + te::common::Convert2String( iIt->m_y ) + ".tif";        
+          
+        te::rst::Grid* newgrid = new te::rst::Grid( tifLinesNumber,
+          tifLinesNumber, 0, -1 );          
+        
+        std::auto_ptr< te::rst::Raster > outputRasterPtr(
+          te::rst::RasterFactory::make( "GDAL", newgrid, bandsProperties, rInfo, 0, 0));
+        TERP_TRUE_OR_THROW( outputRasterPtr.get(), "Output raster creation error");
+          
+        unsigned int line = 0;
+        unsigned int col = 0;
+        double value = 0;
+        double min = 0;
+        double max = 0;
+        double gain = 1.0;
+        
+        for( col = 0 ; col < featuresColsNumber ; ++col )
+        {
+          if( min > featureLinePtr[ col ] ) min = featureLinePtr[ col ];
+          if( max < featureLinePtr[ col ] ) max = featureLinePtr[ col ];
+        }
+        
+        gain = 255.0 / ( max - min );
+        
+        for( line = 0 ; line < tifLinesNumber ; ++line )
+          for( col = 0 ; col < tifLinesNumber ; ++col )
+          {
+            value = featureLinePtr[ ( line * tifLinesNumber ) + col ];
+            value *= gain;
+            value -= min;
+            value = MIN( 255, value );
+            value = MAX( 0, value );
+            
+            outputRasterPtr->setValue( col, line, value, 0 );
+          }
+          
+        ++iIt;
+      }
+    }
+    
+    bool TiePointsLocator::matchCorrelationEuclidean( 
+      const Matrix< double >& featuresSet1,
+      const Matrix< double >& featuresSet2,
+      const InterestPointsContainerT& interestPointsSet1,
+      const InterestPointsContainerT& interestPointsSet2,
+      const unsigned int enableMultiThread,
+      MatchedInterestPointsContainerT& matchedPoints )
+    {
+      matchedPoints.clear();
+      
+      assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
+      assert( featuresSet1.getLinesNumber() == interestPointsSet1.size() );
+      assert( featuresSet2.getLinesNumber() == interestPointsSet2.size() );
+      
+      // creating a internal vectors of interest points
+      
+      const unsigned int interestPointsSet1Size = interestPointsSet1.size();
+      InterestPointsContainerT::const_iterator it1 = interestPointsSet1.begin();
+      boost::scoped_array< InterestPointT > internalInterestPointsSet1( 
+        new InterestPointT[ interestPointsSet1.size() ] );
+      for( unsigned int idx1 = 0 ; idx1 < interestPointsSet1Size ; ++idx1 )
+      {
+        internalInterestPointsSet1[ idx1 ] = *it1;
+        ++it1;
+      }
+      
+      const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      InterestPointsContainerT::const_iterator it2 = interestPointsSet2.begin();
+      boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
+        new InterestPointT[ interestPointsSet2.size() ] );
+      for( unsigned int idx2 = 0 ; idx2 < interestPointsSet2Size ; ++idx2 )
+      {
+        internalInterestPointsSet2[ idx2 ] = *it2;
+        ++it2;
+      }      
+      
+      // Creating the correlation matrix
+      
+      Matrix< double > corrMatrix;
+      TERP_TRUE_OR_RETURN_FALSE( corrMatrix.reset( interestPointsSet1Size,
+        interestPointsSet2Size, Matrix< double >::RAMMemPol ),
+        "Error crearting the correlation matrix" );
+      
+      // creating the thread execution parameters
+      
+      boost::mutex syncMutex;
+      unsigned int nextFeatureIdx1ToProcess = 0;
+      unsigned int nextFeatureIdx2ToProcess = 0;
+      bool returnValue = true;
+      
+      MatchCorrelationEuclideanThreadParams params;
+      params.m_featuresSet1Ptr = &featuresSet1;
+      params.m_featuresSet2Ptr = &featuresSet2;
+      params.m_interestPointsSet1Ptr = internalInterestPointsSet1.get();
+      params.m_interestPointsSet2Ptr = internalInterestPointsSet2.get();
+      params.m_nextFeatureIdx1ToProcessPtr = &nextFeatureIdx1ToProcess;
+      params.m_matchedPointsPtr = &matchedPoints;
+      params.m_returnValuePtr = &returnValue;
+      params.m_corrMatrixPtr = &corrMatrix;
+      params.m_syncMutexPtr = &syncMutex;
+      
+      if( enableMultiThread )
+      {
+        TERP_TRUE_OR_RETURN_FALSE( featuresSet1.getMemPolicy() ==
+          Matrix< double >::RAMMemPol, "Invalid memory policy" )
+        TERP_TRUE_OR_RETURN_FALSE( featuresSet2.getMemPolicy() ==
+          Matrix< double >::RAMMemPol, "Invalid memory policy" )    
+          
+        const unsigned int procsNumber = te::common::GetPhysProcNumber();
+        
+        boost::thread_group threads;
+        
+        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
+          ++threadIdx )
+        {
+          threads.add_thread( new boost::thread( 
+            matchCorrelationEuclideanThreadEntry, &params ) );
+        }
+        
+        threads.join_all();          
+          
+      }
+      else
+      {
+        matchCorrelationEuclideanThreadEntry( &params );
+      }
+      
+      return returnValue;
+    }
+    
+    void TiePointsLocator::matchCorrelationEuclideanThreadEntry(
+      MatchCorrelationEuclideanThreadParams* paramsPtr)
+    {
+      unsigned int feat2Idx = 0;
+      double const* feat1Ptr = 0;
+      double const* feat2Ptr = 0;
+      double* corrMatrixLinePtr = 0;
+      unsigned int featCol = 0;
+      double sumAA = 0;
+      double sumBB = 0;
+      double cc_norm = 0;
+      double ccorrelation = 0;
+      
+      // looking for the next line to process
+      
+      paramsPtr->m_syncMutexPtr->lock();
+      
+      const unsigned int featureSize = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
+      const unsigned int featuresSet1Size = 
+        paramsPtr->m_featuresSet1Ptr->getLinesNumber();
+      const unsigned int featuresSet2Size = 
+        paramsPtr->m_featuresSet2Ptr->getLinesNumber();
+      
+      paramsPtr->m_syncMutexPtr->unlock();
+      
+      for( unsigned int feat1Idx = 0 ; feat1Idx < featuresSet1Size ; ++feat1Idx )
+      {
+        paramsPtr->m_syncMutexPtr->lock();
+        
+        if( feat1Idx == (*paramsPtr->m_nextFeatureIdx1ToProcessPtr) )
+        {
+          ++(*paramsPtr->m_nextFeatureIdx1ToProcessPtr);
+          paramsPtr->m_syncMutexPtr->unlock();
+          
+          corrMatrixLinePtr = paramsPtr->m_corrMatrixPtr->operator[]( feat1Idx );
+          
+          feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
+          
+          for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
+          {
+            feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
+            
+            sumAA = 0;
+            sumBB = 0;   
+            for( featCol = 0 ; featCol < featureSize ; ++featCol )
+            {
+              sumAA += feat1Ptr[ featCol ] * feat1Ptr[ featCol ];
+              sumBB += feat2Ptr[ featCol ] * feat2Ptr[ featCol ];
+            }
+            
+            cc_norm = std::sqrt( sumAA * sumBB );
+            
+            if( cc_norm == 0.0 )
+            {
+              corrMatrixLinePtr[ feat2Idx ] = -1.00 ;
+            }
+            else
+            {
+              ccorrelation = 0;
+              for( featCol = 0 ; featCol < featureSize ; ++featCol )
+              {
+                ccorrelation += ( feat1Ptr[ featCol ] * feat2Ptr[ featCol ] ) / 
+                  cc_norm;
+              }
+                
+              corrMatrixLinePtr[ feat2Idx ] = ccorrelation;            
+            }
+          }
+        }
+        else
+        {
+          paramsPtr->m_syncMutexPtr->unlock();
+        }
+      }
     }
 
   } // end namespace rp
