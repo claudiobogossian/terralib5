@@ -56,6 +56,15 @@ namespace te
   {
 
     /*!
+      \brief It returns the geometry OGC names.
+
+      \param t The TerraLib geometry type.
+
+      \return The geometry OGC names.
+    */
+    const std::string& GetGeometryName(te::gm::GeomType t);
+
+    /*!
       \brief Bind ADO Type to TerraLib Type.
 
       \param adoType Ado Type.
@@ -83,33 +92,6 @@ namespace te
     te::dt::Property* getPropertyFromADO(ADOX::_ColumnPtr column);
     
     /*!
-      \brief Create TerraLib primary key from ADO key
-
-      \param key ADO Key
-
-      \return TerraLib primary key
-    */
-    te::da::PrimaryKey* getPrimaryKeyFromADO(ADOX::_KeyPtr key);
-    
-    /*!
-      \brief Create TerraLib foreign key from ADO key
-
-      \param key ADO Key
-
-      \return TerraLib foreign key
-    */
-    te::da::ForeignKey* getForeignKeyFromADO(ADOX::_KeyPtr key);
-    
-    /*!
-      \brief Create TerraLib unique key from ADO key
-
-      \param key ADO Key
-
-      \return TerraLib unique key
-    */
-    te::da::UniqueKey* getUniqueKeyFromADO(ADOX::_KeyPtr key);
-    
-    /*!
       \brief Get the default geometry property from table "geometry_columns"
       created on Access database
 
@@ -118,14 +100,6 @@ namespace te
       \return TerraLib geometry property
     */
     te::gm::GeometryProperty* getDefaultGeomProperty(te::da::DataSetType* dt, _ConnectionPtr adoConn);
-    
-    /*!
-      \brief Set ADO primary key
-
-      \param dt Data Set Type
-      \param key ADO key
-    */
-    void setPrimaryKey(te::da::DataSetType* dt, ADOX::_KeyPtr key);
 
     /*!
       \brief Add a ADO propert based on the TerraLib property
@@ -145,7 +119,8 @@ namespace te
 
     std::string getOGCType(te::gm::GeomType type);
 
-    void createGeometryColumns(_ConnectionPtr adoConn);
+    void Blob2Variant(const char* blob, int size, _variant_t & var);
+    void Variant2Blob(const _variant_t var, int size, char* & blob);
 
   } // end namespace ado
 }   // end namespace te
