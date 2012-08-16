@@ -89,6 +89,7 @@ namespace te
       m_geomTransfMaxError = 1;
       m_correlationWindowWidth = 21;
       m_moravecWindowWidth = 11;
+      m_maxR1ToR2Offset = 0;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -120,6 +121,7 @@ namespace te
       m_geomTransfMaxError = params.m_geomTransfMaxError;
       m_correlationWindowWidth = params.m_correlationWindowWidth;
       m_moravecWindowWidth = params.m_moravecWindowWidth;
+      m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
 
       return *this;
     }
@@ -394,9 +396,9 @@ namespace te
             raster1Features,
             auxInterestPoints ),
             "Error generating raster 1 features" );
-            
           raster1InterestPoints = auxInterestPoints;
           
+          auxInterestPoints.clear();
           TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
             raster2InterestPoints,
             m_inputParameters.m_correlationWindowWidth,
@@ -440,6 +442,7 @@ namespace te
             raster2Features,
             raster1InterestPoints,
             raster2InterestPoints,
+            m_inputParameters.m_maxR1ToR2Offset,
             m_inputParameters.m_enableMultiThread,
             matchedPoints ),
             "Error matching features" );
@@ -1700,61 +1703,95 @@ namespace te
       const Matrix< double >& featuresSet2,
       const InterestPointsContainerT& interestPointsSet1,
       const InterestPointsContainerT& interestPointsSet2,
+      const unsigned int maxPt1ToPt2Distance,
       const unsigned int enableMultiThread,
       MatchedInterestPointsContainerT& matchedPoints )
     {
       matchedPoints.clear();
       
-      assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
-      assert( featuresSet1.getLinesNumber() == interestPointsSet1.size() );
-      assert( featuresSet2.getLinesNumber() == interestPointsSet2.size() );
-      
-      // creating a internal vectors of interest points
-      
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
+      const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      
+      assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
+      assert( featuresSet1.getLinesNumber() == interestPointsSet1Size );
+      assert( featuresSet2.getLinesNumber() == interestPointsSet2Size );
+      
+      // Creating internal objects
+      
+      double maxTiePointsFeatureValue = DBL_MAX * (-1.0);
+      double minTiePointsFeatureValue = DBL_MAX;
+      
       InterestPointsContainerT::const_iterator it1 = interestPointsSet1.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet1( 
-        new InterestPointT[ interestPointsSet1.size() ] );
+        new InterestPointT[ interestPointsSet1Size ] );
       for( unsigned int idx1 = 0 ; idx1 < interestPointsSet1Size ; ++idx1 )
       {
         internalInterestPointsSet1[ idx1 ] = *it1;
+        
+        if( it1->m_featureValue > maxTiePointsFeatureValue )
+          maxTiePointsFeatureValue = it1->m_featureValue;
+        if( it1->m_featureValue < minTiePointsFeatureValue )
+          minTiePointsFeatureValue = it1->m_featureValue;        
+        
         ++it1;
       }
       
-      const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
+
       InterestPointsContainerT::const_iterator it2 = interestPointsSet2.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
-        new InterestPointT[ interestPointsSet2.size() ] );
+        new InterestPointT[ interestPointsSet2Size ] );
       for( unsigned int idx2 = 0 ; idx2 < interestPointsSet2Size ; ++idx2 )
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
+
+        if( it2->m_featureValue > maxTiePointsFeatureValue )
+          maxTiePointsFeatureValue = it2->m_featureValue;
+        if( it2->m_featureValue < minTiePointsFeatureValue )
+          minTiePointsFeatureValue = it2->m_featureValue;
+        
+        if( maxPt1ToPt2Distance )
+          interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
+            it2->m_x, it2->m_y ), idx2 );
+        
         ++it2;
-      }      
+      }        
       
       // Creating the correlation matrix
       
       Matrix< double > corrMatrix;
       TERP_TRUE_OR_RETURN_FALSE( corrMatrix.reset( interestPointsSet1Size,
-        interestPointsSet2Size, Matrix< double >::RAMMemPol ),
+       interestPointsSet2Size, Matrix< double >::RAMMemPol ),
         "Error crearting the correlation matrix" );
+        
+      unsigned int col = 0;
+      unsigned int line = 0;
+      double* linePtr = 0;
       
-      // creating the thread execution parameters
+      for( line = 0 ; line < interestPointsSet1Size ; ++line )
+      {
+        linePtr = corrMatrix[ line ];
+        
+        for( col = 0 ; col < interestPointsSet2Size ; ++col )
+        {
+          linePtr[ col ] = 0;
+        }
+      }
       
       boost::mutex syncMutex;
       unsigned int nextFeatureIdx1ToProcess = 0;
       unsigned int nextFeatureIdx2ToProcess = 0;
-      bool returnValue = true;
       
-      MatchCorrelationEuclideanThreadParams params;
+      CorrelationMatrixCalcThreadParams params;
       params.m_featuresSet1Ptr = &featuresSet1;
       params.m_featuresSet2Ptr = &featuresSet2;
       params.m_interestPointsSet1Ptr = internalInterestPointsSet1.get();
       params.m_interestPointsSet2Ptr = internalInterestPointsSet2.get();
       params.m_nextFeatureIdx1ToProcessPtr = &nextFeatureIdx1ToProcess;
-      params.m_matchedPointsPtr = &matchedPoints;
-      params.m_returnValuePtr = &returnValue;
       params.m_corrMatrixPtr = &corrMatrix;
       params.m_syncMutexPtr = &syncMutex;
+      params.m_maxPt1ToPt2Distance = maxPt1ToPt2Distance;
+      params.m_interestPointsSet2RTreePtr = &interestPointsSet2RTree;
       
       if( enableMultiThread )
       {
@@ -1771,7 +1808,7 @@ namespace te
           ++threadIdx )
         {
           threads.add_thread( new boost::thread( 
-            matchCorrelationEuclideanThreadEntry, &params ) );
+            correlationMatrixCalcThreadEntry, &params ) );
         }
         
         threads.join_all();          
@@ -1779,14 +1816,98 @@ namespace te
       }
       else
       {
-        matchCorrelationEuclideanThreadEntry( &params );
+        correlationMatrixCalcThreadEntry( &params );
       }
       
-      return returnValue;
+      // finding the correlation matrix maximas for each line and column
+      
+      std::vector< double > eachLineMaxABSValues( interestPointsSet1Size,
+        DBL_MAX * (-1.0) );
+      std::vector< unsigned int > eachLineMaxABSIndexes( interestPointsSet1Size,
+        interestPointsSet2Size + 1 );
+      std::vector< double > eachColMaxABSValues( interestPointsSet2Size,
+        DBL_MAX * (-1.0) );
+      std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
+        interestPointsSet1Size + 1 );
+      double maxCorrelationValue = DBL_MAX * (-1.0);
+      double minCorrelationValue = DBL_MAX;
+      double absValue = 0;
+        
+      for( line = 0 ; line < interestPointsSet1Size ; ++line )
+      {
+        linePtr = corrMatrix[ line ];
+        
+        for( col = 0 ; col < interestPointsSet2Size ; ++col )
+        {
+          const double& value = linePtr[ col ];
+          
+          if( value != 0.0 )
+          {
+            absValue = std::abs( value );
+            
+            if( absValue > eachLineMaxABSValues[ line ] )
+            {
+              eachLineMaxABSValues[ line ] = absValue;
+              eachLineMaxABSIndexes[ line ] = col;
+            }
+            
+            if( absValue > eachColMaxABSValues[ col ] )
+            {
+              eachColMaxABSValues[ col ] = absValue;
+              eachColMaxABSIndexes[ col ] = line;
+            }
+          }
+          
+          if( value > maxCorrelationValue ) maxCorrelationValue = value;
+          if( value < minCorrelationValue ) minCorrelationValue = value;
+        }
+      }
+      
+      
+      
+      // Finding tiepoints
+      
+      const double tiePointsFeatureValueRange = ( maxTiePointsFeatureValue != 
+        minTiePointsFeatureValue ) ? ( maxTiePointsFeatureValue -
+        minTiePointsFeatureValue ) : 1.0;
+      const double correlationValueRange = ( maxCorrelationValue != 
+        minCorrelationValue ) ? ( maxCorrelationValue -
+        minCorrelationValue ) : 1.0;
+      MatchedInterestPointsT auxMatchedPoints;
+        
+      for( line = 0 ; line < interestPointsSet1Size ; ++line )
+      {
+        if( eachColMaxABSIndexes[ eachLineMaxABSIndexes[ line ] ] == line )
+        {
+          const InterestPointT& iPoint1 = internalInterestPointsSet1[ line ];
+          const InterestPointT& iPoint2 = internalInterestPointsSet2[ eachLineMaxABSIndexes[ line ] ];
+          
+          auxMatchedPoints.m_x1 = iPoint1.m_x;
+          auxMatchedPoints.m_y1 = iPoint1.m_y,
+          auxMatchedPoints.m_x2 = iPoint2.m_x;
+          auxMatchedPoints.m_y2 = iPoint2.m_y;
+          auxMatchedPoints.m_featureValue = 
+            ( 
+              ( 
+                ( iPoint1.m_featureValue - minTiePointsFeatureValue ) /
+                tiePointsFeatureValueRange
+              )
+              +
+              (
+                ( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) - 
+                minCorrelationValue ) / correlationValueRange
+              )
+            ) / 2.0;
+          
+          matchedPoints.insert( auxMatchedPoints );
+        }
+      }
+        
+      return true;
     }
     
-    void TiePointsLocator::matchCorrelationEuclideanThreadEntry(
-      MatchCorrelationEuclideanThreadParams* paramsPtr)
+    void TiePointsLocator::correlationMatrixCalcThreadEntry(
+      CorrelationMatrixCalcThreadParams* paramsPtr)
     {
       unsigned int feat2Idx = 0;
       double const* feat1Ptr = 0;
@@ -1797,8 +1918,9 @@ namespace te
       double sumBB = 0;
       double cc_norm = 0;
       double ccorrelation = 0;
+      te::gm::Envelope auxEnvelope;
       
-      // looking for the next line to process
+      // finding the number of features
       
       paramsPtr->m_syncMutexPtr->lock();
       
@@ -1809,6 +1931,24 @@ namespace te
         paramsPtr->m_featuresSet2Ptr->getLinesNumber();
       
       paramsPtr->m_syncMutexPtr->unlock();
+      
+      
+      // initializing the features 2 indexes vector
+      
+      std::vector< unsigned int > selectedFeaturesSet2Indexes;
+      unsigned int selectedFeaturesSet2IndexesSize = 0;
+      
+      if( paramsPtr->m_maxPt1ToPt2Distance == 0 )
+      {
+        selectedFeaturesSet2Indexes.resize( featuresSet2Size );
+        selectedFeaturesSet2IndexesSize = featuresSet2Size;
+        for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
+          {
+            selectedFeaturesSet2Indexes[ feat2Idx ] = feat2Idx;
+          }
+      }      
+      
+      // Analysing each feature
       
       for( unsigned int feat1Idx = 0 ; feat1Idx < featuresSet1Size ; ++feat1Idx )
       {
@@ -1823,8 +1963,29 @@ namespace te
           
           feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
           
-          for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
+          if( paramsPtr->m_maxPt1ToPt2Distance )
           {
+            auxEnvelope.m_llx = auxEnvelope.m_urx = 
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x;
+            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2Distance;
+            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2Distance;
+            auxEnvelope.m_lly = auxEnvelope.m_ury = 
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y;
+            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            
+            selectedFeaturesSet2Indexes.clear();
+            paramsPtr->m_interestPointsSet2RTreePtr->search( auxEnvelope,
+              selectedFeaturesSet2Indexes );
+              
+            selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
+          }
+          
+          for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
+            selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
+          {
+            feat2Idx = selectedFeaturesSet2Indexes[ selectedFSIIdx ];
+            
             feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
             
             sumAA = 0;
@@ -1839,7 +2000,7 @@ namespace te
             
             if( cc_norm == 0.0 )
             {
-              corrMatrixLinePtr[ feat2Idx ] = -1.00 ;
+              corrMatrixLinePtr[ feat2Idx ] = 0;
             }
             else
             {

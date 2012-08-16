@@ -29,6 +29,7 @@
 #include "Matrix.h"
 #include "../raster/Raster.h"
 #include "../geometry/GTParameters.h"
+#include "../sam/rtree.h"
 
 #include <vector>
 #include <set>
@@ -113,6 +114,8 @@ namespace te
             unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21).
             
             unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
+            
+            unsigned int m_maxR1ToR2Offset; //! The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
           
             InputParameters();
             
@@ -209,7 +212,7 @@ namespace te
         */
         typedef std::multiset< InterestPointT > InterestPointsContainerT;  
         
-        /*! Interest point type */
+        /*! Matched Interest point type */
         class MatchedInterestPointsT
         {
           public :
@@ -221,21 +224,21 @@ namespace te
 
             unsigned int m_y2; //!< Point Y2 coord.
 
-            double m_matchingValue; //!< Interest points matching value.
+            double m_featureValue; //!< Interest points feature value.
             
             MatchedInterestPointsT() {};
             
             MatchedInterestPointsT( const unsigned int& x1, const unsigned int& y1,
               const unsigned int& x2, const unsigned int& y2,
-              const double& matchingValue ) : m_x1( x1 ), m_y1( y1 ),
+              const double& featureValue ) : m_x1( x1 ), m_y1( y1 ),
               m_x2( x2 ), m_y2( y2 ),
-              m_matchingValue( matchingValue ) {};
+              m_featureValue( featureValue ) {};
             
             ~MatchedInterestPointsT() {};
             
             bool operator<( const MatchedInterestPointsT& other ) const
             {
-              return ( m_matchingValue < other.m_matchingValue );
+              return ( m_featureValue < other.m_featureValue );
             };
             
             const MatchedInterestPointsT& operator=( const MatchedInterestPointsT& other )
@@ -244,7 +247,7 @@ namespace te
               m_y1 = other.m_y1;
               m_x2 = other.m_x2;
               m_y2 = other.m_y2;
-              m_matchingValue = other.m_matchingValue;
+              m_featureValue = other.m_featureValue;
               return other;
             };            
         };        
@@ -286,9 +289,9 @@ namespace te
             
             boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
             
-            unsigned int m_maxRasterLinesBlockMaxSize; //! The maximum lines number of each raster block to process.
+            unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
             
-            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //! A pointer to a valid counter to control the blocks processing sequence.
+            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
             
             MoravecLocatorThreadParams() {};
             
@@ -298,7 +301,7 @@ namespace te
         /*! 
           \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
         */     
-        class MatchCorrelationEuclideanThreadParams
+        class CorrelationMatrixCalcThreadParams
         {
           public :
             
@@ -307,22 +310,22 @@ namespace te
             Matrix< double > const* m_featuresSet2Ptr;
             
             InterestPointT const* m_interestPointsSet1Ptr;
-            
-            InterestPointT const* m_interestPointsSet2Ptr;
+
+            InterestPointT const* m_interestPointsSet2Ptr;            
             
             unsigned int* m_nextFeatureIdx1ToProcessPtr;
-            
-            MatchedInterestPointsContainerT* m_matchedPointsPtr;
-            
-            bool* m_returnValuePtr;
             
             Matrix< double >* m_corrMatrixPtr;
             
             boost::mutex* m_syncMutexPtr;
             
-            MatchCorrelationEuclideanThreadParams() {};
+            unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
             
-            ~MatchCorrelationEuclideanThreadParams() {};
+            te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
+            
+            CorrelationMatrixCalcThreadParams() {};
+            
+            ~CorrelationMatrixCalcThreadParams() {};
         };        
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
@@ -500,17 +503,26 @@ namespace te
         /*!
           \brief Match each feature using correlation and eucliean distance.
           
-          \param features The features to be saved.
+          \param featuresSet1 Features set 1.
           
-          \param validInteresPoints The interest pionts related to each feature inside the features matrix.
+          \param featuresSet2 Features set 2.
           
-          \param fileNameStart The output file name beginning.
+          \param interestPointsSet1 The interest pionts set 1.
+          
+          \param interestPointsSet2 The interest pionts set 2.
+          
+          \param maxPt1ToPt2Distance Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          
+          \param enableMultiThread Enable/disable the use of threads.
+          
+          \param matchedPoints The matched points.
         */          
         static bool matchCorrelationEuclidean( 
           const Matrix< double >& featuresSet1,
           const Matrix< double >& featuresSet2,
           const InterestPointsContainerT& interestPointsSet1,
           const InterestPointsContainerT& interestPointsSet2,
+          const unsigned int maxPt1ToPt2Distance,
           const unsigned int enableMultiThread,
           MatchedInterestPointsContainerT& matchedPoints );
           
@@ -519,8 +531,8 @@ namespace te
           
           \param paramsPtr A pointer to the thread parameters.
         */      
-        static void matchCorrelationEuclideanThreadEntry(
-          MatchCorrelationEuclideanThreadParams* paramsPtr);          
+        static void correlationMatrixCalcThreadEntry(
+          CorrelationMatrixCalcThreadParams* paramsPtr);          
     };
 
   } // end namespace rp
