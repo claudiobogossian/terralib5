@@ -121,7 +121,7 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
       recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
       recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
       recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
-      recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::getOGCType(geomProp->getGeometryType()).c_str();
+      recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
 
       recset->Update();
 

@@ -137,8 +137,13 @@ te::da::DataSet* te::ado::DataSourceTransactor::query(const std::string& query,
                                                            te::common::TraverseType travType, 
                                                            te::common::AccessPolicy rwRole)
 {
-  _RecordsetPtr rs = m_conn->Execute(_bstr_t(query.c_str()),0, adCmdText);
-  return new DataSet(0, rs, this); 
+  _RecordsetPtr rs;
+  
+  TESTHR(rs.CreateInstance(__uuidof(Recordset)));
+  
+  rs->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
+
+  return new DataSet(0, rs, this);
 }
 
 void te::ado::DataSourceTransactor::execute(const te::da::Query& command)

@@ -134,12 +134,11 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
   TESTHR(recset->AddNew());
 
+  te::gm::GeometryProperty* geomProp = 0;
+  geomProp = dt->getDefaultGeomProperty();
+
   for(size_t i = 0; i < props.size(); i++)
   {
-
-    te::gm::GeometryProperty* geomProp = 0;
-    geomProp = dt->getDefaultGeomProperty();
-
     if(geomProp && (geomProp->getName() == props[i]->getName()))
     {
       te::gm::Geometry* geo = item->getGeometry(props[i]->getName());
@@ -148,7 +147,7 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
       char* wkb = new char[size];
 
-      te::gm::WKBWriter::write(geo, wkb);
+      geo->getWkb(wkb, te::common::NDR);
 
       unsigned int newWkbSize = size+4;
 
@@ -160,22 +159,8 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
       memcpy(newWkb+size, &srid, 4);
 
-      VARIANT var;
-      BYTE *pByte;
-
-      SAFEARRAY FAR* psa;
-      SAFEARRAYBOUND rgsabound[1];
-      rgsabound[0].lLbound = 0;
-      rgsabound[0].cElements = newWkbSize;
-
-      psa = SafeArrayCreate(VT_I1, 1, rgsabound);
-
-      if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-        memcpy((LPVOID)pByte,(LPVOID)newWkb,newWkbSize);
-      SafeArrayUnaccessData(psa);
-
-      var.vt = VT_ARRAY | VT_UI1;
-      var.parray = psa;
+      _variant_t var;
+      te::ado::Blob2Variant(newWkb, newWkbSize, var);
 
       recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
 

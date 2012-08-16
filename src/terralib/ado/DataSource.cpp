@@ -28,6 +28,7 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../datatype/StringProperty.h"
+#include "Globals.h"
 #include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSet.h"
@@ -55,13 +56,11 @@ te::ado::DataSource::DataSource()
 te::ado::DataSource::~DataSource()
 {
   ::CoUninitialize();
-  delete m_catalog;
-  delete m_conn;
 }
 
 const std::string& te::ado::DataSource::getType() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return Globals::sm_driverIdentifier;
 }
 
 const std::map<std::string, std::string>& te::ado::DataSource::getConnectionInfo() const

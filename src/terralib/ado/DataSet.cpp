@@ -58,7 +58,6 @@ te::ado::DataSet::~DataSet()
 {
   delete m_dt;
   delete m_geomFilter;
-  delete m_mbrFilter;
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
@@ -481,7 +480,7 @@ te::dt::ByteArray* te::ado::DataSet::getByteArray(int i) const
     {
       SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
       data = new char[size];
-      memcpy(data, cdata, size * sizeof(char));
+      memcpy(data, cdata, size);
       SafeArrayUnaccessData(varBLOB.parray);
     }
   }
@@ -502,14 +501,7 @@ te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
     VariantInit(&varBLOB);
 
     varBLOB = m_result->GetFields()->GetItem(name.c_str())->GetChunk(size);
-
-    if(varBLOB.vt == (VT_ARRAY | VT_UI1))
-    {
-      SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
-      data = new char[size];
-      memcpy(data, cdata, size * sizeof(char));
-      SafeArrayUnaccessData(varBLOB.parray);
-    }
+    te::ado::Variant2Blob(varBLOB, size, data);
   }
 
   return new te::dt::ByteArray(data, size);

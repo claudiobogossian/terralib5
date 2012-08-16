@@ -47,6 +47,44 @@ namespace te
       public:
 
         static const std::string sm_driverIdentifier;  //!< The ADO driver identifier.
+
+        static const std::string sm_geometryTypeName;
+        static const std::string sm_pointTypeName;
+        static const std::string sm_lineStringTypeName;
+        static const std::string sm_polygonTypeName;
+        static const std::string sm_multiPointTypeName;
+        static const std::string sm_multiLineStringTypeName;
+        static const std::string sm_multiPolygonTypeName;
+        static const std::string sm_curvePolygonTypeName;
+        static const std::string sm_polyhedralSurfaceTypeName;
+        static const std::string sm_geometryZTypeName;
+        static const std::string sm_pointZTypeName;
+        static const std::string sm_lineStringZTypeName;
+        static const std::string sm_polygonZTypeName;
+        static const std::string sm_multiPointZTypeName;
+        static const std::string sm_multiLineStringZTypeName;
+        static const std::string sm_multiPolygonZTypeName;
+        static const std::string sm_curvePolygonZTypeName;
+        static const std::string sm_polyhedralSurfaceZTypeName;
+        static const std::string sm_geometryMTypeName;
+        static const std::string sm_pointMTypeName;
+        static const std::string sm_lineStringMTypeName;
+        static const std::string sm_polygonMTypeName;
+        static const std::string sm_multiPointMTypeName;
+        static const std::string sm_multiLineStringMTypeName;
+        static const std::string sm_multiPolygonMTypeName;
+        static const std::string sm_curvePolygonMTypeName;
+        static const std::string sm_polyhedralSurfaceMTypeName;
+        static const std::string sm_geometryZMTypeName;
+        static const std::string sm_pointZMTypeName;
+        static const std::string sm_lineStringZMTypeName;
+        static const std::string sm_polygonZMTypeName;
+        static const std::string sm_multiPointZMTypeName;
+        static const std::string sm_multiLineStringZMTypeName;
+        static const std::string sm_multiPolygonZMTypeName;
+        static const std::string sm_curvePolygonZMTypeName;
+        static const std::string sm_polyhedralSurfaceZMTypeName;
+        
     };
 
   } // end namespace ado
