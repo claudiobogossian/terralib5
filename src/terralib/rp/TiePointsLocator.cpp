@@ -33,6 +33,7 @@
 #include "../raster/BandProperty.h"
 #include "../raster/RasterFactory.h"
 #include "../datatype/Enums.h"
+#include "../geometry/GTFilter.h"
 
 #include <boost/scoped_array.hpp>
 
@@ -179,6 +180,10 @@ namespace te
     bool TiePointsLocator::execute( AlgorithmOutputParameters& outputParams )
       throw( te::rp::Exception )
     {
+      TiePointsLocator::OutputParameters* outParamsPtr = dynamic_cast<
+        TiePointsLocator::OutputParameters* >( &outputParams );
+      assert( outParamsPtr );
+        
       if( ! m_isInitialized ) return false;
       
       std::auto_ptr< te::common::TaskProgress > progressPtr;
@@ -322,10 +327,9 @@ namespace te
 
           raster2Data[ 0 ] = tempMatrix;          
           
-          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), 
-            "raster1Gaussian");
-          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), 
-            "raster2Gaussian");          
+//          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
+//          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");          
+            
           
           break;
         }
@@ -369,12 +373,12 @@ namespace te
           break;
         }
       };
-      
+/*      
       createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, 
         "raster1InterestPoints");
       createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, 
         "raster2InterestPoints");
-        
+*/        
       // Generting features (one feature per line)
       
       Matrix< double > raster1Features;
@@ -454,7 +458,59 @@ namespace te
           break;
         }
       };
+      
+      // Clean anused data
+      
+      raster1Features.clear();
+      raster2Features.clear();
+      raster1InterestPoints.clear();
+      raster2InterestPoints.clear();
+      
+      // Bring matched points to original images reference
+      
+      te::gm::GTParameters transfParams;
+      std::vector< double > tiePointsWeights;
         
+      {
+        te::gm::GTParameters::TiePoint auxTP;
+        MatchedInterestPointsContainerT::const_iterator itB = matchedPoints.begin();
+        const MatchedInterestPointsContainerT::const_iterator itE = matchedPoints.end();
+        
+        while( itB != itE )
+        {
+          auxTP.first.x = ( itB->m_x1 / raster1XRescFact ) + 
+            (double)m_inputParameters.m_raster1TargetAreaColStart;
+          auxTP.first.y = ( itB->m_y1 / raster1YRescFact ) + 
+            (double)m_inputParameters.m_raster1TargetAreaLineStart;          
+          auxTP.second.x = ( itB->m_x2 / raster2XRescFact ) + 
+            (double)m_inputParameters.m_raster2TargetAreaColStart;
+          auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
+            (double)m_inputParameters.m_raster2TargetAreaLineStart;   
+            
+          tiePointsWeights.push_back( itB->m_featureValue );
+            
+          transfParams.m_tiePoints.push_back( auxTP );
+          
+          ++itB;
+        }
+      }      
+      
+      // Removing outliers
+        
+       std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+       
+       TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
+        m_inputParameters.m_geomTransfName, 
+        transfParams,
+        m_inputParameters.m_geomTransfMaxError,
+        m_inputParameters.m_geomTransfMaxError,
+        m_inputParameters.m_geomTransfMaxError,
+        m_inputParameters.m_geomTransfMaxError,
+        transfPtr,
+        tiePointsWeights ), "Outliers remotion error" );
+       
+      outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;
+      
       return true;
     }
 
@@ -1076,22 +1132,22 @@ namespace te
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
                     moravecWindowRadius ][ windowStartBufCol + 
                     windowStartBufOffset ];
-                  horVar += diffValue * diffValue;
+                  horVar += ( diffValue * diffValue );
                     
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
                     windowStartBufOffset ][ windowStartBufCol +
                     moravecWindowRadius ];
-                  verVar += diffValue * diffValue;
+                  verVar += ( diffValue * diffValue );
                   
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
                     windowStartBufOffset ][ windowStartBufCol +
                     windowStartBufOffset ];
-                  diagVar += diffValue * diffValue;
+                  diagVar += ( diffValue * diffValue );
                   
                   diffValue = windowCenterPixelValue - rasterBufferPtr[ 
                     moravecWindowWidth - 1 - windowStartBufOffset ][ windowStartBufCol +
                     windowStartBufOffset ];
-                  adiagVar += diffValue * diffValue;
+                  adiagVar += ( diffValue * diffValue );
                 }
                 
                 maximasBufferPtr[ moravecWindowRadius ][ windowStartBufCol + 

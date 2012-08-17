@@ -26,8 +26,13 @@
 #ifndef __TERRALIB_UNITTEST_RP_TiePoints_INTERNAL_H
 #define __TERRALIB_UNITTEST_RP_TiePoints_INTERNAL_H
 
+#include <terralib/raster/Raster.h>
+#include <terralib/geometry/GeometricTransformation.h>
+
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <vector>
 
 /*!
   \class TsTiePointsLocator
@@ -45,6 +50,25 @@ class TsTiePointsLocator : public CPPUNIT_NS::TestFixture
 protected :
 
   void MoravecStrategySameImage();
+
+  /*!
+    \brief Save images with their respective tie points market green.
+    
+    \param raster1 The first raster (related to tie points first coordinate pair).
+    
+    \param raster2 The second raster (related to tie points second coordinate pair).
+    
+    \param tiePoints Tie points.          
+
+    \param tifFileNameBeginning Tif file name beginning.
+  */             
+  void saveImagesAndTiePoints( 
+    const te::rst::Raster& raster1,
+    const unsigned int band1,
+    const te::rst::Raster& raster2,
+    const unsigned int band2,
+    const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+    const std::string& tifFileNameBeginning );  
 };
 
 #endif

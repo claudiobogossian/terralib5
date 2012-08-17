@@ -28,8 +28,91 @@
 
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/rp/TiePointsLocator.h>
+#include <terralib/raster/Enums.h>
+#include <terralib/raster/BandProperty.h>
+#include <terralib/raster/Grid.h>
+#include <terralib/raster/Band.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsTiePointsLocator );
+
+void TsTiePointsLocator::saveImagesAndTiePoints( 
+  const te::rst::Raster& raster1,
+  const unsigned int band1,
+  const te::rst::Raster& raster2,
+  const unsigned int band2,
+  const std::vector< te::gm::GTParameters::TiePoint >& tiePoints,
+  const std::string& tifFileNameBeginning )
+{
+  std::map<std::string, std::string> rInfo1;
+  rInfo1["URI"] = TE_DATA_LOCALE "/" + tifFileNameBeginning + "_raster1.tif";
+  
+  std::vector<te::rst::BandProperty*> bandsProperties1;
+  bandsProperties1.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
+  bandsProperties1[0]->m_colorInterp = te::rst::RedCInt;
+  bandsProperties1[0]->m_noDataValue = 0;
+  bandsProperties1.push_back(new te::rst::BandProperty( *bandsProperties1[0] ));
+  bandsProperties1[1]->m_colorInterp = te::rst::GreenCInt;
+  bandsProperties1.push_back(new te::rst::BandProperty( *bandsProperties1[0] ));
+  bandsProperties1[2]->m_colorInterp = te::rst::BlueCInt;  
+
+  te::rst::Grid* newgrid1 = new te::rst::Grid( *raster1.getGrid() );
+
+  std::auto_ptr< te::rst::Raster > outputRaster1Ptr(
+    te::rst::RasterFactory::make( "GDAL", newgrid1, bandsProperties1, rInfo1, 0, 0));
+  CPPUNIT_ASSERT( outputRaster1Ptr.get() );
+  
+  unsigned int line = 0;
+  unsigned int col = 0;
+  double value = 0;
+  
+  for( line = 0 ; line < raster1.getNumberOfRows() ; ++line )
+    for( col = 0 ; col < raster1.getNumberOfColumns() ; ++col )
+    {
+      raster1.getValue( col, line, value, band1 );
+      outputRaster1Ptr->setValue( col, line, value, 0 );
+      outputRaster1Ptr->setValue( col, line, value, 1 );
+      outputRaster1Ptr->setValue( col, line, value, 2 );
+    }
+  
+  std::map<std::string, std::string> rInfo2;
+  rInfo2["URI"] = TE_DATA_LOCALE "/" + tifFileNameBeginning + "_raster2.tif";
+  
+  std::vector<te::rst::BandProperty*> bandsProperties2;
+  bandsProperties2.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
+  bandsProperties2[0]->m_colorInterp = te::rst::RedCInt;
+  bandsProperties2[0]->m_noDataValue = 0;
+  bandsProperties2.push_back(new te::rst::BandProperty( *bandsProperties2[0] ));
+  bandsProperties2[1]->m_colorInterp = te::rst::GreenCInt;
+  bandsProperties2.push_back(new te::rst::BandProperty( *bandsProperties2[0] ));
+  bandsProperties2[2]->m_colorInterp = te::rst::BlueCInt;    
+
+  te::rst::Grid* newgrid2 = new te::rst::Grid( *raster2.getGrid() );
+
+  std::auto_ptr< te::rst::Raster > outputRaster2Ptr(
+    te::rst::RasterFactory::make( "GDAL", newgrid2, bandsProperties2, rInfo2, 0, 0));
+  CPPUNIT_ASSERT( outputRaster2Ptr.get() );
+  
+  for( line = 0 ; line < raster2.getNumberOfRows() ; ++line )
+    for( col = 0 ; col < raster2.getNumberOfColumns() ; ++col )
+    {
+      raster2.getValue( col, line, value, band2 );
+      outputRaster2Ptr->setValue( col, line, value, 0 );
+      outputRaster2Ptr->setValue( col, line, value, 1 );
+      outputRaster2Ptr->setValue( col, line, value, 2 );
+    }
+    
+  std::vector< te::gm::GTParameters::TiePoint >::const_iterator itB = tiePoints.begin();
+  const std::vector< te::gm::GTParameters::TiePoint >::const_iterator itE = 
+    tiePoints.end();
+  
+  while( itB != itE )
+  {
+    outputRaster1Ptr->setValue( itB->first.x, itB->first.y, 255, 1 );
+    outputRaster2Ptr->setValue( itB->second.x, itB->second.y, 255, 1 );
+    
+    ++itB;
+  }
+}
 
 void TsTiePointsLocator::MoravecStrategySameImage()
 {
@@ -53,8 +136,8 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
   algoInputParams.m_inRaster2Bands.push_back( 1 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 50;
-  algoInputParams.m_moravecWindowWidth = 5;
+  algoInputParams.m_maxTiePoints = 500;
+  //algoInputParams.m_moravecWindowWidth = 5;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -65,5 +148,10 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  // saving images and tie-points
+  
+  saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImage" );
 }
 
