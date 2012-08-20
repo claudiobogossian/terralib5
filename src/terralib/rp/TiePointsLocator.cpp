@@ -267,6 +267,9 @@ namespace te
         maskRaster2Data ),
         "Error loading raster data" );
         
+      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
+      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");          
+        
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr->pulse();
@@ -320,6 +323,14 @@ namespace te
 
           raster1Data[ 0 ] = tempMatrix;
           
+          tempMatrix.reset( new Matrix< double > );
+          TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+            0, 0,
+            Matrix< double >::AutoMemPol, 
+            raster2Data[ 0 ]->getMaxTmpFileSize(),
+            raster2Data[ 0 ]->getMaxMemPercentUsage() ),
+            "Cannot allocate image matrix" );          
+          
           TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
             *(raster2Data[ 0 ]), 
             *tempMatrix, 1 ),
@@ -327,9 +338,8 @@ namespace te
 
           raster2Data[ 0 ] = tempMatrix;          
           
-//          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
-//          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");          
-            
+          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
+          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");          
           
           break;
         }
@@ -373,12 +383,12 @@ namespace te
           break;
         }
       };
-/*      
+      
       createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, 
         "raster1InterestPoints");
       createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, 
         "raster2InterestPoints");
-*/        
+        
       // Generting features (one feature per line)
       
       Matrix< double > raster1Features;
@@ -708,6 +718,9 @@ namespace te
       
       // Checking other parameters
       
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_maxTiePoints > 0,
+        "Invalid m_maxTiePoints" )      
+      
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_pixelSizeXRelation > 0,
         "Invalid m_pixelSizeXRelation" )
         
@@ -1025,14 +1038,14 @@ namespace te
       }
       
       boost::scoped_array< double* > maximasBufferHandler( new double*[ bufferLines ] );
+      double** maximasBufferPtr = maximasBufferHandler.get();      
+      unsigned int bufferCol = 0;
       for( unsigned int maximasBufferDataHandlerLine = 0 ; maximasBufferDataHandlerLine < 
         bufferLines ; ++maximasBufferDataHandlerLine )
       {
         maximasBufferHandler[ maximasBufferDataHandlerLine ] = maximasBufferDataHandler[ 
           maximasBufferDataHandlerLine ];
       }
-      
-      double** maximasBufferPtr = maximasBufferHandler.get();      
       
       // Pick the next block to process
       
@@ -1063,8 +1076,8 @@ namespace te
             {
               maximasBufferPtr[ bufferLine ][ bufferCol ] = 0;
             }
-          }
-
+          }          
+          
           // Processing each raster line from the current block
           
           const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
@@ -1077,7 +1090,7 @@ namespace te
           const unsigned int varianceCalcStartRasterLineStart = rasterLinesStart + 
             moravecWindowWidth - 1;
           const unsigned int maximasLocationStartRasterLineStart = 
-            varianceCalcStartRasterLineStart + moravecWindowRadius;
+            varianceCalcStartRasterLineStart + moravecWindowWidth - 1;
           unsigned int windowStartBufCol = 0;
           const unsigned int windowEndBufColsBound = bufferCols - 
             moravecWindowWidth;
@@ -1112,7 +1125,8 @@ namespace te
                 maskRasterBufferLineSizeBytes );
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
-            // calc the diretional variance for the buffer center line
+            // calc the diretional variance for the last line from the
+            // diretional variances buffer
             if( rasterLine >= varianceCalcStartRasterLineStart )
             {
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
@@ -1150,13 +1164,14 @@ namespace te
                   adiagVar += ( diffValue * diffValue );
                 }
                 
-                maximasBufferPtr[ moravecWindowRadius ][ windowStartBufCol + 
+                maximasBufferPtr[ bufferLines - 1 ][ windowStartBufCol + 
                   moravecWindowRadius ] = std::min( horVar, std::min(
                   verVar, std::min( diagVar, adiagVar ) ) );
               }
             }
             
-            // find the local maxima points inside the maximas buffer.
+            // find the local maxima points for the diretional variances buffer
+            // center line.
             if( rasterLine >= maximasLocationStartRasterLineStart )
             {
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
@@ -1965,6 +1980,13 @@ namespace te
     void TiePointsLocator::correlationMatrixCalcThreadEntry(
       CorrelationMatrixCalcThreadParams* paramsPtr)
     {
+      assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
+        Matrix< double >::RAMMemPol );
+      assert( paramsPtr->m_featuresSet2Ptr->getMemPolicy() == 
+        Matrix< double >::RAMMemPol );
+      assert( paramsPtr->m_corrMatrixPtr->getMemPolicy() == 
+        Matrix< double >::RAMMemPol );       
+        
       unsigned int feat2Idx = 0;
       double const* feat1Ptr = 0;
       double const* feat2Ptr = 0;
@@ -1987,7 +2009,6 @@ namespace te
         paramsPtr->m_featuresSet2Ptr->getLinesNumber();
       
       paramsPtr->m_syncMutexPtr->unlock();
-      
       
       // initializing the features 2 indexes vector
       
@@ -2013,11 +2034,6 @@ namespace te
         if( feat1Idx == (*paramsPtr->m_nextFeatureIdx1ToProcessPtr) )
         {
           ++(*paramsPtr->m_nextFeatureIdx1ToProcessPtr);
-          paramsPtr->m_syncMutexPtr->unlock();
-          
-          corrMatrixLinePtr = paramsPtr->m_corrMatrixPtr->operator[]( feat1Idx );
-          
-          feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
           
           if( paramsPtr->m_maxPt1ToPt2Distance )
           {
@@ -2035,7 +2051,13 @@ namespace te
               selectedFeaturesSet2Indexes );
               
             selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
-          }
+          }          
+          
+          paramsPtr->m_syncMutexPtr->unlock();
+          
+          corrMatrixLinePtr = paramsPtr->m_corrMatrixPtr->operator[]( feat1Idx );
+          
+          feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
           
           for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
             selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
