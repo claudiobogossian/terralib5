@@ -176,41 +176,48 @@ void te::ado::addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property
 {
   int pType = prop->getType();
 
-  switch(pType)
+  try
   {
-    case te::dt::CHAR_TYPE:
-    case te::dt::UCHAR_TYPE:
-    case te::dt::INT16_TYPE:
-    case te::dt::INT32_TYPE:
-    case te::dt::INT64_TYPE:
-    case te::dt::FLOAT_TYPE:
-    case te::dt::DOUBLE_TYPE:
-    case te::dt::BOOLEAN_TYPE:
-    case te::dt::BYTE_ARRAY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
-      break;
-
-    case te::dt::STRING_TYPE:
+    switch(pType)
     {
-      te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
-      table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), p->size());
+      case te::dt::CHAR_TYPE:
+      case te::dt::UCHAR_TYPE:
+      case te::dt::INT16_TYPE:
+      case te::dt::INT32_TYPE:
+      case te::dt::INT64_TYPE:
+      case te::dt::FLOAT_TYPE:
+      case te::dt::DOUBLE_TYPE:
+      case te::dt::BOOLEAN_TYPE:
+      case te::dt::BYTE_ARRAY_TYPE:
+        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+        break;
+
+      case te::dt::STRING_TYPE:
+      {
+        te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
+        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), p->size());
+        break;
+      }
+
+      //case te::dt::NUMERIC_TYPE:
+      //case te::dt::DATETIME_TYPE:
+        
+      case te::dt::GEOMETRY_TYPE:
+        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+        break;
+          
+      case te::dt::ARRAY_TYPE:
+        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+        break;
+
+      default:
+        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
       break;
     }
-
-    //case te::dt::NUMERIC_TYPE:
-    //case te::dt::DATETIME_TYPE:
-        
-    case te::dt::GEOMETRY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
-      break;
-          
-    case te::dt::ARRAY_TYPE:
-      table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
-      break;
-
-    default:
-      throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-    break;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
   }
 }
 
@@ -527,27 +534,35 @@ bool te::ado::isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std:
   ADOX::_CatalogPtr pCatalog;
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
-  for(long i = 0; i < pCatalog->GetTables()->Count; i++)
+  try
   {
-    if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == "geometry_columns")
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+    for(long i = 0; i < pCatalog->GetTables()->Count; i++)
     {
-      _RecordsetPtr recset;
-      TESTHR(recset.CreateInstance(__uuidof(Recordset)));
-  
-      TESTHR(recset->Open(_bstr_t("geometry_columns"),
-      _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
-
-      while(!recset->EndOfFile)
+      if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == "geometry_columns")
       {
-        if(std::string((_bstr_t)recset->Fields->GetItem("f_table_name")->Value) == tableName
-          && std::string((_bstr_t)recset->Fields->GetItem("f_geometry_column")->Value) == columnName)
-          return true;
+        _RecordsetPtr recset;
+        TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  
+        TESTHR(recset->Open(_bstr_t("geometry_columns"),
+        _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
 
-        recset->MoveNext();
+        while(!recset->EndOfFile)
+        {
+          if(std::string((_bstr_t)recset->Fields->GetItem("f_table_name")->Value) == tableName
+            && std::string((_bstr_t)recset->Fields->GetItem("f_geometry_column")->Value) == columnName)
+            return true;
+
+          recset->MoveNext();
+        }
       }
     }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
   }
 
   return false;
@@ -555,31 +570,45 @@ bool te::ado::isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std:
 
 void te::ado::Blob2Variant(const char* blob, int size, _variant_t & var)
 {
-  char *pByte;
+  try
+  {
+    char *pByte;
 
-  SAFEARRAY FAR* psa;
-  SAFEARRAYBOUND rgsabound[1];
-  rgsabound[0].lLbound = 0;
-  rgsabound[0].cElements = size;
+    SAFEARRAY FAR* psa;
+    SAFEARRAYBOUND rgsabound[1];
+    rgsabound[0].lLbound = 0;
+    rgsabound[0].cElements = size;
 
-  psa = SafeArrayCreate(VT_I1, 1, rgsabound);
+    psa = SafeArrayCreate(VT_I1, 1, rgsabound);
 
-  if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-    memcpy(pByte, blob, size);
-  SafeArrayUnaccessData(psa);
+    if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
+      memcpy(pByte, blob, size);
+    SafeArrayUnaccessData(psa);
 
-  var.vt = VT_ARRAY | VT_UI1;
-  var.parray = psa;
+    var.vt = VT_ARRAY | VT_UI1;
+    var.parray = psa;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)
 {
-  char *cdata = 0;
-  if(var.vt == (VT_ARRAY | VT_UI1))
+  try
   {
-    SafeArrayAccessData(var.parray,(void **)&cdata);
-    blob = new char[size];
-    memcpy(blob, cdata, size);
-    SafeArrayUnaccessData(var.parray);
+    char *cdata = 0;
+    if(var.vt == (VT_ARRAY | VT_UI1))
+    {
+      SafeArrayAccessData(var.parray,(void **)&cdata);
+      blob = new char[size];
+      memcpy(blob, cdata, size);
+      SafeArrayUnaccessData(var.parray);
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
   }
 }
