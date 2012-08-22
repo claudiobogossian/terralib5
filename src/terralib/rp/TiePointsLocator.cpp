@@ -88,8 +88,8 @@ namespace te
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
       m_geomTransfMaxError = 1;
-      m_correlationWindowWidth = 21;
-      m_moravecWindowWidth = 11;
+      m_correlationWindowWidth = 11;
+      m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
     }
 
@@ -267,8 +267,8 @@ namespace te
         maskRaster2Data ),
         "Error loading raster data" );
         
-      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
-      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");          
+//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
+//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");          
         
       if( m_inputParameters.m_enableProgress )
       {
@@ -277,7 +277,9 @@ namespace te
       }
       
       /* Calculating the maximum interest points number and the Moravec window
-        width for each image trying to keep the same density for both images */
+        width for each image trying to keep the same density for both images 
+        - this is usefull for the case where the area covered by raster 1
+        is different from the area covered by raster 1*/
       
       unsigned int raster1MaxInterestPoints = m_inputParameters.m_maxTiePoints;
       unsigned int raster2MaxInterestPoints = m_inputParameters.m_maxTiePoints;
@@ -338,8 +340,8 @@ namespace te
 
           raster2Data[ 0 ] = tempMatrix;          
           
-          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
-          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");          
+//          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
+//          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");  
           
           break;
         }
@@ -384,10 +386,8 @@ namespace te
         }
       };
       
-      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, 
-        "raster1InterestPoints");
-      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, 
-        "raster2InterestPoints");
+//      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");
+//      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "raster2InterestPoints");
         
       // Generting features (one feature per line)
       
@@ -885,8 +885,8 @@ namespace te
     {
       interestPoints.clear();
 
-      const unsigned int minRasterWidthAndHeight = 2 * moravecWindowWidth;      
-      
+      const unsigned int minRasterWidthAndHeight = 2 * ( ( 2 * 
+        moravecWindowWidth ) - 1 );
       // There is not enough data to look for interest points!
       if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
       if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
@@ -903,7 +903,6 @@ namespace te
       threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
         &nextRasterLinesBlockToProcess;
       threadParams.m_interestPointsPtr = &interestPoints;
-      
       threadParams.m_rasterDataPtr = &rasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
       threadParams.m_moravecWindowWidth = moravecWindowWidth;        
@@ -1045,6 +1044,10 @@ namespace te
       {
         maximasBufferHandler[ maximasBufferDataHandlerLine ] = maximasBufferDataHandler[ 
           maximasBufferDataHandlerLine ];
+        for( bufferCol = 0 ; bufferCol < bufferCols ; ++bufferCol )
+        {
+          maximasBufferPtr[ maximasBufferDataHandlerLine ][ bufferCol ] = 0;
+        }          
       }
       
       // Pick the next block to process
@@ -1065,18 +1068,6 @@ namespace te
           ++( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) );
            
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
-          
-          // fill the maximas buffer with invalid values
-          
-          unsigned int bufferCol = 0;
-          for( unsigned int bufferLine = 0 ; bufferLine < bufferLines ; 
-            ++bufferLine )
-          {
-            for( bufferCol = 0 ; bufferCol < bufferCols ; ++bufferCol )
-            {
-              maximasBufferPtr[ bufferLine ][ bufferCol ] = 0;
-            }
-          }          
           
           // Processing each raster line from the current block
           
@@ -1110,22 +1101,24 @@ namespace te
           {
             // roll up on buffers
             roolUpBuffer( rasterBufferPtr, bufferLines ); 
-            roolUpBuffer( maximasBufferPtr, bufferLines ); 
             if( paramsPtr->m_maskRasterDataPtr )
-              roolUpBuffer( maskRasterBufferPtr, bufferLines ); 
+              roolUpBuffer( maskRasterBufferPtr, bufferLines );
+            roolUpBuffer( maximasBufferPtr, bufferLines );
               
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
             memcpy( rasterBufferPtr[ bufferLines - 1 ], 
               paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
+              
+            // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
               memcpy( maskRasterBufferPtr[ bufferLines - 1 ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
-            // calc the diretional variance for the last line from the
+            // calc the diretional variance for last line from the
             // diretional variances buffer
             if( rasterLine >= varianceCalcStartRasterLineStart )
             {
@@ -1203,7 +1196,7 @@ namespace te
                 {
                   auxInterestPoint.m_x = windowStartBufCol + 
                     moravecWindowRadius;
-                  auxInterestPoint.m_y = rasterLine - moravecWindowWidth + 1;
+                  auxInterestPoint.m_y = rasterLine;
                   auxInterestPoint.m_featureValue = windowCenterPixelValue;
                   assert( auxInterestPoint.m_x < 
                     paramsPtr->m_rasterDataPtr->getColumnsNumber() );
@@ -1216,11 +1209,23 @@ namespace te
                       auxInterestPoint.m_x ] )
                     {
                       blockMaximas.insert( auxInterestPoint);
+                      
+                      if( blockMaximas.size() > 
+                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                      {
+                        blockMaximas.erase( blockMaximas.begin() );
+                      }
                     }
                   }
                   else
                   {
                     blockMaximas.insert( auxInterestPoint );
+                    
+                    if( blockMaximas.size() > 
+                      paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                    {
+                      blockMaximas.erase( blockMaximas.begin() );
+                    }
                   }
                 }
               }
@@ -1236,10 +1241,8 @@ namespace te
             (unsigned int)blockMaximas.size() );
           InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
             blockMaximas.rbegin();
-          const InterestPointsContainerT::const_reverse_iterator blockMaximasItEnd =
-            blockMaximas.rend();
             
-          while( pointsToAdd && ( blockMaximasIt != blockMaximasItEnd ) )
+          while( pointsToAdd )
           {
 //            std::cout << std::endl << blockMaximasIt->m_featureValue
 //              << std::endl;

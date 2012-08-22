@@ -50,6 +50,8 @@ class TsTiePointsLocator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( MoravecStrategySameImageDifBoxes );
   
   CPPUNIT_TEST( MultipleThreads );
+  
+  CPPUNIT_TEST( MaximumOffset );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -62,6 +64,8 @@ protected :
   void MoravecStrategySameImageDifBoxes();
   
   void MultipleThreads();
+  
+  void MaximumOffset();
 
   /*!
     \brief Save images with their respective tie points market green.

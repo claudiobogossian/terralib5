@@ -120,7 +120,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/cbers2b_rgb342_crop.tif";
+    "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -132,13 +132,11 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   algoInputParams.m_interesPointsLocationStrategy = 
     te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
-  algoInputParams.m_inRaster1Bands.push_back( 1 );
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
-  algoInputParams.m_inRaster2Bands.push_back( 1 );
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_maxTiePoints = 50;
-  algoInputParams.m_correlationWindowWidth = 11;
-  algoInputParams.m_moravecWindowWidth = 5;
+  algoInputParams.m_maxTiePoints = 1000;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -161,7 +159,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   
   std::map<std::string, std::string> inputRaster1Info;
   inputRaster1Info["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/cbers2b_rgb342_crop.tif";
+    "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     inputRaster1Info ) );
@@ -169,7 +167,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   
   std::map<std::string, std::string> inputRaster2Info;
   inputRaster2Info["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/cbers2b_rgb342_crop_half_sampled_rotated_90.tif";
+    "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     inputRaster2Info ) );
@@ -181,13 +179,13 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   algoInputParams.m_interesPointsLocationStrategy = 
     te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
   algoInputParams.m_inRaster1Ptr = inputRaster1Pointer.get();
-  algoInputParams.m_inRaster1Bands.push_back( 1 );
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
-  algoInputParams.m_inRaster2Bands.push_back( 1 );
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
-  algoInputParams.m_maxTiePoints = 50;
+  algoInputParams.m_maxTiePoints = 1000;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -211,7 +209,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/cbers2b_rgb342_crop.tif";
+    "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -223,19 +221,19 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   algoInputParams.m_interesPointsLocationStrategy = 
     te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
-  algoInputParams.m_inRaster1Bands.push_back( 1 );
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
-  algoInputParams.m_inRaster2Bands.push_back( 1 );
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
-  algoInputParams.m_raster1TargetAreaColStart = 50;
-  algoInputParams.m_raster1TargetAreaLineStart = 50;
-  algoInputParams.m_raster1TargetAreaWidth = 250;
-  algoInputParams.m_raster1TargetAreaHeight = 250;
-  algoInputParams.m_raster2TargetAreaColStart = 100;
-  algoInputParams.m_raster2TargetAreaLineStart = 100;
-  algoInputParams.m_raster2TargetAreaWidth = 200;
-  algoInputParams.m_raster2TargetAreaHeight = 200;
-  algoInputParams.m_maxTiePoints = 50;
+  algoInputParams.m_raster1TargetAreaColStart = 200;
+  algoInputParams.m_raster1TargetAreaLineStart = 200;
+  algoInputParams.m_raster1TargetAreaWidth = 500;
+  algoInputParams.m_raster1TargetAreaHeight = 500;
+  algoInputParams.m_raster2TargetAreaColStart = 300;
+  algoInputParams.m_raster2TargetAreaLineStart = 300;
+  algoInputParams.m_raster2TargetAreaWidth = 400;
+  algoInputParams.m_raster2TargetAreaHeight = 400;
+  algoInputParams.m_maxTiePoints = 1000;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -258,7 +256,7 @@ void TsTiePointsLocator::MultipleThreads()
   
   std::map<std::string, std::string> inputRasterInfo;
   inputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/cbers2b_rgb342_crop.tif";
+    "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -270,11 +268,11 @@ void TsTiePointsLocator::MultipleThreads()
   algoInputParams.m_interesPointsLocationStrategy = 
     te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
   algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
-  algoInputParams.m_inRaster1Bands.push_back( 1 );
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
   algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
-  algoInputParams.m_inRaster2Bands.push_back( 1 );
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = true;
-  algoInputParams.m_maxTiePoints = 50;
+  algoInputParams.m_maxTiePoints = 1000;
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -289,5 +287,45 @@ void TsTiePointsLocator::MultipleThreads()
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MultipleThreads" );
+}
+
+void TsTiePointsLocator::MaximumOffset()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/cbers_b2_crop.tif";
+    
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );    
+    
+  // Creating the algorithm parameters
+  
+  te::rp::TiePointsLocator::InputParameters algoInputParams;
+  algoInputParams.m_interesPointsLocationStrategy = 
+    te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+  algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
+  algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
+  algoInputParams.m_enableMultiThread = false;
+  algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_maxR1ToR2Offset = 20;
+
+  te::rp::TiePointsLocator::OutputParameters algoOutputParams;
+  
+  // Executing the algorithm
+  
+  te::rp::TiePointsLocator algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  // saving images and tie-points
+  
+  saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MaximumOffset" );
 }
 

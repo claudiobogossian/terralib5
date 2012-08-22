@@ -111,9 +111,9 @@ namespace te
             
             double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:1).
             
-            unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 21).
+            unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 11).
             
-            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 11, default: 11 ).
+            unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
             
             unsigned int m_maxR1ToR2Offset; //! The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
           
