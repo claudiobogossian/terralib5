@@ -65,15 +65,14 @@ te::ado::DataSourceCatalogLoader::~DataSourceCatalogLoader()
 
 void te::ado::DataSourceCatalogLoader::getDataSets(std::vector<std::string*>& datasets)
 {
-  
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+
   try
   {
-    _ConnectionPtr adoConn = m_t->getADOConnection();
-
-    ADOX::_CatalogPtr pCatalog = 0;
-
-    TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
-
     pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
 
     ADOX::TablesPtr tables = pCatalog->GetTables();
@@ -94,7 +93,6 @@ void te::ado::DataSourceCatalogLoader::getDataSets(std::vector<std::string*>& da
 
       datasets.push_back(new std::string(table->GetName()));
     }
-
   }
   catch(_com_error &e)
   {
@@ -114,13 +112,21 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
   
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
   ADOX::_TablePtr t = tables->GetItem(datasetName.c_str());
 
   ADOX::ColumnsPtr cols = t->GetColumns();
+  
 
   std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(datasetName));
   dt->setTitle(datasetName);
@@ -158,8 +164,14 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
-
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
   ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
@@ -201,7 +213,14 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -226,6 +245,7 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
 
     }
   }
+  
 }
 
 void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, std::vector<std::string>& fkNames, std::vector<std::string>& rdts)
@@ -236,7 +256,14 @@ void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, s
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -254,6 +281,7 @@ void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, s
       rdts.push_back(std::string(fk->GetRelatedTable()));
     }
   }
+  
 }
 
 te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::string& fkName, te::da::DataSetType* dt, te::da::DataSetType* rdt)
@@ -264,15 +292,23 @@ te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::s
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
-  ADOX::TablesPtr tables = pCatalog->GetTables();
+    ADOX::TablesPtr tables = pCatalog->GetTables();
 
-  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+    ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
 
-  ADOX::KeysPtr keys = t->GetKeys();
+    ADOX::KeysPtr keys = t->GetKeys();
 
-  ADOX::_KeyPtr adofk = keys->GetItem(fkName.c_str());
+    ADOX::_KeyPtr adofk = keys->GetItem(fkName.c_str());
+  
 
   if(std::string(adofk->GetRelatedTable()) == rdt->getName())
     throw Exception(TR_ADO("Foreign Key not found!"));
@@ -308,7 +344,14 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
 
   TESTHR((pCatalog.CreateInstance(__uuidof(ADOX::Catalog))));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -337,6 +380,7 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
     dt->add(tlIdx);
 
   }
+  
 }
 
 void te::ado::DataSourceCatalogLoader::getCheckConstraints(te::da::DataSetType* dt)
@@ -406,7 +450,14 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::_TablePtr table = 0;
 
@@ -425,7 +476,14 @@ bool te::ado::DataSourceCatalogLoader::primarykeyExists(const std::string& name)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+}
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -454,7 +512,14 @@ bool te::ado::DataSourceCatalogLoader::uniquekeyExists(const std::string& name)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -483,7 +548,14 @@ bool te::ado::DataSourceCatalogLoader::foreignkeyExists(const std::string& name)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
@@ -517,7 +589,14 @@ bool te::ado::DataSourceCatalogLoader::indexExists(const std::string& name)
 
   TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
 
-  pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+}
 
   ADOX::TablesPtr tables = pCatalog->GetTables();
 
