@@ -46,7 +46,7 @@ namespace te
     namespace widgets
     {
       /*!
-        \class AssistantManagerImpl
+        \class AssistantHelpManagerImpl
 
         \brief A help manager that uses the QAssistant to manage help files.
       */
@@ -58,7 +58,7 @@ namespace te
 
           /*!
             \brief Constructor.
-
+            \param collectionFile Name of the Qt collection file to be used.
             \param parent Used by QObject constructor.
           */
           AssistantHelpManagerImpl(const QString& collectionFile, QObject* parent = 0);
@@ -82,9 +82,9 @@ namespace te
 
         protected:
 
-          QProcess* m_proc;
-          QStringList m_regDocs;
-          QString m_collectionFile;
+          QProcess* m_proc;         //!< Qt process, used to init QAssistant.
+          QStringList m_regDocs;    //!< Registered documents.
+          QString m_collectionFile; //!< Collection name.
       };
 
     } // end namespace widgets
