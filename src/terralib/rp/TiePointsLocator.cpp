@@ -190,7 +190,7 @@ namespace te
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 4 );
+        progressPtr->setTotalSteps( 6 );
         progressPtr->setMessage( "Locating tie points" );
       }
       
@@ -245,12 +245,6 @@ namespace te
         raster1Data,
         maskRaster1Data ),
         "Error loading raster data" );
-        
-      if( m_inputParameters.m_enableProgress )
-      {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
-      }        
         
       TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
         m_inputParameters.m_inRaster2Ptr,
@@ -352,6 +346,12 @@ namespace te
         }
       };
       
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
+      
       // locating interest points
       
       InterestPointsContainerT raster1InterestPoints;
@@ -385,6 +385,12 @@ namespace te
           break;
         }
       };
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
 //      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");
 //      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "raster2InterestPoints");
@@ -433,6 +439,12 @@ namespace te
         }
       };
       
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
+      
 //      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );
 //      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );
 
@@ -468,6 +480,12 @@ namespace te
           break;
         }
       };
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       // Clean anused data
       
@@ -520,6 +538,12 @@ namespace te
         tiePointsWeights ), "Outliers remotion error" );
        
       outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       return true;
     }
@@ -1495,8 +1519,8 @@ namespace te
       double rot_sin = 0;
       
       /* the coords rotated but in the hole image reference */
-      int rotated_curr_x_img = 0;
-      int rotated_curr_y_img = 0;
+      unsigned int rotated_curr_x_img = 0;
+      unsigned int rotated_curr_y_img = 0;
       
       /* current window mean and standart deviation */
       double curr_wind_mean = 0.0;
@@ -1504,7 +1528,7 @@ namespace te
       double curr_wind_stddev_aux = 0.0;
       
       // used on intensity vector calcule
-      double imgMatrixValue1 = 0;
+//      double imgMatrixValue1 = 0;
 //      double imgMatrixValue2 = 0;
       
       double* featuresLinePtr = 0;
@@ -1623,25 +1647,13 @@ namespace te
             /* copy the new rotated window to the output vector */
               
             rotated_curr_x_img = curr_window_x_start +
-              (int)ROUND( rotated_curr_x );
+              (unsigned int)ROUND( rotated_curr_x );
             rotated_curr_y_img = curr_window_y_start +
-              (int)ROUND( rotated_curr_y );                        
+              (unsigned int)ROUND( rotated_curr_y );                        
             
-            if( ( rotated_curr_x_img > 0 ) &&  
-              ( rotated_curr_x_img < (int)rasterDataCols ) &&
-              ( rotated_curr_y_img > 0 ) &&
-              ( rotated_curr_y_img < (int)rasterDataLines ) )
-            {
-              imgMatrixValue1 = rasterData( rotated_curr_y_img,
-                rotated_curr_x_img );
-            }
-            else
-            {
-              imgMatrixValue1 = 0;
-            }
-              
             features( validInteresPointsIndex, ( curr_y * 
-              correlationWindowWidth ) + curr_x ) = imgMatrixValue1;
+              correlationWindowWidth ) + curr_x ) = rasterData( 
+              rotated_curr_y_img, rotated_curr_x_img );
           }
         }
         
