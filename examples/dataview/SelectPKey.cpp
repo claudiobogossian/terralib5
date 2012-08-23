@@ -1,5 +1,4 @@
 #include "SelectPKey.h"  
-#include "CheckBoxCentralizer.h"
 
 #include <ui_SelectPKey.h>
 
