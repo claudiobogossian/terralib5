@@ -1466,8 +1466,8 @@ namespace te
       unsigned int curr_window_y_start = 0;
       unsigned int curr_window_x_center = 0;
       unsigned int curr_window_y_center = 0;
-      unsigned int curr_window_x_bound = 0;
-      unsigned int curr_window_y_bound = 0;
+      unsigned int curr_window_x_end = 0; // this coord is also counted in
+      unsigned int curr_window_y_end = 0; // this coord is also counted in
       
       /*used on the rotation calcule */
 
@@ -1531,49 +1531,39 @@ namespace te
         
         curr_window_x_start = curr_window_x_center - wind_radius;
         curr_window_y_start = curr_window_y_center - wind_radius;
-        curr_window_x_bound = curr_window_x_start + correlationWindowWidth;
-        curr_window_y_bound = curr_window_y_start + correlationWindowWidth;
+        curr_window_x_end = curr_window_x_start + correlationWindowWidth - 1;
+        curr_window_y_end = curr_window_y_start + correlationWindowWidth - 1;
           
         /* Estimating the intensity vector X direction */
         
         int_x_dir = 0;
         
-        for( curr_offset = 0 ; curr_offset < wind_radius ;
-          ++curr_offset ) 
-        {      
-          for( curr_y = curr_window_y_start ; curr_y < curr_window_y_bound ; 
-            ++curr_y ) 
+        for( curr_y = curr_window_y_start ; curr_y <= curr_window_y_end ; 
+          ++curr_y ) 
+        {        
+          for( curr_offset = 0 ; curr_offset < wind_radius ;
+            ++curr_offset ) 
           {
-            int_x_dir += rasterData( curr_y, curr_window_x_bound - 1 - curr_offset ) -
+            int_x_dir += rasterData( curr_y, curr_window_x_end - curr_offset ) -
               rasterData( curr_y, curr_window_x_start + curr_offset );
           }
         }
-        
-        int_x_dir /= ( 2.0 * wind_radius_double );
         
         /* Estimating the intensity vector y direction */
         
         int_y_dir = 0;
         
-        for( curr_offset = 0 ; curr_offset < wind_radius ;
-          ++curr_offset ) {      
-
-          for( curr_x = curr_window_x_start ; 
-            curr_x < curr_window_x_bound ;
-            ++curr_x ) 
+        for( curr_x = curr_window_x_start ; curr_x <= curr_window_x_end ;
+          ++curr_x )        
+        {
+          for( curr_offset = 0 ; curr_offset < wind_radius ; ++curr_offset )
           {
-            int_y_dir += rasterData( curr_window_y_start + curr_offset, curr_x ) - 
-              rasterData( curr_window_y_bound - 1 - curr_offset, curr_x );
+            int_y_dir += rasterData( curr_window_y_end - curr_offset, curr_x ) -
+              rasterData( curr_window_y_start + curr_offset, curr_x );
           }
         }      
         
-        int_y_dir /= ( 2.0 * ( (double) wind_radius ) );
-        
         /* Calculating the rotation parameters - 
-          counterclockwise rotation 
-          
-          | u |    |cos  -sin|   |X|
-          | v | == |sin   cos| x |Y|
         */
         int_norm = sqrt( ( int_x_dir * int_x_dir ) + 
           ( int_y_dir * int_y_dir ) );
@@ -1587,11 +1577,18 @@ namespace te
           rot_sin = 0.0;
         }
         
+        assert( ( rot_cos >= -1.0 ) && ( rot_cos <= 1.0 ) );
+        assert( ( rot_sin >= -1.0 ) && ( rot_sin <= 1.0 ) );
+        
         /* Generating the rotated window data and inserting it into 
           the img_features_matrix by setting the intensity vector
-          to the direction (1,0) by a clockwise rotation
-          using the inverse matrix 
-        
+          to the direction (1,0) 
+
+          counterclockwise rotation 
+          | u |    |cos  -sin|   |X|
+          | v | == |sin   cos| x |Y|
+
+          clockwise rotation
           | u |    |cos   sin|   |X|
           | v | == |-sin  cos| x |Y|
         */
@@ -1611,10 +1608,10 @@ namespace te
             
             rotated_curr_x = 
               ( ( rot_cos * curr_x_minus_radius ) + 
-              ( rot_sin * curr_y_minus_radius ) );
+              ( -1.0 * rot_sin * curr_y_minus_radius ) );
             
             rotated_curr_y =
-              ( ( -1.0 * rot_sin * curr_x_minus_radius ) + 
+              ( ( rot_sin * curr_x_minus_radius ) + 
               ( rot_cos * curr_y_minus_radius ) );
               
             /* bringing the window back to its original
