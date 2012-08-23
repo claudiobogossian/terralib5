@@ -55,19 +55,61 @@ namespace te
   namespace ado
   {
 
-    int ado2Terralib(ADOX::DataTypeEnum adoType);
-    ADOX::DataTypeEnum terralib2Ado(int terralib);
-    te::dt::Property* getPropertyFromADO(ADOX::_ColumnPtr column);
-    te::da::PrimaryKey* getPrimaryKeyFromADO(ADOX::_KeyPtr key);
-    te::da::ForeignKey* getForeignKeyFromADO(ADOX::_KeyPtr key);
-    te::da::UniqueKey* getUniqueKeyFromADO(ADOX::_KeyPtr key);
-    te::gm::GeometryProperty* getDefaultGeomProperty(te::da::DataSetType* dt, _ConnectionPtr adoConn);
-    void setPrimaryKey(te::da::DataSetType* dt, ADOX::_KeyPtr key);
+    /*!
+      \brief It returns the geometry OGC names.
 
+      \param t The TerraLib geometry type.
+
+      \return The geometry OGC names.
+    */
+    const std::string& GetGeometryName(te::gm::GeomType t);
+
+    /*!
+      \brief Bind ADO Type to TerraLib Type.
+
+      \param adoType Ado Type.
+
+      \return TerraLib Type
+    */
+    int ado2Terralib(ADOX::DataTypeEnum adoType);
+
+    /*!
+      \brief Bind TerraLib Type to ADO Type.
+
+      \param terralib TerraLib Type.
+
+      \return ADO Type
+    */
+    ADOX::DataTypeEnum terralib2Ado(int terralib);
+    
+    /*!
+      \brief Create TerraLib property from ado property (column)
+
+      \param column ADO column pointer
+
+      \return TerraLib Property
+    */
+    te::dt::Property* getPropertyFromADO(ADOX::_ColumnPtr column);
+    
+    /*!
+      \brief Get the default geometry property from table "geometry_columns"
+      created on Access database
+
+      \param dt Data Set Type
+
+      \return TerraLib geometry property
+    */
+    te::gm::GeometryProperty* getDefaultGeomProperty(te::da::DataSetType* dt, _ConnectionPtr adoConn);
+
+    /*!
+      \brief Add a ADO propert based on the TerraLib property
+
+      \param table Table target
+      \param prop Property to be added
+    */
     void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
 
-    int getAdoColumnId(ADOX::_TablePtr table, std::string& name);
-
+    
     te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
     te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
     std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);
@@ -77,7 +119,8 @@ namespace te
 
     std::string getOGCType(te::gm::GeomType type);
 
-    void createGeometryColumns(_ConnectionPtr adoConn);
+    void Blob2Variant(const char* blob, int size, _variant_t & var);
+    void Variant2Blob(const _variant_t var, int size, char* & blob);
 
   } // end namespace ado
 }   // end namespace te

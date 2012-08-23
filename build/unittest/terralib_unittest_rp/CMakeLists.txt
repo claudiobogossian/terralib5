@@ -5,4 +5,5 @@ project(all)
 add_subdirectory(terralib_unittest_rp_contrast)
 add_subdirectory(terralib_unittest_rp_matrix)
 add_subdirectory(terralib_unittest_rp_segmenter)
+add_subdirectory(terralib_unittest_rp_tiepointslocator)
 

@@ -115,6 +115,7 @@ bool te::gm::SecondDegreePolynomialGT::computeParameters( GTParameters& params )
   // Creating the equation system parameters
   
   const unsigned int tiepointsSize = params.m_tiePoints.size();
+  if( tiepointsSize < 6 ) return false;
   
   boost::numeric::ublas::matrix< double > W( tiepointsSize, 6 );
   boost::numeric::ublas::matrix< double > WI( tiepointsSize, 6 );

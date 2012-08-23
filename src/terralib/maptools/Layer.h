@@ -46,7 +46,9 @@ namespace te
   namespace map
   {
 // Forward declarations
+    class Grouping;
     class LayerRenderer;
+    class LegendItem;
 
     /*!
       \class Layer
@@ -94,7 +96,6 @@ namespace te
         int getSRID() const;
 
         void setSRID(int srid);
-
        
         /*!
           \brief It returns the datasource associated to the layer.
@@ -140,6 +141,43 @@ namespace te
         */
         void setRenderer(LayerRenderer* renderer);
 
+        /*!
+          \brief It gets the grouping parameters used to generate the layer legend.
+
+          \output It returns the grouping parameters of the legend layerr.
+        */
+        Grouping* getGrouping() const;
+
+        /*!
+          \brief It sets the grouping parameters to be used to generate the layer legend.
+
+          \param grouping The grouping to be used to generate the layer legend.
+
+          \note This class will take the ownership of the pointer to the grouping argument.
+        */
+        void setGrouping(Grouping* grouping);
+
+        /*!
+          \brief It checks if this layer has an associated legend.
+
+          \output It returns true if the layer has an legend associated to this layer.
+        */
+        bool hasLegend();
+
+        /*!
+          \brief It gets the legend associated to this layer.
+
+          \output The legend associated to this layer.
+        */
+        const std::vector<LegendItem*>& getLegend() const;
+
+        /*!
+          \brief It sets the legend associated to this layer.
+
+          \param The legend to be associated to this layer.
+        */
+        void setLegend(const std::vector<LegendItem*>& legend);
+
       public:
          
         static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
@@ -152,6 +190,8 @@ namespace te
         std::auto_ptr<te::gm::Envelope> m_mbr;      //!< The Layer bounding box.
         std::auto_ptr<te::se::Style> m_style;       //!< The style to be applied to the geographic objects in the layer.
         std::auto_ptr<LayerRenderer> m_renderer;    //!< A pointer to the internal renderer used to paint this layer.
+        Grouping* m_grouping;                       //!< The grouping used to generate the layer legend.
+        std::vector<LegendItem*> m_legend;          //!< The legend associated to this layer.
     };
 
   } // end namespace map

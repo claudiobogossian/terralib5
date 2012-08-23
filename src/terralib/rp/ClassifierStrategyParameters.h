@@ -18,18 +18,41 @@
  */
 
 /*!
-  \file AbstractLayerItemFactory.cpp
+  \file terralib/rp/ClassifierStrategyParameters.h
 
-  \brief This is the abstract factory for Qt TreeItem objects.
+  \brief Raster classifier strategy parameters base class.
  */
 
-// TerraLib
-#include "AbstractLayerItemFactory.h"
+#ifndef __TERRALIB_RP_INTERNAL_CLASSIFIERSTRATEGYPARAMETERS_H
+#define __TERRALIB_RP_INTERNAL_CLASSIFIERSTRATEGYPARAMETERS_H
 
-te::qt::widgets::AbstractLayerItemFactory::~AbstractLayerItemFactory()
-{}
+#include "../common/AbstractParameters.h"
+#include "Config.h"
 
-te::qt::widgets::AbstractLayerItemFactory::AbstractLayerItemFactory(const std::string& factoryKey)
-  : te::common::ParameterizedAbstractFactory<AbstractLayerItem, std::string, std::pair<te::map::AbstractLayer*, te::qt::widgets::AbstractLayerItem*> >(factoryKey)
-{}
+namespace te
+{
+  namespace rp
+  {
+    /*!
+      \class ClassifierStrategyParameters
+      \brief Classifier Strategy Parameters
+    */
+
+    class TERPEXPORT ClassifierStrategyParameters : public te::common::AbstractParameters
+    {
+      public:
+
+        virtual ~ClassifierStrategyParameters();
+
+      protected :
+
+        ClassifierStrategyParameters();
+
+        ClassifierStrategyParameters(const ClassifierStrategyParameters&);
+
+    };
+  } // end namespace rp
+}   // end namespace te
+
+#endif  // __TERRALIB_RP_INTERNAL_CLASSIFIERSTRATEGYPARAMETERS_H
 

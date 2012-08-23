@@ -26,32 +26,38 @@
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../maptools/Layer.h"
-#include "AbstractLayerItemFactory.h"
+#include "../../../maptools/LegendItem.h"
 #include "LayerItem.h"
+#include "LegendItem.h"
 
 // Qt
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
 te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject* parent)
-  : AbstractLayerItem(refLayer, parent)
+  : AbstractTreeItem(parent)
 {
+  m_refLayer = refLayer;
+
   te::map::AbstractLayer::const_iterator it = m_refLayer->begin();
   te::map::AbstractLayer::const_iterator it_end = m_refLayer->end();
 
   while(it != it_end)
   {
-    te::map::AbstractLayer* layer = static_cast<te::map::AbstractLayer*>(*it);
+    te::map::AbstractLayer* childReflayer = static_cast<te::map::AbstractLayer*>(*it);
 
-    AbstractLayerItemFactory::make(layer->getType(),
-                                   std::pair<te::map::AbstractLayer*, te::qt::widgets::AbstractLayerItem*>(layer, this));
-
+    new LayerItem(childReflayer, this);
     ++it;
   }
+
+  te::map::Layer* layer = static_cast<te::map::Layer*>(refLayer);
+  if(layer->hasLegend() == true)
+    setLegend();
 }
 
 te::qt::widgets::LayerItem::~LayerItem()
-{}
+{
+}
 
 QVariant te::qt::widgets::LayerItem::data(int role) const
 {
@@ -78,7 +84,18 @@ QVariant te::qt::widgets::LayerItem::data(int role) const
   return QVariant();
 }
 
-QMenu* te::qt::widgets::LayerItem::getMenu(QWidget* /*parent*/) const
+QMenu* te::qt::widgets::LayerItem::getMenu(QWidget* parent) const
 {
-  return 0;
+  return new QMenu(parent);
 }
+
+void te::qt::widgets::LayerItem::setLegend()
+{
+  te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_refLayer);
+
+  const std::vector<te::map::LegendItem*>& legend = refLayer->getLegend();
+  for(std::size_t i = 0; i < legend.size(); ++i)
+    new LegendItem(legend[i], this);
+}
+
+

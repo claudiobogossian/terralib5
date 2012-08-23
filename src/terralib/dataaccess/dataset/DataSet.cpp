@@ -431,7 +431,7 @@ void te::da::DataSet::setValue(const std::string& name, te::dt::AbstractData* ad
   return setValue(pos, ad);
 }
 
-std::string te::da::DataSet::getAsString(int i) const
+std::string te::da::DataSet::getAsString(int i, int precision) const
 {
   const DataSetType* dt = getType();
   std::string value;
@@ -472,7 +472,7 @@ std::string te::da::DataSet::getAsString(int i) const
     break;
 
     case te::dt::DOUBLE_TYPE:
-      value = te::common::Convert2String(getDouble(i));
+      value = te::common::Convert2String(getDouble(i), precision);
     break;
 
     case te::dt::NUMERIC_TYPE:
@@ -530,7 +530,7 @@ std::string te::da::DataSet::getAsString(int i) const
   return value;
 }
 
-std::string te::da::DataSet::getAsString(const std::string& name) const
+std::string te::da::DataSet::getAsString(const std::string& name, int precision) const
 {
   const DataSetType* dt = getType();
 
@@ -541,7 +541,7 @@ std::string te::da::DataSet::getAsString(const std::string& name) const
 
   int i = static_cast<int>(dt->getPropertyPosition(p));
 
-  return getAsString(i);
+  return getAsString(i, precision);
 }
 
 bool te::da::DataSet::isNull(const std::string& name) const

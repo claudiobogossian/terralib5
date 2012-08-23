@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file AbstractLayerItem.h
+  \file AbstractTreeItem.h
 
-  \brief A widget designed to show the information of a given Layer in a tree oriented way.
+  \brief A widget designed to show the information of a tree item.
  */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTTREEITEM_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTTREEITEM_H
 
 // TerraLib
 #include "../Config.h"
@@ -41,21 +41,24 @@ class QWidget;
 namespace te
 {
 // Forward declarations
-  namespace map { class AbstractLayer; }
+  namespace map
+  {
+    class AbstractLayer; 
+  }
 
   namespace qt
   {
     namespace widgets
     {
       /*!
-        \class AbstractLayerItem
+        \class AbstractTreeItem
 
-        \brief A widget designed to show the information of a given Layer in a tree oriented way.
+        \brief A widget designed to show the information of a tree item.
 
-        \todo As classes de layer do lado Qt devem ser notificadas de qualquer alteracao no modelo em memoria refenciado por ela.
+        \todo As classes do lado do Qt devem ser notificadas de qualquer alteracao no modelo em memoria refenciado por ela.
               Talvez, uma solucao seja usar o padrao Observer para as classes te::map::AbstractLayer e te::qt::widgets::AbstractLayer.
        */
-      class TEQTWIDGETSEXPORT AbstractLayerItem : public QObject
+      class TEQTWIDGETSEXPORT AbstractTreeItem : public QObject
       {
         Q_OBJECT
 
@@ -67,29 +70,26 @@ namespace te
           //@{
 
           /*!
-            \brief It initializes a Layer item with a reference to a layer and an item parent.
+            \brief It initializes a tree item with its parent item.
 
             \param parent   The parent item or NULL if it is a root item.
-
-            \note The AbstractLayerItem will NOT take the ownership of the referenced layer.
-                  Be sure not to clear it before dropping off the AbstractLayerItem.
            */
-          AbstractLayerItem(te::map::AbstractLayer* refLayer, QObject* parent = 0);
+          AbstractTreeItem(QObject* parent = 0);
 
           /*! Virtual destructor. */
-          virtual ~AbstractLayerItem();
+          virtual ~AbstractTreeItem();
 
           //@}
 
-          /** @name Qt AbstractLayerItem General Methods
-           *  General methods for a AbstractLayerItem.
+          /** @name Qt AbstractTreeItem General Methods
+           *  General methods for a AbstractTreeItem.
            */
           //@{
 
           /*!
-            \brief It returns the layer associated to this AbstractLayerItem.
+            \brief It returns the layer associated to this AbstractTreeItem.
 
-            \return The layer associated to this AbstractLayerItem.
+            \return The layer associated to this AbstractTreeItem.
            */
           te::map::AbstractLayer* getRefLayer() const;
 
@@ -98,7 +98,7 @@ namespace te
 
             \return The list of children of this tree item.
            */
-          const QList<te::qt::widgets::AbstractLayerItem*>& getChildren() const;
+          const QList<QObject*>& getChildren() const;
 
           /*!
             \brief It returns the child item in the given position.
@@ -107,7 +107,7 @@ namespace te
 
             \return The child item in the given position.
            */
-          te::qt::widgets::AbstractLayerItem* getChild(int pos);
+          te::qt::widgets::AbstractTreeItem* getChild(int pos);
 
           /*!
             \brief It returns the index position of this item as child of the parent item.
@@ -130,26 +130,18 @@ namespace te
             \brief It adds an item in the given position.
 
             \param i          The position where the item will be added.
-            \param layerItem  The layer item to be added.
+            \param treeItem   The tree item to be added.
            */
-          void addChild(int i, AbstractLayerItem* layerItem);
-
-          /*!
-            \brief It moves a child from a position to another one.
-
-            \param fromPos  The position the child item should be moved from.
-            \param toPos    The position where the child item should be moved to.
-           */
-          void moveChild(int fromPos, int toPos);
+          void addChild(int i, AbstractTreeItem* treeItem);
 
           /*!
             \brief It returns the child row of the given item.
 
-            \param layeItem  The layer item
+            \param treeItem  The tree item
 
             \return The row of the layer item
            */
-          int getChildRow(AbstractLayerItem* layerItem);
+          int getChildRow(AbstractTreeItem* treeItem);
 
           //@}
 
@@ -159,13 +151,13 @@ namespace te
           //@{
 
           /*!
-            \brief It returns the data stored under the given role for the item referred by this layer.
+            \brief It returns the data stored under the given role for this item tree.
 
             This method will be called by the implementation of LayerExplorerModel.
 
             \param role The role are used by a given view to indicate to this model which type of data it needs.
 
-            \return The data stored under the given role for the item referred by this layer.
+            \return The data stored under the given role for this tree item.
            */
           virtual QVariant data(int role) const = 0;
 
@@ -187,16 +179,15 @@ namespace te
 
             \param item The item to be appended.
            */
-          void append(AbstractLayerItem* item);
+          void append(AbstractTreeItem* item);
 
         protected:
       
-          te::map::AbstractLayer* m_refLayer;  //!< A pointer to the referenced layer.
-          QList<te::qt::widgets::AbstractLayerItem*> m_children; //!< internal list of children.
+          te::map::AbstractLayer* m_refLayer;
       };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTTREEITEM_H

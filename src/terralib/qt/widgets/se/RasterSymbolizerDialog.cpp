@@ -29,6 +29,7 @@
 #include "../../../se.h"
 
 #include "ChannelSelectionWidget.h"
+#include "ColorMapWidget.h"
 #include "ContrastEnhancementWidget.h"
 #include "HorizontalSliderWidget.h"
 #include "ImageOutlineWidget.h"
@@ -47,6 +48,7 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
   : QDialog(parent, f),
     m_ui(new Ui::RasterSymbolizerDialogForm),
     m_channelSelectionWidget(0),
+    m_colorMapWidget(0),
     m_overlapBehaviorWidget(0),
     m_contrastWidget(0),
     m_shadedReliefWidget(0),
@@ -61,6 +63,7 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
   
   connect(m_ui->m_opacityToolButton, SIGNAL(clicked()), this, SLOT(onOpacityClicked()));
   connect(m_ui->m_channelSelectionToolButton, SIGNAL(clicked()), this, SLOT(onChannelSelectionClicked()));
+  connect(m_ui->m_colorMapToolButton, SIGNAL(clicked()), this, SLOT(onColorMapClicked()));
   connect(m_ui->m_contrastToolButton, SIGNAL(clicked()), this, SLOT(onContrastEnhancementClicked()));
   connect(m_ui->m_imageOutlinetoolButton, SIGNAL(clicked()), this, SLOT(onImageOutlineClicked()));
   connect(m_ui->m_overlapBehaviorToolButton, SIGNAL(clicked()), this, SLOT(onOverlapBehaviorClicked()));
@@ -95,7 +98,7 @@ te::se::Symbolizer* te::qt::widgets::RasterSymbolizerDialog::getRasterSymbolizer
 {
   if(m_sliderWidget)
   {
-    // se opacity value is betwen 0 and 1. The value used from slider must be
+    // if opacity value is betwen 0 and 1. The value used from slider must be
     // changed to this range.
     int opacity = m_sliderWidget->getValue();
     double seOpacity = opacity / 100.;
@@ -180,9 +183,24 @@ void te::qt::widgets::RasterSymbolizerDialog::onChannelSelectionClicked()
   }
 }
 
+void te::qt::widgets::RasterSymbolizerDialog::onColorMapClicked()
+{
+    m_ui->m_stackedWidget->setCurrentIndex(3);
+
+  if(!m_colorMapWidget)
+  {
+    m_colorMapWidget = new te::qt::widgets::ColorMapWidget(m_ui->m_stackedWidget->currentWidget());
+
+    QGridLayout* layout = new QGridLayout(m_ui->m_stackedWidget->currentWidget());
+
+    layout->setAlignment(Qt::AlignTop);
+    layout->addWidget(m_colorMapWidget);
+  }
+}
+
 void te::qt::widgets::RasterSymbolizerDialog::onContrastEnhancementClicked()
 {
-  m_ui->m_stackedWidget->setCurrentIndex(3);
+  m_ui->m_stackedWidget->setCurrentIndex(4);
 
   if(!m_contrastWidget)
   {
@@ -197,7 +215,7 @@ void te::qt::widgets::RasterSymbolizerDialog::onContrastEnhancementClicked()
 
 void te::qt::widgets::RasterSymbolizerDialog::onImageOutlineClicked()
 {
-  m_ui->m_stackedWidget->setCurrentIndex(4);
+  m_ui->m_stackedWidget->setCurrentIndex(5);
 
   if(!m_imageOutlineWidget)
   {
@@ -212,7 +230,7 @@ void te::qt::widgets::RasterSymbolizerDialog::onImageOutlineClicked()
 
 void te::qt::widgets::RasterSymbolizerDialog::onOverlapBehaviorClicked()
 {
-  m_ui->m_stackedWidget->setCurrentIndex(5);
+  m_ui->m_stackedWidget->setCurrentIndex(6);
 
   if(!m_overlapBehaviorWidget)
   {
@@ -227,7 +245,7 @@ void te::qt::widgets::RasterSymbolizerDialog::onOverlapBehaviorClicked()
 
 void te::qt::widgets::RasterSymbolizerDialog::onShadedReliefClicked()
 {
-  m_ui->m_stackedWidget->setCurrentIndex(6);
+  m_ui->m_stackedWidget->setCurrentIndex(7);
 
   if(!m_shadedReliefWidget)
   {

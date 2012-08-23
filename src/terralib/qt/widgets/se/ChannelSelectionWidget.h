@@ -112,10 +112,14 @@ namespace te
 
         protected slots:
 
+          void onRGBColorSelected();
+          void onGrayScalelSelected();
+
           void onRedChannelSelected();
           void onGreenChannelSelected();
           void onBlueChannelSelected();
           void onMonoChannelSelected();
+          
 
           void onSelectedChannelChanged();
 

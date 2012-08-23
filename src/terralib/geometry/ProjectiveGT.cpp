@@ -141,7 +141,7 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
     */
 
   const unsigned int tiepointsSize = params.m_tiePoints.size();
-  assert( tiepointsSize > 3 );
+  if( tiepointsSize < 4 ) return false;
 
   /* L and A calcule */
 

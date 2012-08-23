@@ -503,7 +503,7 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
 {
   try
   {
-    te::qt::widgets::AbstractLayerItem* childItem = static_cast<te::qt::widgets::AbstractLayerItem*>(mi.internalPointer());
+    te::qt::widgets::AbstractTreeItem* childItem = static_cast<te::qt::widgets::AbstractTreeItem*>(mi.internalPointer());
     te::map::AbstractLayer* al = childItem->getRefLayer();
     if(al->getType() == "FOLDERLAYER")
     {
@@ -591,7 +591,7 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
 
 void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
 {
-  te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(mi.internalPointer());
+  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(mi.internalPointer());
   te::map::AbstractLayer* al = item->getRefLayer();
   if(al->getVisibility() == 0)
     return;
@@ -714,7 +714,7 @@ void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
 {
   //teste m_styleAction->setEnabled(false);
   m_parentModelIndex = mi.parent();
-  te::qt::widgets::AbstractLayerItem* childItem = static_cast<te::qt::widgets::AbstractLayerItem*>(mi.internalPointer());
+  te::qt::widgets::AbstractTreeItem* childItem = static_cast<te::qt::widgets::AbstractTreeItem*>(mi.internalPointer());
   m_selectedLayer = childItem->getRefLayer();
 
   //if(m_selectedLayer->getType() == "DATASETLAYER")
@@ -1478,12 +1478,12 @@ void MyWindow::addFolderSlot()
       te::map::FolderLayer *folder = new te::map::FolderLayer(name, name, m_selectedLayer);
 
       QModelIndex itemIndex = m_layerExplorer->currentIndex();
-      te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(itemIndex.internalPointer());
+      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(itemIndex.internalPointer());
     
       size_t ind = m_layerExplorerModel->rowCount(itemIndex);
       te::qt::widgets::LayerItem* folderItem = new te::qt::widgets::LayerItem(folder);
       folderItem->setParent(item);
-      std::vector<te::qt::widgets::AbstractLayerItem*> folderItems;
+      std::vector<te::qt::widgets::AbstractTreeItem*> folderItems;
       folderItems.push_back(folderItem);
 
       m_layerExplorerModel->setItemsToBeInserted(folderItems);
@@ -1589,7 +1589,7 @@ void MyWindow::addLayerSlot()
 
   QModelIndex itemIndex = m_layerExplorer->currentIndex();
   QModelIndex parentIndex = itemIndex.parent();
-  te::qt::widgets::AbstractLayerItem* item = static_cast<te::qt::widgets::AbstractLayerItem*>(itemIndex.internalPointer());
+  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(itemIndex.internalPointer());
 
   if(item->getRefLayer()->getType() == "LAYER")
   {
@@ -1597,7 +1597,7 @@ void MyWindow::addLayerSlot()
     size_t ind = itemIndex.row() + 1;
     te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
     layerItem->setParent(item->parent());
-    std::vector<te::qt::widgets::AbstractLayerItem*> layerItems;
+    std::vector<te::qt::widgets::AbstractTreeItem*> layerItems;
     layerItems.push_back(layerItem);
     m_layerExplorerModel->setItemsToBeInserted(layerItems);
     m_layerExplorerModel->insertRows(ind, 1, parentIndex);
@@ -1608,7 +1608,7 @@ void MyWindow::addLayerSlot()
     size_t ind = m_layerExplorerModel->rowCount(itemIndex);
     te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
     layerItem->setParent(item);
-    std::vector<te::qt::widgets::AbstractLayerItem*> layerItems;
+    std::vector<te::qt::widgets::AbstractTreeItem*> layerItems;
     layerItems.push_back(layerItem);
 
     m_layerExplorerModel->setItemsToBeInserted(layerItems);

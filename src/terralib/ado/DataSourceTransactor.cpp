@@ -65,20 +65,41 @@ te::ado::DataSourceTransactor::~DataSourceTransactor()
 
 void te::ado::DataSourceTransactor::begin()
 {
-  m_conn->BeginTrans();
-  m_isInTransaction = true;
+  try
+  {
+    m_conn->BeginTrans();
+    m_isInTransaction = true;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }  
 }
 
 void te::ado::DataSourceTransactor::commit()
 {
-  m_conn->CommitTrans();
-  m_isInTransaction = false;
+  try
+  {
+    m_conn->CommitTrans();
+    m_isInTransaction = false;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSourceTransactor::rollBack()
 {
-  m_conn->RollbackTrans();
-  m_isInTransaction = false;
+  try
+  {
+    m_conn->RollbackTrans();
+    m_isInTransaction = false;
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 bool te::ado::DataSourceTransactor::isInTransaction() const
@@ -100,11 +121,15 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
 
-  recset->CursorType = adOpenStatic;  
-  recset->CursorLocation = adUseClient;
-
-  TESTHR(recset->Open(_bstr_t(name.c_str()),
-    _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+  try
+  {
+    TESTHR(recset->Open(_bstr_t(name.c_str()),
+      _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   return new DataSet(dt, recset, this);
 }
@@ -140,7 +165,20 @@ te::da::DataSet* te::ado::DataSourceTransactor::query(const std::string& query,
                                                            te::common::TraverseType travType, 
                                                            te::common::AccessPolicy rwRole)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _RecordsetPtr rs;
+  
+  TESTHR(rs.CreateInstance(__uuidof(Recordset)));
+  
+  try
+  {
+    rs->Open(query.c_str(), _variant_t((IDispatch *)m_conn), adOpenStatic, adLockReadOnly, adCmdText);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return new DataSet(0, rs, this);
 }
 
 void te::ado::DataSourceTransactor::execute(const te::da::Query& command)

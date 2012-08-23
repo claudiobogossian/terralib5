@@ -28,17 +28,21 @@
 
 // TerraLib
 #include "../Config.h"
+#include "AbstractTreeItem.h"
 
 // Qt
-#include <QtCore/QObject>
 #include <QtCore/QVariant>
+#include <QtGui/QIcon>
 
-// Forward declaration
+// Forward declarations
 class QMenu;
 class QWidget;
 
+
 namespace te
 {
+  namespace map { class LegendItem; }
+
   namespace qt
   {
     namespace widgets
@@ -46,9 +50,9 @@ namespace te
       /*!
         \class LegendItem
 
-        \brief A widget designed to show the information of a Legend in a tree oriented way.
+        \brief A widget designed to show the information of a legend in a tree oriented way.
        */
-      class TEQTWIDGETSEXPORT LegendItem : public QObject
+      class TEQTWIDGETSEXPORT LegendItem : public AbstractTreeItem
       {
         Q_OBJECT
 
@@ -60,13 +64,12 @@ namespace te
           //@{
 
           /*!
-            \brief It initializes a legend item with a reference to a layer and an item parent.
+            \brief It initializes a legend item with a reference to the parent layer item
 
-            \param parent The parent item or NULL if it is a root item.
+            \param parent The parent of this legend item
 
-            \note If parent is informed, it will take the ownership of the legend.
            */
-          LegendItem(QObject* parent = 0);
+          LegendItem(te::map::LegendItem* refLegendItem, QObject* parent = 0);
 
           /*! Destructor. */
           ~LegendItem();
@@ -98,7 +101,26 @@ namespace te
            */
           QMenu* getMenu(QWidget* parent = 0) const;
 
+          /*!
+            \brief It gets the icon that is associated to the legend item.
+
+            \return The icon that is associated to the legend item.
+           */
+          const QIcon& getIcon() const;
+
+          /*!
+            \brief It sets the icon to be associated to the legend item.
+
+            \param icon The icon to be associated to the legend item.
+           */
+          void setIcon(const QIcon& icon);
+
           //@}
+
+      private:
+
+        te::map::LegendItem* m_refLegendItem;
+        QIcon m_icon;
       };
 
     } // end namespace widgets

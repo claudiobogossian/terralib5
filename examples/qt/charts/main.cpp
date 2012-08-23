@@ -28,9 +28,15 @@
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
 
+//Utils
+#include <terralib/qt/widgets/charts/Utils.h>
+
 // Qt Chart
 #include <terralib/qt/widgets/charts/Scatter.h>
 #include <terralib/qt/widgets/charts/ScatterChart.h>
+#include <terralib/qt/widgets/charts/Histogram.h>
+#include <terralib/qt/widgets/charts/HistogramChart.h>
+#include <terralib/qt/widgets/charts/MultiHistogramChart.h>
 #include <terralib/qt/widgets/charts/ChartDisplay.h>
 
 // Qt
@@ -57,7 +63,7 @@ int main(int /*argc*/, char** /*argv*/)
     //========
     
     //pegar um data set
-    std::string ogrInfo("connection_string=C:/tmp/data/shp");
+    std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Solutions/examples/data/data-charts");
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionStr(ogrInfo);
@@ -77,32 +83,59 @@ int main(int /*argc*/, char** /*argv*/)
 	  //criar um scatter do data set
     std::string renda = "RENDA_FAM";
     std::string anosest = "ANOS_EST";
+    std::string idademed = "IDADE_MED";
     te::da::DataSetType* type = dataset->getType();
     int rendaIdx = type->getPropertyPosition(renda);
     int anosestIdx = type->getPropertyPosition(anosest);
+    int idademedIdx = type->getPropertyPosition(idademed);
     
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
-           
-    te::qt::widgets::Scatter* scatter = new te::qt::widgets::Scatter(dataset, rendaIdx, anosestIdx);
 
-    te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, idademedIdx, 10 );
+    te::qt::widgets::Histogram* histogram1 = te::qt::widgets::createHistogram(dataset, anosestIdx, 10 );
+    //te::qt::widgets::Histogram* histogram2 = te::qt::widgets::createHistogram(dataset, rendaIdx, 10 );
+
+    te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
+    te::qt::widgets::HistogramChart* histogramChart1 = new te::qt::widgets::HistogramChart(histogram1);
+   // te::qt::widgets::HistogramChart* histogramChart2 = new te::qt::widgets::HistogramChart(histogram2);
+
+    std::vector<te::qt::widgets::HistogramChart*> charts;
+    charts.push_back(histogramChart);
+    charts.push_back(histogramChart1);
+    //charts.push_back(histogramChart2);
 
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
-    chartDisplay->show();
 
-    scatterChart->attach(chartDisplay);
+    te::qt::widgets::MultiHistogramChart* MultiChart = new te::qt::widgets::MultiHistogramChart();
+
+    MultiChart->setCharts(charts);
+
+    MultiChart->attach(charts, chartDisplay);
+
     chartDisplay->show();
 
     chartDisplay->replot();
+    
+// 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
+// 
+//     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
+// 
+//     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
+//     chartDisplay->show();
+// 
+//     scatterChart->attach(chartDisplay);
+//     chartDisplay->show();
+// 
+//     chartDisplay->replot();
 
     int ret = app.exec();
 
 	  //delete pointers
     //delete chartDisplay; // quando attacha não precisa deletar!!!! => ele cai!
-    delete scatterChart;
-    delete scatter;
+    //delete scatterChart;
+    //delete scatter;
     delete dataset;
     delete transactor;
     delete ds;

@@ -61,7 +61,7 @@ te::gm::Point& te::gm::Point::operator=(const Point& rhs)
     AbstractPoint::operator=(rhs);
 
     m_x = rhs.m_x;
-    m_x = rhs.m_y;
+    m_y = rhs.m_y;
   }
 
   return *this;

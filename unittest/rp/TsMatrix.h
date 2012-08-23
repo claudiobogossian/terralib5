@@ -44,7 +44,7 @@ class TsMatrix : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE( TsMatrix );
 
   CPPUNIT_TEST( genericTests );
-  //CPPUNIT_TEST( rAMMemPolTest );
+  CPPUNIT_TEST( rAMMemPolTest );
   CPPUNIT_TEST( diskMemPolTest );
   CPPUNIT_TEST( autoMemPolTest );
 

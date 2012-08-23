@@ -27,20 +27,19 @@
 #define __TERRALIB_QT_INTERNAL_WIDGETS_H
 
 // TerraLib
-#include "widgets/layer/AbstractLayerItem.h"
-#include "widgets/layer/AbstractLayerItemFactory.h"
-#include "widgets/canvas/Canvas.h"
 #include "widgets/Config.h"
+#include "widgets/canvas/Canvas.h"
+#include "widgets/canvas/MapDisplay.h"
 #include "widgets/datagrid/DataGridItemDelegate.h"
 #include "widgets/datagrid/DataGridModel.h"
 #include "widgets/datagrid/DataGridView.h"
 #include "widgets/datagrid/HeaderView.h"
-#include "widgets/layer/LayerItem.h"
-#include "widgets/layer/LayerItemFactory.h"
+#include "widgets/layer/AbstractTreeItem.h"
 #include "widgets/layer/LayerExplorer.h"
 #include "widgets/layer/LayerExplorerModel.h"
+#include "widgets/layer/LayerItem.h"
 #include "widgets/layer/LegendItem.h"
-#include "widgets/canvas/MapDisplay.h"
+
 
 namespace te
 {  

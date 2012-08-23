@@ -1,17 +1,21 @@
 #include "UtilsWidgets.h"
 
 // TerraLib
+#include <terralib/color/ColorBar.h>
+#include <terralib/qt/qwt/ColorBar.h>
 #include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
 #include <terralib/qt/widgets/utils/DoubleListWidget.h>
 #include <terralib/qt/widgets/utils/ListWidget.h>
 #include <terralib/qt/widgets/utils/ParameterTableWidget.h>
 #include <terralib/qt/widgets/utils/HorizontalSliderWidget.h>
 
+
 // Qt
 #include <QtGui/QApplication>
 #include <QtGui/QDialog>
 #include <QtGui/QFrame>
 #include <QtGui/QGridLayout>
+
 
 void UtilsWidgets()
 {
@@ -65,6 +69,17 @@ void UtilsWidgets()
   //add HorizontalSliderWidget
   te::qt::widgets::HorizontalSliderWidget* hs = new te::qt::widgets::HorizontalSliderWidget(&d);
   layout->addWidget(hs, 2, 1, 1, 2);
+
+  // Qwt scale widget and stuff
+  te::color::ColorBar c(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), te::color::RGBAColor(255, 255, 255, TE_OPAQUE), 256);
+  c.addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.33);
+  c.addColor(te::color::RGBAColor(0 ,0, 255, TE_OPAQUE), 0.66);
+
+  te::qt::qwt::ColorBar* cm = new te::qt::qwt::ColorBar(&d);
+  layout->addWidget(cm, 3, 0, 1, 3);
+
+  cm->setHeight(20);
+  cm->setColorBar(&c);
 
   d.exec();
 }

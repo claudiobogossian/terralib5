@@ -66,7 +66,9 @@ set (
   qwt
   widgets
   widgets/canvas
+  widgets/charts
   widgets/datagrid
+  widgets/dataview
   widgets/dataset
   widgets/layer
   widgets/progress
@@ -76,7 +78,6 @@ set (
   widgets/srs
   widgets/help
   widgets/utils
-  widgets/dataview
 )
 
 # Files in build tree
@@ -89,7 +90,7 @@ appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
 # Select the header files for moc'ing
-file(
+file (
   GLOB HDRS_TO_MOC
   ${SRCDIR}/qwt/HistogramDisplay.h
   ${SRCDIR}/qwt/HistogramSelectionCursor.h
@@ -98,11 +99,13 @@ file(
   ${SRCDIR}/qwt/ScatterDisplay.h
   ${SRCDIR}/qwt/ScatterSelectionCursor.h
   ${SRCDIR}/qwt/TimeSeriesDisplay.h
-  ${SRCDIR}/widgets/layer/AbstractLayerItem.h
+  ${SRCDIR}/widgets/canvas/MapDisplay.h
+  ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
   ${SRCDIR}/widgets/layer/LayerExplorerModel.h
   ${SRCDIR}/widgets/layer/LayerItem.h
   ${SRCDIR}/widgets/layer/LegendItem.h
+  ${SRCDIR}/widgets/layer/Legend.h
   ${SRCDIR}/widgets/layer/FolderLayerItem.h	
   ${SRCDIR}/widgets/dataset/CreateDataSet.h
   ${SRCDIR}/widgets/dataset/AddIndex.h	
@@ -113,7 +116,6 @@ file(
   ${SRCDIR}/widgets/property/RemoveProperty.h
   ${SRCDIR}/widgets/property/RenameProperty.h
   ${SRCDIR}/widgets/property/UpdateProperty.h	
-  ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/progress/ProgressViewerBar.h
   ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
   ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
@@ -135,6 +137,7 @@ file(
   ${SRCDIR}/widgets/se/BasicStrokeWidget.h
   ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
   ${SRCDIR}/widgets/se/CharMapWidget.h
+  ${SRCDIR}/widgets/se/ColorMapWidget.h
   ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
   ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
   ${SRCDIR}/widgets/se/GlyphMarkWidget.h
@@ -165,9 +168,10 @@ file(
   GLOB FORMS
   ${SRCDIR}/widgets/*.ui
   ${SRCDIR}/widgets/canvas/*.ui
+  ${SRCDIR}/widgets/charts/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
-  ${SRCDIR}/widgets/layer/*.ui
+  ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui
   ${SRCDIR}/widgets/rp/ui/*.ui
@@ -183,7 +187,6 @@ endif()
 	
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
 qt4_wrap_ui(UI ${FORMS})
-qt4_add_resources( RSC_IMG "${ROOT}/images/terra_icons.qrc")
 
 install (
   FILES ${UI}
@@ -192,14 +195,14 @@ install (
 )
 
 source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${MOC} ${UI} ${RSC_IMG})
+source_group("Generated Files" FILES ${MOC} ${UI})
 
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}" "${ROOT}/images")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 
-list (APPEND SRCS "${MOC}" "${UI}" "${RSC_IMG}")
+list (APPEND SRCS "${MOC}" "${UI}")
 
 #exporting module information
 exportModuleInformation("qtwidgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")

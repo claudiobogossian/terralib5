@@ -87,8 +87,15 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
   recset->CursorType = adOpenStatic;
   recset->LockType = adLockBatchOptimistic;
 
-  TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
-  _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+  try
+  {
+    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   TESTHR(recset->Delete(adAffectCurrent));
 
@@ -129,126 +136,129 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
   
-  TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
-  _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
-
-  TESTHR(recset->AddNew());
-
-  for(size_t i = 0; i < props.size(); i++)
+  try
   {
+    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+
+    TESTHR(recset->AddNew());
 
     te::gm::GeometryProperty* geomProp = 0;
     geomProp = dt->getDefaultGeomProperty();
 
-    if(geomProp && geomProp->getName() == props[i]->getName())
+    for(size_t i = 0; i < props.size(); i++)
     {
-      te::gm::Geometry* geo = item->getGeometry(props[i]->getName());
-
-      long size = geo->getWkbSize();
-
-      char* wkb = new char[size];
-
-      te::gm::WKBWriter::write(geo, wkb);
-
-      VARIANT var;
-      BYTE *pByte;
-
-      SAFEARRAY FAR* psa;
-      SAFEARRAYBOUND rgsabound[1];
-      rgsabound[0].lLbound = 0;
-      rgsabound[0].cElements = size;
-
-      psa = SafeArrayCreate(VT_I1, 1, rgsabound);
-
-      if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-        memcpy((LPVOID)pByte,(LPVOID)wkb,size);
-      SafeArrayUnaccessData(psa);
-
-      var.vt = VT_ARRAY | VT_UI1;
-      var.parray = psa;
-
-      recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-
-      continue;
-    }
-
-    int pType = props[i]->getType();
-
-    switch(pType)
-    {
-      case te::dt::CHAR_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
-        break;
-
-      //case te::dt::UCHAR_TYPE:
-
-      case te::dt::INT16_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
-        break;
-
-      case te::dt::INT32_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
-        break;
-
-      case te::dt::INT64_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
-        break;
-
-      //case te::dt::NUMERIC_TYPE:
-      //case te::dt::DATETIME_TYPE:
-      case te::dt::FLOAT_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
-        break;
-
-      case te::dt::DOUBLE_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
-        break;
-
-      case te::dt::STRING_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
-        break;
-
-      case te::dt::BOOLEAN_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
-        break;
-
-      case te::dt::BYTE_ARRAY_TYPE:
+      if(geomProp && (geomProp->getName() == props[i]->getName()))
       {
-        char * data = ((te::dt::ByteArray*)props[i])->getData();
+        te::gm::Geometry* geo = item->getGeometry(props[i]->getName());
 
-        VARIANT var;
-        BYTE *pByte;
-        long size = sizeof(data);
+        long size = geo->getWkbSize();
 
-        SAFEARRAY FAR* psa;
-        SAFEARRAYBOUND rgsabound[1];
-        rgsabound[0].lLbound = 0;
-        rgsabound[0].cElements = size;
+        char* wkb = new char[size];
 
-        psa = SafeArrayCreate(VT_I1, 1, rgsabound);
+        geo->getWkb(wkb, te::common::NDR);
 
-        if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-          memcpy((LPVOID)pByte,(LPVOID)data,size);
-        SafeArrayUnaccessData(psa);
+        unsigned int newWkbSize = size+4;
 
-        var.vt = VT_ARRAY | VT_UI1;
-        var.parray = psa;
+        char* newWkb = new char[newWkbSize];
+
+        memcpy(newWkb, wkb, size);
+
+        unsigned int srid = geo->getSRID();
+
+        memcpy(newWkb+size, &srid, 4);
+
+        _variant_t var;
+        te::ado::Blob2Variant(newWkb, newWkbSize, var);
 
         recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
 
+        continue;
+      }
+
+      int pType = props[i]->getType();
+
+      switch(pType)
+      {
+        case te::dt::CHAR_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
+          break;
+
+        //case te::dt::UCHAR_TYPE:
+
+        case te::dt::INT16_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
+          break;
+
+        case te::dt::INT32_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
+          break;
+
+        case te::dt::INT64_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
+          break;
+
+        //case te::dt::NUMERIC_TYPE:
+        //case te::dt::DATETIME_TYPE:
+        case te::dt::FLOAT_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
+          break;
+
+        case te::dt::DOUBLE_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
+          break;
+
+        case te::dt::STRING_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
+          break;
+
+        case te::dt::BOOLEAN_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
+          break;
+
+        case te::dt::BYTE_ARRAY_TYPE:
+        {
+          char * data = ((te::dt::ByteArray*)props[i])->getData();
+
+          VARIANT var;
+          BYTE *pByte;
+          long size = sizeof(data);
+
+          SAFEARRAY FAR* psa;
+          SAFEARRAYBOUND rgsabound[1];
+          rgsabound[0].lLbound = 0;
+          rgsabound[0].cElements = size;
+
+          psa = SafeArrayCreate(VT_I1, 1, rgsabound);
+
+          if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
+            memcpy((LPVOID)pByte,(LPVOID)data,size);
+          SafeArrayUnaccessData(psa);
+
+          var.vt = VT_ARRAY | VT_UI1;
+          var.parray = psa;
+
+          recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+
+          break;
+        }
+
+        //case te::dt::ARRAY_TYPE:
+     
+        default:
+          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
         break;
       }
 
-      //case te::dt::ARRAY_TYPE:
-     
-      default:
-        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-      break;
     }
 
-  }
+    recset->Update();
 
-  recset->Update();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
 }
 

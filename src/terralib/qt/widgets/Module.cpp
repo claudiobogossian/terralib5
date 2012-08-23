@@ -27,8 +27,6 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
-#include "layer/FolderLayerItemFactory.h"
-#include "layer/LayerItemFactory.h"
 #include "se/BasicFillWidgetFactory.h"
 #include "se/GlyphGraphicWidgetFactory.h"
 #include "se/GlyphMarkFactory.h"
@@ -98,10 +96,6 @@ te::qt::widgets::Module::~Module()
 
 void te::qt::widgets::Module::initialize()
 {
-// It initializes the widgets factories
-  te::qt::widgets::FolderLayerItemFactory::initialize();
-  te::qt::widgets::LayerItemFactory::initialize();
-
 // It initializes the well-known mark factory
   te::qt::widgets::WellKnownMarkFactory::initialize();
 
@@ -122,10 +116,6 @@ void te::qt::widgets::Module::initialize()
 
 void te::qt::widgets::Module::finalize()
 {
-// It finalizes the widgets factories
-  te::qt::widgets::FolderLayerItemFactory::finalize();
-  te::qt::widgets::LayerItemFactory::finalize();
-
 // It finalizes the well-known mark factory
   te::qt::widgets::WellKnownMarkFactory::finalize();
 
