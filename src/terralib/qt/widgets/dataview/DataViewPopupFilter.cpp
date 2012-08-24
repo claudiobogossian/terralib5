@@ -85,7 +85,7 @@ QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer)
       QString gName = dec->getDecorated(i)->getGroupName();
       act->setText(gName);
       act->setToolTip(QObject::tr("Promote the ")+gName + QObject::tr(" objects."));
-      act->setData(QVariant(i));
+      act->setData(QVariant((int)i));
       mnu->addAction(act);
     }
 
@@ -114,7 +114,7 @@ QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer)
     QString gName = dec->getDecorated(*it)->getGroupName();
     act->setText(gName);
     act->setToolTip(QObject::tr("Removes the promotion of the ")+gName + QObject::tr(" objects."));
-    act->setData(QVariant(*it));
+    act->setData(QVariant((int)*it));
     mnu->addAction(act);
   }
 
@@ -236,7 +236,7 @@ QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, te::qt::widgets::
     QString gName = ((te::qt::widgets::HLDelegateDecorator*)viewer->itemDelegate())->getDecorated(hls[i])->getGroupName();
     QAction* act = new QAction(gName, mnu);
     act->setToolTip(QObject::tr("Removes the objects from the group of ")+gName+QObject::tr(" objects."));
-    act->setData(QVariant(hls[i]));
+    act->setData(QVariant((int)hls[i]));
     mnu->addAction(act);
   }
 

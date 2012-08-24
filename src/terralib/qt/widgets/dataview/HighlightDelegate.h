@@ -31,12 +31,7 @@ TerraLib Team at <terralib-team@terralib.org>.
 #include <terralib/qt/widgets/Config.h>
 
 //Qt4 include files
-#include <QStyledItemDelegate>
-#include <QObject>
-#include <QPainter>
-#include <QStyleOptionViewItem>
-#include <QModelIndex>
-#include <QColor>
+#include <QItemDelegate>
 
 //STL include files
 #include <set>
@@ -54,7 +49,7 @@ namespace te
         \class HighlightDelegate
         \brief 
       */
-      class TEQTWIDGETSEXPORT HighlightDelegate : public QStyledItemDelegate 
+      class TEQTWIDGETSEXPORT HighlightDelegate : public QItemDelegate 
       {
         /** @name Initializer methods.
         *  Methods related to instantiation and destruction.
@@ -154,6 +149,9 @@ namespace te
         //@}
 
       protected:
+
+        bool toHighlight(const QModelIndex& idx) const;
+
         std::vector<size_t> m_pkeys;    //!< Primary keys positions.    
         std::set<std::string> m_hlOids; //!< Set of primary keys of the data set.    
         QColor m_color;                 //!< Color to be used for paint selected keys.

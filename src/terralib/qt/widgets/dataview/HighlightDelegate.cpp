@@ -7,7 +7,7 @@ namespace te
     namespace widgets 
     {
       HighlightDelegate::HighlightDelegate(QObject * parent) :
-      QStyledItemDelegate(parent),
+      QItemDelegate(parent),
       m_enabled(true)
       {
       }
@@ -21,15 +21,17 @@ namespace te
         if(!index.isValid())
           return;
 
-        if(m_enabled)
-        {
-          std::string key = getPKey(index);
+        QStyleOptionViewItem opt = option;
 
-          if(!key.empty() && m_hlOids.find(key) != m_hlOids.end())
-            painter->fillRect(option.rect, m_color);
+        if(toHighlight(index))
+        {
+          opt.showDecorationSelected = true;
+          opt.state |= QStyle::State_Selected;
+          opt.palette.setColor(QPalette::Highlight, m_color);
+          opt.palette.setColor(QPalette::HighlightedText, Qt::black);
         }
 
-        QStyledItemDelegate::paint(painter, option, index);
+        QItemDelegate::paint(painter, opt, index);
       }
 
       void HighlightDelegate::setEnabled(const bool& enable)
@@ -99,6 +101,12 @@ namespace te
       QString HighlightDelegate::getGroupName() const
       {
         return m_grp_name;
+      }
+
+      bool HighlightDelegate::toHighlight(const QModelIndex& idx) const
+      {
+        std::string key = getPKey(idx);
+        return (!key.empty() && m_enabled && (m_hlOids.find(key) != m_hlOids.end()));
       }
     } // namespace te::qt::widgets
   } // namespace te::qt

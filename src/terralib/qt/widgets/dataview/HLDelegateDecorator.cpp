@@ -8,7 +8,7 @@
 #include <QModelIndex>
 #include <QPainter>
 #include <QStyleOptionViewItem>
-
+#include <QApplication>
 
 namespace te 
 {
@@ -25,17 +25,10 @@ namespace te
         if(!index.isValid())
           return;
 
-        std::string key = getPKey(index);
-
-        if(!key.empty() && HighlightDelegate::m_enabled && (m_hlOids.find(key) != m_hlOids.end()))
-          painter->fillRect(option.rect, m_color);
+        if(HighlightDelegate::toHighlight(index))
+          HighlightDelegate::paint(painter, option, index);
         else if(m_decorated != 0)
-        {
           m_decorated->paint(painter, option, index);
-          return;
-        }
-
-        HighlightDelegate::paint(painter, option, index);
       }
 
       void HLDelegateDecorator::setPKeysColumns(const std::vector<size_t>& pKeyCols)
