@@ -36,6 +36,7 @@ namespace te
   namespace da
   {
     class DataSetType;
+    class DataSetItem;
     class PrimaryKey;
     class ForeignKey;
     class UniqueKey;
@@ -121,6 +122,16 @@ namespace te
 
     void Blob2Variant(const char* blob, int size, _variant_t & var);
     void Variant2Blob(const _variant_t var, int size, char* & blob);
+
+    /*!
+      \brief Update a ADO column based on informations from DataSetType
+
+      \param dt DataSetType
+      \param recset The ADO record to be updated
+      \param prop The property that will be updated
+      \param item The TerraLib item referenced
+    */
+    void updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::da::DataSetItem* item);
 
   } // end namespace ado
 }   // end namespace te

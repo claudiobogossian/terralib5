@@ -35,6 +35,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../datatype/ByteArray.h"
+#include "../datatype/AbstractData.h"
 #include "../memory/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../datatype/Property.h"
@@ -103,19 +104,75 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
 
 }
 
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/)
+void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  std::vector<te::dt::Property*> keyProperties;
+ 
+  if(dt->getPrimaryKey())
+  {
+    keyProperties = dt->getPrimaryKey()->getProperties();
+  }
+  else if(dt->getNumberOfUniqueKeys() > 0)
+  {
+    keyProperties = dt->getUniqueKey(0)->getProperties();
+  }
+  else
+  {
+    throw Exception(TR_ADO("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
+  }
+
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  std::string sql = "SELECT * FROM " + dt->getName() + " WHERE ";
+
+  for(size_t i = 0; i < keyProperties.size(); i++)
+  {
+    if(keyProperties[i]->getType() == te::dt::STRING_TYPE)
+      sql += keyProperties[i]->getName() + " = '" + item->getValue(keyProperties[i]->getName())->toString() + "'";
+    else
+      sql += keyProperties[i]->getName() + " = " + item->getValue(keyProperties[i]->getName())->toString();
+
+    if(i+1 != keyProperties.size())
+      sql += " AND ";
+  }
+
+  sql += ";";
+  
+  _RecordsetPtr adoItem = 0;
+
+  try
+  {
+    TESTHR(adoItem.CreateInstance(__uuidof(Recordset)));
+    adoItem->Open(sql.c_str(), 
+           _variant_t((IDispatch *)adoConn), 
+           adOpenKeyset, adLockOptimistic, adCmdText);
+
+    adoItem->Delete(adAffectCurrent);
+    adoItem->Update();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSetItem* /*item*/)
+void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
+  try
+  {
+    do
+    {
+      m_t->begin();
+      remove(dt, d->getItem());
+      m_t->commit();
+    }
+    while(d->moveNext());
+  }
+  catch(...)
+  {
+    m_t->rollBack();
+  }
 
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
@@ -148,112 +205,8 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
     for(size_t i = 0; i < props.size(); i++)
     {
-      if(geomProp && (geomProp->getName() == props[i]->getName()))
-      {
-        te::gm::Geometry* geo = item->getGeometry(props[i]->getName());
-
-        long size = geo->getWkbSize();
-
-        char* wkb = new char[size];
-
-        geo->getWkb(wkb, te::common::NDR);
-
-        unsigned int newWkbSize = size+4;
-
-        char* newWkb = new char[newWkbSize];
-
-        memcpy(newWkb, wkb, size);
-
-        unsigned int srid = geo->getSRID();
-
-        memcpy(newWkb+size, &srid, 4);
-
-        _variant_t var;
-        te::ado::Blob2Variant(newWkb, newWkbSize, var);
-
-        recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-
-        continue;
-      }
-
-      int pType = props[i]->getType();
-
-      switch(pType)
-      {
-        case te::dt::CHAR_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
-          break;
-
-        //case te::dt::UCHAR_TYPE:
-
-        case te::dt::INT16_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
-          break;
-
-        case te::dt::INT32_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
-          break;
-
-        case te::dt::INT64_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
-          break;
-
-        //case te::dt::NUMERIC_TYPE:
-        //case te::dt::DATETIME_TYPE:
-        case te::dt::FLOAT_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
-          break;
-
-        case te::dt::DOUBLE_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
-          break;
-
-        case te::dt::STRING_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
-          break;
-
-        case te::dt::BOOLEAN_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
-          break;
-
-        case te::dt::BYTE_ARRAY_TYPE:
-        {
-          char * data = ((te::dt::ByteArray*)props[i])->getData();
-
-          VARIANT var;
-          BYTE *pByte;
-          long size = sizeof(data);
-
-          SAFEARRAY FAR* psa;
-          SAFEARRAYBOUND rgsabound[1];
-          rgsabound[0].lLbound = 0;
-          rgsabound[0].cElements = size;
-
-          psa = SafeArrayCreate(VT_I1, 1, rgsabound);
-
-          if(SafeArrayAccessData(psa,(void **)&pByte) == NOERROR)
-            memcpy((LPVOID)pByte,(LPVOID)data,size);
-          SafeArrayUnaccessData(psa);
-
-          var.vt = VT_ARRAY | VT_UI1;
-          var.parray = psa;
-
-          recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-
-          break;
-        }
-
-        //case te::dt::ARRAY_TYPE:
-     
-        default:
-          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-        break;
-      }
-
+      te::ado::updateAdoColumn(dt, recset, props[i], item);
     }
-
-    recset->Update();
-
   }
   catch(_com_error& e)
   {
@@ -262,12 +215,26 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
 }
 
-void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                      te::da::DataSet* /*dataset*/,
-                      const std::vector<te::dt::Property*>& /*properties*/,
+void te::ado::DataSetPersistence::update(const te::da::DataSetType* dt,
+                      te::da::DataSet* dataset,
+                      const std::vector<te::dt::Property*>& properties,
                       std::size_t /*limit*/)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  try
+  {
+    do
+    {
+      m_t->begin();
+      update(dt, dataset->getItem(), properties);
+      m_t->commit();
+    }
+    while(dataset->moveNext());
+  }
+  catch(...)
+  {
+    m_t->rollBack();
+  }
+  
 }
 
 void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
@@ -279,11 +246,58 @@ void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
-void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                    te::da::DataSetItem* /*item*/,
-                    const std::vector<te::dt::Property*>& /*properties*/)
+void te::ado::DataSetPersistence::update(const te::da::DataSetType* dt,
+                    te::da::DataSetItem* item,
+                    const std::vector<te::dt::Property*>& properties)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  std::vector<te::dt::Property*> keyProperties;
+ 
+  if(dt->getPrimaryKey())
+  {
+    keyProperties = dt->getPrimaryKey()->getProperties();
+  }
+  else if(dt->getNumberOfUniqueKeys() > 0)
+  {
+    keyProperties = dt->getUniqueKey(0)->getProperties();
+  }
+  else
+  {
+    throw Exception(TR_ADO("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
+  }
+
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  std::string sql = "SELECT * FROM " + dt->getName() + " WHERE ";
+
+  for(size_t i = 0; i < keyProperties.size(); i++)
+  {
+    if(keyProperties[i]->getType() == te::dt::STRING_TYPE)
+      sql += keyProperties[i]->getName() + " = '" + item->getValue(keyProperties[i]->getName())->toString() + "'";
+    else
+      sql += keyProperties[i]->getName() + " = " + item->getValue(keyProperties[i]->getName())->toString();
+
+    if(i+1 != keyProperties.size())
+      sql += " AND ";
+  }
+
+  sql += ";";
+  
+  _RecordsetPtr adoItem = 0;
+
+  try
+  {
+    TESTHR(adoItem.CreateInstance(__uuidof(Recordset)));
+    adoItem->Open(sql.c_str(), 
+           _variant_t((IDispatch *)adoConn), 
+           adOpenKeyset, adLockOptimistic, adCmdText);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  for(size_t i = 0; i < properties.size(); i++)
+    te::ado::updateAdoColumn(dt, adoItem, properties[i], item);
 }
 
 void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
