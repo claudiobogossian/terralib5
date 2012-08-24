@@ -1912,8 +1912,8 @@ namespace te
         DBL_MAX * (-1.0) );
       std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
         interestPointsSet1Size + 1 );
-      double maxCorrelationValue = DBL_MAX * (-1.0);
-      double minCorrelationValue = DBL_MAX;
+      double maxCorrelationABSValue = DBL_MAX * (-1.0);
+      double minCorrelationABSValue = DBL_MAX;
       double absValue = 0;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
@@ -1922,12 +1922,10 @@ namespace te
         
         for( col = 0 ; col < interestPointsSet2Size ; ++col )
         {
-          const double& value = linePtr[ col ];
+          absValue = std::abs( linePtr[ col ] );
           
-          if( value != 0.0 )
+          if( absValue != 0.0 )
           {
-            absValue = std::abs( value );
-            
             if( absValue > eachLineMaxABSValues[ line ] )
             {
               eachLineMaxABSValues[ line ] = absValue;
@@ -1941,21 +1939,19 @@ namespace te
             }
           }
           
-          if( value > maxCorrelationValue ) maxCorrelationValue = value;
-          if( value < minCorrelationValue ) minCorrelationValue = value;
+          if( absValue > maxCorrelationABSValue ) maxCorrelationABSValue = absValue;
+          if( absValue < minCorrelationABSValue ) minCorrelationABSValue = absValue;
         }
       }
-      
-      
       
       // Finding tiepoints
       
       const double tiePointsFeatureValueRange = ( maxTiePointsFeatureValue != 
         minTiePointsFeatureValue ) ? ( maxTiePointsFeatureValue -
         minTiePointsFeatureValue ) : 1.0;
-      const double correlationValueRange = ( maxCorrelationValue != 
-        minCorrelationValue ) ? ( maxCorrelationValue -
-        minCorrelationValue ) : 1.0;
+      const double correlationABSValueRange = ( maxCorrelationABSValue != 
+        minCorrelationABSValue ) ? ( maxCorrelationABSValue -
+        minCorrelationABSValue ) : 1.0;
       MatchedInterestPointsT auxMatchedPoints;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
@@ -1977,8 +1973,8 @@ namespace te
               )
               +
               (
-                ( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) - 
-                minCorrelationValue ) / correlationValueRange
+                ( std::abs( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) ) - 
+                minCorrelationABSValue ) / correlationABSValueRange
               )
             ) / 2.0;
           
