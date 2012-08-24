@@ -1635,7 +1635,7 @@ namespace te
               ( rot_sin * curr_y_minus_radius );
             
             rotated_curr_y = 
-              ( rot_cos * curr_y_minus_radius ) +
+              ( rot_cos * curr_y_minus_radius )
               - ( rot_sin * curr_x_minus_radius );
               
             /* bringing the window back to its original
