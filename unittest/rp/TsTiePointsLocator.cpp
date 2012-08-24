@@ -146,6 +146,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  CPPUNIT_ASSERT_EQUAL( (size_t)968, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
@@ -196,6 +197,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  CPPUNIT_ASSERT_EQUAL( (size_t)17, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
@@ -243,6 +245,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  CPPUNIT_ASSERT_EQUAL( (size_t)907, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
@@ -322,6 +325,7 @@ void TsTiePointsLocator::MaximumOffset()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  CPPUNIT_ASSERT_EQUAL( (size_t)968, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
