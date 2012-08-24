@@ -58,8 +58,6 @@ namespace te
         void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
 
         void remove(const te::da::DataSetType* dt);
-       
-        void remove(const te::da::DataSetType* dt, te::da::DataSet* d);
 
         void remove(const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
