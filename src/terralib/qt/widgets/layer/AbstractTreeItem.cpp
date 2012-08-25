@@ -132,3 +132,9 @@ int te::qt::widgets::AbstractTreeItem::getChildRow(AbstractTreeItem* treeItem)
 {
   return children().indexOf(treeItem);
 }
+
+bool te::qt::widgets::AbstractTreeItem::isLayerItem() const
+{
+  return true;
+}
+

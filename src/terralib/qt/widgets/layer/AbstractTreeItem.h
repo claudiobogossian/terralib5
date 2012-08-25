@@ -162,6 +162,13 @@ namespace te
           virtual QVariant data(int role) const = 0;
 
           /*!
+            \brief It checks if the item is a layer item.
+
+            \return The default implementation returns true indicating that the item is a layer item.
+           */
+          virtual bool isLayerItem() const = 0;
+
+          /*!
             \brief It creates a menu to be displayed in the given widget.
 
             \param parent The parent widget for the menu.

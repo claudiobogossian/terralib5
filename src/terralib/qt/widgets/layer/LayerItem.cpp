@@ -34,6 +34,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
+
 te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject* parent)
   : AbstractTreeItem(parent)
 {
@@ -82,6 +83,11 @@ QVariant te::qt::widgets::LayerItem::data(int role) const
   }
 
   return QVariant();
+}
+
+bool te::qt::widgets::LayerItem::isLayerItem() const
+{
+  return true;
 }
 
 QMenu* te::qt::widgets::LayerItem::getMenu(QWidget* parent) const
