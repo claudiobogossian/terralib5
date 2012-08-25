@@ -31,6 +31,10 @@
 
 // Qt
 #include <QDialog>
+#include <QModelIndex>
+#include <QPoint>
+
+class QMenu;
 
 // TerraLib
 namespace te
@@ -56,7 +60,6 @@ namespace te
   }
 }
 
-
 class Legend : public QDialog
 {
   Q_OBJECT
@@ -67,6 +70,7 @@ class Legend : public QDialog
     ~Legend();
 
   private slots:
+    void contextMenuActivated(const QModelIndex& index, const QPoint& pos);
     void editLegendSlot();
 
   protected:
@@ -79,8 +83,8 @@ class Legend : public QDialog
     te::map::FolderLayer* m_rootLayer;
     te::qt::widgets::LayerExplorerModel* m_layerModel;
     te::qt::widgets::LayerExplorer* m_layerView;
+
+    QMenu* m_popupMenu;
 };
 
 #endif  // __TERRALIB_EXAMPLE_LEGEND_H
-
-  
