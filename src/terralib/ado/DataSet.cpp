@@ -58,7 +58,6 @@ te::ado::DataSet::~DataSet()
 {
   delete m_dt;
   delete m_geomFilter;
-  delete m_mbrFilter;
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
@@ -214,24 +213,58 @@ char te::ado::DataSet::getChar(int i) const
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  char ival = (char)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  char ival;
+
+  try
+  {
+    ival = (char)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 char te::ado::DataSet::getChar(const std::string& name) const
 {
-  char ival = (char)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  char ival;
+
+  try
+  {
+    ival = (char)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setChar(int i, char value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setChar(const std::string& name, char value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 unsigned char te::ado::DataSet::getUChar(int i) const
@@ -260,24 +293,58 @@ boost::int16_t te::ado::DataSet::getInt16(int i) const
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  int16_t ival = (int16_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  int16_t ival;
+
+  try
+  {
+    ival = (int16_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 boost::int16_t te::ado::DataSet::getInt16(const std::string& name) const
 {
-  int16_t ival = (int16_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  int16_t ival; 
+  
+  try
+  {
+    ival = (int16_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setInt16(int i, boost::int16_t value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setInt16(const std::string& name, boost::int16_t value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 boost::int32_t te::ado::DataSet::getInt32(int i) const
@@ -286,25 +353,58 @@ boost::int32_t te::ado::DataSet::getInt32(int i) const
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  int32_t ival = (int32_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  int32_t ival;
+  
+  try
+  {
+    ival = (int32_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   return ival;
 }
 
 boost::int32_t te::ado::DataSet::getInt32(const std::string& name) const
 {
-  int32_t ival = (int32_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  int32_t ival;
+  
+  try
+  {
+    ival = (int32_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setInt32(int i, boost::int32_t value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setInt32(const std::string& name, boost::int32_t value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 boost::int64_t te::ado::DataSet::getInt64(int i) const
@@ -313,24 +413,58 @@ boost::int64_t te::ado::DataSet::getInt64(int i) const
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  int64_t ival = (int64_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  int64_t ival;
+  
+  try
+  {
+    ival = (int64_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 boost::int64_t te::ado::DataSet::getInt64(const std::string& name) const
 {
-  int64_t ival = (int64_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  int64_t ival;
+  
+  try
+  {
+    ival = (int64_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setInt64(int i, boost::int64_t value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setInt64(const std::string& name, boost::int64_t value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 bool te::ado::DataSet::getBool(int i) const
@@ -339,35 +473,89 @@ bool te::ado::DataSet::getBool(int i) const
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  bool ival = (bool)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  bool ival;
+  
+  try
+  {
+    ival = (bool)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 bool te::ado::DataSet::getBool(const std::string& name) const
 {
-  bool ival = (bool)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  bool ival;
+  
+  try
+  {
+    ival = (bool)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setBool(int i, bool value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setBool(const std::string& name, bool value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 float te::ado::DataSet::getFloat(int i) const
 {
-  float ival = (float)m_result->GetFields()->GetItem(i)->GetValue();
+  float ival;
+  
+  try
+  {
+    ival = (float)m_result->GetFields()->GetItem(i)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 float te::ado::DataSet::getFloat(const std::string& name) const
 {
-  float ival = (float)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  float ival;
+  
+  try
+  {
+    ival = (float)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
@@ -377,23 +565,57 @@ void te::ado::DataSet::setFloat(int i, float value)
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setFloat(const std::string& name, float value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 double te::ado::DataSet::getDouble(int i) const
 {
-  double ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+  double ival;
+  
+  try
+  {
+    ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 double te::ado::DataSet::getDouble(const std::string& name) const
 {
-  double ival = (double)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  double ival;
+  
+  try
+  {
+    ival = (double)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
@@ -403,12 +625,26 @@ void te::ado::DataSet::setDouble(int i, double value)
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setDouble(const std::string& name, double value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 std::string te::ado::DataSet::getNumeric(int i) const
@@ -437,13 +673,33 @@ std::string te::ado::DataSet::getString(int i) const
   vtIndex.vt = VT_I4;
   vtIndex.lVal = i;
 
-  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  std::string ival;
+  
+  try
+  {
+    ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 std::string te::ado::DataSet::getString(const std::string& name) const
 {
-  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  std::string ival;
+  
+  try
+  {
+    ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
@@ -468,22 +724,29 @@ te::dt::ByteArray* te::ado::DataSet::getByteArray(int i) const
   long size;
   char* data;
 
-  ::Field15Ptr field = m_result->GetFields()->GetItem(vtIndex);
-
-  size = field->ActualSize;
-  if(size > 0)
+  try
   {
-    VariantInit(&varBLOB);
+    ::Field15Ptr field = m_result->GetFields()->GetItem(vtIndex);
 
-    varBLOB = field->GetChunk(size);
-
-    if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+    size = field->ActualSize;
+    if(size > 0)
     {
-      SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
-      data = new char[size];
-      memcpy(data, cdata, size * sizeof(char));
-      SafeArrayUnaccessData(varBLOB.parray);
+      VariantInit(&varBLOB);
+
+      varBLOB = field->GetChunk(size);
+
+      if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+      {
+        SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
+        data = new char[size];
+        memcpy(data, cdata, size);
+        SafeArrayUnaccessData(varBLOB.parray);
+      }
     }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
   }
 
   return new te::dt::ByteArray(data, size);
@@ -496,20 +759,20 @@ te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
   long size;
   char* data;
 
-  size = m_result->GetFields()->GetItem(name.c_str())->ActualSize;
-  if(size > 0)
+  try
   {
-    VariantInit(&varBLOB);
-
-    varBLOB = m_result->GetFields()->GetItem(name.c_str())->GetChunk(size);
-
-    if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+    size = m_result->GetFields()->GetItem(name.c_str())->ActualSize;
+    if(size > 0)
     {
-      SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
-      data = new char[size];
-      memcpy(data, cdata, size * sizeof(char));
-      SafeArrayUnaccessData(varBLOB.parray);
+      VariantInit(&varBLOB);
+
+      varBLOB = m_result->GetFields()->GetItem(name.c_str())->GetChunk(size);
+      te::ado::Variant2Blob(varBLOB, size, data);
     }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
   }
 
   return new te::dt::ByteArray(data, size);

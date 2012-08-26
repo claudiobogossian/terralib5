@@ -28,6 +28,7 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../datatype/StringProperty.h"
+#include "Globals.h"
 #include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSet.h"
@@ -47,21 +48,33 @@ te::ado::DataSource::DataSource()
   : m_conn(0),
   m_catalog(0)
 {
-  ::CoInitialize(0);
-  m_catalog = new te::da::DataSourceCatalog;
-  m_catalog->setDataSource(this);
+  try
+  {
+    ::CoInitialize(0);
+    m_catalog = new te::da::DataSourceCatalog;
+    m_catalog->setDataSource(this);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 te::ado::DataSource::~DataSource()
 {
-  ::CoUninitialize();
-  delete m_catalog;
-  delete m_conn;
+  try
+  {
+    ::CoUninitialize();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 const std::string& te::ado::DataSource::getType() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return Globals::sm_driverIdentifier;
 }
 
 const std::map<std::string, std::string>& te::ado::DataSource::getConnectionInfo() const
@@ -96,8 +109,15 @@ void te::ado::DataSource::open()
 
   m_strCnn = info.c_str();
 
-  m_conn.CreateInstance(__uuidof(Connection));
-  TESTHR(m_conn->Open (m_strCnn,"","",-1));
+  try
+  {
+    m_conn.CreateInstance(__uuidof(Connection));
+    TESTHR(m_conn->Open (m_strCnn,"","",-1));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
 }
 
@@ -130,7 +150,15 @@ te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
   _ConnectionPtr newConn = 0;
 
   newConn.CreateInstance(__uuidof(Connection));
-  TESTHR(newConn->Open (m_strCnn,"","",-1));
+
+  try
+  {
+    TESTHR(newConn->Open (m_strCnn,"","",-1));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 
   std::auto_ptr<te::da::DataSourceTransactor> transactor(new DataSourceTransactor(this, newConn));
 
@@ -144,48 +172,48 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
+  
+  m_connectionInfo = dsInfo;
+
+  std::string info = "provider="+m_connectionInfo["provider"]+
+  ";Data Source="+m_connectionInfo["dbname"]+
+  ";User Id=;Password=";
+
+  m_strCnn = info.c_str();
+
+  // let's have a connection to the auxiliary database
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(dsInfo);
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+
   try
   {
-    m_connectionInfo = dsInfo;
-
-    std::string info = "provider="+m_connectionInfo["provider"]+
-    ";Data Source="+m_connectionInfo["dbname"]+
-    ";User Id=;Password=";
-
-    m_strCnn = info.c_str();
-
-    // let's have a connection to the auxiliary database
-    std::auto_ptr<DataSource> ds(new DataSource());
-
-    ds->setConnectionInfo(dsInfo);
-
-    ADOX::_CatalogPtr pCatalog = 0;
-
-    pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
-
     pCatalog->Create(m_strCnn);
 
     ds->open();
-
-    if(!getTransactor()->getCatalogLoader()->datasetExists("geometry_columns"))
-    {
-      te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
-
-      geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
-      geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
-      geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
-      geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
-
-      getTransactor()->getDataSetTypePersistence()->create(geomColsDt);
-    }
-
   }
-  catch(_com_error &e)
+  catch(_com_error& e)
   {
-    throw Exception(TR_ADO(e.ErrorMessage()));
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  if(!getTransactor()->getCatalogLoader()->datasetExists("geometry_columns"))
+  {
+    te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
+
+    geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
+    geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
+    geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
+
+    getTransactor()->getDataSetTypePersistence()->create(geomColsDt);
   }
 }
 
