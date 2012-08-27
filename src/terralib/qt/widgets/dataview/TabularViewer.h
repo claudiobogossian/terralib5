@@ -93,8 +93,10 @@ namespace te
         };
 
         /*!
-          \enum 
-          \brief
+          \enum MenuType
+          \brief Types of menu.
+          \details Two kinds of menu are used: header menu and data menu. Each one is called when right mouse button is 
+          clicked on header area or data area, respectively.
         */
         enum MenuType
         {
