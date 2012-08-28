@@ -24,15 +24,31 @@
 */
 
 #include "CachedBandBlocksManager.h"
+#include "../raster/Band.h"
+#include "../raster/BandProperty.h"
+#include "../common/PlatformUtils.h"
+
+#include <algorithm>
+
+void te::mem::CachedBandBlocksManager::initState()
+{
+  m_rasterPtr = 0;
+  m_maxMemPercentUsed = 0;
+  m_dataPrefetchThreshold = 0;
+  m_globalBlocksNumberX = 0;
+  m_globalBlocksNumberY = 0;
+  m_globalBlockSizeBytes = 0;
+}
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
 {
-  m_rasterPtr = 0;
+  initState();
 }
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager(
   const CachedBandBlocksManager& )
 {
+  initState();
 }
 
 te::mem::CachedBandBlocksManager::~CachedBandBlocksManager()
@@ -51,12 +67,49 @@ bool te::mem::CachedBandBlocksManager::initialize(
   const te::rst::Raster& externalRaster, const unsigned char maxMemPercentUsed, 
   const unsigned int dataPrefetchThreshold)
 {
-
+  free();
+  
+  m_rasterPtr = (te::rst::Raster*)&externalRaster;
+  m_maxMemPercentUsed = maxMemPercentUsed;
+  m_dataPrefetchThreshold = dataPrefetchThreshold;
+  
+  // Finding the global block dimensions
+  
+  for( unsigned int bandIdx = 0 ; bandIdx < externalRaster.getNumberOfBands() ;
+    ++bandIdx )
+  {
+    if( m_globalBlocksNumberX < externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx )
+      m_globalBlocksNumberX = externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx;
+      
+    if( m_globalBlocksNumberY < externalRaster.getBand( bandIdx )->getProperty()->m_nblocksy )
+      m_globalBlocksNumberY = externalRaster.getBand( bandIdx )->getProperty()->m_nblocksy;
+      
+    if( m_globalBlockSizeBytes < externalRaster.getBand( bandIdx )->getBlockSize() )
+      m_globalBlockSizeBytes = externalRaster.getBand( bandIdx )->getBlockSize();
+  }
+  
+  // Finding the max number of memory blocks
+  
+  const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
+  const double usedVMem = (double)te::common::GetUsedVirtualMemory();
+  const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
+    2.0;
+  const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
+    std::min( totalPhysMem, ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );  
+  const unsigned int maxNumberOfMemBlocks = (unsigned int)std::max( 1.0, std::ceil( freeVMem /
+    ((double)m_globalBlockSizeBytes) ) );
+    
+  // Allocating the internal structures
+  
+  m_blocksPointers.resize( boost::extents[externalRaster.getNumberOfBands()][
+    m_globalBlocksNumberX][m_globalBlocksNumberY] );
 }
 
 void te::mem::CachedBandBlocksManager::free()
 {
-
+  m_blocksPointers.resize( boost::extents[0][0][0] );
+  
+  initState();
 }
 
 void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band, 

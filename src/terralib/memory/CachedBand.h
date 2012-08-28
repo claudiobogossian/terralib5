@@ -109,7 +109,7 @@ namespace te
         
         CachedBandBlocksManager& m_blocksManager;
         
-        static CachedBandBlocksManager m_dummyBlocksManager;
+        static te::mem::CachedBandBlocksManager dummyBlocksManager;
       
       private :
 

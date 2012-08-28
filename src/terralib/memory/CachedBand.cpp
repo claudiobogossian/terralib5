@@ -29,6 +29,8 @@
 
 #include <cstring>
 
+te::mem::CachedBandBlocksManager te::mem::CachedBand::dummyBlocksManager;
+
 te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
   std::size_t idx )
 : te::rst::Band( new te::rst::BandProperty( 
@@ -46,7 +48,7 @@ te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
 
 te::mem::CachedBand::CachedBand()
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_idx( 0 ), m_blocksManager( m_dummyBlocksManager )
+  m_idx( 0 ), m_blocksManager( dummyBlocksManager )
 {
   m_idx = 0;
   m_blkWidth = 0;
@@ -60,7 +62,7 @@ te::mem::CachedBand::CachedBand()
 
 te::mem::CachedBand::CachedBand(const CachedBand& )
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_blocksManager( m_dummyBlocksManager )
+  m_blocksManager( dummyBlocksManager )
 {
   m_idx = 0;
   m_blkWidth = 0;

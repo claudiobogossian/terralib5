@@ -104,6 +104,21 @@ namespace te
         
         te::rst::Raster* m_rasterPtr;
         
+        unsigned char m_maxMemPercentUsed;
+        
+        unsigned int m_dataPrefetchThreshold;
+        
+        unsigned int m_globalBlocksNumberX;
+        
+        unsigned int m_globalBlocksNumberY;
+        
+        unsigned int m_globalBlockSizeBytes;
+        
+        /*!
+          \brief 3D Matrix of block pointers indexed as [band][blockXIndex][blockYIndex].
+          
+          \return true if this instance is initialized.
+        */         
         boost::multi_array<void*, 3> m_blocksPointers;
         
       private :
@@ -111,6 +126,11 @@ namespace te
         CachedBandBlocksManager( const CachedBandBlocksManager& );
         
         const CachedBandBlocksManager& operator=( const CachedBandBlocksManager& );
+        
+        /*!
+          \brief Initialize this instance to an initial state.
+        */  
+        void initState();
     };
 
   } // end namespace mem
