@@ -53,6 +53,11 @@ namespace te
     class ColorMap;
   }
 
+  namespace rst
+  {
+    class Raster;
+  }
+
   namespace qt
   {
     namespace qwt
@@ -89,9 +94,11 @@ namespace te
 
         public:
 
+          void setRaster(te::rst::Raster* r);
+
           void setColorMap(te::se::ColorMap* cm);
 
-          te::se::ColorMap* getColorMap() const;
+          te::se::ColorMap* getColorMap();
 
         protected:
 
@@ -101,9 +108,17 @@ namespace te
           /*! \brief Updates the widget form based on internal fill element. */
           void updateUi();
 
+          void buildCategorizationMap();
+
+          void buildInterpolationMap();
+
+          void buildRecodingMap();
+
         protected slots:
 
           void onApplyPushButtonClicked();
+
+          void onBandSelected(QString value);
 
 
         signals:
@@ -112,9 +127,11 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ColorMapWidgetForm> m_ui;                 //!< Dialog form.
-          te::qt::qwt::ColorBar* m_cbWidget;                                //!< QWT widget for color bar.
+          te::qt::qwt::ColorBar* m_cbWidget;                          //!< QWT widget for color bar.
           te::se::ColorMap* m_cm;                                     //!< SE Color Map element.
-          te::color::ColorBar* m_cb;
+          te::color::ColorBar* m_cb;                                  //!< Terralib color bar objetc
+
+          te::rst::Raster* m_raster;                                  //!< TerraLib raster object
 
       };
 

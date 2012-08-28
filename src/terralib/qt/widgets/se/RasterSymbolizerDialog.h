@@ -47,11 +47,13 @@ namespace te
   {
     class RasterSymbolizer;
     class Symbolizer;
+    class ColorMap;
   }
 
   namespace rst
   {
     class RasterProperty;
+    class Raster;
   }
 
   namespace qt
@@ -101,7 +103,7 @@ namespace te
 
             \note The class will NOT take the ownership of the pointer.
           */
-          void setProperty(te::rst::RasterProperty* p);
+          void setRasterProperty(te::rst::Raster* r, te::rst::RasterProperty* p);
 
           void setRasterSymbolizer(const te::se::RasterSymbolizer* rs);
 
@@ -138,8 +140,10 @@ namespace te
           te::qt::widgets::HorizontalSliderWidget* m_sliderWidget;              //!< Slider widget used for opacity information.
 
           te::se::RasterSymbolizer* m_symbolizer;                               //!< SE Raster Symbolizer element.
+          te::se::ColorMap* m_colorMap;                                         //!< SE Color Map element.
 
           te::rst::RasterProperty* m_property;                                  //!< Raster Property object.
+          te::rst::Raster* m_raster;                                            //!< Raster Object.
       };
 
     } // end namespace widgets

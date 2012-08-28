@@ -30,6 +30,8 @@
 
 #define TE_EXAMPLE_USE_OGR 1
 
+#define TE_EXAMPLE_USE_GDAL 1
+
 /*! \brief It loads the data source drivers. */
 void LoadModules();
 
@@ -38,6 +40,9 @@ void DrawingGeometricObjects();
 
 /*! \brief It retrieves data from a Shape-file and prints it to a png graphics file. */
 void DrawPNG();
+
+/*! \brief It retrieves data from a tiff file and prints it to a png graphics file. */
+void DrawingRasterObject();
 
 #endif  // __TERRALIB_EXAMPLES_QTCANVAS_INTERNAL_QTCANVASEXAMPLES_H
 

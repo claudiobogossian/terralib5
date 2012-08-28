@@ -59,6 +59,13 @@ namespace te
         /*! \brief Destructor. */
         ~InterpolationPoint();
 
+        /*!
+          \brief It returns a clone of this object.
+          
+          \return A clone of this object.
+        */
+        virtual InterpolationPoint* clone() const { return 0; }
+
         //@}
 
         /** @name Accessor methods
@@ -67,7 +74,10 @@ namespace te
         //@{
 
         void setData(const double& d);
+        double getData();
+
         void setValue(ParameterValue* v);
+        ParameterValue* getValue();
 
         //@}
 
