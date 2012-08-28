@@ -112,6 +112,14 @@ namespace te
           void setColorBar(te::color::ColorBar* cb);
 
           /*!
+          \brief It sets the precision of mouse click.
+
+          \param double precision of click.
+          */
+
+          void setClickPrecision(double precision);
+
+          /*!
           \brief It returns the colorbar.
 
           \return Current color bar.
@@ -195,6 +203,8 @@ namespace te
           int m_height;         //!< Height of colobar.
 
           double m_initialXPos;       //!< Position initial to move color.
+
+          double m_clickPrecision;   //!< Precision of click to get a color stop.
       };
     } // end namespace qwt
   } // end namespace qt

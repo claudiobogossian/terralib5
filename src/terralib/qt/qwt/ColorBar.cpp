@@ -28,6 +28,9 @@ te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::
   setHeight(20);
 
   m_initialXPos = -1;
+  
+  // sets the precision of mouse click
+  setClickPrecision(0.01);
 
   //setScaleEngine();
 }
@@ -68,6 +71,11 @@ void te::qt::qwt::ColorBar::setScaleEngine()
   QwtLinearScaleEngine se;
 
   this->setScaleDiv(se.transformation(), se.divideScale(m_interval.minValue(), m_interval.maxValue(), 8, 5));
+}
+
+void te::qt::qwt::ColorBar::setClickPrecision(double precision)
+{
+  m_clickPrecision = precision;
 }
 
 void te::qt::qwt::ColorBar::buildColorBar()
@@ -177,7 +185,7 @@ void te::qt::qwt::ColorBar::mousePressEvent(QMouseEvent* e)
       {
         double colorPos = it->first;
 
-        if ( colorPos > (pos - 0.01) && colorPos < (pos + 0.01))
+        if ( colorPos > (pos - m_clickPrecision) && colorPos < (pos + m_clickPrecision))
         {
           delPos = colorPos;
         }
@@ -205,7 +213,7 @@ void te::qt::qwt::ColorBar::mousePressEvent(QMouseEvent* e)
       {
         double colorPos = it->first;
 
-        if ( colorPos > (pos - 0.01) && colorPos < (pos + 0.01))
+        if ( colorPos > (pos - m_clickPrecision) && colorPos < (pos + m_clickPrecision))
         {
           currentPos = colorPos;
         }
