@@ -43,7 +43,7 @@ class MyWindow : public QWidget
 protected slots:
   void layerVisibilityChanged(const QModelIndex&);
   void layerItemMoved(const QModelIndex&, const QModelIndex&);
-  void contextMenuPressed(const QModelIndex& mi, const QPoint& pos);
+  void contextMenuActivated(const QModelIndex& mi, const QPoint& pos);
   void setStyleSlot();
   void openNewMapDisplaySlot();
   void openGridSlot();

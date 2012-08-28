@@ -79,7 +79,11 @@ namespace te
 
         void setCategorize(Categorize* c);
 
+        Categorize* getCategorize();
+
         void setInterpolate(Interpolate* i);
+
+        Interpolate* getInterpolate();
 
         //@}
 

@@ -1582,8 +1582,8 @@ namespace te
         {
           for( curr_offset = 0 ; curr_offset < wind_radius ; ++curr_offset )
           {
-            int_y_dir += rasterData( curr_window_y_end - curr_offset, curr_x ) -
-              rasterData( curr_window_y_start + curr_offset, curr_x );
+            int_y_dir += rasterData( curr_window_y_start + curr_offset, curr_x ) -
+              rasterData( curr_window_y_end - curr_offset, curr_x );
           }
         }      
         
@@ -1631,12 +1631,12 @@ namespace te
             /* rotating the centered window */
             
             rotated_curr_x = 
-              ( ( rot_cos * curr_x_minus_radius ) + 
-              ( -1.0 * rot_sin * curr_y_minus_radius ) );
+              ( rot_cos * curr_x_minus_radius ) + 
+              ( rot_sin * curr_y_minus_radius );
             
-            rotated_curr_y =
-              ( ( rot_sin * curr_x_minus_radius ) + 
-              ( rot_cos * curr_y_minus_radius ) );
+            rotated_curr_y = 
+              ( rot_cos * curr_y_minus_radius )
+              - ( rot_sin * curr_x_minus_radius );
               
             /* bringing the window back to its original
               location with the correct new scale */ 

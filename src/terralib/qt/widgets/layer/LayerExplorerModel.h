@@ -156,6 +156,17 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex& index) const;
 
           /*!
+            \brief It returns the actions supported by the data in this model.
+
+            \return The default implementation returns supportedDropActions() unless
+                    specific values have been set with setSupportedDragActions().
+
+            \note supportedDragActions() is used by QAbstractItemView::startDrag()
+                  as the default values when a drag occurs.
+           */
+          Qt::DropActions supportedDragActions() const;
+
+          /*!
             \brief It returns the drop actions supported by this model.
 
             \return The drop actions supported by this model.
@@ -227,6 +238,13 @@ namespace te
            */
           te::qt::widgets::AbstractTreeItem* getItem(const QModelIndex& index);
 
+          /*!
+            \brief Get the index associated to the dragged item.
+
+            \return It returns the index associated to the dragged item.              
+           */
+          QModelIndex getDragIndex() const;
+
           /*! \brief It resets the model to its original state in any attached views. */
           void resetModel();
 
@@ -238,11 +256,9 @@ namespace te
           void setItemsToBeInserted(std::vector<te::qt::widgets::AbstractTreeItem*> items);
 
         signals:
-
           void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
 
         protected:
-
          /*!
             \brief It emits the dataChanged signal for the descendants indexes of the given index.
 
@@ -253,8 +269,8 @@ namespace te
         private:
 
           te::qt::widgets::AbstractTreeItem* m_rootItem;          //!< The pointer to the root item.
-          te::qt::widgets::AbstractTreeItem* m_dragItem;  //!< The index of the dragged item
-          mutable QModelIndex m_dragIndex;                        //!< The dragged item
+          te::qt::widgets::AbstractTreeItem* m_dragItem;          //!< The pointer to the dragged item
+          mutable QModelIndex m_dragIndex;                        //!< The index of the dragged item
           bool m_dndOperation;                                    //!< Flag indicating drag and drop operation.
 
           std::vector<te::qt::widgets::AbstractTreeItem*> m_childItemsToBeInserted;  //!< A vector of the children items to be inserted.

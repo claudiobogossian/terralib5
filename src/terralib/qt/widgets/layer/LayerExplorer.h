@@ -41,6 +41,9 @@ namespace te
   {
     namespace widgets
     {
+      //Forward declarations
+      class LayerExplorerModel;
+
       /*!
         \class LayerExplorer
 
@@ -61,32 +64,26 @@ namespace te
            */
           LayerExplorer(QWidget* parent = 0);
 
+          /*!
+            \brief It constructs a tree view with the given parent widget.
+
+            \param model     The model associated to this view.
+            \param parent    The parent object.
+           */
+          LayerExplorer(LayerExplorerModel* model, QWidget* parent = 0);
+
           /*! \brief Destructor. */
           ~LayerExplorer();
 
           /*!
-            \brief It sets the list of actions to be performed on the context menu.
+            \brief It gets the index associated to the popup item when the the right button
+                   mouse is pressed.
 
-            \param actionsList The list of actions
+            \return The popup index.
           */
-          void setActionsList(const QList<QAction*> actionsList);
-
-         /*!
-            \brief If the dragged item was the current one, the dropped item will be set to be the current item.
-
-            \param dragIndex The index of the dragged item.
-            \param dropIndex The index of the dropped item.
-          */
-          void updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+          QModelIndex getPopupIndex() const;
 
         protected:
-         /*!
-            \brief The event handler that receives widget context menu events.
-
-            \param e The context menu event.
-          */
-          void contextMenuEvent(QContextMenuEvent* e);
-
          /*!
             \brief The event handler that receives mouse events.
 
@@ -130,15 +127,14 @@ namespace te
 
         signals:
           void checkBoxWasClicked(const QModelIndex& index);
-          void contextMenuPressed(const QModelIndex& index, const QPoint& pos);
+          void contextMenuActivated(const QModelIndex& index, const QPoint& pos);
 
         private:
-          QModelIndex m_previousCurrentIndex;         //!< It stores the previous current index.
-          bool m_leftMouseButtonWasPressed;           //!< It indicates that a item was pressed with the left mouse button.
-          Qt::MouseButton m_mouseButton;              //!< It stores the pressed button.
-          QPoint m_mousePos;                          //!< It stores the pressed position.
-          QList<QAction*> m_actionsList;              //!< The list of actions associated to the context menu
-      }; 
+          QModelIndex m_previousCurrentIndex;    //!< The previous current index.
+          bool m_itemPressedWithLeftButton;      //!< It indicates that the item was pressed with the left mouse button.
+          QModelIndex m_popupIndex;              //!< The index associated to the popped up item.
+      };
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

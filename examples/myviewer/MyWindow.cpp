@@ -217,11 +217,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_layerExplorerModel = new te::qt::widgets::LayerExplorerModel(m_rootFolderLayer, 0);
   
 // create the explorer view and set its model
-  m_layerExplorer = new te::qt::widgets::LayerExplorer;
-  m_layerExplorer->setModel(m_layerExplorerModel);
-
-  QObject::connect(m_layerExplorerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)),
-                   m_layerExplorer, SLOT(dragDropEnded(const QModelIndex&, const QModelIndex&)));
+  m_layerExplorer = new te::qt::widgets::LayerExplorer(m_layerExplorerModel);
 
   m_layerExplorer->setDragEnabled(true);
   m_layerExplorer->setAcceptDrops(true);
@@ -270,7 +266,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
   setLayout(horizontalLayout);
 
-  connect(m_layerExplorer, SIGNAL(contextMenuPressed(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuPressed(const QModelIndex&, const QPoint&)));
+  connect(m_layerExplorer, SIGNAL(contextMenuActivated(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuActivated(const QModelIndex&, const QPoint&)));
   connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChanged(const QModelIndex&)));
   connect(m_layerExplorerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)), this, SLOT(layerItemMoved(const QModelIndex&, const QModelIndex&)));
 
@@ -710,7 +706,7 @@ void MyWindow::timeSliderValueChangedSlot(int)
 
 }
 
-void MyWindow::contextMenuPressed(const QModelIndex& mi, const QPoint& pos)
+void MyWindow::contextMenuActivated(const QModelIndex& mi, const QPoint& pos)
 {
   //teste m_styleAction->setEnabled(false);
   m_parentModelIndex = mi.parent();

@@ -75,13 +75,13 @@ namespace te
             
             std::vector< unsigned int > m_inRaster1Bands; //!< Bands to be used from the input raster 1.
             
-            unsigned int m_raster1TargetAreaLineStart; //!< The first target rectangle line (default:0 - The entire raster will be considered).
+            unsigned int m_raster1TargetAreaLineStart; //!< The first line of the raster 1 target area to process (default:0 - The entire raster will be considered).
             
-            unsigned int m_raster1TargetAreaColStart; //!< The first target rectangle column (default:0 - The entire raster will be considered).
+            unsigned int m_raster1TargetAreaColStart; //!< The first column of the raster 2 target area to process (default:0 - The entire raster will be considered).
 
-            unsigned int m_raster1TargetAreaWidth; //!< The target rectangle width (default:0 - The entire raster will be considered).
+            unsigned int m_raster1TargetAreaWidth; //!< The raster 1 target area width (default:0 - The entire raster will be considered).
             
-            unsigned int m_raster1TargetAreaHeight; //!< The target rectangle height (default:0 - The entire raster will be considered).
+            unsigned int m_raster1TargetAreaHeight; //!< The raster 1 target area height (default:0 - The entire raster will be considered).
             
             te::rst::Raster const* m_inRaster2Ptr; //!< Input raster 2.
             
@@ -89,13 +89,13 @@ namespace te
             
             std::vector< unsigned int > m_inRaster2Bands; //!< Bands to be used from the input raster 2.
             
-            unsigned int m_raster2TargetAreaLineStart; //!< The first target rectangle line (default:0 - The entire raster will be considered).
+            unsigned int m_raster2TargetAreaLineStart; //!< The first line of the raster 2 target area to process (default:0 - The entire raster will be considered).
             
-            unsigned int m_raster2TargetAreaColStart; //!< The first target rectangle column (default:0 - The entire raster will be considered).
+            unsigned int m_raster2TargetAreaColStart; //!< The first column of the raster 2 target area to process (default:0 - The entire raster will be considered).
 
-            unsigned int m_raster2TargetAreaWidth; //!< The target rectangle width (default:0 - The entire raster will be considered).
+            unsigned int m_raster2TargetAreaWidth; //!< The raster 2 target area width (default:0 - The entire raster will be considered).
             
-            unsigned int m_raster2TargetAreaHeight; //!< The target rectangle height (default:0 - The entire raster will be considered).
+            unsigned int m_raster2TargetAreaHeight; //!< The raster 2 target area height (default:0 - The entire raster will be considered).
             
             bool m_enableMultiThread; //!< Enable/Disable the use of multi-threads (default:true).
             
@@ -115,7 +115,7 @@ namespace te
             
             unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
             
-            unsigned int m_maxR1ToR2Offset; //! The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
+            unsigned int m_maxR1ToR2Offset; //!< The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
           
             InputParameters();
             

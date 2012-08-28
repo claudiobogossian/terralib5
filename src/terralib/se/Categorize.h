@@ -113,6 +113,13 @@ namespace te
         /*! \brief Destructor. */
         ~Categorize();
 
+        /*!
+          \brief It returns a clone of this object.
+          
+          \return A clone of this object.
+        */
+        virtual Categorize* clone() const { return 0; }
+
         //@}
 
         void setLookupValue(ParameterValue* v);
@@ -120,6 +127,9 @@ namespace te
         void addThreshold(ParameterValue* v);
         void addValue(ParameterValue* v);
         void setThresholdsBelongTo(ThresholdsBelongToType t);
+
+        std::vector<ParameterValue*>& getThresholds();
+        std::vector<ParameterValue*>& getThresholdValues();
 
       private:
 

@@ -76,7 +76,6 @@ namespace te
 
           //@}
 
-
           /*!
             \brief It returns the data stored under the given role for the item referred by this layer.
 
@@ -87,6 +86,13 @@ namespace te
             \return The data stored under the given role for the item referred by this layer.
            */
           QVariant data(int role) const;
+
+          /*!
+            \brief It checks if the item is a layer item.
+
+            \return The default implementation returns true indicating that the item is a layer item.
+           */
+          bool isLayerItem() const;
 
           /*!
             \brief It creates a menu to be displayed in the given widget.
@@ -100,7 +106,7 @@ namespace te
           /*!
             \brief It sets the legend associated to this layer item.
            */
-          void setLegend(); 
+          void setLegend();
        };
 
     } // end namespace widgets
