@@ -30,6 +30,8 @@
 #include "Config.h"
 #include "../raster/Raster.h"
 
+#include <boost/multi_array.hpp>
+
 #include <vector>
 
 namespace te
@@ -79,21 +81,7 @@ namespace te
         void free(); 
         
         /*!
-          \brief It reads a data block to the specified buffer.
-
-          \param band   The band index.
-          \param x      The block-id in x (or x-offset).
-          \param y      The block-id in y (or y-offset).
-          \param buffer The buffer to be used to read from the band.
-
-          \note The upper-left corner is (0, 0).
-
-          \warning The buffer must have been previously allocated and must have enough capacity.
-        */
-        void read(int band, int x, int y, void* buffer) const;
-        
-        /*!
-          \brief It reads and returns a data block.
+          \brief Returns a pointer to the required data block.
 
           \param band The band index.
           
@@ -101,28 +89,10 @@ namespace te
           
           \param y The block-id in y (or y-offset).
 
-          \note The upper-left corner is (0, 0).
-
-          \return The specified data block.
+          \return a pointer to the required data block.
         */
-        void* read(int band, int x, int y);
+        void* getBlockPointer(unsigned int band, unsigned int x, unsigned int y);
         
-        /*!
-          \brief It writes a data block from the specified buffer.
-
-          \param band The band index.
-          
-          \param x      The block-id in x (or x-offset).
-          
-          \param y      The block-id in y (or y-offset).
-          
-          \param buffer The buffer to be used to write to the band.
-
-          \note The upper-left corner is (0, 0).
-
-          \warning The method will copy the same amount of bytes used by the internal band block representation.
-        */
-        void write(int band, int x, int y, void* buffer);
         
         /*! \brief Returns the associated raster. */
         te::rst::Raster* getRaster() const
@@ -133,6 +103,8 @@ namespace te
       protected :
         
         te::rst::Raster* m_rasterPtr;
+        
+        boost::multi_array<void*, 3> m_blocksPointers;
         
       private :
         

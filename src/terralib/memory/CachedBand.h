@@ -30,6 +30,7 @@
 #include "Config.h"
 #include "CachedBandBlocksManager.h"
 #include "../raster/Band.h"
+#include "../raster/BlockUtils.h"
 
 #include <cstddef>
 #include <cassert>
@@ -75,27 +76,36 @@ namespace te
 
         void setIValue(unsigned int c, unsigned int r, const double value);
 
-        inline void read(int x, int y, void* buffer) const
-        {
-          assert( m_blocksManager.isInitialized() );
-          m_blocksManager.read( m_idx, x, y, buffer );
-        };
+        void read(int x, int y, void* buffer) const;
 
         inline void* read(int x, int y)
         {
           assert( m_blocksManager.isInitialized() );
-          return m_blocksManager.read( m_idx, x, y );
+          return m_blocksManager.getBlockPointer( m_idx, x, y );
         };
 
-        void write(int x, int y, void* buffer)
-        {
-          assert( m_blocksManager.isInitialized() );
-          m_blocksManager.write( m_idx, x, y, buffer );
-        };
+        void write(int x, int y, void* buffer);
 
       protected :
         
         std::size_t m_idx;
+        
+        unsigned int m_blkWidth; //!< The current band blocks width
+        
+        unsigned int m_blkHeight; //!< The current band blocks height
+        
+        unsigned int m_blkSizeBytes; //!< The blocks size (bytes);
+        
+        te::rst::GetBufferValueFPtr m_getBuff;   //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::GetBufferValueFPtr m_getBuffI;  //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
+        te::rst::SetBufferValueFPtr m_setBuff;   //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::SetBufferValueFPtr m_setBuffI;  //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
+        
+        // Variable used by setValue/getValue methods
+        mutable unsigned int m_setGetBlkX;
+        mutable unsigned int m_setGetBlkY;
+        mutable unsigned int m_setGetPos;  
+        mutable void* m_setGetBufPtr;
         
         CachedBandBlocksManager& m_blocksManager;
         

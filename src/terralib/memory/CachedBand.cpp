@@ -27,25 +27,49 @@
 #include "CachedBand.h"
 #include "../raster/BandProperty.h"
 
+#include <cstring>
+
 te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
   std::size_t idx )
 : te::rst::Band( new te::rst::BandProperty( 
-  *(getRaster()->getBand( idx )->getProperty()) ), idx ), 
-  m_idx( idx ), m_blocksManager( blocksManager )
+  *(blocksManager.getRaster()->getBand( idx )->getProperty()) ), idx ),
+  m_blocksManager( blocksManager )
 {
+  m_idx = idx;
+  m_blkHeight = blocksManager.getRaster()->getBand( idx )->getProperty()->m_blkh;
+  m_blkWidth = blocksManager.getRaster()->getBand( idx )->getProperty()->m_blkw;
+  m_blkSizeBytes = blocksManager.getRaster()->getBand( idx )->getBlockSize();
+  
+  te::rst::SetBlockFunctions( &m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, 
+    blocksManager.getRaster()->getBand( idx )->getProperty()->getType());
 }
 
 te::mem::CachedBand::CachedBand()
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
   m_idx( 0 ), m_blocksManager( m_dummyBlocksManager )
 {
-
+  m_idx = 0;
+  m_blkWidth = 0;
+  m_blkHeight = 0;
+  m_blkSizeBytes = 0;
+  m_getBuff = 0;
+  m_getBuffI = 0;
+  m_setBuff = 0;
+  m_setBuffI = 0;
 }
 
 te::mem::CachedBand::CachedBand(const CachedBand& )
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_idx( 0 ), m_blocksManager( m_dummyBlocksManager )
+  m_blocksManager( m_dummyBlocksManager )
 {
+  m_idx = 0;
+  m_blkWidth = 0;
+  m_blkHeight = 0;
+  m_blkSizeBytes = 0;
+  m_getBuff = 0;
+  m_getBuffI = 0;
+  m_setBuff = 0;
+  m_setBuffI = 0;
 }
 
 te::mem::CachedBand::~CachedBand()
@@ -54,23 +78,62 @@ te::mem::CachedBand::~CachedBand()
 
 void te::mem::CachedBand::getValue(unsigned int c, unsigned int r, double& value) const
 {
-
+  m_setGetBlkX = c / m_blkWidth;
+  m_setGetBlkY = r / m_blkHeight;
+  m_setGetPos = c % m_blkWidth + ((r % m_blkHeight) * m_blkWidth);
+  assert(m_setGetPos < ( m_blkWidth * m_blkHeight ) );
+  m_setGetBufPtr = m_blocksManager.getBlockPointer( m_idx, m_setGetBlkX, 
+    m_setGetBlkY );
+  m_getBuff(m_setGetPos, m_setGetBufPtr, &value );
 }
 
 void te::mem::CachedBand::setValue(unsigned int c, unsigned int r, const double value)
 {
-
+  m_setGetBlkX = c / m_blkWidth;
+  m_setGetBlkY = r / m_blkHeight;
+  m_setGetPos = c % m_blkWidth + ((r % m_blkHeight) * m_blkWidth);
+  assert(m_setGetPos < ( m_blkWidth * m_blkHeight ) );
+  m_setGetBufPtr = m_blocksManager.getBlockPointer( m_idx, m_setGetBlkX, 
+    m_setGetBlkY );
+  m_setBuff(m_setGetPos, m_setGetBufPtr, &value );
 }
 
 void te::mem::CachedBand::getIValue(unsigned int c, unsigned int r, double& value) const
 {
-
+  m_setGetBlkX = c / m_blkWidth;
+  m_setGetBlkY = r / m_blkHeight;
+  m_setGetPos = c % m_blkWidth + ((r % m_blkHeight) * m_blkWidth);
+  assert(m_setGetPos < ( m_blkWidth * m_blkHeight ) );
+  m_setGetBufPtr = m_blocksManager.getBlockPointer( m_idx, m_setGetBlkX, 
+    m_setGetBlkY );
+  m_getBuffI(m_setGetPos, m_setGetBufPtr, &value );
 }
 
 void te::mem::CachedBand::setIValue(unsigned int c, unsigned int r, const double value)
 {
-
+  m_setGetBlkX = c / m_blkWidth;
+  m_setGetBlkY = r / m_blkHeight;
+  m_setGetPos = c % m_blkWidth + ((r % m_blkHeight) * m_blkWidth);
+  assert(m_setGetPos < ( m_blkWidth * m_blkHeight ) );
+  m_setGetBufPtr = m_blocksManager.getBlockPointer( m_idx, m_setGetBlkX, 
+    m_setGetBlkY );
+  m_setBuffI(m_setGetPos, m_setGetBufPtr, &value );
 }
+
+void te::mem::CachedBand::read(int x, int y, void* buffer) const
+{
+  assert( m_blocksManager.isInitialized() );
+  memcpy( buffer, m_blocksManager.getBlockPointer( m_idx, x, y ),
+    m_blkSizeBytes );
+}
+
+void te::mem::CachedBand::write(int x, int y, void* buffer)
+{
+  assert( m_blocksManager.isInitialized() );
+  memcpy( m_blocksManager.getBlockPointer( m_idx, x, y ), buffer,
+    m_blkSizeBytes );
+}
+
 
 
 

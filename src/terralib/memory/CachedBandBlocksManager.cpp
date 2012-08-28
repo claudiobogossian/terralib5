@@ -26,13 +26,12 @@
 #include "CachedBandBlocksManager.h"
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
-: m_rasterPtr( 0 )
 {
+  m_rasterPtr = 0;
 }
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager(
   const CachedBandBlocksManager& )
-: m_rasterPtr( 0 )
 {
 }
 
@@ -41,7 +40,7 @@ te::mem::CachedBandBlocksManager::~CachedBandBlocksManager()
   free();
 }
 
-const  te::mem::CachedBandBlocksManager::CachedBandBlocksManager& 
+const  te::mem::CachedBandBlocksManager& 
   te::mem::CachedBandBlocksManager::operator=( 
   const CachedBandBlocksManager& rhs )
 {
@@ -60,13 +59,10 @@ void te::mem::CachedBandBlocksManager::free()
 
 }
 
-void* te::mem::CachedBandBlocksManager::read(int band, int x, int y)
+void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band, 
+  unsigned int x, unsigned int y)
 {
   
 }
 
-void te::mem::CachedBandBlocksManager::write(int band, int x, int y, void* buffer)
-{
-  
-}
 
