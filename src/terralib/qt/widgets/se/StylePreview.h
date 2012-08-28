@@ -53,6 +53,9 @@ namespace te
   {
     namespace widgets
     {
+// Forward declarations
+      class Symbol;
+
       namespace StylePreview
       {
 
@@ -64,8 +67,6 @@ namespace te
           \param size The preview size.
 
           \return A pixmap that represents the result of symbolizer preview.
-
-          \note The widget will NOT take the ownership of the given pointers.
         */
         TEQTWIDGETSEXPORT QPixmap build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size);
 
@@ -77,8 +78,6 @@ namespace te
           \param size The preview size.
 
           \return A pixmap that represents the composite result of symbolizers preview.
-
-          \note The widget will NOT take the ownership of the given pointers.
         */
         TEQTWIDGETSEXPORT QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size);
 
@@ -90,10 +89,19 @@ namespace te
           \param size The preview size.
 
           \return A pixmap that represents the composite result of rule's symbolizers preview.
-
-          \note The widget will NOT take the ownership of the given pointers.
         */
         TEQTWIDGETSEXPORT QPixmap build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size);
+
+        /*!
+          \brief Generates the preview of a symbol.
+
+          \param symbol A valid symbol.
+          \param geom The geometry that will be used to draw the preview.
+          \param size The preview size.
+
+          \return A pixmap that represents the symbol preview.
+        */
+        TEQTWIDGETSEXPORT QPixmap build(Symbol* symbol, te::gm::Geometry* geom, const QSize& size);
 
       } // end namespace StylePreview
     }   // end namespace widgets

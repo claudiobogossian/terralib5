@@ -29,6 +29,7 @@
 #include "../../../se/Symbolizer.h"
 #include "../canvas/Canvas.h"
 #include "StylePreview.h"
+#include "Symbol.h"
 
 // STL
 #include <cassert>
@@ -75,4 +76,11 @@ QPixmap te::qt::widgets::StylePreview::build(te::se::Rule* rule, te::gm::Geometr
   assert(rule);
 
   return build(rule->getSymbolizers(), geom, size);
+}
+
+QPixmap te::qt::widgets::StylePreview::build(te::qt::widgets::Symbol* symbol, te::gm::Geometry* geom, const QSize& size)
+{
+  assert(symbol);
+
+  return build(symbol->getSymbolizers(), geom, size);
 }
