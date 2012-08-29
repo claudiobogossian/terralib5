@@ -43,7 +43,7 @@ namespace te
     class DataSetType;
   }
 
-  //namespace map { class Layer; }
+  namespace map { class LegendItem; }
 
   namespace qt
   {
@@ -58,6 +58,7 @@ namespace te
 
         public:
           Legend(te::qt::widgets::LayerItem* layerItem, QWidget* parent = 0);
+          const std::vector<te::map::LegendItem*>& getLegend() const;
 
         protected:
           void closeEvent(QCloseEvent* e);
@@ -72,6 +73,7 @@ namespace te
           te::qt::widgets::LayerItem* m_layerItem;
           te::da::DataSourceTransactor* m_t;
           te::da::DataSetType* m_dataSetType;
+          std::vector<te::map::LegendItem*> m_legend;
       };
     }   // end namespace widgets
   }     // end namespace qt

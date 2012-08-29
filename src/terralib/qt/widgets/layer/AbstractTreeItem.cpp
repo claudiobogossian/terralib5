@@ -66,9 +66,25 @@ int te::qt::widgets::AbstractTreeItem::getIndex() const
   return index;
 }
 
-bool te::qt::widgets::AbstractTreeItem::removeChildren(int i, int count)
+te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::removeChild(int row)
 {
   const QList<QObject*>& childrenList = children();
+  int numChildren = childrenList.count();
+
+  if (numChildren == 0 || row < 0 || row >= numChildren)
+    return false;
+
+  QObject* item = childrenList.value(row);
+  item->setParent(0);
+  //delete item;
+
+  return m_refLayer;
+}
+
+bool te::qt::widgets::AbstractTreeItem::removeChildren(int i, int count)
+{
+  const QList<QObject*> childrenList = children();
+
   int numChildren = childrenList.count();
 
   if (numChildren == 0)
@@ -79,13 +95,9 @@ bool te::qt::widgets::AbstractTreeItem::removeChildren(int i, int count)
 
   for (int j = i; j < (i + count); ++j)
   {
-    QObject* item = childrenList.value(j);
+    QObject* item = childrenList.at(j);
     item->setParent(0);
-    //delete item;
   }
-
-  const QList<QObject*>& childrenList1 = children();
-  numChildren = childrenList1.count();
 
   m_refLayer->removeChildren(i, count);
 

@@ -35,7 +35,10 @@
 namespace te
 {
 // Forward declarations
-  namespace map { class AbstractLayer; }
+  namespace map
+  { class AbstractLayer;
+    class LegendItem;
+  }
 
   namespace qt
   {
@@ -104,9 +107,14 @@ namespace te
           QMenu* getMenu(QWidget* parent = 0) const;
 
           /*!
-            \brief It sets the legend associated to this layer item.
+            \brief It removes the legend associated to this layer item.
            */
-          void setLegend();
+          void removeLegend();
+
+          /*!
+            \brief It inserts the legend associated to this layer item.
+           */
+          void insertLegend(const std::vector<te::map::LegendItem*>& legend);
        };
 
     } // end namespace widgets
