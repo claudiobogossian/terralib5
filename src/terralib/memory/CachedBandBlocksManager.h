@@ -114,19 +114,9 @@ namespace te
         
         unsigned int m_globalBlockSizeBytes;
         
-        /*!
-          \brief 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
-          
-          \return true if this instance is initialized.
-        */         
-        std::vector< std::vector< std::vector< void* > > > m_blocksPointers;
+        std::vector< std::vector< std::vector< void* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
         
-        /*!
-          \brief 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
-          
-          \return true if this instance is initialized.
-        */         
-        std::vector< boost::scoped_array< unsigned char* > > m_blocksHandler;        
+        std::vector< boost::scoped_array< unsigned char* > > m_blocksHandler; //!< Cache blocks handler.
         
       private :
         
