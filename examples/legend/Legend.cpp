@@ -113,6 +113,11 @@ Legend::~Legend()
 
 void Legend::contextMenuActivated(const QModelIndex& index, const QPoint& pos)
 {
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(m_layerView->getPopupIndex()));
+
+  if(layerItem == m_layerModel->getRootItem() || layerItem->getRefLayer()->getType() != "LAYER")
+    return;
+
   m_popupMenu->exec(pos);
 }
 
@@ -125,8 +130,7 @@ void Legend::editLegendSlot()
   if(legendDialog.exec() != QDialog::Accepted)
     return;
 
-  // Reset the model to take into account changes in the tree of layers
-  m_layerModel->resetModel();
+  m_layerModel->insertLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
 }
 
 void Legend::closeEvent(QCloseEvent* /*e*/)
