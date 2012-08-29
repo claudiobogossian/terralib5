@@ -44,6 +44,11 @@ void te::se::ImageOutline::setSymbolizer(Symbolizer* s)
   m_symbol = s;
 }
 
+te::se::Symbolizer* te::se::ImageOutline::getSymbolizer() const
+{
+  return m_symbol->clone();
+}
+
 te::se::ImageOutline* te::se::ImageOutline::clone() const
 {
   ImageOutline* io = new ImageOutline;

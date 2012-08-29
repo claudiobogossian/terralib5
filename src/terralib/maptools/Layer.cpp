@@ -28,8 +28,10 @@
 #include "../geometry/Envelope.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/Style.h"
+#include "Grouping.h"
 #include "Layer.h"
 #include "LayerRenderer.h"
+#include "LegendItem.h"
 
 const std::string te::map::Layer::sm_type("LAYER");
 
@@ -40,13 +42,18 @@ te::map::Layer::Layer(const std::string& id,
     m_ds(0),
     m_mbr(0),
     m_style(0),
+    m_renderer(0),
     m_srid(-1),
-    m_renderer(0)
+    m_grouping(0)
 {
 }
 
 te::map::Layer::~Layer()
-{  
+{ 
+  if(m_grouping)
+    delete m_grouping;
+
+  removeLegend();
 }
 
 const std::string& te::map::Layer::getType() const
@@ -128,4 +135,43 @@ te::map::LayerRenderer* te::map::Layer::getRenderer() const
 void te::map::Layer::setRenderer(LayerRenderer* renderer)
 {
   m_renderer.reset(renderer);
+}
+
+te::map::Grouping* te::map::Layer::getGrouping() const
+{
+  return m_grouping;
+}
+
+void te::map::Layer::setGrouping(Grouping* grouping)
+{
+  if(m_grouping)
+    delete m_grouping;
+
+  m_grouping = grouping;
+}
+
+bool te::map::Layer::hasLegend()
+{
+  return m_legend.empty() ? false : true;
+}
+
+std::vector<te::map::LegendItem*>* te::map::Layer::getLegend()
+{
+  return &m_legend;
+}
+
+void te::map::Layer::removeLegend()
+{
+  if(hasLegend() == true)
+  {
+    for(std::size_t i = 0; i < m_legend.size(); ++i)
+      delete m_legend[i];
+    m_legend.clear();
+  }
+}
+
+void te::map::Layer::insertLegend(const std::vector<LegendItem*>& legend)
+{
+  removeLegend();
+  m_legend = legend;
 }

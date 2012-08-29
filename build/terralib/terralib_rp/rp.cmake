@@ -1,7 +1,9 @@
 
-find_package(Boost 1.46 COMPONENTS filesystem system thread REQUIRED)
-set (DEP_LIBS ${Boost_LIBRARIES})
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system thread REQUIRED)
+if(Boost_FOUND)
+  set (DEP_LIBS ${Boost_LIBRARIES})
+  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
 #Definitions for windows compiling
 if(WIN32)
@@ -10,9 +12,10 @@ endif()
 
 list (APPEND DEP_LIBS
     terralib_common
-		terralib_dataaccess
-		terralib_datatype
-		terralib_raster
+    terralib_dataaccess
+    terralib_datatype
+    terralib_geometry
+    terralib_raster
     )
 	
 # Select the source and header files

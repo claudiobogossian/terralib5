@@ -32,12 +32,18 @@
 // Qt
 #include <QtGui/QTreeView>
 
+class QAction;
+class QDragMoveEvent;
+
 namespace te
 {
   namespace qt
   {
     namespace widgets
     {
+      //Forward declarations
+      class LayerExplorerModel;
+
       /*!
         \class LayerExplorer
 
@@ -58,15 +64,41 @@ namespace te
            */
           LayerExplorer(QWidget* parent = 0);
 
+          /*!
+            \brief It constructs a tree view with the given parent widget.
+
+            \param model     The model associated to this view.
+            \param parent    The parent object.
+           */
+          LayerExplorer(LayerExplorerModel* model, QWidget* parent = 0);
+
           /*! \brief Destructor. */
           ~LayerExplorer();
 
+          /*!
+            \brief It gets the index associated to the popup item when the the right button
+                   mouse is pressed.
+
+            \return The popup index.
+          */
+          QModelIndex getPopupIndex() const;
+
         protected:
-        //  void contextMenuEvent(QContextMenuEvent *e);
-          void mousePressEvent(QMouseEvent *e);
+         /*!
+            \brief The event handler that receives mouse events.
+
+            \param e The mouse event.
+          */
+          void mousePressEvent(QMouseEvent* e);
+
+         /*!
+            \brief The event handler that receives an event which is sent while a drag and drop action is in progress.
+
+            \param e Event which is sent while a drag and drop action is in progress.
+          */
+          void dragMoveEvent(QDragMoveEvent* e);
 
         protected slots:
-
           /*!
             \brief This slot is called when a mouse button is pressed.
                    The item the mouse was pressed on is specified by index.
@@ -91,25 +123,18 @@ namespace te
             \param dragIndex The index of the dragged item.
             \param dropIndex The index of the dropped item.
           */
-          void updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+          void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
 
         signals:
           void checkBoxWasClicked(const QModelIndex& index);
-          void contextMenuPressed(const QModelIndex& index, const QPoint& pos);
+          void contextMenuActivated(const QModelIndex& index, const QPoint& pos);
 
         private:
+          QModelIndex m_previousCurrentIndex;    //!< The previous current index.
+          bool m_itemPressedWithLeftButton;      //!< It indicates that the item was pressed with the left mouse button.
+          QModelIndex m_popupIndex;              //!< The index associated to the popped up item.
+      };
 
-          QModelIndex m_previousCurrentIndex;         //!< It stores the previous current index.
-
-          bool m_checkBoxWasClicked;                  //!< It indicates if the check box of the item was clicked.
-
-          Qt::CheckState m_prevPressedItemCheckState; //!< It stores the previous check state of the pressed item.
-
-          Qt::MouseButton m_mouseButton;              //!< It stores the pressed button.
-
-          QPoint m_mousePos;                          //!< It stores the pressed position.
-
-      }; 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

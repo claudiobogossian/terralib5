@@ -1146,26 +1146,28 @@ namespace te
         /*!
           \brief Method for retrieving a data value as a string plain representation.
 
-          \param i The attribute index.
+          \param i         The attribute index.
+          \param precision The precision in the conversion.
           
           \return The attribute value in a string format.
 
           \note It is safe to call this method for any data type, the data source implementation will
                 take care of how to convert the internal representation to a string.
         */
-        virtual std::string getAsString(int i) const;
+        virtual std::string getAsString(int i, int precision = 0) const;
 
         /*!
           \brief Method for retrieving a data value as a string plain representation.
 
           \param name The attribute name.
+          \param precision The precision in the conversion.
 
           \return The attribute value in a string format.
 
           \note It is safe to call this method for any data type, the data source implementation will
                 take care of how to convert the internal representation to a string.
         */
-        virtual std::string getAsString(const std::string& name) const;
+        virtual std::string getAsString(const std::string& name, int precision = 0) const;
 
         /*!
           \brief It checks if the attribute value is NULL.

@@ -154,7 +154,7 @@ std::size_t te::gm::CompoundCurve::getNPoints() const throw()
   return 0;
 }
 
-te::gm::Geometry* te::gm::CompoundCurve::locateBetween(const double& /*mStart*/, const double& /*mEnd*/) throw(Exception)
+te::gm::Geometry* te::gm::CompoundCurve::locateBetween(const double& /*mStart*/, const double& /*mEnd*/) const throw(Exception)
 {
   return 0;
 }

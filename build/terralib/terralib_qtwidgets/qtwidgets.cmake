@@ -1,23 +1,29 @@
 
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-include (${QT_USE_FILE})
-add_definitions (${QT_DEFINITIONS})
+find_package(Qt4 ${_Qt4_VERSION} COMPONENTS QtCore QtGui REQUIRED)
+if(QT4_FOUND)
+  include (${QT_USE_FILE})
+  add_definitions (${QT_DEFINITIONS})
 
-set (DEP_INCLUDES ${QT_INCLUDE_DIR})
-set (DEP_LIBS ${QT_LIBRARIES})
+  set (DEP_INCLUDES ${QT_INCLUDE_DIR})
+  set (DEP_LIBS ${QT_LIBRARIES})
+endif()
 
-find_package(Boost 1.46 COMPONENTS date_time REQUIRED)
-list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} COMPONENTS date_time REQUIRED)
+if(Boost_FOUND)
+  list (APPEND DEP_LIBS ${Boost_LIBRARIES})
+  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
-find_package(PostgreSQL)
+find_package(PostgreSQL ${_PostgreSQL_VERSION})
 if(PostgreSQL_FOUND)
 	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
 endif()
 
-find_package(Qwt REQUIRED )
-list (APPEND DEP_LIBS ${QWT_LIBRARY})
-list (APPEND DEP_INCLUDES ${QWT_INCLUDE_DIR})
+find_package(Qwt ${_Qwt_VERSION} REQUIRED)
+if(Qwt_FOUND)
+  list (APPEND DEP_LIBS ${QWT_LIBRARY})
+  list (APPEND DEP_INCLUDES ${QWT_INCLUDE_DIR})
+endif()
 
 #Definitions for Windows compiling
 if(WIN32)
@@ -60,6 +66,7 @@ set (
   qwt
   widgets
   widgets/canvas
+  widgets/charts
   widgets/datagrid
   widgets/dataset
   widgets/layer
@@ -90,10 +97,12 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/qwt/ScatterDisplay.h
 	 ${SRCDIR}/qwt/ScatterSelectionCursor.h
 	 ${SRCDIR}/qwt/TimeSeriesDisplay.h
-	 ${SRCDIR}/widgets/layer/AbstractLayerItem.h
+	 ${SRCDIR}/widgets/canvas/MapDisplay.h
+	 ${SRCDIR}/widgets/layer/AbstractTreeItem.h
 	 ${SRCDIR}/widgets/layer/LayerExplorer.h
 	 ${SRCDIR}/widgets/layer/LayerExplorerModel.h
 	 ${SRCDIR}/widgets/layer/LayerItem.h
+	 ${SRCDIR}/widgets/layer/Legend.h
 	 ${SRCDIR}/widgets/layer/LegendItem.h
 	 ${SRCDIR}/widgets/layer/FolderLayerItem.h	
 	 ${SRCDIR}/widgets/dataset/CreateDataSet.h
@@ -105,26 +114,27 @@ file(GLOB HDRS_TO_MOC
 	 ${SRCDIR}/widgets/property/RemoveProperty.h
 	 ${SRCDIR}/widgets/property/RenameProperty.h
 	 ${SRCDIR}/widgets/property/UpdateProperty.h	
-	 ${SRCDIR}/widgets/canvas/MapDisplay.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerBar.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
 	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
 	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
-     ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
-     ${SRCDIR}/widgets/help/HelpPushButton.h
+   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
+   ${SRCDIR}/widgets/help/HelpPushButton.h
 	 ${SRCDIR}/widgets/help/HelpToolButton.h
 	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
+	 ${SRCDIR}/widgets/utils/HorizontalSliderWidget.h
 	 ${SRCDIR}/widgets/utils/ListWidget.h
 	 ${SRCDIR}/widgets/utils/ParameterDialog.h
 	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
-     ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
-     ${SRCDIR}/widgets/rp/SegmenterDialog.h
-     ${SRCDIR}/widgets/rp/ContrastDialog.h
+   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
+   ${SRCDIR}/widgets/rp/SegmenterDialog.h
+   ${SRCDIR}/widgets/rp/ContrastDialog.h
 	 ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
 	 ${SRCDIR}/widgets/se/BasicFillWidget.h
 	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
 	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
 	 ${SRCDIR}/widgets/se/CharMapWidget.h
+	 ${SRCDIR}/widgets/se/ColorMapWidget.h
 	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
 	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
 	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
@@ -150,11 +160,12 @@ file(GLOB HDRS_TO_MOC
 # Select the FORMS widgets     
 file(GLOB FORMS
 	 ${SRCDIR}/widgets/*.ui
-     ${SRCDIR}/widgets/canvas/*.ui
-     ${SRCDIR}/widgets/datagrid/*.ui
-     ${SRCDIR}/widgets/dataset/*.ui
-     ${SRCDIR}/widgets/layer/*.ui
-     ${SRCDIR}/widgets/property/*.ui
+   ${SRCDIR}/widgets/canvas/*.ui
+	 ${SRCDIR}/widgets/charts/*.ui
+   ${SRCDIR}/widgets/datagrid/*.ui
+   ${SRCDIR}/widgets/dataset/*.ui
+   ${SRCDIR}/widgets/layer/ui/*.ui
+   ${SRCDIR}/widgets/property/*.ui
 	 ${SRCDIR}/widgets/utils/ui/*.ui
 	 ${SRCDIR}/widgets/rp/ui/*.ui
 	 ${SRCDIR}/widgets/se/ui/*.ui

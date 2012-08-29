@@ -41,16 +41,15 @@
 #include <QtCore/QString>
 
 te::qt::widgets::MapDisplay::MapDisplay(int w, int h, QWidget* parent, Qt::WindowFlags f)
-  : te::map::MapDisplay(),
-    QWidget(parent, f),
+  : QWidget(parent, f),
+    te::map::MapDisplay(),
     m_displayPixmap(0),
     m_backgroundColor(Qt::white),
-    m_repaint(true),
     m_resize(false),
+    m_repaint(true),
+    m_timer(0),
     m_hAlign(te::map::Center),
-    m_vAlign(te::map::Center),
-    m_timer(0)
-
+    m_vAlign(te::map::Center)
 {
   setObjectName("MapDisplay");
   resize(w, h);

@@ -31,6 +31,7 @@
 #include "../geometry/WKBWriter.h"
 #include "../geometry/WKBReader.h"
 #include "../geometry/Geometry.h"
+#include "../datatype/ByteArray.h"
 #include "../datatype/SimpleProperty.h"
 #include "../datatype/ByteArrayProperty.h"
 #include "DataSourceTransactor.h"
@@ -57,7 +58,6 @@ te::ado::DataSet::~DataSet()
 {
   delete m_dt;
   delete m_geomFilter;
-  delete m_mbrFilter;
 }
 
 te::common::TraverseType te::ado::DataSet::getTraverseType() const
@@ -209,34 +209,72 @@ bool te::ado::DataSet::isAfterEnd() const
 
 char te::ado::DataSet::getChar(int i) const
 {
-  char ival = (char)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  char ival;
+
+  try
+  {
+    ival = (char)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 char te::ado::DataSet::getChar(const std::string& name) const
 {
-  char ival = (char)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  char ival;
+
+  try
+  {
+    ival = (char)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setChar(int i, char value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setChar(const std::string& name, char value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 unsigned char te::ado::DataSet::getUChar(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return (unsigned char)getChar(i);
 }
 
 unsigned char te::ado::DataSet::getUChar(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return (unsigned char)getChar(name);
 }
 
 void te::ado::DataSet::setUChar(int i, unsigned char value)
@@ -251,134 +289,362 @@ void te::ado::DataSet::setUChar(const std::string& name, unsigned char value)
 
 boost::int16_t te::ado::DataSet::getInt16(int i) const
 {
-  int16_t ival = (int16_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  int16_t ival;
+
+  try
+  {
+    ival = (int16_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 boost::int16_t te::ado::DataSet::getInt16(const std::string& name) const
 {
-  int16_t ival = (int16_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  int16_t ival; 
+  
+  try
+  {
+    ival = (int16_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setInt16(int i, boost::int16_t value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setInt16(const std::string& name, boost::int16_t value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 boost::int32_t te::ado::DataSet::getInt32(int i) const
 {
-  int32_t ival = (int32_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  int32_t ival;
+  
+  try
+  {
+    ival = (int32_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 boost::int32_t te::ado::DataSet::getInt32(const std::string& name) const
 {
-  int32_t ival = (int32_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  int32_t ival;
+  
+  try
+  {
+    ival = (int32_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setInt32(int i, boost::int32_t value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setInt32(const std::string& name, boost::int32_t value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 boost::int64_t te::ado::DataSet::getInt64(int i) const
 {
-  int64_t ival = (int64_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  int64_t ival;
+  
+  try
+  {
+    ival = (int64_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 boost::int64_t te::ado::DataSet::getInt64(const std::string& name) const
 {
-  int64_t ival = (int64_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  int64_t ival;
+  
+  try
+  {
+    ival = (int64_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setInt64(int i, boost::int64_t value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setInt64(const std::string& name, boost::int64_t value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 bool te::ado::DataSet::getBool(int i) const
 {
-  bool ival = (bool)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  bool ival;
+  
+  try
+  {
+    ival = (bool)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 bool te::ado::DataSet::getBool(const std::string& name) const
 {
-  bool ival = (bool)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  bool ival;
+  
+  try
+  {
+    ival = (bool)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setBool(int i, bool value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setBool(const std::string& name, bool value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 float te::ado::DataSet::getFloat(int i) const
 {
-  float ival = (float)m_result->GetFields()->GetItem(i)->GetValue();
+  float ival;
+  
+  try
+  {
+    ival = (float)m_result->GetFields()->GetItem(i)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 float te::ado::DataSet::getFloat(const std::string& name) const
 {
-  float ival = (float)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  float ival;
+  
+  try
+  {
+    ival = (float)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setFloat(int i, float value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  try
+  {
+    m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setFloat(const std::string& name, float value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 double te::ado::DataSet::getDouble(int i) const
 {
-  double ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+  double ival;
+  
+  try
+  {
+    ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 double te::ado::DataSet::getDouble(const std::string& name) const
 {
-  double ival = (double)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  double ival;
+  
+  try
+  {
+    ival = (double)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setDouble(int i, double value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_variant_t)value);
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  try
+  {
+    m_result->GetFields()->GetItem(vtIndex)->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSet::setDouble(const std::string& name, double value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  try
+  {
+    m_result->GetFields()->GetItem(name.c_str())->PutValue((_variant_t)value);
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 std::string te::ado::DataSet::getNumeric(int i) const
@@ -403,34 +669,113 @@ void te::ado::DataSet::setNumeric(const std::string& name, const std::string& va
 
 std::string te::ado::DataSet::getString(int i) const
 {
-  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(i)->GetValue();
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
+  std::string ival;
+  
+  try
+  {
+    ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(vtIndex)->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 std::string te::ado::DataSet::getString(const std::string& name) const
 {
-  std::string ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  std::string ival;
+  
+  try
+  {
+    ival = (LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
   return ival;
 }
 
 void te::ado::DataSet::setString(int i, const std::string& value)
 {
-  m_result->GetFields()->GetItem(i)->PutValue((_bstr_t)value.c_str());
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSet::setString(const std::string& name, const std::string& value)
 {
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_bstr_t)value.c_str());
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 te::dt::ByteArray* te::ado::DataSet::getByteArray(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+  
+  _variant_t varBLOB;
+  char *cdata = 0;
+  long size;
+  char* data;
+
+  try
+  {
+    ::Field15Ptr field = m_result->GetFields()->GetItem(vtIndex);
+
+    size = field->ActualSize;
+    if(size > 0)
+    {
+      VariantInit(&varBLOB);
+
+      varBLOB = field->GetChunk(size);
+
+      if(varBLOB.vt == (VT_ARRAY | VT_UI1))
+      {
+        SafeArrayAccessData(varBLOB.parray,(void **)&cdata);
+        data = new char[size];
+        memcpy(data, cdata, size);
+        SafeArrayUnaccessData(varBLOB.parray);
+      }
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return new te::dt::ByteArray(data, size);
 }
 
 te::dt::ByteArray* te::ado::DataSet::getByteArray(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _variant_t varBLOB;
+  char *cdata = 0;
+  long size;
+  char* data;
+
+  try
+  {
+    size = m_result->GetFields()->GetItem(name.c_str())->ActualSize;
+    if(size > 0)
+    {
+      VariantInit(&varBLOB);
+
+      varBLOB = m_result->GetFields()->GetItem(name.c_str())->GetChunk(size);
+      te::ado::Variant2Blob(varBLOB, size, data);
+    }
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return new te::dt::ByteArray(data, size);
 }
 
 void te::ado::DataSet::setByteArray(int i, const te::dt::ByteArray& value)
@@ -445,32 +790,40 @@ void te::ado::DataSet::setByteArray(const std::string& name, const te::dt::ByteA
 
 te::gm::Geometry* te::ado::DataSet::getGeometry(int i) const
 {
-  char* wkb = (char*)(LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(i)->GetValue();
+  te::dt::ByteArray* ba = getByteArray(i);
 
-  return te::gm::WKBReader::read(wkb);
+  te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
+
+  std::size_t wkb_size = geom->getWkbSize();
+
+  if(ba->bytesUsed() - wkb_size >= 4)
+    geom->setSRID(*((int*)(ba->getData() + wkb_size)));
+
+  return geom;
 }
 
 te::gm::Geometry* te::ado::DataSet::getGeometry(const std::string& name) const
 {
-  char* wkb = (char*)(LPCSTR)(_bstr_t)m_result->GetFields()->GetItem(name.c_str())->GetValue();
+  te::dt::ByteArray* ba = getByteArray(name);
+  
+  te::gm::Geometry* geom = te::gm::WKBReader::read(ba->getData());
 
-  return te::gm::WKBReader::read(wkb);
+  std::size_t wkb_size = geom->getWkbSize();
+
+  if(ba->bytesUsed() - wkb_size >= 4)
+    geom->setSRID(*((int*)(ba->getData() + wkb_size)));
+
+  return geom;
 }
 
 void te::ado::DataSet::setGeometry(int i, const te::gm::Geometry& value)
 {
-  char* wkb = new char[value.getWkbSize()];
-  te::gm::WKBWriter::write(&value, wkb);
-
-  m_result->GetFields()->GetItem(i)->PutValue((_bstr_t)wkb);
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSet::setGeometry(const std::string& name, const te::gm::Geometry& value)
 {
-  char* wkb = new char[value.getWkbSize()];
-  te::gm::WKBWriter::write(&value, wkb);
-
-  m_result->GetFields()->GetItem(name.c_str())->PutValue((_bstr_t)wkb);
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 te::rst::Raster* te::ado::DataSet::getRaster(int i) const
@@ -525,12 +878,16 @@ void te::ado::DataSet::getArray(const std::string& name, std::vector<boost::int1
 
 const unsigned char* te::ado::DataSet::getWKB(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  te::dt::ByteArray* ba = getByteArray(i);
+
+  return (unsigned char*)ba->getData();
 }
 
 const unsigned char* te::ado::DataSet::getWKB(const std::string& name) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  te::dt::ByteArray* ba = getByteArray(name);
+
+  return (unsigned char*)ba->getData();
 }
 
 te::da::DataSet* te::ado::DataSet::getDataSet(int i)

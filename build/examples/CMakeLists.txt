@@ -3,14 +3,14 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "examples")
 project(${PROJ_NAME})
 
-if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
-  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
-endif()
-
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
   gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
  
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
+endif()
+
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
 ############### Get the data used for testing the example ###############
@@ -43,6 +43,7 @@ option (EXAMPLE_DATASETMANAGEMENT "Build data set management example." ON)
 option (EXAMPLE_FACTORY "Build factory example." ON)  
 option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
 option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." ON)  
+option (EXAMPLE_LEGEND "Build legend example." ON)  
 option (EXAMPLE_MAPTOOLS "Build map tools example." ON)  
 option (EXAMPLE_PROGRESS "Build task progress example." ON)  
 option (EXAMPLE_PROPERTYMANAGEMENT "Build property management example." ON)  
@@ -61,6 +62,7 @@ option (EXAMPLE_QT_RP "Build qt/rp example." ON)
 option (EXAMPLE_QT_SE "Build qt/se example." ON)  
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
+option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
   
 # Go into sub-directories
 if(EXAMPLE_COLORBAR)
@@ -100,6 +102,10 @@ if(EXAMPLE_LAYEREXPLORER)
   add_subdirectory(terralib_example_layerexplorer)
 endif()
 
+if(EXAMPLE_LEGEND)
+  add_subdirectory(terralib_example_legend)
+endif()
+
 if(EXAMPLE_MAPTOOLS)
   add_subdirectory(terralib_example_maptools)
 endif()
@@ -108,7 +114,7 @@ if(EXAMPLE_PROGRESS)
   add_subdirectory(terralib_example_progress)
 endif()
   
-if(EXAMPLE_PROPERTYMANAGENT)
+if(EXAMPLE_PROPERTYMANAGEMENT)
   add_subdirectory(terralib_example_propertymanagement)
 endif()
 
@@ -172,11 +178,15 @@ if(EXAMPLE_QT_UTILS)
   add_subdirectory(terralib_example_qt/utils)
 endif()
 
+if(EXAMPLE_QT_CHARTS)
+  add_subdirectory(terralib_example_qt/charts)
+endif()
+
 # Verifying if some packag was not found.
 get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
 
 if(_NOTFOUND)
-  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+  message (WARNING "${_NOTFOUND}. Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
 endif()
 
 find_path ( 

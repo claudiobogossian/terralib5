@@ -7,11 +7,9 @@ set (TE_DEPENDENCIES_DIR "@TE_DEPENDENCIES_DIR@" CACHE PATH "Find the directory 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
 
 #TerraLib dependencies dir
-if(WIN32)
-  set (TE_DPS ${TE_DEPENDENCIES_DIR} )
-  if( NOT "${TE_DPS}" STREQUAL "")
-    set ( CMAKE_FIND_ROOT_PATH  "${TE_DPS}" )
-  endif()
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}")
+  set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}")
 endif()
 
 # Configuration files folder.
@@ -20,20 +18,16 @@ set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 # Compiled modules
 set (TE_LIBRARIES @_TE_LIBRARIES@)
 
-# Include utilities function file
-include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
-
 # Include the dependencies. 
 include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
 
-if(WIN32)
-  include (${T5_MODULEPATH}/WinConfig.cmake)
-endif()
-
 set (DEPS @TE_3DS@)
 
+include ( ${T5_MODULEPATH}/Deps_versions.cmake )	
+include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
+
 foreach(DEP ${DEPS})
-  find_package(${DEP} REQUIRED)
+  find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
 endforeach()
 
 list (FIND DEPS "Qt4" HAS_QT4)

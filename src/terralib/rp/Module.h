@@ -18,10 +18,6 @@
  */
 
 /*!
- \defgroup RPModule Raster processing module.
- */
-
-/*!
   \file terralib/rp/Module.h
    
   \brief This singleton defines the TerraLib Raster Processing module entry.

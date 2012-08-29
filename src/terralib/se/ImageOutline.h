@@ -74,6 +74,8 @@ namespace te
         
         void setSymbolizer(Symbolizer* s);
 
+        Symbolizer* getSymbolizer() const;
+
         //@}
 
         /*! \brief It creates a new copy of this object. */

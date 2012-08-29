@@ -82,7 +82,7 @@ namespace te
 
         public:
 
-          void setSelectedChannel(const te::se::SelectedChannel* sc);
+          void setSelectedChannel(te::se::SelectedChannel* sc);
 
           te::se::SelectedChannel* getSelectedChannel() const;
 
@@ -100,8 +100,12 @@ namespace te
 
           void onChannelNameChanged(QString value);
 
+          void onContrastEnhancementChanged();
+
 
         signals:
+
+          void selectedChannelChanged();
 
 
         private:

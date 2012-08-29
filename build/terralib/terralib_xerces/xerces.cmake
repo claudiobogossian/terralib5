@@ -1,10 +1,14 @@
 
-find_package(Boost 1.46 REQUIRED)
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} REQUIRED)
+if(Boost_FOUND)
+  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
-find_package(Xerces REQUIRED)
-list (APPEND DEP_INCLUDES ${XERCES_INCLUDE_DIR})
-set (DEP_LIBS ${XERCES_LIBRARY})  
+find_package(Xerces ${_Xerces_VERSION} REQUIRED)
+if(Xerces_FOUND)
+  list (APPEND DEP_INCLUDES ${XERCES_INCLUDE_DIR})
+  set (DEP_LIBS ${XERCES_LIBRARY})  
+endif()
 
 #Definitions for windows compiling
 if(WIN32)

@@ -343,8 +343,8 @@ void te::map::CanvasConfigurer::configDefaultPolygon()
 
   m_canvas->setPolygonContourDashStyle(te::map::SolidLine);
   
-  m_canvas->setPolygonContourCapStyle(te::map::RoundCap);
-  m_canvas->setPolygonContourJoinStyle(te::map::RoundJoin);
+  m_canvas->setPolygonContourCapStyle(te::map::ButtCap);
+  m_canvas->setPolygonContourJoinStyle(te::map::MiterJoin);
 
   m_canvas->setPolygonFillColor(te::color::RGBAColor(TE_SE_DEFAULT_FILL_BASIC_COLOR, TE_OPAQUE));
 }
@@ -356,8 +356,8 @@ void te::map::CanvasConfigurer::configDefaultLine()
 
   m_canvas->setLineDashStyle(te::map::SolidLine);
 
-  m_canvas->setLineCapStyle(te::map::RoundCap);
-  m_canvas->setLineJoinStyle(te::map::RoundJoin);
+  m_canvas->setLineCapStyle(te::map::ButtCap);
+  m_canvas->setLineJoinStyle(te::map::MiterJoin);
 }
 
 void te::map::CanvasConfigurer::configDefaultPoint()

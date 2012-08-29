@@ -28,6 +28,7 @@
 
 //STL
 #include <vector>
+#include <string>
 
 //TerraLib
 #include "../Config.h"
@@ -35,7 +36,6 @@
 namespace te
 {
   // Forward declarations
-  namespace da { class DataSet; }
   namespace dt { class AbstractData; } 
  
   namespace qt
@@ -53,17 +53,19 @@ namespace te
 
           /*!
             \brief Constructor
-
-            \note It will traverse the data set, using the moveNext() method
-            \note It will not take the ownership of the DataSet pointer. 
           */
-          Scatter(te::da::DataSet* dataset, int propX, int propY);
+          Scatter(const std::vector<double>& axisX, const std::vector<double>& axisY);
 
           /*!
             \brief Constructor
           */
-          Scatter(const std::vector<double>& axisX, const std::vector<double>& axisY);
+          Scatter();
 
+          /*!            
+            \brief Calculates the minimum and maximum values for both the X and Y axis
+          */
+          void calculateMinMaxValues();
+          
           /*!            
             \brief It returns the size of the scatter.
 
@@ -108,47 +110,95 @@ namespace te
           double* getY();
 
           /*!            
-            \brief It returns the minimun value of the X axis. 
+            \brief It returns a reference to the internal string vector related to the X axis. 
 
-            \return The minimun value of the X axis. 
+            \return A reference to the internal string vector related to the X axis. 
+
+          */
+          std::vector<std::string>& getXString();
+
+          /*!            
+          \brief It returns a reference to the internal string vector related to the Y axis. 
+
+          \return A reference to the internal string vector related to the Y axis. 
+ 
+          */
+          std::vector<std::string>& getYString();
+
+          /*!            
+            \brief It returns the minimum value of the X axis. 
+
+            \return The minimum value of the X axis. 
 
             \note The caller will not have the ownership of the returned pointer. 
           */
           double getMinX();
 
           /*!            
-            \brief It returns the maximun value of the X axis. 
+            \brief It returns the maximum value of the X axis. 
 
-            \return The maximun value of the X axis. 
+            \return The maximum value of the X axis. 
 
             \note The caller will not have the ownership of the returned pointer. 
           */
           double getMaxX();
 
           /*!            
-            \brief It returns the minimun value of the Y axis. 
+            \brief It returns the minimum value of the Y axis. 
 
-            \return The minimun value of the Y axis. 
+            \return The minimum value of the Y axis. 
 
             \note The caller will not have the ownership of the returned pointer. 
           */
           double getMinY();
 
           /*!            
-            \brief It returns the maximun value of the Y axis. 
+            \brief It returns the maximum value of the Y axis. 
 
-            \return The maximun value of the Y axis. 
+            \return The maximum value of the Y axis. 
 
             \note The caller will not have the ownership of the returned pointer. 
           */
           double getMaxY();
 
+          /*!            
+            \brief It sets the minimum value of the X axis.  
+          */
+          void setMinX(double& new_minX);
+
+          /*!            
+            \brief It sets the maximum value of the X axis. 
+          */
+          void setMaxX(double& new_maxX);
+
+          /*!            
+            \brief It sets the minimum value of the Y axis. 
+          */
+          void setMinY(double& new_minY);
+
+          /*!            
+            \brief It sets the maximum value of the Y axis. 
+          */
+          void setMaxY(double& maxY);
+
+          /*!            
+            \brief It adds a new value to the vector containing the X axis values. 
+
+            \param new_XValue  The new value to be added to the vector.
+              
+          */
+          void addX(double& xValue);
+
+          /*!            
+            \brief It adds a new value to the vector containing the Y axis values. 
+
+            \param new_YValue  The new value to be added to the vector.
+              
+          */
+          void addY(double& yValue);
+
           /*! \brief Destructor. */
           ~Scatter();
-
-        private:
-
-          void createScatter(te::da::DataSet* dataset, int propX, int propY);
         
         private:
 

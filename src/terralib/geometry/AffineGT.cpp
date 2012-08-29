@@ -108,7 +108,7 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
     */
 
   const unsigned int tiepointsSize = params.m_tiePoints.size();
-  assert( tiepointsSize > 2 );
+  if( tiepointsSize < 3 ) return false;
 
   /* L calcule */
   

@@ -31,12 +31,12 @@
 
 te::qt::widgets::DataGridModel::DataGridModel(te::da::DataSetType* dt, te::da::DataSet* dataSet, 
                                               te::map::DataGridOperation* dataGridOp, QObject* parent)
-  : m_dataSetType(dt), m_dataSet(dataSet), m_dataGridOp(dataGridOp), QAbstractTableModel(parent)
+  : QAbstractTableModel(parent), m_dataSetType(dt), m_dataSet(dataSet), m_dataGridOp(dataGridOp)
 {
 }
 
 te::qt::widgets::DataGridModel::DataGridModel(te::map::DataGridOperation* dataGridOp, QObject* parent)
-  : m_dataSetType(0), m_dataSet(0), m_dataGridOp(dataGridOp), QAbstractTableModel(parent)
+  : QAbstractTableModel(parent), m_dataSetType(0), m_dataSet(0), m_dataGridOp(dataGridOp) 
 {
 }
 

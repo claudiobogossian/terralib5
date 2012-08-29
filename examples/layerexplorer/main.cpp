@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
       for(int k = 1; k <= maxk; ++k)
       {
-        std::string kid = id + "." + te::common::Convert2String(k);
+        std::string kid = jid + "." + te::common::Convert2String(k);
         title = "Layer "  + kid;
 
         te::map::Layer* fk;
@@ -90,11 +90,7 @@ int main(int argc, char *argv[])
 // create the explorer view and set its model
   begin = clock();
 
-  te::qt::widgets::LayerExplorer* explorer = new te::qt::widgets::LayerExplorer;
-  explorer->setModel(model);
-
-  QObject::connect(model, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)),
-                   explorer, SLOT(updateCurrentIndex(const QModelIndex&, const QModelIndex&)));
+  te::qt::widgets::LayerExplorer* explorer = new te::qt::widgets::LayerExplorer(model);
 
   explorer->setDragEnabled(true);
   explorer->setAcceptDrops(true);

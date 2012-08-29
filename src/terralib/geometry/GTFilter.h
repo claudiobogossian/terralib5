@@ -27,6 +27,11 @@
 #define __TERRALIB_GEOMETRY_INTERNAL_GTFILTER_H
 
 #include "Config.h"
+#include "GTParameters.h"
+#include "GeometricTransformation.h"
+
+#include <memory>
+#include <vector>
 
 namespace te
 {
@@ -35,16 +40,50 @@ namespace te
     /*!
       \class GTFilter
       
-      \brief 2D Geometric transformation outliers remotion filter.
+      \brief 2D Geometric transformation tie-points filter (outliers remotion).
     */
     class TEGEOMEXPORT GTFilter
     {
       public:
 
-        /*! \brief Virtual destructor. */
-        virtual ~GTFilter();
+        /*! \brief Destructor. */
+        ~GTFilter();
+        
+        /*!
+          \brief Apply a RANSAC based outliers remotion strategy.
+
+          \param transfName Transformation name (see te::gm::GTFactory dictionary for reference).
+          
+          \param inputParams Input transformation parameters.
+          
+          \param maxDMapError The maximum allowed direct mapping error.
+          
+          \param maxIMapError The maximum allowed inverse mapping error.
+          
+          \param maxDMapRmse The maximum allowed direct mapping root mean square error.
+          
+          \param maxIMapRmse The maximum allowed inverse mapping root mean square error.
+          
+          \param outTransf The generated output transformation.
+          
+          \param tiePointsWeights Optional tie-points weights.
+
+          \return true if OK, false on errors.
+          
+          \note Reference: Martin A. Fischler and Robert C. Bolles, Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography, Communications of the ACM  archive, Volume 24 , Issue 6  (June 1981).
+        */
+        static bool applyRansac(const std::string& transfName, const GTParameters& inputParams,
+          const double maxDMapError, const double maxIMapError,
+          const double maxDMapRmse, const double maxIMapRmse,
+          std::auto_ptr< GeometricTransformation >& outTransf,
+          const std::vector< double > tiePointsWeights = std::vector< double >() );
         
       private:
+        
+        /*!
+          \brief RANSAC iterations counter type.
+        */        
+        typedef unsigned int RansacItCounterT;        
         
         /*! \brief Default constructor. */
         GTFilter();
@@ -64,6 +103,16 @@ namespace te
           \return A reference for this.
         */
         GTFilter& operator=(const GTFilter& rhs);
+        
+        /*!
+          \brief Returns the tie-points convex hull area (GTParameters::TiePoint::first).
+
+          \param tiePoints Tie points.
+
+          \return The tie-points convex hull area 
+        */
+        static double getPt1ConvexHullArea( 
+          const std::vector< GTParameters::TiePoint >& tiePoints );
 
     };
   } // end namespace gm

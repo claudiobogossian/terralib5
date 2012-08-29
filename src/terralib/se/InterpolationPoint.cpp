@@ -43,9 +43,19 @@ void te::se::InterpolationPoint::setData(const double& d)
   m_data = d;
 }
 
+double te::se::InterpolationPoint::getData()
+{
+  return m_data;
+}
+
 void te::se::InterpolationPoint::setValue(ParameterValue* v)
 {
   delete m_value;
   m_value = v;
+}
+
+te::se::ParameterValue* te::se::InterpolationPoint::getValue()
+{
+  return m_value;
 }
 

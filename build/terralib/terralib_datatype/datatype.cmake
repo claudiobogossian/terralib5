@@ -1,12 +1,10 @@
-# Rules for processing common module files.
-# -------------------------------------------------- 
-# -------------------------------------------------- 
-
 # 3rd-party definitions.
 # -------------------------------------------------- 
-find_package(Boost 1.46 COMPONENTS date_time REQUIRED)
-set (DEP_LIBS ${Boost_LIBRARIES})
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+find_package(Boost ${_Boost_VERSION} COMPONENTS date_time REQUIRED)
+if(Boost_FOUND)
+  set (DEP_LIBS ${Boost_LIBRARIES})
+  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+endif()
 
 #Definitions for windows compiling
 if(WIN32)

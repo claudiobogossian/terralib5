@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/RasterSummaryManager.cpp
- 
+
   \brief A singleton for keeping raster summaries (most statistics).
 */
 
@@ -75,20 +75,26 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(Raster const* r
   {
     te::rst::BandSummary& bs = (*rs)[b];
 
-    if (types & te::rst::SUMMARY_R_HISTOGRAM)
+    if (types & te::rst::SUMMARY_R_HISTOGRAM && bs.m_histogramR == 0)
     {
       bs.m_histogramR = new std::map<double, unsigned>(raster->getBand(b)->getHistogramR());
 
       std::map<double, unsigned>::iterator it = bs.m_histogramR->begin();
 
-      bs.m_minVal = new std::complex<double>(it->first, 0.0);
+      if (!bs.m_minVal)
+        bs.m_minVal = new std::complex<double>(it->first, 0.0);
+      else
+        bs.m_minVal = new std::complex<double>(it->first, bs.m_minVal->imag());
 
       it = bs.m_histogramR->end();
 
-      bs.m_maxVal = new std::complex<double>((--it)->first, 0.0);
+      if (!bs.m_maxVal)
+        bs.m_maxVal = new std::complex<double>((--it)->first, 0.0);
+      else
+        bs.m_maxVal = new std::complex<double>((--it)->first, bs.m_maxVal->imag());
     }
 
-    if (types & te::rst::SUMMARY_I_HISTOGRAM)
+    if (types & te::rst::SUMMARY_I_HISTOGRAM && bs.m_histogramI == 0)
     {
       bs.m_histogramI = new std::map<double, unsigned>(raster->getBand(b)->getHistogramI());
 
@@ -113,10 +119,10 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(Raster const* r
     if (types & te::rst::SUMMARY_MAX && bs.m_maxVal == 0)
       bs.m_maxVal = new std::complex<double>(raster->getBand(b)->getMaxValue());
 
-    if (types & te::rst::SUMMARY_STD)
+    if (types & te::rst::SUMMARY_STD && bs.m_stdVal == 0)
       bs.m_stdVal = new std::complex<double>(raster->getBand(b)->getStdValue());
 
-    if (types & te::rst::SUMMARY_MEAN)
+    if (types & te::rst::SUMMARY_MEAN && bs.m_meanVal == 0)
       bs.m_meanVal = new std::complex<double>(raster->getBand(b)->getMeanValue());
   }
 

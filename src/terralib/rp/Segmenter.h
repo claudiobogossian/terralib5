@@ -18,11 +18,6 @@
  */
 
 /*!
- \defgroup SegmenterAlgorithm Raster segmentation.
- \ingroup RPAlgorithms
- */ 
-
-/*!
   \file terralib/rp/Segmenter.h
   \brief Raster segmentation.
  */
@@ -75,7 +70,7 @@ namespace te
       the data set name must be supplied - m_outDataSetName ).      
       \sa te::rp::Segmenter::Parameters For detailed parameters description.
       \sa te::rp::SegmenterStrategy For detailed parameters description.
-      \ingroup SegmenterAlgorithm
+      \ingroup SegmentationAlgorithms
      */
     class TERPEXPORT Segmenter : public Algorithm
     {

@@ -582,7 +582,6 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
     return;
 
   bool drawed = false;
-  int minPixels = 20; // dx and dy is greater than minPixels, then, draw the segment
 
   m_painter.setPen(m_polyContourPen);
 
@@ -1025,6 +1024,7 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Ras
       src->getValue(r, l, pb, 2);
       pixel = new te::color::RGBAColor((int)pr, (int)pg, (int)pb, 255);
       img.setPixel(ri, li, pixel->getRgba());
+      delete pixel;
     }
   }
 
@@ -1400,7 +1400,6 @@ void te::qt::widgets::Canvas::setPointPattern(te::color::RGBAColor** pattern, in
 
   m_ptImg = GetImage(pattern, ncols, nrows);
   int width = m_ptImg->width();
-  int height = m_ptImg->height();
   m_ptWidth = width;
 
   createPointPatterns();
@@ -1426,7 +1425,6 @@ void te::qt::widgets::Canvas::setPointPattern(char* pattern, std::size_t size, t
   }
 
   int width = m_ptImg->width();
-  int height = m_ptImg->height();
   m_ptWidth = width;
   
   createPointPatterns();

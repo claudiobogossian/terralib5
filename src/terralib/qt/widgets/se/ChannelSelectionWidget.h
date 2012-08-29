@@ -46,6 +46,12 @@ namespace te
   namespace se
   {
     class ChannelSelection;
+    class SelectedChannel;
+  }
+
+  namespace rst
+  {
+    class BandProperty;
   }
 
   namespace qt
@@ -82,16 +88,40 @@ namespace te
 
         public:
 
+          void setChannelSelection(const te::se::ChannelSelection* cs);
 
+          te::se::ChannelSelection* getChannelSelection() const;
+
+          /*! 
+            \brief Sets the band information
+
+            \param p Vector with band property
+
+            \note The class will NOT take the ownership of the pointer.
+          */
+          void setProperty(std::vector<te::rst::BandProperty*>& p);
 
         protected:
+
+
+          /*! \brief Internal method to initialize the widget (e.g.: color, combos, icons, etc.) */
+          void initialize();
 
           /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
         protected slots:
 
+          void onRGBColorSelected();
+          void onGrayScalelSelected();
 
+          void onRedChannelSelected();
+          void onGreenChannelSelected();
+          void onBlueChannelSelected();
+          void onMonoChannelSelected();
+          
+
+          void onSelectedChannelChanged();
 
         signals:
 
@@ -99,10 +129,16 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ChannelSelectionWidgetForm> m_ui;             //!< Dialog form.
-          te::qt::widgets::SelectedChannelWidget* m_redSCWidget;          //!< Selected Channel Widget form for red band.
-          te::qt::widgets::SelectedChannelWidget* m_greenSCWidget;        //!< Selected Channel Widget form for green band.
-          te::qt::widgets::SelectedChannelWidget* m_blueSCWidget;         //!< Selected Channel Widget form for blue band.
-          te::qt::widgets::SelectedChannelWidget* m_monoSCWidget;         //!< Selected Channel Widget form for mono band.
+          te::qt::widgets::SelectedChannelWidget* m_sCWidget;             //!< Selected Channel Widget.
+
+          te::se::SelectedChannel* m_scRed;                               //!< SE Selected Channel element for red band.
+          te::se::SelectedChannel* m_scGreen;                             //!< SE Selected Channel element for red band.
+          te::se::SelectedChannel* m_scBlue;                              //!< SE Selected Channel element for red band.
+          te::se::SelectedChannel* m_scMono;                              //!< SE Selected Channel element for red band.
+
+          te::se::ChannelSelection* m_cs;                                 //!< SE Channel Selection element.
+
+          std::vector<te::rst::BandProperty*> m_bands;                             //!< A vector of bands description.
 
       };
 

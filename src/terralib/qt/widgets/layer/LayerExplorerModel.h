@@ -38,14 +38,18 @@
 namespace te
 {
 // Forward declarations
-  namespace map { class AbstractLayer; }
+  namespace map
+  {
+    class AbstractLayer;
+    class LegendItem;
+  }
 
   namespace qt
   {
     namespace widgets
     {
 // Forward declarations
-      class AbstractLayerItem;
+      class AbstractTreeItem;
 
       /*!
         \class LayerExplorerModel
@@ -61,10 +65,10 @@ namespace te
           /*!
             \brief It constructs an item model with the given parent.
 
-            \param layer  The layer to be explored. It must be the root of a set of layers.
-            \param parent The parent object.
+            \param rootLayer The layer to be explored. It must be the root of a set of layers.
+            \param parent    The parent object.
            */
-          LayerExplorerModel(te::map::AbstractLayer* layer, QObject* parent = 0);
+          LayerExplorerModel(te::map::AbstractLayer* rootLayer, QObject* parent = 0);
 
           /*! Destructor */
           ~LayerExplorerModel();
@@ -156,6 +160,17 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex& index) const;
 
           /*!
+            \brief It returns the actions supported by the data in this model.
+
+            \return The default implementation returns supportedDropActions() unless
+                    specific values have been set with setSupportedDragActions().
+
+            \note supportedDragActions() is used by QAbstractItemView::startDrag()
+                  as the default values when a drag occurs.
+           */
+          Qt::DropActions supportedDragActions() const;
+
+          /*!
             \brief It returns the drop actions supported by this model.
 
             \return The drop actions supported by this model.
@@ -219,25 +234,68 @@ namespace te
           bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
 
           /*!
-            \brief Get the item associated to the given index.
+            \brief Get the root item.
+
+            \return It returns the root item of the tree.              
+           */
+          te::qt::widgets::AbstractTreeItem* getRootItem() const;
+
+          /*!
+            \brief Get the item associated to the given item index.
 
             \param index The item index.
 
             \return It returns the item associated to the given index.              
            */
-          te::qt::widgets::AbstractLayerItem* getItem(const QModelIndex& index);
+          te::qt::widgets::AbstractTreeItem* getItem(const QModelIndex& index);
 
-          /*! \brief It resets the model to its original state in any attached views. */
+          /*!
+            \brief Get the index associated to the dragged item.
+
+            \return It returns the index associated to the dragged item.              
+           */
+          QModelIndex getDragIndex() const;
+
+           /*!
+            \brief It removes the legend, if any, from the item associated to the given index.
+
+            \param index The item index.
+
+            \return It removes the legend of the item associated to the given index.              
+           */
+          void removeLegend(const QModelIndex& index);
+
+           /*!
+            \brief It inserts the given legend into the item associated to the index
+
+            \param index  The item index where the legend will be inserted.
+            \param legend The legend to be inserted.
+           */
+          void insertLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend);
+
+           /*!
+            \brief It removes the item associated to the given index.
+
+            \param index The item index.
+
+            \return It removes the item associated to the given index.              
+           */
+          void removeItem(const QModelIndex& index);
+
+         /*! \brief It resets the model to its original state in any attached views. */
           void resetModel();
 
-          void setItemsToBeInserted(std::vector<te::qt::widgets::AbstractLayerItem*> items); //Lauro
+          /*!
+            \brief It sets the items to be inserted.
+
+            \param items The list of items to be inserted.
+           */
+          void setItemsToBeInserted(std::vector<te::qt::widgets::AbstractTreeItem*> items);
 
         signals:
-
           void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
 
         protected:
-
          /*!
             \brief It emits the dataChanged signal for the descendants indexes of the given index.
 
@@ -247,11 +305,12 @@ namespace te
 
         private:
 
-          te::qt::widgets::AbstractLayerItem* m_rootItem;            //!< The pointer to the root item.
-          mutable QModelIndex m_dragIndex;                           //!< The index of the dragged item
-          bool m_dndOperation;                                       //!< Flag indicating drag and drop operation.
+          te::qt::widgets::AbstractTreeItem* m_rootItem;          //!< The pointer to the root item.
+          te::qt::widgets::AbstractTreeItem* m_dragItem;          //!< The pointer to the dragged item
+          mutable QModelIndex m_dragIndex;                        //!< The index of the dragged item
+          bool m_dndOperation;                                    //!< Flag indicating drag and drop operation.
 
-          std::vector<te::qt::widgets::AbstractLayerItem*> m_childItemsToBeInserted;  //!< A vector of the children items to be inserted.
+          std::vector<te::qt::widgets::AbstractTreeItem*> m_childItemsToBeInserted;  //!< A vector of the children items to be inserted.
       };
 
     } // end namespace widgets

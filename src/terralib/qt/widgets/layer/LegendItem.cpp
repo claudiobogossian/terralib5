@@ -24,39 +24,59 @@
  */
 
 // TerraLib
+#include "../../../maptools/Layer.h"
+#include "../../../maptools/LegendItem.h"
+#include "LayerItem.h"
 #include "LegendItem.h"
 
 // Qt
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
-te::qt::widgets::LegendItem::LegendItem(QObject* parent)
-  : QObject(parent)
+te::qt::widgets::LegendItem::LegendItem(te::map::LegendItem* refLegendItem, QObject* parent)
+  : AbstractTreeItem(parent), m_refLegendItem(refLegendItem)
 {
+  m_refLayer = static_cast<AbstractTreeItem*>(parent)->getRefLayer();
+
+  QPixmap pixmap(16, 12);
+
+  te::color::RGBAColor color = refLegendItem->getColor();
+  QColor qColor(color.getRed(), color.getGreen(), color.getBlue());
+  pixmap.fill(qColor);
+
+  m_icon.addPixmap(pixmap);
 }
 
 te::qt::widgets::LegendItem::~LegendItem()
 {
 }
 
+bool te::qt::widgets::LegendItem::isLayerItem() const
+{
+  return false;
+}
+
+
 QVariant te::qt::widgets::LegendItem::data(int role) const
 {
-  /*if(role == Qt::DisplayRole)
+  if(role == Qt::DisplayRole)
   {
-    if(m_refLayer->getTitle().empty())
+    std::string title = m_refLegendItem->getTitle();
+
+    if(title.empty())
       return QVariant("");
 
-    return QVariant(m_refLayer->getTitle().c_str());
+    return QVariant(title.c_str());
   }
-  else if(role == Qt::CheckStateRole)
+  else if(role == Qt::DecorationRole)
   {
-    if(m_refLayer->isVisible() == true)
-      return QVariant(Qt::Checked);
+    if(m_icon.isNull())
+      return QVariant();
     else
-      return QVariant(Qt::Unchecked);
-  }*/
+      return m_icon;
+  }
 
-  return QVariant("Legenda");
+  return QVariant();
 }
 
 QMenu* te::qt::widgets::LegendItem::getMenu(QWidget* parent) const
@@ -64,3 +84,12 @@ QMenu* te::qt::widgets::LegendItem::getMenu(QWidget* parent) const
   return 0;
 }
 
+const QIcon& te::qt::widgets::LegendItem::getIcon() const
+{
+  return m_icon;
+}
+
+void te::qt::widgets::LegendItem::setIcon(const QIcon& icon)
+{
+  m_icon = icon;
+}

@@ -18,38 +18,21 @@
  */
 
 /*!
-  \file LayerItemFactory.cpp
+  \file terralib/rp/ClassifierStrategyParameters.cpp
 
-  \brief This is the concrete factory for LayerItem objects.  
- */
+  \brief Raster classifier strategy parameters base class.
+*/
 
-// TerraLib
-#include "../../../maptools/Layer.h"
-#include "LayerItem.h"
-#include "LayerItemFactory.h"
+#include "ClassifierStrategyParameters.h"
 
-te::qt::widgets::LayerItemFactory* te::qt::widgets::LayerItemFactory::sm_factory(0);
-
-te::qt::widgets::LayerItemFactory::~LayerItemFactory()
-{}
-
-void te::qt::widgets::LayerItemFactory::initialize()
+te::rp::ClassifierStrategyParameters::ClassifierStrategyParameters()
 {
-  finalize();
-  sm_factory = new LayerItemFactory;
 }
 
-void te::qt::widgets::LayerItemFactory::finalize()
+te::rp::ClassifierStrategyParameters::~ClassifierStrategyParameters()
 {
-  delete sm_factory;
-  sm_factory = 0;
 }
 
-te::qt::widgets::AbstractLayerItem* te::qt::widgets::LayerItemFactory::build(std::pair<te::map::AbstractLayer*, te::qt::widgets::AbstractLayerItem*> p)
+te::rp::ClassifierStrategyParameters::ClassifierStrategyParameters(const te::rp::ClassifierStrategyParameters&)
 {
-  return new LayerItem(static_cast<te::map::Layer*>(p.first), p.second);
 }
-
-te::qt::widgets::LayerItemFactory::LayerItemFactory()
-  : te::qt::widgets::AbstractLayerItemFactory(te::map::Layer::sm_type)
-{}

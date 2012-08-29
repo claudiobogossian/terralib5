@@ -28,8 +28,8 @@
 #include "AddIndex.h"
 
 te::qt::widgets::AddIndex::AddIndex(te::da::DataSource* ds, QWidget* parent)
-  : m_ds(ds), m_transactor(0), m_catalogLoader(0), m_dataSetType(0),
-    m_index(0), QDialog(parent)
+  : QDialog(parent), m_ds(ds), m_transactor(0), m_catalogLoader(0), m_dataSetType(0),
+    m_index(0)
 {
   if (m_ds == 0)
     QMessageBox::critical(this, tr("Missing a Valid Data Source"), tr("Provide a valid data source!"));

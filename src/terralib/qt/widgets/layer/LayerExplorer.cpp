@@ -24,77 +24,178 @@
  */
 
 // TerraLib
+#include "AbstractTreeItem.h"
 #include "LayerExplorer.h"
-#include <QtGui/QContextMenuEvent>
-
+#include "LayerExplorerModel.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "AbstractLayerItem.h"
+
+//Qt
+#include <QtGui/QApplication>
+#include <QtGui/QMenu>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QDragMoveEvent>
 
 te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent)
   : QTreeView(parent),
     m_previousCurrentIndex(QModelIndex()),
-    m_checkBoxWasClicked(false),
-    m_prevPressedItemCheckState(Qt::Unchecked)
+    m_itemPressedWithLeftButton(false)
 {
   connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
   connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(clickedItem(const QModelIndex&)));
+}
+
+te::qt::widgets::LayerExplorer::LayerExplorer(LayerExplorerModel* model, QWidget* parent)
+  : QTreeView(parent),
+    m_previousCurrentIndex(QModelIndex()),
+    m_itemPressedWithLeftButton(false)
+{
+  connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
+  connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(clickedItem(const QModelIndex&)));
+
+  setModel(model);
+
+  if(model)
+    connect(model, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)),
+            this, SLOT(dragDropEnded(const QModelIndex&, const QModelIndex&)));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
 {
 }
 
+QModelIndex te::qt::widgets::LayerExplorer::getPopupIndex() const
+{
+  return m_popupIndex;
+}
+
 void te::qt::widgets::LayerExplorer::pressedItem(const QModelIndex& index)
 {
-  if(m_mouseButton == Qt::RightButton)
-    emit contextMenuPressed(index, m_mousePos);
-
-  m_checkBoxWasClicked = false;
-  m_prevPressedItemCheckState = static_cast<Qt::CheckState>(model()->data(index, Qt::CheckStateRole).toInt());
+  m_itemPressedWithLeftButton = true;
 }
 
 void te::qt::widgets::LayerExplorer::clickedItem(const QModelIndex& index)
 {
-  if (model()->data(index, Qt::CheckStateRole) != m_prevPressedItemCheckState)
+  if(m_itemPressedWithLeftButton == false)
   {
-    m_checkBoxWasClicked = true;
-    emit checkBoxWasClicked(index);
-  }
-
-  if (index == m_previousCurrentIndex)
-  {
-    if (m_checkBoxWasClicked == false)
-      selectionModel()->select(index, QItemSelectionModel::Select);
-  }
-  else
-  {
-    if (m_checkBoxWasClicked == true)
+    if(index != m_previousCurrentIndex)
     {
       selectionModel()->select(index, QItemSelectionModel::Deselect);
       selectionModel()->setCurrentIndex(m_previousCurrentIndex, QItemSelectionModel::Select);
     }
+
+    emit checkBoxWasClicked(index); // The checkbox of the item was clicked
+  }
+  else
+  {
+    // The item was pressed, its checkbox was not clicked
+    if(index == m_previousCurrentIndex)
+      selectionModel()->select(index, QItemSelectionModel::Select);
     else
     {
       selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Deselect);
-      selectionModel()->select(index, QItemSelectionModel::Select);
-      m_previousCurrentIndex = index;
+
+      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
+      if(item->isLayerItem() == true)
+      {
+        selectionModel()->select(index, QItemSelectionModel::Select);
+        m_previousCurrentIndex = index;
+      }
+      else
+      {
+        selectionModel()->select(index, QItemSelectionModel::Deselect);
+        selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Select);
+      }
     }
   }
-}
 
-void te::qt::widgets::LayerExplorer::updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
-{
-  setCurrentIndex(dropIndex);
+  m_itemPressedWithLeftButton = false;
 }
-
-//void te::qt::widgets::LayerExplorer::contextMenuEvent(QContextMenuEvent *e)
-//{
-//  QPoint p = e->pos();
-//}
 
 void te::qt::widgets::LayerExplorer::mousePressEvent(QMouseEvent *e)
 {
-  m_mouseButton = e->button();
-  m_mousePos = e->globalPos();
+  m_itemPressedWithLeftButton = false;
+
+  if(e->button() == Qt::RightButton)
+  {
+    m_popupIndex = indexAt(e->pos());
+    emit contextMenuActivated(m_popupIndex, e->globalPos());
+  }
+
   QTreeView::mousePressEvent(e);
+}
+
+
+void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
+{
+  if(e->possibleActions() == (Qt::MoveAction | Qt::CopyAction))
+  {
+    Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
+    if(keyboardModifiers == Qt::ControlModifier)
+      e->setDropAction(Qt::CopyAction);
+    else
+      e->setDropAction(Qt::MoveAction);
+
+    m_itemPressedWithLeftButton = false;
+
+    te::qt::widgets::LayerExplorerModel* layerExplorerModel = static_cast<te::qt::widgets::LayerExplorerModel*>(model());
+    
+    QModelIndex dragIndex = layerExplorerModel->getDragIndex();
+
+    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(dragIndex.internalPointer());
+
+    if(item != 0 && item->isLayerItem() == true)
+      e->accept();
+    else
+      e->ignore();
+  }
+
+  QTreeView::dragMoveEvent(e);
+}
+
+void te::qt::widgets::LayerExplorer::dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
+{
+  m_itemPressedWithLeftButton = false;
+  
+  // Update the current index
+  int currentRow;
+
+  int dragRow = dragIndex.row();
+
+  int dropRow = dropIndex.row();
+  QModelIndex dropParentIndex = dropIndex.parent();
+
+  int prevCurrentRow = m_previousCurrentIndex.row();
+  QModelIndex previousCurrentParentIndex = m_previousCurrentIndex.parent();
+
+  if(dropParentIndex != previousCurrentParentIndex)
+  {
+    setCurrentIndex(m_previousCurrentIndex);
+    return;
+  }
+
+  if(prevCurrentRow == -1)
+    currentRow = prevCurrentRow;
+  else if(dragRow < prevCurrentRow)
+  {
+    if(dropRow < prevCurrentRow)
+      currentRow = prevCurrentRow;
+    else if(dropRow >= prevCurrentRow)
+      currentRow = prevCurrentRow - 1;
+  }
+  else if(dragRow == prevCurrentRow)
+  {
+    currentRow = dropRow;
+  }
+  else if(dragRow > prevCurrentRow)
+  {
+    if(dropRow <= prevCurrentRow)
+      currentRow = prevCurrentRow + 1;
+    else if(dropRow > prevCurrentRow)
+      currentRow = prevCurrentRow;
+  }
+
+  QModelIndex newCurrentIndex = model()->index(currentRow, 0, previousCurrentParentIndex);
+  setCurrentIndex(newCurrentIndex);
+
+  m_previousCurrentIndex = newCurrentIndex;
 }

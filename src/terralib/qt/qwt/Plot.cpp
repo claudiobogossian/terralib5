@@ -16,19 +16,19 @@
 
 te::qt::qwt::Plot::Plot(QString type, te::map::DataGridOperation* op, QWidget *parent):
   QwtPlot(parent),
-  m_type(type),
+  m_tableChanged(true),
+  m_maxNumberOfHorizontalLabels(30),
+  m_numberOfBars(50),
+  m_yType(-1),
   m_xStringScaleDraw(0),
   m_yStringScaleDraw(0),
   m_op(op),
-  m_numberOfBars(50),
-  m_tableChanged(true),
-  m_yType(-1),
+  m_color(100, 100, 100, 255),
   m_zoomer(0),
   m_panner(0),
-  m_zoomCursor(0),
   m_legend(0),
-  m_color(100, 100, 100, 255),
-  m_maxNumberOfHorizontalLabels(30)
+  m_type(type),
+  m_zoomCursor(0)
 {
   m_xMin = m_XMIN = m_yMin = m_YMIN = std::numeric_limits<double>::max();
   m_xMax = m_XMAX = m_yMax = m_YMAX = -(std::numeric_limits<double>::max());
@@ -238,7 +238,6 @@ void te::qt::qwt::Plot::adjustHistogramHorizontalAxis() // somente para numeros 
   double xmin = m_xMin;
   double xmax = m_xMax;
 
-  int nb = (int)(((xmax- xmin)/(m_XMAX - m_XMIN)) * (double)m_numberOfBars);
   int nl = (int)(((xmax- xmin)/(m_XMAX - m_XMIN)) * (double)m_maxNumberOfHorizontalLabels);
 
   xmin = (int)(xmin / m_barInterval);
