@@ -30,6 +30,38 @@
 
 // Unit-Test TerraLib
 #include "TsDataSourceTransactor.h"
+#include "TsManagerDataSource.h"
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TsDataSourceTransactor );
+
+void TsDataSourceTransactor::setUp()
+{  
+  m_ds = TsManagerDataSource::sm_datasource;
+  m_connInfo = TsManagerDataSource::sm_connInfo;
+  m_dsType = TsManagerDataSource::sm_dsType;
+  m_capabilit = TsManagerDataSource::sm_capabilit;
+
+  m_vecDtNames = TsManagerDataSource::sm_vecDtNames;
+  m_vecEnvelops = TsManagerDataSource::sm_vecEnvelops;  
+  m_vecDtNamesAndEnvelops = TsManagerDataSource::sm_vecDtNamesAndEnvelops;
+  m_vecNamesAndRecs = TsManagerDataSource::sm_vecNamesAndRecs;
+  m_vecNamesSizes = TsManagerDataSource::sm_vecNamesSizes;
+  m_vecNamesSizesRec = TsManagerDataSource::sm_vecNamesSizesRec;
+
+  m_box = TsManagerDataSource::sm_box;
+  m_pt = TsManagerDataSource::sm_pt;
+  m_pol = TsManagerDataSource::sm_pol;
+  m_geom = TsManagerDataSource::sm_geom;
+
+  m_nroDataSets = TsManagerDataSource::sm_nroDataSets;
+}
+
+void TsDataSourceTransactor::tearDown()
+{
+  m_ds = 0;
+  m_dsType = "";
+  m_pol = 0;
+}
 
 void TsDataSourceTransactor::tcBegin()
 {
@@ -114,41 +146,46 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-
-// get a transactor to retrieve information about the data source 
-  std::auto_ptr<te::da::DataSourceTransactor> t(0);
-  CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
-  CPPUNIT_ASSERT(t.get());
-
-  te::da::DataSet* dt;
-  std::vector<std::string>::iterator it = m_vecDtNames.begin();
-
-  //Testing getDataSet(name,geometry, ...)
-  try
+  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("GEOMETRY_DT");
+  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
+  if ((it != it_end) && (it->second == "FALSE"))
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", it->second == "FALSE",te::common::Exception);
+  else
   {
+  // get a transactor to retrieve information about the data source 
+    std::auto_ptr<te::da::DataSourceTransactor> t(0);
+    CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
+    CPPUNIT_ASSERT(t.get());
 
-    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_pt, te::gm::INTERSECTS)); //point
-    int pos = static_cast<int>(dt->getType()->getDefaultGeomPropertyPos());
-    dt->moveNext();
-    m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
-    m_geom->computeMBR(true);
+    te::da::DataSet* dt;
+    std::vector<std::string>::iterator it = m_vecDtNames.begin();
 
-    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() <<  std::endl ;
+    //Testing getDataSet(name,geometry, ...)
+    try
+    {
+    
+      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_pt, te::gm::INTERSECTS)); //point
+      int pos = static_cast<int>(dt->getType()->getDefaultGeomPropertyPos());
+      dt->moveNext();
+      m_geom = static_cast<te::gm::Geometry*>(dt->getGeometry(pos)->clone());
+      m_geom->computeMBR(true);
 
-    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_box, te::gm::INTERSECTS)); //box
-    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
+      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() <<  std::endl ;
 
-    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), m_pol, te::gm::INTERSECTS)); //polygon
-    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
+      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), &m_box, te::gm::INTERSECTS)); //box
+      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size() << std::endl ;
+
+      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), m_pol, te::gm::INTERSECTS)); //polygon
+      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
   
-    CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), m_geom , te::gm::INTERSECTS)); //using the geometry recovered above
-    std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
+      CPPUNIT_ASSERT_NO_THROW(dt = t->getDataSet( (*it), m_geom , te::gm::INTERSECTS)); //using the geometry recovered above
+      std::cout << std::endl << "DataSet Name: " << (*it)  << " DataSet Size: " << dt->size()  << std::endl ;
+    }
+    catch (te::common::Exception  e)
+    { 
+      throw e;
+    }
   }
-  catch (te::common::Exception  e)
-  { 
-    throw e;
-  }
-
 //#endif
 }
 
@@ -322,16 +359,22 @@ void TsDataSourceTransactor::tcQueryByString()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);  
-  std::vector<std::pair<std::string, size_t> >::iterator it = m_vecNamesSizes.begin();
-  std::string sql = "Select * FROM " + (*it).first;
-  std::auto_ptr<te::da::DataSourceTransactor> dstrans(m_ds->getTransactor());
-  CPPUNIT_ASSERT(dstrans.get());
+  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("SELECT_INTO_QUERY");
+  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
+  if ((it != it_end) && (it->second == "FALSE"))
+    CPPUNIT_ASSERT_THROW_MESSAGE("SELECT_INTO_QUERY is not supported by this datasource", it->second == "FALSE",te::common::Exception);
+  else
+  {
+    std::vector<std::pair<std::string, size_t> >::iterator it = m_vecNamesSizes.begin();
+    std::string sql = "Select * FROM " + (*it).first;
+    std::auto_ptr<te::da::DataSourceTransactor> dstrans(m_ds->getTransactor());
+    CPPUNIT_ASSERT(dstrans.get());
 
-  te::da::DataSet* dt;
-  CPPUNIT_ASSERT_NO_THROW(dt = dstrans->query(sql));
-  size_t dtsize = dt->size();
-  CPPUNIT_ASSERT_EQUAL_MESSAGE("Size not equal expected: ", (*it).second, dtsize);
-
+    te::da::DataSet* dt;
+    CPPUNIT_ASSERT_NO_THROW(dt = dstrans->query(sql));
+    size_t dtsize = dt->size();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Size not equal expected: ", (*it).second, dtsize);
+  }
 //#endif
 }
 void TsDataSourceTransactor::tcQueryBySelect()

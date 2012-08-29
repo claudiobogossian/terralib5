@@ -24,17 +24,90 @@
   \brief Test suite for the PostGIS DataSetTypePersistence implemention.
  */
 
-// Unit-Test TerraLib
-#include "TsDataSetTypePersistence.h"
-
 // TerraLib
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/geometry.h>
 #include <terralib/raster.h>
 
+// Unit-Test TerraLib
+#include "TsDataSetTypePersistence.h"
+#include "TsManagerDataSource.h"
+
 // STL
 #include <ctime>
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TsDataSetTypePersistence );
+
+void TsDataSetTypePersistence::setUp()
+{  
+  m_ds = TsManagerDataSource::sm_datasource;
+  m_capabilit = TsManagerDataSource::sm_capabilit;
+  m_newdt = TsManagerDataSource::sm_newdt;
+  m_newdt3 = TsManagerDataSource::sm_newdt3;
+  m_fk = TsManagerDataSource::sm_fk;
+  m_connInfo = TsManagerDataSource::sm_connInfo;
+  m_dsType = TsManagerDataSource::sm_dsType;
+  m_connInfoNewDs = TsManagerDataSource::sm_connInfoNewDs;
+  m_nroDataSets = TsManagerDataSource::sm_nroDataSets;
+
+  m_ccName = TsManagerDataSource::sm_ccName;
+  m_cc = TsManagerDataSource::sm_cc;
+  m_NameAttr1 = TsManagerDataSource::sm_NameAttr1 ;
+  m_Attr1 = TsManagerDataSource::sm_Attr1 ;
+  m_NameAttr2 = TsManagerDataSource::sm_NameAttr2 ; 
+  m_NameAttr3 = TsManagerDataSource::sm_NameAttr3; 
+  m_NameAttr4 = TsManagerDataSource::sm_NameAttr4; 
+  m_NameAttr5 = TsManagerDataSource::sm_NameAttr5;; 
+  m_NameAttr6 = TsManagerDataSource::sm_NameAttr6; 
+  m_NameAttr7 = TsManagerDataSource::sm_NameAttr7; 
+  m_NameAttr8 = TsManagerDataSource::sm_NameAttr8;
+
+  m_Attr6Pk   = TsManagerDataSource::sm_Attr6Pk;
+  m_Attr6Fk   = TsManagerDataSource::sm_Attr6Fk;
+  m_Attr3e4Uk = TsManagerDataSource::sm_Attr3e4Uk;
+  m_Attr5idx  = TsManagerDataSource::sm_Attr5idx; 
+  m_Attr2idx  = TsManagerDataSource::sm_Attr2idx; 
+  m_Attr7_seq = TsManagerDataSource::sm_Attr7_seq;
+
+// to check the datatypes defined in postgis capabilities
+  ////m_attr_bit = TsManagerDataSource::sm_attr_bit;
+  ////m_attr_char = TsManagerDataSource::sm_attr_char;  
+  ////m_attr_uchar = TsManagerDataSource::sm_attr_uchar;
+  ////m_attr_int16 = TsManagerDataSource::sm_attr_int16;
+  ////m_attr_uint16 = TsManagerDataSource::sm_attr_uint16;
+  ////m_attr_int32 = TsManagerDataSource::sm_attr_int32;
+  ////m_attr_uint32 = TsManagerDataSource::sm_attr_uint32;
+  ////m_attr_int64 = TsManagerDataSource::sm_attr_int64;
+  ////m_attr_uint64 = TsManagerDataSource::sm_attr_uint64;
+  ////m_attr_bool = TsManagerDataSource::sm_attr_bool;
+  ////m_attr_float = TsManagerDataSource::sm_attr_float;
+  ////m_attr_double = TsManagerDataSource::sm_attr_double;
+  ////m_attr_numeric = TsManagerDataSource::sm_attr_numeric;
+  ////m_attr_string = TsManagerDataSource::sm_attr_string;
+  ////m_attr_byte_array = TsManagerDataSource::sm_attr_byte_array;
+  ////m_attr_geometry = TsManagerDataSource::sm_attr_geometry;
+  ////m_attr_datetime = TsManagerDataSource::sm_attr_datetime;
+  ////m_attr_array = TsManagerDataSource::sm_attr_array;
+  ////m_attr_composite = TsManagerDataSource::sm_attr_composite;
+  ////m_attr_raster = TsManagerDataSource::sm_attr_raster;
+ 
+// DataSetTypes names
+  m_newDataSetType = TsManagerDataSource::sm_newDataSetType;
+  m_newCapabilitiesDt = TsManagerDataSource::sm_newCapabilitiesDt;
+  m_dtcloned = TsManagerDataSource::sm_dtcloned;
+  m_newDataSetType2 = TsManagerDataSource::sm_newDataSetType2 ;
+  m_newDataSetType3 = TsManagerDataSource::sm_newDataSetType3 ;
+
+  m_oldNameProp = TsManagerDataSource::sm_oldNameProp ;
+  m_newNameProp = TsManagerDataSource::sm_newNameProp ;
+}
+
+void TsDataSetTypePersistence::tearDown()
+{
+  m_ds = 0;
+  m_dsType = "";
+}
 
 void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
 {
@@ -72,135 +145,137 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
   
     it = m_capabilit.find("BIT_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_bit, te::dt::BIT_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_bit", te::dt::BIT_TYPE));
 
   // te::dt::CHAR_TYPE - loop in  util.cpp - te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool justDataType) default:
     it = m_capabilit.find("CHAR_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_char, te::dt::CHAR_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_char", te::dt::CHAR_TYPE));
 
     it = m_capabilit.find("UCHAR_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_uchar, te::dt::UCHAR_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_uchar", te::dt::UCHAR_TYPE));
 
     it = m_capabilit.find("INT16_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_int16, te::dt::INT16_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_int16", te::dt::INT16_TYPE));
 
     it = m_capabilit.find("UINT16_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_uint16, te::dt::UINT16_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_uint16", te::dt::UINT16_TYPE));
 
     it = m_capabilit.find("INT32_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_int32, te::dt::INT32_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_int32", te::dt::INT32_TYPE));
 
     it = m_capabilit.find("UINT32_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_uint32, te::dt::UINT16_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_uint32", te::dt::UINT16_TYPE));
 
     it = m_capabilit.find("INT64_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_int64, te::dt::INT64_TYPE));
+      dt->add(new te::dt::SimpleProperty("ttr_int64", te::dt::INT64_TYPE));
 
     it = m_capabilit.find("UINT64_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_uint64, te::dt::UINT64_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_uint64", te::dt::UINT64_TYPE));
 
     it = m_capabilit.find("BOOLEAN_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_bool, te::dt::BOOLEAN_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_bool", te::dt::BOOLEAN_TYPE));
 
     it = m_capabilit.find("FLOAT_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_float, te::dt::FLOAT_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_float", te::dt::FLOAT_TYPE));
 
     it = m_capabilit.find("DOUBLE_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_double, te::dt::DOUBLE_TYPE));
+      dt->add(new te::dt::SimpleProperty("attr_double", te::dt::DOUBLE_TYPE));
 
     it = m_capabilit.find("NUMERIC_DT");
     if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::NumericProperty(m_attr_numeric, 10, 3, true, new std::string(m_Attr1)));
-
+      //dt->add(new te::dt::NumericProperty("attr_numeric", 10, 3, true, new std::string(m_Attr1)));
+      dt->add(new te::dt::NumericProperty("attr_numeric", 10, 3, true));
     it = m_capabilit.find("STRING_DT");
     if ((it != it_end) && (it->second == "TRUE"))
     {
   // te::dt::STRING_TYPE will be used to set the datatype inside the constructor and the second parameter is the subtype
-      dt->add(new te::dt::StringProperty(m_attr_string+"fixed", te::dt::FIXED_STRING));
-      dt->add(new te::dt::StringProperty(m_attr_string+"var", te::dt::VAR_STRING, 50, false));
-      dt->add(new te::dt::StringProperty(m_attr_string, te::dt::STRING, 0, true));
+      dt->add(new te::dt::StringProperty("attr_string_fixed", te::dt::FIXED_STRING));
+      dt->add(new te::dt::StringProperty("attr_string_var", te::dt::VAR_STRING, 50, false));
+      dt->add(new te::dt::StringProperty("attr_string", te::dt::STRING, 0, true));
     }
 
-    it = m_capabilit.find("BYte::dt::ARRAY_TYPE");
-    if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty(m_attr_byte_array, te::dt::ARRAY_TYPE));
+
 
     it = m_capabilit.find("GEOMETRY_DT");
     if ((it != it_end) && (it->second == "TRUE"))
     { 
   // datatype will be te::dt::GEOMETRY_TYPE and subtype will be the third parameter
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"p", 4326, te::gm::PointType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"pz", 4326, te::gm::PointZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"pzm", 4326, te::gm::PointZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"pm", 4326, te::gm::PointMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_p", 4326, te::gm::PointType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_pz", 4326, te::gm::PointZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_pzm", 4326, te::gm::PointZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_pm", 4326, te::gm::PointMType, true));
 
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"line", 4326, te::gm::LineStringType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"linez", 4326, te::gm::LineStringZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"linezn", 4326, te::gm::LineStringZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"linem", 4326, te::gm::LineStringMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_line", 4326, te::gm::LineStringType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_linez", 4326, te::gm::LineStringZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_linezn", 4326, te::gm::LineStringZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_linem", 4326, te::gm::LineStringMType, true));
 
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"poly", 4326, te::gm::PolygonType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"polyz", 4326, te::gm::PolygonZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"polyzm", 4326, te::gm::PolygonZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"polym", 4326, te::gm::PolygonMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_poly", 4326, te::gm::PolygonType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_polyz", 4326, te::gm::PolygonZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_polyzm", 4326, te::gm::PolygonZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_polym", 4326, te::gm::PolygonMType, true));
 
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"collec", 4326, te::gm::GeometryCollectionType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"collecz", 4326, te::gm::GeometryCollectionZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"colleczm", 4326, te::gm::GeometryCollectionZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"collecm", 4326, te::gm::GeometryCollectionMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_collec", 4326, te::gm::GeometryCollectionType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_ollecz", 4326, te::gm::GeometryCollectionZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_colleczm", 4326, te::gm::GeometryCollectionZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_collecm", 4326, te::gm::GeometryCollectionMType, true));
     
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multip", 4326, te::gm::MultiPointType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multipz", 4326, te::gm::MultiPointZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multipzm", 4326, te::gm::MultiPointZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multipm", 4326, te::gm::MultiPointMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multip", 4326, te::gm::MultiPointType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipz", 4326, te::gm::MultiPointZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipzm", 4326, te::gm::MultiPointZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipm", 4326, te::gm::MultiPointMType, true));
     
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multil", 4326, te::gm::MultiLineStringType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multilz", 4326, te::gm::MultiLineStringZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multilzm", 4326, te::gm::MultiLineStringZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multilm", 4326, te::gm::MultiLineStringMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multil", 4326, te::gm::MultiLineStringType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multilz", 4326, te::gm::MultiLineStringZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multilzm", 4326, te::gm::MultiLineStringZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multilm", 4326, te::gm::MultiLineStringMType, true));
 
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multipol", 4326, te::gm::MultiPolygonType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multiPolz", 4326, te::gm::MultiPolygonZType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multipolzm", 4326, te::gm::MultiPolygonZMType, true));
-      dt->add(new te::gm::GeometryProperty(m_attr_geometry+"multipolm", 4326, te::gm::MultiPolygonMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipol", 4326, te::gm::MultiPolygonType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multiPolz", 4326, te::gm::MultiPolygonZType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipolzm", 4326, te::gm::MultiPolygonZMType, true));
+      dt->add(new te::gm::GeometryProperty("attr_geom_multipolm", 4326, te::gm::MultiPolygonMType, true));
     }
 
-    it = m_capabilit.find("ARRAY_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
-    {
-      // te::dt::ARRAY_TYPE will be used inside constructor
-      te::dt::SimpleProperty* elementType = new te::dt::SimpleProperty(m_attr_array, te::dt::INT16_TYPE, true, 0);
-      dt->add(new te::dt::ArrayProperty(m_attr_array, elementType, true, 0));
-      te::dt::SimpleProperty* elementType1 = new te::dt::SimpleProperty(m_attr_array+"32", te::dt::INT32_TYPE, true, 0);
-      dt->add(new te::dt::ArrayProperty(m_attr_array+"32", elementType1, true, 0));
-    }
+    ////it = m_capabilit.find("BYTEARRAY_DT");
+    ////if ((it != it_end) && (it->second == "TRUE"))
+    ////  dt->add(new te::dt::SimpleProperty("attr_byte_array", te::dt::ARRAY_TYPE));
+
+    ////it = m_capabilit.find("ARRAY_DT");
+    ////if ((it != it_end) && (it->second == "TRUE"))
+    ////{
+    ////  // te::dt::ARRAY_TYPE will be used inside constructor
+    ////  te::dt::SimpleProperty* elementType = new te::dt::SimpleProperty("attr_array", te::dt::INT16_TYPE, true, 0);
+    ////  dt->add(new te::dt::ArrayProperty("attr_array_16", elementType, true, 0));
+    ////  te::dt::SimpleProperty* elementType1 = new te::dt::SimpleProperty("attr_array_32", te::dt::INT32_TYPE, true, 0);
+    ////  dt->add(new te::dt::ArrayProperty("attr_array_32", elementType1, true, 0));
+    ////}
 
     it = m_capabilit.find("DATETIME_DT");
     if ((it != it_end) && (it->second == "TRUE")) 
     {
   // TE_DATETIME_DT is not used inside constructor - only subType
-      dt->add(new te::dt::DateTimeProperty(m_attr_datetime, te::dt::DATE));   
-      dt->add(new te::dt::DateTimeProperty(m_attr_datetime+"date", te::dt::TIME_INSTANT));
-      dt->add(new te::dt::DateTimeProperty(m_attr_datetime+"time", te::dt::TIME_PERIOD));
-      dt->add(new te::dt::DateTimeProperty(m_attr_datetime+"tz", te::dt::TIME_INSTANT_TZ));
-      dt->add(new te::dt::DateTimeProperty(m_attr_datetime+"stamp", te::dt::TIME_INSTANT));
-      dt->add(new te::dt::DateTimeProperty(m_attr_datetime+"stamp_tz", te::dt::TIME_INSTANT_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_datetime", te::dt::DATE));   
+      dt->add(new te::dt::DateTimeProperty("attr_datetime_date", te::dt::TIME_INSTANT));
+      dt->add(new te::dt::DateTimeProperty("attr_datetime_time", te::dt::TIME_PERIOD));
+      dt->add(new te::dt::DateTimeProperty("attr_datetime_tz", te::dt::TIME_INSTANT_TZ));
+      dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp", te::dt::TIME_INSTANT));
+      dt->add(new te::dt::DateTimeProperty("attr_datetime_stamp_tz", te::dt::TIME_INSTANT_TZ));
     }
 
-    it = m_capabilit.find("COMPOSITE_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::CompositeProperty(m_attr_composite, m_attr_composite, te::dt::COMPOSITE_TYPE));
+    ////it = m_capabilit.find("COMPOSITE_DT");
+    ////if ((it != it_end) && (it->second == "TRUE"))
+    ////  dt->add(new te::dt::CompositeProperty("attr_composite_name", "attr_composite", te::dt::COMPOSITE_TYPE));
 
     it = m_capabilit.find("RASTER_DT");
     if ((it != it_end) && (it->second == "TRUE"))
@@ -457,7 +532,7 @@ void TsDataSetTypePersistence::tcAddCheckConstraint()
       CPPUNIT_ASSERT(dt);
       te::da::DataSetTypePersistence* dtP = t->getDataSetTypePersistence();
       CPPUNIT_ASSERT_NO_THROW(dtP->add(dt, m_cc));
-      CPPUNIT_ASSERT(dt->getCheckConstraint("cc_datasettype2") == m_cc); 
+      CPPUNIT_ASSERT(dt->getCheckConstraint(m_ccName) == m_cc); 
     } 
     catch (te::common::Exception  e)
     { 
@@ -798,7 +873,7 @@ void TsDataSetTypePersistence::tcRemoveCheckConstraint()
       CPPUNIT_ASSERT(dt);
 
   // remove checkConstraint named cc_datasetType2
-      te::da::CheckConstraint* cc = dt->getCheckConstraint("cc_datasettype2");
+      te::da::CheckConstraint* cc = dt->getCheckConstraint(m_ccName);
       CPPUNIT_ASSERT(cc);
       te::da::DataSetTypePersistence* dtP = t->getDataSetTypePersistence();
       CPPUNIT_ASSERT_NO_THROW(dtP->drop(cc));
