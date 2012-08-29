@@ -101,13 +101,32 @@ bool te::mem::CachedBandBlocksManager::initialize(
     
   // Allocating the internal structures
   
-  m_blocksPointers.resize( boost::extents[externalRaster.getNumberOfBands()][
-    m_globalBlocksNumberX][m_globalBlocksNumberY] );
+  unsigned int blockBIdx = 0;
+  unsigned int blockYIdx = 0;
+  unsigned int blockXIdx = 0; 
+  
+  m_blocksPointers.resize( externalRaster.getNumberOfBands() );
+  
+  for( blockBIdx = 0 ; blockBIdx < m_blocksPointers.size() ;  ++blockBIdx )
+  {
+    m_blocksPointers[ blockBIdx ].resize( m_globalBlocksNumberY );
+    
+    for( unsigned int blockYIdx = 0 ; blockYIdx < m_globalBlocksNumberY ;
+      ++blockYIdx )
+    {
+      m_blocksPointers[ blockBIdx ][ blockYIdx ].resize( m_globalBlocksNumberX );
+      
+      for( blockXIdx = 0 ; blockXIdx < m_globalBlocksNumberX ; ++blockXIdx )
+      {
+        m_blocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ] = 0;
+      }
+    }
+  }
 }
 
 void te::mem::CachedBandBlocksManager::free()
 {
-  m_blocksPointers.resize( boost::extents[0][0][0] );
+  m_blocksPointers.clear();
   
   initState();
 }

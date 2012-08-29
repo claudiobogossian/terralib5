@@ -30,7 +30,7 @@
 #include "Config.h"
 #include "../raster/Raster.h"
 
-#include <boost/multi_array.hpp>
+#include <boost/scoped_array.hpp>
 
 #include <vector>
 
@@ -115,11 +115,18 @@ namespace te
         unsigned int m_globalBlockSizeBytes;
         
         /*!
-          \brief 3D Matrix of block pointers indexed as [band][blockXIndex][blockYIndex].
+          \brief 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
           
           \return true if this instance is initialized.
         */         
-        boost::multi_array<void*, 3> m_blocksPointers;
+        std::vector< std::vector< std::vector< void* > > > m_blocksPointers;
+        
+        /*!
+          \brief 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
+          
+          \return true if this instance is initialized.
+        */         
+        std::vector< boost::scoped_array< unsigned char* > > m_blocksHandler;        
         
       private :
         
