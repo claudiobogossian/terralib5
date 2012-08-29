@@ -358,6 +358,11 @@ bool	te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const Q
   return true;
 }
 
+te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getRootItem() const
+{
+  return m_rootItem;
+}
+
 te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getItem(const QModelIndex& index)
 {
   if(index.isValid())
@@ -369,6 +374,50 @@ te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getItem(
 QModelIndex te::qt::widgets::LayerExplorerModel::getDragIndex() const
 {
   return m_dragIndex;
+}
+
+void te::qt::widgets::LayerExplorerModel::removeLegend(const QModelIndex& index)
+{
+  if(!index.isValid())
+    return;
+
+  te::qt::widgets::AbstractTreeItem* item = getItem(index);
+
+  if(item->getRefLayer()->getType() != "LAYER")
+    return;
+
+  if(item->getRefLayer()->hasLegend() == false)
+    return;
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(item);
+
+  beginRemoveRows(index, 0, item->children().count() - 1);
+  layerItem->removeLegend();
+  endRemoveRows();
+}
+
+void te::qt::widgets::LayerExplorerModel::insertLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend)
+{
+  if(!index.isValid())
+    return;
+
+  te::qt::widgets::AbstractTreeItem* item = getItem(index);
+
+  if(item->getRefLayer()->getType() != "LAYER")
+    return;
+
+  removeLegend(index);
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(item);
+
+  beginInsertRows(index, 0, legend.size() - 1);
+  layerItem->insertLegend(legend);
+  endInsertRows();
+}
+
+void te::qt::widgets::LayerExplorerModel::removeItem(const QModelIndex& index)
+{
+  
 }
 
 void te::qt::widgets::LayerExplorerModel::resetModel()

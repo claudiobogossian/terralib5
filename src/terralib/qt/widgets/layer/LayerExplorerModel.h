@@ -38,7 +38,11 @@
 namespace te
 {
 // Forward declarations
-  namespace map { class AbstractLayer; }
+  namespace map
+  {
+    class AbstractLayer;
+    class LegendItem;
+  }
 
   namespace qt
   {
@@ -230,6 +234,13 @@ namespace te
           bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex());
 
           /*!
+            \brief Get the root item.
+
+            \return It returns the root item of the tree.              
+           */
+          te::qt::widgets::AbstractTreeItem* getRootItem() const;
+
+          /*!
             \brief Get the item associated to the given item index.
 
             \param index The item index.
@@ -245,7 +256,33 @@ namespace te
            */
           QModelIndex getDragIndex() const;
 
-          /*! \brief It resets the model to its original state in any attached views. */
+           /*!
+            \brief It removes the legend, if any, from the item associated to the given index.
+
+            \param index The item index.
+
+            \return It removes the legend of the item associated to the given index.              
+           */
+          void removeLegend(const QModelIndex& index);
+
+           /*!
+            \brief It inserts the given legend into the item associated to the index
+
+            \param index  The item index where the legend will be inserted.
+            \param legend The legend to be inserted.
+           */
+          void insertLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend);
+
+           /*!
+            \brief It removes the item associated to the given index.
+
+            \param index The item index.
+
+            \return It removes the item associated to the given index.              
+           */
+          void removeItem(const QModelIndex& index);
+
+         /*! \brief It resets the model to its original state in any attached views. */
           void resetModel();
 
           /*!
