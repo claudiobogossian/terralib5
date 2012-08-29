@@ -82,6 +82,11 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   typeComboBoxActivated(typeComboBox->currentIndex());
 }
 
+const std::vector<te::map::LegendItem*>& te::qt::widgets::Legend::getLegend() const
+{
+  return m_legend;
+}
+
 void te::qt::widgets::Legend::closeEvent(QCloseEvent* /*e*/)
 {
   if(m_dataSetType)
@@ -124,8 +129,6 @@ void te::qt::widgets::Legend::okPushButtonClicked()
   delete dataset;
 
   // Get the groupings according to the grouping type selected
-  std::vector<te::map::LegendItem*> legend;
-  //std::vector<double> numValues(attrValues.size());
   std::vector<double> numValues;
 
   if(typeComboBox->currentIndex() == 3)
@@ -134,7 +137,7 @@ void te::qt::widgets::Legend::okPushButtonClicked()
     int dataType = m_dataSetType->getProperty(attributeComboBox->currentIndex())->getType();
 
     std::string rmean;
-    GroupingByUniqueValues(attrValues, dataType, legend, precision);
+    GroupingByUniqueValues(attrValues, dataType, m_legend, precision);
   }
   else
   {
@@ -145,24 +148,24 @@ void te::qt::widgets::Legend::okPushButtonClicked()
 
     if(typeComboBox->currentIndex() == 0)
       GroupingByEqualSteps(numValues.begin(), numValues.end(), slicesComboBox->currentText().toInt(),
-                         legend, precision, true);    // Equal Steps
+                         m_legend, precision, true);    // Equal Steps
     else if(typeComboBox->currentIndex() == 1)
       GroupingByQuantil(numValues.begin(), numValues.end(), slicesComboBox->currentText().toInt(),
-                         legend, precision, true);    // Quantil
+                         m_legend, precision, true);    // Quantil
     else if(typeComboBox->currentIndex() == 2)
     {
       // Standard Deviation
       std::string rmean;
       GroupingByStdDeviation(numValues.begin(), numValues.end(), stdDeviationComboBox->currentText().toDouble(),
-                         legend, rmean, precisionComboBox->currentText().toInt(), true);
+                         m_legend, rmean, precisionComboBox->currentText().toInt(), true);
     }
   }
 
   // Set the legend in the reference layer
-  refLayer->setLegend(legend);
+  //refLayer->setLegend(legend);
 
   // Set the legend in the interface
-  m_layerItem->setLegend();
+ // m_layerItem->setLegend();
 
   accept();
 }
