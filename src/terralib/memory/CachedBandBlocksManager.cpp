@@ -38,6 +38,8 @@ void te::mem::CachedBandBlocksManager::initState()
   m_globalBlocksNumberX = 0;
   m_globalBlocksNumberY = 0;
   m_globalBlockSizeBytes = 0;
+  m_maxNumberOfCacheBlocks = 0;
+  m_blocksFifoPointer = 0;
 }
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
@@ -102,16 +104,14 @@ bool te::mem::CachedBandBlocksManager::initialize(
     2.0;
   const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
     std::min( totalPhysMem, ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );  
-  const unsigned int maxNumberOfCacheBlocks = (unsigned int)std::max( 1.0, std::ceil( freeVMem /
-    ((double)m_globalBlockSizeBytes) ) );
-  const unsigned int numberOfCacheBlocks = std::min( maxNumberOfCacheBlocks,
-    numberOfRasterBlocks );
+  m_maxNumberOfCacheBlocks = std::min( numberOfRasterBlocks,
+    (unsigned int)std::max( 1.0, std::ceil( freeVMem /
+    ((double)m_globalBlockSizeBytes) ) ) );
     
   // Allocating the internal structures
   
   unsigned int blockBIdx = 0;
   unsigned int blockYIdx = 0;
-  unsigned int blockXIdx = 0; 
   
   m_blocksPointers.resize( externalRaster.getNumberOfBands() );
   
@@ -122,12 +122,7 @@ bool te::mem::CachedBandBlocksManager::initialize(
     for( unsigned int blockYIdx = 0 ; blockYIdx < m_globalBlocksNumberY ;
       ++blockYIdx )
     {
-      m_blocksPointers[ blockBIdx ][ blockYIdx ].resize( m_globalBlocksNumberX );
-      
-      for( blockXIdx = 0 ; blockXIdx < m_globalBlocksNumberX ; ++blockXIdx )
-      {
-        m_blocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ] = 0;
-      }
+      m_blocksPointers[ blockBIdx ][ blockYIdx ].resize( m_globalBlocksNumberX, 0 );
     }
   }
   
@@ -138,14 +133,45 @@ void te::mem::CachedBandBlocksManager::free()
 {
   m_blocksPointers.clear();
   m_blocksHandler.clear();
+  m_blocksFifo.clear();
   
   initState();
 }
 
 void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band, 
-  unsigned int x, unsigned int y)
+  unsigned int x, unsigned int y )
 {
-  return 0;
+  assert( m_rasterPtr );
+  assert( band < m_rasterPtr->getNumberOfBands() );
+  assert( x < m_globalBlocksNumberX );
+  assert( y < m_globalBlocksNumberY );
+  
+  m_getBlockPointer_BlkPtr = m_blocksPointers[ band ][ y ][ x ];
+  
+  if( m_getBlockPointer_BlkPtr == 0 )
+  {
+    if( m_blocksHandler.size() < m_maxNumberOfCacheBlocks )
+    {
+      
+    }
+    else
+    {
+      
+    }
+    
+    if( m_dataPrefetchThreshold )
+    {
+      
+    }
+    else
+    {
+      
+    }
+    
+  }
+  
+  return m_getBlockPointer_BlkPtr;
+  
 }
 
 

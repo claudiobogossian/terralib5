@@ -30,7 +30,7 @@
 #include "Config.h"
 #include "../raster/Raster.h"
 
-#include <boost/scoped_array.hpp>
+#include <boost/shared_array.hpp>
 
 #include <vector>
 
@@ -89,9 +89,9 @@ namespace te
           
           \param y The block-id in y (or y-offset).
 
-          \return a pointer to the required data block.
+          \return Pointer to the required data block.
         */
-        void* getBlockPointer(unsigned int band, unsigned int x, unsigned int y);
+        void* getBlockPointer(unsigned int band, unsigned int x, unsigned int y );
         
         
         /*! \brief Returns the associated raster. */
@@ -101,6 +101,18 @@ namespace te
         };        
         
       protected :
+        
+        class BlockIndex
+        {
+          public :
+            
+            unsigned int m_b;
+            unsigned int m_y;
+            unsigned int m_x;
+            
+            BlockIndex() : m_b( 0 ), m_y( 0 ), m_x( 0 ) {};
+            ~BlockIndex() {};
+        };
         
         te::rst::Raster* m_rasterPtr;
         
@@ -114,9 +126,18 @@ namespace te
         
         unsigned int m_globalBlockSizeBytes;
         
+        unsigned int m_maxNumberOfCacheBlocks;
+        
+        unsigned int m_blocksFifoPointer;
+        
+        //variables used by internal methods
+        void* m_getBlockPointer_BlkPtr;
+        
         std::vector< std::vector< std::vector< void* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
         
-        std::vector< boost::scoped_array< unsigned char* > > m_blocksHandler; //!< Cache blocks handler.
+        std::vector< boost::shared_array< unsigned char* > > m_blocksHandler; //!< Cache blocks handler.
+        
+        std::vector< BlockIndex > m_blocksFifo;
         
       private :
         
