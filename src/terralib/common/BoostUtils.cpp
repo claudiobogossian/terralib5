@@ -29,6 +29,7 @@
 // Boost
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/lexical_cast.hpp>
 
 void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::string, std::string>& dict)
 {
@@ -48,3 +49,118 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::str
   }
 }
 
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::string>& vect)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    vect.push_back(v.second.data());
+    continue;
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<double>& vectd)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    vectd.push_back(boost::lexical_cast<double>(v.second.data()));
+    continue;
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<size_t>& vect)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    vect.push_back(boost::lexical_cast<size_t>(v.second.data()));
+    continue;
+  }
+}
+
+
+////void te::common::Convert(std::vector<double>vectd, te::gm::Envelope& env )
+////{
+////   std::vector<double>::iterator it;
+////   double  d[4]={0.0,0.0,0.0,0.0}; int i=0;
+////   for(it = vectd.begin(); it < vectd.end(); it++)
+////   {
+////       d[i] = (*it);       
+////       i+= 1;
+////   }
+////   std::string s;
+////   s = "marisa";
+////   double  d0 = boost::lexical_cast<const double >(d[0]);
+////   double  d1 = boost::lexical_cast<const double >(d[1]);
+////   double  d2 = boost::lexical_cast<const double >(d[2]);
+////   double  d3 = boost::lexical_cast<const double >(d[3]);
+////   
+////   te::gm::Envelope const env_aux(d0,d1,d2,d3);
+////   //env.operator=(env_aux);
+////   env.init(d[0],d[1],d[2],d[3]);
+////   //env.init(d0,d1,d2,d3);
+////   std::string s1;
+////   s1 = "marisa1";
+////}
+
+////void te::common::Convert(const boost::property_tree::ptree& p, std::vector<te::gm::Envelope>& vect)
+////{
+////  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+////  {
+////    BOOST_FOREACH(const boost::property_tree::ptree::value_type& v2, v.second.get_child(""))
+////    {
+////      te::gm::Envelope env_i;
+////      std::vector<double> envrep;
+////      te::common::Convert(v2.second.get_child(""), envrep); 
+////      te::common::Convert(envrep, env_i);
+////      vect.push_back(env_i);
+////      int xx;
+////      xx=0;
+////
+////    }
+////  }
+////}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::vector<double>>& vect)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type& v2, v.second.get_child(""))
+    {
+      std::vector<double> envrep;
+      te::common::Convert(v2.second.get_child(""), envrep);
+      //te::gm::Envelope envelope_res;
+      //te::common::Convert(envrep, envelope_res);
+      {
+          std::vector<double>::iterator it;
+          double  d[4]={0.0,0.0,0.0,0.0}; int i=0;
+          for(it = envrep.begin(); it < envrep.end(); it++)
+           {
+               d[i] = (*it);       
+               i+= 1;
+           }
+          //te::gm::Envelope envelope1;
+          //(d[0],d[1],d[2],d[3]);
+          //double dd1 = envelope1.getLowerLeftX();
+           std::string s;
+           s = "marisa";
+      }
+      vect.push_back(envrep);
+    }
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string>>& vectm)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    // used to get the properties parameters into a map
+    std::map<std::string, std::string> dict;
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type& v2, v.second.get_child(""))
+    {
+      const std::string& f = v2.first.data();
+      const std::string& s = v2.second.data();
+
+      dict[f] = s;
+    }
+    vectm.push_back(dict);
+  }
+}
