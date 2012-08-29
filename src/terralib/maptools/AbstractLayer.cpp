@@ -28,6 +28,8 @@
 #include "../se/Style.h"
 #include "../xlink/SimpleLink.h"
 #include "AbstractLayer.h"
+#include "Grouping.h"
+#include "LegendItem.h"
 
 te::map::AbstractLayer::AbstractLayer(const std::string& id,
                                       const std::string& title,
@@ -104,9 +106,31 @@ void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
   }
 }
 
+te::map::Grouping* te::map::AbstractLayer::getGrouping() const
+{
+  return 0;
+}
+
+void te::map::AbstractLayer::setGrouping(te::map::Grouping* grouping)
+{
+}
+
 bool te::map::AbstractLayer::hasLegend()
 {
   return false;
+}
+
+std::vector<te::map::LegendItem*>* te::map::AbstractLayer::getLegend()
+{
+  return 0;
+}
+
+void te::map::AbstractLayer::removeLegend()
+{
+}
+
+void te::map::AbstractLayer::insertLegend(const std::vector<LegendItem*>& /*legend*/)
+{
 }
 
 void te::map::AbstractLayer::setAscendantsVisibility()
