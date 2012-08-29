@@ -39,7 +39,7 @@ void te::mem::CachedBandBlocksManager::initState()
   m_globalBlocksNumberY = 0;
   m_globalBlockSizeBytes = 0;
   m_maxNumberOfCacheBlocks = 0;
-  m_blocksFifoPointer = 0;
+  m_blocksFifoNextSwapBlockIndex = 0;
 }
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
@@ -126,11 +126,43 @@ bool te::mem::CachedBandBlocksManager::initialize(
     }
   }
   
+  m_blocksFifo.resize( m_maxNumberOfCacheBlocks );
+  
   return true;
 }
 
 void te::mem::CachedBandBlocksManager::free()
 {
+  // flushing the ram data, if necessary
+  
+  if( ( m_rasterPtr != 0 ) &&
+    ( m_rasterPtr->getAccessPolicy() & te::common::WAccess ) )
+  {
+    unsigned int blockBIdx = 0;
+    unsigned int blockYIdx = 0;
+    unsigned int blockXIdx = 0;
+    void* blockPtr = 0;
+    
+    for( blockBIdx = 0 ; blockBIdx < m_blocksPointers.size() ;  ++blockBIdx )
+    {
+      for( blockYIdx = 0 ; blockYIdx < m_globalBlocksNumberY ;
+        ++blockYIdx )
+      {
+        for( blockXIdx = 0 ; blockXIdx < m_globalBlocksNumberX ;
+          ++blockXIdx )
+        {
+          blockPtr = m_blocksPointers[ blockBIdx ][ blockYIdx ][ blockXIdx ];
+          
+          if( blockPtr )
+          {
+            m_rasterPtr->getBand( blockBIdx )->write( blockXIdx, blockYIdx,
+              blockPtr );
+          }
+        }
+      }
+    }
+  }
+  
   m_blocksPointers.clear();
   m_blocksHandler.clear();
   m_blocksFifo.clear();
@@ -150,28 +182,55 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
   
   if( m_getBlockPointer_BlkPtr == 0 )
   {
-    if( m_blocksHandler.size() < m_maxNumberOfCacheBlocks )
-    {
-      
-    }
-    else
-    {
-      
-    }
-    
     if( m_dataPrefetchThreshold )
     {
       
     }
     else
     {
+      BlockIndex& choosedSwapBlockIndex = m_blocksFifo[ 
+        m_blocksFifoNextSwapBlockIndex ];      
+        
+      if( m_blocksHandler.size() < m_maxNumberOfCacheBlocks )
+      {
+        m_getBlockPointer_BlkPtr = new unsigned char[ m_globalBlockSizeBytes ];
+        m_blocksHandler.push_back( boost::shared_array< unsigned char >( 
+          (unsigned char*)m_getBlockPointer_BlkPtr ) );
+      }
+      else
+      {
+        m_getBlockPointer_BlkPtr = m_blocksPointers[ choosedSwapBlockIndex.m_b ][ 
+          choosedSwapBlockIndex.m_y ][ choosedSwapBlockIndex.m_x ];
+        assert( m_getBlockPointer_BlkPtr );
+        
+        m_blocksPointers[ choosedSwapBlockIndex.m_b ][ 
+          choosedSwapBlockIndex.m_y ][ choosedSwapBlockIndex.m_x ] = 0;
+          
+        // writing the block choosed for swap, if necessary
+        if( m_rasterPtr->getAccessPolicy() & te::common::WAccess )
+        {
+          m_rasterPtr->getBand( choosedSwapBlockIndex.m_b )->write( 
+            choosedSwapBlockIndex.m_x, choosedSwapBlockIndex.m_y,
+            m_getBlockPointer_BlkPtr );
+        }
+      }
       
+      m_blocksPointers[ band ][ y ][ x ] = m_getBlockPointer_BlkPtr;
+      
+      // reading the required block
+      m_rasterPtr->getBand( band )->read( x, y, m_getBlockPointer_BlkPtr );
+        
+      choosedSwapBlockIndex.m_b = band;
+      choosedSwapBlockIndex.m_y = y;
+      choosedSwapBlockIndex.m_x = x;
+      
+      // advances the next swap block fifo index
+      m_blocksFifoNextSwapBlockIndex = ( m_blocksFifoNextSwapBlockIndex + 1 ) % 
+        m_maxNumberOfCacheBlocks;        
     }
-    
   }
   
-  return m_getBlockPointer_BlkPtr;
-  
+  return m_getBlockPointer_BlkPtr;  
 }
 
 

@@ -128,14 +128,14 @@ namespace te
         
         unsigned int m_maxNumberOfCacheBlocks;
         
-        unsigned int m_blocksFifoPointer;
+        unsigned int m_blocksFifoNextSwapBlockIndex;
         
         //variables used by internal methods
-        void* m_getBlockPointer_BlkPtr;
+        unsigned char* m_getBlockPointer_BlkPtr;
         
-        std::vector< std::vector< std::vector< void* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
+        std::vector< std::vector< std::vector< unsigned char* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
         
-        std::vector< boost::shared_array< unsigned char* > > m_blocksHandler; //!< Cache blocks handler.
+        std::vector< boost::shared_array< unsigned char > > m_blocksHandler; //!< Cache blocks handler.
         
         std::vector< BlockIndex > m_blocksFifo;
         
