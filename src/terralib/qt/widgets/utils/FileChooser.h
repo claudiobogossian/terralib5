@@ -36,12 +36,15 @@
 
 //Qt include files.
 #include <QWidget>
+#include <QModelIndex>
 
 //Forward declarations
 namespace Ui
 {
   class FileChooser;
 }
+
+class QFileSystemModel;
 
 namespace te
 {
@@ -58,12 +61,21 @@ namespace te
         Q_OBJECT
 
       public:
+        /*!
+          \enum ResourceType
+          \brief Type of resource required.
+        */
+        enum ResourceType
+        {
+          FILE,   //!< Search files.
+          FOLDER  //!< Search folders.
+        };
 
         /*!
           \brief Constructor.
           \param parent The QWidget parent argumnt.
         */
-        FileChooser(QWidget* parent=0);
+        FileChooser(QWidget* parent=0, const ResourceType& type=FILE);
 
         /*!
           \brief Destructor.
@@ -86,12 +98,11 @@ namespace te
           \code{.cpp}
           FileChooser ch;
 
-          QString filter = tr("Images(*.png *.bmp) Text files(*.txt)");
+          QString filter(tr("Images(*.png *.bmp) Text files(*.txt)");
           ch.setFilterPattern(filter);
           \endcode
           In the above example two filters are created, for images and text files.
           \param filter The filter pattern. For details of syntax, see QFileDialog documentation.
-          \note An filter for all kinds of files are always created as the last one.
         */
         void setFilterPattern(const QString& filter);
 
@@ -99,7 +110,13 @@ namespace te
           \brief Returns the text presented in line edit.
           \return The complete path to the selected file.
         */
-        QString getSelectedFile() const;
+        QString getSelectedResource() const;
+
+        /*!
+          \brief Updates the resource type of the search to be done.
+          \param type Resource type.
+        */
+        void setResourceType(const ResourceType& type);
 
       protected slots:
         
@@ -108,10 +125,14 @@ namespace te
         */
         void onChooseFileToolButtonClicked();
 
+        void showIndex(const QModelIndex& idx);
+
+        void showPath(const QString& path);
+
       protected:
 
-        QString m_filterPattern;  //!< Filter patterns to be used.
-        QString m_searchPath;     //!< Initial path for searching.
+        QFileSystemModel* m_fp_model;  //!< Model to show full path.
+        QString m_filter;               //!< Files filter.
 
       private:
 

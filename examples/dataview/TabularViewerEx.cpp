@@ -24,17 +24,17 @@
 
 te::da::DataSource* getDataSource(const std::string& src)
 {
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
 
-    bool res = ds->isOpened();  // expect false;
+  bool res = ds->isOpened();  // expect false;
 
-    std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = src ;  
-    ds->open(connInfo);
-    res = ds->isOpened();  // expect true
-    res = ds->isValid();   // expect true
+  std::map<std::string, std::string> connInfo;
+  connInfo["SOURCE"] = src ;  
+  ds->open(connInfo);
+  res = ds->isOpened();  // expect true
+  res = ds->isValid();   // expect true
 
-    return (res) ? ds : 0;
+  return (res) ? ds : 0;
 }
 
 te::da::DataSet* getDataSet(te::da::DataSource* ds) 
@@ -125,18 +125,8 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
   fc = new te::qt::widgets::FileChooser(wd);
   tv = new te::qt::widgets::TabularViewer(wd);
   QPushButton* btn = new QPushButton(QObject::tr("Update viewer"), wd);
-//  QPushButton* btn2 = new QPushButton(QObject::tr("Promote highlighted"), wd);
-//  QPushButton* btn3 = new QPushButton(QObject::tr("Remove promotion"), wd);
-//  QPushButton* btn4 = new QPushButton(QObject::tr("Reset highlighted"), wd);
-
   QVBoxLayout* vlay = new QVBoxLayout;
-//  QHBoxLayout* hlay = new QHBoxLayout;
   QGridLayout* grdLay = new QGridLayout(wid);
-
-//  hlay->addWidget(btn);
- // hlay->addWidget(btn2);
- // hlay->addWidget(btn3);
- // hlay->addWidget(btn4);
 
   vlay->addWidget(fc);
   vlay->addWidget(btn);
@@ -157,9 +147,6 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
 
   //! Connecting slots
   tv->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(setPrimaryKeys(const std::vector<size_t>&)));
-//  tv->connect(btn2, SIGNAL(clicked()), SLOT(promoteHighlighted()));
-//  tv->connect(btn3, SIGNAL(clicked()), SLOT(resetPromote()));
-//  tv->connect(btn4, SIGNAL(clicked()), SLOT(resetHighlights()));
 
   wd->connect(btn, SIGNAL(pressed()), SLOT(updateViewer()));
   wd->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(pkeysChanged(const std::vector<size_t>&)));
@@ -176,8 +163,10 @@ m_tab(new QTabWidget(this))
 
   QDialog::setWindowTitle(tr("Shapefile tabular viewer"));
 
+  QString filter(tr("Shape Files (*.shp *.SHP)"));
+
   //! Adding filter for shape files
-  m_fchooser->setFilterPattern(tr("Shape Files (*.shp *.SHP)"));
+  m_fchooser->setFilterPattern(filter);
 }
 
 TabularViewerEx::~TabularViewerEx()
@@ -187,7 +176,7 @@ TabularViewerEx::~TabularViewerEx()
 
 void TabularViewerEx::updateViewer()
 {
-  QString fname = m_fchooser->getSelectedFile();
+  QString fname = m_fchooser->getSelectedResource();
 
   if(fname.isEmpty())
   {
