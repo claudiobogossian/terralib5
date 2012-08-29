@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 // #include "../common/STLUtils.h"
 // #include "../common/StringUtils.h"
 // #include "../common/Translator.h"
