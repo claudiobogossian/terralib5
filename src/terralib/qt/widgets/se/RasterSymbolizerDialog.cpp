@@ -55,7 +55,9 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
     m_imageOutlineWidget(0),
     m_sliderWidget(0),
     m_symbolizer(new te::se::RasterSymbolizer),
-    m_property(0)
+    m_property(0),
+    m_raster(0),
+    m_colorMap(0)
 {
   m_ui->setupUi(this);
 
@@ -77,8 +79,11 @@ te::qt::widgets::RasterSymbolizerDialog::~RasterSymbolizerDialog()
   delete m_symbolizer;
 }
 
-void te::qt::widgets::RasterSymbolizerDialog::setProperty(te::rst::RasterProperty* p)
+void te::qt::widgets::RasterSymbolizerDialog::setRasterProperty(te::rst::Raster* r, te::rst::RasterProperty* p)
 {
+  assert(r);
+  m_raster = r;
+
   assert(p);
   m_property = p;
 
@@ -133,6 +138,11 @@ te::se::Symbolizer* te::qt::widgets::RasterSymbolizerDialog::getRasterSymbolizer
     m_symbolizer->setShadedRelief(m_shadedReliefWidget->getShadedRelief());
   }
 
+  if(m_colorMapWidget)
+  {
+    m_symbolizer->setColorMap(m_colorMap);
+  }
+
   return m_symbolizer->clone();
 }
 
@@ -179,7 +189,10 @@ void te::qt::widgets::RasterSymbolizerDialog::onChannelSelectionClicked()
     layout->setAlignment(Qt::AlignTop);
     layout->addWidget(m_channelSelectionWidget);
 
-    updateUi();
+    if(m_property)
+    {
+      m_channelSelectionWidget->setProperty(m_property->getBandProperties());
+    }
   }
 }
 
@@ -195,6 +208,14 @@ void te::qt::widgets::RasterSymbolizerDialog::onColorMapClicked()
 
     layout->setAlignment(Qt::AlignTop);
     layout->addWidget(m_colorMapWidget);
+
+    m_colorMap = new te::se::ColorMap();
+    m_colorMapWidget->setColorMap(m_colorMap);
+
+    if(m_raster)
+    {
+      m_colorMapWidget->setRaster(m_raster);
+    }
   }
 }
 

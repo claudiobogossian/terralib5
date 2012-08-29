@@ -11,6 +11,7 @@
 #include <terralib/qt/widgets/se/PointSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/PolygonSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/SymbolEditorWidget.h>
+#include <terralib/qt/widgets/se/SymbolInfoDialog.h>
 #include <terralib/qt/widgets/se/SymbolizerPreviewWidget.h>
 #include <terralib/qt/widgets/se/SymbolizerTableWidget.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
@@ -31,12 +32,24 @@ void SymbolEditor()
   te::qt::widgets::SymbolEditorWidget* editLineSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::LINE_SYMBOLIZER);
   te::qt::widgets::SymbolEditorWidget* editPolygonSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::POLYGON_SYMBOLIZER);
 
+  // Symbol Information
+  te::qt::widgets::SymbolInfo info;
+  info.m_id = 0;
+  info.m_name = "Brazilian Highway";
+  info.m_author = "TerraLib Team";
+  info.m_category = "Brazilian Road Symbols";
+  info.m_tags = "highway; road; Brazil";
+  info.m_description = "This symbol is used to represent highways.";
+  te::qt::widgets::SymbolInfoDialog* symbolInfo = new te::qt::widgets::SymbolInfoDialog; 
+  symbolInfo->setSymbolInfo(info);
+
   // Grouping to show!
   QMdiArea mainWidget;
   mainWidget.setWindowTitle("Symbol Editors");
   mainWidget.addSubWindow(editPointSymbolizer)->setWindowTitle("Point Symbol");
   mainWidget.addSubWindow(editLineSymbolizer)->setWindowTitle("Line Symbol");
   mainWidget.addSubWindow(editPolygonSymbolizer)->setWindowTitle("Polygon Symbol");
+  mainWidget.addSubWindow(symbolInfo);
   mainWidget.show();
 
   qApp->exec();

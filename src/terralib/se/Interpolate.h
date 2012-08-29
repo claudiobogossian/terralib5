@@ -123,6 +123,13 @@ namespace te
         /*! \brief Destructor. */
         ~Interpolate();
 
+        /*!
+          \brief It returns a clone of this object.
+          
+          \return A clone of this object.
+        */
+        virtual Interpolate* clone() const { return 0; }
+
         //@}
 
         /** @name Accessor methods
@@ -137,6 +144,8 @@ namespace te
         void setModeType(ModeType t);
 
         void setMethodType(MethodType t);
+
+        std::vector<InterpolationPoint*>& getInterpolationPoints();
 
         //@}
 

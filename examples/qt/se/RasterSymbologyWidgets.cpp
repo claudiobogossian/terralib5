@@ -3,8 +3,6 @@
 // TerraLib
 #include <terralib/qt/widgets/se/RasterSymbolizerDialog.h>
 #include <terralib/raster.h>
-#include <terralib/raster/RasterSummary.h>
-#include <terralib/raster/RasterSummaryManager.h>
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/se.h>
@@ -35,18 +33,13 @@ void RasterSymbologyWidgets()
 
   te::da::DataSet* dataSet = tr->getDataSet("landsat.tif");
   te::rst::Raster* raster = dataSet->getRaster();
-//  const te::rst::RasterSummary* rsummary = te::rst::RasterSummaryManager::getInstance().get(raster, te::rst::SUMMARY_ALL);
-//  const std::complex<double>* cmin = rsummary->at(0).m_minVal;
-//  const std::complex<double>* cmax = rsummary->at(0).m_maxVal;
-//  double min = cmin->real();
-//  double max = cmax->real();
 
   te::se::RasterSymbolizer* rs = 0;
 
   // Creates the rastersymbolizer dialog
   te::qt::widgets::RasterSymbolizerDialog dlg;
 
-  dlg.setProperty(rstp);
+  dlg.setRasterProperty(raster, rstp);
 
   if(dlg.exec() == QDialog::Accepted)
   {

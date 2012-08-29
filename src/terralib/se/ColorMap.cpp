@@ -46,9 +46,19 @@ void te::se::ColorMap::setCategorize(Categorize* c)
   m_categorize = c;
 }
 
+te::se::Categorize* te::se::ColorMap::getCategorize()
+{
+  return m_categorize;
+}
+
 void te::se::ColorMap::setInterpolate(Interpolate* i)
 {
   delete m_interpolate;
   m_interpolate = i;
+}
+
+te::se::Interpolate* te::se::ColorMap::getInterpolate()
+{
+  return m_interpolate;
 }
 
