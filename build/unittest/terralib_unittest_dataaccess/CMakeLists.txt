@@ -52,35 +52,35 @@ list (
 
 # Select the source files
 file(GLOB DATAACCESS_SRCS ${SRCDIR}/*.cpp)
-file(GLOB GDAL_SRCS       ${SRCDIR}/../gdal/*.cpp)
-file(GLOB PGIS_SRCS       ${SRCDIR}/../postgis/*.cpp)
+#file(GLOB GDAL_SRCS       ${SRCDIR}/../gdal/*.cpp)
+#file(GLOB PGIS_SRCS       ${SRCDIR}/../postgis/*.cpp)
 
 #Select the header files
 file(GLOB DATAACCESS_HDRS ${SRCDIR}/*.h)
-file(GLOB GDAL_HDRS       ${SRCDIR}/../gdal/*.h)
-file(GLOB PGIS_HDRS       ${SRCDIR}/../postgis/*.h)
+#file(GLOB GDAL_HDRS       ${SRCDIR}/../gdal/*.h)
+#file(GLOB PGIS_HDRS       ${SRCDIR}/../postgis/*.h)
 
 # Remove some files from the source and header files selected
 list(REMOVE_ITEM DATAACCESS_HDRS ${SRCDIR}/Config.h)   
-list(REMOVE_ITEM GDAL_SRCS ${SRCDIR}/../gdal/main.cpp)
-list(REMOVE_ITEM PGIS_SRCS ${SRCDIR}/../postgis/main.cpp ${SRCDIR}/../postgis/TsPostGISInfo.cpp)
-list(REMOVE_ITEM PGIS_HDRS ${SRCDIR}/../postgis/TsPostGISInfo.h)
+#list(REMOVE_ITEM GDAL_SRCS ${SRCDIR}/../gdal/main.cpp)
+#list(REMOVE_ITEM PGIS_SRCS ${SRCDIR}/../postgis/main.cpp ${SRCDIR}/../postgis/TsPostGISInfo.cpp)
+#list(REMOVE_ITEM PGIS_HDRS ${SRCDIR}/../postgis/TsPostGISInfo.h)
 
 # Group the source and header files
 source_group("dataaccess\\Source Files" FILES ${DATAACCESS_SRCS})
-source_group("gdal\\Source Files"       FILES ${GDAL_SRCS})
-source_group("postgis\\Source Files"    FILES ${PGIS_SRCS})
+#source_group("gdal\\Source Files"       FILES ${GDAL_SRCS})
+#source_group("postgis\\Source Files"    FILES ${PGIS_SRCS})
 
 source_group("dataaccess\\Header Files" FILES ${DATAACCESS_HDRS})
-source_group("gdal\\Header Files"       FILES ${GDAL_HDRS})
-source_group("postgis\\Header Files"    FILES ${PGIS_HDRS})
+#source_group("gdal\\Header Files"       FILES ${GDAL_HDRS})
+#source_group("postgis\\Header Files"    FILES ${PGIS_HDRS})
 
 # Select the include directories
 include_directories(${ROOT}/src ${DEP_INCLUDES})
 
-add_executable(${PROJ_NAME} ${DATAACCESS_SRCS} ${DATAACCESS_HDRS}
-               ${GDAL_SRCS} ${GDAL_HDRS}
-               ${PGIS_SRCS} ${PGIS_HDRS})
+add_executable(${PROJ_NAME} ${DATAACCESS_SRCS} ${DATAACCESS_HDRS} )
+ #              ${GDAL_SRCS} ${GDAL_HDRS}
+ #              ${PGIS_SRCS} ${PGIS_HDRS})
                
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 
