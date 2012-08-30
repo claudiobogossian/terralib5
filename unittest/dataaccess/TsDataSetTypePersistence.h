@@ -81,6 +81,7 @@ class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcRemoveCheckConstraint );
   CPPUNIT_TEST( tcRemoveDataSetType );
   CPPUNIT_TEST( tcRenameDataSetTypeCloned );
+  CPPUNIT_TEST( tcRemoveDataSetTypeCloned );
   CPPUNIT_TEST( tcRemoveDataSetTypeWithFk );
 
   CPPUNIT_TEST_SUITE_END();
