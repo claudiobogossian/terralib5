@@ -94,20 +94,20 @@ namespace te
     TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<size_t>& vectd);
 
     /*!
-      \brief Converts a property tree node into a  std::vector<vector<std::string>>.
+      \brief Converts a property tree node into a  std::vector<vector<std::string> >.
 
-      \param p    A node that can be converted to a std::vector<vector<std::string>>.
+      \param p    A node that can be converted to a std::vector<vector<std::string> >.
       \param vect The vector  to output the values.
     */
-    TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::vector<double>>& vect);
+    TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::vector<double> >& vect);
 
      /*!
-      \brief Converts a property tree node into a  std::vector<std::map<std::string, std::string>>.
+      \brief Converts a property tree node into a  std::vector<std::map<std::string, std::string> >.
 
-      \param p    A node that can be converted to a std::vector<std::map<std::string, std::string>>.
+      \param p    A node that can be converted to a std::vector<std::map<std::string, std::string> >.
       \param vect The vector  to output the values.
     */
-    TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string>>& vectm);
+    TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string> >& vectm);
   } // end namespace common
 }   // end namespace te
 

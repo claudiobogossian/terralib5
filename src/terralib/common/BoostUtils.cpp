@@ -76,7 +76,7 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::vector<size_
   }
 }
 
-void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::vector<double>>& vect)
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::vector<double> >& vect)
 {
   BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
   {
@@ -89,7 +89,7 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::
       //    double  d[4]={0.0,0.0,0.0,0.0}; int i=0;
       //    for(it = envrep.begin(); it < envrep.end(); it++)
       //     {
-      //         d[i] = (*it);       
+      //         d[i] = (*it);
       //         i+= 1;
       //     }
       //}
@@ -98,7 +98,7 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::
   }
 }
 
-void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string>>& vectm)
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string> >& vectm)
 {
   BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
   {
