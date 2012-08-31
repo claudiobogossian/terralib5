@@ -160,8 +160,11 @@ file (
   ${SRCDIR}/widgets/srs/SRSDialog.h
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
   ${SRCDIR}/widgets/dataview/TabularViewer.h
-  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.h
+#  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
+
+  
+
 
 # Select the FORMS widgets     
 file(
@@ -185,7 +188,19 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
 	
+#set (SRCS_TO_MOC ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp)  
+  
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
+#qt4_generate_moc("${SRCDIR}/widgets/dataview/TabularViewer.cpp" ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp OPTIONS "-f" )
+#qt4_automoc("${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp")
+#qt4_wrap_cpp( MOC2 "${SRCDIR}/widgets/dataview/TabularViewer.cpp" OPTIONS "-o" "${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp" "-f" )
+
+set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
+
+#set (MOC_OPTIONS "-f"  )
+
+QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-f")
+
 qt4_wrap_ui(UI ${FORMS})
 qt4_add_resources( RSC_IMG "${ROOT}/images/terra_icons.qrc")
 
@@ -196,14 +211,16 @@ install (
 )
 
 source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${MOC} ${UI} ${RSC_IMG})
+source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI} ${RSC_IMG})
 
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}" "${ROOT}/images")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 
-list (APPEND SRCS "${MOC}" "${UI}" "${RSC_IMG}")
+list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${RSC_IMG}")
+
+list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 
 #exporting module information
 exportModuleInformation("qtwidgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")

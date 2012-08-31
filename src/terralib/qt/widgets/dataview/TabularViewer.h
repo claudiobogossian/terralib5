@@ -87,9 +87,10 @@ namespace te
         */
         enum HLGroups
         {
-          Query_Items,          //!< Queried items.
-          Point_Items,          //!< Pointed items.
-          Query_and_Point_Items //!< Pointed and queried itenm.
+          Query_Items,            //!< Queried items.
+          Point_Items,            //!< Pointed items.
+          Query_and_Point_Items,  //!< Pointed and queried items.
+          UserType                //!< Types defined by user.
         };
 
         /*!
@@ -121,6 +122,12 @@ namespace te
         */
         ~TabularViewer();
         //@}
+
+        /*!
+          \brief Updates the popup menus. This method MUST BE called when a new item delegate has been set, 
+          otherwise the popups may not reflect the viewer attributes.
+        */
+        void updatePopupMenus();
 
         /*!
           \brief Returns a set containing the identifiers of the groups promoted.
@@ -180,42 +187,11 @@ namespace te
         //@{
 
         /*!
-          \brief Updates the color of pointed objects.
-          \param c New color for highlight pointed objects.
-        */
-        void setPointedObjectsColor(const QColor& c);
-
-        /*!
-          \brief Adds a set of objects to the existing set of pointed objects
-          \param objIds The collection of object identifiers to be added to the set of the pointed objects.
-        */
-        void addPointedObjects(const std::set<std::string>& objIds);
-
-        /*!
-          \overload void TabularViewer::addPointedObjects(const std::vector<int> rows)
+          \brief Points the rows in the vector.
           \param rows Rows to be pointed.
           \exception If any row is out of table boundaries a te::common::Exception will be raised.
         */
-        void addPointedObjects(const std::vector<int>& rows);
-
-        /*!
-          \brief Updates the color of pointed objects.
-          \param c New color for highlight pointed objects.
-        */
-        void setQueriedObjectsColor(const QColor& c);
-
-        /*!
-          \brief Adds a set of objects to the existing set of pointed objects
-          \param objIds The collection of object identifiers to be added to the set of the pointed objects.
-        */
-        void addQueriedObjects(const std::set<std::string>& objIds);
-
-        /*!
-          \brief Updates the color of pointed objects.
-          \param c New color for highlight pointed objects.
-        */
-        void setPointedAndQueriedObjectsColor(const QColor& c);
-        //@}
+        void pointObjects(const std::vector<int>& rows);
 
         /*! 
           \name Clear highlighted objects.
@@ -229,21 +205,6 @@ namespace te
           \brief Clear all highlight of each group.
         */
         void resetHighlights();
-
-        /*!
-          \brief Clear pointed objects.
-        */
-        void resetPointed();
-
-        /*!
-          \brief Clear queried objects.
-        */
-        void resetQueried();
-
-        /*!
-          \brief Clear pointed and queried objects.
-        */
-        void resetPointedAndQueried();
         //@}
 
         /*! 
@@ -273,39 +234,49 @@ namespace te
         void promoteHighlighted();
 
         /*!
-          \brief Promote pointed objects.
-        */
-        void promotePointed();
-
-        /*!
-          \brief Promote queried objects.
-        */
-        void promoteQueried();
-
-        /*!
-          \brief Promote pointed and queried objects.
-        */
-        void promotePointedAndQueried();
-
-        /*!
           \brief Removes promotion of all groups.
         */
         void resetPromote();
+        //@}
 
         /*!
-          \brief Removes promotion of pointed objects.
+          \name Low level functions
+          \details Functions used for manipulate other groups than the default one.
+          This function MUST be used only if the client uses other te::qt::widgets::HLDelegateDecorator
+          than the default one.
         */
-        void resetPointedPromote();
+        //@{
+        /*!
+          \brief Updates the objects in a group of highlighted items.
+          \param g The highlight group.
+          \param ids List of identifiers to be the group.
+        */
+        void setHighlightObjects(const int& g, const std::set<std::string>& ids);
 
         /*!
-          \brief Removes promotion of queried objects.
+          \brief Removes objects from the group of highlighted.
+          \param g Group to be reset.
         */
-        void resetQueriedPromote();
+        void clearHighlighted(const int& g);
 
         /*!
-          \brief Removes promotion of pointed and queried objects.
+          \brief Updates the color of highlight of a group of items.
+          \param g The highlight group.
+          \param c The new color of the group.
         */
-        void resetPointedAndQueriedPromote();
+        void setHighlightColor(const int& g, const QColor& c);
+
+        /*!
+          \brief Removes the promotion of group \a g.
+          \param g Group identifier.
+        */
+        void resetPromoteHighlight(const int& g);
+
+        /*!
+          \brief Adds promotion to the group \a g.
+          \param g Group identifier.
+        */
+        void addPromoteHighlight(const int& g);
         //@}
 
         /*!
@@ -327,40 +298,7 @@ namespace te
 
       protected:
 
-        /*!
-          \brief Updates the objects in a group of highlighted items.
-          \param g The highlight group.
-          \param ids List of identifiers to be the group.
-        */
-        void setHighlightObjects(const HLGroups& g, const std::set<std::string>& ids);
-
-        /*!
-          \brief Removes objects from the group of highlighted.
-          \param g Group to be reset.
-        */
-        void clearHighlighted(const HLGroups& g);
-
-        /*!
-          \brief Updates the color of highlight of a group of items.
-          \param g The highlight group.
-          \param c The new color of the group.
-        */
-        void setHighlightColor(const HLGroups& g, const QColor& c);
-
-        /*!
-          \brief Removes the promotion of group \a g.
-          \param g Group identifier.
-        */
-        void resetPromoteHighlight(const HLGroups& g);
-
-        /*!
-          \brief Adds promotion to the group \a g.
-          \param g Group identifier.
-        */
-        void addPromoteHighlight(const HLGroups& g);
-
         te::qt::widgets::DataSetModel* m_model;           //!< Model for te::da::DataSet.
-        te::qt::widgets::HLDelegateDecorator* m_delegate; //!< Delegate for te::da::DataSet.
         te::map::AbstractTable* m_table;                  //!< Table to use with model.
         std::set<size_t> m_promotedGroups;                //!< Contains the groups that have been promoted.
         DataViewPopupFilter* m_menu_filter;               //!< Menus selector.

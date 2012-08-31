@@ -20,6 +20,21 @@ namespace te
       {
       }
 
+      HighlightDelegate* HLDelegateDecorator::clone ()
+      {
+        HLDelegateDecorator* r = 0;
+
+        if(m_decorated != 0)
+        {
+          r = new HLDelegateDecorator(m_decorated->clone());
+          r->m_delDecorated = m_delDecorated;
+        }
+
+        r->copyAttributes(this);
+
+        return r;
+      }
+
       void HLDelegateDecorator::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
       {
         if(!index.isValid())
@@ -61,40 +76,42 @@ namespace te
 
       HighlightDelegate* HLDelegateDecorator::getDecorated(const size_t& pos)
       {
-        if(pos == 0)
+        size_t lim = this->getNumberOfClasses()-1;
+
+        if(pos == lim)
           return this;
 
-        if((m_decorated == 0) && (pos > 0))
+        if((m_decorated == 0) && (pos > lim))
           throw te::common::Exception(tr("Delegate position out of boundaries.").toAscii().data());
 
         HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(m_decorated);
 
         if(del == 0)
         {
-          if(pos > 1)
+          if(pos > lim)
             throw te::common::Exception(tr("Delegate position out of boundaries.").toAscii().data());
 
           return m_decorated;
         }
 
-        return del->getDecorated(pos -1);
+        return del->getDecorated(pos);
       }
 
-      size_t HLDelegateDecorator::getGroupPosition(const std::string& pKey) const
+      int HLDelegateDecorator::getGroupPosition(const std::string& pKey) const
       {
         std::set<std::string>::iterator it = m_hlOids.find(pKey);
 
         if(it == m_hlOids.end())
         {
           if(m_decorated == 0)
-            return 0;
+            return -1;
 
           HLDelegateDecorator* aux = dynamic_cast<HLDelegateDecorator*>(m_decorated);
 
-          return (aux != 0) ? (aux->getGroupPosition(pKey) + 1) : 1;
+          return (aux != 0) ? (aux->getGroupPosition(pKey)) : -1;
         }
 
-        return 0;
+        return (int)this->getNumberOfClasses()-1;
       }
 
       size_t HLDelegateDecorator::getNumberOfClasses() const

@@ -28,6 +28,8 @@
 
 //! Forward declarations
 class QLineEdit;
+class QAction;
+
 namespace te
 {
   namespace qt
@@ -49,15 +51,20 @@ public:
 
 protected slots:
 
+  void addHighlight(QAction* action);
+
   void addQueriedClicked();
 
 signals:
 
   void queryItems(const std::set<std::string>&);
 
+  void updateHighlight(const int&, const std::set<std::string>&);
+
 protected:
 
   QLineEdit* m_queried;
+  QLineEdit* m_starred;
 };
 
 #endif //__TERRALIB_EXAMPLE_HIGHLIGHTEDINFO_H

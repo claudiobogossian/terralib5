@@ -1,17 +1,18 @@
 #include "HighlightedInfo.h"
 
 //! TerraLib include files
-#include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
 #include <terralib/qt/widgets/dataview/TabularViewer.h>
+#include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
 
 //! Qt include files
 #include <QGridLayout>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <QPushButton>
+#include <QToolButton>
 #include <QLabel>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QAction>
 
 std::set<std::string> getIdsList(const QString& ids)
 {
@@ -25,78 +26,50 @@ std::set<std::string> getIdsList(const QString& ids)
   return idList;
 }
 
-QGroupBox* getGroupBox(HighlightedInfo* dlg, te::qt::widgets::TabularViewer* v, QLineEdit* ids, const int& grp)
+QGroupBox* getGroupBox(HighlightedInfo* dlg, te::qt::widgets::TabularViewer* v, QLineEdit* ids, te::qt::widgets::HLDelegateDecorator* dec, int grp)
 {
+  if(dec == 0)
+    return 0;
+
+  te::qt::widgets::HighlightDelegate* d = dec->getDecorated(grp);
+
   QGroupBox* grpBox = new QGroupBox(dlg);
   QLabel* lbl = new QLabel(grpBox);
   ids->setParent(grpBox);
-  QPushButton* btn = new QPushButton(grpBox);
-  //QPushButton* btn2 = new QPushButton(QObject::tr("Promote"), grpBox);
-  //QPushButton* btn3 = new QPushButton(QObject::tr("Reset promote"), grpBox);
-  //QPushButton* btn4 = new QPushButton(QObject::tr("Reset highlight"), grpBox);
-//  te::qt::widgets::ColorPickerToolButton* cbtn = new te::qt::widgets::ColorPickerToolButton(grpBox);
+  QToolButton* btn = new QToolButton(grpBox);
+  QAction* act = new QAction(btn);
+  btn->setDefaultAction(act);
 
   QHBoxLayout* h_lay = new QHBoxLayout(grpBox);
   h_lay->addWidget(lbl);
   h_lay->addWidget(ids);
   h_lay->addWidget(btn);
-  //h_lay->addWidget(btn2);
-  //h_lay->addWidget(btn3);
-  //h_lay->addWidget(btn4);
-//  h_lay->addWidget(cbtn);
 
-  switch(grp)
-  {
-    case te::qt::widgets::TabularViewer::Point_Items:
-      grpBox->setTitle(QObject::tr("Pointed data configuration"));
-      lbl->setText(QObject::tr("Pointed ids: "));
-      btn->setText(QObject::tr("Update pointed"));
-      dlg->connect(btn, SIGNAL(clicked()), SLOT(addPointedClicked()));
-//      v->connect(cbtn, SIGNAL(colorChanged(const QColor&)), SLOT(setPointedObjectsColor(const QColor&)));
-      v->connect(dlg, SIGNAL(pointItems(const std::set<std::string>&)), SLOT(addPointedObjects(const std::set<std::string>&)));
-      //v->connect(btn2, SIGNAL(clicked()), SLOT(promotePointed()));
-      //v->connect(btn3, SIGNAL(clicked()), SLOT(resetPointedPromote()));
-      //v->connect(btn4, SIGNAL(clicked()), SLOT(resetPointed()));
-    break;
+  QString gName = d->getGroupName();
 
-    case te::qt::widgets::TabularViewer::Query_Items:
-      grpBox->setTitle(QObject::tr("Queried data configuration"));
-      lbl->setText(QObject::tr("Queried ids: "));
-      btn->setText(QObject::tr("Update"));
-      dlg->connect(btn, SIGNAL(clicked()), SLOT(addQueriedClicked()));
-      v->connect(dlg, SIGNAL(queryItems(const std::set<std::string>&)), SLOT(addQueriedObjects(const std::set<std::string>&)));
-      //v->connect(btn2, SIGNAL(clicked()), SLOT(promoteQueried()));
-      //v->connect(btn3, SIGNAL(clicked()), SLOT(resetQueriedPromote()));
-      //v->connect(btn4, SIGNAL(clicked()), SLOT(resetQueried()));
-    break;
+  grpBox->setTitle(gName + QObject::tr(" data configuration"));
+  lbl->setText(gName + QObject::tr(" ids: "));
+  act->setText(QObject::tr("Update ")+gName);
+  act->setData(QVariant(grp));
 
-    case te::qt::widgets::TabularViewer::Query_and_Point_Items:
-      grpBox->setTitle(QObject::tr("Pointed / queried data configuration"));
-      lbl->setText(QObject::tr("Pointed / queried ids: "));
-      btn->setText(QObject::tr("Update pointed / queried"));
-      dlg->connect(btn, SIGNAL(clicked()), SLOT(addPointedAndQueriedClicked()));
-//      v->connect(cbtn, SIGNAL(colorChanged(const QColor&)), SLOT(setPointedAndQueriedObjectsColor(const QColor&)));
-      v->connect(dlg, SIGNAL(pointAndQueryItems(const std::set<std::string>&)), SLOT(addPointedAndQueriedObjects(const std::set<std::string>&)));
-      //v->connect(btn2, SIGNAL(clicked()), SLOT(promotePointedAndQueried()));
-      //v->connect(btn3, SIGNAL(clicked()), SLOT(resetPointedAndQueriedPromote()));
-      //v->connect(btn4, SIGNAL(clicked()), SLOT(resetPointedAndQueried()));
-    break;
-  };
+  dlg->connect(btn, SIGNAL(triggered(QAction*)), SLOT(addHighlight(QAction*)));
+  v->connect(dlg, SIGNAL(updateHighlight(const int&, const std::set<std::string>&)), SLOT(setHighlightObjects(const int&, const std::set<std::string>&)));
 
   return grpBox;
 }
 
-void makeDialog(HighlightedInfo* dlg, te::qt::widgets::TabularViewer* v, QLineEdit* ids)
+void makeDialog(HighlightedInfo* dlg, te::qt::widgets::TabularViewer* v, QLineEdit* qids, QLineEdit* sids)
 {
 //  QGroupBox* pBox = getGroupBox(dlg, v, hl_ids, HighlightedInfo::pointed);
-  QGroupBox* qBox = getGroupBox(dlg, v, ids, te::qt::widgets::TabularViewer::Query_Items);
+  QGroupBox* qBox = getGroupBox(dlg, v, qids, dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(v->itemDelegate()), te::qt::widgets::TabularViewer::Query_Items);
+  QGroupBox* sBox = getGroupBox(dlg, v, sids, dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(v->itemDelegate()), 3);
 //  QGroupBox* pqBox = getGroupBox(dlg, v, hl_ids, HighlightedInfo::pointed_and_queried);
   QSpacerItem* spacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
   QVBoxLayout* v_lay = new QVBoxLayout;
 //  v_lay->addWidget(pBox);
   v_lay->addWidget(qBox);
-//  v_lay->addWidget(pqBox);
+  v_lay->addWidget(sBox);
   v_lay->addItem(spacer);
 
   QGridLayout* grd = new QGridLayout(dlg);
@@ -106,8 +79,10 @@ void makeDialog(HighlightedInfo* dlg, te::qt::widgets::TabularViewer* v, QLineEd
 HighlightedInfo::HighlightedInfo(te::qt::widgets::TabularViewer* v, QWidget* parent) :
 QWidget(parent)
 {
-  m_queried = new QLineEdit;
-  makeDialog(this, v, m_queried);
+  m_queried = new QLineEdit(this);
+  m_starred = new QLineEdit(this);
+
+  makeDialog(this, v, m_queried, m_starred);
 }
 
 void HighlightedInfo::addQueriedClicked()
@@ -116,4 +91,14 @@ void HighlightedInfo::addQueriedClicked()
 
   if(!txt.isEmpty())
     emit queryItems(getIdsList(txt));
+}
+
+void HighlightedInfo::addHighlight(QAction* action)
+{
+  int act = action->data().toInt();
+
+  QString txt = (act == te::qt::widgets::TabularViewer::Query_Items) ? m_queried->text() : m_starred->text();
+
+  if(!txt.isEmpty())
+    emit updateHighlight(act, getIdsList(txt));
 }

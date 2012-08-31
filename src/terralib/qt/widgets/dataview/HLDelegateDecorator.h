@@ -62,9 +62,14 @@ namespace te
       {
       public:
         /*!
-          \brief Destructor.
+          \brief Virtual Destructor.
         */
-        ~HLDelegateDecorator();
+        virtual ~HLDelegateDecorator();
+
+        /*!
+          \brief
+        */
+        virtual HighlightDelegate* clone ();
 
         /*!
           \overload void te::qt::widgets::HLDelegateDecorator::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -143,9 +148,9 @@ namespace te
           Note that the last position corresponds to default group.
 
           \param pKey Identifier of the register to be searched.
-          \return Index of the class that the identifier was associated.
+          \return Index of the class that the identifier was associated, or -1 with no group found.
         */
-        size_t getGroupPosition(const std::string& pKey) const;
+        int getGroupPosition(const std::string& pKey) const;
 
         /*!
           \brief Returns the number of classes including the default one.
@@ -165,6 +170,10 @@ namespace te
         */
         static HighlightDelegate* getDelegate(const size_t& numClasses);
 
+        /*!
+          \brief Clones the delegate informations.
+        */
+//        static HLDelegateDecorator* clone(HLDelegateDecorator* other);
 
       protected:
         /*!

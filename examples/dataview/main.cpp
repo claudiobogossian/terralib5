@@ -22,7 +22,8 @@
 //! TerraLib include files
 #include <terralib/common/TerraLib.h>
 #include <terralib/common/Exception.h>
-#include <terralib/qt/widgets/dataview/TabularViewer.h>
+#include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
+//#include <terralib/qt/widgets/dataview/TabularViewer.h>
 
 //! Qt include files
 #include <QApplication>
@@ -37,8 +38,8 @@ int main(int argc, char** argv)
 
     QApplication app(argc, argv);
 
-    TabularViewerEx* win = new TabularViewerEx;
-    win->show();
+    TabularViewerEx win;
+    win.show();
 
     res = app.exec();
   }

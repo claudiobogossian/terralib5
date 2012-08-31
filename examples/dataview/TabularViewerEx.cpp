@@ -1,6 +1,7 @@
 #include "TabularViewerEx.h"
 #include "SelectPKey.h"
 #include "HighlightedInfo.h"
+#include "StarDelegate.h"
 
 //! TerraLib include files
 #include <terralib/qt/widgets/utils/FileChooser.h>
@@ -128,6 +129,19 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
   QVBoxLayout* vlay = new QVBoxLayout;
   QGridLayout* grdLay = new QGridLayout(wid);
 
+  //! Inserting a custom delegate.
+  te::qt::widgets::HighlightDelegate* del = (te::qt::widgets::HighlightDelegate*)tv->itemDelegate();
+  StarDelegate* st = new StarDelegate(del->clone());
+
+  st->setClassColor(3, QColor(23, 27, 8));
+  st->setParent(tv);
+  tv->setItemDelegate(st);
+  tv->updatePopupMenus();
+
+  fc->setInitialPath(QString::fromStdString(""TE_DATA_EXAMPLE_LOCALE"/data/shp"));  
+
+  delete del;
+
   vlay->addWidget(fc);
   vlay->addWidget(btn);
   vlay->addWidget(tv);
@@ -146,9 +160,8 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
   tab->setTabEnabled(2, false);
 
   //! Connecting slots
-  tv->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(setPrimaryKeys(const std::vector<size_t>&)));
-
   wd->connect(btn, SIGNAL(pressed()), SLOT(updateViewer()));
+  tv->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(setPrimaryKeys(const std::vector<size_t>&)));
   wd->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(pkeysChanged(const std::vector<size_t>&)));
 }
 

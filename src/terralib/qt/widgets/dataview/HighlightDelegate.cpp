@@ -16,6 +16,14 @@ namespace te
       {
       }
 
+      HighlightDelegate* HighlightDelegate::clone ()
+      {
+        HighlightDelegate* cl = new HighlightDelegate(parent());
+        cl->copyAttributes(this);
+
+        return cl;
+      }
+
       void HighlightDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
       {
         if(!index.isValid())
@@ -107,6 +115,15 @@ namespace te
       {
         std::string key = getPKey(idx);
         return (!key.empty() && m_enabled && (m_hlOids.find(key) != m_hlOids.end()));
+      }
+
+      void HighlightDelegate::copyAttributes(HighlightDelegate* other)
+      {
+        m_color = other->m_color;
+        m_enabled = other->m_enabled;
+        m_grp_name = other->m_grp_name;
+        m_hlOids = other->m_hlOids;
+        m_pkeys = other->m_pkeys;
       }
     } // namespace te::qt::widgets
   } // namespace te::qt

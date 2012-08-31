@@ -73,6 +73,11 @@ namespace te
         virtual ~HighlightDelegate();
         //@}
 
+        /*!
+          \brief
+        */
+        virtual HighlightDelegate* clone ();
+
         /** @name QStyledItemDelegate re-implementation methods.
         *  Re-implementation of QStyledItemDelegate methods.
         */
@@ -102,7 +107,7 @@ namespace te
         /*! 
           \brief Update color used to highlight a row.    
         */
-        void setHighlightColor(const QColor & value);
+        virtual void setHighlightColor(const QColor & value);
 
         /*! 
           \brief Returns the color being used.
@@ -154,6 +159,8 @@ namespace te
       protected:
 
         bool toHighlight(const QModelIndex& idx) const;
+
+        void copyAttributes(HighlightDelegate* other);
 
         std::vector<size_t> m_pkeys;    //!< Primary keys positions.    
         std::set<std::string> m_hlOids; //!< Set of primary keys of the data set.    

@@ -92,7 +92,7 @@ namespace te
           \brief Defines the filter for files of interest.
 
           This can be used to restrict the seach for different kinds of files.  
-          The must use something like "Images(*.png *.bmp) Text files(*.txt)"
+          The client must use something like "Images(*.png *.bmp) Text files(*.txt)".
 
           Example:
           \code{.cpp}
@@ -124,10 +124,6 @@ namespace te
           \brief Shows the file selection dialog.
         */
         void onChooseFileToolButtonClicked();
-
-        void showIndex(const QModelIndex& idx);
-
-        void showPath(const QString& path);
 
       protected:
 
