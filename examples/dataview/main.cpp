@@ -17,56 +17,38 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*!
-  \file main.cpp
+#include "TabularViewerEx.h"
 
-  \brief A list of examples for the TerraLib Qt Canvas.
- */
-
-// TerraLib
+//! TerraLib include files
 #include <terralib/common/TerraLib.h>
-#include "QtCanvasExamples.h"
+#include <terralib/common/Exception.h>
+#include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
+//#include <terralib/qt/widgets/dataview/TabularViewer.h>
 
-// STL
-#include <exception>
-#include <iostream>
-#include <cstdlib>
+//! Qt include files
+#include <QApplication>
 
-int main(int /*argc*/, char** /*argv*/)
+int main(int argc, char** argv)
 {
-// initialize Terralib support
-  TerraLib::getInstance().initialize();
+  int res;
 
-// It initializes all the data source drivers (see LoadModule.cpp)
   try
   {
-    LoadModules();
-    //DrawingRasterObject();
-    DrawingGeometricObjects();
-    DrawPNG();
+    TerraLib::getInstance().initialize();
+
+    QApplication app(argc, argv);
+
+    TabularViewerEx win;
+    win.show();
+
+    res = app.exec();
   }
-  catch(const std::exception& e)
+  catch(te::common::Exception&)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-
-    return EXIT_FAILURE;
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
-
-    std::cout << "Press Enter to exit..." << std::endl;
-    std::cin.get();
-
-    return EXIT_FAILURE;
+    return -1;
   }
 
-// shutdown Terralib support
   TerraLib::getInstance().finalize();
 
-  return EXIT_SUCCESS;
+  return res;
 }
-

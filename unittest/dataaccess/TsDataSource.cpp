@@ -30,7 +30,26 @@
 
 // Unit-Test TerraLib
 #include "TsDataSource.h"
+#include "TsManagerDataSource.h"
 
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TsDataSource );
+
+void TsDataSource::setUp()
+{  
+  m_ds = TsManagerDataSource::sm_datasource;
+  m_connInfo = TsManagerDataSource::sm_connInfo;
+  m_dsType = TsManagerDataSource::sm_dsType;
+  m_connInfoNewDs  = TsManagerDataSource::sm_connInfoNewDs;
+  m_connInfoDropDs = TsManagerDataSource::sm_connInfoDropDs;
+  m_connStr = TsManagerDataSource::sm_connStr;
+
+}
+
+void TsDataSource::tearDown()
+{
+  m_ds = 0;
+}
 
 void TsDataSource::tcGetType()
 {
@@ -40,17 +59,21 @@ void TsDataSource::tcGetType()
 //#endif
 }
 
-void TsDataSource::tcOpen()
+void TsDataSource::tcOpenWithMap()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds);
-  CPPUNIT_ASSERT_NO_THROW(m_ds->open());
-
-
-
+  CPPUNIT_ASSERT_NO_THROW(m_ds->open(m_connInfo));
 //#endif
 }
 
+void TsDataSource::tcOpenWithStr()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds);
+  CPPUNIT_ASSERT_NO_THROW(m_ds->open(m_connStr));
+//#endif
+}
 void TsDataSource::tcClose()
 {
 //#ifdef TE_COMPILE_ALL
@@ -121,7 +144,6 @@ void TsDataSource::tcGetCatalogFull()
   CPPUNIT_ASSERT(ct);
   CPPUNIT_ASSERT(ct->getNumberOfDataSets() != 0);
 
-
 //#endif
 }
 
@@ -147,6 +169,25 @@ void TsDataSource::tcGetTransactor()
 //#endif
 }
 
+void TsDataSource::tcGetConnectionInfo()
+{
+//#ifdef TE_COMPILE_ALL
+  std::map<std::string, std::string>  connInfo;
+  connInfo = m_ds->getConnectionInfo();
+  size_t size_connInfo = connInfo.size();
+
+  CPPUNIT_ASSERT(size_connInfo > 0);
+
+//#endif
+}
+
+void TsDataSource::tcExist()
+{
+//#ifdef TE_COMPILE_ALL
+  CPPUNIT_ASSERT(m_ds->exists(m_dsType, m_connInfo)== true);
+//#endif
+
+}
 void TsDataSource::tcCreate()
 {
 //#ifdef TE_COMPILE_ALL
@@ -175,33 +216,16 @@ void TsDataSource::tcDrop()
 //#endif
 }
 
-//===========New methods
-
-void TsDataSource::tcOpenWithMap()
+void TsDataSource::tcGetConnectionStr()
 {
 //#ifdef TE_COMPILE_ALL
+  std::string conn;
   CPPUNIT_ASSERT(m_ds);
-  CPPUNIT_ASSERT_NO_THROW(m_ds->open(m_connInfo));
+  conn = m_ds->getConnectionStr();
+  CPPUNIT_ASSERT(conn.size() != 0);
 //#endif
 }
 
-void TsDataSource::tcOpenWithString()
-{
-//#ifdef TE_COMPILE_ALL
-//#endif
-}
-
-void TsDataSource::tcGetConnectionInfo()
-{
-//#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>  connInfo;
-  connInfo = m_ds->getConnectionInfo();
-  size_t size_connInfo = connInfo.size();
-
-  CPPUNIT_ASSERT(size_connInfo > 0);
-
-//#endif
-}
 void TsDataSource::tcSetConnectionInfo()
 {
 //#ifdef TE_COMPILE_ALL
@@ -215,18 +239,15 @@ void TsDataSource::tcSetConnectionInfo()
 //#endif
 }
 
-void TsDataSource::tcGetConnectionStr()
-{
-//#ifdef TE_COMPILE_ALL
-  std::string conn;
-  CPPUNIT_ASSERT(m_ds);
-  conn = m_ds->getConnectionStr();
-  CPPUNIT_ASSERT(conn.size() != 0);
-//#endif
-}
 void TsDataSource::tcSetConnectionStr()
 {
 //#ifdef TE_COMPILE_ALL
+  std::string  connStr;
+  CPPUNIT_ASSERT(m_ds);
+  m_ds->setConnectionStr(m_connStr);
+  connStr = m_ds->getConnectionStr();
+  CPPUNIT_ASSERT(connStr == m_connStr);
+
 //#endif
 }
 

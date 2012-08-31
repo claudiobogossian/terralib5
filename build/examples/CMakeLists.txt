@@ -39,6 +39,7 @@ option (EXAMPLE_COMMON "Build common example." ON)
 option (EXAMPLE_PLUGIN_HELLOWORLD "Build plugin hello world example." ON)  
 option (EXAMPLE_DATAACCESS "Build data access example." ON)  
 option (EXAMPLE_DATAGRID "Build data grid example." ON)  
+option (EXAMPLE_DATAVIEW "Build data view example." ON)  
 option (EXAMPLE_DATASETMANAGEMENT "Build data set management example." ON)  
 option (EXAMPLE_FACTORY "Build factory example." ON)  
 option (EXAMPLE_GEOMETRY "Build geometry example." ON)  
@@ -80,6 +81,10 @@ endif()
 
 if(EXAMPLE_DATAACCESS)
   add_subdirectory(terralib_example_dataaccess)
+endif()
+
+if(EXAMPLE_DATAVIEW)
+  add_subdirectory(terralib_example_dataview)
 endif()
 
 if(EXAMPLE_DATAGRID)

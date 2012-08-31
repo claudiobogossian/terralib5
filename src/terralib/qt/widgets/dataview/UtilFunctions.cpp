@@ -1,0 +1,510 @@
+#include "TabularViewer.h"
+
+#include <terralib/common/Exception.h>
+#include <terralib/dataaccess/dataset/DataSet.h>
+#include <terralib/dataaccess/dataset/DataSetType.h>
+#include <terralib/dataaccess/dataset/PrimaryKey.h>
+#include <terralib/maptools/PromoTable.h>
+#include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
+#include "HLDelegateDecorator.h"
+
+#include <QContextMenuEvent>
+#include <QMenu>
+#include <QWidgetAction>
+#include <QHeaderView>
+
+#include <set>
+#include <vector>
+
+QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* mainMnu)
+{
+  te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
+
+  if(dec == 0)
+    return 0;
+
+  size_t nGrps = dec->getNumberOfClasses();
+
+  if(nGrps == 0)
+    return 0;
+
+  QMenu* mnu = new QMenu(QObject::tr("Set group color"), mainMnu);
+
+  for(size_t i=0; i<nGrps; i++)
+  {
+    te::qt::widgets::ColorPickerToolButton* btn = new te::qt::widgets::ColorPickerToolButton(mnu);
+    btn->setColor(dec->getDecorated(i)->getHighlightColor());
+
+    QWidgetAction* act = new QWidgetAction(mnu);
+    act->setDefaultWidget(btn);
+    mnu->addAction(act);
+    btn->setDefaultAction(act);
+    act->setText(dec->getDecorated(i)->getGroupName());
+    act->setData(QVariant((int)i));
+
+    filter->connect(btn, SIGNAL(colorChanged(const QColor&)), SLOT(colorChanged(const QColor&)));
+    mainMnu->connect(btn, SIGNAL(colorChanged(const QColor&)), SLOT(close()));
+  }
+
+  return mnu;
+}
+
+QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent)
+{
+  te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
+
+  if(dec == 0)
+    return 0;
+
+  size_t nGrps = dec->getNumberOfClasses();
+
+  if(nGrps == 0)
+    return 0;
+
+  std::set<size_t> grps = viewer->getPromotedGroups();
+
+  if(nGrps == grps.size())
+    return 0;
+
+  QMenu* mnu = new QMenu(QObject::tr("Promote"), parent);
+
+  for(size_t i=0; i<nGrps; i++)
+    if(grps.find(i) == grps.end())
+    {
+      QAction* act = new QAction(mnu);
+      QString gName = dec->getDecorated(i)->getGroupName();
+      act->setText(gName);
+      act->setToolTip(QObject::tr("Promote the ")+gName + QObject::tr(" objects."));
+      act->setData(QVariant((int)i));
+      mnu->addAction(act);
+    }
+
+  return mnu;
+}
+
+QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent)
+{
+  std::set<size_t> grps = viewer->getPromotedGroups();
+
+  if(grps.empty())
+    return 0;
+
+  te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
+
+  if(dec == 0)
+    return 0;
+
+  QMenu* mnu = new QMenu(QObject::tr("Reset promotion"), parent);
+
+  std::set<size_t>::iterator it;
+
+  for(it=grps.begin(); it!=grps.end(); ++it)
+  {
+    QAction* act = new QAction(mnu);
+    QString gName = dec->getDecorated(*it)->getGroupName();
+    act->setText(gName);
+    act->setToolTip(QObject::tr("Removes the promotion of the ")+gName + QObject::tr(" objects."));
+    act->setData(QVariant((int)*it));
+    mnu->addAction(act);
+  }
+
+  return mnu;
+}
+
+void makeHeaderMenu(QMenu*& mnu, QAction*& col, te::qt::widgets::TabularViewer* viewer, QObject* filter)
+{
+  mnu = new QMenu(viewer);
+
+  //! Hide column action definition.
+  QAction* act = new QAction(mnu);
+  act->setText(QObject::tr("Hide column"));
+  act->setToolTip(QObject::tr("Hides the selected column."));
+  mnu->addAction(act);
+  filter->connect(act, SIGNAL(triggered()), SLOT(hideCurrentColumn()));
+
+  //! Reset columns action definition.
+  act = new QAction(mnu);
+  act->setText(QObject::tr("Reset columns"));
+  act->setToolTip(QObject::tr("Turns all columns visible and changes to its original position."));
+  mnu->addAction(act);
+  viewer->connect(act, SIGNAL(triggered()), SLOT(resetColumns()));
+  col = act;
+}
+
+QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAction*& rset_hl, QAction*& prmAll, QAction*& reset_prmAll, QAction*& prm, QAction*& reset_prm)
+{
+  QMenu* mnu = new QMenu(viewer);
+
+  //! Promote actions
+  QAction* act = new QAction(mnu);
+  act->setText(QObject::tr("Promote all"));
+  act->setToolTip(QObject::tr("Promote all objects in all groups of highlighted objects."));
+  mnu->addAction(act);
+  viewer->connect(act, SIGNAL(triggered()), SLOT(promoteHighlighted()));
+
+  prmAll = act;
+  prm = mnu->addSeparator();
+  prm->setParent(mnu);
+
+  //! Reset promote actions
+  act = new QAction(mnu);
+  act->setText(QObject::tr("Reset all promotion"));
+  act->setToolTip(QObject::tr("Clear all promotions."));
+  mnu->addAction(act);
+  viewer->connect(act, SIGNAL(triggered()), SLOT(resetPromote()));
+
+  reset_prmAll = act;
+  reset_prm = mnu->addSeparator();
+  reset_prm->setParent(mnu);
+
+  mnu->addMenu(makeGroupColorMenu(viewer, filter, mnu));
+
+  mnu->addSeparator()->setParent(mnu);
+
+  //! Reset highlights actions
+  act = new QAction(mnu);
+  act->setText(QObject::tr("Clear all highlighted"));
+  act->setToolTip(QObject::tr("Clear all groups of highlighted objects."));
+  mnu->addAction(act);
+  viewer->connect(act, SIGNAL(triggered()), SLOT(resetHighlights()));
+
+  rset_hl = act;
+
+  return mnu;
+}
+
+QMenu* makeHiddenMenu(QHeaderView* view, QMenu* parent)
+{
+  if(!view->sectionsHidden())
+    return 0;
+
+  QMenu* mnu = new QMenu(QObject::tr("Show column"), parent);
+
+  for(int i=0; i<view->count(); i++)
+    if(view->isSectionHidden(i))
+    {
+      QString cName = view->model()->headerData(i, Qt::Horizontal, Qt::DisplayRole).toString();
+      QAction* act = new QAction(mnu);
+
+      act->setText(cName);
+      act->setData(QVariant(i));
+      act->setToolTip(QObject::tr("Turns column \"") + cName + "\" visible.");
+
+      mnu->addAction(act);
+    }
+
+  return mnu;
+}
+
+std::vector<size_t> getGrpsHLighted(te::qt::widgets::TabularViewer* viewer)
+{
+  std::vector<size_t> grps;
+  te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
+
+  if(dec != 0)
+  {
+    size_t nC = dec->getNumberOfClasses();
+
+    if(nC > 0)
+      for(size_t i=0; i<nC; i++)
+        if(!dec->getDecorated(i)->getHighlightKeys().empty())
+          grps.push_back(i);
+  }
+
+  return grps;
+}
+
+QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* parent)
+{
+  std::vector<size_t> hls = getGrpsHLighted(viewer);
+  
+  if(hls.empty())
+    return 0;
+
+  QMenu* mnu = new QMenu(QObject::tr("Clear group"), parent);
+
+  for(size_t i=0; i<hls.size(); i++)
+  {
+    QString gName = ((te::qt::widgets::HLDelegateDecorator*)viewer->itemDelegate())->getDecorated(hls[i])->getGroupName();
+    QAction* act = new QAction(gName, mnu);
+    act->setToolTip(QObject::tr("Removes the objects from the group of ")+gName+QObject::tr(" objects."));
+    act->setData(QVariant((int)hls[i]));
+    mnu->addAction(act);
+  }
+
+  filter->connect(mnu, SIGNAL(triggered(QAction*)), SLOT(clearGroup(QAction*)));
+
+  return mnu;
+}
+
+bool isAllPromoted(te::qt::widgets::TabularViewer* viewer)
+{
+  te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*> (viewer->itemDelegate());
+
+  if(dec == 0)
+    return false;
+
+  return (viewer->getPromotedGroups().size() == dec->getNumberOfClasses());
+}
+
+std::vector<size_t> getPKeysPositions(te::da::DataSet* dset)
+{
+  std::vector<size_t> res;
+
+  if(dset != 0)
+  {
+    te::da::DataSetType* type = dset->getType();
+    te::da::PrimaryKey* pk = type->getPrimaryKey();
+
+    if(pk != 0)
+    {
+      std::vector<te::dt::Property*> ps = pk->getProperties();
+      std::vector<te::dt::Property*>::iterator it;
+
+      for(it = ps.begin(); it != ps.end(); ++it)
+        res.push_back(type->getPropertyPosition(*it));
+    }
+  }
+
+  return res;
+}
+
+void updatePromotion(te::map::PromoTable* tbl, te::qt::widgets::HLDelegateDecorator* dec, const std::set<size_t>& promoGrps)
+{
+  if(dec == 0 || tbl == 0)
+    return;
+
+  std::set<size_t>::const_iterator it;
+  std::set<std::string>::iterator sit;
+  std::set<std::string> h_ids;
+  std::vector<std::string> ids; 
+
+  for(it = promoGrps.begin(); it != promoGrps.end(); ++it)
+  {
+    h_ids = dec->getDecorated(*it)->getHighlightKeys();
+
+    for(sit=h_ids.begin(); sit!=h_ids.end(); ++sit)
+      ids.push_back(*sit);
+  }
+
+  tbl->promoteRows(ids);
+}
+
+void addPromoted(te::map::AbstractTable* tbl, te::qt::widgets::HLDelegateDecorator* dec, std::set<size_t>& promoGrps, const size_t& grp)
+{
+  if(dec == 0)
+    return;
+
+  te::map::PromoTable* tblAux = dynamic_cast<te::map::PromoTable*>(tbl);
+
+  if(tblAux == 0)
+    return;
+
+  if(grp >= dec->getNumberOfClasses())
+    throw te::common::Exception(QObject::tr("Resquested group for promotion out of group boundaries.").toStdString());
+
+  if(promoGrps.find(grp) == promoGrps.end())
+    promoGrps.insert(grp);
+
+  updatePromotion(tblAux, dec, promoGrps);
+}
+
+void removePromoted(te::map::AbstractTable* tbl, te::qt::widgets::HLDelegateDecorator* dec, std::set<size_t>& promoGrps, const size_t& grp)
+{
+  if(dec == 0)
+    return;
+
+  te::map::PromoTable* tblAux = dynamic_cast<te::map::PromoTable*>(tbl);
+
+  if(tblAux == 0)
+    return;
+
+  if(grp >= dec->getNumberOfClasses())
+    throw te::common::Exception(QObject::tr("Resquested group for promotion out of group boundaries.").toStdString());
+
+  if(promoGrps.find(grp) == promoGrps.end())
+    return;
+
+  promoGrps.erase(grp);
+
+  updatePromotion(tblAux, dec, promoGrps);
+}
+
+void resetPromotion(te::map::AbstractTable* tbl)
+{
+  te::map::PromoTable* aux = dynamic_cast<te::map::PromoTable*>(tbl);
+
+  if(aux != 0)
+    updatePromotion(aux, 0, std::set<size_t>());
+}
+
+void promoteAll(te::map::AbstractTable* tbl, te::qt::widgets::HLDelegateDecorator* dec, std::set<size_t>& promoGrps)
+{
+  if(dec == 0)
+    return;
+
+  te::map::PromoTable* aux = dynamic_cast<te::map::PromoTable*>(tbl);
+
+  if(aux != 0)
+  {
+    promoGrps.clear();
+    for(size_t i=0; i<dec->getNumberOfClasses(); i++)
+      promoGrps.insert(i);
+
+    updatePromotion(aux, dec, promoGrps);
+  }
+}
+
+void resetHeaderOrder(QHeaderView* hdr)
+{
+  int nCols = hdr->count();
+
+  for(int i=0; i<nCols; i++)
+  {
+    int visCol = hdr->visualIndex(i);
+
+    if(visCol != i)
+      hdr->moveSection(visCol, i);
+  }
+}
+
+void setHeaderHidden(QHeaderView* hdr, const bool& status)
+{
+  int nCols = hdr->count();
+
+  for(int i=0; i<nCols; i++)
+    hdr->setSectionHidden(i, status);
+}
+
+void resetHeader(QHeaderView* hdr)
+{
+  setHeaderHidden(hdr, false);
+  resetHeaderOrder(hdr);
+}
+
+te::qt::widgets::HLDelegateDecorator* makeDefaultDelegate()
+{
+  te::qt::widgets::HLDelegateDecorator* del = (te::qt::widgets::HLDelegateDecorator*) te::qt::widgets::HLDelegateDecorator::getDelegate(3);
+  del->getDecorated(te::qt::widgets::TabularViewer::Point_Items)->setGroupName(QObject::tr("Pointed"));
+  del->getDecorated(te::qt::widgets::TabularViewer::Query_Items)->setGroupName(QObject::tr("Queried"));
+  del->getDecorated(te::qt::widgets::TabularViewer::Query_and_Point_Items)->setGroupName(QObject::tr("Queried and pointed"));
+
+  del->setClassColor(te::qt::widgets::TabularViewer::Point_Items, QColor(255, 0, 0));
+  del->setClassColor(te::qt::widgets::TabularViewer::Query_Items, QColor(0, 255, 0));
+  del->setClassColor(te::qt::widgets::TabularViewer::Query_and_Point_Items, QColor(0, 0, 255));
+
+  return del;
+}
+
+void updateGrp(std::vector< std::set<std::string> >& hlGroups, int grpIn, int grpOut, std::string id)
+{
+  if(grpOut != -1)
+    hlGroups[grpOut].erase(id);
+
+  hlGroups[grpIn].insert(id);
+}
+
+std::vector< std::set<std::string> > updateHighlightGroups(const std::set<std::string>& ids, const int& hlGroup, te::qt::widgets::HLDelegateDecorator* dec)
+{
+  if(dec == 0)
+    return std::vector< std::set<std::string> >();
+
+  std::vector< std::set<std::string> > hlGroups;
+  size_t nClasses = dec->getNumberOfClasses();
+  std::set<std::string>::const_iterator it;
+
+  for(size_t i=0; i<nClasses; i++)
+    hlGroups.push_back(dec->getDecorated(i)->getHighlightKeys());
+
+  for(it = ids.begin(); it!=ids.end(); ++it)
+  {
+    int grp = dec->getGroupPosition(*it);
+
+    switch(hlGroup)
+    {
+      case te::qt::widgets::TabularViewer::Point_Items:
+        switch(grp)
+        {
+          case te::qt::widgets::TabularViewer::Point_Items:
+            hlGroups[grp].erase(*it);
+          break;
+
+          case te::qt::widgets::TabularViewer::Query_Items:
+            hlGroups[grp].erase(*it);
+            hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].insert(*it);
+          break;
+
+          case te::qt::widgets::TabularViewer::Query_and_Point_Items:
+            hlGroups[grp].erase(*it);
+            hlGroups[te::qt::widgets::TabularViewer::Query_Items].insert(*it);
+          break;
+
+          default:
+            updateGrp(hlGroups, te::qt::widgets::TabularViewer::Point_Items, grp, *it); 
+          break;
+        };
+      break;
+
+      case te::qt::widgets::TabularViewer::Query_Items:
+        switch(grp)
+        {
+          case te::qt::widgets::TabularViewer::Point_Items:
+            hlGroups[grp].erase(*it);
+            hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].insert(*it);
+          break;
+
+          case te::qt::widgets::TabularViewer::Query_Items:
+          case te::qt::widgets::TabularViewer::Query_and_Point_Items:
+          break;
+
+          default:
+            updateGrp(hlGroups, te::qt::widgets::TabularViewer::Query_Items, grp, *it); 
+          break;
+        };
+      break;
+
+      default:
+        updateGrp(hlGroups, hlGroup, grp, *it); 
+      break;
+    }
+  }
+   
+  return hlGroups;
+}
+
+std::vector< std::set<std::string> > cleanHighlight(const int& hlGroup, te::qt::widgets::HLDelegateDecorator* dec)
+{
+  if(dec == 0)
+    return std::vector< std::set<std::string> >();
+
+  std::vector< std::set<std::string> > hlGroups;
+  size_t nClasses = dec->getNumberOfClasses();
+
+  for(size_t i=0; i<nClasses; i++)
+    hlGroups.push_back(dec->getDecorated(i)->getHighlightKeys());
+
+  switch(hlGroup)
+  {
+    case te::qt::widgets::TabularViewer::Point_Items:
+      hlGroups[te::qt::widgets::TabularViewer::Point_Items].clear();
+      if(!hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].empty())
+        hlGroups[te::qt::widgets::TabularViewer::Query_Items].insert(
+        hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].begin(), hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].end());
+      hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].clear();
+    break;
+
+    case te::qt::widgets::TabularViewer::Query_Items:
+      hlGroups[te::qt::widgets::TabularViewer::Query_Items].clear();
+      if(!hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].empty())
+        hlGroups[te::qt::widgets::TabularViewer::Point_Items].insert(
+        hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].begin(), hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].end());
+      hlGroups[te::qt::widgets::TabularViewer::Query_and_Point_Items].clear();
+    break;
+
+    default:
+      hlGroups[hlGroup].clear();
+    break;
+  };
+
+  return hlGroups;
+}
