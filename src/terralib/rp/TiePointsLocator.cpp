@@ -1801,8 +1801,8 @@ namespace te
       
       // Creating internal objects
       
-      double maxTiePointsFeatureValue = DBL_MAX * (-1.0);
-      double minTiePointsFeatureValue = DBL_MAX;
+      double maxTiePoints1FeatureValue = DBL_MAX * (-1.0);
+      double minTiePoints1FeatureValue = DBL_MAX;
       
       InterestPointsContainerT::const_iterator it1 = interestPointsSet1.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet1( 
@@ -1811,15 +1811,17 @@ namespace te
       {
         internalInterestPointsSet1[ idx1 ] = *it1;
         
-        if( it1->m_featureValue > maxTiePointsFeatureValue )
-          maxTiePointsFeatureValue = it1->m_featureValue;
-        if( it1->m_featureValue < minTiePointsFeatureValue )
-          minTiePointsFeatureValue = it1->m_featureValue;        
+        if( it1->m_featureValue > maxTiePoints1FeatureValue )
+          maxTiePoints1FeatureValue = it1->m_featureValue;
+        if( it1->m_featureValue < minTiePoints1FeatureValue )
+          minTiePoints1FeatureValue = it1->m_featureValue;        
         
         ++it1;
       }
       
       te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
+      double maxTiePoints2FeatureValue = DBL_MAX * (-1.0);
+      double minTiePoints2FeatureValue = DBL_MAX;            
 
       InterestPointsContainerT::const_iterator it2 = interestPointsSet2.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
@@ -1828,10 +1830,10 @@ namespace te
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
 
-        if( it2->m_featureValue > maxTiePointsFeatureValue )
-          maxTiePointsFeatureValue = it2->m_featureValue;
-        if( it2->m_featureValue < minTiePointsFeatureValue )
-          minTiePointsFeatureValue = it2->m_featureValue;
+        if( it2->m_featureValue > maxTiePoints2FeatureValue )
+          maxTiePoints2FeatureValue = it2->m_featureValue;
+        if( it2->m_featureValue < minTiePoints2FeatureValue )
+          minTiePoints2FeatureValue = it2->m_featureValue;
         
         if( maxPt1ToPt2Distance )
           interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
@@ -1946,9 +1948,12 @@ namespace te
       
       // Finding tiepoints
       
-      const double tiePointsFeatureValueRange = ( maxTiePointsFeatureValue != 
-        minTiePointsFeatureValue ) ? ( maxTiePointsFeatureValue -
-        minTiePointsFeatureValue ) : 1.0;
+      const double tiePoints1FeatureValueRange = ( maxTiePoints1FeatureValue != 
+        minTiePoints1FeatureValue ) ? ( maxTiePoints1FeatureValue -
+        minTiePoints1FeatureValue ) : 1.0;
+      const double tiePoints2FeatureValueRange = ( maxTiePoints2FeatureValue != 
+        minTiePoints2FeatureValue ) ? ( maxTiePoints2FeatureValue -
+        minTiePoints2FeatureValue ) : 1.0;        
       const double correlationABSValueRange = ( maxCorrelationABSValue != 
         minCorrelationABSValue ) ? ( maxCorrelationABSValue -
         minCorrelationABSValue ) : 1.0;
@@ -1968,8 +1973,21 @@ namespace te
           auxMatchedPoints.m_featureValue = 
             ( 
               ( 
-                ( iPoint1.m_featureValue - minTiePointsFeatureValue ) /
-                tiePointsFeatureValueRange
+                (
+                  ( 
+                    ( iPoint1.m_featureValue - minTiePoints1FeatureValue ) 
+                    /
+                    tiePoints1FeatureValueRange 
+                  )
+                  +
+                  ( 
+                    ( iPoint2.m_featureValue - minTiePoints2FeatureValue ) 
+                    /
+                    tiePoints2FeatureValueRange 
+                  )                  
+                )
+                /
+                2.0
               )
               +
               (

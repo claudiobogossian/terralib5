@@ -78,7 +78,7 @@ void TsCachedRaster::ReadWriteTest()
 
   // using the cached raster adaptor.
   {
-    te::mem::CachedRaster cachedRaster( *inputRasterPointer, 40, 0 );
+    te::mem::CachedRaster cachedRaster( 2, *inputRasterPointer, 0 );
     
     unsigned int band = 0;
     unsigned int line = 0;
