@@ -1024,6 +1024,7 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Ras
       src->getValue(r, l, pb, 2);
       pixel = new te::color::RGBAColor((int)pr, (int)pg, (int)pb, 255);
       img.setPixel(ri, li, pixel->getRgba());
+      delete pixel;
     }
   }
 

@@ -371,8 +371,7 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
     ADOX::ColumnsPtr cols = idx->GetColumns();
     for(long i = 0; i < cols->GetCount(); i++)
     {
-      te::dt::Property* tlProp = te::ado::Convert2Terralib(cols->GetItem(i));
-      props.push_back(tlProp);
+      props.push_back(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
     }
     
     tlIdx->setProperties(props);

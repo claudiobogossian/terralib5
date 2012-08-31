@@ -208,11 +208,31 @@ QVariant te::qt::widgets::LayerExplorerModel::headerData(int section, Qt::Orient
 
 Qt::ItemFlags te::qt::widgets::LayerExplorerModel::flags(const QModelIndex &index) const
 {
-  if(!index.isValid())
-    return Qt::ItemIsDropEnabled;
+  Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
-  return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
-         Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
+  if(index.isValid())
+  {
+    if(index == m_dragIndex)
+    {
+      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
+
+      if(item->isLayerItem() == true)     
+        flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
+             Qt::ItemIsUserCheckable;
+      else
+        flags = Qt::ItemIsEnabled;
+    }
+    else
+      flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
+             Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
+  }
+
+  return flags;
+}
+
+Qt::DropActions te::qt::widgets::LayerExplorerModel::supportedDragActions() const
+{ 
+  return Qt::MoveAction | Qt::CopyAction;
 }
 
 Qt::DropActions te::qt::widgets::LayerExplorerModel::supportedDropActions() const
@@ -232,7 +252,7 @@ QMimeData* te::qt::widgets::LayerExplorerModel::mimeData(const QModelIndexList& 
   m_dragIndex = indexes[0];
 
   QMimeData *mimeData = new QMimeData();
-  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(indexes[0].internalPointer());
+  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(m_dragIndex.internalPointer());
   te::map::AbstractLayer* refLayer = item->getRefLayer();
 
   QString s;
@@ -273,8 +293,11 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   // Get the drag row
   int dragRow = m_dragIndex.row();
   
-  // Set the item that was dragged
+  // Get the item that was dragged
   m_dragItem = getItem(m_dragIndex);
+
+  if(m_dragItem->isLayerItem() == false)
+    return true;
 
   // Get the drop row
   int dropRow = dropIndex.row();
@@ -335,6 +358,11 @@ bool	te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const Q
   return true;
 }
 
+te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getRootItem() const
+{
+  return m_rootItem;
+}
+
 te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getItem(const QModelIndex& index)
 {
   if(index.isValid())
@@ -343,6 +371,54 @@ te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getItem(
     return m_rootItem;
 }
 
+QModelIndex te::qt::widgets::LayerExplorerModel::getDragIndex() const
+{
+  return m_dragIndex;
+}
+
+void te::qt::widgets::LayerExplorerModel::removeLegend(const QModelIndex& index)
+{
+  if(!index.isValid())
+    return;
+
+  te::qt::widgets::AbstractTreeItem* item = getItem(index);
+
+  if(item->getRefLayer()->getType() != "LAYER")
+    return;
+
+  if(item->getRefLayer()->hasLegend() == false)
+    return;
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(item);
+
+  beginRemoveRows(index, 0, item->children().count() - 1);
+  layerItem->removeLegend();
+  endRemoveRows();
+}
+
+void te::qt::widgets::LayerExplorerModel::insertLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend)
+{
+  if(!index.isValid())
+    return;
+
+  te::qt::widgets::AbstractTreeItem* item = getItem(index);
+
+  if(item->getRefLayer()->getType() != "LAYER")
+    return;
+
+  removeLegend(index);
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(item);
+
+  beginInsertRows(index, 0, legend.size() - 1);
+  layerItem->insertLegend(legend);
+  endInsertRows();
+}
+
+void te::qt::widgets::LayerExplorerModel::removeItem(const QModelIndex& index)
+{
+  
+}
 
 void te::qt::widgets::LayerExplorerModel::resetModel()
 {

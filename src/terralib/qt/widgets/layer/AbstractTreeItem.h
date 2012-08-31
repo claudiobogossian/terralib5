@@ -119,6 +119,27 @@ namespace te
           int getIndex() const;
 
           /*!
+            \brief It removes the tree item in the row-th position and returns to the caller the associated item in the memory.
+
+            \param row   The item position of the tree item to be removed.
+
+            \return The associated item in the memory
+            \param count The number of items to be removed as children of this item.
+           */
+          //te::qt::widgets::AbstractTreeItem* takeChild(int row);
+
+          /*!
+            \brief It removes the tree item in the given position.
+
+            \param row The position of the item relative to its parent.
+
+            \return It returns the reference layer associated to the removed item.
+
+            \note The caller takes the ownership of the returned reference layer.
+           */
+          te::map::AbstractLayer* removeChild(int row);
+
+          /*!
             \brief It removes the given number of items as children of this item from the given position.
 
             \param i     The position from which the list of items will be removed as children of this item.
@@ -160,6 +181,13 @@ namespace te
             \return The data stored under the given role for this tree item.
            */
           virtual QVariant data(int role) const = 0;
+
+          /*!
+            \brief It checks if the item is a layer item.
+
+            \return The default implementation returns true indicating that the item is a layer item.
+           */
+          virtual bool isLayerItem() const = 0;
 
           /*!
             \brief It creates a menu to be displayed in the given widget.

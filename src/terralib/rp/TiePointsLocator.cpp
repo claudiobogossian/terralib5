@@ -190,7 +190,7 @@ namespace te
       if( m_inputParameters.m_enableProgress )
       {
         progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 4 );
+        progressPtr->setTotalSteps( 6 );
         progressPtr->setMessage( "Locating tie points" );
       }
       
@@ -245,12 +245,6 @@ namespace te
         raster1Data,
         maskRaster1Data ),
         "Error loading raster data" );
-        
-      if( m_inputParameters.m_enableProgress )
-      {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
-      }        
         
       TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
         m_inputParameters.m_inRaster2Ptr,
@@ -352,6 +346,12 @@ namespace te
         }
       };
       
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
+      
       // locating interest points
       
       InterestPointsContainerT raster1InterestPoints;
@@ -385,6 +385,12 @@ namespace te
           break;
         }
       };
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
 //      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");
 //      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "raster2InterestPoints");
@@ -433,6 +439,12 @@ namespace te
         }
       };
       
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
+      
 //      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );
 //      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );
 
@@ -468,6 +480,12 @@ namespace te
           break;
         }
       };
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       // Clean anused data
       
@@ -520,6 +538,12 @@ namespace te
         tiePointsWeights ), "Outliers remotion error" );
        
       outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
       
       return true;
     }
@@ -1466,8 +1490,8 @@ namespace te
       unsigned int curr_window_y_start = 0;
       unsigned int curr_window_x_center = 0;
       unsigned int curr_window_y_center = 0;
-      unsigned int curr_window_x_bound = 0;
-      unsigned int curr_window_y_bound = 0;
+      unsigned int curr_window_x_end = 0; // this coord is also counted in
+      unsigned int curr_window_y_end = 0; // this coord is also counted in
       
       /*used on the rotation calcule */
 
@@ -1495,8 +1519,8 @@ namespace te
       double rot_sin = 0;
       
       /* the coords rotated but in the hole image reference */
-      int rotated_curr_x_img = 0;
-      int rotated_curr_y_img = 0;
+      unsigned int rotated_curr_x_img = 0;
+      unsigned int rotated_curr_y_img = 0;
       
       /* current window mean and standart deviation */
       double curr_wind_mean = 0.0;
@@ -1504,7 +1528,7 @@ namespace te
       double curr_wind_stddev_aux = 0.0;
       
       // used on intensity vector calcule
-      double imgMatrixValue1 = 0;
+//      double imgMatrixValue1 = 0;
 //      double imgMatrixValue2 = 0;
       
       double* featuresLinePtr = 0;
@@ -1531,49 +1555,39 @@ namespace te
         
         curr_window_x_start = curr_window_x_center - wind_radius;
         curr_window_y_start = curr_window_y_center - wind_radius;
-        curr_window_x_bound = curr_window_x_start + correlationWindowWidth;
-        curr_window_y_bound = curr_window_y_start + correlationWindowWidth;
+        curr_window_x_end = curr_window_x_start + correlationWindowWidth - 1;
+        curr_window_y_end = curr_window_y_start + correlationWindowWidth - 1;
           
         /* Estimating the intensity vector X direction */
         
         int_x_dir = 0;
         
-        for( curr_offset = 0 ; curr_offset < wind_radius ;
-          ++curr_offset ) 
-        {      
-          for( curr_y = curr_window_y_start ; curr_y < curr_window_y_bound ; 
-            ++curr_y ) 
+        for( curr_y = curr_window_y_start ; curr_y <= curr_window_y_end ; 
+          ++curr_y ) 
+        {        
+          for( curr_offset = 0 ; curr_offset < wind_radius ;
+            ++curr_offset ) 
           {
-            int_x_dir += rasterData( curr_y, curr_window_x_bound - 1 - curr_offset ) -
+            int_x_dir += rasterData( curr_y, curr_window_x_end - curr_offset ) -
               rasterData( curr_y, curr_window_x_start + curr_offset );
           }
         }
-        
-        int_x_dir /= ( 2.0 * wind_radius_double );
         
         /* Estimating the intensity vector y direction */
         
         int_y_dir = 0;
         
-        for( curr_offset = 0 ; curr_offset < wind_radius ;
-          ++curr_offset ) {      
-
-          for( curr_x = curr_window_x_start ; 
-            curr_x < curr_window_x_bound ;
-            ++curr_x ) 
+        for( curr_x = curr_window_x_start ; curr_x <= curr_window_x_end ;
+          ++curr_x )        
+        {
+          for( curr_offset = 0 ; curr_offset < wind_radius ; ++curr_offset )
           {
-            int_y_dir += rasterData( curr_window_y_start + curr_offset, curr_x ) - 
-              rasterData( curr_window_y_bound - 1 - curr_offset, curr_x );
+            int_y_dir += rasterData( curr_window_y_start + curr_offset, curr_x ) -
+              rasterData( curr_window_y_end - curr_offset, curr_x );
           }
         }      
         
-        int_y_dir /= ( 2.0 * ( (double) wind_radius ) );
-        
         /* Calculating the rotation parameters - 
-          counterclockwise rotation 
-          
-          | u |    |cos  -sin|   |X|
-          | v | == |sin   cos| x |Y|
         */
         int_norm = sqrt( ( int_x_dir * int_x_dir ) + 
           ( int_y_dir * int_y_dir ) );
@@ -1587,11 +1601,18 @@ namespace te
           rot_sin = 0.0;
         }
         
+        assert( ( rot_cos >= -1.0 ) && ( rot_cos <= 1.0 ) );
+        assert( ( rot_sin >= -1.0 ) && ( rot_sin <= 1.0 ) );
+        
         /* Generating the rotated window data and inserting it into 
           the img_features_matrix by setting the intensity vector
-          to the direction (1,0) by a clockwise rotation
-          using the inverse matrix 
-        
+          to the direction (1,0) 
+
+          counterclockwise rotation 
+          | u |    |cos  -sin|   |X|
+          | v | == |sin   cos| x |Y|
+
+          clockwise rotation
           | u |    |cos   sin|   |X|
           | v | == |-sin  cos| x |Y|
         */
@@ -1610,12 +1631,12 @@ namespace te
             /* rotating the centered window */
             
             rotated_curr_x = 
-              ( ( rot_cos * curr_x_minus_radius ) + 
-              ( rot_sin * curr_y_minus_radius ) );
+              ( rot_cos * curr_x_minus_radius ) + 
+              ( rot_sin * curr_y_minus_radius );
             
-            rotated_curr_y =
-              ( ( -1.0 * rot_sin * curr_x_minus_radius ) + 
-              ( rot_cos * curr_y_minus_radius ) );
+            rotated_curr_y = 
+              ( rot_cos * curr_y_minus_radius )
+              - ( rot_sin * curr_x_minus_radius );
               
             /* bringing the window back to its original
               location with the correct new scale */ 
@@ -1626,25 +1647,13 @@ namespace te
             /* copy the new rotated window to the output vector */
               
             rotated_curr_x_img = curr_window_x_start +
-              (int)ROUND( rotated_curr_x );
+              (unsigned int)ROUND( rotated_curr_x );
             rotated_curr_y_img = curr_window_y_start +
-              (int)ROUND( rotated_curr_y );                        
+              (unsigned int)ROUND( rotated_curr_y );                        
             
-            if( ( rotated_curr_x_img > 0 ) &&  
-              ( rotated_curr_x_img < (int)rasterDataCols ) &&
-              ( rotated_curr_y_img > 0 ) &&
-              ( rotated_curr_y_img < (int)rasterDataLines ) )
-            {
-              imgMatrixValue1 = rasterData( rotated_curr_y_img,
-                rotated_curr_x_img );
-            }
-            else
-            {
-              imgMatrixValue1 = 0;
-            }
-              
             features( validInteresPointsIndex, ( curr_y * 
-              correlationWindowWidth ) + curr_x ) = imgMatrixValue1;
+              correlationWindowWidth ) + curr_x ) = rasterData( 
+              rotated_curr_y_img, rotated_curr_x_img );
           }
         }
         
@@ -1903,8 +1912,8 @@ namespace te
         DBL_MAX * (-1.0) );
       std::vector< unsigned int > eachColMaxABSIndexes( interestPointsSet2Size,
         interestPointsSet1Size + 1 );
-      double maxCorrelationValue = DBL_MAX * (-1.0);
-      double minCorrelationValue = DBL_MAX;
+      double maxCorrelationABSValue = DBL_MAX * (-1.0);
+      double minCorrelationABSValue = DBL_MAX;
       double absValue = 0;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
@@ -1913,12 +1922,10 @@ namespace te
         
         for( col = 0 ; col < interestPointsSet2Size ; ++col )
         {
-          const double& value = linePtr[ col ];
+          absValue = std::abs( linePtr[ col ] );
           
-          if( value != 0.0 )
+          if( absValue != 0.0 )
           {
-            absValue = std::abs( value );
-            
             if( absValue > eachLineMaxABSValues[ line ] )
             {
               eachLineMaxABSValues[ line ] = absValue;
@@ -1932,21 +1939,19 @@ namespace te
             }
           }
           
-          if( value > maxCorrelationValue ) maxCorrelationValue = value;
-          if( value < minCorrelationValue ) minCorrelationValue = value;
+          if( absValue > maxCorrelationABSValue ) maxCorrelationABSValue = absValue;
+          if( absValue < minCorrelationABSValue ) minCorrelationABSValue = absValue;
         }
       }
-      
-      
       
       // Finding tiepoints
       
       const double tiePointsFeatureValueRange = ( maxTiePointsFeatureValue != 
         minTiePointsFeatureValue ) ? ( maxTiePointsFeatureValue -
         minTiePointsFeatureValue ) : 1.0;
-      const double correlationValueRange = ( maxCorrelationValue != 
-        minCorrelationValue ) ? ( maxCorrelationValue -
-        minCorrelationValue ) : 1.0;
+      const double correlationABSValueRange = ( maxCorrelationABSValue != 
+        minCorrelationABSValue ) ? ( maxCorrelationABSValue -
+        minCorrelationABSValue ) : 1.0;
       MatchedInterestPointsT auxMatchedPoints;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
@@ -1968,8 +1973,8 @@ namespace te
               )
               +
               (
-                ( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) - 
-                minCorrelationValue ) / correlationValueRange
+                ( std::abs( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) ) - 
+                minCorrelationABSValue ) / correlationABSValueRange
               )
             ) / 2.0;
           

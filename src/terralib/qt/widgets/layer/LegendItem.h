@@ -74,6 +74,13 @@ namespace te
           /*! Destructor. */
           ~LegendItem();
 
+          /*!
+            \brief It checks if the item is a layer item.
+
+            \return It returns false indicating that the item is not a layer item.
+           */
+          bool isLayerItem() const;
+
           //@}
 
           /** @name Pure Virtual Methods
@@ -118,7 +125,6 @@ namespace te
           //@}
 
       private:
-
         te::map::LegendItem* m_refLegendItem;
         QIcon m_icon;
       };

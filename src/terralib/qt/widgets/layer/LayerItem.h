@@ -35,7 +35,10 @@
 namespace te
 {
 // Forward declarations
-  namespace map { class AbstractLayer; }
+  namespace map
+  { class AbstractLayer;
+    class LegendItem;
+  }
 
   namespace qt
   {
@@ -76,7 +79,6 @@ namespace te
 
           //@}
 
-
           /*!
             \brief It returns the data stored under the given role for the item referred by this layer.
 
@@ -89,6 +91,13 @@ namespace te
           QVariant data(int role) const;
 
           /*!
+            \brief It checks if the item is a layer item.
+
+            \return The default implementation returns true indicating that the item is a layer item.
+           */
+          bool isLayerItem() const;
+
+          /*!
             \brief It creates a menu to be displayed in the given widget.
 
             \param parent The parent widget for the menu.
@@ -98,9 +107,14 @@ namespace te
           QMenu* getMenu(QWidget* parent = 0) const;
 
           /*!
-            \brief It sets the legend associated to this layer item.
+            \brief It removes the legend associated to this layer item.
            */
-          void setLegend(); 
+          void removeLegend();
+
+          /*!
+            \brief It inserts the legend associated to this layer item.
+           */
+          void insertLegend(const std::vector<te::map::LegendItem*>& legend);
        };
 
     } // end namespace widgets

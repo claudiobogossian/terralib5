@@ -71,3 +71,13 @@ void te::se::Categorize::setThresholdsBelongTo(ThresholdsBelongToType t)
   m_threshholdsBelongTo = t;
 }
 
+std::vector<te::se::ParameterValue*>& te::se::Categorize::getThresholds()
+{
+  return m_thresholds;
+}
+
+std::vector<te::se::ParameterValue*>& te::se::Categorize::getThresholdValues()
+{
+  return m_thresholdValues;
+}
+

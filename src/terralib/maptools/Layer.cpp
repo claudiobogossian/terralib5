@@ -53,8 +53,7 @@ te::map::Layer::~Layer()
   if(m_grouping)
     delete m_grouping;
 
-  for(std::size_t i = 0; i < m_legend.size(); ++i)
-    delete m_legend[i];
+  removeLegend();
 }
 
 const std::string& te::map::Layer::getType() const
@@ -156,12 +155,12 @@ bool te::map::Layer::hasLegend()
   return m_legend.empty() ? false : true;
 }
 
-const std::vector<te::map::LegendItem*>& te::map::Layer::getLegend() const
+std::vector<te::map::LegendItem*>* te::map::Layer::getLegend()
 {
-  return m_legend;
+  return &m_legend;
 }
 
-void te::map::Layer::setLegend(const std::vector<LegendItem*>& legend)
+void te::map::Layer::removeLegend()
 {
   if(hasLegend() == true)
   {
@@ -169,6 +168,10 @@ void te::map::Layer::setLegend(const std::vector<LegendItem*>& legend)
       delete m_legend[i];
     m_legend.clear();
   }
+}
 
+void te::map::Layer::insertLegend(const std::vector<LegendItem*>& legend)
+{
+  removeLegend();
   m_legend = legend;
 }

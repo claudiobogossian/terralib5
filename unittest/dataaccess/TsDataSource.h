@@ -54,44 +54,95 @@
  */
 class TsDataSource : public CPPUNIT_NS::TestFixture
 {
+
+// It registers this class as a Test Suit
+  CPPUNIT_TEST_SUITE( TsDataSource );
+
+// It registers the class methods as Test Cases belonging to the suit 
+  CPPUNIT_TEST( tcOpenWithStr );
+  CPPUNIT_TEST( tcClose );
+
+  CPPUNIT_TEST( tcExist );
+
+  CPPUNIT_TEST( tcSetConnectionInfo );
+  CPPUNIT_TEST( tcOpenWithMap ); 
+  CPPUNIT_TEST( tcGetType );
+  CPPUNIT_TEST( tcIsOpened );
+  CPPUNIT_TEST( tcIsValid );
+  CPPUNIT_TEST( tcGetCatalog );
+  CPPUNIT_TEST( tcGetCatalogFull );
+  CPPUNIT_TEST( tcGetCapabilities );
+  CPPUNIT_TEST( tcGetTransactor );
+  CPPUNIT_TEST( tcGetConnectionInfo );
+  CPPUNIT_TEST( tcGetConnectionStr );
+  CPPUNIT_TEST( tcClose );
+
+  CPPUNIT_TEST( tcSetConnectionInfo );
+  CPPUNIT_TEST( tcSetConnectionStr );
+
+  CPPUNIT_TEST( tcCreate );
+  CPPUNIT_TEST( tcDrop );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  public:
+// It sets up context before running the test.
+    void setUp();
+
+// It cleann up after the test run.
+    void tearDown();
+
   protected:
+    void tcOpenWithMap();
+    void tcOpenWithStr();
+    void tcGetType();
+    void tcClose();
+    void tcIsOpened();
+    void tcIsValid();
+    void tcGetCatalog();
+    void tcGetCatalogFull();
+    void tcGetCapabilities();
+    void tcGetTransactor();
+    void tcGetConnectionInfo();
+    void tcGetConnectionStr();
+    void tcSQLDialect();
 
-// Test Cases:
 
-    virtual void tcGetType();
+    void tcSetConnectionInfo();
+    void tcSetConnectionStr();
+    void tcExist();
+    void tcCreate();
+    void tcDrop();
+/*
     virtual void tcGetConnectionInfo();
     virtual void tcSetConnectionInfo();
     virtual void tcGetConnectionStr();
     virtual void tcSetConnectionStr();
-    virtual void tcGetCapabilities();
     virtual void tcSQLDialect();
     virtual void tcOpen();
-    virtual void tcOpenWithMap();
     virtual void tcOpenWithString();
-    virtual void tcClose();
-    virtual void tcIsOpened();
-    virtual void tcIsValid();
-
-    virtual void tcGetCatalog();
-    virtual void tcGetCatalogFull();
-
-    virtual void tcGetTransactor();
     virtual void tcCreate();
     virtual void tcDrop();
-
+*/
+  public:
 // It will come from the setUp of the derived database class (see:TsPostGIS, TsSQLite, etc)
     te::da::DataSource* m_ds;
     std::map<std::string, std::string> m_capabilit;
     std::map<std::string, std::string> m_connInfo;
-    std::string m_connInfoStr;
+    std::string m_connStr;
     std::string m_dsType;
     std::map<std::string, std::string> m_connInfoNewDs;
     std::map<std::string, std::string> m_connInfoDropDs;
+
+
+/*
+    std::string m_connInfoStr;
+    std::map<std::string, std::string> m_connInfoDropDs;
     te::da::DataSourceCatalog* m_dsCatalog;
     size_t m_nroDataSets;
-
+*/
 };
-
+/*
 #define INSERT_DATASOURCE_TC CPPUNIT_TEST( tcOpenWithMap ); \
                              CPPUNIT_TEST( tcGetTransactor ); \
                              CPPUNIT_TEST( tcIsValid ); \
@@ -112,6 +163,6 @@ class TsDataSource : public CPPUNIT_NS::TestFixture
                              CPPUNIT_TEST( tcGetCatalogFull ); \
                              CPPUNIT_TEST( tcCreate ); \
                              CPPUNIT_TEST( tcDrop ); \
-
+*/
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_H
 

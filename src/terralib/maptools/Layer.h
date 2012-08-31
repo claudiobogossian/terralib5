@@ -169,14 +169,19 @@ namespace te
 
           \output The legend associated to this layer.
         */
-        const std::vector<LegendItem*>& getLegend() const;
+        std::vector<te::map::LegendItem*>* getLegend();
 
         /*!
-          \brief It sets the legend associated to this layer.
+          \brief It removes the legend associated to this layer.
+        */
+        void removeLegend();
+
+        /*!
+          \brief It inserts the given legend to this layer.
 
           \param The legend to be associated to this layer.
         */
-        void setLegend(const std::vector<LegendItem*>& legend);
+        void insertLegend(const std::vector<LegendItem*>& legend);
 
       public:
          

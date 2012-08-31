@@ -25,14 +25,39 @@
 
 // Unit-Test TerraLib
 #include "TsDataSourceCatalogLoader.h"
+#include "TsManagerDataSource.h"
 
 // TerraLib
-//#include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 
 // STL
 #include <ctime>
+
+CPPUNIT_TEST_SUITE_REGISTRATION( TsDataSourceCatalogLoader );
+
+void TsDataSourceCatalogLoader::setUp()
+{  
+  m_ds = TsManagerDataSource::sm_datasource;
+  m_connInfo = TsManagerDataSource::sm_connInfo;
+  m_dsType = TsManagerDataSource::sm_dsType;
+  m_capabilit = TsManagerDataSource::sm_capabilit;
+
+  m_vecDtNames = TsManagerDataSource::sm_vecDtNames;
+  m_vecPkNames = TsManagerDataSource::sm_vecPkNames;  
+  m_vecUkNames = TsManagerDataSource::sm_vecUkNames;
+  m_vecIdxNames = TsManagerDataSource::sm_vecIdxNames;
+  m_vecFkNames = TsManagerDataSource::sm_vecFkNames;
+  m_vecCcNames = TsManagerDataSource::sm_vecCcNames;
+  m_vecSeqNames = TsManagerDataSource::sm_vecSeqNames;
+  m_vecDtNamesAndEnvelops = TsManagerDataSource::sm_vecDtNamesAndEnvelops;
+}
+
+void TsDataSourceCatalogLoader::tearDown()
+{
+  m_ds = 0;
+  m_dsType = "";
+}
 
 void TsDataSourceCatalogLoader::tcGetDataSets()
 {

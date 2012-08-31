@@ -57,73 +57,110 @@ namespace te { namespace da { class DataSource; } }
  */
 class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
 {
+  // It registers this class as a Test Suit
+  CPPUNIT_TEST_SUITE( TsDataSetTypePersistence );
+
+// It registers the class methods as Test Cases belonging to the suit 
+  CPPUNIT_TEST( tcCreateDataSetTypeBasedOnCapabilities ); 
+  CPPUNIT_TEST( tcCreateDataSetType );
+  CPPUNIT_TEST( tcAddPrimaryKey );
+  CPPUNIT_TEST( tcAddUniqueKey );
+  CPPUNIT_TEST( tcAddCheckConstraint );
+  CPPUNIT_TEST( tcAddIndex );
+  CPPUNIT_TEST( tcAddAutoIncrementProperty );
+  CPPUNIT_TEST( tcAddArrayProperty );
+  CPPUNIT_TEST( tcRenameProperty );
+  CPPUNIT_TEST( tcUpdateProperty );
+  CPPUNIT_TEST( tcCloneTable );
+  CPPUNIT_TEST( tcRemoveIndex );
+  CPPUNIT_TEST( tcCreateDataSetTypeWithPkUkIdxCc );
+  CPPUNIT_TEST( tcAddForeignKey );
+  CPPUNIT_TEST( tcRemovePrimaryKey );
+  CPPUNIT_TEST( tcRemoveUniqueKey );
+  CPPUNIT_TEST( tcRemoveProperty );
+  CPPUNIT_TEST( tcRemoveCheckConstraint );
+  CPPUNIT_TEST( tcRemoveDataSetType );
+  CPPUNIT_TEST( tcRenameDataSetTypeCloned );
+  CPPUNIT_TEST( tcRemoveDataSetTypeCloned );
+  CPPUNIT_TEST( tcRemoveDataSetTypeWithFk );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  public:
+// It sets up context before running the test.
+    void setUp();
+
+// It cleann up after the test run.
+    void tearDown();
+
   protected:
 
 // Test Cases:
 
     /*! \brief Test Case: create datasettype checking datasource capabilities. */
-    virtual void tcCreateDataSetTypeBasedOnCapabilities();
+    void tcCreateDataSetTypeBasedOnCapabilities();
 
     /*! \brief Test Case: create several dataset types with/without constraints and indexes. */
-    virtual void tcCreateDataSetType();
+    void tcCreateDataSetType();
 
     /*! \brief Test Case: adding a primary key. */
-    virtual void tcAddPrimaryKey();
+    void tcAddPrimaryKey();
 
     /*! \brief Test Case: adding a unique key. */
-    virtual void tcAddUniqueKey();
+    void tcAddUniqueKey();
 
     /*! \brief Test Case: adding an index. */
-    virtual void tcAddIndex();
+    void tcAddIndex();
 
     /*! \brief Test Case: adding a new autoincrement property. */
-    virtual void tcAddAutoIncrementProperty();
+    void tcAddAutoIncrementProperty();
 
     /*! \brief Test Case: adding an array property. */
-    virtual void tcAddArrayProperty();
+    void tcAddArrayProperty();
 
     /*! \brief Test Case: Renaming an property. */
-    virtual void tcRenameProperty();
+    void tcRenameProperty();
 
     /*! \brief Test Case: Updating an property. */
-    virtual void tcUpdateProperty();
+    void tcUpdateProperty();
 
     /*! \brief Test Case: Clonning a dataset type. */
-    virtual void tcCloneTable();
+    void tcCloneTable();
 
     /*! \brief Test Case: drop properties. */
-    virtual void tcRemoveProperty();
+    void tcRemoveProperty();
 
     /*! \brief Test Case: drop pk. */
-    virtual void tcRemovePrimaryKey();
+    void tcRemovePrimaryKey();
 
     /*! \brief Test Case: drop uk. */
-    virtual void tcRemoveUniqueKey();
+    void tcRemoveUniqueKey();
 
     /*! \brief Test Case: drop index. */
-    virtual void tcRemoveIndex();
+    void tcRemoveIndex();
 
     /*! \brief Test Case: drop dataset type. */
-    virtual void tcRemoveDataSetType();
+    void tcRemoveDataSetType();
 
     /*! \brief Test Case: Rename dataset type cloned. */
-    virtual void tcRenameDataSetTypeCloned();
+    void tcRenameDataSetTypeCloned();
 
     /*! \brief Test Case: drop dataset type cloned. */
-    virtual void tcRemoveDataSetTypeCloned();
+    void tcRemoveDataSetTypeCloned();
 
     /*! \brief Test Case: create dataset type with pk,uk,idx,cc. */
-    virtual void tcCreateDataSetTypeWithPkUkIdxCc();
+    void tcCreateDataSetTypeWithPkUkIdxCc();
 
-    virtual void tcRemoveDataSetTypeWithFk();
+    void tcRemoveDataSetTypeWithFk();
 
-    virtual void tcAddCheckConstraint();
+    void tcAddCheckConstraint();
 
-    virtual void tcRemoveCheckConstraint(); 
+    void tcRemoveCheckConstraint(); 
 
-    virtual void tcAddForeignKey ();
+    void tcAddForeignKey ();
 
-// It will come from the setUp of the derived class (see:TsDataSetTypePersistencePostGis, TsSQLiteDataSetTypePersistence, etc)
+// It will come from the setUp (values from json file for each driver)
+
     te::da::DataSource* m_ds;
     std::map<std::string, std::string> m_capabilit;
     te::da::DataSetType* m_newdt;
@@ -150,7 +187,7 @@ class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
     std::vector<std::pair<std::string, size_t> > m_vecNamesSizesRec;
 
 // Specific variables to use in DataSetTypePersistence tests
-
+    std::string m_ccName;
     te::da::CheckConstraint* m_cc;
 
     std::string m_newDataSetType; //define always 8 attributes
@@ -206,6 +243,7 @@ class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
 
 };
 
+/*
 // It registers the class methods as Test Cases in a macro 
 #define INSERT_DATASETTYPEPERSISTENCE_TC CPPUNIT_TEST( tcCreateDataSetTypeBasedOnCapabilities ); \
                 CPPUNIT_TEST( tcCreateDataSetType ); \
@@ -229,6 +267,6 @@ class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
                 CPPUNIT_TEST( tcRenameDataSetTypeCloned ); \
                 CPPUNIT_TEST( tcRemoveDataSetTypeCloned ); \
                 CPPUNIT_TEST( tcRemoveDataSetTypeWithFk ); \
-
+*/
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_DATASETTYPEPERSISTENCE_H
 

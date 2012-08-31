@@ -87,11 +87,7 @@ Legend::Legend(QWidget* parent)
   m_layerModel = new te::qt::widgets::LayerExplorerModel(m_rootLayer, 0);
 
   // Create the layer view and set its model
-  m_layerView = new te::qt::widgets::LayerExplorer(this);
-  m_layerView->setModel(m_layerModel);
-
-  QObject::connect(m_layerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)),
-                   m_layerView, SLOT(updateCurrentIndex(const QModelIndex&, const QModelIndex&)));
+  m_layerView = new te::qt::widgets::LayerExplorer(m_layerModel, this);
 
   m_layerView->setDragEnabled(true);
   m_layerView->setAcceptDrops(true);
@@ -101,33 +97,40 @@ Legend::Legend(QWidget* parent)
   mainLayout->addWidget(m_layerView);
   setLayout(mainLayout);
 
-  QAction* editLegendAction = new QAction(QObject::tr("Edit Legend..."), m_layerView);
-  editLegendAction->setStatusTip(QObject::tr("Edit Legend"));
+  m_popupMenu = new QMenu(this);
+
+  QAction* editLegendAction = new QAction(QObject::tr("Edit Legend..."), m_popupMenu);
+  m_popupMenu->addAction(editLegendAction);
   QObject::connect(editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
 
-  QList<QAction*> actionsList;
-  actionsList << editLegendAction;
-
-  m_layerView->setActionsList(actionsList);
+  // Signal/Slot connections
+  connect(m_layerView, SIGNAL(contextMenuActivated(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuActivated(const QModelIndex&, const QPoint&)));
 }
 
 Legend::~Legend()
 {
 }
 
+void Legend::contextMenuActivated(const QModelIndex& index, const QPoint& pos)
+{
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(m_layerView->getPopupIndex()));
+
+  if(layerItem == m_layerModel->getRootItem() || layerItem->getRefLayer()->getType() != "LAYER")
+    return;
+
+  m_popupMenu->exec(pos);
+}
+
 void Legend::editLegendSlot()
 {
-  QModelIndex currentIndex = m_layerView->currentIndex();
-
-  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(currentIndex));
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(m_layerView->getPopupIndex()));
 
   te::qt::widgets::Legend legendDialog(layerItem);
 
   if(legendDialog.exec() != QDialog::Accepted)
     return;
 
-  // Reset the model to take into account changes in the tree of layers
-  m_layerModel->resetModel();
+  m_layerModel->insertLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
 }
 
 void Legend::closeEvent(QCloseEvent* /*e*/)

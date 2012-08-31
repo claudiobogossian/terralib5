@@ -14,6 +14,10 @@
 #include <qwt_interval.h>
 #include <qwt_scale_engine.h>
 
+#include <iostream>
+
+using namespace std;
+
 te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::BottomScale, parent),
   m_colorBar(0)
 {
@@ -22,6 +26,11 @@ te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::
   m_interval.setInterval(0., 1.);
 
   setHeight(20);
+
+  m_initialXPos = -1;
+  
+  // sets the precision of mouse click
+  setClickPrecision(0.01);
 
   //setScaleEngine();
 }
@@ -62,6 +71,11 @@ void te::qt::qwt::ColorBar::setScaleEngine()
   QwtLinearScaleEngine se;
 
   this->setScaleDiv(se.transformation(), se.divideScale(m_interval.minValue(), m_interval.maxValue(), 8, 5));
+}
+
+void te::qt::qwt::ColorBar::setClickPrecision(double precision)
+{
+  m_clickPrecision = precision;
 }
 
 void te::qt::qwt::ColorBar::buildColorBar()
@@ -127,6 +141,8 @@ void te::qt::qwt::ColorBar::paintEvent(QPaintEvent* e)
 
 void te::qt::qwt::ColorBar::mouseDoubleClickEvent(QMouseEvent* e)
 {
+  if(e->button() == Qt::LeftButton)
+  {
     QColor c = QColorDialog::getColor();
 
     if(c.isValid() && m_colorBar)
@@ -144,4 +160,98 @@ void te::qt::qwt::ColorBar::mouseDoubleClickEvent(QMouseEvent* e)
 
       this->repaint();
     }
+  }
+}
+
+void te::qt::qwt::ColorBar::mousePressEvent(QMouseEvent* e)
+{
+  if (m_colorBar)
+  {    
+    int button = e->button();
+
+    double x = e->x();
+
+    double width = this->width(); 
+    double pos = (double) x / width;
+
+    //remove stop from colobar
+    if(button == Qt::RightButton)
+    {
+      double delPos = -1;
+
+      std::map<double, te::color::RGBAColor>::const_iterator it = m_colorBar->getColorMap().begin();
+
+      while(it != m_colorBar->getColorMap().end())
+      {
+        double colorPos = it->first;
+
+        if ( colorPos > (pos - m_clickPrecision) && colorPos < (pos + m_clickPrecision))
+        {
+          delPos = colorPos;
+        }
+        ++it;
+      }
+      
+      if (delPos > -1)
+      {
+        m_colorBar->remove(delPos);
+      }
+
+      buildColorBar();
+      this->repaint();
+    }
+
+    //gets the initial position to move the stop
+    if (button == Qt::LeftButton)
+    {
+      double currentPos = -1;
+      m_initialXPos = -1;
+
+      std::map<double, te::color::RGBAColor>::const_iterator it = m_colorBar->getColorMap().begin();
+
+      while(it != m_colorBar->getColorMap().end())
+      {
+        double colorPos = it->first;
+
+        if ( colorPos > (pos - m_clickPrecision) && colorPos < (pos + m_clickPrecision))
+        {
+          currentPos = colorPos;
+        }
+        ++it;
+      }
+
+      if (currentPos > -1)
+      {
+        m_initialXPos = currentPos;
+      }
+    }
+  }
+}
+
+void te::qt::qwt::ColorBar::mouseReleaseEvent(QMouseEvent* e)
+{
+  //finalize moving stop from colobar
+  if (e->button() == Qt::LeftButton)
+  {
+    m_initialXPos = -1;
+  }
+}
+
+void te::qt::qwt::ColorBar::mouseMoveEvent(QMouseEvent* e)
+{
+  //move the stop from colorbar
+  if (m_initialXPos > -1)
+  {
+    int button = e->button();
+    double x = e->x();
+    double width = this->width(); 
+    double currentPos = (double) x / width;
+
+    m_colorBar->move(m_initialXPos, currentPos);
+
+    m_initialXPos = currentPos;
+
+    buildColorBar();
+    this->repaint();
+  }
 }

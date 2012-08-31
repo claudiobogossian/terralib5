@@ -24,7 +24,10 @@
  */
 
 // TerraLib
+#include "AbstractTreeItem.h"
 #include "LayerExplorer.h"
+#include "LayerExplorerModel.h"
+#include "../../../maptools/AbstractLayer.h"
 
 //Qt
 #include <QtGui/QApplication>
@@ -32,47 +35,47 @@
 #include <QtGui/QContextMenuEvent>
 #include <QtGui/QDragMoveEvent>
 
-#include "../../../maptools/AbstractLayer.h"
-#include "AbstractTreeItem.h"
-#include "LayerExplorerModel.h"
-
 te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent)
   : QTreeView(parent),
     m_previousCurrentIndex(QModelIndex()),
-    m_leftMouseButtonWasPressed(false)
+    m_itemPressedWithLeftButton(false)
 {
   connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
   connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(clickedItem(const QModelIndex&)));
+}
+
+te::qt::widgets::LayerExplorer::LayerExplorer(LayerExplorerModel* model, QWidget* parent)
+  : QTreeView(parent),
+    m_previousCurrentIndex(QModelIndex()),
+    m_itemPressedWithLeftButton(false)
+{
+  connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
+  connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(clickedItem(const QModelIndex&)));
+
+  setModel(model);
+
+  if(model)
+    connect(model, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)),
+            this, SLOT(dragDropEnded(const QModelIndex&, const QModelIndex&)));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
 {
 }
 
-void te::qt::widgets::LayerExplorer::setActionsList(const QList<QAction*> actionsList)
+QModelIndex te::qt::widgets::LayerExplorer::getPopupIndex() const
 {
-  m_actionsList = actionsList;
-}
-
-void te::qt::widgets::LayerExplorer::updateCurrentIndex(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
-{
-  setCurrentIndex(dropIndex);
+  return m_popupIndex;
 }
 
 void te::qt::widgets::LayerExplorer::pressedItem(const QModelIndex& index)
 {
-  if(m_mouseButton == Qt::RightButton)
-  {
-    emit contextMenuPressed(index, m_mousePos);
-    m_leftMouseButtonWasPressed = false;
-  }
-  else
-    m_leftMouseButtonWasPressed = true;
+  m_itemPressedWithLeftButton = true;
 }
 
 void te::qt::widgets::LayerExplorer::clickedItem(const QModelIndex& index)
 {
-  if(m_leftMouseButtonWasPressed == false)
+  if(m_itemPressedWithLeftButton == false)
   {
     if(index != m_previousCurrentIndex)
     {
@@ -90,35 +93,39 @@ void te::qt::widgets::LayerExplorer::clickedItem(const QModelIndex& index)
     else
     {
       selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Deselect);
-      selectionModel()->select(index, QItemSelectionModel::Select);
-      m_previousCurrentIndex = index;
+
+      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
+      if(item->isLayerItem() == true)
+      {
+        selectionModel()->select(index, QItemSelectionModel::Select);
+        m_previousCurrentIndex = index;
+      }
+      else
+      {
+        selectionModel()->select(index, QItemSelectionModel::Deselect);
+        selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Select);
+      }
     }
-
-    m_leftMouseButtonWasPressed = false;
   }
-}
 
-void te::qt::widgets::LayerExplorer::contextMenuEvent(QContextMenuEvent *e)
-{
-  QModelIndex index = indexAt(e->pos());
-  if(index.isValid() == false)
-    return;
-
-  QMenu* menu = new QMenu(this);
-  for(int i = 0; i < m_actionsList.count(); ++i)
-    menu->addAction(m_actionsList[i]);
-
-  menu->exec(QCursor::pos());
+  m_itemPressedWithLeftButton = false;
 }
 
 void te::qt::widgets::LayerExplorer::mousePressEvent(QMouseEvent *e)
 {
-  m_mouseButton = e->button();
-  m_mousePos = e->globalPos();
+  m_itemPressedWithLeftButton = false;
+
+  if(e->button() == Qt::RightButton)
+  {
+    m_popupIndex = indexAt(e->pos());
+    emit contextMenuActivated(m_popupIndex, e->globalPos());
+  }
+
   QTreeView::mousePressEvent(e);
 }
 
-void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent * e)
+
+void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
 {
   if(e->possibleActions() == (Qt::MoveAction | Qt::CopyAction))
   {
@@ -128,12 +135,67 @@ void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent * e)
     else
       e->setDropAction(Qt::MoveAction);
 
-    e->accept();
+    m_itemPressedWithLeftButton = false;
+
+    te::qt::widgets::LayerExplorerModel* layerExplorerModel = static_cast<te::qt::widgets::LayerExplorerModel*>(model());
+    
+    QModelIndex dragIndex = layerExplorerModel->getDragIndex();
+
+    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(dragIndex.internalPointer());
+
+    if(item != 0 && item->isLayerItem() == true)
+      e->accept();
+    else
+      e->ignore();
   }
+
+  QTreeView::dragMoveEvent(e);
 }
 
 void te::qt::widgets::LayerExplorer::dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
 {
-  setCurrentIndex(dropIndex);
-  m_leftMouseButtonWasPressed = false;
+  m_itemPressedWithLeftButton = false;
+  
+  // Update the current index
+  int currentRow;
+
+  int dragRow = dragIndex.row();
+
+  int dropRow = dropIndex.row();
+  QModelIndex dropParentIndex = dropIndex.parent();
+
+  int prevCurrentRow = m_previousCurrentIndex.row();
+  QModelIndex previousCurrentParentIndex = m_previousCurrentIndex.parent();
+
+  if(dropParentIndex != previousCurrentParentIndex)
+  {
+    setCurrentIndex(m_previousCurrentIndex);
+    return;
+  }
+
+  if(prevCurrentRow == -1)
+    currentRow = prevCurrentRow;
+  else if(dragRow < prevCurrentRow)
+  {
+    if(dropRow < prevCurrentRow)
+      currentRow = prevCurrentRow;
+    else if(dropRow >= prevCurrentRow)
+      currentRow = prevCurrentRow - 1;
+  }
+  else if(dragRow == prevCurrentRow)
+  {
+    currentRow = dropRow;
+  }
+  else if(dragRow > prevCurrentRow)
+  {
+    if(dropRow <= prevCurrentRow)
+      currentRow = prevCurrentRow + 1;
+    else if(dropRow > prevCurrentRow)
+      currentRow = prevCurrentRow;
+  }
+
+  QModelIndex newCurrentIndex = model()->index(currentRow, 0, previousCurrentParentIndex);
+  setCurrentIndex(newCurrentIndex);
+
+  m_previousCurrentIndex = newCurrentIndex;
 }

@@ -34,6 +34,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
+
 te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject* parent)
   : AbstractTreeItem(parent)
 {
@@ -50,9 +51,12 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject*
     ++it;
   }
 
-  te::map::Layer* layer = static_cast<te::map::Layer*>(refLayer);
-  if(layer->hasLegend() == true)
-    setLegend();
+  if(refLayer->hasLegend() == true)
+  {
+    std::vector<te::map::LegendItem*> legend = *(refLayer->getLegend());
+    for(std::size_t i = 0; i < legend.size(); ++i)
+      new te::qt::widgets::LegendItem(legend[i], this);
+  }
 }
 
 te::qt::widgets::LayerItem::~LayerItem()
@@ -84,18 +88,40 @@ QVariant te::qt::widgets::LayerItem::data(int role) const
   return QVariant();
 }
 
+bool te::qt::widgets::LayerItem::isLayerItem() const
+{
+  return true;
+}
+
 QMenu* te::qt::widgets::LayerItem::getMenu(QWidget* parent) const
 {
   return new QMenu(parent);
 }
 
-void te::qt::widgets::LayerItem::setLegend()
+void te::qt::widgets::LayerItem::removeLegend()
 {
-  te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_refLayer);
+  const QList<QObject*> childrenList = children();
+  int numChildren = childrenList.count();
 
-  const std::vector<te::map::LegendItem*>& legend = refLayer->getLegend();
-  for(std::size_t i = 0; i < legend.size(); ++i)
-    new LegendItem(legend[i], this);
+  if(numChildren == 0)
+    return;
+
+  for(int i = 0; i < numChildren; ++i)
+  {
+    QObject* item = childrenList.at(i);
+    item->setParent(0);
+    delete item;
+  }
+    
+  m_refLayer->removeLegend();
 }
 
+void te::qt::widgets::LayerItem::insertLegend(const std::vector<te::map::LegendItem*>& legend)
+{
+  removeLegend();
 
+  for(std::size_t i = 0; i < legend.size(); ++i)
+    new te::qt::widgets::LegendItem(legend[i], this);
+
+  m_refLayer->insertLegend(legend);
+}
