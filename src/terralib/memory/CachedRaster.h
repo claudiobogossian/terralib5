@@ -63,6 +63,20 @@ namespace te
         */
         CachedRaster( const Raster& rhs, const unsigned char maxMemPercentUsed, 
           const unsigned int dataPrefetchThreshold );
+          
+        /*!
+          \brief Constructor.
+          
+          \param rhs The external raster where the data will be read/writed.
+          
+          \param maxNumberOfCacheBlocks The maximum number of cache blocks.
+          
+          \param dataPrefetchThreshold The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
+          
+          \return true if OK, false on errors.
+        */
+        CachedRaster( const unsigned int maxNumberOfCacheBlocks, const Raster& rhs, 
+          const unsigned int dataPrefetchThreshold );          
 
         ~CachedRaster();
 
@@ -70,8 +84,8 @@ namespace te
 
         std::map<std::string, std::string> getInfo() const
         {
-          assert( m_RasterPtr );
-          return m_RasterPtr->getInfo();
+          assert( m_blocksManager.getRaster() );
+          return m_blocksManager.getRaster()->getInfo();
         };        
 
         inline std::size_t getNumberOfBands() const
@@ -81,8 +95,8 @@ namespace te
 
         inline int getBandDataType(std::size_t i) const
         {
-          assert( m_RasterPtr );
-          return m_RasterPtr->getBandDataType( i );
+          assert( m_blocksManager.getRaster() );
+          return m_blocksManager.getRaster()->getBandDataType( i );
         };        
 
         inline const te::rst::Band* getBand(std::size_t i) const
@@ -113,20 +127,10 @@ namespace te
 
       protected :
         
-        te::rst::Raster* m_RasterPtr; //!<  The external raster where the data will be read/writed.
-        
-        unsigned char m_maxMemPercentUsed; //!< The maximum free memory percentual to use valid range: [1:100].
-        
-        unsigned int m_dataPrefetchThreshold; //!< The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
-        
         std::vector< CachedBand* > m_bands; //!< Internal raster bands.
         
         CachedBandBlocksManager m_blocksManager; //!< Internal blocks manager.
-        
-        /*!
-          \brief Initialize this instance to an initial state.
-        */        
-        void initialize();        
+      
 
         /*!
           \note Free all allocated internal resources and go back to the initial state.

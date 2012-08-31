@@ -46,13 +46,11 @@
 
 te::mem::CachedRaster::CachedRaster()
 {
-  initialize();
 }
 
 te::mem::CachedRaster::CachedRaster( te::rst::Grid* grid, te::common::AccessPolicy p )
 : te::rst::Raster( grid, p )
 {
-  initialize();
 }
 
 te::mem::CachedRaster::CachedRaster( const Raster& rhs, 
@@ -60,16 +58,22 @@ te::mem::CachedRaster::CachedRaster( const Raster& rhs,
   const unsigned int dataPrefetchThreshold )
 : te::rst::Raster( rhs )
 {
-  initialize();
-  
-  m_RasterPtr = (te::rst::Raster*)&rhs;
-  
   if( ! m_blocksManager.initialize( rhs, maxMemPercentUsed, dataPrefetchThreshold) )
     throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
   
-  m_maxMemPercentUsed = maxMemPercentUsed;
-  
-  m_dataPrefetchThreshold = dataPrefetchThreshold;
+  for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
+    ++bandsIdx )
+    m_bands.push_back( new te::mem::CachedBand( m_blocksManager, bandsIdx ) );
+}
+
+te::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
+  const Raster& rhs, 
+  const unsigned int dataPrefetchThreshold )
+: te::rst::Raster( rhs )
+{
+  if( ! m_blocksManager.initialize( maxNumberOfCacheBlocks, rhs, 
+    dataPrefetchThreshold) )
+    throw Exception(TR_MEMORY("Cannot initialize the blocks menager") );
   
   for( unsigned int bandsIdx = 0 ; bandsIdx < rhs.getNumberOfBands() ; 
     ++bandsIdx )
@@ -88,16 +92,9 @@ void te::mem::CachedRaster::open(const std::map<std::string, std::string>& rinfo
 
 te::dt::AbstractData* te::mem::CachedRaster::clone() const
 {
-  assert( m_RasterPtr );
-  return new CachedRaster( *m_RasterPtr, m_maxMemPercentUsed, 
-    m_dataPrefetchThreshold );
-}
-
-void te::mem::CachedRaster::initialize()
-{
-  m_RasterPtr = 0;
-  m_maxMemPercentUsed = 0;
-  m_dataPrefetchThreshold = 0;
+  assert( m_blocksManager.isInitialized() );
+  return new CachedRaster( m_blocksManager.getMaxNumberOfCacheBlocks(),
+    *m_blocksManager.getRaster(), m_blocksManager.getDataPrefetchThreshold() );
 }
 
 void te::mem::CachedRaster::free()
@@ -110,6 +107,4 @@ void te::mem::CachedRaster::free()
   }
   
   m_blocksManager.free();
-  
-  initialize();
 }
