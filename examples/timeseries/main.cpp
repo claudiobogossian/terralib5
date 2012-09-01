@@ -37,7 +37,7 @@
 int main(int argc, char *argv[])
 {
   TerraLib::getInstance().initialize();
-  te::pgis::Platform::initialize();
+  //te::pgis::Platform::initialize();
   LoadModules();
 
   QApplication app(argc, argv);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
   int ret = app.exec();
 
 //  delete myWindow;
-  te::pgis::Platform::finalize();
+  //te::pgis::Platform::finalize();
   TerraLib::getInstance().finalize();
 
   return ret;
