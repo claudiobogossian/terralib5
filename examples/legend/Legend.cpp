@@ -130,7 +130,7 @@ void Legend::editLegendSlot()
   if(legendDialog.exec() != QDialog::Accepted)
     return;
 
-  m_layerModel->insertLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
+  m_layerModel->addLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
 }
 
 void Legend::closeEvent(QCloseEvent* /*e*/)
