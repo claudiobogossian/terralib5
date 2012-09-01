@@ -331,10 +331,7 @@ bool te::qt::widgets::LayerExplorerModel::insertRows(int row, int count, const Q
 
   for (int i = 0; i < count; ++i)
   {
-    if(m_childItemsToBeInserted.empty() == false)
-      layerItem = m_childItemsToBeInserted[i];
-    else
-      layerItem = m_dragItem;
+    layerItem = m_dragItem;
     parentLayerItem->addChild(row++, layerItem);
   }
 
@@ -396,7 +393,7 @@ void te::qt::widgets::LayerExplorerModel::removeLegend(const QModelIndex& index)
   endRemoveRows();
 }
 
-void te::qt::widgets::LayerExplorerModel::insertLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend)
+void te::qt::widgets::LayerExplorerModel::addLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend)
 {
   if(!index.isValid())
     return;
@@ -415,19 +412,53 @@ void te::qt::widgets::LayerExplorerModel::insertLegend(const QModelIndex& index,
   endInsertRows();
 }
 
-void te::qt::widgets::LayerExplorerModel::removeItem(const QModelIndex& index)
+QModelIndex te::qt::widgets::LayerExplorerModel::insertItem(const QModelIndex& parent, int insertRow, te::map::AbstractLayer* refLayer)
 {
-  
+  te::qt::widgets::AbstractTreeItem* parentItem = getItem(parent);
+
+  if(parentItem->isLayerItem() == false)
+    return QModelIndex();
+
+  te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(refLayer, 0);
+  beginInsertRows(parent, insertRow, insertRow);
+  parentItem->addChild(insertRow, layerItem);
+  endInsertRows();
+
+  QModelIndex newIndex = createIndex(insertRow, 0, layerItem);
+
+  setData(newIndex, 0, Qt::CheckStateRole);
+
+  return newIndex;
+}
+
+te::map::AbstractLayer* te::qt::widgets::LayerExplorerModel::removeItem(const QModelIndex& index)
+{
+  if(!index.isValid())
+    return 0;
+
+  te::qt::widgets::AbstractTreeItem* item = getItem(index);
+
+  if(item->isLayerItem() == false)
+    return 0;
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(item);
+  te::qt::widgets::LayerItem* layerParentItem = static_cast<te::qt::widgets::LayerItem*>(layerItem->parent());
+
+  // Adjust the visibility of the folder layers
+  setData(index, 0, Qt::CheckStateRole);
+
+  int row = index.row();
+  QModelIndex parentIndex = index.parent();
+  beginRemoveRows(parentIndex, row, row);
+  te::map::AbstractLayer* itemRefLayer = layerParentItem->removeChild(row);
+  endRemoveRows();
+
+  return itemRefLayer;
 }
 
 void te::qt::widgets::LayerExplorerModel::resetModel()
 {
   reset();
-}
-
-void te::qt::widgets::LayerExplorerModel::setItemsToBeInserted(std::vector<te::qt::widgets::AbstractTreeItem*> items)
-{
-  m_childItemsToBeInserted = items;
 }
 
 void te::qt::widgets::LayerExplorerModel::dataChangedForDescendantsIndexes(const QModelIndex& parentIndex)
