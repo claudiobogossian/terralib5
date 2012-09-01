@@ -68,6 +68,7 @@ set (
   widgets/canvas
   widgets/charts
   widgets/datagrid
+  widgets/dataview
   widgets/dataset
   widgets/layer
   widgets/progress
@@ -89,87 +90,97 @@ appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
 # Select the header files for moc'ing
-file(GLOB HDRS_TO_MOC
-	 ${SRCDIR}/qwt/HistogramDisplay.h
-	 ${SRCDIR}/qwt/HistogramSelectionCursor.h
-	 ${SRCDIR}/qwt/Legend.h
-	 ${SRCDIR}/qwt/Plot.h
-	 ${SRCDIR}/qwt/ScatterDisplay.h
-	 ${SRCDIR}/qwt/ScatterSelectionCursor.h
-	 ${SRCDIR}/qwt/TimeSeriesDisplay.h
-	 ${SRCDIR}/widgets/canvas/MapDisplay.h
-	 ${SRCDIR}/widgets/layer/AbstractTreeItem.h
-	 ${SRCDIR}/widgets/layer/LayerExplorer.h
-	 ${SRCDIR}/widgets/layer/LayerExplorerModel.h
-	 ${SRCDIR}/widgets/layer/LayerItem.h
-	 ${SRCDIR}/widgets/layer/Legend.h
-	 ${SRCDIR}/widgets/layer/LegendItem.h
-	 ${SRCDIR}/widgets/layer/FolderLayerItem.h	
-	 ${SRCDIR}/widgets/dataset/CreateDataSet.h
-	 ${SRCDIR}/widgets/dataset/AddIndex.h	
-	 ${SRCDIR}/widgets/datagrid/DataGridModel.h
-	 ${SRCDIR}/widgets/datagrid/DataGridView.h	
-	 ${SRCDIR}/widgets/datagrid/HeaderView.h	
-	 ${SRCDIR}/widgets/property/AddProperty.h
-	 ${SRCDIR}/widgets/property/RemoveProperty.h
-	 ${SRCDIR}/widgets/property/RenameProperty.h
-	 ${SRCDIR}/widgets/property/UpdateProperty.h	
-	 ${SRCDIR}/widgets/progress/ProgressViewerBar.h
-	 ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
-	 ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
-	 ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
-   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
-   ${SRCDIR}/widgets/help/HelpPushButton.h
-	 ${SRCDIR}/widgets/help/HelpToolButton.h
-	 ${SRCDIR}/widgets/utils/DoubleListWidget.h
-	 ${SRCDIR}/widgets/utils/HorizontalSliderWidget.h
-	 ${SRCDIR}/widgets/utils/ListWidget.h
-	 ${SRCDIR}/widgets/utils/ParameterDialog.h
-	 ${SRCDIR}/widgets/utils/ParameterTableWidget.h
-   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
-   ${SRCDIR}/widgets/rp/SegmenterDialog.h
-   ${SRCDIR}/widgets/rp/ContrastDialog.h
-	 ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
-	 ${SRCDIR}/widgets/se/BasicFillWidget.h
-	 ${SRCDIR}/widgets/se/BasicStrokeWidget.h
-	 ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
-	 ${SRCDIR}/widgets/se/CharMapWidget.h
-	 ${SRCDIR}/widgets/se/ColorMapWidget.h
-	 ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
-	 ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
-	 ${SRCDIR}/widgets/se/GlyphMarkWidget.h
-	 ${SRCDIR}/widgets/se/GraphicFillWidget.h
-	 ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
-	 ${SRCDIR}/widgets/se/ImageOutlineWidget.h
-	 ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
-	 ${SRCDIR}/widgets/se/LocalGraphicWidget.h
-	 ${SRCDIR}/widgets/se/LocalImageWidget.h
-	 ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
-	 ${SRCDIR}/widgets/se/PointSymbolizerWidget.h
-	 ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
-	 ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
-	 ${SRCDIR}/widgets/se/SelectedChannelWidget.h
-	 ${SRCDIR}/widgets/se/ShadedReliefWidget.h
-	 ${SRCDIR}/widgets/se/SymbolEditorWidget.h
-	 ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
-	 ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
-	 ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
-	 ${SRCDIR}/widgets/srs/SRSDialog.h
-	 ${SRCDIR}/widgets/srs/SRSManagerDialog.h)
+file (
+  GLOB HDRS_TO_MOC
+  ${SRCDIR}/qwt/HistogramDisplay.h
+  ${SRCDIR}/qwt/HistogramSelectionCursor.h
+  ${SRCDIR}/qwt/Legend.h
+  ${SRCDIR}/qwt/Plot.h
+  ${SRCDIR}/qwt/ScatterDisplay.h
+  ${SRCDIR}/qwt/ScatterSelectionCursor.h
+  ${SRCDIR}/qwt/TimeSeriesDisplay.h
+  ${SRCDIR}/widgets/canvas/MapDisplay.h
+  ${SRCDIR}/widgets/layer/AbstractTreeItem.h
+  ${SRCDIR}/widgets/layer/LayerExplorer.h
+  ${SRCDIR}/widgets/layer/LayerExplorerModel.h
+  ${SRCDIR}/widgets/layer/LayerItem.h
+  ${SRCDIR}/widgets/layer/LegendItem.h
+  ${SRCDIR}/widgets/layer/Legend.h
+  ${SRCDIR}/widgets/layer/FolderLayerItem.h	
+  ${SRCDIR}/widgets/dataset/CreateDataSet.h
+  ${SRCDIR}/widgets/dataset/AddIndex.h	
+  ${SRCDIR}/widgets/datagrid/DataGridModel.h
+  ${SRCDIR}/widgets/datagrid/DataGridView.h	
+  ${SRCDIR}/widgets/datagrid/HeaderView.h	
+  ${SRCDIR}/widgets/property/AddProperty.h
+  ${SRCDIR}/widgets/property/RemoveProperty.h
+  ${SRCDIR}/widgets/property/RenameProperty.h
+  ${SRCDIR}/widgets/property/UpdateProperty.h	
+  ${SRCDIR}/widgets/progress/ProgressViewerBar.h
+  ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
+  ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
+  ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
+  ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
+  ${SRCDIR}/widgets/help/HelpPushButton.h
+  ${SRCDIR}/widgets/help/HelpToolButton.h
+  ${SRCDIR}/widgets/utils/DoubleListWidget.h
+  ${SRCDIR}/widgets/utils/HorizontalSliderWidget.h
+  ${SRCDIR}/widgets/utils/ListWidget.h
+  ${SRCDIR}/widgets/utils/ParameterDialog.h
+  ${SRCDIR}/widgets/utils/ParameterTableWidget.h
+  ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
+  ${SRCDIR}/widgets/utils/FileChooser.h
+  ${SRCDIR}/widgets/rp/SegmenterDialog.h
+  ${SRCDIR}/widgets/rp/ContrastDialog.h
+  ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
+  ${SRCDIR}/widgets/se/BasicFillWidget.h
+  ${SRCDIR}/widgets/se/BasicStrokeWidget.h
+  ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
+  ${SRCDIR}/widgets/se/CharMapWidget.h
+  ${SRCDIR}/widgets/se/ColorMapWidget.h
+  ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
+  ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
+  ${SRCDIR}/widgets/se/GlyphMarkWidget.h
+  ${SRCDIR}/widgets/se/GraphicFillWidget.h
+  ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
+  ${SRCDIR}/widgets/se/ImageOutlineWidget.h
+  ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
+  ${SRCDIR}/widgets/se/LocalGraphicWidget.h
+  ${SRCDIR}/widgets/se/LocalImageWidget.h
+  ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
+  ${SRCDIR}/widgets/se/PointSymbolizerWidget.h
+  ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
+  ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
+  ${SRCDIR}/widgets/se/SelectedChannelWidget.h
+  ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+  ${SRCDIR}/widgets/se/SymbolEditorWidget.h
+  ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
+  ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
+  ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
+  ${SRCDIR}/widgets/srs/SRSDialog.h
+  ${SRCDIR}/widgets/srs/SRSManagerDialog.h
+  ${SRCDIR}/widgets/dataview/TabularViewer.h
+#  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
+)
+
+  
+
 
 # Select the FORMS widgets     
-file(GLOB FORMS
-	 ${SRCDIR}/widgets/*.ui
-   ${SRCDIR}/widgets/canvas/*.ui
-	 ${SRCDIR}/widgets/charts/*.ui
-   ${SRCDIR}/widgets/datagrid/*.ui
-   ${SRCDIR}/widgets/dataset/*.ui
-   ${SRCDIR}/widgets/layer/ui/*.ui
-   ${SRCDIR}/widgets/property/*.ui
-	 ${SRCDIR}/widgets/utils/ui/*.ui
-	 ${SRCDIR}/widgets/rp/ui/*.ui
-	 ${SRCDIR}/widgets/se/ui/*.ui
-	 ${SRCDIR}/widgets/srs/ui/*.ui)
+file(
+  GLOB FORMS
+  ${SRCDIR}/widgets/*.ui
+  ${SRCDIR}/widgets/canvas/*.ui
+  ${SRCDIR}/widgets/charts/*.ui
+  ${SRCDIR}/widgets/datagrid/*.ui
+  ${SRCDIR}/widgets/dataset/*.ui
+  ${SRCDIR}/widgets/layer/ui/*.ui
+  ${SRCDIR}/widgets/property/*.ui
+  ${SRCDIR}/widgets/utils/ui/*.ui
+  ${SRCDIR}/widgets/rp/ui/*.ui
+  ${SRCDIR}/widgets/se/ui/*.ui
+  ${SRCDIR}/widgets/srs/ui/*.ui
+)
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
 	
@@ -177,8 +188,21 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
 	
+#set (SRCS_TO_MOC ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp)  
+  
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
+#qt4_generate_moc("${SRCDIR}/widgets/dataview/TabularViewer.cpp" ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp OPTIONS "-f" )
+#qt4_automoc("${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp")
+#qt4_wrap_cpp( MOC2 "${SRCDIR}/widgets/dataview/TabularViewer.cpp" OPTIONS "-o" "${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp" "-f" )
+
+set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
+
+#set (MOC_OPTIONS "-f"  )
+
+QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-f")
+
 qt4_wrap_ui(UI ${FORMS})
+qt4_add_resources( RSC_IMG "${ROOT}/images/terra_icons.qrc")
 
 install (
   FILES ${UI}
@@ -187,14 +211,16 @@ install (
 )
 
 source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${MOC} ${UI})
+source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI} ${RSC_IMG})
 
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}" "${ROOT}/images")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 
-list (APPEND SRCS "${MOC}" "${UI}")
+list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${RSC_IMG}")
+
+list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 
 #exporting module information
 exportModuleInformation("qtwidgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")

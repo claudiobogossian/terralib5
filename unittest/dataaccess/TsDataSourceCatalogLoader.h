@@ -29,9 +29,9 @@
 // TerraLib
 #include <terralib/dataaccess_fw.h>
 #include <terralib/geometry.h>
+
 // STL
 #include <string>
-//#include <vector>
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
@@ -56,6 +56,34 @@
 
 class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
 {
+  // It registers this class as a Test Suit
+  CPPUNIT_TEST_SUITE( TsDataSourceCatalogLoader );
+
+// It registers the class methods as Test Cases belonging to the suit 
+  CPPUNIT_TEST( tcLoadCatalog );
+  CPPUNIT_TEST( tcGetDataSets );
+  CPPUNIT_TEST( tcDataSetExists );
+  CPPUNIT_TEST( tcGetSequences  );
+  CPPUNIT_TEST( tcGetTransactor  );
+  CPPUNIT_TEST( tcGetExtentAll );
+  CPPUNIT_TEST( tcPkExists );
+  CPPUNIT_TEST( tcUkExists );
+  CPPUNIT_TEST( tcCcExists );
+  CPPUNIT_TEST( tcIdxExists );
+  CPPUNIT_TEST( tcFkExists );
+  CPPUNIT_TEST( tcAllGets );
+  CPPUNIT_TEST( tcGetFks );
+  CPPUNIT_TEST( tcLoadCatalogFull );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  public:
+// It sets up context before running the test.
+    void setUp();
+
+// It cleann up after the test run.
+    void tearDown();
+
   protected:
 
 // Test Cases for DataSourceCatalogLoader:
@@ -67,11 +95,11 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
       \brief Test Case: Testing DataSourceCatalogLoader of an given datasource.
     */
 
-    virtual void tcLoadCatalog();
+    void tcLoadCatalog();
     virtual void tcLoadCatalogFull();
-    virtual void tcGetDataSets();
-    virtual void tcGetDataSetType();
-    virtual void tcAllGets();
+    void tcGetDataSets();
+    void tcGetDataSetType();
+    void tcAllGets();
     virtual void tcGetDataSetTypeInvalid();
     virtual void tcDataSetExists();
     virtual void tcGetSequences();
@@ -95,6 +123,7 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
     virtual void tcFkExists();
     virtual void tcGetFks();
 
+  public:
 // It will come from the setUp of the derived database class (see:TsPostGISCatalogLoader, TsSQLiteCatalogLoader, etc)
     te::da::DataSource* m_ds;
     std::map<std::string, std::string> m_connInfo;
@@ -109,10 +138,10 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
     std::vector<std::string> m_vecSeqNames;
     std::vector<std::pair<std::string, te::gm::Envelope> > m_vecDtNamesAndEnvelops;
 
-    size_t m_nroDataSets;
-    std::string m_newDataSetType;
+    //size_t m_nroDataSets;
+    //std::string m_newDataSetType;
 };
-
+/*
 #define INSERT_DATASOURCECATALOGLOADER_TC \
                              CPPUNIT_TEST( tcGetDataSetTypeInvalid ); \
                              CPPUNIT_TEST( tcLoadCatalog  ); \
@@ -131,5 +160,5 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
                              CPPUNIT_TEST( tcAllGets ); \
                              CPPUNIT_TEST( tcGetFks ); \
                              CPPUNIT_TEST( tcLoadCatalogFull ); \
-
+*/
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_DATASOURCECATALOGLOADER_H

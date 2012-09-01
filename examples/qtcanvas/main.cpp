@@ -41,9 +41,9 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     LoadModules();
-    DrawingRasterObject();
-    //DrawingGeometricObjects();
-    //DrawPNG();
+    //DrawingRasterObject();
+    DrawingGeometricObjects();
+    DrawPNG();
   }
   catch(const std::exception& e)
   {

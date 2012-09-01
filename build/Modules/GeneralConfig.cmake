@@ -17,3 +17,11 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${_libOutdir}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${_libOutdir}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${_binOutdir}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${_binOutdir}")  
+
+if(UNIX)
+# On Linux-based systems, by default uses release configuration. Change CMAKE_BUILD_TYPE value to "Debug" to change to debug configuration.
+  if("${CMAKE_BUILD_TYPE}" STREQUAL "")
+    set (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug 
+    Release RelWithDebInfo MinSizeRel." FORCE)
+  endif()
+endif()

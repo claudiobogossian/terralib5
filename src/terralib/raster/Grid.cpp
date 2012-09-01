@@ -274,7 +274,7 @@ void te::rst::Grid::computeExtent() const
   m_extent->init(std::min(ll.x, ul.x),
                  std::min(ll.y, lr.y),
                  std::max(ur.x, lr.x),
-                 std::max(ul.y,ur.y));
+                 std::max(ul.y, ur.y));
 
   return;
 }

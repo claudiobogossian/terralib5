@@ -31,8 +31,11 @@
 #include "../raster/Raster.h"
 
 #include <boost/shared_array.hpp>
+#include <boost/thread.hpp>
 
 #include <vector>
+#include <memory>
+
 
 namespace te
 {  
@@ -64,6 +67,21 @@ namespace te
         */        
         bool initialize( const te::rst::Raster& externalRaster, 
           const unsigned char maxMemPercentUsed, const unsigned int dataPrefetchThreshold );
+          
+        /*!
+          \brief Initialize this instance to an initial state.
+          
+          \param externalRaster The external raster where the data will be read/writed.
+          
+          \param maxNumberOfCacheBlocks The maximum number of cache blocks.
+          
+          \param dataPrefetchThreshold The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
+          
+          \return true if OK, false on errors.
+        */        
+        bool initialize( const unsigned int maxNumberOfCacheBlocks, 
+          const te::rst::Raster& externalRaster, 
+          const unsigned int dataPrefetchThreshold );          
         
         /*!
           \brief Returns true if this instance is initialized.
@@ -95,10 +113,23 @@ namespace te
         
         
         /*! \brief Returns the associated raster. */
-        te::rst::Raster* getRaster() const
+        inline te::rst::Raster* getRaster() const
         {
           return m_rasterPtr;
         };        
+        
+        
+        /*! \brief The maximum number of cache blocks. */
+        inline unsigned int getMaxNumberOfCacheBlocks() const
+        {
+          return m_maxNumberOfCacheBlocks;
+        };
+        
+        /*! \brief The read-ahead data prefetch threshold. */
+        inline unsigned int getDataPrefetchThreshold() const
+        {
+          return m_dataPrefetchThreshold;
+        };
         
       protected :
         
@@ -114,9 +145,64 @@ namespace te
             ~BlockIndex() {};
         };
         
-        te::rst::Raster* m_rasterPtr;
+        class ThreadParameters
+        {
+          public :
+            
+            enum TaskType
+            {
+              InvalidTaskT = 0,
+              ReadTaskT = 1, //!< m_exchangeBlockPtr must point to a valid exchange block (it will be keept inside the thread for further use), m_blockPtr will be updated to point to the read block.
+              WriteTaskT = 2 //!< m_blockPtr must point to the block to be written.
+            };
+            
+            te::rst::Raster* m_rasterPtr;
+            
+            unsigned int m_dataPrefetchThreshold;
+            
+            bool m_keepRunning;
+            
+            bool m_taskFinished;
+            
+            TaskType m_task;
+            
+            unsigned char* m_blockPtr; //!< Input block pointer.
+            
+            unsigned char* m_exchangeBlockPtr; //!< Exchange block pointer.
+            
+            unsigned int m_blockB;
+            
+            unsigned int m_blockX;
+            
+            unsigned int m_blockY;
+            
+            boost::mutex m_doTaskMutex;
+            
+            boost::mutex m_taskFinishedMutex;
+            
+            boost::condition_variable m_doTaskCondVar;
+            
+            boost::condition_variable m_taskFinishedCondVar;
+            
+            boost::shared_array< unsigned char > m_threadDataBlockHandler;
+            
+            ThreadParameters() 
+            : m_rasterPtr( 0 ), 
+              m_dataPrefetchThreshold( 0 ),
+              m_keepRunning( false ),
+              m_taskFinished( false ),
+              m_task( InvalidTaskT ), 
+              m_blockPtr( 0 ),
+              m_exchangeBlockPtr( 0 ),
+              m_blockB( 0 ),
+              m_blockX( 0 ),
+              m_blockY( 0 )
+            {};
+            
+            ~ThreadParameters() {};
+        };
         
-        unsigned char m_maxMemPercentUsed;
+        te::rst::Raster* m_rasterPtr;
         
         unsigned int m_dataPrefetchThreshold;
         
@@ -128,16 +214,27 @@ namespace te
         
         unsigned int m_maxNumberOfCacheBlocks;
         
-        unsigned int m_blocksFifoPointer;
+        unsigned int m_blocksFifoNextSwapBlockIndex;
         
         //variables used by internal methods
-        void* m_getBlockPointer_BlkPtr;
+        unsigned char* m_getBlockPointer_BlkPtr;
         
-        std::vector< std::vector< std::vector< void* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
+        std::vector< std::vector< std::vector< unsigned char* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
         
-        std::vector< boost::shared_array< unsigned char* > > m_blocksHandler; //!< Cache blocks handler.
+        std::vector< boost::shared_array< unsigned char > > m_blocksHandler; //!< Cache blocks handler.
         
         std::vector< BlockIndex > m_blocksFifo;
+        
+        ThreadParameters m_threadParams;
+        
+        std::auto_ptr< boost::thread > m_threadHandler;
+        
+        /*! 
+          \brief Thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void threadEntry(ThreadParameters* paramsPtr);        
         
       private :
         

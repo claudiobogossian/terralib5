@@ -18,81 +18,100 @@
  */
 
 // TerraLib
-#include <terralib/common/Module.h>
-#include <terralib/dataaccess/Module.h>
-#include <terralib/geometry/Module.h>
+#include <terralib/common.h>
+#include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
 
-// cppUnit
-#include <cppunit/BriefTestProgressListener.h>
-#include <cppunit/CompilerOutputter.h>
-#include <cppunit/XmlOutputter.h>
-#include <cppunit/TextOutputter.h>
+// STL
+#include <cstdlib>
 
+// Boost
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
+
+// cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/BriefTestProgressListener.h>
+#include <cppunit/CompilerOutputter.h>
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
+#include <cppunit/TextOutputter.h>
+#include <cppunit/XmlOutputter.h>
 
 // Unit-Test TerraLib includes by platform
 #include "Config.h"
 
+#include "TsManagerDataSource.h"
+
 #if TE_TEST_GDAL
-  #include <terralib/gdal/Platform.h>
-  // Gdal test suit
-  #include "../gdal/TsManagerGdal.h"
+#include <terralib/gdal/Platform.h>
 #endif
 
 #if TE_TEST_PGIS
-  #include <terralib/postgis/Platform.h>
-  // PostGIS test suit
-  #include "../postgis/TsManagerPostGIS.h"
-#endif 
+#include <terralib/postgis/Platform.h>
+#endif
 
-#include <cstdlib>
+//static te::da::DataSource* sm_ds;
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  
+
 #if TE_TEST_PGIS
 // initialize PostGIS platform
-  te::pgis::Platform::initialize();  
-// initialize PostGIS test suit
-  TsManagerPostGIS::initialize();
+  te::pgis::Platform::initialize();
 #endif
 
 #if TE_TEST_GDAL
 // initialize GDAL platform
   te::gdal::Platform::initialize();  
-// initialize GDAL test suit
-  TsManagerGdal::initialize();
 #endif
 
+ // TsManagerDataSource::initialize();
+  bool resultStatus;
+  
+  boost::property_tree::ptree drivers;
+
+  boost::property_tree::read_json("../data/json_files/drivers.json", drivers);
+
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, drivers.get_child("drivers").get_child(""))
+  {
+
+    const std::string& driver_name = v.second.data();
+
+    TsManagerDataSource::initialize(driver_name);
+
+    boost::property_tree::ptree driver;
+
+    boost::property_tree::read_json(driver_name, driver);
+
+    std::string m_dsType = driver.get_child("ds.ds_type").data();
+
 // it creates the event manager and test controller
-  CPPUNIT_NS::TestResult controller;
+    CPPUNIT_NS::TestResult controller;
 
 // it adds a listener that collects test result 
-  CPPUNIT_NS::TestResultCollector result;
+    CPPUNIT_NS::TestResultCollector result;
 
-  controller.addListener(&result);
+    controller.addListener(&result);
 
 // it adds a listener that print dots as test run.
-  CPPUNIT_NS::BriefTestProgressListener progress;
+    CPPUNIT_NS::BriefTestProgressListener progress;
 
-  controller.addListener(&progress);
+    controller.addListener(&progress);
 
 // it adds the top suite to the test runner
-  CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
+    CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
 
-  CPPUNIT_NS::TestRunner runner;
+    CPPUNIT_NS::TestRunner runner;
 
-  runner.addTest(suite);
+    runner.addTest(suite);
 
-  runner.run(controller);
+    runner.run(controller);
 
-  CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
-  outputter.write();
+    CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
+    outputter.write();
 
 // Testing  different outputs
   // In a DEBUG version (Visual Net) testResults will be saved at Project directory (vcxproj)
@@ -110,38 +129,44 @@ int main(int /*argc*/, char** /*argv*/)
   //      1) Change at Configuration Properties:  'Debug | Working Directory '  from $(ProjectDir) to $(OutDir)   
     
 // Print only fail results in a txt file (the same containt you see in DOS window)
-  std::ofstream file1(TE_DATA_UNITTEST_LOCALE"/testResults_dataaccess_dos.txt" );
-  CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
-  outputter1.write();
-  file1.close();
+  //std::string driverTeste = TE_DATA_UNITTEST_LOCALE  + '/';
+  //std::string testResultDriver = "/testResult_" + m_dsType + ".xml";
+    std::string testResultDriver = "/testResult_" + m_dsType ;
 
-// Printing testResults in XML file   
-  CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_xml.xml");
-  CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet( TE_DATA_LOCALE"/data/report.xsl" ); //it is found at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl
-  xml.write();
-  file2.close();
+    std::ofstream file1(TE_DATA_UNITTEST_LOCALE+ testResultDriver + "_dos.txt" );
+    CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
+    outputter1.write();
+    file1.close();
+
+// Printing testResults in XML file 
+//  CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_xml.xml");
+    CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE + testResultDriver + ".xml");
+    CPPUNIT_NS::XmlOutputter xml( &result, file2 );
+    xml.setStyleSheet( TE_DATA_LOCALE"/data/report.xsl" ); //it is found at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl
+    xml.write();
+    file2.close();
 
 // Print formated testResult in a txt 
-  CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_formated.txt" );
-  CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
-  outputter3.write();
-  file3.close();
+    //CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_formated.txt" );
+    CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE + testResultDriver + ".txt" );
+     CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
+    outputter3.write();
+    file3.close();
 
-  bool resultStatus = result.wasSuccessful();
+    //bool resultStatus = result.wasSuccessful();
+    resultStatus = result.wasSuccessful();
+
+    TsManagerDataSource::finalize();
+  }
 
 // finalize defined drivers test suit
 
 #if TE_TEST_GDAL
-  // finalize Gdal test suit
-  TsManagerGdal::finalize();
-  // finalize TerraLib Plataform
+// finalize TerraLib Plataform
   te::gdal::Platform::finalize(); 
 #endif
 
 #if TE_TEST_PGIS
-  // finalize PostGIS test suit
-  TsManagerPostGIS::finalize();
   // finalize TerraLib Plataform
   te::pgis::Platform::finalize();  
 #endif

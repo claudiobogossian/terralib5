@@ -29,6 +29,7 @@
 // Boost
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
+#include <boost/lexical_cast.hpp>
 
 void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::string, std::string>& dict)
 {
@@ -48,3 +49,68 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::str
   }
 }
 
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::string>& vect)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    vect.push_back(v.second.data());
+    continue;
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<double>& vectd)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    vectd.push_back(boost::lexical_cast<double>(v.second.data()));
+    continue;
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<size_t>& vect)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    vect.push_back(boost::lexical_cast<size_t>(v.second.data()));
+    continue;
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::vector<double> >& vect)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type& v2, v.second.get_child(""))
+    {
+      std::vector<double> envrep;
+      te::common::Convert(v2.second.get_child(""), envrep);
+      //{
+      //    std::vector<double>::iterator it;
+      //    double  d[4]={0.0,0.0,0.0,0.0}; int i=0;
+      //    for(it = envrep.begin(); it < envrep.end(); it++)
+      //     {
+      //         d[i] = (*it);
+      //         i+= 1;
+      //     }
+      //}
+      vect.push_back(envrep);
+    }
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::map<std::string, std::string> >& vectm)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    // used to get the properties parameters into a map
+    std::map<std::string, std::string> dict;
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type& v2, v.second.get_child(""))
+    {
+      const std::string& f = v2.first.data();
+      const std::string& s = v2.second.data();
+
+      dict[f] = s;
+    }
+    vectm.push_back(dict);
+  }
+}

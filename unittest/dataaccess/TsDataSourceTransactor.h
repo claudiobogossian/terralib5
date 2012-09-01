@@ -54,21 +54,53 @@
  */
 class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
 {
+// It registers this class as a Test Suit
+  CPPUNIT_TEST_SUITE( TsDataSourceTransactor );
+
+// It registers the class methods as Test Cases belonging to the suit 
+  CPPUNIT_TEST( tcGetDataSource ); 
+  CPPUNIT_TEST( tcGetDataSet );
+  CPPUNIT_TEST( tcGetDataSetByGeometry );
+  CPPUNIT_TEST( tcGetDataSetByProperty );
+  CPPUNIT_TEST( tcGetDataSetByEnvRec );
+  CPPUNIT_TEST( tcGetDataSetByEnvRec1 );
+  CPPUNIT_TEST( tcGetDataSetByEnvRec2 );
+  CPPUNIT_TEST( tcQueryByString );
+  CPPUNIT_TEST( tcGetCatalogLoader );
+  CPPUNIT_TEST( tcGetDataSetTypePersistence );
+  CPPUNIT_TEST( tcGetDataSetPersistence );
+
+  CPPUNIT_TEST_SUITE_END();
+
+  public:
+// It sets up context before running the test.
+    void setUp();
+
+// It cleann up after the test run.
+    void tearDown();
+
   protected:
 
-// Test Cases:
-    virtual void tcBegin();
-    virtual void tcComit();
-    virtual void tcRollback();
-    virtual void tcExecuteQuery();
-    virtual void tcExecuteCommand();
+// Test Cases for DataSourceTransactor:
+
+    // Protected Methods 
+    // ...
+
+    /*!
+      \brief Test Case: Testing DataSourceTransactor of an given datasource.
+    */
+    void tcBegin();
+    void tcComit();
+    void tcRollback();
+    void tcExecuteQuery();
+    void tcExecuteCommand();
 
     /*!
       \brief Test Case: get the dataSet using the i-th position in the DataSourceCatalog.
   
       This test case will get all the dataSets using the i-th position in the DataSourceCatalog.
      */    
-    virtual void tcGetDataSet(); //10 API
+    void tcGetDataSet(); //10 API
 
     /*!
       \brief Test Case: get only the objects that intercepts a given rectangle.
@@ -76,8 +108,8 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
       This test case will get all the objects that intercepts a given rectangle defined m_vecNamesAndRecs.
       The vector of pairs contain the dataSets names and the rectangles to be used as a spatial filter when retrieving datasets.
      */
-    virtual void tcGetDataSetByEnvRec();
-    virtual void tcGetDataSetByEnvRec1();
+    void tcGetDataSetByEnvRec();
+    void tcGetDataSetByEnvRec1();
 
     /*!
       \brief Test Case: get only the objects that intercepts a given rectangle.
@@ -86,33 +118,33 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
       The vector of pairs contain the dataSets names and the rectangles to be used as a spatial filter when retrieving datasets.
       The number of objects returned is compared with the size in the vector of pairs m_vecNamesSizesRec.
      */
-    virtual void tcGetDataSetByEnvRec2();
+    void tcGetDataSetByEnvRec2();
 
     /*!
     \brief Test Case: get only the objects that intercepts a given geometry (point, box, pol, geom).
 
     This test case will get all the objects that intercepts a given geometry (point, box, pol, geom).
    */
-    virtual void tcGetDataSetByGeometry();
+    void tcGetDataSetByGeometry();
 
     /*!
     \brief Test Case: It get the DataSet identified by the given name using a spatial filter over the given geometric property.
 
     This test case will get the DataSet identified by the given name using a spatial filter over the given geometric property.
    */
-    virtual void tcGetDataSetByProperty();
-    virtual void tcQueryByString(); 
-    virtual void tcQueryBySelect();
+    void tcGetDataSetByProperty();
+    void tcQueryByString(); 
+    void tcQueryBySelect();
 
 
     // New ones...
-    virtual void tcGetPreparedStmt();
-    virtual void tcGetBatchExecutor();
-    virtual void tcGetCatalogLoader();
-    virtual void tcGetDataSetTypePersistence();
-    virtual void tcGetDataSetPersistence();
-    virtual void tcCancel();
-    virtual void tcGetDataSource();
+    void tcGetPreparedStmt();
+    void tcGetBatchExecutor();
+    void tcGetCatalogLoader();
+    void tcGetDataSetTypePersistence();
+    void tcGetDataSetPersistence();
+    void tcCancel();
+    void tcGetDataSource();
 
 
     //It will come from the setUp of the derived database class (see:TsPostGIS or TsSQLite or ...)
@@ -142,7 +174,7 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
     te::gm::Geometry* m_geom;
 
 };
-
+/*
 // Calling order of DATASOURCETRANSACTOR Test Cases                                
                           
 #define INSERT_DATASOURCETRANSACTOR_TC CPPUNIT_TEST( tcGetDataSource ); \
@@ -156,5 +188,5 @@ class TsDataSourceTransactor : public CPPUNIT_NS::TestFixture
                                CPPUNIT_TEST( tcGetCatalogLoader ); \
                                CPPUNIT_TEST( tcGetDataSetTypePersistence ); \
                                CPPUNIT_TEST( tcGetDataSetPersistence ); \
-
+*/
 #endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_DATASOURCETRANSACTOR_H

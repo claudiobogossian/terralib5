@@ -154,8 +154,8 @@ namespace te
 
           \param ulLocation  The location of the upper-left corner of the upper-left pixel (or cell) of the grid.
           \param srid        The id of the SRS that the location refers to.
-          \para resX         The grid horizontal (x-axis) resolution 
-          \para resY         The grid vertical (y-axis) resolution 
+          \para resX         The grid horizontal (x-axis) resolution
+          \para resY         The grid vertical (y-axis) resolution
         */
         void setGeoreference(const te::gm::Coord2D& ulLocation, int srid, double resX, double resY);
 
@@ -168,7 +168,7 @@ namespace te
           \verbatin
           X = geoTrans(0) + col*geoTrans(1) + lin*geoTrans(2)
           Y = geoTrans(3) + col*geoTrans(4) + lin*geoTrans(5)
-          \verbatin
+          \endverbatin
 
           This method should be used mainly when there is a translation associated to the mapping.
           Otherwise use the method above.

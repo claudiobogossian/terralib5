@@ -247,7 +247,7 @@ namespace te
 
         signals:
 
-          void colorChanged();
+          void colorChanged(const QColor&);
 
         private:
 
