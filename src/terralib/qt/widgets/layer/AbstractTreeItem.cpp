@@ -74,11 +74,13 @@ te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::removeChild(int row)
   if (numChildren == 0 || row < 0 || row >= numChildren)
     return false;
 
-  QObject* item = childrenList.value(row);
-  item->setParent(0);
-  //delete item;
+  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(childrenList.at(row));
 
-  return m_refLayer;
+  te::map::AbstractLayer* itemRefLayer = static_cast<te::map::AbstractLayer*>(m_refLayer->removeChild(row));
+  item->setParent(0);
+  delete item;
+
+  return itemRefLayer;
 }
 
 bool te::qt::widgets::AbstractTreeItem::removeChildren(int i, int count)
