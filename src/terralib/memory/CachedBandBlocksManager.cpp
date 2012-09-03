@@ -39,6 +39,7 @@ void te::mem::CachedBandBlocksManager::initState()
   m_globalBlockSizeBytes = 0;
   m_maxNumberOfCacheBlocks = 0;
   m_blocksFifoNextSwapBlockIndex = 0;
+  m_getBlockPointer_BlkPtr = 0;
 }
 
 te::mem::CachedBandBlocksManager::CachedBandBlocksManager()
@@ -68,6 +69,19 @@ bool te::mem::CachedBandBlocksManager::initialize(
   const te::rst::Raster& externalRaster, const unsigned char maxMemPercentUsed, 
   const unsigned int dataPrefetchThreshold)
 {
+  free();
+  
+  // Finding the global block dimensions
+  
+  unsigned int maxBlockSizeBytes = 0;
+  
+  for( unsigned int bandIdx = 0 ; bandIdx < externalRaster.getNumberOfBands() ;
+    ++bandIdx )
+  {
+    if( maxBlockSizeBytes < externalRaster.getBand( bandIdx )->getBlockSize() )
+      maxBlockSizeBytes = externalRaster.getBand( bandIdx )->getBlockSize();
+  }
+  
   const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
   const double usedVMem = (double)te::common::GetUsedVirtualMemory();
   const double totalVMem = ( (double)te::common::GetTotalVirtualMemory() ) / 
@@ -75,7 +89,7 @@ bool te::mem::CachedBandBlocksManager::initialize(
   const double freeVMem = ( ((double)maxMemPercentUsed) / 100.0 ) *
     std::min( totalPhysMem, ( ( totalVMem <= usedVMem ) ? 0.0 : ( totalVMem - usedVMem ) ) );  
   const unsigned int maxNumberOfCacheBlocks = (unsigned int)
-    std::max( 1.0, std::ceil( freeVMem / ((double)m_globalBlockSizeBytes) ) );
+    std::max( 1.0, std::ceil( freeVMem / ((double)maxBlockSizeBytes) ) );
     
   return initialize( maxNumberOfCacheBlocks, externalRaster, dataPrefetchThreshold );
 }
@@ -136,7 +150,6 @@ bool te::mem::CachedBandBlocksManager::initialize(
   {
     m_threadParams.m_rasterPtr = (te::rst::Raster*)&externalRaster;
     m_threadParams.m_dataPrefetchThreshold = dataPrefetchThreshold;
-    m_threadParams.m_keepRunning = true;
     m_threadParams.m_taskFinished = false;
     m_threadParams.m_task = ThreadParameters::InvalidTaskT;
     m_threadParams.m_blockPtr= 0;
@@ -159,8 +172,12 @@ void te::mem::CachedBandBlocksManager::free()
   
   if( m_dataPrefetchThreshold )
   {
-    m_threadParams.m_keepRunning = false;
-    m_threadParams.m_doTaskCondVar.notify_one();
+    {
+      boost::lock_guard<boost::mutex> lock(m_threadParams.m_doTaskMutex);
+      m_threadParams.m_task = ThreadParameters::SuicideTastT;
+      m_threadParams.m_doTaskCondVar.notify_one();
+    }
+    
     m_threadHandler->join();
     m_threadHandler.reset();
   }  
@@ -247,12 +264,15 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
             m_threadParams.m_blockX = choosedSwapBlockIndex.m_x;
             m_threadParams.m_blockY = choosedSwapBlockIndex.m_y;
             m_threadParams.m_blockPtr = m_getBlockPointer_BlkPtr;             
+            m_threadParams.m_exchangeBlockPtr = 0;
             m_threadParams.m_task = ThreadParameters::WriteTaskT;
+            m_threadParams.m_taskFinished = false;
           }
           
           m_threadParams.m_doTaskCondVar.notify_one();
           
           // wait for the block writing request to finish
+          while( ! m_threadParams.m_taskFinished )
           {
             boost::unique_lock<boost::mutex> lock(
               m_threadParams.m_taskFinishedMutex);
@@ -262,8 +282,6 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
               m_threadParams.m_taskFinishedCondVar.wait( lock );
             }
           }
-          
-          m_threadParams.m_taskFinished = false;
         }
         else
         {
@@ -284,11 +302,13 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
         m_threadParams.m_blockB = band;
         m_threadParams.m_blockX = x;
         m_threadParams.m_blockY = y;
+        m_threadParams.m_blockPtr = 0;
         m_threadParams.m_exchangeBlockPtr = m_getBlockPointer_BlkPtr;
         m_threadParams.m_task = ThreadParameters::ReadTaskT;
+        m_threadParams.m_taskFinished = false;
+        
+        m_threadParams.m_doTaskCondVar.notify_one();
       }
-      
-      m_threadParams.m_doTaskCondVar.notify_one();
       
       // wait for the block reading request to finish
       {
@@ -325,6 +345,8 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
 
 void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
 {
+//  std::cout << std::endl << "Thread started" << std::endl;
+  
   assert( paramsPtr );
   assert( paramsPtr->m_rasterPtr );
   
@@ -332,153 +354,209 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
   unsigned char* internalExchangeBlockPtr = paramsPtr->m_threadDataBlockHandler.get();
   assert( internalExchangeBlockPtr );
   
-  int readXDirectionVector = 0;
-  int readYDirectionVector = 0;
-  int readBDirectionVector = 0;
-  int lastReadBlkX = 0;
-  int lastReadBlkY = 0;
-  int lastReadBlkB = 0;
-  bool hasReadedAheadBlk = false;
-  bool doReadAhead = false;
-  int readAheadBlkB = 0;
-  int readAheadBlkX = 0;
-  int readAheadBlkY = 0;
+  int globalReadAheadDirectionVectorX = 0;
+  int globalReadAheadDirectionVectorY = 0;
+  int globalReadAheadDirectionVectorB = 0;
+  bool globalReadAheadBlockReady = false;
+  int globalReadAheadBlockB = 0;
+  int globalReadAheadBlockX = 0;
+  int globalReadAheadBlockY = 0;  
+  int lastReadBlockX = 0;
+  int lastReadBlockY = 0;
+  int lastReadBlockB = 0;
   
-  while( paramsPtr->m_keepRunning )
+  int currentReadDirectionVectorX = 0;
+  int currentReadDirectionVectorY = 0;
+  int currentReadDirectionVectorB = 0;
+  int nextReadAheadBlkB = 0;
+  int nextReadAheadBlkX = 0;
+  int nextReadAheadBlkY = 0;
+  bool doReadAhead = false;
+  
+  while( true )
   {
     // wait for a task
+    boost::unique_lock<boost::mutex> lock( paramsPtr->m_doTaskMutex );
+    while( paramsPtr->m_task == ThreadParameters::InvalidTaskT )
     {
-      boost::unique_lock<boost::mutex> lock( paramsPtr->m_doTaskMutex );
+      paramsPtr->m_doTaskCondVar.wait( lock );
+    }
+    
+    if( paramsPtr->m_task == ThreadParameters::ReadTaskT )
+    {
+//      std::cout << std::endl << "Starting a read task" << std::endl;
       
-      while( paramsPtr->m_task == ThreadParameters::InvalidTaskT )
-      {
-        paramsPtr->m_doTaskCondVar.wait( lock );
+      assert( paramsPtr->m_blockPtr == 0 );
+      assert( paramsPtr->m_exchangeBlockPtr );
+      
+      if( globalReadAheadBlockReady 
+        && ( globalReadAheadBlockB == paramsPtr->m_blockB )
+        && ( globalReadAheadBlockX == paramsPtr->m_blockX )
+        && ( globalReadAheadBlockY == paramsPtr->m_blockY ) )
+      { 
+//        std::cout << std::endl << "Read-ahead block is avaliable, it will be used" << std::endl;
+        
+        // use the read-ahed block
+        paramsPtr->m_blockPtr = internalExchangeBlockPtr;
+        globalReadAheadBlockReady = false;
+        internalExchangeBlockPtr = paramsPtr->m_exchangeBlockPtr;
+        
+//        std::cout << std::endl << "Read-ahead block used." << std::endl;
+      }
+      else
+      { 
+//        std::cout << std::endl << "Read-ahead block not avaliable, block will be read from raster" << std::endl;
+        
+        // read from the external raster
+        paramsPtr->m_rasterPtr->getBand( paramsPtr->m_blockB )->read( paramsPtr->m_blockX, 
+          paramsPtr->m_blockY, paramsPtr->m_exchangeBlockPtr );
+        paramsPtr->m_blockPtr = paramsPtr->m_exchangeBlockPtr;
+          
+//        std::cout << std::endl << "Block readed from raster." << std::endl;
       }
       
-      if( paramsPtr->m_task == ThreadParameters::ReadTaskT )
+      // notifying the task finishment
+      
       {
-        assert( paramsPtr->m_exchangeBlockPtr );
-        
-        if( hasReadedAheadBlk && ( readAheadBlkB == paramsPtr->m_blockB )
-          && ( readAheadBlkX == paramsPtr->m_blockX )
-          && ( readAheadBlkY == paramsPtr->m_blockY ) )
-        { 
-          // use the read-ahed block
-          paramsPtr->m_blockPtr = internalExchangeBlockPtr;
-          internalExchangeBlockPtr = paramsPtr->m_exchangeBlockPtr;
-          hasReadedAheadBlk = false;
-        }
-        else
-        { 
-          // read from the external raster
-          paramsPtr->m_rasterPtr->getBand( paramsPtr->m_blockB )->read( paramsPtr->m_blockX, 
-            paramsPtr->m_blockY, paramsPtr->m_blockPtr );
-        }
-        
-        // defining if read-ahed must be done
-        
-        if( paramsPtr->m_dataPrefetchThreshold )
-        {
-          readXDirectionVector += ( paramsPtr->m_blockX - lastReadBlkX );
-          readYDirectionVector += ( paramsPtr->m_blockY - lastReadBlkY );
-          readBDirectionVector += ( paramsPtr->m_blockB - lastReadBlkB );
-          
-          doReadAhead = false;
-          
-          if( std::abs( readXDirectionVector )  > paramsPtr->m_dataPrefetchThreshold )
-          {
-            if( readXDirectionVector > 0 )
-            {
-              readAheadBlkX = ((int)paramsPtr->m_blockX) + 1;
-              --readXDirectionVector;
-            }
-            else
-            {
-              readAheadBlkX = ((int)paramsPtr->m_blockX) - 1;
-              ++readXDirectionVector;
-            }
-              
-            if( ( readAheadBlkX >= 0 ) &&
-              ( readAheadBlkX < paramsPtr->m_rasterPtr->getNumberOfColumns() ) )
-              doReadAhead = true;
-            else
-              readAheadBlkX = ((int)paramsPtr->m_blockX);
-          }
-          
-          if( std::abs( readYDirectionVector )  > paramsPtr->m_dataPrefetchThreshold )
-          {
-            if( readYDirectionVector > 0 )
-            {
-              readAheadBlkY = ((int)paramsPtr->m_blockY) + 1;
-              --readYDirectionVector;
-            }
-            else
-            {
-              readAheadBlkY = ((int)paramsPtr->m_blockY) - 1;
-              ++readYDirectionVector;
-            }
-              
-            if( ( readAheadBlkY >= 0 ) &&
-              ( readAheadBlkY < paramsPtr->m_rasterPtr->getNumberOfRows() ) )
-              doReadAhead = true;
-            else
-              readAheadBlkY = ((int)paramsPtr->m_blockY);
-          }
-         
-          if( std::abs( readBDirectionVector )  > paramsPtr->m_dataPrefetchThreshold )
-          {
-            if( readBDirectionVector > 0 )
-            {
-              readAheadBlkB = ((int)paramsPtr->m_blockB) + 1;
-              --readBDirectionVector;
-            }
-            else
-            {
-              readAheadBlkB = ((int)paramsPtr->m_blockB) - 1;
-              ++readBDirectionVector;
-            }
-              
-            if( ( readAheadBlkB >= 0 ) &&
-              ( readAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() ) )
-              doReadAhead = true;
-            else
-              readAheadBlkB = ((int)paramsPtr->m_blockB);
-          }
-          
-          lastReadBlkX = paramsPtr->m_blockX;
-          lastReadBlkY = paramsPtr->m_blockY;
-          lastReadBlkB = paramsPtr->m_blockB;
-        }
-        
-        // notifying the task finishment
+        boost::lock_guard<boost::mutex> lock( paramsPtr->m_taskFinishedMutex );
         
         paramsPtr->m_taskFinished = true;
         paramsPtr->m_task = ThreadParameters::InvalidTaskT;
+        
         paramsPtr->m_taskFinishedCondVar.notify_one();
       }
-      else if( paramsPtr->m_task == ThreadParameters::WriteTaskT )
+      
+      // defining if read-ahed must be done
+      
+      if( paramsPtr->m_dataPrefetchThreshold )
       {
-        paramsPtr->m_rasterPtr->getBand( paramsPtr->m_blockB )->write( paramsPtr->m_blockX, 
-          paramsPtr->m_blockY, paramsPtr->m_blockPtr );
+        currentReadDirectionVectorX = ( ((int)paramsPtr->m_blockX) - lastReadBlockX );
+        currentReadDirectionVectorY = ( ((int)paramsPtr->m_blockY) - lastReadBlockY );
+        currentReadDirectionVectorB = ( ((int)paramsPtr->m_blockB) - lastReadBlockB );
+        
+        doReadAhead = false;
+        
+        if( ( std::abs( currentReadDirectionVectorX ) < 2 ) && 
+          ( std::abs( currentReadDirectionVectorY ) < 2 )
+          && ( std::abs( currentReadDirectionVectorB ) < 2 ) )
+        {
+          globalReadAheadDirectionVectorX += currentReadDirectionVectorX;
+          globalReadAheadDirectionVectorY += currentReadDirectionVectorY;
+          globalReadAheadDirectionVectorB += currentReadDirectionVectorB;
           
-        // notifying the task finishment
-        
-        paramsPtr->m_taskFinished = true;
-        paramsPtr->m_task = ThreadParameters::InvalidTaskT;
-        paramsPtr->m_taskFinishedCondVar.notify_one();          
+          if( std::abs( globalReadAheadDirectionVectorX )  > 
+            paramsPtr->m_dataPrefetchThreshold )
+          {
+            if( globalReadAheadDirectionVectorX > 0 )
+            {
+              nextReadAheadBlkX = ((int)paramsPtr->m_blockX) + 1;
+              --globalReadAheadDirectionVectorX;
+            }
+            else
+            {
+              nextReadAheadBlkX = ((int)paramsPtr->m_blockX) - 1;
+              ++globalReadAheadDirectionVectorX;
+            }
+              
+            if( ( nextReadAheadBlkX >= 0 ) &&
+              ( nextReadAheadBlkX < paramsPtr->m_rasterPtr->getNumberOfColumns() ) )
+              doReadAhead = true;
+            else
+              nextReadAheadBlkX = ((int)paramsPtr->m_blockX);
+          }
+                    
+          if( std::abs( globalReadAheadDirectionVectorY )  > 
+            paramsPtr->m_dataPrefetchThreshold )
+          {
+            if( globalReadAheadDirectionVectorY > 0 )
+            {
+              nextReadAheadBlkY = ((int)paramsPtr->m_blockY) + 1;
+              --globalReadAheadDirectionVectorY;
+            }
+            else
+            {
+              nextReadAheadBlkY = ((int)paramsPtr->m_blockY) - 1;
+              ++globalReadAheadDirectionVectorY;
+            }
+              
+            if( ( nextReadAheadBlkY >= 0 ) &&
+              ( nextReadAheadBlkY < paramsPtr->m_rasterPtr->getNumberOfRows() ) )
+              doReadAhead = true;
+            else
+              nextReadAheadBlkY = ((int)paramsPtr->m_blockY);
+          }
+          
+          if( std::abs( globalReadAheadDirectionVectorB )  > 
+            paramsPtr->m_dataPrefetchThreshold )
+          {
+            if( globalReadAheadDirectionVectorB > 0 )
+            {
+              nextReadAheadBlkB = ((int)paramsPtr->m_blockB) + 1;
+              --globalReadAheadDirectionVectorB;
+            }
+            else
+            {
+              nextReadAheadBlkB = ((int)paramsPtr->m_blockB) - 1;
+              ++globalReadAheadDirectionVectorB;
+            }
+              
+            if( ( nextReadAheadBlkB >= 0 ) &&
+              ( nextReadAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() ) )
+              doReadAhead = true;
+            else
+              nextReadAheadBlkB = ((int)paramsPtr->m_blockB);
+          }          
+        }
+        else
+        {
+          globalReadAheadDirectionVectorX = 0;
+          globalReadAheadDirectionVectorY = 0;
+          globalReadAheadDirectionVectorB = 0;
+        }
+    
+        if( doReadAhead )
+        {
+//          std::cout << std::endl << "Reading-ahead a new block" << std::endl;
+          
+          paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->read( nextReadAheadBlkX, 
+            nextReadAheadBlkY, internalExchangeBlockPtr );      
+          
+          globalReadAheadBlockX = nextReadAheadBlkX;
+          globalReadAheadBlockY = nextReadAheadBlkY;
+          globalReadAheadBlockB = nextReadAheadBlkB;
+          globalReadAheadBlockReady = true;
+          
+//          std::cout << std::endl << "Read-ahead block reading completed." << std::endl;
+        }
       }
+      
+      lastReadBlockX = (int)paramsPtr->m_blockX;
+      lastReadBlockY = (int)paramsPtr->m_blockY;
+      lastReadBlockB = (int)paramsPtr->m_blockB;         
     }
-    
-    // do read-ahead if necessary
-    
-    if( doReadAhead )
+    else if( paramsPtr->m_task == ThreadParameters::WriteTaskT )
     {
-      doReadAhead = false;
-      paramsPtr->m_rasterPtr->getBand( readAheadBlkB )->read( readAheadBlkX, 
-        readAheadBlkY, internalExchangeBlockPtr );      
+//      std::cout << std::endl << "Starting a write task" << std::endl;
+      
+      assert( paramsPtr->m_blockPtr );
+      assert( paramsPtr->m_exchangeBlockPtr == 0 );
+      
+      paramsPtr->m_rasterPtr->getBand( paramsPtr->m_blockB )->write( paramsPtr->m_blockX, 
+        paramsPtr->m_blockY, paramsPtr->m_blockPtr );
         
-      hasReadedAheadBlk = true;
+      // notifying the task finishment
+      
+      paramsPtr->m_taskFinished = true;
+      paramsPtr->m_task = ThreadParameters::InvalidTaskT;
+      paramsPtr->m_taskFinishedCondVar.notify_one();          
     }
+    else if( paramsPtr->m_task == ThreadParameters::SuicideTastT )
+    {
+//      std::cout << std::endl << "Thread ending" << std::endl;
+      return;
+    }
+    
+//    std::cout << std::endl << "Task ended" << std::endl;
   }
 }
         

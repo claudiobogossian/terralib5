@@ -88,7 +88,7 @@ namespace te
 
       protected :
         
-        std::size_t m_idx;
+        std::size_t m_idx; //!< This band index.
         
         unsigned int m_blkWidth; //!< The current band blocks width
         
@@ -107,9 +107,9 @@ namespace te
         mutable unsigned int m_setGetPos;  
         mutable void* m_setGetBufPtr;
         
-        CachedBandBlocksManager& m_blocksManager;
+        CachedBandBlocksManager& m_blocksManager; //!< The external blocks manager reference.
         
-        static te::mem::CachedBandBlocksManager dummyBlocksManager;
+        static te::mem::CachedBandBlocksManager dummyBlocksManager; //!< A global static dummy blocks manager.
       
       private :
 

@@ -53,7 +53,7 @@ namespace te
         /*!
           \brief Constructor.
           
-          \param rhs The external raster where the data will be read/writed.
+          \param rhs The external raster where the data will be read/written.
           
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
           
@@ -67,7 +67,7 @@ namespace te
         /*!
           \brief Constructor.
           
-          \param rhs The external raster where the data will be read/writed.
+          \param rhs The external raster where the data will be read/written.
           
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
           
