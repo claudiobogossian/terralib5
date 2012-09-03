@@ -73,7 +73,8 @@ namespace te
 
           ColorBar(QWidget* parent = 0);
 
-          /*! \brief Destructor */
+          /*! 
+          \brief Destructor */
 
           ~ColorBar();
 
@@ -150,7 +151,7 @@ namespace te
           /*!
           \brief Inherit of QEvent, receive events to paint e update widgets.
 
-          \params QPaintEvent.
+          \param QPaintEvent
           */
 
           virtual void paintEvent(QPaintEvent* e);
@@ -158,7 +159,7 @@ namespace te
           /*!
           \brief It waits a doubleClickEvent to do something.
 
-          \params QMouseEvent.
+          \param QMouseEvent
           \note In this case, it treat the add color funciontion.
           */
 
@@ -167,7 +168,7 @@ namespace te
           /*!
           \brief It waits a pressEvent from mouse to do something.
 
-          \params QMouseEvent.
+          \param QMouseEvent
           \note In this case, it treat the remove colorStops funciontion
           \note and sets the start position to move stops.
           */
@@ -177,7 +178,7 @@ namespace te
           /*!
           \brief It waits a releaseEvent from mouse to do something.
 
-          \params QMouseEvent.
+          \param QMouseEvent
           \note In this case, it treat the finalization of move colorStops.
           */
 
@@ -186,7 +187,7 @@ namespace te
           /*!
           \brief It waits a moveEvent from mouse to do something.
 
-          \params QMouseEvent.
+          \param QMouseEvent
           \note In this case, it treat the moce of colorStops.
           */
 
