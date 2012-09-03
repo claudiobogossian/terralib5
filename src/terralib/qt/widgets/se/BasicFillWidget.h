@@ -105,7 +105,7 @@ namespace te
 
         protected slots:
 
-          void onColorChanged();
+          void onColorChanged(const QColor& color);
 
           void onFillOpacitySliderValueChanged(int value);
 

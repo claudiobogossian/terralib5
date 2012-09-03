@@ -58,7 +58,7 @@ te::qt::widgets::BasicStrokeWidget::BasicStrokeWidget(QWidget* parent, Qt::Windo
   initialize();
 
   // Signals & slots
-  connect(m_colorPicker, SIGNAL(colorChanged()), SLOT(onColorChanged()));
+  connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
   connect(m_ui->m_strokeOpacitySlider, SIGNAL(valueChanged(int)), SLOT(onStrokeOpacitySliderValueChanged(int)));
   connect(m_ui->m_strokeWidthDoubleSpinBox, SIGNAL(valueChanged(const QString&)), SLOT(onStrokeWidthDoubleSpinBoxValueChanged(const QString&)));
   connect(m_ui->m_strokeDashComboBox, SIGNAL(currentIndexChanged(int)), SLOT(onStrokeDashComboBoxCurrentIndexChanged(int)));
@@ -245,12 +245,10 @@ void te::qt::widgets::BasicStrokeWidget::fillStrokeDashStyleComboBox()
   }
 }
 
-void te::qt::widgets::BasicStrokeWidget::onColorChanged()
+void te::qt::widgets::BasicStrokeWidget::onColorChanged(const QColor& color)
 {
   // The new stroke color
-  QColor selectedColor = m_colorPicker->getColor();
-  // Updating opacity
-  m_color.setRgb(selectedColor.red(), selectedColor.green(), selectedColor.blue(), m_color.alpha());
+  m_color.setRgb(color.red(), color.green(), color.blue(), m_color.alpha());
 
   updateUiStrokeColor();
 
