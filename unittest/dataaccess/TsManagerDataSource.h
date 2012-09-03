@@ -69,7 +69,7 @@ class TsManagerDataSource
       \param vectd    A vector of vector of doubles std::vector<std::vector<double>>.
       \param vecte    The vector of Envelope to output the values.
     */
-    static void ConvertVectorToEnvelope(std::vector<std::vector<double>>& vectd, std::vector<te::gm::Envelope>& vecte);
+    static void ConvertVectorToEnvelope(std::vector<std::vector<double> >& vectd, std::vector<te::gm::Envelope>& vecte);
 
     /*!
       \brief Converts a vector of vector of 3 doubles - representing points (SRID,X,Y) into a vector of te::gm::Envelope
@@ -77,7 +77,7 @@ class TsManagerDataSource
       \param vectd    A vector of vector of doubles std::vector<std::vector<double>>.
       \param vectp    The vector of Points with SRID,X,Y to output the values.
     */
-    static void ConvertVectorToPoints(std::vector<std::vector<double>>& vectd, std::vector<te::gm::Point>& vectp);
+    static void ConvertVectorToPoints( std::vector< std::vector<double> >& vectd, std::vector<te::gm::Point>& vectp);
 
     /*!
       \brief Converts a vector of vector of 3 doubles - representing points (SRID,X,Y) into a vector of te::gm::LinearRings
@@ -85,7 +85,7 @@ class TsManagerDataSource
       \param vectd    A vector of vector of values representing points std::vector<std::vector<double>>.
       \param vectp    The vector of Points with SRID,X,Y to output the values.
     */
-    static void ConvertVectorToLinearRing(std::vector<std::vector<double>>& vectd, te::gm::LinearRing& lr);
+    static void ConvertVectorToLinearRing(std::vector<std::vector<double> >& vectd, te::gm::LinearRing& lr);
 
     /*!
       \brief Converts a string into a string (Enum) property type
@@ -139,7 +139,7 @@ class TsManagerDataSource
   static std::vector<std::string> sm_vecSeqNames;
   static std::vector<std::string> sm_vecCcNames;
 
-// Geometries to be used in getDataSet API´s
+// Geometries to be used in getDataSet APIï¿½s
   static te::gm::Envelope sm_box;
   static te::gm::Point sm_pt;
   static te::gm::LinearRing* sm_linearRing;

@@ -133,14 +133,14 @@ int main(int /*argc*/, char** /*argv*/)
   //std::string testResultDriver = "/testResult_" + m_dsType + ".xml";
     std::string testResultDriver = "/testResult_" + m_dsType ;
 
-    std::ofstream file1(TE_DATA_UNITTEST_LOCALE+ testResultDriver + "_dos.txt" );
+    std::ofstream file1( (TE_DATA_UNITTEST_LOCALE+ testResultDriver + "_dos.txt" ).c_str() );
     CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
     outputter1.write();
     file1.close();
 
 // Printing testResults in XML file 
 //  CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_xml.xml");
-    CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE + testResultDriver + ".xml");
+    CPPUNIT_NS::OFileStream file2( ( TE_DATA_UNITTEST_LOCALE + testResultDriver + ".xml").c_str() );
     CPPUNIT_NS::XmlOutputter xml( &result, file2 );
     xml.setStyleSheet( TE_DATA_LOCALE"/data/report.xsl" ); //it is found at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl
     xml.write();
@@ -148,7 +148,7 @@ int main(int /*argc*/, char** /*argv*/)
 
 // Print formated testResult in a txt 
     //CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE"/testsResult_dataaccess_formated.txt" );
-    CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE + testResultDriver + ".txt" );
+    CPPUNIT_NS::OFileStream file3( ( TE_DATA_UNITTEST_LOCALE + testResultDriver + ".txt" ).c_str() );
      CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
     outputter3.write();
     file3.close();
