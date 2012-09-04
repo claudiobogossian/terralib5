@@ -76,7 +76,8 @@ protected slots:
   void changePolygonStyleSlot();
 
 protected:
-  void removeLayer(MyLayer* myLayer);
+  void adjustingLayerRemotion(te::map::AbstractLayer*);
+  void reoderDrawing(te::map::AbstractLayer*);
 
 private:
   void generatePNGs(std::vector<MyLayer*>&);
