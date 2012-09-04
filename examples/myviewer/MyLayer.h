@@ -20,7 +20,7 @@ public:
   void createGrid();
   void deleteGrid(bool = true);
   MyGrid* getGrid();
-  std::set<QwtPlot*> getPlots();
+  std::set<QwtPlot*>& getPlots();
   void insertPlot(QwtPlot*);
   void removePlot(QwtPlot*);
   void setKeepOnMemory(bool);
