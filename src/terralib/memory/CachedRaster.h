@@ -61,7 +61,7 @@ namespace te
           
           \return true if OK, false on errors.
         */
-        CachedRaster( const Raster& rhs, const unsigned char maxMemPercentUsed, 
+        CachedRaster( const te::rst::Raster& rhs, const unsigned char maxMemPercentUsed, 
           const unsigned int dataPrefetchThreshold );
           
         /*!
@@ -75,7 +75,7 @@ namespace te
           
           \return true if OK, false on errors.
         */
-        CachedRaster( const unsigned int maxNumberOfCacheBlocks, const Raster& rhs, 
+        CachedRaster( const unsigned int maxNumberOfCacheBlocks, const te::rst::Raster& rhs, 
           const unsigned int dataPrefetchThreshold );          
 
         ~CachedRaster();
