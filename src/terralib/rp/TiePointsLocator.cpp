@@ -91,6 +91,8 @@ namespace te
       m_correlationWindowWidth = 11;
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
+      m_enableGeometryFilter = true;
+      m_GaussianFilterIterations = 1;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -123,6 +125,8 @@ namespace te
       m_correlationWindowWidth = params.m_correlationWindowWidth;
       m_moravecWindowWidth = params.m_moravecWindowWidth;
       m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
+      m_enableGeometryFilter = params.m_enableGeometryFilter;
+      m_GaussianFilterIterations = params.m_GaussianFilterIterations;
 
       return *this;
     }
@@ -185,6 +189,8 @@ namespace te
       assert( outParamsPtr );
         
       if( ! m_isInitialized ) return false;
+      
+      outParamsPtr->m_tiePoints.clear();
       
       std::auto_ptr< te::common::TaskProgress > progressPtr;
       if( m_inputParameters.m_enableProgress )
@@ -299,52 +305,55 @@ namespace te
       
       // applying the gaussian filter
       
-      switch( m_inputParameters.m_interesPointsLocationStrategy )
+      if( m_inputParameters.m_GaussianFilterIterations )
       {
-        case InputParameters::MoravecStrategyT :
+        switch( m_inputParameters.m_interesPointsLocationStrategy )
         {
-          boost::shared_ptr< Matrix< double > > tempMatrix( 
-            new Matrix< double > );
-          TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
-            0, 0,
-            Matrix< double >::AutoMemPol, 
-            raster1Data[ 0 ]->getMaxTmpFileSize(),
-            raster1Data[ 0 ]->getMaxMemPercentUsage() ),
-            "Cannot allocate image matrix" );
-          
-          TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
-            *(raster1Data[ 0 ]), 
-            *tempMatrix, 1 ),
-            "Gaussian filter error" );
+          case InputParameters::MoravecStrategyT :
+          {
+            boost::shared_ptr< Matrix< double > > tempMatrix( 
+              new Matrix< double > );
+            TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+              0, 0,
+              Matrix< double >::AutoMemPol, 
+              raster1Data[ 0 ]->getMaxTmpFileSize(),
+              raster1Data[ 0 ]->getMaxMemPercentUsage() ),
+              "Cannot allocate image matrix" );
+            
+            TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
+              *(raster1Data[ 0 ]), 
+              *tempMatrix, m_inputParameters.m_GaussianFilterIterations ),
+              "Gaussian filter error" );
 
-          raster1Data[ 0 ] = tempMatrix;
-          
-          tempMatrix.reset( new Matrix< double > );
-          TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
-            0, 0,
-            Matrix< double >::AutoMemPol, 
-            raster2Data[ 0 ]->getMaxTmpFileSize(),
-            raster2Data[ 0 ]->getMaxMemPercentUsage() ),
-            "Cannot allocate image matrix" );          
-          
-          TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
-            *(raster2Data[ 0 ]), 
-            *tempMatrix, 1 ),
-            "Gaussian filter error" );
+            raster1Data[ 0 ] = tempMatrix;
+            
+            tempMatrix.reset( new Matrix< double > );
+            TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+              0, 0,
+              Matrix< double >::AutoMemPol, 
+              raster2Data[ 0 ]->getMaxTmpFileSize(),
+              raster2Data[ 0 ]->getMaxMemPercentUsage() ),
+              "Cannot allocate image matrix" );          
+            
+            TERP_TRUE_OR_RETURN_FALSE( applyGaussianFilter( 
+              *(raster2Data[ 0 ]), 
+              *tempMatrix, m_inputParameters.m_GaussianFilterIterations ),
+              "Gaussian filter error" );
 
-          raster2Data[ 0 ] = tempMatrix;          
-          
-//          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
-//          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");  
-          
-          break;
+            raster2Data[ 0 ] = tempMatrix;          
+            
+  //          createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Gaussian");
+  //          createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Gaussian");  
+            
+            break;
+          }
+          default :
+          {
+            TERP_LOG_AND_THROW( "Invalid strategy" );
+            break;
+          }
         }
-        default :
-        {
-          TERP_LOG_AND_THROW( "Invalid strategy" );
-          break;
-        }
-      };
+      }
       
       if( m_inputParameters.m_enableProgress )
       {
@@ -495,15 +504,28 @@ namespace te
       raster2InterestPoints.clear();
       
       // Bring matched points to original images reference
+      // and execute outliers remotion, if required
       
-      te::gm::GTParameters transfParams;
-      std::vector< double > tiePointsWeights;
-        
       {
         te::gm::GTParameters::TiePoint auxTP;
+        std::vector< double > tiePointsWeights;
         MatchedInterestPointsContainerT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsContainerT::const_iterator itE = matchedPoints.end();
         
+        double minFeatureValue = DBL_MAX;
+        double maxFeatureValue = (-1.0) * DBL_MAX;
+        itB = matchedPoints.begin();
+        while( itB != itE )
+        {
+          if( minFeatureValue > itB->m_featureValue )
+            minFeatureValue = itB->m_featureValue;
+          if( maxFeatureValue < itB->m_featureValue )
+            maxFeatureValue = itB->m_featureValue;
+          
+          ++itB;
+        }
+        
+        itB = matchedPoints.begin();
         while( itB != itE )
         {
           auxTP.first.x = ( itB->m_x1 / raster1XRescFact ) + 
@@ -514,36 +536,38 @@ namespace te
             (double)m_inputParameters.m_raster2TargetAreaColStart;
           auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaLineStart;   
+           
+          if( maxFeatureValue > minFeatureValue )
+          {
+            tiePointsWeights.push_back( std::max( 0.1, ( itB->m_featureValue - 
+              minFeatureValue ) / ( maxFeatureValue - minFeatureValue ) ) );
+          }
             
-          tiePointsWeights.push_back( itB->m_featureValue );
-            
-          transfParams.m_tiePoints.push_back( auxTP );
+          outParamsPtr->m_tiePoints.push_back( auxTP );
           
           ++itB;
-        }
-      }      
-      
-      // Removing outliers
+        }        
         
-       std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
-       
-       TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
-        m_inputParameters.m_geomTransfName, 
-        transfParams,
-        m_inputParameters.m_geomTransfMaxError,
-        m_inputParameters.m_geomTransfMaxError,
-        m_inputParameters.m_geomTransfMaxError,
-        m_inputParameters.m_geomTransfMaxError,
-        transfPtr,
-        tiePointsWeights ), "Outliers remotion error" );
-       
-      outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;
-      
-      if( m_inputParameters.m_enableProgress )
-      {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
-      }      
+        if( m_inputParameters.m_enableGeometryFilter )
+        {
+          te::gm::GTParameters transfParams;
+          transfParams.m_tiePoints = outParamsPtr->m_tiePoints;
+          
+          std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+          
+          TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
+            m_inputParameters.m_geomTransfName, 
+            transfParams,
+            m_inputParameters.m_geomTransfMaxError,
+            m_inputParameters.m_geomTransfMaxError,
+            m_inputParameters.m_geomTransfMaxError,
+            m_inputParameters.m_geomTransfMaxError,
+            transfPtr,
+            tiePointsWeights ), "Outliers remotion error" );
+          
+          outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;        
+        }
+      }
       
       return true;
     }
@@ -551,7 +575,6 @@ namespace te
     void TiePointsLocator::reset() throw( te::rp::Exception )
     {
       m_inputParameters.reset();
-      m_outputParametersPtr = 0;
       m_isInitialized = false;
     }
 
