@@ -46,7 +46,7 @@ void SelectPKey::on_m_updateKeysPushButton_clicked()
   int nrows = m_ui->m_columnsTable->rowCount();
   std::vector<size_t> pkeys;
 
-  for(size_t i=0; i<nrows; i++)
+  for(int i=0; i<nrows; i++)
     if(((QCheckBox*)m_ui->m_columnsTable->cellWidget((int)i, 1))->isChecked())
       pkeys.push_back(i);
 
