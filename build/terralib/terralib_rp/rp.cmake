@@ -14,6 +14,7 @@ list (APPEND DEP_LIBS
     terralib_common
     terralib_dataaccess
     terralib_datatype
+    terralib_memory
     terralib_geometry
     terralib_raster
     )

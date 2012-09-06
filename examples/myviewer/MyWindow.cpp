@@ -613,6 +613,11 @@ void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
   if(modif == false)
     return;
 
+  reoderDrawing(al);
+}
+
+void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
+{
   //redesenhar os displays afetados
   std::set<te::map::MapDisplay*> displays;
   std::vector<te::map::MapDisplay*>::iterator it;
@@ -623,7 +628,8 @@ void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
     std::vector<te::map::AbstractLayer*>::iterator lit, lit2;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
-      if(al == *lit)
+      te::map::AbstractLayer* al2 = *lit;
+      if(al == al2)
       {
         displays.insert(*it);
         break;
@@ -638,7 +644,6 @@ void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
     getLayers((*sit)->getLayerTree(), layers);
     MyDisplay* display = (MyDisplay*)*sit;
     display->reorderDrawing(layers);
-    //((MyDisplay*)(*sit))->draw();
     ((MyDisplay*)(*sit))->update();
   }
 }
@@ -1433,15 +1438,25 @@ void MyWindow::removeSlot()
 {
   // Remove the item from the tree of layers and get its reference layer
   QModelIndex popupIndex = m_layerExplorer->getPopupIndex();
+
+  te::qt::widgets::AbstractTreeItem* Item = static_cast<te::qt::widgets::AbstractTreeItem*>(popupIndex.internalPointer());
+  te::map::AbstractLayer* al = Item->getRefLayer();
+
+  adjustingLayerRemotion(al);
+  al->setVisibility(te::map::NOT_VISIBLE);
+  reoderDrawing(al);
+
+  // remove the tree
   MyLayer* itemRefLayer = static_cast<MyLayer*>(m_layerExplorerModel->removeItem(popupIndex));
 
-  removeLayer(itemRefLayer);
+//  removeLayer(itemRefLayer);
   delete itemRefLayer;
 }
 
-void MyWindow::removeLayer(MyLayer* myLayer)
+void MyWindow::adjustingLayerRemotion(te::map::AbstractLayer* al)
 {
   // Mount the vector of layers that must be deleted
+  MyLayer* myLayer = (MyLayer*)al;
   std::vector<MyLayer*> layerVec;
 
   if(myLayer->getType() == "FOLDERLAYER")
@@ -1450,20 +1465,36 @@ void MyWindow::removeLayer(MyLayer* myLayer)
     for(int i = 0; i < numChildren; ++i)
     {
       MyLayer* layer = static_cast<MyLayer*>(myLayer->getChild(i));
-      if(layer->getType() == "FOLDERLAYER")
-        removeLayer(layer);
-      else
-      layerVec.push_back(layer);
+      if(layer->getType() == "LAYER")
+        layerVec.push_back(layer);
     }
   }
   else
     layerVec.push_back(myLayer);
 
-  // Delete the layers
+  // Delete the affecteds (grid and plots)
   for(unsigned int i = 0; i < layerVec.size(); ++i)
   {
     MyLayer* layer = layerVec[i];
-    
+
+    // reorder drawing of the displays
+    layer->setVisibility(te::map::NOT_VISIBLE);
+    reoderDrawing(al);
+
+    // delete all plots
+    std::set<QwtPlot*>::iterator it = layer->getPlots().begin();
+    while(it != layer->getPlots().end())
+    {
+      QwtPlot* w = *it;
+      layer->removePlot(w);
+      delete w;
+      it = layer->getPlots().begin();
+    }
+
+    // delete Grid
+    layer->deleteGrid();
+
+    // delete DataGridOperation
     te::map::DataGridOperation* dataGridOp = layer->getDataGridOperation();
     if(dataGridOp)
     {
@@ -1472,24 +1503,38 @@ void MyWindow::removeLayer(MyLayer* myLayer)
 
       delete dataGridOp;
     }
-
     layer->setDataGridOperation(0);
-    layer->deleteGrid();
+  }
 
-    // Delete the mapDisplay associated to the layer
-    std::vector<te::map::MapDisplay*>::iterator it;
-    for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
+  // Delete all displays with zero layers. Except display of the main window
+  std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
+  ++it; // skip display of the main window
+  while(it != m_mapDisplayVec.end())
+  {
+    int c = 0;
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers((*it)->getLayerTree(), layers);
+    std::vector<te::map::AbstractLayer*>::iterator lit;
+    for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
-      MyDisplay* md = (MyDisplay*)(*it);
-      if(md->parent() == 0 && md->getLayerTree() == layer)
+      MyLayer* dlayer = (MyLayer*)(*lit);
+      for(unsigned int i = 0; i < layerVec.size(); ++i)
       {
-        md->disconnect();
-        md->close();
-        delete md;
-        m_mapDisplayVec.erase(it);
-        it = m_mapDisplayVec.begin();
+        MyLayer* layer = layerVec[i];
+        if(dlayer == layer)
+        {
+          c++;
+          break;
+        }
       }
     }
+    if(c == layers.size())
+    {
+      delete *it;
+      m_mapDisplayVec.erase(it);
+      it = m_mapDisplayVec.begin();
+    }
+    ++it;
   }
 }
 

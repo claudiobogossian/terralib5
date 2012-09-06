@@ -57,7 +57,7 @@ namespace te
         /*!
           \brief Initialize this instance to an initial state.
           
-          \param externalRaster The external raster where the data will be read/writed.
+          \param externalRaster The external raster where the data will be read/written.
           
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
           
@@ -71,7 +71,7 @@ namespace te
         /*!
           \brief Initialize this instance to an initial state.
           
-          \param externalRaster The external raster where the data will be read/writed.
+          \param externalRaster The external raster where the data will be read/written.
           
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
           
@@ -133,18 +133,28 @@ namespace te
         
       protected :
         
+        /*!
+          \class BlockIndex
+
+          \brief Internal blocks indexes.
+        */        
         class BlockIndex
         {
           public :
             
-            unsigned int m_b;
-            unsigned int m_y;
-            unsigned int m_x;
+            unsigned int m_b; //!< Block band index
+            unsigned int m_y; //!< Block index over the Y axis.
+            unsigned int m_x; //!< Block index over the X axis.
             
             BlockIndex() : m_b( 0 ), m_y( 0 ), m_x( 0 ) {};
             ~BlockIndex() {};
         };
         
+        /*!
+          \class ThreadParameters
+
+          \brief Internal read/write thread execution parameters.
+        */           
         class ThreadParameters
         {
           public :
@@ -152,44 +162,42 @@ namespace te
             enum TaskType
             {
               InvalidTaskT = 0,
-              ReadTaskT = 1, //!< m_exchangeBlockPtr must point to a valid exchange block (it will be keept inside the thread for further use), m_blockPtr will be updated to point to the read block.
-              WriteTaskT = 2 //!< m_blockPtr must point to the block to be written.
+              ReadTaskT = 1, //!< m_exchangeBlockPtr must point to a valid exchange block (it will be keept inside the thread for further use), m_blockPtr must be zero and will be updated to point to the read block.
+              WriteTaskT = 2, //!< m_blockPtr must point to the block to be written, m_exchangeBlockPtr must be zero.
+              SuicideTastT = 3 //! The thread will finish the main loop and exit.
             };
             
-            te::rst::Raster* m_rasterPtr;
+            te::rst::Raster* m_rasterPtr; //!< External raster pointer.
             
-            unsigned int m_dataPrefetchThreshold;
+            unsigned int m_dataPrefetchThreshold; //!< The user defined read-ahead threshold.
             
-            bool m_keepRunning;
+            bool m_taskFinished; //!< true when the thread has finished the required task.
             
-            bool m_taskFinished;
-            
-            TaskType m_task;
+            TaskType m_task; //!< The required task to be performed (read/write/exit).
             
             unsigned char* m_blockPtr; //!< Input block pointer.
             
             unsigned char* m_exchangeBlockPtr; //!< Exchange block pointer.
             
-            unsigned int m_blockB;
+            unsigned int m_blockB; //!< Raster block band index.
             
-            unsigned int m_blockX;
+            unsigned int m_blockX; //!< Raster block X index
             
-            unsigned int m_blockY;
+            unsigned int m_blockY; //!< Raster block Y index
             
-            boost::mutex m_doTaskMutex;
+            boost::mutex m_doTaskMutex; //!< Used when wakenning the thread to perform some task.
             
-            boost::mutex m_taskFinishedMutex;
+            boost::mutex m_taskFinishedMutex; //! used by the thread to inform a task finishment.
             
-            boost::condition_variable m_doTaskCondVar;
+            boost::condition_variable m_doTaskCondVar; //!< Used by the thread when awakenning to perform some task.
             
-            boost::condition_variable m_taskFinishedCondVar;
+            boost::condition_variable m_taskFinishedCondVar; //!< Used to wait for the required task finishment.
             
-            boost::shared_array< unsigned char > m_threadDataBlockHandler;
+            boost::shared_array< unsigned char > m_threadDataBlockHandler; //!< A extra block used in exchange when a read-ahead task is performed.
             
             ThreadParameters() 
             : m_rasterPtr( 0 ), 
               m_dataPrefetchThreshold( 0 ),
-              m_keepRunning( false ),
               m_taskFinished( false ),
               m_task( InvalidTaskT ), 
               m_blockPtr( 0 ),
@@ -202,19 +210,19 @@ namespace te
             ~ThreadParameters() {};
         };
         
-        te::rst::Raster* m_rasterPtr;
+        te::rst::Raster* m_rasterPtr; //!< External raster pointer.
         
-        unsigned int m_dataPrefetchThreshold;
+        unsigned int m_dataPrefetchThreshold; //!< The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
         
-        unsigned int m_globalBlocksNumberX;
+        unsigned int m_globalBlocksNumberX; //!< The maximum number of blocks (X axis) for all bands.
         
-        unsigned int m_globalBlocksNumberY;
+        unsigned int m_globalBlocksNumberY; //!< The maximum number of blocks (Y axis) for all bands.
         
-        unsigned int m_globalBlockSizeBytes;
+        unsigned int m_globalBlockSizeBytes; //!< The maximum block size for all bands.
         
-        unsigned int m_maxNumberOfCacheBlocks;
+        unsigned int m_maxNumberOfCacheBlocks; //!< The maximum number of cache blocks.
         
-        unsigned int m_blocksFifoNextSwapBlockIndex;
+        unsigned int m_blocksFifoNextSwapBlockIndex; //!< The next block swapp index over m_blocksFifo.
         
         //variables used by internal methods
         unsigned char* m_getBlockPointer_BlkPtr;
@@ -223,11 +231,11 @@ namespace te
         
         std::vector< boost::shared_array< unsigned char > > m_blocksHandler; //!< Cache blocks handler.
         
-        std::vector< BlockIndex > m_blocksFifo;
+        std::vector< BlockIndex > m_blocksFifo; //!< blocks swap FIFO.
         
-        ThreadParameters m_threadParams;
+        ThreadParameters m_threadParams; //!< The internal thread execution parameters.
         
-        std::auto_ptr< boost::thread > m_threadHandler;
+        std::auto_ptr< boost::thread > m_threadHandler; //!< The internal thread handler.
         
         /*! 
           \brief Thread entry.

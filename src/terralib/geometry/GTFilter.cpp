@@ -64,6 +64,10 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
   
   outTransf.reset( te::gm::GTFactory::make( transfName ) );
   if( outTransf.get() == 0 ) return false;
+  
+  // initializend the random numbers generator
+  
+  srand( rand() );
         
   // Checking the number of required tie-points
     
@@ -92,6 +96,8 @@ bool te::gm::GTFilter::applyRansac(const std::string& transfName,
 
         for( tpIdx = 0 ; tpIdx < inputTPNmb ; ++tpIdx )
         {
+          if( tiePointsWeights[ tpIdx ] <= 0.0 ) return false;
+          
           originalWSum += tiePointsWeights[ tpIdx ];
         }
 
