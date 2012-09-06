@@ -46,30 +46,29 @@ int main(int argc, char *argv[])
 
   te::map::FolderLayer* rootLayer = new te::map::FolderLayer("0", "Layers");
 
-  const int maxi = 1000;
-  const int maxj = 10;
-  const int maxk = 5;
+  const int maxi = 1;
+  const int maxj = 3;
+  const int maxk = 3;
   for(int i = 1; i <= maxi; ++i)
   {
     std::string id = te::common::Convert2String(i);
-    std::string title = "Layer "  + id;
+    std::string title = "Folder Layer "  + id;
 
-    te::map::Layer* f = new te::map::Layer(id, title, rootLayer);
+    te::map::FolderLayer* f = new te::map::FolderLayer(id, title, rootLayer);
 
     for(int j = 1; j <= maxj; ++j)
     {
       std::string jid = id + "." + te::common::Convert2String(j);
-      title = "Layer "  + jid;
+      title = "Folder Layer "  + jid;
 
-      te::map::Layer* fj = new te::map::Layer(jid, title, f);
+      te::map::FolderLayer* fj = new te::map::FolderLayer(jid, title, f);
 
       for(int k = 1; k <= maxk; ++k)
       {
         std::string kid = jid + "." + te::common::Convert2String(k);
         title = "Layer "  + kid;
 
-        te::map::Layer* fk;
-        fk = new te::map::Layer(kid, title, fj);
+        te::map::Layer* fk = new te::map::Layer(kid, title, fj);
       }
     }
   }
