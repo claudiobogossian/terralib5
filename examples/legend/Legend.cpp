@@ -136,5 +136,7 @@ void Legend::editLegendSlot()
 void Legend::closeEvent(QCloseEvent* /*e*/)
 {
   delete m_rootLayer;
+  delete m_t;
+  m_ds->close();
   delete m_ds;
 }

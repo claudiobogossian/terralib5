@@ -42,6 +42,7 @@ namespace te
     namespace widgets
     {
       //Forward declarations
+      class AbstractTreeItem;
       class LayerExplorerModel;
 
       /*!
@@ -118,21 +119,21 @@ namespace te
           void clickedItem(const QModelIndex& index);
 
          /*!
-            \brief If the dragged item was the current one, the dropped item will be set to be the current item.
+            \brief This slot is called when a drag and drop operation was accomplished.
 
-            \param dragIndex The index of the dragged item.
-            \param dropIndex The index of the dropped item.
+            \param dragItem          The dragged item after the drag and drop operation.
+            \param dragItemOldParent The parent of the dragged item before drag and drop operation.
           */
-          void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+          void dragDropEnded(AbstractTreeItem* dragItem, AbstractTreeItem* dragItemOldParent);
 
         signals:
           void checkBoxWasClicked(const QModelIndex& index);
           void contextMenuActivated(const QModelIndex& index, const QPoint& pos);
 
         private:
-          QModelIndex m_previousCurrentIndex;    //!< The previous current index.
-          bool m_itemPressedWithLeftButton;      //!< It indicates that the item was pressed with the left mouse button.
-          QModelIndex m_popupIndex;              //!< The index associated to the popped up item.
+          te::qt::widgets::AbstractTreeItem* m_currentItem;  //!< The current item.
+          bool m_itemPressedWithLeftButton;                  //!< It indicates that the item was pressed with the left mouse button.
+          QModelIndex m_popupIndex;                          //!< The index associated to the popped up item.
       };
 
     } // end namespace widgets
