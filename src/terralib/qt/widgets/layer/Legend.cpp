@@ -161,11 +161,7 @@ void te::qt::widgets::Legend::okPushButtonClicked()
     }
   }
 
-  // Set the legend in the reference layer
-  //refLayer->setLegend(legend);
-
-  // Set the legend in the interface
- // m_layerItem->setLegend();
+  delete m_t;
 
   accept();
 }
