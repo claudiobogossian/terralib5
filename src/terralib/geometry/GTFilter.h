@@ -66,7 +66,7 @@ namespace te
           
           \param outTransf The generated output transformation.
           
-          \param tiePointsWeights Optional tie-points weights.
+          \param tiePointsWeights Optional tie-points weights (non-zero, positive values).
 
           \return true if OK, false on errors.
           

@@ -75,10 +75,17 @@ te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::removeChild(int row)
     return false;
 
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(childrenList.at(row));
+  numChildren = m_refLayer->getChildrenCount();
 
   te::map::AbstractLayer* itemRefLayer = static_cast<te::map::AbstractLayer*>(m_refLayer->removeChild(row));
   item->setParent(0);
+
+  numChildren = m_refLayer->getChildrenCount();
+
   delete item;
+
+  numChildren = m_refLayer->getChildrenCount();
+
 
   return itemRefLayer;
 }
@@ -124,8 +131,12 @@ void te::qt::widgets::AbstractTreeItem::addChild(int i, AbstractTreeItem* treeIt
     child->setParent(0);
   }
 
+  //te::map::AbstractLayer* pai = static_cast<te::map::AbstractLayer*>(treeItem->getRefLayer()->getParent());
+  //numChildren = pai->getChildrenCount();
+
   // Insert the given item
   treeItem->setParent(this);  
+  //numChildren = pai->getChildrenCount();
 
   // Reinsert the saved items as children of this tree item
   for(int j = 0; j < savedItemsList.count(); ++j)
@@ -134,7 +145,15 @@ void te::qt::widgets::AbstractTreeItem::addChild(int i, AbstractTreeItem* treeIt
     child->setParent(this);
   }
 
+  numChildren = children().count();
+
+  //numChildren = pai->getChildrenCount();
+
+
   m_refLayer->addChild(i, treeItem->getRefLayer());
+
+  //numChildren = pai->getChildrenCount();
+
 }
 
 void te::qt::widgets::AbstractTreeItem::append(AbstractTreeItem* treeItem)
@@ -147,8 +166,12 @@ int te::qt::widgets::AbstractTreeItem::getChildRow(AbstractTreeItem* treeItem)
   return children().indexOf(treeItem);
 }
 
+bool te::qt::widgets::AbstractTreeItem::isLegendItem() const
+{
+  return false;
+}
+
 bool te::qt::widgets::AbstractTreeItem::isLayerItem() const
 {
   return true;
 }
-

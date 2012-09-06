@@ -116,6 +116,10 @@ namespace te
             unsigned int m_moravecWindowWidth; //!< The Moravec window width used to locate canditate tie-points (minimum 3, default: 5 ).
             
             unsigned int m_maxR1ToR2Offset; //!< The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
+            
+            bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
+            
+            unsigned int m_GaussianFilterIterations; //!< The number of gaussian filter iterations (used to remove image noise, zero will disable the Gaussian Filter, default:1).
           
             InputParameters();
             
@@ -329,7 +333,7 @@ namespace te
         };        
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
-        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
+//        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
         

@@ -164,6 +164,13 @@ namespace te
            */
           int getChildRow(AbstractTreeItem* treeItem);
 
+          /*!
+            \brief It checks if the item is a legend item.
+
+            \return The default implementation returns false indicating that the item is not a legend item.
+           */
+          virtual bool isLegendItem() const;
+
           //@}
 
           /** @name Pure Virtual Methods

@@ -228,6 +228,8 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
   assert( band < m_rasterPtr->getNumberOfBands() );
   assert( x < m_globalBlocksNumberX );
   assert( y < m_globalBlocksNumberY );
+  assert( x < m_rasterPtr->getBand( band )->getProperty()->m_nblocksx );
+  assert( y < m_rasterPtr->getBand( band )->getProperty()->m_nblocksy );
   
   m_getBlockPointer_BlkPtr = m_blocksPointers[ band ][ y ][ x ];
   
@@ -444,6 +446,27 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
           globalReadAheadDirectionVectorY += currentReadDirectionVectorY;
           globalReadAheadDirectionVectorB += currentReadDirectionVectorB;
           
+          if( std::abs( globalReadAheadDirectionVectorB )  > 
+            paramsPtr->m_dataPrefetchThreshold )
+          {
+            if( globalReadAheadDirectionVectorB > 0 )
+            {
+              nextReadAheadBlkB = ((int)paramsPtr->m_blockB) + 1;
+              --globalReadAheadDirectionVectorB;
+            }
+            else
+            {
+              nextReadAheadBlkB = ((int)paramsPtr->m_blockB) - 1;
+              ++globalReadAheadDirectionVectorB;
+            }
+              
+            if( ( nextReadAheadBlkB >= 0 ) &&
+              ( nextReadAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() ) )
+              doReadAhead = true;
+            else
+              nextReadAheadBlkB = ((int)paramsPtr->m_blockB);
+          }           
+          
           if( std::abs( globalReadAheadDirectionVectorX )  > 
             paramsPtr->m_dataPrefetchThreshold )
           {
@@ -459,7 +482,8 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
             }
               
             if( ( nextReadAheadBlkX >= 0 ) &&
-              ( nextReadAheadBlkX < paramsPtr->m_rasterPtr->getNumberOfColumns() ) )
+              ( nextReadAheadBlkX < 
+              paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->getProperty()->m_nblocksx ) )
               doReadAhead = true;
             else
               nextReadAheadBlkX = ((int)paramsPtr->m_blockX);
@@ -480,32 +504,12 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
             }
               
             if( ( nextReadAheadBlkY >= 0 ) &&
-              ( nextReadAheadBlkY < paramsPtr->m_rasterPtr->getNumberOfRows() ) )
+              ( nextReadAheadBlkY < 
+              paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->getProperty()->m_nblocksy ) )
               doReadAhead = true;
             else
               nextReadAheadBlkY = ((int)paramsPtr->m_blockY);
           }
-          
-          if( std::abs( globalReadAheadDirectionVectorB )  > 
-            paramsPtr->m_dataPrefetchThreshold )
-          {
-            if( globalReadAheadDirectionVectorB > 0 )
-            {
-              nextReadAheadBlkB = ((int)paramsPtr->m_blockB) + 1;
-              --globalReadAheadDirectionVectorB;
-            }
-            else
-            {
-              nextReadAheadBlkB = ((int)paramsPtr->m_blockB) - 1;
-              ++globalReadAheadDirectionVectorB;
-            }
-              
-            if( ( nextReadAheadBlkB >= 0 ) &&
-              ( nextReadAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() ) )
-              doReadAhead = true;
-            else
-              nextReadAheadBlkB = ((int)paramsPtr->m_blockB);
-          }          
         }
         else
         {
@@ -517,6 +521,12 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
         if( doReadAhead )
         {
 //          std::cout << std::endl << "Reading-ahead a new block" << std::endl;
+
+          assert( nextReadAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() );
+          assert( nextReadAheadBlkX < 
+            paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->getProperty()->m_nblocksx );
+          assert( nextReadAheadBlkY < 
+            paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->getProperty()->m_nblocksy );
           
           paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->read( nextReadAheadBlkX, 
             nextReadAheadBlkY, internalExchangeBlockPtr );      

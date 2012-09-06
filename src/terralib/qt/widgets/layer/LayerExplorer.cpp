@@ -37,7 +37,7 @@
 
 te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent)
   : QTreeView(parent),
-    m_previousCurrentIndex(QModelIndex()),
+    m_currentItem(0),
     m_itemPressedWithLeftButton(false)
 {
   connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
@@ -46,7 +46,7 @@ te::qt::widgets::LayerExplorer::LayerExplorer(QWidget* parent)
 
 te::qt::widgets::LayerExplorer::LayerExplorer(LayerExplorerModel* model, QWidget* parent)
   : QTreeView(parent),
-    m_previousCurrentIndex(QModelIndex()),
+    m_currentItem(0),
     m_itemPressedWithLeftButton(false)
 {
   connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(pressedItem(const QModelIndex&)));
@@ -55,8 +55,8 @@ te::qt::widgets::LayerExplorer::LayerExplorer(LayerExplorerModel* model, QWidget
   setModel(model);
 
   if(model)
-    connect(model, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)),
-            this, SLOT(dragDropEnded(const QModelIndex&, const QModelIndex&)));
+    connect(model, SIGNAL(dragDropEnded(AbstractTreeItem*, AbstractTreeItem*)),
+            this, SLOT(dragDropEnded(AbstractTreeItem*, AbstractTreeItem*)));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
@@ -77,34 +77,24 @@ void te::qt::widgets::LayerExplorer::clickedItem(const QModelIndex& index)
 {
   if(m_itemPressedWithLeftButton == false)
   {
-    if(index != m_previousCurrentIndex)
-    {
-      selectionModel()->select(index, QItemSelectionModel::Deselect);
-      selectionModel()->setCurrentIndex(m_previousCurrentIndex, QItemSelectionModel::Select);
-    }
+    // The checkbox of the item was clicked
+    QModelIndex currentIndex = static_cast<te::qt::widgets::LayerExplorerModel*>(model())->getIndex(m_currentItem);
+    setCurrentIndex(currentIndex);
 
-    emit checkBoxWasClicked(index); // The checkbox of the item was clicked
+    emit checkBoxWasClicked(index); 
   }
   else
   {
     // The item was pressed, its checkbox was not clicked
-    if(index == m_previousCurrentIndex)
-      selectionModel()->select(index, QItemSelectionModel::Select);
+    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
+    const std::string itemType = item->getRefLayer()->getType();
+
+    if(item->isLegendItem() == false)
+      m_currentItem = item;
     else
     {
-      selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Deselect);
-
-      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
-      if(item->isLayerItem() == true)
-      {
-        selectionModel()->select(index, QItemSelectionModel::Select);
-        m_previousCurrentIndex = index;
-      }
-      else
-      {
-        selectionModel()->select(index, QItemSelectionModel::Deselect);
-        selectionModel()->select(m_previousCurrentIndex, QItemSelectionModel::Select);
-      }
+      QModelIndex index = static_cast<te::qt::widgets::LayerExplorerModel*>(model())->getIndex(m_currentItem);
+      setCurrentIndex(index);
     }
   }
 
@@ -124,7 +114,6 @@ void te::qt::widgets::LayerExplorer::mousePressEvent(QMouseEvent *e)
   QTreeView::mousePressEvent(e);
 }
 
-
 void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
 {
   if(e->possibleActions() == (Qt::MoveAction | Qt::CopyAction))
@@ -136,66 +125,45 @@ void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
       e->setDropAction(Qt::MoveAction);
 
     m_itemPressedWithLeftButton = false;
-
-    te::qt::widgets::LayerExplorerModel* layerExplorerModel = static_cast<te::qt::widgets::LayerExplorerModel*>(model());
-    
-    QModelIndex dragIndex = layerExplorerModel->getDragIndex();
-
-    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(dragIndex.internalPointer());
-
-    if(item != 0 && item->isLayerItem() == true)
-      e->accept();
-    else
-      e->ignore();
+    e->accept();
   }
 
-  QTreeView::dragMoveEvent(e);
+  return QTreeView::dragMoveEvent(e);
 }
 
-void te::qt::widgets::LayerExplorer::dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex)
+//void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
+//{
+//  if(e->possibleActions() == (Qt::MoveAction | Qt::CopyAction))
+//  {
+//    Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
+//    if(keyboardModifiers == Qt::ControlModifier)
+//      e->setDropAction(Qt::CopyAction);
+//    else
+//      e->setDropAction(Qt::MoveAction);
+//
+//    m_itemPressedWithLeftButton = false;
+//
+//    te::qt::widgets::LayerExplorerModel* layerExplorerModel = static_cast<te::qt::widgets::LayerExplorerModel*>(model());
+//    
+//    QModelIndex dragIndex = layerExplorerModel->getDragIndex();
+//
+//    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(dragIndex.internalPointer());
+//
+//    if(item != 0 && item->isLayerItem() == true)
+//      e->accept();
+//    else
+//      e->ignore();
+//  }
+//  return QTreeView::dragMoveEvent(e);
+//}
+
+void te::qt::widgets::LayerExplorer::dragDropEnded(AbstractTreeItem* dragItem, AbstractTreeItem* dragItemOldParent)
 {
   m_itemPressedWithLeftButton = false;
-  
-  // Update the current index
-  int currentRow;
 
-  int dragRow = dragIndex.row();
+  LayerExplorerModel* layerExploreModel = static_cast<LayerExplorerModel*>(model());
 
-  int dropRow = dropIndex.row();
-  QModelIndex dropParentIndex = dropIndex.parent();
-
-  int prevCurrentRow = m_previousCurrentIndex.row();
-  QModelIndex previousCurrentParentIndex = m_previousCurrentIndex.parent();
-
-  if(dropParentIndex != previousCurrentParentIndex)
-  {
-    setCurrentIndex(m_previousCurrentIndex);
-    return;
-  }
-
-  if(prevCurrentRow == -1)
-    currentRow = prevCurrentRow;
-  else if(dragRow < prevCurrentRow)
-  {
-    if(dropRow < prevCurrentRow)
-      currentRow = prevCurrentRow;
-    else if(dropRow >= prevCurrentRow)
-      currentRow = prevCurrentRow - 1;
-  }
-  else if(dragRow == prevCurrentRow)
-  {
-    currentRow = dropRow;
-  }
-  else if(dragRow > prevCurrentRow)
-  {
-    if(dropRow <= prevCurrentRow)
-      currentRow = prevCurrentRow + 1;
-    else if(dropRow > prevCurrentRow)
-      currentRow = prevCurrentRow;
-  }
-
-  QModelIndex newCurrentIndex = model()->index(currentRow, 0, previousCurrentParentIndex);
-  setCurrentIndex(newCurrentIndex);
-
-  m_previousCurrentIndex = newCurrentIndex;
+  QModelIndex index = layerExploreModel->getIndex(dragItem);
+  setCurrentIndex(index);
+  m_currentItem = dragItem;
 }
