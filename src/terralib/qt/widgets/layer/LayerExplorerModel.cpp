@@ -41,7 +41,8 @@ te::qt::widgets::LayerExplorerModel::LayerExplorerModel(te::map::AbstractLayer* 
   : QAbstractItemModel(parent),
     m_rootItem(0),
     m_dragItem(0),
-    m_dndOperation(false)
+    m_dndOperation(false),
+    m_removeRowsAllowed(true)
 {
   m_rootItem = new te::qt::widgets::LayerItem(rootLayer, 0);
 }
@@ -212,22 +213,63 @@ Qt::ItemFlags te::qt::widgets::LayerExplorerModel::flags(const QModelIndex &inde
 
   if(index.isValid())
   {
-    if(index == m_dragIndex)
-    {
-      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
+    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
 
-      if(item->isLayerItem() == true)     
-        flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
-             Qt::ItemIsUserCheckable;
-      else
-        flags = Qt::ItemIsEnabled;
-    }
-    else
-      flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
-             Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
+    //if(item->isLegendItem())     
+      //flags |= Qt::ItemIsEnabled;
+    //else         
+      flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
+              Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
   }
+  else
+    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 
   return flags;
+}
+
+
+//Qt::ItemFlags te::qt::widgets::LayerExplorerModel::flags(const QModelIndex &index) const
+//{
+//  Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+//
+//  if(index.isValid())
+//  {
+//    if(index == m_dragIndex)
+//    {
+//      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
+//
+//      if(item->isLayerItem() == true)     
+//        flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
+//             Qt::ItemIsUserCheckable;
+//      else
+//        flags = Qt::ItemIsEnabled;
+//    }
+//    else
+//      flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
+//             Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
+//  }
+//  else
+//    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+//
+//  return flags;
+//}
+
+QModelIndex te::qt::widgets::LayerExplorerModel::getIndex(te::qt::widgets::AbstractTreeItem* item) const
+{
+  if(item == 0)
+    return QModelIndex();
+
+  te::qt::widgets::AbstractTreeItem* itemParent = static_cast<te::qt::widgets::AbstractTreeItem*>(item->parent());
+
+  int itemRow;
+
+  if(itemParent)
+  {
+    itemRow = itemParent->getChildRow(item);
+    return createIndex(itemRow, 0, item);
+  }
+
+  return QModelIndex();
 }
 
 Qt::DropActions te::qt::widgets::LayerExplorerModel::supportedDragActions() const
@@ -251,14 +293,21 @@ QMimeData* te::qt::widgets::LayerExplorerModel::mimeData(const QModelIndexList& 
 {
   m_dragIndex = indexes[0];
 
-  QMimeData *mimeData = new QMimeData();
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(m_dragIndex.internalPointer());
-  te::map::AbstractLayer* refLayer = item->getRefLayer();
+
+  // The drag and drop operation is not allowed with legend items.
+  if(item->isLegendItem())
+    return 0;
+
+  // Encode the reference layer of the dragged item
+  te::map::AbstractLayer* dragRefLayer = item->getRefLayer();
 
   QString s;
-  s.setNum((qulonglong)refLayer);
+  s.setNum((qulonglong)dragRefLayer);
 
   QByteArray encodedData(s.toStdString().c_str());
+
+  QMimeData *mimeData = new QMimeData();
   mimeData->setData("application/layer-explorer", encodedData);
 
   return mimeData;
@@ -267,57 +316,94 @@ QMimeData* te::qt::widgets::LayerExplorerModel::mimeData(const QModelIndexList& 
 bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt::DropAction action, 
                   int row, int column, const QModelIndex& dropIndex)
 {
-  m_dndOperation = true;
-
   if(action == Qt::IgnoreAction)
     return true;
 
-  if(column > 0)
+  if(action != Qt::MoveAction || column > 0)
     return false;
 
   if(!data->hasFormat("application/layer-explorer"))
     return false;
 
-  // Get the drop item
-  te::qt::widgets::AbstractTreeItem* dropItem = getItem(dropIndex);
-
-  // Get the drop parent item
-  te::qt::widgets::AbstractTreeItem* dropParentItem = static_cast<te::qt::widgets::AbstractTreeItem*>(dropItem->parent());
-
-  if(dropParentItem == 0)
+  // Get the data that was dragged
+  QString s = data->data("application/layer-explorer");
+  if(s.isEmpty())
     return false;
 
-  // Get the drag parent item
-  te::qt::widgets::AbstractTreeItem* dragParentItem = getItem(m_dragIndex.parent());
+  unsigned long long dataValue = s.toULongLong();
+  te::map::AbstractLayer* dragRefLayer = (te::map::AbstractLayer*)dataValue;
 
-  // Get the drag row
-  int dragRow = m_dragIndex.row();
-  
-  // Get the item that was dragged
-  m_dragItem = getItem(m_dragIndex);
-
-  if(m_dragItem->isLayerItem() == false)
-    return true;
-
-  // Get the drop row
-  int dropRow = dropIndex.row();
-
-  // Check if the parent of the drag item is the same as the drop item parent
-  if(dragParentItem == dropParentItem)
+  // The drag and drop operation is not allowed if the dragged item is associated to
+  // a folder layer and the dropped item is associated to a layer item
+  te::qt::widgets::AbstractTreeItem* dropItem = getItem(dropIndex);
+  te::map::AbstractLayer* dropRefLayer = dropItem->getRefLayer();
+  if(dragRefLayer->getType() == "FOLDERLAYER" && dropRefLayer->getType() == "LAYER")
   {
-    if(dragRow == dropRow)
-      return true;
-
-    // Remove the dragged item
-    beginRemoveRows(m_dragIndex.parent(), dragRow, dragRow);
-    dragParentItem->removeChildren(dragRow, 1);
-    endRemoveRows();
-
-     // Insert the dragged item at the dropped item position
-    insertRows(dropRow, 1, dropIndex.parent());
-
-    emit dragDropEnded(m_dragIndex, dropIndex);
+    m_removeRowsAllowed = false;
+    return false;
   }
+
+  // Set the flag indicating that a drag and drop operation will be accomplished
+  m_dndOperation = true;
+
+  // Get the drop row, the parent index of the drop item, and the parent item of the new item 
+  // that will be created with the information of the dropped data
+  int dropRow;
+  QModelIndex dropParentIndex;
+
+  te::qt::widgets::AbstractTreeItem* newItemParent = 0;
+  if(row == -1)
+  {
+    if(dropIndex.isValid())
+    {
+      if(dragRefLayer->getType() == "LAYER" && dropRefLayer->getType() == "FOLDERLAYER")
+      {
+        dropRow = 0;
+        dropParentIndex = dropIndex;
+      }
+      else
+      {
+        dropRow = dropIndex.row();
+        dropParentIndex = dropIndex.parent();
+      }
+      newItemParent = getItem(dropParentIndex);
+    }
+    else
+    {
+      dropRow = m_rootItem->children().count();
+      dropParentIndex = QModelIndex();
+      newItemParent = m_rootItem;
+    }
+  }
+
+  // Disconnect the reference layer from its parent
+  te::map::AbstractLayer* dragRefLayerParent = static_cast<te::map::AbstractLayer*>(dragRefLayer->getParent());
+  int dragPosition = dragRefLayer->getIndex();
+  dragRefLayerParent->removeChild(dragPosition);
+  
+  // Construct a dummy layer and insert it as a child of the dragged item parent in the drag position
+  te::map::AbstractLayer* dummyLayer = new te::map::Layer("0", "DummyLayer", 0);
+  dragRefLayerParent->addChild(dragPosition, dummyLayer);
+
+  // Create a new tree item
+  m_dragItem = new te::qt::widgets::LayerItem(dragRefLayer, 0);
+
+  // Insert the new item into the tree
+  beginInsertRows(dropParentIndex, dropRow, dropRow);
+  newItemParent->addChild(dropRow, m_dragItem);
+  endInsertRows();
+
+  // Update the visibility of the tree
+  Qt::CheckState state;
+  te::map::Visibility visibility = dragRefLayer->getVisibility();
+  if(visibility == te::map::NOT_VISIBLE)
+    state = Qt::Unchecked;
+  else if(visibility == te::map::VISIBLE)
+    state = Qt::Checked;
+  else
+    state = Qt::PartiallyChecked;
+
+  setData(index(dropRow, 0, dropParentIndex), state, Qt::CheckStateRole);
 
   return true;
 }
@@ -339,21 +425,68 @@ bool te::qt::widgets::LayerExplorerModel::insertRows(int row, int count, const Q
   return true;
 }
 
-bool	te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const QModelIndex& parent)
+bool te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-  if(m_dndOperation == true)
+  if(m_removeRowsAllowed == false)
   {
-    m_dndOperation = false;
-    return true;
+    m_removeRowsAllowed = true;
+    return false;
   }
 
   te::qt::widgets::AbstractTreeItem* parentLayerItem = getItem(parent);
  
   beginRemoveRows(parent, row, row+count-1);
-  parentLayerItem->removeChildren(row, count);
+  te::map::AbstractLayer* dummyLayer = parentLayerItem->removeChild(row);
+  delete dummyLayer;
   endRemoveRows();
+
+  // Update the visibility of the items of the tree taking into account
+  // the item that is being removed
+  te::map::AbstractLayer* parentLayer = parentLayerItem->getRefLayer();
+  int numChildren = parentLayer->getChildrenCount();
+
+  bool allIsNotVisible = true;
+  bool allIsVisible = true;
+
+  if(numChildren == 0)
+  {
+    allIsNotVisible = true;
+    allIsVisible = false;
+  }
+  else if(parentLayer->getVisibility() == te::map::PARTIALLY_VISIBLE)
+  {
+    for(int i = 0; i < numChildren; ++i)
+    {
+      te::map::AbstractLayer* childLayer = static_cast<te::map::AbstractLayer*>(parentLayer->getChild(i));
+      te::map::Visibility childVisibility = childLayer->getVisibility();
+
+      if(childVisibility == te::map::PARTIALLY_VISIBLE)
+      {
+        allIsNotVisible = false;
+        allIsVisible = false;
+        break;
+      }
+      else if(childVisibility == te::map::VISIBLE)
+        allIsNotVisible = false;
+      else if(childVisibility == te::map::NOT_VISIBLE)
+        allIsVisible = false;
+    }
+  }
+
+  if(allIsNotVisible)
+    setData(parent, Qt::Unchecked, Qt::CheckStateRole);
+  else if(allIsNotVisible)
+    setData(parent, Qt::Checked, Qt::CheckStateRole);
+
+  if(m_dndOperation)
+  {
+    emit dragDropEnded(m_dragItem, parentLayerItem);
+    m_dndOperation = false;
+  }
+
   return true;
 }
+
 
 te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getRootItem() const
 {
@@ -426,7 +559,7 @@ QModelIndex te::qt::widgets::LayerExplorerModel::insertItem(const QModelIndex& p
 
   QModelIndex newIndex = createIndex(insertRow, 0, layerItem);
 
-  setData(newIndex, 0, Qt::CheckStateRole);
+  setData(newIndex, Qt::Unchecked, Qt::CheckStateRole);
 
   return newIndex;
 }
@@ -445,7 +578,7 @@ te::map::AbstractLayer* te::qt::widgets::LayerExplorerModel::removeItem(const QM
   te::qt::widgets::LayerItem* layerParentItem = static_cast<te::qt::widgets::LayerItem*>(layerItem->parent());
 
   // Adjust the visibility of the folder layers
-  setData(index, 0, Qt::CheckStateRole);
+  setData(index, Qt::Unchecked, Qt::CheckStateRole);
 
   int row = index.row();
   QModelIndex parentIndex = index.parent();

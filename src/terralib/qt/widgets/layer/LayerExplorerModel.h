@@ -160,6 +160,15 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex& index) const;
 
           /*!
+            \brief It returns the index associated to the given item.
+
+            \param item The tree item.
+
+            \return The index associated to the item.
+           */
+          QModelIndex getIndex(te::qt::widgets::AbstractTreeItem* item) const;
+
+          /*!
             \brief It returns the actions supported by the data in this model.
 
             \return The default implementation returns supportedDropActions() unless
@@ -297,7 +306,7 @@ namespace te
           void resetModel();
 
         signals:
-          void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+          void dragDropEnded(AbstractTreeItem* dragItemOldParent, AbstractTreeItem* dragItem);
 
         protected:
          /*!
@@ -309,10 +318,12 @@ namespace te
 
         private:
 
-          te::qt::widgets::AbstractTreeItem* m_rootItem;          //!< The pointer to the root item.
-          te::qt::widgets::AbstractTreeItem* m_dragItem;          //!< The pointer to the dragged item
-          mutable QModelIndex m_dragIndex;                        //!< The index of the dragged item
-          bool m_dndOperation;                                    //!< Flag indicating drag and drop operation.
+          AbstractTreeItem* m_rootItem;              //!< The pointer to the root item.
+          AbstractTreeItem* m_dragItem;              //!< The pointer to the dragged item
+          te::map::AbstractLayer* m_dragRefLayer;    //!< The reference layer of the dragged item
+          mutable QModelIndex m_dragIndex;           //!< The index of the dragged item
+          bool m_dndOperation;                       //!< Flag indicating drag and drop operation.
+          bool m_removeRowsAllowed;                  //!< Flag is true when a drag and drop operation takes place.
       };
 
     } // end namespace widgets
