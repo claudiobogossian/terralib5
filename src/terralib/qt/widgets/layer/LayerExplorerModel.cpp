@@ -348,32 +348,29 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
 
   // Get the drop row, the parent index of the drop item, and the parent item of the new item 
   // that will be created with the information of the dropped data
-  int dropRow;
+  int dropRow = 0;
   QModelIndex dropParentIndex;
 
   te::qt::widgets::AbstractTreeItem* newItemParent = 0;
-  if(row == -1)
+  if(dropIndex.isValid())
   {
-    if(dropIndex.isValid())
+    if(dragRefLayer->getType() == "LAYER" && dropRefLayer->getType() == "FOLDERLAYER")
     {
-      if(dragRefLayer->getType() == "LAYER" && dropRefLayer->getType() == "FOLDERLAYER")
-      {
-        dropRow = 0;
-        dropParentIndex = dropIndex;
-      }
-      else
-      {
-        dropRow = dropIndex.row();
-        dropParentIndex = dropIndex.parent();
-      }
-      newItemParent = getItem(dropParentIndex);
+      dropRow = 0;
+      dropParentIndex = dropIndex;
     }
     else
     {
-      dropRow = m_rootItem->children().count();
-      dropParentIndex = QModelIndex();
-      newItemParent = m_rootItem;
+      dropRow = dropIndex.row();
+      dropParentIndex = dropIndex.parent();
     }
+    newItemParent = getItem(dropParentIndex);
+  }
+  else
+  {
+    dropRow = m_rootItem->children().count();
+    dropParentIndex = QModelIndex();
+    newItemParent = m_rootItem;
   }
 
   // Disconnect the reference layer from its parent
