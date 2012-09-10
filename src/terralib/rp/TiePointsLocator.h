@@ -119,7 +119,7 @@ namespace te
             
             bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
             
-            unsigned int m_GaussianFilterIterations; //!< The number of gaussian filter iterations (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+            unsigned int m_noiseFilterIterations; //!< The number of noise filter iterations (used to remove image noise, zero will disable the Gaussian Filter, default:1).
           
             InputParameters();
             
@@ -195,6 +195,13 @@ namespace te
             InterestPointT( const unsigned int& x, const unsigned int& y,
               const double& featureValue ) : m_x( x ), m_y( y ),
               m_featureValue( featureValue) {};
+              
+            InterestPointT( const InterestPointT& other )
+            {
+              m_x = other.m_x;
+              m_y = other.m_y;
+              m_featureValue = other.m_featureValue;
+            };
             
             ~InterestPointT() {};
             
@@ -231,6 +238,15 @@ namespace te
             double m_featureValue; //!< Interest points feature value.
             
             MatchedInterestPointsT() {};
+            
+            MatchedInterestPointsT( const MatchedInterestPointsT& other )
+            {
+              m_x1 = other.m_x1;
+              m_y1 = other.m_y1;
+              m_x2 = other.m_x2;
+              m_y2 = other.m_y2;
+              m_featureValue = other.m_featureValue;
+            };
             
             MatchedInterestPointsT( const unsigned int& x1, const unsigned int& y1,
               const unsigned int& x2, const unsigned int& y2,
@@ -462,6 +478,22 @@ namespace te
           const Matrix< double >& inputData,
           Matrix< double >& outputData,
           const unsigned int iterationsNumber );
+          
+        /*!
+          \brief Mean Filter.
+          
+          \param inputData The input data.
+          
+          \param outputData The output data.
+          
+          \param iterationsNumber The number of filter iterations.
+
+          \return true if ok, false on errors.
+        */             
+        static bool applyMeanFilter( 
+          const Matrix< double >& inputData,
+          Matrix< double >& outputData,
+          const unsigned int iterationsNumber );          
           
         /*!
           \brief Generate a correlation features matrix for the given interes points.

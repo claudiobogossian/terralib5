@@ -146,12 +146,13 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
-  CPPUNIT_ASSERT_EQUAL( (size_t)968, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImage" );
+    
+  CPPUNIT_ASSERT_EQUAL( (size_t)970, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
@@ -197,12 +198,13 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
-  CPPUNIT_ASSERT_EQUAL( (size_t)17, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyHalfRotated90Image" );
+    
+  CPPUNIT_ASSERT_EQUAL( (size_t)39, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
@@ -245,12 +247,13 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
-  CPPUNIT_ASSERT_EQUAL( (size_t)907, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImageDifBoxes" );
+    
+  CPPUNIT_ASSERT_EQUAL( (size_t)881, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::MultipleThreads()
@@ -325,11 +328,12 @@ void TsTiePointsLocator::MaximumOffset()
   
   CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
-  CPPUNIT_ASSERT_EQUAL( (size_t)968, algoOutputParams.m_tiePoints.size() );
   
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MaximumOffset" );
+    
+  CPPUNIT_ASSERT_EQUAL( (size_t)970, algoOutputParams.m_tiePoints.size() );    
 }
 
