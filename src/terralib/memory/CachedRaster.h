@@ -53,7 +53,7 @@ namespace te
         /*!
           \brief Constructor.
           
-          \param rhs The external raster where the data will be read/writed.
+          \param rhs The external raster where the data will be read/written.
           
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
           
@@ -61,13 +61,13 @@ namespace te
           
           \return true if OK, false on errors.
         */
-        CachedRaster( const Raster& rhs, const unsigned char maxMemPercentUsed, 
+        CachedRaster( const te::rst::Raster& rhs, const unsigned char maxMemPercentUsed, 
           const unsigned int dataPrefetchThreshold );
           
         /*!
           \brief Constructor.
           
-          \param rhs The external raster where the data will be read/writed.
+          \param rhs The external raster where the data will be read/written.
           
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
           
@@ -75,7 +75,7 @@ namespace te
           
           \return true if OK, false on errors.
         */
-        CachedRaster( const unsigned int maxNumberOfCacheBlocks, const Raster& rhs, 
+        CachedRaster( const unsigned int maxNumberOfCacheBlocks, const te::rst::Raster& rhs, 
           const unsigned int dataPrefetchThreshold );          
 
         ~CachedRaster();

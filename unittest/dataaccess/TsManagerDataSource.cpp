@@ -53,7 +53,7 @@ std::map<std::string, std::string> TsManagerDataSource::sm_connInfoNewDs;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfoDropDs;
 std::string TsManagerDataSource::sm_connStr;
 
-// Vector of dataSetType´s names, envelops, rect, size, recsize
+// Vector of dataSetTypeï¿½s names, envelops, rect, size, recsize
 std::vector<std::string> TsManagerDataSource::sm_vecDtNames;
 std::vector<te::gm::Envelope> TsManagerDataSource::sm_vecEnvelops;
 std::vector<te::gm::Envelope> TsManagerDataSource::sm_recEnvelops;
@@ -84,7 +84,7 @@ std::vector<std::string> TsManagerDataSource::sm_vecSeqNames;
 std::vector<std::string> TsManagerDataSource::sm_vecCcNames;
 
 // Defining some geometries valid for the first dataSet in sm_vecDtNames (postgis: "br_munic_2001" and city "Ouro Preto")
-//TODO:Agora só tem dado para o primeiro dt=br_munic_2001 , mas pode ter mais e o teste varrer os datasets...
+//TODO:Agora sï¿½ tem dado para o primeiro dt=br_munic_2001 , mas pode ter mais e o teste varrer os datasets...
 te::gm::Envelope    TsManagerDataSource::sm_box; //(-43.9329795837402, -20.6328010559082, -43.4036407470703, -20.1612071990967);
 te::gm::Point      TsManagerDataSource::sm_pt; //(4291, 0, -43.6107606714293, -20.3913548070123);
 te::gm::Polygon*    TsManagerDataSource::sm_pol = new te::gm::Polygon(0, te::gm::PolygonType);
@@ -123,9 +123,9 @@ std::string TsManagerDataSource::sm_newNameProp;
 
 // End of Specification of variables to be used in TsDataSetTypePersistence
 
-void TsManagerDataSource::ConvertVectorToEnvelope(std::vector<std::vector<double>>& vectd, std::vector<te::gm::Envelope>& vecte)
+void TsManagerDataSource::ConvertVectorToEnvelope(std::vector<std::vector<double> >& vectd, std::vector<te::gm::Envelope>& vecte)
 {
-    std::vector<std::vector<double>>::iterator it;
+    std::vector<std::vector<double> >::iterator it;
     te::gm::Envelope envi;
     std::vector<double> vecti;
     for(it = vectd.begin(); it < vectd.end(); it++)
@@ -136,9 +136,9 @@ void TsManagerDataSource::ConvertVectorToEnvelope(std::vector<std::vector<double
     }
 }
 
-void TsManagerDataSource::ConvertVectorToPoints(std::vector<std::vector<double>>& vectd, std::vector<te::gm::Point>& vectp)
+void TsManagerDataSource::ConvertVectorToPoints(std::vector<std::vector<double> >& vectd, std::vector<te::gm::Point>& vectp)
 {
-    std::vector<std::vector<double>>::iterator it;
+    std::vector<std::vector<double> >::iterator it;
     std::vector<double>::iterator it1;
     te::gm::Point pt;
     double  d[3]={0.0,0.0,0.0};int i=0;
@@ -158,9 +158,9 @@ void TsManagerDataSource::ConvertVectorToPoints(std::vector<std::vector<double>>
     }
 }
 
-void TsManagerDataSource::ConvertVectorToLinearRing(std::vector<std::vector<double>>& vectd, te::gm::LinearRing& lr)
+void TsManagerDataSource::ConvertVectorToLinearRing(std::vector<std::vector<double> >& vectd, te::gm::LinearRing& lr)
 {
-    std::vector<std::vector<double>>::iterator it;
+    std::vector<std::vector<double> >::iterator it;
     std::vector<double>::iterator it1;
     te::gm::Point pt;
     double  d[3]={0.0,0.0,0.0};int i=0; int p =0;
@@ -319,18 +319,18 @@ void TsManagerDataSource::initialize(const std::string driver_name)
   { //to other drivers...
 
     //Reading-envelopes (rec) that will be used as FILTER when retrieving datasets(using intersects)
-    std::vector<std::vector<double>> vect_res;
+    std::vector<std::vector<double> > vect_res;
     te::common::Convert(driver.get_child("dt.dt_envelop"), vect_res);
     ConvertVectorToEnvelope(vect_res,sm_vecEnvelops);
 
     //teste marisa
-    std::vector<std::vector<double>> vect_res3;
+    std::vector<std::vector<double> > vect_res3;
     std::vector<te::gm::Envelope> vecEnv3;
     te::common::Convert(driver.get_child("dt.dt_envelop3.br_munic_2001"), vect_res3);
     ConvertVectorToEnvelope(vect_res3,vecEnv3);
     // testefim
 
-    std::vector<std::vector<double>> vect_rec; 
+    std::vector<std::vector<double> > vect_rec; 
     te::common::Convert(driver.get_child("dt.dt_rect"), vect_rec);
     ConvertVectorToEnvelope(vect_rec,sm_recEnvelops);
 
@@ -355,14 +355,14 @@ void TsManagerDataSource::initialize(const std::string driver_name)
     std::string srid_s = driver.get_child("geom.geom_srid").data();
     int geom_srid = boost::lexical_cast<int>(srid_s);
     //reading points
-    std::vector<std::vector<double>> vect_pts;
+    std::vector<std::vector<double> > vect_pts;
     std::vector<te::gm::Point> vect_pts1;
     te::common::Convert(driver.get_child("geom.geom_pts"), vect_pts);
 
-    std::vector<std::vector<double>> vect_envboxs;
+    std::vector<std::vector<double> > vect_envboxs;
     std::vector<te::gm::Envelope> vect_boxEnvel; //sm_box
-    std::vector<std::vector<double>> vect_lines;
-    std::vector<std::vector<double>> vect_pols;
+    std::vector<std::vector<double> > vect_lines;
+    std::vector<std::vector<double> > vect_pols;
     //TODO:Mudar para vetor os sm_pt, sm_box, sm_pol, sm_linearRing nos programas de teste...
 
     //reading-box
@@ -380,7 +380,7 @@ void TsManagerDataSource::initialize(const std::string driver_name)
     sm_pt.setSRID(geom_srid);
 
     // reading-polgygon (points that will compose the sm_pol geometry (polygon) used in getDataSet)
-    std::vector<std::vector<double>> vect_ptsx;
+    std::vector<std::vector<double> > vect_ptsx;
     te::common::Convert(driver.get_child("geom.geom_linearRings"), vect_ptsx);    
     if (vect_ptsx.size() >0)
     {
@@ -408,10 +408,10 @@ void TsManagerDataSource::initialize(const std::string driver_name)
     sm_newdt3->add(new te::dt::NumericProperty("attribute1_numeric", 10, 3, true, new std::string(sm_Attr1)));
 
     //reading string properties and adding to dataSetTypes
-    std::vector<std::map<std::string, std::string>> vectProp;
+    std::vector<std::map<std::string, std::string> > vectProp;
     te::common::Convert(driver.get_child("dt_new_attr.dt_att_str"), vectProp);    
 
-    std::vector<std::map<std::string, std::string>>::iterator itvectmap;
+    std::vector<std::map<std::string, std::string> >::iterator itvectmap;
     std::map<std::string, std::string> atti;
     for(itvectmap = vectProp.begin(); itvectmap < vectProp.end(); itvectmap++)
     {

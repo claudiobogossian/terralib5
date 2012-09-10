@@ -81,10 +81,16 @@ namespace te
            */
           bool isLayerItem() const;
 
+          /*!
+            \brief It checks if the item is a legend item.
+
+            \return It returns true indicating that the item is a legend item.
+           */
+          bool isLegendItem() const;
+
           //@}
 
-          /** @name Pure Virtual Methods
-           *  Methods that subclasses must implement.
+          /** @Methods that subclasses must implement.
            */
           //@{
 

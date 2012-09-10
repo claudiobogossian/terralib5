@@ -53,7 +53,7 @@ te::qt::widgets::BasicFillWidget::BasicFillWidget(QWidget* parent, Qt::WindowFla
   initialize();
 
   // Signals & slots
-  connect(m_colorPicker, SIGNAL(colorChanged()), SLOT(onColorChanged()));
+  connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
   connect(m_ui->m_fillOpacitySlider, SIGNAL(valueChanged(int)), SLOT(onFillOpacitySliderValueChanged(int)));
 }
 
@@ -115,12 +115,10 @@ void te::qt::widgets::BasicFillWidget::updateUiFillColor()
   m_colorPicker->setColor(m_color);
 }
 
-void te::qt::widgets::BasicFillWidget::onColorChanged()
+void te::qt::widgets::BasicFillWidget::onColorChanged(const QColor& color)
 {
   // The new fill color
-  QColor selectedColor = m_colorPicker->getColor();
-  // Updating opacity
-  m_color.setRgb(selectedColor.red(), selectedColor.green(), selectedColor.blue(), m_color.alpha());
+  m_color.setRgb(color.red(), color.green(), color.blue(), m_color.alpha());
 
   updateUiFillColor();
 

@@ -113,3 +113,52 @@ void TsCachedRaster::ReadWriteTest()
         }
   }
 }
+
+void TsCachedRaster::ReadAheadTest()
+{
+  // create the input test raster
+  
+  const unsigned int nBands = 10;
+  const unsigned int nLines = 10;
+  const unsigned int nCols = 10;
+
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer;
+  CreateTestRaster( nBands, nLines, nCols, inputRasterPointer );
+
+  // using the cached raster adaptor.
+  {
+    te::mem::CachedRaster cachedRaster( 2, *inputRasterPointer, 1 );
+    
+    unsigned int band = 0;
+    unsigned int line = 0;
+    unsigned int col = 0;
+    double pixelValue = 0;
+    
+    for( band = 0 ; band < nBands ; ++band )
+      for( line = 0 ; line < nLines ; ++line )
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          cachedRaster.getValue( col, line, pixelValue, band );
+          cachedRaster.setValue( col, line, pixelValue + 10.0, band );
+        }
+  }
+  
+  // Verifying the values
+  
+  {
+    unsigned int band = 0;
+    unsigned int line = 0;
+    unsigned int col = 0;
+    double pixelValue = 0;
+    double readPixelValue = 0;
+    
+    for( band = 0 ; band < nBands ; ++band )
+      for( line = 0 ; line < nLines ; ++line )
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          inputRasterPointer->getValue( col, line, readPixelValue, band );
+          CPPUNIT_ASSERT_DOUBLES_EQUAL( pixelValue + 10.0, readPixelValue, 0.0000001 );
+          ++pixelValue;
+        }
+  }
+}

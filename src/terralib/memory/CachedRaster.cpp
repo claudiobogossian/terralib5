@@ -53,7 +53,7 @@ te::mem::CachedRaster::CachedRaster( te::rst::Grid* grid, te::common::AccessPoli
 {
 }
 
-te::mem::CachedRaster::CachedRaster( const Raster& rhs, 
+te::mem::CachedRaster::CachedRaster( const te::rst::Raster& rhs, 
   const unsigned char maxMemPercentUsed, 
   const unsigned int dataPrefetchThreshold )
 : te::rst::Raster( rhs )
@@ -67,7 +67,7 @@ te::mem::CachedRaster::CachedRaster( const Raster& rhs,
 }
 
 te::mem::CachedRaster::CachedRaster( const unsigned int maxNumberOfCacheBlocks,
-  const Raster& rhs, 
+  const te::rst::Raster& rhs, 
   const unsigned int dataPrefetchThreshold )
 : te::rst::Raster( rhs )
 {

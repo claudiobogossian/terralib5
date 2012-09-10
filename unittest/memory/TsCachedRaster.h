@@ -47,6 +47,8 @@ class TsCachedRaster : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE( TsCachedRaster );
   
   CPPUNIT_TEST( ReadWriteTest );
+  
+  CPPUNIT_TEST( ReadAheadTest );
 
   CPPUNIT_TEST_SUITE_END();
 
@@ -56,6 +58,8 @@ class TsCachedRaster : public CPPUNIT_NS::TestFixture
       unsigned int nCols, boost::shared_ptr< te::rst::Raster >& rasterPointer );
 
     void ReadWriteTest();
+    
+    void ReadAheadTest();
 };
 
 #endif  // __TERRALIB_UNITTEST_MEMORY_CACHEDRASTER_INTERNAL_H

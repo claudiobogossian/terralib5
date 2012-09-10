@@ -116,7 +116,7 @@ MyGrid* MyLayer::getGrid()
   return m_grid;
 }
 
-std::set<QwtPlot*> MyLayer::getPlots()
+std::set<QwtPlot*>& MyLayer::getPlots()
 {
   return m_plots;
 }

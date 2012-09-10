@@ -56,6 +56,10 @@ bool te::qt::widgets::LegendItem::isLayerItem() const
   return false;
 }
 
+bool te::qt::widgets::LegendItem::isLegendItem() const
+{
+  return true;
+}
 
 QVariant te::qt::widgets::LegendItem::data(int role) const
 {

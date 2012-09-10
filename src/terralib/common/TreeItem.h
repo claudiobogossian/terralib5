@@ -153,6 +153,18 @@ namespace te
         void addChild(std::size_t i, TreeItem* childItem);
 
         /*!
+          \brief It removes the child in the i-th position, by disconnecting it from the list of children.
+
+          \param i The position of the item to be removed.
+
+          \return The item removed.
+
+          \note The caller will get the ownership of the nodes removed.
+
+         */
+        TreeItem* removeChild(std::size_t i);
+
+        /*!
           \brief It removes from the given position a certain number of items as children of this item.
                  The items to be removed will be disconnected from this item.
 
@@ -349,6 +361,23 @@ namespace te
 
       m_children.insert(it, childItem); 
     }
+
+    template<class T> inline
+    TreeItem<T>* TreeItem<T>::removeChild(std::size_t i)
+    {
+      assert(i < m_children.size());
+
+      iterator it = begin();
+
+      std::advance(it, i);
+
+      TreeItem* item = *it;
+      item->m_parent = 0;
+
+      m_children.erase(it);
+
+      return item;
+    } 
 
     template<class T> inline
     std::list<TreeItem<T>*> TreeItem<T>::removeChildren(std::size_t i, std::size_t count)

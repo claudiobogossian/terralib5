@@ -75,10 +75,15 @@ protected slots:
   void changeLineStyleSlot();
   void changePolygonStyleSlot();
 
+protected:
+  void adjustingLayerRemotion(te::map::AbstractLayer*);
+  void reoderDrawing(te::map::AbstractLayer*);
+
 private:
   void generatePNGs(std::vector<MyLayer*>&);
 
 private:
+  std::set<te::da::DataSource*> m_dataSourceSet;
   te::map::FolderLayer* m_rootFolderLayer;
   te::qt::widgets::LayerExplorerModel* m_layerExplorerModel;
   te::qt::widgets::LayerExplorer* m_layerExplorer;

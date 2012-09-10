@@ -44,13 +44,14 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_temporalDrawingConfig(0),
   m_temporalDrawLines(false),
   m_temporalLoop(false)
-
 {
   setWindowTitle("My Main Window - Display: Root Folder");
 
   te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
   std::string dsInfo("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
   ds->open(dsInfo);
+
+  m_dataSourceSet.insert(ds);
 
   te::da::DataSourceCatalog* catalog = ds->getCatalog();
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
@@ -134,6 +135,8 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   ds = te::da::DataSourceFactory::make("OGR");
 //  ds->open("connection_string=./data/kml/t_40_41.kml");
   ds->open("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/kml/t_40_41.kml");
+  m_dataSourceSet.insert(ds);
+
   catalog = ds->getCatalog();
   transactor = ds->getTransactor();
   loader = transactor->getCatalogLoader();
@@ -178,6 +181,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   std::string path = "URI=";
   path += TE_DATA_EXAMPLE_LOCALE"/data/rasters";
   ds->open(path);
+  m_dataSourceSet.insert(ds);
   catalog = ds->getCatalog();
   transactor = ds->getTransactor();
   loader = transactor->getCatalogLoader();
@@ -334,16 +338,13 @@ MyWindow::~MyWindow()
 {
 // delete m_rootFolderLayer; //como deletar isto???????
 // acho que o LayerExplorer deveria fazer isso, mas, vou varrer a arvore e fazer aqui...
-  std::set<te::da::DataSource*> dataSources;
   std::vector<te::map::AbstractLayer*> layers;
   getLayers(m_rootFolderLayer, layers);
   std::vector<te::map::AbstractLayer*>::iterator lit;
   for(lit = layers.begin(); lit != layers.end(); ++lit)
   {
     MyLayer* layer = (MyLayer*)(*lit);
-    dataSources.insert(layer->getDataSource());
     delete layer; // already delete grid, plots, and dataSet
-
   }
 
 // delete map displays
@@ -352,7 +353,7 @@ MyWindow::~MyWindow()
     delete (*it);
 
   std::set<te::da::DataSource*>::iterator di;
-  for(di = dataSources.begin(); di != dataSources.end(); ++di)
+  for(di = m_dataSourceSet.begin(); di != m_dataSourceSet.end(); ++di)
     delete *di;
 
   delete m_splitter;
@@ -612,6 +613,11 @@ void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
   if(modif == false)
     return;
 
+  reoderDrawing(al);
+}
+
+void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
+{
   //redesenhar os displays afetados
   std::set<te::map::MapDisplay*> displays;
   std::vector<te::map::MapDisplay*>::iterator it;
@@ -622,7 +628,8 @@ void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
     std::vector<te::map::AbstractLayer*>::iterator lit, lit2;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
-      if(al == *lit)
+      te::map::AbstractLayer* al2 = *lit;
+      if(al == al2)
       {
         displays.insert(*it);
         break;
@@ -637,7 +644,6 @@ void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
     getLayers((*sit)->getLayerTree(), layers);
     MyDisplay* display = (MyDisplay*)*sit;
     display->reorderDrawing(layers);
-    //((MyDisplay*)(*sit))->draw();
     ((MyDisplay*)(*sit))->update();
   }
 }
@@ -706,12 +712,19 @@ void MyWindow::timeSliderValueChangedSlot(int)
 
 }
 
-void MyWindow::contextMenuActivated(const QModelIndex& mi, const QPoint& pos)
+void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint& pos)
 {
   //teste m_styleAction->setEnabled(false);
-  m_parentModelIndex = mi.parent();
-  te::qt::widgets::AbstractTreeItem* childItem = static_cast<te::qt::widgets::AbstractTreeItem*>(mi.internalPointer());
-  m_selectedLayer = childItem->getRefLayer();
+  m_parentModelIndex = popupIndex.parent();
+
+  te::qt::widgets::AbstractTreeItem* popupItem;
+
+  if(popupIndex.isValid() == true)
+    popupItem = static_cast<te::qt::widgets::AbstractTreeItem*>(popupIndex.internalPointer());
+  else
+    popupItem = m_layerExplorerModel->getRootItem();
+
+  m_selectedLayer = popupItem->getRefLayer();
 
   //if(m_selectedLayer->getType() == "DATASETLAYER")
   QString title = m_selectedLayer->getTitle().c_str();
@@ -1423,42 +1436,106 @@ void MyWindow::renameSlot()
 
 void MyWindow::removeSlot()
 {
-  size_t ind = m_selectedLayer->getIndex();
-  // este metodo ja remove da interface e da memoria - TreeItem
-//  m_layerExplorerModel->removeRowForced(ind, m_parentModelIndex); 
+  // Remove the item from the tree of layers and get its reference layer
+  QModelIndex popupIndex = m_layerExplorer->getPopupIndex();
 
-  // delete todos os DataSets e Transactors abaixo de m_selectedLayer
-  std::vector<te::map::AbstractLayer*> layers;
-  getLayers(m_selectedLayer, layers);
-  std::vector<te::map::AbstractLayer*>::iterator lit;
-  for(lit = layers.begin(); lit != layers.end(); ++lit)
+  te::qt::widgets::AbstractTreeItem* Item = static_cast<te::qt::widgets::AbstractTreeItem*>(popupIndex.internalPointer());
+  te::map::AbstractLayer* al = Item->getRefLayer();
+
+  adjustingLayerRemotion(al);
+  al->setVisibility(te::map::NOT_VISIBLE);
+  reoderDrawing(al);
+
+  // remove the tree
+  MyLayer* itemRefLayer = static_cast<MyLayer*>(m_layerExplorerModel->removeItem(popupIndex));
+
+//  removeLayer(itemRefLayer);
+  delete itemRefLayer;
+}
+
+void MyWindow::adjustingLayerRemotion(te::map::AbstractLayer* al)
+{
+  // Mount the vector of layers that must be deleted
+  MyLayer* myLayer = (MyLayer*)al;
+  std::vector<MyLayer*> layerVec;
+
+  if(myLayer->getType() == "FOLDERLAYER")
   {
-    MyLayer* layer = (MyLayer*)(*lit);
-    te::map::DataGridOperation* op = layer->getDataGridOperation();
-    if(op)
+    int numChildren = myLayer->getChildrenCount();
+    for(int i = 0; i < numChildren; ++i)
     {
-      delete op->getDataSet()->getTransactor();
-      delete op->getDataSet();
-    }
-    layer->setDataGridOperation(0);
-    layer->deleteGrid();
-
-    //delete o mapDisplay relacionado ao layer
-    std::vector<te::map::MapDisplay*>::iterator it;
-    for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
-    {
-      MyDisplay* md = (MyDisplay*)(*it);
-      if(md->parent() == 0 && md->getLayerTree() == layer)
-      {
-        md->disconnect();
-        md->close();
-        delete md;
-        m_mapDisplayVec.erase(it);
-        it = m_mapDisplayVec.begin();
-      }
+      MyLayer* layer = static_cast<MyLayer*>(myLayer->getChild(i));
+      if(layer->getType() == "LAYER")
+        layerVec.push_back(layer);
     }
   }
-  m_selectedLayer = 0;
+  else
+    layerVec.push_back(myLayer);
+
+  // Delete the affecteds (grid and plots)
+  for(unsigned int i = 0; i < layerVec.size(); ++i)
+  {
+    MyLayer* layer = layerVec[i];
+
+    // reorder drawing of the displays
+    layer->setVisibility(te::map::NOT_VISIBLE);
+    reoderDrawing(al);
+
+    // delete all plots
+    std::set<QwtPlot*>::iterator it = layer->getPlots().begin();
+    while(it != layer->getPlots().end())
+    {
+      QwtPlot* w = *it;
+      layer->removePlot(w);
+      delete w;
+      it = layer->getPlots().begin();
+    }
+
+    // delete Grid
+    layer->deleteGrid();
+
+    // delete DataGridOperation
+    te::map::DataGridOperation* dataGridOp = layer->getDataGridOperation();
+    if(dataGridOp)
+    {
+      delete dataGridOp->getDataSet()->getTransactor();
+      delete dataGridOp->getDataSet();
+
+      delete dataGridOp;
+    }
+    layer->setDataGridOperation(0);
+  }
+
+  // Delete all displays with zero layers. Except display of the main window
+  std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
+  ++it; // skip display of the main window
+  while(it != m_mapDisplayVec.end())
+  {
+    int c = 0;
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers((*it)->getLayerTree(), layers);
+    std::vector<te::map::AbstractLayer*>::iterator lit;
+    for(lit = layers.begin(); lit != layers.end(); ++lit)
+    {
+      MyLayer* dlayer = (MyLayer*)(*lit);
+      for(unsigned int i = 0; i < layerVec.size(); ++i)
+      {
+        MyLayer* layer = layerVec[i];
+        if(dlayer == layer)
+        {
+          c++;
+          break;
+        }
+      }
+    }
+    if(c == layers.size())
+    {
+      delete *it;
+      m_mapDisplayVec.erase(it);
+      it = m_mapDisplayVec.begin();
+    }
+    ++it;
+  }
 }
 
 void MyWindow::addFolderSlot()
@@ -1471,25 +1548,23 @@ void MyWindow::addFolderSlot()
     if (ok && !text.isEmpty())
     {
       std::string name = text.toStdString();
-      te::map::FolderLayer *folder = new te::map::FolderLayer(name, name, m_selectedLayer);
+      te::map::FolderLayer *newFolder = new te::map::FolderLayer(name, name, m_selectedLayer);
 
-      QModelIndex itemIndex = m_layerExplorer->currentIndex();
-      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(itemIndex.internalPointer());
-    
-      size_t ind = m_layerExplorerModel->rowCount(itemIndex);
-      te::qt::widgets::LayerItem* folderItem = new te::qt::widgets::LayerItem(folder);
-      folderItem->setParent(item);
-      std::vector<te::qt::widgets::AbstractTreeItem*> folderItems;
-      folderItems.push_back(folderItem);
+      QModelIndex popupIndex = m_layerExplorer->getPopupIndex();
+      te::qt::widgets::AbstractTreeItem* popupItem = m_layerExplorerModel->getItem(popupIndex);
 
-      m_layerExplorerModel->setItemsToBeInserted(folderItems);
-      m_layerExplorerModel->insertRows(ind, 1, itemIndex);
+      if(popupItem->getRefLayer()->getType() != "FOLDERLAYER")
+        return;
+
+      // Insert the new folder layer item  in the position of the the popup item
+      int insertRow = m_layerExplorerModel->rowCount(popupIndex);
+      m_layerExplorerModel->insertItem(popupIndex, insertRow, newFolder);
     }
   }
   catch(std::exception& e)
   {
     QApplication::restoreOverrideCursor();
-    QMessageBox::information(this, tr("Error Add Layer..."), tr(e.what()));
+    QMessageBox::information(this, tr("Error in Add Folder Operation..."), tr(e.what()));
     return;
   }
 }
@@ -1533,6 +1608,7 @@ void MyWindow::addLayerSlot()
   delete sel;
 
   ds = te::da::DataSourceFactory::make(dstype);
+  m_dataSourceSet.insert(ds);
 
   std::string dsInfo;
   //if(dstype == "GDAL")
@@ -1583,54 +1659,20 @@ void MyWindow::addLayerSlot()
     layer->setExtent(gp->getExtent());
   }
 
-  QModelIndex itemIndex = m_layerExplorer->currentIndex();
-  QModelIndex parentIndex = itemIndex.parent();
-  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(itemIndex.internalPointer());
+  QModelIndex popupIndex = m_layerExplorer->getPopupIndex();
+  te::qt::widgets::AbstractTreeItem* popupItem = m_layerExplorerModel->getItem(popupIndex);
 
-  if(item->getRefLayer()->getType() == "LAYER")
+  if(popupItem->getRefLayer()->getType() == "LAYER")
   {
-    // insert abaixo do layer current
-    size_t ind = itemIndex.row() + 1;
-    te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
-    layerItem->setParent(item->parent());
-    std::vector<te::qt::widgets::AbstractTreeItem*> layerItems;
-    layerItems.push_back(layerItem);
-    m_layerExplorerModel->setItemsToBeInserted(layerItems);
-    m_layerExplorerModel->insertRows(ind, 1, parentIndex);
+    // Insert the new item in the position of the the popup item
+    QModelIndex parentIndex = popupIndex.parent();
+    m_layerExplorerModel->insertItem(parentIndex, popupIndex.row(), layer);
   }
   else
   {
-    // insert no fim do folder
-    size_t ind = m_layerExplorerModel->rowCount(itemIndex);
-    te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(layer);
-    layerItem->setParent(item);
-    std::vector<te::qt::widgets::AbstractTreeItem*> layerItems;
-    layerItems.push_back(layerItem);
-
-    m_layerExplorerModel->setItemsToBeInserted(layerItems);
-    m_layerExplorerModel->insertRows(ind, 1, itemIndex);
-
-    if(item->getRefLayer()->getVisibility() == 1)
-    {
-      std::map<te::map::AbstractLayer*, te::map::Visibility> mapv;
-      std::vector<te::map::AbstractLayer*> layers;
-      getLayers(item->getRefLayer(), layers);
-      std::vector<te::map::AbstractLayer*>::iterator it;
-      for(it = layers.begin(); it != layers.end(); ++it)
-      {
-        te::map::Visibility v = (*it)->getVisibility();
-        mapv[*it] = v;
-      }
-
-      item->getRefLayer()->setVisibility(te::map::PARTIALLY_VISIBLE); // este comando deixa todos os filhos do tipos layer no estado
-                                                                      // PARTIALLY_VISIBLE, entao, o codigo abaixo acerta a visbilidade
-                                                                      // de seus filhos (LAYERS) na arvore
-      std::map<te::map::AbstractLayer*, te::map::Visibility>::iterator mt;
-      for(mt = mapv.begin(); mt != mapv.end(); ++mt)
-        mt->first->setVisibility(mt->second);
-
-      m_layerExplorer->update();
-    }
+    // The popup item is a folder layer.
+    // Insert the new layer as the last child of this folder
+    m_layerExplorerModel->insertItem(popupIndex, m_layerExplorerModel->rowCount(popupIndex), layer);
   }
 }
 

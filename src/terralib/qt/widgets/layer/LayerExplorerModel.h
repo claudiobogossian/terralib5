@@ -160,6 +160,15 @@ namespace te
           Qt::ItemFlags flags(const QModelIndex& index) const;
 
           /*!
+            \brief It returns the index associated to the given item.
+
+            \param item The tree item.
+
+            \return The index associated to the item.
+           */
+          QModelIndex getIndex(te::qt::widgets::AbstractTreeItem* item) const;
+
+          /*!
             \brief It returns the actions supported by the data in this model.
 
             \return The default implementation returns supportedDropActions() unless
@@ -266,34 +275,38 @@ namespace te
           void removeLegend(const QModelIndex& index);
 
            /*!
-            \brief It inserts the given legend into the item associated to the index
+            \brief It adds the given legend to the item associated to the index
 
-            \param index  The item index where the legend will be inserted.
+            \param index  The item index where the legend will be added.
             \param legend The legend to be inserted.
            */
-          void insertLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend);
+          void addLegend(const QModelIndex& index, const std::vector<te::map::LegendItem*>& legend);
+
+           /*!
+            \brief It adds a item to the list of children of the given parent at the given row.
+
+            \param parent    The parent index of the item to be added.
+            \param insertRow The row where the new item will be added.
+            \param refLayer  The reference layer associated to the item layer to be added.
+
+            \return It returns the index of the item added.
+           */
+          QModelIndex insertItem(const QModelIndex& parent, int insertRow, te::map::AbstractLayer* refLayer);
 
            /*!
             \brief It removes the item associated to the given index.
 
             \param index The item index.
 
-            \return It removes the item associated to the given index.              
+            \return It returns the reference layer associated to the item removed.              
            */
-          void removeItem(const QModelIndex& index);
+          te::map::AbstractLayer* removeItem(const QModelIndex& index);
 
          /*! \brief It resets the model to its original state in any attached views. */
           void resetModel();
 
-          /*!
-            \brief It sets the items to be inserted.
-
-            \param items The list of items to be inserted.
-           */
-          void setItemsToBeInserted(std::vector<te::qt::widgets::AbstractTreeItem*> items);
-
         signals:
-          void dragDropEnded(const QModelIndex& dragIndex, const QModelIndex& dropIndex);
+          void dragDropEnded(AbstractTreeItem* dragItemOldParent, AbstractTreeItem* dragItem);
 
         protected:
          /*!
@@ -305,12 +318,12 @@ namespace te
 
         private:
 
-          te::qt::widgets::AbstractTreeItem* m_rootItem;          //!< The pointer to the root item.
-          te::qt::widgets::AbstractTreeItem* m_dragItem;          //!< The pointer to the dragged item
-          mutable QModelIndex m_dragIndex;                        //!< The index of the dragged item
-          bool m_dndOperation;                                    //!< Flag indicating drag and drop operation.
-
-          std::vector<te::qt::widgets::AbstractTreeItem*> m_childItemsToBeInserted;  //!< A vector of the children items to be inserted.
+          AbstractTreeItem* m_rootItem;              //!< The pointer to the root item.
+          AbstractTreeItem* m_dragItem;              //!< The pointer to the dragged item
+          te::map::AbstractLayer* m_dragRefLayer;    //!< The reference layer of the dragged item
+          mutable QModelIndex m_dragIndex;           //!< The index of the dragged item
+          bool m_dndOperation;                       //!< Flag indicating drag and drop operation.
+          bool m_removeRowsAllowed;                  //!< Flag is true when a drag and drop operation takes place.
       };
 
     } // end namespace widgets
