@@ -21,8 +21,8 @@
   \file HLDelegateDecorator.h
   \brief Defines a decorator for te::qt::widgets::HighlightDelegate objects.
   \details This way, the behavior of te::qt::widgets::HighlightDelegate is maintained, but we can add new groups of highlighted objects.
-  Note that the default delegate is the last one. This means that if the client requires a decorated with 3 classes, the index
-  3 will be the default presentation.
+  Note that the default delegate does not have an index. It means that it is not possible to change the behavior of the default presentation
+  delegate.
   \version 5.0
   \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
   \date 2001-2012
