@@ -170,7 +170,8 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
   m_layerTree = al;
   std::list<te::map::AbstractLayer*> layerList;
   std::list<te::map::AbstractLayer*>::iterator lit;
-  mountLayerList(m_layerTree, layerList);
+  if(m_layerTree)
+    mountLayerList(m_layerTree, layerList);
   te::gm::Envelope extent;
 
   for(lit = layerList.begin(); lit != layerList.end(); ++lit)
@@ -188,7 +189,8 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
   setExtent(extent);
 
   QString wtitle = "Display: ";
-  wtitle += m_layerTree->getTitle().c_str();
+  if(m_layerTree)
+    wtitle += m_layerTree->getTitle().c_str();
   setWindowTitle(wtitle);
 
   QWidget* w = (QWidget*)parent();
@@ -451,9 +453,18 @@ void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
     {
       MyLayer* layer =  (MyLayer*)(*it);
       te::qt::widgets::Canvas* c = getCanvas(layer);
-      if(c == 0 || layer->getVisibility() == 0)
-        continue;
-      painter.drawPixmap(0, 0, *(c->getPixmap()));
+      //if(c == 0 || layer->getVisibility() == 0)
+      //  continue;
+      if(layer->getVisibility() == te::map::VISIBLE)
+      {
+        if(c == 0)
+        {
+          setCanvas(layer);
+          c = getCanvas(layer);
+          draw(layer);
+        }
+        painter.drawPixmap(0, 0, *(c->getPixmap()));
+      }
     }
     unsetWaitCursor();
   }

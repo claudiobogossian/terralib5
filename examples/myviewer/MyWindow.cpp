@@ -235,18 +235,18 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   //QVBoxLayout *displayLayout = new QVBoxLayout(m_displayBox);
   m_splitter = new QSplitter;
   displayLayout->addWidget(m_splitter);
-  MyDisplay* display = new MyDisplay(650, 600, m_rootFolderLayer, m_splitter);
-  m_mapDisplayVec.push_back(display);
+  m_mapDisplay = new MyDisplay(650, 600, m_rootFolderLayer, m_splitter);
+  m_mapDisplayVec.push_back(m_mapDisplay);
 
-  display->setMinimumWidth(300);
-  display->setMinimumHeight(200);
-  display->setLayerTree(m_rootFolderLayer);
+  m_mapDisplay->setMinimumWidth(300);
+  m_mapDisplay->setMinimumHeight(200);
+  m_mapDisplay->setLayerTree(m_rootFolderLayer);
   //faca conexao para atualizacao de grid operation
-  QObject::connect(display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+  QObject::connect(m_mapDisplay, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), m_mapDisplay, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
 
   m_timeSlider = new TimeSlider(Qt::Horizontal);
-  m_timeSlider->setMapDisplay(display);
+  m_timeSlider->setMapDisplay(m_mapDisplay);
   displayLayout->addWidget(m_timeSlider);
 
   m_timeSlider->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -262,7 +262,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   connect(configDrawingAction, SIGNAL(triggered()), this, SLOT(configDrawingSlot()));
   connect(m_timeSlider, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenu(const QPoint&)));
   m_timeSlider->loadMovingObjects();
-  display->setTimeSlider(m_timeSlider);
+  m_mapDisplay->setTimeSlider(m_timeSlider);
 
   QHBoxLayout *horizontalLayout = new QHBoxLayout;
   horizontalLayout->addWidget(m_layerExplorer);
@@ -272,7 +272,8 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
   connect(m_layerExplorer, SIGNAL(contextMenuActivated(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuActivated(const QModelIndex&, const QPoint&)));
   connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChanged(const QModelIndex&)));
-  connect(m_layerExplorerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)), this, SLOT(layerItemMoved(const QModelIndex&, const QModelIndex&)));
+//  connect(m_layerExplorerModel, SIGNAL(dragDropEnded(const QModelIndex&, const QModelIndex&)), this, SLOT(layerItemMoved(const QModelIndex&, const QModelIndex&)));
+  connect(m_layerExplorerModel, SIGNAL(dragDropEnded(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)), this, SLOT(takeLayerSlot(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)));
 
   m_treeMenu = new QMenu(this);
   m_openNewMapDisplayAction = new QAction("&Open New MapDisplay...", m_treeMenu);
@@ -322,7 +323,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
   m_removeAction = new QAction("&Remove...", m_treeMenu);
   m_treeMenu->addAction(m_removeAction);
-  connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeSlot()));
+  connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
 
   m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
   m_keepOnMemoryAction->setCheckable(true);
@@ -586,35 +587,35 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
   }
 }
 
-void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
-{
-  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(mi.internalPointer());
-  te::map::AbstractLayer* al = item->getRefLayer();
-  if(al->getVisibility() == 0)
-    return;
-
-  te::map::AbstractLayer* parent = (te::map::AbstractLayer*)al->getParent();
-
-  bool modif = false;
-  int ini = mi.row();
-  int fim = mf.row();
-  int inc = 1;
-  if(ini > fim)
-    inc = -1;
-  for(int i = ini; i != fim; i += inc)
-  {
-    te::map::AbstractLayer* l = (te::map::AbstractLayer*)parent->getChild(i);
-    if(l->getVisibility() != 0)
-    {
-      modif = true;
-      break;
-    }
-  }
-  if(modif == false)
-    return;
-
-  reoderDrawing(al);
-}
+//void MyWindow::layerItemMoved(const QModelIndex& mi, const QModelIndex& mf)
+//{
+//  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(mi.internalPointer());
+//  te::map::AbstractLayer* al = item->getRefLayer();
+//  if(al->getVisibility() == 0)
+//    return;
+//
+//  te::map::AbstractLayer* parent = (te::map::AbstractLayer*)al->getParent();
+//
+//  bool modif = false;
+//  int ini = mi.row();
+//  int fim = mf.row();
+//  int inc = 1;
+//  if(ini > fim)
+//    inc = -1;
+//  for(int i = ini; i != fim; i += inc)
+//  {
+//    te::map::AbstractLayer* l = (te::map::AbstractLayer*)parent->getChild(i);
+//    if(l->getVisibility() != 0)
+//    {
+//      modif = true;
+//      break;
+//    }
+//  }
+//  if(modif == false)
+//    return;
+//
+//  reoderDrawing(al);
+//}
 
 void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
 {
@@ -1434,7 +1435,7 @@ void MyWindow::renameSlot()
     m_selectedLayer->setTitle(text.toStdString());
 }
 
-void MyWindow::removeSlot()
+void MyWindow::removeLayerSlot()
 {
   // Remove the item from the tree of layers and get its reference layer
   QModelIndex popupIndex = m_layerExplorer->getPopupIndex();
@@ -1442,18 +1443,15 @@ void MyWindow::removeSlot()
   te::qt::widgets::AbstractTreeItem* Item = static_cast<te::qt::widgets::AbstractTreeItem*>(popupIndex.internalPointer());
   te::map::AbstractLayer* al = Item->getRefLayer();
 
-  adjustingLayerRemotion(al);
-  al->setVisibility(te::map::NOT_VISIBLE);
-  reoderDrawing(al);
+  AdjustmentsBeforeRemoveLayer(al);
 
   // remove the tree
-  MyLayer* itemRefLayer = static_cast<MyLayer*>(m_layerExplorerModel->removeItem(popupIndex));
+  m_layerExplorerModel->removeItem(popupIndex);
 
-//  removeLayer(itemRefLayer);
-  delete itemRefLayer;
+  delete al;
 }
 
-void MyWindow::adjustingLayerRemotion(te::map::AbstractLayer* al)
+void MyWindow::AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer* al)
 {
   // Mount the vector of layers that must be deleted
   MyLayer* myLayer = (MyLayer*)al;
@@ -1477,9 +1475,12 @@ void MyWindow::adjustingLayerRemotion(te::map::AbstractLayer* al)
   {
     MyLayer* layer = layerVec[i];
 
-    // reorder drawing of the displays
-    layer->setVisibility(te::map::NOT_VISIBLE);
-    reoderDrawing(al);
+    if(layer->getVisibility() == te::map::VISIBLE)
+    {
+      // reorder drawing of the displays
+      layer->setVisibility(te::map::NOT_VISIBLE);
+      reoderDrawing(al);
+    }
 
     // delete all plots
     std::set<QwtPlot*>::iterator it = layer->getPlots().begin();
@@ -1506,9 +1507,8 @@ void MyWindow::adjustingLayerRemotion(te::map::AbstractLayer* al)
     layer->setDataGridOperation(0);
   }
 
-  // Delete all displays with zero layers. Except display of the main window
+  // Delete all displays with zero layers. Except of the main window
   std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
-  ++it; // skip display of the main window
   while(it != m_mapDisplayVec.end())
   {
     int c = 0;
@@ -1530,12 +1530,133 @@ void MyWindow::adjustingLayerRemotion(te::map::AbstractLayer* al)
     }
     if(c == layers.size())
     {
-      delete *it;
-      m_mapDisplayVec.erase(it);
-      it = m_mapDisplayVec.begin();
+      if(*it == m_mapDisplay)
+      {
+        if(myLayer->getType() == "FOLDERLAYER")
+          // main map display is empty
+          m_mapDisplay->changeTree(0);
+        else
+        {
+          // main map display with empty folder
+          m_mapDisplay->draw();
+          m_mapDisplay->update();
+        }
+        ++it;
+      }
+      else
+      {
+        // delete map display and remove it from the vector
+        te::map::MapDisplay* prox = 0;
+        delete *it;
+        ++it;
+        if(it != m_mapDisplayVec.end())
+          prox = *it;
+        --it;
+        m_mapDisplayVec.erase(it);
+
+        // go to the next map display
+        it = m_mapDisplayVec.begin();
+        while(it != m_mapDisplayVec.end())
+        {
+          if(*it == prox)
+            break;
+          ++it;
+        }
+      }
+      continue;
     }
     ++it;
   }
+}
+
+void MyWindow::takeLayerSlot(te::qt::widgets::AbstractTreeItem* dragItem, te::qt::widgets::AbstractTreeItem* oldParent)
+{
+  te::map::AbstractLayer* al = dragItem->getRefLayer();
+  te::map::AbstractLayer* parent = oldParent->getRefLayer();
+  if(al->getVisibility() != te::map::NOT_VISIBLE)
+  {
+    if(al->getParent() == parent)
+        reoderDrawing(al);
+    else
+      AdjustmentsAfterTakeLayer(parent, al);
+  }
+}
+
+void MyWindow::AdjustmentsAfterTakeLayer(te::map::AbstractLayer* parent, te::map::AbstractLayer* al)
+{
+  te::map::AbstractLayer* newParent = (te::map::AbstractLayer*)(al->getParent());
+  bool movedToSubFolder = false;
+
+  int numChildren = parent->getChildrenCount();
+  for(int i = 0; i < numChildren; ++i)
+  {
+    te::map::AbstractLayer* aux = (te::map::AbstractLayer*)(parent->getChild(i));
+    if(aux->getType() == "FOLDERLAYER")
+    {
+      if(aux == newParent)
+      {
+        movedToSubFolder = true;
+        break;
+      }
+    }
+  }
+
+  reoderDrawing(parent);
+
+  // Delete all displays with zero layers. Except of the main window
+  std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
+  while(it != m_mapDisplayVec.end())
+  {
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers((*it)->getLayerTree(), layers);
+    if(layers.empty())
+    {
+      if(*it == m_mapDisplay)
+      {
+        if(((*it)->getLayerTree())->getType() == "FOLDERLAYER")
+          // main map display is empty
+          m_mapDisplay->changeTree(0);
+        else
+        {
+          // main map display with empty folder
+          m_mapDisplay->draw();
+          m_mapDisplay->update();
+        }
+        ++it;
+      }
+      else
+      {
+        // delete map display and remove it from the vector
+        te::map::MapDisplay* prox = 0;
+        delete *it;
+        ++it;
+        if(it != m_mapDisplayVec.end())
+          prox = *it;
+        --it;
+        m_mapDisplayVec.erase(it);
+
+        // go to the next map display
+        it = m_mapDisplayVec.begin();
+        while(it != m_mapDisplayVec.end())
+        {
+          if(*it == prox)
+            break;
+          ++it;
+        }
+      }
+      continue;
+    }
+    ++it;
+  }
+
+  if(movedToSubFolder == false)
+    AdjustmentsAfterInsertLayer(al);
+}
+
+void MyWindow::AdjustmentsAfterInsertLayer(te::map::AbstractLayer* al)
+{
+  te::map::AbstractLayer* newParent = (te::map::AbstractLayer*)(al->getParent());
+  reoderDrawing(newParent);
 }
 
 void MyWindow::addFolderSlot()
