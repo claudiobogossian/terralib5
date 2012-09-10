@@ -306,7 +306,7 @@ namespace te
           void resetModel();
 
         signals:
-          void dragDropEnded(AbstractTreeItem* dragItemOldParent, AbstractTreeItem* dragItem);
+          void dragDropEnded(te::qt::widgets::AbstractTreeItem* dragItemOldParent, te::qt::widgets::AbstractTreeItem* dragItem);
 
         protected:
          /*!

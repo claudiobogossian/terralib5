@@ -55,8 +55,8 @@ te::qt::widgets::LayerExplorer::LayerExplorer(LayerExplorerModel* model, QWidget
   setModel(model);
 
   if(model)
-    connect(model, SIGNAL(dragDropEnded(AbstractTreeItem*, AbstractTreeItem*)),
-            this, SLOT(dragDropEnded(AbstractTreeItem*, AbstractTreeItem*)));
+    connect(model, SIGNAL(dragDropEnded(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)),
+            this, SLOT(dragDropEnded(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)));
 }
 
 te::qt::widgets::LayerExplorer::~LayerExplorer()
@@ -157,7 +157,7 @@ void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
 //  return QTreeView::dragMoveEvent(e);
 //}
 
-void te::qt::widgets::LayerExplorer::dragDropEnded(AbstractTreeItem* dragItem, AbstractTreeItem* dragItemOldParent)
+void te::qt::widgets::LayerExplorer::dragDropEnded(te::qt::widgets::AbstractTreeItem* dragItem, te::qt::widgets::AbstractTreeItem* dragItemOldParent)
 {
   m_itemPressedWithLeftButton = false;
 
