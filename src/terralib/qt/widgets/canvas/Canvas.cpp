@@ -1585,6 +1585,7 @@ void te::qt::widgets::Canvas::setPolygonFillPattern(te::color::RGBAColor** patte
     delete m_polyImage;
     m_polyImage = 0;
   }
+  m_polyPatternWidth = m_polyImage->width();
 
   //QImage* img = GetImage(pattern, ncols, nrows);
 
