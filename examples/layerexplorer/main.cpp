@@ -46,9 +46,10 @@ int main(int argc, char *argv[])
 
   te::map::FolderLayer* rootLayer = new te::map::FolderLayer("0", "Layers");
 
-  const int maxi = 1;
-  const int maxj = 3;
-  const int maxk = 3;
+  const int maxi = 1000;
+  const int maxj = 10;
+  const int maxk = 5;
+
   for(int i = 1; i <= maxi; ++i)
   {
     std::string id = te::common::Convert2String(i);

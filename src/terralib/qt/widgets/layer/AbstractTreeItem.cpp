@@ -77,7 +77,7 @@ te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::removeChild(int row)
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(childrenList.at(row));
   numChildren = m_refLayer->getChildrenCount();
 
-  te::map::AbstractLayer* itemRefLayer = static_cast<te::map::AbstractLayer*>(m_refLayer->removeChild(row));
+  te::map::AbstractLayer* itemRefLayer = static_cast<te::map::AbstractLayer*>(m_refLayer->takeChild(row));
   item->setParent(0);
 
   numChildren = m_refLayer->getChildrenCount();
@@ -108,52 +108,31 @@ bool te::qt::widgets::AbstractTreeItem::removeChildren(int i, int count)
     item->setParent(0);
   }
 
-  m_refLayer->removeChildren(i, count);
+  m_refLayer->takeChildren(i, count);
 
   return true;
 }
 
-void te::qt::widgets::AbstractTreeItem::addChild(int i, AbstractTreeItem* treeItem)
+void te::qt::widgets::AbstractTreeItem::insertChild(int pos, AbstractTreeItem* item)
 {
   int numChildren = children().count();
 
-  assert(i <= numChildren);
+  assert(pos <= numChildren);
 
-  // Remove all the items from the ith position until the end of the list of children
-  QList<QObject*> savedItemsList;
+  // Get the children of the tree item and disconnect them from the tree item
+  QList<QObject*> savedItemsList = children();
 
-  for(int pos = i; pos < numChildren; ++pos)
-    savedItemsList.append(getChild(pos));
+  for(int i = 0; i < numChildren; ++i)
+    savedItemsList.at(i)->setParent(0);
 
-  for(int j = 0; j < savedItemsList.count(); ++j)
-  {
-    QObject* child = savedItemsList.at(j);
-    child->setParent(0);
-  }
+  // Insert the given item into the saved tree
+  savedItemsList.insert(pos, item);
 
-  //te::map::AbstractLayer* pai = static_cast<te::map::AbstractLayer*>(treeItem->getRefLayer()->getParent());
-  //numChildren = pai->getChildrenCount();
+  // Reinsert the saved items into the tree
+  for(int i = 0; i < savedItemsList.count(); ++i)
+    savedItemsList.at(i)->setParent(this);
 
-  // Insert the given item
-  treeItem->setParent(this);  
-  //numChildren = pai->getChildrenCount();
-
-  // Reinsert the saved items as children of this tree item
-  for(int j = 0; j < savedItemsList.count(); ++j)
-  {
-    QObject* child = savedItemsList.at(j);
-    child->setParent(this);
-  }
-
-  numChildren = children().count();
-
-  //numChildren = pai->getChildrenCount();
-
-
-  m_refLayer->addChild(i, treeItem->getRefLayer());
-
-  //numChildren = pai->getChildrenCount();
-
+  m_refLayer->insertChild(pos, item->getRefLayer());
 }
 
 void te::qt::widgets::AbstractTreeItem::append(AbstractTreeItem* treeItem)
