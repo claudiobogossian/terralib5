@@ -258,13 +258,6 @@ namespace te
            */
           te::qt::widgets::AbstractTreeItem* getItem(const QModelIndex& index);
 
-          /*!
-            \brief Get the index associated to the dragged item.
-
-            \return It returns the index associated to the dragged item.              
-           */
-          QModelIndex getDragIndex() const;
-
            /*!
             \brief It removes the legend, if any, from the item associated to the given index.
 
@@ -317,11 +310,9 @@ namespace te
           void dataChangedForDescendantsIndexes(const QModelIndex& index);
 
         private:
-
           AbstractTreeItem* m_rootItem;              //!< The pointer to the root item.
           AbstractTreeItem* m_dragItem;              //!< The pointer to the dragged item
           te::map::AbstractLayer* m_dragRefLayer;    //!< The reference layer of the dragged item
-          mutable QModelIndex m_dragIndex;           //!< The index of the dragged item
           bool m_dndOperation;                       //!< Flag indicating drag and drop operation.
           bool m_removeRowsAllowed;                  //!< Flag is true when a drag and drop operation takes place.
       };

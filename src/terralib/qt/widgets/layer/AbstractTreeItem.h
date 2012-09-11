@@ -148,12 +148,12 @@ namespace te
           bool removeChildren(int i, int count);
 
           /*!
-            \brief It adds an item in the given position.
+            \brief It inserts an item in the given position.
 
-            \param i          The position where the item will be added.
-            \param treeItem   The tree item to be added.
+            \param pos   The position where the item will be inserted.
+            \param item  The item to be added.
            */
-          void addChild(int i, AbstractTreeItem* treeItem);
+          void insertChild(int i, AbstractTreeItem* item);
 
           /*!
             \brief It returns the child row of the given item.
