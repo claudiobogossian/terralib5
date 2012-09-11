@@ -307,24 +307,28 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
       switch(configStyle)
       {
         case te::map::CanvasConfigurer::Fill:
+          m_canvas->setPolygonFillColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
           m_canvas->setPolygonFillPattern(rgba, sizeValue, sizeValue);
           m_canvas->setPolygonPatternRotation(angle);
           m_canvas->setPolygonPatternOpacity(alpha);
         break;
 
         case te::map::CanvasConfigurer::Contour:
+          m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
           m_canvas->setPolygonContourPattern(rgba, sizeValue, sizeValue);
           m_canvas->setPolygonContourPatternRotation(angle);
           m_canvas->setPolygonContourPatternOpacity(alpha);
         break;
 
         case te::map::CanvasConfigurer::Line:
+          m_canvas->setLineColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
           m_canvas->setLinePattern(rgba, sizeValue, sizeValue);
           m_canvas->setLinePatternRotation(angle);
           m_canvas->setLinePatternOpacity(alpha);
         break;
 
         case te::map::CanvasConfigurer::Point:
+          m_canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
           m_canvas->setPointPattern(rgba, sizeValue, sizeValue);
           m_canvas->setPointPatternRotation(angle);
           m_canvas->setPointPatternOpacity(alpha);
