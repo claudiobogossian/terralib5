@@ -131,32 +131,6 @@ void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
   return QTreeView::dragMoveEvent(e);
 }
 
-//void te::qt::widgets::LayerExplorer::dragMoveEvent(QDragMoveEvent* e)
-//{
-//  if(e->possibleActions() == (Qt::MoveAction | Qt::CopyAction))
-//  {
-//    Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
-//    if(keyboardModifiers == Qt::ControlModifier)
-//      e->setDropAction(Qt::CopyAction);
-//    else
-//      e->setDropAction(Qt::MoveAction);
-//
-//    m_itemPressedWithLeftButton = false;
-//
-//    te::qt::widgets::LayerExplorerModel* layerExplorerModel = static_cast<te::qt::widgets::LayerExplorerModel*>(model());
-//    
-//    QModelIndex dragIndex = layerExplorerModel->getDragIndex();
-//
-//    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(dragIndex.internalPointer());
-//
-//    if(item != 0 && item->isLayerItem() == true)
-//      e->accept();
-//    else
-//      e->ignore();
-//  }
-//  return QTreeView::dragMoveEvent(e);
-//}
-
 void te::qt::widgets::LayerExplorer::dragDropEnded(te::qt::widgets::AbstractTreeItem* dragItem, te::qt::widgets::AbstractTreeItem* dragItemOldParent)
 {
   m_itemPressedWithLeftButton = false;

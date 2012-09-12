@@ -99,7 +99,7 @@ void MouseHandler::setMode(MouseMode m)
 
 void MouseHandler::setCursor()
 {
-  QCursor* cursor;
+  QCursor* cursor = 0;
 
   if(m_mouseMode == ZoomInMode) // zoom in
     cursor = new QCursor(*m_zoomInPixmap, 9, 9);
@@ -115,8 +115,11 @@ void MouseHandler::setCursor()
     cursor = new QCursor(*m_toggleSelectionPixmap, 4, 5);
   else if(m_mouseMode == TooltipMode) // tooltip
     cursor = new QCursor(Qt::PointingHandCursor);
-  DisplayEventHandler::setCursor(*cursor);
-  delete cursor;
+  if(cursor)
+  {
+    DisplayEventHandler::setCursor(*cursor);
+    delete cursor;
+  }
 }
 
 void MouseHandler::mousePressEvent(QMouseEvent* e)
@@ -227,7 +230,7 @@ void MouseHandler::mouseReleaseEvent(QMouseEvent* e)
 
 void MouseHandler::keyPressEvent(QKeyEvent* e)
 {
-  MouseMode newMode;
+  int newMode = -1;
 
   if(e->key() == Qt::Key_Control)
   {
@@ -239,7 +242,7 @@ void MouseHandler::keyPressEvent(QKeyEvent* e)
     else
       newMode = m_mouseOldMode;
   }
-  if(e->key() == Qt::Key_Alt)
+  else if(e->key() == Qt::Key_Alt)
   {
     if(m_mouseMode == ZoomInMode)
       newMode = ZoomOutMode;
@@ -257,9 +260,10 @@ void MouseHandler::keyPressEvent(QKeyEvent* e)
     else if(m_mouseMode == TooltipMode)
       newMode = SelectionMode;
   }
-  if(newMode != m_mouseMode)
+
+  if(newMode != -1)
   {
-    setMode(newMode);
+    setMode((MouseMode)newMode);
     m_panEnd = true;
     setCursor();
   }

@@ -19,6 +19,7 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QPaintEngine>
+#include <QUrl>
 
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(w, h, parent, f),
@@ -143,6 +144,27 @@ void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
   if(laux == m_rootFolderLayer)
     e->accept();
   return;
+
+  //const QMimeData* mime = e->mimeData();
+  //QString s =	mime->text(); 
+  //bool b = mime->hasColor();
+  //b = mime->hasHtml();
+  //b = mime->hasImage();
+  //b = mime->hasText();
+  //b = mime->hasUrls();
+  //QList<QUrl>	urls = mime->urls();
+  //QList<QUrl>::Iterator it;
+  //for(it = urls.begin(); it != urls.end(); ++it)
+  //{
+  //  QUrl url = *it;
+  //  QString autority = url.authority();
+  //  QString host = url.host();
+  //  QString path = url.path();
+  //  int port = url.port();
+  //  bool isLocalFile = url.isLocalFile();
+  //  bool isRelative = url.isRelative();
+  //  bool hasfragment = url.hasFragment();
+  //}
 }
 
 void MyDisplay::dropEvent(QDropEvent* e)

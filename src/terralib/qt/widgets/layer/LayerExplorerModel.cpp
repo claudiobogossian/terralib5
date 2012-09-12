@@ -212,47 +212,13 @@ Qt::ItemFlags te::qt::widgets::LayerExplorerModel::flags(const QModelIndex &inde
   Qt::ItemFlags flags = QAbstractItemModel::flags(index);
 
   if(index.isValid())
-  {
-    te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
-
-    //if(item->isLegendItem())     
-      //flags |= Qt::ItemIsEnabled;
-    //else         
-      flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
-              Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
-  }
+    flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
+            Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
   else
     flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 
   return flags;
 }
-
-
-//Qt::ItemFlags te::qt::widgets::LayerExplorerModel::flags(const QModelIndex &index) const
-//{
-//  Qt::ItemFlags flags = QAbstractItemModel::flags(index);
-//
-//  if(index.isValid())
-//  {
-//    if(index == m_dragIndex)
-//    {
-//      te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(index.internalPointer());
-//
-//      if(item->isLayerItem() == true)     
-//        flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
-//             Qt::ItemIsUserCheckable;
-//      else
-//        flags = Qt::ItemIsEnabled;
-//    }
-//    else
-//      flags |= Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled |
-//             Qt::ItemIsDropEnabled | Qt::ItemIsUserCheckable;
-//  }
-//  else
-//    flags |= Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
-//
-//  return flags;
-//}
 
 QModelIndex te::qt::widgets::LayerExplorerModel::getIndex(te::qt::widgets::AbstractTreeItem* item) const
 {
@@ -291,9 +257,7 @@ QStringList te::qt::widgets::LayerExplorerModel::mimeTypes() const
 
 QMimeData* te::qt::widgets::LayerExplorerModel::mimeData(const QModelIndexList& indexes) const
 {
-  m_dragIndex = indexes[0];
-
-  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(m_dragIndex.internalPointer());
+  te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(indexes[0].internalPointer());
 
   // The drag and drop operation is not allowed with legend items.
   if(item->isLegendItem())
@@ -375,19 +339,23 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
 
   // Disconnect the reference layer from its parent
   te::map::AbstractLayer* dragRefLayerParent = static_cast<te::map::AbstractLayer*>(dragRefLayer->getParent());
-  int dragPosition = dragRefLayer->getIndex();
-  dragRefLayerParent->removeChild(dragPosition);
+  int dragRow = dragRefLayer->getIndex();
+  dragRefLayerParent->takeChild(dragRow);
   
   // Construct a dummy layer and insert it as a child of the dragged item parent in the drag position
   te::map::AbstractLayer* dummyLayer = new te::map::Layer("0", "DummyLayer", 0);
-  dragRefLayerParent->addChild(dragPosition, dummyLayer);
+  dragRefLayerParent->insertChild(dragRow, dummyLayer);
 
   // Create a new tree item
   m_dragItem = new te::qt::widgets::LayerItem(dragRefLayer, 0);
 
+  // Adjust the dropRow when it is below the dragRow
+  if(dropRow > dragRow)
+    ++dropRow;
+
   // Insert the new item into the tree
   beginInsertRows(dropParentIndex, dropRow, dropRow);
-  newItemParent->addChild(dropRow, m_dragItem);
+  newItemParent->insertChild(dropRow, m_dragItem);
   endInsertRows();
 
   // Update the visibility of the tree
@@ -415,7 +383,7 @@ bool te::qt::widgets::LayerExplorerModel::insertRows(int row, int count, const Q
   for (int i = 0; i < count; ++i)
   {
     layerItem = m_dragItem;
-    parentLayerItem->addChild(row++, layerItem);
+    parentLayerItem->insertChild(row++, layerItem);
   }
 
   endInsertRows();
@@ -498,11 +466,6 @@ te::qt::widgets::AbstractTreeItem* te::qt::widgets::LayerExplorerModel::getItem(
     return m_rootItem;
 }
 
-QModelIndex te::qt::widgets::LayerExplorerModel::getDragIndex() const
-{
-  return m_dragIndex;
-}
-
 void te::qt::widgets::LayerExplorerModel::removeLegend(const QModelIndex& index)
 {
   if(!index.isValid())
@@ -551,7 +514,7 @@ QModelIndex te::qt::widgets::LayerExplorerModel::insertItem(const QModelIndex& p
 
   te::qt::widgets::LayerItem* layerItem = new te::qt::widgets::LayerItem(refLayer, 0);
   beginInsertRows(parent, insertRow, insertRow);
-  parentItem->addChild(insertRow, layerItem);
+  parentItem->insertChild(insertRow, layerItem);
   endInsertRows();
 
   QModelIndex newIndex = createIndex(insertRow, 0, layerItem);
