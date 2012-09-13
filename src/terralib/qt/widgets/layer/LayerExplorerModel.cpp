@@ -40,9 +40,8 @@
 te::qt::widgets::LayerExplorerModel::LayerExplorerModel(te::map::AbstractLayer* rootLayer, QObject* parent)
   : QAbstractItemModel(parent),
     m_rootItem(0),
-    m_dragItem(0),
-    m_dndOperation(false),
-    m_removeRowsAllowed(true)
+    m_dndNewItem(0),
+    m_dndOperation(false)
 {
   m_rootItem = new te::qt::widgets::LayerItem(rootLayer, 0);
 }
@@ -289,7 +288,7 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   if(!data->hasFormat("application/layer-explorer"))
     return false;
 
-  // Get the data that was dragged
+  // Get the reference layer of the item that was dragged
   QString s = data->data("application/layer-explorer");
   if(s.isEmpty())
     return false;
@@ -297,43 +296,61 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   unsigned long long dataValue = s.toULongLong();
   te::map::AbstractLayer* dragRefLayer = (te::map::AbstractLayer*)dataValue;
 
-  // The drag and drop operation is not allowed if the dragged item is associated to
-  // a folder layer and the dropped item is associated to a layer item
+  // Get the reference layer of the item where the dragged item was dropped
   te::qt::widgets::AbstractTreeItem* dropItem = getItem(dropIndex);
   te::map::AbstractLayer* dropRefLayer = dropItem->getRefLayer();
-  if(dragRefLayer->getType() == "FOLDERLAYER" && dropRefLayer->getType() == "LAYER")
-  {
-    m_removeRowsAllowed = false;
-    return false;
-  }
 
   // Set the flag indicating that a drag and drop operation will be accomplished
   m_dndOperation = true;
 
-  // Get the drop row, the parent index of the drop item, and the parent item of the new item 
-  // that will be created with the information of the dropped data
-  int dropRow = 0;
-  QModelIndex dropParentIndex;
+  // Check if the items involved in the drag and drop operation are siblings
+  bool areSiblings = false;
+  if(dragRefLayer->isSibling(dropRefLayer))
+    areSiblings = true;
 
+  // A new item will be generated(m_dndNewItem). Check where it will be placed, by setting
+  // its row(newItemRow) and its parent index(newItemParentIndex). Set also its new
+  // item parent(newItemParent).
+  int newItemRow = 0;
+  QModelIndex newItemParentIndex;
   te::qt::widgets::AbstractTreeItem* newItemParent = 0;
+
   if(dropIndex.isValid())
   {
-    if(dragRefLayer->getType() == "LAYER" && dropRefLayer->getType() == "FOLDERLAYER")
+    if((dragRefLayer->getType() == "LAYER" && dropRefLayer->getType() == "LAYER") ||
+       (dragRefLayer->getType() == "FOLDERLAYER" && dropRefLayer->getType() == "LAYER"))
     {
-      dropRow = 0;
-      dropParentIndex = dropIndex;
+      newItemRow = dropIndex.row();
+      newItemParentIndex = dropIndex.parent();
     }
-    else
+    else if((dragRefLayer->getType() == "LAYER" && dropRefLayer->getType() == "FOLDERLAYER") ||
+            (dragRefLayer->getType() == "FOLDERLAYER" && dropRefLayer->getType() == "FOLDERLAYER"))
     {
-      dropRow = dropIndex.row();
-      dropParentIndex = dropIndex.parent();
+      if(areSiblings)
+      {
+        if(dropRefLayer->getChildrenCount() == 0)
+        {
+          newItemRow = 0;
+          newItemParentIndex = dropIndex;
+        }
+        else
+        {
+          newItemRow = dropIndex.row();
+          newItemParentIndex = dropIndex.parent();
+        }
+      }
+      else
+      {
+        newItemRow = 0;
+        newItemParentIndex = dropIndex;
+      }
     }
-    newItemParent = getItem(dropParentIndex);
+    newItemParent = getItem(newItemParentIndex);
   }
   else
   {
-    dropRow = m_rootItem->children().count();
-    dropParentIndex = QModelIndex();
+    newItemRow = m_rootItem->children().count();
+    newItemParentIndex = QModelIndex();
     newItemParent = m_rootItem;
   }
 
@@ -346,16 +363,17 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   te::map::AbstractLayer* dummyLayer = new te::map::Layer("0", "DummyLayer", 0);
   dragRefLayerParent->insertChild(dragRow, dummyLayer);
 
-  // Create a new tree item
-  m_dragItem = new te::qt::widgets::LayerItem(dragRefLayer, 0);
+  // Create the new tree item
+  m_dndNewItem = new te::qt::widgets::LayerItem(dragRefLayer, 0);
 
-  // Adjust the dropRow when it is below the dragRow
-  if(dropRow > dragRow)
-    ++dropRow;
+  // Adjust the newItemRow when it is immediately below the dragRow, and when
+  // the drag and drop items are siblings.
+  if(areSiblings && (newItemRow == dragRow + 1))
+    ++newItemRow;
 
   // Insert the new item into the tree
-  beginInsertRows(dropParentIndex, dropRow, dropRow);
-  newItemParent->insertChild(dropRow, m_dragItem);
+  beginInsertRows(newItemParentIndex, newItemRow, newItemRow);
+  newItemParent->insertChild(newItemRow, m_dndNewItem);
   endInsertRows();
 
   // Update the visibility of the tree
@@ -368,36 +386,13 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   else
     state = Qt::PartiallyChecked;
 
-  setData(index(dropRow, 0, dropParentIndex), state, Qt::CheckStateRole);
+  setData(index(newItemRow, 0, newItemParentIndex), state, Qt::CheckStateRole);
 
-  return true;
-}
-
-bool te::qt::widgets::LayerExplorerModel::insertRows(int row, int count, const QModelIndex& parent)
-{
-  te::qt::widgets::AbstractTreeItem* parentLayerItem = getItem(parent);
-
-  beginInsertRows(parent, row, row + count - 1);
-  te::qt::widgets::AbstractTreeItem* layerItem;
-
-  for (int i = 0; i < count; ++i)
-  {
-    layerItem = m_dragItem;
-    parentLayerItem->insertChild(row++, layerItem);
-  }
-
-  endInsertRows();
   return true;
 }
 
 bool te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-  if(m_removeRowsAllowed == false)
-  {
-    m_removeRowsAllowed = true;
-    return false;
-  }
-
   te::qt::widgets::AbstractTreeItem* parentLayerItem = getItem(parent);
  
   beginRemoveRows(parent, row, row+count-1);
@@ -445,7 +440,7 @@ bool te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const Q
 
   if(m_dndOperation)
   {
-    emit dragDropEnded(m_dragItem, parentLayerItem);
+    emit dragDropEnded(m_dndNewItem, parentLayerItem);
     m_dndOperation = false;
   }
 
