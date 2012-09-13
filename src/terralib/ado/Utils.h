@@ -133,6 +133,14 @@ namespace te
     */
     void updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::da::DataSetItem* item);
 
+    /*!
+      \brief Insert DataSetType with geometry in the geometryColumns table
+
+      \param adoConn ADO connection
+      \param dt DataSetType to be inserted
+    */
+    void insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
+
   } // end namespace ado
 }   // end namespace te
 

@@ -49,7 +49,7 @@ void LoadModules()
 #ifdef NDEBUG
       info.m_mainFile = "libterralib_ogr.dylib";
 #else
-      info.m_mainFile = "libterralib_ogr.dylib";
+      info.m_mainFile = "libterralib_ogr_d.dylib";
 #endif
 #endif
 

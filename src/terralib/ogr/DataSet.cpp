@@ -463,7 +463,7 @@ te::dt::DateTime* te::ogr::DataSet::getDateTime(int i) const
   te::dt::DateTime* dateTime = 0;
 
   if(subType==te::dt::DATE)
-    dateTime = new te::dt::Date((unsigned short)pnDay, (unsigned short)pnMonth, (unsigned short)pnYear);
+    dateTime = new te::dt::Date((unsigned short)pnYear, (unsigned short)pnMonth, (unsigned short)pnDay);
   else if(subType==te::dt::TIME_DURATION)
     dateTime = new te::dt::TimeDuration(pnHour, pnMinute, pnSecond);
   else if(subType==te::dt::TIME_INSTANT)
