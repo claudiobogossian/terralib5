@@ -150,7 +150,58 @@ namespace te
 
           \note The layer will take the icon ownership.
         */
-        void setIcon(te::xl::SimpleLink* icon);        
+        void setIcon(te::xl::SimpleLink* icon);
+
+        /*!
+          \brief It checks if the given layer is sibling of this one.
+          
+          \param layer The layer to be compared to.
+
+          \return It returns true if the layers are siblings.
+        */
+        bool isSibling(te::map::AbstractLayer* layer) const;
+       
+        /*!
+          \brief It gets the grouping parameters used to generate the layer legend.
+
+          \output It returns the grouping parameters of the legend layerr.
+        */
+        virtual te::map::Grouping* getGrouping() const;
+
+        /*!
+          \brief It sets the grouping parameters to be used to generate the layer legend.
+
+          \param grouping The grouping to be used to generate the layer legend.
+
+          \note This class will take the ownership of the pointer to the grouping argument.
+        */
+        virtual void setGrouping(Grouping* grouping);
+        
+        /*!
+          \brief It checks if this layer has an associated legend.
+
+          \output It returns true if the layer has an legend associated to this layer.
+        */
+        virtual bool hasLegend();
+
+        /*!
+          \brief It gets the legend associated to this layer.
+
+          \output The legend associated to this layer.
+        */
+        virtual std::vector<te::map::LegendItem*>* getLegend();
+
+        /*!
+          \brief It removes the legend associated to this layer.
+        */
+        virtual void removeLegend();
+
+        /*!
+          \brief It inserts the given legend to this layer.
+
+          \param legend The legend to be associated to this layer.
+        */
+        virtual void insertLegend(const std::vector<LegendItem*>& legend);
 
         /*!
           \brief It returns the layer type.
@@ -235,48 +286,6 @@ namespace te
           \param srid The Spatial Reference System ID to be associated to the Layer.
         */
         virtual void setSRID(int srid) = 0;
-
-       /*!
-          \brief It gets the grouping parameters used to generate the layer legend.
-
-          \output It returns the grouping parameters of the legend layerr.
-        */
-        virtual te::map::Grouping* getGrouping() const;
-
-        /*!
-          \brief It sets the grouping parameters to be used to generate the layer legend.
-
-          \param grouping The grouping to be used to generate the layer legend.
-
-          \note This class will take the ownership of the pointer to the grouping argument.
-        */
-        virtual void setGrouping(Grouping* grouping);
-        
-        /*!
-          \brief It checks if this layer has an associated legend.
-
-          \output It returns true if the layer has an legend associated to this layer.
-        */
-        virtual bool hasLegend();
-
-        /*!
-          \brief It gets the legend associated to this layer.
-
-          \output The legend associated to this layer.
-        */
-        virtual std::vector<te::map::LegendItem*>* getLegend();
-
-        /*!
-          \brief It removes the legend associated to this layer.
-        */
-        virtual void removeLegend();
-
-        /*!
-          \brief It inserts the given legend to this layer.
-
-          \param legend The legend to be associated to this layer.
-        */
-        virtual void insertLegend(const std::vector<LegendItem*>& legend);
 
       protected:
 
