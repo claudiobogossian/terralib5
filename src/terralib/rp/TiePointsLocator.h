@@ -30,6 +30,7 @@
 #include "../raster/Raster.h"
 #include "../geometry/GTParameters.h"
 #include "../sam/rtree.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <vector>
 #include <set>
@@ -64,7 +65,8 @@ namespace te
             enum InteresPointsLocationStrategyType
             {
               InvalidStrategyT = 0, /*!< Invalid strategy. */
-              MoravecStrategyT = 1, /*!<  Modified Moravec Interest Operator based image area matching. */
+              MoravecStrategyT = 1, /*!<  Modified Moravec Interest Operator based image area matching - Reference: Extration of GCP chips from GeoCover using Modified Moravec Interest Operator (MMIO) algorithm, The United States Geological Survey. */
+              SurfStrategyT = 2 /*!<  SURF based image area matching - Reference: SURF: Speeded Up Robust Features, Herbert Bay. */
             };
 
             InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:MoravecStrategyT).
@@ -119,7 +121,7 @@ namespace te
             
             bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
             
-            unsigned int m_noiseFilterIterations; //!< The number of noise filter iterations (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+            unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
           
             InputParameters();
             
@@ -353,6 +355,81 @@ namespace te
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
         
+        
+        /*!
+          \brief Executes the Moravec algorithm using the supplied parameters.
+          
+          \param raster1XRescFact The X axis rescale factor to be aplied into raster 1.
+          
+          \param raster1YRescFact The Y axis rescale factor to be aplied into raster 1.
+
+          \param raster2XRescFact The X axis rescale factor to be aplied into raster 2.
+          
+          \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
+          
+          \param raster1MaxInterestPoints The maximum number of interes points to be found over raster 1.
+          
+          \param raster2MaxInterestPoints The maximum number of interes points to be found over raster 2.
+          
+          \param raster1Data The raster 1 loaded data.
+          
+          \param maskRaster1Data The mask raster 1 loaded data.
+
+          \param outParamsPtr Output parameters pointer.
+          
+          \param tiePointsWeights Ouptut tie-points weights.
+          
+          \return true if OK, false on errors.
+         */        
+        bool executeMoravec( 
+          const double raster1XRescFact, 
+          const double raster1YRescFact,
+          const double raster2XRescFact,
+          const double raster2YRescFact,
+          const unsigned int raster1MaxInterestPoints,
+          const unsigned int raster2MaxInterestPoints,
+          te::common::TaskProgress& progress,
+          TiePointsLocator::OutputParameters* outParamsPtr,
+          std::vector< double >& tiePointsWeights )
+          throw( te::rp::Exception );
+          
+        /*!
+          \brief Executes the SURF algorithm using the supplied parameters.
+          
+          \param raster1XRescFact The X axis rescale factor to be aplied into raster 1.
+          
+          \param raster1YRescFact The Y axis rescale factor to be aplied into raster 1.
+
+          \param raster2XRescFact The X axis rescale factor to be aplied into raster 2.
+          
+          \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
+          
+          \param raster1MaxInterestPoints The maximum number of interes points to be found over raster 1.
+          
+          \param raster2MaxInterestPoints The maximum number of interes points to be found over raster 2.
+          
+          \param raster1Data The raster 1 loaded data.
+          
+          \param maskRaster1Data The mask raster 1 loaded data.
+
+          \param outParamsPtr Output parameters pointer.
+          
+          \param tiePointsWeights Ouptut tie-points weights.
+          
+          \return true if OK, false on errors.
+         */        
+        bool executeSurf( 
+          const double raster1XRescFact, 
+          const double raster1YRescFact,
+          const double raster2XRescFact,
+          const double raster2YRescFact,
+          const unsigned int raster1MaxInterestPoints,
+          const unsigned int raster2MaxInterestPoints,
+          te::common::TaskProgress& progress,
+          TiePointsLocator::OutputParameters* outParamsPtr,
+          std::vector< double >& tiePointsWeights )
+          throw( te::rp::Exception );        
+        
         /*!
           \brief Load rasters data.
           
@@ -426,7 +503,7 @@ namespace te
           
           \param paramsPtr A pointer to the thread parameters.
         */      
-        static void moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr);
+        static void locateMoravecInterestPointsThreadEntry(MoravecLocatorThreadParams* paramsPtr);
         
         /*! 
           \brief RoolUp a buffer of lines.
@@ -493,7 +570,22 @@ namespace te
         static bool applyMeanFilter( 
           const Matrix< double >& inputData,
           Matrix< double >& outputData,
-          const unsigned int iterationsNumber );          
+          const unsigned int iterationsNumber );     
+          
+        /*!
+          \brief Create an integral image.
+          
+          \param inputData The input data.
+          
+          \param outputData The output data.
+          
+          \note The entry of an integral image IΣ(x) at a location x = (x, y) represents the sum of all pixels in the input image I of a rectangular region formed by the point x and the origi.
+
+          \return true if ok, false on errors.
+        */             
+        static bool createIntegralImage( 
+          const Matrix< double >& inputData,
+          Matrix< double >& outputData );           
           
         /*!
           \brief Generate a correlation features matrix for the given interes points.
