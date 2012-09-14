@@ -115,6 +115,9 @@ namespace te
         void setParameter(const std::string& name);
         void setParameterValue(const double& value);
 
+        void setAxisName(const std::string& name);
+        void setAxisValue(const std::string& value);
+
         void endSpheroid();
         void endDatum();
         void endGeographicCoordinateSystem();
@@ -150,6 +153,9 @@ namespace te
 
         std::pair<std::string, double> m_parameter;   //<! A pair that represents a projection parameter.
         std::map<std::string, double>  m_params;      //<! The set of projection parameters.
+
+        std::pair<std::string, std::string> m_axis;   //<! A pair that represents a axis.
+        std::map<std::string, std::string>  m_axes;   //<! The set of axes.
 
         std::string m_authorityName;                  //<! Authority names that can be read during the parser process.
         std::string m_authorityCode;                  //<! Authority codes that can be read during the parser process.
