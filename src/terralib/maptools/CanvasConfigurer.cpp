@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/StringUtils.h"
+#include "../common/STLUtils.h"
 #include "../fe/Literal.h"
 #include "../se/Fill.h"
 #include "../se/Font.h"
@@ -334,6 +335,7 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
           m_canvas->setPointPatternOpacity(alpha);
         break;
       }
+      te::common::Free(rgba, sizeValue);
     }
   }
 
