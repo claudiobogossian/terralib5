@@ -35,6 +35,7 @@
 #include "../geometry/GTFilter.h"
 
 #include <boost/scoped_array.hpp>
+#include <boost/shared_array.hpp>
 
 #include <algorithm>
 
@@ -47,6 +48,46 @@ namespace te
 {
   namespace rp
   {
+    
+    const double  TiePointsLocator::surfGaussianY[ 9 ][ 9 ] = 
+    { 
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    };  
+      
+    const double  TiePointsLocator::surfGaussianX[ 9 ][ 9 ] = 
+    { 
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },
+      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },
+      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },      
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 }
+    };
+    
+    const double  TiePointsLocator::surfGaussianXY[ 9 ][ 9 ] = 
+    { 
+      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
+      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
+      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
+      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
+      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
+      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
+      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  }
+    };
+    
     TiePointsLocator::InputParameters::InputParameters()
     {
       reset();
@@ -1096,6 +1137,74 @@ namespace te
       return returnValue;
     }
     
+    bool TiePointsLocator::locateSurfInterestPoints( 
+      const Matrix< double >& rasterData,
+      Matrix< unsigned char > const* maskRasterDataPtr,
+      const unsigned int maxInterestPoints,
+      const unsigned int enableMultiThread,
+      const unsigned int scalesNumber,
+      InterestPointsContainerT& interestPoints )
+    {
+      interestPoints.clear();
+
+      const unsigned int minRasterWidthAndHeight = 2 * ( scalesNumber * 9 );
+      // There is not enough data to look for interest points!
+      if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
+      if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
+      
+      bool returnValue = true;
+      boost::mutex rastaDataAccessMutex;
+      boost::mutex interestPointsAccessMutex;
+      unsigned int nextRasterLinesBlockToProcess = 0;
+      
+      SurfLocatorThreadParams threadParams;
+      threadParams.m_returnValuePtr = &returnValue;
+      threadParams.m_rastaDataAccessMutexPtr = &rastaDataAccessMutex;
+      threadParams.m_interestPointsAccessMutexPtr = &interestPointsAccessMutex;
+      threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
+        &nextRasterLinesBlockToProcess;
+      threadParams.m_interestPointsPtr = &interestPoints;
+      threadParams.m_rasterDataPtr = &rasterData;
+      threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
+      threadParams.m_scalesNumber = scalesNumber;
+      
+      if( enableMultiThread )
+      {
+        const unsigned int procsNumber = te::common::GetPhysProcNumber();
+        
+        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
+          minRasterWidthAndHeight, rasterData.getLinesNumber() / procsNumber );
+          
+        const unsigned int rasterLinesBlocksNumber = 
+          ( rasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
+          ( ( rasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+
+        threadParams.m_maxInterestPointsPerRasterLinesBlock =
+          maxInterestPoints / rasterLinesBlocksNumber;
+        
+        boost::thread_group threads;
+        
+        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
+          ++threadIdx )
+        {
+          threads.add_thread( new boost::thread( 
+            locateSurfInterestPointsThreadEntry, 
+            &threadParams ) );
+        }
+        
+        threads.join_all();
+      }
+      else
+      {
+        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber() / 1;
+        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
+        
+        locateSurfInterestPointsThreadEntry( &threadParams );
+      }
+     
+      return returnValue;
+    }
+    
     void TiePointsLocator::locateMoravecInterestPointsThreadEntry(MoravecLocatorThreadParams* paramsPtr)
     {
       assert( paramsPtr );
@@ -1418,6 +1527,204 @@ namespace te
       }
     }
     
+    void TiePointsLocator::locateSurfInterestPointsThreadEntry(SurfLocatorThreadParams* paramsPtr)
+    {
+      assert( paramsPtr );
+      assert( paramsPtr->m_returnValuePtr );
+      assert( paramsPtr->m_rasterDataPtr );
+      assert( paramsPtr->m_interestPointsPtr );
+      assert( paramsPtr->m_rastaDataAccessMutexPtr );
+      assert( paramsPtr->m_interestPointsAccessMutexPtr );
+      assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
+      assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
+      assert( paramsPtr->m_scalesNumber > 2 );
+      
+      // Allocating the internal raster data buffer
+      // and the mask raster buffer
+      
+      const unsigned int maxGausFilterWidth = paramsPtr->m_scalesNumber * 9;
+      const unsigned int maxGausFilterRadius = paramsPtr->m_scalesNumber * 9;
+      const unsigned int bufferLines = maxGausFilterWidth;
+      const unsigned int lastBufferLineIdx = bufferLines - 1;
+
+      paramsPtr->m_rastaDataAccessMutexPtr->lock();
+      
+      const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
+      const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
+      const unsigned int rasterBufferLineSizeBytes = sizeof( 
+        MoravecLocatorThreadParams::RasterDataContainerT::ElementTypeT ) * 
+        bufferCols;
+      const unsigned int maskRasterBufferLineSizeBytes = sizeof(
+        MoravecLocatorThreadParams::MaskRasterDataContainerT::ElementTypeT ) * 
+        bufferCols;
+      
+      paramsPtr->m_rastaDataAccessMutexPtr->unlock();      
+      
+      Matrix< double > rasterBufferDataHandler;
+      if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
+        Matrix< double >::RAMMemPol ) )
+      {
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+        paramsPtr->m_returnValuePtr = false;
+        paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        return;
+      }
+      
+      boost::scoped_array< double* > rasterBufferHandler( new double*[ bufferLines ] );
+      for( unsigned int rasterBufferDataHandlerLine = 0 ; rasterBufferDataHandlerLine < 
+        bufferLines ; ++rasterBufferDataHandlerLine )
+      {
+        rasterBufferHandler[ rasterBufferDataHandlerLine ] = rasterBufferDataHandler[ 
+          rasterBufferDataHandlerLine ];
+      }
+      
+      double** rasterBufferPtr = rasterBufferHandler.get();
+      
+      // Allocating the mask raster buffer      
+      
+      Matrix< double > maskRasterBufferDataHandler;
+      
+      boost::scoped_array< double* > maskRasterBufferHandler( new double*[ bufferLines ] );
+      
+      double** maskRasterBufferPtr = 0;
+      
+      if( paramsPtr->m_maskRasterDataPtr )
+      {
+        if( ! maskRasterBufferDataHandler.reset( bufferLines, bufferCols, 
+          Matrix< double >::RAMMemPol ) )
+        {
+          paramsPtr->m_rastaDataAccessMutexPtr->lock();
+          paramsPtr->m_returnValuePtr = false;
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+          return;
+        }        
+        
+        for( unsigned int maskRasterBufferDataHandlerLine = 0 ; maskRasterBufferDataHandlerLine < 
+          bufferLines ; ++maskRasterBufferDataHandlerLine )
+        {
+          maskRasterBufferHandler[ maskRasterBufferDataHandlerLine ] = maskRasterBufferDataHandler[ 
+            maskRasterBufferDataHandlerLine ];
+        }
+        
+        maskRasterBufferPtr = maskRasterBufferHandler.get();      
+      }
+      
+      // Allocating the internal scales values data buffer
+        
+      Matrix< double > scalesBufferDataHandler;
+      if( ! scalesBufferDataHandler.reset( paramsPtr->m_scalesNumber *
+        bufferLines, bufferCols, Matrix< double >::RAMMemPol ) )
+      {
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+        paramsPtr->m_returnValuePtr = false;
+        paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        return;
+      }
+      
+      std::vector< boost::shared_array< double* > > scalesBuffersHandlers;
+      for( unsigned int scalesBuffersPtrsIdx = 0 ; scalesBuffersPtrsIdx < 
+        bufferLines ; ++scalesBuffersPtrsIdx )
+      {
+        for( unsigned int scaleIdx = 0; scaleIdx < paramsPtr->m_scalesNumber ;
+          ++scaleIdx )
+        {
+          scalesBuffersHandlers.push_back( boost::shared_array< double* >(
+            new double*[ bufferLines ] ) );
+            
+          for( unsigned int bufferLine = 0 ; bufferLine <  bufferLines ; 
+            ++bufferLine )
+          {
+            scalesBuffersHandlers[ scaleIdx ][ bufferLine ] = 
+              scalesBufferDataHandler[ ( scaleIdx * bufferLines ) + bufferLine ];
+          }
+        }
+      }
+      
+      // Pick the next block to process
+      
+      const unsigned int rasterLinesBlocksNumber = 
+        ( rasterLines / paramsPtr->m_maxRasterLinesBlockMaxSize ) +
+        ( ( rasterLines % paramsPtr->m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+        
+      for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
+        rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
+      {
+        InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
+        
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+         
+        if( rasterLinesBlockIdx == ( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) ) )
+        {
+          ++( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) );
+           
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+          
+          // Processing each raster line from the current block
+          
+          const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
+            (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
+            (int)( 2 * maxGausFilterRadius ) ); 
+          const unsigned int rasterLinesEndBound = std::min( 1 +
+            (rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) + 
+            paramsPtr->m_maxRasterLinesBlockMaxSize + 
+            ( 2 * maxGausFilterRadius ), rasterLines );
+                   
+          for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
+            ++rasterLine )
+          {
+            // read a new raster line into the last raster buffer line
+            paramsPtr->m_rastaDataAccessMutexPtr->lock();
+            
+            roolUpBuffer( rasterBufferPtr, bufferLines );             
+            memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
+              paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
+              rasterBufferLineSizeBytes );
+              
+            // read a new mask raster line into the last mask raster buffer line
+            if( paramsPtr->m_maskRasterDataPtr )
+            {
+              roolUpBuffer( maskRasterBufferPtr, bufferLines );
+              memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
+                paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
+                maskRasterBufferLineSizeBytes );
+            }    
+            
+            paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+            
+            
+          }
+          
+          // Copying the best found block maximas to the external maximas container
+          
+          paramsPtr->m_interestPointsAccessMutexPtr->lock();
+          
+          unsigned int pointsToAdd = std::min( 
+            paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
+            (unsigned int)blockMaximas.size() );
+          InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
+            blockMaximas.rbegin();
+            
+          while( pointsToAdd )
+          {
+//            std::cout << std::endl << blockMaximasIt->m_featureValue
+//              << std::endl;
+              
+            paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
+           
+            ++blockMaximasIt;
+            --pointsToAdd;
+          }
+          
+          paramsPtr->m_interestPointsAccessMutexPtr->unlock();          
+        }
+        else
+        {
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        }
+      }      
+      
+    }
+    
     void TiePointsLocator::createTifFromMatrix( 
       const Matrix< double >& rasterData,
       const InterestPointsContainerT& interestPoints,
@@ -1714,7 +2021,7 @@ namespace te
           if( outCol )
             currSum += outputData[ outLine ][ outCol - 1 ];
           if( outLine && outCol )
-            currSum += outputData[ outLine - 1 ][ outCol - 1 ];
+            currSum -= outputData[ outLine - 1 ][ outCol - 1 ];
           
           outputData[ outLine ][ outCol ] = currSum;
         }

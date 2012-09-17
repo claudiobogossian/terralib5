@@ -320,6 +320,49 @@ namespace te
             ~MoravecLocatorThreadParams() {};
         };              
         
+        
+        /*! 
+          \brief The parameters passed to the surfLocatorThreadEntry method.
+        */     
+        class SurfLocatorThreadParams
+        {
+          public :
+            
+            /*!
+            \brief Raster data container type.
+            */          
+            typedef Matrix< double > RasterDataContainerT;
+            
+            /*!
+            \brief Mask raster data container type.
+            */          
+            typedef Matrix< unsigned char > MaskRasterDataContainerT;            
+            
+            bool* m_returnValuePtr; //! Thread return value pointer.
+            
+            unsigned int m_scalesNumber; //!< The number of sub-samples scales to generate (minimum:3).
+            
+            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
+            
+            RasterDataContainerT const* m_rasterDataPtr; //!< The loaded raster data.
+            
+            MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            
+            InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            
+            boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
+            
+            boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
+            
+            unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
+            
+            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
+            
+            SurfLocatorThreadParams() {};
+            
+            ~SurfLocatorThreadParams() {};
+        };         
+        
         /*! 
           \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
         */     
@@ -348,7 +391,12 @@ namespace te
             CorrelationMatrixCalcThreadParams() {};
             
             ~CorrelationMatrixCalcThreadParams() {};
-        };        
+        };     
+        
+        // Suft internal gaussian filter kernels
+        static const double surfGaussianY[ 9 ][ 9 ];        
+        static const double surfGaussianX[ 9 ][ 9 ];
+        static const double surfGaussianXY[ 9 ][ 9 ];
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
 //        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
@@ -498,12 +546,44 @@ namespace te
           const unsigned int enableMultiThread,
           InterestPointsContainerT& interestPoints );
           
+        /*!
+          \brief SURF interest points locator.
+          
+          \param rasterData The loaded raster data.
+          
+          \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
+          
+          \param scalesNumber The number of sub-sampling scales to generate.
+          
+          \param maxInterestPoints The maximum number of interest points to find over raster 1.
+          
+          \param enableMultiThread Enable/disable multi-thread.
+          
+          \param interestPoints The found interest points (coords related to rasterData lines/cols).          
+
+          \return true if ok, false on errors.
+        */             
+        static bool locateSurfInterestPoints( 
+          const Matrix< double >& rasterData,
+          Matrix< unsigned char > const* maskRasterDataPtr,
+          const unsigned int maxInterestPoints,
+          const unsigned int enableMultiThread,
+          const unsigned int scalesNumber,
+          InterestPointsContainerT& interestPoints );          
+          
         /*! 
           \brief Movavec locator thread entry.
           
           \param paramsPtr A pointer to the thread parameters.
         */      
         static void locateMoravecInterestPointsThreadEntry(MoravecLocatorThreadParams* paramsPtr);
+        
+        /*! 
+          \brief Surf locator thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void locateSurfInterestPointsThreadEntry(SurfLocatorThreadParams* paramsPtr);        
         
         /*! 
           \brief RoolUp a buffer of lines.
