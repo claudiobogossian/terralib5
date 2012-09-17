@@ -21,14 +21,12 @@
   \file MapDisplay.h
 
   \brief The map display controls how a set of layers are displayed.
- */
+*/
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_MAPDISPLAY_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_MAPDISPLAY_H
 
-// STL 
-#include <map>
-#include <vector>
+// TerraLib
 #include "AbstractMapDisplay.h"
 
 namespace te
@@ -40,7 +38,7 @@ namespace te
 
       \brief This class controls how a set of layers are displayed.
 
-      \sa Canvas
+      \sa AbstractMapDisplay, AbstractLayer
      */
     class TEMAPEXPORT MapDisplay : public AbstractMapDisplay
     {
@@ -64,94 +62,29 @@ namespace te
           */
         //@{
 
-        /*!
-          \brief It sets the root layer.
-
-          \param layer The root layer.
-
-          \note The display will NOT take the ownership of the given layer.
-                You must choose between using setLayerTree or setLayerList. Never use both.
-          */
         virtual void setLayerTree(te::map::AbstractLayer* layer);
+
+        virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order);
 
         /*!
           \brief It gets the root layer.
 
           \return The root layer.
-
-          */
+        */
         te::map::AbstractLayer* getLayerTree();
 
-        /*!
-          \brief It sets the layer list to be showed in the Map Display.
-
-          \param order The layer list.
-
-          \note The display will NOT take the ownership of the given layer.
-                You must choose between using setLayerTree or setLayerList. Never use both.
-          */
-        virtual void setLayerList(std::list<te::map::AbstractLayer*>& order);
-
-         /*!
-          \brief It returns the MapDisplay current horizontal align.
-
-          \return The MapDisplay current horizontal align.
-         */
         virtual te::map::AlignType getHAlign() const;
 
-        /*!
-          \brief It returns the MapDisplay current vertical align.
-
-          \return The MapDisplay current vertical align.
-         */
         virtual te::map::AlignType getVAlign() const;
 
-        /*!
-          \brief It will set the align rendering of objects into the map display. Just successive drawings will be affected by this modification.
-
-          \param h The new horizontal align.
-          \param v The new vertical align.
-
-          \note It will not automatically redraw the objects, you must explicit call the setExtent method.
-         */
         virtual void setAlign(te::map::AlignType h, te::map::AlignType v);
 
-        /*!
-          \brief It returns the world extent showned by the MapDisplay.
+        virtual const te::gm::Envelope* getExtent() const;
 
-          \return The world extent showned by the MapDisplay or NULL if none is set.
-
-          \note The extent coordinates are in the Map Display SRS.
-         */
-        const te::gm::Envelope* getExtent() const;
-
-        /*!
-          \brief It sets the world visible area. If the given area is not proportional to the device width and height,
-                 the MapDisplay will change it in order to preserve the aspect ratio.
-                 Just successive calls to the draw method will be affected.
-
-          \param e The world visible area. It coordinates must be in the Map Display SRS.
-
-          \todo Pensar se ter um metodo chamado getBestFit seria mais adequado para que o setExtent fosse mais burrinho, isto e, so fizesse o que manda e nao pensasse qual a melhro proporcao.
-         */
         virtual void setExtent(const te::gm::Envelope& e);
 
-        /*!
-          \brief It return the Spatial Reference System used by the Map Display.
-
-          \return The Spatial Reference System used by the Map Display.
-         */
         virtual int getSRID() const;
 
-        /*!
-          \brief It sets a new Spatial Reference System to be used by the Map Display.
-
-          It will also convert the current envelope coordinates to the new SRS. This may
-          cause changes to the world visible area. In this case, the extent will be updated and
-          new internal transformation function will be calculated.
-
-          \param srid The new Spatial Reference System to be used by the Map Display.
-         */
         virtual void setSRID(const int& srid);
 
         //@}
@@ -167,7 +100,7 @@ namespace te
           \brief Copy constructor not allowed.
 
           \param rhs The map display that would be copied.
-         */
+        */
         MapDisplay(const MapDisplay& rhs);
 
         /*!
@@ -176,14 +109,14 @@ namespace te
           \param rhs The map display whose contents would be assigned to this map display .
 
           \return A reference to this map display.
-         */
+        */
         MapDisplay& operator=(const MapDisplay& rhs);
 
         //@}
 
       protected:
 
-        int m_srid;                                         //!< The display SRS.        
+        int m_srid;                                         //!< The display SRS.
         te::gm::Envelope* m_extent;                         //!< The display extent.
         te::map::AbstractLayer* m_layerTree;                //!< The root layer to be displayed. You should choose to use the tree or list. Never use both.
         std::list<te::map::AbstractLayer*> m_layerList;     //!< The layer list to be displayed. You should choose to use the tree or list. Never use both.
@@ -195,4 +128,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_MAPDISPLAY_H
-
