@@ -64,6 +64,13 @@
 
 //@}
 
+/*!
+ \def TE_UNKNOWN_SRS
+ 
+ \brief A numeric value to represent a unknown SRS ID in TerraLib. 
+ */
+#define TE_UNKNOWN_SRS 0
+
 /** @name EPSG codes
  *  Some commoly used EPSG codes for Spatial Reference Systems.
  */
