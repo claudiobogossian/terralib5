@@ -159,6 +159,9 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
       dataset = t->query(select);
     }
     assert(dataset);
+    
+    // Loading the dataset type
+    dataset->loadTypeInfo();
 
     // Gets the set of symbolizers
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
