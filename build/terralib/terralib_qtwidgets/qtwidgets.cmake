@@ -99,6 +99,7 @@ file (
   ${SRCDIR}/qwt/ScatterDisplay.h
   ${SRCDIR}/qwt/ScatterSelectionCursor.h
   ${SRCDIR}/qwt/TimeSeriesDisplay.h
+  ${SRCDIR}/widgets/canvas/BasicMapDisplay.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
