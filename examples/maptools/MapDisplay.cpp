@@ -5,11 +5,11 @@
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
-#include <terralib/qt/widgets/canvas/Canvas.h>
-#include <terralib/qt/widgets/canvas/MapDisplay.h>
+#include <terralib/qt/widgets/canvas/BasicMapDisplay.h>
 
 // STL
 #include <iostream>
+#include <list>
 
 // Qt
 #include <QtGui/QApplication>
@@ -39,48 +39,56 @@ void MapDisplay()
     std::vector<std::string*> datasets;
     transactor->getCatalogLoader()->getDataSets(datasets);
 
-    te::qt::widgets::MapDisplay* mapDisplay = new te::qt::widgets::MapDisplay(800, 600);
+    te::qt::widgets::BasicMapDisplay* mapDisplay = new te::qt::widgets::BasicMapDisplay(QSize(700, 500));
 
     // MapDisplay box
     te::gm::Envelope env;
 
-    // Root
-    te::map::FolderLayer* folderLayer = new te::map::FolderLayer("0", "Folder", 0);
+    std::map<te::gm::GeomType, te::se::Style*> styles;
+    styles[te::gm::PolygonType] = SimplePolygonStyle();
+    styles[te::gm::LineStringType] = SimpleLineStyle();
+    styles[te::gm::PointType] = MarkPointStyle("circle");
+
+    // Layer list
     std::vector<std::string*>::iterator it;
+    std::list<te::map::AbstractLayer*> layerList;
     int id = 0;
     for(it = datasets.begin(); it != datasets.end(); ++it)
     {
       const std::string* s = *it;
       te::da::DataSetType* dt = cl->getDataSetType(*s);
       if(!dt->hasGeom())
-        continue;    
+        continue;
 
-      // Updates MapDisplay box
+      // To MapDisplay extent
       te::gm::Envelope* e = cl->getExtent(dt->getDefaultGeomProperty());
       env.Union(*e);
       delete e;
       
       // Creates a Layer
-      te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(++id), *s, folderLayer);
+      te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(++id), *s);
       layer->setDataSource(ds);
       layer->setDataSetName(*s);
+      layer->setVisibility(te::map::VISIBLE);
+      layer->setStyle(styles[dt->getDefaultGeomProperty()->getGeometryType()]);
 
       // Creates a Layer Renderer
       te::map::LayerRenderer* r = new te::map::LayerRenderer();
       layer->setRenderer(r);
+
+      layerList.push_back(layer);
     }
 
-	folderLayer->setVisibility(te::map::VISIBLE);
-    std::list<te::map::AbstractLayer*> layerList;
-    layerList.push_back(folderLayer);
+    mapDisplay->setMinimumSize(QSize(60, 60));
+    mapDisplay->setResizePolicy(te::qt::widgets::BasicMapDisplay::Center);
     mapDisplay->setLayerList(layerList);
+    mapDisplay->show();
     mapDisplay->setExtent(env);
-    mapDisplay->showNormal();
 
     app.exec();
 
     delete mapDisplay;
-    delete folderLayer;
+    te::common::FreeContents(layerList);
     delete cl;
     delete transactor;
     delete ds;
