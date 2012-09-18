@@ -568,7 +568,7 @@ namespace te
       
       MatchedInterestPointsContainerT matchedPoints;
       
-      TERP_TRUE_OR_RETURN_FALSE( matchCorrelationEuclidean( 
+      TERP_TRUE_OR_RETURN_FALSE( executeMatchingByCorrelation( 
         raster1Features,
         raster2Features,
         raster1InterestPoints,
@@ -2389,7 +2389,7 @@ namespace te
       }
     }
     
-    bool TiePointsLocator::matchCorrelationEuclidean( 
+    bool TiePointsLocator::executeMatchingByCorrelation( 
       const Matrix< double >& featuresSet1,
       const Matrix< double >& featuresSet2,
       const InterestPointsContainerT& interestPointsSet1,
@@ -2501,7 +2501,7 @@ namespace te
           ++threadIdx )
         {
           threads.add_thread( new boost::thread( 
-            correlationMatrixCalcThreadEntry, &params ) );
+            executeMatchingByCorrelationThreadEntry, &params ) );
         }
         
         threads.join_all();          
@@ -2509,7 +2509,7 @@ namespace te
       }
       else
       {
-        correlationMatrixCalcThreadEntry( &params );
+        executeMatchingByCorrelationThreadEntry( &params );
       }
       
       // finding the correlation matrix maximas for each line and column
@@ -2611,7 +2611,7 @@ namespace te
       return true;
     }
     
-    void TiePointsLocator::correlationMatrixCalcThreadEntry(
+    void TiePointsLocator::executeMatchingByCorrelationThreadEntry(
       CorrelationMatrixCalcThreadParams* paramsPtr)
     {
       assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
