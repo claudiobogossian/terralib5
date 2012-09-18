@@ -725,7 +725,7 @@ namespace te
           
           \param matchedPoints The matched points.
         */          
-        static bool matchCorrelationEuclidean( 
+        static bool executeMatchingByCorrelation( 
           const Matrix< double >& featuresSet1,
           const Matrix< double >& featuresSet2,
           const InterestPointsContainerT& interestPointsSet1,
@@ -739,7 +739,7 @@ namespace te
           
           \param paramsPtr A pointer to the thread parameters.
         */      
-        static void correlationMatrixCalcThreadEntry(
+        static void executeMatchingByCorrelationThreadEntry(
           CorrelationMatrixCalcThreadParams* paramsPtr);          
     };
 
