@@ -239,14 +239,14 @@ namespace te
         te::gm::Line* m_currline;                //!< The current line in the iterator.
         int m_column;                            //!< The current column of the iterator.
         int m_row;                               //!< The current row of the iterator.
-        int m_startingcolumn;
-        int m_endingcolumn;
-        int m_startingrow;
-        int m_endingrow;
-        unsigned m_maxcolumns;
-        unsigned m_maxrows;
-        int m_nline;
-        unsigned m_nintersections;
+        int m_startingcolumn;                    //!< The starting column (in current line) to initialize the iteration.
+        int m_endingcolumn;                      //!< The column (in current line) to finalize the iteration.
+        int m_startingrow;                       //!< The starting row of the iteration.
+        int m_endingrow;                         //!< The ending row of the iteration.
+        unsigned m_maxcolumns;                   //!< The number of columns in band.
+        unsigned m_maxrows;                      //!< The number of rows in band.
+        int m_nline;                             //!< The actual line of the iterator.
+        int m_nintersections;                    //!< The number number of intersected lines in current line of the iterator.
 
     };
 
@@ -500,8 +500,8 @@ namespace te
       te::gm::Coord2D ll = g->getMBR()->getLowerLeft();
       te::gm::Coord2D ur = g->getMBR()->getUpperRight();
 
-      m_startingrow = b->getRaster()->getGrid()->geoToGrid(ll.x, ur.y).y;
-      m_endingrow = b->getRaster()->getGrid()->geoToGrid(ll.x, ll.y).y;
+      m_startingrow = (int) b->getRaster()->getGrid()->geoToGrid(ll.x, ur.y).y;
+      m_endingrow = (int) b->getRaster()->getGrid()->geoToGrid(ll.x, ll.y).y;
 
       m_currline = new te::gm::Line(te::gm::Point(ll.x, ll.y, m_geometry->getSRID()),
                                     te::gm::Point(ur.x, ll.y, m_geometry->getSRID()),
@@ -594,9 +594,9 @@ namespace te
         m_nintersections = mls->getNumGeometries();
       }
 
-      m_startingcolumn = this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getStartPoint()->getX(), lineinter->getStartPoint()->getY()).x;
+      m_startingcolumn = (int) this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getStartPoint()->getX(), lineinter->getStartPoint()->getY()).x;
 
-      m_endingcolumn = this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getEndPoint()->getX(), lineinter->getEndPoint()->getY()).x;
+      m_endingcolumn = (int) this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getEndPoint()->getX(), lineinter->getEndPoint()->getY()).x;
 
       int tmp;
 
