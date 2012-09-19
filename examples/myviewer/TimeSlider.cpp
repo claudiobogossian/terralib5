@@ -2,6 +2,7 @@
 #include "QTimerEvent"
 #include "QPixmap"
 #include "QPainter"
+#include "QHBoxLayout"
 #include "MyLayer.h"
 #include "MyDisplay.h"
 
@@ -10,7 +11,6 @@
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/geometry.h>
-//#include <terralib/st/movingobject/MovingObject.h>
 #include <terralib/st/observation/Observation.h>
 #include <terralib/st/observation/SpatioTemporalObservationSet.h>
 #include <terralib/st/coverage/RasterCoverage.h>
@@ -18,29 +18,28 @@
 
 #include "STExamples.h"
 
-TimeSlider::TimeSlider(QWidget* parent) : 
-  QSlider(parent),
+TimeSlider::TimeSlider(te::map::MapDisplay* md, QWidget* parent) : 
+  QSlider(Qt::Horizontal, parent),
+  m_mapDisplay(md),
   m_lines(false),
   m_loop(false),
   m_timerId(0),
   m_initialDateTime(0),
-  m_finalDateTime(0)
+  m_finalDateTime(0),
+  m_temporalDrawingConfig(0),
+  m_play(false), 
+  m_stop(true),
+  m_value(0)
 {
   connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
-}
-
-TimeSlider::TimeSlider(Qt::Orientation orientation, QWidget* parent) : 
-  QSlider(orientation, parent),
-  m_timerId(0)
-{
-  connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
+  stop();
 }
 
 TimeSlider::~TimeSlider()
 {
 }
 
-void TimeSlider::loadMovingObjects(bool addTime)
+bool TimeSlider::loadMovingObjects(bool addTime)
 {
   //como vai ter apenas 1 ativo (ou vetorial ou temporal
   // vamos simplificar o codigo...
@@ -76,15 +75,18 @@ void TimeSlider::loadMovingObjects(bool addTime)
             tfim = t;
         }
 
-    //std::string t1 = tini->toString();
-    //std::string t2 = tfim->toString();
+//std::string t1 = tini->toString();
+//std::string t2 = tfim->toString();
 
         setInitialDateTime(tini);
         setFinalDateTime(tfim);
       }
-      return;
+      return true;
     }
   }
+
+  if(m_mObs.empty())
+    return false;
 
   for(it = m_layers.begin(); it != m_layers.end(); ++it)
   {
@@ -92,20 +94,16 @@ void TimeSlider::loadMovingObjects(bool addTime)
     if(parent->getId() == "TemporalImages")
     {
       calculateTemporalImageTimes();
-      return;
+      return true;
     }
   }
+  return true;
 }
 
 void TimeSlider::calculateTemporalImageTimes(bool addTime)
 {
 // este metodo pega todos os layers existentes debaixo da pasta TemporalImages e calcula o tempo inicial e final.
 
-}
-
-void TimeSlider::setMapDisplay(te::map::MapDisplay* display)
-{
-  m_mapDisplay = display;
 }
 
 void TimeSlider::addLayer(te::map::AbstractLayer* al)
@@ -133,8 +131,11 @@ void TimeSlider::timerEvent(QTimerEvent* e)
   if(m_initialDateTime->getDateTimeType() != te::dt::TIME_INSTANT)
     return;
 
-  int ivalue = this->value();
-  if(ivalue == 0)
+  if(m_play == false)
+    return;
+
+  m_value = this->value();
+  if(m_value == 0)
   {
     ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
     clearLastPointMap();
@@ -143,7 +144,7 @@ void TimeSlider::timerEvent(QTimerEvent* e)
   te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialDateTime;
   boost::gregorian::date initialDate(ti->getDate().getDate());
   boost::posix_time::ptime iTime(initialDate, ti->getTime().getTimeDuration());
-  boost::posix_time::time_duration timedur(ivalue/60, 0, 0);
+  boost::posix_time::time_duration timedur(m_value/60, 0, 0);
   boost::posix_time::ptime time1 = iTime + timedur;
   te::dt::TimeInstant* tInitial = new te::dt::TimeInstant(time1);
 
@@ -153,7 +154,7 @@ void TimeSlider::timerEvent(QTimerEvent* e)
 
   draw(tInitial, tFinal);
 
-  int fvalue = ivalue + m_minuteInterval;
+  int fvalue = m_value + m_minuteInterval;
   if(fvalue >= maximum())
   {
     backToInit();
@@ -169,10 +170,10 @@ void TimeSlider::timerEvent(QTimerEvent* e)
 
 void TimeSlider::valueChangedSlot(int v)
 {
-  if(m_timerId)
-    return;
   if(m_initialDateTime->getDateTimeType() != te::dt::TIME_INSTANT)
     return;
+
+  m_value = v;
   
   ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
 
@@ -251,7 +252,7 @@ void TimeSlider::draw(te::dt::DateTime* tini, te::dt::DateTime* tfim)
           line->setPoint(n++, p->getX(), p->getY());
         }
       }
-      if(m_lines)
+      if(n > 1 && m_lines)
       {
         geoms.push_back(line);
         if(p)
@@ -397,4 +398,87 @@ void TimeSlider::killTimer()
   if(m_timerId)
     QSlider::killTimer(m_timerId);
   m_timerId = 0;
+}
+
+void TimeSlider::clearDrawing()
+{
+  killTimer();
+  backToInit();
+
+  std::vector<te::map::AbstractLayer*>::iterator it;
+  for(it = m_layers.begin(); it != m_layers.end(); ++it)
+     ((MyDisplay*)m_mapDisplay)->clearTemporalCanvas(*it);
+
+  ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
+}
+
+void TimeSlider::configDrawing()
+{
+  if(m_temporalDrawingConfig == 0)
+    m_temporalDrawingConfig = new TemporalDrawingConfig(this);
+
+  if(m_temporalDrawingConfig->exec() == QDialog::Rejected)
+    return;
+  m_minuteInterval = 15;
+  m_dateInterval = 0;
+
+  int index = m_temporalDrawingConfig->m_intervalDateComboBox->currentIndex();
+  if(index == 0)
+    m_minuteInterval = 15;
+  else if(index == 1)
+    m_minuteInterval = 30;
+  else if(index == 2)
+    m_minuteInterval = 60;
+  else
+    m_minuteInterval = (index - 2) * 24 * 60;
+
+  index = m_temporalDrawingConfig->m_intervalDrawingComboBox->currentIndex();
+  m_drawingInterval = (index + 1) * 100;
+  m_lines = m_temporalDrawingConfig->m_drawLinesCheckBox->isChecked();
+  m_loop = m_temporalDrawingConfig->m_loopCheckBox->isChecked();
+}
+
+void TimeSlider::playPauseSlot()
+{
+  if(m_play)
+    pause();
+  else
+    play();
+}
+
+void TimeSlider::stopSlot()
+{
+  stop();
+}
+
+void TimeSlider::play()
+{
+  m_play = true;
+
+  if(m_stop)
+  {
+    setEnabled(true);
+    int value = m_value;
+    m_stop = false;
+    if(m_temporalDrawingConfig == 0)
+    {
+      loadMovingObjects();
+      configDrawing();
+    }
+    startTimer(m_drawingInterval);
+    setValue(value);
+  }
+}
+
+void TimeSlider::pause()
+{
+  m_play = false;
+}
+
+void TimeSlider::stop()
+{
+  m_play = false;
+  m_stop = true;
+  clearDrawing();
+  setEnabled(false);
 }

@@ -6,6 +6,10 @@
 #include<terralib/qt/widgets.h>
 #include<terralib/maptools/DataGridOperation.h>
 
+//QT
+#include <QVBoxLayout>
+#include <QGroupBox>
+
 #include<map>
 
 class MyLayer;
@@ -32,9 +36,13 @@ public:
   void drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::gm::Geometry*>& geoms, bool drawLines = false);
   void clearTemporalPixmaps(std::vector<te::map::AbstractLayer*>);
   void clearTemporalCanvas(te::map::AbstractLayer*);
-  void setTimeSlider(TimeSlider*);
   void removeDrawOnlyChanged(te::map::AbstractLayer*);
   void addDrawOnlyChanged(te::map::AbstractLayer*);
+  void mountLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList);
+  void removeAllTemporalLayers();
+  void addTemporalLayer(te::map::AbstractLayer*);
+  void setTitle(QString&);
+  QWidget* getWidget();
 
 public Q_SLOTS:
   void selectionChangedSlot(te::map::DataGridOperation*);
@@ -94,8 +102,11 @@ public Q_SLOTS:
   void setMouseOperationToTooltipSlot();
   void clearTooltipPixmap();
   void showRootFolderSlot();
+  void initTemporal();
   void printSlot();
   void printFileSlot();
+  void timeSliderContextMenuSlot(const QPoint&);
+  void configTemporalPlaySlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -110,6 +121,10 @@ private:
   MouseHandler* m_mouseHandler;
   std::set<te::map::AbstractLayer*> m_drawOnlyChanged;
   te::map::AbstractLayer* m_rootFolderLayer;
+  QVBoxLayout* m_layout;
+  QWidget* m_widget;
+  QGroupBox* m_timeGroupBox;
+  QMenu* m_timeSliderMenu;
   QMenu* m_mouseOperationMenu;
   QAction* m_mouseZoomInAction;
   QAction* m_mouseZoomOutAction;

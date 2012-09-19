@@ -20,8 +20,6 @@
 #include "MyGrid.h"
 #include "MyLayer.h"
 #include "ConfigStyle.h"
-#include "TemporalDrawingConfig.h"
-#include "TimeSlider.h"
 
 class MyWindow : public QWidget
 {
@@ -42,7 +40,6 @@ class MyWindow : public QWidget
 
 protected slots:
   void layerVisibilityChanged(const QModelIndex&);
-  //void layerItemMoved(const QModelIndex&, const QModelIndex&);
   void contextMenuActivated(const QModelIndex& mi, const QPoint& pos);
   void setStyleSlot();
   void openNewMapDisplaySlot();
@@ -53,11 +50,6 @@ protected slots:
   void addFolderSlot();
   void addLayerSlot();
   void plotTemporalDistanceSlot();
-  void timeSliderContextMenu(const QPoint&);
-  void autoDrawingSlot();
-  void manualDrawingSlot();
-  void configDrawingSlot();
-  void timeSliderValueChangedSlot(int);
   void removeDisplaySlot(MyDisplay*);
   void removeGridSlot(MyGrid*);
   void plotHistogramSlot(MyGrid*);
@@ -97,8 +89,7 @@ private:
   te::map::AbstractLayer* m_selectedLayer;
   QModelIndex m_parentModelIndex;
   QGroupBox* m_displayBox;
-  QSplitter* m_splitter;
-  TimeSlider* m_timeSlider;
+  QVBoxLayout* m_displayLayout;
   QAction* m_styleAction;
   QAction* m_openNewMapDisplayAction;
   QAction* m_openGridAction;
@@ -119,18 +110,7 @@ private:
   QMenu* m_treeMenu;
   QMenu* m_changeStatusColorMenu;
   QMenu* m_changeDefaultStyleMenu;
-  QMenu* m_timeSliderMenu;
   ConfigStyle* m_configStyle;
-  TemporalDrawingConfig* m_temporalDrawingConfig;
   std::vector<te::st::MovingObject*> m_movObjOutput;
-
-  int m_dateInterval;
-  int m_minuteInterval;
-  int m_temporalDrawingInterval;
-  bool m_temporalDrawLines;
-  bool m_temporalLoop;
-
-
-  //HistogramDisplay *m_histogramDisplay;
 };
 #endif
