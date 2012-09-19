@@ -173,14 +173,12 @@ double te::rp::ClassifierISOSegStrategy::Pattern::getDistance(Pattern* p)
 {
   assert(m_meanVector.size() == p->m_meanVector.size());
 
-  unsigned int i;
-  unsigned int j;
   unsigned int nBands = m_meanVector.size();
 
   boost::numeric::ublas::matrix<double> term1(1, nBands);
   boost::numeric::ublas::matrix<double> term2(nBands, 1);
 
-  for (i = 0; i < nBands; i++)
+  for (unsigned int i = 0; i < nBands; i++)
   {
     term1(0, i) = m_meanVector[i].real() - p->m_meanVector[i].real();
 
@@ -279,16 +277,16 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
 
   std::complex<double> mean;
 
-  te::rp::RasterAttributes* rattributes;
+  te::rp::RasterAttributes rattributes;
 
 // fill m_regions, in the beginning, each region is a cluster
   for (unsigned i = 0; i < inputPolygons.size(); i++)
   {
     te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (inputPolygons[i]);
 
-    std::vector<std::complex<double> > means = rattributes->getMeans(inputRaster, *polygon, inputRasterBands);
+    std::vector<std::complex<double> > means = rattributes.getMeans(inputRaster, *polygon, inputRasterBands);
 
-    Pattern* region = new Pattern(i, polygon->getArea(), means, rattributes->getCovarianceMatrix(inputRaster, *polygon, inputRasterBands));
+    Pattern* region = new Pattern(i, polygon->getArea(), means, rattributes.getCovarianceMatrix(inputRaster, *polygon, inputRasterBands));
 
     Pattern* cluster = new Pattern(*region);
 
@@ -376,9 +374,6 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
     colormap[*lit] = color++;
 
   te::gm::Coord2D geoCoord;
-  te::gm::Point* point;
-  unsigned int c;
-  unsigned int r;
   unsigned int pattern;
 
 // classify output image

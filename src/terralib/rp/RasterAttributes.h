@@ -72,6 +72,9 @@ namespace te
         // overload
         bool initialize(const AlgorithmInputParameters& inputParams) throw(te::rp::Exception);
 
+        //overload
+        bool isInitialized() const;
+
         // overload
         bool execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception);
 

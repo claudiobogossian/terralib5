@@ -46,6 +46,11 @@ bool te::rp::RasterAttributes::initialize(const AlgorithmInputParameters& inputP
   return true;
 }
 
+bool te::rp::RasterAttributes::isInitialized() const
+{
+  return true;
+}
+
 bool te::rp::RasterAttributes::execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception)
 {
   return true;
