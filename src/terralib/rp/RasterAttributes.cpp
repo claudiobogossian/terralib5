@@ -43,10 +43,12 @@ te::rp::RasterAttributes::~RasterAttributes()
 
 bool te::rp::RasterAttributes::initialize(const AlgorithmInputParameters& inputParams) throw(te::rp::Exception)
 {
+  return true;
 }
 
 bool te::rp::RasterAttributes::execute(AlgorithmOutputParameters& outputParams) throw(te::rp::Exception)
 {
+  return true;
 }
 
 void te::rp::RasterAttributes::reset() throw(te::rp::Exception)
