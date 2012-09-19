@@ -117,7 +117,7 @@ namespace te
 
             te::rst::Raster const* m_inputRasterPtr;                      //!< Input raster.
             std::vector<unsigned int> m_inputRasterBands;                 //!< Bands to be processed from the input raster.
-            std::vector<te::gm::Polygon*> m_inputPolygons;                //!< The polygons to be classified when using object-based image analysis (OBIA).
+            std::vector<te::gm::Geometry*> m_inputPolygons;               //!< The polygons to be classified when using object-based image analysis (OBIA).
             std::string m_strategyName;                                   //!< The classifier strategy name see each te::rp::ClassifierStrategyFactory inherited classes documentation for reference.
             ClassifierStrategyParameters* m_classifierStrategyParamsPtr;  //!< Internal specific classifier strategy parameters.
 
