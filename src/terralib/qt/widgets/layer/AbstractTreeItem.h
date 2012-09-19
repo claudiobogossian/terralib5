@@ -165,6 +165,13 @@ namespace te
           int getChildRow(AbstractTreeItem* treeItem);
 
           /*!
+            \brief It checks if the item is a layer item.
+
+            \return The default implementation returns true indicating that the item is a layer item.
+           */
+          virtual bool isLayerItem() const;
+
+          /*!
             \brief It checks if the item is a legend item.
 
             \return The default implementation returns false indicating that the item is not a legend item.
@@ -188,13 +195,6 @@ namespace te
             \return The data stored under the given role for this tree item.
            */
           virtual QVariant data(int role) const = 0;
-
-          /*!
-            \brief It checks if the item is a layer item.
-
-            \return The default implementation returns true indicating that the item is a layer item.
-           */
-          virtual bool isLayerItem() const = 0;
 
           /*!
             \brief It creates a menu to be displayed in the given widget.

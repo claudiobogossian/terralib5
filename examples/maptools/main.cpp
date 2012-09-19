@@ -48,7 +48,7 @@ int main(int /*argc*/, char** /*argv*/)
     LoadModules();
 
     // Show a MapDisplay
-    //MapDisplay();
+    MapDisplay();
 
     // Creates a OGC Filter Expression and convert it to TerraLib Expression.
     Filter2Query();

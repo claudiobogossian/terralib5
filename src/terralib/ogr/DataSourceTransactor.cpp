@@ -65,32 +65,17 @@ te::ogr::DataSourceTransactor::~DataSourceTransactor()
 
 void te::ogr::DataSourceTransactor::begin()
 {
-  OGRLayer* result = m_ogrDS->ExecuteSQL("START TRANSACTION", 0, 0);
-
-  if(result)
-    m_ogrDS->ReleaseResultSet(result);
-
   m_isInTransaction = true;
 }
 
 void te::ogr::DataSourceTransactor::commit()
 {
   m_isInTransaction = false;
-
-  OGRLayer* result = m_ogrDS->ExecuteSQL("COMMIT", 0, 0);
-
-  if(result)
-    m_ogrDS->ReleaseResultSet(result);
 }
 
 void te::ogr::DataSourceTransactor::rollBack()
 {
   m_isInTransaction = false;
-
-  OGRLayer* result = m_ogrDS->ExecuteSQL("ROLLBACK", 0, 0);
-
-  if(result)
-    m_ogrDS->ReleaseResultSet(result);
 }
 
 bool te::ogr::DataSourceTransactor::isInTransaction() const

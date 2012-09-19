@@ -193,6 +193,17 @@ void te::srs::WKTActions::setParameterValue(const double& value)
   m_params.insert(m_parameter);
 }
 
+void te::srs::WKTActions::setAxisName(const std::string& name)
+{
+  m_axis.first = name;
+}
+
+void te::srs::WKTActions::setAxisValue(const std::string& value)
+{
+  m_axis.second = value;
+  m_axes.insert(m_axis);
+}
+
 void te::srs::WKTActions::endSpheroid()
 {
   m_datum->setEllipsoid(m_ellps);

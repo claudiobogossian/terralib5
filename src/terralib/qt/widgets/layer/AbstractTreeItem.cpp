@@ -145,12 +145,12 @@ int te::qt::widgets::AbstractTreeItem::getChildRow(AbstractTreeItem* treeItem)
   return children().indexOf(treeItem);
 }
 
-bool te::qt::widgets::AbstractTreeItem::isLegendItem() const
-{
-  return false;
-}
-
 bool te::qt::widgets::AbstractTreeItem::isLayerItem() const
 {
   return true;
+}
+
+bool te::qt::widgets::AbstractTreeItem::isLegendItem() const
+{
+  return false;
 }

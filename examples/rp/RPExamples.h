@@ -37,4 +37,7 @@ void Segmenter();
 /* \brief Contrast example using Raster Processing module. */
 void Contrast();
 
+/* \brief Classification example using Dummy module. */
+void Classifier();
+
 #endif

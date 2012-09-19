@@ -84,8 +84,8 @@ namespace te
     template<class T>
     Decorator<T>::Decorator(T * decorated, const bool& deleteDecorated) :
     T(),
-    m_delDecorated(deleteDecorated),
-    m_decorated(decorated)
+    m_decorated(decorated),
+    m_delDecorated(deleteDecorated)
     {
     }
 

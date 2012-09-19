@@ -40,7 +40,7 @@ namespace te
     class Raster;
 
     /*!
-      \class RasdterIterator
+      \class RasterIterator
 
       \brief This class implements and iterator to "navigate" over a raster,
              with a predefined number of bands.

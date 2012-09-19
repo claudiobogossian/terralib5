@@ -220,18 +220,6 @@ namespace te
                             int row, int column, const QModelIndex& parent);
 
           /*!
-            \brief It inserts "count" rows into the model before the given row.
-                   The items in the new row will be children of the item represented by the parent model index.
-
-            \param row The rows will be inserted before this row.
-            \param count The number of rows to be inserted.
-            \param parent The parent of the inserted rows.
-
-            \return It returns true if the rows were successfully inserted; otherwise, it returns false.              
-           */
-          bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex());
-
-          /*!
             \brief It remove "count" rows into the model before the given row.
 
             \param row The initial row.
@@ -310,11 +298,9 @@ namespace te
           void dataChangedForDescendantsIndexes(const QModelIndex& index);
 
         private:
-          AbstractTreeItem* m_rootItem;              //!< The pointer to the root item.
-          AbstractTreeItem* m_dragItem;              //!< The pointer to the dragged item
-          te::map::AbstractLayer* m_dragRefLayer;    //!< The reference layer of the dragged item
+          AbstractTreeItem* m_rootItem;              //!< The root item.
+          AbstractTreeItem* m_dndNewItem;            //!< The new item to be created in a drag and drop operation
           bool m_dndOperation;                       //!< Flag indicating drag and drop operation.
-          bool m_removeRowsAllowed;                  //!< Flag is true when a drag and drop operation takes place.
       };
 
     } // end namespace widgets

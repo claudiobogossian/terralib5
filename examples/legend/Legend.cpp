@@ -75,7 +75,7 @@ Legend::Legend(QWidget* parent)
 
   for(size_t i = 0; i < numDataSets; ++i)
   {
-    id = te::common::Convert2String(i+1);
+    id = te::common::Convert2String(static_cast<unsigned int>(i+1));
     dataSetName = dataSetList[i].toStdString();
     
     layer = new te::map::Layer(id, dataSetName, m_rootLayer);
