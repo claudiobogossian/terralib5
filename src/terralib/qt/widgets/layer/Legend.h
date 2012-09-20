@@ -65,15 +65,22 @@ namespace te
 
         private slots:
           void typeComboBoxActivated(int index);
+          void applyPushButtonClicked();
+          void legendColorsPushButtonClicked();
+          void legendTableItemChanged(QTableWidgetItem*);
           void okPushButtonClicked();
           void cancelPushButtonClicked();
           void helpPushButtonClicked();
 
         private:
+          void setTableContents();
+         
+        private:
           te::qt::widgets::LayerItem* m_layerItem;
           te::da::DataSourceTransactor* m_t;
           te::da::DataSetType* m_dataSetType;
           std::vector<te::map::LegendItem*> m_legend;
+          std::map<int, std::string> m_changedItemLabel;
       };
     }   // end namespace widgets
   }     // end namespace qt
