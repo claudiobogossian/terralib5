@@ -123,14 +123,21 @@ void Legend::contextMenuActivated(const QModelIndex& index, const QPoint& pos)
 
 void Legend::editLegendSlot()
 {
+  setCursor(Qt::WaitCursor);
+
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(m_layerView->getPopupIndex()));
 
   te::qt::widgets::Legend legendDialog(layerItem);
 
   if(legendDialog.exec() != QDialog::Accepted)
+  {
+    unsetCursor();
     return;
+  }
 
   m_layerModel->addLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
+
+  unsetCursor();
 }
 
 void Legend::closeEvent(QCloseEvent* /*e*/)
