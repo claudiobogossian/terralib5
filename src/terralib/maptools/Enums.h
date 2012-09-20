@@ -149,11 +149,10 @@ namespace te
       */
       enum GroupingType
       {
-        NOT_GROUPED,       /*!< If there is no grouping associated to this layer.                                       */
-        UNIQUE_VALUE,      /*!< If the legend was generated using the unique value algorithm.                           */
         EQUAL_STEPS,       /*!< If the legend was generated using the equal steps algorithm.                            */
         QUANTIL,           /*!< If the legend was generated using the quantil algorithm.                                */
-        STD_DEVIATION      /*!< If the legend was generated using the standard deviation algorithm.                     */
+        STD_DEVIATION,     /*!< If the legend was generated using the standard deviation algorithm.                     */
+        UNIQUE_VALUE       /*!< If the legend was generated using the unique value algorithm.                           */
       };
 
   }   // end namespace map
