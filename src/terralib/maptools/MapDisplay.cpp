@@ -31,7 +31,6 @@ te::map::MapDisplay::MapDisplay()
   : AbstractMapDisplay(),
     m_srid(-1),
     m_extent(0),
-    m_layerTree(0),
     m_hAlign(te::map::Center),
     m_vAlign(te::map::Center)
 {}
@@ -41,20 +40,10 @@ te::map::MapDisplay::~MapDisplay()
   delete m_extent;
 }
 
-void te::map::MapDisplay::setLayerTree(te::map::AbstractLayer* layer)
-{
-  m_layerTree = layer;
-}
-
 void te::map::MapDisplay::setLayerList(const std::list<te::map::AbstractLayer*>& order)
 {
   if(&m_layerList != &order)
     m_layerList = order;
-}
-
-te::map::AbstractLayer* te::map::MapDisplay::getLayerTree()
-{
-  return m_layerTree;
 }
 
 te::map::AlignType te::map::MapDisplay::getHAlign() const
