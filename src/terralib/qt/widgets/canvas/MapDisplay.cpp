@@ -28,7 +28,7 @@
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../maptools/AbstractLayer.h"
-#include "BasicMapDisplay.h"
+#include "MapDisplay.h"
 #include "Canvas.h"
 #include "ScopedCursor.h"
 
@@ -36,13 +36,13 @@
 #include <QtCore/QTimer>
 #include <QtGui/QResizeEvent>
 
-te::qt::widgets::BasicMapDisplay::BasicMapDisplay(const QSize& size, QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     te::map::MapDisplay(),
     m_displayPixmap(new QPixmap(size)),
     m_draft(new QPixmap(size)),
     m_backgroundColor(Qt::white),
-    m_resizePolicy(te::qt::widgets::BasicMapDisplay::Fixed),
+    m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
     m_interval(0)
 {
@@ -55,13 +55,13 @@ te::qt::widgets::BasicMapDisplay::BasicMapDisplay(const QSize& size, QWidget* pa
   resize(size);
 }
 
-te::qt::widgets::BasicMapDisplay::~BasicMapDisplay()
+te::qt::widgets::MapDisplay::~MapDisplay()
 {
   delete m_displayPixmap;
   delete m_draft;
 }
 
-void te::qt::widgets::BasicMapDisplay::setExtent(const te::gm::Envelope& e)
+void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
 {
   te::map::MapDisplay::setExtent(e);
 
@@ -77,17 +77,17 @@ void te::qt::widgets::BasicMapDisplay::setExtent(const te::gm::Envelope& e)
   draw();
 }
 
-QPixmap* te::qt::widgets::BasicMapDisplay::getDisplayPixmap()
+QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap()
 {
   return m_displayPixmap;
 }
 
-void te::qt::widgets::BasicMapDisplay::setResizePolicy(const ResizePolicy& policy)
+void te::qt::widgets::MapDisplay::setResizePolicy(const ResizePolicy& policy)
 {
   m_resizePolicy = policy;
 }
 
-void te::qt::widgets::BasicMapDisplay::draw()
+void te::qt::widgets::MapDisplay::draw()
 {
   ScopedCursor cursor(Qt::WaitCursor);
 
@@ -115,7 +115,7 @@ void te::qt::widgets::BasicMapDisplay::draw()
   update();
 }
 
-te::qt::widgets::Canvas* te::qt::widgets::BasicMapDisplay::getCanvas(te::map::AbstractLayer* layer)
+te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::AbstractLayer* layer)
 {
   // Is there a canvas associated with the given layer?
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it = m_layerCanvasMap.find(layer);
@@ -133,21 +133,21 @@ te::qt::widgets::Canvas* te::qt::widgets::BasicMapDisplay::getCanvas(te::map::Ab
   return canvas;
 }
 
-void te::qt::widgets::BasicMapDisplay::resizeAllCanvas()
+void te::qt::widgets::MapDisplay::resizeAllCanvas()
 {
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
     it->second->resize(m_displayPixmap->width(), m_displayPixmap->height());
 }
 
-void te::qt::widgets::BasicMapDisplay::paintEvent(QPaintEvent* e)
+void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
 {
   QPainter painter(this);
   painter.drawPixmap(0, 0, *m_displayPixmap);
   painter.drawPixmap(0, 0, *m_draft);
 }
 
-void te::qt::widgets::BasicMapDisplay::resizeEvent(QResizeEvent* e)
+void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
 {
   QWidget::resizeEvent(e);
 
@@ -159,7 +159,7 @@ void te::qt::widgets::BasicMapDisplay::resizeEvent(QResizeEvent* e)
   m_timer->start(m_interval);
 }
 
-void te::qt::widgets::BasicMapDisplay::onResizeTimeout()
+void te::qt::widgets::MapDisplay::onResizeTimeout()
 {
   // Rebulding the map display pixmaps
   delete m_displayPixmap;
@@ -180,13 +180,13 @@ void te::qt::widgets::BasicMapDisplay::onResizeTimeout()
   m_oldSize = QSize();
 }
 
-void te::qt::widgets::BasicMapDisplay::adjustExtent(const QSize& oldSize, const QSize& size)
+void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize& size)
 {
   if(m_extent == 0)
     return;
 
   te::gm::Envelope e = *m_extent;
-  if(m_resizePolicy == te::qt::widgets::BasicMapDisplay::Fixed)
+  if(m_resizePolicy == te::qt::widgets::MapDisplay::Fixed)
     setExtent(e);
 
   double widthW = e.m_urx - e.m_llx;
@@ -197,14 +197,14 @@ void te::qt::widgets::BasicMapDisplay::adjustExtent(const QSize& oldSize, const 
 
   switch(m_resizePolicy)
   {
-    case te::qt::widgets::BasicMapDisplay::Cut:
+    case te::qt::widgets::MapDisplay::Cut:
     {
       e.m_urx = e.m_llx + newWidthW;
       e.m_lly = e.m_ury - newHeightW;
     }
     break;
 
-    case te::qt::widgets::BasicMapDisplay::Center:
+    case te::qt::widgets::MapDisplay::Center:
     {
       te::gm::Coord2D center = e.getCenter();
       e.m_llx = center.x - (newWidthW * 0.5);

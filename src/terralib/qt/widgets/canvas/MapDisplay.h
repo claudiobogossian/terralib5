@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file BasicMapDisplay.h
+  \file MapDisplay.h
 
   \brief A Qt4 widget to control the display of a set of layers.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_BASICMAPDISPLAY_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_BASICMAPDISPLAY_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_MAPDISPLAY_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_MAPDISPLAY_H
 
 // TerraLib
 #include "../../../maptools/MapDisplay.h"
@@ -53,11 +53,11 @@ namespace te
     class Canvas;
 
       /*!
-        \class BasicMapDisplay
+        \class MapDisplay
 
         \brief A widget to control the display of a set of layers.
       */
-      class TEQTWIDGETSEXPORT BasicMapDisplay : public QWidget, public te::map::MapDisplay
+      class TEQTWIDGETSEXPORT MapDisplay : public QWidget, public te::map::MapDisplay
       {
         Q_OBJECT
 
@@ -87,10 +87,10 @@ namespace te
             \param parent The widget's parent.
             \param f Widget window flags.
           */
-          BasicMapDisplay(const QSize& size, QWidget* parent = 0, Qt::WindowFlags f = 0);
+          MapDisplay(const QSize& size, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          ~BasicMapDisplay();
+          ~MapDisplay();
 
           //@}
 
@@ -180,7 +180,7 @@ namespace te
 
             \param rhs The right-hand-side copy that would be used to copy from.
           */
-          BasicMapDisplay(const BasicMapDisplay& rhs);
+          MapDisplay(const MapDisplay& rhs);
 
           /*!
             \brief Assignment operator not allowed.
@@ -189,7 +189,7 @@ namespace te
 
             \return A reference to this object.
           */
-          BasicMapDisplay& operator=(const BasicMapDisplay& rhs);
+          MapDisplay& operator=(const MapDisplay& rhs);
 
           //@}
 
