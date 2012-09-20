@@ -493,8 +493,7 @@ void te::qt::widgets::MapDisplay::fit(std::list<te::map::AbstractLayer*>& layerL
   {
     std::list<te::map::AbstractLayer*>::iterator it;
 
-    delete m_extent;
-    m_extent = new te::gm::Envelope();
+    te::gm::Envelope extent;
     for(it = layerList.begin(); it != layerList.end(); ++it)
     {
       te::gm::Envelope env = getLayerExtent(*it);
@@ -507,10 +506,28 @@ void te::qt::widgets::MapDisplay::fit(std::list<te::map::AbstractLayer*>& layerL
         env.transform(srid, m_srid);
       }
 
-      m_extent->Union(env);
+      extent.Union(env);
     }
-    setExtent(*m_extent);
+    setExtent(extent);
     draw();
+    //delete m_extent;
+    //m_extent = new te::gm::Envelope();
+    //for(it = layerList.begin(); it != layerList.end(); ++it)
+    //{
+    //  te::gm::Envelope env = getLayerExtent(*it);
+
+    //  int srid = (*it)->getSRID();
+    //  if(m_srid == -1)
+    //    m_srid = srid;
+    //  if(srid != m_srid)
+    //  {
+    //    env.transform(srid, m_srid);
+    //  }
+
+    //  m_extent->Union(env);
+    //}
+    //setExtent(*m_extent);
+    //draw();
   }
   catch(te::common::Exception& e)
   {
