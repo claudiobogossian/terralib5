@@ -20,7 +20,7 @@ void ExemplifyBandIterator()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -75,7 +75,7 @@ void ExemplifyConstBandIterator()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -129,7 +129,7 @@ void ExemplifyRasterIterator()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -174,7 +174,7 @@ void ExemplifyBandIteratorWindow()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
@@ -182,7 +182,7 @@ void ExemplifyBandIteratorWindow()
 // define output raster info
   std::map<std::string, std::string> orinfo;
 
-  orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_band3_crop_median_5x5.tif";
+  orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_band3_crop_median_5x5.tif";
 
   te::rst::Grid* grid = new te::rst::Grid(*inraster->getGrid());
 
@@ -243,7 +243,7 @@ void ExemplifyRasterIteratorWindow()
 // define raster info
   std::map<std::string, std::string> rinfo;
 
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open raster from disk
   te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);

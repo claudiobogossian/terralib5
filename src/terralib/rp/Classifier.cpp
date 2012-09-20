@@ -168,7 +168,6 @@ bool te::rp::Classifier::execute(AlgorithmOutputParameters& outputParams) throw(
   bandsProperties.push_back(new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
     m_inputParameters.m_inputRasterBands[0])->getProperty())));
   bandsProperties[0]->m_colorInterp = te::rst::GrayIdxCInt;
-  bandsProperties[0]->m_noDataValue = 0;
   bandsProperties[0]->m_type = te::dt::UINT32_TYPE;
   bandsProperties[0]->m_noDataValue = 0;
 
@@ -222,9 +221,11 @@ bool te::rp::Classifier::initialize(const AlgorithmInputParameters& inputParams)
                               "Invalid raster bands" );
 
 // check if input raster and geometries fit
-  for (unsigned i = 0; i < inputParamsPtr->m_inputPolygons.size(); i++)
+  for (unsigned i = 0; i > inputParamsPtr->m_inputPolygons.size(); i++)
+  {
     TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputPolygons[i]->getMBR()->within(*inputParamsPtr->m_inputRasterPtr->getExtent()),
                               "Raster and Polygons does not fit");
+  }
 
 // everything is ok
   m_instanceInitialized = true;

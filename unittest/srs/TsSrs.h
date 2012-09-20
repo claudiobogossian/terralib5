@@ -5,11 +5,14 @@
 
 class TsSrs : public CPPUNIT_NS::TestFixture
 {
+  
   protected:
 
     void tcInitialization();
 
-    void tcEPSGFactory();
+    void tcSRSManager();
+  
+    void tcSRSConvertion();
 
   public :
 
@@ -21,7 +24,9 @@ class TsSrs : public CPPUNIT_NS::TestFixture
 
     CPPUNIT_TEST_SUITE( TsSrs );
 
-    CPPUNIT_TEST( tcEPSGFactory );
+    CPPUNIT_TEST( tcSRSManager );
+  
+    CPPUNIT_TEST( tcSRSConvertion );
 
 	  CPPUNIT_TEST_SUITE_END();  	
 };

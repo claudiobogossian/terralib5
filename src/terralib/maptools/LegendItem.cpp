@@ -28,7 +28,7 @@
 
 
 te::map::LegendItem::LegendItem(const std::string& from, const std::string& to)
-  : m_from(from), m_to(to), m_title(""), m_count(0)
+  : m_from(from), m_to(to),m_count(0), m_title("")
 {
   m_color.setColor(0, 0, 0, 255);
 }

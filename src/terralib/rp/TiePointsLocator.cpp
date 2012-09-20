@@ -25,7 +25,6 @@
 #include "TiePointsLocator.h"
 #include "Macros.h"
 #include "../geometry/GTFactory.h"
-#include "../common/progress/TaskProgress.h"
 #include "../common/PlatformUtils.h"
 #include "../common/StringUtils.h"
 #include "../raster/Band.h"
@@ -36,6 +35,7 @@
 #include "../geometry/GTFilter.h"
 
 #include <boost/scoped_array.hpp>
+#include <boost/shared_array.hpp>
 
 #include <algorithm>
 
@@ -48,6 +48,46 @@ namespace te
 {
   namespace rp
   {
+    
+    const double  TiePointsLocator::surfGaussianY[ 9 ][ 9 ] = 
+    { 
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+    };  
+      
+    const double  TiePointsLocator::surfGaussianX[ 9 ][ 9 ] = 
+    { 
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },
+      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },
+      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },      
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
+      { 0, 0, 1, 1, 1, 1, 1, 0, 0 }
+    };
+    
+    const double  TiePointsLocator::surfGaussianXY[ 9 ][ 9 ] = 
+    { 
+      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
+      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
+      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
+      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
+      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
+      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
+      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
+      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  }
+    };
+    
     TiePointsLocator::InputParameters::InputParameters()
     {
       reset();
@@ -92,7 +132,7 @@ namespace te
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
-      m_noiseFilterIterations = 1;
+      m_gaussianFilterIterations = 1;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -126,7 +166,7 @@ namespace te
       m_moravecWindowWidth = params.m_moravecWindowWidth;
       m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
-      m_noiseFilterIterations = params.m_noiseFilterIterations;
+      m_gaussianFilterIterations = params.m_gaussianFilterIterations;
 
       return *this;
     }
@@ -180,25 +220,15 @@ namespace te
     TiePointsLocator::~TiePointsLocator()
     {
     }
-
+    
     bool TiePointsLocator::execute( AlgorithmOutputParameters& outputParams )
       throw( te::rp::Exception )
     {
-      TiePointsLocator::OutputParameters* outParamsPtr = dynamic_cast<
-        TiePointsLocator::OutputParameters* >( &outputParams );
-      assert( outParamsPtr );
-        
       if( ! m_isInitialized ) return false;
       
-      outParamsPtr->m_tiePoints.clear();
-      
-      std::auto_ptr< te::common::TaskProgress > progressPtr;
-      if( m_inputParameters.m_enableProgress )
-      {
-        progressPtr.reset( new te::common::TaskProgress );
-        progressPtr->setTotalSteps( 6 );
-        progressPtr->setMessage( "Locating tie points" );
-      }
+      TiePointsLocator::OutputParameters* outParamsPtr = dynamic_cast<
+        TiePointsLocator::OutputParameters* >( &outputParams );
+      TERP_TRUE_OR_THROW( outParamsPtr, "Invalid paramters" );
       
       /* Calculating the rescale factors 
         factor = rescaled_orignal_image / original_image  */
@@ -228,7 +258,146 @@ namespace te
           raster1XRescFact = m_inputParameters.m_pixelSizeXRelation;
           raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
         }
-      }        
+      }
+      
+      /* Calculating the maximum interest points number and the Moravec window
+        width for each image trying to keep the same density for both images 
+        - this is usefull for the case where the area covered by raster 1
+        is different from the area covered by raster 1*/
+      
+      unsigned int raster1MaxInterestPoints = m_inputParameters.m_maxTiePoints;
+      unsigned int raster2MaxInterestPoints = m_inputParameters.m_maxTiePoints;
+      {
+        double rescRaster1Area = 
+          ( (double)( m_inputParameters.m_raster1TargetAreaWidth ) * raster1XRescFact ) *
+          ( (double)( m_inputParameters.m_raster1TargetAreaHeight ) * raster1YRescFact );
+        double rescRaster2Area =
+          ( (double)( m_inputParameters.m_raster2TargetAreaWidth ) * raster2XRescFact ) *
+          ( (double)( m_inputParameters.m_raster2TargetAreaHeight ) * raster2YRescFact );;
+          
+        if( rescRaster1Area > rescRaster2Area )
+        {
+          raster1MaxInterestPoints = (unsigned int)( 
+            rescRaster1Area / 
+            ( rescRaster2Area / ( (double)m_inputParameters.m_maxTiePoints ) ) );
+        }
+        else if( rescRaster1Area < rescRaster2Area )
+        {
+          raster2MaxInterestPoints = (unsigned int)( 
+            rescRaster2Area / 
+            ( rescRaster1Area / ( (double)m_inputParameters.m_maxTiePoints ) ) ); 
+        }
+      }
+      
+      // progress
+      
+      std::auto_ptr< te::common::TaskProgress > progressPtr;
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr.reset( new te::common::TaskProgress );
+        progressPtr->setTotalSteps( 1 );
+        progressPtr->setMessage( "Locating tie points" );
+      }
+      
+         
+        
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }      
+      
+      // executing the choosed strategy
+      
+      std::vector< double > tiePointsWeights;
+      
+      switch( m_inputParameters.m_interesPointsLocationStrategy )
+      {
+        case InputParameters::MoravecStrategyT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( executeMoravec( 
+            raster1XRescFact, 
+            raster1YRescFact,
+            raster2XRescFact,
+            raster2YRescFact,
+            raster1MaxInterestPoints,
+            raster2MaxInterestPoints,
+            *progressPtr,
+            outParamsPtr,
+            tiePointsWeights ),
+            "Moravec execution error" );   
+          break;
+        }
+        case InputParameters::SurfStrategyT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( executeSurf( 
+            raster1XRescFact, 
+            raster1YRescFact,
+            raster2XRescFact,
+            raster2YRescFact,
+            raster1MaxInterestPoints,
+            raster2MaxInterestPoints,
+            *progressPtr,
+            outParamsPtr,
+            tiePointsWeights ),
+            "SURF execution error" );   
+          break;
+        }        
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid strategy" );
+          break;
+        }
+      }
+      
+      // Execute outliers remotion, if required
+      
+      if( m_inputParameters.m_enableGeometryFilter )
+      {
+        te::gm::GTParameters transfParams;
+        transfParams.m_tiePoints = outParamsPtr->m_tiePoints;
+        
+        std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+        
+        TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
+          m_inputParameters.m_geomTransfName, 
+          transfParams,
+          m_inputParameters.m_geomTransfMaxError,
+          m_inputParameters.m_geomTransfMaxError,
+          m_inputParameters.m_geomTransfMaxError,
+          m_inputParameters.m_geomTransfMaxError,
+          transfPtr,
+          tiePointsWeights ), "Outliers remotion error" );
+        
+        outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;        
+      }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progressPtr->pulse();
+        if( ! progressPtr->isActive() ) return false;
+      }
+      
+      return true;
+    }
+
+    bool TiePointsLocator::executeMoravec( 
+      const double raster1XRescFact, 
+      const double raster1YRescFact,
+      const double raster2XRescFact,
+      const double raster2YRescFact,
+      const unsigned int raster1MaxInterestPoints,
+      const unsigned int raster2MaxInterestPoints,
+      te::common::TaskProgress& progress,
+      TiePointsLocator::OutputParameters* outParamsPtr,
+      std::vector< double >& tiePointsWeights ) 
+      throw( te::rp::Exception )
+    {
+      outParamsPtr->m_tiePoints.clear();
+      tiePointsWeights.clear();
+      
+      if( m_inputParameters.m_enableProgress )
+        progress.setTotalSteps( progress.getTotalSteps() + 5 );
       
       // Loading image data
       
@@ -268,138 +437,79 @@ namespace te
         "Error loading raster data" );
         
 //      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
-//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");          
-        
-      if( m_inputParameters.m_enableProgress )
-      {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
-      }
-      
-      /* Calculating the maximum interest points number and the Moravec window
-        width for each image trying to keep the same density for both images 
-        - this is usefull for the case where the area covered by raster 1
-        is different from the area covered by raster 1*/
-      
-      unsigned int raster1MaxInterestPoints = m_inputParameters.m_maxTiePoints;
-      unsigned int raster2MaxInterestPoints = m_inputParameters.m_maxTiePoints;
-      {
-        double rescRaster1Area = (double)( raster1Data[ 0 ]->getColumnsNumber() *
-          raster1Data[ 0 ]->getLinesNumber() );
-        double rescRaster2Area = (double)( raster2Data[ 0 ]->getColumnsNumber() *
-          raster2Data[ 0 ]->getLinesNumber() );
-          
-        if( rescRaster1Area > rescRaster2Area )
-        {
-          raster1MaxInterestPoints = (unsigned int)( 
-            rescRaster1Area / 
-            ( rescRaster2Area / ( (double)m_inputParameters.m_maxTiePoints ) ) );
-        }
-        else if( rescRaster1Area < rescRaster2Area )
-        {
-          raster2MaxInterestPoints = (unsigned int)( 
-            rescRaster2Area / 
-            ( rescRaster1Area / ( (double)m_inputParameters.m_maxTiePoints ) ) ); 
-        }
-      }
+//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");       
       
       // applying the noise filter
       
-      if( m_inputParameters.m_noiseFilterIterations )
+      if( m_inputParameters.m_gaussianFilterIterations )
       {
-        switch( m_inputParameters.m_interesPointsLocationStrategy )
-        {
-          case InputParameters::MoravecStrategyT :
-          {
-            boost::shared_ptr< Matrix< double > > tempMatrix( 
-              new Matrix< double > );
-            TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
-              0, 0,
-              Matrix< double >::AutoMemPol, 
-              raster1Data[ 0 ]->getMaxTmpFileSize(),
-              raster1Data[ 0 ]->getMaxMemPercentUsage() ),
-              "Cannot allocate image matrix" );
-            
-            TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
-              *(raster1Data[ 0 ]), 
-              *tempMatrix, m_inputParameters.m_noiseFilterIterations ),
-              "Gaussian filter error" );
+        boost::shared_ptr< Matrix< double > > tempMatrix( 
+          new Matrix< double > );
+        TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+          0, 0,
+          Matrix< double >::AutoMemPol, 
+          raster1Data[ 0 ]->getMaxTmpFileSize(),
+          raster1Data[ 0 ]->getMaxMemPercentUsage() ),
+          "Cannot allocate image matrix" );
+        
+        TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
+          *(raster1Data[ 0 ]), 
+          *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+          "Gaussian filter error" );
 
-            raster1Data[ 0 ] = tempMatrix;
-            
-            tempMatrix.reset( new Matrix< double > );
-            TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
-              0, 0,
-              Matrix< double >::AutoMemPol, 
-              raster2Data[ 0 ]->getMaxTmpFileSize(),
-              raster2Data[ 0 ]->getMaxMemPercentUsage() ),
-              "Cannot allocate image matrix" );          
-            
-            TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
-              *(raster2Data[ 0 ]), 
-              *tempMatrix, m_inputParameters.m_noiseFilterIterations ),
-              "Gaussian filter error" );
+        raster1Data[ 0 ] = tempMatrix;
+        
+        tempMatrix.reset( new Matrix< double > );
+        TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+          0, 0,
+          Matrix< double >::AutoMemPol, 
+          raster2Data[ 0 ]->getMaxTmpFileSize(),
+          raster2Data[ 0 ]->getMaxMemPercentUsage() ),
+          "Cannot allocate image matrix" );          
+        
+        TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
+          *(raster2Data[ 0 ]), 
+          *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+          "Gaussian filter error" );
 
-            raster2Data[ 0 ] = tempMatrix;          
-            
-            break;
-          }
-          default :
-          {
-            TERP_LOG_AND_THROW( "Invalid strategy" );
-            break;
-          }
-        }
+        raster2Data[ 0 ] = tempMatrix;          
         
 //        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Filtered");
 //        createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Filtered");  
-        
       }
       
       if( m_inputParameters.m_enableProgress )
       {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
+        progress.pulse();
+        if( ! progress.isActive() ) return false;
       }      
       
       // locating interest points
       
       InterestPointsContainerT raster1InterestPoints;
       InterestPointsContainerT raster2InterestPoints;      
-      
-      switch( m_inputParameters.m_interesPointsLocationStrategy )
-      {
-        case InputParameters::MoravecStrategyT :
-        {
-          TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
-            *(raster1Data[ 0 ]), 
-            maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
-            m_inputParameters.m_moravecWindowWidth,
-            raster1MaxInterestPoints,
-            m_inputParameters.m_enableMultiThread,
-            raster1InterestPoints ),
-            "Error locating raster 1 interest points" );
-          TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
-            *(raster2Data[ 0 ]), 
-            maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
-            m_inputParameters.m_moravecWindowWidth,
-            raster2MaxInterestPoints,
-            m_inputParameters.m_enableMultiThread,
-            raster2InterestPoints ),
-            "Error locating raster 2 interest points" );             
-          break;
-        }
-        default :
-        {
-          TERP_LOG_AND_THROW( "Invalid strategy" );
-          break;
-        }
-      };
+
+      TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
+        *(raster1Data[ 0 ]), 
+        maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
+        m_inputParameters.m_moravecWindowWidth,
+        raster1MaxInterestPoints,
+        m_inputParameters.m_enableMultiThread,
+        raster1InterestPoints ),
+        "Error locating raster 1 interest points" );
+      TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
+        *(raster2Data[ 0 ]), 
+        maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
+        m_inputParameters.m_moravecWindowWidth,
+        raster2MaxInterestPoints,
+        m_inputParameters.m_enableMultiThread,
+        raster2InterestPoints ),
+        "Error locating raster 2 interest points" );             
       
       if( m_inputParameters.m_enableProgress )
       {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
+        progress.pulse();
+        if( ! progress.isActive() ) return false;
       }      
       
 //      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");
@@ -412,47 +522,36 @@ namespace te
       Matrix< double > raster2Features;
       raster2Features.reset( Matrix< double >::RAMMemPol );
       
-      switch( m_inputParameters.m_interesPointsLocationStrategy )
       {
-        case InputParameters::MoravecStrategyT :
-        {
-          InterestPointsContainerT auxInterestPoints;
+        InterestPointsContainerT auxInterestPoints;
+        
+        TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
+          raster1InterestPoints,
+          m_inputParameters.m_correlationWindowWidth,
+          *(raster1Data[ 0 ]),
+          true,
+          raster1Features,
+          auxInterestPoints ),
+          "Error generating raster 1 features" );
+        raster1InterestPoints = auxInterestPoints;
+        
+        auxInterestPoints.clear();
+        TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
+          raster2InterestPoints,
+          m_inputParameters.m_correlationWindowWidth,
+          *(raster2Data[ 0 ]),
+          true,
+          raster2Features,
+          auxInterestPoints ),
+          "Error generating raster 2 features" );
           
-          TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
-            raster1InterestPoints,
-            m_inputParameters.m_correlationWindowWidth,
-            *(raster1Data[ 0 ]),
-            true,
-            raster1Features,
-            auxInterestPoints ),
-            "Error generating raster 1 features" );
-          raster1InterestPoints = auxInterestPoints;
-          
-          auxInterestPoints.clear();
-          TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
-            raster2InterestPoints,
-            m_inputParameters.m_correlationWindowWidth,
-            *(raster2Data[ 0 ]),
-            true,
-            raster2Features,
-            auxInterestPoints ),
-            "Error generating raster 2 features" );
-            
-          raster2InterestPoints = auxInterestPoints;
-          
-          break;
-        }
-        default :
-        {
-          TERP_LOG_AND_THROW( "Invalid strategy" );
-          break;
-        }
-      };
+        raster2InterestPoints = auxInterestPoints;
+      }
       
       if( m_inputParameters.m_enableProgress )
       {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
+        progress.pulse();
+        if( ! progress.isActive() ) return false;
       }      
       
 //      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );
@@ -469,32 +568,20 @@ namespace te
       
       MatchedInterestPointsContainerT matchedPoints;
       
-      switch( m_inputParameters.m_interesPointsLocationStrategy )
-      {
-        case InputParameters::MoravecStrategyT :
-        {
-          TERP_TRUE_OR_RETURN_FALSE( matchCorrelationEuclidean( 
-            raster1Features,
-            raster2Features,
-            raster1InterestPoints,
-            raster2InterestPoints,
-            m_inputParameters.m_maxR1ToR2Offset,
-            m_inputParameters.m_enableMultiThread,
-            matchedPoints ),
-            "Error matching features" );
-          break;
-        }
-        default :
-        {
-          TERP_LOG_AND_THROW( "Invalid strategy" );
-          break;
-        }
-      };
+      TERP_TRUE_OR_RETURN_FALSE( executeMatchingByCorrelation( 
+        raster1Features,
+        raster2Features,
+        raster1InterestPoints,
+        raster2InterestPoints,
+        m_inputParameters.m_maxR1ToR2Offset,
+        m_inputParameters.m_enableMultiThread,
+        matchedPoints ),
+        "Error matching features" );
       
       if( m_inputParameters.m_enableProgress )
       {
-        progressPtr->pulse();
-        if( ! progressPtr->isActive() ) return false;
+        progress.pulse();
+        if( ! progress.isActive() ) return false;
       }      
       
       // Clean anused data
@@ -504,12 +591,10 @@ namespace te
       raster1InterestPoints.clear();
       raster2InterestPoints.clear();
       
-      // Bring matched points to original images reference
-      // and execute outliers remotion, if required
+      // Generating the  output tie-points
       
       {
         te::gm::GTParameters::TiePoint auxTP;
-        std::vector< double > tiePointsWeights;
         MatchedInterestPointsContainerT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsContainerT::const_iterator itE = matchedPoints.end();
         
@@ -526,6 +611,12 @@ namespace te
           ++itB;
         }
         
+        if( maxFeatureValue == minFeatureValue )
+        {
+          minFeatureValue = 0;
+          maxFeatureValue = 1.0;          
+        }
+        
         itB = matchedPoints.begin();
         while( itB != itE )
         {
@@ -538,40 +629,92 @@ namespace te
           auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaLineStart;   
            
-          if( maxFeatureValue > minFeatureValue )
-          {
-            tiePointsWeights.push_back( std::max( 0.1, ( itB->m_featureValue - 
-              minFeatureValue ) / ( maxFeatureValue - minFeatureValue ) ) );
-          }
+          tiePointsWeights.push_back( std::max( 0.1, ( itB->m_featureValue - 
+            minFeatureValue ) / ( maxFeatureValue - minFeatureValue ) ) );
             
           outParamsPtr->m_tiePoints.push_back( auxTP );
           
           ++itB;
         }        
-        
-        if( m_inputParameters.m_enableGeometryFilter )
-        {
-          te::gm::GTParameters transfParams;
-          transfParams.m_tiePoints = outParamsPtr->m_tiePoints;
-          
-          std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
-          
-          TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
-            m_inputParameters.m_geomTransfName, 
-            transfParams,
-            m_inputParameters.m_geomTransfMaxError,
-            m_inputParameters.m_geomTransfMaxError,
-            m_inputParameters.m_geomTransfMaxError,
-            m_inputParameters.m_geomTransfMaxError,
-            transfPtr,
-            tiePointsWeights ), "Outliers remotion error" );
-          
-          outParamsPtr->m_tiePoints = transfPtr->getParameters().m_tiePoints;        
-        }
-      }
+      }            
       
       return true;
     }
+    
+    bool TiePointsLocator::executeSurf( 
+      const double raster1XRescFact, 
+      const double raster1YRescFact,
+      const double raster2XRescFact,
+      const double raster2YRescFact,
+      const unsigned int raster1MaxInterestPoints,
+      const unsigned int raster2MaxInterestPoints,
+      te::common::TaskProgress& progress,
+      TiePointsLocator::OutputParameters* outParamsPtr,
+      std::vector< double >& tiePointsWeights ) 
+      throw( te::rp::Exception )
+    {
+      outParamsPtr->m_tiePoints.clear();
+      tiePointsWeights.clear();
+      
+      if( m_inputParameters.m_enableProgress )
+        progress.setTotalSteps( progress.getTotalSteps() + 5 );
+      
+      // Loading image data
+      
+      std::vector< boost::shared_ptr< Matrix< double > > > raster1Data;
+      Matrix< unsigned char > maskRaster1Data;
+      std::vector< boost::shared_ptr< Matrix< double > > > raster2Data;
+      Matrix< unsigned char > maskRaster2Data;
+      
+      TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+        m_inputParameters.m_inRaster1Ptr,
+        m_inputParameters.m_inRaster1Bands,
+        m_inputParameters.m_inMaskRaster1Ptr,
+        0,
+        m_inputParameters.m_raster1TargetAreaLineStart,
+        m_inputParameters.m_raster1TargetAreaColStart,
+        m_inputParameters.m_raster1TargetAreaWidth,
+        m_inputParameters.m_raster1TargetAreaHeight,
+        raster1XRescFact,
+        raster1YRescFact,
+        raster1Data,
+        maskRaster1Data ),
+        "Error loading raster data" );
+        
+      TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+        m_inputParameters.m_inRaster2Ptr,
+        m_inputParameters.m_inRaster2Bands,
+        m_inputParameters.m_inMaskRaster2Ptr,
+        0,
+        m_inputParameters.m_raster2TargetAreaLineStart,
+        m_inputParameters.m_raster2TargetAreaColStart,
+        m_inputParameters.m_raster2TargetAreaWidth,
+        m_inputParameters.m_raster2TargetAreaHeight,                                                
+        raster2XRescFact,
+        raster2YRescFact,
+        raster2Data,
+        maskRaster2Data ),
+        "Error loading raster data" );
+        
+//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
+//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");       
+      
+      // Creating the integral images
+      
+       Matrix< double > integralRaster1;
+       Matrix< double > integralRaster2;
+       
+      TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(raster1Data[ 0 ]), 
+        integralRaster1 ), "Integral image 1 creation error" );
+      TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(raster2Data[ 0 ]), 
+        integralRaster2 ), "Integral image 1 creation error" );
+        
+      createTifFromMatrix( integralRaster1, InterestPointsContainerT(), "integralRaster1" );
+      createTifFromMatrix( integralRaster2, InterestPointsContainerT(), "integralRaster2" );
+
+      return true;
+    }
+
 
     void TiePointsLocator::reset() throw( te::rp::Exception )
     {
@@ -750,6 +893,7 @@ namespace te
       switch( m_inputParameters.m_interesPointsLocationStrategy )
       {
         case InputParameters::MoravecStrategyT :
+        case InputParameters::SurfStrategyT :
         {
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster1Bands.size()
             == 1, "Invalid number of raster 1 bands" );
@@ -975,7 +1119,8 @@ namespace te
         for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
           ++threadIdx )
         {
-          threads.add_thread( new boost::thread( moravecLocatorThreadEntry, 
+          threads.add_thread( new boost::thread( 
+            locateMoravecInterestPointsThreadEntry, 
             &threadParams ) );
         }
         
@@ -986,13 +1131,81 @@ namespace te
         threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber() / 1;
         threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
         
-        moravecLocatorThreadEntry( &threadParams );
+        locateMoravecInterestPointsThreadEntry( &threadParams );
       }
      
       return returnValue;
     }
     
-    void TiePointsLocator::moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr)
+    bool TiePointsLocator::locateSurfInterestPoints( 
+      const Matrix< double >& rasterData,
+      Matrix< unsigned char > const* maskRasterDataPtr,
+      const unsigned int maxInterestPoints,
+      const unsigned int enableMultiThread,
+      const unsigned int scalesNumber,
+      InterestPointsContainerT& interestPoints )
+    {
+      interestPoints.clear();
+
+      const unsigned int minRasterWidthAndHeight = 2 * ( scalesNumber * 9 );
+      // There is not enough data to look for interest points!
+      if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
+      if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
+      
+      bool returnValue = true;
+      boost::mutex rastaDataAccessMutex;
+      boost::mutex interestPointsAccessMutex;
+      unsigned int nextRasterLinesBlockToProcess = 0;
+      
+      SurfLocatorThreadParams threadParams;
+      threadParams.m_returnValuePtr = &returnValue;
+      threadParams.m_rastaDataAccessMutexPtr = &rastaDataAccessMutex;
+      threadParams.m_interestPointsAccessMutexPtr = &interestPointsAccessMutex;
+      threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
+        &nextRasterLinesBlockToProcess;
+      threadParams.m_interestPointsPtr = &interestPoints;
+      threadParams.m_rasterDataPtr = &rasterData;
+      threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
+      threadParams.m_scalesNumber = scalesNumber;
+      
+      if( enableMultiThread )
+      {
+        const unsigned int procsNumber = te::common::GetPhysProcNumber();
+        
+        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
+          minRasterWidthAndHeight, rasterData.getLinesNumber() / procsNumber );
+          
+        const unsigned int rasterLinesBlocksNumber = 
+          ( rasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
+          ( ( rasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+
+        threadParams.m_maxInterestPointsPerRasterLinesBlock =
+          maxInterestPoints / rasterLinesBlocksNumber;
+        
+        boost::thread_group threads;
+        
+        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
+          ++threadIdx )
+        {
+          threads.add_thread( new boost::thread( 
+            locateSurfInterestPointsThreadEntry, 
+            &threadParams ) );
+        }
+        
+        threads.join_all();
+      }
+      else
+      {
+        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber() / 1;
+        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
+        
+        locateSurfInterestPointsThreadEntry( &threadParams );
+      }
+     
+      return returnValue;
+    }
+    
+    void TiePointsLocator::locateMoravecInterestPointsThreadEntry(MoravecLocatorThreadParams* paramsPtr)
     {
       assert( paramsPtr );
       assert( paramsPtr->m_returnValuePtr );
@@ -1314,6 +1527,204 @@ namespace te
       }
     }
     
+    void TiePointsLocator::locateSurfInterestPointsThreadEntry(SurfLocatorThreadParams* paramsPtr)
+    {
+      assert( paramsPtr );
+      assert( paramsPtr->m_returnValuePtr );
+      assert( paramsPtr->m_rasterDataPtr );
+      assert( paramsPtr->m_interestPointsPtr );
+      assert( paramsPtr->m_rastaDataAccessMutexPtr );
+      assert( paramsPtr->m_interestPointsAccessMutexPtr );
+      assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
+      assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
+      assert( paramsPtr->m_scalesNumber > 2 );
+      
+      // Allocating the internal raster data buffer
+      // and the mask raster buffer
+      
+      const unsigned int maxGausFilterWidth = paramsPtr->m_scalesNumber * 9;
+      const unsigned int maxGausFilterRadius = paramsPtr->m_scalesNumber * 9;
+      const unsigned int bufferLines = maxGausFilterWidth;
+      const unsigned int lastBufferLineIdx = bufferLines - 1;
+
+      paramsPtr->m_rastaDataAccessMutexPtr->lock();
+      
+      const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
+      const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
+      const unsigned int rasterBufferLineSizeBytes = sizeof( 
+        MoravecLocatorThreadParams::RasterDataContainerT::ElementTypeT ) * 
+        bufferCols;
+      const unsigned int maskRasterBufferLineSizeBytes = sizeof(
+        MoravecLocatorThreadParams::MaskRasterDataContainerT::ElementTypeT ) * 
+        bufferCols;
+      
+      paramsPtr->m_rastaDataAccessMutexPtr->unlock();      
+      
+      Matrix< double > rasterBufferDataHandler;
+      if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
+        Matrix< double >::RAMMemPol ) )
+      {
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+        paramsPtr->m_returnValuePtr = false;
+        paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        return;
+      }
+      
+      boost::scoped_array< double* > rasterBufferHandler( new double*[ bufferLines ] );
+      for( unsigned int rasterBufferDataHandlerLine = 0 ; rasterBufferDataHandlerLine < 
+        bufferLines ; ++rasterBufferDataHandlerLine )
+      {
+        rasterBufferHandler[ rasterBufferDataHandlerLine ] = rasterBufferDataHandler[ 
+          rasterBufferDataHandlerLine ];
+      }
+      
+      double** rasterBufferPtr = rasterBufferHandler.get();
+      
+      // Allocating the mask raster buffer      
+      
+      Matrix< double > maskRasterBufferDataHandler;
+      
+      boost::scoped_array< double* > maskRasterBufferHandler( new double*[ bufferLines ] );
+      
+      double** maskRasterBufferPtr = 0;
+      
+      if( paramsPtr->m_maskRasterDataPtr )
+      {
+        if( ! maskRasterBufferDataHandler.reset( bufferLines, bufferCols, 
+          Matrix< double >::RAMMemPol ) )
+        {
+          paramsPtr->m_rastaDataAccessMutexPtr->lock();
+          paramsPtr->m_returnValuePtr = false;
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+          return;
+        }        
+        
+        for( unsigned int maskRasterBufferDataHandlerLine = 0 ; maskRasterBufferDataHandlerLine < 
+          bufferLines ; ++maskRasterBufferDataHandlerLine )
+        {
+          maskRasterBufferHandler[ maskRasterBufferDataHandlerLine ] = maskRasterBufferDataHandler[ 
+            maskRasterBufferDataHandlerLine ];
+        }
+        
+        maskRasterBufferPtr = maskRasterBufferHandler.get();      
+      }
+      
+      // Allocating the internal scales values data buffer
+        
+      Matrix< double > scalesBufferDataHandler;
+      if( ! scalesBufferDataHandler.reset( paramsPtr->m_scalesNumber *
+        bufferLines, bufferCols, Matrix< double >::RAMMemPol ) )
+      {
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+        paramsPtr->m_returnValuePtr = false;
+        paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        return;
+      }
+      
+      std::vector< boost::shared_array< double* > > scalesBuffersHandlers;
+      for( unsigned int scalesBuffersPtrsIdx = 0 ; scalesBuffersPtrsIdx < 
+        bufferLines ; ++scalesBuffersPtrsIdx )
+      {
+        for( unsigned int scaleIdx = 0; scaleIdx < paramsPtr->m_scalesNumber ;
+          ++scaleIdx )
+        {
+          scalesBuffersHandlers.push_back( boost::shared_array< double* >(
+            new double*[ bufferLines ] ) );
+            
+          for( unsigned int bufferLine = 0 ; bufferLine <  bufferLines ; 
+            ++bufferLine )
+          {
+            scalesBuffersHandlers[ scaleIdx ][ bufferLine ] = 
+              scalesBufferDataHandler[ ( scaleIdx * bufferLines ) + bufferLine ];
+          }
+        }
+      }
+      
+      // Pick the next block to process
+      
+      const unsigned int rasterLinesBlocksNumber = 
+        ( rasterLines / paramsPtr->m_maxRasterLinesBlockMaxSize ) +
+        ( ( rasterLines % paramsPtr->m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+        
+      for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
+        rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
+      {
+        InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
+        
+        paramsPtr->m_rastaDataAccessMutexPtr->lock();
+         
+        if( rasterLinesBlockIdx == ( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) ) )
+        {
+          ++( *(paramsPtr->m_nextRasterLinesBlockToProcessValuePtr ) );
+           
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+          
+          // Processing each raster line from the current block
+          
+          const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
+            (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
+            (int)( 2 * maxGausFilterRadius ) ); 
+          const unsigned int rasterLinesEndBound = std::min( 1 +
+            (rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) + 
+            paramsPtr->m_maxRasterLinesBlockMaxSize + 
+            ( 2 * maxGausFilterRadius ), rasterLines );
+                   
+          for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
+            ++rasterLine )
+          {
+            // read a new raster line into the last raster buffer line
+            paramsPtr->m_rastaDataAccessMutexPtr->lock();
+            
+            roolUpBuffer( rasterBufferPtr, bufferLines );             
+            memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
+              paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
+              rasterBufferLineSizeBytes );
+              
+            // read a new mask raster line into the last mask raster buffer line
+            if( paramsPtr->m_maskRasterDataPtr )
+            {
+              roolUpBuffer( maskRasterBufferPtr, bufferLines );
+              memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
+                paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
+                maskRasterBufferLineSizeBytes );
+            }    
+            
+            paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+            
+            
+          }
+          
+          // Copying the best found block maximas to the external maximas container
+          
+          paramsPtr->m_interestPointsAccessMutexPtr->lock();
+          
+          unsigned int pointsToAdd = std::min( 
+            paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
+            (unsigned int)blockMaximas.size() );
+          InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
+            blockMaximas.rbegin();
+            
+          while( pointsToAdd )
+          {
+//            std::cout << std::endl << blockMaximasIt->m_featureValue
+//              << std::endl;
+              
+            paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
+           
+            ++blockMaximasIt;
+            --pointsToAdd;
+          }
+          
+          paramsPtr->m_interestPointsAccessMutexPtr->unlock();          
+        }
+        else
+        {
+          paramsPtr->m_rastaDataAccessMutexPtr->unlock();
+        }
+      }      
+      
+    }
+    
     void TiePointsLocator::createTifFromMatrix( 
       const Matrix< double >& rasterData,
       const InterestPointsContainerT& interestPoints,
@@ -1342,13 +1753,39 @@ namespace te
       unsigned int col = 0;
       const unsigned int nLines = rasterData.getLinesNumber();
       const unsigned int nCols = rasterData.getColumnsNumber();
+      double rasterDataMin = DBL_MAX;
+      double rasterDataMax = (-1.0) * DBL_MAX;
+      double value = 0;
       
       for( line = 0 ; line < nLines ; ++line )
         for( col = 0 ; col < nCols ; ++col )
         {
-          outputRasterPtr->setValue( col, line, rasterData[ line ][ col ], 0 );
-          outputRasterPtr->setValue( col, line, rasterData[ line ][ col ], 1 );
-          outputRasterPtr->setValue( col, line, rasterData[ line ][ col ], 2 );
+          value = rasterData[ line ][ col ];
+          
+          if( rasterDataMin > value )
+            rasterDataMin = value;
+          if( rasterDataMax < value )
+            rasterDataMax = value;
+        }     
+        
+      if( rasterDataMax == rasterDataMin )
+      {
+        rasterDataMin = 0.0;
+        rasterDataMax = 1.0;
+      }
+      
+      for( line = 0 ; line < nLines ; ++line )
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          value = rasterData[ line ][ col ];
+          value = ( value - rasterDataMin ) / ( rasterDataMax - rasterDataMin );
+          value *= 255.0;
+          value = std::max( 0.0, value );
+          value = std::min( 255.0, value );
+          
+          outputRasterPtr->setValue( col, line, value, 0 );
+          outputRasterPtr->setValue( col, line, value, 1 );
+          outputRasterPtr->setValue( col, line, value, 2 );
         }
         
       InterestPointsContainerT::const_iterator itB = interestPoints.begin();
@@ -1356,7 +1793,9 @@ namespace te
       
       while( itB != itE )
       {
-        outputRasterPtr->setValue( itB->m_x, itB->m_y, 255, 0 );
+        outputRasterPtr->setValue( itB->m_x, itB->m_y, 0, 0 );
+        outputRasterPtr->setValue( itB->m_x, itB->m_y, 255, 1 );
+        outputRasterPtr->setValue( itB->m_x, itB->m_y, 0, 2 );
         
         ++itB;
       }
@@ -1559,7 +1998,37 @@ namespace te
       
       return true;
     }    
+
+    bool TiePointsLocator::createIntegralImage( const Matrix< double >& inputData,
+      Matrix< double >& outputData )
+    {
+      TERP_TRUE_OR_RETURN_FALSE( outputData.reset( inputData.getLinesNumber(),
+        inputData.getColumnsNumber() ), "Cannot allocate image matrix" );
     
+      const unsigned int nLines = inputData.getLinesNumber();
+      const unsigned int nCols = inputData.getColumnsNumber();
+      
+      unsigned int outCol = 0;
+      double currSum = 0;
+      
+      for( unsigned int outLine = 0 ; outLine < nLines ; ++outLine )
+        for( outCol = 0; outCol < nCols ; ++outCol )
+        {
+          currSum = inputData[ outLine ][ outCol ];
+          
+          if( outLine )
+            currSum += outputData[ outLine - 1 ][ outCol ];
+          if( outCol )
+            currSum += outputData[ outLine ][ outCol - 1 ];
+          if( outLine && outCol )
+            currSum -= outputData[ outLine - 1 ][ outCol - 1 ];
+          
+          outputData[ outLine ][ outCol ] = currSum;
+        }
+      
+      return true;
+    }    
+
     bool TiePointsLocator::generateCorrelationFeatures( 
       const InterestPointsContainerT& interestPoints,
       const unsigned int correlationWindowWidth,
@@ -1920,7 +2389,7 @@ namespace te
       }
     }
     
-    bool TiePointsLocator::matchCorrelationEuclidean( 
+    bool TiePointsLocator::executeMatchingByCorrelation( 
       const Matrix< double >& featuresSet1,
       const Matrix< double >& featuresSet2,
       const InterestPointsContainerT& interestPointsSet1,
@@ -2032,7 +2501,7 @@ namespace te
           ++threadIdx )
         {
           threads.add_thread( new boost::thread( 
-            correlationMatrixCalcThreadEntry, &params ) );
+            executeMatchingByCorrelationThreadEntry, &params ) );
         }
         
         threads.join_all();          
@@ -2040,7 +2509,7 @@ namespace te
       }
       else
       {
-        correlationMatrixCalcThreadEntry( &params );
+        executeMatchingByCorrelationThreadEntry( &params );
       }
       
       // finding the correlation matrix maximas for each line and column
@@ -2142,7 +2611,7 @@ namespace te
       return true;
     }
     
-    void TiePointsLocator::correlationMatrixCalcThreadEntry(
+    void TiePointsLocator::executeMatchingByCorrelationThreadEntry(
       CorrelationMatrixCalcThreadParams* paramsPtr)
     {
       assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 

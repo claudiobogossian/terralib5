@@ -21,12 +21,10 @@
   \file MapDisplay.cpp
 
   \brief The map display controls how a set of layers are displayed.
- */
+*/
 
 // TerraLib
 #include "../geometry/Envelope.h"
-#include "AbstractLayer.h"
-#include "Canvas.h"
 #include "MapDisplay.h"
 
 te::map::MapDisplay::MapDisplay()
@@ -43,20 +41,20 @@ te::map::MapDisplay::~MapDisplay()
   delete m_extent;
 }
 
-void te::map::MapDisplay::setLayerTree(te::map::AbstractLayer* layerTree)
+void te::map::MapDisplay::setLayerTree(te::map::AbstractLayer* layer)
 {
-  m_layerTree = layerTree;
+  m_layerTree = layer;
+}
+
+void te::map::MapDisplay::setLayerList(const std::list<te::map::AbstractLayer*>& order)
+{
+  if(&m_layerList != &order)
+    m_layerList = order;
 }
 
 te::map::AbstractLayer* te::map::MapDisplay::getLayerTree()
 {
   return m_layerTree;
-}
-
-void te::map::MapDisplay::setLayerList(std::list<te::map::AbstractLayer*>& layerList)
-{
-  if(&m_layerList != &layerList)
-    m_layerList = layerList;
 }
 
 te::map::AlignType te::map::MapDisplay::getHAlign() const
@@ -82,18 +80,11 @@ const te::gm::Envelope* te::map::MapDisplay::getExtent() const
 
 void te::map::MapDisplay::setExtent(const te::gm::Envelope& e)
 {
+  delete m_extent;
+  m_extent = 0;
+
   if(e.isValid())
-  {
-    if(m_extent == 0)
-      m_extent = new te::gm::Envelope(e);
-    else
-      *m_extent = e;
-  }
-  else
-  {
-    delete m_extent;
-    m_extent = 0;
-  }
+    m_extent = new te::gm::Envelope(e);
 }
 
 int te::map::MapDisplay::getSRID() const
@@ -103,11 +94,13 @@ int te::map::MapDisplay::getSRID() const
 
 void te::map::MapDisplay::setSRID(const int& srid)
 {
-  if(m_extent && m_srid != srid)
+  if(m_srid == srid)
+    return;
+
+  if(m_extent)
   {
     m_extent->transform(m_srid, srid);
-    m_srid = srid;
     setExtent(*m_extent);
   }
-
+  m_srid = srid;
 }

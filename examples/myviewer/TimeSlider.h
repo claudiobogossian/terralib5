@@ -1,6 +1,8 @@
 #ifndef __TIME_SLIDER_H_
 #define __TIME_SLIDER_H_
 
+#include "TemporalDrawingConfig.h"
+
 //TerraLib
 #include <terralib/datatype.h>
 #include <terralib/maptools.h>
@@ -8,20 +10,20 @@
 
 //QT
 #include <QSlider>
+#include <QMenu>
 
 class TimeSlider : public QSlider
 {
   Q_OBJECT
 
 public:
-  TimeSlider(QWidget* parent = 0);
-  TimeSlider(Qt::Orientation orientation, QWidget * parent = 0);
+  TimeSlider(te::map::MapDisplay* md, QWidget* parent = 0);
   ~TimeSlider();
 
   //carrega dados vetoriais e inicializa os tempos inicial e final
   // addTime: if false: inicializa os tempos inicial e final
   // addTime: if true: adiciona aos tempos ja existentes (como faz o retangulo envolvente do box).
-  void loadMovingObjects(bool addTime = false);
+  bool loadMovingObjects(bool addTime = false);
 
   //calcula os tempos inicial e final
   // addTime: if false: inicializa os tempos inicial e final
@@ -31,7 +33,6 @@ public:
   // setar os tempos inicial e final (mas, isto pode levar tempo demais e prejudicar a animacao)
   void calculateTemporalImageTimes(bool addTime = false);
 
-  void setMapDisplay(te::map::MapDisplay*);
   void addLayer(te::map::AbstractLayer*);
   void removeLayer(te::map::AbstractLayer*);
   void removeAllLayers();
@@ -49,9 +50,17 @@ public:
   void killTimer();
   void startTimer(int);
   void backToInit();
+  void play();
+  void pause();
+  void stop();
+  void clearDrawing();
+  void configDrawing();
 
-  public slots:
+
+public slots:
   void valueChangedSlot(int);
+  void playPauseSlot();
+  void stopSlot();
 
 private:
   te::map::MapDisplay* m_mapDisplay;
@@ -65,6 +74,12 @@ private:
   bool m_lines;
   std::vector<te::st::MovingObject*> m_mObs;
   std::map<std::string, te::gm::Point*> m_lastPointMap;
+  TemporalDrawingConfig* m_temporalDrawingConfig;
+  int m_dateInterval;
+  int m_drawingInterval;
+  bool m_play;
+  bool m_stop;
+  int m_value;
 };
 
 #endif

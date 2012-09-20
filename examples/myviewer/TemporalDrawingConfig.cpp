@@ -12,19 +12,21 @@ TemporalDrawingConfig::TemporalDrawingConfig(QWidget* parent, Qt::WindowFlags f)
 {
   setWindowTitle("Temporal Drawing Config");
   QVBoxLayout* vlayout = new QVBoxLayout(this);
-  QLabel* label1 = new QLabel("Date Interval:", this);
-  m_intervalDateComboBox = new QComboBox(this);
-  QHBoxLayout* layout1 = new QHBoxLayout(this);
+  QGroupBox* g1 = new QGroupBox(this);
+  QLabel* label1 = new QLabel("Date Interval:", g1);
+  m_intervalDateComboBox = new QComboBox(g1);
+  QHBoxLayout* layout1 = new QHBoxLayout(g1);
   layout1->addWidget(label1);
   layout1->addWidget(m_intervalDateComboBox);
-  vlayout->addLayout(layout1);
+  vlayout->addWidget(g1);
 
-  QLabel* label2 = new QLabel("Drawing Interval:", this);
-  m_intervalDrawingComboBox = new QComboBox(this);
-  QHBoxLayout* layout2 = new QHBoxLayout(this);
+  QGroupBox* g2 = new QGroupBox(this);
+  QLabel* label2 = new QLabel("Drawing Interval:", g2);
+  m_intervalDrawingComboBox = new QComboBox(g2);
+  QHBoxLayout* layout2 = new QHBoxLayout(g2);
   layout2->addWidget(label2);
   layout2->addWidget(m_intervalDrawingComboBox);
-  vlayout->addLayout(layout2);
+  vlayout->addWidget(g2);
 
   m_drawLinesCheckBox = new QCheckBox("Draw Lines", this);
   vlayout->addWidget(m_drawLinesCheckBox);
@@ -32,13 +34,13 @@ TemporalDrawingConfig::TemporalDrawingConfig(QWidget* parent, Qt::WindowFlags f)
   m_loopCheckBox = new QCheckBox("Loop", this);
   vlayout->addWidget(m_loopCheckBox);
 
-  QGroupBox* gb = new QGroupBox(this);
-  m_okPushButton = new QPushButton("Ok", gb);
-  m_cancelPushButton = new QPushButton("Cancel", gb);
-  QHBoxLayout* layout4 = new QHBoxLayout(gb);
+  QGroupBox* g3 = new QGroupBox(this);
+  m_okPushButton = new QPushButton("Ok", g3);
+  m_cancelPushButton = new QPushButton("Cancel", g3);
+  QHBoxLayout* layout4 = new QHBoxLayout(g3);
   layout4->addWidget(m_okPushButton);
   layout4->addWidget(m_cancelPushButton);
-  vlayout->addWidget(gb);
+  vlayout->addWidget(g3);
 
   setLayout(vlayout);
 

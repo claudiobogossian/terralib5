@@ -21,14 +21,17 @@
   \file AbstractMapDisplay.h
 
   \brief It defines the concept of a map display responsible for controlling how a set of layers are displayed.
- */
+*/
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMAPDISPLAY_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMAPDISPLAY_H
 
 // TerraLib
 #include "Config.h"
-#include "Canvas.h"
+#include "Enums.h"
+
+// STL
+#include <list>
 
 namespace te
 {
@@ -46,7 +49,7 @@ namespace te
       \brief It defines the concept of a map display responsible for controlling how a set of layers are displayed.
 
       \sa AbstractLayer, MapDisplay
-     */
+    */
     class TEMAPEXPORT AbstractMapDisplay
     {
       public:
@@ -74,7 +77,7 @@ namespace te
 
           \note The display will NOT take the ownership of the given layer.
                 You must choose between using setLayerTree or setLayerList. Never use both.
-          */
+        */
         virtual void setLayerTree(te::map::AbstractLayer* layer) = 0;
 
         /*!
@@ -84,21 +87,21 @@ namespace te
 
           \note The display will NOT take the ownership of the given layer.
                 You must choose between using setLayerTree or setLayerList. Never use both.
-          */
-        virtual void setLayerList(std::list<te::map::AbstractLayer*>& order) = 0;
+        */
+        virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order) = 0;
 
         /*!
           \brief It returns the MapDisplay current horizontal align.
 
           \return The MapDisplay current horizontal align.
-         */
+        */
         virtual te::map::AlignType getHAlign() const = 0;
 
         /*!
           \brief It returns the MapDisplay current vertical align.
 
           \return The MapDisplay current vertical align.
-         */
+        */
         virtual te::map::AlignType getVAlign() const = 0;
 
         /*!
@@ -108,7 +111,7 @@ namespace te
           \param v The new vertical align.
 
           \note It will not automatically redraw the objects, you must explicit call the setExtent method.
-         */
+        */
         virtual void setAlign(te::map::AlignType h, te::map::AlignType v) = 0;
 
         /*!
@@ -117,7 +120,7 @@ namespace te
           \return The world extent showned by the MapDisplay or NULL if none is set.
 
           \note The extent coordinates are in the Map Display SRS.
-         */
+        */
         virtual const te::gm::Envelope* getExtent() const = 0;
 
         /*!
@@ -128,14 +131,14 @@ namespace te
           \param e The world visible area. It coordinates must be in the Map Display SRS.
 
           \todo Pensar se ter um metodo chamado getBestFit seria mais adequado para que o setExtent fosse mais burrinho, isto e, so fizesse o que manda e nao pensasse qual a melhro proporcao.
-         */
+        */
         virtual void setExtent(const te::gm::Envelope& e) = 0;
 
         /*!
           \brief It return the Spatial Reference System used by the Map Display.
 
           \return The Spatial Reference System used by the Map Display.
-         */
+        */
         virtual int getSRID() const = 0;
 
         /*!
@@ -146,7 +149,7 @@ namespace te
           new internal transformation function will be calculated.
 
           \param srid The new Spatial Reference System to be used by the Map Display.
-         */
+        */
         virtual void setSRID(const int& srid) = 0;
  
         //@}
@@ -162,7 +165,7 @@ namespace te
           \brief Copy constructor not allowed.
 
           \param rhs The map display that would be copied.
-         */
+        */
         AbstractMapDisplay(const AbstractMapDisplay& rhs);
 
         /*!
@@ -171,7 +174,7 @@ namespace te
           \param rhs The map display whose contents would be assigned to this map display .
 
           \return A reference to this map display.
-         */
+        */
         AbstractMapDisplay& operator=(const AbstractMapDisplay& rhs);
 
         //@}
@@ -181,4 +184,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMAPDISPLAY_H
-

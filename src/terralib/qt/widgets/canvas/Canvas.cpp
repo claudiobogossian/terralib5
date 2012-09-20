@@ -182,10 +182,13 @@ void te::qt::widgets::Canvas::clear()
   if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
     return;
 
-  QPaintDevice* dev = m_painter.device();
-  m_painter.end();
-  static_cast<QPixmap*>(dev)->fill(m_bgColor);
-  m_painter.begin(dev);
+  QPixmap* pix = getPixmap();
+  if(pix)
+  {
+    m_painter.end();
+    pix->fill(m_bgColor);
+    m_painter.begin(pix);
+  }
   //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
   m_painter.setMatrix(m_matrix);
 

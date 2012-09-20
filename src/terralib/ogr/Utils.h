@@ -107,9 +107,7 @@ namespace te
 
       \param osrs A valid OGR Projection.
 
-      \return A valid TerraLib Projection id.
-
-      \exception Exception It throws an exception if the general coordinate system can not be identified.
+      \return An SRS id recognized by TerraLib or an indication of unknown SRS (TE_UNKNOWN_SRS)
     */
     TEOGREXPORT int Convert2TerraLibProjection(OGRSpatialReference* osrs);
 

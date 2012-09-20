@@ -36,8 +36,10 @@
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
+#include "../geometry/GeometryProperty.h"
 #include "../geometry/WKBReader.h"
 #include "../memory/DataSetItem.h"
+#include "../srs/Config.h"
 #include "DataSource.h"
 #include "DataSourceTransactor.h"
 #include "DataSet.h"
@@ -54,7 +56,8 @@ te::ogr::DataSet::DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isO
     m_i(-1),
     m_wkbArray(0),
     m_wkbArraySize(0),
-    m_isOwner(isOwner)
+    m_isOwner(isOwner),
+    m_srid(TE_UNKNOWN_SRS)
 {
   layer->ResetReading();
 }
@@ -77,6 +80,16 @@ te::da::DataSetType* te::ogr::DataSet::getType()
   {
     m_dt = Convert2TerraLib(m_ogrLayer->GetLayerDefn());
     m_dt->setFullLoaded(true);
+    
+    if(m_dt->hasGeom())
+    {
+      OGRSpatialReference* osrs = m_ogrLayer->GetSpatialRef();
+      if(osrs)
+      {
+        m_srid = Convert2TerraLibProjection(osrs);
+        m_dt->getDefaultGeomProperty()->setSRID(m_srid);
+      }
+    } 
   }
   
   return m_dt;
@@ -417,7 +430,9 @@ te::gm::Geometry* te::ogr::DataSet::getGeometry(const std::string& /*name*/) con
 te::gm::Geometry* te::ogr::DataSet::getGeometry() const
 {
   char* wkb = (char*)getWKB(0);
-  return te::gm::WKBReader::read(wkb);
+  te::gm::Geometry* geom = te::gm::WKBReader::read(wkb);
+  geom->setSRID(m_srid);
+  return geom;
 }
 
 void te::ogr::DataSet::setGeometry(int /*i*/, const te::gm::Geometry& /*value*/) 

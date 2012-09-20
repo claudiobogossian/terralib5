@@ -1,4 +1,5 @@
 #include "../Config.h"
+#include <terralib/common.h>
 
 // cppUnit include files
 #include <cppunit/BriefTestProgressListener.h>
@@ -15,7 +16,8 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
-
+  TerraLib::getInstance().initialize();
+  
 // it creates the event manager and test controller
   CPPUNIT_NS::TestResult controller;
 
@@ -65,6 +67,8 @@ int main(int /*argc*/, char** /*argv*/)
   file3.close();  
 
   bool resultStatus = result.wasSuccessful();
+  
+  TerraLib::getInstance().finalize();
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
