@@ -108,6 +108,7 @@ public Q_SLOTS:
   void timeSliderContextMenuSlot(const QPoint&);
   void configTemporalPlaySlot();
   void showCurrentTimeSlot();
+  void setTimeSliderIcon(QPixmap*);
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -143,6 +144,7 @@ private:
 
   QPixmap* m_temporalVectorialDisplayPixmap;     //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible vectorial layers.
   QPixmap* m_temporalImageDisplayPixmap;         //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible image layers.
+  QPushButton* m_playPauseButton;
   TimeSlider* m_timeSlider;
 };
 

@@ -84,6 +84,8 @@ private:
   bool m_play;
   bool m_stop;
   int m_value;
+  QPixmap* m_playPixmap;
+  QPixmap* m_pausePixmap;
 };
 
 #endif

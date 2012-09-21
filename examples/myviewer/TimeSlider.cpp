@@ -3,6 +3,8 @@
 #include "QPixmap"
 #include "QPainter"
 #include "QHBoxLayout"
+#include "QDir.h"
+
 #include "MyLayer.h"
 #include "MyDisplay.h"
 
@@ -32,6 +34,17 @@ TimeSlider::TimeSlider(te::map::MapDisplay* md, QWidget* parent) :
   m_stop(true),
   m_value(0)
 {
+  QDir dir;
+  if(dir.cd(""TE_DATA_EXAMPLE_LOCALE"/data/cursorShapes") == false)
+      dir.cd("../../images");
+
+  m_playPixmap = new QPixmap(dir.absolutePath() + "/play.png");
+  m_pausePixmap = new QPixmap(dir.absolutePath() + "/pause.png");
+
+  int w = m_playPixmap->width();
+
+  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_playPixmap);
+
   connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
   stop();
 }
@@ -551,6 +564,7 @@ void TimeSlider::stopSlot()
 
 void TimeSlider::play()
 {
+  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_pausePixmap);
   m_play = true;
   int value = m_value;
 
@@ -571,6 +585,7 @@ void TimeSlider::play()
 
 void TimeSlider::pause()
 {
+  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_playPixmap);
   m_play = false;
 }
 

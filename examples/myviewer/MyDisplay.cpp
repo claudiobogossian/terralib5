@@ -125,17 +125,16 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   m_timeGroupBox = new QGroupBox(m_widget);
   m_timeGroupBox->setMaximumHeight(40);
+  m_playPauseButton = new QPushButton("", m_timeGroupBox); // tem que ser criado antes do TimeSlider
   m_timeSlider = new TimeSlider(this, m_timeGroupBox);
   QHBoxLayout* timeLayout = new QHBoxLayout(m_timeGroupBox);
-  QIcon playPauseIcon("C:/lixo/playPause.png");
-  QPushButton* playPauseButton = new QPushButton(playPauseIcon, "", m_timeGroupBox);
   QIcon stopIcon("C:/lixo/stop.png");
   QPushButton* stopButton = new QPushButton(stopIcon, "", m_timeGroupBox);
-  timeLayout->addWidget(playPauseButton);
+  timeLayout->addWidget(m_playPauseButton);
   timeLayout->addWidget(stopButton);
   timeLayout->addWidget(m_timeSlider);
   m_timeGroupBox->hide();
-  connect(playPauseButton, SIGNAL(clicked()), m_timeSlider, SLOT(playPauseSlot()));
+  connect(m_playPauseButton, SIGNAL(clicked()), m_timeSlider, SLOT(playPauseSlot()));
   connect(stopButton, SIGNAL(clicked()), m_timeSlider, SLOT(stopSlot()));
 
   m_timeGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -186,6 +185,12 @@ void MyDisplay::configTemporalPlaySlot()
 
 void MyDisplay::showCurrentTimeSlot()
 {
+}
+
+void MyDisplay::setTimeSliderIcon(QPixmap* p)
+{
+  QIcon icon(*p);
+  m_playPauseButton->setIcon(icon);
 }
 
 void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
