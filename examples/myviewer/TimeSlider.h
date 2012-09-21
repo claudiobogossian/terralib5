@@ -38,11 +38,14 @@ public:
   void removeAllLayers();
   std::vector<te::map::AbstractLayer*> getLayers();
   virtual void timerEvent(QTimerEvent*);
-  void draw(te::dt::DateTime* initial, te::dt::DateTime* final);
-  void setInitialDateTime(te::dt::DateTime*);
-  void setFinalDateTime(te::dt::DateTime*);
+  void draw(te::dt::TimeInstant* initial, te::dt::TimeInstant* final);
+  void setInitialTime(te::dt::TimeInstant*);
+  void setFinalTime(te::dt::TimeInstant*);
+  void setInitialTime(QString t);
+  void setFinalTime(QString t);
+  QString simpleTimeString2IsoString(QString t);
   void setMinuteInterval(int);
-  te::map::AbstractLayer* findImage(te::dt::DateTime* initial, te::dt::DateTime* final);
+  te::map::AbstractLayer* findImage(te::dt::TimeInstant* initial, te::dt::TimeInstant* final);
   void setLoop(bool);
   void setLines(bool);
   void clearLastPointMap();
@@ -55,7 +58,7 @@ public:
   void stop();
   void clearDrawing();
   void configDrawing();
-
+  te::dt::TimeInstant* getCurrentTime();
 
 public slots:
   void valueChangedSlot(int);
@@ -65,8 +68,9 @@ public slots:
 private:
   te::map::MapDisplay* m_mapDisplay;
   std::vector<te::map::AbstractLayer*> m_layers;
-  te::dt::DateTime* m_initialDateTime;
-  te::dt::DateTime* m_finalDateTime;
+  te::dt::TimeInstant* m_initialTime;
+  te::dt::TimeInstant* m_finalTime;
+  te::dt::TimeInstant* m_currentTime;
   te::dt::DatePeriod* m_datePeriod;
   int m_minuteInterval;
   int m_timerId;
