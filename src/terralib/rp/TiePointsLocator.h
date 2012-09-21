@@ -360,6 +360,12 @@ namespace te
             
             unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
             
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXPtr; //!< Gaussian second order partial derivatives (X direction).
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelYPtr; //!< Gaussian second order partial derivatives (Y direction).
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXYPtr; //!< Gaussian second order partial derivatives (XY direction).
+            
             SurfLocatorThreadParams() {};
             
             ~SurfLocatorThreadParams() {};
@@ -771,13 +777,15 @@ namespace te
           CorrelationMatrixCalcThreadParams* paramsPtr);
           
         /*! 
-          \brief Generate rescaled Gaussian second order derivatives using a given base filter.
+          \brief Generate rescaled Gaussian second order partial derivatives using a given base filter.
           
           \param scalesNumber The number of scales to generate.
           
           \param baseFilterKernel The base filter.
           
           \param kernels The generated filter kernels.
+          
+          \details The first kernel is related to the first scale.
         */
         static void generateRescaledGaussianFilterKernels( const unsigned int scalesNumber,
           const double (&baseFilterKernel)[9][9], const unsigned int baseFilterKernelWidth,
