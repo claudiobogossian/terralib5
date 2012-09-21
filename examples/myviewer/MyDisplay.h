@@ -107,6 +107,7 @@ public Q_SLOTS:
   void printFileSlot();
   void timeSliderContextMenuSlot(const QPoint&);
   void configTemporalPlaySlot();
+  void showCurrentTimeSlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -125,6 +126,7 @@ private:
   QWidget* m_widget;
   QGroupBox* m_timeGroupBox;
   QMenu* m_timeSliderMenu;
+  QAction* m_showCurrentTimeAction;
   QMenu* m_mouseOperationMenu;
   QAction* m_mouseZoomInAction;
   QAction* m_mouseZoomOutAction;

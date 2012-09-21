@@ -140,9 +140,16 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   m_timeGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
   m_timeSliderMenu = new QMenu(m_timeGroupBox);
+
   QAction* configTemporalPlayAction = new QAction("&Play Config...", m_timeSliderMenu);
   m_timeSliderMenu->addAction(configTemporalPlayAction);
   connect(configTemporalPlayAction, SIGNAL(triggered()), this, SLOT(configTemporalPlaySlot()));
+
+  m_showCurrentTimeAction = new QAction("&Show Current Time...", m_timeSliderMenu);
+  m_showCurrentTimeAction->setCheckable(true);
+  m_timeSliderMenu->addAction(m_showCurrentTimeAction);
+  connect(m_showCurrentTimeAction, SIGNAL(triggered()), this, SLOT(showCurrentTimeSlot()));
+
   connect(m_timeGroupBox, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenuSlot(const QPoint&)));
 
   m_widget->show();
@@ -175,6 +182,10 @@ void MyDisplay::configTemporalPlaySlot()
   m_timeSlider->setEnabled(true);
   m_timeSlider->configDrawing();
   m_timeSlider->setEnabled(b);
+}
+
+void MyDisplay::showCurrentTimeSlot()
+{
 }
 
 void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
@@ -645,6 +656,34 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
       canvas->draw(*it);
       ++it;
     }
+
+    if(m_showCurrentTimeAction->isChecked())
+    {
+      te::dt::TimeInstant* t = m_timeSlider->getCurrentTime();
+      if(t)
+      {
+        int x = 8;
+        int y = canvas->getHeight() - 6;
+        std::string time = t->toString();
+        canvas->setFontFamily("Tahoma Normal");
+        canvas->setTextPointSize(14);
+        canvas->setTextColor(te::color::RGBAColor(255, 0, 255, 255));
+        canvas->setTextContourColor(te::color::RGBAColor(255, 0, 255, 255));
+        canvas->setTextContourWidth(1);
+        canvas->setTextOpacity(255);
+        canvas->setTextContourEnabled(true);
+        canvas->setTextContourOpacity(255);
+
+        te::gm::Polygon* pol = canvas->getTextBoundary(x, y, time);
+        canvas->setPolygonFillColor(te::color::RGBAColor(255, 255, 255, 255));
+        canvas->setPolygonContourColor(te::color::RGBAColor(255, 255, 255, 255));
+        canvas->draw(pol);
+        delete pol;
+
+        canvas->drawText(x, y, time);
+      }
+    }
+
     QPainter painter(m_temporalVectorialDisplayPixmap);
     painter.drawPixmap(0, 0, *(canvas->getPixmap()));
     update();
