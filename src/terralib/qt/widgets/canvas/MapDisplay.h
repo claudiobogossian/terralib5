@@ -119,14 +119,32 @@ namespace te
           */
           void setResizePolicy(const ResizePolicy& policy);
 
+           /*!
+            \brief Sets the timeout interval in milliseconds to redraw on resize event.
+
+            \param msec The timeout interval in milliseconds.
+          */
+          void setResizeInterval(int msec);
+
         protected:
 
           /*!
-            \brief It displays the layers.
+            \brief It displays the all layers.
 
             \note It may need to retrieve data in order top display the layers.
           */
           virtual void draw();
+
+          /*!
+            \brief It displays the given layer.
+
+            \param layer The layer that will be drawn.
+            \param painter The painter that will composed the draw result.
+
+            \note This method is called recursively for each child of the given layer.
+            \note It may need to retrieve data in order top display the layers.
+          */
+          virtual void draw(te::map::AbstractLayer* layer, QPainter& painter);
 
           /*!
             \brief It retrieves an associated canvas to the given layer.

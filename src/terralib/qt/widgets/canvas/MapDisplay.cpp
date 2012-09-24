@@ -87,6 +87,11 @@ void te::qt::widgets::MapDisplay::setResizePolicy(const ResizePolicy& policy)
   m_resizePolicy = policy;
 }
 
+void te::qt::widgets::MapDisplay::setResizeInterval(int msec)
+{
+  m_interval = msec;
+}
+
 void te::qt::widgets::MapDisplay::draw()
 {
   ScopedCursor cursor(Qt::WaitCursor);
@@ -98,21 +103,29 @@ void te::qt::widgets::MapDisplay::draw()
 
   std::list<te::map::AbstractLayer*>::iterator it;
   for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
-  {
-    // Retrieves a canvas to current layer
-    te::qt::widgets::Canvas* canvas = getCanvas(*it);
-
-    // Checking the visibility...
-    if((*it)->getVisibility() == te::map::NOT_VISIBLE)
-      continue;
-
-    // Draw the current layer
-    (*it)->draw(canvas, *m_extent, m_srid);
-    
-    painter.drawPixmap(0, 0, *(canvas->getPixmap()));
-  }
+    draw(*it, painter);
 
   update();
+}
+
+void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& painter)
+{
+  // Checking the visibility...
+  if(layer->getVisibility() == te::map::NOT_VISIBLE)
+    return;
+
+  // Recursive draw
+  for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
+    draw(layer, painter);
+  
+  // Retrieves a canvas to current layer
+  te::qt::widgets::Canvas* canvas = getCanvas(layer);
+
+  // Draw the current layer
+  layer->draw(canvas, *m_extent, m_srid);
+
+  // Composes the result
+  painter.drawPixmap(0, 0, *(canvas->getPixmap()));
 }
 
 te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::AbstractLayer* layer)
