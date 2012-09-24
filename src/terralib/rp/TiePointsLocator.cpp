@@ -438,8 +438,8 @@ namespace te
         maskRaster2Data ),
         "Error loading raster data" );
         
-//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
-//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");       
+//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "loadedRaster1");
+//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "loadedRaster2");       
       
       // applying the noise filter
       
@@ -476,8 +476,8 @@ namespace te
 
         raster2Data[ 0 ] = tempMatrix;          
         
-//        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "raster1Filtered");
-//        createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "raster2Filtered");  
+//        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "raster1Filtered");
+//        createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "raster2Filtered");  
       }
       
       if( m_inputParameters.m_enableProgress )
@@ -488,8 +488,8 @@ namespace te
       
       // locating interest points
       
-      InterestPointsContainerT raster1InterestPoints;
-      InterestPointsContainerT raster2InterestPoints;      
+      InterestPointsSetT raster1InterestPoints;
+      InterestPointsSetT raster2InterestPoints;      
 
       TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
         *(raster1Data[ 0 ]), 
@@ -525,7 +525,7 @@ namespace te
       raster2Features.reset( Matrix< double >::RAMMemPol );
       
       {
-        InterestPointsContainerT auxInterestPoints;
+        InterestPointsSetT auxInterestPoints;
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster1InterestPoints,
@@ -568,7 +568,7 @@ namespace te
 
       // Matching features
       
-      MatchedInterestPointsContainerT matchedPoints;
+      MatchedInterestPointsSetT matchedPoints;
       
       TERP_TRUE_OR_RETURN_FALSE( executeMatchingByCorrelation( 
         raster1Features,
@@ -597,8 +597,8 @@ namespace te
       
       {
         te::gm::GTParameters::TiePoint auxTP;
-        MatchedInterestPointsContainerT::const_iterator itB = matchedPoints.begin();
-        const MatchedInterestPointsContainerT::const_iterator itE = matchedPoints.end();
+        MatchedInterestPointsSetT::const_iterator itB = matchedPoints.begin();
+        const MatchedInterestPointsSetT::const_iterator itE = matchedPoints.end();
         
         double minFeatureValue = DBL_MAX;
         double maxFeatureValue = (-1.0) * DBL_MAX;
@@ -698,8 +698,8 @@ namespace te
         maskRaster2Data ),
         "Error loading raster data" );
         
-//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsContainerT(), "loadedRaster1");
-//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsContainerT(), "loadedRaster2");       
+//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "loadedRaster1");
+//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "loadedRaster2");       
       
       // Creating the integral images
       
@@ -711,13 +711,13 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(raster2Data[ 0 ]), 
         integralRaster2 ), "Integral image 1 creation error" );
         
-      createTifFromMatrix( integralRaster1, InterestPointsContainerT(), "integralRaster1" );
-      createTifFromMatrix( integralRaster2, InterestPointsContainerT(), "integralRaster2" );
+      createTifFromMatrix( integralRaster1, InterestPointsSetT(), "integralRaster1" );
+      createTifFromMatrix( integralRaster2, InterestPointsSetT(), "integralRaster2" );
       
       // locating interest points
       
-      InterestPointsContainerT raster1InterestPoints;
-      InterestPointsContainerT raster2InterestPoints;      
+      InterestPointsSetT raster1InterestPoints;
+      InterestPointsSetT raster2InterestPoints;      
 
       TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
         integralRaster1, 
@@ -736,7 +736,9 @@ namespace te
         m_inputParameters.m_scalesNumber,
         raster2InterestPoints ),
         "Error locating raster 2 interest points" );        
-          
+        
+      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "surfInterestPoints1");
+      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "surfInterestPoints2");                  
       
       if( m_inputParameters.m_enableProgress )
       {
@@ -1116,7 +1118,7 @@ namespace te
       const unsigned int moravecWindowWidth,
       const unsigned int maxInterestPoints,
       const unsigned int enableMultiThread,
-      InterestPointsContainerT& interestPoints )
+      InterestPointsSetT& interestPoints )
     {
       interestPoints.clear();
 
@@ -1296,7 +1298,7 @@ namespace te
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
         rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
-        InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
+        InterestPointsSetT blockMaximas; // the maxima points found inside the current raster block
         
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
          
@@ -1444,8 +1446,7 @@ namespace te
                   
                   if( maskRasterBufferPtr )
                   {
-                    if( maskRasterBufferPtr[ moravecWindowRadius ][ 
-                      auxInterestPoint.m_x ] )
+                    if( maskRasterBufferPtr[ 0 ][ auxInterestPoint.m_x ] )
                     {
                       blockMaximas.insert( auxInterestPoint);
                       
@@ -1478,7 +1479,7 @@ namespace te
           unsigned int pointsToAdd = std::min( 
             paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
             (unsigned int)blockMaximas.size() );
-          InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
+          InterestPointsSetT::const_reverse_iterator blockMaximasIt =
             blockMaximas.rbegin();
             
           while( pointsToAdd )
@@ -1507,7 +1508,7 @@ namespace te
       const unsigned int maxInterestPoints,
       const unsigned int enableMultiThread,
       const unsigned int scalesNumber,
-      InterestPointsContainerT& interestPoints )
+      InterestPointsSetT& interestPoints )
     {
       interestPoints.clear();
 
@@ -1608,9 +1609,10 @@ namespace te
       // Globals
       
       const unsigned int maxGausFilterWidth = 9 *
-        std::pow( 2, ( paramsPtr->m_scalesNumber - 1 ) );
+        (unsigned int)std::pow( 2.0, ( paramsPtr->m_scalesNumber - 1 ) );
       const unsigned int maxGausFilterRadius = maxGausFilterWidth / 2;
-      const unsigned int maxSamplingStep = std::pow( 2, ( paramsPtr->m_scalesNumber - 1 ) );
+      const unsigned int maxSamplingStep = (unsigned int)std::pow( 2.0, 
+        ( paramsPtr->m_scalesNumber - 1 ) );
       const unsigned int bufferLines = maxGausFilterWidth;
       const unsigned int lastBufferLineIdx = bufferLines - 1;
 
@@ -1719,7 +1721,7 @@ namespace te
       for( unsigned int rasterLinesBlockIdx = 0; rasterLinesBlockIdx <
         rasterLinesBlocksNumber ; ++rasterLinesBlockIdx )
       {
-        InterestPointsContainerT blockMaximas; // the maxima points found inside the current raster block
+        InterestPointsSetT blockMaximas; // the maxima points found inside the current raster block
         
         paramsPtr->m_rastaDataAccessMutexPtr->lock();
          
@@ -1751,6 +1753,7 @@ namespace te
           double dXY = 0;
           unsigned int samplingStep = 0;
           bool isLocalMaxima = false;
+          InterestPointT auxInterestPoint;
           
           // zero fill buffers
           
@@ -1768,12 +1771,10 @@ namespace te
           {
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
-            
             roolUpBuffer( rasterBufferPtr, bufferLines );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
               paramsPtr->m_integralRasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
-              
             // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
             {
@@ -1782,7 +1783,6 @@ namespace te
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
             }    
-            
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
             // calculating the determinant of the Hessian matrix for each
@@ -1803,16 +1803,14 @@ namespace te
                   paramsPtr->m_gaussianFiltersKernelXYPtr->operator[]( 
                   scaleIdx );                
                 
-                samplingStep = std::pow( 2, scaleIdx );
+                samplingStep = (unsigned int)std::pow( 2.0, scaleIdx );
                 filterWidth = filterKernelX.getLinesNumber();
                 filterRadius = filterWidth / 2;
-                windowEndBufColsBound = bufferCols - maxGausFilterWidth +
-                  filterRadius;
+                windowEndBufColsBound = bufferCols - filterWidth;
                 windowStartBufLine = maxGausFilterRadius - filterRadius;
                   
-                for( windowStartBufCol = maxGausFilterRadius - filterRadius ; 
-                  windowStartBufCol < windowEndBufColsBound ; 
-                  windowStartBufCol += samplingStep )
+                for( windowStartBufCol = 0 ; windowStartBufCol < 
+                  windowEndBufColsBound ; windowStartBufCol += samplingStep )
                 {
                   dXX = 0;
                   dYY = 0;
@@ -1843,15 +1841,15 @@ namespace te
             
             if( rasterLine >= ( ( 2 * maxGausFilterWidth ) - 1 ) )
             {
-              isLocalMaxima = true;
-              
               for( unsigned int windCenterCol = maxGausFilterRadius ; windCenterCol <
                 maxGausFilterCenterBufferColBound ; ++windCenterCol )
               {
+                isLocalMaxima = true;
+                
                 for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
                   ++scaleIdx )
                 {   
-                  samplingStep = std::pow( 2, scaleIdx );
+                  samplingStep = (unsigned int)std::pow( 2.0, scaleIdx );
                   filterWidth = 3 * samplingStep;
                   filterRadius = filterWidth / 2;
 
@@ -1877,12 +1875,55 @@ namespace te
                     }
                   }
                 }
-              }
-              
-              if( isLocalMaxima )
-              {
+                
+                if( isLocalMaxima )
+                {
+                  if( maskRasterBufferPtr )
+                  {
+                    if( maskRasterBufferPtr[ 0 ][ windCenterCol ] )
+                    {
+                      auxInterestPoint.m_x = windCenterCol;
+                      auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
+                      auxInterestPoint.m_featureValue = scalesBuffersHandlers[ 0 ][
+                        maxGausFilterRadius ][ windCenterCol ];
+                      assert( auxInterestPoint.m_x < 
+                        paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
+                      assert( auxInterestPoint.m_y < 
+                        paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                       
+                      
+                      blockMaximas.insert( auxInterestPoint);
+                      
+                      if( blockMaximas.size() > 
+                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                      {
+                        blockMaximas.erase( blockMaximas.begin() );
+                      }
+                    }
+                  }
+                  else
+                  {
+                    auxInterestPoint.m_x = windCenterCol;
+                    auxInterestPoint.m_y = rasterLine - ( 2 * maxGausFilterRadius) ;
+                    auxInterestPoint.m_featureValue = scalesBuffersHandlers[ 0 ][
+                      maxGausFilterRadius ][ windCenterCol ];
+                    assert( auxInterestPoint.m_x < 
+                      paramsPtr->m_integralRasterDataPtr->getColumnsNumber() );
+                    assert( auxInterestPoint.m_y < 
+                      paramsPtr->m_integralRasterDataPtr->getLinesNumber() );                     
+                    
+                    blockMaximas.insert( auxInterestPoint );
+                    
+                    if( blockMaximas.size() > 
+                      paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                    {
+                      blockMaximas.erase( blockMaximas.begin() );
+                    }
+                  }
+                }                
                 
               }
+              
+
             }
             
           }
@@ -1892,12 +1933,35 @@ namespace te
         {
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         }
+        
+        // Copying the best found block maximas to the external maximas container
+        
+        paramsPtr->m_interestPointsAccessMutexPtr->lock();
+        
+        unsigned int pointsToAdd = std::min( 
+          paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
+          (unsigned int)blockMaximas.size() );
+        InterestPointsSetT::const_reverse_iterator blockMaximasIt =
+          blockMaximas.rbegin();
+          
+        while( pointsToAdd )
+        {
+//            std::cout << std::endl << blockMaximasIt->m_featureValue
+//              << std::endl;
+            
+          paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
+          
+          ++blockMaximasIt;
+          --pointsToAdd;
+        }
+        
+        paramsPtr->m_interestPointsAccessMutexPtr->unlock();         
       }      
     }
     
     void TiePointsLocator::createTifFromMatrix( 
       const Matrix< double >& rasterData,
-      const InterestPointsContainerT& interestPoints,
+      const InterestPointsSetT& interestPoints,
       const std::string& tifFileName )
     {
       std::map<std::string, std::string> rInfo;
@@ -1958,8 +2022,8 @@ namespace te
           outputRasterPtr->setValue( col, line, value, 2 );
         }
         
-      InterestPointsContainerT::const_iterator itB = interestPoints.begin();
-      InterestPointsContainerT::const_iterator itE = interestPoints.end();
+      InterestPointsSetT::const_iterator itB = interestPoints.begin();
+      InterestPointsSetT::const_iterator itE = interestPoints.end();
       
       while( itB != itE )
       {
@@ -2200,12 +2264,12 @@ namespace te
     }    
 
     bool TiePointsLocator::generateCorrelationFeatures( 
-      const InterestPointsContainerT& interestPoints,
+      const InterestPointsSetT& interestPoints,
       const unsigned int correlationWindowWidth,
       const Matrix< double >& rasterData,
       const bool normalize,
       Matrix< double >& features,
-      InterestPointsContainerT& validInteresPoints )
+      InterestPointsSetT& validInteresPoints )
     {
       // Locating the the valid interest points
       
@@ -2240,8 +2304,8 @@ namespace te
         - rotated90CorralationWindowRadius - 2;        
       
       {
-        InterestPointsContainerT::const_iterator iPointsIt = interestPoints.begin();
-        const InterestPointsContainerT::const_iterator iPointsItEnd = interestPoints.end();        
+        InterestPointsSetT::const_iterator iPointsIt = interestPoints.begin();
+        const InterestPointsSetT::const_iterator iPointsItEnd = interestPoints.end();        
         
         while( iPointsIt != iPointsItEnd )
         {
@@ -2316,8 +2380,8 @@ namespace te
         features.getLinesNumber();
       unsigned int features_matrix_col = 0;
       
-      InterestPointsContainerT::const_iterator viPointsIt = validInteresPoints.begin();
-      const InterestPointsContainerT::const_iterator viPointsItEnd = validInteresPoints.end();      
+      InterestPointsSetT::const_iterator viPointsIt = validInteresPoints.begin();
+      const InterestPointsSetT::const_iterator viPointsItEnd = validInteresPoints.end();      
       unsigned int validInteresPointsIndex = 0 ;
       
       while( viPointsIt != viPointsItEnd )
@@ -2496,7 +2560,7 @@ namespace te
     }
     
     void TiePointsLocator::features2Tiff( const Matrix< double >& features,
-      const InterestPointsContainerT& interestPoints,
+      const InterestPointsSetT& interestPoints,
       const std::string& fileNameBeginning )
     {
       const unsigned int tifLinesNumber = (unsigned int)std::sqrt( (double)
@@ -2505,7 +2569,7 @@ namespace te
       
       double const* featureLinePtr = 0;
       
-      InterestPointsContainerT::const_iterator iIt = interestPoints.begin();
+      InterestPointsSetT::const_iterator iIt = interestPoints.begin();
 
       for( unsigned int featuresIdx = 0 ; featuresIdx < features.getLinesNumber() ;
         ++featuresIdx )
@@ -2562,11 +2626,11 @@ namespace te
     bool TiePointsLocator::executeMatchingByCorrelation( 
       const Matrix< double >& featuresSet1,
       const Matrix< double >& featuresSet2,
-      const InterestPointsContainerT& interestPointsSet1,
-      const InterestPointsContainerT& interestPointsSet2,
+      const InterestPointsSetT& interestPointsSet1,
+      const InterestPointsSetT& interestPointsSet2,
       const unsigned int maxPt1ToPt2Distance,
       const unsigned int enableMultiThread,
-      MatchedInterestPointsContainerT& matchedPoints )
+      MatchedInterestPointsSetT& matchedPoints )
     {
       matchedPoints.clear();
       
@@ -2582,7 +2646,7 @@ namespace te
       double maxTiePoints1FeatureValue = DBL_MAX * (-1.0);
       double minTiePoints1FeatureValue = DBL_MAX;
       
-      InterestPointsContainerT::const_iterator it1 = interestPointsSet1.begin();
+      InterestPointsSetT::const_iterator it1 = interestPointsSet1.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet1( 
         new InterestPointT[ interestPointsSet1Size ] );
       for( unsigned int idx1 = 0 ; idx1 < interestPointsSet1Size ; ++idx1 )
@@ -2601,7 +2665,7 @@ namespace te
       double maxTiePoints2FeatureValue = DBL_MAX * (-1.0);
       double minTiePoints2FeatureValue = DBL_MAX;            
 
-      InterestPointsContainerT::const_iterator it2 = interestPointsSet2.begin();
+      InterestPointsSetT::const_iterator it2 = interestPointsSet2.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
         new InterestPointT[ interestPointsSet2Size ] );
       for( unsigned int idx2 = 0 ; idx2 < interestPointsSet2Size ; ++idx2 )
@@ -2913,8 +2977,8 @@ namespace te
     {
       kernels.clear();
       
-      const unsigned int maxKernelWidth =  std::pow( 2, ( scalesNumber - 1 ) ) * 
-        baseFilterKernelWidth;
+      const unsigned int maxKernelWidth =  (unsigned int)std::pow( 2.0, 
+        ( scalesNumber - 1 ) ) * baseFilterKernelWidth;
       unsigned int kernelWidth = 0;
       double* outKernelLinePtr = 0;
       double const* inKernelLinePtr = 0;
@@ -2926,7 +2990,8 @@ namespace te
       for( unsigned int scaleNumber = 1 ; scaleNumber <= scalesNumber ;
         ++scaleNumber )
       {
-        kernelWidth = std::pow( 2, ( scaleNumber - 1 ) ) * baseFilterKernelWidth;
+        kernelWidth = (unsigned int)std::pow( 2.0, ( scaleNumber - 1 ) ) * 
+          baseFilterKernelWidth;
           
         kernels[ scaleNumber - 1 ].reset( kernelWidth, kernelWidth, 
           te::rp::Matrix< double >::RAMMemPol );

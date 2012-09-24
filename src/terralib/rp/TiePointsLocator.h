@@ -35,6 +35,7 @@
 #include <vector>
 #include <set>
 #include <string>
+#include <list>
 
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
@@ -223,9 +224,13 @@ namespace te
             };            
         };
         
-        /*! Interest points container type 
+        /*! Interest points set container type 
         */
-        typedef std::multiset< InterestPointT > InterestPointsContainerT;  
+        typedef std::multiset< InterestPointT > InterestPointsSetT;  
+        
+        /*! Interest points list container type 
+        */
+        typedef std::list< InterestPointT > InterestPointsListT;
         
         /*! Matched Interest point type */
         class MatchedInterestPointsT
@@ -278,7 +283,7 @@ namespace te
         
         /*! Matched interest points container type 
         */
-        typedef std::multiset< MatchedInterestPointsT > MatchedInterestPointsContainerT;         
+        typedef std::multiset< MatchedInterestPointsT > MatchedInterestPointsSetT;         
         
         /*! 
           \brief The parameters passed to the moravecLocatorThreadEntry method.
@@ -307,7 +312,7 @@ namespace te
             
             MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
-            InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
             
             boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
             
@@ -350,7 +355,7 @@ namespace te
             
             MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
-            InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
             
             boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
             
@@ -552,7 +557,7 @@ namespace te
           const unsigned int moravecWindowWidth,
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
-          InterestPointsContainerT& interestPoints );
+          InterestPointsSetT& interestPoints );
           
         /*!
           \brief SURF interest points locator.
@@ -577,7 +582,7 @@ namespace te
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
           const unsigned int scalesNumber,
-          InterestPointsContainerT& interestPoints );          
+          InterestPointsSetT& interestPoints );          
           
         /*! 
           \brief Movavec locator thread entry.
@@ -651,7 +656,7 @@ namespace te
         */             
         static void createTifFromMatrix( 
           const Matrix< double >& rasterData,
-          const InterestPointsContainerT& interestPoints,
+          const InterestPointsSetT& interestPoints,
           const std::string& tifFileName );
           
         /*!
@@ -721,12 +726,12 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool generateCorrelationFeatures( 
-          const InterestPointsContainerT& interestPoints,
+          const InterestPointsSetT& interestPoints,
           const unsigned int correlationWindowWidth,
           const Matrix< double >& rasterData,
           const bool normalize,
           Matrix< double >& features,
-          InterestPointsContainerT& validInteresPoints );
+          InterestPointsSetT& validInteresPoints );
           
         /*!
           \brief Save the generated features to tif files.
@@ -739,7 +744,7 @@ namespace te
         */          
         static void features2Tiff( 
           const Matrix< double >& features,
-          const InterestPointsContainerT& interestPoints,
+          const InterestPointsSetT& interestPoints,
           const std::string& fileNameBeginning );
           
         /*!
@@ -762,11 +767,11 @@ namespace te
         static bool executeMatchingByCorrelation( 
           const Matrix< double >& featuresSet1,
           const Matrix< double >& featuresSet2,
-          const InterestPointsContainerT& interestPointsSet1,
-          const InterestPointsContainerT& interestPointsSet2,
+          const InterestPointsSetT& interestPointsSet1,
+          const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2Distance,
           const unsigned int enableMultiThread,
-          MatchedInterestPointsContainerT& matchedPoints );
+          MatchedInterestPointsSetT& matchedPoints );
           
         /*! 
           \brief Correlation/Euclidean match thread entry.
