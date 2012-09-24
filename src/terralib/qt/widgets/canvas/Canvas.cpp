@@ -305,7 +305,14 @@ void te::qt::widgets::Canvas::draw(const te::gm::Point* point)
   }
   else
   {
-    m_painter.setPen(m_ptPen);
+    if(m_erase)
+    {
+      QPen p(m_ptPen);
+      p.setColor(Qt::black);
+      m_painter.setPen(p);
+    }
+    else
+      m_painter.setPen(m_ptPen);
     m_painter.drawPoint(m_pt);
   }
 }
@@ -598,7 +605,9 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
 
     if(m_polyContourPen.brush().style() != Qt::TexturePattern)
     {
-      drawed = true;
+      drawed = true;     
+      m_polyContourPen.setColor(m_polyContourColor);
+      m_painter.setPen(m_polyContourPen);
       m_painter.drawLine(p1, p2);
     }
     else
