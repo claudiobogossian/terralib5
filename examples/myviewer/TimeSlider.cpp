@@ -591,8 +591,8 @@ void TimeSlider::pause()
 
 void TimeSlider::stop()
 {
-  m_play = false;
   m_stop = true;
+  pause();
   clearDrawing();
   setEnabled(false);
 }
