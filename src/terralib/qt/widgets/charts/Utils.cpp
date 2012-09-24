@@ -141,7 +141,6 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     }
 
     //insert values into the vectors
-
     newScatter->addX(x_doubleValue);
     newScatter->addY(y_doubleValue);
 
@@ -155,6 +154,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       newScatter->setMinY(y_doubleValue);
     if(y_doubleValue>newScatter->getMaxY())
       newScatter->setMaxY(y_doubleValue);
+
   } //end of the data set
   return newScatter;
 }
@@ -181,7 +181,6 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
      while(dataset->moveNext())
      {
-       double teste = dataset->getDouble(propId);
        //calculate range
        if(minValue>dataset->getDouble(propId))
           minValue = dataset->getDouble(propId);
@@ -209,10 +208,12 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      {
        double currentValue = dataset->getDouble(propId);
 
-       for (unsigned int i= 0; i<intervals.size(); i++)
+      for (unsigned int i= 0; i<intervals.size(); i++)
        {
-         if((currentValue >= intervals[i]) && (currentValue < intervals[i+1]))
-           values[i] =  values[i]+1;
+         if((currentValue >= intervals[i]) && (currentValue <= intervals[i+1])){
+            values[i] =  values[i]+1;
+            break;
+         }
        }
       }
 

@@ -49,7 +49,7 @@ namespace te
   namespace rp
   {
     
-    const double  TiePointsLocator::surfGaussianY[ 9 ][ 9 ] = 
+    const double  TiePointsLocator::surfGaussianBaseFilterKernelY[ 9 ][ 9 ] = 
     { 
       { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
       { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
@@ -62,7 +62,7 @@ namespace te
       { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
     };  
       
-    const double  TiePointsLocator::surfGaussianX[ 9 ][ 9 ] = 
+    const double  TiePointsLocator::surfGaussianBaseFilterKernelX[ 9 ][ 9 ] = 
     { 
       { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
       { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
@@ -75,7 +75,7 @@ namespace te
       { 0, 0, 1, 1, 1, 1, 1, 0, 0 }
     };
     
-    const double  TiePointsLocator::surfGaussianXY[ 9 ][ 9 ] = 
+    const double  TiePointsLocator::surfGaussianBaseFilterKernelXY[ 9 ][ 9 ] = 
     { 
       { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
       { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
@@ -133,6 +133,7 @@ namespace te
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
       m_gaussianFilterIterations = 1;
+      m_scalesNumber = 3;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -167,6 +168,7 @@ namespace te
       m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
       m_gaussianFilterIterations = params.m_gaussianFilterIterations;
+      m_scalesNumber = params.m_scalesNumber;
 
       return *this;
     }
@@ -701,8 +703,8 @@ namespace te
       
       // Creating the integral images
       
-       Matrix< double > integralRaster1;
-       Matrix< double > integralRaster2;
+      Matrix< double > integralRaster1;
+      Matrix< double > integralRaster2;
        
       TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(raster1Data[ 0 ]), 
         integralRaster1 ), "Integral image 1 creation error" );
@@ -711,6 +713,36 @@ namespace te
         
       createTifFromMatrix( integralRaster1, InterestPointsContainerT(), "integralRaster1" );
       createTifFromMatrix( integralRaster2, InterestPointsContainerT(), "integralRaster2" );
+      
+      // locating interest points
+      
+      InterestPointsContainerT raster1InterestPoints;
+      InterestPointsContainerT raster2InterestPoints;      
+
+      TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
+        integralRaster1, 
+        maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
+        raster1MaxInterestPoints,
+        m_inputParameters.m_enableMultiThread,
+        m_inputParameters.m_scalesNumber,
+        raster1InterestPoints ),
+        "Error locating raster 1 interest points" );
+        
+      TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
+        integralRaster2, 
+        maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
+        raster2MaxInterestPoints,
+        m_inputParameters.m_enableMultiThread,
+        m_inputParameters.m_scalesNumber,
+        raster2InterestPoints ),
+        "Error locating raster 2 interest points" );        
+          
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progress.pulse();
+        if( ! progress.isActive() ) return false;
+      }      
 
       return true;
     }
@@ -893,13 +925,23 @@ namespace te
       switch( m_inputParameters.m_interesPointsLocationStrategy )
       {
         case InputParameters::MoravecStrategyT :
-        case InputParameters::SurfStrategyT :
         {
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster1Bands.size()
             == 1, "Invalid number of raster 1 bands" );
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
             == 1, "Invalid number of raster 2 bands" );
           
+          break;
+        }          
+        case InputParameters::SurfStrategyT :
+        {
+          TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster1Bands.size()
+            == 1, "Invalid number of raster 1 bands" );
+          TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
+            == 1, "Invalid number of raster 2 bands" );
+          TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_scalesNumber > 2,
+            "Invalid scales number" );
+            
           break;
         }
         default :
@@ -1132,74 +1174,6 @@ namespace te
         threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
         
         locateMoravecInterestPointsThreadEntry( &threadParams );
-      }
-     
-      return returnValue;
-    }
-    
-    bool TiePointsLocator::locateSurfInterestPoints( 
-      const Matrix< double >& rasterData,
-      Matrix< unsigned char > const* maskRasterDataPtr,
-      const unsigned int maxInterestPoints,
-      const unsigned int enableMultiThread,
-      const unsigned int scalesNumber,
-      InterestPointsContainerT& interestPoints )
-    {
-      interestPoints.clear();
-
-      const unsigned int minRasterWidthAndHeight = 2 * ( scalesNumber * 9 );
-      // There is not enough data to look for interest points!
-      if( rasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
-      if( rasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
-      
-      bool returnValue = true;
-      boost::mutex rastaDataAccessMutex;
-      boost::mutex interestPointsAccessMutex;
-      unsigned int nextRasterLinesBlockToProcess = 0;
-      
-      SurfLocatorThreadParams threadParams;
-      threadParams.m_returnValuePtr = &returnValue;
-      threadParams.m_rastaDataAccessMutexPtr = &rastaDataAccessMutex;
-      threadParams.m_interestPointsAccessMutexPtr = &interestPointsAccessMutex;
-      threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
-        &nextRasterLinesBlockToProcess;
-      threadParams.m_interestPointsPtr = &interestPoints;
-      threadParams.m_rasterDataPtr = &rasterData;
-      threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
-      threadParams.m_scalesNumber = scalesNumber;
-      
-      if( enableMultiThread )
-      {
-        const unsigned int procsNumber = te::common::GetPhysProcNumber();
-        
-        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
-          minRasterWidthAndHeight, rasterData.getLinesNumber() / procsNumber );
-          
-        const unsigned int rasterLinesBlocksNumber = 
-          ( rasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
-          ( ( rasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
-
-        threadParams.m_maxInterestPointsPerRasterLinesBlock =
-          maxInterestPoints / rasterLinesBlocksNumber;
-        
-        boost::thread_group threads;
-        
-        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
-          ++threadIdx )
-        {
-          threads.add_thread( new boost::thread( 
-            locateSurfInterestPointsThreadEntry, 
-            &threadParams ) );
-        }
-        
-        threads.join_all();
-      }
-      else
-      {
-        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber() / 1;
-        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
-        
-        locateSurfInterestPointsThreadEntry( &threadParams );
       }
      
       return returnValue;
@@ -1525,40 +1499,136 @@ namespace te
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         }
       }
+    }    
+    
+    bool TiePointsLocator::locateSurfInterestPoints( 
+      const Matrix< double >& integralRasterData,
+      Matrix< unsigned char > const* maskRasterDataPtr,
+      const unsigned int maxInterestPoints,
+      const unsigned int enableMultiThread,
+      const unsigned int scalesNumber,
+      InterestPointsContainerT& interestPoints )
+    {
+      interestPoints.clear();
+
+      const unsigned int minRasterWidthAndHeight = 2 * ( scalesNumber * 9 );
+      // There is not enough data to look for interest points!
+      if( integralRasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
+      if( integralRasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
+      
+      // Building filters kernels
+      
+      std::vector< te::rp::Matrix< double > > gaussianFiltersKernelX;
+      generateRescaledGaussianFilterKernels( scalesNumber, 
+        surfGaussianBaseFilterKernelX, 9, gaussianFiltersKernelX );
+        
+      std::vector< te::rp::Matrix< double > > gaussianFiltersKernelY;
+      generateRescaledGaussianFilterKernels( scalesNumber, 
+        surfGaussianBaseFilterKernelY, 9, gaussianFiltersKernelY );      
+      
+      std::vector< te::rp::Matrix< double > > gaussianFiltersKernelXY;
+      generateRescaledGaussianFilterKernels( scalesNumber,
+        surfGaussianBaseFilterKernelXY, 9, gaussianFiltersKernelXY );      
+      
+      // finding interest points
+      
+      bool returnValue = true;
+      boost::mutex rastaDataAccessMutex;
+      boost::mutex interestPointsAccessMutex;
+      unsigned int nextRasterLinesBlockToProcess = 0;
+      
+      SurfLocatorThreadParams threadParams;
+      threadParams.m_returnValuePtr = &returnValue;
+      threadParams.m_rastaDataAccessMutexPtr = &rastaDataAccessMutex;
+      threadParams.m_interestPointsAccessMutexPtr = &interestPointsAccessMutex;
+      threadParams.m_nextRasterLinesBlockToProcessValuePtr = 
+        &nextRasterLinesBlockToProcess;
+      threadParams.m_interestPointsPtr = &interestPoints;
+      threadParams.m_integralRasterDataPtr = &integralRasterData;
+      threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
+      threadParams.m_scalesNumber = scalesNumber;
+      threadParams.m_gaussianFiltersKernelXPtr = &gaussianFiltersKernelX;
+      threadParams.m_gaussianFiltersKernelYPtr = &gaussianFiltersKernelY;
+      threadParams.m_gaussianFiltersKernelXYPtr = &gaussianFiltersKernelXY;
+      
+      if( enableMultiThread )
+      {
+        const unsigned int procsNumber = te::common::GetPhysProcNumber();
+        
+        threadParams.m_maxRasterLinesBlockMaxSize = std::max(
+          minRasterWidthAndHeight, integralRasterData.getLinesNumber() / procsNumber );
+          
+        const unsigned int rasterLinesBlocksNumber = 
+          ( integralRasterData.getLinesNumber() / threadParams.m_maxRasterLinesBlockMaxSize ) +
+          ( ( integralRasterData.getLinesNumber() % threadParams.m_maxRasterLinesBlockMaxSize ) ? 1 : 0 );
+
+        threadParams.m_maxInterestPointsPerRasterLinesBlock =
+          maxInterestPoints / rasterLinesBlocksNumber;
+        
+        boost::thread_group threads;
+        
+        for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
+          ++threadIdx )
+        {
+          threads.add_thread( new boost::thread( 
+            locateSurfInterestPointsThreadEntry, 
+            &threadParams ) );
+        }
+        
+        threads.join_all();
+      }
+      else
+      {
+        threadParams.m_maxRasterLinesBlockMaxSize = integralRasterData.getLinesNumber() / 1;
+        threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
+        
+        locateSurfInterestPointsThreadEntry( &threadParams );
+      }
+     
+      return returnValue;
     }
+    
+
     
     void TiePointsLocator::locateSurfInterestPointsThreadEntry(SurfLocatorThreadParams* paramsPtr)
     {
       assert( paramsPtr );
       assert( paramsPtr->m_returnValuePtr );
-      assert( paramsPtr->m_rasterDataPtr );
+      assert( paramsPtr->m_integralRasterDataPtr );
       assert( paramsPtr->m_interestPointsPtr );
       assert( paramsPtr->m_rastaDataAccessMutexPtr );
       assert( paramsPtr->m_interestPointsAccessMutexPtr );
       assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
       assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
       assert( paramsPtr->m_scalesNumber > 2 );
+      assert( paramsPtr->m_gaussianFiltersKernelXPtr );
+      assert( paramsPtr->m_gaussianFiltersKernelYPtr );
+      assert( paramsPtr->m_gaussianFiltersKernelXYPtr );      
       
-      // Allocating the internal raster data buffer
-      // and the mask raster buffer
+      // Globals
       
-      const unsigned int maxGausFilterWidth = paramsPtr->m_scalesNumber * 9;
-      const unsigned int maxGausFilterRadius = paramsPtr->m_scalesNumber * 9;
+      const unsigned int maxGausFilterWidth = 9 *
+        std::pow( 2, ( paramsPtr->m_scalesNumber - 1 ) );
+      const unsigned int maxGausFilterRadius = maxGausFilterWidth / 2;
+      const unsigned int maxSamplingStep = std::pow( 2, ( paramsPtr->m_scalesNumber - 1 ) );
       const unsigned int bufferLines = maxGausFilterWidth;
       const unsigned int lastBufferLineIdx = bufferLines - 1;
 
       paramsPtr->m_rastaDataAccessMutexPtr->lock();
-      
-      const unsigned int rasterLines = paramsPtr->m_rasterDataPtr->getLinesNumber();
-      const unsigned int bufferCols = paramsPtr->m_rasterDataPtr->getColumnsNumber();
+      const unsigned int rasterLines = paramsPtr->m_integralRasterDataPtr->getLinesNumber();
+      const unsigned int bufferCols = paramsPtr->m_integralRasterDataPtr->getColumnsNumber();
       const unsigned int rasterBufferLineSizeBytes = sizeof( 
         MoravecLocatorThreadParams::RasterDataContainerT::ElementTypeT ) * 
         bufferCols;
       const unsigned int maskRasterBufferLineSizeBytes = sizeof(
         MoravecLocatorThreadParams::MaskRasterDataContainerT::ElementTypeT ) * 
         bufferCols;
+      paramsPtr->m_rastaDataAccessMutexPtr->unlock();     
       
-      paramsPtr->m_rastaDataAccessMutexPtr->unlock();      
+      const unsigned maxGausFilterCenterBufferColBound = bufferCols - maxGausFilterRadius;
+      
+      // Allocating the internal raster data buffer
+      // and the mask raster buffer
       
       Matrix< double > rasterBufferDataHandler;
       if( ! rasterBufferDataHandler.reset( bufferLines, bufferCols, 
@@ -1659,7 +1729,7 @@ namespace te
            
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
           
-          // Processing each raster line from the current block
+          // globals
           
           const unsigned int rasterLinesStart = (unsigned int)std::max( 0,
             (int)(rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) - 
@@ -1668,6 +1738,30 @@ namespace te
             (rasterLinesBlockIdx * paramsPtr->m_maxRasterLinesBlockMaxSize ) + 
             paramsPtr->m_maxRasterLinesBlockMaxSize + 
             ( 2 * maxGausFilterRadius ), rasterLines );
+          unsigned int scaleIdx = 0 ;
+          unsigned int windowStartBufCol = 0;
+          unsigned int windowStartBufLine = 0;
+          unsigned int filterWidth = 0;
+          unsigned int filterRadius = 0;
+          unsigned int windowEndBufColsBound = 0;
+          unsigned int windowX = 0;
+          unsigned int windowY = 0;
+          double dXX = 0;
+          double dYY = 0;
+          double dXY = 0;
+          unsigned int samplingStep = 0;
+          bool isLocalMaxima = false;
+          
+          // zero fill buffers
+          
+          for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
+            ++scaleIdx )
+          {
+            zeroFillBuffer( scalesBuffersHandlers[ scaleIdx ].get(), bufferLines,
+              bufferCols );              
+          }          
+          
+          // Processing each raster line from the current block
                    
           for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
             ++rasterLine )
@@ -1677,7 +1771,7 @@ namespace te
             
             roolUpBuffer( rasterBufferPtr, bufferLines );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
-              paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
+              paramsPtr->m_integralRasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
               
             // read a new mask raster line into the last mask raster buffer line
@@ -1691,38 +1785,114 @@ namespace te
             
             paramsPtr->m_rastaDataAccessMutexPtr->unlock();
             
+            // calculating the determinant of the Hessian matrix for each
+            // sampled pixel
             
-          }
-          
-          // Copying the best found block maximas to the external maximas container
-          
-          paramsPtr->m_interestPointsAccessMutexPtr->lock();
-          
-          unsigned int pointsToAdd = std::min( 
-            paramsPtr->m_maxInterestPointsPerRasterLinesBlock, 
-            (unsigned int)blockMaximas.size() );
-          InterestPointsContainerT::const_reverse_iterator blockMaximasIt =
-            blockMaximas.rbegin();
+            if( rasterLine >= ( maxGausFilterWidth - 1 ) )
+            {
+              for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
+                ++scaleIdx )
+              {
+                const te::rp::Matrix< double >& filterKernelX = 
+                  paramsPtr->m_gaussianFiltersKernelXPtr->operator[]( 
+                  scaleIdx );
+                const te::rp::Matrix< double >& filterKernelY = 
+                  paramsPtr->m_gaussianFiltersKernelYPtr->operator[]( 
+                  scaleIdx );
+                const te::rp::Matrix< double >& filterKernelXY = 
+                  paramsPtr->m_gaussianFiltersKernelXYPtr->operator[]( 
+                  scaleIdx );                
+                
+                samplingStep = std::pow( 2, scaleIdx );
+                filterWidth = filterKernelX.getLinesNumber();
+                filterRadius = filterWidth / 2;
+                windowEndBufColsBound = bufferCols - maxGausFilterWidth +
+                  filterRadius;
+                windowStartBufLine = maxGausFilterRadius - filterRadius;
+                  
+                for( windowStartBufCol = maxGausFilterRadius - filterRadius ; 
+                  windowStartBufCol < windowEndBufColsBound ; 
+                  windowStartBufCol += samplingStep )
+                {
+                  dXX = 0;
+                  dYY = 0;
+                  dXY = 0;
+                  for( windowY = 0 ; windowY < filterWidth ; ++windowY )
+                    for( windowX = 0 ; windowX < filterWidth ; ++windowX )
+                    {
+                      dXX += filterKernelX[ windowY ][ windowX ] * 
+                        rasterBufferPtr[ windowY + windowStartBufLine ][ 
+                        windowX + windowStartBufCol ];
+                      dYY += filterKernelY[ windowY ][ windowX ] * 
+                        rasterBufferPtr[ windowY + windowStartBufLine ][ 
+                        windowX + windowStartBufCol ];                        
+                      dXY += filterKernelXY[ windowY ][ windowX ] * 
+                        rasterBufferPtr[ windowY + windowStartBufLine ][ 
+                        windowX + windowStartBufCol ];                          
+                    }
+                    
+                  scalesBuffersHandlers[ scaleIdx ][ lastBufferLineIdx ][ 
+                    windowStartBufCol + filterRadius ] = ( dXX * dYY ) - 
+                    ( ( 0.9 * dXY ) * ( 0.9 * dXY ) );
+                }
+              }
+            }
             
-          while( pointsToAdd )
-          {
-//            std::cout << std::endl << blockMaximasIt->m_featureValue
-//              << std::endl;
+            // Finding local maximas over all scales using 3 x 3 x 3 window
+            // at the lowest scale
+            
+            if( rasterLine >= ( ( 2 * maxGausFilterWidth ) - 1 ) )
+            {
+              isLocalMaxima = true;
               
-            paramsPtr->m_interestPointsPtr->insert( *blockMaximasIt );
-           
-            ++blockMaximasIt;
-            --pointsToAdd;
+              for( unsigned int windCenterCol = maxGausFilterRadius ; windCenterCol <
+                maxGausFilterCenterBufferColBound ; ++windCenterCol )
+              {
+                for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
+                  ++scaleIdx )
+                {   
+                  samplingStep = std::pow( 2, scaleIdx );
+                  filterWidth = 3 * samplingStep;
+                  filterRadius = filterWidth / 2;
+
+                  windowStartBufCol = windCenterCol - filterRadius;
+                  windowStartBufLine = maxGausFilterRadius - filterRadius;
+                    
+                  const double& windowCenterPixelValue = scalesBuffersHandlers[ scaleIdx ][
+                    maxGausFilterRadius ][ windCenterCol ];
+                  
+                  for( windowY = 0 ; windowY < filterWidth ; ++windowY )
+                  {
+                    for( windowX = 0 ; windowX < filterWidth ; ++windowX )
+                    {
+                      if( windowCenterPixelValue < scalesBuffersHandlers[ scaleIdx ][
+                        windowStartBufLine + windowY ][ windowStartBufCol + 
+                        windowX ] )
+                      {
+                        isLocalMaxima = false;
+                        windowY = filterWidth;
+                        scaleIdx = paramsPtr->m_scalesNumber;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+              
+              if( isLocalMaxima )
+              {
+                
+              }
+            }
+            
           }
-          
-          paramsPtr->m_interestPointsAccessMutexPtr->unlock();          
+         
         }
         else
         {
           paramsPtr->m_rastaDataAccessMutexPtr->unlock();
         }
       }      
-      
     }
     
     void TiePointsLocator::createTifFromMatrix( 
@@ -2730,6 +2900,46 @@ namespace te
         else
         {
           paramsPtr->m_syncMutexPtr->unlock();
+        }
+      }
+    }
+    
+    
+    void TiePointsLocator::generateRescaledGaussianFilterKernels(
+      const unsigned int scalesNumber,
+      const double (&baseFilterKernel)[9][9], 
+      const unsigned int baseFilterKernelWidth,
+      std::vector< te::rp::Matrix< double > >& kernels )
+    {
+      kernels.clear();
+      
+      const unsigned int maxKernelWidth =  std::pow( 2, ( scalesNumber - 1 ) ) * 
+        baseFilterKernelWidth;
+      unsigned int kernelWidth = 0;
+      double* outKernelLinePtr = 0;
+      double const* inKernelLinePtr = 0;
+      unsigned int outKernelY = 0;
+      unsigned int outKernelX = 0;
+      
+      kernels.resize( scalesNumber );
+      
+      for( unsigned int scaleNumber = 1 ; scaleNumber <= scalesNumber ;
+        ++scaleNumber )
+      {
+        kernelWidth = std::pow( 2, ( scaleNumber - 1 ) ) * baseFilterKernelWidth;
+          
+        kernels[ scaleNumber - 1 ].reset( kernelWidth, kernelWidth, 
+          te::rp::Matrix< double >::RAMMemPol );
+        
+        for( outKernelY = 0 ; outKernelY < kernelWidth ; ++outKernelY )
+        {
+          outKernelLinePtr = kernels[ scaleNumber - 1 ][ outKernelY ];
+          inKernelLinePtr = baseFilterKernel[ outKernelY / scaleNumber ];
+          
+          for( outKernelX = 0 ; outKernelX < kernelWidth ; ++outKernelX )
+          {
+            outKernelLinePtr[ outKernelX ] = inKernelLinePtr[ outKernelX / scaleNumber ];
+          }
         }
       }
     }

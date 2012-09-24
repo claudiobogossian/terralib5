@@ -3,6 +3,8 @@
 #include "QPixmap"
 #include "QPainter"
 #include "QHBoxLayout"
+#include "QDir.h"
+
 #include "MyLayer.h"
 #include "MyDisplay.h"
 
@@ -24,13 +26,25 @@ TimeSlider::TimeSlider(te::map::MapDisplay* md, QWidget* parent) :
   m_lines(false),
   m_loop(false),
   m_timerId(0),
-  m_initialDateTime(0),
-  m_finalDateTime(0),
+  m_initialTime(0),
+  m_finalTime(0),
+  m_currentTime(0),
   m_temporalDrawingConfig(0),
   m_play(false), 
   m_stop(true),
   m_value(0)
 {
+  QDir dir;
+  if(dir.cd(""TE_DATA_EXAMPLE_LOCALE"/data/cursorShapes") == false)
+      dir.cd("../../images");
+
+  m_playPixmap = new QPixmap(dir.absolutePath() + "/play.png");
+  m_pausePixmap = new QPixmap(dir.absolutePath() + "/pause.png");
+
+  int w = m_playPixmap->width();
+
+  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_playPixmap);
+
   connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
   stop();
 }
@@ -55,22 +69,22 @@ bool TimeSlider::loadMovingObjects(bool addTime)
         std::string XMLFileName = TE_DATA_EXAMPLE_LOCALE"/data/kml/t_40_41_metadata.xml";
         MovingObjectsFromKMLAndMetadata(m_mObs, XMLFileName);
 
-        te::dt::DateTime* t = 0;
-        te::dt::DateTime* tini = 0;
-        te::dt::DateTime* tfim = 0;
+        te::dt::TimeInstant* t = 0;
+        te::dt::TimeInstant* tini = 0;
+        te::dt::TimeInstant* tfim = 0;
         if(addTime)
         {
-          te::dt::DateTime* tini = m_initialDateTime;
-          te::dt::DateTime* tfim = m_finalDateTime;
+          te::dt::TimeInstant* tini = m_initialTime;
+          te::dt::TimeInstant* tfim = m_finalTime;
         }
 
         for(int j = 0; j < (int)m_mObs.size(); j++)
         {
           te::dt::DateTimePeriod* period = m_mObs[j]->temporalExtent();
-          t = period->getInitialInstant();
+          t = (te::dt::TimeInstant*)(period->getInitialInstant());
           if(tini == 0 || t < tini)
             tini = t;
-          t = period->getFinalInstant();
+          t = (te::dt::TimeInstant*)(period->getFinalInstant());
           if(tfim == 0 || t > tfim)
             tfim = t;
         }
@@ -78,8 +92,8 @@ bool TimeSlider::loadMovingObjects(bool addTime)
 //std::string t1 = tini->toString();
 //std::string t2 = tfim->toString();
 
-        setInitialDateTime(tini);
-        setFinalDateTime(tfim);
+        setInitialTime(tini);
+        setFinalTime(tfim);
       }
       return true;
     }
@@ -128,7 +142,7 @@ void TimeSlider::removeAllLayers()
 
 void TimeSlider::timerEvent(QTimerEvent* e)
 {
-  if(m_initialDateTime->getDateTimeType() != te::dt::TIME_INSTANT)
+  if(m_initialTime->getDateTimeType() != te::dt::TIME_INSTANT)
     return;
 
   if(m_play == false)
@@ -141,7 +155,7 @@ void TimeSlider::timerEvent(QTimerEvent* e)
     clearLastPointMap();
   }
 
-  te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialDateTime;
+  te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialTime;
   boost::gregorian::date initialDate(ti->getDate().getDate());
   boost::posix_time::ptime iTime(initialDate, ti->getTime().getTimeDuration());
   boost::posix_time::time_duration timedur(m_value/60, 0, 0);
@@ -170,14 +184,14 @@ void TimeSlider::timerEvent(QTimerEvent* e)
 
 void TimeSlider::valueChangedSlot(int v)
 {
-  if(m_initialDateTime->getDateTimeType() != te::dt::TIME_INSTANT)
+  if(m_initialTime->getDateTimeType() != te::dt::TIME_INSTANT)
     return;
 
   m_value = v;
   
   ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
 
-  te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialDateTime;
+  te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialTime;
   boost::gregorian::date initialDate(ti->getDate().getDate());
   boost::posix_time::ptime iTime(initialDate, ti->getTime().getTimeDuration());
   te::dt::TimeInstant* tInitial = new te::dt::TimeInstant(iTime);
@@ -190,7 +204,7 @@ void TimeSlider::valueChangedSlot(int v)
   draw(tInitial, tFinal);
 }
 
-void TimeSlider::draw(te::dt::DateTime* tini, te::dt::DateTime* tfim)
+void TimeSlider::draw(te::dt::TimeInstant* tini, te::dt::TimeInstant* tfim)
 {
   int i;
   bool rasterDrawed = false;
@@ -280,10 +294,14 @@ void TimeSlider::draw(te::dt::DateTime* tini, te::dt::DateTime* tfim)
         ((MyDisplay*)m_mapDisplay)->drawTemporalData(layer, geoms, false);
       }
     }
+
+    if(m_currentTime)
+      delete m_currentTime;
+    m_currentTime = new te::dt::TimeInstant(*tfim);
   }
 }
 
-te::map::AbstractLayer* TimeSlider::findImage(te::dt::DateTime* initial, te::dt::DateTime* final)
+te::map::AbstractLayer* TimeSlider::findImage(te::dt::TimeInstant* initial, te::dt::TimeInstant* final)
 {
   //std::vector<te::map::AbstractLayer*>::iterator it;
 
@@ -321,22 +339,26 @@ te::map::AbstractLayer* TimeSlider::findImage(te::dt::DateTime* initial, te::dt:
   return m_layers[ist++];
 }
 
-void TimeSlider::setInitialDateTime(te::dt::DateTime* dt)
+void TimeSlider::setInitialTime(te::dt::TimeInstant* dt)
 {
-  m_initialDateTime = dt;
+  if(m_initialTime)
+    delete m_initialTime;
+  m_initialTime = dt;
   setMinimum(0);
 }
 
-void TimeSlider::setFinalDateTime(te::dt::DateTime* dt)
+void TimeSlider::setFinalTime(te::dt::TimeInstant* dt)
 {
-  m_finalDateTime = dt;
-  if(m_finalDateTime->getDateTimeType() == te::dt::TIME_INSTANT)
+  if(m_finalTime)
+    delete m_finalTime;
+  m_finalTime = dt;
+  if(m_finalTime->getDateTimeType() == te::dt::TIME_INSTANT)
   {
-    te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialDateTime;
+    te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialTime;
     boost::gregorian::date initialDate(ti->getDate().getDate());
     boost::posix_time::ptime iTime(initialDate, ti->getTime().getTimeDuration());
 
-    te::dt::TimeInstant* tf = (te::dt::TimeInstant*)m_finalDateTime;
+    te::dt::TimeInstant* tf = (te::dt::TimeInstant*)m_finalTime;
     boost::gregorian::date finalDate(tf->getDate().getDate());
     boost::posix_time::ptime fTime(finalDate, tf->getTime().getTimeDuration());
 
@@ -410,12 +432,21 @@ void TimeSlider::clearDrawing()
      ((MyDisplay*)m_mapDisplay)->clearTemporalCanvas(*it);
 
   ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
+  ((MyDisplay*)m_mapDisplay)->update();
 }
 
 void TimeSlider::configDrawing()
 {
+  if(m_initialTime == 0)
+  {
+    if(loadMovingObjects() == false)
+      return;
+  }
   if(m_temporalDrawingConfig == 0)
+  {
     m_temporalDrawingConfig = new TemporalDrawingConfig(this);
+    m_temporalDrawingConfig->setDefaultTimes(m_initialTime, m_finalTime);
+  }
 
   if(m_temporalDrawingConfig->exec() == QDialog::Rejected)
     return;
@@ -436,6 +467,86 @@ void TimeSlider::configDrawing()
   m_drawingInterval = (index + 1) * 100;
   m_lines = m_temporalDrawingConfig->m_drawLinesCheckBox->isChecked();
   m_loop = m_temporalDrawingConfig->m_loopCheckBox->isChecked();
+
+  QString t = m_temporalDrawingConfig->m_initialTimeLineEdit->text();
+  setInitialTime(t);
+  t = m_temporalDrawingConfig->m_finalTimeLineEdit->text();
+  setFinalTime(t);
+
+  killTimer();
+  play();
+}
+
+void TimeSlider::setInitialTime(QString timeString)
+{
+  QString time = simpleTimeString2IsoString(timeString);
+  if(time.isEmpty())
+    return;
+
+  te::dt::TimeInstant* t = new te::dt::TimeInstant(time.toStdString());
+  setInitialTime(t);
+}
+
+void TimeSlider::setFinalTime(QString timeString)
+{
+  QString time = simpleTimeString2IsoString(timeString);
+  if(time.isEmpty())
+    return;
+
+  te::dt::TimeInstant* t = new te::dt::TimeInstant(time.toStdString());
+  setFinalTime(t);
+}
+
+QString TimeSlider::simpleTimeString2IsoString(QString timeString)
+{
+  QString timeIso;
+
+  QString tt = timeString.toUpper();
+  tt.remove(" ");
+  std::string time = tt.toStdString();
+  if(time.size() != 19)
+    return timeIso;
+  std::string tIso = time.substr(0, 4);
+
+  std::string s = time.substr(5, 3);
+  std::string mes;
+  if(s == "JAN")
+    mes = "01";
+  else if(s == "FEB")
+    mes = "02";
+  else if(s == "MAR")
+    mes = "03";
+  else if(s == "APR")
+    mes = "04";
+  else if(s == "MAY")
+    mes = "05";
+  else if(s == "JUN")
+    mes = "06";
+  else if(s == "JUL")
+    mes = "07";
+  else if(s == "AUG")
+    mes = "08";
+  else if(s == "SEP")
+    mes = "09";
+  else if(s == "OCT")
+    mes = "10";
+  else if(s == "NOV")
+    mes = "11";
+  else if(s == "DEC")
+    mes = "12";
+  if(mes.empty())
+    return timeIso;
+
+  tIso += mes;
+
+  tIso += time.substr(9, 2);
+  tIso += "T";
+  tIso += time.substr(11, 2);
+  tIso += time.substr(14, 2);
+  tIso += time.substr(17, 2);
+
+  timeIso = tIso.c_str();
+  return timeIso;
 }
 
 void TimeSlider::playPauseSlot()
@@ -453,25 +564,28 @@ void TimeSlider::stopSlot()
 
 void TimeSlider::play()
 {
+  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_pausePixmap);
   m_play = true;
+  int value = m_value;
 
   if(m_stop)
   {
     setEnabled(true);
-    int value = m_value;
     m_stop = false;
     if(m_temporalDrawingConfig == 0)
     {
       loadMovingObjects();
       configDrawing();
     }
-    startTimer(m_drawingInterval);
-    setValue(value);
   }
+  killTimer();
+  startTimer(m_drawingInterval);
+  setValue(value);
 }
 
 void TimeSlider::pause()
 {
+  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_playPixmap);
   m_play = false;
 }
 
@@ -481,4 +595,9 @@ void TimeSlider::stop()
   m_stop = true;
   clearDrawing();
   setEnabled(false);
+}
+
+te::dt::TimeInstant* TimeSlider::getCurrentTime()
+{
+  return m_currentTime;
 }

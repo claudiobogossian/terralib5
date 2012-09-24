@@ -122,6 +122,8 @@ namespace te
             bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+            
+            unsigned int m_scalesNumber; //!< The number of multi-resolution pyramid scales to generate, when applicable (default:3, minimum: 3);
           
             InputParameters();
             
@@ -344,7 +346,7 @@ namespace te
             
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
-            RasterDataContainerT const* m_rasterDataPtr; //!< The loaded raster data.
+            RasterDataContainerT const* m_integralRasterDataPtr; //!< The integral image raster data.
             
             MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
@@ -357,6 +359,12 @@ namespace te
             unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
             
             unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXPtr; //!< Gaussian second order partial derivatives (X direction).
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelYPtr; //!< Gaussian second order partial derivatives (Y direction).
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXYPtr; //!< Gaussian second order partial derivatives (XY direction).
             
             SurfLocatorThreadParams() {};
             
@@ -393,10 +401,10 @@ namespace te
             ~CorrelationMatrixCalcThreadParams() {};
         };     
         
-        // Suft internal gaussian filter kernels
-        static const double surfGaussianY[ 9 ][ 9 ];        
-        static const double surfGaussianX[ 9 ][ 9 ];
-        static const double surfGaussianXY[ 9 ][ 9 ];
+        // Suft internal second order derivatives gaussian filter kernels
+        static const double surfGaussianBaseFilterKernelY[ 9 ][ 9 ];        
+        static const double surfGaussianBaseFilterKernelX[ 9 ][ 9 ];
+        static const double surfGaussianBaseFilterKernelXY[ 9 ][ 9 ];
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
 //        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
@@ -549,7 +557,7 @@ namespace te
         /*!
           \brief SURF interest points locator.
           
-          \param rasterData The loaded raster data.
+          \param integralRasterData Integral image raster data.
           
           \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
           
@@ -564,7 +572,7 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool locateSurfInterestPoints( 
-          const Matrix< double >& rasterData,
+          const Matrix< double >& integralRasterData,
           Matrix< unsigned char > const* maskRasterDataPtr,
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
@@ -605,6 +613,32 @@ namespace te
           
           bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
         };
+        
+        /*! 
+          \brief Fill a buffer with zeroes.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param bufferLinesNumber Buffer lines number.
+          
+          \param bufferColsNumber Buffer columns number.
+        */         
+        template< typename BufferElementT >
+        static void zeroFillBuffer( BufferElementT** bufferPtr, 
+          const unsigned int& bufferLinesNumber, const unsigned int& 
+          bufferColsNumber )
+        {
+          BufferElementT* linePtr = 0;
+          unsigned int col = 0;
+          for( unsigned int line = 0 ; line < bufferLinesNumber ; ++line )
+          {
+            linePtr = bufferPtr[ line ];
+            for( col = 0 ; col < bufferColsNumber  ; ++col )
+            {
+              linePtr[ col ] = 0;
+            }
+          }
+        };        
         
         /*!
           \brief Moravec interest points locator.
@@ -740,7 +774,22 @@ namespace te
           \param paramsPtr A pointer to the thread parameters.
         */      
         static void executeMatchingByCorrelationThreadEntry(
-          CorrelationMatrixCalcThreadParams* paramsPtr);          
+          CorrelationMatrixCalcThreadParams* paramsPtr);
+          
+        /*! 
+          \brief Generate rescaled Gaussian second order partial derivatives using a given base filter.
+          
+          \param scalesNumber The number of scales to generate.
+          
+          \param baseFilterKernel The base filter.
+          
+          \param kernels The generated filter kernels.
+          
+          \details The first kernel is related to the first scale.
+        */
+        static void generateRescaledGaussianFilterKernels( const unsigned int scalesNumber,
+          const double (&baseFilterKernel)[9][9], const unsigned int baseFilterKernelWidth,
+          std::vector< te::rp::Matrix< double > >& kernels ); 
     };
 
   } // end namespace rp

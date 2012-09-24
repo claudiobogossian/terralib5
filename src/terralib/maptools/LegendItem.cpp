@@ -37,6 +37,26 @@ te::map::LegendItem::~LegendItem()
 {  
 }
 
+te::map::LegendItem::LegendItem(const LegendItem& rhs)
+  : m_from(rhs.m_from), m_to(rhs.m_to), m_count(rhs.m_count),
+    m_title(rhs.m_title), m_color(rhs.m_color)
+{
+}
+
+te::map::LegendItem& te::map::LegendItem::operator=(const LegendItem& rhs)
+{
+  if(this != &rhs)
+  {
+    m_from = rhs.m_from;
+    m_to = rhs.m_to;
+    m_count = rhs.m_count;
+    m_title = rhs.m_title;
+    m_color = rhs.m_color;
+  }
+
+  return *this;
+}
+
 const std::string& te::map::LegendItem::getLowerLimit() const
 {
   return m_from;

@@ -125,24 +125,30 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   m_timeGroupBox = new QGroupBox(m_widget);
   m_timeGroupBox->setMaximumHeight(40);
+  m_playPauseButton = new QPushButton("", m_timeGroupBox); // tem que ser criado antes do TimeSlider
   m_timeSlider = new TimeSlider(this, m_timeGroupBox);
   QHBoxLayout* timeLayout = new QHBoxLayout(m_timeGroupBox);
-  QIcon playPauseIcon("C:/lixo/playPause.png");
-  QPushButton* playPauseButton = new QPushButton(playPauseIcon, "", m_timeGroupBox);
   QIcon stopIcon("C:/lixo/stop.png");
   QPushButton* stopButton = new QPushButton(stopIcon, "", m_timeGroupBox);
-  timeLayout->addWidget(playPauseButton);
+  timeLayout->addWidget(m_playPauseButton);
   timeLayout->addWidget(stopButton);
   timeLayout->addWidget(m_timeSlider);
   m_timeGroupBox->hide();
-  connect(playPauseButton, SIGNAL(clicked()), m_timeSlider, SLOT(playPauseSlot()));
+  connect(m_playPauseButton, SIGNAL(clicked()), m_timeSlider, SLOT(playPauseSlot()));
   connect(stopButton, SIGNAL(clicked()), m_timeSlider, SLOT(stopSlot()));
 
   m_timeGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
   m_timeSliderMenu = new QMenu(m_timeGroupBox);
+
   QAction* configTemporalPlayAction = new QAction("&Play Config...", m_timeSliderMenu);
   m_timeSliderMenu->addAction(configTemporalPlayAction);
   connect(configTemporalPlayAction, SIGNAL(triggered()), this, SLOT(configTemporalPlaySlot()));
+
+  m_showCurrentTimeAction = new QAction("&Show Current Time...", m_timeSliderMenu);
+  m_showCurrentTimeAction->setCheckable(true);
+  m_timeSliderMenu->addAction(m_showCurrentTimeAction);
+  connect(m_showCurrentTimeAction, SIGNAL(triggered()), this, SLOT(showCurrentTimeSlot()));
+
   connect(m_timeGroupBox, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenuSlot(const QPoint&)));
 
   m_widget->show();
@@ -175,6 +181,16 @@ void MyDisplay::configTemporalPlaySlot()
   m_timeSlider->setEnabled(true);
   m_timeSlider->configDrawing();
   m_timeSlider->setEnabled(b);
+}
+
+void MyDisplay::showCurrentTimeSlot()
+{
+}
+
+void MyDisplay::setTimeSliderIcon(QPixmap* p)
+{
+  QIcon icon(*p);
+  m_playPauseButton->setIcon(icon);
 }
 
 void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
@@ -645,6 +661,34 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
       canvas->draw(*it);
       ++it;
     }
+
+    if(m_showCurrentTimeAction->isChecked())
+    {
+      te::dt::TimeInstant* t = m_timeSlider->getCurrentTime();
+      if(t)
+      {
+        int x = 8;
+        int y = canvas->getHeight() - 6;
+        std::string time = t->toString();
+        canvas->setFontFamily("Tahoma Normal");
+        canvas->setTextPointSize(14);
+        canvas->setTextColor(te::color::RGBAColor(255, 0, 255, 255));
+        canvas->setTextContourColor(te::color::RGBAColor(255, 0, 255, 255));
+        canvas->setTextContourWidth(1);
+        canvas->setTextOpacity(255);
+        canvas->setTextContourEnabled(true);
+        canvas->setTextContourOpacity(255);
+
+        te::gm::Polygon* pol = canvas->getTextBoundary(x, y, time);
+        canvas->setPolygonFillColor(te::color::RGBAColor(255, 255, 255, 255));
+        canvas->setPolygonContourColor(te::color::RGBAColor(255, 255, 255, 255));
+        canvas->draw(pol);
+        delete pol;
+
+        canvas->drawText(x, y, time);
+      }
+    }
+
     QPainter painter(m_temporalVectorialDisplayPixmap);
     painter.drawPixmap(0, 0, *(canvas->getPixmap()));
     update();

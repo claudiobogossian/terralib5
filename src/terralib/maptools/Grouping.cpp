@@ -27,14 +27,26 @@
 #include "Grouping.h"
 
 
-te::map::Grouping::Grouping(te::dt::Property* p, te::map::GroupingType type, size_t precision)
-  : m_property(p), m_type(type), m_precision(precision)
+te::map::Grouping::Grouping(const std::string& propertyName, te::map::GroupingType type, size_t precision)
+  : m_propertyName(propertyName), m_type(type), m_precision(precision)
 {
 }
 
 te::map::Grouping::~Grouping()
 {  
 }
+
+std::string te::map::Grouping::getPropertyName() const
+{
+  return m_propertyName;
+}
+
+
+void te::map::Grouping::setPropertyName(const std::string& name)
+{
+  m_propertyName = name;
+}
+
 
 const te::map::GroupingType te::map::Grouping::getType() const
 {
