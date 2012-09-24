@@ -604,19 +604,24 @@ namespace te
           \param bufferPtr Buffer pointer.
           
           \param bufferLinesNumber Buffer lines number.
+          
+          \param stepSize The rool-up step size.
         */         
         template< typename BufferElementT >
         static void roolUpBuffer( BufferElementT** bufferPtr, 
-          const unsigned int& bufferLinesNumber )
+          const unsigned int& bufferLinesNumber, const unsigned int& stepSize )
         {
           BufferElementT* auxLinePtr = bufferPtr[ 0 ];
+          unsigned int idx = 0;
           
-          for( unsigned int idx = bufferLinesNumber - 1 ; idx  ; --idx )
+          for( unsigned int currStep = 0 ; currStep < stepSize ; ++currStep )
           {
-            bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
-          };
-          
-          bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
+            for( idx = bufferLinesNumber - 1 ; idx  ; --idx )
+            {
+              bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
+            }
+            bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
+          }
         };
         
         /*! 
