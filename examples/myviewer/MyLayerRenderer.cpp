@@ -54,23 +54,14 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     {
       defaultColor = op->getPointColor();
       canvas->setPointColor(defaultColor);
-      if(op->getPointMarkerType() == te::map::MarkerPattern && op->getPointIcon())
-      {
-        canvas->setPointPattern(op->getPointIcon(), op->getPointIconSize(), op->getPointIconImageType());
-        canvas->setPointWidth(op->getPointWidth());
-      }
-      else
-      {
-        canvas->setPointWidth(op->getPointWidth());
-        //canvas->setPointMarker(op->getPointMarkerType());
-      }
+      canvas->setPointPattern(op->getPointIcon(), op->getPointIconSize(), op->getPointIconImageType());
+      canvas->setPointWidth(op->getPointWidth());
     }
     else if(gtype == te::gm::LineStringType || gtype == te::gm::LineStringZType || gtype == te::gm::LineStringMType || gtype == te::gm::LineStringZMType ||
       gtype == te::gm::MultiLineStringType || gtype == te::gm::MultiLineStringZType || gtype == te::gm::MultiLineStringMType || gtype == te::gm::MultiLineStringZMType)
     {
       defaultColor = op->getLineColor();
-      if(op->getLinePatternIcon())
-        canvas->setLinePattern(op->getLinePatternIcon(), op->getLinePatternIconSize(), op->getLinePatternIconImageType());
+      canvas->setLinePattern(op->getLinePatternIcon(), op->getLinePatternIconSize(), op->getLinePatternIconImageType());
       canvas->setLineWidth(op->getLineWidth());
       canvas->setLineColor(op->getLineColor());
       //((te::qt::widgets::Canvas*)canvas)->setLineStyle(Qt::SolidLine);
@@ -80,25 +71,15 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
       // polygon fill style
       defaultColor = op->getPolygonFillColor();
       canvas->setPolygonFillColor(defaultColor);
+      canvas->setPolygonFillPattern(op->getPolygonPatternIcon(), op->getPolygonPatternIconSize(), op->getPolygonPatternIconImageType());
       if(op->getPolygonPatternIcon())
-      {
-        canvas->setPolygonFillPattern(op->getPolygonPatternIcon(), op->getPolygonPatternIconSize(), op->getPolygonPatternIconImageType());
         canvas->setPolygonPatternWidth(op->getPolygonPatternWidth());
-      }
-      else if(op->getPolygonMarkerType() != te::map::MarkerNone && op->getPolygonMarkerType() != te::map::MarkerPattern)
-      {
-        //canvas->setPolygonFillMarkerColor(op->getPolygonFillMarkerColor());
-        //canvas->setPolygonFillMarker(op->getPolygonMarkerType());
-      }
-      else
-        canvas->setPolygonFillPattern(0, 0, 0);
 
       // polygon contour style
       canvas->setPolygonContourColor(op->getPolygonContourColor());
       //((te::qt::widgets::Canvas*)canvas)->setPolygonContourStyle(Qt::SolidLine);
       canvas->setPolygonContourWidth(op->getPolygonContourWidth());
-      if(op->getPolygonContourPatternIcon())
-        canvas->setPolygonContourPattern(op->getPolygonContourPatternIcon(), op->getPolygonContourPatternIconSize(), op->getPolygonContourPatternIconImageType());
+      canvas->setPolygonContourPattern(op->getPolygonContourPatternIcon(), op->getPolygonContourPatternIconSize(), op->getPolygonContourPatternIconImageType());
     }
 
     size_t size = changeds.size();
