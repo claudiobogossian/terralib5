@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
-    <height>381</height>
+    <width>496</width>
+    <height>393</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -154,14 +154,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
-       <widget class="te::qt::qwt::ColorBar" name="legendColors" native="true">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="te::qt::qwt::ColorBar" name="colorBar" native="true"/>
       </item>
      </layout>
     </widget>
