@@ -155,9 +155,9 @@ bool te::map::Layer::hasLegend()
   return m_legend.empty() ? false : true;
 }
 
-std::vector<te::map::LegendItem*>* te::map::Layer::getLegend()
+std::vector<te::map::LegendItem*> te::map::Layer::getLegend() const
 {
-  return &m_legend;
+  return m_legend;
 }
 
 void te::map::Layer::removeLegend()
