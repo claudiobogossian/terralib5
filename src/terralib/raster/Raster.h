@@ -76,7 +76,7 @@ namespace te
           \param p      Access Policy.
         */
         Raster(Grid* grid, te::common::AccessPolicy p = te::common::RAccess);
-        
+
         /*!
           \brief Copy constructor.
 
@@ -391,7 +391,7 @@ namespace te
           \note Both rasters must have the same properties, #bands, #columns,
                 #rows, and data type.
 
-          \note The caller is responsible to guarantee that resultant values 
+          \note The caller is responsible to guarantee that resultant values
                 will not exceed the range of the data type.
 
           \return The raster subtraction.
@@ -406,7 +406,7 @@ namespace te
           \note Both rasters must have the same properties, #bands, #columns,
                 #rows, and data type.
 
-          \note The caller is responsible to guarantee that resultant values 
+          \note The caller is responsible to guarantee that resultant values
                 will not exceed the range of the data type.
 
           \return The raster product.
@@ -421,7 +421,7 @@ namespace te
           \note Both rasters must have the same properties, #bands, #columns,
                 #rows, and data type.
 
-          \note The caller is responsible to guarantee that resultant values 
+          \note The caller is responsible to guarantee that resultant values
                 will not exceed the range of the data type.
 
           \return The raster division.
@@ -450,6 +450,26 @@ namespace te
         virtual Raster* trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo);
 
         /*!
+          \brief Resample a subset of the raster, given a box.
+
+          \param method      The method of interpolation. \sa te::rst::Interpolator
+          \param drow        The starting row to make a subset of the image.
+          \param dcolumn     The starting column to make a subset of the image.
+          \param height      The height of the subset.
+          \param width       The width of the subset.
+          \param newheight   The resampled height of the new raster.
+          \param newwidth    The resampled width of the new raster.
+          \param rinfo       The parameters needed to build the output raster (see RasterFactory documentation).
+
+          \return A pointer to the resampled raster if success and a null pointer otherwise.
+
+          \note The caller will take the ownership of the returned pointer.
+
+          \warning A scale of 0 is not allowed. Use 1, 2, 3, or -1, -2, 3...
+        */
+        virtual Raster* resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo);
+
+        /*!
           \brief Resample raster.
 
           \param method      The method of interpolation.
@@ -466,7 +486,7 @@ namespace te
 
         /*!
           \brief Return the raster grid for a specific scale.
-          
+
           \param scale The desired sacale of interpolation (use - to shrink or + to enlarge).
 
           \return The raster grid.
