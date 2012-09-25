@@ -116,10 +116,16 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     }
 
     // Make a copy of the legend contents of the reference layer
-    std::vector<te::map::LegendItem*>& layerLegend = *(refLayer->getLegend());
-    m_legend.resize(layerLegend.size());
-    for(size_t i = 0; i < layerLegend.size(); ++i)
+    std::vector<te::map::LegendItem*>& layerLegend = refLayer->getLegend();
+    size_t legendSize = layerLegend.size();
+
+    m_legend.resize(legendSize);
+    m_legendColors.resize(legendSize);
+    for(size_t i = 0; i < legendSize; ++i)
+    {
       m_legend[i] = new te::map::LegendItem(*layerLegend[i]);
+      m_legendColors[i] = m_legend[i]->getColor();
+    }
 
     setTableContents();
   }
@@ -129,11 +135,20 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     precisionComboBox->setCurrentIndex(6);
   }
 
+  m_colorBar.setBarSize(legendColors->width());
+  m_colorBar.addColor(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), 0.);      // red
+  m_colorBar.addColor(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), 0.25);    // green
+  m_colorBar.addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.5);   // yellow
+  m_colorBar.addColor(te::color::RGBAColor(255, 0, 255, TE_OPAQUE), 0.75);  // magenta
+  m_colorBar.addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
+
+  legendColors->setHeight(20);
+
+  legendColors->setColorBar(&m_colorBar);
 
   // Connect signal/slots
   connect(typeComboBox, SIGNAL(activated(int)), this, SLOT(typeComboBoxActivated(int)));
   connect(applyPushButton, SIGNAL(clicked()), this, SLOT(applyPushButtonClicked()));
-  connect(legendColorsPushButton, SIGNAL(clicked()), this, SLOT(legendColorsPushButtonClicked()));
   connect(legendTableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(legendTableItemChanged(QTableWidgetItem*)));
   connect(okPushButton, SIGNAL(clicked()), this, SLOT(okPushButtonClicked()));
   connect(cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelPushButtonClicked()));
@@ -233,15 +248,16 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
     }
   }
 
+  // Clear the legend colors and get the new colors
+  m_legendColors.clear();
+  m_legendColors = m_colorBar.getSlices(m_legend.size());
+
+  // Set the new table contents
   setTableContents();
 
   okPushButton->setEnabled(true);
 
   unsetCursor();
-}
-
-void te::qt::widgets::Legend::legendColorsPushButtonClicked()
-{
 }
 
 void te::qt::widgets::Legend::legendTableItemChanged(QTableWidgetItem* item)
@@ -274,6 +290,10 @@ void te::qt::widgets::Legend::okPushButtonClicked()
   std::map<int, std::string>::iterator it;
   for(it = m_changedItemLabel.begin(); it != m_changedItemLabel.end(); ++it)
     m_legend[it->first]->setTitle(it->second);
+
+  // Set the colors of the legend generated
+  for(size_t i = 0; i < m_legend.size(); ++i)
+    m_legend[i]->setColor(m_legendColors[i]);
    
   delete m_t;
 
@@ -303,6 +323,7 @@ void te::qt::widgets::Legend::setTableContents()
 
   // Set the number of columns and set the cell contents of the legend table
   QStringList headerLabels;
+  QColor color;
   if(typeComboBox->currentIndex() == te::map::UNIQUE_VALUE)
   {
     // Unique Value
@@ -311,6 +332,12 @@ void te::qt::widgets::Legend::setTableContents()
 
     for(size_t i = 0; i < m_legend.size(); ++i)
     {
+      color.setRgba(m_legendColors[i].getRgba());
+      QPixmap pixmap(16, 12);
+      pixmap.fill(color);
+      QIcon icon(pixmap);
+
+      legendTableWidget->setItem(i, 0, new QTableWidgetItem(icon, ""));
       legendTableWidget->setItem(i, 1, new QTableWidgetItem(m_legend[i]->getLowerLimit().c_str()));
       legendTableWidget->setItem(i, 2, new QTableWidgetItem(m_legend[i]->getLowerLimit().c_str()));
       legendTableWidget->setItem(i, 3, new QTableWidgetItem(QString("%1").arg(m_legend[i]->getCount())));
@@ -323,6 +350,15 @@ void te::qt::widgets::Legend::setTableContents()
 
     for(size_t i = 0; i < m_legend.size(); ++i)
     {
+      if((typeComboBox->currentIndex() == te::map::STD_DEVIATION &&
+         m_legend[i]->getUpperLimit().empty()) == false)
+      {
+        color.setRgba(m_legendColors[i].getRgba());
+        QPixmap pixmap(16, 12);
+        pixmap.fill(color);
+        QIcon icon(pixmap);
+        legendTableWidget->setItem(i, 0, new QTableWidgetItem(icon, ""));
+      }
       legendTableWidget->setItem(i, 1, new QTableWidgetItem(m_legend[i]->getLowerLimit().c_str()));
       legendTableWidget->setItem(i, 2, new QTableWidgetItem(m_legend[i]->getUpperLimit().c_str()));
       legendTableWidget->setItem(i, 3, new QTableWidgetItem(m_legend[i]->getTitle().c_str()));
