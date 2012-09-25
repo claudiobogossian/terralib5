@@ -26,6 +26,7 @@
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/qt/qwt/ColorBar.h>
 #include <terralib/qt/widgets/layer/Legend.h>
 
 #include "Legend.h"
