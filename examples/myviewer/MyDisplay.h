@@ -8,7 +8,9 @@
 
 //QT
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QGroupBox>
+#include <QLineEdit>
 
 #include<map>
 
@@ -43,6 +45,8 @@ public:
   void addTemporalLayer(te::map::AbstractLayer*);
   void setTitle(QString&);
   QWidget* getWidget();
+  void setTimeSliderIcon(QPixmap*);
+  void clearTimeLineEdit();
 
 public Q_SLOTS:
   void selectionChangedSlot(te::map::DataGridOperation*);
@@ -107,6 +111,7 @@ public Q_SLOTS:
   void printFileSlot();
   void timeSliderContextMenuSlot(const QPoint&);
   void configTemporalPlaySlot();
+  void showTimeLineEditSlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -125,6 +130,7 @@ private:
   QWidget* m_widget;
   QGroupBox* m_timeGroupBox;
   QMenu* m_timeSliderMenu;
+  QAction* m_showTimeLineEditAction;
   QMenu* m_mouseOperationMenu;
   QAction* m_mouseZoomInAction;
   QAction* m_mouseZoomOutAction;
@@ -141,7 +147,10 @@ private:
 
   QPixmap* m_temporalVectorialDisplayPixmap;     //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible vectorial layers.
   QPixmap* m_temporalImageDisplayPixmap;         //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible image layers.
+  QPushButton* m_playPauseButton;
   TimeSlider* m_timeSlider;
+  QLineEdit* m_timeLineEdit;
+  QHBoxLayout* m_timeLayout;
 };
 
 #endif
