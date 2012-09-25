@@ -45,6 +45,8 @@
 #include "maptools/QueryEncoder.h"
 #include "maptools/QueryLayer.h"
 #include "maptools/QueryLayerRenderer.h"
+#include "maptools/RasterLayer.h"
+#include "maptools/RasterLayerRenderer.h"
 
 namespace te
 {
