@@ -128,7 +128,11 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   m_playPauseButton = new QPushButton("", m_timeGroupBox); // tem que ser criado antes do TimeSlider
   m_timeSlider = new TimeSlider(this, m_timeGroupBox);
   QHBoxLayout* timeLayout = new QHBoxLayout(m_timeGroupBox);
-  QIcon stopIcon("C:/lixo/stop.png");
+
+  QDir dir;
+  if(dir.cd(""TE_DATA_EXAMPLE_LOCALE"/data/cursorShapes") == false)
+      dir.cd("../../images");
+  QIcon stopIcon(dir.absolutePath() + "/stop.png");
   QPushButton* stopButton = new QPushButton(stopIcon, "", m_timeGroupBox);
   timeLayout->addWidget(m_playPauseButton);
   timeLayout->addWidget(stopButton);
@@ -1382,7 +1386,7 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
 void MyDisplay::initTemporal()
 {
   //parar o desenho dos layers temporais e reinicializar o vector de layers temporais no time Slider
-  m_timeSlider->clearDrawing();
+  m_timeSlider->stop();
 
   m_timeSlider->removeAllLayers();
   std::list<te::map::AbstractLayer*>::iterator lit;
