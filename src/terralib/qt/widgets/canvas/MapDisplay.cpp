@@ -180,6 +180,9 @@ void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
 QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
 {
   te::qt::widgets::Canvas* canvas = m_layerCanvasMap.begin()->second;
+  if(canvas == 0)
+    return QPointF();
+
   return canvas->getMatrix().inverted().map(p);
 }
 

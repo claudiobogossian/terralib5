@@ -142,6 +142,8 @@ namespace te
             \param p A point in screen coordinates.
 
             \return The point in world coordinates.
+
+            \note This method will return a null point if the transform can not be done.
           */
           QPointF transform(const QPointF& p);
 
