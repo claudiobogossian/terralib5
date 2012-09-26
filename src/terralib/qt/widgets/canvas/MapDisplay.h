@@ -110,7 +110,17 @@ namespace te
 
             \note The caller of this method will NOT take the ownership of the returned pixmap.
           */
-          QPixmap* getDisplayPixmap();
+          QPixmap* getDisplayPixmap() const;
+
+          /*!
+            \brief It returns the map display draft pixmap.
+
+            \return The map display draft pixmap.
+
+            \note This pixmap can be used to draw some feedback on map display.
+            \note The caller of this method will NOT take the ownership of the returned pixmap.
+          */
+          QPixmap* getDraftPixmap() const;
 
           /*!
             \brief Sets the resize policy to this map display.
@@ -119,12 +129,21 @@ namespace te
           */
           void setResizePolicy(const ResizePolicy& policy);
 
-           /*!
+          /*!
             \brief Sets the timeout interval in milliseconds to redraw on resize event.
 
             \param msec The timeout interval in milliseconds.
           */
           void setResizeInterval(int msec);
+
+          /*!
+            \brief Transforms the given point, in screen coordinates, to a point in world coordinates.
+
+            \param p A point in screen coordinates.
+
+            \return The point in world coordinates.
+          */
+          QPointF transform(const QPointF& p);
 
         protected:
 
@@ -214,7 +233,7 @@ namespace te
         protected:
 
           QPixmap* m_displayPixmap;    //!< This pixmap will be the result of all canvas pixmap drawing, i. e., the result of drawing all visible layers.
-          QPixmap* m_draft;            //!< Pixmap that can be used to draw some feedback on map display.
+          QPixmap* m_draftPixmap;      //!< The draft pixmap can be used to draw some feedback on map display.
           QColor  m_backgroundColor;   //!< Background color.
           ResizePolicy m_resizePolicy; //!< Resize policy for this map display.
           QSize m_oldSize;             //!< Stores the last size of map display on start resize event.

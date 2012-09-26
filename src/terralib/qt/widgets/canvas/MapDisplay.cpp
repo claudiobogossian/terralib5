@@ -40,7 +40,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
   : QWidget(parent, f),
     te::map::MapDisplay(),
     m_displayPixmap(new QPixmap(size)),
-    m_draft(new QPixmap(size)),
+    m_draftPixmap(new QPixmap(size)),
     m_backgroundColor(Qt::white),
     m_resizePolicy(te::qt::widgets::MapDisplay::Fixed),
     m_timer(new QTimer(this)),
@@ -50,7 +50,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
   connect(m_timer, SIGNAL(timeout()), this, SLOT(onResizeTimeout()));
 
   m_displayPixmap->fill(m_backgroundColor);
-  m_draft->fill(Qt::transparent);
+  m_draftPixmap->fill(Qt::transparent);
 
   resize(size);
 }
@@ -58,7 +58,7 @@ te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::
 te::qt::widgets::MapDisplay::~MapDisplay()
 {
   delete m_displayPixmap;
-  delete m_draft;
+  delete m_draftPixmap;
 }
 
 void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
@@ -77,9 +77,14 @@ void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
   draw();
 }
 
-QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap()
+QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap() const
 {
   return m_displayPixmap;
+}
+
+QPixmap* te::qt::widgets::MapDisplay::getDraftPixmap() const
+{
+  return m_draftPixmap;
 }
 
 void te::qt::widgets::MapDisplay::setResizePolicy(const ResizePolicy& policy)
@@ -157,7 +162,7 @@ void te::qt::widgets::MapDisplay::paintEvent(QPaintEvent* e)
 {
   QPainter painter(this);
   painter.drawPixmap(0, 0, *m_displayPixmap);
-  painter.drawPixmap(0, 0, *m_draft);
+  painter.drawPixmap(0, 0, *m_draftPixmap);
 }
 
 void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
@@ -172,6 +177,12 @@ void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
   m_timer->start(m_interval);
 }
 
+QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
+{
+  te::qt::widgets::Canvas* canvas = m_layerCanvasMap.begin()->second;
+  return canvas->getMatrix().inverted().map(p);
+}
+
 void te::qt::widgets::MapDisplay::onResizeTimeout()
 {
   // Rebulding the map display pixmaps
@@ -179,9 +190,9 @@ void te::qt::widgets::MapDisplay::onResizeTimeout()
   m_displayPixmap = new QPixmap(size());
   m_displayPixmap->fill(m_backgroundColor);
 
-  delete m_draft;
-  m_draft = new QPixmap(size());
-  m_draft->fill(Qt::transparent);
+  delete m_draftPixmap;
+  m_draftPixmap = new QPixmap(size());
+  m_draftPixmap->fill(Qt::transparent);
 
   // Resizing all canvas
   resizeAllCanvas();
