@@ -26,6 +26,9 @@
 #ifndef __TERRALIB_ADO_INTERNAL_UTILS_H
 #define __TERRALIB_ADO_INTERNAL_UTILS_H
 
+// TerraLib
+#include "../geometry/Geometry.h"
+
 // ADO
 #import "msado15.dll" \
     no_namespace rename("EOF", "EndOfFile")

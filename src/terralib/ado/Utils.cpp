@@ -27,7 +27,6 @@
 #include "../common/Translator.h"
 #include "../datatype.h"
 #include "../dataaccess.h"
-#include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Enums.h"
 #include "Config.h"
