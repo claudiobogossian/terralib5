@@ -54,12 +54,17 @@ namespace te
         //@{
 
         /*!
+          \brief It initializes a new ColorBar(default constructor)
+         */
+        ColorBar();
+
+        /*!
           \brief It initializes a new ColorBar.
 
           \param size Number of colors to be generated.
           \note By default the first color is red and the second is white.
          */
-        ColorBar(const int& size);
+        ColorBar(int size);
 
         /*!
           \brief It initializes a new ColorBar.
@@ -68,7 +73,7 @@ namespace te
           \param colorEnd End color.
           \param size Number of colors to be generated.
          */
-        ColorBar(const RGBAColor& colorBegin, const RGBAColor& colorEnd, const int& size);
+        ColorBar(const RGBAColor& colorBegin, const RGBAColor& colorEnd, int size);
 
         /*! \brief Destructor */
         ~ColorBar();
@@ -99,7 +104,7 @@ namespace te
 
           \return Generated color bar.
          */
-        const std::map<double, te::color::RGBAColor>& getColorMap();
+        const std::map<double, te::color::RGBAColor>& getColorMap() const;
 
         /*!
           \brief It generates color bar.

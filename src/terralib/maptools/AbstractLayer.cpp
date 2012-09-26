@@ -110,9 +110,10 @@ bool te::map::AbstractLayer::hasLegend()
   return false;
 }
 
-std::vector<te::map::LegendItem*>* te::map::AbstractLayer::getLegend()
+std::vector<te::map::LegendItem*> te::map::AbstractLayer::getLegend() const
 {
-  return 0;
+  std::vector<te::map::LegendItem*> legend;
+  return legend;
 }
 
 void te::map::AbstractLayer::removeLegend()

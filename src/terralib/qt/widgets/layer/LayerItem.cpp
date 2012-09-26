@@ -53,7 +53,7 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject*
 
   if(refLayer->hasLegend() == true)
   {
-    std::vector<te::map::LegendItem*> legend = *(refLayer->getLegend());
+    std::vector<te::map::LegendItem*> legend = refLayer->getLegend();
     for(std::size_t i = 0; i < legend.size(); ++i)
       new te::qt::widgets::LegendItem(legend[i], this);
   }

@@ -711,8 +711,8 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(raster2Data[ 0 ]), 
         integralRaster2 ), "Integral image 1 creation error" );
         
-      createTifFromMatrix( integralRaster1, InterestPointsSetT(), "integralRaster1" );
-      createTifFromMatrix( integralRaster2, InterestPointsSetT(), "integralRaster2" );
+//      createTifFromMatrix( integralRaster1, InterestPointsSetT(), "integralRaster1" );
+//      createTifFromMatrix( integralRaster2, InterestPointsSetT(), "integralRaster2" );
       
       // locating interest points
       
@@ -1172,7 +1172,7 @@ namespace te
       }
       else
       {
-        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber() / 1;
+        threadParams.m_maxRasterLinesBlockMaxSize = rasterData.getLinesNumber();
         threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
         
         locateMoravecInterestPointsThreadEntry( &threadParams );
@@ -1341,7 +1341,7 @@ namespace te
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
             
-            roolUpBuffer( rasterBufferPtr, bufferLines, 1 );             
+            roolUpBuffer( rasterBufferPtr, bufferLines, bufferCols, 1, false );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
               paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
@@ -1349,7 +1349,7 @@ namespace te
             // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
             {
-              roolUpBuffer( maskRasterBufferPtr, bufferLines, 1 );
+              roolUpBuffer( maskRasterBufferPtr, bufferLines, bufferCols, 1, false );
               memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
@@ -1361,7 +1361,7 @@ namespace te
             // diretional variances buffer
             if( rasterLine >= varianceCalcStartRasterLineStart )
             {
-              roolUpBuffer( maximasBufferPtr, bufferLines, 1 );
+              roolUpBuffer( maximasBufferPtr, bufferLines, bufferCols, 1, false );
               
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )
@@ -1580,7 +1580,7 @@ namespace te
       }
       else
       {
-        threadParams.m_maxRasterLinesBlockMaxSize = integralRasterData.getLinesNumber() / 1;
+        threadParams.m_maxRasterLinesBlockMaxSize = integralRasterData.getLinesNumber();
         threadParams.m_maxInterestPointsPerRasterLinesBlock = maxInterestPoints;
         
         locateSurfInterestPointsThreadEntry( &threadParams );
@@ -1771,14 +1771,14 @@ namespace te
           {
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
-            roolUpBuffer( rasterBufferPtr, bufferLines, 1 );             
+            roolUpBuffer( rasterBufferPtr, bufferLines, bufferCols, 1, false );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
               paramsPtr->m_integralRasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
             // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
             {
-              roolUpBuffer( maskRasterBufferPtr, bufferLines, 1 );
+              roolUpBuffer( maskRasterBufferPtr, bufferLines, bufferCols, 1, false );
               memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
@@ -1798,7 +1798,7 @@ namespace te
                 samplingStep = (unsigned int)std::pow( 2.0, (double)scaleIdx );
                 
                 roolUpBuffer( scalesBuffersHandlers[ scaleIdx ].get(), bufferLines, 
-                  samplingStep );
+                  bufferCols, samplingStep, samplingStep > 1 );
                 
                 // applying the filter kernels for the current scale
                 
@@ -1901,11 +1901,11 @@ namespace te
                       
                       blockMaximas.insert( auxInterestPoint);
                       
-                      if( blockMaximas.size() > 
-                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
-                      {
-                        blockMaximas.erase( blockMaximas.begin() );
-                      }
+                       if( blockMaximas.size() > 
+                         paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                       {
+                         blockMaximas.erase( blockMaximas.begin() );
+                       }
                     }
                   }
                   else
@@ -1921,21 +1921,16 @@ namespace te
                     
                     blockMaximas.insert( auxInterestPoint );
                     
-                    if( blockMaximas.size() > 
-                      paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
-                    {
-                      blockMaximas.erase( blockMaximas.begin() );
-                    }
+                     if( blockMaximas.size() > 
+                       paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                     {
+                       blockMaximas.erase( blockMaximas.begin() );
+                     }
                   }
                 }                
-                
               }
-              
-
             }
-            
           }
-         
         }
         else
         {
@@ -2992,6 +2987,7 @@ namespace te
       double const* inKernelLinePtr = 0;
       unsigned int outKernelY = 0;
       unsigned int outKernelX = 0;
+      double factor = 0;
       
       kernels.resize( scalesNumber );
       
@@ -3001,20 +2997,44 @@ namespace te
         kernelWidth = (unsigned int)std::pow( 2.0, (double)( scaleNumber - 1 ) ) * 
           baseFilterKernelWidth;
           
+        factor = 9.0 / ((double)kernelWidth);
+          
         kernels[ scaleNumber - 1 ].reset( kernelWidth, kernelWidth, 
           te::rp::Matrix< double >::RAMMemPol );
         
         for( outKernelY = 0 ; outKernelY < kernelWidth ; ++outKernelY )
         {
           outKernelLinePtr = kernels[ scaleNumber - 1 ][ outKernelY ];
-          inKernelLinePtr = baseFilterKernel[ outKernelY / scaleNumber ];
+          inKernelLinePtr = baseFilterKernel[ 
+            (unsigned int)(((double)outKernelY) * factor ) ];
           
           for( outKernelX = 0 ; outKernelX < kernelWidth ; ++outKernelX )
           {
-            outKernelLinePtr[ outKernelX ] = inKernelLinePtr[ outKernelX / scaleNumber ];
+            outKernelLinePtr[ outKernelX ] = inKernelLinePtr[ 
+              (unsigned int)(((double)outKernelX) * factor ) ];
           }
         }
+        
+//        printMatrix( kernels[ scaleNumber - 1 ] );
       }
+    }
+    
+    void TiePointsLocator::printMatrix( const te::rp::Matrix< double >& matrix )
+    {
+      std::cout << std::endl;
+      
+      for( unsigned int line = 0 ; line < matrix.getLinesNumber() ; ++line )
+      {
+        std::cout << std::endl << "[";
+        
+        for( unsigned int col = 0 ; col < matrix.getColumnsNumber() ; ++col )
+        {
+          std::cout << " " << matrix( line, col );
+        }
+        
+        std::cout << "]";
+      }
+      
     }
 
   } // end namespace rp

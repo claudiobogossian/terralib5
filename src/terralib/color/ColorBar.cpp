@@ -26,7 +26,12 @@
 // TerraLib
 #include "ColorBar.h"
 
-te::color::ColorBar::ColorBar(const int& size)
+te::color::ColorBar::ColorBar()
+  : m_barSize(0)
+{
+}
+
+te::color::ColorBar::ColorBar(int size)
 {
   RGBAColor c1(255, 0, 0, 255);
   RGBAColor c2(255, 255, 255, 255);
@@ -35,7 +40,7 @@ te::color::ColorBar::ColorBar(const int& size)
   m_barSize = size;
 }
 
-te::color::ColorBar::ColorBar(const RGBAColor& colorBegin, const RGBAColor& colorEnd, const int& size)
+te::color::ColorBar::ColorBar(const RGBAColor& colorBegin, const RGBAColor& colorEnd, int size)
 {
   m_colorMap[0.] = colorBegin;
   m_colorMap[1.] = colorEnd;
@@ -56,7 +61,7 @@ void te::color::ColorBar::setName(const std::string& name)
     m_name = name;
 }
 
-const std::map<double, te::color::RGBAColor>& te::color::ColorBar::getColorMap()
+const std::map<double, te::color::RGBAColor>& te::color::ColorBar::getColorMap() const
 {
   return m_colorMap;
 }

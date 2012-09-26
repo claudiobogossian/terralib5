@@ -74,7 +74,8 @@ include_directories(
     ${TE_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     ${QT_INCLUDE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}
+    ${QWT_INCLUDE_DIR}
+	  ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${MOC})

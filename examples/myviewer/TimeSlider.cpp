@@ -167,6 +167,8 @@ void TimeSlider::timerEvent(QTimerEvent* e)
   te::dt::TimeInstant* tFinal = new te::dt::TimeInstant(time2);
 
   draw(tInitial, tFinal);
+  if(m_stop)
+    ((MyDisplay*)m_mapDisplay)->clearTimeLineEdit();
 
   int fvalue = m_value + m_minuteInterval;
   if(fvalue >= maximum())
@@ -175,6 +177,7 @@ void TimeSlider::timerEvent(QTimerEvent* e)
     if(m_loop == false)
     {
       killTimer();
+      stop();
       return;
     }
   }
@@ -560,6 +563,7 @@ void TimeSlider::playPauseSlot()
 void TimeSlider::stopSlot()
 {
   stop();
+  stop(); // chamar 2 vezes para apagar o time line edit;
 }
 
 void TimeSlider::play()
@@ -591,8 +595,9 @@ void TimeSlider::pause()
 
 void TimeSlider::stop()
 {
-  m_play = false;
   m_stop = true;
+  pause();
+  ((MyDisplay*)m_mapDisplay)->clearTimeLineEdit();
   clearDrawing();
   setEnabled(false);
 }
