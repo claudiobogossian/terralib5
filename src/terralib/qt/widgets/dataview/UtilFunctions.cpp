@@ -33,13 +33,16 @@ QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filte
   for(size_t i=0; i<nGrps; i++)
   {
     te::qt::widgets::ColorPickerToolButton* btn = new te::qt::widgets::ColorPickerToolButton(mnu);
-    btn->setColor(dec->getDecorated(i)->getHighlightColor());
+    te::qt::widgets::HighlightDelegate* hl = dec->getDecorated(i);
+
+    btn->setColor(hl->getHighlightColor());
 
     QWidgetAction* act = new QWidgetAction(mnu);
     act->setDefaultWidget(btn);
     mnu->addAction(act);
     btn->setDefaultAction(act);
-    act->setText(dec->getDecorated(i)->getGroupName());
+    act->setText(hl->getGroupName());
+
     act->setData(QVariant((int)i));
 
     filter->connect(btn, SIGNAL(colorChanged(const QColor&)), SLOT(colorChanged(const QColor&)));
@@ -271,20 +274,24 @@ std::vector<size_t> getPKeysPositions(te::da::DataSet* dset)
 
 void updatePromotion(te::map::PromoTable* tbl, te::qt::widgets::HLDelegateDecorator* dec, const std::set<size_t>& promoGrps)
 {
-  if(dec == 0 || tbl == 0)
+  if(tbl == 0)
     return;
 
-  std::set<size_t>::const_iterator it;
-  std::set<std::string>::iterator sit;
-  std::set<std::string> h_ids;
   std::vector<std::string> ids; 
 
-  for(it = promoGrps.begin(); it != promoGrps.end(); ++it)
+  if(dec != 0)
   {
-    h_ids = dec->getDecorated(*it)->getHighlightKeys();
+    std::set<size_t>::const_iterator it;
+    std::set<std::string>::iterator sit;
+    std::set<std::string> h_ids;
 
-    for(sit=h_ids.begin(); sit!=h_ids.end(); ++sit)
-      ids.push_back(*sit);
+    for(it = promoGrps.begin(); it != promoGrps.end(); ++it)
+    {
+      h_ids = dec->getDecorated(*it)->getHighlightKeys();
+
+      for(sit=h_ids.begin(); sit!=h_ids.end(); ++sit)
+        ids.push_back(*sit);
+    }
   }
 
   tbl->promoteRows(ids);

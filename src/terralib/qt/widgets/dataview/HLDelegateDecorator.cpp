@@ -124,7 +124,7 @@ namespace te
         if(dec == 0)
           return 1;
 
-        return dec->getNumberOfClasses() + 1;
+        return 1 + dec->getNumberOfClasses();
       }
 
       void HLDelegateDecorator::clearSelection()

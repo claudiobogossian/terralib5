@@ -15,9 +15,6 @@ endif()
 # Configuration files folder.
 set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 
-# Compiled modules
-set (TE_LIBRARIES @_TE_LIBRARIES@)
-
 # Include the dependencies. 
 include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
 

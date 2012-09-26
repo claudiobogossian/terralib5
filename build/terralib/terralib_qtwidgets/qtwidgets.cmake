@@ -160,11 +160,7 @@ file (
   ${SRCDIR}/widgets/srs/SRSDialog.h
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
   ${SRCDIR}/widgets/dataview/TabularViewer.h
-#  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
-
-  
-
 
 # Select the FORMS widgets     
 file(
@@ -188,17 +184,9 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
 	
-#set (SRCS_TO_MOC ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp)  
-  
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
-#qt4_generate_moc("${SRCDIR}/widgets/dataview/TabularViewer.cpp" ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp OPTIONS "-f" )
-#qt4_automoc("${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp")
-#qt4_wrap_cpp( MOC2 "${SRCDIR}/widgets/dataview/TabularViewer.cpp" OPTIONS "-o" "${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp" "-f" )
 
 set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
-
-#set (MOC_OPTIONS "-f"  )
-
 QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-f")
 
 qt4_wrap_ui(UI ${FORMS})

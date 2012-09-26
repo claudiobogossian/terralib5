@@ -118,6 +118,7 @@ namespace te
           m_viewer->connect(this, SIGNAL(highlightObjects(const std::vector<int>&)), SLOT(pointObjects(const std::vector<int>&)));
           m_viewer->connect(this, SIGNAL(promote(const int&)), SLOT(addPromoteHighlight(const int&)));
           m_viewer->connect(this, SIGNAL(resetGroupPromotion(const int&)), SLOT(resetPromoteHighlight(const int&)));
+          m_viewer->connect(this, SIGNAL(resetHighlight(const int&)), SLOT(clearHighlighted(const int&)));
         }
 
         /*!

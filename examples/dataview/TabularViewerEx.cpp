@@ -136,8 +136,7 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
   StarDelegate* st = new StarDelegate(del->clone());
 
   // Setting up color
-  // index 3 is the index of StarDelegate. By default, TabularViewer has 3 classes.
-  st->setClassColor(3, QColor(0, 27, 0));
+  st->setHighlightColor(QColor(255, 255, 0));
 
   //Setting up the new delegate
   st->setParent(tv);
