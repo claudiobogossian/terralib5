@@ -1,4 +1,4 @@
-#include "QtCanvasExamples.h"
+#include "CanvasExamples.h"
 
 // TerraLib
 #include <terralib/color.h>
