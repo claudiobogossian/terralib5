@@ -605,7 +605,8 @@ namespace te
           const unsigned int& bufferLinesNumber, 
           const unsigned int& bufferColsNumber,
           const unsigned int& stepSize,
-          const bool zeroFill )
+          const bool autoFill,
+          const BufferElementT& autoFillValue )
         {
           unsigned int idx = 0;
           unsigned int col = 0;
@@ -621,11 +622,11 @@ namespace te
             
             bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
             
-            if( zeroFill )
+            if( autoFill )
             {
               for( col = 0 ; col < bufferColsNumber  ; ++col )
               {
-                auxLinePtr[ col ] = 0;
+                auxLinePtr[ col ] = autoFillValue;
               }
             }
           }

@@ -1302,7 +1302,7 @@ namespace te
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
             
-            roolUpBuffer( rasterBufferPtr, bufferLines, bufferCols, 1, false );             
+            roolUpBuffer( rasterBufferPtr, bufferLines, bufferCols, 1, false, 0.0 );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
               paramsPtr->m_rasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
@@ -1310,7 +1310,8 @@ namespace te
             // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
             {
-              roolUpBuffer( maskRasterBufferPtr, bufferLines, bufferCols, 1, false );
+              roolUpBuffer( maskRasterBufferPtr, bufferLines, bufferCols, 1, false,
+                0.0 );
               memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
@@ -1322,7 +1323,8 @@ namespace te
             // diretional variances buffer
             if( rasterLine >= varianceCalcStartRasterLineStart )
             {
-              roolUpBuffer( maximasBufferPtr, bufferLines, bufferCols, 1, false );
+              roolUpBuffer( maximasBufferPtr, bufferLines, bufferCols, 1, false,
+                0.0 );
               
               for( windowStartBufCol = 0 ; windowStartBufCol < windowEndBufColsBound ; 
                 ++windowStartBufCol )
@@ -1698,14 +1700,14 @@ namespace te
           InterestPointT auxInterestPoint;
           
           // zero fill buffers
-          
+/*          
           for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
             ++scaleIdx )
           {
             zeroFillBuffer( scalesBuffersHandlers[ scaleIdx ].get(), bufferLines,
               bufferCols );              
           }          
-          
+*/          
           // Processing each raster line from the current block
                    
           for( unsigned int rasterLine = rasterLinesStart; rasterLine < rasterLinesEndBound ;
@@ -1713,14 +1715,15 @@ namespace te
           {
             // read a new raster line into the last raster buffer line
             paramsPtr->m_rastaDataAccessMutexPtr->lock();
-            roolUpBuffer( rasterBufferPtr, bufferLines, bufferCols, 1, false );             
+            roolUpBuffer( rasterBufferPtr, bufferLines, bufferCols, 1, false, 0.0 );             
             memcpy( rasterBufferPtr[ lastBufferLineIdx ], 
               paramsPtr->m_integralRasterDataPtr->operator[]( rasterLine ),
               rasterBufferLineSizeBytes );
             // read a new mask raster line into the last mask raster buffer line
             if( paramsPtr->m_maskRasterDataPtr )
             {
-              roolUpBuffer( maskRasterBufferPtr, bufferLines, bufferCols, 1, false );
+              roolUpBuffer( maskRasterBufferPtr, bufferLines, bufferCols, 1, false,
+                0.0 );
               memcpy( maskRasterBufferPtr[ lastBufferLineIdx ], 
                 paramsPtr->m_maskRasterDataPtr->operator[]( rasterLine ),
                 maskRasterBufferLineSizeBytes );
@@ -1737,21 +1740,19 @@ namespace te
               {
                 // Roll up buffer
                 
-                samplingStep = (unsigned int)std::pow( 2.0, (double)scaleIdx );
-                
                 roolUpBuffer( scalesBuffersHandlers[ scaleIdx ].get(), bufferLines, 
-                  bufferCols, samplingStep, samplingStep > 1 );
+                  bufferCols, 1, false, 0.0 );
                 
                 // applying the filter kernels for the current scale
                 
-                filterWidth = ( scaleIdx + 1 ) * 9;;
+                filterWidth = 3 * ( 3 + ( 2 * scaleIdx ) );
                 filterRadius = filterWidth / 2;
                 filterScaleFactorToBase = ((double)filterWidth) / 9.0;
-                windowUpperLeftColBound = bufferCols - filterWidth;
-                windowUpperLeftLine = maxGausFilterWidth - filterRadius;
+                windowUpperLeftColBound = bufferCols - filterWidth + 1;
+                windowUpperLeftLine = maxGausFilterRadius - filterRadius;
                   
                 for( windowUpperLeftCol = 0 ; windowUpperLeftCol < 
-                  windowUpperLeftColBound ; windowUpperLeftCol += samplingStep )
+                  windowUpperLeftColBound ; ++windowUpperLeftCol )
                 {
                   dXX = 
                     rasterBufferPtr
@@ -1871,7 +1872,10 @@ namespace te
                   ++scaleIdx )
                 {   
                   samplingStep = (unsigned int)std::pow( 2.0, (double)scaleIdx );
+                  
                   filterWidth = 3 * samplingStep;
+                  filterWidth += ( ( filterWidth % 2 ) ? 0 : 1 );
+                  
                   filterRadius = filterWidth / 2;
 
                   windowUpperLeftCol = windCenterCol - filterRadius;
