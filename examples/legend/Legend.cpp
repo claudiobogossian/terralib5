@@ -26,6 +26,7 @@
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/qt/qwt/ColorBar.h>
 #include <terralib/qt/widgets/layer/Legend.h>
 
 #include "Legend.h"
@@ -75,7 +76,7 @@ Legend::Legend(QWidget* parent)
 
   for(size_t i = 0; i < numDataSets; ++i)
   {
-    id = te::common::Convert2String(i+1);
+    id = te::common::Convert2String(static_cast<unsigned int>(i+1));
     dataSetName = dataSetList[i].toStdString();
     
     layer = new te::map::Layer(id, dataSetName, m_rootLayer);
@@ -123,14 +124,21 @@ void Legend::contextMenuActivated(const QModelIndex& index, const QPoint& pos)
 
 void Legend::editLegendSlot()
 {
+  setCursor(Qt::WaitCursor);
+
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(m_layerView->getPopupIndex()));
 
   te::qt::widgets::Legend legendDialog(layerItem);
 
   if(legendDialog.exec() != QDialog::Accepted)
+  {
+    unsetCursor();
     return;
+  }
 
   m_layerModel->addLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
+
+  unsetCursor();
 }
 
 void Legend::closeEvent(QCloseEvent* /*e*/)

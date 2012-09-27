@@ -20,8 +20,6 @@
 #include "MyGrid.h"
 #include "MyLayer.h"
 #include "ConfigStyle.h"
-#include "TemporalDrawingConfig.h"
-#include "TimeSlider.h"
 
 class MyWindow : public QWidget
 {
@@ -42,21 +40,16 @@ class MyWindow : public QWidget
 
 protected slots:
   void layerVisibilityChanged(const QModelIndex&);
-  void layerItemMoved(const QModelIndex&, const QModelIndex&);
   void contextMenuActivated(const QModelIndex& mi, const QPoint& pos);
   void setStyleSlot();
   void openNewMapDisplaySlot();
   void openGridSlot();
   void renameSlot();
-  void removeSlot();
+  void removeLayerSlot();
+  void takeLayerSlot(te::qt::widgets::AbstractTreeItem* dragItem, te::qt::widgets::AbstractTreeItem* oldParent);
   void addFolderSlot();
   void addLayerSlot();
   void plotTemporalDistanceSlot();
-  void timeSliderContextMenu(const QPoint&);
-  void autoDrawingSlot();
-  void manualDrawingSlot();
-  void configDrawingSlot();
-  void timeSliderValueChangedSlot(int);
   void removeDisplaySlot(MyDisplay*);
   void removeGridSlot(MyGrid*);
   void plotHistogramSlot(MyGrid*);
@@ -76,7 +69,9 @@ protected slots:
   void changePolygonStyleSlot();
 
 protected:
-  void adjustingLayerRemotion(te::map::AbstractLayer*);
+  void AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer*);
+  void AdjustmentsAfterTakeLayer(te::map::AbstractLayer*, te::map::AbstractLayer*);
+  void AdjustmentsAfterInsertLayer(te::map::AbstractLayer*);
   void reoderDrawing(te::map::AbstractLayer*);
 
 private:
@@ -88,13 +83,13 @@ private:
   te::qt::widgets::LayerExplorerModel* m_layerExplorerModel;
   te::qt::widgets::LayerExplorer* m_layerExplorer;
   std::vector<te::map::MapDisplay*> m_mapDisplayVec;
+  MyDisplay* m_mapDisplay;
 //  std::map<MyLayer*, MyGrid*> m_gridMap; // para que cada layer tenha apenas um unico grid correspondente
                                          // se o grid ja foi aberto nao cria outro DataSet - apenas da' show
   te::map::AbstractLayer* m_selectedLayer;
   QModelIndex m_parentModelIndex;
   QGroupBox* m_displayBox;
-  QSplitter* m_splitter;
-  TimeSlider* m_timeSlider;
+  QVBoxLayout* m_displayLayout;
   QAction* m_styleAction;
   QAction* m_openNewMapDisplayAction;
   QAction* m_openGridAction;
@@ -115,18 +110,7 @@ private:
   QMenu* m_treeMenu;
   QMenu* m_changeStatusColorMenu;
   QMenu* m_changeDefaultStyleMenu;
-  QMenu* m_timeSliderMenu;
   ConfigStyle* m_configStyle;
-  TemporalDrawingConfig* m_temporalDrawingConfig;
   std::vector<te::st::MovingObject*> m_movObjOutput;
-
-  int m_dateInterval;
-  int m_minuteInterval;
-  int m_temporalDrawingInterval;
-  bool m_temporalDrawLines;
-  bool m_temporalLoop;
-
-
-  //HistogramDisplay *m_histogramDisplay;
 };
 #endif

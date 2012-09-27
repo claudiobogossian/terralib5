@@ -28,13 +28,33 @@
 
 
 te::map::LegendItem::LegendItem(const std::string& from, const std::string& to)
-  : m_from(from), m_to(to), m_title(""), m_count(0)
+  : m_from(from), m_to(to),m_count(0), m_title("")
 {
   m_color.setColor(0, 0, 0, 255);
 }
 
 te::map::LegendItem::~LegendItem()
 {  
+}
+
+te::map::LegendItem::LegendItem(const LegendItem& rhs)
+  : m_from(rhs.m_from), m_to(rhs.m_to), m_count(rhs.m_count),
+    m_title(rhs.m_title), m_color(rhs.m_color)
+{
+}
+
+te::map::LegendItem& te::map::LegendItem::operator=(const LegendItem& rhs)
+{
+  if(this != &rhs)
+  {
+    m_from = rhs.m_from;
+    m_to = rhs.m_to;
+    m_count = rhs.m_count;
+    m_title = rhs.m_title;
+    m_color = rhs.m_color;
+  }
+
+  return *this;
 }
 
 const std::string& te::map::LegendItem::getLowerLimit() const

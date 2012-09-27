@@ -6,6 +6,12 @@
 #include<terralib/qt/widgets.h>
 #include<terralib/maptools/DataGridOperation.h>
 
+//QT
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QGroupBox>
+#include <QLineEdit>
+
 #include<map>
 
 class MyLayer;
@@ -32,9 +38,15 @@ public:
   void drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::gm::Geometry*>& geoms, bool drawLines = false);
   void clearTemporalPixmaps(std::vector<te::map::AbstractLayer*>);
   void clearTemporalCanvas(te::map::AbstractLayer*);
-  void setTimeSlider(TimeSlider*);
   void removeDrawOnlyChanged(te::map::AbstractLayer*);
   void addDrawOnlyChanged(te::map::AbstractLayer*);
+  void mountLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList);
+  void removeAllTemporalLayers();
+  void addTemporalLayer(te::map::AbstractLayer*);
+  void setTitle(QString&);
+  QWidget* getWidget();
+  void setTimeSliderIcon(QPixmap*);
+  void clearTimeLineEdit();
 
 public Q_SLOTS:
   void selectionChangedSlot(te::map::DataGridOperation*);
@@ -94,8 +106,12 @@ public Q_SLOTS:
   void setMouseOperationToTooltipSlot();
   void clearTooltipPixmap();
   void showRootFolderSlot();
+  void initTemporal();
   void printSlot();
   void printFileSlot();
+  void timeSliderContextMenuSlot(const QPoint&);
+  void configTemporalPlaySlot();
+  void showTimeLineEditSlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -110,6 +126,11 @@ private:
   MouseHandler* m_mouseHandler;
   std::set<te::map::AbstractLayer*> m_drawOnlyChanged;
   te::map::AbstractLayer* m_rootFolderLayer;
+  QVBoxLayout* m_layout;
+  QWidget* m_widget;
+  QGroupBox* m_timeGroupBox;
+  QMenu* m_timeSliderMenu;
+  QAction* m_showTimeLineEditAction;
   QMenu* m_mouseOperationMenu;
   QAction* m_mouseZoomInAction;
   QAction* m_mouseZoomOutAction;
@@ -126,7 +147,10 @@ private:
 
   QPixmap* m_temporalVectorialDisplayPixmap;     //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible vectorial layers.
   QPixmap* m_temporalImageDisplayPixmap;         //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible image layers.
+  QPushButton* m_playPauseButton;
   TimeSlider* m_timeSlider;
+  QLineEdit* m_timeLineEdit;
+  QHBoxLayout* m_timeLayout;
 };
 
 #endif

@@ -76,6 +76,7 @@ set (
   widgets/rp
   widgets/se
   widgets/srs
+  widgets/tools
   widgets/help
   widgets/utils
 )
@@ -160,6 +161,8 @@ file (
   ${SRCDIR}/widgets/srs/SRSDialog.h
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
   ${SRCDIR}/widgets/dataview/TabularViewer.h
+  ${SRCDIR}/widgets/tools/CoordTracking.h
+#  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
 
 # Select the FORMS widgets     

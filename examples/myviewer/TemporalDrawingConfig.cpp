@@ -3,6 +3,7 @@
 //QT
 #include <QHBoxLayout>
 #include <QVBoxLayout>
+#include <QGridLayout>
 #include <QLabel>
 #include <QGroupBox>
 #include <QAction>
@@ -12,36 +13,50 @@ TemporalDrawingConfig::TemporalDrawingConfig(QWidget* parent, Qt::WindowFlags f)
 {
   setWindowTitle("Temporal Drawing Config");
   QVBoxLayout* vlayout = new QVBoxLayout(this);
-  QLabel* label1 = new QLabel("Date Interval:", this);
-  m_intervalDateComboBox = new QComboBox(this);
-  QHBoxLayout* layout1 = new QHBoxLayout(this);
-  layout1->addWidget(label1);
-  layout1->addWidget(m_intervalDateComboBox);
-  vlayout->addLayout(layout1);
+  QGroupBox* g1 = new QGroupBox(this);
+  QLabel* label1 = new QLabel("Date Interval:", g1);
+  m_intervalDateComboBox = new QComboBox(g1);
+  QGridLayout* layout1 = new QGridLayout(g1);
+  layout1->addWidget(label1, 0, 0, Qt::AlignLeft);
+  layout1->addWidget(m_intervalDateComboBox, 0, 1, Qt::AlignLeft);
 
-  QLabel* label2 = new QLabel("Drawing Interval:", this);
-  m_intervalDrawingComboBox = new QComboBox(this);
-  QHBoxLayout* layout2 = new QHBoxLayout(this);
-  layout2->addWidget(label2);
-  layout2->addWidget(m_intervalDrawingComboBox);
-  vlayout->addLayout(layout2);
+  QLabel* label11 = new QLabel("Drawing Interval:", g1);
+  m_intervalDrawingComboBox = new QComboBox(g1);
+  layout1->addWidget(label11, 1, 0, Qt::AlignLeft);
+  layout1->addWidget(m_intervalDrawingComboBox, 1, 1, Qt::AlignLeft);
 
-  m_drawLinesCheckBox = new QCheckBox("Draw Lines", this);
-  vlayout->addWidget(m_drawLinesCheckBox);
+  m_drawLinesCheckBox = new QCheckBox("Draw Lines", g1);
+  m_loopCheckBox = new QCheckBox("Loop", g1);
+  layout1->addWidget(m_drawLinesCheckBox, 2, 0, Qt::AlignLeft);
+  layout1->addWidget(m_loopCheckBox, 3, 0, Qt::AlignLeft);
+  vlayout->addWidget(g1);
 
-  m_loopCheckBox = new QCheckBox("Loop", this);
-  vlayout->addWidget(m_loopCheckBox);
+  QGroupBox* g2 = new QGroupBox(this);
+  QGridLayout* layout2 = new QGridLayout(g2);
+  QLabel* label2 = new QLabel("Initial Time:", g2);
+  m_initialTimeLineEdit = new QLineEdit(g2);
+  QLabel* label21 = new QLabel("Final Time:", g2);
+  m_finalTimeLineEdit = new QLineEdit(g2);
+  m_defaultTimePushButton = new QPushButton("Default", g2);
+  layout2->addWidget(label2, 0, 0, Qt::AlignLeft);
+  layout2->addWidget(m_initialTimeLineEdit, 0, 1, Qt::AlignLeft);
+  layout2->addWidget(label21, 1, 0, Qt::AlignLeft);
+  layout2->addWidget(m_finalTimeLineEdit, 1, 1, Qt::AlignLeft);
+  layout2->addWidget(m_defaultTimePushButton, 2, 0, Qt::AlignLeft);
+  vlayout->addWidget(g2);
 
-  QGroupBox* gb = new QGroupBox(this);
-  m_okPushButton = new QPushButton("Ok", gb);
-  m_cancelPushButton = new QPushButton("Cancel", gb);
-  QHBoxLayout* layout4 = new QHBoxLayout(gb);
-  layout4->addWidget(m_okPushButton);
-  layout4->addWidget(m_cancelPushButton);
-  vlayout->addWidget(gb);
+  QGroupBox* g3 = new QGroupBox(this);
+  m_okPushButton = new QPushButton("Ok", g3);
+  m_cancelPushButton = new QPushButton("Cancel", g3);
+  QHBoxLayout* layout5 = new QHBoxLayout(g3);
+  layout5->addWidget(m_okPushButton);
+  layout5->addSpacing(50);
+  layout5->addWidget(m_cancelPushButton);
+  vlayout->addWidget(g3);
 
   setLayout(vlayout);
 
+  QObject::connect(m_defaultTimePushButton, SIGNAL(clicked()), this, SLOT(defaultTimeSlot()));
   QObject::connect(m_okPushButton, SIGNAL(clicked()), this, SLOT(okSlot()));
   QObject::connect(m_cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelSlot()));
 
@@ -109,4 +124,24 @@ void TemporalDrawingConfig::cancelSlot()
 {
   reject();
   hide();
+}
+
+void TemporalDrawingConfig::setDefaultTimes(te::dt::DateTime* initial, te::dt::DateTime* final)
+{
+  te::dt::TimeInstant* i = (te::dt::TimeInstant*)initial;
+  te::dt::TimeInstant* f = (te::dt::TimeInstant*)final;
+  m_initialDefaultTime = *i;
+  m_finalDefaultTime = *f;
+
+  if(m_initialTimeLineEdit->text().isEmpty())
+    defaultTimeSlot();
+}
+
+void TemporalDrawingConfig::defaultTimeSlot()
+{
+  QString qinitial = m_initialDefaultTime.toString().c_str();
+   QString qfinal = m_finalDefaultTime.toString().c_str();
+
+  m_initialTimeLineEdit->setText(qinitial);
+  m_finalTimeLineEdit->setText(qfinal);
 }

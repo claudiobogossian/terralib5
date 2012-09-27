@@ -40,7 +40,7 @@ namespace te
     class Raster;
 
     /*!
-      \class RasdterIterator
+      \class RasterIterator
 
       \brief This class implements and iterator to "navigate" over a raster,
              with a predefined number of bands.
@@ -197,7 +197,7 @@ namespace te
     template<class T> void te::rst::RasterIterator<T>::getValues(std::vector<T>& v) const
     {
       for (std::size_t b = 0; b < m_b.size(); b++)
-        v.push_back(*m_it[b]);
+        v[b] = *m_it[b];
     }
 
     template<class T> void te::rst::RasterIterator<T>::operator++()

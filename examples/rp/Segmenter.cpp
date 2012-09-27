@@ -41,7 +41,7 @@ void Segmenter()
     algoInputParameters.m_inputRasterBands.push_back( 0 );
     algoInputParameters.m_inputRasterBands.push_back( 1 );
     algoInputParameters.m_inputRasterBands.push_back( 2 );
-    
+
 // link specific parameters with chosen implementation
 // strategy specific parameters (m_minSegmentSize: size of the smallest segment to be created; m_segmentsSimilarityThreshold: similarity between neighboring segments to merge them or not)
     te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
@@ -49,9 +49,9 @@ void Segmenter()
     segparameters.m_segmentsSimilarityThreshold = 30;
 
     algoInputParameters.m_strategyName = "RegionGrowing";
-    algoInputParameters.setSegStrategyParams(segparameters);    
-    
-// output parameters    
+    algoInputParameters.setSegStrategyParams(segparameters);
+
+// output parameters
 // the output can be a previously created raster (in this case, rout)
 
     te::rp::Segmenter::OutputParameters algoOutputParameters;
@@ -66,7 +66,7 @@ void Segmenter()
 
 // export the segmentation into shapefile
     std::vector<te::gm::Geometry*> geometries;
-    te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get() 
+    te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get()
       )->getGDALDataset()->GetRasterBand(1), geometries);
 
     te::da::DataSetType* dst = new te::da::DataSetType("objects from segmentation");

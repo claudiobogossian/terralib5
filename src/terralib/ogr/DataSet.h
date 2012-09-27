@@ -269,6 +269,7 @@ namespace te
         mutable int m_wkbArraySize;           //<! The size of wkb array.
 
         bool m_isOwner;                       //!< It defines if this dataset has the ownership of OGR Layer.
+        int m_srid;                           //!< The STR id associated to this dataset.
     };
 
   } // end namespace ogr

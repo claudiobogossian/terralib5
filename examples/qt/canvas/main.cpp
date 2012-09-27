@@ -25,7 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-#include "QtCanvasExamples.h"
+#include "CanvasExamples.h"
 
 // STL
 #include <exception>

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file QtCanvasExamples.h
+  \file CanvasExamples.h
 
   \brief Several examples declarations.
  */
 
-#ifndef __TERRALIB_EXAMPLES_QTCANVAS_INTERNAL_QTCANVASEXAMPLES_H
-#define __TERRALIB_EXAMPLES_QTCANVAS_INTERNAL_QTCANVASEXAMPLES_H
+#ifndef __TERRALIB_EXAMPLES_QT_CANVAS_INTERNAL_CANVAS_H
+#define __TERRALIB_EXAMPLES_QT_CANVAS_INTERNAL_CANVAS_H
 
 #include "../Config.h"
 
@@ -44,5 +44,5 @@ void DrawPNG();
 /*! \brief It retrieves data from a tiff file and prints it to a png graphics file. */
 void DrawingRasterObject();
 
-#endif  // __TERRALIB_EXAMPLES_QTCANVAS_INTERNAL_QTCANVASEXAMPLES_H
+#endif  // __TERRALIB_EXAMPLES_QT_CANVAS_INTERNAL_CANVAS_H
 

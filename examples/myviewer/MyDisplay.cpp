@@ -12,13 +12,16 @@
 
 //QT
 #include <QPaintEvent>
+#include <QPaintEngine>
+#include <QHBoxLayout>
+#include <QIcon>
 #include <QMessageBox>
 #include <QString>
 #include <QMatrix>
 #include <QRectF>
 #include <QPrintDialog>
 #include <QPrinter>
-#include <QPaintEngine>
+#include <QUrl>
 
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(w, h, parent, f),
@@ -110,11 +113,66 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   m_mouseHandler->setCursor();
 
+  setAttribute(Qt::WA_DeleteOnClose);
+
   sizeHint();
+
+  // put temporal controls
+
+  m_widget = new QWidget(parent, f);
+  m_widget->resize(w, h);
+  m_widget->setAttribute(Qt::WA_DeleteOnClose);
+  m_layout = new QVBoxLayout(m_widget);
+  m_layout->addWidget(this);
+
+  m_timeGroupBox = new QGroupBox(m_widget);
+  m_timeGroupBox->setMaximumHeight(40);
+
+  m_playPauseButton = new QPushButton("", m_timeGroupBox); // tem que ser criado antes do TimeSlider
+  m_playPauseButton->setMaximumWidth(22);
+  m_timeLineEdit = new QLineEdit(m_timeGroupBox); // tem que ser criado antes do TimeSlider
+  m_timeLineEdit->setMaximumWidth(120);
+  m_timeLineEdit->setMinimumWidth(120);
+  m_timeLineEdit->setReadOnly(true);
+  m_timeLineEdit->hide();
+
+  m_timeSlider = new TimeSlider(this, m_timeGroupBox);
+
+  m_timeLayout = new QHBoxLayout(m_timeGroupBox);
+
+  QDir dir;
+  if(dir.cd(""TE_DATA_EXAMPLE_LOCALE"/data/cursorShapes") == false)
+      dir.cd("../../images");
+  QIcon stopIcon(dir.absolutePath() + "/stop.png");
+  QPushButton* stopButton = new QPushButton(stopIcon, "", m_timeGroupBox);
+  stopButton->setMaximumWidth(22);
+  m_timeLayout->addWidget(m_playPauseButton);
+  m_timeLayout->addWidget(stopButton);
+  m_timeLayout->addWidget(m_timeSlider);
+  m_timeGroupBox->hide();
+  connect(m_playPauseButton, SIGNAL(clicked()), m_timeSlider, SLOT(playPauseSlot()));
+  connect(stopButton, SIGNAL(clicked()), m_timeSlider, SLOT(stopSlot()));
+
+  m_timeGroupBox->setContextMenuPolicy(Qt::CustomContextMenu);
+  m_timeSliderMenu = new QMenu(m_timeGroupBox);
+
+  QAction* configTemporalPlayAction = new QAction("&Play Config...", m_timeSliderMenu);
+  m_timeSliderMenu->addAction(configTemporalPlayAction);
+  connect(configTemporalPlayAction, SIGNAL(triggered()), this, SLOT(configTemporalPlaySlot()));
+
+  m_showTimeLineEditAction = new QAction("&Show Current Time...", m_timeSliderMenu);
+  m_showTimeLineEditAction->setCheckable(true);
+  m_timeSliderMenu->addAction(m_showTimeLineEditAction);
+  connect(m_showTimeLineEditAction, SIGNAL(triggered()), this, SLOT(showTimeLineEditSlot()));
+
+  connect(m_timeGroupBox, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenuSlot(const QPoint&)));
+
+  m_widget->show();
 }
 
 MyDisplay::~MyDisplay()
 {
+  Q_EMIT closed(this);
   delete m_temporalVectorialDisplayPixmap;
   delete m_temporalImageDisplayPixmap;
   disconnect();
@@ -122,9 +180,45 @@ MyDisplay::~MyDisplay()
 
 void MyDisplay::closeEvent(QCloseEvent *event)
 {
-  setAttribute(Qt::WA_DeleteOnClose);
-  Q_EMIT closed(this);
-  event->accept();
+  //setAttribute(Qt::WA_DeleteOnClose);
+  //Q_EMIT closed(this);
+  //event->accept();
+}
+
+void MyDisplay::timeSliderContextMenuSlot(const QPoint& pos)
+{
+  QPoint p = mapToGlobal(m_timeGroupBox->pos() + pos);
+  m_timeSliderMenu->exec(p);
+}
+
+void MyDisplay::configTemporalPlaySlot()
+{
+  bool b = m_timeSlider->isEnabled();
+  m_timeSlider->setEnabled(true);
+  m_timeSlider->configDrawing();
+  m_timeSlider->setEnabled(b);
+}
+
+void MyDisplay::showTimeLineEditSlot()
+{
+  if(m_showTimeLineEditAction->isChecked())
+  {
+    m_timeLayout->removeWidget(m_timeSlider);
+    m_timeLineEdit->show();
+    m_timeLayout->addWidget(m_timeLineEdit);
+    m_timeLayout->addWidget(m_timeSlider);
+  }
+  else
+  {
+    m_timeLineEdit->hide();
+    m_timeLayout->removeWidget(m_timeLineEdit);
+  }
+}
+
+void MyDisplay::setTimeSliderIcon(QPixmap* p)
+{
+  QIcon icon(*p);
+  m_playPauseButton->setIcon(icon);
 }
 
 void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
@@ -143,6 +237,27 @@ void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
   if(laux == m_rootFolderLayer)
     e->accept();
   return;
+
+  //const QMimeData* mime = e->mimeData();
+  //QString s =	mime->text(); 
+  //bool b = mime->hasColor();
+  //b = mime->hasHtml();
+  //b = mime->hasImage();
+  //b = mime->hasText();
+  //b = mime->hasUrls();
+  //QList<QUrl>	urls = mime->urls();
+  //QList<QUrl>::Iterator it;
+  //for(it = urls.begin(); it != urls.end(); ++it)
+  //{
+  //  QUrl url = *it;
+  //  QString autority = url.authority();
+  //  QString host = url.host();
+  //  QString path = url.path();
+  //  int port = url.port();
+  //  bool isLocalFile = url.isLocalFile();
+  //  bool isRelative = url.isRelative();
+  //  bool hasfragment = url.hasFragment();
+  //}
 }
 
 void MyDisplay::dropEvent(QDropEvent* e)
@@ -156,6 +271,8 @@ void MyDisplay::dropEvent(QDropEvent* e)
 
 void MyDisplay::changeTree(te::map::AbstractLayer* al)
 {
+  initTemporal();
+
   // limpe todos os canvas antes usados 
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
@@ -170,7 +287,8 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
   m_layerTree = al;
   std::list<te::map::AbstractLayer*> layerList;
   std::list<te::map::AbstractLayer*>::iterator lit;
-  mountLayerList(m_layerTree, layerList);
+  if(m_layerTree)
+    mountLayerList(m_layerTree, layerList);
   te::gm::Envelope extent;
 
   for(lit = layerList.begin(); lit != layerList.end(); ++lit)
@@ -188,8 +306,9 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
   setExtent(extent);
 
   QString wtitle = "Display: ";
-  wtitle += m_layerTree->getTitle().c_str();
-  setWindowTitle(wtitle);
+  if(m_layerTree)
+    wtitle += m_layerTree->getTitle().c_str();
+  setTitle(wtitle);
 
   QWidget* w = (QWidget*)parent();
   while(w)
@@ -220,7 +339,8 @@ void MyDisplay::showRootFolderSlot()
   if(m_layerTree == m_rootFolderLayer)
     return;
 
-  changeTree(m_rootFolderLayer);
+  m_layerTree = m_rootFolderLayer;
+  changeTree(m_layerTree);
 }
 
 void MyDisplay::contextMenuEvent(QContextMenuEvent* c)
@@ -369,6 +489,11 @@ void MyDisplay::setCanvas(te::map::AbstractLayer* layer)
 
 void MyDisplay::draw()
 {
+  std::vector<te::map::AbstractLayer*> layers =  m_timeSlider->getLayers();
+  std::vector<te::map::AbstractLayer*>::iterator it;
+  for(it = layers.begin(); it != layers.end(); ++it)
+    clearTemporalCanvas(*it);
+
   te::qt::widgets::MapDisplay::draw();
 }
 
@@ -377,7 +502,6 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
   try
   {
     setWaitCursor();
-
     te::qt::widgets::Canvas* canvas = getCanvas(al);
 //
 //
@@ -451,9 +575,18 @@ void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
     {
       MyLayer* layer =  (MyLayer*)(*it);
       te::qt::widgets::Canvas* c = getCanvas(layer);
-      if(c == 0 || layer->getVisibility() == 0)
-        continue;
-      painter.drawPixmap(0, 0, *(c->getPixmap()));
+      //if(c == 0 || layer->getVisibility() == 0)
+      //  continue;
+      if(layer->getVisibility() == te::map::VISIBLE)
+      {
+        if(c == 0)
+        {
+          setCanvas(layer);
+          c = getCanvas(layer);
+          draw(layer);
+        }
+        painter.drawPixmap(0, 0, *(c->getPixmap()));
+      }
     }
     unsetWaitCursor();
   }
@@ -556,6 +689,44 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
       canvas->draw(*it);
       ++it;
     }
+
+    if(m_showTimeLineEditAction->isChecked())
+    {
+      te::dt::TimeInstant* t = m_timeSlider->getCurrentTime();
+      if(t)
+      {
+        QString timeString = t->toString().c_str();
+        m_timeLineEdit->setText(timeString);
+      }
+    }
+
+    //if(m_showTimeLineEditAction->isChecked())
+    //{
+    //  te::dt::TimeInstant* t = m_timeSlider->getCurrentTime();
+    //  if(t)
+    //  {
+    //    int x = 8;
+    //    int y = canvas->getHeight() - 6;
+    //    std::string time = t->toString();
+    //    canvas->setFontFamily("Tahoma Normal");
+    //    canvas->setTextPointSize(14);
+    //    canvas->setTextColor(te::color::RGBAColor(255, 0, 255, 255));
+    //    canvas->setTextContourColor(te::color::RGBAColor(255, 0, 255, 255));
+    //    canvas->setTextContourWidth(1);
+    //    canvas->setTextOpacity(255);
+    //    canvas->setTextContourEnabled(true);
+    //    canvas->setTextContourOpacity(255);
+
+    //    te::gm::Polygon* pol = canvas->getTextBoundary(x, y, time);
+    //    canvas->setPolygonFillColor(te::color::RGBAColor(255, 255, 255, 255));
+    //    canvas->setPolygonContourColor(te::color::RGBAColor(255, 255, 255, 255));
+    //    canvas->draw(pol);
+    //    delete pol;
+
+    //    canvas->drawText(x, y, time);
+    //  }
+    //}
+
     QPainter painter(m_temporalVectorialDisplayPixmap);
     painter.drawPixmap(0, 0, *(canvas->getPixmap()));
     update();
@@ -602,6 +773,16 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
     update();
   }
 
+}
+
+void MyDisplay::removeAllTemporalLayers()
+{
+  m_timeSlider->removeAllLayers();
+}
+
+void MyDisplay::addTemporalLayer(te::map::AbstractLayer* layer)
+{
+  m_timeSlider->addLayer(layer);
 }
 
 void MyDisplay::paintEvent(QPaintEvent* e)
@@ -1236,10 +1417,45 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
   unsetWaitCursor();
 }
 
-void MyDisplay::setTimeSlider(TimeSlider* t)
+void MyDisplay::initTemporal()
 {
-  m_timeSlider = t;
+  //parar o desenho dos layers temporais e reinicializar o vector de layers temporais no time Slider
+  m_timeSlider->stop();
+
+  m_timeSlider->removeAllLayers();
+  std::list<te::map::AbstractLayer*>::iterator lit;
+  std::list<te::map::AbstractLayer*> layers;
+  mountLayerList(m_layerTree, layers);
+  for(lit = layers.begin(); lit != layers.end(); ++lit)
+  {
+    MyLayer* layer = (MyLayer*)(*lit);
+    if(layer->isTemporal())
+    {
+      if(layer->getVisibility() == te::map::VISIBLE)
+        m_timeSlider->addLayer(layer);
+    }
+  }
+
+  if(m_timeSlider->getLayers().empty() == false)
+  {
+    m_layout->addWidget(m_timeGroupBox);  
+    m_timeGroupBox->show();
+    //m_layout->addWidget(m_timeSlider);  
+    //m_timeSlider->show();
+  }
+  else
+  {
+    m_layout->removeWidget(m_timeGroupBox);  
+    m_timeGroupBox->hide();
+    //m_layout->removeWidget(m_timeSlider);  
+    //m_timeSlider->hide();
+  }
 }
+
+//void MyDisplay::setTimeSlider(TimeSlider* t)
+//{
+//  m_timeSlider = t;
+//}
 
 void MyDisplay::printSlot()
 {
@@ -1481,4 +1697,42 @@ void MyDisplay::print(QPrinter* printer)
 void MyDisplay::clearTooltipPixmap()
 {
   m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
+}
+
+void MyDisplay::mountLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList)
+{
+  te::qt::widgets::MapDisplay::mountLayerList(al, layerList);
+
+  std::list<te::map::AbstractLayer*>::iterator it;
+  for(it = layerList.begin(); it != layerList.end(); ++it)
+  {
+    MyLayer* layer = (MyLayer*)*it;
+    if(layer->isTemporal() == true && layer->getVisibility() == te::map::VISIBLE)
+    {
+      m_timeGroupBox->show();
+      m_layout->addWidget(m_timeGroupBox);
+      break;
+    }
+  }
+
+  if(it == layerList.end())
+  {
+    m_timeGroupBox->hide();
+    m_layout->removeWidget(m_timeGroupBox);
+  }
+}
+
+void MyDisplay::setTitle(QString& title)
+{
+  m_widget->setWindowTitle(title);
+}
+
+QWidget* MyDisplay::getWidget()
+{
+  return m_widget;
+}
+
+void MyDisplay::clearTimeLineEdit()
+{
+  m_timeLineEdit->clear();
 }

@@ -124,7 +124,7 @@ namespace te
             \param dragItem          The dragged item after the drag and drop operation.
             \param dragItemOldParent The parent of the dragged item before drag and drop operation.
           */
-          void dragDropEnded(AbstractTreeItem* dragItem, AbstractTreeItem* dragItemOldParent);
+          void dragDropEnded(te::qt::widgets::AbstractTreeItem* dragItem, te::qt::widgets::AbstractTreeItem* dragItemOldParent);
 
         signals:
           void checkBoxWasClicked(const QModelIndex& index);

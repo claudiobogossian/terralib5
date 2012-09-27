@@ -26,6 +26,9 @@
 #ifndef __TERRALIB_ADO_INTERNAL_UTILS_H
 #define __TERRALIB_ADO_INTERNAL_UTILS_H
 
+// TerraLib
+#include "../geometry/Geometry.h"
+
 // ADO
 #import "msado15.dll" \
     no_namespace rename("EOF", "EndOfFile")
@@ -132,6 +135,14 @@ namespace te
       \param item The TerraLib item referenced
     */
     void updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::da::DataSetItem* item);
+
+    /*!
+      \brief Insert DataSetType with geometry in the geometryColumns table
+
+      \param adoConn ADO connection
+      \param dt DataSetType to be inserted
+    */
+    void insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
 
   } // end namespace ado
 }   // end namespace te

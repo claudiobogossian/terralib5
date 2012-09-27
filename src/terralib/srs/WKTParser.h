@@ -82,6 +82,7 @@ namespace te
           initToWGS84();
           initProjection();
           initParameter();
+          initAxis();
           initSpheroid();
           initPrimeMeridian();
           initUnits();
@@ -112,6 +113,14 @@ namespace te
           primeMeridianTag = "PRIMEM";
           unitTag = "UNIT";
           authorityTag = "AUTHORITY";
+          axisTag = "AXIS";
+          northTag = "NORTH";
+          southTag = "SOUTH";
+          eastTag = "EAST";
+          westTag = "WEST";
+          upTag = "UP";
+          downTag = "DOWN";
+          otherTag = "OTHER";
         }
 
         void initSpatialReferenceSystems()
@@ -120,7 +129,7 @@ namespace te
                         >> leftDelimiter
                         >> csName >> ',' 
                         >> geographicCS >> ',' 
-                        >> projection >> *(',' >> parameter) 
+                        >> projection >> *(',' >> parameter) >> *(',' >> axis)
                         >> ',' >> unit >> -(',' >> authority)
                         >> rigthDelimiter)[boost::bind(&WKTActions::endProjectedCoordinateSystem, &m_a)];
 
@@ -210,6 +219,10 @@ namespace te
           
           datumName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setDatumName, &m_a, ::_1)] >> '"';
           
+          axisName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAxisName, &m_a, ::_1)] >> '"';
+          
+          axisValue = as_string[(+(char_ - ']'))][boost::bind(&WKTActions::setAxisValue, &m_a, ::_1)];
+
           csName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setName, &m_a, ::_1)] >> '"';
           
           parameterName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setParameter, &m_a, ::_1)] >> '"';
@@ -236,6 +249,18 @@ namespace te
           authorityName = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAuthorityName, &m_a, ::_1)] >> '"';
           authorityCode = '"' >> as_string[(+(char_ - '"'))][boost::bind(&WKTActions::setAuthorityCode, &m_a, ::_1)] >> '"';
         }
+
+        void initAxis()
+        {
+          axisValue = northTag | southTag | eastTag | westTag| upTag | downTag | otherTag;
+
+          axis = axisTag
+            >> leftDelimiter
+            >> axisName >> ','
+            >> axisValue
+            >> rigthDelimiter;
+        }
+        
 
         void initDelimiters()
         {
@@ -282,7 +307,8 @@ namespace te
         qi::rule<Iterator, ascii::space_type> projectedCS, geographicCS;
 
         qi::rule<Iterator, ascii::space_type> projectedCSTag, geographicCSTag, datumTag, spheroidTag, projectionTag, 
-                                              parameterTag, primeMeridianTag, unitTag, toWGS84Tag, authorityTag;
+          parameterTag, primeMeridianTag, unitTag, toWGS84Tag, authorityTag, axisTag, northTag, southTag, eastTag,
+          westTag, upTag, downTag, otherTag;
 
         qi::rule<Iterator, ascii::space_type> datum;
 
@@ -300,9 +326,13 @@ namespace te
 
         qi::rule<Iterator, ascii::space_type> unit;
 
+        qi::rule<Iterator, ascii::space_type> axis;
+
+        qi::rule<Iterator, ascii::space_type> axisValue;
+
         qi::rule<Iterator, ascii::space_type> value, semiMajorAxis, longitude, invFlattening, conversionFactor;
 
-        qi::rule<Iterator> unitName, spheroidName, projectionName, primeMeridianName, parameterName, datumName, csName;
+        qi::rule<Iterator> unitName, spheroidName, projectionName, primeMeridianName, parameterName, datumName, csName, axisName;
 
         qi::rule<Iterator, ascii::space_type> authority, authorityCode;
 

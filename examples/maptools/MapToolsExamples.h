@@ -28,6 +28,10 @@
 
 // TerraLib
 #include <terralib/dataaccess_fw.h>
+#include <terralib/se_fw.h>
+
+// STL
+#include <string>
 
 /*!
   \brief Flags for TerraLib MapTools Examples.
@@ -49,5 +53,30 @@ void Filter2Query();
 
 /*! \brief It draws a set of layers using styles encoded using OGC Symbology Enconding specification. */
 void DrawStyledLayers();
+
+/** @name Hard-coded styles
+ *  Methods to build pre-defined styles.
+*/
+//@{
+
+/* Polygon Styles */
+te::se::Style* SimplePolygonStyle();
+te::se::Style* SimplePolygonStyleWithStroke();
+te::se::Style* TransparentPolygonStyle();
+te::se::Style* GraphicFillPolygonStyle(const std::string& markName);
+te::se::Style* TreePolygonStyle();
+te::se::Style* GraphicFillContourPolygonStyle(const std::string& markName);
+
+/* Line Styles */
+te::se::Style* SimpleLineStyle();
+te::se::Style* DashedLineStyle();
+te::se::Style* LineWithBorderStyle();
+te::se::Style* RoadStyleOne();
+te::se::Style* RoadStyleTwo();
+
+/* Point Styles */
+te::se::Style* MarkPointStyle(const std::string& markName);
+
+//@}
 
 #endif  // __TERRALIB_EXAMPLES_MAPTOOLS_INTERNAL_MAPTOOLSEXAMPLES_H

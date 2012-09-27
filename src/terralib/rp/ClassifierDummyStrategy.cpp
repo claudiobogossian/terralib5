@@ -82,7 +82,7 @@ bool te::rp::ClassifierDummyStrategy::initialize(te::rp::ClassifierStrategyParam
 }
 
 bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                              const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
+                                              const std::vector<te::gm::Geometry*>& inputPolygons, te::rst::Raster& outputRaster,
                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
   double v;
@@ -98,6 +98,7 @@ bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster
     for (unsigned i = 0; i < inputPolygons.size(); i++)
     {
       te::gm::Geometry* geometry = inputPolygons[i];
+
       te::gm::Coord2D ll = geometry->getMBR()->getLowerLeft();
       te::gm::Coord2D ur = geometry->getMBR()->getUpperRight();
 

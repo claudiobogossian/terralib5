@@ -105,6 +105,8 @@ namespace te
         te::da::DataSourceCatalog* m_catalog;                       //!< The main system catalog.
         _bstr_t m_strCnn;                                           //!< Connection String
         std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
+
+        static te::da::SQLDialect* sm_myDialect;                    //!< ADO SQL dialect.
     };
 
   } // end namespace ado

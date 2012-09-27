@@ -31,6 +31,7 @@
 #include "Enums.h"
 
 #include <cstdlib>
+#include<string>
 
 namespace te
 {
@@ -56,14 +57,28 @@ namespace te
         /*!
           \brief It constructs a new Grouping instance.
 
-          \param p          The property whose values will be used to make the grouping.
-          \param type       The grouping type.
-          \param precision  The precision to be set to the property values.
+          \param propertyName  The property name whose values will be used to make the grouping.
+          \param type          The grouping type.
+          \param precision     The precision to be set to the property values.
         */
-        Grouping(te::dt::Property* p, GroupingType type, size_t precision = 6);
+        Grouping(const std::string& propertyName, GroupingType type, size_t precision = 6);
 
         /*! \brief Destructor. */
         ~Grouping();
+
+        /*!
+          \brief It gets the property name whose values will be grouped.
+
+          \return The property name.
+        */
+        std::string getPropertyName() const;
+
+        /*!
+          \brief It sets the property name whose values will be grouped.
+
+          \param name The property name.
+        */
+        void setPropertyName(const std::string& name);
 
         /*!
           \brief It gets the grouping type.
@@ -123,7 +138,7 @@ namespace te
 
       private:
 
-        te::dt::Property* m_property;    //!< The property whose values will be used to make the grouping.
+        std::string m_propertyName;      //!< The property name whose values will be used to make the grouping.
         GroupingType m_type;             //!< The grouping type.
         size_t m_precision;              //!< The precision of the values.
         size_t m_numSlices;              //!< The number of slices used in the Equal Steps and Quantil groupings.

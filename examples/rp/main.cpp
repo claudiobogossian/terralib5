@@ -18,6 +18,7 @@ int main()
 
     Segmenter();
     Contrast();
+    Classifier();
 
     TerraLib::getInstance().finalize();
   }

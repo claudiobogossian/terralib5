@@ -39,6 +39,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/WKBReader.h"
+#include "../srs/Config.h"
 #include "Utils.h"
 
 // Boost
@@ -121,8 +122,8 @@ OGREnvelope* te::ogr::Convert2OGR(const te::gm::Envelope* env)
 
 int te::ogr::Convert2TerraLibProjection(OGRSpatialReference* osrs)
 {
-  if(osrs->AutoIdentifyEPSG() == OGRERR_UNSUPPORTED_SRS)
-    throw(te::common::Exception(TR_OGR("Fail identifying the general coordinate system.")));
+  if(osrs->AutoIdentifyEPSG() == OGRERR_UNSUPPORTED_SRS) 
+    return TE_UNKNOWN_SRS;
   
   return atoi(osrs->GetAuthorityCode(0));
 }

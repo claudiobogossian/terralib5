@@ -182,10 +182,13 @@ void te::qt::widgets::Canvas::clear()
   if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
     return;
 
-  QPaintDevice* dev = m_painter.device();
-  m_painter.end();
-  static_cast<QPixmap*>(dev)->fill(m_bgColor);
-  m_painter.begin(dev);
+  QPixmap* pix = getPixmap();
+  if(pix)
+  {
+    m_painter.end();
+    pix->fill(m_bgColor);
+    m_painter.begin(pix);
+  }
   //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
   m_painter.setMatrix(m_matrix);
 
@@ -302,7 +305,14 @@ void te::qt::widgets::Canvas::draw(const te::gm::Point* point)
   }
   else
   {
-    m_painter.setPen(m_ptPen);
+    if(m_erase)
+    {
+      QPen p(m_ptPen);
+      p.setColor(Qt::black);
+      m_painter.setPen(p);
+    }
+    else
+      m_painter.setPen(m_ptPen);
     m_painter.drawPoint(m_pt);
   }
 }
@@ -595,7 +605,9 @@ void te::qt::widgets::Canvas::drawContour(const te::gm::LineString* line)
 
     if(m_polyContourPen.brush().style() != Qt::TexturePattern)
     {
-      drawed = true;
+      drawed = true;     
+      m_polyContourPen.setColor(m_polyContourColor);
+      m_painter.setPen(m_polyContourPen);
       m_painter.drawLine(p1, p2);
     }
     else
@@ -1585,6 +1597,7 @@ void te::qt::widgets::Canvas::setPolygonFillPattern(te::color::RGBAColor** patte
     delete m_polyImage;
     m_polyImage = 0;
   }
+  m_polyPatternWidth = m_polyImage->width();
 
   //QImage* img = GetImage(pattern, ncols, nrows);
 

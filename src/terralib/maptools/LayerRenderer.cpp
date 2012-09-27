@@ -45,6 +45,7 @@
 #include "../se/FeatureTypeStyle.h"
 #include "../se/Style.h"
 #include "../se/Rule.h"
+#include "../srs/Config.h"
 #include "AbstractLayer.h"
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
@@ -159,6 +160,9 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
       dataset = t->query(select);
     }
     assert(dataset);
+    
+    // Loading the dataset type
+    dataset->loadTypeInfo();
 
     // Gets the set of symbolizers
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
@@ -179,9 +183,9 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
           continue;
 
         // Verifies the SRID. Case differents, converts coordinates...
-        /*int gsrid = g->getSRID();
-        if(gsrid != -1 && gsrid != srid)
-          g->transform(srid);*/
+        int gsrid = g->getSRID();
+        if(gsrid != TE_UNKNOWN_SRS && gsrid != srid)
+          g->transform(srid);
 
         canvas->draw(g);
 

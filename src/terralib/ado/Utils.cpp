@@ -27,7 +27,6 @@
 #include "../common/Translator.h"
 #include "../datatype.h"
 #include "../dataaccess.h"
-#include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Enums.h"
 #include "Config.h"
@@ -712,6 +711,42 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
 
     recset->Update();
 
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
+
+void te::ado::insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
+{
+  te::gm::GeometryProperty* geomProp = 0;
+  geomProp = dt->getDefaultGeomProperty();
+
+  int coord_dimension = 2;
+
+  if(te::ado::isZProperty(geomProp->getGeometryType()))
+    coord_dimension = 3;
+
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+  
+  try
+  {
+    TESTHR(recset->Open(_bstr_t("geometry_columns"),
+    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+      
+    TESTHR(recset->AddNew());
+
+    recset->GetFields()->GetItem("f_table_catalog")->Value = (_bstr_t)std::string("''").c_str();
+    recset->GetFields()->GetItem("f_table_schema")->Value = (_bstr_t)std::string("public").c_str();
+    recset->GetFields()->GetItem("f_table_name")->Value = (_bstr_t)dt->getName().c_str();
+    recset->GetFields()->GetItem("f_geometry_column")->Value = (_bstr_t)geomProp->getName().c_str();
+    recset->GetFields()->GetItem("coord_dimension")->Value = (_variant_t)coord_dimension;
+    recset->GetFields()->GetItem("srid")->Value = (_variant_t)geomProp->getSRID();
+    recset->GetFields()->GetItem("type")->Value = (_bstr_t)te::ado::GetGeometryName(geomProp->getGeometryType()).c_str();
+
+    recset->Update();
   }
   catch(_com_error& e)
   {

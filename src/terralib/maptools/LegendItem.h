@@ -56,6 +56,12 @@ namespace te
         /*! \brief Destructor. */
         ~LegendItem();
 
+        /*! \brief Copy constructor. */
+        LegendItem(const LegendItem& rhs);
+
+        /*! Assignment operator.  */
+        LegendItem& operator=(const LegendItem& rhs);
+
         /*!
           \brief It gets the lower limit value of the legend item.
 

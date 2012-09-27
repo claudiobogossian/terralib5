@@ -169,7 +169,7 @@ namespace te
 
           \output The legend associated to this layer.
         */
-        std::vector<te::map::LegendItem*>* getLegend();
+        std::vector<te::map::LegendItem*> getLegend() const;
 
         /*!
           \brief It removes the legend associated to this layer.

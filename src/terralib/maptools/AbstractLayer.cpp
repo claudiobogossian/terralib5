@@ -88,22 +88,12 @@ void te::map::AbstractLayer::setIcon(te::xl::SimpleLink* icon)
   m_icon.reset(icon);
 }
 
-void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
+bool te::map::AbstractLayer::isSibling(te::map::AbstractLayer* layer) const
 {
-  te::common::TreeItem<AbstractLayer>::iterator it = begin();
-  te::common::TreeItem<AbstractLayer>::iterator it_end = end();
+  if(getParent() == layer->getParent())
+    return true;
 
-  while(it != it_end)
-  {
-    AbstractLayer* layer = static_cast<AbstractLayer*>(*it);
-
-    layer->m_visibility = v;
-
-    if(v != PARTIALLY_VISIBLE)
-      layer->setDescendantsVisibility(v);
-
-    ++it;
-  }
+  return false;
 }
 
 te::map::Grouping* te::map::AbstractLayer::getGrouping() const
@@ -120,9 +110,10 @@ bool te::map::AbstractLayer::hasLegend()
   return false;
 }
 
-std::vector<te::map::LegendItem*>* te::map::AbstractLayer::getLegend()
+std::vector<te::map::LegendItem*> te::map::AbstractLayer::getLegend() const
 {
-  return 0;
+  std::vector<te::map::LegendItem*> legend;
+  return legend;
 }
 
 void te::map::AbstractLayer::removeLegend()
@@ -131,6 +122,24 @@ void te::map::AbstractLayer::removeLegend()
 
 void te::map::AbstractLayer::insertLegend(const std::vector<LegendItem*>& /*legend*/)
 {
+}
+
+void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
+{
+  te::common::TreeItem<AbstractLayer>::iterator it = begin();
+  te::common::TreeItem<AbstractLayer>::iterator it_end = end();
+
+  while(it != it_end)
+  {
+    AbstractLayer* layer = static_cast<AbstractLayer*>(*it);
+
+    layer->m_visibility = v;
+
+    if(v != PARTIALLY_VISIBLE)
+      layer->setDescendantsVisibility(v);
+
+    ++it;
+  }
 }
 
 void te::map::AbstractLayer::setAscendantsVisibility()

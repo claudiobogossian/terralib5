@@ -140,7 +140,7 @@ te::gm::Envelope* te::rst::Raster::getExtent(int srid, te::gm::Envelope* roi) co
 
   aux=m_grid->gridToGeo(cf,li);
   converter->convert(aux.x,aux.y);
-  double urx=aux.x, 
+  double urx=aux.x,
          ury=aux.y;
 
   // follow the upper horizontal edge
@@ -376,7 +376,7 @@ te::rst::Raster& te::rst::Raster::operator=(const te::rst::Raster& rhs)
   if(this != &rhs)
   {
     m_name = rhs.m_name;
-    
+
     delete m_grid;
 
     m_grid = rhs.m_grid ? new Grid(*rhs.m_grid) : 0;
@@ -387,7 +387,7 @@ te::rst::Raster& te::rst::Raster::operator=(const te::rst::Raster& rhs)
 
 te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::map<std::string, std::string>& rinfo)
 {
-// get input properties 
+// get input properties
   const te::gm::Envelope* inex = m_grid->getExtent();
 
 // calculate output properties
@@ -396,7 +396,7 @@ te::rst::Raster* te::rst::Raster::trim(const te::gm::Envelope* env, const std::m
   te::gm::Coord2D curenv(m_grid->geoToGrid(env->getUpperRightX(), env->getUpperRightY()));
 
   te::gm::Coord2D cllimg(m_grid->geoToGrid(inex->getLowerLeftX(), inex->getLowerLeftY()));
-  
+
   const unsigned height = static_cast<unsigned>(std::fabs(cllenv.y - curenv.y)) + 1;
 
   const unsigned width = static_cast<unsigned>(std::fabs(cllenv.x - curenv.x)) + 1;
@@ -458,13 +458,63 @@ te::rst::Raster* te::rst::Raster::resample(int method, int scale, const std::map
 
   double ri = 0.0;
 
+  double ci;
+
   te::rst::Interpolator* interp = new te::rst::Interpolator(this, method);
 
 // fill output raster
   for (unsigned r = 0; r < rout->getNumberOfRows(); r++, ri+=ripp)
   {
-    double ci = 0.0;
+    ci = 0.0;
     for (unsigned c = 0; c < rout->getNumberOfColumns(); c++, ci+=cipp)
+    {
+      interp->getValues(ci, ri, v);
+
+      rout->setValues(c, r, v);
+    }
+  }
+
+  return rout;
+}
+
+te::rst::Raster* te::rst::Raster::resample(int method, unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, unsigned int newheight, unsigned int newwidth, const std::map<std::string, std::string>& rinfo)
+{
+  assert(drow + height <= getNumberOfRows());
+  assert(dcolumn + width <= getNumberOfColumns());
+
+  te::gm::Coord2D ll = getGrid()->gridToGeo(dcolumn, drow + height);
+  te::gm::Coord2D ur = getGrid()->gridToGeo(dcolumn + width, drow);
+
+  te::gm::Envelope* newbox = new te::gm::Envelope(ll.x, ll.y, ur.x, ur.y);
+
+// create output parameters and raster
+  te::rst::Grid* grid = new te::rst::Grid(newwidth, newheight, newbox, getSRID());
+
+  std::vector<te::rst::BandProperty*> bands;
+
+  for (std::size_t b = 0; b < getNumberOfBands(); b++)
+    bands.push_back(new te::rst::BandProperty(*(getBand(b)->getProperty())));
+
+  te::rst::Raster* rout = te::rst::RasterFactory::make(grid, bands, rinfo);
+
+// define variables for interpolation
+  std::vector<std::complex<double> > v;
+
+  te::rst::Interpolator* interp = new te::rst::Interpolator(this, method);
+
+// fill output raster
+  double ripp = (double) height / newheight;
+
+  double cipp = (double) width / newwidth;
+
+  double ri = drow;
+
+  double ci;
+
+  for (unsigned r = 0; r < newheight; r++, ri+=ripp)
+  {
+    ci = dcolumn;
+    for (unsigned c = 0; c < newwidth; c++, ci+=cipp)
     {
       interp->getValues(ci, ri, v);
 

@@ -128,55 +128,55 @@ namespace te
         void push_back(TreeItem* childItem);
 
         /*!
-          \brief It adds the child item to the list of children of this item. If the child item already has a parent,
-          it will be disconnected from it and will be attached to this one.
+          \brief It adds(appends) a item in the end of the list of children. If the item has a parent,
+                 it will be disconnected from it and will be attached to this one.
 
-          \param childItem The item to be added as a child of this item.
+          \param item The item to be added.
 
-          \note This item will take the ownership of the pointer.
-
-          \note Never pass a NULL pointer to this method.
-         */
-        void addChild(TreeItem* childItem);
-
-        /*!
-          \brief It adds the child item to the list of children of this item in a given position. If the child item
-           already has a parent, it will be disconnected from it and will be attached to this one.
-
-          \param i         The position where the child item will be added as a child of this item.
-          \param childItem The item to be added as a child of this item.
-
-          \note This item will take the ownership of the pointer.
+          \note This item will take the ownership of the pointer of the given item.
 
           \note Never pass a NULL pointer to this method.
          */
-        void addChild(std::size_t i, TreeItem* childItem);
+        void addChild(TreeItem* item);
 
         /*!
-          \brief It removes the child in the i-th position, by disconnecting it from the list of children.
+          \brief It inserts a item in the position. If the item has a parent, 
+           it will be disconnected from it and will be attached to this one.
 
-          \param i The position of the item to be removed.
+          \param i    The position where the item will be inserted.
+          \param item The item to be inserted.
 
-          \return The item removed.
+          \note This item will take the ownership of the pointer of the given item.
 
-          \note The caller will get the ownership of the nodes removed.
+          \note Never pass a NULL pointer to this method.
+         */
+        void insertChild(std::size_t pos, TreeItem* item);
+
+        /*!
+          \brief It takes the child in the i-th position by disconnecting it from the list of children.
+
+          \param i The position of the item to be taken.
+
+          \return The item taken.
+
+          \note The caller will get the ownership of the node taken.
 
          */
-        TreeItem* removeChild(std::size_t i);
+        TreeItem* takeChild(std::size_t i);
 
         /*!
-          \brief It removes from the given position a certain number of items as children of this item.
-                 The items to be removed will be disconnected from this item.
+          \brief It takes from the given position a certain number of items.
+                 The items to be taken will be disconnected from this item.
 
-          \param i     The position from where the items will be removed as children of this item.
+          \param i     The position from where the items will be taken as children of this item.
           \param count The number of items to be removed as children of this item.
 
-          \return The list of removed items.
+          \return The list of items that was taken.
 
-          \note The caller will get the ownership of the nodes removed.
+          \note The caller will get the ownership of the nodes that were taken.
 
          */
-        std::list<TreeItem*> removeChildren(std::size_t i, std::size_t count);        
+        std::list<TreeItem*> takeChildren(std::size_t i, std::size_t count);        
 
         /*!
           \brief It replaces the child item at the given position by the new one.
@@ -341,29 +341,29 @@ namespace te
     }
 
     template<class T> inline
-    void TreeItem<T>::addChild(TreeItem<T>* childItem)
+    void TreeItem<T>::addChild(TreeItem<T>* item)
     {
-      push_back(childItem);
+      push_back(item);
     }
 
     template<class T> inline
-    void TreeItem<T>::addChild(std::size_t i, TreeItem<T>* childItem)
+    void TreeItem<T>::insertChild(std::size_t pos, TreeItem<T>* item)
     {
-      assert(i <= m_children.size());
-      assert(childItem);
+      assert(pos <= m_children.size());
+      assert(item);
 
-      childItem->disconnect();
+      item->disconnect();
 
-      childItem->m_parent = this;
+      item->m_parent = this;
 
       iterator it = begin();
-      std::advance(it, i);
+      std::advance(it, pos);
 
-      m_children.insert(it, childItem); 
+      m_children.insert(it, item); 
     }
 
     template<class T> inline
-    TreeItem<T>* TreeItem<T>::removeChild(std::size_t i)
+    TreeItem<T>* TreeItem<T>::takeChild(std::size_t i)
     {
       assert(i < m_children.size());
 
@@ -380,7 +380,7 @@ namespace te
     } 
 
     template<class T> inline
-    std::list<TreeItem<T>*> TreeItem<T>::removeChildren(std::size_t i, std::size_t count)
+    std::list<TreeItem<T>*> TreeItem<T>::takeChildren(std::size_t i, std::size_t count)
     {
       assert(i < m_children.size());
 
@@ -392,17 +392,17 @@ namespace te
       lastIt = firstIt;
       std::advance(lastIt, count);
 
-      std::list<TreeItem*> removedItems;
+      std::list<TreeItem*> itemsList;
       for (it = firstIt; it != lastIt; ++it)
       {
         TreeItem* item = *it;
         item->m_parent = 0;
-        removedItems.push_back(item);
+        itemsList.push_back(item);
       }
 
       m_children.erase(firstIt, lastIt);
 
-      return removedItems;
+      return itemsList;
     }    
 
     template<class T> inline
@@ -414,7 +414,7 @@ namespace te
       TreeItem* replacedItem = getChild(i);
       replacedItem->disconnect();
 
-      addChild(i, childItem);
+      insertChild(i, childItem);
 
       return replacedItem;
     }

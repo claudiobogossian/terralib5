@@ -30,10 +30,12 @@
 #include "../raster/Raster.h"
 #include "../geometry/GTParameters.h"
 #include "../sam/rtree.h"
+#include "../common/progress/TaskProgress.h"
 
 #include <vector>
 #include <set>
 #include <string>
+#include <list>
 
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
@@ -64,7 +66,8 @@ namespace te
             enum InteresPointsLocationStrategyType
             {
               InvalidStrategyT = 0, /*!< Invalid strategy. */
-              MoravecStrategyT = 1, /*!<  Modified Moravec Interest Operator based image area matching. */
+              MoravecStrategyT = 1, /*!<  Modified Moravec Interest Operator based image area matching - Reference: Extration of GCP chips from GeoCover using Modified Moravec Interest Operator (MMIO) algorithm, The United States Geological Survey. */
+              SurfStrategyT = 2 /*!<  SURF based image area matching - Reference: SURF: Speeded Up Robust Features, Herbert Bay. */
             };
 
             InteresPointsLocationStrategyType m_interesPointsLocationStrategy; //!< The strategy used to locate interest points (default:MoravecStrategyT).
@@ -119,7 +122,9 @@ namespace te
             
             bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
             
-            unsigned int m_noiseFilterIterations; //!< The number of noise filter iterations (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+            unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
+            
+            unsigned int m_scalesNumber; //!< The number of multi-resolution pyramid scales to generate, when applicable (default:3, minimum: 3);
           
             InputParameters();
             
@@ -219,9 +224,13 @@ namespace te
             };            
         };
         
-        /*! Interest points container type 
+        /*! Interest points set container type 
         */
-        typedef std::multiset< InterestPointT > InterestPointsContainerT;  
+        typedef std::multiset< InterestPointT > InterestPointsSetT;  
+        
+        /*! Interest points list container type 
+        */
+        typedef std::list< InterestPointT > InterestPointsListT;
         
         /*! Matched Interest point type */
         class MatchedInterestPointsT
@@ -274,7 +283,7 @@ namespace te
         
         /*! Matched interest points container type 
         */
-        typedef std::multiset< MatchedInterestPointsT > MatchedInterestPointsContainerT;         
+        typedef std::multiset< MatchedInterestPointsT > MatchedInterestPointsSetT;         
         
         /*! 
           \brief The parameters passed to the moravecLocatorThreadEntry method.
@@ -303,7 +312,7 @@ namespace te
             
             MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
             
-            InterestPointsContainerT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
             
             boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
             
@@ -317,6 +326,55 @@ namespace te
             
             ~MoravecLocatorThreadParams() {};
         };              
+        
+        
+        /*! 
+          \brief The parameters passed to the surfLocatorThreadEntry method.
+        */     
+        class SurfLocatorThreadParams
+        {
+          public :
+            
+            /*!
+            \brief Raster data container type.
+            */          
+            typedef Matrix< double > RasterDataContainerT;
+            
+            /*!
+            \brief Mask raster data container type.
+            */          
+            typedef Matrix< unsigned char > MaskRasterDataContainerT;            
+            
+            bool* m_returnValuePtr; //! Thread return value pointer.
+            
+            unsigned int m_scalesNumber; //!< The number of sub-samples scales to generate (minimum:3).
+            
+            unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
+            
+            RasterDataContainerT const* m_integralRasterDataPtr; //!< The integral image raster data.
+            
+            MaskRasterDataContainerT const* m_maskRasterDataPtr; //!< The loaded mask raster data pointer (or zero if no mask is avaliable).
+            
+            InterestPointsSetT* m_interestPointsPtr; //!< A pointer to a valid interest points container.
+            
+            boost::mutex* m_rastaDataAccessMutexPtr; //!< A pointer to a valid mutex to controle raster data access.
+            
+            boost::mutex* m_interestPointsAccessMutexPtr; //!< A pointer to a valid mutex to control the output interest points container access.
+            
+            unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
+            
+            unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXPtr; //!< Gaussian second order partial derivatives (X direction).
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelYPtr; //!< Gaussian second order partial derivatives (Y direction).
+            
+            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXYPtr; //!< Gaussian second order partial derivatives (XY direction).
+            
+            SurfLocatorThreadParams() {};
+            
+            ~SurfLocatorThreadParams() {};
+        };         
         
         /*! 
           \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
@@ -346,12 +404,92 @@ namespace te
             CorrelationMatrixCalcThreadParams() {};
             
             ~CorrelationMatrixCalcThreadParams() {};
-        };        
+        };     
+        
+        // Suft internal second order derivatives gaussian filter kernels
+        static const double surfGaussianBaseFilterKernelY[ 9 ][ 9 ];        
+        static const double surfGaussianBaseFilterKernelX[ 9 ][ 9 ];
+        static const double surfGaussianBaseFilterKernelXY[ 9 ][ 9 ];
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
 //        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.
+        
+        
+        /*!
+          \brief Executes the Moravec algorithm using the supplied parameters.
+          
+          \param raster1XRescFact The X axis rescale factor to be aplied into raster 1.
+          
+          \param raster1YRescFact The Y axis rescale factor to be aplied into raster 1.
+
+          \param raster2XRescFact The X axis rescale factor to be aplied into raster 2.
+          
+          \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
+          
+          \param raster1MaxInterestPoints The maximum number of interes points to be found over raster 1.
+          
+          \param raster2MaxInterestPoints The maximum number of interes points to be found over raster 2.
+          
+          \param raster1Data The raster 1 loaded data.
+          
+          \param maskRaster1Data The mask raster 1 loaded data.
+
+          \param outParamsPtr Output parameters pointer.
+          
+          \param tiePointsWeights Ouptut tie-points weights.
+          
+          \return true if OK, false on errors.
+         */        
+        bool executeMoravec( 
+          const double raster1XRescFact, 
+          const double raster1YRescFact,
+          const double raster2XRescFact,
+          const double raster2YRescFact,
+          const unsigned int raster1MaxInterestPoints,
+          const unsigned int raster2MaxInterestPoints,
+          te::common::TaskProgress& progress,
+          TiePointsLocator::OutputParameters* outParamsPtr,
+          std::vector< double >& tiePointsWeights )
+          throw( te::rp::Exception );
+          
+        /*!
+          \brief Executes the SURF algorithm using the supplied parameters.
+          
+          \param raster1XRescFact The X axis rescale factor to be aplied into raster 1.
+          
+          \param raster1YRescFact The Y axis rescale factor to be aplied into raster 1.
+
+          \param raster2XRescFact The X axis rescale factor to be aplied into raster 2.
+          
+          \param raster2YRescFact The Y axis rescale factor to be aplied into raster 2.
+          
+          \param raster1MaxInterestPoints The maximum number of interes points to be found over raster 1.
+          
+          \param raster2MaxInterestPoints The maximum number of interes points to be found over raster 2.
+          
+          \param raster1Data The raster 1 loaded data.
+          
+          \param maskRaster1Data The mask raster 1 loaded data.
+
+          \param outParamsPtr Output parameters pointer.
+          
+          \param tiePointsWeights Ouptut tie-points weights.
+          
+          \return true if OK, false on errors.
+         */        
+        bool executeSurf( 
+          const double raster1XRescFact, 
+          const double raster1YRescFact,
+          const double raster2XRescFact,
+          const double raster2YRescFact,
+          const unsigned int raster1MaxInterestPoints,
+          const unsigned int raster2MaxInterestPoints,
+          te::common::TaskProgress& progress,
+          TiePointsLocator::OutputParameters* outParamsPtr,
+          std::vector< double >& tiePointsWeights )
+          throw( te::rp::Exception );        
         
         /*!
           \brief Load rasters data.
@@ -419,14 +557,46 @@ namespace te
           const unsigned int moravecWindowWidth,
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
-          InterestPointsContainerT& interestPoints );
+          InterestPointsSetT& interestPoints );
+          
+        /*!
+          \brief SURF interest points locator.
+          
+          \param integralRasterData Integral image raster data.
+          
+          \param maskRasterDataPtr The loaded mask raster data pointer (or zero if no mask is avaliable).
+          
+          \param scalesNumber The number of sub-sampling scales to generate.
+          
+          \param maxInterestPoints The maximum number of interest points to find over raster 1.
+          
+          \param enableMultiThread Enable/disable multi-thread.
+          
+          \param interestPoints The found interest points (coords related to rasterData lines/cols).          
+
+          \return true if ok, false on errors.
+        */             
+        static bool locateSurfInterestPoints( 
+          const Matrix< double >& integralRasterData,
+          Matrix< unsigned char > const* maskRasterDataPtr,
+          const unsigned int maxInterestPoints,
+          const unsigned int enableMultiThread,
+          const unsigned int scalesNumber,
+          InterestPointsSetT& interestPoints );          
           
         /*! 
           \brief Movavec locator thread entry.
           
           \param paramsPtr A pointer to the thread parameters.
         */      
-        static void moravecLocatorThreadEntry(MoravecLocatorThreadParams* paramsPtr);
+        static void locateMoravecInterestPointsThreadEntry(MoravecLocatorThreadParams* paramsPtr);
+        
+        /*! 
+          \brief Surf locator thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void locateSurfInterestPointsThreadEntry(SurfLocatorThreadParams* paramsPtr);        
         
         /*! 
           \brief RoolUp a buffer of lines.
@@ -434,20 +604,69 @@ namespace te
           \param bufferPtr Buffer pointer.
           
           \param bufferLinesNumber Buffer lines number.
+          
+          \param bufferColsNumber Buffer columns number.
+          
+          \param stepSize The rool-up step size.
+          
+          \param zeroFill Zero fill the rooled-up lines.
         */         
         template< typename BufferElementT >
         static void roolUpBuffer( BufferElementT** bufferPtr, 
-          const unsigned int& bufferLinesNumber )
+          const unsigned int& bufferLinesNumber, 
+          const unsigned int& bufferColsNumber,
+          const unsigned int& stepSize,
+          const bool zeroFill )
         {
-          BufferElementT* auxLinePtr = bufferPtr[ 0 ];
+          unsigned int idx = 0;
+          unsigned int col = 0;
           
-          for( unsigned int idx = bufferLinesNumber - 1 ; idx  ; --idx )
+          for( unsigned int currStep = 0 ; currStep < stepSize ; ++currStep )
           {
-            bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
-          };
-          
-          bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
+            BufferElementT* auxLinePtr = bufferPtr[ 0 ];
+            
+            for( idx = bufferLinesNumber - 1 ; idx  ; --idx )
+            {
+              bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
+            }
+            
+            bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
+            
+            if( zeroFill )
+            {
+              for( col = 0 ; col < bufferColsNumber  ; ++col )
+              {
+                auxLinePtr[ col ] = 0;
+              }
+            }
+          }
         };
+        
+        /*! 
+          \brief Fill a buffer with zeroes.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param bufferLinesNumber Buffer lines number.
+          
+          \param bufferColsNumber Buffer columns number.
+        */         
+        template< typename BufferElementT >
+        static void zeroFillBuffer( BufferElementT** bufferPtr, 
+          const unsigned int& bufferLinesNumber, const unsigned int& 
+          bufferColsNumber )
+        {
+          BufferElementT* linePtr = 0;
+          unsigned int col = 0;
+          for( unsigned int line = 0 ; line < bufferLinesNumber ; ++line )
+          {
+            linePtr = bufferPtr[ line ];
+            for( col = 0 ; col < bufferColsNumber  ; ++col )
+            {
+              linePtr[ col ] = 0;
+            }
+          }
+        };        
         
         /*!
           \brief Moravec interest points locator.
@@ -460,7 +679,7 @@ namespace te
         */             
         static void createTifFromMatrix( 
           const Matrix< double >& rasterData,
-          const InterestPointsContainerT& interestPoints,
+          const InterestPointsSetT& interestPoints,
           const std::string& tifFileName );
           
         /*!
@@ -493,7 +712,22 @@ namespace te
         static bool applyMeanFilter( 
           const Matrix< double >& inputData,
           Matrix< double >& outputData,
-          const unsigned int iterationsNumber );          
+          const unsigned int iterationsNumber );     
+          
+        /*!
+          \brief Create an integral image.
+          
+          \param inputData The input data.
+          
+          \param outputData The output data.
+          
+          \note The entry of an integral image IΣ(x) at a location x = (x, y) represents the sum of all pixels in the input image I of a rectangular region formed by the point x and the origi.
+
+          \return true if ok, false on errors.
+        */             
+        static bool createIntegralImage( 
+          const Matrix< double >& inputData,
+          Matrix< double >& outputData );           
           
         /*!
           \brief Generate a correlation features matrix for the given interes points.
@@ -515,12 +749,12 @@ namespace te
           \return true if ok, false on errors.
         */             
         static bool generateCorrelationFeatures( 
-          const InterestPointsContainerT& interestPoints,
+          const InterestPointsSetT& interestPoints,
           const unsigned int correlationWindowWidth,
           const Matrix< double >& rasterData,
           const bool normalize,
           Matrix< double >& features,
-          InterestPointsContainerT& validInteresPoints );
+          InterestPointsSetT& validInteresPoints );
           
         /*!
           \brief Save the generated features to tif files.
@@ -533,7 +767,7 @@ namespace te
         */          
         static void features2Tiff( 
           const Matrix< double >& features,
-          const InterestPointsContainerT& interestPoints,
+          const InterestPointsSetT& interestPoints,
           const std::string& fileNameBeginning );
           
         /*!
@@ -553,22 +787,44 @@ namespace te
           
           \param matchedPoints The matched points.
         */          
-        static bool matchCorrelationEuclidean( 
+        static bool executeMatchingByCorrelation( 
           const Matrix< double >& featuresSet1,
           const Matrix< double >& featuresSet2,
-          const InterestPointsContainerT& interestPointsSet1,
-          const InterestPointsContainerT& interestPointsSet2,
+          const InterestPointsSetT& interestPointsSet1,
+          const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2Distance,
           const unsigned int enableMultiThread,
-          MatchedInterestPointsContainerT& matchedPoints );
+          MatchedInterestPointsSetT& matchedPoints );
           
         /*! 
           \brief Correlation/Euclidean match thread entry.
           
           \param paramsPtr A pointer to the thread parameters.
         */      
-        static void correlationMatrixCalcThreadEntry(
-          CorrelationMatrixCalcThreadParams* paramsPtr);          
+        static void executeMatchingByCorrelationThreadEntry(
+          CorrelationMatrixCalcThreadParams* paramsPtr);
+          
+        /*! 
+          \brief Generate rescaled Gaussian second order partial derivatives using a given base filter.
+          
+          \param scalesNumber The number of scales to generate.
+          
+          \param baseFilterKernel The base filter.
+          
+          \param kernels The generated filter kernels.
+          
+          \details The first kernel is related to the first scale.
+        */
+        static void generateRescaledGaussianFilterKernels( const unsigned int scalesNumber,
+          const double (&baseFilterKernel)[9][9], const unsigned int baseFilterKernelWidth,
+          std::vector< te::rp::Matrix< double > >& kernels ); 
+          
+        /*! 
+          \brief Print the given matrix to std::out.
+          
+          \param matrix The given matrix.
+        */
+        static void printMatrix( const te::rp::Matrix< double >& matrix );
     };
 
   } // end namespace rp
