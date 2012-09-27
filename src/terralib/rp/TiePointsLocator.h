@@ -365,12 +365,6 @@ namespace te
             
             unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
             
-            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXPtr; //!< Gaussian second order partial derivatives (X direction).
-            
-            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelYPtr; //!< Gaussian second order partial derivatives (Y direction).
-            
-            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXYPtr; //!< Gaussian second order partial derivatives (XY direction).
-            
             SurfLocatorThreadParams() {};
             
             ~SurfLocatorThreadParams() {};
@@ -405,11 +399,6 @@ namespace te
             
             ~CorrelationMatrixCalcThreadParams() {};
         };     
-        
-        // Suft internal second order derivatives gaussian filter kernels
-        static const double surfGaussianBaseFilterKernelY[ 9 ][ 9 ];        
-        static const double surfGaussianBaseFilterKernelX[ 9 ][ 9 ];
-        static const double surfGaussianBaseFilterKernelXY[ 9 ][ 9 ];
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
 //        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
@@ -803,21 +792,6 @@ namespace te
         */      
         static void executeMatchingByCorrelationThreadEntry(
           CorrelationMatrixCalcThreadParams* paramsPtr);
-          
-        /*! 
-          \brief Generate rescaled Gaussian second order partial derivatives using a given base filter.
-          
-          \param scalesNumber The number of scales to generate.
-          
-          \param baseFilterKernel The base filter.
-          
-          \param kernels The generated filter kernels.
-          
-          \details The first kernel is related to the first scale.
-        */
-        static void generateRescaledGaussianFilterKernels( const unsigned int scalesNumber,
-          const double (&baseFilterKernel)[9][9], const unsigned int baseFilterKernelWidth,
-          std::vector< te::rp::Matrix< double > >& kernels ); 
           
         /*! 
           \brief Print the given matrix to std::out.

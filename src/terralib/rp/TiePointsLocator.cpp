@@ -48,46 +48,7 @@ namespace te
 {
   namespace rp
   {
-    
-    const double  TiePointsLocator::surfGaussianBaseFilterKernelY[ 9 ][ 9 ] = 
-    { 
-      { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
-      { 0, 0, 0, 0, 0, 0, 0, 0, 0  },
-      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
-      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
-      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
-      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
-      { 1, 1, 1, -2, -2, -2, 1, 1, 1 },
-      { 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-      { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
-    };  
-      
-    const double  TiePointsLocator::surfGaussianBaseFilterKernelX[ 9 ][ 9 ] = 
-    { 
-      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },
-      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },
-      { 0, 0, -2, -2, -2, -2, -2, 0, 0 },      
-      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-      { 0, 0, 1, 1, 1, 1, 1, 0, 0 },
-      { 0, 0, 1, 1, 1, 1, 1, 0, 0 }
-    };
-    
-    const double  TiePointsLocator::surfGaussianBaseFilterKernelXY[ 9 ][ 9 ] = 
-    { 
-      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
-      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
-      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
-      { 0, 1, 1, 1, 0, -1, -1, -1 , 0 },
-      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  },
-      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
-      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
-      { 0, -1, -1, -1, 0, 1, 1, 1 , 0 },
-      { 0, 0, 0, 0, 0, 0, 0, 0 , 0  }
-    };
-    
+
     TiePointsLocator::InputParameters::InputParameters()
     {
       reset();
@@ -1517,20 +1478,6 @@ namespace te
       if( integralRasterData.getColumnsNumber() < minRasterWidthAndHeight ) return true;
       if( integralRasterData.getLinesNumber() < minRasterWidthAndHeight ) return true;
       
-      // Building filters kernels
-      
-      std::vector< te::rp::Matrix< double > > gaussianFiltersKernelX;
-      generateRescaledGaussianFilterKernels( scalesNumber, 
-        surfGaussianBaseFilterKernelX, 9, gaussianFiltersKernelX );
-        
-      std::vector< te::rp::Matrix< double > > gaussianFiltersKernelY;
-      generateRescaledGaussianFilterKernels( scalesNumber, 
-        surfGaussianBaseFilterKernelY, 9, gaussianFiltersKernelY );      
-      
-      std::vector< te::rp::Matrix< double > > gaussianFiltersKernelXY;
-      generateRescaledGaussianFilterKernels( scalesNumber,
-        surfGaussianBaseFilterKernelXY, 9, gaussianFiltersKernelXY );      
-      
       // finding interest points
       
       bool returnValue = true;
@@ -1548,9 +1495,6 @@ namespace te
       threadParams.m_integralRasterDataPtr = &integralRasterData;
       threadParams.m_maskRasterDataPtr = maskRasterDataPtr;
       threadParams.m_scalesNumber = scalesNumber;
-      threadParams.m_gaussianFiltersKernelXPtr = &gaussianFiltersKernelX;
-      threadParams.m_gaussianFiltersKernelYPtr = &gaussianFiltersKernelY;
-      threadParams.m_gaussianFiltersKernelXYPtr = &gaussianFiltersKernelXY;
       
       if( enableMultiThread )
       {
@@ -1602,9 +1546,6 @@ namespace te
       assert( paramsPtr->m_maxRasterLinesBlockMaxSize > 2 );
       assert( paramsPtr->m_nextRasterLinesBlockToProcessValuePtr );
       assert( paramsPtr->m_scalesNumber > 2 );
-      assert( paramsPtr->m_gaussianFiltersKernelXPtr );
-      assert( paramsPtr->m_gaussianFiltersKernelYPtr );
-      assert( paramsPtr->m_gaussianFiltersKernelXYPtr );      
       
       // Globals
       
@@ -1741,13 +1682,14 @@ namespace te
             paramsPtr->m_maxRasterLinesBlockMaxSize + 
             ( 2 * maxGausFilterRadius ), rasterLines );
           unsigned int scaleIdx = 0 ;
-          unsigned int windowStartBufCol = 0;
-          unsigned int windowStartBufLine = 0;
           unsigned int filterWidth = 0;
           unsigned int filterRadius = 0;
-          unsigned int windowEndBufColsBound = 0;
-          unsigned int windowX = 0;
-          unsigned int windowY = 0;
+          double filterScaleFactorToBase = 0;
+          unsigned int windowUpperLeftLine = 0;
+          unsigned int windowUpperLeftCol = 0;
+          unsigned int windowUpperLeftColBound = 0;
+          unsigned int windowUpperLeftColOffset = 0;
+          unsigned int windowUpperLeftLineOffset = 0;
           double dXX = 0;
           double dYY = 0;
           double dXY = 0;
@@ -1802,43 +1744,114 @@ namespace te
                 
                 // applying the filter kernels for the current scale
                 
-                const te::rp::Matrix< double >& filterKernelX = 
-                  paramsPtr->m_gaussianFiltersKernelXPtr->operator[]( 
-                  scaleIdx );
-                const te::rp::Matrix< double >& filterKernelY = 
-                  paramsPtr->m_gaussianFiltersKernelYPtr->operator[]( 
-                  scaleIdx );
-                const te::rp::Matrix< double >& filterKernelXY = 
-                  paramsPtr->m_gaussianFiltersKernelXYPtr->operator[]( 
-                  scaleIdx );                
-                
-                filterWidth = filterKernelX.getLinesNumber();
+                filterWidth = ( scaleIdx + 1 ) * 9;;
                 filterRadius = filterWidth / 2;
-                windowEndBufColsBound = bufferCols - filterWidth;
-                windowStartBufLine = maxGausFilterRadius - filterRadius;
+                filterScaleFactorToBase = ((double)filterWidth) / 9.0;
+                windowUpperLeftColBound = bufferCols - filterWidth;
+                windowUpperLeftLine = maxGausFilterWidth - filterRadius;
                   
-                for( windowStartBufCol = 0 ; windowStartBufCol < 
-                  windowEndBufColsBound ; windowStartBufCol += samplingStep )
+                for( windowUpperLeftCol = 0 ; windowUpperLeftCol < 
+                  windowUpperLeftColBound ; windowUpperLeftCol += samplingStep )
                 {
-                  dXX = 0;
-                  dYY = 0;
-                  dXY = 0;
-                  for( windowY = 0 ; windowY < filterWidth ; ++windowY )
-                    for( windowX = 0 ; windowX < filterWidth ; ++windowX )
-                    {
-                      dXX += filterKernelX[ windowY ][ windowX ] * 
-                        rasterBufferPtr[ windowY + windowStartBufLine ][ 
-                        windowX + windowStartBufCol ];
-                      dYY += filterKernelY[ windowY ][ windowX ] * 
-                        rasterBufferPtr[ windowY + windowStartBufLine ][ 
-                        windowX + windowStartBufCol ];                        
-                      dXY += filterKernelXY[ windowY ][ windowX ] * 
-                        rasterBufferPtr[ windowY + windowStartBufLine ][ 
-                        windowX + windowStartBufCol ];                          
-                    }
+                  dXX = 
+                    rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
+                    + 3.0 *
+                    (
+                      rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                    );
+                      
+                  dYY =
+                    rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                    + 3.0 *
+                    (
+                      rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr
+                        [ windowUpperLeftLine + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                        [ windowUpperLeftCol + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                    );
+                  
+                  dXY =
+                    rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine ]
+                      [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine ]
+                      [ windowUpperLeftCol ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine ]
+                      [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine ]
+                      [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                    + rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol ]
+                    - rasterBufferPtr
+                      [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      [ windowUpperLeftCol ]
+                    ;
                     
                   scalesBuffersHandlers[ scaleIdx ][ lastBufferLineIdx ][ 
-                    windowStartBufCol + filterRadius ] = ( dXX * dYY ) - 
+                    windowUpperLeftCol + filterRadius ] = ( dXX * dYY ) - 
                     ( ( 0.9 * dXY ) * ( 0.9 * dXY ) );
                 }
               }
@@ -1861,22 +1874,24 @@ namespace te
                   filterWidth = 3 * samplingStep;
                   filterRadius = filterWidth / 2;
 
-                  windowStartBufCol = windCenterCol - filterRadius;
-                  windowStartBufLine = maxGausFilterRadius - filterRadius;
+                  windowUpperLeftCol = windCenterCol - filterRadius;
+                  windowUpperLeftLine = maxGausFilterRadius - filterRadius;
                     
                   const double& windowCenterPixelValue = scalesBuffersHandlers[ scaleIdx ][
                     maxGausFilterRadius ][ windCenterCol ];
                   
-                  for( windowY = 0 ; windowY < filterWidth ; ++windowY )
+                  for( windowUpperLeftLineOffset = 0 ; windowUpperLeftLineOffset < 
+                    filterWidth ; ++windowUpperLeftLineOffset )
                   {
-                    for( windowX = 0 ; windowX < filterWidth ; ++windowX )
+                    for( windowUpperLeftColOffset = 0 ; windowUpperLeftColOffset < 
+                      filterWidth ; ++windowUpperLeftColOffset )
                     {
                       if( windowCenterPixelValue < scalesBuffersHandlers[ scaleIdx ][
-                        windowStartBufLine + windowY ][ windowStartBufCol + 
-                        windowX ] )
+                        windowUpperLeftLine + windowUpperLeftLineOffset ][ 
+                        windowUpperLeftCol + windowUpperLeftColOffset ] )
                       {
                         isLocalMaxima = false;
-                        windowY = filterWidth;
+                        windowUpperLeftLineOffset = filterWidth;
                         scaleIdx = paramsPtr->m_scalesNumber;
                         break;
                       }
@@ -1901,11 +1916,11 @@ namespace te
                       
                       blockMaximas.insert( auxInterestPoint);
                       
-                       if( blockMaximas.size() > 
-                         paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
-                       {
-                         blockMaximas.erase( blockMaximas.begin() );
-                       }
+                      if( blockMaximas.size() > 
+                        paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                      {
+                        blockMaximas.erase( blockMaximas.begin() );
+                      }
                     }
                   }
                   else
@@ -1921,11 +1936,11 @@ namespace te
                     
                     blockMaximas.insert( auxInterestPoint );
                     
-                     if( blockMaximas.size() > 
-                       paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
-                     {
-                       blockMaximas.erase( blockMaximas.begin() );
-                     }
+                    if( blockMaximas.size() > 
+                      paramsPtr->m_maxInterestPointsPerRasterLinesBlock )
+                    {
+                      blockMaximas.erase( blockMaximas.begin() );
+                    }
                   }
                 }                
               }
@@ -2968,54 +2983,6 @@ namespace te
         {
           paramsPtr->m_syncMutexPtr->unlock();
         }
-      }
-    }
-    
-    
-    void TiePointsLocator::generateRescaledGaussianFilterKernels(
-      const unsigned int scalesNumber,
-      const double (&baseFilterKernel)[9][9], 
-      const unsigned int baseFilterKernelWidth,
-      std::vector< te::rp::Matrix< double > >& kernels )
-    {
-      kernels.clear();
-      
-      const unsigned int maxKernelWidth =  (unsigned int)std::pow( 2.0, 
-        (double)( scalesNumber - 1 ) ) * baseFilterKernelWidth;
-      unsigned int kernelWidth = 0;
-      double* outKernelLinePtr = 0;
-      double const* inKernelLinePtr = 0;
-      unsigned int outKernelY = 0;
-      unsigned int outKernelX = 0;
-      double factor = 0;
-      
-      kernels.resize( scalesNumber );
-      
-      for( unsigned int scaleNumber = 1 ; scaleNumber <= scalesNumber ;
-        ++scaleNumber )
-      {
-        kernelWidth = (unsigned int)std::pow( 2.0, (double)( scaleNumber - 1 ) ) * 
-          baseFilterKernelWidth;
-          
-        factor = 9.0 / ((double)kernelWidth);
-          
-        kernels[ scaleNumber - 1 ].reset( kernelWidth, kernelWidth, 
-          te::rp::Matrix< double >::RAMMemPol );
-        
-        for( outKernelY = 0 ; outKernelY < kernelWidth ; ++outKernelY )
-        {
-          outKernelLinePtr = kernels[ scaleNumber - 1 ][ outKernelY ];
-          inKernelLinePtr = baseFilterKernel[ 
-            (unsigned int)(((double)outKernelY) * factor ) ];
-          
-          for( outKernelX = 0 ; outKernelX < kernelWidth ; ++outKernelX )
-          {
-            outKernelLinePtr[ outKernelX ] = inKernelLinePtr[ 
-              (unsigned int)(((double)outKernelX) * factor ) ];
-          }
-        }
-        
-//        printMatrix( kernels[ scaleNumber - 1 ] );
       }
     }
     
