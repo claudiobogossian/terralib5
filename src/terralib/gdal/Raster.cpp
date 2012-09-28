@@ -35,6 +35,7 @@
 #include "../raster/RasterProperty.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Utils.h"
+#include "../raster/Reprojection.h"
 #include "../srs/Converter.h"
 #include "Band.h"
 #include "Exception.h"
@@ -259,7 +260,7 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
       overviewIndex = ov;
       ov = inds->GetRasterBand(1)->GetOverviewCount();
     }
-      
+
   if (overviewIndex == -1)
   {
     inds->BuildOverviews("CUBIC", 1, overviewScale, 0, NULL, GDALDummyProgress, NULL);
@@ -279,10 +280,10 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
 
     GDALRasterBand* inband = inds->GetRasterBand(b + 1)->GetOverview(overviewIndex);
 
-    inband->RasterIO(GF_Read, 0, 0, inband->GetXSize(), inband->GetYSize(), 
+    inband->RasterIO(GF_Read, 0, 0, inband->GetXSize(), inband->GetYSize(),
                       buffer, inband->GetXSize(), inband->GetYSize(), GDT_Byte, 0, 0);
 
-    outband->RasterIO(GF_Write, 0, 0, inband->GetXSize(), inband->GetYSize(), 
+    outband->RasterIO(GF_Write, 0, 0, inband->GetXSize(), inband->GetYSize(),
                       buffer, inband->GetXSize(), inband->GetYSize(), GDT_Byte, 0, 0);
   }
 
@@ -291,6 +292,13 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
 
 te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo)
 {
+// if raster out is not a GDAL dataset, use other implementation
+  std::map<std::string, std::string>::const_iterator it = rinfo.find("URI");
+
+  if(!(it != rinfo.end() && te::gdal::IsGDALDataSet(it->second)))
+    return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo);
+
+// otherwise, use GDAL Warp function
   if (srid == getSRID())
     return 0;
 
@@ -341,12 +349,17 @@ te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, d
     bands.push_back(bb);
   }
 
-  // create output raster
+// create output raster
   te::rst::Raster* rout = te::rst::RasterFactory::make(g, bands, rinfo);
 
-  // calls the reprojection algorithm
   if (te::gdal::ReprojectRaster(this, rout))
-    return rout;
+  {
+    delete rout;
+
+    return te::rst::RasterFactory::open(rinfo, te::common::RWAccess);
+  }
+
+  delete rout;
 
   return 0;
 }
