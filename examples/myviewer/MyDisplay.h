@@ -3,6 +3,7 @@
 
 #include "TimeSlider.h"
 #include "MouseHandler.h"
+#include<terralib/geometry/Envelope.h>
 #include<terralib/qt/widgets.h>
 #include<terralib/maptools/DataGridOperation.h>
 
@@ -24,15 +25,36 @@ public:
   ~MyDisplay();
 
   void paintEvent(QPaintEvent*);
+  void resizeEvent(QResizeEvent*);
   void closeEvent(QCloseEvent*);
   void dragEnterEvent(QDragEnterEvent*);
   void dropEvent(QDropEvent*);
+  void setLayerTree(te::map::AbstractLayer* layer);
+  te::gm::Envelope MyDisplay::getLayerExtent(te::map::AbstractLayer* al);
   void changeTree(te::map::AbstractLayer*);
   void contextMenuEvent(QContextMenuEvent*);
   void changeObjectStatus(QRect rec, const std::string& mode);
   virtual void draw();
+  void draw(std::list<te::map::AbstractLayer*>& layerList);
   virtual void draw(te::map::AbstractLayer* layerTree);
   virtual void setExtent(const te::gm::Envelope& e);
+
+  /*!            
+    \brief Recalculates the extension of all visible layers.
+
+    \return The envelope of all visible layers.
+  */
+  te::gm::Envelope getAllExtent();
+
+  /*!            
+    \brief Recalculates the extension of all visible layers.
+
+    \layerList List of layers to be calculated.
+
+    \return The envelope of all visible layers.
+  */
+  te::gm::Envelope getAllExtent(std::list<te::map::AbstractLayer*>& layerList);
+
   virtual void setSRID(const int& srid);
   void reorderDrawing(std::vector<te::map::AbstractLayer*>); // nao redesenha. Muda a ordem do desenho usando o conteudo do pixmap do canvas.
   void drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::gm::Geometry*>& geoms, bool drawLines = false);
@@ -40,13 +62,17 @@ public:
   void clearTemporalCanvas(te::map::AbstractLayer*);
   void removeDrawOnlyChanged(te::map::AbstractLayer*);
   void addDrawOnlyChanged(te::map::AbstractLayer*);
-  void mountLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList);
+  void getLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList);
   void removeAllTemporalLayers();
   void addTemporalLayer(te::map::AbstractLayer*);
   void setTitle(QString&);
   QWidget* getWidget();
   void setTimeSliderIcon(QPixmap*);
   void clearTimeLineEdit();
+  void showOrHideTimeSlider(std::list<te::map::AbstractLayer*>& layerList);
+  void setRepaint(bool s);
+  te::map::AbstractLayer* getLayerTree();
+  void fit(std::list<te::map::AbstractLayer*>& layerList);
 
 public Q_SLOTS:
   void selectionChangedSlot(te::map::DataGridOperation*);
@@ -112,10 +138,14 @@ public Q_SLOTS:
   void timeSliderContextMenuSlot(const QPoint&);
   void configTemporalPlaySlot();
   void showTimeLineEditSlot();
+  void fitAllLayersSlot();
+  void setSRIDSlot();
+  void onResizeTimeout();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
   void closed(MyDisplay*);
+  void sizeChanged(QSize s);
 
 protected:
   virtual te::qt::widgets::Canvas* getCanvas(te::map::AbstractLayer* layer);
@@ -123,12 +153,19 @@ protected:
   void print(QPrinter*);
 
 private:
+  te::gm::Envelope m_envelope;      //!< Envelope.
   MouseHandler* m_mouseHandler;
   std::set<te::map::AbstractLayer*> m_drawOnlyChanged;
   te::map::AbstractLayer* m_rootFolderLayer;
+  te::map::AbstractLayer* m_layerTree;        //!< The layer to be displayed.
+  bool m_resize;                    //!< flag to draw with zoom due to the resize in progress
+  QRect m_resizeRec;                //!< rectangle used for display resize
+  QRect m_resizeWRec;               //!< rectangle used for display resize
+  bool m_repaint;                   //!< repaint control.
   QVBoxLayout* m_layout;
   QWidget* m_widget;
   QGroupBox* m_timeGroupBox;
+  QMenu* m_menu;                    //!< Menu.
   QMenu* m_timeSliderMenu;
   QAction* m_showTimeLineEditAction;
   QMenu* m_mouseOperationMenu;
@@ -141,6 +178,8 @@ private:
   QAction* m_mouseTooltipAction;
   QAction* printAction;
   QAction* printFileAction;
+  QAction* m_fitAllLayersAction;    //!< Action to fit all layers.
+  QAction* m_srsAction;             //!< Action to change srid.
 
   QPixmap* m_tooltipDisplayPixmap;               //!< tootip display pixmap
   QRect    m_tooltipRect;                        //!< tootip rect
