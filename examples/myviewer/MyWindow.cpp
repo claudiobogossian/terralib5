@@ -496,8 +496,9 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
       bool temporal = false;
+      MyDisplay* md = (MyDisplay*)*it;
       std::vector<te::map::AbstractLayer*> mdLayers;
-      getLayers((*it)->getLayerTree(), mdLayers);
+      getLayers(md->getLayerTree(), mdLayers);
       std::vector<te::map::AbstractLayer*>::iterator lit, mdit;
       for(mdit = mdLayers.begin(); mdit != mdLayers.end(); ++mdit)
       {
@@ -564,8 +565,9 @@ void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
   std::vector<te::map::MapDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit, lit2;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
@@ -581,9 +583,9 @@ void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
   std::set<te::map::MapDisplay*>::iterator sit;
   for(sit = displays.begin(); sit != displays.end(); ++sit)
   {
-    std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*sit)->getLayerTree(), layers);
     MyDisplay* display = (MyDisplay*)*sit;
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers(display->getLayerTree(), layers);
     display->reorderDrawing(layers);
     ((MyDisplay*)(*sit))->update();
   }
@@ -926,8 +928,9 @@ void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
     std::vector<te::map::MapDisplay*>::iterator it;
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
+      MyDisplay* display = (MyDisplay*)*it;
       std::vector<te::map::AbstractLayer*> layers;
-      getLayers((*it)->getLayerTree(), layers);
+      getLayers(display->getLayerTree(), layers);
       std::vector<te::map::AbstractLayer*>::iterator lit;
       for(lit = layers.begin(); lit != layers.end(); ++lit)
       {
@@ -1379,8 +1382,9 @@ void MyWindow::AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer* al)
   while(it != m_mapDisplayVec.end())
   {
     int c = 0;
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
@@ -1474,13 +1478,15 @@ void MyWindow::AdjustmentsAfterTakeLayer(te::map::AbstractLayer* parent, te::map
   std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
   while(it != m_mapDisplayVec.end())
   {
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     if(layers.empty())
     {
       if(*it == m_mapDisplay)
       {
-        if(((*it)->getLayerTree())->getType() == "FOLDERLAYER")
+        MyDisplay* display = (MyDisplay*)*it;
+        if((display->getLayerTree())->getType() == "FOLDERLAYER")
           // main map display is empty
           m_mapDisplay->changeTree(0);
         else
@@ -1879,8 +1885,9 @@ void MyWindow::updateDisplays(MyLayer* layer)
   std::vector<te::map::MapDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
