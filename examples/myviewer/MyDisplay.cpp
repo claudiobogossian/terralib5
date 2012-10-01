@@ -517,8 +517,18 @@ te::qt::widgets::Canvas* MyDisplay::getCanvas(te::map::AbstractLayer* layer)
   MyLayer* l = (MyLayer*)layer;
   if(l->isTemporal())
   {
-    te::map::AbstractLayer* parent = (te::map::AbstractLayer*)l->getParent();
-    return te::qt::widgets::MapDisplay::getCanvas(parent);
+    if(m_extent == 0)
+    {
+      if(layer->getExtent())
+        m_extent = new te::gm::Envelope(*(layer->getExtent()));
+    }
+    if(m_extent)
+    {
+      te::map::AbstractLayer* parent = (te::map::AbstractLayer*)l->getParent();
+      return te::qt::widgets::MapDisplay::getCanvas(parent);
+    }
+    else
+      return 0;
   }
   return te::qt::widgets::MapDisplay::getCanvas(l);
 }

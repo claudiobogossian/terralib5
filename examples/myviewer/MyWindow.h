@@ -67,6 +67,7 @@ protected slots:
   void changePointStyleSlot();
   void changeLineStyleSlot();
   void changePolygonStyleSlot();
+  void editLegendSlot();
 
 protected:
   void AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer*);
