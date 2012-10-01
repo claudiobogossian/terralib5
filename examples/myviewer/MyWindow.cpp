@@ -305,9 +305,9 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_removeAction);
   connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
 
-  QAction* editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
-  m_treeMenu->addAction(editLegendAction);
-  connect(editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
+  m_editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
+  m_treeMenu->addAction(m_editLegendAction);
+  connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
 
   m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
   m_keepOnMemoryAction->setCheckable(true);
@@ -639,10 +639,12 @@ void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint&
       m_addFolderAction->setEnabled(true);
       m_changeStatusColorMenu->setEnabled(false);
       m_changeDefaultStyleMenu->setEnabled(false);
+      m_editLegendAction->setEnabled(false);
     }
     else
     {
       MyLayer* layer = (MyLayer*)m_selectedLayer;
+      m_editLegendAction->setEnabled(true);
       m_keepOnMemoryAction->setEnabled(true);
       m_keepOnMemoryAction->setChecked(layer->isKeepOnMemory());
       m_addFolderAction->setEnabled(false);
