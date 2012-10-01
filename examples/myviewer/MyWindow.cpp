@@ -15,6 +15,7 @@
 #include <terralib/maptools.h>
 #include <terralib/postgis.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/qt/widgets/layer/Legend.h>
 #include <terralib/color.h>
 #include <terralib/geometry.h>
 #include <terralib/datatype.h>
@@ -22,6 +23,7 @@
 #include <terralib/raster.h>
 #include <terralib/raster/RasterSummary.h>
 #include <terralib/raster/RasterSummaryManager.h>
+#include <terralib/qt/widgets/utils/ScopedCursor.h>
 
 
 //Qt
@@ -302,6 +304,10 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_removeAction = new QAction("&Remove...", m_treeMenu);
   m_treeMenu->addAction(m_removeAction);
   connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
+
+  m_editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
+  m_treeMenu->addAction(m_editLegendAction);
+  connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
 
   m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
   m_keepOnMemoryAction->setCheckable(true);
@@ -633,10 +639,12 @@ void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint&
       m_addFolderAction->setEnabled(true);
       m_changeStatusColorMenu->setEnabled(false);
       m_changeDefaultStyleMenu->setEnabled(false);
+      m_editLegendAction->setEnabled(false);
     }
     else
     {
       MyLayer* layer = (MyLayer*)m_selectedLayer;
+      m_editLegendAction->setEnabled(true);
       m_keepOnMemoryAction->setEnabled(true);
       m_keepOnMemoryAction->setChecked(layer->isKeepOnMemory());
       m_addFolderAction->setEnabled(false);
@@ -1911,4 +1919,18 @@ void MyWindow::updateDisplays(MyLayer* layer)
     display->reorderDrawing(layers);
     ((MyDisplay*)(*sit))->update();
   }
+}
+
+void MyWindow::editLegendSlot()
+{
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
+
+  te::qt::widgets::Legend legendDialog(layerItem);
+
+  if(legendDialog.exec() != QDialog::Accepted)
+    return;
+
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+  m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legendDialog.getLegend());
+  updateDisplays((MyLayer*)(layerItem->getRefLayer()));
 }

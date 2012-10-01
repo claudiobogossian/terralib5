@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/BandProperty.cpp
- 
+
   \brief It describes the range of one dimension of a raster.
 */
 
@@ -38,7 +38,7 @@ te::rst::BandProperty::BandProperty(std::size_t idx, int t, const std::string& d
     m_description(desc),
     m_noDataValue(std::numeric_limits<double>::max()),
     m_valuesOffset(0.0, 0.0),
-    m_valuesScale(1.0, 1.0),
+    m_valuesScale(1.0, 0.0),
     m_colorInterp(te::rst::UndefCInt),
     m_paletteInterp(te::rst::UndefPalInt),
     m_blkw(0),
@@ -94,7 +94,7 @@ te::rst::BandProperty& te::rst::BandProperty::operator=(const BandProperty& rhs)
     m_nblocksy = rhs.m_nblocksy;
     m_unit = rhs.m_unit;
   }
-  
+
   return *this;
 }
 

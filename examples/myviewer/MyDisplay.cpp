@@ -515,6 +515,14 @@ void MyDisplay::addDrawOnlyChanged(te::map::AbstractLayer* al)
 te::qt::widgets::Canvas* MyDisplay::getCanvas(te::map::AbstractLayer* layer)
 {
   MyLayer* l = (MyLayer*)layer;
+  if(m_extent == 0)
+  {
+    if(layer->getExtent())
+      m_extent = new te::gm::Envelope(*(layer->getExtent()));
+    else
+      return 0;
+  }
+
   if(l->isTemporal())
   {
     te::map::AbstractLayer* parent = (te::map::AbstractLayer*)l->getParent();
@@ -641,6 +649,8 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
     //setWaitCursor();
     te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
     te::qt::widgets::Canvas* canvas = getCanvas(al);
+    if(canvas == 0)
+      return;
 //
 //
 //if(((MyLayer*)(al))->getId().find("crimes") != std::string::npos)

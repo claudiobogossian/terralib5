@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/rp/ClassifierISOSegStrategy.h
-  \brief ISOSeg strategy for OBIA classification.
+  \brief ISOSeg strategy for segmentation-based classification.
  */
 
 #ifndef __TERRALIB_RP_INTERNAL_CLASSIFIERISOSEGSTRATEGY_H
