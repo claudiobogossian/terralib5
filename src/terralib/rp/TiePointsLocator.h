@@ -611,6 +611,8 @@ namespace te
           const bool autoFill,
           const BufferElementT& autoFillValue )
         {
+          assert( bufferLinesNumber > 1 );
+          
           unsigned int idx = 0;
           unsigned int col = 0;
           
@@ -802,7 +804,55 @@ namespace te
           
           \param matrix The given matrix.
         */
-        static void printMatrix( const te::rp::Matrix< double >& matrix );
+        template < typename ElementT >
+        void printMatrix( const te::rp::Matrix< ElementT >& matrix )
+        {
+          std::cout << std::endl;
+          
+          for( unsigned int line = 0 ; line < matrix.getLinesNumber() ; ++line )
+          {
+            std::cout << std::endl << "[";
+            
+            for( unsigned int col = 0 ; col < matrix.getColumnsNumber() ; ++col )
+            {
+              std::cout << " " << matrix( line, col );
+            }
+            
+            std::cout << "]";
+          }
+          
+          std::cout << std::endl;
+        }        
+        
+        /*! 
+          \brief Print the given buffer to std::out.
+          
+          \param buffer Buffer pointer.
+          
+          \param nLines Number of lines.
+          
+          \param nCols Number of columns.
+        */
+        template< typename BufferElementT >
+        static void printBuffer( BufferElementT** buffer, const unsigned int nLines,
+          const unsigned int nCols )
+        {
+          std::cout << std::endl;
+          
+          for( unsigned int line = 0 ; line < nLines ; ++line )
+          {
+            std::cout << std::endl << "[";
+            
+            for( unsigned int col = 0 ; col < nCols ; ++col )
+            {
+              std::cout << " " << buffer[ line ][ col ];
+            }
+            
+            std::cout << "]";
+          }
+          
+          std::cout << std::endl;
+        };
     };
 
   } // end namespace rp
