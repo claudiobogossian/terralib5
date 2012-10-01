@@ -46,6 +46,7 @@
 #include <cassert>
 #include <limits>
 #include <stdint.h>
+#include <map>
 
 // GDAL
 #include <gdal_priv.h>
@@ -297,11 +298,13 @@ te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, d
 
   if((it != rinfo.end()) &&
      (te::common::Convert2UCase(it->second) == "TRUE"))
-   {
-    rinfo.erase(it);
+  {
+    std::map<std::string, std::string> irinfo(rinfo);
+    std::map<std::string, std::string>::iterator iit = irinfo.find("USE_TERRALIB_REPROJECTION");
+    irinfo.erase(iit);
 
-    return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo);
-   }
+    return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, irinfo);
+  }
 
 // otherwise, use GDAL Warp function
   if (srid == getSRID())
