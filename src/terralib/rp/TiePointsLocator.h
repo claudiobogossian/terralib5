@@ -124,8 +124,6 @@ namespace te
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
-            unsigned int m_scalesNumber; //!< The number of multi-resolution pyramid scales to generate, when applicable (default:3, minimum: 3);
-          
             InputParameters();
             
             InputParameters( const InputParameters& );
@@ -349,6 +347,8 @@ namespace te
             
             unsigned int m_scalesNumber; //!< The number of sub-samples scales to generate (minimum:3).
             
+            unsigned int m_octavesNumber; //!< The number of octaves to generate (minimum:1).
+            
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
             RasterDataContainerT const* m_integralRasterDataPtr; //!< The integral image raster data.
@@ -557,6 +557,8 @@ namespace te
           
           \param scalesNumber The number of sub-sampling scales to generate.
           
+          \param octavesNumber The number of octaves to generate.
+          
           \param maxInterestPoints The maximum number of interest points to find over raster 1.
           
           \param enableMultiThread Enable/disable multi-thread.
@@ -571,6 +573,7 @@ namespace te
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
           const unsigned int scalesNumber,
+          const unsigned int octavesNumber,
           InterestPointsSetT& interestPoints );          
           
         /*! 

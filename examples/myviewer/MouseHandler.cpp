@@ -50,7 +50,7 @@ MouseHandler::MouseHandler(QWidget* parent) : DisplayEventHandler(parent),
   QWidget* p = parent;
   while(p)
   {
-    if(p->objectName() == "MapDisplay")
+    if(p->objectName() == "MyDisplay")
       break;
     p = (QWidget*)p->parent();
   }
