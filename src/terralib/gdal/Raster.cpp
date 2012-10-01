@@ -292,11 +292,16 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
 
 te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo)
 {
-// if raster out is not a GDAL dataset, use other implementation
-  std::map<std::string, std::string>::const_iterator it = rinfo.find("URI");
+// if raster out is forced to be on memory, use other implementation
+  std::map<std::string, std::string>::const_iterator it = rinfo.find("USE_TERRALIB_REPROJECTION");
 
-  if(!(it != rinfo.end() && te::gdal::IsGDALDataSet(it->second)))
+  if((it != rinfo.end()) &&
+     (te::common::Convert2UCase(it->second) == "TRUE"))
+   {
+    rinfo.erase(it);
+
     return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo);
+   }
 
 // otherwise, use GDAL Warp function
   if (srid == getSRID())
