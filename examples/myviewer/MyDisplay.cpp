@@ -1143,11 +1143,16 @@ void MyDisplay::onResizeTimeout()
 
 void MyDisplay::setExtent(const te::gm::Envelope& e)
 {
-  //m_useChanged = false;
+  ////m_useChanged = false;
+  //m_drawOnlyChanged.clear();
+  //te::qt::widgets::MapDisplay::setExtent(e);
+  ////if(e.isValid())
+  ////  m_useChanged = true;
+  //clearTooltipPixmap();
+  //if(m_timeSlider)
+  //  clearTemporalPixmaps(m_timeSlider->getLayers());
   m_drawOnlyChanged.clear();
-  te::qt::widgets::MapDisplay::setExtent(e);
-  //if(e.isValid())
-  //  m_useChanged = true;
+  te::map::MapDisplay::setExtent(e);
   clearTooltipPixmap();
   if(m_timeSlider)
     clearTemporalPixmaps(m_timeSlider->getLayers());

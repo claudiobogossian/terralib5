@@ -1704,13 +1704,15 @@ void te::qt::widgets::Canvas::setPolygonContourColor(const te::color::RGBAColor&
   QColor cor(color.getRgba());
   cor.setAlpha(qAlpha(color.getRgba()));
 
-  if(cor.alpha() == 255)
-  {
-    m_polyContourPen.setColor(cor);
-    m_polyContourColor = QColor(0, 0, 0, 0);
-  }
-  else
-    m_polyContourColor = cor;
+  //if(cor.alpha() == 255)
+  //{
+  //  m_polyContourPen.setColor(cor);
+  //  m_polyContourColor = QColor(0, 0, 0, 0);
+  //}
+  //else
+  //  m_polyContourColor = cor;
+  m_polyContourPen.setColor(cor);
+  m_polyContourColor = cor;
 }
 
 void te::qt::widgets::Canvas::setPolygonContourPattern(te::color::RGBAColor** pattern, int ncols, int nrows)
