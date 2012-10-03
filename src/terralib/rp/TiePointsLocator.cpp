@@ -1523,8 +1523,8 @@ namespace te
       
       // Globals
       
-      const unsigned int maxFilterStepSize = std::pow( 2u, 
-        paramsPtr->m_octavesNumber );
+      const unsigned int maxFilterStepSize = (unsigned int)std::pow( 2.0, 
+        (double)paramsPtr->m_octavesNumber );
       const unsigned int maxGausFilterWidth = 3 + ( 3 * 
         paramsPtr->m_scalesNumber * maxFilterStepSize );
       const unsigned int maxGausFilterRadius = maxGausFilterWidth / 2;
@@ -1725,7 +1725,7 @@ namespace te
               
               for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
               {
-                filterStepSize = std::pow( 2u, octaveIdx + 1 );
+                filterStepSize = (unsigned int)std::pow( 2.0, (double)(octaveIdx + 1) );
                 baseFilterSize = 3 + ( 3 * filterStepSize );
                 
                 for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
