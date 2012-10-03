@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../color/ColorBar.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../geometry/Envelope.h"
 #include "../se/FeatureTypeStyle.h"
@@ -44,15 +45,13 @@ te::map::Layer::Layer(const std::string& id,
     m_mbr(0),
     m_style(0),
     m_renderer(0),
-    m_grouping(0)
+    m_grouping(0),
+    m_colorBar(0)
 {
 }
 
 te::map::Layer::~Layer()
 { 
-  if(m_grouping)
-    delete m_grouping;
-
   removeLegend();
 }
 
@@ -139,15 +138,12 @@ void te::map::Layer::setRenderer(LayerRenderer* renderer)
 
 te::map::Grouping* te::map::Layer::getGrouping() const
 {
-  return m_grouping;
+  return m_grouping.get();
 }
 
 void te::map::Layer::setGrouping(Grouping* grouping)
 {
-  if(m_grouping)
-    delete m_grouping;
-
-  m_grouping = grouping;
+  m_grouping.reset(grouping);
 }
 
 bool te::map::Layer::hasLegend()
@@ -174,4 +170,14 @@ void te::map::Layer::insertLegend(const std::vector<LegendItem*>& legend)
 {
   removeLegend();
   m_legend = legend;
+}
+
+te::color::ColorBar* te::map::Layer::getColorBar() const
+{
+  return m_colorBar.get();
+}
+
+void te::map::Layer::setColorBar(te::color::ColorBar* colorBar)
+{
+  m_colorBar.reset(colorBar);
 }
