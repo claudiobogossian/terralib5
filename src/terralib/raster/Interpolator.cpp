@@ -104,9 +104,19 @@ void te::rst::Interpolator::getValues(const double& c, const double& r, std::vec
 
 void te::rst::Interpolator::nearestNeighborGetValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
 {
-  unsigned cr = (unsigned) std::floor(c);
+  unsigned cr;
 
-  unsigned rr = (unsigned) std::floor(r);
+  unsigned rr;
+
+  if (c < 0)
+    cr = 0;
+  else
+    cr = (unsigned) std::floor(c);
+
+  if (r < 0)
+    rr = 0;
+  else
+    rr = (unsigned) std::floor(r);
 
   m_raster->getValue(cr, rr, v, b);
 }
@@ -124,7 +134,7 @@ void te::rst::Interpolator::bilinearGetValue(const double& c, const double& r, s
 
   m_bilColMin = std::floor(c);
   m_bilColMax = (m_bilColMin == c)? m_bilColMin: (m_bilColMin + 1.0);
-    
+
   m_bilRowDifMin = r - m_bilRowMin;
   m_bilRowDifMax = m_bilRowMax - r;
 
@@ -145,16 +155,16 @@ void te::rst::Interpolator::bilinearGetValue(const double& c, const double& r, s
   m_raster->getValue((unsigned) m_bilColMax, (unsigned) m_bilRowMin, m_bilValues[1], b);
   m_raster->getValue((unsigned) m_bilColMin, (unsigned) m_bilRowMax, m_bilValues[2], b);
   m_raster->getValue((unsigned) m_bilColMax, (unsigned) m_bilRowMax, m_bilValues[3], b);
-  
-  double vr = ( (m_bilValues[0].real() * m_bilWeights[0]) + 
-            (m_bilValues[1].real() * m_bilWeights[1]) + 
-            (m_bilValues[2].real() * m_bilWeights[2]) + 
-            (m_bilValues[3].real() * m_bilWeights[3]) ) / 
+
+  double vr = ( (m_bilValues[0].real() * m_bilWeights[0]) +
+            (m_bilValues[1].real() * m_bilWeights[1]) +
+            (m_bilValues[2].real() * m_bilWeights[2]) +
+            (m_bilValues[3].real() * m_bilWeights[3]) ) /
             (m_bilWeights[0] + m_bilWeights[1] + m_bilWeights[2] + m_bilWeights[3]);
-  double vi = ( (m_bilValues[0].imag() * m_bilWeights[0]) + 
-            (m_bilValues[1].imag() * m_bilWeights[1]) + 
-            (m_bilValues[2].imag() * m_bilWeights[2]) + 
-            (m_bilValues[3].imag() * m_bilWeights[3]) ) / 
+  double vi = ( (m_bilValues[0].imag() * m_bilWeights[0]) +
+            (m_bilValues[1].imag() * m_bilWeights[1]) +
+            (m_bilValues[2].imag() * m_bilWeights[2]) +
+            (m_bilValues[3].imag() * m_bilWeights[3]) ) /
             (m_bilWeights[0] + m_bilWeights[1] + m_bilWeights[2] + m_bilWeights[3]);
   v = std::complex<double>(vr,vi);
 
@@ -180,9 +190,9 @@ void te::rst::Interpolator::bicubicGetValue(const double& c, const double& r, st
   {
     for(m_bicBufCol = 0; m_bicBufCol < 4 ; ++m_bicBufCol)
     {
-      m_raster->getValue(m_bicGridCol + m_bicBufCol, m_bicGridRow + m_bicBufRow, 
+      m_raster->getValue(m_bicGridCol + m_bicBufCol, m_bicGridRow + m_bicBufRow,
                          m_bicBbufferReal[m_bicBufRow][m_bicBufCol], b);
-      m_raster->getIValue(m_bicGridCol + m_bicBufCol, m_bicGridRow + m_bicBufRow, 
+      m_raster->getIValue(m_bicGridCol + m_bicBufCol, m_bicGridRow + m_bicBufRow,
                           m_bicBbufferImag[m_bicBufRow][m_bicBufCol], b);
     }
   }
@@ -211,24 +221,24 @@ void te::rst::Interpolator::bicubicGetValue(const double& c, const double& r, st
     m_bicRowAccumImag = 0.0;
     for(m_bicBufCol = 0; m_bicBufCol < 4; ++m_bicBufCol)
     {
-      m_bicRowAccumReal += m_bicBbufferReal[m_bicBufRow][m_bicBufCol] * 
+      m_bicRowAccumReal += m_bicBbufferReal[m_bicBufRow][m_bicBufCol] *
                            m_bicHWeights[m_bicBufCol];
-      m_bicRowAccumImag += m_bicBbufferImag[m_bicBufRow][m_bicBufCol] * 
+      m_bicRowAccumImag += m_bicBbufferImag[m_bicBufRow][m_bicBufCol] *
                            m_bicHWeights[m_bicBufCol];
     }
 
     m_bicRowsValuesReal[m_bicBufRow] = m_bicRowAccumReal / m_bicHSum;
     m_bicRowsValuesImag[m_bicBufRow] = m_bicRowAccumImag / m_bicHSum;
   }
-  double vr = ( m_bicRowsValuesReal[0] * m_bicVWeights[0] + 
-            m_bicRowsValuesReal[1] * m_bicVWeights[1] + 
-            m_bicRowsValuesReal[2] * m_bicVWeights[2] + 
+  double vr = ( m_bicRowsValuesReal[0] * m_bicVWeights[0] +
+            m_bicRowsValuesReal[1] * m_bicVWeights[1] +
+            m_bicRowsValuesReal[2] * m_bicVWeights[2] +
             m_bicRowsValuesReal[3] * m_bicVWeights[3] ) / m_bicVSum;
 
-  double vi = ( m_bicRowsValuesImag[0] * m_bicVWeights[0] + 
-            m_bicRowsValuesImag[1] * m_bicVWeights[1] + 
-            m_bicRowsValuesImag[2] * m_bicVWeights[2] + 
-               m_bicRowsValuesImag[3] * m_bicVWeights[3] ) / m_bicVSum; 
+  double vi = ( m_bicRowsValuesImag[0] * m_bicVWeights[0] +
+            m_bicRowsValuesImag[1] * m_bicVWeights[1] +
+            m_bicRowsValuesImag[2] * m_bicVWeights[2] +
+               m_bicRowsValuesImag[3] * m_bicVWeights[3] ) / m_bicVSum;
   v = std::complex<double>(vr,vi);
 
   // if the output value is equal to dummy, call nearest neighbor method

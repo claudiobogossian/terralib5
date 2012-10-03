@@ -291,7 +291,7 @@ te::rst::Raster* te::gdal::Raster::resample(int method, int scale, const std::ma
   return rout;
 }
 
-te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo)
+te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m)
 {
 // if raster out is forced to be on memory, use other implementation
   std::map<std::string, std::string>::const_iterator it = rinfo.find("USE_TERRALIB_REPROJECTION");
@@ -303,7 +303,7 @@ te::rst::Raster* te::gdal::Raster::transform(int srid, double llx, double lly, d
     std::map<std::string, std::string>::iterator iit = irinfo.find("USE_TERRALIB_REPROJECTION");
     irinfo.erase(iit);
 
-    return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, irinfo);
+    return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, irinfo, m);
   }
 
 // otherwise, use GDAL Warp function

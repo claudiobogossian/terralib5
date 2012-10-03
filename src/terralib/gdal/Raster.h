@@ -117,8 +117,9 @@ namespace te
         /*!
           \note When the parameter USE_TERRALIB_REPROJECTION = TRUE in rinfo, the default reprojection will be called.
                 Otherwise this method will call the GDAL reprojection method. The rinfo must define a GDAL compatible raster.
+                The parameter m (interpolation method) is not used in GDAL implementation.
         */
-        te::rst::Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo);
+        te::rst::Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m = 0);
 
         void transform(te::rst::Raster* outRaster);
 
