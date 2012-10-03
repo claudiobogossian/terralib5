@@ -15,6 +15,8 @@
 #include <terralib/maptools.h>
 #include <terralib/postgis.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/qt/widgets/layer/Legend.h>
+#include <terralib/maptools/LegendItem.h>
 #include <terralib/color.h>
 #include <terralib/geometry.h>
 #include <terralib/datatype.h>
@@ -22,6 +24,7 @@
 #include <terralib/raster.h>
 #include <terralib/raster/RasterSummary.h>
 #include <terralib/raster/RasterSummaryManager.h>
+#include <terralib/qt/widgets/utils/ScopedCursor.h>
 
 
 //Qt
@@ -303,6 +306,10 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_removeAction);
   connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
 
+  m_editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
+  m_treeMenu->addAction(m_editLegendAction);
+  connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
+
   m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
   m_keepOnMemoryAction->setCheckable(true);
   m_treeMenu->addAction(m_keepOnMemoryAction);
@@ -496,8 +503,9 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
       bool temporal = false;
+      MyDisplay* md = (MyDisplay*)*it;
       std::vector<te::map::AbstractLayer*> mdLayers;
-      getLayers((*it)->getLayerTree(), mdLayers);
+      getLayers(md->getLayerTree(), mdLayers);
       std::vector<te::map::AbstractLayer*>::iterator lit, mdit;
       for(mdit = mdLayers.begin(); mdit != mdLayers.end(); ++mdit)
       {
@@ -564,8 +572,9 @@ void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
   std::vector<te::map::MapDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit, lit2;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
@@ -581,9 +590,9 @@ void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
   std::set<te::map::MapDisplay*>::iterator sit;
   for(sit = displays.begin(); sit != displays.end(); ++sit)
   {
-    std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*sit)->getLayerTree(), layers);
     MyDisplay* display = (MyDisplay*)*sit;
+    std::vector<te::map::AbstractLayer*> layers;
+    getLayers(display->getLayerTree(), layers);
     display->reorderDrawing(layers);
     ((MyDisplay*)(*sit))->update();
   }
@@ -631,10 +640,12 @@ void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint&
       m_addFolderAction->setEnabled(true);
       m_changeStatusColorMenu->setEnabled(false);
       m_changeDefaultStyleMenu->setEnabled(false);
+      m_editLegendAction->setEnabled(false);
     }
     else
     {
       MyLayer* layer = (MyLayer*)m_selectedLayer;
+      m_editLegendAction->setEnabled(true);
       m_keepOnMemoryAction->setEnabled(true);
       m_keepOnMemoryAction->setChecked(layer->isKeepOnMemory());
       m_addFolderAction->setEnabled(false);
@@ -926,8 +937,9 @@ void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
     std::vector<te::map::MapDisplay*>::iterator it;
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
+      MyDisplay* display = (MyDisplay*)*it;
       std::vector<te::map::AbstractLayer*> layers;
-      getLayers((*it)->getLayerTree(), layers);
+      getLayers(display->getLayerTree(), layers);
       std::vector<te::map::AbstractLayer*>::iterator lit;
       for(lit = layers.begin(); lit != layers.end(); ++lit)
       {
@@ -1379,8 +1391,9 @@ void MyWindow::AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer* al)
   while(it != m_mapDisplayVec.end())
   {
     int c = 0;
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
@@ -1474,13 +1487,15 @@ void MyWindow::AdjustmentsAfterTakeLayer(te::map::AbstractLayer* parent, te::map
   std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
   while(it != m_mapDisplayVec.end())
   {
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     if(layers.empty())
     {
       if(*it == m_mapDisplay)
       {
-        if(((*it)->getLayerTree())->getType() == "FOLDERLAYER")
+        MyDisplay* display = (MyDisplay*)*it;
+        if((display->getLayerTree())->getType() == "FOLDERLAYER")
           // main map display is empty
           m_mapDisplay->changeTree(0);
         else
@@ -1879,8 +1894,9 @@ void MyWindow::updateDisplays(MyLayer* layer)
   std::vector<te::map::MapDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
+    MyDisplay* display = (MyDisplay*)*it;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers((*it)->getLayerTree(), layers);
+    getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit;
     for(lit = layers.begin(); lit != layers.end(); ++lit)
     {
@@ -1904,4 +1920,38 @@ void MyWindow::updateDisplays(MyLayer* layer)
     display->reorderDrawing(layers);
     ((MyDisplay*)(*sit))->update();
   }
+}
+
+void MyWindow::editLegendSlot()
+{
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
+
+  te::qt::widgets::Legend legendDialog(layerItem);
+
+  if(legendDialog.exec() != QDialog::Accepted)
+    return;
+
+    int frameStyle = QFrame::Sunken | QFrame::Panel;
+
+    bool ok;
+    int opac = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
+                                 tr("Color Opacity:"), 120, 0, 255, 10, &ok);
+    if(ok == false)
+      opac = 255;
+
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
+  std::vector<te::map::LegendItem*> legends = legendDialog.getLegend();
+  std::vector<te::map::LegendItem*>::iterator it;
+  for(it = legends.begin(); it != legends.end(); ++it)
+  {
+    te::map::LegendItem* leg = *it;
+    te::color::RGBAColor cor = leg->getColor();
+    cor.setColor(cor.getRed(), cor.getGreen(), cor.getBlue(), opac);
+    leg->setColor(cor);
+  }
+
+  //m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legendDialog.getLegend());
+  m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legends);
+  updateDisplays((MyLayer*)(layerItem->getRefLayer()));
 }

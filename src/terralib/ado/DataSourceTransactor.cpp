@@ -28,9 +28,14 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "../memory/DataSet.h"
 #include "../memory/DataSetItem.h"
-#include "DataSource.h"
+#include "../dataaccess/query/Query.h"
+#include "../dataaccess/query/Select.h"
+#include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/query/SQLVisitor.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "DataSource.h"
 #include "DataSet.h"
+#include "SQLVisitor.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
 #include "DataSetTypePersistence.h"
@@ -158,7 +163,12 @@ te::da::DataSet* te::ado::DataSourceTransactor::query(const te::da::Select& q,
                                                            te::common::TraverseType travType, 
                                                            te::common::AccessPolicy rwRole)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  std::string sql;
+
+  SQLVisitor visitor(*(m_ds->getDialect()), sql, m_conn);
+  q.accept(visitor);
+
+  return query(sql, travType, rwRole);
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::query(const std::string& query, 

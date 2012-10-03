@@ -1,4 +1,4 @@
-#include "QtCanvasExamples.h"
+#include "CanvasExamples.h"
 
 // TerraLib
 #include <terralib/raster.h>
@@ -21,17 +21,17 @@ void DrawingRasterObject()
  
     // set input raster name
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = "D:/landsat.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
 
   // open input raster
   te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
   ds->open(rinfo);
 
   te::da::DataSourceTransactor* tr = ds->getTransactor();
-  te::da::DataSetType* dt = tr->getCatalogLoader()->getDataSetType("landsat.tif");
+  te::da::DataSetType* dt = tr->getCatalogLoader()->getDataSetType("cbers2b_rgb342_crop.tif");
   te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperties()[0]->clone());
 
-  te::da::DataSet* dataSet = tr->getDataSet("landsat.tif");
+  te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
   te::rst::Raster* raster = dataSet->getRaster();
 
   const te::gm::Envelope* extent = raster->getExtent();

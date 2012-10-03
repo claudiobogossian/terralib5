@@ -76,6 +76,7 @@ set (
   widgets/rp
   widgets/se
   widgets/srs
+  widgets/tools
   widgets/help
   widgets/utils
 )
@@ -99,7 +100,6 @@ file (
   ${SRCDIR}/qwt/ScatterDisplay.h
   ${SRCDIR}/qwt/ScatterSelectionCursor.h
   ${SRCDIR}/qwt/TimeSeriesDisplay.h
-  ${SRCDIR}/widgets/canvas/BasicMapDisplay.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
@@ -161,6 +161,8 @@ file (
   ${SRCDIR}/widgets/srs/SRSDialog.h
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
   ${SRCDIR}/widgets/dataview/TabularViewer.h
+  ${SRCDIR}/widgets/tools/CoordTracking.h
+  ${SRCDIR}/widgets/tools/Measure.h
 #  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
 

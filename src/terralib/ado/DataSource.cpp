@@ -27,6 +27,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
+#include "../dataaccess/query/SQLDialect.h"
 #include "../datatype/StringProperty.h"
 #include "Globals.h"
 #include "DataSource.h"
@@ -43,6 +44,8 @@ inline void TESTHR( HRESULT hr )
 {
 	if( FAILED(hr) ) _com_issue_error( hr );
 }
+
+te::da::SQLDialect* te::ado::DataSource::sm_myDialect(0);
 
 te::ado::DataSource::DataSource()
   : m_conn(0),
@@ -94,7 +97,7 @@ void te::ado::DataSource::getCapabilities(std::map<std::string, std::string>& /*
 
 const te::da::SQLDialect* te::ado::DataSource::getDialect() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  return sm_myDialect;
 }
 
 void te::ado::DataSource::open()

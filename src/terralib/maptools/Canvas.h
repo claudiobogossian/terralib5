@@ -405,11 +405,12 @@ namespace te
         /*!
           \brief It draws a raster over the canvas at the specified position (x, y). The raster must be with three 8-bit bands (1R, 2G, 3B), 
 
-          \param x   The canvas start position in x where the raster image will be drawn.
-          \param y   The canvas start position in y where the raster image will be drawn.
-          \param src The source raster.
+          \param x        The canvas start position in x where the raster image will be drawn.
+          \param y        The canvas start position in y where the raster image will be drawn.
+          \param src      The source raster.
+          \param opacity  The opacity value used to draw the image
         */
-        virtual void drawImage(int x, int y, te::rst::Raster* src) = 0;
+        virtual void drawImage(int x, int y, te::rst::Raster* src, int opacity = TE_OPAQUE) = 0;
 
         /*!
           \brief It draws the rectangular portion with the origin (sx, sy), width sw and height sh, of the source raster, 
@@ -425,8 +426,9 @@ namespace te
           \param sy  The source image start position.
           \param sw  The source image rectangle width.
           \param sh  The source image rectangle height.
+          \param opacity  The opacity value used to draw the image
         */
-        virtual void drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh) = 0;
+        virtual void drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh, int opacity = TE_OPAQUE) = 0;
 
         //@}
 

@@ -25,7 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
-#include "QtCanvasExamples.h"
+#include "CanvasExamples.h"
 
 // STL
 #include <exception>
@@ -41,7 +41,7 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     LoadModules();
-    //DrawingRasterObject();
+    DrawingRasterObject();
     DrawingGeometricObjects();
     DrawPNG();
   }

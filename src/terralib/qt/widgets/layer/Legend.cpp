@@ -129,7 +129,7 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     }
 
     // Make a copy of the legend contents of the reference layer
-    std::vector<te::map::LegendItem*>& layerLegend = refLayer->getLegend();
+    std::vector<te::map::LegendItem*> layerLegend = refLayer->getLegend();
     size_t legendSize = layerLegend.size();
 
     m_legend.resize(legendSize);

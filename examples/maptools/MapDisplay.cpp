@@ -5,7 +5,7 @@
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
-#include <terralib/qt/widgets/canvas/BasicMapDisplay.h>
+#include <terralib/qt/widgets/canvas/MapDisplay.h>
 
 // STL
 #include <iostream>
@@ -39,7 +39,7 @@ void MapDisplay()
     std::vector<std::string*> datasets;
     transactor->getCatalogLoader()->getDataSets(datasets);
 
-    te::qt::widgets::BasicMapDisplay* mapDisplay = new te::qt::widgets::BasicMapDisplay(QSize(700, 500));
+    te::qt::widgets::MapDisplay* mapDisplay = new te::qt::widgets::MapDisplay(QSize(700, 500));
 
     // MapDisplay box
     te::gm::Envelope env;
@@ -80,7 +80,7 @@ void MapDisplay()
     }
 
     mapDisplay->setMinimumSize(QSize(60, 60));
-    mapDisplay->setResizePolicy(te::qt::widgets::BasicMapDisplay::Center);
+    mapDisplay->setResizePolicy(te::qt::widgets::MapDisplay::Center);
     mapDisplay->setLayerList(layerList);
     mapDisplay->show();
     mapDisplay->setExtent(env);
