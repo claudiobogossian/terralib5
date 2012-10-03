@@ -183,6 +183,7 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   connect(m_timeGroupBox, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenuSlot(const QPoint&)));
 
+  MyDisplay::MapDisplay::QWidget::raise();
   m_widget->show();
 }
 
