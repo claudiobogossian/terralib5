@@ -367,6 +367,9 @@ namespace te
            */
           QMatrix getMatrix();
 
+          /*! \brief Sets the given render hint on the canvas painter if on is true; otherwise clears the render hint. */
+          void setRenderHint(QPainter::RenderHint hint, bool on = true);
+
           //@}
 
         private:
