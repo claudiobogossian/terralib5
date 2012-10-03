@@ -1153,6 +1153,15 @@ void MyDisplay::setExtent(const te::gm::Envelope& e)
   //  clearTemporalPixmaps(m_timeSlider->getLayers());
   m_drawOnlyChanged.clear();
   te::map::MapDisplay::setExtent(e);
+  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  {
+    te::qt::widgets::Canvas* canvas = it->second;
+    canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
+    canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
+    canvas->clear();
+  }
+
   clearTooltipPixmap();
   if(m_timeSlider)
     clearTemporalPixmaps(m_timeSlider->getLayers());
