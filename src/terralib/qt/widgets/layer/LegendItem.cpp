@@ -45,7 +45,7 @@ te::qt::widgets::LegendItem::LegendItem(te::map::LegendItem* refLegendItem, QObj
     QPixmap pixmap(16, 12);
 
     te::color::RGBAColor color = refLegendItem->getColor();
-    QColor qColor(color.getRgba());
+    QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     pixmap.fill(qColor);
     m_icon.addPixmap(pixmap);
   }
