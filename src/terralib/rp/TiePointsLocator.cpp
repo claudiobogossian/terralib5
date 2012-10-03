@@ -644,7 +644,8 @@ namespace te
           maskRasterData ),
           "Error loading raster data" );
           
-  //      createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster1");
+//        printMatrix( *(rasterData[ 0 ]) );
+//        createTifFromMatrix( *(rasterData[ 0 ]), InterestPointsSetT(), "loadedRaster1");
         
         // Creating the integral image
         
@@ -663,8 +664,8 @@ namespace te
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
           raster1MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
-          3,
-          3,
+          6,
+          6,
           raster1InterestPoints ),
           "Error locating raster 1 interest points" );
           
@@ -1522,7 +1523,7 @@ namespace te
       
       // Globals
       
-      const unsigned int maxFilterStepSize = std::pow( 2, 
+      const unsigned int maxFilterStepSize = std::pow( 2u, 
         paramsPtr->m_octavesNumber );
       const unsigned int maxGausFilterWidth = 3 + ( 3 * 
         paramsPtr->m_scalesNumber * maxFilterStepSize );
@@ -1618,15 +1619,15 @@ namespace te
         {
           octavesBufferHandlers.push_back( std::vector< boost::shared_array< double* > >() );
           std::vector< boost::shared_array< double* > >&
-            currOctavesBufferHandler = octavesBufferHandlers[ 
+            currOctaveBuffersHandler = octavesBufferHandlers[ 
             octavesBufferHandlers.size() - 1 ];
           
           for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ; ++scaleIdx )
           {
-            currOctavesBufferHandler.push_back( boost::shared_array< double* >(
+            currOctaveBuffersHandler.push_back( boost::shared_array< double* >(
               new double*[ buffersLines ] ) );
             boost::shared_array< double* >& currOctavesBuffer = 
-              currOctavesBufferHandler[ currOctavesBufferHandler.size() - 1 ];
+              currOctaveBuffersHandler[ currOctaveBuffersHandler.size() - 1 ];
             for( unsigned int bufferLine = 0 ; bufferLine <  buffersLines ; 
               ++bufferLine )
             {
@@ -1720,9 +1721,11 @@ namespace te
             
             if( rasterLine >= firstRasterLineToGenerateResponse )
             {
+//              printBuffer( rasterBufferPtr, buffersLines, buffersCols );
+              
               for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
               {
-                filterStepSize = std::pow( 2, octaveIdx + 1 );
+                filterStepSize = std::pow( 2u, octaveIdx + 1 );
                 baseFilterSize = 3 + ( 3 * filterStepSize );
                 
                 for( scaleIdx = 0 ; scaleIdx < paramsPtr->m_scalesNumber ;
@@ -1752,106 +1755,106 @@ namespace te
                     windowUpperLeftColBound ; ++windowUpperLeftCol )
                   {
                     dXX = 
-                      rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
-                      - 3.0 *
-                      (
-                        rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
-                        - rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
-                        - rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
-                        + rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                      rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        6.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        1.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
+                      -
+                      ( 
+                        3.0 
+                        *
+                        (
+                          rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            6.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
+                          - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            6.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                          - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            1.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
+                          + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            1.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
+                        )
                       );
                     dXX /= (double)( filterWidth * filterWidth );
                         
                     dYY =
-                      rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 8.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
-                      - 3.0 *
-                      (
-                        rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
-                        - rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
-                        - rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 5.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
-                        + rasterBufferPtr
-                          [ windowUpperLeftLine + (unsigned int)( 2.0 * filterScaleFactorToBase )  ]
-                          [ windowUpperLeftCol + (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                      rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        8.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        8.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                      - 
+                      ( 
+                        3.0 
+                        *
+                        (
+                          rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            5.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                          - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            2.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 6.0 * filterScaleFactorToBase )  ]
+                          - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            5.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                          + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                            2.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                            (unsigned int)( 1.0 * filterScaleFactorToBase )  ]
+                        )
                       );
                     dYY /= (double)( filterWidth * filterWidth );
                     
                     dXY =
                       // Upper-left
-                      rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine ]
-                        [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol ]
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine ]
-                        [ windowUpperLeftCol ]
+                      rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        3.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine ][ windowUpperLeftCol + 
+                        (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        3.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol ]
+                      + rasterBufferPtr[ windowUpperLeftLine ][ windowUpperLeftCol ]
                       // lower-right
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        7.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        4.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        7.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        4.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
                       // upper-right
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine ]
-                        [ windowUpperLeftCol + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine ]
-                        [ windowUpperLeftCol + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        3.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr[ windowUpperLeftLine ][ windowUpperLeftCol + 
+                        (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        3.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
+                      - rasterBufferPtr[ windowUpperLeftLine ][ windowUpperLeftCol + 
+                        (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
                       // lower-left
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol + (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
-                      + rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 7.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol ]
-                      - rasterBufferPtr
-                        [ windowUpperLeftLine + (unsigned int)( 4.0 * filterScaleFactorToBase )  ]
-                        [ windowUpperLeftCol ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        7.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        4.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol + 
+                        (unsigned int)( 3.0 * filterScaleFactorToBase )  ]
+                      + rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        7.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol ]
+                      - rasterBufferPtr[ windowUpperLeftLine + (unsigned int)( 
+                        4.0 * filterScaleFactorToBase )  ][ windowUpperLeftCol ]
                       ;
                     dXY /= (double)( filterWidth * filterWidth );
                       
@@ -1879,73 +1882,73 @@ namespace te
                 for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
                 {         
                   std::vector< boost::shared_array< double* > >& 
-                    currOctavesBufferHandler = octavesBufferHandlers[ octaveIdx ];
+                    currOctaveBuffersHandler = octavesBufferHandlers[ octaveIdx ];
                     
                   isLocalMaxima = false;
                   
                   for( scaleIdx = 1 ; scaleIdx < ( paramsPtr->m_scalesNumber - 1 );
                     ++scaleIdx )
                   {   
-                    const double& windowCenterPixelValue = currOctavesBufferHandler[
+                    const double& windowCenterPixelValue = currOctaveBuffersHandler[
                       scaleIdx ][ maxGausFilterRadius ][ windCenterCol ];
                     lastScaleIdx = scaleIdx - 1;
                     nextScaleIdx = scaleIdx + 1;
                       
                     if( 
                         // verifying the current scale (center not included)
-                        ( windowCenterPixelValue > currOctavesBufferHandler[
+                        ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ] )
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           scaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] ) 
                         // verifying the top scale
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ] )
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ maxGausFilterRadius ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           lastScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
                         // verifying the next scale
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ prevResponseBufferLineIdx ][ prevResponseBufferColIdx ] )
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ prevResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ prevResponseBufferLineIdx ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ maxGausFilterRadius ][ prevResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ maxGausFilterRadius ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ maxGausFilterRadius ][ nextResponseBufferColIdx ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ prevResponseBufferColIdx] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ windCenterCol ] )                          
-                        && ( windowCenterPixelValue > currOctavesBufferHandler[
+                        && ( windowCenterPixelValue > currOctaveBuffersHandler[
                           nextScaleIdx ][ nextResponseBufferLineIdx ][ nextResponseBufferColIdx ] )
                       )
                     {
