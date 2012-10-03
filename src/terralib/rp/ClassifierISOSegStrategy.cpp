@@ -20,7 +20,7 @@
 /*!
   \file terralib/rp/ClassifierISOSegStrategy.cpp
 
-  \briefRaster ISOSeg strategy for OBIA classification.
+  \briefRaster ISOSeg strategy for segmentation-based classification.
 */
 
 // TerraLib

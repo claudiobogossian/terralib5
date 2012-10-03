@@ -54,7 +54,7 @@ namespace te
     {
       public:
 
-         /** @name Initializer Methods
+        /** @name Initializer Methods
          *  Methods related to instantiation and destruction.
          */
         //@{
@@ -70,23 +70,12 @@ namespace te
          */
         //@{
 
-         /*!
-          \brief It sets the root layer.
-
-          \param layer The root layer.
-
-          \note The display will NOT take the ownership of the given layer.
-                You must choose between using setLayerTree or setLayerList. Never use both.
-        */
-        virtual void setLayerTree(te::map::AbstractLayer* layer) = 0;
-
         /*!
           \brief It sets the layer list to be showed in the Map Display.
 
           \param order The layer list.
 
-          \note The display will NOT take the ownership of the given layer.
-                You must choose between using setLayerTree or setLayerList. Never use both.
+          \note The display will NOT take the ownership of the given layers.
         */
         virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order) = 0;
 

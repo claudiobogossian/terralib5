@@ -52,7 +52,7 @@ namespace te
 
       \sa te::rst::Raster
     */
-    class TEGDALEXPORT Raster : public te::rst::Raster 
+    class TEGDALEXPORT Raster : public te::rst::Raster
     {
       public:
 
@@ -114,6 +114,10 @@ namespace te
 
         te::rst::Raster* resample(int method, int scale, const std::map<std::string, std::string>& rinfo);
 
+        /*!
+          \note When the parameter USE_TERRALIB_REPROJECTION = TRUE in rinfo, the default reprojection will be called.
+                Otherwise this method will call the GDAL reprojection method. The rinfo must define a GDAL compatible raster.
+        */
         te::rst::Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo);
 
         void transform(te::rst::Raster* outRaster);

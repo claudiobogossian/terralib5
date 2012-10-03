@@ -116,7 +116,7 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     }
 
     // Make a copy of the legend contents of the reference layer
-    std::vector<te::map::LegendItem*>& layerLegend = refLayer->getLegend();
+    std::vector<te::map::LegendItem*> layerLegend = refLayer->getLegend();
     size_t legendSize = layerLegend.size();
 
     m_legend.resize(legendSize);
@@ -135,16 +135,16 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     precisionComboBox->setCurrentIndex(6);
   }
 
-  m_colorBar.setBarSize(legendColors->width());
+  m_colorBar.setBarSize(colorBar->width());
   m_colorBar.addColor(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), 0.);      // red
   m_colorBar.addColor(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), 0.25);    // green
   m_colorBar.addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.5);   // yellow
   m_colorBar.addColor(te::color::RGBAColor(255, 0, 255, TE_OPAQUE), 0.75);  // magenta
   m_colorBar.addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
 
-  legendColors->setHeight(20);
+  colorBar->setHeight(20);
 
-  legendColors->setColorBar(&m_colorBar);
+  colorBar->setColorBar(&m_colorBar);
 
   // Connect signal/slots
   connect(typeComboBox, SIGNAL(activated(int)), this, SLOT(typeComboBoxActivated(int)));

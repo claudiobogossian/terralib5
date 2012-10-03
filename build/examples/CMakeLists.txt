@@ -48,7 +48,6 @@ option (EXAMPLE_LEGEND "Build legend example." ON)
 option (EXAMPLE_MAPTOOLS "Build map tools example." ON)  
 option (EXAMPLE_PROGRESS "Build task progress example." ON)  
 option (EXAMPLE_PROPERTYMANAGEMENT "Build property management example." ON)  
-option (EXAMPLE_QTCANVAS "Build qt canvas example." ON)  
 option (EXAMPLE_RASTER "Build raster example." ON)  
 option (EXAMPLE_RP "Build rp example." ON)  
 option (EXAMPLE_SAM "Build sam example." ON)  
@@ -64,6 +63,8 @@ option (EXAMPLE_QT_SE "Build qt/se example." ON)
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
 option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
+option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
+option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
   
 # Go into sub-directories
 if(EXAMPLE_COLORBAR)
@@ -121,10 +122,6 @@ endif()
   
 if(EXAMPLE_PROPERTYMANAGEMENT)
   add_subdirectory(terralib_example_propertymanagement)
-endif()
-
-if(EXAMPLE_QTCANVAS)
-  add_subdirectory(terralib_example_qtcanvas)
 endif()
 
 if(EXAMPLE_RASTER)
@@ -185,6 +182,14 @@ endif()
 
 if(EXAMPLE_QT_CHARTS)
   add_subdirectory(terralib_example_qt/charts)
+endif()
+
+if(EXAMPLE_QT_CANVAS)
+  add_subdirectory(terralib_example_qt/canvas)
+endif()
+
+if(EXAMPLE_QT_TOOLS)
+  add_subdirectory(terralib_example_qt/tools)
 endif()
 
 # Verifying if some packag was not found.

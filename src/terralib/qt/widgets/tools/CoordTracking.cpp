@@ -18,41 +18,42 @@
  */
 
 /*!
-  \file MapDisplay.cpp
+  \file terralib/qt/widgets/tools/CoordTracking.cpp
 
-  \brief A widget to control the display of a set of layers.
- */
+  \brief This class implements a concrete tool to geographic coordinate tracking on mouse move operation.
+*/
 
 // TerraLib
-#include "DisplayEventHandler.h"
-#include "MyDisplay.h" 
+#include "MapDisplay.h"
+#include "CoordTracking.h"
 
 // Qt
-#include <QtGui/QResizeEvent>
+#include <QtGui/QMouseEvent>
 
-
-QPixmap* DisplayEventHandler::getDisplayPixmap()
+te::qt::widgets::CoordTracking::CoordTracking(te::qt::widgets::MapDisplay* display, QObject* parent) 
+  : AbstractTool(display, parent)
 {
-  QWidget* p = (QWidget*)parent();
-  while(p)
-  {
-    if(p->objectName() == "MyDisplay")
-      return ((te::qt::widgets::MapDisplay*)p)->getDisplayPixmap();
-    p = (QWidget*)p->parent();
-  }
-  return NULL;
+  m_display->setMouseTracking(true);
 }
 
-void DisplayEventHandler::setRepaint(bool s)
+te::qt::widgets::CoordTracking::~CoordTracking()
 {
-  QWidget* p = (QWidget*)parent();
-  while(p)
-  {
-    if(p->objectName() == "MyDisplay")
-    {
-      ((MyDisplay*)p)->setRepaint(s);
-      break;
-    }
-    p = (QWidget*)p->parent();
-  }
+}
+
+void te::qt::widgets::CoordTracking::initialize()
+{
+}
+
+void te::qt::widgets::CoordTracking::finalize()
+{
+}
+
+bool te::qt::widgets::CoordTracking::mouseMoveEvent(QMouseEvent* e)
+{
+  QPointF p = e->posF();
+  p = m_display->transform(p);
+  if(!p.isNull())
+    emit coordTracked(p);
+
+  return false;
 }

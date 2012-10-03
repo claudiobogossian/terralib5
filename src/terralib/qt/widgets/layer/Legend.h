@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "terralib/qt/qwt/ColorBar.h"
 #include "terralib/color/ColorBar.h"
 #include "../../../color/RGBAColor.h"
 

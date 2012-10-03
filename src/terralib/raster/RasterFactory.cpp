@@ -46,6 +46,12 @@ te::rst::Raster* te::rst::RasterFactory::make(const std::string& rType)
 
 te::rst::Raster* te::rst::RasterFactory::make(Grid* g, const std::vector<BandProperty*> bands, const std::map<std::string, std::string>& rinfo, void* h, void (*deleter)(void*))
 {
+  std::map<std::string, std::string>::const_iterator it = rinfo.find("FORCE_MEM_DRIVER");
+
+  if((it != rinfo.end()) &&
+     (te::common::Convert2UCase(it->second) == "TRUE"))
+    return make("MEM", g, bands, rinfo, h, deleter);
+
   return make(TE_DEFAULT_RASTER_TYPE, g, bands, rinfo, h, deleter);
 }
 

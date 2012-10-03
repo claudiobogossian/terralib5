@@ -124,8 +124,6 @@ namespace te
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
-            unsigned int m_scalesNumber; //!< The number of multi-resolution pyramid scales to generate, when applicable (default:3, minimum: 3);
-          
             InputParameters();
             
             InputParameters( const InputParameters& );
@@ -349,6 +347,8 @@ namespace te
             
             unsigned int m_scalesNumber; //!< The number of sub-samples scales to generate (minimum:3).
             
+            unsigned int m_octavesNumber; //!< The number of octaves to generate (minimum:1).
+            
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
             RasterDataContainerT const* m_integralRasterDataPtr; //!< The integral image raster data.
@@ -364,12 +364,6 @@ namespace te
             unsigned int m_maxRasterLinesBlockMaxSize; //!< The maximum lines number of each raster block to process.
             
             unsigned int* m_nextRasterLinesBlockToProcessValuePtr; //!< A pointer to a valid counter to control the blocks processing sequence.
-            
-            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXPtr; //!< Gaussian second order partial derivatives (X direction).
-            
-            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelYPtr; //!< Gaussian second order partial derivatives (Y direction).
-            
-            std::vector< te::rp::Matrix< double > >* m_gaussianFiltersKernelXYPtr; //!< Gaussian second order partial derivatives (XY direction).
             
             SurfLocatorThreadParams() {};
             
@@ -405,11 +399,6 @@ namespace te
             
             ~CorrelationMatrixCalcThreadParams() {};
         };     
-        
-        // Suft internal second order derivatives gaussian filter kernels
-        static const double surfGaussianBaseFilterKernelY[ 9 ][ 9 ];        
-        static const double surfGaussianBaseFilterKernelX[ 9 ][ 9 ];
-        static const double surfGaussianBaseFilterKernelXY[ 9 ][ 9 ];
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
 //        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
@@ -568,6 +557,8 @@ namespace te
           
           \param scalesNumber The number of sub-sampling scales to generate.
           
+          \param octavesNumber The number of octaves to generate.
+          
           \param maxInterestPoints The maximum number of interest points to find over raster 1.
           
           \param enableMultiThread Enable/disable multi-thread.
@@ -582,6 +573,7 @@ namespace te
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
           const unsigned int scalesNumber,
+          const unsigned int octavesNumber,
           InterestPointsSetT& interestPoints );          
           
         /*! 
@@ -616,8 +608,11 @@ namespace te
           const unsigned int& bufferLinesNumber, 
           const unsigned int& bufferColsNumber,
           const unsigned int& stepSize,
-          const bool zeroFill )
+          const bool autoFill,
+          const BufferElementT& autoFillValue )
         {
+          assert( bufferLinesNumber > 1 );
+          
           unsigned int idx = 0;
           unsigned int col = 0;
           
@@ -632,11 +627,11 @@ namespace te
             
             bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
             
-            if( zeroFill )
+            if( autoFill )
             {
               for( col = 0 ; col < bufferColsNumber  ; ++col )
               {
-                auxLinePtr[ col ] = 0;
+                auxLinePtr[ col ] = autoFillValue;
               }
             }
           }
@@ -805,26 +800,59 @@ namespace te
           CorrelationMatrixCalcThreadParams* paramsPtr);
           
         /*! 
-          \brief Generate rescaled Gaussian second order partial derivatives using a given base filter.
-          
-          \param scalesNumber The number of scales to generate.
-          
-          \param baseFilterKernel The base filter.
-          
-          \param kernels The generated filter kernels.
-          
-          \details The first kernel is related to the first scale.
-        */
-        static void generateRescaledGaussianFilterKernels( const unsigned int scalesNumber,
-          const double (&baseFilterKernel)[9][9], const unsigned int baseFilterKernelWidth,
-          std::vector< te::rp::Matrix< double > >& kernels ); 
-          
-        /*! 
           \brief Print the given matrix to std::out.
           
           \param matrix The given matrix.
         */
-        static void printMatrix( const te::rp::Matrix< double >& matrix );
+        template < typename ElementT >
+        void printMatrix( const te::rp::Matrix< ElementT >& matrix )
+        {
+          std::cout << std::endl;
+          
+          for( unsigned int line = 0 ; line < matrix.getLinesNumber() ; ++line )
+          {
+            std::cout << std::endl << "[";
+            
+            for( unsigned int col = 0 ; col < matrix.getColumnsNumber() ; ++col )
+            {
+              std::cout << " " << matrix( line, col );
+            }
+            
+            std::cout << "]";
+          }
+          
+          std::cout << std::endl;
+        }        
+        
+        /*! 
+          \brief Print the given buffer to std::out.
+          
+          \param buffer Buffer pointer.
+          
+          \param nLines Number of lines.
+          
+          \param nCols Number of columns.
+        */
+        template< typename BufferElementT >
+        static void printBuffer( BufferElementT** buffer, const unsigned int nLines,
+          const unsigned int nCols )
+        {
+          std::cout << std::endl;
+          
+          for( unsigned int line = 0 ; line < nLines ; ++line )
+          {
+            std::cout << std::endl << "[";
+            
+            for( unsigned int col = 0 ; col < nCols ; ++col )
+            {
+              std::cout << " " << buffer[ line ][ col ];
+            }
+            
+            std::cout << "]";
+          }
+          
+          std::cout << std::endl;
+        };
     };
 
   } // end namespace rp

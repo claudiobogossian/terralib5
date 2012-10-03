@@ -62,16 +62,7 @@ namespace te
           */
         //@{
 
-        virtual void setLayerTree(te::map::AbstractLayer* layer);
-
         virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order);
-
-        /*!
-          \brief It gets the root layer.
-
-          \return The root layer.
-        */
-        te::map::AbstractLayer* getLayerTree();
 
         virtual te::map::AlignType getHAlign() const;
 
@@ -118,8 +109,7 @@ namespace te
 
         int m_srid;                                         //!< The display SRS.
         te::gm::Envelope* m_extent;                         //!< The display extent.
-        te::map::AbstractLayer* m_layerTree;                //!< The root layer to be displayed. You should choose to use the tree or list. Never use both.
-        std::list<te::map::AbstractLayer*> m_layerList;     //!< The layer list to be displayed. You should choose to use the tree or list. Never use both.
+        std::list<te::map::AbstractLayer*> m_layerList;     //!< The layer list to be displayed.
         te::map::AlignType m_hAlign;                        //!< The display horizontal align.
         te::map::AlignType m_vAlign;                        //!< The display vertical align.
    };
