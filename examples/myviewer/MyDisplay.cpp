@@ -339,7 +339,7 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
     getLayerList(m_layerTree, layerList);
   showOrHideTimeSlider(layerList);
 
-  te::gm::Envelope extent;
+  m_envelope = te::gm::Envelope();
 
   for(lit = layerList.begin(); lit != layerList.end(); ++lit)
   {
@@ -351,9 +351,9 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
     if(srid != m_srid)
       env.transform(srid, m_srid);
 
-    extent.Union(env);
+    m_envelope.Union(env);
   }
-  setExtent(extent);
+  setExtent();
 
   QString wtitle = "Display: ";
   if(m_layerTree)
@@ -377,7 +377,7 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
   m_temporalImageDisplayPixmap->fill(QColor(255, 255, 255, 0));
 
   draw();
-  if(extent.isValid() == false)
+  if(m_envelope.isValid() == false)
   {
     m_displayPixmap->fill();
     update();
@@ -1116,7 +1116,6 @@ void MyDisplay::onResizeTimeout()
   if(m_displayPixmap)
     delete m_displayPixmap;
   m_displayPixmap = new QPixmap(width(), height());
-
   m_displayPixmap->fill(QColor(0, 0, 0, 0));
   int w = m_displayPixmap->width();
   int h = m_displayPixmap->height();
@@ -1127,32 +1126,19 @@ void MyDisplay::onResizeTimeout()
   {
     te::qt::widgets::Canvas *c = it->second;
     c->resize(w, h);
-    setExtent(m_envelope);
-    c->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
-    c->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
   }
-
-  te::gm::Envelope env = getAllExtent();
-  if(m_extent && env.contains(*m_extent))
-    m_envelope = *m_extent;
+  setExtent();
 
   draw();
+
   emit sizeChanged(QSize(w, h));
 }
 
 
-void MyDisplay::setExtent(const te::gm::Envelope& e)
+void MyDisplay::setExtent()
 {
-  ////m_useChanged = false;
-  //m_drawOnlyChanged.clear();
-  //te::qt::widgets::MapDisplay::setExtent(e);
-  ////if(e.isValid())
-  ////  m_useChanged = true;
-  //clearTooltipPixmap();
-  //if(m_timeSlider)
-  //  clearTemporalPixmaps(m_timeSlider->getLayers());
   m_drawOnlyChanged.clear();
-  te::map::MapDisplay::setExtent(e);
+  te::map::MapDisplay::setExtent(m_envelope);
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
   {
@@ -1302,13 +1288,10 @@ void MyDisplay::execZoomAreaSlot(const QRect& rec)
 
     pll = canvas->getMatrix().inverted().map(pll);
     pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
+    m_envelope = te::gm::Envelope(pll.x(), pll.y(), pur.x(), pur.y());
 
-    setExtent(envelope);
+    setExtent();
 
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
     draw();
   }
   catch(te::common::Exception& e)
@@ -1334,13 +1317,10 @@ void MyDisplay::execZoomInSlot(const QPoint& p)
 
     pll = canvas->getMatrix().inverted().map(pll);
     pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
+    m_envelope = te::gm::Envelope(pll.x(), pll.y(), pur.x(), pur.y());
 
-    setExtent(envelope);
+    setExtent();
 
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
     draw();
   }
   catch(te::common::Exception& e)
@@ -1365,12 +1345,9 @@ void MyDisplay::execZoomOutSlot(const QPoint& p)
 
     pll = canvas->getMatrix().inverted().map(pll);
     pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
-    setExtent(envelope);
+    m_envelope = te::gm::Envelope(pll.x(), pll.y(), pur.x(), pur.y());
+    setExtent();
 
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
     draw();
   }
   catch(te::common::Exception& e)
@@ -1398,14 +1375,10 @@ void MyDisplay::execPanSlot(const QPoint& from, const QPoint& to)
 
     pll = canvas->getMatrix().inverted().map(pll);
     pur = canvas->getMatrix().inverted().map(pur);
-    te::gm::Envelope envelope(pll.x(), pll.y(), pur.x(), pur.y());
+    m_envelope = te::gm::Envelope(pll.x(), pll.y(), pur.x(), pur.y());
 
-    setExtent(envelope);
+    setExtent();
     draw();
-
-    te::gm::Envelope env = getAllExtent();
-    if(m_extent && env.contains(*m_extent))
-      m_envelope = *m_extent;
   }
   catch(te::common::Exception& e)
   {
@@ -2111,11 +2084,8 @@ void MyDisplay::fit(std::list<te::map::AbstractLayer*>& layerList)
 {
   try
   {
+    m_envelope = te::gm::Envelope();
     std::list<te::map::AbstractLayer*>::iterator it;
-
-    //delete m_extent;
-    //m_extent = new te::gm::Envelope();
-    te::gm::Envelope e;
     for(it = layerList.begin(); it != layerList.end(); ++it)
     {
       te::gm::Envelope env = getLayerExtent(*it);
@@ -2127,12 +2097,9 @@ void MyDisplay::fit(std::list<te::map::AbstractLayer*>& layerList)
       {
         env.transform(srid, m_srid);
       }
-
-      //m_extent->Union(env);
-      e.Union(env);
+      m_envelope.Union(env);
     }
-    setExtent(e);
-    //setExtent(*m_extent);
+    setExtent();
     draw();
   }
   catch(te::common::Exception& e)

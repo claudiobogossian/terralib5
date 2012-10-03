@@ -37,7 +37,7 @@ public:
   virtual void draw();
   void draw(std::list<te::map::AbstractLayer*>& layerList);
   virtual void draw(te::map::AbstractLayer* layerTree);
-  virtual void setExtent(const te::gm::Envelope& e);
+  void setExtent();
 
   /*!            
     \brief Recalculates the extension of all visible layers.
