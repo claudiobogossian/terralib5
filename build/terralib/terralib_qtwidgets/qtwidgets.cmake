@@ -162,6 +162,7 @@ file (
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
   ${SRCDIR}/widgets/dataview/TabularViewer.h
   ${SRCDIR}/widgets/tools/CoordTracking.h
+  ${SRCDIR}/widgets/tools/Measure.h
 #  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
 
