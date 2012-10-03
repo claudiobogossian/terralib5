@@ -110,6 +110,8 @@ namespace te
 
         void setOpacity(ParameterValue* p);
 
+        ParameterValue* getOpacity() { return m_opacity; }
+
         void setChannelSelection(ChannelSelection* c);
 
         te::se::ChannelSelection* getChannelSelection() { return m_channelSelection; }

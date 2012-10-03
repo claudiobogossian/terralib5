@@ -13,11 +13,14 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
+#include <string>
 
 // Qt
 #include <QtGui/QApplication>
 #include <QtGui/QDialog>
 #include <QtGui/QLabel>
+
+bool generatePNG = true;
 
 te::map::RasterLayer* CreateLayer(const std::string& path)
 {
@@ -67,39 +70,378 @@ te::map::RasterLayer* CreateLayer(const std::string& path)
   return layer;
 }
 
-void Draw(te::map::RasterLayer* layer)
+ te::qt::widgets::Canvas* CreateCanvas(te::map::RasterLayer* layer, te::gm::Envelope* e, int srid)
 {
   te::gm::Envelope* extent = new te::gm::Envelope(*layer->getExtent());
-
-  int srid = 4618; // LL SAD69
-
-  extent->transform(layer->getRaster()->getSRID(), srid);
+  
+  if(srid != layer->getRaster()->getSRID())
+  {
+    extent->transform(layer->getRaster()->getSRID(), srid);
+  }
 
   double llx = extent->m_llx;
   double lly = extent->m_lly;
   double urx = extent->m_urx;
   double ury = extent->m_ury;
 
-  te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(512, 512);
+  te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(800, 600);
   canvas->calcAspectRatio(llx, lly, urx, ury);
   canvas->setWindow(llx, lly, urx, ury);
   canvas->setBackgroundColor(te::color::RGBAColor(255, 255, 255, TE_OPAQUE));
 
-  layer->draw(canvas, *extent, srid);
+  delete extent;
 
-  QPixmap* pixmap = canvas->getPixmap();
+  return canvas;
+}
+
+void showPixmap(te::qt::widgets::Canvas* c, std::string fileName)
+{
+  QPixmap* pixmap = c->getPixmap();
 
   QDialog dialog;
+  dialog.setWindowTitle(fileName.c_str());
   dialog.setFixedSize(pixmap->size());
   
   QLabel preview(&dialog);
   preview.setPixmap(*pixmap);
   
   dialog.exec();
-
-  delete extent;
-  delete canvas;
 }
+
+void paint(te::qt::widgets::Canvas* c, bool generatePNG, std::string fileName)
+{
+  showPixmap(c, fileName);
+
+  if(generatePNG)
+  {
+    fileName += ".tif";
+    c->save(fileName.c_str(), te::map::PNG);
+  }
+
+  c->clear();
+}
+
+void RGB_012_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel R
+  te::se::SelectedChannel* scR = new te::se::SelectedChannel();
+  scR->setSourceChannelName("0");
+  cs->setRedChannel(scR);
+
+  //channel G
+  te::se::SelectedChannel* scG = new te::se::SelectedChannel();
+  scG->setSourceChannelName("1");
+  cs->setGreenChannel(scG);
+
+  //channel B
+  te::se::SelectedChannel* scB = new te::se::SelectedChannel();
+  scB->setSourceChannelName("2");
+  cs->setBlueChannel(scB);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "RGB_012_Style");
+ }
+
+void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("0.5"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel R
+  te::se::SelectedChannel* scR = new te::se::SelectedChannel();
+  scR->setSourceChannelName("0");
+  cs->setRedChannel(scR);
+
+  //channel G
+  te::se::SelectedChannel* scG = new te::se::SelectedChannel();
+  scG->setSourceChannelName("1");
+  cs->setGreenChannel(scG);
+
+  //channel B
+  te::se::SelectedChannel* scB = new te::se::SelectedChannel();
+  scB->setSourceChannelName("2");
+  cs->setBlueChannel(scB);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "RGB_012_Transp_Style");
+ }
+
+ void RGB_102_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel R
+  te::se::SelectedChannel* scR = new te::se::SelectedChannel();
+  scR->setSourceChannelName("1");
+  cs->setRedChannel(scR);
+
+  //channel G
+  te::se::SelectedChannel* scG = new te::se::SelectedChannel();
+  scG->setSourceChannelName("0");
+  cs->setGreenChannel(scG);
+
+  //channel B
+  te::se::SelectedChannel* scB = new te::se::SelectedChannel();
+  scB->setSourceChannelName("2");
+  cs->setBlueChannel(scB);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "RGB_102_Style");
+ }
+
+void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel R
+  te::se::SelectedChannel* scR = new te::se::SelectedChannel();
+  scR->setSourceChannelName("0");
+  cs->setRedChannel(scR);
+
+  //channel G
+  te::se::SelectedChannel* scG = new te::se::SelectedChannel();
+  scG->setSourceChannelName("1");
+
+  te::se::ContrastEnhancement* cG = new te::se::ContrastEnhancement();
+  cG->setGammaValue(0.5);
+  scG->setContrastEnhancement(cG);
+  cs->setGreenChannel(scG);
+
+  //channel B
+  te::se::SelectedChannel* scB = new te::se::SelectedChannel();
+  scB->setSourceChannelName("2");
+  cs->setBlueChannel(scB);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "RGB_012_G_Contrast_Style");
+ }
+
+void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel R
+  te::se::SelectedChannel* scR = new te::se::SelectedChannel();
+  scR->setSourceChannelName("0");
+
+  te::se::ContrastEnhancement* cR = new te::se::ContrastEnhancement();
+  cR->setGammaValue(0.5);
+  scR->setContrastEnhancement(cR);
+  cs->setRedChannel(scR);
+
+  //channel G
+  te::se::SelectedChannel* scG = new te::se::SelectedChannel();
+  scG->setSourceChannelName("1");
+
+  te::se::ContrastEnhancement* cG = new te::se::ContrastEnhancement();
+  cG->setGammaValue(0.5);
+  scG->setContrastEnhancement(cG);
+  cs->setGreenChannel(scG);
+
+  //channel B
+  te::se::SelectedChannel* scB = new te::se::SelectedChannel();
+  scB->setSourceChannelName("2");
+
+  te::se::ContrastEnhancement* cB = new te::se::ContrastEnhancement();
+  cB->setGammaValue(0.5);
+  scB->setContrastEnhancement(cB);
+  cs->setBlueChannel(scB);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "RGB_012_RGB_Contrast_Style");
+ }
+
+void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel M
+  te::se::SelectedChannel* scM = new te::se::SelectedChannel();
+  scM->setSourceChannelName("0");
+  cs->setGrayChannel(scM);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "MONO_0_Style");
+ }
+
+void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel M
+  te::se::SelectedChannel* scM = new te::se::SelectedChannel();
+  scM->setSourceChannelName("2");
+  cs->setGrayChannel(scM);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "MONO_2_Style");
+ }
+
+void RED_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ {
+  //create default raster symbolizer
+  te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
+
+  //set transparency
+  rs->setOpacity(new te::se::ParameterValue("1.0"));
+
+  //set channel selection
+  te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+  //channel R
+  te::se::SelectedChannel* scR = new te::se::SelectedChannel();
+  scR->setSourceChannelName("0");
+  cs->setRedChannel(scR);
+
+  rs->setChannelSelection(cs);
+
+  //add symbolizer to a layer style
+  te::se::Rule* r = new te::se::Rule();
+  r->push_back(rs);
+
+  te::se::Style* s = new te::se::Style();
+  s->push_back(r);
+
+  l->setStyle(s);
+
+  l->draw(c, *e, srid);
+
+  paint(c, generatePNG, "RED_Style");
+ }
 
 void DrawRasterStyledLayers()
 {
@@ -112,9 +454,40 @@ void DrawRasterStyledLayers()
     // Creates a layer of raster
     te::map::RasterLayer* rasterLayer = CreateLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
 
-    Draw(rasterLayer);
+    // Get the box to be painted
+    te::gm::Envelope* extent = new te::gm::Envelope(*rasterLayer->getExtent());
 
+    // Get the projection used to be paint the raster
+    int srid = rasterLayer->getRaster()->getSRID();
+    //int srid = 4618; // LL SAD69
+
+    // Creates a canvas
+    te::qt::widgets::Canvas* canvas = CreateCanvas(rasterLayer, extent, srid);
+
+    // RGB 012 Style
+    RGB_012_Style(canvas, rasterLayer, extent, srid);
+
+    // RGB 012 with transparency Style
+    RGB_012_Transp_Style(canvas, rasterLayer, extent, srid);
+
+    // RGB 012 Style
+    RGB_102_Style(canvas, rasterLayer, extent, srid);
+
+    // RGB 012 with contrast in green band Style
+    RGB_012_G_Contrast_Style(canvas, rasterLayer, extent, srid);
+
+    // RGB 012 with contrast in RGB bands Style
+    RGB_012_RGB_Contrast_Style(canvas, rasterLayer, extent, srid);
+
+    // Mono band 0 Style
+    MONO_0_Style(canvas, rasterLayer, extent, srid);
+
+    // Mono band 2 Style
+    MONO_2_Style(canvas, rasterLayer, extent, srid);
+
+    delete extent;
     delete rasterLayer;
+    delete canvas;
   }
   catch(const std::exception& e)
   {

@@ -1000,21 +1000,21 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::color::R
   m_painter.setWorldMatrixEnabled(true);
 }
 
-void te::qt::widgets::Canvas::drawImage(int x, int y, te::rst::Raster* src)
+void te::qt::widgets::Canvas::drawImage(int x, int y, te::rst::Raster* src, int opacity)
 {
   int sw = src->getNumberOfColumns();
   int sh = src->getNumberOfRows();
 
-  drawImage(x, y, sw, sh, src, 0, 0, sw, sh);
+  drawImage(x, y, sw, sh, src, 0, 0, sw, sh, opacity);
 }
 
-void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh)
+void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh, int opacity)
 {
   // Defines QImage size
   int iw = std::min(sw, w);
   int ih = std::min(sh, h);
 
-  QImage img(iw, ih, QImage::Format_RGB32);
+  QImage img(iw, ih, QImage::Format_ARGB32);
   double pr, pg, pb;
   te::color::RGBAColor* pixel;
 
@@ -1034,8 +1034,12 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Ras
       src->getValue(r, l, pr, 0);
       src->getValue(r, l, pg, 1);
       src->getValue(r, l, pb, 2);
-      pixel = new te::color::RGBAColor((int)pr, (int)pg, (int)pb, 255);
-      img.setPixel(ri, li, pixel->getRgba());
+
+      pixel = new te::color::RGBAColor((int)pr, (int)pg, (int)pb, opacity);
+      QRgb val = qRgba(pixel->getRed(), pixel->getGreen(), pixel->getBlue(), pixel->getAlpha());
+
+      img.setPixel(ri, li, val);
+
       delete pixel;
     }
   }

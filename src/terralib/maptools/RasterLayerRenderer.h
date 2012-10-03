@@ -122,11 +122,14 @@ namespace te
         */
         void createVisualDefault(RasterLayer* layer);
 
+        void applyStyle(RasterLayer* layer, Canvas* canvas);
+
 
       protected:
 
-        te::rst::Raster* _rasterCanvas;     //!< This raster is used to paint canvas.
-        te::rst::Raster* _resampledRaster;  //!< This raster is the resampled grid for a given scale
+        te::rst::Raster* _rasterCanvas;           //!< This raster is used to paint canvas.
+        te::rst::Raster* _rasterCanvasStyled;     //!< This raster is used to paint canvas with the selected styled.
+        te::rst::Raster* _resampledRaster;       //!< This raster is the resampled grid for a given scale
 
         //@}
     };

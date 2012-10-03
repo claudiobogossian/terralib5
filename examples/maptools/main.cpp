@@ -37,8 +37,12 @@
 #include <exception>
 #include <iostream>
 
+#include <locale.h>
+
 int main(int /*argc*/, char** /*argv*/)
 {
+  setlocale(LC_ALL,"C");
+
 // initialize Terralib support
   TerraLib::getInstance().initialize();
 
@@ -48,13 +52,13 @@ int main(int /*argc*/, char** /*argv*/)
     LoadModules();
 
     // Show a MapDisplay
-    //MapDisplay();
+    MapDisplay();
 
     // Creates a OGC Filter Expression and convert it to TerraLib Expression.
-    //Filter2Query();
+    Filter2Query();
 
     // Creates a set of Layers and Styles.
-    //DrawStyledLayers();
+    DrawStyledLayers();
 
     // Creates a set of raster Layers and Styles.
     DrawRasterStyledLayers();
