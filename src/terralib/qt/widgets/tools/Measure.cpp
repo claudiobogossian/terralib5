@@ -40,12 +40,16 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
+// STL
+#include <cassert>
+
 te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const MeasureType& measureType, QObject* parent) 
   : AbstractTool(display, parent),
-    m_measureType(measureType)
+    m_measureType(measureType),
+    m_isFinished(false)
 {
   // Setups the path style
-  m_pen.setColor(QColor(0, 0, 0, 200));
+  m_pen.setColor(QColor(100, 177, 216));
   m_pen.setWidth(3);
   m_brush = QColor(100, 177, 216, 80);
 
@@ -67,23 +71,18 @@ void te::qt::widgets::Measure::finalize()
 
 bool te::qt::widgets::Measure::mousePressEvent(QMouseEvent* e)
 {
-  if(e->button() == Qt::RightButton) // Clear!
-  {
-    m_coords.clear();
-    
-    QPixmap* draft = m_display->getDraftPixmap();
-    draft->fill(Qt::transparent);
-    
-    m_display->update();
-
-    return true;
-  }
-
   if(e->button() != Qt::LeftButton)
     return false;
 
-  if(m_coords.size() == 3 && m_measureType == Angle)
-    return false;
+  if(m_isFinished) // Is Finished?! So, start again...
+  {
+    clear();
+    m_isFinished = false;
+  }
+
+  // Angle case: the maximum is 2 points collected...
+  if(m_coords.size() == 2 && m_measureType == Angle)
+    return false; // No collect more!
 
   QPointF pw = m_display->transform(e->pos());
   m_coords.push_back(te::gm::Coord2D(pw.x(), pw.y()));
@@ -93,10 +92,7 @@ bool te::qt::widgets::Measure::mousePressEvent(QMouseEvent* e)
 
 bool te::qt::widgets::Measure::mouseMoveEvent(QMouseEvent* e)
 {
-  if(m_coords.size() < 1)
-    return false;
-
-  if(m_coords.size() == 3 && m_measureType == Angle)
+  if(m_coords.size() < 1 || m_isFinished)
     return false;
 
   QPointF pw = m_display->transform(e->posF());
@@ -116,6 +112,19 @@ bool te::qt::widgets::Measure::mouseReleaseEvent(QMouseEvent* e)
   return false;
 }
 
+bool te::qt::widgets::Measure::mouseDoubleClickEvent(QMouseEvent* e)
+{
+  if(e->button() != Qt::LeftButton)
+    return false;
+
+  if(m_measureType == Area && m_coords.size() < 3) // Can not stop yet...
+    return false;
+
+  m_isFinished = true;
+
+  return true;
+}
+
 void te::qt::widgets::Measure::drawGeometry()
 {
   const te::gm::Envelope* env = m_display->getExtent();
@@ -130,6 +139,7 @@ void te::qt::widgets::Measure::drawGeometry()
   Canvas canvas(m_display->width(), m_display->height());
   canvas.setDevice(draft, false);
   canvas.setWindow(env->m_llx, env->m_lly, env->m_urx, env->m_ury);
+  canvas.setRenderHint(QPainter::Antialiasing, true);
 
   // Let's draw!
   switch(m_measureType)
@@ -160,10 +170,17 @@ void te::qt::widgets::Measure::drawLine(Canvas& canvas)
   canvas.setLineColor(m_pen.color().rgba());
   canvas.setLineWidth(m_pen.width());
 
+  // Let's draw!
   canvas.draw(line);
 
-  // Testing...
-  drawText(canvas, (tr("Distance: ") + QString::number(calculateLength(line))).toStdString(), line->getEndPoint());
+  // Measuring and feedback...
+  if(m_measureType == Distance)
+    drawText(canvas, (tr("Distance: ") + QString::number(calculateLength(line))).toStdString(), line->getEndPoint());
+  else if(m_measureType == Angle)
+  {
+    if(line->getNPoints() >= 3)
+      drawText(canvas, (tr("Angle: ") + QString::number(calculateAngle(line))).toStdString(), line->getPointN(1));
+  }
 
   delete line;
 }
@@ -187,9 +204,10 @@ void te::qt::widgets::Measure::drawPolygon(Canvas& canvas)
   canvas.setPolygonContourWidth(m_pen.width());
   canvas.setPolygonFillColor(m_brush.color().rgba());
 
+  // Let's draw!
   canvas.draw(polygon);
 
-  // Testing...
+  // Measuring and feedback...
   const te::gm::Envelope* env = polygon->getMBR();
   te::gm::Point p(env->getCenter().x, env->getCenter().y);
   drawText(canvas, (tr("Area: ") + QString::number(polygon->getArea())).toStdString(), &p);
@@ -207,8 +225,17 @@ void te::qt::widgets::Measure::drawText(Canvas& canvas, const std::string& text,
   canvas.setTextContourEnabled(true);
   canvas.setTextContourWidth(3);
   canvas.setTextContourColor(te::color::RGBAColor(255, 255, 255, TE_OPAQUE));
-  canvas.setRenderHint(QPainter::Antialiasing, true);
   canvas.drawText(p, text);
+}
+
+void te::qt::widgets::Measure::clear()
+{
+  m_coords.clear();
+
+  QPixmap* draft = m_display->getDraftPixmap();
+  draft->fill(Qt::transparent);
+    
+  m_display->update();
 }
 
 double te::qt::widgets::Measure::calculateLength(te::gm::LineString* line) const
@@ -219,6 +246,21 @@ double te::qt::widgets::Measure::calculateLength(te::gm::LineString* line) const
     length += line->getPointN(i)->distance( line->getPointN(i + 1));
 
   return length;
+}
+
+double te::qt::widgets::Measure::calculateAngle(te::gm::LineString* line) const
+{
+  std::size_t n = line->getNPoints();
+  assert(n >= 3);
+
+  te::gm::Point* p1 = line->getPointN(0);
+  te::gm::Point* p2 = line->getPointN(1);
+  te::gm::Point* p3 = line->getPointN(2);
+
+  QLineF line1(p2->getX(), p2->getY(), p1->getX(), p1->getY());
+  QLineF line2(p2->getX(), p2->getY(), p3->getX(), p3->getY());
+
+  return line1.angle(line2);
 }
 
 void te::qt::widgets::Measure::onExtentChanged()
