@@ -18,6 +18,12 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
+find_package(GDAL ${_GDAL_VERSION})
+if(GDAL_FOUND)
+  list (APPEND DEP_LIBS ${GDAL_LIBRARY})
+  list (APPEND DEP_INCLUDES ${GDAL_INCLUDE_DIR})
+endif(GDAL_FOUND)
+
 set (
   DEP_LIBS
   terralib_common
