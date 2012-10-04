@@ -47,7 +47,7 @@ namespace te
 
   namespace gm
   {
-    class Polygon;
+    class Geometry;
   }
 
   namespace rp
