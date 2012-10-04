@@ -183,8 +183,9 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   connect(m_timeGroupBox, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(timeSliderContextMenuSlot(const QPoint&)));
 
-  MyDisplay::MapDisplay::QWidget::raise();
   m_widget->show();
+  MyDisplay::MapDisplay::raise();
+  MyDisplay::MapDisplay::show();
 }
 
 MyDisplay::~MyDisplay()
@@ -987,6 +988,9 @@ void MyDisplay::paintEvent(QPaintEvent* e)
 {
   if(m_displayPixmap == 0)
     return;
+
+  MyDisplay::MapDisplay::raise();
+  MyDisplay::MapDisplay::show();
 
   double w, h, nw, nh, sw, sh;
   QMatrix m;

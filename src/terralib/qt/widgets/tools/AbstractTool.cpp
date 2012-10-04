@@ -60,9 +60,6 @@ bool te::qt::widgets::AbstractTool::eventFilter(QObject* watched, QEvent* e)
     case QEvent::MouseButtonRelease:
       return mouseReleaseEvent(static_cast<QMouseEvent*>(e));
 
-    case QEvent::MouseButtonDblClick:
-      return mouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
-
     default:
       return QObject::eventFilter(watched, e);
   }
@@ -79,11 +76,6 @@ bool te::qt::widgets::AbstractTool::mouseMoveEvent(QMouseEvent* e)
 }
 
 bool te::qt::widgets::AbstractTool::mouseReleaseEvent(QMouseEvent* e)
-{
-  return false;
-}
-
-bool te::qt::widgets::AbstractTool::mouseDoubleClickEvent(QMouseEvent* e)
 {
   return false;
 }

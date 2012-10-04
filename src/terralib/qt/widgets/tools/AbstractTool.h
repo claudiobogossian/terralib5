@@ -130,19 +130,6 @@ namespace te
           */
           virtual bool mouseReleaseEvent(QMouseEvent* e);
 
-          /*!
-            \biref This event handler can be reimplemented in a concrete tool class
-                   to receive mouse double click events for the watched object.
-
-            \param e The mouse event.
-
-            \return If you want to filter the event out,  i.e. stop it being handled further, return true; otherwise return false.
-
-            \note The AbstractTool will also receive mouse press and mouse release events in addition to the double click event.
-                  It is up to the developer to ensure that the application interprets these events correctly.
-          */
-          virtual bool mouseDoubleClickEvent(QMouseEvent* e);
-
           //@}
 
         private:
