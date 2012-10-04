@@ -74,7 +74,8 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
 
   m_t = refLayer->getDataSource()->getTransactor();
   catalogLoader = m_t->getCatalogLoader();
-  m_dataSetType = catalogLoader->getDataSetType(refLayer->getDataSetName());
+  m_dataSetType = catalogLoader->getDataSetType(refLayer->getId());
+  //m_dataSetType = catalogLoader->getDataSetType(refLayer->getDataSetName());
 
   size_t numAttributes = m_dataSetType->size();
 
