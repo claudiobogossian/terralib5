@@ -100,5 +100,5 @@ void StarDelegate::setHighlightColor(const QColor & value)
 void StarDelegate::init()
 {
   m_img = getStarImage(QSize(10,10), m_color);
-  setGroupName(tr("Starred"));
+  HighlightDelegate::setGroupName(tr("Starred"));
 }

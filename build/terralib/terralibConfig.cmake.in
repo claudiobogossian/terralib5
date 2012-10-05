@@ -85,25 +85,23 @@ if(WIN32)
   include (${T5_MODULEPATH}/WinConfig.cmake)
 endif()
 
-# These are IMPORTED targets created by teLibraryDepends.cmake
-set ( TE_LIBRARIES @_TE_LIBRARIES@ )
-
 # Modules compiled 
 # This code is used to verify the compiled components.
 set ( TE_MODULES @_TE_MODULES@ )
 
-IF( terralib_FIND_COMPONENTS )
-  FOREACH( comp ${terralib_FIND_COMPONENTS} )
-	list ( FIND TE_MODULES ${comp} cmp_found )
-    if( cmp_found EQUAL "-1" )
-      SET(terralib_${comp}_FOUND 0)
-      IF(terralib_FIND_REQUIRED_${comp})
-        MESSAGE(SEND_ERROR "TerraLib ${comp} not available.")
-      ENDIF()
-    ELSE()
-      SET(terralib_${comp}_FOUND 1)
-	  MESSAGE("TerraLib module ${comp} available.")
-    ENDIF()
-  ENDFOREACH()
-ENDIF() 
+if (terralib_FIND_COMPONENTS)
+  foreach (comp ${terralib_FIND_COMPONENTS})
+    list (FIND TE_MODULES ${comp} cmp_found)
+    if (cmp_found EQUAL "-1") # Does not found component
+      set (terralib_${comp}_FOUND 0)
+      if(terralib_FIND_REQUIRED_${comp})
+        message(SEND_ERROR "TerraLib ${comp} not available.")
+      endif()
+    else()                    # Found component.
+      set(terralib_${comp}_FOUND 1)
+      message("TerraLib module ${comp} available.")
+      list (APPEND TE_LIBRARIES "terralib_${comp}")
+    endif()
+  endforeach()
+endif() 
 

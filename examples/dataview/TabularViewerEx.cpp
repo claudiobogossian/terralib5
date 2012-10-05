@@ -129,18 +129,24 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
   QVBoxLayout* vlay = new QVBoxLayout;
   QGridLayout* grdLay = new QGridLayout(wid);
 
-  //! Inserting a custom delegate.
+  //! [Adding custom delegate decorator]
   te::qt::widgets::HighlightDelegate* del = (te::qt::widgets::HighlightDelegate*)tv->itemDelegate();
+
+  // Decorate the clone of delegate
   StarDelegate* st = new StarDelegate(del->clone());
 
-  st->setClassColor(3, QColor(23, 27, 8));
+  // Setting up color
+  st->setHighlightColor(QColor(255, 255, 0));
+
+  //Setting up the new delegate
   st->setParent(tv);
   tv->setItemDelegate(st);
+
+  // Update menus
   tv->updatePopupMenus();
 
-  fc->setInitialPath(QString::fromStdString(""TE_DATA_EXAMPLE_LOCALE"/data/shp"));  
-
   delete del;
+  //! [Adding custom delegate decorator]
 
   vlay->addWidget(fc);
   vlay->addWidget(btn);

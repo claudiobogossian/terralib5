@@ -124,6 +124,10 @@ namespace te
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
+            unsigned int m_scalesNumber; //! The number of sub-sampling scales to generate, when applicable (default:3).
+            
+            unsigned int m_octavesNumber; //! The number of octaves to generate, when applicable (default: 2).
+            
             InputParameters();
             
             InputParameters( const InputParameters& );
@@ -596,46 +600,9 @@ namespace te
           \param bufferPtr Buffer pointer.
           
           \param bufferLinesNumber Buffer lines number.
-          
-          \param bufferColsNumber Buffer columns number.
-          
-          \param stepSize The rool-up step size.
-          
-          \param zeroFill Zero fill the rooled-up lines.
         */         
-        template< typename BufferElementT >
-        static void roolUpBuffer( BufferElementT** bufferPtr, 
-          const unsigned int& bufferLinesNumber, 
-          const unsigned int& bufferColsNumber,
-          const unsigned int& stepSize,
-          const bool autoFill,
-          const BufferElementT& autoFillValue )
-        {
-          assert( bufferLinesNumber > 1 );
-          
-          unsigned int idx = 0;
-          unsigned int col = 0;
-          
-          for( unsigned int currStep = 0 ; currStep < stepSize ; ++currStep )
-          {
-            BufferElementT* auxLinePtr = bufferPtr[ 0 ];
-            
-            for( idx = bufferLinesNumber - 1 ; idx  ; --idx )
-            {
-              bufferPtr[ idx - 1 ] = bufferPtr[ idx ];            
-            }
-            
-            bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
-            
-            if( autoFill )
-            {
-              for( col = 0 ; col < bufferColsNumber  ; ++col )
-              {
-                auxLinePtr[ col ] = autoFillValue;
-              }
-            }
-          }
-        };
+        static void roolUpBuffer( double** bufferPtr, 
+          const unsigned int& bufferLinesNumber );
         
         /*! 
           \brief Fill a buffer with zeroes.
@@ -833,26 +800,8 @@ namespace te
           
           \param nCols Number of columns.
         */
-        template< typename BufferElementT >
-        static void printBuffer( BufferElementT** buffer, const unsigned int nLines,
-          const unsigned int nCols )
-        {
-          std::cout << std::endl;
-          
-          for( unsigned int line = 0 ; line < nLines ; ++line )
-          {
-            std::cout << std::endl << "[";
-            
-            for( unsigned int col = 0 ; col < nCols ; ++col )
-            {
-              std::cout << " " << buffer[ line ][ col ];
-            }
-            
-            std::cout << "]";
-          }
-          
-          std::cout << std::endl;
-        };
+        static void printBuffer( double** buffer, const unsigned int nLines,
+          const unsigned int nCols );
     };
 
   } // end namespace rp
