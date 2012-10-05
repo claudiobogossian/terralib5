@@ -310,13 +310,13 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
     c.setColor(c.getRed(), c.getGreen(), c.getBlue(), opacityComboBox->currentText().toInt() * 255/100);
   }
 
-  // If there are values not grouped, generate a legend item at the 
+  // If there are null values, generate a legend item at the end
   // of the legend and set its color as being totally white
   if(m_numValuesNotGrouped)
   {
-    te::map::LegendItem* notGroupedItem = new te::map::LegendItem(QString(tr("Null Values")).toStdString(),
-                                                                  QString(tr("Null Values")).toStdString());
-    notGroupedItem->setTitle(QString(tr("Not Grouped")).toStdString());
+    te::map::LegendItem* notGroupedItem = new te::map::LegendItem(QString("Null Values").toStdString(),
+                                                                  QString("Null Values").toStdString());
+    notGroupedItem->setTitle(QString("Null Values").toStdString());
     notGroupedItem->setCount(m_numValuesNotGrouped);
 
     te::color::RGBAColor color(255, 255, 255, 255);
