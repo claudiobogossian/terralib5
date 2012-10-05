@@ -8,6 +8,9 @@ set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")  # the terralib root directory 
 set(SRCDIR ${ROOT}/examples/dataview)             # directory where the source files of the datagrid example are located
 set(INCLDIR ${SRCDIR})                            # directory where the header files of the datagrid example are located
 
+set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
+set (ICON_THEME_PATH "C:/icons" CACHE STRING "Lists of directories that contains icon themes.")
+
 # Set the project name
 set(PROJ_NAME "terralib_example_dataview")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
@@ -27,8 +30,11 @@ if(WIN32)
 		              -DQT_HAVE_SSE
 		              -DQT_HAVE_MMXEXT
 		              -DQT_HAVE_SSE2
-		              -DQT_THREAD_SUPPORT)
+		              -DQT_THREAD_SUPPORT
+                  )
 endif()
+
+add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\")
 
 set(DEP_LIBS 
 		terralib_color

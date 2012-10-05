@@ -27,6 +27,7 @@
 
 //! Qt include files
 #include <QApplication>
+#include <QIcon>
 
 int main(int argc, char** argv)
 {
@@ -37,6 +38,13 @@ int main(int argc, char** argv)
     TerraLib::getInstance().initialize();
 
     QApplication app(argc, argv);
+
+    QString spaths = std::string(ICON_THEME_PATH).c_str();
+    QStringList paths = spaths.split(";");
+//    paths << "D:/funcate/projetos/terralib5/resources/themes";
+
+    QIcon::setThemeName(ICON_THEME);
+    QIcon::setThemeSearchPaths(paths);
 
     TabularViewerEx win;
     win.show();

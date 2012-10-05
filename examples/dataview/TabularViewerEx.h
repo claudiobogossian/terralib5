@@ -21,7 +21,7 @@
 #define __TERRALIB_EXAMPLE_TABULARVIEWEREX_H
 
 //!Qt include files
-#include <QDialog>
+#include <QMainWindow>
 
 namespace te
 {
@@ -44,7 +44,7 @@ namespace te
 class SelectPKey;
 class QTabWidget;
 
-class TabularViewerEx : public QDialog
+class TabularViewerEx : public QMainWindow
 {
   Q_OBJECT
 
@@ -58,6 +58,10 @@ protected slots:
   void updateViewer();
 
   void pkeysChanged(const std::vector<size_t>& ids);
+
+  void setThemeName(const QString& tName);
+
+  void changeThemeName();
 
 protected:
   te::qt::widgets::FileChooser* m_fchooser;

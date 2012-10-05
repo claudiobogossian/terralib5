@@ -83,7 +83,7 @@ namespace te
 
             case Qt::DecorationRole:
               return (isPkey(section, m_table->getPKeysColumns())) ?
-                QIcon(":terralib/png/32x32/key.png") :
+                QIcon::fromTheme("terralib_logo") :
                 QVariant();
             break;
 

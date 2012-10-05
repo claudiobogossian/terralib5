@@ -22,6 +22,11 @@
 #include <QTabWidget>
 #include <QLabel>
 #include <QGroupBox>
+#include <QInputDialog>
+#include <QMenu>
+#include <QMenuBar>
+#include <QAction>
+#include <QDir>
 
 te::da::DataSource* getDataSource(const std::string& src)
 {
@@ -120,6 +125,14 @@ void loadModules()
 //! Function for initialize the TabularViewerEx dialog.
 void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChooser*& fc, te::qt::widgets::TabularViewer*& tv, SelectPKey*& pkeySel)
 {
+  QMenuBar* mbar= new QMenuBar(wd);
+  QMenu* file_mnu = new QMenu(QObject::tr("File"), mbar);
+  QAction* act = new QAction(QObject::tr("Change icons theme..."), file_mnu);
+
+  file_mnu->addAction(act);
+  mbar->addMenu(file_mnu);
+  wd->setMenuBar(mbar);
+
   QWidget* wid = new QWidget(wd);
   pkeySel = new SelectPKey(wd);
 
@@ -154,10 +167,6 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
 
   grdLay->addLayout(vlay, 0, 0, 1, 1);
 
-  QGridLayout* grdLay2 = new QGridLayout(wd);
-
-  grdLay2->addWidget(tab, 0, 0, 1, 1);
-
   tab->addTab(wid, QObject::tr("Data viewer"));
   tab->addTab(pkeySel, QObject::tr("Primary keys"));
   tab->addTab(new HighlightedInfo(tv, wd), QObject::tr("Query by primary key"));
@@ -165,14 +174,17 @@ void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChoos
   tab->setTabEnabled(1, false);
   tab->setTabEnabled(2, false);
 
+  wd->setCentralWidget(tab);
+
   //! Connecting slots
   wd->connect(btn, SIGNAL(pressed()), SLOT(updateViewer()));
   tv->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(setPrimaryKeys(const std::vector<size_t>&)));
   wd->connect(pkeySel, SIGNAL(pkeysChanged(const std::vector<size_t>&)), SLOT(pkeysChanged(const std::vector<size_t>&)));
+  wd->connect(act, SIGNAL(triggered()), SLOT(changeThemeName()));
 }
 
 TabularViewerEx::TabularViewerEx(QWidget* parent) :
-QDialog(parent),
+QMainWindow(parent),
 m_dsrc(0),
 m_tab(new QTabWidget(this))
 {
@@ -180,7 +192,7 @@ m_tab(new QTabWidget(this))
 
   initDialog(this, m_tab, m_fchooser, m_viewer, m_pkey_sel);
 
-  QDialog::setWindowTitle(tr("Shapefile tabular viewer"));
+  QMainWindow::setWindowTitle(tr("Shapefile tabular viewer"));
 
   QString filter(tr("Shape Files (*.shp *.SHP)"));
 
@@ -228,4 +240,19 @@ void TabularViewerEx::pkeysChanged(const std::vector<size_t>& ids)
 
   if(!ids.empty())
     m_tab->setTabEnabled(2, true);
+}
+
+void TabularViewerEx::setThemeName(const QString& tName)
+{
+  QIcon::setThemeName(tName);
+  QMainWindow::update();
+}
+
+void TabularViewerEx::changeThemeName()
+{
+  bool ok;
+  QString text = QInputDialog::getText(this, tr("Enter the name of the new icon theme."), tr("Icon theme name:"), QLineEdit::Normal, QDir::home().dirName(), &ok);
+
+  if (ok && !text.isEmpty())
+   setThemeName(text);
 }
