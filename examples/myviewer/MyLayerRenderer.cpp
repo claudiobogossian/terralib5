@@ -181,24 +181,32 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
           {
             std::string from = (*it)->getLowerLimit();
             std::string to = (*it)->getUpperLimit();
-            if(useDouble)
+
+            if(v.empty() && from == "Null Values")
             {
-              QString q = from.c_str();
-              dfrom = q.toDouble();
-              q = to.c_str();
-              dto = q.toDouble();
-              if(dv >= dfrom && dv < dto)
-              {
-                cor = (*it)->getColor();
-                break;
-              }
+              cor = (*it)->getColor();
             }
             else
             {
-              if(v == from)
+              if(useDouble)
               {
-                cor = (*it)->getColor();
-                break;
+                QString q = from.c_str();
+                dfrom = q.toDouble();
+                q = to.c_str();
+                dto = q.toDouble();
+                if(dv >= dfrom && dv < dto)
+                {
+                  cor = (*it)->getColor();
+                  break;
+                }
+              }
+              else
+              {
+                if(v == from)
+                {
+                  cor = (*it)->getColor();
+                  break;
+                }
               }
             }
           }
