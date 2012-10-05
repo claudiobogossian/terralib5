@@ -76,8 +76,6 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   catalogLoader = m_t->getCatalogLoader();
   m_dataSetType = catalogLoader->getDataSetType(refLayer->getId());
 
-  typeComboBoxActivated(typeComboBox->currentIndex());
-
   // If the layer has already a legend associated to it, set the legend parameters
   if(refLayer->hasLegend())
   {
@@ -86,6 +84,22 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     // Get the grouping type of the layer legend
     const te::map::GroupingType type = grouping->getType();
     typeComboBox->setCurrentIndex(type);
+
+    // Set the possible layer attributes according to the grouping type and set the 
+    // layer attribute which the legend is associated to as the current one.
+    typeComboBoxActivated(typeComboBox->currentIndex());
+
+    std::string propertyName = grouping->getPropertyName();
+
+    size_t numAttributes = m_dataSetType->size();
+    for(size_t i = 0; i < numAttributes; ++i)
+    {
+      if(propertyName == attributeComboBox->itemText(i).toStdString())
+      {
+        attributeComboBox->setCurrentIndex(i);
+        break;
+      }
+    }
 
     // Get the number of slices of the layer legend
     if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL)
@@ -104,19 +118,6 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
         stdDeviationComboBox->setCurrentIndex(1);
       else if(stdDev == 0.25)
         stdDeviationComboBox->setCurrentIndex(2);
-    }
-
-    // Get the layer attribute which the legend is associated to
-    std::string propertyName = grouping->getPropertyName();
-
-    size_t numAttributes = m_dataSetType->size();
-    for(size_t i = 0; i < numAttributes; ++i)
-    {
-      if(propertyName == attributeComboBox->itemText(i).toStdString())
-      {
-        attributeComboBox->setCurrentIndex(i);
-        break;
-      }
     }
 
     // Make a copy of the legend contents of the reference layer
