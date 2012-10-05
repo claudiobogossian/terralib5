@@ -141,6 +141,7 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
     }
 
     //insert values into the vectors
+
     newScatter->addX(x_doubleValue);
     newScatter->addY(y_doubleValue);
 
@@ -154,30 +155,34 @@ te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* datase
       newScatter->setMinY(y_doubleValue);
     if(y_doubleValue>newScatter->getMaxY())
       newScatter->setMaxY(y_doubleValue);
-
   } //end of the data set
   return newScatter;
 }
 
 te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* dataset, int propId, int slices)
 {
-   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
-   std::map<double, int> histogramValues;
+  te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
-   double minValue, maxValue;
-   minValue = std::numeric_limits<double>::max();
-   maxValue = -std::numeric_limits<double>::max();
-   
-   int propType = dataset->getType()->getProperty(propId)->getType();
+  int propType = dataset->getType()->getProperty(propId)->getType();
 
-   std::vector<double> intervals;
-   std::vector<int> values;
+  newHistogram->setType(propType);
+
+  //The vector containing the frequency of each interval, will be used to every property type
+  std::vector<int> values;
 
    if((propType >= te::dt::INT16_TYPE && propType <= te::dt::UINT64_TYPE) || 
      propType == te::dt::FLOAT_TYPE || propType == te::dt::DOUBLE_TYPE || 
      propType == te::dt::NUMERIC_TYPE)
    {
 
+     std::map<double, int> histogramValues;
+
+     double minValue, maxValue;
+     minValue = std::numeric_limits<double>::max();
+     maxValue = -std::numeric_limits<double>::max();
+
+     std::vector<double> intervals;
+     
      //Calculating the minimum and maximum values of the given property and adjusting the Histogram's interval.
      while(dataset->moveNext())
      {
@@ -208,9 +213,10 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      {
        double currentValue = dataset->getDouble(propId);
 
-      for (unsigned int i= 0; i<intervals.size(); i++)
+       for (unsigned int i= 0; i<intervals.size(); i++)
        {
-         if((currentValue >= intervals[i]) && (currentValue <= intervals[i+1])){
+         if((currentValue >= intervals[i]) && (currentValue <= intervals[i+1]))
+         {
             values[i] =  values[i]+1;
             break;
          }
@@ -223,11 +229,76 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
        std::pair<double, int> new_pair(intervals[i], values[i]);
        histogramValues.insert(new_pair);
      }
+
+     newHistogram->setValues(histogramValues);
+     newHistogram->setMinValue(minValue);
+     dataset->moveBeforeFirst();
+
    }
-   newHistogram->setValues(histogramValues);
-   newHistogram->setMinValue(minValue);
-   dataset->moveBeforeFirst();
+
    return newHistogram;
+}
+
+te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* dataset, int propId)
+{
+  te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
+
+  int propType = dataset->getType()->getProperty(propId)->getType();
+
+  newHistogram->setType(propType);
+
+  //The vector containing the frequency of each interval, will be used to every property type
+  std::vector<int> values;
+    
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  {
+
+    std::set <std::string> intervals;
+    std::set <std::string>::iterator intervalsIt;
+    std::map<std::string, int> histogramValues;
+
+    //Adjusting the histogram's intervals
+    while(dataset->moveNext())
+    {
+      std::string interval = dataset->getString(propId);
+
+      //Every unique string will be an interval
+      intervals.insert(interval);
+    }
+
+    values.resize(intervals.size(), 0);
+    dataset->moveBeforeFirst();
+    newHistogram->setStringInterval(intervals);
+
+    //Adjusting the Histogram's values
+    while(dataset->moveNext())
+    {
+      std::string currentValue = dataset->getString(propId);
+      int i;
+
+      for (  i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
+      {
+        if(currentValue == *intervalsIt)
+        {
+          values[i] =  values[i]+1;
+          break;
+        }
+      }
+    }
+
+    //With both the intervals and values ready, the map can be populated
+    int i;
+    for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
+    {
+      std::pair<std::string, int> new_pair(*intervalsIt, values[i]);
+      histogramValues.insert(new_pair);
+    }
+
+    newHistogram->setStringValues(histogramValues);
+    dataset->moveBeforeFirst();
+  }
+
+  return newHistogram;
 }
 
 QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text)
