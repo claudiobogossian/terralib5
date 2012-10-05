@@ -40,6 +40,7 @@ namespace te
     {
       // Forward declarations
       class Histogram;
+      class StringScaleDraw;
 
       /*!
         \class HidtogramChart
@@ -62,8 +63,28 @@ namespace te
           /*! \brief Destructor. */
           ~HistogramChart();  
 
+      /*!            
+        \brief It returns the chart's scale draw.  
+
+        \return The chart's scale draw.  
+
+      */
+
+       StringScaleDraw* getScaleDraw();
+      
+      /*!            
+        \brief It sets the chart's scale draw.   
+
+        \param new_labels The new chart's scale draw.   
+      */
+
+      void setScaleDraw(  StringScaleDraw* new_scaleDraw);
+
+      void attach(QwtPlot* plot);
+
          private:
            Histogram* m_histogram;
+           StringScaleDraw* m_histogramScaleDraw;
 
       };
     } // end namespace widgets

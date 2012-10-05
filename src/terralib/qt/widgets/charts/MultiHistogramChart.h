@@ -18,9 +18,9 @@
 */
 
 /*!
-  \fileHistogram.h
+  \file MultiHistogramChart.h
 
-  \brief A class to represent a histogram chart. 
+  \brief A class to represent multiple histogram's charts. 
 */
 
 //TerraLib
