@@ -36,7 +36,8 @@ namespace te
         m_ui(new Ui::FileChooser)
       {
         m_ui->setupUi(this);
-        m_ui->m_ChooseFileToolButton->setIcon(QIcon(":terralib/png/32x32/folder.png"));
+        m_ui->m_ChooseFileToolButton->setIcon(QIcon::fromTheme("terralib_logo"));
+//        m_ui->m_ChooseFileToolButton->setIcon(QIcon::fromTheme("folder").pixmap(m_ui->m_ChooseFileToolButton->iconSize()));
 
         QCompleter* cmp = new QCompleter(this);
         m_fp_model = new QFileSystemModel(cmp);

@@ -195,7 +195,13 @@ set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
 QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-f")
 
 qt4_wrap_ui(UI ${FORMS})
-qt4_add_resources( RSC_IMG "${ROOT}/images/terra_icons.qrc")
+#qt4_add_resources( RSC_IMG "${ROOT}/images/terra_icons.qrc")
+
+# Usando o temas de icones.
+#set (ICON_THEME_NAME "Terralib" CACHE STRING "Name of the theme of icons to be used.")
+#set (ICON_THEMES_DIRS "${ROOT}/resources/themes" CACHE STRING "Directories to search for themes.")
+
+#add_definitions (-DICO_THEME_NAME=${ICON_THEME_NAME} -DICO_THEME_DIRS=${ICON_THEMES_DIRS})
 
 install (
   FILES ${UI}
@@ -204,14 +210,14 @@ install (
 )
 
 source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI} ${RSC_IMG})
+source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})# ${RSC_IMG})
 
 # Include directory of the image files
-list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}" "${ROOT}/images")
+list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")# "${ROOT}/images")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 
-list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${RSC_IMG}")
+list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")# "${RSC_IMG}")
 
 list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 
