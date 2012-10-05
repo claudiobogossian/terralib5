@@ -63,7 +63,9 @@ int main(int /*argc*/, char** /*argv*/)
     //========
     
     //pegar um data set
-    std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Solutions/examples/data/charts");
+    //std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Solutions/examples/data/charts");
+    std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Fontes/data");
+    
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionStr(ogrInfo);
@@ -71,8 +73,8 @@ int main(int /*argc*/, char** /*argv*/)
     
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
 
-    te::da::DataSet* dataset = transactor->getDataSet("mapa_distritos_sp");
-
+    //te::da::DataSet* dataset = transactor->getDataSet("mapa_distritos_sp");
+    te::da::DataSet* dataset = transactor->getDataSet("OcorrenciasPoA");
     if(dataset==0)
     {
        delete dataset;
@@ -81,27 +83,26 @@ int main(int /*argc*/, char** /*argv*/)
        return 0;
     }
     
-	  //criar um scatter do data set
-    std::string renda = "RENDA_FAM";
-    std::string anosest = "ANOS_EST";
-    std::string idademed = "IDADE_MED";
-    std::string nome = "SPRNOME";
-    std::string ID = "ID2";
-
+    //Acquiring the dataset Properties types
     te::da::DataSetType* type = dataset->getType();
 
-    int rendaIdx = type->getPropertyPosition(renda);
-    int anosestIdx = type->getPropertyPosition(anosest);
+    //Getting the Columns that will be used to populate the graph
+
+//     std::string renda = "RENDA_FAM";
+//     std::string anosest = "ANOS_EST";
+    std::string idademed = "IDADE_MED";
+    std::string data = "DATA";
+
+//     int rendaIdx = type->getPropertyPosition(renda);
+//     int anosestIdx = type->getPropertyPosition(anosest);
     int idademedIdx = type->getPropertyPosition(idademed);
-    int nomedIdx = type->getPropertyPosition(nome);
-    int IDIdx = type->getPropertyPosition(ID);
-    
+    int dataIdx= type->getPropertyPosition(data);
+
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, anosestIdx, 10 );
-
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dataIdx);
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
 
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
@@ -112,7 +113,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     chartDisplay->replot();
     
-// 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, nomedIdx );
+// 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
 // 
 //     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
 // 
@@ -128,8 +129,8 @@ int main(int /*argc*/, char** /*argv*/)
 
 	  //delete pointers
     //delete chartDisplay; // quando attacha não precisa deletar!!!! => ele cai!
-//     delete scatterChart;
-//     delete scatter;
+    //delete scatterChart;
+    //delete scatter;
     delete histogramChart;
     delete histogram;
     delete dataset;

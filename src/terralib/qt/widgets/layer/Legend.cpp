@@ -74,19 +74,7 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
 
   m_t = refLayer->getDataSource()->getTransactor();
   catalogLoader = m_t->getCatalogLoader();
-  m_dataSetType = catalogLoader->getDataSetType(refLayer->getDataSetName());
-
-  size_t numAttributes = m_dataSetType->size();
-
-  for (size_t i = 0; i < numAttributes; ++i)
-  {
-    te::dt::Property* p = m_dataSetType->getProperty(i);
-    int type = p->getType();
-    if(type == te::dt::GEOMETRY_TYPE || type == te::dt::DATETIME_TYPE ||
-       type == te::dt::STRING_TYPE)
-      continue;
-    attributeComboBox->addItem(m_dataSetType->getProperty(i)->getName().c_str());
-  }
+  m_dataSetType = catalogLoader->getDataSetType(refLayer->getId());
 
   // If the layer has already a legend associated to it, set the legend parameters
   if(refLayer->hasLegend())
@@ -96,6 +84,22 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     // Get the grouping type of the layer legend
     const te::map::GroupingType type = grouping->getType();
     typeComboBox->setCurrentIndex(type);
+
+    // Set the possible layer attributes according to the grouping type and set the 
+    // layer attribute which the legend is associated to as the current one.
+    typeComboBoxActivated(typeComboBox->currentIndex());
+
+    std::string propertyName = grouping->getPropertyName();
+
+    size_t numAttributes = m_dataSetType->size();
+    for(size_t i = 0; i < numAttributes; ++i)
+    {
+      if(propertyName == attributeComboBox->itemText(i).toStdString())
+      {
+        attributeComboBox->setCurrentIndex(i);
+        break;
+      }
+    }
 
     // Get the number of slices of the layer legend
     if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL)
@@ -114,18 +118,6 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
         stdDeviationComboBox->setCurrentIndex(1);
       else if(stdDev == 0.25)
         stdDeviationComboBox->setCurrentIndex(2);
-    }
-
-    // Get the layer attribute which the legend is associated to
-    std::string propertyName = grouping->getPropertyName();
-
-    for(size_t i = 0; i < numAttributes; ++i)
-    {
-      if(propertyName == attributeComboBox->itemText(i).toStdString())
-      {
-        attributeComboBox->setCurrentIndex(i);
-        break;
-      }
     }
 
     // Make a copy of the legend contents of the reference layer
@@ -164,6 +156,8 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     m_colorBar->addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
 
     opacityComboBox->setCurrentIndex(100);
+
+    typeComboBoxActivated(typeComboBox->currentIndex());
   }
 
   colorBar->setHeight(25);
@@ -177,10 +171,6 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   connect(okPushButton, SIGNAL(clicked()), this, SLOT(okPushButtonClicked()));
   connect(cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelPushButtonClicked()));
   connect(helpPushButton, SIGNAL(clicked()), this, SLOT(helpPushButtonClicked()));
-
-  typeComboBoxActivated(typeComboBox->currentIndex());
-
-  okPushButton->setEnabled(false);
 }
 
 const std::vector<te::map::LegendItem*>& te::qt::widgets::Legend::getLegend() const
@@ -204,20 +194,20 @@ void te::qt::widgets::Legend::closeEvent(QCloseEvent* /*e*/)
 
 void te::qt::widgets::Legend::typeComboBoxActivated(int index)
 {
-  if(index == 3)
-  {
-    // Unique Value
-    attributeComboBox->clear();
+  attributeComboBox->clear();
+  legendTableWidget->clear();
+  okPushButton->setEnabled(false);
 
-    size_t numAttributes = m_dataSetType->size();
-    for(size_t i = 0; i < numAttributes; ++i)
-    {
-      te::dt::Property* p = m_dataSetType->getProperty(i);
-      int type = p->getType();
-      if(type == te::dt::GEOMETRY_TYPE || type == te::dt::DATETIME_TYPE)
-        continue;
-      attributeComboBox->addItem(m_dataSetType->getProperty(i)->getName().c_str());
-    }
+  size_t numAttributes = m_dataSetType->size();
+  for(size_t i = 0; i < numAttributes; ++i)
+  {
+    int type = m_dataSetType->getProperty(i)->getType();
+
+    if(type == te::dt::GEOMETRY_TYPE || type == te::dt::DATETIME_TYPE ||
+      (index != 3 && type == te::dt::STRING_TYPE))
+      continue;
+
+    attributeComboBox->addItem(m_dataSetType->getProperty(i)->getName().c_str());
   }
 
   slicesComboBox->setEnabled(false);
@@ -241,7 +231,6 @@ void te::qt::widgets::Legend::typeComboBoxActivated(int index)
 
 void te::qt::widgets::Legend::applyPushButtonClicked()
 {
-  //setCursor(Qt::WaitCursor);
   ScopedCursor cursor(Qt::WaitCursor);
 
   m_changedItemLabel.clear();
@@ -321,13 +310,13 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
     c.setColor(c.getRed(), c.getGreen(), c.getBlue(), opacityComboBox->currentText().toInt() * 255/100);
   }
 
-  // If there are values not grouped, generate a legend item at the 
+  // If there are null values, generate a legend item at the end
   // of the legend and set its color as being totally white
   if(m_numValuesNotGrouped)
   {
-    te::map::LegendItem* notGroupedItem = new te::map::LegendItem(QString(tr("Null Values")).toStdString(),
-                                                                  QString(tr("Null Values")).toStdString());
-    notGroupedItem->setTitle(QString(tr("Not Grouped")).toStdString());
+    te::map::LegendItem* notGroupedItem = new te::map::LegendItem(QString("Null Values").toStdString(),
+                                                                  QString("Null Values").toStdString());
+    notGroupedItem->setTitle(QString("Null Values").toStdString());
     notGroupedItem->setCount(m_numValuesNotGrouped);
 
     te::color::RGBAColor color(255, 255, 255, 255);
@@ -339,7 +328,6 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
 
   // Set the new table contents
   setTableContents();
-
   okPushButton->setEnabled(true);
 }
 

@@ -11,8 +11,8 @@
 # Find path - tries to find *.h in paths hard-coded by the script
 find_path(
   PROJ4_INCLUDE_DIR org_proj4_Projections.h
-  PATHS "/usr/local/include" "/usr/include" 
-  PATH_SUFFIXES "proj4" "proj4/include" "include/proj4"
+  PATHS /usr/local/include /usr/include 
+  PATH_SUFFIXES "proj4" "proj4/include" "include/proj4" "proj" "proj/include"
 )
 
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
@@ -20,14 +20,14 @@ find_library(
   PROJ4_LIBRARY_RELEASE
   NAMES proj_i proj
   PATHS /usr/local/lib /lib /usr/lib
-  PATH_SUFFIXES "proj4/lib"
+  PATH_SUFFIXES "proj4/lib" "proj/lib"
 )
 
 find_library(
   PROJ4_LIBRARY_DEBUG
-  NAMES proj_i proj
+  NAMES proj_i_d proj
   PATHS /usr/local/lib /lib /usr/lib
-  PATH_SUFFIXES "proj4/lib"
+  PATH_SUFFIXES "proj4/lib" "proj/lib"
 )
 
 checkLibNames("PROJ4")

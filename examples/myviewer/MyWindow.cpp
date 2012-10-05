@@ -1931,27 +1931,27 @@ void MyWindow::editLegendSlot()
   if(legendDialog.exec() != QDialog::Accepted)
     return;
 
-    int frameStyle = QFrame::Sunken | QFrame::Panel;
+    //int frameStyle = QFrame::Sunken | QFrame::Panel;
 
-    bool ok;
-    int opac = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
-                                 tr("Color Opacity:"), 120, 0, 255, 10, &ok);
-    if(ok == false)
-      opac = 255;
+    //bool ok;
+    //int opac = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
+    //                             tr("Color Opacity:"), 120, 0, 255, 10, &ok);
+    //if(ok == false)
+    //  opac = 255;
 
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  std::vector<te::map::LegendItem*> legends = legendDialog.getLegend();
-  std::vector<te::map::LegendItem*>::iterator it;
-  for(it = legends.begin(); it != legends.end(); ++it)
-  {
-    te::map::LegendItem* leg = *it;
-    te::color::RGBAColor cor = leg->getColor();
-    cor.setColor(cor.getRed(), cor.getGreen(), cor.getBlue(), opac);
-    leg->setColor(cor);
-  }
+  //std::vector<te::map::LegendItem*> legends = legendDialog.getLegend();
+  //std::vector<te::map::LegendItem*>::iterator it;
+  //for(it = legends.begin(); it != legends.end(); ++it)
+  //{
+  //  te::map::LegendItem* leg = *it;
+  //  te::color::RGBAColor cor = leg->getColor();
+  //  cor.setColor(cor.getRed(), cor.getGreen(), cor.getBlue(), opac);
+  //  leg->setColor(cor);
+  //}
 
-  //m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legendDialog.getLegend());
-  m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legends);
+  m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legendDialog.getLegend());
+  //m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legends);
   updateDisplays((MyLayer*)(layerItem->getRefLayer()));
 }

@@ -31,6 +31,14 @@
 
   Its possible to add any data to any group. To remove highlight, just remove the id from the group. Its, also, possible to
   change presentation parameters of any group.
+
+  There is also an option for customize delegates. The te::qt::widgets::HLDelegateDecorator can be used. This way it is possible to change 
+  the delegate behavior in run-time. To do that, the code looks like:
+  \snippet examples/dataview/TabularViewerEx.cpp Adding custom delegate decorator
+  The code above, presents a customization of the delegate of the TabularViewer \a tv. In the example, a StarDelegate is created over the
+  clone of the delegate being used. It's not necessary cloning it, because the pointer to the older delegate is not owned by the TabularViewer.
+  Note that if a clone of the delegate was used, then is necessary to delete the older pointer as we do in the last line of the example.
+
   \version 5.0
   \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
   \date 2001-2012
@@ -137,12 +145,6 @@ namespace te
 
       public slots:
 
-        /*! 
-          \name Data configuration methods.
-          \details Methods related to the configuration of data to be presented.
-        */
-        //@{
-
         /*!
           \brief Presents the data set.
           \param dset The te::da::DataSet to be presented.
@@ -169,7 +171,6 @@ namespace te
           \return The vector containing the positions of primary keys.
         */
         std::vector<size_t> getPrimaryKeys() const;
-        //@}
 
         /*! 
           \name Highlight object methods.
@@ -186,66 +187,6 @@ namespace te
         */
         //@{
 
-        /*!
-          \brief Points the rows in the vector.
-          \param rows Rows to be pointed.
-          \exception If any row is out of table boundaries a te::common::Exception will be raised.
-        */
-        void pointObjects(const std::vector<int>& rows);
-
-        /*! 
-          \name Clear highlighted objects.
-          \details Methods used to removing objects from highlighted groups.
-          \note The primary keys pre-processed still remain in memory, the promotion NOT. 
-          See the section \ref promotion_section "Methods of promotion of highlighted groups" for details about the functionality of promote. 
-        */
-        //@{
-
-        /*!
-          \brief Clear all highlight of each group.
-        */
-        void resetHighlights();
-        //@}
-
-        /*! 
-          \name Methods of promotion.
-          \details Methods related to promotion of the highlighted objects. Promotion is a way of grouping highlighted objects. The operation just get the selected group,
-          and presents its contents on top of table. It only reorder the table just by moving the highlighted. Promotion has an aditional cost, when analizing the 
-          comsuption of computational resources. First of all, it is necessary to pre-proccess the primary keys. It consumes proccessing of CPU and time. The time required
-          for pre-proccess depends on CPU power and size of the table. Greater table, more proccessing of the CPU and more time spent. But this pre-proccess is only required
-          on first time, the subsequent requirements of promotion is instantaneously. The second aspect is the memory consuption. All pre-proccessed primary keys MUST be stored,
-          in main memory.
-          \anchor promotion_section
-          \note DO NOT use promotion if you do not have aditional computational resources available. It may compromise your system.
-          \note Resetting promotion DO NOT clears the primary keys pre-proccessed set.
-        */
-        //@{
-
-        /*!
-          \brief Enable or disable promotion.
-          \details Enabling promotion may costs time. The primary keys must be pre-processed if it did not.
-          \param enable True enables promotion, False disables it.
-        */
-        void setPromoteEnabled(const bool& enable);
-
-        /*!
-          \brief Promote all groups.
-        */
-        void promoteHighlighted();
-
-        /*!
-          \brief Removes promotion of all groups.
-        */
-        void resetPromote();
-        //@}
-
-        /*!
-          \name Low level functions
-          \details Functions used for manipulate other groups than the default one.
-          This function MUST be used only if the client uses other te::qt::widgets::HLDelegateDecorator
-          than the default one.
-        */
-        //@{
         /*!
           \brief Updates the objects in a group of highlighted items.
           \param g The highlight group.
@@ -267,6 +208,50 @@ namespace te
         void setHighlightColor(const int& g, const QColor& c);
 
         /*!
+          \brief Points the rows in the vector.
+          \param rows Rows to be pointed.
+          \exception If any row is out of table boundaries a te::common::Exception will be raised.
+        */
+        void pointObjects(const std::vector<int>& rows);
+
+        /*!
+          \brief Clear all highlight of each group.
+        */
+        void resetHighlights();
+        //@}
+
+        /*! 
+          \name Methods of promotion.
+          \details Methods related to promotion of the highlighted objects. Promotion is a way of grouping highlighted objects. The operation just get the selected group,
+          and presents its contents on top of table. It only reorder the table just by moving the highlighted. The promotion has additional costs, when analyzing the 
+          consumption of computational resources. First of all, it is necessary to pre-process the primary keys. It consumes processing of CPU and time. The time required 
+          for pre-processing the primary keys, depends on the CPU power and size of the table. Greatest tables requires more processing of the CPU and more time spent. 
+          But this pre-processing is only required at first time, the subsequent requests of promotion are instantaneous. The second aspect is the memory consumption. 
+          All pre-processed primary keys MUST be stored, in main memory.
+          \anchor promotion_section
+          \note DO NOT use promotion if you do not have additional computational resources available. It may compromise your system.
+          \note Resetting promotion DO NOT clears the primary keys pre-proccessed set.
+        */
+        //@{
+
+        /*!
+          \brief Enable or disable promotion.
+          \details Enabling promotion may costs time. The primary keys must be pre-processed if it did not.
+          \param enable True enables promotion, False disables it.
+        */
+        void setPromoteEnabled(const bool& enable);
+
+        /*!
+          \brief Promote all groups.
+        */
+        void promoteHighlighted();
+
+        /*!
+          \brief Removes promotion of all groups.
+        */
+        void resetPromote();
+
+        /*!
           \brief Removes the promotion of group \a g.
           \param g Group identifier.
         */
@@ -278,6 +263,7 @@ namespace te
         */
         void addPromoteHighlight(const int& g);
         //@}
+
 
         /*!
           \brief Returns the menu for the given \a type.
@@ -292,7 +278,7 @@ namespace te
 
         /*!
           \brief Resets state of all columns.
-          \details Shows all hidden columns and changes the positions to original state.
+          \details Shows all hidden columns and changes the positions to the original state.
         */
         void resetColumns();
 

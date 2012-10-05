@@ -32,15 +32,19 @@ te::qt::widgets::Histogram::Histogram()
 
 }
 
-te::qt::widgets::Histogram::Histogram(std::map<double, int> values, double minValue)
-{
-  m_values = values;
-  m_minValue = minValue;
-}
-
 te::qt::widgets::Histogram::~Histogram()
 {
 
+}
+
+int& te::qt::widgets::Histogram::getType()
+{
+  return m_histogramType;
+}
+
+void te::qt::widgets::Histogram::setType(int new_type)
+{
+ m_histogramType = new_type;
 }
 
 std::map<double, int>& te::qt::widgets::Histogram::getValues()
@@ -48,9 +52,19 @@ std::map<double, int>& te::qt::widgets::Histogram::getValues()
   return m_values;
 }
 
+std::map<std::string, int>& te::qt::widgets::Histogram::getStringValues()
+{
+  return m_StringValues;
+}
+
 void te::qt::widgets::Histogram::setValues(std::map<double, int> new_values)
 {
   m_values = new_values;
+}
+
+void te::qt::widgets::Histogram::setStringValues(std::map<std::string, int> new_values)
+{
+  m_StringValues = new_values;
 }
 
 double& te::qt::widgets::Histogram::getMinValue()
@@ -71,6 +85,16 @@ double& te::qt::widgets::Histogram::getInterval()
 void te::qt::widgets::Histogram::setInterval(double new_Interval)
 {
   m_interval = new_Interval;
+}
+
+std::set <std::string>& te::qt::widgets::Histogram::getStringInterval()
+{
+  return m_StringIntervals;
+}
+
+void te::qt::widgets::Histogram::setStringInterval( std::set <std::string> new_Interval)
+{
+  m_StringIntervals = new_Interval;
 }
 
 void te::qt::widgets::Histogram::add(std::pair<double, int> new_value)

@@ -25,6 +25,7 @@
 
 //STL
 #include <map>
+#include <set>
 
 //TerraLib
 #include "../Config.h"
@@ -52,22 +53,32 @@ namespace te
           */
           Histogram();
 
-          /*!
-            \brief Constructor
-          */
-          Histogram(std::map<double, int> values, double minValue);
-
           /*! 
             \brief Destructor.
           */
           ~Histogram();
 
+            /*!            
+            \brief It returns the histogram's type.  
+
+            \return The histogram's type.  
+
+          */
+
+          int& getType();
+      
+          /*!            
+            \brief It sets the histogram's type. 
+
+            \param new_type The new type 
+          */
+
+          void setType(int new_type);
+
           /*!            
             \brief It returns the map containing the histogram values. 
 
             \return A  map containing the histogram values. 
-
-            \note The caller will not have the ownership of the returned pointer. 
           */
 
           std::map<double, int>& getValues();
@@ -80,12 +91,27 @@ namespace te
 
           void setValues(std::map<double, int> new_values);
 
+          
+          /*!            
+            \brief It returns the map containing the histogram String values. 
+
+            \return A  map containing the histogram values. 
+          */
+
+          std::map<std::string, int>& getStringValues();
+      
+          /*!            
+            \brief It sets the map containing the histogram String values. 
+
+            \param new_values The new map of values
+          */
+
+          void setStringValues(std::map<std::string, int> new_values);
+
           /*!            
             \brief It returns the histogram's minimum value. 
 
             \return The histogram's minimum value. 
-
-            \note The caller will not have the ownership of the returned pointer. 
           */
 
           double& getMinValue();
@@ -102,8 +128,6 @@ namespace te
             \brief It returns the histogram's interval. 
 
             \return The histogram's interval. 
-
-            \note The caller will not have the ownership of the returned pointer. 
           */
 
           double& getInterval();
@@ -117,6 +141,22 @@ namespace te
           void setInterval(double new_Interval);
 
            /*!            
+            \brief It returns the histogram's string set of intervals. 
+
+            \return The histogram's interval. 
+          */
+
+          std::set <std::string>& getStringInterval();
+      
+          /*!            
+            \brief It sets the histogram's string set of intervals. 
+
+            \param new_values The new histogram's interval.
+          */
+
+          void setStringInterval( std::set <std::string> new_Interval);
+
+           /*!            
             \brief It adds a new value to the map containing the histogram values. 
 
             \param new_value The value that will be added.
@@ -126,9 +166,23 @@ namespace te
 
         private:
 
+          //Histogram's type
+          int m_histogramType;
+
+          //Histogram's numeric values
           std::map<double, int> m_values;
+
+          //Histogram string values
+          std::map<std::string, int> m_StringValues; 
+
+          //Histogram's minimum numeric value
           double m_minValue;
+
+           //Histogram's numeric interval
           double m_interval;
+
+          //Histogram unique strings set, represents string intervals
+          std::set <std::string> m_StringIntervals;
       };
     } // end namespace widgets
   }   // end namespace qt

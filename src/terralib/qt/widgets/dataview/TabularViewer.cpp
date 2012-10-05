@@ -118,6 +118,7 @@ namespace te
           m_viewer->connect(this, SIGNAL(highlightObjects(const std::vector<int>&)), SLOT(pointObjects(const std::vector<int>&)));
           m_viewer->connect(this, SIGNAL(promote(const int&)), SLOT(addPromoteHighlight(const int&)));
           m_viewer->connect(this, SIGNAL(resetGroupPromotion(const int&)), SLOT(resetPromoteHighlight(const int&)));
+          m_viewer->connect(this, SIGNAL(resetHighlight(const int&)), SLOT(clearHighlighted(const int&)));
         }
 
         /*!
@@ -548,6 +549,43 @@ namespace te
         return m_table->getPKeysColumns();
       }
 
+      void TabularViewer::setHighlightObjects(const int& g, const std::set<std::string>& ids)
+      {
+        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
+
+        std::vector< std::set<std::string> > hls = updateHighlightGroups(ids, g, del);
+
+        if(del != 0)
+          for(size_t i=0; i<hls.size(); i++)
+            del->setClassSelection(i, hls[i]);
+
+        updatePromotion(dynamic_cast<te::map::PromoTable*>(m_table), del, m_promotedGroups);
+
+        QTableView::viewport()->update();
+      }
+
+      void TabularViewer::clearHighlighted(const int& g)
+      {
+        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
+        std::vector< std::set<std::string> > hls = cleanHighlight(g, del);
+
+        if(del != 0)
+          for(size_t i=0; i<hls.size(); i++)
+            del->setClassSelection(i, hls[i]);
+
+        QTableView::viewport()->update();
+      }
+
+      void TabularViewer::setHighlightColor(const int& g, const QColor& c)
+      {
+        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
+
+        if(del != 0)
+          del->setClassColor(g, c);
+
+        QTableView::viewport()->update();
+      }
+
       void TabularViewer::pointObjects(const std::vector<int>& rows)
       {
         std::vector<int>::const_iterator it;
@@ -604,43 +642,6 @@ namespace te
       {
         m_promotedGroups.clear();
         resetPromotion(m_table);
-
-        QTableView::viewport()->update();
-      }
-
-      void TabularViewer::setHighlightObjects(const int& g, const std::set<std::string>& ids)
-      {
-        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
-
-        std::vector< std::set<std::string> > hls = updateHighlightGroups(ids, g, del);
-
-        if(del != 0)
-          for(size_t i=0; i<hls.size(); i++)
-            del->setClassSelection(i, hls[i]);
-
-        updatePromotion(dynamic_cast<te::map::PromoTable*>(m_table), del, m_promotedGroups);
-
-        QTableView::viewport()->update();
-      }
-
-      void TabularViewer::clearHighlighted(const int& g)
-      {
-        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
-        std::vector< std::set<std::string> > hls = cleanHighlight(g, del);
-
-        if(del != 0)
-          for(size_t i=0; i<hls.size(); i++)
-            del->setClassSelection(i, hls[i]);
-
-        QTableView::viewport()->update();
-      }
-
-      void TabularViewer::setHighlightColor(const int& g, const QColor& c)
-      {
-        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
-
-        if(del != 0)
-          del->setClassColor(g, c);
 
         QTableView::viewport()->update();
       }

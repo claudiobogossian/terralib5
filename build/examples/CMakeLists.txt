@@ -53,7 +53,6 @@ option (EXAMPLE_RP "Build rp example." ON)
 option (EXAMPLE_SAM "Build sam example." ON)  
 option (EXAMPLE_SRS "Build srs example." ON)  
 option (EXAMPLE_ST "Build st example." ON)  
-option (EXAMPLE_TIMESERIES "Build time series example." ON)  
 option (EXAMPLE_MYVIEWER "Build my viewer example." ON)  
 option (EXAMPLE_URL "Build URL example." ON)  
 option (EXAMPLE_XERCES "Build xerces example." ON)  
@@ -142,10 +141,6 @@ endif()
 
 if(EXAMPLE_ST)
   add_subdirectory(terralib_example_st)
-endif()
-
-if(EXAMPLE_TIMESERIES)
-  add_subdirectory(terralib_example_timeseries)
 endif()
 
 if(EXAMPLE_MYVIEWER)

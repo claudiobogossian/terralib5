@@ -52,20 +52,42 @@ namespace te
     double getDouble(te::dt::DateTime* dateTime);
 
     /*!
-            \brief Scatter Creator
+        \brief Scatter Creator
 
-            \note It will traverse the data set, using the moveNext() method
-            \note It will not take the ownership of the DataSet pointer. 
+        \param dataset The dataset that will be used to populate the scatter's data
+
+        \note It will traverse the data set, using the moveNext() method
+        \note It will not take the ownership of the DataSet pointer. 
+
+        \return a new Scatter
     */
 		TEQTWIDGETSEXPORT Scatter* createScatter(te::da::DataSet* dataset, int propX, int propY);
 		
-        /*!
-            \brief Histogram Creator
+    /*!
+        \brief Histogram Creator
 
-            \note It will traverse the data set, using the moveNext() method
-            \note It will not take the ownership of the DataSet pointer. 
+        \param dataset The dataset that will be used to populate the histogram's data
+        \param propId The id of the property that contains the data
+        \param slices The desired number of intervals
+
+        \note It will traverse the data set, using the moveNext() method
+        \note It will not take the ownership of the DataSet pointer. 
+
+        \return a new Scatter
     */
 		TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId, int slices);
+
+    /*!
+        \brief Histogram Creator
+
+        \param dataset The dataset that will be used to populate the histogram's data
+        \param propId The id of the property that contains the data
+
+        \note This version is used to create a histogram based on a set of labels (Strings), therefore there is no user-defined number of intervals, each label is an interval
+        \note It will traverse the data set, using the moveNext() method
+        \note It will not take the ownership of the DataSet pointer. 
+    */
+		TEQTWIDGETSEXPORT Histogram* createHistogram(te::da::DataSet* dataset, int propId);
 
 		/*!
         \function Terralib2Qwt
