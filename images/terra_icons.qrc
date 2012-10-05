@@ -1,8 +1,0 @@
-<RCC>
-  <qresource prefix="terralib">
-    <file>png/32x32/key.png</file>
-  </qresource>
-  <qresource prefix="terralib">
-    <file>png/32x32/folder.png</file>
-  </qresource>
-</RCC>

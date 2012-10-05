@@ -24,11 +24,11 @@
 */
 
 // TerraView
-#include "ui/AboutDialogForm.h"
+#include "ui_AboutDialogForm.h"
 #include "AboutDialog.h"
 
 // TerraLib
-#include <terralib/common/SystemApplicationSettings.h>
+//#include <terralib/common/SystemApplicationSettings.h>
 
 // Qt
 #include <QtGui/QPixmap>
@@ -40,7 +40,8 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
   m_ui->setupUi(this);
 
   {
-    std::string logoFileName = te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href");
+    std::string logoFileName = "C:/teste.teste";
+   // te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href");
 
     QPixmap pixmap(logoFileName.c_str());
 
@@ -48,7 +49,8 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
   }
 
   {
-    std::string logoFileName = te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href");
+    std::string logoFileName = "C:/teste.teste";
+   // te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href");
 
     QPixmap pixmap(logoFileName.c_str());
 

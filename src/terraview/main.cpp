@@ -23,18 +23,102 @@
   \brief It contains the main routine of TerraView.
 */
 
-// TerraView
-#include "TerraView.h"
+#include "MainDialog.h"
 
-// STL
+//! TerraLib include files
+#include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
+
+//! Qt include files
+#include <QtGui/QApplication>
+
+//! STL include files
 #include <cstdlib>
 #include <exception>
 
-// Boost
-#include <boost/format.hpp>
+void loadModules()
+{
+  try
+  {
+    {
+      te::plugin::PluginInfo info;
 
-// Qt
-#include <QtGui/QApplication>
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      info.m_type = "dll";
+#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+      info.m_type = "s.o.";
+#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      info.m_type = "dylib";      
+#else
+  #error "Platform not supported yet"
+#endif
+
+      info.m_name = "OGR DataSource Driver";
+      info.m_description = "This data source driver supports...";
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+      info.m_mainFile = "terralib_ogr.dll";
+#else
+      info.m_mainFile = "terralib_ogr_d.dll";
+#endif
+#endif
+
+#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
+#ifdef NDEBUG
+      info.m_mainFile = "libterralib_ogr.so";
+#else
+      info.m_mainFile = "libterralib_ogr_d.so";
+#endif
+#endif
+
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#ifdef NDEBUG
+      info.m_mainFile = "libterralib_ogr.dylib";
+#else
+      info.m_mainFile = "libterralib_ogr.dylib";
+#endif
+#endif
+
+      te::plugin::PluginManager::getInstance().loadPlugin(info);
+
+
+      info.m_name = "PostGIS DataSource Driver";
+      info.m_description = "This data source driver supports...";
+
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+      info.m_mainFile = "terralib_postgis.dll";
+#else
+      info.m_mainFile = "terralib_postgis_d.dll";
+#endif
+#endif
+
+#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
+#ifdef NDEBUG
+      info.m_mainFile = "libterralib_postgis.so";
+#else
+      info.m_mainFile = "libterralib_postgis_d.so";
+#endif
+#endif
+
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#ifdef NDEBUG
+      info.m_mainFile = "libterralib_postgis.dylib";
+#else
+      info.m_mainFile = "libterralib_postgis_d.dylib";
+#endif
+#endif
+
+      te::plugin::PluginManager::getInstance().loadPlugin(info);
+    }
+  }
+  catch(const te::common::Exception& e)
+  {
+    throw e;
+  }
+}
+
 
 int main(int argc, char** argv)
 {
@@ -44,8 +128,14 @@ int main(int argc, char** argv)
 
   try
   {
+
+    TerraLib::getInstance().initialize();
+
+    loadModules();
+
 // initialize the application
-    TerraView teapp;
+    MainDialog dlg;
+    dlg.show();
 
     waitVal = app.exec();
   }
@@ -57,6 +147,8 @@ int main(int argc, char** argv)
   {
     return EXIT_FAILURE;
   }
+
+  TerraLib::getInstance().finalize();
 
   return waitVal;
 }

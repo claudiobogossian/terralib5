@@ -1,0 +1,40 @@
+[Icon Theme]
+Name=Terralib2
+Name[pt]=Terralib2
+Comment=Default icons for TerraLib applications
+Comment[pt]=Ícones padrão para aplicativos Terralib
+Directories=21x21,32x32,48x48,64x64,128x128,scalable
+
+[21x21]
+Size=21
+Type=Fixed
+Context=Applications
+
+[32x32]
+Size=32
+Type=Scalable
+MinSize=1
+MaxSize=256
+Context=Applications
+
+[48x48]
+Size=48
+Type=Fixed
+Context=Applications
+
+[64x64]
+Size=64
+Type=Fixed
+Context=Applications
+
+[128x128]
+Size=128
+Type=Fixed
+Context=Applications
+
+[scalable]
+Size=12
+Type=Scalable
+MinSize=1
+MaxSize=256
+Context=Applications
