@@ -26,6 +26,7 @@
 //STL
 #include <map>
 #include <set>
+#include <string>
 
 //TerraLib
 #include "../Config.h"
