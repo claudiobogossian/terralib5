@@ -214,6 +214,12 @@ namespace te
 
           virtual void mouseMoveEvent(QMouseEvent* e);
 
+          /*!
+          \brief It waits the wheel from mouse to do something.
+
+          \param QWheelEvent
+          \note In this case, it change the color lightness.
+          */
 
           virtual void wheelEvent(QWheelEvent* e);
 
@@ -236,33 +242,40 @@ namespace te
           */
           void editPin();
 
+          /*!
+          \brief It changes the pins positions for an equal distribution.
+          */
+          void equalStep();
+
         protected:
 
           te::color::ColorBar* m_colorBar;       //!< Color map information
           
-          QwtInterval m_interval;       //!< Color vector.
+          QwtInterval m_interval;                //!< Color vector.
 
-          int m_height;         //!< Height of colobar.
+          int m_height;                          //!< Height of colobar.
 
-          double m_initialXPos;       //!< Position initial to move color.
+          double m_initialXPos;                  //!< Position initial to move color.
 
-          double m_clickPrecision;   //!< Precision of click to get a color stop.
+          double m_clickPrecision;               //!< Precision of click to get a color stop.
 
-          double m_currentPinPos;
+          double m_currentPinPos;                //!< Value of the current Pin position.
 
-          QMenu* m_colorBarMenu; //!< Popup menu for Pin on color bar.
+          QMenu* m_colorBarMenu;                 //!< Popup menu for Pin on color bar.
 
-          QMenu* m_pinMenu; //!< Popup menu for Pin on color bar.
+          QMenu* m_pinMenu;                      //!< Popup menu for Pin on color bar.
 
-          te::qt::widgets::ColorPickerToolButton* m_colorBarPicker;
+          te::qt::widgets::ColorPickerToolButton* m_colorBarPicker; //!< Color picker for colorbar menu.
 
-          te::qt::widgets::ColorPickerToolButton* m_pinPicker;
+          te::qt::widgets::ColorPickerToolButton* m_pinPicker; //!< Color picker for pin menu.
 
-          QWidgetAction* m_addPinAction;
+          QWidgetAction* m_addPinAction;         //!< Add Pin Action
 
-          QWidgetAction* m_editPinAction;
+          QWidgetAction* m_editPinAction;        //!< Edit Pin Action
 
-          QAction* m_removePinAction;
+          QAction* m_removePinAction;            //!< Remove Pin Action
+
+          QAction* m_equalStepAction;            //!< Equal Step Pin Action
 
       };
     } // end namespace qwt

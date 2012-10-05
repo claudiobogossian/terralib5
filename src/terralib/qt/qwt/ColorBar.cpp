@@ -56,10 +56,13 @@ te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::
   // Set the actions for the color bar menu
   m_colorBarMenu = new QMenu(this);
   m_addPinAction = new QWidgetAction(m_colorBarMenu);
-  m_addPinAction->setStatusTip(QObject::tr("Add Color"));
   m_addPinAction->setDefaultWidget(m_colorBarPicker);
+  m_equalStepAction = new QAction(QObject::tr("Equal Step"), m_colorBarMenu);
+  m_equalStepAction->setStatusTip(QObject::tr("Equal Step"));
+  connect(m_equalStepAction, SIGNAL(triggered()), this, SLOT(equalStep()));
   connect(m_colorBarPicker, SIGNAL(colorChanged(const QColor&)), this, SLOT(addPin()));
    m_colorBarMenu->addAction(m_addPinAction);
+   m_colorBarMenu->addAction(m_equalStepAction);
    //
 
   // Set the actions for the color bar pin menu
@@ -185,6 +188,39 @@ void te::qt::qwt::ColorBar::addPin()
   this->repaint();
 }
 
+void te::qt::qwt::ColorBar::equalStep()
+{
+  std::map<double, te::color::RGBAColor>::const_iterator it = m_colorBar->getColorMap().begin();
+
+  std::map<double, double> newpos = std::map<double, double>();
+
+  int numPins = m_colorBar->getColorMap().size();
+
+  int increment = (int)this->width() / (numPins-1);
+
+  int pinCount = 0;
+  while(it != m_colorBar->getColorMap().end())
+  {
+    if(it->first != 0 && it->first != 1)
+    {
+      pinCount == 0 ? pinCount = 2:true;
+      newpos[it->first] = convert2toolbarPos((pinCount-1)*increment);
+      ++pinCount;
+    }
+    ++it;
+  }
+
+  std::map<double, double>::const_iterator it2 = newpos.begin();
+  while(it2 != newpos.end())
+  {
+    m_colorBar->move(it2->first, it2->second);
+    ++it2;
+  }
+
+  buildColorBar();
+  this->repaint();
+}
+
 void te::qt::qwt::ColorBar::paintEvent(QPaintEvent* e)
 {
   QwtScaleWidget::paintEvent(e);
@@ -290,7 +326,7 @@ void te::qt::qwt::ColorBar::wheelEvent(QWheelEvent* e)
 
     te::color::RGBAColor color1 = m_colorBar->getColorMap().at(pin);
     te::color::RGBAColor color2 = m_colorBar->getColorMap().at(pin);
-        
+
     te::color::ColorTransform c(color1.getRgba());
     c.getHsl(&hh, &ss, &ll, &a);
 
@@ -300,7 +336,7 @@ void te::qt::qwt::ColorBar::wheelEvent(QWheelEvent* e)
 
     if(e->delta() < 0)
       d *= -1;
-    
+
     qc.getHsl(&h, &s, &l, &a);
     
     l += d;
