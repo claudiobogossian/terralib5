@@ -39,7 +39,7 @@
          If you want to disable a specific data source driver just just set the flag to 0.
 */
 #define TE_EXAMPLE_USE_OGR  1
-#define TE_EXAMPLE_USE_GDAL 0
+#define TE_EXAMPLE_USE_GDAL 1
 #define TE_EXAMPLE_USE_PGIS 0
 
 /*! \brief It loads the data source drivers. */
@@ -53,6 +53,9 @@ void Filter2Query();
 
 /*! \brief It draws a set of layers using styles encoded using OGC Symbology Enconding specification. */
 void DrawStyledLayers();
+
+/*! \brief It draws a set of raster layers using styles encoded using OGC RasterSymbology Enconding specification. */
+void DrawRasterStyledLayers();
 
 /** @name Hard-coded styles
  *  Methods to build pre-defined styles.

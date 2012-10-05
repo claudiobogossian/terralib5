@@ -20,6 +20,7 @@
 // Qt
 #include <QComboBox>
 #include <QMessageBox>
+#include <QMenu>
 
 // TerraLib
 #include <terralib/common.h>

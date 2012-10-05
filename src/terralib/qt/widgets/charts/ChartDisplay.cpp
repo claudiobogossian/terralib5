@@ -84,7 +84,3 @@ te::qt::widgets::ChartDisplay::~ChartDisplay()
   delete m_titleBackFill;
   delete m_titleBackStroke;
 }
-
-
-
-

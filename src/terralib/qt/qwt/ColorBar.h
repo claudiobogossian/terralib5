@@ -36,6 +36,9 @@
 //TerraLib
 #include "../widgets/Config.h"
 
+class QMenu;
+class QAction;
+class QWidgetAction;
 
 namespace te
 {
@@ -46,6 +49,11 @@ namespace te
 
   namespace qt
   {
+    namespace widgets
+    {
+      class ColorPickerToolButton;
+    }
+
     namespace qwt
     {
       /*!
@@ -58,6 +66,9 @@ namespace te
 
       class TEQTWIDGETSEXPORT ColorBar: public QwtScaleWidget
       {
+        
+        Q_OBJECT
+        
         public:
 
           /** @name Initializer Methods
@@ -149,21 +160,31 @@ namespace te
           void buildColorBar();
 
           /*!
+          \brief It returns the pin based on mouse click and the click precision
+
+          \param pos Mouse click X on toolbar
+
+          \return Pin found or -1, if not found.
+          */
+
+          double getPin(int pos);
+
+          /*!
+          \brief It convert a mouse position to a toolbar position
+
+          \param pos Mouse click X on toolbar
+
+          \return Toolbar position
+          */
+          double convert2toolbarPos(int pos);
+
+          /*!
           \brief Inherit of QEvent, receive events to paint e update widgets.
 
           \param QPaintEvent
           */
 
           virtual void paintEvent(QPaintEvent* e);
-
-          /*!
-          \brief It waits a doubleClickEvent to do something.
-
-          \param QMouseEvent
-          \note In this case, it treat the add color funciontion.
-          */
-
-          virtual void mouseDoubleClickEvent(QMouseEvent* e);
 
           /*!
           \brief It waits a pressEvent from mouse to do something.
@@ -193,19 +214,69 @@ namespace te
 
           virtual void mouseMoveEvent(QMouseEvent* e);
 
+          /*!
+          \brief It waits the wheel from mouse to do something.
+
+          \param QWheelEvent
+          \note In this case, it change the color lightness.
+          */
+
+          virtual void wheelEvent(QWheelEvent* e);
+
           //@}
+
+        protected slots:
+          
+          /*!
+          \brief It add a colorbar pin.
+          */
+          void addPin();
+
+          /*!
+          \brief It remove a colorbar pin.
+          */
+          void removePin();
+
+          /*!
+          \brief It edit a colorbar pin.
+          */
+          void editPin();
+
+          /*!
+          \brief It changes the pins positions for an equal distribution.
+          */
+          void equalStep();
 
         protected:
 
           te::color::ColorBar* m_colorBar;       //!< Color map information
           
-          QwtInterval m_interval;       //!< Color vector.
+          QwtInterval m_interval;                //!< Color vector.
 
-          int m_height;         //!< Height of colobar.
+          int m_height;                          //!< Height of colobar.
 
-          double m_initialXPos;       //!< Position initial to move color.
+          double m_initialXPos;                  //!< Position initial to move color.
 
-          double m_clickPrecision;   //!< Precision of click to get a color stop.
+          double m_clickPrecision;               //!< Precision of click to get a color stop.
+
+          double m_currentPinPos;                //!< Value of the current Pin position.
+
+          QMenu* m_colorBarMenu;                 //!< Popup menu for Pin on color bar.
+
+          QMenu* m_pinMenu;                      //!< Popup menu for Pin on color bar.
+
+          te::qt::widgets::ColorPickerToolButton* m_colorBarPicker; //!< Color picker for colorbar menu.
+
+          te::qt::widgets::ColorPickerToolButton* m_pinPicker; //!< Color picker for pin menu.
+
+          QWidgetAction* m_addPinAction;         //!< Add Pin Action
+
+          QWidgetAction* m_editPinAction;        //!< Edit Pin Action
+
+          QAction* m_removePinAction;            //!< Remove Pin Action
+
+          QAction* m_equalStepAction;            //!< Equal Step Pin Action
+
       };
     } // end namespace qwt
   } // end namespace qt

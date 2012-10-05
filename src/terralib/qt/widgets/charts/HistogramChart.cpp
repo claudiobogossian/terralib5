@@ -24,12 +24,14 @@
 */
 
 //QWT
-#include <qwt_plot_histogram.h>
 #include <qwt_column_symbol.h>
+#include <qwt_plot.h>
 
 //Terralib
 #include "HistogramChart.h"
 #include "Histogram.h"
+#include "StringScaleDraw.h"
+#include "../../../datatype.h"
 
 te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   QwtPlotHistogram(),
@@ -38,53 +40,64 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   //Vector that will be populated by the histogram's data
   QVector<QwtIntervalSample> samples;
 
-  std::map<double, int>::const_iterator it;
-  std::map<int, int> vmap;
-
-  int i = 0;
-  it = histogram->getValues().begin();
-  double ini = histogram->getMinValue();
-  
-  double vx = ini + histogram->getInterval();
-  while(vx <= histogram->getValues().rbegin()->first)
+  if((histogram->getType() >= te::dt::INT16_TYPE && histogram->getType() <= te::dt::UINT64_TYPE) || 
+    histogram->getType() == te::dt::FLOAT_TYPE || histogram->getType() == te::dt::DOUBLE_TYPE || 
+    histogram->getType() == te::dt::NUMERIC_TYPE)
   {
-    vmap[i] = 0;
-    if(fabs(vx) < 0.000000000001)
-      vx = 0.;
-    while(it != histogram->getValues().end())
+    std::map<double, int>::const_iterator it;
+    std::map<int, int> vmap;
+
+    int i = 0;
+    it = histogram->getValues().begin();
+    double ini = histogram->getMinValue();
+
+    double vx = ini + histogram->getInterval();
+
+    while(vx <= histogram->getValues().rbegin()->first)
     {
-      if(it->first >= ini && it->first < vx)
-        vmap[i] += it->second;
-      else
-        break;
-      ++it;
+      vmap[i] = 0;
+      if(fabs(vx) < 0.000000000001)
+        vx = 0.;
+      while(it != histogram->getValues().end())
+      {
+        if(it->first >= ini && it->first < vx)
+          vmap[i] += it->second;
+        else
+          break;
+        ++it;
+      }
+
+      QwtInterval qinterval(ini, vx);
+      qinterval.setBorderFlags(QwtInterval::ExcludeMaximum);  
+      samples.push_back(QwtIntervalSample(vmap[i], qinterval));
+
+      ini = vx;
+      vx += histogram->getInterval();
+      ++i;
     }
-     
-    QwtInterval qinterval(ini, vx);
-    qinterval.setBorderFlags(QwtInterval::ExcludeMaximum);  
-    samples.push_back(QwtIntervalSample(vmap[i], qinterval));
 
-    ini = vx;
-    vx += histogram->getInterval();
-    ++i;
+    setData(new QwtIntervalSeriesData(samples));
   }
-  vmap[i] = 0;
-  if(fabs(vx) < 0.000000000001)
-    vx = 0.;
-  while(it != histogram->getValues().end())
+
+  else if (histogram->getType() == te::dt::DATETIME_TYPE || histogram->getType() == te::dt::STRING_TYPE)
   {
-    if(it->first >= ini && it->first < vx)
-      vmap[i] += it->second;
-    else
-      break;
-    ++it;
+    std::map<std::string, int>::iterator it;
+    it  = histogram->getStringValues().begin();
+    m_histogramScaleDraw = new StringScaleDraw(histogram->getStringInterval());
+    QVector<QwtIntervalSample> samples(histogram->getStringValues().size());
+    double LabelInterval = 0.0;
+
+    while (it != histogram->getStringValues().end())
+    {
+      QwtInterval qwtInterval(LabelInterval, LabelInterval+5);
+      qwtInterval.setBorderFlags(QwtInterval::ExcludeMaximum);
+      samples[LabelInterval] = QwtIntervalSample(it->second, qwtInterval);
+      LabelInterval++;
+       it++;
+    }
+    
+    setData(new QwtIntervalSeriesData(samples));
   }
-
-  QwtInterval qinterval(ini, vx);
-  qinterval.setBorderFlags(QwtInterval::ExcludeMaximum);  
-  samples.push_back(QwtIntervalSample(vmap[i], qinterval));
-
-  setData(new QwtIntervalSeriesData(samples));
 
   QwtColumnSymbol *symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
   setSymbol(symbol);
@@ -92,6 +105,28 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
 
 te::qt::widgets::HistogramChart::~HistogramChart()
 {  
-  delete m_histogram;  
+  delete m_histogram;
+  delete m_histogramScaleDraw;
 }
 
+te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw()
+{
+  return m_histogramScaleDraw;
+}
+
+void te::qt::widgets::HistogramChart::setScaleDraw( StringScaleDraw* new_scaleDraw)
+{
+  m_histogramScaleDraw = new_scaleDraw;
+}
+
+void te::qt::widgets::HistogramChart::attach(QwtPlot* plot)
+{
+  if (m_histogram->getType() == te::dt::DATETIME_TYPE || m_histogram->getType() == te::dt::STRING_TYPE)
+  {
+    plot->setAxisScaleDraw(QwtPlot::xBottom, m_histogramScaleDraw);
+    plot->axisScaleDraw(QwtPlot::xBottom)->setLabelAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    plot->axisScaleDraw(QwtPlot::xBottom)->setLabelRotation(-60);
+  }
+
+  QwtPlotHistogram::attach(plot);
+}

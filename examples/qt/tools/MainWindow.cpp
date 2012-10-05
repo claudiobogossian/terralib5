@@ -34,6 +34,7 @@
 #include <terralib/se.h>
 #include <terralib/qt/widgets/canvas/MapDisplay.h>
 #include <terralib/qt/widgets/tools/CoordTracking.h>
+#include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/tools/Pan.h>
 #include <terralib/qt/widgets/tools/ZoomArea.h>
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
@@ -93,23 +94,45 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupActions()
 {
-  // Creates actions
+  // Pan
   m_setPan = new QAction(tr("Pan"), this);
   m_setPan->setCheckable(true);
   connect(m_setPan, SIGNAL(triggered()), SLOT(onPanTriggered()));
 
+  // Zoom Area
   m_setZoomArea = new QAction(tr("Zoom Area"), this);
   m_setZoomArea->setCheckable(true);
   connect(m_setZoomArea, SIGNAL(triggered()), SLOT(onZoomAreaTriggered()));
+
+  // Distance
+  m_setDistance = new QAction(tr("Distance"), this);
+  m_setDistance->setCheckable(true);
+  connect(m_setDistance, SIGNAL(triggered()), SLOT(onDistanceTriggered()));
+
+  // Area
+  m_setArea = new QAction(tr("Area"), this);
+  m_setArea->setCheckable(true);
+  connect(m_setArea, SIGNAL(triggered()), SLOT(onAreaTriggered()));
+
+  // Angle
+  m_setAngle = new QAction(tr("Angle"), this);
+  m_setAngle->setCheckable(true);
+  connect(m_setAngle, SIGNAL(triggered()), SLOT(onAngleTriggered()));
 
   // Tools group
   QActionGroup* toolsGroup = new QActionGroup(this);
   toolsGroup->addAction(m_setPan);
   toolsGroup->addAction(m_setZoomArea);
+  toolsGroup->addAction(m_setDistance);
+  toolsGroup->addAction(m_setArea);
+  toolsGroup->addAction(m_setAngle);
 
   // Add action on toolbar
   m_toolBar->addAction(m_setPan);
   m_toolBar->addAction(m_setZoomArea);
+  m_toolBar->addAction(m_setDistance);
+  m_toolBar->addAction(m_setArea);
+  m_toolBar->addAction(m_setAngle);
 }
 
 void MainWindow::addLayer(const QString& path)
@@ -146,7 +169,7 @@ void MainWindow::addLayer(const QString& path)
   // Creates a hard-coded style
   te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
   symbolizer->setFill(te::se::CreateFill("#339966", "1.0"));
-  symbolizer->setStroke(te::se::CreateStroke("#000000", "2", "0.9"));
+  symbolizer->setStroke(te::se::CreateStroke("#000000", "2", "1.0"));
 
   te::se::Rule* rule = new te::se::Rule;
   rule->push_back(symbolizer);
@@ -188,6 +211,27 @@ void MainWindow::onZoomAreaTriggered()
 {
   delete m_tool;
   m_tool = new te::qt::widgets::ZoomArea(m_display, this);
+  m_display->installEventFilter(m_tool);
+}
+
+void MainWindow::onDistanceTriggered()
+{
+  delete m_tool;
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Distance, this);
+  m_display->installEventFilter(m_tool);
+}
+
+void MainWindow::onAreaTriggered()
+{
+  delete m_tool;
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Area, this);
+  m_display->installEventFilter(m_tool);
+}
+
+void MainWindow::onAngleTriggered()
+{
+  delete m_tool;
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Angle, this);
   m_display->installEventFilter(m_tool);
 }
 

@@ -100,6 +100,7 @@ file (
   ${SRCDIR}/qwt/ScatterDisplay.h
   ${SRCDIR}/qwt/ScatterSelectionCursor.h
   ${SRCDIR}/qwt/TimeSeriesDisplay.h
+  ${SRCDIR}/qwt/ColorBar.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
@@ -162,6 +163,7 @@ file (
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
   ${SRCDIR}/widgets/dataview/TabularViewer.h
   ${SRCDIR}/widgets/tools/CoordTracking.h
+  ${SRCDIR}/widgets/tools/Measure.h
 #  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
 

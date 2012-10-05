@@ -102,6 +102,9 @@ class MainWindow : public QMainWindow
 
     void onPanTriggered();
     void onZoomAreaTriggered();
+    void onDistanceTriggered();
+    void onAreaTriggered();
+    void onAngleTriggered();
     void onCoordTracked(QPointF& coordinate);
 
   private:
@@ -115,6 +118,9 @@ class MainWindow : public QMainWindow
     QToolBar* m_toolBar;
     QAction* m_setPan;
     QAction* m_setZoomArea;
+    QAction* m_setDistance;
+    QAction* m_setArea;
+    QAction* m_setAngle;
 
     static std::size_t ms_id;
 };

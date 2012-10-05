@@ -35,10 +35,12 @@
 #include "terralib/maptools/Layer.h"
 #include "LayerItem.h"
 #include "Legend.h"
+#include "ScopedCursor.h"
 
 
 te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* parent)
-  : QDialog(parent), m_layerItem(layerItem), m_t(0), m_dataSetType(0)
+  : QDialog(parent), m_layerItem(layerItem), m_t(0), m_dataSetType(0),
+    m_colorBar(0), m_numValuesNotGrouped(0)
 {
   setupUi(this);
 
@@ -61,6 +63,10 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   stdDeviationComboBox->addItem("0.5");
   stdDeviationComboBox->addItem("0.25");
 
+  // Set the opacity values
+  for(size_t i = 0; i <= 100; ++i)
+    opacityComboBox->addItem(QString("%1").arg(i));
+
   // Set the attribute values
   te::da::DataSourceCatalogLoader* catalogLoader;
 
@@ -68,12 +74,7 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
 
   m_t = refLayer->getDataSource()->getTransactor();
   catalogLoader = m_t->getCatalogLoader();
-  m_dataSetType = catalogLoader->getDataSetType(refLayer->getDataSetName());
-
-  size_t numAttributes = m_dataSetType->size();
-
-  for (size_t i = 0; i < numAttributes; ++i)
-    attributeComboBox->addItem(m_dataSetType->getProperty(i)->getName().c_str());
+  m_dataSetType = catalogLoader->getDataSetType(refLayer->getId());
 
   // If the layer has already a legend associated to it, set the legend parameters
   if(refLayer->hasLegend())
@@ -83,6 +84,22 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
     // Get the grouping type of the layer legend
     const te::map::GroupingType type = grouping->getType();
     typeComboBox->setCurrentIndex(type);
+
+    // Set the possible layer attributes according to the grouping type and set the 
+    // layer attribute which the legend is associated to as the current one.
+    typeComboBoxActivated(typeComboBox->currentIndex());
+
+    std::string propertyName = grouping->getPropertyName();
+
+    size_t numAttributes = m_dataSetType->size();
+    for(size_t i = 0; i < numAttributes; ++i)
+    {
+      if(propertyName == attributeComboBox->itemText(i).toStdString())
+      {
+        attributeComboBox->setCurrentIndex(i);
+        break;
+      }
+    }
 
     // Get the number of slices of the layer legend
     if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL)
@@ -103,18 +120,6 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
         stdDeviationComboBox->setCurrentIndex(2);
     }
 
-    // Get the layer attribute which the legend is associated to
-    std::string propertyName = grouping->getPropertyName();
-
-    for(size_t i = 0; i < numAttributes; ++i)
-    {
-      if(propertyName == attributeComboBox->itemText(i).toStdString())
-      {
-        attributeComboBox->setCurrentIndex(i);
-        break;
-      }
-    }
-
     // Make a copy of the legend contents of the reference layer
     std::vector<te::map::LegendItem*> layerLegend = refLayer->getLegend();
     size_t legendSize = layerLegend.size();
@@ -127,24 +132,37 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
       m_legendColors[i] = m_legend[i]->getColor();
     }
 
+    m_colorBar = refLayer->getColorBar();
+
+    // Set the opacity
+    te::color::RGBAColor color = m_legend[0]->getColor();
+    int opacity = (int)(color.getAlpha() * 100./255. + 0.5);
+    opacityComboBox->setCurrentIndex(opacity);
+
     setTableContents();
   }
   else
   {
     slicesComboBox->setCurrentIndex(4);
     precisionComboBox->setCurrentIndex(6);
+
+    m_colorBar = new te::color::ColorBar();
+
+    m_colorBar->setBarSize(colorBar->width());
+    m_colorBar->addColor(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), 0.);      // red
+    m_colorBar->addColor(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), 0.25);    // green
+    m_colorBar->addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.5);   // yellow
+    m_colorBar->addColor(te::color::RGBAColor(255, 0, 255, TE_OPAQUE), 0.75);  // magenta
+    m_colorBar->addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
+
+    opacityComboBox->setCurrentIndex(100);
+
+    typeComboBoxActivated(typeComboBox->currentIndex());
   }
 
-  m_colorBar.setBarSize(colorBar->width());
-  m_colorBar.addColor(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), 0.);      // red
-  m_colorBar.addColor(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), 0.25);    // green
-  m_colorBar.addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.5);   // yellow
-  m_colorBar.addColor(te::color::RGBAColor(255, 0, 255, TE_OPAQUE), 0.75);  // magenta
-  m_colorBar.addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
+  colorBar->setHeight(25);
 
-  colorBar->setHeight(20);
-
-  colorBar->setColorBar(&m_colorBar);
+  colorBar->setColorBar(m_colorBar);
 
   // Connect signal/slots
   connect(typeComboBox, SIGNAL(activated(int)), this, SLOT(typeComboBoxActivated(int)));
@@ -153,15 +171,16 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   connect(okPushButton, SIGNAL(clicked()), this, SLOT(okPushButtonClicked()));
   connect(cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelPushButtonClicked()));
   connect(helpPushButton, SIGNAL(clicked()), this, SLOT(helpPushButtonClicked()));
-
-  typeComboBoxActivated(typeComboBox->currentIndex());
-
-  okPushButton->setEnabled(false);
 }
 
 const std::vector<te::map::LegendItem*>& te::qt::widgets::Legend::getLegend() const
 {
   return m_legend;
+}
+
+size_t te::qt::widgets::Legend::getNumberOfValuesNotGrouped() const
+{
+  return m_numValuesNotGrouped;
 }
 
 void te::qt::widgets::Legend::closeEvent(QCloseEvent* /*e*/)
@@ -175,19 +194,44 @@ void te::qt::widgets::Legend::closeEvent(QCloseEvent* /*e*/)
 
 void te::qt::widgets::Legend::typeComboBoxActivated(int index)
 {
+  attributeComboBox->clear();
+  legendTableWidget->clear();
+  okPushButton->setEnabled(false);
+
+  size_t numAttributes = m_dataSetType->size();
+  for(size_t i = 0; i < numAttributes; ++i)
+  {
+    int type = m_dataSetType->getProperty(i)->getType();
+
+    if(type == te::dt::GEOMETRY_TYPE || type == te::dt::DATETIME_TYPE ||
+      (index != 3 && type == te::dt::STRING_TYPE))
+      continue;
+
+    attributeComboBox->addItem(m_dataSetType->getProperty(i)->getName().c_str());
+  }
+
   slicesComboBox->setEnabled(false);
   stdDeviationComboBox->setEnabled(false);
+  precisionComboBox->setEnabled(false);
 
   // Enable/Disable the grouping parameters according to the type selected
   if(index == 0 || index == 1)
-    slicesComboBox->setEnabled(true);        // Equal Steps or Quantil
+  {
+    // Equal Steps or Quantil
+    slicesComboBox->setEnabled(true);
+    precisionComboBox->setEnabled(true);
+  }
   else if(index == 2)
-    stdDeviationComboBox->setEnabled(true);  // Standard Deviation
+  {
+    // Standard Deviation
+    stdDeviationComboBox->setEnabled(true);
+    precisionComboBox->setEnabled(true);
+  }
 }
 
 void te::qt::widgets::Legend::applyPushButtonClicked()
 {
-  setCursor(Qt::WaitCursor);
+  ScopedCursor cursor(Qt::WaitCursor);
 
   m_changedItemLabel.clear();
   legendTableWidget->clear();
@@ -198,6 +242,8 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
 
   m_legend.clear();
 
+  m_numValuesNotGrouped = 0;
+
   // Get the precision
   int precision = precisionComboBox->currentText().toInt();
 
@@ -207,13 +253,18 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
   te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer());
 
   std::string sql = "SELECT " + attributeComboBox->currentText().toStdString();
-  sql += " FROM " + refLayer->getDataSetName();
+  sql += " FROM " + refLayer->getId();
 
   te::da::DataSet* dataset = m_t->query(sql);
 
   size_t i = 0;
   while(dataset->moveNext())
-    attrValues.push_back(dataset->getAsString(0, precision));
+  {
+    if(dataset->isNull(i))
+      ++m_numValuesNotGrouped;
+    else
+      attrValues.push_back(dataset->getAsString(0, precision));
+  }
 
   delete dataset;
 
@@ -250,14 +301,34 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
 
   // Clear the legend colors and get the new colors
   m_legendColors.clear();
-  m_legendColors = m_colorBar.getSlices(m_legend.size());
+  m_legendColors = m_colorBar->getSlices(m_legend.size());
+
+  // Set the alpha component(opacity) of the generated colors
+  for(size_t i = 0; i < m_legendColors.size(); ++i)
+  {
+    te::color::RGBAColor& c = m_legendColors[i];
+    c.setColor(c.getRed(), c.getGreen(), c.getBlue(), opacityComboBox->currentText().toInt() * 255/100);
+  }
+
+  // If there are null values, generate a legend item at the end
+  // of the legend and set its color as being totally white
+  if(m_numValuesNotGrouped)
+  {
+    te::map::LegendItem* notGroupedItem = new te::map::LegendItem(QString("Null Values").toStdString(),
+                                                                  QString("Null Values").toStdString());
+    notGroupedItem->setTitle(QString("Null Values").toStdString());
+    notGroupedItem->setCount(m_numValuesNotGrouped);
+
+    te::color::RGBAColor color(255, 255, 255, 255);
+    notGroupedItem->setColor(color);
+
+    m_legend.push_back(notGroupedItem);
+    m_legendColors.push_back(color);
+  }
 
   // Set the new table contents
   setTableContents();
-
   okPushButton->setEnabled(true);
-
-  unsetCursor();
 }
 
 void te::qt::widgets::Legend::legendTableItemChanged(QTableWidgetItem* item)
@@ -285,6 +356,8 @@ void te::qt::widgets::Legend::okPushButtonClicked()
   te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer());
 
   refLayer->setGrouping(grouping);
+
+  refLayer->setColorBar(m_colorBar);
 
   // Update the labels of the legend items that were changed
   std::map<int, std::string>::iterator it;

@@ -35,6 +35,7 @@
 namespace te
 {
 // Forward declarations
+  namespace color { class ColorBar; }
   namespace da
   {
     class DataSource;
@@ -183,20 +184,37 @@ namespace te
         */
         void insertLegend(const std::vector<LegendItem*>& legend);
 
+        /*!
+          \brief It gets the color bar associated to this layer.
+
+          \output The color bar associated to this layer.
+        */
+        te::color::ColorBar* getColorBar() const;
+
+        /*!
+          \brief It sets the color bar to be associated to this layer.
+
+          \param colorBar The color bar to be associated to this layer.
+
+          \note This class will take the ownership of the pointer to the color bar argument.
+        */
+        void setColorBar(te::color::ColorBar* colorBar);
+
       public:
          
         static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
 
       private:
 
-        int m_srid;                                 //!< The layer SRS.
-        std::string m_datasetName;                  //!< The dataset name where we will retrieve the layer objects.
-        te::da::DataSource* m_ds;                   //!< The DataSource associated to this Layer.
-        std::auto_ptr<te::gm::Envelope> m_mbr;      //!< The Layer bounding box.
-        std::auto_ptr<te::se::Style> m_style;       //!< The style to be applied to the geographic objects in the layer.
-        std::auto_ptr<LayerRenderer> m_renderer;    //!< A pointer to the internal renderer used to paint this layer.
-        Grouping* m_grouping;                       //!< The grouping used to generate the layer legend.
-        std::vector<LegendItem*> m_legend;          //!< The legend associated to this layer.
+        int m_srid;                                     //!< The SRS of the layer.
+        std::string m_datasetName;                      //!< The dataset name where we will retrieve the layer objects.
+        te::da::DataSource* m_ds;                       //!< The DataSource associated to this Layer.
+        std::auto_ptr<te::gm::Envelope> m_mbr;          //!< The Layer bounding box.
+        std::auto_ptr<te::se::Style> m_style;           //!< The style to be applied to the geographic objects in the layer.
+        std::auto_ptr<LayerRenderer> m_renderer;        //!< A pointer to the internal renderer used to paint this layer.
+        std::auto_ptr<Grouping> m_grouping;             //!< The grouping used to generate the layer legend.
+        std::vector<LegendItem*> m_legend;              //!< The legend associated to this layer.
+        std::auto_ptr<te::color::ColorBar> m_colorBar;  //!< The color bar associated to this layer.
     };
 
   } // end namespace map

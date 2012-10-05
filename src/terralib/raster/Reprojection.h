@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/Reprojection.h
- 
+
   \brief It contains the algorithm to reproject raster data.
 */
 
@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "Interpolator.h"
 
 // STL
 #include <map>
@@ -49,6 +50,7 @@ namespace te
       \param rin       The input raster file. Do not pass a null pointer.
       \param srid      The target SRID for the reprojection.
       \param routinfo  The basic parameters necessary to create the reprojected raster.
+      \param m         The method of interpolation to apply. \sa te::rst::Interpolator
 
       \return A pointer to the raster reprojected if success or a null pointer otherwise.
 
@@ -56,7 +58,7 @@ namespace te
 
       \note The caller will take the ownership of the returned pointer.
     */
-    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster* rin, int srid, const std::map<std::string, std::string>& routinfo);
+    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster* rin, int srid, const std::map<std::string, std::string>& routinfo, int m = te::rst::Interpolator::NearestNeighbor);
 
     /*!
       \brief Reprojects a portion of a raster to another SRS.
@@ -68,6 +70,7 @@ namespace te
       \param urx        Upper-Right X-coordinate of the portion to be reprojected (in the original SRS).
       \param ury        Upper-Right Y-coordinate of the portion to be reprojected (in the original SRS).
       \param routinfo   The basic parameters necessary to create the reprojected raster.
+      \param m          The method of interpolation to apply. \sa te::rst::Interpolator
 
       \return A pointer to the raster reprojected if success or a null pointer otherwise.
 
@@ -75,7 +78,7 @@ namespace te
 
       \note The caller will take the ownership of the returned pointer.
     */
-    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo);
+    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo, int m = te::rst::Interpolator::NearestNeighbor);
 
     /*!
       \brief Reprojects a portion of a raster to another SRS and maintaining a given resolution.
@@ -89,6 +92,7 @@ namespace te
       \param resx       The output x resolution (in units of the target SRS).
       \param resx       The output y resolution (in units of the target SRS).
       \param routinfo   The basic parameters necessary to create the reprojected raster.
+      \param m          The method of interpolation to apply. \sa te::rst::Interpolator
 
       \return A pointer to the raster reprojected if success or a null pointer otherwise.
 
@@ -96,7 +100,7 @@ namespace te
 
       \note The caller will take the ownership of the returned pointer.
     */
-    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo);
+    TERASTEREXPORT te::rst::Raster* Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo, int m = te::rst::Interpolator::NearestNeighbor);
   }
 }
 

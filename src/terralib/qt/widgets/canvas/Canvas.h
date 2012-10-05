@@ -138,9 +138,9 @@ namespace te
 
           void drawImage(int x, int y, int w, int h, te::color::RGBAColor** src, int sx, int sy, int sw, int sh);
 
-          void drawImage(int x, int y, te::rst::Raster* src);
+          void drawImage(int x, int y, te::rst::Raster* src, int opacity = TE_OPAQUE);
 
-          void drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh);
+          void drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh, int opacity = TE_OPAQUE);
 
           void drawPixel(int x, int y);
 
@@ -366,6 +366,9 @@ namespace te
             \return The marix.
            */
           QMatrix getMatrix();
+
+          /*! \brief Sets the given render hint on the canvas painter if on is true; otherwise clears the render hint. */
+          void setRenderHint(QPainter::RenderHint hint, bool on = true);
 
           //@}
 
