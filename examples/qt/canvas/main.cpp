@@ -41,7 +41,7 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     LoadModules();
-    //DrawingRasterObject();
+    DrawingRasterObject();
     DrawingGeometricObjects();
     DrawPNG();
   }

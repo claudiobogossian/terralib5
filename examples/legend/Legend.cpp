@@ -20,6 +20,7 @@
 // Qt
 #include <QMessageBox>
 #include <QGridLayout>
+#include <QMenu>
 
 // TerraLib
 #include <terralib/common.h>
@@ -28,6 +29,7 @@
 #include <terralib/qt/widgets.h>
 #include <terralib/qt/qwt/ColorBar.h>
 #include <terralib/qt/widgets/layer/Legend.h>
+#include <terralib/qt/widgets/utils/ScopedCursor.h>
 
 #include "Legend.h"
 
@@ -68,18 +70,17 @@ Legend::Legend(QWidget* parent)
   dataSetList.sort();
 
   // Mount a layer tree where each element corresponds to a dataset
-  std::string id;
   std::string dataSetName;
   te::map::Layer* layer;
 
-  m_rootLayer = new te::map::FolderLayer("0", "Layers");
+  m_rootLayer = new te::map::FolderLayer("Layers", "Layers");
 
   for(size_t i = 0; i < numDataSets; ++i)
   {
-    id = te::common::Convert2String(static_cast<unsigned int>(i+1));
+    //string id = te::common::Convert2String(static_cast<unsigned int>(i+1));
     dataSetName = dataSetList[i].toStdString();
     
-    layer = new te::map::Layer(id, dataSetName, m_rootLayer);
+    layer = new te::map::Layer(dataSetName, dataSetName, m_rootLayer);
     layer->setDataSource(m_ds);
     layer->setDataSetName(dataSetName);
   }
@@ -124,21 +125,14 @@ void Legend::contextMenuActivated(const QModelIndex& index, const QPoint& pos)
 
 void Legend::editLegendSlot()
 {
-  setCursor(Qt::WaitCursor);
-
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerModel->getItem(m_layerView->getPopupIndex()));
 
   te::qt::widgets::Legend legendDialog(layerItem);
 
   if(legendDialog.exec() != QDialog::Accepted)
-  {
-    unsetCursor();
     return;
-  }
 
   m_layerModel->addLegend(m_layerView->getPopupIndex(), legendDialog.getLegend());
-
-  unsetCursor();
 }
 
 void Legend::closeEvent(QCloseEvent* /*e*/)

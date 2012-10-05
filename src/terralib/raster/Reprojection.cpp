@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/Reprojection.cpp
- 
+
   \brief It contains the algorithm to reproject raster data.
 */
 
@@ -32,6 +32,7 @@
 #include "BandProperty.h"
 #include "Exception.h"
 #include "Grid.h"
+#include "Interpolator.h"
 #include "Raster.h"
 #include "RasterFactory.h"
 #include "Reprojection.h"
@@ -42,19 +43,19 @@
 
 bool IsPointOnLine(te::gm::Coord2D& p, te::gm::Coord2D& q, te::gm::Coord2D& t, double tol);
 
-bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv);
+bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m = te::rst::Interpolator::NearestNeighbor);
 
-te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, const std::map<std::string, std::string>& routinfo)
+te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, const std::map<std::string, std::string>& routinfo, int m)
 {
-  return te::rst::Reproject(rin, srid, 1, 1, -1, -1, 0, 0, routinfo);
+  return te::rst::Reproject(rin, srid, 1, 1, -1, -1, 0, 0, routinfo, m);
 }
 
-te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo)
+te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& routinfo, int m)
 {
-  return te::rst::Reproject(rin, srid, llx, lly, urx, ury, 0, 0, routinfo);
+  return te::rst::Reproject(rin, srid, llx, lly, urx, ury, 0, 0, routinfo, m);
 }
 
-te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo)
+te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& routinfo, int m)
 {
   if (srid == rin->getSRID())
     return 0;
@@ -74,7 +75,7 @@ te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, 
   unsigned int nrows = rin->getNumberOfRows();
 
   te::gm::Envelope* roi = new te::gm::Envelope(llx, lly, urx, ury);
-  if (!roi->isValid()) 
+  if (!roi->isValid())
   {
     delete roi;
     roi = 0;
@@ -113,7 +114,7 @@ te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, 
 // create output raster
   te::rst::Raster* rout = te::rst::RasterFactory::make(g, bands, routinfo);
 
-  bool res = InterpolateIn(rin, rout, env, converter);
+  bool res = InterpolateIn(rin, rout, env, converter, m);
 
   if (!res)
   {
@@ -124,7 +125,7 @@ te::rst::Raster* te::rst::Reproject(te::rst::Raster* rin, int srid, double llx, 
   return rout;
 }
 
-bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv)
+bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope* box, te::srs::Converter* conv, int m)
 {
   te::gm::Coord2D poll = box->getLowerLeft();
   te::gm::Coord2D pour = box->getUpperRight();
@@ -160,9 +161,9 @@ bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope
   conv->invert(pilr.x,pilr.y);
 
 // Check if linear interpolation may be performed on input raster
-// Evaluate point at middle of the edges in output domain and check if their 
-// corresponding points belong to the edges in input domain. If they belong, 
-// a linear interpolation may be performed, else divide output image 
+// Evaluate point at middle of the edges in output domain and check if their
+// corresponding points belong to the edges in input domain. If they belong,
+// a linear interpolation may be performed, else divide output image
 // in four quadrants and try interpolating again.
 
   te::gm::Coord2D pou((pour.x-poul.x)/2.+poul.x, poul.y), // upper edge
@@ -240,7 +241,11 @@ bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope
   double x = xl; // round to left pixel
   double y = yl; // round to left pixel
 
-  int i, j; double value;
+  // Create the interpolator
+  te::rst::Interpolator* interpolator = new te::rst::Interpolator(rin, m);
+
+  int i, j;
+  std::complex<double> value;
   for (j = y1; j <= y2; ++j)
   {
     for (i = x1; i <= x2; ++i)
@@ -250,7 +255,8 @@ bool InterpolateIn(te::rst::Raster* rin, te::rst::Raster* rout, te::gm::Envelope
       {
         for (std::size_t b = 0; b < rin->getNumberOfBands(); ++b)
         {
-          rin->getValue((int)(x+0.5), (int)(y+0.5), value, b);
+          //rin->getValue((int)(x+0.5), (int)(y+0.5), value, b);
+          interpolator->getValue(x, y, value, b);
           rout->setValue(i, j, value, b);
         }
       }

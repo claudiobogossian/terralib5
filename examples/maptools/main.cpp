@@ -37,8 +37,12 @@
 #include <exception>
 #include <iostream>
 
+#include <locale.h>
+
 int main(int /*argc*/, char** /*argv*/)
 {
+  setlocale(LC_ALL,"C");
+
 // initialize Terralib support
   TerraLib::getInstance().initialize();
 
@@ -55,6 +59,9 @@ int main(int /*argc*/, char** /*argv*/)
 
     // Creates a set of Layers and Styles.
     DrawStyledLayers();
+
+    // Creates a set of raster Layers and Styles.
+    DrawRasterStyledLayers();
   }
   catch(const std::exception& e)
   {

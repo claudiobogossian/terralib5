@@ -81,7 +81,6 @@ te::qt::widgets::Canvas::Canvas(int w, int h)
   QPixmap* pixmap = new QPixmap(w, h);
   pixmap->fill(m_bgColor);
   m_painter.begin(pixmap);
-  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
 
   m_ptPen.setColor(m_ptColor);
 }
@@ -189,7 +188,6 @@ void te::qt::widgets::Canvas::clear()
     pix->fill(m_bgColor);
     m_painter.begin(pix);
   }
-  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
   m_painter.setMatrix(m_matrix);
 
   m_ptPen.setColor(m_ptColor);
@@ -215,7 +213,6 @@ void te::qt::widgets::Canvas::resize(int w, int h)
   pixmap->fill(m_bgColor);
 
   m_painter.begin(pixmap);
-  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
 }
 
 int te::qt::widgets::Canvas::getWidth() const
@@ -1000,21 +997,21 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::color::R
   m_painter.setWorldMatrixEnabled(true);
 }
 
-void te::qt::widgets::Canvas::drawImage(int x, int y, te::rst::Raster* src)
+void te::qt::widgets::Canvas::drawImage(int x, int y, te::rst::Raster* src, int opacity)
 {
   int sw = src->getNumberOfColumns();
   int sh = src->getNumberOfRows();
 
-  drawImage(x, y, sw, sh, src, 0, 0, sw, sh);
+  drawImage(x, y, sw, sh, src, 0, 0, sw, sh, opacity);
 }
 
-void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh)
+void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Raster* src, int sx, int sy, int sw, int sh, int opacity)
 {
   // Defines QImage size
   int iw = std::min(sw, w);
   int ih = std::min(sh, h);
 
-  QImage img(iw, ih, QImage::Format_RGB32);
+  QImage img(iw, ih, QImage::Format_ARGB32);
   double pr, pg, pb;
   te::color::RGBAColor* pixel;
 
@@ -1034,8 +1031,12 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, int w, int h, te::rst::Ras
       src->getValue(r, l, pr, 0);
       src->getValue(r, l, pg, 1);
       src->getValue(r, l, pb, 2);
-      pixel = new te::color::RGBAColor((int)pr, (int)pg, (int)pb, 255);
-      img.setPixel(ri, li, pixel->getRgba());
+
+      pixel = new te::color::RGBAColor((int)pr, (int)pg, (int)pb, opacity);
+      QRgb val = qRgba(pixel->getRed(), pixel->getGreen(), pixel->getBlue(), pixel->getAlpha());
+
+      img.setPixel(ri, li, val);
+
       delete pixel;
     }
   }
@@ -1704,13 +1705,15 @@ void te::qt::widgets::Canvas::setPolygonContourColor(const te::color::RGBAColor&
   QColor cor(color.getRgba());
   cor.setAlpha(qAlpha(color.getRgba()));
 
-  if(cor.alpha() == 255)
-  {
-    m_polyContourPen.setColor(cor);
-    m_polyContourColor = QColor(0, 0, 0, 0);
-  }
-  else
-    m_polyContourColor = cor;
+  //if(cor.alpha() == 255)
+  //{
+  //  m_polyContourPen.setColor(cor);
+  //  m_polyContourColor = QColor(0, 0, 0, 0);
+  //}
+  //else
+  //  m_polyContourColor = cor;
+  m_polyContourPen.setColor(cor);
+  m_polyContourColor = cor;
 }
 
 void te::qt::widgets::Canvas::setPolygonContourPattern(te::color::RGBAColor** pattern, int ncols, int nrows)
@@ -1928,14 +1931,13 @@ QPixmap* te::qt::widgets::Canvas::getPixmap() const
 
 void te::qt::widgets::Canvas::setDevice(QPaintDevice* device, bool takeOwnerShip)
 {
+  m_painter.end();
+
   if(m_isDeviceOwner)
     delete m_painter.device();
 
-  m_painter.end();
-
   m_isDeviceOwner = takeOwnerShip;
   m_painter.begin(device);
-  //m_painter.setRenderHint(QPainter::HighQualityAntialiasing, true); //teste
 }
 
 int te::qt::widgets::Canvas::getResolution()
@@ -1949,6 +1951,11 @@ int te::qt::widgets::Canvas::getResolution()
 QMatrix te::qt::widgets::Canvas::getMatrix()
 {
   return m_matrix;
+}
+
+void  te::qt::widgets::Canvas::setRenderHint(QPainter::RenderHint hint, bool on)
+{
+  m_painter.setRenderHint(hint, on);
 }
 
 void te::qt::widgets::Canvas::setLineDashStyle(QPen& pen, const std::vector<double>& style)

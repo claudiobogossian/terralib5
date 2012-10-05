@@ -47,6 +47,26 @@ te::color::ColorBar::ColorBar(const RGBAColor& colorBegin, const RGBAColor& colo
   m_barSize = size;
 }
 
+te::color::ColorBar::ColorBar(const ColorBar& rhs)
+  : m_colorBarVec(rhs.m_colorBarVec), m_colorSliceVec(rhs.m_colorSliceVec),
+    m_name(rhs.m_name), m_barSize(rhs.m_barSize), m_colorMap(rhs.m_colorMap)
+{
+}
+
+te::color::ColorBar& te::color::ColorBar::operator=(const ColorBar& rhs)
+{
+  if(this != &rhs)
+  {
+    m_colorBarVec = rhs.m_colorBarVec;
+    m_colorSliceVec = rhs.m_colorSliceVec;
+    m_name = rhs.m_name;
+    m_barSize = rhs.m_barSize;
+    m_colorMap = rhs.m_colorMap;
+  }
+
+  return *this;
+}
+
 te::color::ColorBar::~ColorBar()
 {
 }

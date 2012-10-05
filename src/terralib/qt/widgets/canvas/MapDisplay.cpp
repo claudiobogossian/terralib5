@@ -75,6 +75,8 @@ void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
   }
 
   draw();
+
+  emit extentChanged();
 }
 
 QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap() const

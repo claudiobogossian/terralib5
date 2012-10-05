@@ -502,12 +502,14 @@ namespace te
 
           \param srid        The target SRS identifier.
           \param rinfo       The parameters needed to build the output raster (see RasterFactory documentation).
+          \param m           The method of interpolation to apply (default 1 = nearest neighbor). \sa te::rst::Interpolator
+
 
           \return A pointer to the reprojected raster if success and a null pointer otherwise.
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* transform(int srid, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* transform(int srid, const std::map<std::string, std::string>& rinfo, int m = 1);
 
         /*!
           \brief Reprojects a squared portion of this raster to a distinct SRS.
@@ -521,12 +523,13 @@ namespace te
           \param urx         Upper-Right X-coordinate of the portion to be reprojected (in the original SRS).
           \param url         Upper-Right Y-coordinate of the portion to be reprojected (in the original SRS).
           \param rinfo       The parameters needed to build the output raster (see RasterFactory documentation).
+          \param m           The method of interpolation to apply (default 1 = nearest neighbor). \sa te::rst::Interpolator
 
           \return A pointer to the reprojected raster if success and a null pointer otherwise.
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, const std::map<std::string, std::string>& rinfo, int m = 1);
 
         /*!
           \brief Reprojects a squared portion of this raster to another SRS with a desired resolution.
@@ -542,12 +545,13 @@ namespace te
           \param resx        The output x resolution (in units of the target SRS).
           \param resx        The output y resolution (in units of the target SRS).
           \param rinfo       The parameters needed to build the output raster (see RasterFactory documentation).
+          \param m           The method of interpolation to apply (default 1 = nearest neighbor). \sa te::rst::Interpolator
 
           \return A pointer to the reprojected raster if success and a null pointer otherwise.
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo);
+        virtual Raster* transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m = 1);
 
         /*!
           \brief Vectorizes a given raster band, using GDALPolygonize function.

@@ -62,7 +62,10 @@ namespace te
 
         public:
           Legend(te::qt::widgets::LayerItem* layerItem, QWidget* parent = 0);
+
           const std::vector<te::map::LegendItem*>& getLegend() const;
+
+          size_t getNumberOfValuesNotGrouped() const;
 
         protected:
           void closeEvent(QCloseEvent* e);
@@ -85,8 +88,9 @@ namespace te
           te::da::DataSetType* m_dataSetType;
 
           std::vector<te::map::LegendItem*> m_legend;
-          te::color::ColorBar m_colorBar;
+          te::color::ColorBar* m_colorBar;
           std::vector<te::color::RGBAColor> m_legendColors;
+          size_t m_numValuesNotGrouped;
 
           std::map<int, std::string> m_changedItemLabel;
       };

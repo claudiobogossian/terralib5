@@ -124,8 +124,6 @@ namespace te
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
-            unsigned int m_scalesNumber; //!< The number of multi-resolution pyramid scales to generate, when applicable (default:3, minimum: 3);
-          
             InputParameters();
             
             InputParameters( const InputParameters& );
@@ -349,6 +347,8 @@ namespace te
             
             unsigned int m_scalesNumber; //!< The number of sub-samples scales to generate (minimum:3).
             
+            unsigned int m_octavesNumber; //!< The number of octaves to generate (minimum:1).
+            
             unsigned int m_maxInterestPointsPerRasterLinesBlock; //!< The maximum number of points to find for each raster lines block.
             
             RasterDataContainerT const* m_integralRasterDataPtr; //!< The integral image raster data.
@@ -557,6 +557,8 @@ namespace te
           
           \param scalesNumber The number of sub-sampling scales to generate.
           
+          \param octavesNumber The number of octaves to generate.
+          
           \param maxInterestPoints The maximum number of interest points to find over raster 1.
           
           \param enableMultiThread Enable/disable multi-thread.
@@ -571,6 +573,7 @@ namespace te
           const unsigned int maxInterestPoints,
           const unsigned int enableMultiThread,
           const unsigned int scalesNumber,
+          const unsigned int octavesNumber,
           InterestPointsSetT& interestPoints );          
           
         /*! 
@@ -605,8 +608,11 @@ namespace te
           const unsigned int& bufferLinesNumber, 
           const unsigned int& bufferColsNumber,
           const unsigned int& stepSize,
-          const bool zeroFill )
+          const bool autoFill,
+          const BufferElementT& autoFillValue )
         {
+          assert( bufferLinesNumber > 1 );
+          
           unsigned int idx = 0;
           unsigned int col = 0;
           
@@ -621,11 +627,11 @@ namespace te
             
             bufferPtr[ bufferLinesNumber - 1 ] = auxLinePtr;
             
-            if( zeroFill )
+            if( autoFill )
             {
               for( col = 0 ; col < bufferColsNumber  ; ++col )
               {
-                auxLinePtr[ col ] = 0;
+                auxLinePtr[ col ] = autoFillValue;
               }
             }
           }
@@ -798,7 +804,55 @@ namespace te
           
           \param matrix The given matrix.
         */
-        static void printMatrix( const te::rp::Matrix< double >& matrix );
+        template < typename ElementT >
+        void printMatrix( const te::rp::Matrix< ElementT >& matrix )
+        {
+          std::cout << std::endl;
+          
+          for( unsigned int line = 0 ; line < matrix.getLinesNumber() ; ++line )
+          {
+            std::cout << std::endl << "[";
+            
+            for( unsigned int col = 0 ; col < matrix.getColumnsNumber() ; ++col )
+            {
+              std::cout << " " << matrix( line, col );
+            }
+            
+            std::cout << "]";
+          }
+          
+          std::cout << std::endl;
+        }        
+        
+        /*! 
+          \brief Print the given buffer to std::out.
+          
+          \param buffer Buffer pointer.
+          
+          \param nLines Number of lines.
+          
+          \param nCols Number of columns.
+        */
+        template< typename BufferElementT >
+        static void printBuffer( BufferElementT** buffer, const unsigned int nLines,
+          const unsigned int nCols )
+        {
+          std::cout << std::endl;
+          
+          for( unsigned int line = 0 ; line < nLines ; ++line )
+          {
+            std::cout << std::endl << "[";
+            
+            for( unsigned int col = 0 ; col < nCols ; ++col )
+            {
+              std::cout << " " << buffer[ line ][ col ];
+            }
+            
+            std::cout << "]";
+          }
+          
+          std::cout << std::endl;
+        };
     };
 
   } // end namespace rp

@@ -75,6 +75,12 @@ namespace te
          */
         ColorBar(const RGBAColor& colorBegin, const RGBAColor& colorEnd, int size);
 
+         /*! \brief Copy constructor. */
+        ColorBar(const ColorBar& rhs);
+
+        /*! Assignment operator.  */
+        te::color::ColorBar& operator=(const ColorBar& rhs);
+        
         /*! \brief Destructor */
         ~ColorBar();
 
@@ -274,10 +280,10 @@ namespace te
       private:
 
         std::vector<RGBAColor> m_colorBarVec;      //!< Color vector.
-        std::vector<RGBAColor> m_colorSliceVec;  //!< Color step vector.
-        std::string m_name;                     //!< Color bar name.
-        int m_barSize;                          //!< Size of color bar (number of colors in the color bar).
-        std::map<double, RGBAColor> m_colorMap; //!< Color map.
+        std::vector<RGBAColor> m_colorSliceVec;    //!< Color step vector.
+        std::string m_name;                        //!< Color bar name.
+        int m_barSize;                             //!< Size of color bar (number of colors in the color bar).
+        std::map<double, RGBAColor> m_colorMap;    //!< Color map.
     };
 
   }   // end namespace color

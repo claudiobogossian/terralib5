@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 // create the layers
   begin = clock();
 
-  te::map::FolderLayer* rootLayer = new te::map::FolderLayer("0", "Layers");
+  te::map::FolderLayer* rootLayer = new te::map::FolderLayer("Layers", "Layers");
 
   const int maxi = 1000;
   const int maxj = 10;

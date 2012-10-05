@@ -207,6 +207,11 @@ namespace te
 
           void onResizeTimeout();
 
+        signals:
+
+          /*! This signal is emitted when the map display extent changed. */
+          void extentChanged();
+
         private:
 
           /** @name Copy Constructor and Assignment Operator
