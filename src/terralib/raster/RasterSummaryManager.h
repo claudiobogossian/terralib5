@@ -66,7 +66,7 @@ namespace te
 
           \note If the raster was already added, the summary will be replaced.
         */
-        void add(Raster const* raster, RasterSummary* summary);
+        void add(const Raster* raster, RasterSummary* summary);
 
         /*!
           \brief It searches for a raster summary.
@@ -75,14 +75,14 @@ namespace te
 
           \return The calculated raster summary, or a null summary otherwise.
         */
-        const RasterSummary* find(Raster const* raster) const;
+        const RasterSummary* find(const Raster* raster) const;
 
         /*!
           \brief Removes the summary from the specified raster.
 
           \param raster The raster to remove the summary.
         */
-        void remove(Raster const* raster);
+        void remove(const Raster* raster);
 
         /*!
           \brief It searches for a raster summary. If not found it creates the summary and returns it.
@@ -92,7 +92,7 @@ namespace te
 
           \return The calculated raster summary.
         */
-        const RasterSummary* get(Raster const* raster, const SummaryTypes st);
+        const RasterSummary* get(const Raster* raster, const SummaryTypes st);
 
         /*! \brief Destructor. */
         ~RasterSummaryManager();
@@ -104,7 +104,7 @@ namespace te
 
       private:
 
-        boost::ptr_map<Raster const*, RasterSummary> m_rasterSummaries;    //!< A map of rasters and their respective summaries.
+        boost::ptr_map<const Raster*, RasterSummary> m_rasterSummaries;    //!< A map of rasters and their respective summaries.
     };
 
   } // end namespace rst

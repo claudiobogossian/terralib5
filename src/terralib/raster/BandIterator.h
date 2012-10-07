@@ -163,6 +163,7 @@ namespace te
         static BandIterator end(Band* b, te::gm::Geometry* g);
 
     };
+
     /*!
       \class ConstBandIterator
 
