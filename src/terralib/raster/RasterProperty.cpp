@@ -145,16 +145,16 @@ te::dt::Property* te::rst::RasterProperty::clone() const
   return new RasterProperty(*this);
 }
 
-void te::rst::RasterProperty::setName(const std::string& name)
-{
-  m_name = name;
-
-  boost::filesystem::path path(m_rinfo["URI"]);
-
-  if (path.has_filename())
-    path.remove_filename();
-
-  path /= name;
-
-  m_rinfo["URI"] = path.string();
-}
+//void te::rst::RasterProperty::setName(const std::string& name)
+//{
+//  m_name = name;
+//
+//  boost::filesystem::path path(m_rinfo["URI"]);
+//
+//  if (path.has_filename())
+//    path.remove_filename();
+//
+//  path /= name;
+//
+//  m_rinfo["URI"] = path.string();
+//}

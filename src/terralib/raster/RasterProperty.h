@@ -158,14 +158,14 @@ namespace te
         */
         te::dt::Property* clone() const;
 
-        /*!
-          \brief Sets the Raster Property name
+        ///*!
+        //  \brief Sets the Raster Property name
 
-          \param name The name.
+        //  \param name The name.
 
-          \warning This method will update the 'm_rinfo["URI"]' property.
-        */
-        void setName(const std::string& name);
+        //  \warning This method will update the 'm_rinfo["URI"]' property.
+        //*/
+        //void setName(const std::string& name);
 
       protected:
 
