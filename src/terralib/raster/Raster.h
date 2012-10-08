@@ -39,6 +39,9 @@
 #include <string>
 #include <vector>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
 // Forward declaration
@@ -588,6 +591,10 @@ namespace te
         Grid* m_grid;                            //!< The spatial support for raster data.
         te::common::AccessPolicy m_policy;       //!< The access policy, can be te::common::{NoAccess, RAccess, RWAccess, WAccess}.
     };
-  }
-}
+
+    typedef boost::shared_ptr<Raster> RasterPtr;
+
+  } // end namespace rst
+}   // end namespace te
+
 #endif //__TERRALIB_RASTER_INTERNAL_RASTER_H

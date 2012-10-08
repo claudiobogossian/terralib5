@@ -37,6 +37,7 @@
 te::rst::ProxyRaster::ProxyRaster(const std::vector<RasterPtr>& rasters)
   : m_rasters(rasters)
 {
+// TODO: check if all rasters have the same grid!
   assert(rasters.empty() == false);
 
   const std::size_t nrasters = rasters.size();
