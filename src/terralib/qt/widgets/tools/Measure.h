@@ -114,6 +114,8 @@ namespace te
 
           bool mouseReleaseEvent(QMouseEvent* e);
 
+          bool mouseDoubleClickEvent(QMouseEvent* e);
+
           //@}
 
         private:
@@ -126,9 +128,11 @@ namespace te
 
           void drawText(Canvas& canvas, const std::string& text, te::gm::Point* p);
 
-        private:
+          void clear();
 
           double calculateLength(te::gm::LineString* line) const;
+
+          double calculateAngle(te::gm::LineString* line) const;
 
         private slots:
 
@@ -166,6 +170,7 @@ namespace te
           MeasureType m_measureType;              //!< The measure type.
           QPen m_pen;                             //!< The pen used to draw the path.
           QBrush m_brush;                         //!< The brush used to draw the path.
+          bool m_isFinished;                      //!< A flag that indicates if the operations was finished.
       };
 
     } // end namespace widgets
