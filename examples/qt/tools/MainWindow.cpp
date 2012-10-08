@@ -83,7 +83,7 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   resize(size);
 
   // Adding a hard-coded layer
-  addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/munic_2001.shp");
+  addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/Muni_SM_Setoresrec_pol.shp");
 }
 
 MainWindow::~MainWindow()
