@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>PostGISConnectorDialogForm</class>
+ <widget class="QDialog" name="PostGISConnectorDialogForm">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>441</width>
+    <height>444</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>PostGIS Connector</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_19" stretch="0,0,0,1,4,0,0">
+   <item>
+    <widget class="QFrame" name="frame_2">
+     <property name="styleSheet">
+      <string notr="true">QWidget { background: white }</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QLabel" name="m_datasourceTypeTitleLabel">
+        <property name="font">
+         <font>
+          <pointsize>10</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>PostGIS</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,1">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Base Information</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Line" name="line">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Title</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="m_datasourceTitleLineEdit"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Description</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QTextEdit" name="m_datasourceDescriptionTextEdit">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>A more detailed description about the data source</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="m_datasourceConnectionScrollArea">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>406</width>
+        <height>533</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_32">
+       <property name="margin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QGroupBox" name="m_basicOptionsGroupBox">
+         <property name="title">
+          <string>Connection Information</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_3">
+              <item>
+               <widget class="QLabel" name="m_hostNameLabel">
+                <property name="text">
+                 <string>Host</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_hostNameLineEdit"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,1">
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <item>
+                 <widget class="QLabel" name="m_portLabel">
+                  <property name="text">
+                   <string>Port</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="m_portLineEdit">
+                  <property name="inputMask">
+                   <string>9999999999; </string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>27</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <item>
+               <widget class="QLabel" name="m_userNameLabel">
+                <property name="text">
+                 <string>User</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_userNameLineEdit"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_8">
+              <item>
+               <widget class="QLabel" name="m_passwordLabel">
+                <property name="text">
+                 <string>Password</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="m_passwordLineEdit">
+                <property name="echoMode">
+                 <enum>QLineEdit::Password</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_9">
+              <item>
+               <widget class="QLabel" name="m_databaseLabel">
+                <property name="text">
+                 <string>Database Name</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="m_databaseComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_10">
+              <item>
+               <widget class="QLabel" name="m_clientEncodingLabel">
+                <property name="text">
+                 <string>Client Encoding</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="m_clientEncodingComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="m_advancedOptionsGroupBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="title">
+          <string>Advanced Connection Options</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <widget class="QWidget" name="m_advancedOptionsWidget" native="true">
+            <layout class="QVBoxLayout" name="verticalLayout_12">
+             <item>
+              <widget class="QGroupBox" name="groupBox_3">
+               <property name="title">
+                <string>Tables</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_13">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_16">
+                  <item>
+                   <widget class="QLabel" name="m_tablesToHideLabel">
+                    <property name="text">
+                     <string>Tables to be hidden</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="m_tablesToHideLineEdit"/>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="m_hideMetadataTablesCheckBox">
+                  <property name="text">
+                   <string>Hide spatial metadata tables</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="m_hideRasterTablesCheckBox">
+                  <property name="text">
+                   <string>Hide raster tables</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_14">
+                 <item>
+                  <widget class="QLabel" name="m_connectTimeoutLabel">
+                   <property name="text">
+                    <string>Connect timeout</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="m_connectTimeoutSpinBox">
+                   <property name="minimum">
+                    <number>5</number>
+                   </property>
+                   <property name="maximum">
+                    <number>60</number>
+                   </property>
+                   <property name="value">
+                    <number>5</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="m_connectionPoolingGroupBox">
+               <property name="title">
+                <string>Connection Pooling</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_22">
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_9">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_10" stretch="1,1,1">
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_15">
+                      <item>
+                       <widget class="QLabel" name="m_maxPoolSizeLabel">
+                        <property name="text">
+                         <string>Max</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="m_maxPoolSizeSpinBox">
+                        <property name="toolTip">
+                         <string>Max connections</string>
+                        </property>
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>1024</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_17">
+                      <item>
+                       <widget class="QLabel" name="m_minPoolSizeLabel">
+                        <property name="text">
+                         <string>Min</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="m_minPoolSizeSpinBox">
+                        <property name="toolTip">
+                         <string>Min connections</string>
+                        </property>
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="maximum">
+                         <number>1024</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                    <item>
+                     <layout class="QVBoxLayout" name="verticalLayout_21">
+                      <item>
+                       <widget class="QLabel" name="m_maxPoolSizeLabel_3">
+                        <property name="text">
+                         <string>Max Idle Time</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="m_maxIdleTimeSpinBox">
+                        <property name="toolTip">
+                         <string>Max idle time for connections</string>
+                        </property>
+                        <property name="minimum">
+                         <number>60</number>
+                        </property>
+                        <property name="maximum">
+                         <number>3600</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_18">
+               <item>
+                <widget class="QLabel" name="m_optionsLabel">
+                 <property name="text">
+                  <string>Options</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="m_optionsLineEdit"/>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1,0">
+     <item>
+      <widget class="QPushButton" name="m_helpPushButton">
+       <property name="text">
+        <string>&amp;Help</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="m_testPushButton">
+         <property name="text">
+          <string>&amp;Test</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_openPushButton">
+         <property name="text">
+          <string>&amp;Open</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_closePushButton">
+         <property name="text">
+          <string>&amp;Close</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>m_datasourceTitleLineEdit</tabstop>
+  <tabstop>m_datasourceDescriptionTextEdit</tabstop>
+  <tabstop>m_datasourceConnectionScrollArea</tabstop>
+  <tabstop>m_hostNameLineEdit</tabstop>
+  <tabstop>m_portLineEdit</tabstop>
+  <tabstop>m_userNameLineEdit</tabstop>
+  <tabstop>m_passwordLineEdit</tabstop>
+  <tabstop>m_databaseComboBox</tabstop>
+  <tabstop>m_clientEncodingComboBox</tabstop>
+  <tabstop>m_advancedOptionsGroupBox</tabstop>
+  <tabstop>m_tablesToHideLineEdit</tabstop>
+  <tabstop>m_hideMetadataTablesCheckBox</tabstop>
+  <tabstop>m_hideRasterTablesCheckBox</tabstop>
+  <tabstop>m_connectTimeoutSpinBox</tabstop>
+  <tabstop>m_maxPoolSizeSpinBox</tabstop>
+  <tabstop>m_minPoolSizeSpinBox</tabstop>
+  <tabstop>m_maxIdleTimeSpinBox</tabstop>
+  <tabstop>m_optionsLineEdit</tabstop>
+  <tabstop>m_testPushButton</tabstop>
+  <tabstop>m_openPushButton</tabstop>
+  <tabstop>m_closePushButton</tabstop>
+  <tabstop>m_helpPushButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>m_closePushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>PostGISConnectorDialogForm</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>393</x>
+     <y>895</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>149</x>
+     <y>890</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_advancedOptionsGroupBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>m_advancedOptionsWidget</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>25</x>
+     <y>519</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>46</x>
+     <y>538</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
