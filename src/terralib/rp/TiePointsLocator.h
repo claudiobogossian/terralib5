@@ -802,6 +802,143 @@ namespace te
         */
         static void printBuffer( double** buffer, const unsigned int nLines,
           const unsigned int nCols );
+          
+        /*! 
+          \brief Return a sum of all pixels inside a box over the given integral image buffer.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param upperLeftX Box upper left X.
+          
+          \param upperLeftY Box upper left Y.
+          
+          \param lowerRightX Box lower right X.
+          
+          \param lowerRightY Box lower right X.
+        */          
+        inline static double getIntegralBoxSum( double** bufferPtr, 
+          const unsigned int& upperLeftX, const unsigned int& upperLeftY, 
+          const unsigned int& lowerRightX, const unsigned int& lowerRightY )
+        {
+          return bufferPtr[ lowerRightY ][ lowerRightX ]
+            - ( ( upperLeftY ) ? bufferPtr[ upperLeftY - 1 ][ lowerRightX ] : 0 )
+            - ( ( upperLeftX ) ? bufferPtr[ lowerRightY ][ upperLeftX - 1 ] : 0 )
+            + ( ( upperLeftX & upperLeftY ) ? bufferPtr[ upperLeftY - 1 ][ upperLeftX - 1 ] : 0 );
+        };
+        
+        /*! 
+          \brief Return a SURF box filter Dxx derivative centered over the given position from the given integral image buffer.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param centerX Center X.
+          
+          \param centerY Center Y.
+          
+          \param lobeWidth Filter lobe width.
+          
+          \param lobeRadius Filter lobe radius.
+        */         
+        inline static double getSurfDyyDerivative( double** bufferPtr, 
+          const unsigned int& centerX,  const unsigned int& centerY, 
+           const unsigned int& lobeWidth,  const unsigned int& lobeRadius )
+        {
+          return 
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX + 1 - lobeWidth ),
+              ( centerY - lobeWidth - lobeRadius ),
+              ( centerX + lobeWidth - 1 ),
+              ( centerY + lobeWidth + lobeRadius ) )
+            - 3.0 *
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX + 1 - lobeWidth ),
+              ( centerY - lobeRadius ),
+              ( centerX + lobeWidth - 1 ),
+              ( centerY + lobeRadius ) );
+        };
+        
+        /*! 
+          \brief Return a SURF box filter Dyy derivative centered over the given position from the given integral image buffer.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param centerX Center X.
+          
+          \param centerY Center Y.
+          
+          \param lobeWidth Filter lobe width.
+          
+          \param lobeRadius Filter lobe radius.
+        */        
+        inline static double getSurfDxxDerivative( double** bufferPtr, 
+          const unsigned int& centerX,  const unsigned int& centerY, 
+           const unsigned int& lobeWidth,  const unsigned int& lobeRadius )
+        {
+          return 
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX - lobeWidth - lobeRadius ),
+              ( centerY + 1 - lobeWidth ),
+              ( centerX + lobeWidth + lobeRadius ),
+              ( centerY + lobeWidth - 1 ) )
+            - 3.0 *
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX - lobeRadius ),
+              ( centerY + 1 - lobeWidth ),
+              ( centerX + lobeRadius ),
+              ( centerY + lobeWidth - 1 ) );
+        };
+        
+        /*! 
+          \brief Return a SURF box filter Dxy derivative centered over the given position from the given integral image buffer.
+          
+          \param bufferPtr Buffer pointer.
+          
+          \param centerX Center X.
+          
+          \param centerY Center Y.
+          
+          \param lobeWidth Filter lobe width.
+          
+          \param lobeRadius Filter lobe radius.
+        */ 
+        inline static double getSurfDxyDerivative( double** bufferPtr, 
+          const unsigned int& centerX,  const unsigned int& centerY, 
+           const unsigned int& lobeWidth,  const unsigned int& lobeRadius )
+        {
+          return
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX - lobeWidth ),
+              ( centerY - lobeWidth ),
+              ( centerX - 1 ),
+              ( centerY - 1 ) )
+            +
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX + 1 ),
+              ( centerY + 1 ),
+              ( centerX + lobeWidth ),
+              ( centerY + lobeWidth ) )
+            -
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX + 1 ),
+              ( centerY - lobeWidth ),
+              ( centerX + lobeWidth ),
+              ( centerY - 1 ) )
+            -
+            getIntegralBoxSum(
+              bufferPtr,
+              ( centerX - lobeWidth ),
+              ( centerY + 1 ),
+              ( centerX - 1 ),
+              ( centerY + lobeWidth ) );
+        };
+
     };
 
   } // end namespace rp

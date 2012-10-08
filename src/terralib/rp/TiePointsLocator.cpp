@@ -44,80 +44,6 @@
 #include <cstdio>
 #include <cmath>
 
-#define getIntegralBoxSum( bufferPtr, upperLeftX, upperLeftY, lowerRightX, lowerRightY ) \
-( \
-  bufferPtr[ lowerRightY ][ lowerRightX ] \
-  - bufferPtr[ upperLeftY - 1 ][ lowerRightX ] \
-  - bufferPtr[ lowerRightY ][ upperLeftX - 1 ] \
-  + bufferPtr[ upperLeftY - 1 ][ upperLeftX - 1 ] \
-)
-  
-#define getSurfDyyDerivative( bufferPtr, centerX, centerY, lobeWidth, lobeRadius ) \
-( \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX - lobeWidth + 1 ), \
-    ( centerY - lobeWidth - lobeRadius ), \
-    ( centerX + lobeWidth - 1 ), \
-    ( centerY + lobeWidth + lobeRadius ) ) \
-  - 3.0 * \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX - lobeWidth + 1 ), \
-    ( centerY - lobeRadius ), \
-    ( centerX + lobeWidth - 1 ), \
-    ( centerY + lobeRadius ) ) \
-)
-
-#define getSurfDxxDerivative( bufferPtr, centerX, centerY, lobeWidth, lobeRadius ) \
-( \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX - lobeWidth - lobeRadius ), \
-    ( centerY - lobeWidth + 1 ), \
-    ( centerX + lobeWidth + lobeRadius ), \
-    ( centerY + lobeWidth - 1 ) ) \
-  - 3.0 * \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX - lobeRadius ), \
-    ( centerY - lobeWidth + 1 ), \
-    ( centerX + lobeRadius ), \
-    ( centerY + lobeWidth - 1 ) ) \
-)
-
-#define getSurfDxyDerivative( bufferPtr, centerX, centerY, lobeWidth, lobeRadius ) \
-( \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX - lobeWidth ), \
-    ( centerY - lobeWidth ), \
-    ( centerX - 1 ), \
-    ( centerY - 1 ) ) \
-  + \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX + 1 ), \
-    ( centerY + 1 ), \
-    ( centerX + lobeWidth ), \
-    ( centerY + lobeWidth ) ) \
-  - \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX + 1 ), \
-    ( centerY - lobeWidth ), \
-    ( centerX + lobeWidth ), \
-    ( centerY - 1 ) ) \
-  - \
-  getIntegralBoxSum( \
-    bufferPtr, \
-    ( centerX - lobeWidth ), \
-    ( centerY + 1 ), \
-    ( centerX - 1 ), \
-    ( centerY + lobeWidth ) ) \
-)
-
-
 namespace te
 {
   namespace rp
@@ -1889,6 +1815,7 @@ namespace te
                 prevResponseBufferColIdx = windCenterCol - 1;
                 nextResponseBufferColIdx = windCenterCol + 1;
                 isLocalMaxima = false;
+                auxInterestPoint.m_featureValue = (-1.0) * DBL_MAX;
                     
                 for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
                 {         
@@ -1962,9 +1889,10 @@ namespace te
                       )
                     {
                       isLocalMaxima = true;
-                      auxInterestPoint.m_featureValue = windowCenterPixelValue;
-                      octaveIdx = paramsPtr->m_octavesNumber;
-                      break;
+                      if( auxInterestPoint.m_featureValue < windowCenterPixelValue )
+                      {
+                        auxInterestPoint.m_featureValue = windowCenterPixelValue;
+                      }                      
                     }
                   }
                 }
