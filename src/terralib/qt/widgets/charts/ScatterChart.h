@@ -18,7 +18,7 @@
 */
 
 /*!
-  \file ScatterChart.h
+  \file  terralib/qt/widgets/charts/ScatterChart.h
 
   \brief A class to represent a scatter chart. 
 */
@@ -26,14 +26,14 @@
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCHART_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCHART_H
 
-//STL
-#include <vector>
-
 //TerraLib
 #include "../Config.h"
 
 //QWT
 #include <qwt_plot_curve.h>
+
+//STL
+#include <vector>
 
 namespace te
 {
@@ -87,9 +87,9 @@ namespace te
           void setValues();     
           
         private:
-          Scatter*                m_scatter;
-          te::se::Mark*           m_mark;
-          std::size_t             m_size;                                         
+          Scatter*                m_scatter; //!< The scatter that will be shown on this chart.
+          te::se::Mark*           m_mark; //!< The symbol that defines the look of a scatter's point.
+          std::size_t             m_size; //!< The size of a scatter's point.                                        
       }; 
     } // end namespace widgets
   }   // end namespace qt

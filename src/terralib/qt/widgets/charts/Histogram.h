@@ -18,21 +18,21 @@
 */
 
 /*!
-  \file Histogram.h
+  \file terralib/qt/widgets/charts/Histogram.h
 
   \brief A class to represent a histogram. 
 */
+
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAM_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAM_H
+
+//TerraLib
+#include "../Config.h"
 
 //STL
 #include <map>
 #include <set>
 #include <string>
-
-//TerraLib
-#include "../Config.h"
-
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAM_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAM_H
 
 namespace te
 {
@@ -167,23 +167,17 @@ namespace te
 
         private:
 
-          //Histogram's type
-          int m_histogramType;
+          int m_histogramType; //!< Histogram's type
 
-          //Histogram's numeric values
-          std::map<double, int> m_values;
+          std::map<double, int> m_values; //!< Histogram's numeric values
 
-          //Histogram string values
-          std::map<std::string, int> m_StringValues; 
+          std::map<std::string, int> m_StringValues; //!< Histogram string values 
 
-          //Histogram's minimum numeric value
-          double m_minValue;
+          double m_minValue; //!< Histogram's minimum numeric value
 
-           //Histogram's numeric interval
-          double m_interval;
+          double m_interval; //!< Histogram's numeric interval
 
-          //Histogram unique strings set, represents string intervals
-          std::set <std::string> m_StringIntervals;
+          std::set <std::string> m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
       };
     } // end namespace widgets
   }   // end namespace qt

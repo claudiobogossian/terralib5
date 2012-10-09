@@ -187,7 +187,7 @@ namespace te
 
     template<class T> std::vector<T> te::rst::RasterIterator<T>::operator*() const
     {
-      std::vector<T> values;
+      std::vector<T> values(m_b.size());
 
       getValues(values);
 

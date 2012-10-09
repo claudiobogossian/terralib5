@@ -195,33 +195,41 @@ namespace te
 
             unsigned int m_y; //!< Point Y coord.
 
-            double m_featureValue; //!< Interest point feature value.
+            double m_feature1; //!< Interest point feature 1 value.
             
-            InterestPointT() {};
+            double m_feature2; //!< Interest point feature 2 value.
             
-            InterestPointT( const unsigned int& x, const unsigned int& y,
-              const double& featureValue ) : m_x( x ), m_y( y ),
-              m_featureValue( featureValue) {};
+            double m_feature3; //!< Interest point feature 3 value.
+            
+            InterestPointT() 
+              : m_x( 0 ), m_y( 0 ), m_feature1( 0 ), m_feature2( 0 ),
+                m_feature3( 0 ) 
+            {
+            };
+            
+//            InterestPointT( const unsigned int& x, const unsigned int& y,
+//              const double& featureValue ) : m_x( x ), m_y( y ),
+//              m_featureValue( featureValue) {};
               
             InterestPointT( const InterestPointT& other )
             {
-              m_x = other.m_x;
-              m_y = other.m_y;
-              m_featureValue = other.m_featureValue;
+              operator=( other );
             };
             
             ~InterestPointT() {};
             
             bool operator<( const InterestPointT& other ) const
             {
-              return ( m_featureValue < other.m_featureValue );
+              return ( m_feature1 < other.m_feature1 );
             };
             
             const InterestPointT& operator=( const InterestPointT& other )
             {
               m_x = other.m_x;
               m_y = other.m_y;
-              m_featureValue = other.m_featureValue;
+              m_feature1 = other.m_feature1;
+              m_feature2 = other.m_feature2;
+              m_feature3 = other.m_feature3;
               return other;
             };            
         };
@@ -719,6 +727,22 @@ namespace te
           InterestPointsSetT& validInteresPoints );
           
         /*!
+          \brief Generate a Surf features matrix for the given interes points.
+          
+          \param interestPoints The interest points (coords related to rasterData lines/cols).
+          
+          \param integralRasterData The integral raster data.
+          
+          \param features The generated features matrix (one feature per line, one feature per interes point).
+          
+          \return true if ok, false on errors.
+        */             
+        static bool generateSurfFeatures( 
+          const InterestPointsSetT& interestPoints,
+          const Matrix< double >& integralRasterData,
+          Matrix< double >& features );          
+          
+        /*!
           \brief Save the generated features to tif files.
           
           \param features The features to be saved.
@@ -816,14 +840,15 @@ namespace te
           
           \param lowerRightY Box lower right X.
         */          
-        inline static double getIntegralBoxSum( double** bufferPtr, 
+        template< typename BufferType >
+        inline static double getIntegralBoxSum( BufferType buffer, 
           const unsigned int& upperLeftX, const unsigned int& upperLeftY, 
           const unsigned int& lowerRightX, const unsigned int& lowerRightY )
         {
-          return bufferPtr[ lowerRightY ][ lowerRightX ]
-            - ( ( upperLeftY ) ? bufferPtr[ upperLeftY - 1 ][ lowerRightX ] : 0 )
-            - ( ( upperLeftX ) ? bufferPtr[ lowerRightY ][ upperLeftX - 1 ] : 0 )
-            + ( ( upperLeftX & upperLeftY ) ? bufferPtr[ upperLeftY - 1 ][ upperLeftX - 1 ] : 0 );
+          return buffer[ lowerRightY ][ lowerRightX ]
+            - ( ( upperLeftY ) ? buffer[ upperLeftY - 1 ][ lowerRightX ] : 0 )
+            - ( ( upperLeftX ) ? buffer[ lowerRightY ][ upperLeftX - 1 ] : 0 )
+            + ( ( upperLeftX & upperLeftY ) ? buffer[ upperLeftY - 1 ][ upperLeftX - 1 ] : 0 );
         };
         
         /*! 
@@ -938,6 +963,70 @@ namespace te
               ( centerX - 1 ),
               ( centerY + lobeWidth ) );
         };
+        
+        /*! 
+          \brief Return a Haar X intesity vector for the window centered at the given point.
+          
+          \param buffer Integral image buffer.
+          
+          \param centerX Center X.
+          
+          \param centerY Center Y.
+          
+          \param radius Window radius.
+        */         
+        template< typename BufferType >
+        inline static double getHaarXVectorIntensity( BufferType buffer, 
+          const unsigned int& centerX,  const unsigned int& centerY, 
+           const unsigned int& radius )
+        {
+          return
+            getIntegralBoxSum(
+              buffer,
+              ( centerX + 1 ),
+              ( centerY - radius ),
+              ( centerX + radius ),
+              ( centerY + radius ) )
+            -
+            getIntegralBoxSum(
+              buffer,
+              ( centerX - radius ),
+              ( centerY - radius ),
+              ( centerX - 1 ),
+              ( centerY + radius ) );
+        };
+        
+        /*! 
+          \brief Return a Haar Y intesity vector for the window centered at the given point.
+          
+          \param buffer Integral image buffer.
+          
+          \param centerX Center X.
+          
+          \param centerY Center Y.
+          
+          \param radius Window radius.
+        */         
+        template< typename BufferType >
+        inline static double getHaarYVectorIntensity( BufferType buffer, 
+          const unsigned int& centerX,  const unsigned int& centerY, 
+           const unsigned int& radius )
+        {
+          return
+            getIntegralBoxSum(
+              buffer,
+              ( centerX - radius ),
+              ( centerY - radius ),
+              ( centerX + radius ),
+              ( centerY - 1 ) )
+            -
+            getIntegralBoxSum(
+              buffer,
+              ( centerX - radius ),
+              ( centerY + 1 ),
+              ( centerX + radius ),
+              ( centerY + radius ) );
+        };        
 
     };
 

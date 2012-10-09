@@ -65,8 +65,8 @@ namespace te
           void drawSymbols(QPainter* painter, const QPointF* point, int numPoints) const; 
                           
         protected:
-          te::se::Mark*   m_mark;   
-          std::size_t     m_size;  
+          te::se::Mark*   m_mark; //!<  The mark.
+          std::size_t     m_size; //!< The mark's size
                                  
       }; 
     } // end namespace widgets
