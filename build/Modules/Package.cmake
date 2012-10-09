@@ -9,7 +9,7 @@ set ( CPACK_PACKAGE_VERSION_PATCH "0" )
 set ( CPACK_PACKAGE_CONTACT "terralib-devel@dpi.inpe.br" )
 set ( CPACK_PACKAGE_NAME "terralib" )
 set ( CPACK_PACKAGE_INSTALL_DIRECTORY "terralib-${CPACK_PACKAGE_VERSION}" )
-set ( CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/../../images/bmp/logo\\\\terralib_installer_logo_150x57.bmp" )
+set ( CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/../../resources/images\\\\terralib_installer_logo_150x57.bmp" )
 
 getPackageName(pname)
 set ( CPACK_PACKAGE_FILE_NAME ${pname} )

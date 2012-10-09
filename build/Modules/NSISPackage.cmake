@@ -1,8 +1,8 @@
 # There is a bug in NSI that does not handle full unix paths properly. Make
 # sure there is at least one set of four (4) backlasshes.
 
-set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/../../images/icons/64x64\\\\terralib_install_icon.ico")
-set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/../../images/icons/64x64\\\\terralib_uninstall_icon.ico")
+set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/../../resources/images\\\\terralib_install_icon.ico")
+set(CPACK_NSIS_MUI_UNIICON "${CMAKE_SOURCE_DIR}/../../resources/images\\\\terralib_uninstall_icon.ico")
 set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ${PKG_NAME}")
 set(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.dpi.inpe.br")
 set(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.funcate.org.br")
