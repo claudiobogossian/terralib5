@@ -18,19 +18,19 @@
 */
 
 /*!
-  \fileHistogram.h
+  \file terralib/qt/widgets/charts/HistogramChart.h
 
   \brief A class to represent a histogram chart. 
 */
+
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCHART_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCHART_H
 
 //TerraLib
 #include "../Config.h"
 
 //QWT
 #include <qwt_plot_histogram.h>
-
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCHART_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCHART_H
 
 namespace te
 {
@@ -63,28 +63,36 @@ namespace te
           /*! \brief Destructor. */
           ~HistogramChart();  
 
-      /*!            
-        \brief It returns the chart's scale draw.  
+          /*!            
+            \brief It returns the chart's scale draw.  
 
-        \return The chart's scale draw.  
+            \return The chart's scale draw.  
 
-      */
+          */
 
-       StringScaleDraw* getScaleDraw();
+           StringScaleDraw* getScaleDraw();
       
-      /*!            
-        \brief It sets the chart's scale draw.   
+          /*!            
+            \brief It sets the chart's scale draw.   
 
-        \param new_labels The new chart's scale draw.   
-      */
+            \param new_labels The new chart's scale draw.   
+          */
 
-      void setScaleDraw(  StringScaleDraw* new_scaleDraw);
+          void setScaleDraw(  StringScaleDraw* new_scaleDraw);
 
-      void attach(QwtPlot* plot);
+          /*!            
+            \brief IT atttaches a QwtPlot to this Cahrt 
 
-         private:
-           Histogram* m_histogram;
-           StringScaleDraw* m_histogramScaleDraw;
+            \param plot The QwtPlot that will be attached to this plot.
+
+             \note If the histogram's data contains string labels, this function will define how they are drawn
+          */
+          void attach(QwtPlot* plot);
+
+        private:
+
+            Histogram* m_histogram; //!< The histogram that will be shown on this chart.
+            StringScaleDraw* m_histogramScaleDraw; //!< Scale draw that defines how a label will be displayed on this chart.
 
       };
     } // end namespace widgets

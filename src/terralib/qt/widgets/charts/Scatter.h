@@ -18,7 +18,7 @@
 */
 
 /*!
-  \file Scatter.h
+  \file terralib/qt/widgets/charts/Scatter.h
 
   \brief A class to represent a scatter. 
 */
@@ -26,12 +26,12 @@
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTER_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTER_H
 
+//TerraLib
+#include "../Config.h"
+
 //STL
 #include <vector>
 #include <string>
-
-//TerraLib
-#include "../Config.h"
 
 namespace te
 {
@@ -202,16 +202,16 @@ namespace te
         
         private:
 
-          std::vector<double> m_xValues;      /*! Double values for axis X */
-          std::vector<double> m_yValues;      /*! Double values for axis Y */
+          std::vector<double> m_xValues;      //!< Double values for axis X
+          std::vector<double> m_yValues;      //!< Double values for axis Y
           
-          std::vector<std::string> m_xString;  /*! String values for axis X */
-          std::vector<std::string> m_yString;  /*! String values for axis Y */
+          std::vector<std::string> m_xString;  //!< String values for axis X
+          std::vector<std::string> m_yString;  //!< String values for axis Y
           
-          double m_minX;
-          double m_maxX;
-          double m_minY;
-          double m_maxY;                   
+          double m_minX; //!< The minimum value of the x Axis.
+          double m_maxX; //!< The maximum value of the x Axis.
+          double m_minY; //!< The minimum value of the y Axis.
+          double m_maxY; //!< The maximum value of the y Axis.
       }; 
     } // end namespace widgets
   }   // end namespace qt

@@ -28,11 +28,11 @@
 #include "../geometry/Envelope.h"
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
-#include "../raster/BandIterator.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "ClassifierISOSegStrategy.h"
 #include "Macros.h"
+#include "PositionIterator.h"
 #include "RasterAttributes.h"
 
 // STL
@@ -398,8 +398,10 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
     pattern = rit->second->m_myCluster->m_id;
 
 // iterate over polygon to classify output image
-    te::rst::ConstBandIterator<unsigned> it = te::rst::ConstBandIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]), geometry);
-    te::rst::ConstBandIterator<unsigned> itend = te::rst::ConstBandIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]), geometry);
+    te::rp::PolygonIterator<unsigned> it = te::rp::PolygonIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]),
+                                                                                    static_cast<te::gm::Polygon*> (geometry));
+    te::rp::PolygonIterator<unsigned> itend = te::rp::PolygonIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]),
+                                                                                     static_cast<te::gm::Polygon*> (geometry));
 
     while (it != itend)
     {

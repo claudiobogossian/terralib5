@@ -36,7 +36,6 @@
 #include <terralib/qt/widgets/charts/ScatterChart.h>
 #include <terralib/qt/widgets/charts/Histogram.h>
 #include <terralib/qt/widgets/charts/HistogramChart.h>
-#include <terralib/qt/widgets/charts/MultiHistogramChart.h>
 #include <terralib/qt/widgets/charts/ChartDisplay.h>
 
 // Qt

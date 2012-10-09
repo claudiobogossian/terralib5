@@ -42,7 +42,7 @@ namespace te
 // Forward declaration
   namespace gm
   {
-    class Geometry;
+    class Polygon;
   }
   namespace rst
   {
@@ -82,67 +82,67 @@ namespace te
         void reset() throw(te::rp::Exception);
 
         /*!
-          \brief Returns the pixel values for the band, inside the geometry.
+          \brief Returns the pixel values for the band, inside the polygon.
 
           \param band        The input band.
-          \param geometry    The input geometry.
+          \param polygon     The input polygon.
 
-          \return The pixel values for the band, inside the geometry.
+          \return The pixel values for the band, inside the polygon.
 
-          \warning Band and geometry must fit.
+          \warning Band and polygon must fit.
         */
-        std::vector<std::complex<double> > getValuesFromBand(const te::rst::Band& band, const te::gm::Geometry& geometry);
+        std::vector<std::complex<double> > getValuesFromBand(const te::rst::Band& band, const te::gm::Polygon& polygon);
 
         /*!
-          \brief Returns the pixel values for all the bands in raster, inside the geometry.
+          \brief Returns the pixel values for all the bands in raster, inside the polygon.
 
           \param raster      The input band.
-          \param geometry    The input geometry.
+          \param polygon     The input polygon.
           \param bands       Bands to be processed from the input raster.
 
-          \return A vector with the pixel values for all the bands in raster, inside the geometry, with values[pixel][band].
+          \return A vector with the pixel values for all the bands in raster, inside the polygon, with values[pixel][band].
 
-          \warning Bands and geometry must fit.
+          \warning Bands and polygon must fit.
         */
-        std::vector<std::vector<std::complex<double> > > getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Geometry& geometry, std::vector<unsigned int> bands);
+        std::vector<std::vector<std::complex<double> > > getValuesFromRaster(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
 
         /*!
-          \brief Returns the mean value for the pixels of a band, inside the geometry.
+          \brief Returns the mean value for the pixels of a band, inside the polygon.
 
           \param band        The input band.
-          \param geometry    The input geometry.
+          \param polygon     The input polygon.
 
-          \return The mean value for the band, inside the geometry.
+          \return The mean value for the band, inside the polygon.
 
-          \warning Bands and geometry must fit.
+          \warning Bands and polygon must fit.
         */
-        std::complex<double> getMean(const te::rst::Band& band, const te::gm::Geometry& geometry);
+        std::complex<double> getMean(const te::rst::Band& band, const te::gm::Polygon& polygon);
 
         /*!
-          \brief Returns the mean value for the pixels of a band, inside the geometry.
+          \brief Returns the mean value for the pixels of a band, inside the polygon.
 
           \param raster      The input raster.
-          \param geometry    The input geometry.
+          \param polygon     The input polygon.
           \param bands       Bands to be processed from the input raster.
 
-          \return A vector of means from the raster, inside the geometry.
+          \return A vector of means from the raster, inside the polygon.
 
-          \warning Bands and geometry must fit, the bands to be processed must be available in the input raster.
+          \warning Bands and polygon must fit, the bands to be processed must be available in the input raster.
         */
-        std::vector<std::complex<double> > getMeans(const te::rst::Raster& raster, const te::gm::Geometry& geometry, std::vector<unsigned int> bands);
+        std::vector<std::complex<double> > getMeans(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
 
         /*!
-          \brief Returns the covariance matrix between raster bands, inside the geometry.
+          \brief Returns the covariance matrix between raster bands, inside the polygon.
 
           \param raster      The input raster.
-          \param geometry    The input geometry.
+          \param polygon     The input polygon.
           \param bands       Bands to be processed from the input raster.
 
-          \return The covariance matrix between raster bands, inside the geometry.
+          \return The covariance matrix between raster bands, inside the polygon.
 
-          \warning Raster bands and geometry must fit.
+          \warning Raster bands and polygon must fit.
         */
-        boost::numeric::ublas::matrix<double> getCovarianceMatrix(const te::rst::Raster& raster, const te::gm::Geometry& geometry, std::vector<unsigned int> bands);
+        boost::numeric::ublas::matrix<double> getCovarianceMatrix(const te::rst::Raster& raster, const te::gm::Polygon& polygon, std::vector<unsigned int> bands);
     };
 
   } // end namespace rp
