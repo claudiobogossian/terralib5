@@ -1,4 +1,4 @@
-# This script builds the rp unit test 
+# This script builds the rp unit test
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
@@ -38,10 +38,11 @@ set(HDRS ${SRCDIR}/Config.h ${SRCDIR}/LoadModules.h ${SRCDIR}/TsClassifier.h)
 
 # Select the include directories
 include_directories(
-  ${ROOT}/src 
+  ${ROOT}/src
   ${DEP_INCLUDES}
   ${CPPUNIT_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
+  ${GDAL_INCLUDE_DIR}
   )
 
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})
