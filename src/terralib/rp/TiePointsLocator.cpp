@@ -1378,7 +1378,7 @@ namespace te
                   auxInterestPoint.m_x = windowStartBufCol + 
                     moravecWindowRadius;
                   auxInterestPoint.m_y = rasterLine - moravecWindowWidth + 1;
-                  auxInterestPoint.m_featureValue = windowCenterPixelValue;
+                  auxInterestPoint.m_feature1 = windowCenterPixelValue;
                   assert( auxInterestPoint.m_x < 
                     paramsPtr->m_rasterDataPtr->getColumnsNumber() );
                   assert( auxInterestPoint.m_y < 
@@ -1815,7 +1815,7 @@ namespace te
                 prevResponseBufferColIdx = windCenterCol - 1;
                 nextResponseBufferColIdx = windCenterCol + 1;
                 isLocalMaxima = false;
-                auxInterestPoint.m_featureValue = (-1.0) * DBL_MAX;
+                auxInterestPoint.m_feature1 = (-1.0) * DBL_MAX;
                     
                 for( octaveIdx = 0 ; octaveIdx < paramsPtr->m_octavesNumber ; ++octaveIdx )
                 {         
@@ -1889,9 +1889,14 @@ namespace te
                       )
                     {
                       isLocalMaxima = true;
-                      if( auxInterestPoint.m_featureValue < windowCenterPixelValue )
+                      if( auxInterestPoint.m_feature1 < windowCenterPixelValue )
                       {
-                        auxInterestPoint.m_featureValue = windowCenterPixelValue;
+                        filterStepSize = (unsigned int)std::pow( 2.0, (double)(octaveIdx + 1) );
+                        baseFilterSize = 3 + ( 3 * filterStepSize );
+                        filterWidth = baseFilterSize + ( 3 * ( filterStepSize * scaleIdx ) );
+                        
+                        auxInterestPoint.m_feature1 = windowCenterPixelValue;
+                        auxInterestPoint.m_feature2 = (double)filterWidth;
                       }                      
                     }
                   }
@@ -2588,6 +2593,148 @@ namespace te
       return true;
     }
     
+    bool TiePointsLocator::generateSurfFeatures( 
+      const InterestPointsSetT& interestPoints,
+      const Matrix< double >& integralRasterData,
+      Matrix< double >& features )
+    {
+      const unsigned int rasterDataCols = integralRasterData.getColumnsNumber();
+      const unsigned int rasterDataLines = integralRasterData.getLinesNumber();
+      
+      // Allocating the features matrix
+      
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( interestPoints.size(), 64 ),
+        "Cannot allocate features matrix" );      
+      
+      /* globals  */
+      
+      unsigned int currIPointWindowWidth = 0;
+      unsigned int currIPointWindowRadius = 0;
+      unsigned int currIPointWindowRasterXStart = 0;
+      unsigned int currIPointWindowRasterYStart = 0;
+      double currIPointScale = 0;
+      double currIPointXIntensity = 0;
+      double currIPointYIntensity = 0;
+      double currIPointRotationNorm = 0;
+      double currIPointRotationSin = 0;
+      double currIPointRotationCos = 0;
+      unsigned int featureWindowBlockXIdx = 0;
+      unsigned int featureWindowBlockYIdx = 0;
+      unsigned int featureWindowXIdx = 0;
+      unsigned int featureWindowYIdx = 0;
+      double featureWindowXIdxMinusRadius = 0;
+      double featureWindowYIdxMinusRadius = 0;
+      double featureRasterXIdx = 0;
+      double featureRasterYIdx = 0;
+      double featureOriginalHaarIntensityX = 0;
+      double featureOriginalHaarIntensityY = 0;
+      unsigned int featureWindowWidth = 0;
+      unsigned int featureWindowRadius = 0;
+      
+      InterestPointsSetT::const_iterator iPointsIt = interestPoints.begin();
+      const InterestPointsSetT::const_iterator iPointsItEnd = interestPoints.end();      
+      
+      while( iPointsIt != iPointsItEnd )
+      {
+        // Calculating the current window center position
+      
+        const unsigned int& currIPointCenterX = iPointsIt->m_x;
+        const unsigned int& currIPointCenterY = iPointsIt->m_y;
+        currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+        currIPointWindowWidth = (unsigned int)( 6.0 * currIPointScale );
+        currIPointWindowRadius = currIPointWindowWidth / 2;
+        currIPointWindowRasterXStart = currIPointCenterX - currIPointWindowRadius;
+        currIPointWindowRasterYStart = currIPointCenterY - currIPointWindowRadius;
+        featureWindowWidth = (unsigned int)( 2.0 * currIPointScale );
+        featureWindowRadius = featureWindowWidth / 2;
+          
+        // Estimating the intensity vectors
+        
+        currIPointXIntensity = getHaarXVectorIntensity( integralRasterData, currIPointCenterX,
+          currIPointCenterY, currIPointWindowRadius );
+        currIPointYIntensity = getHaarYVectorIntensity( integralRasterData, currIPointCenterX,
+          currIPointCenterY, currIPointWindowRadius );
+        
+        // Calculating the rotation parameters
+        
+        currIPointRotationNorm = sqrt( ( currIPointXIntensity * currIPointXIntensity ) + 
+          ( currIPointYIntensity * currIPointYIntensity ) );
+        
+        if( currIPointRotationNorm != 0.0 ) {
+          currIPointRotationCos = currIPointXIntensity / currIPointRotationNorm;
+          currIPointRotationSin = currIPointYIntensity / currIPointRotationNorm;
+        } else {
+          /* No rotation */
+          currIPointRotationCos = 1.0;
+          currIPointRotationSin = 0.0;
+        }
+        
+        assert( ( currIPointRotationCos >= -1.0 ) && ( currIPointRotationCos <= 1.0 ) );
+        assert( ( currIPointRotationSin >= -1.0 ) && ( currIPointRotationSin <= 1.0 ) );
+        
+        /* Generating the rotated window data and inserting it into 
+          the img_features_matrix by setting the intensity vector
+          to the direction (1,0) 
+
+          counterclockwise rotation 
+          | u |    |cos  -sin|   |X|
+          | v | == |sin   cos| x |Y|
+
+          clockwise rotation
+          | u |    |cos   sin|   |X|
+          | v | == |-sin  cos| x |Y|
+        */
+        
+        for( featureWindowBlockYIdx = 0; featureWindowBlockYIdx < 2 ;
+          ++featureWindowBlockYIdx )
+        {
+          for( featureWindowBlockXIdx = 0; featureWindowBlockXIdx < 2 ;
+            ++featureWindowBlockXIdx )
+          {
+            for( featureWindowYIdx = 0 ; featureWindowYIdx < 8 ; ++featureWindowYIdx ) 
+            {
+              for( featureWindowXIdx = 0 ; featureWindowXIdx < 8 ; ++featureWindowXIdx ) 
+              {
+                /* finding the correspondent point over the raster */
+                
+                featureWindowXIdxMinusRadius = ((double)featureWindowXIdx) - 
+                  ((double)currIPointWindowRadius);
+                featureWindowYIdxMinusRadius = ((double)featureWindowYIdx) - 
+                  ((double)currIPointWindowRadius);
+                
+                featureRasterXIdx = 
+                  ( currIPointRotationCos * featureWindowXIdxMinusRadius ) + 
+                  ( currIPointRotationSin * featureWindowYIdxMinusRadius );
+                featureRasterYIdx = 
+                  ( currIPointRotationCos * featureWindowYIdxMinusRadius )
+                  - ( currIPointRotationSin * featureWindowXIdxMinusRadius );
+                  
+                featureRasterXIdx += ((double)currIPointWindowRadius);
+                featureRasterYIdx += ((double)currIPointWindowRadius);
+                
+                featureRasterXIdx = currIPointWindowRasterXStart +
+                  (unsigned int)ROUND( featureRasterXIdx );
+                featureRasterYIdx = currIPointWindowRasterYStart +
+                  (unsigned int)ROUND( featureRasterYIdx );
+                  
+                // Finding the original haar intesity vectors
+                  
+                featureOriginalHaarIntensityX = getHaarXVectorIntensity( integralRasterData, 
+                  featureRasterXIdx, featureRasterYIdx, featureWindowRadius );
+                featureOriginalHaarIntensityY = getHaarYVectorIntensity( integralRasterData, 
+                  featureRasterXIdx, featureRasterYIdx, featureWindowRadius );
+
+              }
+            }
+          }
+        }
+        
+        ++iPointsIt;
+      }
+     
+      return true;
+    }    
+    
     void TiePointsLocator::features2Tiff( const Matrix< double >& features,
       const InterestPointsSetT& interestPoints,
       const std::string& fileNameBeginning )
@@ -2682,10 +2829,10 @@ namespace te
       {
         internalInterestPointsSet1[ idx1 ] = *it1;
         
-        if( it1->m_featureValue > maxTiePoints1FeatureValue )
-          maxTiePoints1FeatureValue = it1->m_featureValue;
-        if( it1->m_featureValue < minTiePoints1FeatureValue )
-          minTiePoints1FeatureValue = it1->m_featureValue;        
+        if( it1->m_feature1 > maxTiePoints1FeatureValue )
+          maxTiePoints1FeatureValue = it1->m_feature1;
+        if( it1->m_feature1 < minTiePoints1FeatureValue )
+          minTiePoints1FeatureValue = it1->m_feature1;        
         
         ++it1;
       }
@@ -2701,10 +2848,10 @@ namespace te
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
 
-        if( it2->m_featureValue > maxTiePoints2FeatureValue )
-          maxTiePoints2FeatureValue = it2->m_featureValue;
-        if( it2->m_featureValue < minTiePoints2FeatureValue )
-          minTiePoints2FeatureValue = it2->m_featureValue;
+        if( it2->m_feature1 > maxTiePoints2FeatureValue )
+          maxTiePoints2FeatureValue = it2->m_feature1;
+        if( it2->m_feature1 < minTiePoints2FeatureValue )
+          minTiePoints2FeatureValue = it2->m_feature1;
         
         if( maxPt1ToPt2Distance )
           interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
@@ -2846,13 +2993,13 @@ namespace te
               ( 
                 (
                   ( 
-                    ( iPoint1.m_featureValue - minTiePoints1FeatureValue ) 
+                    ( iPoint1.m_feature1 - minTiePoints1FeatureValue ) 
                     /
                     tiePoints1FeatureValueRange 
                   )
                   +
                   ( 
-                    ( iPoint2.m_featureValue - minTiePoints2FeatureValue ) 
+                    ( iPoint2.m_feature1 - minTiePoints2FeatureValue ) 
                     /
                     tiePoints2FeatureValueRange 
                   )                  
