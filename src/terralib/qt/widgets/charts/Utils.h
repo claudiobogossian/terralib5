@@ -18,7 +18,7 @@
 */
 
 /*!
-  \file Utils.h
+  \file terralib/qt/widgets/charts/Utils.h
 
   \brief This file contains a set of utility chart functions
 */
@@ -29,7 +29,7 @@
 //TerraLib
 #include "../Config.h"
 
-//Qwt
+//QWT
 #include <qwt_text.h>
 
 namespace te

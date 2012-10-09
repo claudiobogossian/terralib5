@@ -66,7 +66,7 @@ QwtText te::qt::widgets::StringScaleDraw::label( double value ) const
 {
   QString lbl = " ";
 
-  int index = qRound( value );
+  uint index = qRound( value );
 
   if(m_labels.empty() == false)
   { 

@@ -18,22 +18,22 @@
 */
 
 /*!
-  \file StringScaleDraw.h
+  \file terralib/qt/widgets/charts/StringScaleDraw.h
 
   \brief A class to represent a set of labels to be used on a histogram's chart.
 */
 
-//QWT
-#include <qwt_scale_draw.h>
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_STRINGSCALEDRAW_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_STRINGSCALEDRAW_H
 
 //TerraLib
 #include "../Config.h"
 
+//QWT
+#include <qwt_scale_draw.h>
+
 //STL
 #include <set>
-
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_STRINGSCALEDRAW_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_STRINGSCALEDRAW_H
 
 namespace te
 {
@@ -97,7 +97,7 @@ namespace te
 
      private:
 
-        std::set<QString> m_labels;  /*! label values*/
+        std::set<QString> m_labels;  //!< A set of label values
      };
     } // end namespace widgets
   }   // end namespace qt

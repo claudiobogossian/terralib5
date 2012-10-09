@@ -18,7 +18,7 @@
 */
 
 /*!
-  \file ChartDisplay.h
+  \file  terralib/qt/widgets/charts/ChartDisplay.h
 
   \brief A class to represent a chart display
 */
@@ -26,14 +26,14 @@
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDISPLAY_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTDISPLAY_H
 
-//STL
-#include <string>
-
 //TerraLib
 #include "../Config.h"
 
 //QWT
 #include <qwt_plot.h>
+
+//STL
+#include <string>
 
 namespace te
 {
@@ -83,11 +83,11 @@ namespace te
                  
          private:
           
-          std::string           m_title;
-          te::color::RGBAColor* m_titleColor;
-          te::se::Font*         m_titleFont;
-          te::se::Fill*         m_titleBackFill;
-          te::se::Stroke*       m_titleBackStroke;  //background title stroke
+          std::string           m_title; //!< The chart's title.
+          te::color::RGBAColor* m_titleColor; //!< The chart title's color.
+          te::se::Font*         m_titleFont; //!< The chart title's font.
+          te::se::Fill*         m_titleBackFill; //!< The chart title's background fill..
+          te::se::Stroke*       m_titleBackStroke;  //!<  background title stroke
                      
       }; 
     } // end namespace widgets
