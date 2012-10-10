@@ -207,10 +207,6 @@ namespace te
             {
             };
             
-//            InterestPointT( const unsigned int& x, const unsigned int& y,
-//              const double& featureValue ) : m_x( x ), m_y( y ),
-//              m_featureValue( featureValue) {};
-              
             InterestPointT( const InterestPointT& other )
             {
               operator=( other );
@@ -608,9 +604,24 @@ namespace te
           \param bufferPtr Buffer pointer.
           
           \param bufferLinesNumber Buffer lines number.
-        */         
-        static void roolUpBuffer( double** bufferPtr, 
-          const unsigned int& bufferLinesNumber );
+        */       
+        template< typename BufferElementT >
+        static void roolUpBuffer( BufferElementT** bufferPtr, 
+          const unsigned int& bufferLinesNumber )
+        {
+          assert( bufferLinesNumber > 1 );
+          
+          unsigned int idx = 0;
+          BufferElementT* auxLinePtr = bufferPtr[ 0 ];
+          const unsigned int lastLineIdx = bufferLinesNumber - 1;
+          
+          for( idx = 0 ; idx < lastLineIdx ; ++idx )
+          {
+            bufferPtr[ idx ] = bufferPtr[ idx + 1 ];
+          }
+          
+          bufferPtr[ lastLineIdx ] = auxLinePtr;
+        };
         
         /*! 
           \brief Fill a buffer with zeroes.
