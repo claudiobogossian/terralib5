@@ -85,7 +85,6 @@ bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster
                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
-  double v;
   unsigned int c;
   unsigned int r;
   unsigned int pattern;
@@ -107,8 +106,8 @@ bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster
 
       pattern = rand() % 5 + 1;
 
-      for(r = startGridCoord.y; r < endGridCoord.y; r++)
-        for(c = startGridCoord.x; c < endGridCoord.x; c++)
+      for(r = (unsigned) startGridCoord.y; r < endGridCoord.y; r++)
+        for(c = (unsigned) startGridCoord.x; c < endGridCoord.x; c++)
         {
           te::gm::Coord2D geoCoord = outputRaster.getGrid()->gridToGeo(c, r);
           point = new te::gm::Point(geoCoord.x, geoCoord.y);
