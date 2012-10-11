@@ -39,13 +39,6 @@
 
 namespace te
 {
-//// Forward declaration.
-//  namespace gm
-//  {
-//    class Line;
-//    class Polygon;
-//  }
-
   namespace rp
   {
 // Forward declaration.
@@ -316,9 +309,7 @@ namespace te
 
     template<class T> te::rp::PolygonIterator<T>::~PolygonIterator()
     {
-      //delete m_intersection;
       m_intersection->clear();
-      delete m_currline;
     }
 
     template<class T> void te::rp::PolygonIterator<T>::setNextLine()
