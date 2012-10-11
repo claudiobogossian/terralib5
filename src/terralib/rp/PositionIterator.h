@@ -316,7 +316,8 @@ namespace te
 
     template<class T> te::rp::PolygonIterator<T>::~PolygonIterator()
     {
-      delete m_intersection;
+      //delete m_intersection;
+      m_intersection->clear();
       delete m_currline;
     }
 

@@ -16,11 +16,11 @@
 #include <map>
 #include <string>
 
-std::vector<te::gm::Geometry*> CreatePolygons(te::rst::Raster* rin)
+std::vector<te::gm::Polygon*> CreatePolygons(te::rst::Raster* rin)
 {
 // create 4 input polygons
   te::gm::Envelope* mbr = new te::gm::Envelope(*rin->getExtent());
-  std::vector<te::gm::Geometry*> pin;
+  std::vector<te::gm::Polygon*> pin;
 
   double xc = (rin->getExtent()->getUpperRightX() + rin->getExtent()->getLowerLeftX())/2;
   double yc = (rin->getExtent()->getUpperRightY() + rin->getExtent()->getLowerLeftY())/2;
@@ -105,7 +105,7 @@ void DummyClassifier()
     orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_classified_dummy.tif";
 
 // create 4 input polygons
-    std::vector<te::gm::Geometry*> pin = CreatePolygons(rin);
+    std::vector<te::gm::Polygon*> pin = CreatePolygons(rin);
 
 // define classification parameters
 
@@ -154,7 +154,7 @@ void DummyClassifier()
 }
 
 // this code is for image segmentation to be used with ISOSegClassifier function
-std::vector<te::gm::Geometry*> SegmentImage(te::rst::Raster* rin)
+std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 {
 // define segmentation parameters
 
@@ -193,7 +193,11 @@ std::vector<te::gm::Geometry*> SegmentImage(te::rst::Raster* rin)
   std::vector<te::gm::Geometry*> geometries;
   te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get())->getGDALDataset()->GetRasterBand(1), geometries);
 
-  return geometries;
+  std::vector<te::gm::Polygon*> polygons;
+  for (unsigned i = 0; i < geometries.size(); i++)
+    polygons.push_back(static_cast<te::gm::Polygon*> (geometries[i]));
+
+  return polygons;
 }
 
 void ISOSegClassifier()
@@ -213,10 +217,10 @@ void ISOSegClassifier()
     orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_classified_isoseg.tif";
 
 // to apply ISOSeg the image must be segmented
-  std::vector<te::gm::Geometry*> geometries = SegmentImage(rin);
+  std::vector<te::gm::Polygon*> polygons = SegmentImage(rin);
   //std::vector<te::gm::Geometry*> geometries = CreatePolygons(rin);
 
-  std::cout << "Segmentation created " << geometries.size() << " polygons" << std::endl;
+  std::cout << "Segmentation created " << polygons.size() << " polygons" << std::endl;
 
 // define classification parameters
 
@@ -226,7 +230,7 @@ void ISOSegClassifier()
     algoInputParameters.m_inputRasterBands.push_back(0);
     algoInputParameters.m_inputRasterBands.push_back(1);
     algoInputParameters.m_inputRasterBands.push_back(2);
-    algoInputParameters.m_inputPolygons = geometries;
+    algoInputParameters.m_inputPolygons = polygons;
 
 // link specific parameters with chosen implementation
     te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
