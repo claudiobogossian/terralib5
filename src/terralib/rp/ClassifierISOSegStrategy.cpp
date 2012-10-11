@@ -269,7 +269,7 @@ double getThreshold(double acceptanceThreshold, unsigned nBands)
 }
 
 bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                               const std::vector<te::gm::Geometry*>& inputPolygons, te::rst::Raster& outputRaster,
+                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                                const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
@@ -282,7 +282,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
 // fill m_regions, in the beginning, each region is a cluster
   for (unsigned i = 0; i < inputPolygons.size(); i++)
   {
-    te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (inputPolygons[i]);
+    te::gm::Polygon* polygon = inputPolygons[i];
 
     std::vector<std::complex<double> > means = rattributes.getMeans(inputRaster, *polygon, inputRasterBands);
 
@@ -379,10 +379,10 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
 // classify output image
   for (rit = m_regions.begin(); rit != m_regions.end(); ++rit)
   {
-    te::gm::Geometry* geometry = inputPolygons[rit->second->m_id];
+    te::gm::Polygon* polygon = inputPolygons[rit->second->m_id];
 
-    te::gm::Coord2D ll = geometry->getMBR()->getLowerLeft();
-    te::gm::Coord2D ur = geometry->getMBR()->getUpperRight();
+    te::gm::Coord2D ll = polygon->getMBR()->getLowerLeft();
+    te::gm::Coord2D ur = polygon->getMBR()->getUpperRight();
 
     te::gm::Coord2D startGridCoord = outputRaster.getGrid()->geoToGrid(ll.x, ur.y);
     te::gm::Coord2D endGridCoord = outputRaster.getGrid()->geoToGrid(ur.x, ll.y);
@@ -398,10 +398,8 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
     pattern = rit->second->m_myCluster->m_id;
 
 // iterate over polygon to classify output image
-    te::rp::PolygonIterator<unsigned> it = te::rp::PolygonIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]),
-                                                                                    static_cast<te::gm::Polygon*> (geometry));
-    te::rp::PolygonIterator<unsigned> itend = te::rp::PolygonIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]),
-                                                                                     static_cast<te::gm::Polygon*> (geometry));
+    te::rp::PolygonIterator<unsigned> it = te::rp::PolygonIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]), polygon);
+    te::rp::PolygonIterator<unsigned> itend = te::rp::PolygonIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]), polygon);
 
     while (it != itend)
     {

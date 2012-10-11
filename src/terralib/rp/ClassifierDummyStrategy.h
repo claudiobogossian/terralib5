@@ -79,7 +79,7 @@ namespace te
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                     const std::vector<te::gm::Geometry*>& inputPolygons, te::rst::Raster& outputRaster,
+                     const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                      const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception);
     };
 
