@@ -1862,7 +1862,7 @@ namespace te
                     currScaleBufferPtr[ lastBuffersLineIdx ][ filterCenterBufCol ] = 
                       dXY;
                     currLaplacianSignBufferPtr[ lastBuffersLineIdx ][ filterCenterBufCol ] = 
-                      ( ( dXX + dYY ) >= 0.0 );                      
+                      ( ( dXX + dYY ) >= 0.0 ) ? 1 : 0;                      
                   }
                 }
               }
@@ -1965,8 +1965,9 @@ namespace te
                         
                         auxInterestPoint.m_feature1 = windowCenterPixelValue;
                         auxInterestPoint.m_feature2 = (double)filterWidth;
-                        auxInterestPoint.m_feature3 = laplacianSignBufferHandlers[ octaveIdx ][
-                          scaleIdx ][ maxGausFilterRadius ][ windCenterCol ] ;
+                        auxInterestPoint.m_feature3 = (double)
+                          laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
+                          maxGausFilterRadius ][ windCenterCol ] ;
                       }                      
                     }
                   }
@@ -2656,7 +2657,7 @@ namespace te
       
       // Allocating the features matrix
       
-      TERP_TRUE_OR_RETURN_FALSE( features.reset( interestPoints.size(), 64 ),
+      TERP_TRUE_OR_RETURN_FALSE( features.reset( interestPoints.size(), 65 ),
         "Cannot allocate features matrix" );      
       
       /* globals  */
@@ -2672,10 +2673,18 @@ namespace te
       double currIPointRotationCos = 0;
       unsigned int currIPointIndex = 0;
       unsigned int currIPointFeatureElementIndex = 0;
+      unsigned int featureWindowWidth = 0;
+      unsigned int featureWindowRadius = 0;
+      unsigned int featureWindowSampleStep = 0;
+      unsigned int featureSubWindowWidth = 0;
       unsigned int featureSubWindowBlockStartX = 0;
       unsigned int featureSubWindowBlockStartY = 0;
       unsigned int featureSubWindowXOffset = 0;
       unsigned int featureSubWindowYOffset = 0;
+      double featureSubWindowHaarSumX = 0;
+      double featureSubWindowHaarSumY = 0;
+      double featureSubWindowHaarAbsSumX = 0;
+      double featureSubWindowHaarAbsSumY = 0;            
       double featureElementRasterOriginalXIdx = 0;
       double featureElementRasterOriginalYIdx = 0;
       double featureElementRasterRotatedXIdx = 0;
@@ -2684,21 +2693,29 @@ namespace te
       double featureElementOriginalHaarYIntensity = 0;
       double featureElementRotatedHaarXIntensity = 0;
       double featureElementRotatedHaarYIntensity = 0;
-      double featureSubWindowHaarSumX = 0;
-      double featureSubWindowHaarSumY = 0;
-      double featureSubWindowHaarAbsSumX = 0;
-      double featureSubWindowHaarAbsSumY = 0;      
       unsigned int featureElementHaarWindowRadius = 0;
+      double featureElementsNormalizeFactor = 0;
       
       InterestPointsSetT::const_iterator iPointsIt = interestPoints.begin();
       const InterestPointsSetT::const_iterator iPointsItEnd = interestPoints.end();
       while( iPointsIt != iPointsItEnd )
       {
-        // Calculating the current window center position
+        // Calculating the current interest point variables
       
         const unsigned int& currIPointCenterX = iPointsIt->m_x;
         const unsigned int& currIPointCenterY = iPointsIt->m_y;
+        std::cout << std:: endl << "Interest Point [";
+        std::cout << currIPointCenterX;
+        std::cout << " , ";
+        std::cout << currIPointCenterY;
+        std::cout << "]" << std::endl;        
+        
         currIPointScale = 1.2 * iPointsIt->m_feature2 / 9.0;
+        featureWindowWidth = (unsigned int)( 20.0 * currIPointScale );
+        featureWindowWidth += ( featureWindowWidth % 4 );
+        featureWindowRadius = featureWindowWidth / 2;
+        featureSubWindowWidth = featureWindowWidth / 4;
+        featureWindowSampleStep = MAX( 1, featureWindowRadius / 8 );
         currIPointHaarWindowRadius = ((unsigned int)( 6.0 * currIPointScale )) / 2;
         currIPointHaarWindowRasterXStart = currIPointCenterX - currIPointHaarWindowRadius;
         currIPointHaarWindowRasterYStart = currIPointCenterY - currIPointHaarWindowRadius;
@@ -2743,23 +2760,24 @@ namespace te
         */
         
         currIPointFeatureElementIndex = 0;
+        featureElementsNormalizeFactor = 0;
         
-        for( featureSubWindowBlockStartY = 0; featureSubWindowBlockStartY < 16 ;
-          featureSubWindowBlockStartY += 4 )
+        for( featureSubWindowBlockStartY = 0; featureSubWindowBlockStartY < 
+          featureWindowWidth ; featureSubWindowBlockStartY += featureSubWindowWidth )
         {
-          for( featureSubWindowBlockStartX = 0; featureSubWindowBlockStartX < 16 ;
-            ++featureSubWindowBlockStartX += 4 )
+          for( featureSubWindowBlockStartX = 0; featureSubWindowBlockStartX < 
+            featureWindowWidth ; ++featureSubWindowBlockStartX += featureSubWindowWidth )
           {
             featureSubWindowHaarSumX = 0;
             featureSubWindowHaarSumY = 0;
             featureSubWindowHaarAbsSumX = 0;
             featureSubWindowHaarAbsSumY = 0;
             
-            for( featureSubWindowYOffset = 0 ; featureSubWindowYOffset < 4 ; 
-              ++featureSubWindowYOffset ) 
+            for( featureSubWindowYOffset = 0 ; featureSubWindowYOffset < 
+              featureWindowRadius ; featureSubWindowYOffset += featureWindowSampleStep ) 
             {
-              for( featureSubWindowXOffset = 0 ; featureSubWindowXOffset < 4 ; 
-                ++featureSubWindowXOffset ) 
+              for( featureSubWindowXOffset = 0 ; featureSubWindowXOffset < 
+                featureWindowRadius ; featureSubWindowXOffset += featureWindowSampleStep ) 
               {
                 /* finding the correspondent point over the original raster */
                 
@@ -2815,6 +2833,8 @@ namespace te
             
             // Generating the related portion inside the output features vector
             
+            assert( currIPointFeatureElementIndex < 61 );
+            
             features( currIPointIndex, currIPointFeatureElementIndex ) = 
               featureSubWindowHaarSumX;
             features( currIPointIndex, currIPointFeatureElementIndex + 1 ) = 
@@ -2823,10 +2843,38 @@ namespace te
               featureSubWindowHaarAbsSumX;
             features( currIPointIndex, currIPointFeatureElementIndex + 3 ) = 
               featureSubWindowHaarAbsSumY;
+              
+            // Calculating the feature normalization factor
+              
+            featureElementsNormalizeFactor += ( featureSubWindowHaarSumX *
+              featureSubWindowHaarSumX );
+            featureElementsNormalizeFactor += ( featureSubWindowHaarSumY *
+              featureSubWindowHaarSumY );
+            featureElementsNormalizeFactor += ( featureSubWindowHaarAbsSumX *
+              featureSubWindowHaarAbsSumX );
+            featureElementsNormalizeFactor += ( featureSubWindowHaarAbsSumY *
+              featureSubWindowHaarAbsSumY );
             
             currIPointFeatureElementIndex += 4;
           }
         }
+        
+        // turning the descriptor into a unit vector.(Invariance to contrast)
+        
+        featureElementsNormalizeFactor = std::sqrt( featureElementsNormalizeFactor );
+        
+        for( currIPointFeatureElementIndex = 0 ; currIPointFeatureElementIndex < 64 ;
+          ++currIPointFeatureElementIndex )
+        {
+          features( currIPointIndex, currIPointFeatureElementIndex ) /=
+            featureElementsNormalizeFactor;
+        }
+        
+        // Adding an attribute based on the sign of the Laplacian to 
+        // distinguishes bright blobs 
+        // on dark backgrounds from the reverse situation.
+        
+        features( currIPointIndex, 64 ) = (double)( iPointsIt->m_feature3 * 2 );
         
         ++currIPointIndex;
         ++iPointsIt;

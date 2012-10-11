@@ -609,7 +609,8 @@ namespace te
         static void roolUpBuffer( BufferElementT** bufferPtr, 
           const unsigned int& bufferLinesNumber )
         {
-          assert( bufferLinesNumber > 1 );
+          assert( bufferPtr );
+          assert( bufferLinesNumber );
           
           unsigned int idx = 0;
           BufferElementT* auxLinePtr = bufferPtr[ 0 ];
@@ -852,7 +853,7 @@ namespace te
           \param lowerRightY Box lower right X.
         */          
         template< typename BufferType >
-        inline static double getIntegralBoxSum( BufferType buffer, 
+        inline static double getIntegralBoxSum( BufferType& buffer, 
           const unsigned int& upperLeftX, const unsigned int& upperLeftY, 
           const unsigned int& lowerRightX, const unsigned int& lowerRightY )
         {
@@ -987,7 +988,7 @@ namespace te
           \param radius Window radius.
         */         
         template< typename BufferType >
-        inline static double getHaarXVectorIntensity( BufferType buffer, 
+        inline static double getHaarXVectorIntensity( BufferType& buffer, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& radius )
         {
@@ -1019,7 +1020,7 @@ namespace te
           \param radius Window radius.
         */         
         template< typename BufferType >
-        inline static double getHaarYVectorIntensity( BufferType buffer, 
+        inline static double getHaarYVectorIntensity( BufferType& buffer, 
           const unsigned int& centerX,  const unsigned int& centerY, 
            const unsigned int& radius )
         {
