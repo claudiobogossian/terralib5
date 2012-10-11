@@ -82,7 +82,7 @@ bool te::rp::ClassifierDummyStrategy::initialize(te::rp::ClassifierStrategyParam
 }
 
 bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                              const std::vector<te::gm::Geometry*>& inputPolygons, te::rst::Raster& outputRaster,
+                                              const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
 {
   double v;
@@ -97,10 +97,10 @@ bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster
 // iterate over geometries
     for (unsigned i = 0; i < inputPolygons.size(); i++)
     {
-      te::gm::Geometry* geometry = inputPolygons[i];
+      te::gm::Polygon* polygon = inputPolygons[i];
 
-      te::gm::Coord2D ll = geometry->getMBR()->getLowerLeft();
-      te::gm::Coord2D ur = geometry->getMBR()->getUpperRight();
+      te::gm::Coord2D ll = polygon->getMBR()->getLowerLeft();
+      te::gm::Coord2D ur = polygon->getMBR()->getUpperRight();
 
       te::gm::Coord2D startGridCoord = outputRaster.getGrid()->geoToGrid(ll.x, ur.y);
       te::gm::Coord2D endGridCoord = outputRaster.getGrid()->geoToGrid(ur.x, ll.y);
@@ -113,7 +113,7 @@ bool te::rp::ClassifierDummyStrategy::execute(const te::rst::Raster& inputRaster
           te::gm::Coord2D geoCoord = outputRaster.getGrid()->gridToGeo(c, r);
           point = new te::gm::Point(geoCoord.x, geoCoord.y);
 
-          if (geometry->intersects(point))
+          if (polygon->intersects(point))
             outputRaster.setValue(c, r, pattern, outputRasterBand);
 
           delete point;

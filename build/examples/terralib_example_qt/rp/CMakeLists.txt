@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")  # the terralib root directory (change it if it is in another directory)
-set(SRCDIR ${ROOT}/examples/qt/rp)                # directory where the source files of the chart Qt widgets example are located
+set(SRCDIR ${ROOT}/examples/qt/rp)                   # directory where the source files of the chart Qt widgets example are located
 set(INCLDIR ${SRCDIR})                               # directory where the header files of the chart Qt widgets example are located
 
 # Set the project name
@@ -13,43 +13,45 @@ set(PROJ_NAME "terralib_example_qt_rp")
 project(${PROJ_NAME})         # the project name is terralib_example_qt_rp
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_rp
 
-set(DEP_LIBS 
-    terralib_annotationtext
-		terralib_color
-		terralib_common
-		terralib_dataaccess
-		terralib_datatype
-		terralib_filter
-		terralib_geometry
-		terralib_gml
-		terralib_maptools
-		terralib_plugin
-		terralib_qtwidgets
-		terralib_raster
-    terralib_rp
-		terralib_symbology
-		terralib_srs
-		terralib_xlink
-    ${QWT_LIBRARY}
-    ${QT_LIBRARIES}
-    )  
+set(DEP_LIBS
+  terralib_annotationtext
+  terralib_color
+  terralib_common
+  terralib_dataaccess
+  terralib_datatype
+  terralib_filter
+  terralib_gdal
+  terralib_geometry
+  terralib_gml
+  terralib_maptools
+  terralib_plugin
+  terralib_qtwidgets
+  terralib_raster
+  terralib_rp
+  terralib_symbology
+  terralib_srs
+  terralib_xlink
+  ${QWT_LIBRARY}
+  ${QT_LIBRARIES}
+  ${GDAL_LIBRARY}
+)
 
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${SRCDIR}/*.h)
 
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS ${QT_DEFINITIONS} -DBOOST_ALL_NO_LIB)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS ${QT_DEFINITIONS} -DBOOST_ALL_NO_LIB)
 endif()
 
 # Select the include directories
 include_directories(
-    ${TE_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
-    ${QT_INCLUDE_DIR}
-    ${QWT_INCLUDE_DIR}
+  ${TE_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
+  ${QT_INCLUDE_DIR}
+  ${QWT_INCLUDE_DIR}
 )
-		      
+
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})
 
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)

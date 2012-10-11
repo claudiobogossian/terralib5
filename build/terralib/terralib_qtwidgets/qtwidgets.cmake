@@ -57,11 +57,11 @@ list (APPEND DEP_LIBS
 		terralib_rp
 		terralib_xlink
     )
-	
+
 # Files to process.
-# -------------------------------------------------- 
+# --------------------------------------------------
 set (
-  _DIRS 
+  _DIRS
   .
   qwt
   widgets
@@ -87,7 +87,7 @@ appPrefix ("${SRCDIR}" "${_DIRS}" QT_INC_DIRS)
 # Files in build tree
 appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
 
-# Get files by structured by folders. 
+# Get files by structured by folders.
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
 # Select the header files for moc'ing
@@ -108,16 +108,16 @@ file (
   ${SRCDIR}/widgets/layer/LayerItem.h
   ${SRCDIR}/widgets/layer/LegendItem.h
   ${SRCDIR}/widgets/layer/Legend.h
-  ${SRCDIR}/widgets/layer/FolderLayerItem.h	
+  ${SRCDIR}/widgets/layer/FolderLayerItem.h
   ${SRCDIR}/widgets/dataset/CreateDataSet.h
-  ${SRCDIR}/widgets/dataset/AddIndex.h	
+  ${SRCDIR}/widgets/dataset/AddIndex.h
   ${SRCDIR}/widgets/datagrid/DataGridModel.h
-  ${SRCDIR}/widgets/datagrid/DataGridView.h	
-  ${SRCDIR}/widgets/datagrid/HeaderView.h	
+  ${SRCDIR}/widgets/datagrid/DataGridView.h
+  ${SRCDIR}/widgets/datagrid/HeaderView.h
   ${SRCDIR}/widgets/property/AddProperty.h
   ${SRCDIR}/widgets/property/RemoveProperty.h
   ${SRCDIR}/widgets/property/RenameProperty.h
-  ${SRCDIR}/widgets/property/UpdateProperty.h	
+  ${SRCDIR}/widgets/property/UpdateProperty.h
   ${SRCDIR}/widgets/progress/ProgressViewerBar.h
   ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
   ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
@@ -134,6 +134,7 @@ file (
   ${SRCDIR}/widgets/utils/FileChooser.h
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
+  ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
   ${SRCDIR}/widgets/se/BasicFillWidget.h
   ${SRCDIR}/widgets/se/BasicStrokeWidget.h
@@ -167,7 +168,7 @@ file (
 #  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
 
-# Select the FORMS widgets     
+# Select the FORMS widgets
 file(
   GLOB FORMS
   ${SRCDIR}/widgets/*.ui
@@ -184,11 +185,11 @@ file(
 )
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
-	
+
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
-	
+
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
 
 set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
@@ -223,5 +224,4 @@ list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 
 #exporting module information
 exportModuleInformation("qtwidgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
-  
-                
+
