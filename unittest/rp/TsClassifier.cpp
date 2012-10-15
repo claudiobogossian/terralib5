@@ -41,7 +41,7 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( TsClassifier );
 
 // this code is for image segmentation to be used with ISOSegClassifier function
-std::vector<te::gm::Geometry*> SegmentImage(te::rst::Raster* rin)
+std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 {
 // define segmentation parameters
 
@@ -79,7 +79,11 @@ std::vector<te::gm::Geometry*> SegmentImage(te::rst::Raster* rin)
   std::vector<te::gm::Geometry*> geometries;
   te::gdal::Vectorize(((te::gdal::Raster*) algoOutputParameters.m_outputRasterPtr.get())->getGDALDataset()->GetRasterBand(1), geometries);
 
-  return geometries;
+  std::vector<te::gm::Polygon*> polygons;
+  for (unsigned i = 0; i < geometries.size(); i++)
+    polygons.push_back(static_cast<te::gm::Polygon*> (geometries[i]));
+
+  return polygons;
 }
 
 void TsClassifier::ISOSeg()
@@ -95,7 +99,7 @@ void TsClassifier::ISOSeg()
   orinfo["URI"] = TE_DATA_LOCALE"/data/rasters/terralib_unittest_rp_Classifier_ISOSeg_Test.tif";
 
 // to apply ISOSeg the image must be segmented
-  std::vector<te::gm::Geometry*> geometries = SegmentImage(rin);
+  std::vector<te::gm::Polygon*> pin = SegmentImage(rin);
 
 // define classification parameters
 
@@ -105,7 +109,7 @@ void TsClassifier::ISOSeg()
   algoInputParameters.m_inputRasterBands.push_back(0);
   algoInputParameters.m_inputRasterBands.push_back(1);
   algoInputParameters.m_inputRasterBands.push_back(2);
-  algoInputParameters.m_inputPolygons = geometries;
+  algoInputParameters.m_inputPolygons = pin;
 
 // link specific parameters with chosen implementation
   te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
