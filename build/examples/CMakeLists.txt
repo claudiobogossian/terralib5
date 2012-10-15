@@ -206,5 +206,12 @@ if(WIN32)
   if(_NOTFOUND)
     message (WARNING "Batch file may not contain paths to all searched dlls.")
   endif()
-  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.bat)
+  
+  # Debug settings
+  set (GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/debug)
+  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.debug.bat)
+
+  # Release settings
+  set (GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
+  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.release.bat)
 endif()

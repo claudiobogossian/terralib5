@@ -47,8 +47,8 @@ else()
   set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
   
   if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
-    list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}")
-    set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}")
+    list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
+    set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
   endif()
   
 	set ( TE_DIRS @_TE_INST_INCLUDE_DIRS@ )	
