@@ -381,7 +381,7 @@ namespace te
         /*! 
           \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
         */     
-        class CorrelationMatrixCalcThreadParams
+        class ExecuteMatchingByCorrelationThreadEntry
         {
           public :
             
@@ -403,10 +403,40 @@ namespace te
             
             te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
             
-            CorrelationMatrixCalcThreadParams() {};
+            ExecuteMatchingByCorrelationThreadEntry() {};
             
-            ~CorrelationMatrixCalcThreadParams() {};
+            ~ExecuteMatchingByCorrelationThreadEntry() {};
         };     
+        
+        /*! 
+          \brief The parameters passed to the executeMatchingByEuclideanDistThreadEntry method.
+        */     
+        class ExecuteMatchingByEuclideanDistThreadEntryParams
+        {
+          public :
+            
+            Matrix< double > const* m_featuresSet1Ptr;
+            
+            Matrix< double > const* m_featuresSet2Ptr;
+            
+            InterestPointT const* m_interestPointsSet1Ptr;
+
+            InterestPointT const* m_interestPointsSet2Ptr;            
+            
+            unsigned int* m_nextFeatureIdx1ToProcessPtr;
+            
+            Matrix< double >* m_distMatrixPtr;
+            
+            boost::mutex* m_syncMutexPtr;
+            
+            unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+            
+            te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
+            
+            ExecuteMatchingByEuclideanDistThreadEntryParams() {};
+            
+            ~ExecuteMatchingByEuclideanDistThreadEntryParams() {};
+        };         
         
         TiePointsLocator::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
 //        TiePointsLocator::OutputParameters* m_outputParametersPtr; //!< TiePointsLocator input execution parameters.
@@ -745,14 +775,17 @@ namespace te
           
           \param integralRasterData The integral raster data.
           
-          \param features The generated features matrix (one feature per line, one feature per interes point).
+          \param features The generated features matrix (one feature per line, one feature per interest point).
+          
+          \param validInterestPoints The valid interest pionts related to each feature inside the features matrix (some interest points may be invalid and are removed).
           
           \return true if ok, false on errors.
         */             
         static bool generateSurfFeatures( 
           const InterestPointsSetT& interestPoints,
           const Matrix< double >& integralRasterData,
-          Matrix< double >& features );          
+          Matrix< double >& features,
+          InterestPointsSetT& validInterestPoints );          
           
         /*!
           \brief Save the generated features to tif files.
@@ -769,7 +802,7 @@ namespace te
           const std::string& fileNameBeginning );
           
         /*!
-          \brief Match each feature using correlation and eucliean distance.
+          \brief Match each feature using correlation.
           
           \param featuresSet1 Features set 1.
           
@@ -779,7 +812,7 @@ namespace te
           
           \param interestPointsSet2 The interest pionts set 2.
           
-          \param maxPt1ToPt2Distance Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          \param maxPt1ToPt2Distance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
           
           \param enableMultiThread Enable/disable the use of threads.
           
@@ -800,7 +833,42 @@ namespace te
           \param paramsPtr A pointer to the thread parameters.
         */      
         static void executeMatchingByCorrelationThreadEntry(
-          CorrelationMatrixCalcThreadParams* paramsPtr);
+          ExecuteMatchingByCorrelationThreadEntry* paramsPtr);
+          
+        /*!
+          \brief Match each feature using eucliean distance.
+          
+          \param featuresSet1 Features set 1.
+          
+          \param featuresSet2 Features set 2.
+          
+          \param interestPointsSet1 The interest pionts set 1.
+          
+          \param interestPointsSet2 The interest pionts set 2.
+          
+          \param maxPt1ToPt2Distance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          
+          \param enableMultiThread Enable/disable the use of threads.
+          
+          \param matchedPoints The matched points.
+        */          
+        static bool executeMatchingByEuclideanDist( 
+          const Matrix< double >& featuresSet1,
+          const Matrix< double >& featuresSet2,
+          const InterestPointsSetT& interestPointsSet1,
+          const InterestPointsSetT& interestPointsSet2,
+          const unsigned int maxPt1ToPt2Distance,
+          const unsigned int enableMultiThread,
+          MatchedInterestPointsSetT& matchedPoints ); 
+          
+          
+        /*! 
+          \brief Correlation/Euclidean match thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void executeMatchingByEuclideanDistThreadEntry(
+          ExecuteMatchingByEuclideanDistThreadEntryParams* paramsPtr);          
           
         /*! 
           \brief Print the given matrix to std::out.
