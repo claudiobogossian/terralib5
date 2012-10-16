@@ -27,14 +27,13 @@ void RasterizePolygonSet()
     te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
 
 // now retrieve the name of the datasets
-    std::vector<std::string*> datasets;
+    boost::ptr_vector<std::string> datasets;
     cloader->getDataSets(datasets);
 
-    for(std::vector<std::string*>::const_iterator it = datasets.begin(); it < datasets.end(); ++it)
+    for(unsigned int i=0; i<datasets.size(); ++i)
     {
 // retrieve the dataset by its name
-      const std::string* datasetName = *it;
-      te::da::DataSet* dataset = transactor->getDataSet(*datasetName);
+      te::da::DataSet* dataset = transactor->getDataSet(datasets[i]);
 
       while(dataset->moveNext())
       {

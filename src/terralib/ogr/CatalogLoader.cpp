@@ -53,7 +53,7 @@ te::ogr::CatalogLoader::CatalogLoader(DataSourceTransactor* t)
 te::ogr::CatalogLoader::~CatalogLoader()
 {}
 
-void te::ogr::CatalogLoader::getDataSets(std::vector<std::string*>& datasets)
+void te::ogr::CatalogLoader::getDataSets(boost::ptr_vector<std::string>& datasets)
 {
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
   int nLayers = ogrDS->GetLayerCount(); 
@@ -93,6 +93,14 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
   }
 
   return dt;
+}
+
+void te::ogr::CatalogLoader::getProperties(te::da::DataSetType* dt)
+{
+  OGRDataSource* ogrDS = m_t->getOGRDataSource();
+  OGRLayer* layer = ogrDS->GetLayerByName(dt->getName().c_str());
+  
+  Convert2TerraLib(layer->GetLayerDefn(),dt);
 }
 
 void te::ogr::CatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
@@ -177,6 +185,12 @@ void te::ogr::CatalogLoader::loadCatalog(const bool full)
     dt->setId(i);
     catalog->add(dt);
   }
+}
+
+bool te::ogr::CatalogLoader::hasDataSets()
+{
+  OGRDataSource* ogrDS = m_t->getOGRDataSource();
+  return (ogrDS->GetLayerCount() > 0); 
 }
 
 te::da::DataSourceTransactor* te::ogr::CatalogLoader::getTransactor() const

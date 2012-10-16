@@ -46,7 +46,7 @@ te::mem::DataSourceCatalogLoader::~DataSourceCatalogLoader()
 {
 }
 
-void te::mem::DataSourceCatalogLoader::getDataSets(std::vector<std::string*>& datasets)
+void te::mem::DataSourceCatalogLoader::getDataSets(boost::ptr_vector<std::string>& datasets)
 {
   datasets = m_t->getMemDataSource()->getDataSets();
 }
@@ -108,18 +108,26 @@ void te::mem::DataSourceCatalogLoader::loadCatalog(const bool /*full*/)
   
   catalog->clear();
 
-  std::vector<std::string*> datasets = m_t->getMemDataSource()->getDataSets();
+  boost::ptr_vector<std::string> datasets = m_t->getMemDataSource()->getDataSets();
 
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
-    te::da::DataSetType* dt = m_t->getMemDataSource()->getDataSetType(*datasets[i]);
+    te::da::DataSetType* dt = m_t->getMemDataSource()->getDataSetType(datasets[i]);
 
     dt->setId(i);
 
     catalog->add(dt);
   }
+}
 
-  te::common::FreeContents(datasets);
+void te::mem::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
+{
+  return;
+}
+
+bool te::mem::DataSourceCatalogLoader::hasDataSets()
+{
+  return (m_t->getMemDataSource()->hasDataSets());
 }
 
 bool te::mem::DataSourceCatalogLoader::datasetExists(const std::string& name)

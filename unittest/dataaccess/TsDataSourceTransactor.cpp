@@ -117,7 +117,7 @@ void TsDataSourceTransactor::tcGetDataSet()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::vector<std::string*>  datasets;
+  boost::ptr_vector<std::string>  datasets;
   cl->getDataSets(datasets);
   //CPPUNIT_ASSERT(datasets.size() == m_nroDataSets);
 
@@ -129,8 +129,8 @@ void TsDataSourceTransactor::tcGetDataSet()
     size_t i=0;
     while (i < datasets.size() && i < 10)   //to save time during test
     {
-      dt = t->getDataSet(*datasets[i]);
-      CPPUNIT_ASSERT_NO_THROW(dt->getType()->getName() == (*datasets[i]));
+      dt = t->getDataSet(datasets[i]);
+      CPPUNIT_ASSERT_NO_THROW(dt->getType()->getName() == (datasets[i]));
       i++;
     }
   }

@@ -32,6 +32,7 @@ set (
   dataset
   datasource
   query
+  utils
 )
 
 # Files in build tree

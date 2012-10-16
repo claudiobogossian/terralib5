@@ -62,7 +62,7 @@ void TsDataSourceCatalogLoader::tearDown()
 void TsDataSourceCatalogLoader::tcGetDataSets()
 {
 //#ifdef TE_COMPILE_ALL
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 
 // get a transactor to retrieve the data source catalog

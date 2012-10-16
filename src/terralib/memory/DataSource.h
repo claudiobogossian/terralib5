@@ -34,6 +34,7 @@
 
 // Boost
 #include <boost/ptr_container/ptr_map.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
 #include <vector>
@@ -151,7 +152,7 @@ namespace te
 
           \note In-Memory driver extended method.
         */
-        std::vector<std::string*> getDataSets() const;
+        boost::ptr_vector<std::string> getDataSets() const;
 
         /*!
           \brief It checks if a given dataset exists.
@@ -184,6 +185,13 @@ namespace te
           \note In-Memory driver extended method.
         */
         void rename(const std::string& oldName, std::string newName);
+      
+        /*!
+         \brief It return true if the data source has any dataset.
+         
+         \return True if the data source has datasets otherwise, false.
+         */      
+        bool hasDataSets();      
 
       protected:
 

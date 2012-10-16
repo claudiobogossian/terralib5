@@ -140,30 +140,37 @@ OGRSpatialReference* te::ogr::Convert2OGRProjection(int srid)
   return osrs;
 }
 
-te::da::DataSetType* te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef)
+void te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef,  te::da::DataSetType* dt)
 {
-  te::da::DataSetType* dt = new  te::da::DataSetType(featDef->GetName());
+  assert(dt);
   
-  dt->setTitle(featDef->GetName());
-
   int nFields = featDef->GetFieldCount();
-       
+  
   for(int i = 0; i < nFields; i++)
   {
     OGRFieldDefn* fieldDef = featDef->GetFieldDefn(i); 
     te::dt::Property* p = Convert2TerraLib(fieldDef);
     dt->add(p);
   }
-
+  
   OGRwkbGeometryType ogrGeomType = featDef->GetGeomType();
-
+  
   if(ogrGeomType != wkbNone) // has geometry?
   {
     te::gm::GeomType geomType = Convert2TerraLib(ogrGeomType);
     te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("geom", -1, geomType);
     dt->add(geomPropertyType);
     dt->setDefaultGeomProperty(geomPropertyType);
-  }
+  }  
+}
+
+te::da::DataSetType* te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef)
+{
+  te::da::DataSetType* dt = new  te::da::DataSetType(featDef->GetName());
+  
+  dt->setTitle(featDef->GetName());
+  
+  te::ogr::Convert2TerraLib(featDef,dt);
 
   return dt;
 }

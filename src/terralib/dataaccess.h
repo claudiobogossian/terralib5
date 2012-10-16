@@ -34,6 +34,7 @@
 #include "dataaccess/dataset_h.h"
 #include "dataaccess/datasource_h.h"
 #include "dataaccess/query_h.h"
+#include "dataaccess/utils/Utils.h"
 
 namespace te
 {

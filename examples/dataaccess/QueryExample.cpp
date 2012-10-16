@@ -53,61 +53,61 @@ void QueryExample()
     }
  
 // quering a table called public.geometry_test using query object
-    {
-      te::da::Field* f = new te::da::Field(new te::da::Function("st_intersects", new te::da::PropertyName("g1.spatial_data"), new te::da::PropertyName("g2.spatial_data")));
-      te::da::Fields* fields = new te::da::Fields;
-      fields->push_back(f);
-
-      te::da::FromItem* t1 = new te::da::DataSetName("geometry_test", "g1");
-      te::da::FromItem* t2 = new te::da::DataSetName("geometry_test", "g2");
-      te::da::From* from = new te::da::From;
-      from->push_back(t1);
-      from->push_back(t2);
-
-      te::da::EqualTo* e1 = new te::da::EqualTo(new te::da::PropertyName("g1.gid"), new te::da::LiteralInt(1));
-      te::da::EqualTo* e2 = new te::da::EqualTo(new te::da::PropertyName("g2.gid"), new te::da::LiteralInt(2));
-      te::da::And* andd = new te::da::And(e1, e2);
-      te::da::Where* filter = andd;
-
-      te::da::Select select(fields, from, filter, 0);
-
-      te::da::DataSet* dataset = transactor->query(select);
-
-      while(dataset->moveNext())
-      {
-        std::string value = dataset->getAsString(0);
-        std::cout << "st_intersects(g1.spatial_data, g2.spatial_data) = " << value << std::endl;
-      }
-
-      delete dataset;
-    }
-
-// what city contains the given point?
-    {
-      te::da::Field* f = new te::da::Field(new te::da::PropertyName("*"));
-      te::da::Fields* fields = new te::da::Fields;
-      fields->push_back(f);
-
-      te::da::FromItem* t = new te::da::DataSetName("public.br_munic_2001");
-      te::da::From* from = new te::da::From;
-      from->push_back(t);
-
-      te::da::LiteralGeom* lgeom = new te::da::LiteralGeom(new te::gm::Point(-43.6107606714293, -20.3913548070123, 4291, 0));
-
-      te::da::Where* filter = new te::da::Function("st_contains", new te::da::PropertyName("geom"), lgeom);
-
-      te::da::Select select(fields, from, filter, 0);
-
-      te::da::DataSet* dataset = transactor->query(select);
-
-      while(dataset->moveNext())
-      {
-        std::string value = dataset->getAsString("nome");
-        std::cout << "city: " << value << std::endl;
-      }
-
-      delete dataset;
-    }
+//    {
+//      te::da::Field* f = new te::da::Field(new te::da::Function("st_intersects", new te::da::PropertyName("g1.spatial_data"), new te::da::PropertyName("g2.spatial_data")));
+//      te::da::Fields* fields = new te::da::Fields;
+//      fields->push_back(f);
+//
+//      te::da::FromItem* t1 = new te::da::DataSetName("geometry_test", "g1");
+//      te::da::FromItem* t2 = new te::da::DataSetName("geometry_test", "g2");
+//      te::da::From* from = new te::da::From;
+//      from->push_back(t1);
+//      from->push_back(t2);
+//
+//      te::da::EqualTo* e1 = new te::da::EqualTo(new te::da::PropertyName("g1.gid"), new te::da::LiteralInt(1));
+//      te::da::EqualTo* e2 = new te::da::EqualTo(new te::da::PropertyName("g2.gid"), new te::da::LiteralInt(2));
+//      te::da::And* andd = new te::da::And(e1, e2);
+//      te::da::Where* filter = andd;
+//
+//      te::da::Select select(fields, from, filter, 0);
+//
+//      te::da::DataSet* dataset = transactor->query(select);
+//
+//      while(dataset->moveNext())
+//      {
+//        std::string value = dataset->getAsString(0);
+//        std::cout << "st_intersects(g1.spatial_data, g2.spatial_data) = " << value << std::endl;
+//      }
+//
+//      delete dataset;
+//    }
+//
+//// what city contains the given point?
+//    {
+//      te::da::Field* f = new te::da::Field(new te::da::PropertyName("*"));
+//      te::da::Fields* fields = new te::da::Fields;
+//      fields->push_back(f);
+//
+//      te::da::FromItem* t = new te::da::DataSetName("public.br_munic_2001");
+//      te::da::From* from = new te::da::From;
+//      from->push_back(t);
+//
+//      te::da::LiteralGeom* lgeom = new te::da::LiteralGeom(new te::gm::Point(-43.6107606714293, -20.3913548070123, 4291, 0));
+//
+//      te::da::Where* filter = new te::da::Function("st_contains", new te::da::PropertyName("geom"), lgeom);
+//
+//      te::da::Select select(fields, from, filter, 0);
+//
+//      te::da::DataSet* dataset = transactor->query(select);
+//
+//      while(dataset->moveNext())
+//      {
+//        std::string value = dataset->getAsString("nome");
+//        std::cout << "city: " << value << std::endl;
+//      }
+//
+//      delete dataset;
+//    }
 
 // At the end, let's release the transactor and data source instances
     delete transactor;

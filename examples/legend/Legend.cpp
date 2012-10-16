@@ -34,8 +34,9 @@
 #include "Legend.h"
 
 Legend::Legend(QWidget* parent)
-  : m_ds(0), m_t(0), m_rootLayer(0), m_layerModel(0),
-    m_layerView(0), QDialog(parent)
+  : QDialog(parent),
+    m_ds(0), m_t(0), m_rootLayer(0), m_layerModel(0),
+    m_layerView(0) 
 {
   // Get a connection to a data source and a data source name
   std::map<std::string, std::string> connInfo;
@@ -57,7 +58,7 @@ Legend::Legend(QWidget* parent)
   //catalogLoader->loadCatalog();
 
   // Get the dataset names of the data source
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   catalogLoader->getDataSets(datasets);
 
   // Sort the dataset names
@@ -65,7 +66,7 @@ Legend::Legend(QWidget* parent)
 
   size_t numDataSets = datasets.size();
   for (size_t i = 0; i < numDataSets; ++i)
-    dataSetList << (*datasets[i]).c_str();
+    dataSetList << (datasets[i]).c_str();
 
   dataSetList.sort();
 

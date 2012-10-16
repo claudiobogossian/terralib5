@@ -60,7 +60,7 @@ te::gdal::CatalogLoader::~CatalogLoader()
 {
 }
 
-void te::gdal::CatalogLoader::getDataSets(std::vector<std::string*>& datasets)
+void te::gdal::CatalogLoader::getDataSets(boost::ptr_vector<std::string>& datasets)
 {
   te::da::DataSourceCatalog* catalog = initCatalog();
   
@@ -132,6 +132,42 @@ void te::gdal::CatalogLoader::loadCatalog(const bool /*full*/)
     dt->setId(static_cast<unsigned int>(i));
     ds->getCatalog()->add(dt);
   }  
+}
+
+bool te::gdal::CatalogLoader::hasDataSets()
+{
+  DataSource* ds = m_t->getGDALDataSource();
+  
+  if (ds->isDirectory())
+  {
+    boost::filesystem::path path(GetGDALConnectionInfo(ds->getConnectionInfo()));
+    
+    for(boost::filesystem::directory_iterator it(path), itEnd; it != itEnd; ++it)
+    {
+      boost::filesystem::path foundFile = (*it);
+      
+      GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(foundFile.string().c_str(), GA_ReadOnly));
+      
+      if(dataset == 0)
+        continue;
+      
+      GDALClose(dataset);
+      
+      return true;
+    }
+    return false;
+  }
+  else
+  {
+    GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(GetGDALConnectionInfo(ds->getConnectionInfo()).c_str(), GA_ReadOnly));
+    
+    if(dataset == 0)
+      return false;
+    
+    GDALClose(dataset); 
+    
+    return true;
+  }
 }
 
 te::da::DataSourceTransactor* te::gdal::CatalogLoader::getTransactor() const
@@ -245,6 +281,34 @@ void te::gdal::CatalogLoader::getDataSetTypeList(GDALDataset* dataset, std::vect
       (*datasets.rbegin())->setTitle(sdsmap.begin()->second);
   }
 }
+
+void te::gdal::CatalogLoader::getProperties(te::da::DataSetType* dt)
+{
+  assert(dt);
+
+  GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(dt->getName().c_str(), GA_ReadOnly));
+  
+  if (!dataset)
+    throw Exception(TR_GDAL("GDAL couldn't retrieve the dataset properties."));
+  
+  te::rst::Grid* grid = GetGrid(dataset);
+  
+  std::vector<te::rst::BandProperty*> bprops;
+  
+  GetBandProperties(dataset, bprops);
+  
+  std::map<std::string, std::string> rinfo;
+  
+  rinfo["URI"] = dataset->GetDescription();
+  
+  te::rst::RasterProperty* rp = new te::rst::RasterProperty(grid, bprops, rinfo);
+ 
+  dt->add(rp);
+  
+  GDALClose(dataset);
+  
+}
+
 
 te::da::DataSetType* te::gdal::CatalogLoader::getDataSetType(GDALDataset* dataset)
 {
