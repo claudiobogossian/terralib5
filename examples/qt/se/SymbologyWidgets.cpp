@@ -163,6 +163,12 @@ void BasicWidgets()
   int argc = 1;
   QApplication app(argc, 0);
 
+  // Adjusting icons theme
+  QString spaths = std::string(ICON_THEME_PATH).c_str();
+  QStringList paths = spaths.split(";");
+  QIcon::setThemeName(ICON_THEME);
+  QIcon::setThemeSearchPaths(paths);
+
   SymbolEditor();
 
   SymbolizerWidgets();
