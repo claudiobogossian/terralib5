@@ -130,7 +130,7 @@ public Q_SLOTS:
   void setMouseOperationToAddObjectSelectionSlot();
   void setMouseOperationToToggleObjectSelectionSlot();
   void setMouseOperationToTooltipSlot();
-  void clearTooltipPixmap();
+  //void clearTooltipPixmap();
   void showRootFolderSlot();
   void initTemporal();
   void printSlot();
@@ -181,7 +181,7 @@ private:
   QAction* m_fitAllLayersAction;    //!< Action to fit all layers.
   QAction* m_srsAction;             //!< Action to change srid.
 
-  QPixmap* m_tooltipDisplayPixmap;               //!< tootip display pixmap
+  //QPixmap* m_tooltipDisplayPixmap;               //!< tootip display pixmap
   QRect    m_tooltipRect;                        //!< tootip rect
 
   QPixmap* m_temporalVectorialDisplayPixmap;     //!< This pixmap will be the result of all temporal drawing, i. e., the result of drawing all visible vectorial layers.

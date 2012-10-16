@@ -33,9 +33,10 @@
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
-te::qt::widgets::Pan::Pan(te::qt::widgets::MapDisplay* display, QObject* parent) 
-  : AbstractTool(display, parent),
-    m_panStarted(false)
+te::qt::widgets::Pan::Pan(te::qt::widgets::MapDisplay* display, const QCursor& cursor, const QCursor& actionCursor, QObject* parent) 
+  : AbstractTool(display, parent, cursor),
+    m_panStarted(false),
+    m_actionCursor(actionCursor)
 {
 }
 
@@ -59,6 +60,10 @@ bool te::qt::widgets::Pan::mousePressEvent(QMouseEvent* e)
   m_panStarted = true;
   m_origin = e->pos();
   m_delta *= 0;
+
+  // Adjusting the action cursor
+  if(m_actionCursor.shape() != Qt::BlankCursor)
+    m_display->setCursor(m_actionCursor);
 
   return true;
 }
@@ -94,6 +99,9 @@ bool te::qt::widgets::Pan::mouseMoveEvent(QMouseEvent* e)
 bool te::qt::widgets::Pan::mouseReleaseEvent(QMouseEvent* e)
 {
   m_panStarted = false;
+
+  // Roll back the default tool cursor
+  m_display->setCursor(m_cursor);
 
   if(e->button() != Qt::LeftButton || m_delta.isNull())
     return false;

@@ -202,14 +202,14 @@ void MainWindow::addLayer(const QString& path)
 void MainWindow::onPanTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Pan(m_display, this);
+  m_tool = new te::qt::widgets::Pan(m_display, Qt::OpenHandCursor, Qt::ClosedHandCursor, this);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onZoomAreaTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomArea(m_display, this);
+  m_tool = new te::qt::widgets::ZoomArea(m_display, Qt::CrossCursor, this);
   m_display->installEventFilter(m_tool);
 }
 

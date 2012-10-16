@@ -54,14 +54,17 @@ namespace te
           //@{
 
           /*!
-            \brief It constructs a pan tool associated with the given map display.
+            \brief It constructs a pan tool associated with the given map display and with the specified cursors.
 
             \param display The map display associated with the tool.
+            \param cursor The default tool cursor.
+            \param actionCursor An optional cursor to be used during the pan user action. If Qt::BlankCursor, it will be NOT modified.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
+            \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          Pan(MapDisplay* display, QObject* parent = 0);
+          Pan(MapDisplay* display, const QCursor& cursor, const QCursor& actionCursor = Qt::BlankCursor, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~Pan();
@@ -112,9 +115,10 @@ namespace te
 
         protected:
 
-          bool m_panStarted; //!< Flag that indicates if pan operation was started.
-          QPoint m_origin;   //!< Origin point on mouse pressed.
-          QPoint m_delta;    //!< Difference between pressed point and destination point on mouse move.
+          bool m_panStarted;      //!< Flag that indicates if pan operation was started.
+          QPoint m_origin;        //!< Origin point on mouse pressed.
+          QPoint m_delta;         //!< Difference between pressed point and destination point on mouse move.
+          QCursor m_actionCursor; //!< An optional cursor to be used during the pan user action.
 
       };
 

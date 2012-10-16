@@ -116,14 +116,14 @@ void te::qt::widgets::BasicStrokeWidget::initialize()
   m_strokeCapStyleButtonGroup->addButton(m_ui->m_roundCapPushButton, te::map::RoundCap);
   m_strokeCapStyleButtonGroup->addButton(m_ui->m_squareCapPushButton, te::map::SquareCap);
 
-  // For now: hard-coded icon paths.
-  m_ui->m_miterJoinPushButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/miterjoin.png"));
-  m_ui->m_roundJoinPushButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/roundjoin.png"));
-  m_ui->m_bevelJoinPushButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/beveljoin.png"));
+  // Setup icons
+  m_ui->m_miterJoinPushButton->setIcon(QIcon::fromTheme("stroke-join-miter"));
+  m_ui->m_roundJoinPushButton->setIcon(QIcon::fromTheme("stroke-join-round"));
+  m_ui->m_bevelJoinPushButton->setIcon(QIcon::fromTheme("stroke-join-bevel"));
 
-  m_ui->m_buttCapPushButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/buttcap.png"));
-  m_ui->m_roundCapPushButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/roundcap.png"));
-  m_ui->m_squareCapPushButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/squarecap.png"));
+  m_ui->m_buttCapPushButton->setIcon(QIcon::fromTheme("stroke-cap-butt"));
+  m_ui->m_roundCapPushButton->setIcon(QIcon::fromTheme("stroke-cap-round"));
+  m_ui->m_squareCapPushButton->setIcon(QIcon::fromTheme("stroke-cap-square"));
 }
 
 void te::qt::widgets::BasicStrokeWidget::updateUi()
