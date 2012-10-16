@@ -250,7 +250,7 @@ namespace te
 
             unsigned int m_y2; //!< Point Y2 coord.
 
-            double m_featureValue; //!< Interest points feature value.
+            double m_weight; //!< Matched interest points weight (valid range: positive (non-zero) real values.
             
             MatchedInterestPointsT() {};
             
@@ -260,20 +260,20 @@ namespace te
               m_y1 = other.m_y1;
               m_x2 = other.m_x2;
               m_y2 = other.m_y2;
-              m_featureValue = other.m_featureValue;
+              m_weight = other.m_weight;
             };
             
             MatchedInterestPointsT( const unsigned int& x1, const unsigned int& y1,
               const unsigned int& x2, const unsigned int& y2,
-              const double& featureValue ) : m_x1( x1 ), m_y1( y1 ),
+              const double& weight ) : m_x1( x1 ), m_y1( y1 ),
               m_x2( x2 ), m_y2( y2 ),
-              m_featureValue( featureValue ) {};
+              m_weight( weight ) {};
             
             ~MatchedInterestPointsT() {};
             
             bool operator<( const MatchedInterestPointsT& other ) const
             {
-              return ( m_featureValue < other.m_featureValue );
+              return ( m_weight < other.m_weight );
             };
             
             const MatchedInterestPointsT& operator=( const MatchedInterestPointsT& other )
@@ -282,7 +282,7 @@ namespace te
               m_y1 = other.m_y1;
               m_x2 = other.m_x2;
               m_y2 = other.m_y2;
-              m_featureValue = other.m_featureValue;
+              m_weight = other.m_weight;
               return other;
             };            
         };        
@@ -876,7 +876,7 @@ namespace te
           \param matrix The given matrix.
         */
         template < typename ElementT >
-        void printMatrix( const te::rp::Matrix< ElementT >& matrix )
+        static void printMatrix( const te::rp::Matrix< ElementT >& matrix )
         {
           std::cout << std::endl;
           
@@ -886,7 +886,8 @@ namespace te
             
             for( unsigned int col = 0 ; col < matrix.getColumnsNumber() ; ++col )
             {
-              std::cout << " " << matrix( line, col );
+              std::cout << " ";
+              std::cout << matrix( line, col );
             }
             
             std::cout << "]";
