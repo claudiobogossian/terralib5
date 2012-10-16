@@ -26,6 +26,7 @@
 #include <QPrintDialog>
 #include <QPrinter>
 #include <QUrl>
+#include <QToolTip>
 
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(QSize(w, h), parent, f),
@@ -36,8 +37,8 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   setAcceptDrops(true);
 
-  m_tooltipDisplayPixmap = new QPixmap(w, h);
-  clearTooltipPixmap();
+  //m_tooltipDisplayPixmap = new QPixmap(w, h);
+  //clearTooltipPixmap();
 
   m_temporalVectorialDisplayPixmap = new QPixmap(w, h);
   m_temporalVectorialDisplayPixmap->fill(QColor(255, 255, 255, 0));
@@ -1081,7 +1082,7 @@ void MyDisplay::paintEvent(QPaintEvent* e)
       QRect rec = e->rect();
       painter.drawPixmap(rec, *m_temporalVectorialDisplayPixmap, rec);
       painter.drawPixmap(rec, *m_temporalImageDisplayPixmap, rec);
-      painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
+      //painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
     }
   }
   else // fazendo resize do display com os pixmaps temporais
@@ -1095,7 +1096,7 @@ void MyDisplay::paintEvent(QPaintEvent* e)
     QPainter painter(this);
     painter.drawPixmap(m_resizeRec, *m_temporalVectorialDisplayPixmap, m_resizeWRec);
     painter.drawPixmap(m_resizeRec, *m_temporalImageDisplayPixmap, m_resizeWRec);
-    painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
+    //painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
   }
 }
 
@@ -1153,7 +1154,7 @@ void MyDisplay::setExtent()
     canvas->clear();
   }
 
-  clearTooltipPixmap();
+  //clearTooltipPixmap();
   if(m_timeSlider)
     clearTemporalPixmaps(m_timeSlider->getLayers());
 }
@@ -1450,7 +1451,6 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
 
     QString val;
     std::vector<QString> values;
-    std::vector<QString>::reverse_iterator its;
     std::vector<int>::iterator it;
     dataSet->moveBeforeFirst();
     while(dataSet->moveNext())
@@ -1518,45 +1518,66 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       delete g;
     }
     delete poly;
+////////////////////////////////////////////////////////////
+    //int w = m_displayPixmap->width();
+    //int h = m_displayPixmap->height();
+    //if(m_tooltipDisplayPixmap->width() != w || m_tooltipDisplayPixmap->height() != h)
+    //{
+    //  delete m_tooltipDisplayPixmap;
+    //  m_tooltipDisplayPixmap = new QPixmap(w, h);
+    //  clearTooltipPixmap();
+    //  m_tooltipRect = QRect();
+    //}
 
-    int w = m_displayPixmap->width();
-    int h = m_displayPixmap->height();
-    if(m_tooltipDisplayPixmap->width() != w || m_tooltipDisplayPixmap->height() != h)
-    {
-      delete m_tooltipDisplayPixmap;
-      m_tooltipDisplayPixmap = new QPixmap(w, h);
-      clearTooltipPixmap();
-      m_tooltipRect = QRect();
-    }
+    //QPainter painter(m_tooltipDisplayPixmap);
+    //if(m_tooltipRect.isValid())
+    //{
+    //  painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+    //  painter.setPen(Qt::black);
+    //  painter.setBrush(Qt::black);
+    //  painter.drawRect(m_tooltipRect);
+    //  painter.setCompositionMode(QPainter::CompositionMode_Source);
+    //  m_tooltipRect = QRect();
+    //}
 
-    QPainter painter(m_tooltipDisplayPixmap);
-    if(m_tooltipRect.isValid())
-    {
-      painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-      painter.setPen(Qt::black);
-      painter.setBrush(Qt::black);
-      painter.drawRect(m_tooltipRect);
-      painter.setCompositionMode(QPainter::CompositionMode_Source);
-      m_tooltipRect = QRect();
-    }
+    //if(values.empty() == false)
+    //{
+    //  QPoint mp(p);
+    //  std::vector<QString>::reverse_iterator its;
+    //  for(its = values.rbegin(); its != values.rend(); ++its)
+    //  {
+    //    QRect trect;
+    //    QRect rect(0, 0, 1000, 40);
+    //    QPoint pp(mp.x(), mp.y() + 7);
+    //    rect.moveCenter(pp);
+    //    painter.drawText(rect, Qt::AlignHCenter, *its, &trect);
+    //    trect.setLeft(trect.left() - 2);
+    //    trect.setWidth(trect.width() + 3);
+    //    m_tooltipRect = m_tooltipRect.united(trect);
+    //    mp.setY(mp.y() - trect.height());
+    //  }
+    //}
+    //repaint();
+///////////////////////////////////////////////////////////
+
 
     if(values.empty() == false)
     {
-      QPoint mp(p);
-      for(its = values.rbegin(); its != values.rend(); ++its)
+      QString s;
+      std::vector<QString>::iterator it = values.begin();
+      s = *it;
+      it++;
+      while(it != values.end())
       {
-        QRect trect;
-        QRect rect(0, 0, 1000, 40);
-        QPoint pp(mp.x(), mp.y() + 7);
-        rect.moveCenter(pp);
-        painter.drawText(rect, Qt::AlignHCenter, *its, &trect);
-        trect.setLeft(trect.left() - 2);
-        trect.setWidth(trect.width() + 3);
-        m_tooltipRect = m_tooltipRect.united(trect);
-        mp.setY(mp.y() - trect.height());
+        s += "\n" + *it;
+        it++;
       }
+
+      if(s != QToolTip::text())
+        QToolTip::showText(mapToGlobal(p), s);
     }
-    repaint();
+    else
+      QToolTip::hideText();
   }
 }
 
@@ -2000,10 +2021,10 @@ void MyDisplay::print(QPrinter* printer)
   //unsetWaitCursor();
 }
 
-void MyDisplay::clearTooltipPixmap()
-{
-  m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
-}
+//void MyDisplay::clearTooltipPixmap()
+//{
+//  m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
+//}
 
 void MyDisplay::getLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList)
 {
