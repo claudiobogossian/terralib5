@@ -54,14 +54,16 @@ namespace te
           //@{
 
           /*!
-            \brief It constructs a zoom area tool associated with the given map display.
+            \brief It constructs a zoom area tool associated with the given map display and with the specified cursor.
 
             \param display The map display associated with the tool.
+            \param cursor The tool cursor.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
+            \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          ZoomArea(MapDisplay* display, QObject* parent = 0);
+          ZoomArea(MapDisplay* display, const QCursor& cursor, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~ZoomArea();

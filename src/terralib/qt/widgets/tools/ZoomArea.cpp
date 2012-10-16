@@ -31,8 +31,8 @@
 // Qt
 #include <QtGui/QMouseEvent>
 
-te::qt::widgets::ZoomArea::ZoomArea(te::qt::widgets::MapDisplay* display, QObject* parent) 
-  : RubberBand(display, parent),
+te::qt::widgets::ZoomArea::ZoomArea(te::qt::widgets::MapDisplay* display, const QCursor& cursor, QObject* parent) 
+  : RubberBand(display, parent, cursor),
     m_zoomStarted(false)
 {
 }
