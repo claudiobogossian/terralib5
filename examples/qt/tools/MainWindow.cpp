@@ -149,21 +149,20 @@ void MainWindow::addLayer(const QString& path)
   cl->loadCatalog();
 
   // Get the number of data set types that belongs to the data source
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   transactor->getCatalogLoader()->getDataSets(datasets);
   assert(!datasets.empty());
 
   // Gets DataSet Type
-  std::string dsName = *datasets[0];
-  te::da::DataSetType* dt = cl->getDataSetType(dsName);
+  te::da::DataSetType* dt = cl->getDataSetType(datasets[0]);
 
   // Default geometry property
   te::gm::GeometryProperty* geomProperty = dt->getDefaultGeomProperty();
 
   // Creates a Layer
-  te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(ms_id++), dsName);
+  te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(static_cast<unsigned int>(ms_id++)), datasets[0]);
   layer->setDataSource(ds);
-  layer->setDataSetName(dsName);
+  layer->setDataSetName(datasets[0]);
   layer->setVisibility(te::map::VISIBLE);
 
   // Creates a hard-coded style
@@ -203,14 +202,14 @@ void MainWindow::addLayer(const QString& path)
 void MainWindow::onPanTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Pan(m_display, this);
+  m_tool = new te::qt::widgets::Pan(m_display, Qt::OpenHandCursor, Qt::ClosedHandCursor, this);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onZoomAreaTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomArea(m_display, this);
+  m_tool = new te::qt::widgets::ZoomArea(m_display, Qt::CrossCursor, this);
   m_display->installEventFilter(m_tool);
 }
 

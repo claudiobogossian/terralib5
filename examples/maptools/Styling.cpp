@@ -278,12 +278,12 @@ te::map::Layer* CreateLayer(const std::string& path)
   catalogLoader->loadCatalog();
 
   // Gets the number of data set types that belongs to the data source
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   transactor->getCatalogLoader()->getDataSets(datasets);
   assert(!datasets.empty());
 
   // Gets the first dataset
-  std::string dataSetName(*datasets[0]);
+  std::string dataSetName(datasets[0]);
   te::da::DataSetType* dt = catalogLoader->getDataSetType(dataSetName);
   assert(dt->hasGeom());
 
@@ -300,7 +300,6 @@ te::map::Layer* CreateLayer(const std::string& path)
   te::map::LayerRenderer* r = new te::map::LayerRenderer();
   layer->setRenderer(r);
 
-  te::common::FreeContents(datasets);
   delete catalogLoader;
   delete transactor;
 

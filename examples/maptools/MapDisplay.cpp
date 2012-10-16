@@ -36,7 +36,7 @@ void MapDisplay()
     cl->loadCatalog();
 
     // Get the number of data set types that belongs to the data source
-    std::vector<std::string*> datasets;
+    boost::ptr_vector<std::string> datasets;
     transactor->getCatalogLoader()->getDataSets(datasets);
 
     te::qt::widgets::MapDisplay* mapDisplay = new te::qt::widgets::MapDisplay(QSize(700, 500));
@@ -53,10 +53,9 @@ void MapDisplay()
     std::vector<std::string*>::iterator it;
     std::list<te::map::AbstractLayer*> layerList;
     int id = 0;
-    for(it = datasets.begin(); it != datasets.end(); ++it)
+    for(unsigned int i=0; i<datasets.size(); ++i)
     {
-      const std::string* s = *it;
-      te::da::DataSetType* dt = cl->getDataSetType(*s);
+      te::da::DataSetType* dt = cl->getDataSetType(datasets[i]);
       if(!dt->hasGeom())
         continue;
 
@@ -66,9 +65,9 @@ void MapDisplay()
       delete e;
       
       // Creates a Layer
-      te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(++id), *s);
+      te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(++id), datasets[i]);
       layer->setDataSource(ds);
-      layer->setDataSetName(*s);
+      layer->setDataSetName(datasets[i]);
       layer->setVisibility(te::map::VISIBLE);
       layer->setStyle(styles[dt->getDefaultGeomProperty()->getGeometryType()]);
 

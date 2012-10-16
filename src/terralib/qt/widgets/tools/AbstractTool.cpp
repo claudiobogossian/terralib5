@@ -33,15 +33,25 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::AbstractTool::AbstractTool(te::qt::widgets::MapDisplay* display, QObject* parent) 
+te::qt::widgets::AbstractTool::AbstractTool(te::qt::widgets::MapDisplay* display, QObject* parent, const QCursor& cursor)
   : QObject(parent),
-    m_display(display)
+    m_display(display),
+    m_cursor(cursor)
 {
-  assert(display);
+  assert(m_display);
+
+  // Stores the current map display cursor
+  m_oldCursor = m_display->cursor();
+
+  // Adjusts the map display cursor based on tool cursor
+  if(m_cursor.shape() != Qt::BlankCursor)
+    m_display->setCursor(m_cursor);
 }
 
 te::qt::widgets::AbstractTool::~AbstractTool()
 {
+  // Roll back the old map display cursor
+  m_display->setCursor(m_oldCursor);
 }
 
 bool te::qt::widgets::AbstractTool::eventFilter(QObject* watched, QEvent* e)

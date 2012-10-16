@@ -22,7 +22,7 @@
 
 bool generatePNG = true;
 
-te::map::RasterLayer* CreateLayer(const std::string& path)
+te::map::RasterLayer* CreateRasterLayer(const std::string& path)
 {
   // Connection string to a shape file
   std::map<std::string, std::string> connInfo;
@@ -40,12 +40,12 @@ te::map::RasterLayer* CreateLayer(const std::string& path)
   catalogLoader->loadCatalog();
 
   // Gets the number of data set types that belongs to the data source
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   transactor->getCatalogLoader()->getDataSets(datasets);
   assert(!datasets.empty());
 
   // Gets the first dataset
-  std::string dataSetName(*datasets[0]);
+  std::string dataSetName(datasets[0]);
   te::da::DataSetType* dt = catalogLoader->getDataSetType(dataSetName);
   te::da::DataSet* ds = transactor->getDataSet(dataSetName);
   te::rst::Raster* raster = ds->getRaster();
@@ -63,7 +63,6 @@ te::map::RasterLayer* CreateLayer(const std::string& path)
   te::map::RasterLayerRenderer* r = new te::map::RasterLayerRenderer();
   layer->setRenderer(r);
 
-  te::common::FreeContents(datasets);
   delete catalogLoader;
   delete transactor;
 
@@ -452,7 +451,7 @@ void DrawRasterStyledLayers()
   try
   {
     // Creates a layer of raster
-    te::map::RasterLayer* rasterLayer = CreateLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
+    te::map::RasterLayer* rasterLayer = CreateRasterLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
 
     // Get the box to be painted
     te::gm::Envelope* extent = new te::gm::Envelope(*rasterLayer->getExtent());

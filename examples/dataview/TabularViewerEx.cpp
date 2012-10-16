@@ -52,14 +52,12 @@ te::da::DataSet* getDataSet(te::da::DataSource* ds)
   te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
 
 // now retrieve the name of the datasets
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
 
   cloader->getDataSets(datasets);
 
-  const std::string* datasetName = *datasets.begin();
-
 // retrieve the dataset by its name
-  te::da::DataSet* dataset = transactor->getDataSet(*datasetName);
+  te::da::DataSet* dataset = transactor->getDataSet(datasets[0]);
 
   delete cloader;
 

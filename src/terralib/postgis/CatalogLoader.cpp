@@ -59,7 +59,7 @@ te::pgis::CatalogLoader::~CatalogLoader()
 {
 }
 
-void te::pgis::CatalogLoader::getDataSets(std::vector<std::string*>& datasets)
+void te::pgis::CatalogLoader::getDataSets(boost::ptr_vector<std::string>& datasets)
 {
   std::auto_ptr<te::da::DataSet> tables(getDataSetTypes());
  
@@ -298,6 +298,35 @@ void te::pgis::CatalogLoader::loadCatalog(const bool full)
   loadSequences();
 }
 
+bool te::pgis::CatalogLoader::hasDataSets()
+{
+  std::string sql("SELECT COUNT (pg_class.oid) "
+                  "FROM pg_class, pg_namespace "
+                  "WHERE pg_class.relname !~ '^pg_' "
+                  "AND pg_class.relname NOT IN ('spatial_ref_sys', 'geometry_columns', 'geography_columns', 'raster_columns', 'raster_overviews') "
+                  "AND pg_class.relkind in ('r','v') "
+                  "AND pg_class.relnamespace = pg_namespace.oid "
+                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology')");
+  
+  PGresult* result = PQexec(m_t->getConnection()->getConn(), sql.c_str());
+  
+  if(PQresultStatus(result) != PGRES_TUPLES_OK)
+  {
+    std::string errmsg(TR_PGIS("Could not find the tables the following error: "));
+    errmsg += PQerrorMessage(m_t->getConnection()->getConn());
+    PQclear(result);
+    throw Exception(errmsg);
+  }
+  
+  const char* ndatasets = PQgetvalue(result, 0, 0);
+  
+  int ndts = atoi(ndatasets);
+
+  PQclear(result);
+  
+  return ndts > 0;
+}
+
 bool te::pgis::CatalogLoader::datasetExists(const std::string& name)
 {
   std::string tname, sname;
@@ -403,7 +432,7 @@ te::da::DataSet* te::pgis::CatalogLoader::getDataSetTypes()
                   "AND pg_class.relname NOT IN ('spatial_ref_sys', 'geometry_columns', 'geography_columns', 'raster_columns', 'raster_overviews') "
                   "AND pg_class.relkind in ('r','v') "
                   "AND pg_class.relnamespace = pg_namespace.oid "
-                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog')");
+                  "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology')");
 
   return m_t->query(sql);
 }

@@ -68,12 +68,12 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   te::map::FolderLayer *rjFolderLayer = new te::map::FolderLayer("Rio de Janeiro", "Rio de Janeiro", brFolderLayer);
 
 // create the layers
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   loader->getDataSets(datasets);
   int size = datasets.size();
   for(int i = 0; i < size; ++i)
   {
-    std::string& id = (*datasets[i]);
+    std::string& id = (datasets[i]);
     if(id.find("public.br_focos") != std::string::npos ||
       id.find("public.br_munic") != std::string::npos)
     {
@@ -190,7 +190,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   size = datasets.size();
   for(int i = 0; i < size; ++i)
   {
-    std::string& id = (*datasets[i]);
+    std::string& id = (datasets[i]);
     if(id.find("hidro_") == std::string::npos)
       continue;
     te::da::DataSetType* dst = loader->getDataSetType(id, true);

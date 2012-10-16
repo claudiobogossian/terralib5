@@ -264,11 +264,11 @@ te::da::DataSetType* te::mem::DataSource::getDataSetType(const std::string& name
   return static_cast<te::da::DataSetType*>(it->second->getType()->clone());
 }
 
-std::vector<std::string*> te::mem::DataSource::getDataSets() const
+boost::ptr_vector<std::string> te::mem::DataSource::getDataSets() const
 {
   LockRead l(this);
 
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
 
   boost::ptr_map<std::string, DataSet>::const_iterator it = m_datasets.begin();
   boost::ptr_map<std::string, DataSet>::const_iterator itend = m_datasets.end();
@@ -289,6 +289,11 @@ bool te::mem::DataSource::datasetExists(const std::string& name) const
   boost::ptr_map<std::string, DataSet>::const_iterator it = m_datasets.find(name);
 
   return it != m_datasets.end();
+}
+
+bool te::mem::DataSource::hasDataSets()
+{
+  return m_ndatasets > 0;
 }
 
 void te::mem::DataSource::remove(const std::string& datasetName)

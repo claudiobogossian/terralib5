@@ -111,13 +111,13 @@ void SelectLayer::populeWidgets(te::da::DataSource* ds)
     te::da::DataSourceCatalog* catalog = ds->getCatalog();
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
     te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
-    std::vector<std::string*> names;
+    boost::ptr_vector<std::string> names;
     loader->getDataSets(names);
     int size = names.size();
     QStringList items;
     for(int i = 0; i < size; ++i)
     {
-      std::string& id = (*names[i]);
+      std::string& id = (names[i]);
       QString s = id.c_str();
       m_layerNameComboBox->addItem(s);
     }
@@ -156,17 +156,16 @@ void SelectLayer::connectionStringEditedSlot()
     }
     dsInfo = cs;
     ds->open(dsInfo);
-
-    te::da::DataSourceCatalog* catalog = ds->getCatalog();
+    
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
     te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
-    std::vector<std::string*> names;
+    boost::ptr_vector<std::string> names;
     loader->getDataSets(names);
     int size = names.size();
     QStringList items;
     for(int i = 0; i < size; ++i)
     {
-      std::string& id = (*names[i]);
+      std::string& id = (names[i]);
       QString s = id.c_str();
       m_layerNameComboBox->addItem(s);
     }

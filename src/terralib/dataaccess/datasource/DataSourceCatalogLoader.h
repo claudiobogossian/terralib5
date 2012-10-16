@@ -36,6 +36,7 @@
 // Boost
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -83,7 +84,7 @@ namespace te
 
           \note The caller of this method will take the ownership of the strings in the output vector.
         */
-        virtual void getDataSets(std::vector<std::string*>& datasets) = 0;
+        virtual void getDataSets(boost::ptr_vector<std::string>& datasets) = 0;
 
         /*!
           \brief It searches for information about a given dataset in the data source.
@@ -110,6 +111,17 @@ namespace te
                 if you want that information you should call getExtent method.
         */
         virtual DataSetType* getDataSetType(const std::string& datasetName, const bool full = false) = 0;
+      
+        /*!
+         \brief It retrieves the properties of the dataset.
+         
+         \param dt The dataset we are looking for the properties.
+         
+         \exception Exception It throws an exception if something goes wrong during data source search.
+         
+         \post The dataset will contain information only about properties (no pk, no uk nor check-constraints).
+         */
+        virtual void getProperties(DataSetType* dt) = 0;
 
         /*!
           \brief It retrieves the dataset's primary key.
@@ -237,6 +249,13 @@ namespace te
           \note Calling this method will refresh any previously loaded catalog information.
         */
         virtual void loadCatalog(const bool full = false) = 0;
+      
+        /*!
+         \brief It return true if the data source has any dataset.
+         
+         \return True if the data source has datasets otherwise, false.
+         */
+        virtual bool hasDataSets() = 0;
 
         /*!
           \brief It checks if a dataset with the given name already exists in the data source.

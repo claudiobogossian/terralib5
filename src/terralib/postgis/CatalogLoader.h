@@ -56,7 +56,7 @@ namespace te
 
         ~CatalogLoader();
 
-        void getDataSets(std::vector<std::string*>& datasets);
+        void getDataSets(boost::ptr_vector<std::string>& datasets);
 
         te::da::DataSetType* getDataSetType(const std::string& datasetName, const bool full = false);
 
@@ -81,6 +81,8 @@ namespace te
         void loadCatalog(const bool full = false);
 
         bool datasetExists(const std::string& name);
+      
+        bool hasDataSets();
 
         bool primarykeyExists(const std::string& name);
 

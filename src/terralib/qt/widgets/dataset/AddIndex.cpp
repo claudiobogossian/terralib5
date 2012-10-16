@@ -44,7 +44,7 @@ te::qt::widgets::AddIndex::AddIndex(te::da::DataSource* ds, QWidget* parent)
   m_catalogLoader->loadCatalog();
 
   // Get the dataset names of the data source
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   m_catalogLoader->getDataSets(datasets);
 
   // Fill alphabetically the dataSetCombobox with the dataset names of the data source
@@ -52,7 +52,7 @@ te::qt::widgets::AddIndex::AddIndex(te::da::DataSource* ds, QWidget* parent)
 
   size_t numDataSets = datasets.size();
   for (size_t i = 0; i < numDataSets; ++i)
-    dataSetList << (*datasets[i]).c_str();
+    dataSetList << (datasets[i]).c_str();
 
   dataSetList.sort();
   dataSetComboBox->addItems(dataSetList);

@@ -31,6 +31,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QCursor>
 
 // Forward declarations
 class QMouseEvent;
@@ -61,14 +62,16 @@ namespace te
           //@{
 
           /*!
-            \brief It constructs a tool associated with the given map display.
+            \brief It constructs a tool associated with the given map display and with the specified cursor.
 
             \param display The map display associated with the tool.
             \param parent The tool's parent.
+            \param cursor The default tool cursor.
 
             \note The tool will NOT take the ownership of the given pointers.
+            \note If the given cursor is different of Qt::BlankCursor, it will be setted on map display.
           */
-          AbstractTool(MapDisplay* display, QObject* parent = 0);
+          AbstractTool(MapDisplay* display, QObject* parent = 0, const QCursor& cursor = Qt::BlankCursor);
 
           /*! \brief Destructor. */
           virtual ~AbstractTool();
@@ -173,6 +176,8 @@ namespace te
         protected:
 
           MapDisplay* m_display; //!< The map display associated with the tool.
+          QCursor m_cursor;      //!< The default tool cursor.
+          QCursor m_oldCursor;   //!< The cursor that has been used on map display before of this tool. Setted again on tool destruction.
       };
 
     } // end namespace widgets

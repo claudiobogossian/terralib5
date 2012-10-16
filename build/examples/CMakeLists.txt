@@ -34,6 +34,9 @@ add_definitions(
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
 )
 
+set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
+set (ICON_THEME_PATH "" CACHE STRING "Lists of directories that contains icon themes.")
+
 option (EXAMPLE_COLORBAR "Build colorbar example." ON)  
 option (EXAMPLE_COMMON "Build common example." ON)  
 option (EXAMPLE_PLUGIN_HELLOWORLD "Build plugin hello world example." ON)  

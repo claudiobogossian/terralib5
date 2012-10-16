@@ -181,14 +181,14 @@ void DataSource()
 
     te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
 
-    std::vector<std::string*> datasets;
+    boost::ptr_vector<std::string> datasets;
 
     cloader->getDataSets(datasets);
 
     std::cout << "List of raster datasets in " << connInfo["URI"] << ":";
     for(size_t i=0; i<datasets.size(); ++i)
     {
-      te::da::DataSet* ds = transactor->getDataSet(*datasets[i]);
+      te::da::DataSet* ds = transactor->getDataSet(datasets[i]);
       te::rst::Raster* rst = ds->getRaster(0);
       std::cout << std::endl;
       std::cout << rst->toString();

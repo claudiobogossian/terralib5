@@ -28,14 +28,11 @@ void CopyingData()
 // let's find out the information in the data source!
   clOrigin->loadCatalog(); //only the schemas
 
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
 
   clOrigin->getDataSets(datasets);
 
-  std::vector<std::string*>::iterator const it = datasets.begin();
-  const std::string* ss = *it;
-
-  te::da::DataSet* datasetOrigin = tOrigin->getDataSet(*ss);
+  te::da::DataSet* datasetOrigin = tOrigin->getDataSet(datasets[0]);
   te::da::DataSetType* dtOrigin = datasetOrigin->getType();
 
 // let's open the destination datasource

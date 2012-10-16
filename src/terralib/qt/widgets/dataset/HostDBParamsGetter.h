@@ -52,8 +52,10 @@ namespace te
       class TEQTWIDGETSEXPORT HostDBParamsGetter : public QWidget, public te::map::DSParamsGetter
       {
       public:
+        
+        HostDBParamsGetter(QWidget* parent=0);
 
-        HostDBParamsGetter(QWidget* parent=0, const std::map<std::string, std::string>& info = std::map<std::string, std::string>());
+        HostDBParamsGetter(QWidget* parent, const std::map<std::string, std::string>& info);
 
         std::map<std::string, std::string> getParams() const;
 

@@ -52,9 +52,11 @@ namespace te
 
         ~DataSourceCatalogLoader();
 
-        void getDataSets(std::vector<std::string*>& datasets);
+        void getDataSets(boost::ptr_vector<std::string>& datasets);
 
         te::da::DataSetType* getDataSetType(const std::string& datasetName, const bool full = false);
+      
+        void getProperties(te::da::DataSetType* dt);
 
         void getPrimaryKey(te::da::DataSetType* dt);
 
@@ -75,6 +77,8 @@ namespace te
         te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp);
 
         void loadCatalog(const bool full = false);
+      
+        bool hasDataSets();
 
         bool datasetExists(const std::string& name);
 

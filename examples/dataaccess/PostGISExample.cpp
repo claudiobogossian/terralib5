@@ -22,6 +22,12 @@ void PostGISExample()
     connInfo["password"] = "sitim110";
     connInfo["dbname"] = "terralib4";
     connInfo["connect_timeout"] = "4"; 
+    
+//    connInfo["host"] = "localhost" ;   // or "localhost";
+//    connInfo["user"] = "postgres";
+//    connInfo["password"] = "";
+//    connInfo["dbname"] = "bdimages";
+//    connInfo["connect_timeout"] = "4";     
 
 // create a data source using the data source factory
     te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");

@@ -145,7 +145,7 @@ void DataGrid::serverComboBoxChanged(const QString& server)
   m_catalogLoader->loadCatalog();
 
   // Get the dataset names of the data source
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
   m_catalogLoader->getDataSets(datasets);
 
   dataSetComboBox->clear();
@@ -155,7 +155,7 @@ void DataGrid::serverComboBoxChanged(const QString& server)
 
   size_t numDataSets = datasets.size();
   for (size_t i = 0; i < numDataSets; ++i)
-    dataSetList << (*datasets[i]).c_str();
+    dataSetList << (datasets[i]).c_str();
 
   dataSetList.sort();
   dataSetComboBox->addItems(dataSetList);

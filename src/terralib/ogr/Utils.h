@@ -123,6 +123,19 @@ namespace te
       \note The caller of this function will take the ownership of the returned OGR Spatial Reference System.
     */
     TEOGREXPORT OGRSpatialReference* Convert2OGRProjection(int srid);
+    
+    /*!
+     \brief It inserts a OGR Feature Definition to TerraLib DataSet Type
+     
+     \param featDef A valid OGR Feature Definition.
+     \param dt      Pointer to a TerraLib dataset type previously created. Do not pass NULL.
+     
+     \exception Exception It throws an exception if the feature definition can not be converted.
+     
+     \note It uses the method that converts a OGR Field Definition to TerraLib Property Type. 
+     \note It uses the method that converts a OGR Geometry Type to TerraLib Geometry Type.
+     */
+    TEOGREXPORT void Convert2TerraLib(OGRFeatureDefn* featDef, te::da::DataSetType* dt);
 
     /*!
       \brief It converts the OGR Feature Definition to TerraLib DataSet Type
@@ -138,6 +151,7 @@ namespace te
       \note The caller of this function will take the ownership of the returned TerraLib DataSet Type.
     */
     TEOGREXPORT te::da::DataSetType* Convert2TerraLib(OGRFeatureDefn* featDef);
+    
 
     /*!
       \brief It converts the TerraLib DataSet Type to OGR Feature Definition

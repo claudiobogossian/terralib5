@@ -45,19 +45,19 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
-    OGRExampleRead();
+ //   OGRExampleRead();
 
-    ORGExampleWrite();
+//    ORGExampleWrite();
 
     PostGISExample();     
 
 //    QueryExample(); //??? tem codigo comentado - cai...
 
-    CopyingData();
+//    CopyingData();
 	
-    GDALExample();
+//    GDALExample();
 
-    MemoryExample();
+//    MemoryExample();
 
 //    PersistenceExample(); //??? Está caindo - em ======Adds a new property and its values  
 

@@ -23,20 +23,19 @@ void PrintCatalog(te::da::DataSource* ds)
   te::da::DataSourceCatalogLoader* cloader = transactor->getCatalogLoader();
 
 // now retrieve the name of the datasets
-  std::vector<std::string*> datasets;
+  boost::ptr_vector<std::string> datasets;
 
   cloader->getDataSets(datasets);
 
 // and then iterate over dataset names to retrieve its information
   std::cout << "Printing information about datasets...\n\n Number of datasets: " << datasets.size() << std::endl;
 
-  for(std::vector<std::string*>::const_iterator it = datasets.begin(); it < datasets.end(); ++it)
+  for(unsigned int i=0; i<datasets.size(); ++i)
   {
-    const std::string* datasetName = *it;
 
 // get dataset information: the parameter true indicates that we want all information about the dataset
 //                          you can set it to false and see the difference (no primary key and other stuffs are retrieved)
-    te::da::DataSetType* dt = cloader->getDataSetType(*datasetName, true);
+    te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], true);
 
     std::cout << "DataSet: " << dt->getName() << std::endl;
     std::cout << "\t" << "Number of attributes:" << dt->size() << std::endl;
@@ -49,9 +48,6 @@ void PrintCatalog(te::da::DataSource* ds)
 // release the dataset type: you are the owner!
     delete dt;
   }
-
-// don't forget to release the vector of dataset names... they are pointers to strings
-  te::common::FreeContents(datasets);
 
 // release the catalog loader: you are the owner
   delete cloader;

@@ -63,7 +63,7 @@ te::ado::DataSourceCatalogLoader::~DataSourceCatalogLoader()
 {
 }
 
-void te::ado::DataSourceCatalogLoader::getDataSets(std::vector<std::string*>& datasets)
+void te::ado::DataSourceCatalogLoader::getDataSets(boost::ptr_vector<std::string>& datasets)
 {
   _ConnectionPtr adoConn = m_t->getADOConnection();
 
@@ -154,6 +154,52 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
   getUniqueKeys(dt.get());
 
   return dt.release();
+}
+
+void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
+{
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  ADOX::TablesPtr tables = pCatalog->GetTables();
+
+  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+
+  ADOX::ColumnsPtr cols = t->GetColumns();
+
+  std::vector<te::dt::Property*> properties;
+
+  for(long i = 0; i < cols->Count; i++)
+  {
+    ADOX::_ColumnPtr c = cols->GetItem(i);
+
+    te::dt::Property* prop = te::ado::Convert2Terralib(c);
+
+    dt->add(prop);
+
+    if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
+    {
+      te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
+      geop->getParent()->setName(dt->getName());
+      dt->setDefaultGeomProperty(geop);
+    }
+  }
+
+  getPrimaryKey(dt);
+  getIndexes(dt);
+  getUniqueKeys(dt);
 }
 
 void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
@@ -463,6 +509,31 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
   for(long i = 0; i < pCatalog->GetTables()->Count; i++)
     if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == name)
       return true;
+
+  return false;
+}
+
+bool te::ado::DataSourceCatalogLoader::hasDataSets()
+{
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+    ADOX::TablesPtr tables = pCatalog->GetTables();
+
+    if(tables->GetCount() > 0)
+      return true;
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO(e.ErrorMessage()));
+  }
 
   return false;
 }
