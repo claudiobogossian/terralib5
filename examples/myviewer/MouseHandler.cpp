@@ -92,7 +92,7 @@ MouseHandler::MouseMode MouseHandler::getMode()
 void MouseHandler::setMode(MouseMode m)
 {
   MyDisplay* mydisplay = (MyDisplay*)parent();
-  mydisplay->clearTooltipPixmap();
+  //mydisplay->clearTooltipPixmap();
   mydisplay->update();
   m_mouseMode = m;
 }
