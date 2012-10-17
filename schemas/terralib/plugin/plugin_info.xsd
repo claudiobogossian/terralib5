@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:plugin="http://www.terralib.org/schemas/plugin"
+            xmlns:common="http://www.terralib.org/schemas/common"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/schemas/plugin"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>PluginInfo</xsd:appinfo>
+    <xsd:documentation>This XML Schema describes the information about a given Terralib Plugin</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/schemas/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
+
+  <xsd:element name="PluginInfo" type="plugin:PluginInfoType">
+    <xsd:annotation>
+      <xsd:documentation>This is the root element for plugin configuration files.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="PluginInfoType">
+    <xsd:annotation>
+      <xsd:documentation>This type describes the plugin type.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="DisplayName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Description" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="TerraLibVersion" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="License" type="plugin:LicenseType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Category" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Site" type="common:OnlineResourceType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Provider" type="plugin:ProviderType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="RequiredPlugins" type="plugin:RequiredPluginsType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="RequiredPluginCategory" type="plugin:RequiredPluginCategoryType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="RequiredModules" type="plugin:RequiredModulesType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="Resources" type="plugin:ResourcesType" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="Parameters" type="plugin:ParametersType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute name="release" type="xsd:date" use="required"/>
+    <xsd:attribute name="engine" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="LicenseType">
+    <xsd:annotation>
+      <xsd:documentation>You can include a reference to an on-line resource from where the license can be accessed.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attributeGroup ref="xlink:simpleLink"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  
+  <xsd:complexType name="ProviderType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Site" type="common:OnlineResourceType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Email" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+  <xsd:complexType name="RequiredPluginsType">
+    <xsd:sequence>
+      <xsd:element name="PluginId" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="RequiredPluginCategoryType">
+    <xsd:sequence>
+      <xsd:element name="CategoryId" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="RequiredModulesType">
+    <xsd:sequence>
+      <xsd:element name="ModuleId" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+  <xsd:complexType name="ResourcesType">
+    <xsd:sequence>
+      <xsd:element name="Resource" type="plugin:ResourceType" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+  <xsd:complexType name="ResourceType">
+    <xsd:annotation>
+      <xsd:documentation>If your plugin need to track any resource you can use a resource to point to it.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+    <xsd:attributeGroup ref="xlink:simpleLink"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ParametersType">
+    <xsd:sequence>
+      <xsd:element name="Parameter" type="plugin:ParameterType" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+  <xsd:complexType name="ParameterType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+</xsd:schema>

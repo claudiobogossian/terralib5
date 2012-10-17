@@ -90,11 +90,11 @@ void te::qt::widgets::SymbolEditorWidget::initialize()
   // Creating the first symbolizer
   createNewSymbolizer();
 
-  // For now: hard-coded icon paths.
-  m_ui->m_addToolButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/list-add.png"));
-  m_ui->m_removeToolButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/list-remove.png"));
-  m_ui->m_upToolButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/go-up.png"));
-  m_ui->m_downToolButton->setIcon(QIcon("D:/terralib5/terralib5/src/terralib/qt/widgets/se/resources/go-down.png"));
+  // Setup icons
+  m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
+  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("list-remove"));
+  m_ui->m_upToolButton->setIcon(QIcon::fromTheme("go-up"));
+  m_ui->m_downToolButton->setIcon(QIcon::fromTheme("go-down"));
 }
 
 void te::qt::widgets::SymbolEditorWidget::updateUi()

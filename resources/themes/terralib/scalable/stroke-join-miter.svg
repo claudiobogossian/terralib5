@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="24.004459"
+   height="24"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.2 r9819"
+   sodipodi:docname="miterjoin.svg"
+   inkscape:export-filename="D:\terralib5\terralib5\src\terralib\qt\widgets\se\resources\miterjoin.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="-26.729416"
+     inkscape:cy="17.815215"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="706"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-4.15625,-1024.2188)">
+    <g
+       transform="translate(-895.34375,865.9688)"
+       id="stroke-join-miter"
+       inkscape:label="#join_miter"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#99b6d4;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         d="m 900.04,181.75 -0.04,-23 23,0 0,17.5 -6,0 0,5.5"
+         id="path4023"
+         sodipodi:nodetypes="cccccc" />
+      <rect
+         style="color:#000000;fill:none;stroke:none;stroke-width:9;marker:none;display:inline"
+         id="rect4025"
+         width="24"
+         height="24"
+         x="899.5"
+         y="158.25" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path4027"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1"
+         d="m 900.04,181.75 -0.04,-23 23,0 m -6,23 0,-6 6,0" />
+      <rect
+         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:9;marker:none;display:inline"
+         id="use5673"
+         width="2"
+         height="2"
+         x="920.5246"
+         y="167.2491" />
+      <use
+         xlink:href="#use5673"
+         height="1250"
+         width="1250"
+         transform="translate(-3.999997,0)"
+         id="use5689"
+         y="0"
+         x="0" />
+      <use
+         xlink:href="#use5673"
+         height="1250"
+         width="1250"
+         transform="translate(-7.999997,0)"
+         id="use5691"
+         y="0"
+         x="0" />
+      <use
+         xlink:href="#use5673"
+         height="1250"
+         width="1250"
+         transform="translate(-12,0)"
+         id="use5693"
+         y="0"
+         x="0" />
+      <use
+         xlink:href="#use5673"
+         height="1250"
+         width="1250"
+         transform="translate(-12,4)"
+         id="use5696"
+         y="0"
+         x="0" />
+      <use
+         xlink:href="#use5673"
+         height="1250"
+         width="1250"
+         transform="translate(-12,8)"
+         id="use5698"
+         y="0"
+         x="0" />
+      <use
+         xlink:href="#use5673"
+         height="1250"
+         width="1250"
+         transform="translate(-12,12)"
+         id="use5700"
+         y="0"
+         x="0" />
+    </g>
+  </g>
+</svg>

@@ -566,10 +566,10 @@ namespace te
         itB = matchedPoints.begin();
         while( itB != itE )
         {
-          if( minFeatureValue > itB->m_featureValue )
-            minFeatureValue = itB->m_featureValue;
-          if( maxFeatureValue < itB->m_featureValue )
-            maxFeatureValue = itB->m_featureValue;
+          if( minFeatureValue > itB->m_weight )
+            minFeatureValue = itB->m_weight;
+          if( maxFeatureValue < itB->m_weight )
+            maxFeatureValue = itB->m_weight;
           
           ++itB;
         }
@@ -592,7 +592,7 @@ namespace te
           auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaLineStart;   
            
-          tiePointsWeights.push_back( std::max( 0.1, ( itB->m_featureValue - 
+          tiePointsWeights.push_back( std::max( 0.1, ( itB->m_weight - 
             minFeatureValue ) / ( maxFeatureValue - minFeatureValue ) ) );
             
           outParamsPtr->m_tiePoints.push_back( auxTP );
@@ -663,7 +663,7 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
           
-        rasterData.clear();
+//        rasterData.clear();
         
         if( m_inputParameters.m_enableProgress )
         {
@@ -688,7 +688,7 @@ namespace te
           candidateInterestPoints ),
           "Error locating raster 1 interest points" );
           
-//        createTifFromMatrix( *(rasterData[ 0 ]), raster1InterestPoints, "surfInterestPoints1");
+        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints1");
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -756,7 +756,7 @@ namespace te
           if( ! progress.isActive() ) return false;
         }           
           
-        rasterData.clear();
+//        rasterData.clear();
           
 //        printMatrix( integralRaster );
 //        createTifFromMatrix( integralRaster, InterestPointsSetT(), "integralRaster2" );
@@ -768,14 +768,14 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( locateSurfInterestPoints( 
           integralRaster, 
           maskRasterData.getLinesNumber() ? (&maskRasterData) : 0, 
-          raster1MaxInterestPoints,
+          raster2MaxInterestPoints,
           m_inputParameters.m_enableMultiThread,
           m_inputParameters.m_scalesNumber,
           m_inputParameters.m_octavesNumber,
           candidateInterestPoints ),
           "Error locating raster interest points" );
           
-//        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints2");
+        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints2");
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -794,6 +794,9 @@ namespace te
           if( ! progress.isActive() ) return false;
         }           
       }
+      
+//      printMatrix( raster1Features );
+//      printMatrix( raster2Features );
       
       // Matching features
       
@@ -822,26 +825,6 @@ namespace te
         MatchedInterestPointsSetT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsSetT::const_iterator itE = matchedPoints.end();
         
-        double minFeatureValue = DBL_MAX;
-        double maxFeatureValue = (-1.0) * DBL_MAX;
-        itB = matchedPoints.begin();
-        while( itB != itE )
-        {
-          if( minFeatureValue > itB->m_featureValue )
-            minFeatureValue = itB->m_featureValue;
-          if( maxFeatureValue < itB->m_featureValue )
-            maxFeatureValue = itB->m_featureValue;
-          
-          ++itB;
-        }
-        
-        if( maxFeatureValue == minFeatureValue )
-        {
-          minFeatureValue = 0;
-          maxFeatureValue = 1.0;          
-        }
-        
-        itB = matchedPoints.begin();
         while( itB != itE )
         {
           auxTP.first.x = ( itB->m_x1 / raster1XRescFact ) + 
@@ -853,8 +836,7 @@ namespace te
           auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaLineStart;   
            
-          tiePointsWeights.push_back( std::max( 0.1, ( itB->m_featureValue - 
-            minFeatureValue ) / ( maxFeatureValue - minFeatureValue ) ) );
+          tiePointsWeights.push_back( itB->m_weight );
             
           outParamsPtr->m_tiePoints.push_back( auxTP );
           
@@ -2941,9 +2923,9 @@ namespace te
           
           // Allocating the internal features vector
           
+          currentFeaturePtr = new double[ 65 ];
           internalFeaturesData.push_back( boost::shared_array< double >(
-            new double[ 65 ] ) );
-          currentFeaturePtr = internalFeaturesData.back().get();
+            currentFeaturePtr ) );
             
           // Estimating the intensity vectors
           
@@ -3119,6 +3101,8 @@ namespace te
           {
             currentFeaturePtr[ currIPointFeatureElementIndex ] /=
               featureElementsNormalizeFactor;
+            assert( currentFeaturePtr[ currIPointFeatureElementIndex ] <= 1.0 );
+            assert( currentFeaturePtr[ currIPointFeatureElementIndex ] >= -1.0 );
           }
           
           // Adding an attribute based on the sign of the Laplacian to 
@@ -3133,6 +3117,8 @@ namespace te
       
       // Copying the generated features to the output features matrix
       
+      assert( internalFeaturesData.size() == validInterestPoints.size() );
+      
       TERP_TRUE_OR_RETURN_FALSE( features.reset( validInterestPoints.size(), 65 ),
         "Cannot allocate features matrix" );            
         
@@ -3145,9 +3131,10 @@ namespace te
       while( itBeg != itEnd )
       {
         memcpy( features[ featuresLine ], itBeg->get(), 65 * sizeof( double ) );
+        ++featuresLine;
         ++itBeg;
       }
-     
+                 
       return true;
     }    
     
@@ -3404,7 +3391,7 @@ namespace te
           auxMatchedPoints.m_y1 = iPoint1.m_y,
           auxMatchedPoints.m_x2 = iPoint2.m_x;
           auxMatchedPoints.m_y2 = iPoint2.m_y;
-          auxMatchedPoints.m_featureValue = 
+          auxMatchedPoints.m_weight = 
             ( 
               ( 
                 (
@@ -3669,11 +3656,11 @@ namespace te
       // finding the distances matrix minimum for each line and column
       
       std::vector< double > eachLineMinValues( interestPointsSet1Size,
-        DBL_MAX * (-1.0) );
+        DBL_MAX );
       std::vector< unsigned int > eachLineMinIndexes( interestPointsSet1Size,
         interestPointsSet2Size + 1 );
       std::vector< double > eachColMinValues( interestPointsSet2Size,
-        DBL_MAX * (-1.0) );
+        DBL_MAX );
       std::vector< unsigned int > eachColMinIndexes( interestPointsSet2Size,
         interestPointsSet1Size + 1 );
       double maxDistValue = DBL_MAX * (-1.0);
@@ -3687,54 +3674,58 @@ namespace te
         {
           const double& value = linePtr[ col ];
           
-          if( value < eachLineMinValues[ line ] )
+          if( value != DBL_MAX )
           {
-            eachLineMinValues[ line ] = value;
-            eachLineMinIndexes[ line ] = col;
-          }
+            if( value < eachLineMinValues[ line ] )
+            {
+              eachLineMinValues[ line ] = value;
+              eachLineMinIndexes[ line ] = col;
+            }
+            
+            if( value < eachColMinValues[ col ] )
+            {
+              eachColMinValues[ col ] = value;
+              eachColMinIndexes[ col ] = line;
+            }
           
-          if( value < eachColMinValues[ col ] )
-          {
-            eachColMinValues[ col ] = value;
-            eachColMinIndexes[ col ] = line;
+            if( value > maxDistValue ) maxDistValue = value;
+            if( value < minDistValue ) minDistValue = value;
           }
-          
-          if( value > maxDistValue ) maxDistValue = value;
-          if( value < minDistValue ) minDistValue = value;
         }
       }
       
       // Finding tiepoints
       
-      const double distValueRange = ( maxDistValue != minDistValue ) ? ( maxDistValue -
+      const double distValueRange = ( ( minDistValue != DBL_MAX ) &&
+        ( maxDistValue != minDistValue ) ) ? ( maxDistValue -
         minDistValue ) : 1.0;
       MatchedInterestPointsT auxMatchedPoints;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
-        if( eachColMinIndexes[ eachLineMinIndexes[ line ] ] == line )
+        col =  eachLineMinIndexes[ line ];
+        
+        if( eachColMinIndexes[ col ] == line )
         {
-          const InterestPointT& iPoint1 = internalInterestPointsSet1[ line ];
-          const InterestPointT& iPoint2 = internalInterestPointsSet2[ eachLineMinIndexes[ line ] ];
+          const double& distValue = distMatrix( line, col );
           
-          auxMatchedPoints.m_x1 = iPoint1.m_x;
-          auxMatchedPoints.m_y1 = iPoint1.m_y,
-          auxMatchedPoints.m_x2 = iPoint2.m_x;
-          auxMatchedPoints.m_y2 = iPoint2.m_y;
-          auxMatchedPoints.m_featureValue = 
-            (
-              ( 
-                distMatrix( line, eachLineMinValues[ line ] )
-                - 
-                minDistValue 
-              ) 
-              / distValueRange
-            );
-          auxMatchedPoints.m_featureValue = std::max( 0.0000001,
-            auxMatchedPoints.m_featureValue );
-          auxMatchedPoints.m_featureValue = 1.0 / auxMatchedPoints.m_featureValue;
-          
-          matchedPoints.insert( auxMatchedPoints );
+          if( distValue != DBL_MAX )
+          {
+            const InterestPointT& iPoint1 = internalInterestPointsSet1[ line ];
+            const InterestPointT& iPoint2 = internalInterestPointsSet2[ col ];
+            
+            auxMatchedPoints.m_x1 = iPoint1.m_x;
+            auxMatchedPoints.m_y1 = iPoint1.m_y,
+            auxMatchedPoints.m_x2 = iPoint2.m_x;
+            auxMatchedPoints.m_y2 = iPoint2.m_y;
+            
+            auxMatchedPoints.m_weight = ( maxDistValue - distValue )  / 
+              distValueRange;
+            auxMatchedPoints.m_weight = std::max( 0.0000001, 
+              auxMatchedPoints.m_weight );
+            
+            matchedPoints.insert( auxMatchedPoints );
+          }
         }
       }
         
@@ -3744,7 +3735,110 @@ namespace te
     void TiePointsLocator::executeMatchingByEuclideanDistThreadEntry(
       ExecuteMatchingByEuclideanDistThreadEntryParams* paramsPtr)
     {
+      assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
+        Matrix< double >::RAMMemPol );
+      assert( paramsPtr->m_featuresSet2Ptr->getMemPolicy() == 
+        Matrix< double >::RAMMemPol );
+      assert( paramsPtr->m_distMatrixPtr->getMemPolicy() == 
+        Matrix< double >::RAMMemPol );
+      assert( paramsPtr->m_featuresSet1Ptr->getColumnsNumber() ==
+        paramsPtr->m_featuresSet2Ptr->getColumnsNumber() );
+        
+      unsigned int feat2Idx = 0;
+      double const* feat1Ptr = 0;
+      double const* feat2Ptr = 0;
+      double* corrMatrixLinePtr = 0;
+      unsigned int featCol = 0;
+      te::gm::Envelope auxEnvelope;
+      double diff = 0;
+      double euclideanDist = 0;
       
+      // finding the number of features
+      
+      paramsPtr->m_syncMutexPtr->lock();
+      
+      const unsigned int featureSize = paramsPtr->m_featuresSet1Ptr->getColumnsNumber();
+      const unsigned int featuresSet1Size = 
+        paramsPtr->m_featuresSet1Ptr->getLinesNumber();
+      const unsigned int featuresSet2Size = 
+        paramsPtr->m_featuresSet2Ptr->getLinesNumber();
+      
+      paramsPtr->m_syncMutexPtr->unlock();
+      
+      // initializing the features 2 indexes vector
+      
+      std::vector< unsigned int > selectedFeaturesSet2Indexes;
+      unsigned int selectedFeaturesSet2IndexesSize = 0;
+      
+      if( paramsPtr->m_maxPt1ToPt2Distance == 0 )
+      {
+        selectedFeaturesSet2Indexes.resize( featuresSet2Size );
+        selectedFeaturesSet2IndexesSize = featuresSet2Size;
+        for( unsigned int feat2Idx = 0 ; feat2Idx < featuresSet2Size ; ++feat2Idx )
+          {
+            selectedFeaturesSet2Indexes[ feat2Idx ] = feat2Idx;
+          }
+      }      
+      
+      // Analysing each feature
+      
+      for( unsigned int feat1Idx = 0 ; feat1Idx < featuresSet1Size ; ++feat1Idx )
+      {
+        paramsPtr->m_syncMutexPtr->lock();
+        
+        if( feat1Idx == (*paramsPtr->m_nextFeatureIdx1ToProcessPtr) )
+        {
+          ++(*paramsPtr->m_nextFeatureIdx1ToProcessPtr);
+          
+          if( paramsPtr->m_maxPt1ToPt2Distance )
+          {
+            auxEnvelope.m_llx = auxEnvelope.m_urx = 
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x;
+            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2Distance;
+            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2Distance;
+            auxEnvelope.m_lly = auxEnvelope.m_ury = 
+              paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y;
+            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            
+            selectedFeaturesSet2Indexes.clear();
+            paramsPtr->m_interestPointsSet2RTreePtr->search( auxEnvelope,
+              selectedFeaturesSet2Indexes );
+              
+            selectedFeaturesSet2IndexesSize = selectedFeaturesSet2Indexes.size();
+          }          
+          
+          paramsPtr->m_syncMutexPtr->unlock();
+          
+          corrMatrixLinePtr = paramsPtr->m_distMatrixPtr->operator[]( feat1Idx );
+          
+          feat1Ptr = paramsPtr->m_featuresSet1Ptr->operator[]( feat1Idx );
+          
+          for( unsigned int selectedFSIIdx = 0 ; selectedFSIIdx < 
+            selectedFeaturesSet2IndexesSize ; ++selectedFSIIdx )
+          {
+            feat2Idx = selectedFeaturesSet2Indexes[ selectedFSIIdx ];
+            
+            feat2Ptr = paramsPtr->m_featuresSet2Ptr->operator[]( feat2Idx );
+            
+            euclideanDist = 0.0;
+
+            for( featCol = 0 ; featCol < featureSize ; ++featCol )
+            {
+              diff = feat1Ptr[ featCol ] - feat2Ptr[ featCol ];
+              euclideanDist += ( diff * diff );              
+            }
+            
+            euclideanDist = std::sqrt( euclideanDist );
+                
+            corrMatrixLinePtr[ feat2Idx ] = euclideanDist;            
+          }
+        }
+        else
+        {
+          paramsPtr->m_syncMutexPtr->unlock();
+        }
+      }
     }
     
     void TiePointsLocator::printBuffer( double** buffer, const unsigned int nLines,
