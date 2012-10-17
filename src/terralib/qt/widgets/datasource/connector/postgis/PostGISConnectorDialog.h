@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_CONNECTOR_POSTGIS_INTERNAL_POSTGISCONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../../dataaccess/Definitions.h"
+#include "../../../../../dataaccess/datasource/DataSource.h"
 #include "../../core/DataSource.h"
 
 // STL

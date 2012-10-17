@@ -107,14 +107,14 @@ void te::qt::widgets::DataSetGroupItem::fetchMore()
   if(m_ds == 0)
     return;
 
-  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(m_ds->getId(), m_ds->getAccessDriver(), m_ds->getConnInfo());
+  te::da::DataSource* ds = te::da::DataSourceManager::getInstance().get(m_ds->getId(), m_ds->getAccessDriver(), m_ds->getConnInfo());
 
-  if(ds.get() == 0)
+  if(ds == 0)
     return;
 
   boost::ptr_vector<std::string> datasets;
 
-  te::da::GetDataSets(datasets, ds.get());
+  te::da::GetDataSets(datasets, ds);
 
   const std::size_t ndatasets = datasets.size();
 
@@ -122,7 +122,7 @@ void te::qt::widgets::DataSetGroupItem::fetchMore()
   {
     te::da::DataSetTypePtr dt(new te::da::DataSetType(datasets[i]));
 
-    new DataSetItem(dt, ds.get(), this);
+    new DataSetItem(dt, ds, this);
   }
 }
 
@@ -136,12 +136,12 @@ bool te::qt::widgets::DataSetGroupItem::hasChildren() const
 
   try
   {
-    te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().get(m_ds->getId(), m_ds->getAccessDriver(), m_ds->getConnInfo());
+    te::da::DataSource* ds = te::da::DataSourceManager::getInstance().get(m_ds->getId(), m_ds->getAccessDriver(), m_ds->getConnInfo());
 
-    if(ds.get() == 0)
+    if(ds == 0)
       return false;
 
-    return te::da::HasDataSet(ds.get());
+    return te::da::HasDataSet(ds);
   }
   catch(...)
   {

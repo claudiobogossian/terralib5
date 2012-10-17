@@ -88,9 +88,9 @@ void te::qt::widgets::ForeignKeyGroupItem::fetchMore()
   if(parentItem == 0)
     return;
 
-  te::da::DataSetType* dt = parentItem->getDataSet();
+  te::da::DataSetTypePtr dt = parentItem->getDataSet();
 
-  if(dt == 0 || dt->getNumberOfForeignKeys() == 0)
+  if(dt.get() == 0 || dt->getNumberOfForeignKeys() == 0)
     return;
 
   const std::size_t nfks = dt->getNumberOfForeignKeys();
@@ -106,9 +106,9 @@ bool te::qt::widgets::ForeignKeyGroupItem::hasChildren() const
   if(parentItem == 0)
     return false;
 
-  te::da::DataSetType* dt = parentItem->getDataSet();
+  te::da::DataSetTypePtr dt = parentItem->getDataSet();
 
-  if(dt == 0)
+  if(dt.get() == 0)
     return false;
 
   return dt->getNumberOfForeignKeys() != 0;

@@ -44,7 +44,7 @@ te::qt::widgets::DataSourceToolBox::DataSourceToolBox(QWidget * parent, Qt::Wind
     DataSourceTreeView* treeView = new DataSourceTreeView(this);
     
     treeView->setHeaderHidden(true);
-    treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
+//    treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
 
     std::vector<DataSourcePtr> datasources;
 

@@ -77,12 +77,12 @@ void te::qt::widgets::GeoFileConnector::remove(std::list<DataSourcePtr>& datasou
     if(it->get() == 0)
       continue;
 // first remove driver
-    te::da::DataSourcePtr rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
+    te::da::DataSource* rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
 
-    if(rds.get())
+    if(rds)
     {
       te::da::DataSourceManager::getInstance().detach(rds);
-      rds.reset();
+      //rds->reset();
     }
 
 // then remove data source

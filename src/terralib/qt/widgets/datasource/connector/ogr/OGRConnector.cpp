@@ -66,7 +66,7 @@ void te::qt::widgets::OGRConnector::create(std::list<DataSourcePtr>& datasources
 
     te::da::DataSourcePtr driver = cdialog->getDriver();
 
-    te::da::DataSourceManager::getInstance().insert(driver);
+    te::da::DataSourceManager::getInstance().insert(driver->getId(),driver.get());
   }
 }
 
@@ -94,7 +94,7 @@ void te::qt::widgets::OGRConnector::update(std::list<DataSourcePtr>& datasources
       if(te::da::DataSourceManager::getInstance().find(driver->getId()) != 0)
         te::da::DataSourceManager::getInstance().detach(driver->getId());
 
-      te::da::DataSourceManager::getInstance().insert(driver);
+      te::da::DataSourceManager::getInstance().insert(driver->getId(),driver.get());
     }
   }
 }
@@ -107,12 +107,12 @@ void te::qt::widgets::OGRConnector::remove(std::list<DataSourcePtr>& datasources
       continue;
 
 // first remove driver
-    te::da::DataSourcePtr rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
+    te::da::DataSource* rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
 
-    if(rds.get())
+    if(rds)
     {
       te::da::DataSourceManager::getInstance().detach(rds);
-      rds.reset();
+      //rds.reset();
     }
 
 // then remove data source

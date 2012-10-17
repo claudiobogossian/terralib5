@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/DataSetLayerSelector.h"
+//#include "../../../layer/selector/core/DataSetLayerSelector.h"
 #include "GeoFileConnector.h"
 #include "GeoFileType.h"
 
@@ -62,8 +62,8 @@ QWidget* te::qt::widgets::GeoFileType::getWidget(int widgetType, QWidget* parent
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new GeoFileConnector(parent, f);
 
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new DataSetLayerSelector(parent, f);
+//    case DataSourceType::WIDGET_LAYER_SELECTOR:
+//      return new DataSetLayerSelector(parent, f);
 
     default:
       return 0;
