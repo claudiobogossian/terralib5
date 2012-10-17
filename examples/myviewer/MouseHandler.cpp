@@ -115,6 +115,8 @@ void MouseHandler::setCursor()
     cursor = new QCursor(*m_toggleSelectionPixmap, 4, 5);
   else if(m_mouseMode == TooltipMode) // tooltip
     cursor = new QCursor(Qt::PointingHandCursor);
+  else if(m_mouseMode == ShowCoordMode) // show Coordenates
+    cursor = new QCursor(Qt::CrossCursor);
   if(cursor)
   {
     DisplayEventHandler::setCursor(*cursor);
@@ -151,7 +153,7 @@ void MouseHandler::mouseMoveEvent(QMouseEvent* e)
     }
     else // resizing area. Used for zoom in and object selection (add/toggle) 
     {
-      if(m_mouseMode != TooltipMode)
+      if(m_mouseMode != TooltipMode && m_mouseMode != ShowCoordMode)
       {
         int w = abs(m_point.x() - m_pressPoint.x()) + 1;
         int h = abs(m_point.y() - m_pressPoint.y()) + 1;
@@ -173,6 +175,10 @@ void MouseHandler::mouseMoveEvent(QMouseEvent* e)
     if(m_mouseMode == TooltipMode)
     {
       emit execTooltip(m_point);
+    }
+    else if(m_mouseMode == ShowCoordMode)
+    {
+      emit execShowCoord(m_point);
     }
   }
 }

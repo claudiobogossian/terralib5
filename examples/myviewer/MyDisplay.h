@@ -80,6 +80,7 @@ public Q_SLOTS:
   void drawAllQueriedsSlot();
   void drawAllPointedsAndQueriedsSlot();
   void mouseTooltipSlot(QPoint);
+  void mouseShowCoordSlot(QPoint);
   /*!            
     \brief Executes zoom area.
 
@@ -130,6 +131,7 @@ public Q_SLOTS:
   void setMouseOperationToAddObjectSelectionSlot();
   void setMouseOperationToToggleObjectSelectionSlot();
   void setMouseOperationToTooltipSlot();
+  void setMouseOperationToShowCoordSlot();
   //void clearTooltipPixmap();
   void showRootFolderSlot();
   void initTemporal();
@@ -176,6 +178,7 @@ private:
   QAction* m_mouseAddSelectionAction;
   QAction* m_mouseToggleSelectionAction;
   QAction* m_mouseTooltipAction;
+  QAction* m_mouseShowCoordAction;
   QAction* printAction;
   QAction* printFileAction;
   QAction* m_fitAllLayersAction;    //!< Action to fit all layers.
