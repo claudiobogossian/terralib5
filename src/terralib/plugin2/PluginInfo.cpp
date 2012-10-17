@@ -1,0 +1,250 @@
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/plugin/PluginInfo.cpp
+
+  \brief The basic information about a plugin.
+*/
+
+// TerraLib
+#include "../xml/Reader.h"
+#include "../xml/ReaderFactory.h"
+#include "PluginInfo.h"
+
+// STL
+#include <cassert>
+#include <cstdlib>
+
+te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reader& xmlReader)
+{
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "PluginInfo");
+
+  if(xmlReader.hasAttrs())
+  {
+    pInfo.m_engine = xmlReader.getAttr("engine");
+    pInfo.m_release = xmlReader.getAttr("release");
+    pInfo.m_version = xmlReader.getAttr("version");
+  }
+
+// Name
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Name");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_name = xmlReader.getElementValue();
+
+// DisplayName
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "DisplayName");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_displayName = xmlReader.getElementValue();
+
+// Description
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Description");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_description = xmlReader.getElementValue();
+
+// TerraLibVersion
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "TerraLibVersion");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_terralibVersion = xmlReader.getElementValue();
+
+// License
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "License");
+
+  if(xmlReader.hasAttrs())
+  {
+    pInfo.m_licenseURL = xmlReader.getAttr(0);
+  }
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_licenseDescription = xmlReader.getElementValue();
+
+// Category
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Category");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_category = xmlReader.getElementValue();
+
+// Site
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Site");
+
+  if(xmlReader.hasAttrs())
+  {
+    pInfo.m_site = xmlReader.getAttr(0);
+  }
+
+// Provider
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Provider");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Name");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_provider.m_name = xmlReader.getElementValue();
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Site");
+
+  if(xmlReader.hasAttrs())
+  {
+    pInfo.m_provider.m_site = xmlReader.getAttr(0);
+  }
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader.getElementLocalName() == "Email");
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::VALUE);
+  pInfo.m_provider.m_email = xmlReader.getElementValue();
+
+// RequiredPlugins
+  xmlReader.next();
+
+  if((xmlReader.getNodeType() == te::xml::START_ELEMENT) &&
+     (xmlReader.getElementLocalName() == "RequiredPlugins"))
+  {
+    while(xmlReader.next())
+    {
+      if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
+         (xmlReader.getElementLocalName() != "PluginId"))
+        break;
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::VALUE);
+      std::string pluginId = xmlReader.getElementValue();
+      pInfo.m_requiredPlugins.push_back(pluginId);
+    }
+  }
+
+// RequiredPluginCategory
+  if((xmlReader.getNodeType() == te::xml::START_ELEMENT) &&
+     (xmlReader.getElementLocalName() == "RequiredPluginCategory"))
+  {
+    while(xmlReader.next())
+    {
+      if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
+         (xmlReader.getElementLocalName() != "CategoryId"))
+        break;
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::VALUE);
+      std::string categoryId = xmlReader.getElementValue();
+      pInfo.m_requiredPluginCategories.push_back(categoryId);
+    }
+  }
+
+// RequiredModules
+  if((xmlReader.getNodeType() == te::xml::START_ELEMENT) &&
+     (xmlReader.getElementLocalName() == "RequiredModules"))
+  {
+    while(xmlReader.next())
+    {
+      if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
+         (xmlReader.getElementLocalName() != "ModuleId"))
+        break;
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::VALUE);
+      std::string moduleId = xmlReader.getElementValue();
+      pInfo.m_requiredModules.push_back(moduleId);
+    }
+  }
+
+// Resources
+  if((xmlReader.getNodeType() == te::xml::START_ELEMENT) &&
+     (xmlReader.getElementLocalName() == "Resources"))
+  {
+    while(xmlReader.next())
+    {
+      if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
+         (xmlReader.getElementLocalName() != "Resource"))
+        break;
+
+      std::string name = xmlReader.getAttr("name");
+      std::string href = xmlReader.getAttr("xlink:href");
+
+      pInfo.m_resources.push_back(te::plugin::PluginInfo::Resource(name, href));
+    }
+  }
+
+// Parameters
+  if((xmlReader.getNodeType() == te::xml::START_ELEMENT) &&
+     (xmlReader.getElementLocalName() == "Parameters"))
+  {
+    while(xmlReader.next())
+    {
+      if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
+         (xmlReader.getElementLocalName() != "Parameter"))
+        break;
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+      assert(xmlReader.getElementLocalName() == "Name");
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::VALUE);
+      std::string paramName = xmlReader.getElementValue();
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
+      assert(xmlReader.getElementLocalName() == "Value");
+
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::VALUE);
+      std::string paramValue = xmlReader.getElementValue();
+
+      pInfo.m_parameters.push_back(te::plugin::PluginInfo::Parameter(paramName, paramValue));
+    }
+  }
+
+  assert(xmlReader.getNodeType() == te::xml::END_DOCUMENT);
+
+  return pInfo;
+}
+
