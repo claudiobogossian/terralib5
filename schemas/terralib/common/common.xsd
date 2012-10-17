@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xsd:schema xmlns:common="http://www.terralib.org/schemas/common"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/schemas/common"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+        
+  <xsd:annotation>
+    <xsd:appinfo>General Declarations for TerraLib Schemas</xsd:appinfo>
+    <xsd:documentation>This XML Schema contains the basic set of elements and data types for the various Terralib Schema documents.</xsd:documentation>
+  </xsd:annotation>
+  
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
+  
+  <xsd:complexType name="OnlineResourceType">
+		<xsd:attributeGroup ref="xlink:simpleLink"/>
+	</xsd:complexType>
+
+</xsd:schema>
