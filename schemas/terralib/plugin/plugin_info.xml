@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<PluginInfo xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns="http://www.terralib.org/schemas/plugin"
+            xsd:schemaLocation="http://www.terralib.org/schemas/plugin plugin_info.xsd"
+            version="5.0.0-20110110"
+            release="2011-01-01"
+            engine="C++">
+  <Name>te.da.pgis</Name>
+  <DisplayName>PostGIS Data Source Driver</DisplayName>
+  <Description>This plugin enables TerraLib to access data in a PostgreSQL DBMS using the PostGIS extension</Description>
+  <TerraLibVersion>5.0.0-20100101</TerraLibVersion>
+  <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
+  <Category>Data Access</Category>
+  <Site xlink:href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:postgis"/>
+  <Provider>
+    <Name>Terralib Team</Name>
+    <Site xlink:href="http://www.terralib.org/"/>
+    <Email>terralib-team@terralib.org</Email>
+  </Provider>
+  <RequiredPlugins>
+    <PluginId>te.plugin</PluginId>
+  </RequiredPlugins>
+  <RequiredModules>
+    <ModuleId>te.common</ModuleId>
+	<ModuleId>te.dt</ModuleId>
+    <ModuleId>te.da</ModuleId>
+	<ModuleId>te.gm</ModuleId>
+	<ModuleId>te.srs</ModuleId>
+  </RequiredModules>
+  <Resources>
+    <Resource name="SharedLibraryName" xlink:href="terralib_postgis"/>
+    <Resource name="SQLDialectFile" xlink:href="postgis_dialect.xml"/>
+    <Resource name="LangFile" xlink:href="pt.br"/>
+    <Resource name="HelpFile" xlink:href="pgis.html"/>
+  </Resources>
+  <Parameters>
+    <Parameter>
+      <Name>DEFAULT_DATASET_CACHE_SIZE</Name>
+      <Value>5000</Value>
+    </Parameter>
+    <Parameter>
+      <Name>CLIENT_ENCODING</Name>
+      <Value>LATIN1</Value>
+    </Parameter>
+    <Parameter>
+      <Name>InitialPoolSize</Name>
+      <Value>1</Value>
+    </Parameter>
+    <Parameter>
+      <Name>MinPoolSize</Name>
+      <Value>1</Value>
+    </Parameter>
+    <Parameter>
+      <Name>MaxPoolSize</Name>
+      <Value>1</Value>
+    </Parameter>
+  </Parameters>
+</PluginInfo>
