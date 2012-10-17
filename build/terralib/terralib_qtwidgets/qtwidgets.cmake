@@ -8,7 +8,7 @@ if(QT4_FOUND)
   set (DEP_LIBS ${QT_LIBRARIES})
 endif()
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS date_time REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS date_time filesystem system REQUIRED)
 if(Boost_FOUND)
   list (APPEND DEP_LIBS ${Boost_LIBRARIES})
   list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
@@ -49,6 +49,7 @@ list (APPEND DEP_LIBS
 		terralib_dataaccess
 		terralib_datatype
 		terralib_filter
+    terralib_gdal
 		terralib_geometry
 		terralib_maptools
 		terralib_raster
@@ -70,6 +71,15 @@ set (
   widgets/datagrid
   widgets/dataview
   widgets/dataset
+  widgets/datasource/connector/core
+  widgets/datasource/connector/gdal
+  widgets/datasource/connector/geofile
+  widgets/datasource/connector/ogr  
+  widgets/datasource/connector/postgis
+  widgets/datasource/connector/shp
+  widgets/datasource/core
+  widgets/datasource/explorer
+  widgets/datasource/selector
   widgets/layer
   widgets/progress
   widgets/property
@@ -102,6 +112,45 @@ file (
   ${SRCDIR}/qwt/TimeSeriesDisplay.h
   ${SRCDIR}/qwt/ColorBar.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
+  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnector.h
+  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h  
+  ${SRCDIR}/widgets/datasource/connector/gdal/GDALType.h  
+  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnector.h
+  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h  
+  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileType.h
+  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnector.h
+  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h  
+  ${SRCDIR}/widgets/datasource/connector/ogr/OGRType.h
+  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnector.h
+  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
+  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISType.h
+  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnector.h
+  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnectorDialog.h  
+  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileType.h
+  ${SRCDIR}/widgets/datasource/core/DataSourceType.h
+  ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
+  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintItem.h
+  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
+  ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
+  ${SRCDIR}/widgets/datasource/explorer/IndexGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSetGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/IndexItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSetItem.h
+  ${SRCDIR}/widgets/datasource/explorer/PrimaryKeyItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSourceExplorer.h
+  ${SRCDIR}/widgets/datasource/explorer/PropertyGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSourceItem.h
+  ${SRCDIR}/widgets/datasource/explorer/PropertyItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSourceToolBox.h
+  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
+  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
+  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorDialog.h
+  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWidget.h
+  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h  
   ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
   ${SRCDIR}/widgets/layer/LayerExplorerModel.h
@@ -176,6 +225,11 @@ file(
   ${SRCDIR}/widgets/charts/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
+  ${SRCDIR}/widgets/datasource/connector/gdal/ui/*.ui
+  ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
+  ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
+  ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
+  ${SRCDIR}/widgets/datasource/selector/ui/*.ui  
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui
