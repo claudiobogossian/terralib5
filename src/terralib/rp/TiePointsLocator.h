@@ -929,7 +929,7 @@ namespace te
           return buffer[ lowerRightY ][ lowerRightX ]
             - ( ( upperLeftY ) ? buffer[ upperLeftY - 1 ][ lowerRightX ] : 0 )
             - ( ( upperLeftX ) ? buffer[ lowerRightY ][ upperLeftX - 1 ] : 0 )
-            + ( ( upperLeftX & upperLeftY ) ? buffer[ upperLeftY - 1 ][ upperLeftX - 1 ] : 0 );
+            + ( ( ( upperLeftX != 0 ) && ( upperLeftY != 0 ) ) ? buffer[ upperLeftY - 1 ][ upperLeftX - 1 ] : 0 );
         };
         
         /*! 
@@ -956,13 +956,13 @@ namespace te
               ( centerY - lobeWidth - lobeRadius ),
               ( centerX + lobeWidth - 1 ),
               ( centerY + lobeWidth + lobeRadius ) )
-            - 3.0 *
+            - ( 3.0 *
             getIntegralBoxSum(
               bufferPtr,
               ( centerX + 1 - lobeWidth ),
               ( centerY - lobeRadius ),
               ( centerX + lobeWidth - 1 ),
-              ( centerY + lobeRadius ) );
+              ( centerY + lobeRadius ) ) );
         };
         
         /*! 
@@ -1008,14 +1008,13 @@ namespace te
           \param centerY Center Y.
           
           \param lobeWidth Filter lobe width.
-          
-          \param lobeRadius Filter lobe radius.
         */ 
         inline static double getSurfDxyDerivative( double** bufferPtr, 
           const unsigned int& centerX,  const unsigned int& centerY, 
-           const unsigned int& lobeWidth,  const unsigned int& lobeRadius )
+           const unsigned int& lobeWidth )
         {
           return
+            // upper-left filter lobe
             getIntegralBoxSum(
               bufferPtr,
               ( centerX - lobeWidth ),
@@ -1023,6 +1022,7 @@ namespace te
               ( centerX - 1 ),
               ( centerY - 1 ) )
             +
+            // lower-right filter lobe
             getIntegralBoxSum(
               bufferPtr,
               ( centerX + 1 ),
@@ -1030,6 +1030,7 @@ namespace te
               ( centerX + lobeWidth ),
               ( centerY + lobeWidth ) )
             -
+            // upper-right filter lobe
             getIntegralBoxSum(
               bufferPtr,
               ( centerX + 1 ),
@@ -1037,6 +1038,7 @@ namespace te
               ( centerX + lobeWidth ),
               ( centerY - 1 ) )
             -
+            // lower-left filter lobe
             getIntegralBoxSum(
               bufferPtr,
               ( centerX - lobeWidth ),
@@ -1108,6 +1110,40 @@ namespace te
               ( centerX + radius ),
               ( centerY + radius ) );
         };        
+        
+        /*! 
+          \brief Return the surf octave filter step size (width).
+          
+          \param octaveIndex Octave index (starting from zero).
+        */           
+        inline static unsigned int getSurfOctaveFilterStepSize( const unsigned int& octaveIndex )
+        {
+          return (unsigned int)std::pow( 2.0, (double)(octaveIndex + 1) );
+        };
+
+        /*! 
+          \brief Return the surf octave base filter size (width).
+          
+          \param octaveIndex Octave index (starting from zero).
+        */
+        inline static unsigned int getSurfOctaveBaseFilterSize( const unsigned int& octaveIndex )
+        {
+          return  3 + ( 3 * getSurfOctaveFilterStepSize( octaveIndex ) );
+        };
+        
+        /*! 
+          \brief Return the surf octave filter size (width).
+          
+          \param octaveIndex Octave index (starting from zero).
+          
+          \param scaleIndex Scale index (starting from zero).
+        */        
+        inline static unsigned int getSurfFilterSize( const unsigned int& octaveIndex,
+          const unsigned int& scaleIndex )
+        {
+          return  getSurfOctaveBaseFilterSize( octaveIndex ) + 
+            ( 3 * ( getSurfOctaveFilterStepSize( octaveIndex ) * scaleIndex ) );
+        };                
 
     };
 

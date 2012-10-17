@@ -152,7 +152,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)970, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)950, algoOutputParams.m_tiePoints.size() );
 }
 
 void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
@@ -204,7 +204,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyHalfRotated90Image" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)39, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)900, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
@@ -253,10 +253,10 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImageDifBoxes" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)881, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)909, algoOutputParams.m_tiePoints.size() );    
 }
 
-void TsTiePointsLocator::MultipleThreads()
+void TsTiePointsLocator::MoravecStrategyMultipleThreads()
 {
   // openning input raster
   
@@ -292,10 +292,10 @@ void TsTiePointsLocator::MultipleThreads()
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
-    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MultipleThreads" );
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyMultipleThreads" );
 }
 
-void TsTiePointsLocator::MaximumOffset()
+void TsTiePointsLocator::MoravecStrategyMaximumOffset()
 {
   // openning input raster
   
@@ -332,9 +332,9 @@ void TsTiePointsLocator::MaximumOffset()
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
-    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MaximumOffset" );
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyMaximumOffset" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)970, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)950, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::SurfStrategySameImage()
@@ -373,10 +373,109 @@ void TsTiePointsLocator::SurfStrategySameImage()
   // saving images and tie-points
   
   saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
-    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategySameImage" );
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImage" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)970, algoOutputParams.m_tiePoints.size() );
+  CPPUNIT_ASSERT_EQUAL( (size_t)914, algoOutputParams.m_tiePoints.size() );
 }
 
+void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
+{
+  // openning input raster
+  
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/cbers_b2_crop.tif";
+    
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );    
+    
+  // Creating the algorithm parameters
+  
+  te::rp::TiePointsLocator::InputParameters algoInputParams;
+  algoInputParams.m_interesPointsLocationStrategy = 
+    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_inRaster1Ptr = inputRasterPointer.get();
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
+  algoInputParams.m_inRaster2Ptr = inputRasterPointer.get();
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
+  algoInputParams.m_enableMultiThread = false;
+  algoInputParams.m_raster1TargetAreaColStart = 0;
+  algoInputParams.m_raster1TargetAreaLineStart = 0;
+  algoInputParams.m_raster1TargetAreaWidth = 700;
+  algoInputParams.m_raster1TargetAreaHeight = 600;
+  algoInputParams.m_raster2TargetAreaColStart = 20;
+  algoInputParams.m_raster2TargetAreaLineStart = 30;
+  algoInputParams.m_raster2TargetAreaWidth = 600;
+  algoInputParams.m_raster2TargetAreaHeight = 700;
+  algoInputParams.m_maxTiePoints = 1000;
 
+  te::rp::TiePointsLocator::OutputParameters algoOutputParams;
+  
+  // Executing the algorithm
+  
+  te::rp::TiePointsLocator algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  // saving images and tie-points
+  
+  saveImagesAndTiePoints( *inputRasterPointer, 0, *inputRasterPointer, 0,
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategySameImageDifBoxes" );
+    
+  CPPUNIT_ASSERT_EQUAL( (size_t)715, algoOutputParams.m_tiePoints.size() );    
+}
+
+void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
+{
+  // openning input rasters
+  
+  std::map<std::string, std::string> inputRaster1Info;
+  inputRaster1Info["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/cbers_b2_crop.tif";
+    
+  boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
+    inputRaster1Info ) );
+  CPPUNIT_ASSERT( inputRaster1Pointer.get() );     
+  
+  std::map<std::string, std::string> inputRaster2Info;
+  inputRaster2Info["URI"] = TE_DATA_LOCALE 
+    "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
+    
+  boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
+    inputRaster2Info ) );
+  CPPUNIT_ASSERT( inputRaster2Pointer.get() );    
+    
+  // Creating the algorithm parameters
+  
+  te::rp::TiePointsLocator::InputParameters algoInputParams;
+  algoInputParams.m_interesPointsLocationStrategy = 
+    te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
+  algoInputParams.m_inRaster1Ptr = inputRaster1Pointer.get();
+  algoInputParams.m_inRaster1Bands.push_back( 0 );
+  algoInputParams.m_inRaster2Ptr = inputRaster2Pointer.get();
+  algoInputParams.m_inRaster2Bands.push_back( 0 );
+  algoInputParams.m_enableMultiThread = false;
+  algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
+  algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
+  algoInputParams.m_maxTiePoints = 1000;
+
+  te::rp::TiePointsLocator::OutputParameters algoOutputParams;
+
+  
+  // Executing the algorithm
+  
+  te::rp::TiePointsLocator algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+  
+  // saving images and tie-points
+  
+  saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
+    algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_SurfStrategyHalfRotated90Image" );
+    
+  CPPUNIT_ASSERT_EQUAL( (size_t)39, algoOutputParams.m_tiePoints.size() );    
+}
 
