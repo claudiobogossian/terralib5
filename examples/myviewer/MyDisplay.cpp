@@ -2275,6 +2275,16 @@ void MyDisplay::setSRIDSlot()
   sridMap[TE_SRS_WGS84_UTM_ZONE_24S] = "TE_SRS_WGS84_UTM_ZONE_24S";
   sridMap[TE_SRS_WGS84_UTM_ZONE_25S] = "TE_SRS_WGS84_UTM_ZONE_25S";
   sridMap[TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC] = "TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC";
+  sridMap[4291] = "4291";
+  sridMap[29177] = "29177";
+  sridMap[29178] = "29178";
+  sridMap[29179] = "29179";
+  sridMap[29180] = "29180";
+  sridMap[29181] = "29181";
+  sridMap[29182] = "29182";
+  sridMap[29183] = "29183";
+  sridMap[29184] = "29184";
+  sridMap[29185] = "29185";
 
   QStringList items;
   for(it = sridMap.begin(); it != sridMap.end(); ++it)

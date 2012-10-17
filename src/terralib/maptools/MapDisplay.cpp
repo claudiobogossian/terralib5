@@ -89,7 +89,8 @@ void te::map::MapDisplay::setSRID(const int& srid)
   if(m_extent)
   {
     m_extent->transform(m_srid, srid);
-    setExtent(*m_extent);
+    te::gm::Envelope e(*m_extent);
+    setExtent(e);
   }
   m_srid = srid;
 }
