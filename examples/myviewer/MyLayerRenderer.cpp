@@ -138,7 +138,8 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
       g = dataSet->getGeometry(gPos);
       if(g == 0)
         continue;
-
+      
+      layer->setSRID(g->getSRID());
       g->transform(srid);
       const te::gm::Envelope* env = g->getMBR();
       QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());

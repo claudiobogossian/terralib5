@@ -93,6 +93,11 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   m_mouseOperationMenu->addAction(m_mouseTooltipAction);
   connect(m_mouseTooltipAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToTooltipSlot()));
 
+  m_mouseShowCoordAction = new QAction("Show Coordenates", m_mouseOperationMenu);
+  m_mouseShowCoordAction->setCheckable(true);
+  m_mouseOperationMenu->addAction(m_mouseShowCoordAction);
+  connect(m_mouseShowCoordAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToShowCoordSlot()));
+
   QAction* drawAllPointedsAction = new QAction("Fit All &Pointeds", m_menu);
   m_menu->addAction(drawAllPointedsAction);
   connect(drawAllPointedsAction, SIGNAL(triggered()), this, SLOT(drawAllPointedsSlot()));
@@ -127,6 +132,7 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   connect(m_mouseHandler, SIGNAL(execAddSelection(QRect)), this, SLOT(mouseAddSelectionSlot(QRect)));
   connect(m_mouseHandler, SIGNAL(execToggleSelection(QRect)), this, SLOT(mouseToggleSelectionSlot(QRect)));
   connect(m_mouseHandler, SIGNAL(execTooltip(QPoint)), this, SLOT(mouseTooltipSlot(QPoint)));
+  connect(m_mouseHandler, SIGNAL(execShowCoord(QPoint)), this, SLOT(mouseShowCoordSlot(QPoint)));
 
   m_mouseHandler->setCursor();
 
@@ -405,6 +411,7 @@ void MyDisplay::contextMenuEvent(QContextMenuEvent* c)
   m_mouseAddSelectionAction->setChecked(false);
   m_mouseToggleSelectionAction->setChecked(false);
   m_mouseTooltipAction->setChecked(false);
+  m_mouseShowCoordAction->setChecked(false);
 
   MouseHandler::MouseMode mode = m_mouseHandler->getMode();
   if(mode == MouseHandler::ZoomInMode)
@@ -421,6 +428,8 @@ void MyDisplay::contextMenuEvent(QContextMenuEvent* c)
     m_mouseToggleSelectionAction->setChecked(true);
   else if(mode == MouseHandler::TooltipMode)
     m_mouseTooltipAction->setChecked(true);
+  else if(mode == MouseHandler::ShowCoordMode)
+    m_mouseShowCoordAction->setChecked(true);
 
   m_menu->exec(c->globalPos());
 }
@@ -454,6 +463,21 @@ void MyDisplay::setMouseOperationToTooltipSlot()
   m_mouseTooltipAction->setChecked(true);
 
   m_mouseHandler->setMode(MouseHandler::TooltipMode);
+  m_mouseHandler->setCursor();
+}
+
+void MyDisplay::setMouseOperationToShowCoordSlot()
+{
+  m_mouseZoomInAction->setChecked(false);
+  m_mouseZoomOutAction->setChecked(false);
+  m_mousePanAction->setChecked(false);
+  m_mouseSelectionAction->setChecked(false);
+  m_mouseAddSelectionAction->setChecked(false);
+  m_mouseToggleSelectionAction->setChecked(false);
+  m_mouseTooltipAction->setChecked(false);
+  m_mouseShowCoordAction->setChecked(true);
+
+  m_mouseHandler->setMode(MouseHandler::ShowCoordMode);
   m_mouseHandler->setCursor();
 }
 
@@ -1433,9 +1457,14 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
 
     QRectF mouseRectF(0., 0., 5., 5.);
     mouseRectF.moveCenter(p);     
+
+    //get coordenates in the display projection
+    QPointF pw = canvas->getMatrix().inverted().map(QPointF(p));
+    te::gm::Point mouseWPos(pw.x(), pw.y(), m_srid);
+
     mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
-    te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
-    te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+    te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType, m_srid);
+    te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType, m_srid);
 
     line->setPoint(0, mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y()); // lower left
     line->setPoint(1, mouseRectF.topLeft().x(), mouseRectF.bottomLeft().y()); // upper left
@@ -1443,6 +1472,10 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
     line->setPoint(3, mouseRectF.bottomRight().x(), mouseRectF.topRight().y()); // lower rigth
     line->setPoint(4, mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y()); // closing
     poly->push_back(line);
+
+    //transform to layer projection
+    mouseWPos.transform(layer->getSRID());
+    poly->transform(layer->getSRID());
    
     te::da::DataSet* dataSet = op->getDataSet();
     te::da::DataSetType* dsType = op->getDataSetType();
@@ -1459,14 +1492,10 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       if(g == 0)
         continue;
 
-      g->transform(m_srid);
       if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
       {
-        QPointF pw = canvas->getMatrix().inverted().map(p);
-        te::gm::Point mouseWPos(pw.x(), pw.y());
         if(g->contains(&mouseWPos))
         {
-          delete g;
           for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
           {
             val = dsType->getProperty(*it)->getName().c_str();
@@ -1475,19 +1504,21 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
               val += dataSet->getAsString(*it).c_str();
             values.push_back(val);
           }
+          delete g;
           break;
         }
       }
       else if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
       {
-        QRect mouseRect(0, 0, 5, 5);
-        mouseRect.moveCenter(p);     
-        QPointF gwp(static_cast<const te::gm::Point*>(g)->getX(), static_cast<const te::gm::Point*>(g)->getY());
-        QPoint gdp(canvas->getMatrix().map(gwp).toPoint());
+        //QRect mouseRect(0, 0, 5, 5);
+        //mouseRect.moveCenter(p);     
+        //QPointF gwp(static_cast<const te::gm::Point*>(g)->getX(), static_cast<const te::gm::Point*>(g)->getY());
+        //QPoint gdp(canvas->getMatrix().map(gwp).toPoint());
 
-        if(mouseRect.contains(gdp))
+
+        //if(mouseRect.contains(gdp))
+        if(poly->contains(g))
         {
-          delete g;
           for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
           {
             val = dsType->getProperty(*it)->getName().c_str();
@@ -1496,6 +1527,7 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
               val += dataSet->getAsString(*it).c_str();
             values.push_back(val);
           }
+          delete g;
           break;
         }
       }
@@ -1503,7 +1535,6 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       {
         if(g->crosses(poly))
         {
-          delete g;
           for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
           {
             val = dsType->getProperty(*it)->getName().c_str();
@@ -1512,6 +1543,7 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
               val += dataSet->getAsString(*it).c_str();
             values.push_back(val);
           }
+          delete g;
           break;
         }
       }
@@ -1579,6 +1611,55 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
     else
       QToolTip::hideText();
   }
+}
+
+void MyDisplay::mouseShowCoordSlot(QPoint p)
+{
+  QString s, pixx, pixy, dispx, dispy, layerx, layery, srid;
+
+  pixx.setNum(p.x());
+  pixy.setNum(p.y());
+
+  s += "display(pixel) x:" + pixx + " y:" + pixy;
+
+  std::list<te::map::AbstractLayer*> layerList;
+  getLayerList(m_layerTree, layerList);
+
+  std::list<te::map::AbstractLayer*>::iterator it;
+
+  for(it = layerList.begin(); it != layerList.end(); ++it)
+  {
+    MyLayer* layer = (MyLayer*)*it;
+
+    te::qt::widgets::Canvas* canvas = getCanvas(layer);
+    if(canvas)
+    {
+      //get coodenates in the display projection
+      QPointF pf = canvas->getMatrix().inverted().map(QPointF(p));
+      if(dispx.isEmpty())
+      {
+        dispx.setNum(pf.x());
+        dispy.setNum(pf.y());
+        srid.setNum(m_srid);
+        s += "\ndisplay(" + srid + ") x:" + dispx + " y:" + dispy;
+      }
+
+      te::gm::Point g(pf.x(), pf.y());
+      g.setSRID(m_srid);
+
+      //transform to layer projection
+      g.transform(layer->getSRID());
+      srid.setNum(layer->getSRID());
+      layerx.setNum(g.getX());
+      layery.setNum(g.getY());
+      s += "\n";
+      s +=  layer->getId().c_str();
+      s += "(" + srid + ") x:" + layerx + " y:" + layery;
+    }
+  }
+  if(dispx.isEmpty() == false)
+
+  QToolTip::showText(mapToGlobal(p), s);
 }
 
 void MyDisplay::drawAllPointedsSlot()

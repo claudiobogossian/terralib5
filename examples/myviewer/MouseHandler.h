@@ -25,6 +25,7 @@ public:
     ToggleSelectionMode,
     DeselectionMode,
     TooltipMode,
+    ShowCoordMode
   };
 
   MouseHandler(QWidget* parent = 0);
@@ -49,6 +50,7 @@ signals:
   void execAddSelection(QRect);
   void execToggleSelection(QRect);
   void execTooltip(QPoint);
+  void execShowCoord(QPoint);
 
 protected:
   void mouseMoveEvent(QMouseEvent*);
