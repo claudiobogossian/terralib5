@@ -46,7 +46,7 @@
 
 #include <cstdlib>
 
-#define TS_TEST_NAME "terralib_unittest_memory"
+#define TS_TEST_NAME "testResult_memory"
 
 int main(int /*argc*/, char** /*argv*/)
 {
@@ -75,35 +75,27 @@ int main(int /*argc*/, char** /*argv*/)
   CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
   outputter.write();
 
-  // Testing  different outputs
-  // In a DEBUG version (Visual Net) testResults will be saved at Project directory (vcxproj)
-  //      1) Look at Configuration Properties:  'Debug | Working Directory ' to see where it will be saved. 
-  //         A post Build Event will copy the report.xsl to the folder defined by a macro $(ProjectDir)
-  //      2) If you have 'data' to be read in your test, unzip de 'data.zip' file from the wiki-pages in the above dir.
-  // In a Release Version...
-  //      1) The TE_DATA_UNITTEST_LOCALE define the terralib folder where it will be saved
-  //          and in this case the folder is  <terralib-working-dir>\bin32\msvc2010\ (the Output dir)
-  //      2) If you have data to be read in your test, unzip the 'data.zip' file from the wiki-pages in the above path.
-  //      3) Run your test from a command line <terrraliv-working-dir>\bin32\msvc2010\terralib_unittest_<module>_d.exe
-  // NOTE: the Style Sheet "report.xsl" should be at the same folder of *.xml in order to open/see the .xml results in your web-browser
-  //
-  // If you want to save the testResults at the same folder in both Debug and Release version do:
-  //      1) Change at Configuration Properties:  'Debug | Working Directory '  from $(ProjectDir) to $(OutDir)   
-    
-  // Print only fail results in a txt file (the same containt you see in DOS window)
+// Testing  different outputs...
+
+// Print only fail results in a txt file (the same containt you see in DOS window)
   std::ofstream file1(TE_DATA_UNITTEST_LOCALE "/" TS_TEST_NAME ".txt" );
   CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
   outputter1.write();
   file1.close();
 
-  // Printing testResults in XML file   
+// Printing testResults in XML file 
+  // The testResult_*.xml files will be saved at TE_DATA_UNITTEST_LOCALE directory.
+  // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
+  // and then you can open the testResults using your web-browser.
+  // One level up TE_DATA_UNITTEST_LOCALE should have a 'data' directory with all files used by unit test.
+ 
   CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE "/" TS_TEST_NAME ".xml");
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet(  TE_DATA_LOCALE"/data/report.xsl" ); //it is found at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl
+  xml.setStyleSheet( "report.xsl" ); 
   xml.write();
   file2.close();
 
-  // Print formated testResult in a txt 
+// Print formated testResult in a txt 
   CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE "/" TS_TEST_NAME ".txt" );
   CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
   outputter3.write();
