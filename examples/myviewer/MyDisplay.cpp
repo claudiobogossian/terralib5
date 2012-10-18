@@ -1203,7 +1203,11 @@ void MyDisplay::setSRID(const int& srid)
   if(m_extent)
   {
     m_envelope = *m_extent;
-    transform(m_envelope, m_srid, srid);
+    if(transform(m_envelope, m_srid, srid) == false)
+    {
+      QMessageBox::information(this, tr("Projection Fail..."), tr("Fail to change projection!"));
+      return;
+    }
     setExtent();
   }
   m_srid = srid;
@@ -2334,10 +2338,10 @@ void MyDisplay::setSRIDSlot()
   }
 }
 
-void MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
+bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
 {
   if(oldsrid == newsrid)
-    return;
+    return true;
 
   double x1, y1, x2, y2, cx, cy, dx, dy;
   
@@ -2364,5 +2368,14 @@ void MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
   x2 = cx + dx;
   y1 = cy - dy;
   y2 = cy + dy;
+
+  if(std::numeric_limits<double>::has_infinity)
+  {
+    if(x1 == std::numeric_limits<double>::infinity() || y1 == std::numeric_limits<double>::infinity() ||
+       x2 == std::numeric_limits<double>::infinity() || y2 == std::numeric_limits<double>::infinity())
+    return false;
+  }
+
   e.init(x1, y1, x2, y2);
+  return true;
 }
