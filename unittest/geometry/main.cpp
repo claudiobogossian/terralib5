@@ -73,12 +73,15 @@ int main(int /*argc*/, char** /*argv*/)
   outputter1.write();
   file1.close();  
 
- // Printing testResults in XML file 
-  // NOTE: copy StyleSheet "report.xsl" from the cppunit library to the same folder of testResult*.xlm 
-  // and then you can open the testResults using your web-browser.   
+// Printing testResults in XML file 
+  // The testResult_*.xml files will be saved at TE_DATA_UNITTEST_LOCALE directory.
+  // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
+  // and then you can open the testResults using your web-browser.
+  // One level up TE_DATA_UNITTEST_LOCALE should have a 'data' directory with all files used by unit test.
+ 
   CPPUNIT_NS::OFileStream file2( TE_DATA_UNITTEST_LOCALE "/testsResult_geometry_xml.xml" );
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet(  TE_DATA_LOCALE"/data/report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
+  xml.setStyleSheet( "report.xsl" );
   xml.write();
   file2.close();
 
