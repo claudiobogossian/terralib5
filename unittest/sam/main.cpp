@@ -62,12 +62,13 @@ int main(int /*argc*/, char** /*argv*/)
 
   outputter.write();
 
-// Printing testResult in XML file at vcxproj dir or at <terralib-working-dir\bin32\msvc2010  
-// NOTE: copy StyleSheet "report.xsl" from the cppunit library to the same folder of testResult*.xlm 
-// and then you can open the testResults using your web-browser.  
+// Printing testResult in XML file 
+  // The testResult_*.xml files will be saved at TE_DATA_UNITTEST_LOCALE directory.
+  // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
+  // One level up TE_DATA_UNITTEST_LOCALE should have a 'data' directory with all files used by unit test. 
   CPPUNIT_NS::OFileStream file2( TE_DATA_UNITTEST_LOCALE"/testsResult_sam_xml.xml" );
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet(  TE_DATA_LOCALE"/data/report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
+  xml.setStyleSheet( "report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
   xml.write();
   file2.close();
 
