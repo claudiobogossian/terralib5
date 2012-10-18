@@ -8,6 +8,7 @@
 #include <terralib/raster.h>
 #include <terralib/geometry.h>
 #include <terralib/qt/widgets/utils/ScopedCursor.h>
+#include <terralib/srs/Converter.h>
 #include <terralib/srs/Config.h>
 
 #include "STExamples.h"
@@ -358,7 +359,8 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
     if(m_srid == -1)
       m_srid = srid;
     if(srid != m_srid)
-      env.transform(srid, m_srid);
+      transform(env, srid, m_srid);
+      //env.transform(srid, m_srid);
 
     m_envelope.Union(env);
   }
@@ -631,7 +633,8 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
         if(m_srid == -1)
           m_srid = srid;
         if(srid != m_srid)
-          env.transform(srid, m_srid);
+          transform(env, srid, m_srid);
+          //env.transform(srid, m_srid);
 
         m_extent->Union(env);
       }
@@ -809,7 +812,8 @@ te::gm::Envelope MyDisplay::getAllExtent(std::list<te::map::AbstractLayer*>& lay
         if(m_srid == -1)
           m_srid = srid;
         if(srid != m_srid)
-          env.transform(srid, m_srid);
+          transform(env, srid, m_srid);
+          //env.transform(srid, m_srid);
       }
 
       extent.Union(env);
@@ -1191,10 +1195,18 @@ void MyDisplay::setRepaint(bool s)
 
 void MyDisplay::setSRID(const int& srid)
 {
-  //m_useChanged = false;
   m_drawOnlyChanged.clear();
-  te::map::MapDisplay::setSRID(srid);
-  //m_useChanged = true;
+  //te::map::MapDisplay::setSRID(srid);
+  if(m_srid == srid)
+    return;
+
+  if(m_extent)
+  {
+    m_envelope = *m_extent;
+    transform(m_envelope, m_srid, srid);
+    setExtent();
+  }
+  m_srid = srid;
 }
 
 void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
@@ -1225,7 +1237,8 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     if(layer->getExtent())
     {
       te::gm::Envelope layerEnv(*layer->getExtent());
-      layerEnv.transform(layer->getSRID(), m_srid);
+      transform(layerEnv, layer->getSRID(), m_srid);
+      //layerEnv.transform(layer->getSRID(), m_srid);
       if(layerEnv.intersects(mouseEnv) == false)
         continue;
     }
@@ -2202,7 +2215,8 @@ void MyDisplay::fit(std::list<te::map::AbstractLayer*>& layerList)
         m_srid = srid;
       if(srid != m_srid)
       {
-        env.transform(srid, m_srid);
+        transform(env, srid, m_srid);
+        //env.transform(srid, m_srid);
       }
       m_envelope.Union(env);
     }
@@ -2318,4 +2332,37 @@ void MyDisplay::setSRIDSlot()
       }
     }
   }
+}
+
+void MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
+{
+  if(oldsrid == newsrid)
+    return;
+
+  double x1, y1, x2, y2, cx, cy, dx, dy;
+  
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+
+  converter->setSourceSRID(oldsrid);
+  converter->setTargetSRID(newsrid);
+
+  cx = e.getLowerLeftX() + e.getWidth() / 2.;
+  cy = e.getLowerLeftY() + e.getHeight() / 2.;
+  converter->convert(cx, cy);
+
+  x1 = e.getLowerLeftX();
+  y1 = e.getLowerLeftY();
+  converter->convert(x1, y1);
+
+  x2 = e.getUpperRightX();
+  y2 = e.getUpperRightY();
+  converter->convert(x2, y2);
+  dx = fabs(x2 - x1) / 2.;
+  dy = fabs(y2 - y1) / 2.;
+
+  x1 = cx - dx;
+  x2 = cx + dx;
+  y1 = cy - dy;
+  y2 = cy + dy;
+  e.init(x1, y1, x2, y2);
 }
