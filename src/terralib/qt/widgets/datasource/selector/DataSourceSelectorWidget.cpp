@@ -30,7 +30,7 @@
 #include "../core/DataSourceManager.h"
 #include "../core/DataSourceType.h"
 #include "../core/DataSourceTypeManager.h"
-#include "ui/DataSourceSelectorWidgetForm.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceSelectorWidget.h"
 
 // Qt

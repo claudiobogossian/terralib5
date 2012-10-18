@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/DataSetLayerSelector.h"
+//#include "../../../layer/selector/core/DataSetLayerSelector.h"
 #include "PostGISConnector.h"
 #include "PostGISType.h"
 
@@ -62,8 +62,8 @@ QWidget* te::qt::widgets::PostGISType::getWidget(int widgetType, QWidget* parent
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new PostGISConnector(parent, f);
 
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new DataSetLayerSelector(parent, f);
+//    case DataSourceType::WIDGET_LAYER_SELECTOR:
+//      return new DataSetLayerSelector(parent, f);
 
     default:
       return 0;

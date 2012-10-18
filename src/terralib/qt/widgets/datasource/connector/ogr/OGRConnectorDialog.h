@@ -27,8 +27,9 @@
 #define __TERRALIB_QT_WIDGETS_CONNECTOR_OGR_INTERNAL_OGRCONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../../dataaccess/Definitions.h"
+//#include "../../../../../dataaccess/Definitions.h"
 #include "../../core/DataSource.h"
+#include "../../../../../dataaccess.h"
 
 // STL
 #include <memory>

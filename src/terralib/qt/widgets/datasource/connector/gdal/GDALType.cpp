@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/DataSetLayerSelector.h"
+//#include "../../../layer/selector/core/DataSetLayerSelector.h"
 #include "GDALConnector.h"
 #include "GDALType.h"
 
@@ -61,9 +61,9 @@ QWidget* te::qt::widgets::GDALType::getWidget(int widgetType, QWidget* parent, Q
   {
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new GDALConnector(parent, f);
-
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new DataSetLayerSelector(parent, f);
+//
+//    case DataSourceType::WIDGET_LAYER_SELECTOR:
+//      return new DataSetLayerSelector(parent, f);
 
     default:
       return 0;

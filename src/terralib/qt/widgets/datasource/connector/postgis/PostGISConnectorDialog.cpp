@@ -30,7 +30,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/PostGISConnectorDialogForm.h"
+#include "ui_PostGISConnectorDialogForm.h"
 #include "PostGISConnectorDialog.h"
 
 // Boost

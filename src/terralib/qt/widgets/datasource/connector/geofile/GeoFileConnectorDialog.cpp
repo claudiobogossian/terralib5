@@ -29,7 +29,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/GeoFileConnectorDialogForm.h"
+#include "ui_GeoFileConnectorDialogForm.h"
 #include "GeoFileConnectorDialog.h"
 
 // Boost

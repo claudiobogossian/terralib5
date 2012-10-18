@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/HiddenDataSetLayerSelector.h"
+//#include "../../../layer/selector/core/HiddenDataSetLayerSelector.h"
 #include "ShapeFileConnector.h"
 #include "ShapeFileType.h"
 
@@ -62,8 +62,8 @@ QWidget* te::qt::widgets::ShapeFileType::getWidget(int widgetType, QWidget* pare
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new ShapeFileConnector(parent, f);
 
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new HiddenDataSetLayerSelector(parent, f);
+//    case DataSourceType::WIDGET_LAYER_SELECTOR:
+//      return new HiddenDataSetLayerSelector(parent, f);
 
     default:
       return 0;

@@ -18,20 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/DataSourceInfo2.cpp
+  \file terralib/qt/widgets/connector/core/DataSourceConnectorManager.cpp
 
   \brief A widget that groups datasource identificatin and connection information.
 */
 
 // TerraLib
-#include "DataSourceInfo2.h"
+#include "DataSourceConnectorManager.h"
 
-te::qt::widgets::DataSourceInfo2::DataSourceInfo2(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::DataSourceConnectorManager::DataSourceConnectorManager(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f)
 {
 }
 
-te::qt::widgets::DataSourceInfo2::~DataSourceInfo2()
+te::qt::widgets::DataSourceConnectorManager::~DataSourceConnectorManager()
 {
 }
 

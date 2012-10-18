@@ -30,7 +30,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/OGRConnectorDialogForm.h"
+#include "ui_OGRConnectorDialogForm.h"
 #include "OGRConnectorDialog.h"
 
 // Boost

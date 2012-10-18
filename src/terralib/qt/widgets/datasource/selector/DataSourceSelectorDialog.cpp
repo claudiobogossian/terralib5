@@ -26,8 +26,8 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
-#include "ui/DataSourceSelectorDialogForm.h"
-#include "ui/DataSourceSelectorWidgetForm.h"
+#include "ui_DataSourceSelectorDialogForm.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceSelectorDialog.h"
 #include "DataSourceSelectorWidget.h"
 

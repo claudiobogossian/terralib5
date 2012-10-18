@@ -30,7 +30,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/GDALConnectorDialogForm.h"
+#include "ui_GDALConnectorDialogForm.h"
 #include "GDALConnectorDialog.h"
 
 // Boost

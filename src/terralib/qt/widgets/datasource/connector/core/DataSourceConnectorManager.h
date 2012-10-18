@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/DataSourceInfo2.h
+  \file terralib/qt/widgets/connector/core/DataSourceConnectorManager.h
 
   \brief A widget that groups datasource identificatin and connection information.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_INTERNAL_DATASOURCEINFO2_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_INTERNAL_DATASOURCEINFO2_H
+#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_INTERNAL_DATASOURCECONNECTORMANAGER_H
+#define __TERRALIB_QT_WIDGETS_CONNECTOR_INTERNAL_DATASOURCECONNECTORMANAGER_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../../../Config.h"
 
 // STL
 #include <map>
@@ -43,22 +43,22 @@ namespace te
     namespace widgets
     {
       /*!
-        \class DataSourceInfo2
+        \class DataSourceConnectorManager
 
         \brief A widget that groups datasource identificatin and connection information.
       */
-      class TEQTWIDGETSEXPORT DataSourceInfo2 : public QWidget
+      class TEQTWIDGETSEXPORT DataSourceConnectorManager : public QWidget
       {
         public:
 
-          DataSourceInfo2(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          DataSourceConnectorManager(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~DataSourceInfo2();
+          ~DataSourceConnectorManager();
 
       }; 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_INTERNAL_DATASOURCEINFO2_H
+#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_INTERNAL_DATASOURCECONNECTORMANAGER_H
 

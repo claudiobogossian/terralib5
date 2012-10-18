@@ -88,7 +88,7 @@ void te::qt::widgets::CheckConstraintGroupItem::fetchMore()
   if(parentItem == 0)
     return;
 
-  te::da::DataSetType* dt = parentItem->getDataSet();
+  te::da::DataSetTypePtr dt = parentItem->getDataSet();
 
   if(dt == 0 || dt->getNumberOfCheckConstraints() == 0)
     return;
@@ -106,7 +106,7 @@ bool te::qt::widgets::CheckConstraintGroupItem::hasChildren() const
   if(parentItem == 0)
     return false;
 
-  te::da::DataSetType* dt = parentItem->getDataSet();
+  te::da::DataSetTypePtr dt = parentItem->getDataSet();
 
   if(dt == 0)
     return false;

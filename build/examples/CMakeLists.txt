@@ -67,6 +67,7 @@ option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)
 option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
 option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
 option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
+option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
   
 # Go into sub-directories
 if(EXAMPLE_COLORBAR)
@@ -189,6 +190,11 @@ endif()
 if(EXAMPLE_QT_TOOLS)
   add_subdirectory(terralib_example_qt/tools)
 endif()
+
+if(EXAMPLE_QT_DATASOURCE)
+  add_subdirectory(terralib_example_qt/datasource)
+endif()
+
 
 # Verifying if some packag was not found.
 get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)

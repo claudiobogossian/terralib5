@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "ui/DataSourceSelectorWidgetForm.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
 #include "DataSourceSelectorWidget.h"
 #include "DataSourceSelectorWizardPage.h"
 
