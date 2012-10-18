@@ -95,6 +95,12 @@ int main(int argc, char** argv)
   {
     QApplication app(argc, argv);
 
+    // Adjusting icons theme
+    QString spaths = std::string(ICON_THEME_PATH).c_str();
+    QStringList paths = spaths.split(";");
+    QIcon::setThemeName(ICON_THEME);
+    QIcon::setThemeSearchPaths(paths);
+
     LoadOGRModule();
 
     MainWindow window;
