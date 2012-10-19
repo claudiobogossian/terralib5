@@ -156,7 +156,7 @@ void te::qt::widgets::Measure::drawGeometry()
 
   m_coords.pop_back();
 
-  m_display->update();
+  m_display->repaint();
 }
 
 void te::qt::widgets::Measure::drawLine(Canvas& canvas)
@@ -235,7 +235,7 @@ void te::qt::widgets::Measure::clear()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
     
-  m_display->update();
+  m_display->repaint();
 }
 
 double te::qt::widgets::Measure::calculateLength(te::gm::LineString* line) const
