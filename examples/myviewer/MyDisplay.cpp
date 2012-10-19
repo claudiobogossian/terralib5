@@ -2362,15 +2362,22 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
 
     x2 = e.getUpperRightX();
     y2 = e.getUpperRightY();
+    converter->convert(x2, y2);
     if(std::numeric_limits<double>::has_infinity)
     {
       if(x1 == std::numeric_limits<double>::infinity() || y1 == std::numeric_limits<double>::infinity() ||
-         x2 == std::numeric_limits<double>::infinity() || y2 == std::numeric_limits<double>::infinity() ||
-         cx == std::numeric_limits<double>::infinity() || cy == std::numeric_limits<double>::infinity())
-      return false;
+         x2 == std::numeric_limits<double>::infinity() || y2 == std::numeric_limits<double>::infinity())
+      {
+        if(cx == std::numeric_limits<double>::infinity() || cy == std::numeric_limits<double>::infinity())
+          return false;
+        else
+        {
+          x1 = y1 = -20000000;
+          x2 = y2 = 20000000;
+        }
+      }
     }
 
-    converter->convert(x2, y2);
     dx = fabs(x2 - x1) / 2.;
     dy = fabs(y2 - y1) / 2.;
 
