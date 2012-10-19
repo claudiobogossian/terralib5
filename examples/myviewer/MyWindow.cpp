@@ -1658,7 +1658,10 @@ void MyWindow::addLayerSlot()
   else
   {
     te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-    layer->setSRID(gp->getSRID());
+    int srid = gp->getSRID();
+    if(srid == -1)
+      srid = 4326; // teste para country.shp
+    layer->setSRID(srid);
     layer->setExtent(gp->getExtent());
   }
 

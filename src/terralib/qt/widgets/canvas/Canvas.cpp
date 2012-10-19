@@ -521,8 +521,7 @@ void te::qt::widgets::Canvas::draw(const te::gm::Polygon* poly)
 
     QPolygonF qpol(nPoints);
 
-    memcpy(&(qpol[0]), (double*)(ring->getCoordinates()), 16 * nPoints);
-    
+    memcpy(&(qpol[0]), (double*)(ring->getCoordinates()), 16 * nPoints);    
     path.addPolygon(qpol);
   }
 

@@ -2343,39 +2343,48 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
   if(oldsrid == newsrid)
     return true;
 
-  double x1, y1, x2, y2, cx, cy, dx, dy;
-  
-  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
-
-  converter->setSourceSRID(oldsrid);
-  converter->setTargetSRID(newsrid);
-
-  cx = e.getLowerLeftX() + e.getWidth() / 2.;
-  cy = e.getLowerLeftY() + e.getHeight() / 2.;
-  converter->convert(cx, cy);
-
-  x1 = e.getLowerLeftX();
-  y1 = e.getLowerLeftY();
-  converter->convert(x1, y1);
-
-  x2 = e.getUpperRightX();
-  y2 = e.getUpperRightY();
-  converter->convert(x2, y2);
-  dx = fabs(x2 - x1) / 2.;
-  dy = fabs(y2 - y1) / 2.;
-
-  x1 = cx - dx;
-  x2 = cx + dx;
-  y1 = cy - dy;
-  y2 = cy + dy;
-
-  if(std::numeric_limits<double>::has_infinity)
+  try
   {
-    if(x1 == std::numeric_limits<double>::infinity() || y1 == std::numeric_limits<double>::infinity() ||
-       x2 == std::numeric_limits<double>::infinity() || y2 == std::numeric_limits<double>::infinity())
+    double x1, y1, x2, y2, cx, cy, dx, dy;
+  
+    std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+
+    converter->setSourceSRID(oldsrid);
+    converter->setTargetSRID(newsrid);
+
+    cx = e.getLowerLeftX() + e.getWidth() / 2.;
+    cy = e.getLowerLeftY() + e.getHeight() / 2.;
+    converter->convert(cx, cy);
+
+    x1 = e.getLowerLeftX();
+    y1 = e.getLowerLeftY();
+    converter->convert(x1, y1);
+
+    x2 = e.getUpperRightX();
+    y2 = e.getUpperRightY();
+    if(std::numeric_limits<double>::has_infinity)
+    {
+      if(x1 == std::numeric_limits<double>::infinity() || y1 == std::numeric_limits<double>::infinity() ||
+         x2 == std::numeric_limits<double>::infinity() || y2 == std::numeric_limits<double>::infinity() ||
+         cx == std::numeric_limits<double>::infinity() || cy == std::numeric_limits<double>::infinity())
+      return false;
+    }
+
+    converter->convert(x2, y2);
+    dx = fabs(x2 - x1) / 2.;
+    dy = fabs(y2 - y1) / 2.;
+
+    x1 = cx - dx;
+    x2 = cx + dx;
+    y1 = cy - dy;
+    y2 = cy + dy;
+
+    e.init(x1, y1, x2, y2);
+    return true;
+  }
+  catch(std::exception& e)
+  {
+    QMessageBox::information(this, tr("Projection convertion error..."), tr(e.what()));
     return false;
   }
-
-  e.init(x1, y1, x2, y2);
-  return true;
 }

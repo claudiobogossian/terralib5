@@ -275,7 +275,91 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     }
   }
   else
-    te::map::LayerRenderer::draw(al, canvas, e, srid);
+  {
+    //te::map::LayerRenderer::draw(al, canvas, e, srid);
+    std::string name = layer->getId();
+    te::da::DataSource* ds = layer->getDataSource();
+    te::da::DataSourceTransactor* t = ds->getTransactor();
+    te::da::DataSet* dataSet = t->getDataSet(name);
+    te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+    te::da::DataSetType* dsType = loader->getDataSetType(name, true);
+    te::gm::GeometryProperty* gProp = dsType->getDefaultGeomProperty();
+    int gtype = gProp->getGeometryType();
+    std::size_t gPos = dsType->getDefaultGeomPropertyPos();
+
+    if(gtype == te::gm::PointType || gtype == te::gm::PointZType || gtype == te::gm::PointMType || gtype == te::gm::PointZMType)
+    {
+      canvas->setPointColor(te::color::RGBAColor(255, 0, 0, 255));
+      canvas->setPointPattern(0, 0, 0);
+      canvas->setPointWidth(2);
+    }
+    else if(gtype == te::gm::LineStringType || gtype == te::gm::LineStringZType || gtype == te::gm::LineStringMType || gtype == te::gm::LineStringZMType ||
+      gtype == te::gm::MultiLineStringType || gtype == te::gm::MultiLineStringZType || gtype == te::gm::MultiLineStringMType || gtype == te::gm::MultiLineStringZMType)
+    {
+      canvas->setLinePattern(0, 0, 0);
+      canvas->setLineWidth(1);
+      canvas->setLineColor(te::color::RGBAColor(0, 0, 255, 255));
+      //((te::qt::widgets::Canvas*)canvas)->setLineStyle(Qt::SolidLine);
+    }
+    else
+    {
+      // polygon fill style
+      canvas->setPolygonFillColor(te::color::RGBAColor(0, 255, 0, 255));
+      canvas->setPolygonFillPattern(0, 0, 0);
+
+      // polygon contour style
+      canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, 255));
+      canvas->setPolygonContourWidth(1);
+      canvas->setPolygonContourPattern(0, 0, 0);
+    }
+    dataSet->moveBeforeFirst();
+    while(dataSet->moveNext())
+    {
+      te::gm::Geometry* g = dataSet->getGeometry(gPos);
+      if(g == 0)
+        continue;
+      
+      if(g->getSRID() <= 0)
+        g->setSRID(layer->getSRID());
+      g->transform(srid);
+
+      const te::gm::Envelope* env = g->getMBR();
+      QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
+
+      int w = canvas->getWidth();
+      int h = canvas->getHeight();
+      QMatrix matrix = ((te::qt::widgets::Canvas*)canvas)->getMatrix();
+      QRectF deviceRect(0, 0, w, h);
+      QRectF worldRect = matrix.inverted().mapRect(deviceRect);
+
+      // increase the rectangle to verify geometries of type point. 
+      double delta = 50.; 
+      QRectF pointDeviceRect(-delta, -delta, w + 2 * delta, h + 2 * delta);
+      QRectF pointWorldRect = matrix.inverted().mapRect(pointDeviceRect);
+
+      if(env->getWidth() == 0 && env->getHeight() == 0)
+      {
+        if(pointWorldRect.contains(env->m_llx, env->m_lly) == false)
+        {
+          delete g;
+          continue;
+        }
+      }
+      else
+      {
+        if(r.intersects(worldRect) == false)
+        {
+          delete g;
+          continue;
+        }
+      }
+
+      canvas->draw(g);
+        delete g;
+    }
+    delete dataSet;
+    delete t;
+  }
 }
 
 void MyLayerRenderer::draw(te::map::Canvas* canvas, const te::gm::Geometry* g, const te::color::RGBAColor& cor)

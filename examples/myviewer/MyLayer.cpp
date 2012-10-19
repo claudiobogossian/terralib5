@@ -13,6 +13,7 @@ MyLayer::MyLayer(const std::string& id, const std::string& title, AbstractLayer*
   m_temporal(false),
   m_keepOnMemory(false)
 {
+  setDataSetName(id);
 }
 
 MyLayer::~MyLayer()
