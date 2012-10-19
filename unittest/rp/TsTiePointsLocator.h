@@ -52,6 +52,8 @@ class TsTiePointsLocator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( SurfStrategyMultipleThreads );
   
   CPPUNIT_TEST( SurfStrategyMaximumOffset );
+  
+  CPPUNIT_TEST( SurfStrategyRescaleFactor );
 
   CPPUNIT_TEST( MoravecStrategySameImage );
   
@@ -62,6 +64,8 @@ class TsTiePointsLocator : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( MoravecStrategyMultipleThreads );
   
   CPPUNIT_TEST( MoravecStrategyMaximumOffset );
+  
+  CPPUNIT_TEST( MoravecStrategyRescaleFactor );
   
   CPPUNIT_TEST_SUITE_END();
 
@@ -77,6 +81,8 @@ protected :
   
   void MoravecStrategyMaximumOffset();
   
+  void MoravecStrategyRescaleFactor();
+  
   void SurfStrategySameImage();
   
   void SurfStrategySameImageDifBoxes();
@@ -86,6 +92,8 @@ protected :
   void SurfStrategyMultipleThreads();
   
   void SurfStrategyMaximumOffset();
+  
+  void SurfStrategyRescaleFactor();
 
   /*!
     \brief Save images with their respective tie points market green.

@@ -96,6 +96,7 @@ namespace te
       m_gaussianFilterIterations = 1;
       m_scalesNumber = 3;
       m_octavesNumber = 2;
+      m_rastersRescaleFactor = 1.0;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -132,6 +133,7 @@ namespace te
       m_gaussianFilterIterations = params.m_gaussianFilterIterations;
       m_scalesNumber = params.m_scalesNumber;
       m_octavesNumber = params.m_octavesNumber;
+      m_rastersRescaleFactor = params.m_rastersRescaleFactor;
 
       return *this;
     }
@@ -224,6 +226,13 @@ namespace te
           raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
         }
       }
+      
+      // Applying the global rescale factor
+      
+      raster1XRescFact *= m_inputParameters.m_rastersRescaleFactor;
+      raster1YRescFact *= m_inputParameters.m_rastersRescaleFactor;
+      raster2XRescFact *= m_inputParameters.m_rastersRescaleFactor;
+      raster2YRescFact *= m_inputParameters.m_rastersRescaleFactor;
       
       /* Calculating the maximum interest points number and the Moravec window
         width for each image trying to keep the same density for both images 

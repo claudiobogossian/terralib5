@@ -70,10 +70,10 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   setCentralWidget(m_display);
 
   // Install zoom wheel tool. It's always active!
-  m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, this));
+  m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, m_display));
 
   // Install coordinate tracking tool. It's always active!
-  te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, this);
+  te::qt::widgets::CoordTracking* coordTracking = new te::qt::widgets::CoordTracking(m_display, m_display);
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), SLOT(onCoordTracked(QPointF&)));
   m_display->installEventFilter(coordTracking);
 
@@ -95,27 +95,27 @@ MainWindow::~MainWindow()
 void MainWindow::setupActions()
 {
   // Pan
-  m_setPan = new QAction(tr("Pan"), this);
+  m_setPan = new QAction(QIcon::fromTheme("pan"), tr("Pan"), this);
   m_setPan->setCheckable(true);
   connect(m_setPan, SIGNAL(triggered()), SLOT(onPanTriggered()));
 
   // Zoom Area
-  m_setZoomArea = new QAction(tr("Zoom Area"), this);
+  m_setZoomArea = new QAction(QIcon::fromTheme("zoom-in"), tr("Zoom Area"), this);
   m_setZoomArea->setCheckable(true);
   connect(m_setZoomArea, SIGNAL(triggered()), SLOT(onZoomAreaTriggered()));
 
   // Distance
-  m_setDistance = new QAction(tr("Distance"), this);
+  m_setDistance = new QAction(QIcon::fromTheme("distance-measure"), tr("Measure Distance"), this);
   m_setDistance->setCheckable(true);
   connect(m_setDistance, SIGNAL(triggered()), SLOT(onDistanceTriggered()));
 
   // Area
-  m_setArea = new QAction(tr("Area"), this);
+  m_setArea = new QAction(QIcon::fromTheme("area-measure"), tr("Measure Area"), this);
   m_setArea->setCheckable(true);
   connect(m_setArea, SIGNAL(triggered()), SLOT(onAreaTriggered()));
 
   // Angle
-  m_setAngle = new QAction(tr("Angle"), this);
+  m_setAngle = new QAction(QIcon::fromTheme("angle-measure"), tr("Measure Angle"), this);
   m_setAngle->setCheckable(true);
   connect(m_setAngle, SIGNAL(triggered()), SLOT(onAngleTriggered()));
 
@@ -202,35 +202,35 @@ void MainWindow::addLayer(const QString& path)
 void MainWindow::onPanTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Pan(m_display, Qt::OpenHandCursor, Qt::ClosedHandCursor, this);
+  m_tool = new te::qt::widgets::Pan(m_display, Qt::OpenHandCursor, Qt::ClosedHandCursor);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onZoomAreaTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::ZoomArea(m_display, Qt::CrossCursor, this);
+  m_tool = new te::qt::widgets::ZoomArea(m_display, Qt::BlankCursor, this);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onDistanceTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Distance, this);
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Distance);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onAreaTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Area, this);
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Area);
   m_display->installEventFilter(m_tool);
 }
 
 void MainWindow::onAngleTriggered()
 {
   delete m_tool;
-  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Angle, this);
+  m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Angle);
   m_display->installEventFilter(m_tool);
 }
 
