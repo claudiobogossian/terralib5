@@ -1480,20 +1480,19 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
     te::gm::Point mouseWPos(pw.x(), pw.y(), m_srid);
 
     mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
+    te::gm::Envelope env(mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y(), mouseRectF.topLeft().x(), mouseRectF.bottomLeft().y());
+    transform(env, m_srid, layer->getSRID());
+
     te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType, m_srid);
     te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType, m_srid);
+    line->setPoint(0, env.getLowerLeftX(), env.getLowerLeftY()); // lower left
+    line->setPoint(1, env.getUpperRightX(), env.getLowerLeftY()); // upper left
+    line->setPoint(2, env.getUpperRightX(), env.getUpperRightY()); // upper rigth
+    line->setPoint(3, env.getLowerLeftX(), env.getUpperRightY()); // lower rigth
+    line->setPoint(4, env.getLowerLeftX(), env.getLowerLeftY()); // closing
 
-    line->setPoint(0, mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y()); // lower left
-    line->setPoint(1, mouseRectF.topLeft().x(), mouseRectF.bottomLeft().y()); // upper left
-    line->setPoint(2, mouseRectF.topRight().x(), mouseRectF.bottomRight().y()); // upper rigth
-    line->setPoint(3, mouseRectF.bottomRight().x(), mouseRectF.topRight().y()); // lower rigth
-    line->setPoint(4, mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y()); // closing
     poly->push_back(line);
 
-    //transform to layer projection
-    mouseWPos.transform(layer->getSRID());
-    poly->transform(layer->getSRID());
-   
     te::da::DataSet* dataSet = op->getDataSet();
     te::da::DataSetType* dsType = op->getDataSetType();
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
@@ -1508,6 +1507,8 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       te::gm::Geometry* g = dataSet->getGeometry(gPos);
       if(g == 0)
         continue;
+
+      g->transform(m_srid);
 
       if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
       {
@@ -1527,13 +1528,6 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       }
       else if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
       {
-        //QRect mouseRect(0, 0, 5, 5);
-        //mouseRect.moveCenter(p);     
-        //QPointF gwp(static_cast<const te::gm::Point*>(g)->getX(), static_cast<const te::gm::Point*>(g)->getY());
-        //QPoint gdp(canvas->getMatrix().map(gwp).toPoint());
-
-
-        //if(mouseRect.contains(gdp))
         if(poly->contains(g))
         {
           for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
