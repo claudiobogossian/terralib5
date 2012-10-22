@@ -18,46 +18,64 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tools/ZoomWheel.cpp
+  \file terralib/qt/widgets/tools/ZoomKeyboard.cpp
 
-  \brief This class implements a concrete tool to geographic zoom operation using the mouse wheel.
+  \brief This class implements a concrete tool to geographic zoom operation using the keyboard.
 */
 
 // TerraLib
 #include "MapDisplay.h"
-#include "ZoomWheel.h"
+#include "ZoomKeyboard.h"
 
 // Qt
-#include <QtGui/QWheelEvent>
+#include <QtGui/QKeyEvent>
 
-te::qt::widgets::ZoomWheel::ZoomWheel(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
+te::qt::widgets::ZoomKeyboard::ZoomKeyboard(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
   : Zoom(display, zoomFactor, In, parent)
 {
+  m_display->setFocusPolicy(Qt::ClickFocus);
 }
 
-te::qt::widgets::ZoomWheel::~ZoomWheel()
+te::qt::widgets::ZoomKeyboard::~ZoomKeyboard()
 {
 }
 
-void te::qt::widgets::ZoomWheel::initialize()
+void te::qt::widgets::ZoomKeyboard::initialize()
 {
 }
 
-void te::qt::widgets::ZoomWheel::finalize()
+void te::qt::widgets::ZoomKeyboard::finalize()
 {
 }
 
-bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
+bool te::qt::widgets::ZoomKeyboard::eventFilter(QObject* watched, QEvent* e)
 {
   if(watched != m_display)
     return false;
 
   switch(e->type())
   {
-    case QEvent::Wheel:
+    case QEvent::KeyPress:
     {
-      QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(e);
-      wheelEvent->delta() > 0 ? setZoomType(In) : setZoomType(Out);
+      QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+
+      int key = keyEvent->key();
+
+      switch(key)
+      {
+        case Qt::Key_Up:
+        case Qt::Key_Plus:
+          setZoomType(In);
+        break;
+
+        case Qt::Key_Down:
+        case Qt::Key_Minus:
+          setZoomType(Out);
+        break;
+
+        default:
+          return false;
+      }
       
       applyZoom();
 
@@ -65,6 +83,6 @@ bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
     }
 
     default:
-      return Zoom::eventFilter(watched, e);
+       return Zoom::eventFilter(watched, e);
   }
 }

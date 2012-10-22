@@ -101,6 +101,8 @@ class MainWindow : public QMainWindow
   private slots:
 
     void onPanTriggered();
+    void onZoomInTriggered();
+    void onZoomOutTriggered();
     void onZoomAreaTriggered();
     void onDistanceTriggered();
     void onAreaTriggered();
@@ -116,11 +118,6 @@ class MainWindow : public QMainWindow
     std::list<te::map::AbstractLayer*> m_layers;
 
     QToolBar* m_toolBar;
-    QAction* m_setPan;
-    QAction* m_setZoomArea;
-    QAction* m_setDistance;
-    QAction* m_setArea;
-    QAction* m_setAngle;
 
     static std::size_t ms_id;
 };

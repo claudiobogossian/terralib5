@@ -64,7 +64,7 @@ bool te::qt::widgets::RubberBand::mouseMoveEvent(QMouseEvent* e)
   painter.setBrush(m_brush);
   painter.drawRect(m_rect);
 
-  m_display->update();
+  m_display->repaint();
 
   return true;
 }
@@ -74,7 +74,7 @@ bool te::qt::widgets::RubberBand::mouseReleaseEvent(QMouseEvent* e)
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
 
-  m_display->update();
+  m_display->repaint();
 
   return true;
 }

@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tools/ZoomWheel.h
+  \file terralib/qt/widgets/tools/ZoomClick.h
 
-  \brief This class implements a concrete tool to geographic zoom operation using the mouse wheel.
+  \brief This class implements a concrete tool to geographic zoom operation using the mouse click.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ZOOMWHEEL_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_ZOOMWHEEL_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_ZOOMCLICK_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_ZOOMCLICK_H
 
 // TerraLib
 #include "../Config.h"
@@ -40,11 +40,11 @@ namespace te
     class MapDisplay;
 
       /*!
-        \class ZoomWheel
+        \class ZoomClick
 
-        \brief This class implements a concrete tool to geographic zoom operation using the mouse wheel.
+        \brief This class implements a concrete tool to geographic zoom operation using the mouse click.
       */
-      class TEQTWIDGETSEXPORT ZoomWheel : public Zoom
+      class TEQTWIDGETSEXPORT ZoomClick : public Zoom
       {
         public:
 
@@ -54,18 +54,19 @@ namespace te
           //@{
 
           /*!
-            \brief It constructs a zoom wheel tool associated with the given map display.
+            \brief It constructs a zoom click tool associated with the given map display.
 
             \param display The map display associated with the tool.
             \param zoomFactor The factor used to zoom. i.e. A factor value of 2.0 (default) will generate a new extent twice (%) bigger or smaller.
+            \para zoomType The zoom operation type - ZoomIn | ZoomOut.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          ZoomWheel(MapDisplay* display, const double& zoomFactor = 2.0, QObject* parent = 0);
+          ZoomClick(MapDisplay* display, const double& zoomFactor = 2.0, const ZoomType& type = In, QObject* parent = 0);
 
           /*! \brief Destructor. */
-          ~ZoomWheel();
+          ~ZoomClick();
 
           //@}
 
@@ -78,7 +79,7 @@ namespace te
 
           void finalize();
 
-          bool eventFilter(QObject* watched, QEvent* e);
+          bool mousePressEvent(QMouseEvent* e);
 
           //@}
 
@@ -94,7 +95,7 @@ namespace te
 
             \param rhs The right-hand-side copy that would be used to copy from.
           */
-          ZoomWheel(const ZoomWheel& rhs);
+          ZoomClick(const ZoomClick& rhs);
 
           /*!
             \brief Assignment operator not allowed.
@@ -103,7 +104,7 @@ namespace te
 
             \return A reference to this object.
           */
-          ZoomWheel& operator=(const ZoomWheel& rhs);
+          ZoomClick& operator=(const ZoomClick& rhs);
 
           //@}
       };
@@ -112,4 +113,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_ZOOMWHEEL_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_ZOOMCLICK_H

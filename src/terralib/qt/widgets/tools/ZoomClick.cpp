@@ -18,53 +18,41 @@
  */
 
 /*!
-  \file terralib/qt/widgets/tools/ZoomWheel.cpp
+  \file terralib/qt/widgets/tools/ZoomClick.cpp
 
-  \brief This class implements a concrete tool to geographic zoom operation using the mouse wheel.
+  \brief This class implements a concrete tool to geographic zoom operation using the mouse click.
 */
 
 // TerraLib
 #include "MapDisplay.h"
-#include "ZoomWheel.h"
+#include "ZoomClick.h"
 
 // Qt
-#include <QtGui/QWheelEvent>
+#include <QtGui/QMouseEvent>
 
-te::qt::widgets::ZoomWheel::ZoomWheel(te::qt::widgets::MapDisplay* display, const double& zoomFactor, QObject* parent) 
-  : Zoom(display, zoomFactor, In, parent)
+te::qt::widgets::ZoomClick::ZoomClick(te::qt::widgets::MapDisplay* display, const double& zoomFactor, const ZoomType& type, QObject* parent) 
+  : Zoom(display, zoomFactor, type, parent)
 {
 }
 
-te::qt::widgets::ZoomWheel::~ZoomWheel()
+te::qt::widgets::ZoomClick::~ZoomClick()
 {
 }
 
-void te::qt::widgets::ZoomWheel::initialize()
+void te::qt::widgets::ZoomClick::initialize()
 {
 }
 
-void te::qt::widgets::ZoomWheel::finalize()
+void te::qt::widgets::ZoomClick::finalize()
 {
 }
 
-bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
+bool te::qt::widgets::ZoomClick::mousePressEvent(QMouseEvent* e)
 {
-  if(watched != m_display)
+  if(e->button() != Qt::LeftButton)
     return false;
 
-  switch(e->type())
-  {
-    case QEvent::Wheel:
-    {
-      QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(e);
-      wheelEvent->delta() > 0 ? setZoomType(In) : setZoomType(Out);
-      
-      applyZoom();
+  applyZoom(m_display->transform(e->posF()));
 
-      return true;
-    }
-
-    default:
-      return Zoom::eventFilter(watched, e);
-  }
+  return true;
 }
