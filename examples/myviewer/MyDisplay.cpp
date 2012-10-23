@@ -702,10 +702,10 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
       te::da::DataSource* ds = layer->getDataSource();
       te::da::DataSourceTransactor* t = ds->getTransactor();
       te::da::DataSet* dataSet = t->getDataSet(name);
-      te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-      te::da::DataSetType* dsType = loader->getDataSetType(name, true);
-      if(dsType->getCatalog() == 0)
-        dsType->setCatalog(ds->getCatalog());
+      //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+      te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
+      //if(dsType->getCatalog() == 0)
+      //  dsType->setCatalog(ds->getCatalog());
 
       assert(dataSet);
 
@@ -715,7 +715,7 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
         op->init(dsType, dataSet);
         layer->setDataGridOperation(op);
       }
-      delete loader;
+      //delete loader;
   //?    delete t;
     }
 
@@ -1275,7 +1275,7 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
       te::gm::Geometry* g = dataSet->getGeometry(gPos);
       if(g == 0)
         continue;
-
+      g->setSRID(layer->getSRID());
       g->transform(m_srid);
       if(rec.width() == 1 && rec.height() == 1)
       {

@@ -70,13 +70,14 @@ void MyLayer::createGrid()
     te::da::DataSourceTransactor* t = ds->getTransactor();
     assert(t);
 
-    te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-    assert(loader);
+    //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+    //assert(loader);
 
-    te::da::DataSetType* dsType = loader->getDataSetType(getId(), true);
-    dsType->setCatalog(ds->getCatalog());
-    assert(dsType);
-    delete loader;
+    //te::da::DataSetType* dsType = loader->getDataSetType(getId(), true);
+    //dsType->setCatalog(ds->getCatalog());
+    //assert(dsType);
+    //delete loader;
+    te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(getId());
 
     m_grid->setWindowTitle(getId().c_str());
 

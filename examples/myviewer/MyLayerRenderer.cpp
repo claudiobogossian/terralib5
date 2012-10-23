@@ -139,7 +139,7 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
       if(g == 0)
         continue;
       
-      layer->setSRID(g->getSRID());
+      g->setSRID(layer->getSRID());
       g->transform(srid);
       const te::gm::Envelope* env = g->getMBR();
       QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
@@ -281,8 +281,9 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     te::da::DataSource* ds = layer->getDataSource();
     te::da::DataSourceTransactor* t = ds->getTransactor();
     te::da::DataSet* dataSet = t->getDataSet(name);
-    te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-    te::da::DataSetType* dsType = loader->getDataSetType(name, true);
+    //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+    //te::da::DataSetType* dsType = loader->getDataSetType(name, true);
+    te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
     te::gm::GeometryProperty* gProp = dsType->getDefaultGeomProperty();
     int gtype = gProp->getGeometryType();
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();

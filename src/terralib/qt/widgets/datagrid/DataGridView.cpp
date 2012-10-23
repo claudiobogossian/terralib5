@@ -161,6 +161,9 @@ void te::qt::widgets::DataGridView::updateTableViewSelectionStatus()
 
 void te::qt::widgets::DataGridView::rowClicked(int clickedVisualRow)
 {
+  if(m_dataGridOp == 0)
+    return;
+
   static int prevClickedVisualRow = -1; // previous visual row clicked
 
   Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
@@ -220,6 +223,9 @@ void te::qt::widgets::DataGridView::rowClicked(int clickedVisualRow)
 
 void te::qt::widgets::DataGridView::columnClicked(int clickedVisualColumn)
 {
+  if(m_dataGridOp == 0)
+    return;
+
   static int prevClickedVisualColumn = -1;  // previous visual column clicked
 
   Qt::KeyboardModifiers keyboardModifiers = QApplication::keyboardModifiers();
@@ -276,6 +282,9 @@ void te::qt::widgets::DataGridView::columnClicked(int clickedVisualColumn)
 
 void te::qt::widgets::DataGridView::promotePointedRows()
 {
+  if(m_dataGridOp == 0)
+    return;
+
   // Promote the visual rows that are pointed, or "pointed and queried".
   m_dataGridOp->promoteRows(te::map::DataGridOperation::POINTED);
 
@@ -288,6 +297,9 @@ void te::qt::widgets::DataGridView::promotePointedRows()
 
 void te::qt::widgets::DataGridView::promoteQueriedRows()
 {
+  if(m_dataGridOp == 0)
+    return;
+
   // Promote the visual rows that are queried, or "pointed and queried".
   m_dataGridOp->promoteRows(te::map::DataGridOperation::QUERIED);
 
@@ -300,6 +312,9 @@ void te::qt::widgets::DataGridView::promoteQueriedRows()
 
 void te::qt::widgets::DataGridView::removeAllSelections()
 {
+  if(m_dataGridOp == 0)
+    return;
+
   m_dataGridOp->removeRowSelections();
   m_dataGridOp->removeColumnSelections();
 
@@ -321,6 +336,9 @@ void te::qt::widgets::DataGridView::sortColumnsInDescendentOrder()
 
 void te::qt::widgets::DataGridView::columnMoved(int fromPos, int toPos)
 {
+  if(m_dataGridOp == 0)
+    return;
+
   // Move the column in memory from the fromPos to toPos, and get the
   // logical geomtry column before the moving operation
   int prevLogicalGeometryColumn = m_dataGridOp->moveColumn(fromPos, toPos);
@@ -387,6 +405,9 @@ void te::qt::widgets::DataGridView::getSequencePairs(std::vector<int>& sections,
 
 void te::qt::widgets::DataGridView::mouseReleaseEvent(QMouseEvent* e)
 {
+  if(m_dataGridOp == 0)
+    return;
+
   if (e->button() == Qt::LeftButton)
   {
     const QPoint& p = e->pos();
@@ -412,6 +433,9 @@ void te::qt::widgets::DataGridView::mouseReleaseEvent(QMouseEvent* e)
 
 void te::qt::widgets::DataGridView::sortColumns(std::string order)
 {
+  if(m_dataGridOp == 0)
+    return;
+
   QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 
   std::vector<int> selectedColumns = m_dataGridOp->getSelectedColumns();
