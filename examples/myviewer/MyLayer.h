@@ -5,6 +5,8 @@
 
 #include <terralib/qt/qwt/Plot.h>
 
+#include <QWidget>
+
 class MyGrid;
 
 class MyLayer : public te::map::Layer
@@ -17,7 +19,7 @@ public:
   te::map::DataGridOperation* getDataGridOperation();
   void setTemporal(bool);
   bool isTemporal();
-  void createGrid();
+  void createGrid(QWidget* = 0);
   void deleteGrid(bool = true);
   MyGrid* getGrid();
   std::set<QwtPlot*>& getPlots();

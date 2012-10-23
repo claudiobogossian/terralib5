@@ -151,6 +151,7 @@ void SelectLayer::connectionStringEditedSlot()
 
     std::string dstype = m_dataSourceTypeComboBox->currentText().toStdString();
     te::da::DataSource* ds = te::da::DataSourceFactory::make(dstype);
+    m_connectionStringLineEdit->setText(m_connectionStringLineEdit->text().remove(QChar(' ')));
     std::string cs = m_connectionStringLineEdit->text().toStdString();
     m_connectionWithError = m_connectionStringLineEdit->text();
     std::string dsInfo;
@@ -198,7 +199,7 @@ void SelectLayer::okSlot()
   if(m_layerNameComboBox->count() == 0)
     return;
 
-  if(m_connectionWithError.isEmpty() == false)
+  if(m_connectionWithError.isEmpty() == false && m_titleNameLineEdit->text().isEmpty())
   {
     m_connectionWithError.clear();
     return;

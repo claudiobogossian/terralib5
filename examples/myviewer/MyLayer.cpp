@@ -42,13 +42,13 @@ te::map::DataGridOperation* MyLayer::getDataGridOperation()
   return m_op;
 }
 
-void MyLayer::createGrid()
+void MyLayer::createGrid(QWidget* w)
 {
   if(m_grid)
     return;
 
   te::da::DataSource* ds = getDataSource();
-  m_grid = new MyGrid(this);
+  m_grid = new MyGrid(this, w);
   if(m_op)
   {
     te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(m_op->getDataSetType(), m_op->getDataSet(), m_op);
