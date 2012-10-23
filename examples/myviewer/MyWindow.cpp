@@ -884,8 +884,8 @@ void MyWindow::openGridSlot()
 
     if(grid == 0)
     {
-      //layer->createGrid(this);
-      layer->createGrid();
+      layer->createGrid(this);
+      //layer->createGrid();
       QString wtitle = "Grid: ";
       wtitle += m_selectedLayer->getTitle().c_str();
       grid = layer->getGrid();

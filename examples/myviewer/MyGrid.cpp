@@ -12,6 +12,8 @@ MyGrid::MyGrid(MyLayer* layer, QWidget* parent) :
   m_layer(layer),
   m_localSelection(false)
 {
+  setWindowFlags(Qt::Window);
+
   // Set the actions for the menu of the vertical header of the grid
   QAction* promotePointedRowsAction = new QAction(QObject::tr("Promote the Pointed Rows"), this);
   promotePointedRowsAction->setStatusTip(QObject::tr("Promote the rows pointed"));
