@@ -25,6 +25,7 @@
 
 // Example
 #include "MainWindow.h"
+#include "SelectionTool.h"
 
 // TerraLib
 #include <terralib/common.h>
@@ -44,6 +45,8 @@
 // Qt
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
+#include <QtGui/QContextMenuEvent>
+#include <QtGui/QMenu>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 
@@ -58,6 +61,9 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
 {
   // Creates the tool bar
   m_toolBar = addToolBar("Tools");
+
+  // Creates the menu
+  m_menu = new QMenu(this);
 
   // Creates the status bar
   statusBar();
@@ -144,6 +150,12 @@ void MainWindow::setupActions()
   connect(setAngle, SIGNAL(triggered()), SLOT(onAngleTriggered()));
   actions << setAngle;
 
+  // Selection
+  QAction* setSelection = new QAction(QIcon::fromTheme("pointer"), tr("Selection"), this);
+  setSelection->setCheckable(true);
+  connect(setSelection, SIGNAL(triggered()), SLOT(onSelectionTriggered()));
+  actions << setSelection;
+
   // Tools group
   QActionGroup* toolsGroup = new QActionGroup(this);
   
@@ -153,6 +165,7 @@ void MainWindow::setupActions()
   {
     toolsGroup->addAction(*it);
     m_toolBar->addAction(*it);
+    m_menu->addAction(*it);
   }
 }
 
@@ -220,6 +233,11 @@ void MainWindow::addLayer(const QString& path)
   m_display->setExtent(*extent);
 }
 
+void MainWindow::contextMenuEvent(QContextMenuEvent* e)
+{
+  m_menu->popup(e->globalPos());
+}
+
 void MainWindow::onPanTriggered()
 {
   delete m_tool;
@@ -266,6 +284,13 @@ void MainWindow::onAngleTriggered()
 {
   delete m_tool;
   m_tool = new te::qt::widgets::Measure(m_display, te::qt::widgets::Measure::Angle);
+  m_display->installEventFilter(m_tool);
+}
+
+void MainWindow::onSelectionTriggered()
+{
+  delete m_tool;
+  m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(*m_layers.begin()));
   m_display->installEventFilter(m_tool);
 }
 
