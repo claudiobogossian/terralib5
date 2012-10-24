@@ -38,9 +38,6 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
 
   setAcceptDrops(true);
 
-  //m_tooltipDisplayPixmap = new QPixmap(w, h);
-  //clearTooltipPixmap();
-
   m_temporalVectorialDisplayPixmap = new QPixmap(w, h);
   m_temporalVectorialDisplayPixmap->fill(QColor(255, 255, 255, 0));
 
@@ -360,7 +357,6 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
       m_srid = srid;
     if(srid != m_srid)
       transform(env, srid, m_srid);
-      //env.transform(srid, m_srid);
 
     m_envelope.Union(env);
   }
@@ -504,29 +500,8 @@ void MyDisplay::setMouseOperationToPanSlot()
 
 void MyDisplay::selectionChangedSlot(te::map::DataGridOperation* op)
 {
-  //std::list<te::map::AbstractLayer*> layerList;
-  //mountLayerList(m_layerTree, layerList);
-  //std::list<te::map::AbstractLayer*>::iterator it;
-  //for(it = layerList.begin(); it != layerList.end(); ++it)
-  //{
-  //  MyLayer* layer = (MyLayer*)*it;
-  //  if(layer->getDataGridOperation() == op)
-  //  {
-  //    //neste ponto o style do layer deve ser setado para depois desenhar...
-  //    //.....vou fazer um renderer que usa DataGridOperation em vez do style
-  //    //te::map::Layer* layer = (te::map::Layer*)al;
-
-      //setWaitCursor();
-//      te::qt::widgets::Canvas* canvas = getCanvas(layer);
-//      canvas->clear();
-
-      te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
-      draw();
-
-      //unsetWaitCursor();
-  //    break;
-  //  }
-  //}
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+  draw();
 }
 
 void MyDisplay::removeDrawOnlyChanged(te::map::AbstractLayer* al)
@@ -611,7 +586,6 @@ void MyDisplay::draw()
   {
     throw(te::common::Exception(e.what()));
   }
-  //te::qt::widgets::MapDisplay::draw();
 }
 
 void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
@@ -634,7 +608,6 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
           m_srid = srid;
         if(srid != m_srid)
           transform(env, srid, m_srid);
-          //env.transform(srid, m_srid);
 
         m_extent->Union(env);
       }
@@ -676,23 +649,10 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
 {
   try
   {
-    //setWaitCursor();
     te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
     te::qt::widgets::Canvas* canvas = getCanvas(al);
     if(canvas == 0)
       return;
-//
-//
-//if(((MyLayer*)(al))->getId().find("crimes") != std::string::npos)
-//{
-//  std::vector<te::gm::Geometry*> ggs;
-//  canvas->clear(ggs);
-//}
-//
-//
-//
-//
-//
 
     MyLayer* layer =  (MyLayer*)al;
     te::map::DataGridOperation* op = layer->getDataGridOperation();
@@ -702,10 +662,7 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
       te::da::DataSource* ds = layer->getDataSource();
       te::da::DataSourceTransactor* t = ds->getTransactor();
       te::da::DataSet* dataSet = t->getDataSet(name);
-      //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
       te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
-      //if(dsType->getCatalog() == 0)
-      //  dsType->setCatalog(ds->getCatalog());
 
       assert(dataSet);
 
@@ -715,8 +672,6 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
         op->init(dsType, dataSet);
         layer->setDataGridOperation(op);
       }
-      //delete loader;
-  //?    delete t;
     }
 
     bool b = false;
@@ -729,11 +684,9 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
       al->draw(canvas, *m_extent, m_srid);
 
     addDrawOnlyChanged(layer);
-    //unsetWaitCursor();
   }
   catch(std::exception& e)
   {
-    //unsetWaitCursor();
     QMessageBox::information(this, tr("Error Drawing..."), tr(e.what()));
     return;
   }
@@ -743,7 +696,6 @@ void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
 {
   try
   {
-    //setWaitCursor();
     te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
     m_displayPixmap->fill();
@@ -754,8 +706,6 @@ void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
     {
       MyLayer* layer =  (MyLayer*)(*it);
       te::qt::widgets::Canvas* c = getCanvas(layer);
-      //if(c == 0 || layer->getVisibility() == 0)
-      //  continue;
       if(layer->getVisibility() == te::map::VISIBLE)
       {
         if(c == 0)
@@ -767,11 +717,9 @@ void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
         painter.drawPixmap(0, 0, *(c->getPixmap()));
       }
     }
-    //unsetWaitCursor();
   }
   catch(std::exception& e)
   {
-    //unsetWaitCursor();
     QMessageBox::information(this, tr("Error Drawing..."), tr(e.what()));
     return;
   }
@@ -813,7 +761,6 @@ te::gm::Envelope MyDisplay::getAllExtent(std::list<te::map::AbstractLayer*>& lay
           m_srid = srid;
         if(srid != m_srid)
           transform(env, srid, m_srid);
-          //env.transform(srid, m_srid);
       }
 
       extent.Union(env);
@@ -896,14 +843,10 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
       canvas->setPointWidth(1);
       if(layer->getId() == "40: locations")
       {
-        //canvas->setPointMarker(te::map::MarkerPixel);
-        //canvas->setPointMarkerColor(te::color::RGBAColor(220 ,0, 0, 255));
         canvas->setPointColor(te::color::RGBAColor(220 ,0, 0, 255));
       }
       else
       {
-        //canvas->setPointMarker(te::map::MarkerPixel);
-        //canvas->setPointMarkerColor(te::color::RGBAColor(0, 220, 0, 255));
         canvas->setPointColor(te::color::RGBAColor(0 , 220, 0, 255));
       }
     }
@@ -927,33 +870,6 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
         m_timeLineEdit->setText(timeString);
       }
     }
-
-    //if(m_showTimeLineEditAction->isChecked())
-    //{
-    //  te::dt::TimeInstant* t = m_timeSlider->getCurrentTime();
-    //  if(t)
-    //  {
-    //    int x = 8;
-    //    int y = canvas->getHeight() - 6;
-    //    std::string time = t->toString();
-    //    canvas->setFontFamily("Tahoma Normal");
-    //    canvas->setTextPointSize(14);
-    //    canvas->setTextColor(te::color::RGBAColor(255, 0, 255, 255));
-    //    canvas->setTextContourColor(te::color::RGBAColor(255, 0, 255, 255));
-    //    canvas->setTextContourWidth(1);
-    //    canvas->setTextOpacity(255);
-    //    canvas->setTextContourEnabled(true);
-    //    canvas->setTextContourOpacity(255);
-
-    //    te::gm::Polygon* pol = canvas->getTextBoundary(x, y, time);
-    //    canvas->setPolygonFillColor(te::color::RGBAColor(255, 255, 255, 255));
-    //    canvas->setPolygonContourColor(te::color::RGBAColor(255, 255, 255, 255));
-    //    canvas->draw(pol);
-    //    delete pol;
-
-    //    canvas->drawText(x, y, time);
-    //  }
-    //}
 
     QPainter painter(m_temporalVectorialDisplayPixmap);
     painter.drawPixmap(0, 0, *(canvas->getPixmap()));
@@ -1095,12 +1011,8 @@ void MyDisplay::paintEvent(QPaintEvent* e)
 
     painter.drawPixmap(m_resizeRec, *m_displayPixmap, m_resizeWRec);
   }
-//  te::qt::widgets::MapDisplay::paintEvent(e);
 
   QRect rec, wrec;
-  //QMatrix m;
-  //QPointF p1, p2;
-  //te::qt::widgets::Canvas *c = 0;
 
   if(m_resize == false)
   {
@@ -1110,7 +1022,6 @@ void MyDisplay::paintEvent(QPaintEvent* e)
       QRect rec = e->rect();
       painter.drawPixmap(rec, *m_temporalVectorialDisplayPixmap, rec);
       painter.drawPixmap(rec, *m_temporalImageDisplayPixmap, rec);
-      //painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
     }
   }
   else // fazendo resize do display com os pixmaps temporais
@@ -1124,7 +1035,6 @@ void MyDisplay::paintEvent(QPaintEvent* e)
     QPainter painter(this);
     painter.drawPixmap(m_resizeRec, *m_temporalVectorialDisplayPixmap, m_resizeWRec);
     painter.drawPixmap(m_resizeRec, *m_temporalImageDisplayPixmap, m_resizeWRec);
-    //painter.drawPixmap(0, 0, *m_tooltipDisplayPixmap);
   }
 }
 
@@ -1182,7 +1092,6 @@ void MyDisplay::setExtent()
     canvas->clear();
   }
 
-  //clearTooltipPixmap();
   if(m_timeSlider)
     clearTemporalPixmaps(m_timeSlider->getLayers());
 }
@@ -1196,7 +1105,6 @@ void MyDisplay::setRepaint(bool s)
 void MyDisplay::setSRID(const int& srid)
 {
   m_drawOnlyChanged.clear();
-  //te::map::MapDisplay::setSRID(srid);
   if(m_srid == srid)
     return;
 
@@ -1223,7 +1131,6 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
   if(layerList.size() == 0)
     return;
 
-  //setWaitCursor();
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
   for(it = layerList.begin(); it != layerList.end(); ++it)
   {
@@ -1319,7 +1226,6 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
       op->toggleRowsPointingStatus(visRows);
     Q_EMIT selectionChanged(op);
   }
-  //unsetWaitCursor();
 }
 
 void MyDisplay::execZoomAreaSlot(const QRect& rec)
@@ -1561,48 +1467,6 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       delete g;
     }
     delete poly;
-////////////////////////////////////////////////////////////
-    //int w = m_displayPixmap->width();
-    //int h = m_displayPixmap->height();
-    //if(m_tooltipDisplayPixmap->width() != w || m_tooltipDisplayPixmap->height() != h)
-    //{
-    //  delete m_tooltipDisplayPixmap;
-    //  m_tooltipDisplayPixmap = new QPixmap(w, h);
-    //  clearTooltipPixmap();
-    //  m_tooltipRect = QRect();
-    //}
-
-    //QPainter painter(m_tooltipDisplayPixmap);
-    //if(m_tooltipRect.isValid())
-    //{
-    //  painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
-    //  painter.setPen(Qt::black);
-    //  painter.setBrush(Qt::black);
-    //  painter.drawRect(m_tooltipRect);
-    //  painter.setCompositionMode(QPainter::CompositionMode_Source);
-    //  m_tooltipRect = QRect();
-    //}
-
-    //if(values.empty() == false)
-    //{
-    //  QPoint mp(p);
-    //  std::vector<QString>::reverse_iterator its;
-    //  for(its = values.rbegin(); its != values.rend(); ++its)
-    //  {
-    //    QRect trect;
-    //    QRect rect(0, 0, 1000, 40);
-    //    QPoint pp(mp.x(), mp.y() + 7);
-    //    rect.moveCenter(pp);
-    //    painter.drawText(rect, Qt::AlignHCenter, *its, &trect);
-    //    trect.setLeft(trect.left() - 2);
-    //    trect.setWidth(trect.width() + 3);
-    //    m_tooltipRect = m_tooltipRect.united(trect);
-    //    mp.setY(mp.y() - trect.height());
-    //  }
-    //}
-    //repaint();
-///////////////////////////////////////////////////////////
-
 
     if(values.empty() == false)
     {
@@ -1676,8 +1540,7 @@ void MyDisplay::mouseShowCoordSlot(QPoint p)
 void MyDisplay::drawAllPointedsSlot()
 {
   te::qt::widgets::Canvas* canvas;
-  QRectF recF;
-  int status;
+  int status = -1;
   std::list<te::map::AbstractLayer*> layerList;
   getLayerList(m_layerTree, layerList);
 
@@ -1685,7 +1548,7 @@ void MyDisplay::drawAllPointedsSlot()
   if(layerList.size() == 0)
     return;
 
-  //setWaitCursor();
+  te::gm::Envelope fitEnv;
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
   for(it = layerList.begin(); it != layerList.end(); ++it)
   {
@@ -1715,28 +1578,33 @@ void MyDisplay::drawAllPointedsSlot()
       status = op->getDataSetSelectionStatus(pkv);
       if(status == te::map::DataGridOperation::POINTED || status == te::map::DataGridOperation::POINTED_AND_QUERIED)
       {
-        g->transform(m_srid);
-        const te::gm::Envelope* env = g->getMBR();
-        QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
-        recF |= r;
+        te::gm::Envelope env(*g->getMBR());
+        if(transform(env, layer->getSRID(), m_srid))
+          fitEnv.Union(env);
       }
       delete g;
     }
   }
 
-  if(recF.isValid())
+  if(fitEnv.isValid())
   {
-    recF = canvas->getMatrix().mapRect(recF);
-    QRect rec(recF.x(), recF.y(), recF.width(), recF.height());
-    execZoomAreaSlot(rec);
+    m_envelope = fitEnv;
+    setExtent();
+    draw();
   }
-  //unsetWaitCursor();
+  else
+  {
+    if(status != -1)
+    {
+      QMessageBox::information(this, tr("Projection Error"), tr("Convertion Error"));
+      return;
+    }
+  }
 }
 
 void MyDisplay::drawAllQueriedsSlot()
 {
   te::qt::widgets::Canvas* canvas;
-  QRectF recF;
   int status;
   std::list<te::map::AbstractLayer*> layerList;
   getLayerList(m_layerTree, layerList);
@@ -1745,7 +1613,7 @@ void MyDisplay::drawAllQueriedsSlot()
   if(layerList.size() == 0)
     return;
 
-  //setWaitCursor();
+  te::gm::Envelope fitEnv;
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
   for(it = layerList.begin(); it != layerList.end(); ++it)
   {
@@ -1775,22 +1643,28 @@ void MyDisplay::drawAllQueriedsSlot()
       status = op->getDataSetSelectionStatus(pkv);
       if(status == te::map::DataGridOperation::QUERIED || status == te::map::DataGridOperation::POINTED_AND_QUERIED)
       {
-        g->transform(m_srid);
-        const te::gm::Envelope* env = g->getMBR();
-        QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
-        recF |= r;
+        te::gm::Envelope env(*g->getMBR());
+        if(transform(env, layer->getSRID(), m_srid))
+          fitEnv.Union(env);
       }
       delete g;
     }
   }
 
-  if(recF.isValid())
+  if(fitEnv.isValid())
   {
-    recF = canvas->getMatrix().mapRect(recF);
-    QRect rec(recF.x(), recF.y(), recF.width(), recF.height());
-    execZoomAreaSlot(rec);
+    m_envelope = fitEnv;
+    setExtent();
+    draw();
   }
-  //unsetWaitCursor();
+  else
+  {
+    if(status != -1)
+    {
+      QMessageBox::information(this, tr("Projection Error"), tr("Convertion Error"));
+      return;
+    }
+  }
 }
 
 void MyDisplay::drawAllPointedsAndQueriedsSlot()
@@ -1805,7 +1679,7 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
   if(layerList.size() == 0)
     return;
 
-  //setWaitCursor();
+  te::gm::Envelope fitEnv;
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
   for(it = layerList.begin(); it != layerList.end(); ++it)
   {
@@ -1835,22 +1709,28 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
       status = op->getDataSetSelectionStatus(pkv);
       if(status == te::map::DataGridOperation::POINTED_AND_QUERIED)
       {
-        g->transform(m_srid);
-        const te::gm::Envelope* env = g->getMBR();
-        QRectF r(env->m_llx, env->m_lly, env->getWidth(), env->getHeight());
-        recF |= r;
+        te::gm::Envelope env(*g->getMBR());
+        if(transform(env, layer->getSRID(), m_srid))
+          fitEnv.Union(env);
       }
       delete g;
     }
   }
 
-  if(recF.isValid())
+  if(fitEnv.isValid())
   {
-    recF = canvas->getMatrix().mapRect(recF);
-    QRect rec(recF.x(), recF.y(), recF.width(), recF.height());
-    execZoomAreaSlot(rec);
+    m_envelope = fitEnv;
+    setExtent();
+    draw();
   }
-  //unsetWaitCursor();
+  else
+  {
+    if(status != -1)
+    {
+      QMessageBox::information(this, tr("Projection Error"), tr("Convertion Error"));
+      return;
+    }
+  }
 }
 
 void MyDisplay::initTemporal()
@@ -1932,7 +1812,6 @@ void MyDisplay::printFileSlot()
 
 void MyDisplay::print(QPrinter* printer)
 {
-  //setWaitCursor();
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
   QSizeF paperSizeMM = printer->paperSize(QPrinter::Millimeter);
 
@@ -2109,14 +1988,7 @@ void MyDisplay::print(QPrinter* printer)
   }
   painter.end();
   delete canvas;
-
-  //unsetWaitCursor();
 }
-
-//void MyDisplay::clearTooltipPixmap()
-//{
-//  m_tooltipDisplayPixmap->fill(QColor(255, 255, 255, 0));
-//}
 
 void MyDisplay::getLayerList(te::map::AbstractLayer* al, std::list<te::map::AbstractLayer*>& layerList)
 {
@@ -2381,6 +2253,8 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
     y2 = cy + dy;
 
     e.init(x1, y1, x2, y2);
+    if(e.getWidth() == 0 || e.getHeight() == 0)
+      return false;
     return true;
   }
   catch(std::exception& e)
