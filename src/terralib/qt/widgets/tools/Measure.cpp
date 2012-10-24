@@ -59,6 +59,8 @@ te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const Me
 
 te::qt::widgets::Measure::~Measure()
 {
+  QPixmap* draft = m_display->getDraftPixmap();
+  draft->fill(Qt::transparent);
 }
 
 bool te::qt::widgets::Measure::mousePressEvent(QMouseEvent* e)
