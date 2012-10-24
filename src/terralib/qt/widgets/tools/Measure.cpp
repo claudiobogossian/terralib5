@@ -59,14 +59,8 @@ te::qt::widgets::Measure::Measure(te::qt::widgets::MapDisplay* display, const Me
 
 te::qt::widgets::Measure::~Measure()
 {
-}
-
-void te::qt::widgets::Measure::initialize()
-{
-}
-
-void te::qt::widgets::Measure::finalize()
-{
+  QPixmap* draft = m_display->getDraftPixmap();
+  draft->fill(Qt::transparent);
 }
 
 bool te::qt::widgets::Measure::mousePressEvent(QMouseEvent* e)
@@ -156,7 +150,7 @@ void te::qt::widgets::Measure::drawGeometry()
 
   m_coords.pop_back();
 
-  m_display->update();
+  m_display->repaint();
 }
 
 void te::qt::widgets::Measure::drawLine(Canvas& canvas)
@@ -235,7 +229,7 @@ void te::qt::widgets::Measure::clear()
   QPixmap* draft = m_display->getDraftPixmap();
   draft->fill(Qt::transparent);
     
-  m_display->update();
+  m_display->repaint();
 }
 
 double te::qt::widgets::Measure::calculateLength(te::gm::LineString* line) const

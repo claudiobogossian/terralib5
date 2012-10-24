@@ -73,7 +73,7 @@ public:
   void setRepaint(bool s);
   te::map::AbstractLayer* getLayerTree();
   void fit(std::list<te::map::AbstractLayer*>& layerList);
-  void transform(te::gm::Envelope& e, int oldsrid, int newsrid);
+  bool transform(te::gm::Envelope& e, int oldsrid, int newsrid);
 
 public Q_SLOTS:
   void selectionChangedSlot(te::map::DataGridOperation*);

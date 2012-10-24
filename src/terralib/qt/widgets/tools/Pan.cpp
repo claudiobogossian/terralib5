@@ -44,14 +44,6 @@ te::qt::widgets::Pan::~Pan()
 {
 }
 
-void te::qt::widgets::Pan::initialize()
-{
-}
-
-void te::qt::widgets::Pan::finalize()
-{
-}
-
 bool te::qt::widgets::Pan::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
@@ -91,7 +83,7 @@ bool te::qt::widgets::Pan::mouseMoveEvent(QMouseEvent* e)
   painter.drawPixmap(m_delta, *result); // Draw the current result translated.
   painter.restore();
 
-  m_display->update();
+  m_display->repaint();
 
   return true;
 }

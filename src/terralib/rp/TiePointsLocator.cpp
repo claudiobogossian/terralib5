@@ -96,6 +96,7 @@ namespace te
       m_gaussianFilterIterations = 1;
       m_scalesNumber = 3;
       m_octavesNumber = 2;
+      m_rastersRescaleFactor = 1.0;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -132,6 +133,7 @@ namespace te
       m_gaussianFilterIterations = params.m_gaussianFilterIterations;
       m_scalesNumber = params.m_scalesNumber;
       m_octavesNumber = params.m_octavesNumber;
+      m_rastersRescaleFactor = params.m_rastersRescaleFactor;
 
       return *this;
     }
@@ -224,6 +226,13 @@ namespace te
           raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
         }
       }
+      
+      // Applying the global rescale factor
+      
+      raster1XRescFact *= m_inputParameters.m_rastersRescaleFactor;
+      raster1YRescFact *= m_inputParameters.m_rastersRescaleFactor;
+      raster2XRescFact *= m_inputParameters.m_rastersRescaleFactor;
+      raster2YRescFact *= m_inputParameters.m_rastersRescaleFactor;
       
       /* Calculating the maximum interest points number and the Moravec window
         width for each image trying to keep the same density for both images 
@@ -663,7 +672,7 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( createIntegralImage( *(rasterData[ 0 ]), 
           integralRaster ), "Integral image creation error" );
           
-//        rasterData.clear();
+        rasterData.clear();
         
         if( m_inputParameters.m_enableProgress )
         {
@@ -688,7 +697,7 @@ namespace te
           candidateInterestPoints ),
           "Error locating raster 1 interest points" );
           
-        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints1");
+//        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints1");
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -756,7 +765,7 @@ namespace te
           if( ! progress.isActive() ) return false;
         }           
           
-//        rasterData.clear();
+        rasterData.clear();
           
 //        printMatrix( integralRaster );
 //        createTifFromMatrix( integralRaster, InterestPointsSetT(), "integralRaster2" );
@@ -775,7 +784,7 @@ namespace te
           candidateInterestPoints ),
           "Error locating raster interest points" );
           
-        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints2");
+//        createTifFromMatrix( *(rasterData[ 0 ]), candidateInterestPoints, "surfInterestPoints2");
 
         if( m_inputParameters.m_enableProgress )
         {
@@ -2808,6 +2817,7 @@ namespace te
       unsigned int currIPointFeatureElementIndex = 0;
       unsigned int featureWindowWidth = 0;
       unsigned int featureWindowRadius = 0;
+      double featureWindowRadiusDouble = 0;
       unsigned int feature90DegreeRotatedWindowRadius = 0;
       unsigned int currIPointCenterXAllowedMin = 0 ;
       unsigned int currIPointCenterXAllowedMax = 0 ;
@@ -2823,14 +2833,22 @@ namespace te
       double featureSubWindowHaarSumY = 0;
       double featureSubWindowHaarAbsSumX = 0;
       double featureSubWindowHaarAbsSumY = 0;            
-      double featureElementRasterOriginalXIdx = 0;
-      double featureElementRasterOriginalYIdx = 0;
-      double featureElementRasterRotatedXIdx = 0;
-      double featureElementRasterRotatedYIdx = 0;
+      double featureElementZeroCenteredOriginalXIdx = 0;
+      double featureElementZeroCenteredOriginalYIdx = 0;
+      double featureElementZeroCenteredRotatedXIdx = 0;
+      double featureElementZeroCenteredRotatedYIdx = 0;
+      double featureElementRotatedXIdx = 0;
+      double featureElementRotatedYIdx = 0;      
+      unsigned int featureElementRasterRotatedXIdx = 0;
+      unsigned int featureElementRasterRotatedYIdx = 0;
       double featureElementOriginalHaarXIntensity = 0;
       double featureElementOriginalHaarYIntensity = 0;
+      double featureElementZeroCenteredOriginalHaarXIntensity = 0;
+      double featureElementZeroCenteredOriginalHaarYIntensity = 0;
       double featureElementRotatedHaarXIntensity = 0;
       double featureElementRotatedHaarYIntensity = 0;
+      double featureElementZeroCenteredRotatedHaarXIntensity = 0;
+      double featureElementZeroCenteredRotatedHaarYIntensity = 0;      
       unsigned int featureElementHaarWindowRadius = 0;
       double featureElementsNormalizeFactor = 0;
       double* currentFeaturePtr = 0;
@@ -2899,6 +2917,7 @@ namespace te
           // intenal vars
           
           featureWindowRadius = featureWindowWidth / 2;
+          featureWindowRadiusDouble = (double)featureWindowRadius;
           featureSubWindowWidth = featureWindowWidth / 4;
           featureWindowSampleStep = MAX( 1, featureWindowWidth / 9 );
           featureWindowRasterXStart = currIPointCenterX - featureWindowRadius;
@@ -2983,34 +3002,34 @@ namespace te
               for( featureSubWindowYOffset = 0 ; featureSubWindowYOffset < 
                 featureSubWindowWidth ; featureSubWindowYOffset += featureWindowSampleStep ) 
               {
+                featureElementZeroCenteredOriginalYIdx = ((double)featureSubWindowYOffset)
+                  - featureWindowRadiusDouble;
+                  
                 for( featureSubWindowXOffset = 0 ; featureSubWindowXOffset < 
                   featureSubWindowWidth ; featureSubWindowXOffset += featureWindowSampleStep ) 
                 {
-                  /* finding the correspondent point over the original raster */
+                  featureElementZeroCenteredOriginalXIdx = ((double)featureSubWindowXOffset)
+                    - featureWindowRadiusDouble;                  
                   
-                  featureElementRasterOriginalXIdx = 
-                    ((double)( featureSubWindowBlockStartX + featureSubWindowXOffset )) - 
-                    ((double)featureWindowRadius);
-                  featureElementRasterOriginalYIdx = 
-                    ((double)( featureSubWindowBlockStartY + featureSubWindowYOffset )) - 
-                    ((double)featureWindowRadius);
+                  /* finding the correspondent point over the original raster
+                     using a clockwize rotation */ 
                   
-                  featureElementRasterRotatedXIdx = 
-                    ( currIPointRotationCos * featureElementRasterOriginalXIdx ) + 
-                    ( currIPointRotationSin * featureElementRasterOriginalYIdx );
-                  featureElementRasterRotatedYIdx = 
-                    ( currIPointRotationCos * featureElementRasterOriginalYIdx )
-                    - ( currIPointRotationSin * featureElementRasterOriginalXIdx );
+                  featureElementZeroCenteredRotatedXIdx = 
+                    ( currIPointRotationCos * featureElementZeroCenteredOriginalXIdx ) + 
+                    ( currIPointRotationSin * featureElementZeroCenteredOriginalYIdx );
+                  featureElementZeroCenteredRotatedYIdx = 
+                    ( currIPointRotationCos * featureElementZeroCenteredOriginalYIdx )
+                    - ( currIPointRotationSin * featureElementZeroCenteredOriginalXIdx );
                     
-                  featureElementRasterRotatedXIdx += ((double)featureWindowRadius);
-                  featureElementRasterRotatedYIdx += ((double)featureWindowRadius);
-                  
+                  featureElementRotatedXIdx = featureElementZeroCenteredRotatedXIdx +
+                    featureWindowRadiusDouble;
+                  featureElementRotatedYIdx = featureElementZeroCenteredRotatedYIdx +
+                    featureWindowRadiusDouble;
+                    
                   featureElementRasterRotatedXIdx = featureWindowRasterXStart +
-                    (unsigned int)ROUND( featureElementRasterRotatedXIdx );
-                  featureElementRasterRotatedYIdx = featureWindowRasterYStart +
-                    (unsigned int)ROUND( featureElementRasterRotatedYIdx );
-                    
-                  // Finding the original haar intesity vectors
+                    (unsigned int)ROUND( featureElementRotatedXIdx );
+                  featureElementRasterRotatedYIdx = ((double)featureWindowRasterYStart) +
+                    (unsigned int)ROUND( featureElementRotatedYIdx );
                     
                   assert( ((long int)featureElementRasterRotatedXIdx) -
                     ((long int)featureElementHaarWindowRadius) >= 0 );
@@ -3019,7 +3038,9 @@ namespace te
                   assert( featureElementRasterRotatedXIdx + 
                     featureElementHaarWindowRadius < integralRasterData.getColumnsNumber() ); 
                   assert( featureElementRasterRotatedYIdx + 
-                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );
+                    featureElementHaarWindowRadius < integralRasterData.getLinesNumber() );                    
+                    
+                  // Finding the original haar intesity vectors
                     
                   featureElementOriginalHaarXIntensity = getHaarXVectorIntensity( integralRasterData, 
                     featureElementRasterRotatedXIdx, featureElementRasterRotatedYIdx, 
@@ -3029,13 +3050,24 @@ namespace te
                     featureElementHaarWindowRadius );
                     
                   // Rotating the intensities by the central point haar intensities vectors
+                  // usigng a counterclockwise rotation
                   
-                  featureElementRotatedHaarXIntensity = 
-                    ( currIPointRotationCos * featureElementOriginalHaarXIntensity ) + 
-                    ( currIPointRotationSin * featureElementRotatedHaarYIntensity );
-                  featureElementRotatedHaarYIntensity = 
-                    ( currIPointRotationCos * featureElementRotatedHaarYIntensity )
-                    - ( currIPointRotationSin * featureElementOriginalHaarXIntensity );                
+                  featureElementZeroCenteredOriginalHaarXIntensity = featureElementOriginalHaarXIntensity +
+                    featureElementZeroCenteredOriginalXIdx;
+                  featureElementZeroCenteredOriginalHaarYIntensity = featureElementOriginalHaarYIntensity + 
+                    featureElementZeroCenteredOriginalYIdx;
+                  
+                  featureElementZeroCenteredRotatedHaarXIntensity = 
+                    ( currIPointRotationCos * featureElementZeroCenteredOriginalHaarXIntensity ) + 
+                    ( currIPointRotationSin * featureElementZeroCenteredOriginalHaarYIntensity );
+                  featureElementZeroCenteredRotatedHaarYIntensity = 
+                    ( currIPointRotationCos * featureElementZeroCenteredOriginalHaarYIntensity )
+                    - ( currIPointRotationSin * featureElementZeroCenteredOriginalHaarXIntensity );
+                    
+                  featureElementRotatedHaarXIntensity = featureElementZeroCenteredRotatedHaarXIntensity
+                    - featureElementZeroCenteredRotatedXIdx;
+                  featureElementRotatedHaarYIntensity = featureElementZeroCenteredRotatedHaarYIntensity 
+                    - featureElementZeroCenteredRotatedYIdx;
                     
                   // Haar intensity sum
                     

@@ -16,52 +16,57 @@ SelectLayer::SelectLayer(te::da::DataSource* ds, QWidget* parent, Qt::WindowFlag
 {
   setWindowTitle("Add Layer");
   QVBoxLayout* vlayout = new QVBoxLayout(this);
-  QLabel* label1 = new QLabel("Data Source Type Name:", this);
-  m_dataSourceTypeComboBox = new QComboBox(this);
+
+  QGroupBox* b1 = new QGroupBox(this);
+  QLabel* label1 = new QLabel("Data Source Type Name:", b1);
+  m_dataSourceTypeComboBox = new QComboBox(b1);
   m_dataSourceTypeComboBox->setMinimumWidth(100);
-  QHBoxLayout* layout1 = new QHBoxLayout(this);
+  QHBoxLayout* layout1 = new QHBoxLayout(b1);
   layout1->addWidget(label1);
   layout1->addWidget(m_dataSourceTypeComboBox);
   layout1->addStretch();
-  vlayout->addLayout(layout1);
+  vlayout->addWidget(b1);
 
-  QLabel* label2 = new QLabel("Connection String:", this);
-  m_connectionStringLineEdit = new QLineEdit(this);
-  QPushButton* editedButton = new QPushButton("CR", this);
-  QHBoxLayout* layout2 = new QHBoxLayout(this);
+  QGroupBox* b2 = new QGroupBox(this);
+  QLabel* label2 = new QLabel("Connection String:", b2);
+  m_connectionStringLineEdit = new QLineEdit(b2);
+  //QPushButton* editedButton = new QPushButton("CR", b2);
+  QHBoxLayout* layout2 = new QHBoxLayout(b2);
   layout2->addWidget(label2);
   layout2->addWidget(m_connectionStringLineEdit);
-  layout2->addWidget(editedButton);
-  vlayout->addLayout(layout2);
+  //layout2->addWidget(editedButton);
+  vlayout->addWidget(b2);
 
-  QLabel* label3 = new QLabel("Layer Name:", this);
-  m_layerNameComboBox = new QComboBox(this);
+  QGroupBox* b3 = new QGroupBox(this);
+  QLabel* label3 = new QLabel("Layer Name:", b3);
+  m_layerNameComboBox = new QComboBox(b3);
   m_layerNameComboBox->setMinimumWidth(200);
-  QHBoxLayout* layout3 = new QHBoxLayout(this);
+  QHBoxLayout* layout3 = new QHBoxLayout(b3);
   layout3->addWidget(label3);
   layout3->addWidget(m_layerNameComboBox);
   layout3->addStretch();
-  vlayout->addLayout(layout3);
+  vlayout->addWidget(b3);
 
-  QLabel* label4 = new QLabel("Title Name:", this);
-  m_titleNameLineEdit = new QLineEdit(this);
+  QGroupBox* b4 = new QGroupBox(this);
+  QLabel* label4 = new QLabel("Title Name:", b4);
+  m_titleNameLineEdit = new QLineEdit(b4);
   m_titleNameLineEdit->setMinimumWidth(100);
-  QHBoxLayout* layout4 = new QHBoxLayout(this);
+  QHBoxLayout* layout4 = new QHBoxLayout(b4);
   layout4->addWidget(label4);
   layout4->addWidget(m_titleNameLineEdit);
   layout4->addStretch();
-  vlayout->addLayout(layout4);
+  vlayout->addWidget(b4);
 
-  QGroupBox* gb = new QGroupBox(this);
-  m_okPushButton = new QPushButton("Ok", gb);
-  m_cancelPushButton = new QPushButton("Cancel", gb);
-  QHBoxLayout* layout5 = new QHBoxLayout(gb);
+  QGroupBox* b5 = new QGroupBox(this);
+  m_okPushButton = new QPushButton("Ok", b5);
+  m_cancelPushButton = new QPushButton("Cancel", b5);
+  QHBoxLayout* layout5 = new QHBoxLayout(b5);
   layout5->addStretch();
   layout5->addWidget(m_okPushButton);
   layout5->addStretch();
   layout5->addWidget(m_cancelPushButton);
   layout5->addStretch();
-  vlayout->addWidget(gb);
+  vlayout->addWidget(b5);
 
   setLayout(vlayout);
 
@@ -128,12 +133,17 @@ void SelectLayer::dataSourceChangedSlot(int)
 {
   m_connectionStringLineEdit->clear();
   m_layerNameComboBox->clear();
+    m_titleNameLineEdit->clear();
 }
 
 void SelectLayer::connectionStringEditedSlot()
 {
-  if(m_connectionStringLineEdit->text().isEmpty())
+  if(m_connectionStringLineEdit->text().isEmpty() || m_connectionWithError.isEmpty() == false)
+  {
+    m_connectionStringLineEdit->setText(m_connectionWithError);
+    m_connectionWithError.clear();
     return;
+  }
 
   try
   {
@@ -141,8 +151,9 @@ void SelectLayer::connectionStringEditedSlot()
 
     std::string dstype = m_dataSourceTypeComboBox->currentText().toStdString();
     te::da::DataSource* ds = te::da::DataSourceFactory::make(dstype);
+    m_connectionStringLineEdit->setText(m_connectionStringLineEdit->text().remove(QChar(' ')));
     std::string cs = m_connectionStringLineEdit->text().toStdString();
-
+    m_connectionWithError = m_connectionStringLineEdit->text();
     std::string dsInfo;
     //if(dstype == "GDAL")
     //  dsInfo = "URI=" + cs;
@@ -173,16 +184,27 @@ void SelectLayer::connectionStringEditedSlot()
     delete loader;
     delete transactor;
     delete ds;
+    //m_connectionWithError.clear();
   }
   catch(const te::common::Exception& e)
   {
+    // O catch faz chamar este slot (connectionStringEditedSlot()) novamente
+    m_connectionStringLineEdit->clear();
     QMessageBox::information(this, tr("Connection String Error"), tr(e.what()));
-    return;
   }
 }
 
 void SelectLayer::okSlot()
 {
+  if(m_layerNameComboBox->count() == 0)
+    return;
+
+  if(m_connectionWithError.isEmpty() == false && m_titleNameLineEdit->text().isEmpty())
+  {
+    m_connectionWithError.clear();
+    return;
+  }
+
   if(m_titleNameLineEdit->text().isEmpty())
   {
     QMessageBox::information(this, tr("Title Name is empty"), tr("Type Title Name and Continue"));

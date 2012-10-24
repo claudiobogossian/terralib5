@@ -83,12 +83,6 @@ namespace te
            */
           //@{
 
-          /*! \brief It initializes the tool. */
-          virtual void initialize() = 0;
-
-          /*! \brief It finalizes the tool. */
-          virtual void finalize() = 0;
-
           /*!
             \biref Filters events if this object has been installed as an event filter for the watched object.
 

@@ -78,10 +78,6 @@ namespace te
            */
           //@{
 
-          void initialize();
-
-          void finalize();
-
           bool mouseMoveEvent(QMouseEvent* e);
 
           //@}

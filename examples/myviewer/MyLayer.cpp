@@ -13,6 +13,7 @@ MyLayer::MyLayer(const std::string& id, const std::string& title, AbstractLayer*
   m_temporal(false),
   m_keepOnMemory(false)
 {
+  setDataSetName(id);
 }
 
 MyLayer::~MyLayer()
@@ -41,13 +42,13 @@ te::map::DataGridOperation* MyLayer::getDataGridOperation()
   return m_op;
 }
 
-void MyLayer::createGrid()
+void MyLayer::createGrid(QWidget* w)
 {
   if(m_grid)
     return;
 
   te::da::DataSource* ds = getDataSource();
-  m_grid = new MyGrid(this);
+  m_grid = new MyGrid(this, w);
   if(m_op)
   {
     te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(m_op->getDataSetType(), m_op->getDataSet(), m_op);
@@ -69,13 +70,14 @@ void MyLayer::createGrid()
     te::da::DataSourceTransactor* t = ds->getTransactor();
     assert(t);
 
-    te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
-    assert(loader);
+    //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
+    //assert(loader);
 
-    te::da::DataSetType* dsType = loader->getDataSetType(getId(), true);
-    dsType->setCatalog(ds->getCatalog());
-    assert(dsType);
-    delete loader;
+    //te::da::DataSetType* dsType = loader->getDataSetType(getId(), true);
+    //dsType->setCatalog(ds->getCatalog());
+    //assert(dsType);
+    //delete loader;
+    te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(getId());
 
     m_grid->setWindowTitle(getId().c_str());
 

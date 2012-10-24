@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
-#include "AbstractTool.h"
+#include "Zoom.h"
 
 namespace te
 {
@@ -44,7 +44,7 @@ namespace te
 
         \brief This class implements a concrete tool to geographic zoom operation using the mouse wheel.
       */
-      class TEQTWIDGETSEXPORT ZoomWheel : public AbstractTool
+      class TEQTWIDGETSEXPORT ZoomWheel : public Zoom
       {
         public:
 
@@ -57,11 +57,12 @@ namespace te
             \brief It constructs a zoom wheel tool associated with the given map display.
 
             \param display The map display associated with the tool.
+            \param zoomFactor The factor used to zoom. i.e. A factor value of 2.0 (default) will generate a new extent twice (%) bigger or smaller.
             \param parent The tool's parent.
 
             \note The tool will NOT take the ownership of the given pointers.
           */
-          ZoomWheel(MapDisplay* display, QObject* parent = 0);
+          ZoomWheel(MapDisplay* display, const double& zoomFactor = 2.0, QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~ZoomWheel();
@@ -73,17 +74,9 @@ namespace te
            */
           //@{
 
-          void initialize();
-
-          void finalize();
-
           bool eventFilter(QObject* watched, QEvent* e);
 
           //@}
-
-        private:
-
-          void performsZoom(const double& t);
 
         private:
 

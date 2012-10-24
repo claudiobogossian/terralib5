@@ -41,21 +41,13 @@ te::qt::widgets::ZoomArea::~ZoomArea()
 {
 }
 
-void te::qt::widgets::ZoomArea::initialize()
-{
-}
-
-void te::qt::widgets::ZoomArea::finalize()
-{
-}
-
 bool te::qt::widgets::ZoomArea::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
     return false;
 
   m_zoomStarted = true;
-  m_rect = QRect();
+  m_rect = QRectF();
 
   return RubberBand::mousePressEvent(e);
 }
@@ -72,10 +64,17 @@ bool te::qt::widgets::ZoomArea::mouseReleaseEvent(QMouseEvent* e)
 {
   m_zoomStarted = false;
 
-  if(e->button() != Qt::LeftButton || m_rect.isNull())
+  if(e->button() != Qt::LeftButton)
     return false;
 
   RubberBand::mouseReleaseEvent(e);
+
+  if(m_rect.isNull()) // Zoom by click
+  {
+    QRect displayRect = m_display->rect();
+    m_rect = QRectF(displayRect.topLeft() * 0.5, displayRect.bottomRight() * 0.5);
+    m_rect.moveCenter(m_origin);
+  }
 
   // Converts zoom boundary to world coordinates
   QPointF ll(m_rect.left(), m_rect.bottom());

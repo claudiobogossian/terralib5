@@ -32,6 +32,7 @@ public:
   QLineEdit* m_titleNameLineEdit;
   QPushButton* m_okPushButton;
   QPushButton* m_cancelPushButton;
+  QString m_connectionWithError;
 };
 
 #endif

@@ -25,6 +25,7 @@
 #include <terralib/raster/RasterSummary.h>
 #include <terralib/raster/RasterSummaryManager.h>
 #include <terralib/qt/widgets/utils/ScopedCursor.h>
+#include <terralib/srs/Config.h>
 
 
 //Qt
@@ -883,7 +884,7 @@ void MyWindow::openGridSlot()
 
     if(grid == 0)
     {
-      layer->createGrid();
+      layer->createGrid(this);
       QString wtitle = "Grid: ";
       wtitle += m_selectedLayer->getTitle().c_str();
       grid = layer->getGrid();
@@ -902,7 +903,7 @@ void MyWindow::openGridSlot()
       connect(grid, SIGNAL(closed(MyGrid*)), this, SLOT(removeGridSlot(MyGrid*)));
     }
     else
-      grid->raise();  
+      grid->showNormal();  
 
     QApplication::restoreOverrideCursor();
   }
@@ -1632,6 +1633,26 @@ void MyWindow::addLayerSlot()
   te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
 
   te::da::DataSetType* dst = loader->getDataSetType(lname, true);
+  dst->setCatalog(catalog);
+  if(dst->getPrimaryKey() == 0)
+  {
+    QStringList items;
+    const std::vector<te::dt::Property*>& props = dst->getProperties();
+    std::vector<te::dt::Property*>::const_iterator cit;
+    for(cit = props.cbegin(); cit != props.cend(); ++cit)
+      items.append((*cit)->getName().c_str());
+
+    bool ok;
+    QString item = QInputDialog::getItem(this, "Enter a Unique Key", "Unique key:", items, 0, false, &ok);
+
+    if(ok && !items.isEmpty())
+    {
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst);
+      pk->add(dst->getProperty(item.toStdString()));
+      dst->add(pk);
+    }
+  }
+
   if(catalog->getDataSetType(lname) == 0)
     catalog->add(dst);
   MyLayer* layer = new MyLayer(lname, tname, folderLayer);
@@ -1658,7 +1679,98 @@ void MyWindow::addLayerSlot()
   else
   {
     te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-    layer->setSRID(gp->getSRID());
+    int srid = gp->getSRID();
+    if(srid == -1)
+    {
+      //srid = 4326; // teste para country.shp
+      std::map<int, QString> sridMap;
+      std::map<int, QString>::iterator it;
+
+      sridMap[TE_SRS_SAD69] = "TE_SRS_SAD69";
+      sridMap[TE_SRS_CORREGO_ALEGRE] = "TE_SRS_CORREGO_ALEGRE";
+      sridMap[TE_SRS_WGS84] = "TE_SRS_WGS84";
+      sridMap[TE_SRS_SIRGAS2000] = "TE_SRS_SIRGAS2000";
+      sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_21S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_21S";
+      sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_22S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_22S";
+      sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_23S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_23S";
+      sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_24S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_24S";
+      sridMap[TE_SRS_CORREGO_ALEGRE_UTM_ZONE_25S] = "TE_SRS_CORREGO_ALEGRE_UTM_ZONE_25S";
+      sridMap[TE_SRS_SAD69_POLYCONIC] = "TE_SRS_SAD69_POLYCONIC";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_18N] = "TE_SRS_SAD69_UTM_ZONE_18N";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_19N] = "TE_SRS_SAD69_UTM_ZONE_19N";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_20N] = "TE_SRS_SAD69_UTM_ZONE_20N";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_21N] = "TE_SRS_SAD69_UTM_ZONE_21N";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_22N] = "TE_SRS_SAD69_UTM_ZONE_22N";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_17S] = "TE_SRS_SAD69_UTM_ZONE_17S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_18S] = "TE_SRS_SAD69_UTM_ZONE_18S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_19S] = "TE_SRS_SAD69_UTM_ZONE_19S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_20S] = "TE_SRS_SAD69_UTM_ZONE_20S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_21S] = "TE_SRS_SAD69_UTM_ZONE_21S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_22S] = "TE_SRS_SAD69_UTM_ZONE_22S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_23S] = "TE_SRS_SAD69_UTM_ZONE_23S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_24S] = "TE_SRS_SAD69_UTM_ZONE_24S";
+      sridMap[TE_SRS_SAD69_UTM_ZONE_25S] = "TE_SRS_SAD69_UTM_ZONE_25S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_17N] = "TE_SRS_SIRGAS2000_UTM_ZONE_17N";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_18N] = "TE_SRS_SIRGAS2000_UTM_ZONE_18N";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_19N] = "TE_SRS_SIRGAS2000_UTM_ZONE_19N";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_20N] = "TE_SRS_SIRGAS2000_UTM_ZONE_20N";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_21N] = "TE_SRS_SIRGAS2000_UTM_ZONE_21N";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_22N] = "TE_SRS_SIRGAS2000_UTM_ZONE_22N";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_17S] = "TE_SRS_SIRGAS2000_UTM_ZONE_17S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_18S] = "TE_SRS_SIRGAS2000_UTM_ZONE_18S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_19S] = "TE_SRS_SIRGAS2000_UTM_ZONE_19S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_20S] = "TE_SRS_SIRGAS2000_UTM_ZONE_20S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_21S] = "TE_SRS_SIRGAS2000_UTM_ZONE_21S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_22S] = "TE_SRS_SIRGAS2000_UTM_ZONE_22S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_23S] = "TE_SRS_SIRGAS2000_UTM_ZONE_23S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_24S] = "TE_SRS_SIRGAS2000_UTM_ZONE_24S";
+      sridMap[TE_SRS_SIRGAS2000_UTM_ZONE_25S] = "TE_SRS_SIRGAS2000_UTM_ZONE_25S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_18N] = "TE_SRS_WGS84_UTM_ZONE_18N";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_19N] = "TE_SRS_WGS84_UTM_ZONE_19N";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_20N] = "TE_SRS_WGS84_UTM_ZONE_20N";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_21N] = "TE_SRS_WGS84_UTM_ZONE_21N";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_22N] = "TE_SRS_WGS84_UTM_ZONE_22N";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_17S] = "TE_SRS_WGS84_UTM_ZONE_17S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_18S] = "TE_SRS_WGS84_UTM_ZONE_18S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_19S] = "TE_SRS_WGS84_UTM_ZONE_19S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_20S] = "TE_SRS_WGS84_UTM_ZONE_20S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_21S] = "TE_SRS_WGS84_UTM_ZONE_21S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_22S] = "TE_SRS_WGS84_UTM_ZONE_22S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_23S] = "TE_SRS_WGS84_UTM_ZONE_23S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_24S] = "TE_SRS_WGS84_UTM_ZONE_24S";
+      sridMap[TE_SRS_WGS84_UTM_ZONE_25S] = "TE_SRS_WGS84_UTM_ZONE_25S";
+      sridMap[TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC] = "TE_SRS_WGS84_ANTARTIC_POLAR_STEREOGRAPHIC";
+      sridMap[4291] = "4291";
+      sridMap[29177] = "29177";
+      sridMap[29178] = "29178";
+      sridMap[29179] = "29179";
+      sridMap[29180] = "29180";
+      sridMap[29181] = "29181";
+      sridMap[29182] = "29182";
+      sridMap[29183] = "29183";
+      sridMap[29184] = "29184";
+      sridMap[29185] = "29185";
+
+      QStringList items;
+      for(it = sridMap.begin(); it != sridMap.end(); ++it)
+        items.append(it->second);
+
+      bool ok;
+      QString item = QInputDialog::getItem(this, "Config SRID", "SRID:", items, 0, false, &ok);
+
+      if(ok && !items.isEmpty())
+      {
+        for(it = sridMap.begin(); it != sridMap.end(); ++it)
+        {
+          if(item == it->second)
+          {
+            srid = it->first;
+            layer->setSRID(srid);
+            break;
+          }
+        }
+      }
+    }
     layer->setExtent(gp->getExtent());
   }
 

@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtGui/QApplication>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <exception>
@@ -95,11 +96,49 @@ int main(int argc, char** argv)
   {
     QApplication app(argc, argv);
 
+    // Adjusting icons theme
+    QString spaths = std::string(ICON_THEME_PATH).c_str();
+    QStringList paths = spaths.split(";");
+    QIcon::setThemeName(ICON_THEME);
+    QIcon::setThemeSearchPaths(paths);
+
     LoadOGRModule();
 
+    // Instructions
+    QString text = QString::fromLatin1("<p>Here you have a Map Display component associated with a set of geographic tools.\
+                                        <p>There are somes tools always active. e.g.:\
+                                        <ul><li><b>CoordTracking:</b> move the mouse on Map Display and see the tracked geographic coordinate on status bar;</li>\
+                                            <li><b>ZoomWheel:</b> use the mouse wheel to performs a zoom on MapDisplay;</li>\
+                                            <li><b>ZoomKeyboard:</b> you can use the keys (+) / (Up) or (-) / (Down) to performs a zoom also.</li>\
+                                        </ul>\
+                                        <p>Some tools can be activated using the tool bar. e.g.\
+                                        <ul><li><b>Pan:</b> click on MapDisplay using the left mouse button. Keep the button hold and move. Release the button to perform a pan;</li>\
+                                            <li><b>ZoomIn:</b> click on MapDisplay using the left mouse button. You will perform a zoom in on clicked point;</li>\
+                                            <li><b>ZoomOut:</b> click on MapDisplay using the left mouse button. You will perform a zoom out on clicked point;</li>\
+                                            <li><b>ZoomArea:</b> click on MapDisplay using the left mouse button. Keep the button hold and move to define a boundary rectangle. Release the button to perform a zoom in on this area;</li>\
+                                            <li><b>Measure:</b> you can measure distance, area and angles. Try it!\
+                                                         Select the specified tool. Click on MapDisplay using the left mouse button to fix a point. Move the mouse to see a geometry and the measured value.\
+                                                         Double click left button to stop the measuring.</li>\
+                                        </ul>\
+                                        <p>Finally, this example also provides a tool called <b>Selection</b>.<br>\
+                                           The only purpose of this tool is to show how you can implement a new tool.<br>\
+                                           Do not consider it as a final application!<br>\
+                                           So, select it and click with the left button. You will see the feature attributes.\
+                                        ");
+
+    // Show instructions
+    QMessageBox instructions;
+    instructions.setWindowTitle("Information");
+    instructions.setText(text);
+    instructions.setTextFormat(Qt::RichText);
+    instructions.setWindowModality(Qt::NonModal);
+    instructions.move(0, 0);
+    instructions.show();
+
+    // Example MainWindow
     MainWindow window;
     window.show();
-    
+
     app.exec();
   }
   catch(...)

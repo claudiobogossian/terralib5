@@ -124,9 +124,11 @@ namespace te
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
-            unsigned int m_scalesNumber; //! The number of sub-sampling scales to generate, when applicable (default:3).
+            unsigned int m_scalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3).
             
-            unsigned int m_octavesNumber; //! The number of octaves to generate, when applicable (default: 2).
+            unsigned int m_octavesNumber; //!< The number of octaves to generate, when applicable (default: 2).
+            
+            double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
             InputParameters();
             

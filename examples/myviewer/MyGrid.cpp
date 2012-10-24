@@ -12,6 +12,8 @@ MyGrid::MyGrid(MyLayer* layer, QWidget* parent) :
   m_layer(layer),
   m_localSelection(false)
 {
+  setWindowFlags(Qt::Window);
+
   // Set the actions for the menu of the vertical header of the grid
   QAction* promotePointedRowsAction = new QAction(QObject::tr("Promote the Pointed Rows"), this);
   promotePointedRowsAction->setStatusTip(QObject::tr("Promote the rows pointed"));
@@ -103,27 +105,47 @@ MyLayer* MyGrid::getLayer()
 
 void MyGrid::plotHistogram()
 {
-  Q_EMIT plotHistogram(this);
+  QAbstractItemModel* item = model();
+  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
+  te::map::DataGridOperation* op = model->getDataGridOperation();
+  if(op)
+    Q_EMIT plotHistogram(this);
 }
 
 void MyGrid::plotScatter()
 {
-  Q_EMIT plotScatter(this);
+  QAbstractItemModel* item = model();
+  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
+  te::map::DataGridOperation* op = model->getDataGridOperation();
+  if(op)
+    Q_EMIT plotScatter(this);
 }
 
 void MyGrid::plotTimeSeries()
 {
-  Q_EMIT plotTimeSeries(this);
+  QAbstractItemModel* item = model();
+  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
+  te::map::DataGridOperation* op = model->getDataGridOperation();
+  if(op)
+    Q_EMIT plotTimeSeries(this);
 }
 
 void MyGrid::addTooltip()
 {
-  Q_EMIT addTooltip(this);
+  QAbstractItemModel* item = model();
+  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
+  te::map::DataGridOperation* op = model->getDataGridOperation();
+  if(op)
+    Q_EMIT addTooltip(this);
 }
 
 void MyGrid::clearTooltip()
 {
-  Q_EMIT clearTooltip(this);
+  QAbstractItemModel* item = model();
+  te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
+  te::map::DataGridOperation* op = model->getDataGridOperation();
+  if(op)
+    Q_EMIT clearTooltip(this);
 }
 
 void MyGrid::selectionChangedSlot(te::map::DataGridOperation*)
@@ -139,15 +161,17 @@ void MyGrid::selectionChangedSlot(te::map::DataGridOperation*)
   QAbstractItemModel* item = model();
   te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
   te::map::DataGridOperation* op = model->getDataGridOperation();
-
-  int i;
-  int rows = op->getNumberOfRows();
-  for(i = 0; i < rows; ++i)
+  if(op)
   {
-    if(op->getVisualRowStatus(i) != te::map::DataGridOperation::DESELECTED)
+    int i;
+    int rows = op->getNumberOfRows();
+    for(i = 0; i < rows; ++i)
     {
-      verticalScrollBar()->setValue(i);
-      break;
+      if(op->getVisualRowStatus(i) != te::map::DataGridOperation::DESELECTED)
+      {
+        verticalScrollBar()->setValue(i);
+        break;
+      }
     }
   }
 }
@@ -160,7 +184,8 @@ void MyGrid::rowClicked(int clickedVisualRow)
   QAbstractItemModel* item = model();
   te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
   te::map::DataGridOperation* op = model->getDataGridOperation();
-  Q_EMIT selectionChanged(op);
+  if(op)
+    Q_EMIT selectionChanged(op);
 }
 
 void MyGrid::removeAllSelections()
@@ -171,5 +196,6 @@ void MyGrid::removeAllSelections()
   QAbstractItemModel* item = model();
   te::qt::widgets::DataGridModel* model = (te::qt::widgets::DataGridModel*)item;
   te::map::DataGridOperation* op = model->getDataGridOperation();
-  Q_EMIT selectionChanged(op);
+  if(op)
+    Q_EMIT selectionChanged(op);
 }

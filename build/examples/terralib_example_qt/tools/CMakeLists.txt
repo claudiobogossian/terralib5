@@ -30,6 +30,8 @@ if(WIN32)
 		              -DQT_THREAD_SUPPORT)
 endif()
 	
+add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\")
+
 set (DEP_LIBS 
 		terralib_annotationtext
 		terralib_color
@@ -58,6 +60,7 @@ file(GLOB HDRS ${INCLDIR}/*.h)
 file(
   GLOB HDRS_TO_MOC 
   ${INCLDIR}/MainWindow.h
+  ${INCLDIR}/SelectionTool.h
 )
 
 if(WIN32)
