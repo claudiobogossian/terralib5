@@ -1144,15 +1144,16 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     if(recWorld.isValid() == false)
       continue;
 
-    te::gm::Envelope mouseEnv(recWorld.bottomLeft().x(), recWorld.topRight().y(), recWorld.topRight().x(), recWorld.bottomLeft().y());
-    if(layer->getExtent())
-    {
-      te::gm::Envelope layerEnv(*layer->getExtent());
-      transform(layerEnv, layer->getSRID(), m_srid);
-      //layerEnv.transform(layer->getSRID(), m_srid);
-      if(layerEnv.intersects(mouseEnv) == false)
-        continue;
-    }
+    //te::gm::Envelope mouseEnv(recWorld.bottomLeft().x(), recWorld.topRight().y(), recWorld.topRight().x(), recWorld.bottomLeft().y());
+    //if(layer->getExtent())
+    //{
+    //  te::gm::Envelope layerEnv(*layer->getExtent());
+    //  if(transform(layerEnv, layer->getSRID(), m_srid))
+    //  {
+    //    if(layerEnv.intersects(mouseEnv) == false)
+    //      continue;
+    //  }
+    //}
 
     te::gm::Polygon* mousePolyRec = new te::gm::Polygon(0, te::gm::PolygonType);
     te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
@@ -1387,7 +1388,7 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
 
     mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
     te::gm::Envelope env(mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y(), mouseRectF.topLeft().x(), mouseRectF.bottomLeft().y());
-    transform(env, m_srid, layer->getSRID());
+    //transform(env, m_srid, layer->getSRID());
 
     te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType, m_srid);
     te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType, m_srid);
@@ -1413,7 +1414,8 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       te::gm::Geometry* g = dataSet->getGeometry(gPos);
       if(g == 0)
         continue;
-
+      
+      g->setSRID(layer->getSRID());
       g->transform(m_srid);
 
       if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
@@ -2253,7 +2255,7 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
     y2 = cy + dy;
 
     e.init(x1, y1, x2, y2);
-    if(e.getWidth() == 0 || e.getHeight() == 0)
+    if(e.getWidth() == 0. || e.getHeight() == 0.)
       return false;
     return true;
   }
