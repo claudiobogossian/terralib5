@@ -39,14 +39,6 @@ te::qt::widgets::ZoomClick::~ZoomClick()
 {
 }
 
-void te::qt::widgets::ZoomClick::initialize()
-{
-}
-
-void te::qt::widgets::ZoomClick::finalize()
-{
-}
-
 bool te::qt::widgets::ZoomClick::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)

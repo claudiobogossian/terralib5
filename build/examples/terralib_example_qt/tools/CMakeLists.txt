@@ -60,6 +60,7 @@ file(GLOB HDRS ${INCLDIR}/*.h)
 file(
   GLOB HDRS_TO_MOC 
   ${INCLDIR}/MainWindow.h
+  ${INCLDIR}/SelectionTool.h
 )
 
 if(WIN32)

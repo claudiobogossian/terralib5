@@ -87,11 +87,13 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/,
                                                            te::common::AccessPolicy /*rwRole*/)
 {
-  OGRLayer* layer = m_ogrDS->GetLayerByName(name.c_str());
-  if(layer == 0)
-    throw(te::common::Exception(TR_OGR("The informed DataSet could not be found in the data source.")));
+  std::string sql = "SELECT * FROM " + name;
+  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
-  return new DataSet(this, layer, false);
+  if(layer == 0)
+    throw(te::common::Exception(TR_OGR("The informed data set could not be found in the data source.")));
+
+  return new DataSet(this, layer, true);
 }
 
 te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& name,
@@ -101,14 +103,15 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/, 
                                                            te::common::AccessPolicy /*rwRole*/)
 {
-  OGRLayer* layer = m_ogrDS->GetLayerByName(name.c_str());
+  std::string sql = "SELECT * FROM " + name;
+  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw(te::common::Exception(TR_OGR("The informed data set could not be found in the data source.")));
 
   layer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
   
-  return new DataSet(this, layer, false);
+  return new DataSet(this, layer, true);
 }
 
 te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& name,
@@ -118,7 +121,8 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::TraverseType /*travType*/, 
                                                            te::common::AccessPolicy /*rwRole*/)
 { 
-  OGRLayer* layer = m_ogrDS->GetLayerByName(name.c_str());
+  std::string sql = "SELECT * FROM " + name;
+  OGRLayer* layer = m_ogrDS->ExecuteSQL(sql.c_str(), 0, 0);
 
   if(layer == 0)
     throw(te::common::Exception(TR_OGR("The informed data set could not be found in the data source.")));
@@ -129,7 +133,7 @@ te::da::DataSet* te::ogr::DataSourceTransactor::getDataSet(const std::string& na
   
   OGRGeometryFactory::destroyGeometry(ogrg);
   
-  return new DataSet(this, layer, false);
+  return new DataSet(this, layer, true);
 }
 
 te::da::DataSet* te::ogr::DataSourceTransactor::query(const te::da::Select& /*q*/, 

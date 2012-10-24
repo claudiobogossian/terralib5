@@ -39,14 +39,6 @@ te::qt::widgets::ZoomWheel::~ZoomWheel()
 {
 }
 
-void te::qt::widgets::ZoomWheel::initialize()
-{
-}
-
-void te::qt::widgets::ZoomWheel::finalize()
-{
-}
-
 bool te::qt::widgets::ZoomWheel::eventFilter(QObject* watched, QEvent* e)
 {
   if(watched != m_display)

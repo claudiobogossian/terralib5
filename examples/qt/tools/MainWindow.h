@@ -66,7 +66,9 @@ namespace te
 
 // Forward declarations
 class QAction;
+class QContextMenuEvent;
 class QPointF;
+class QMenu;
 class QToolBar;
 
 /*!
@@ -97,6 +99,7 @@ class MainWindow : public QMainWindow
 
     void setupActions();
     void addLayer(const QString& path);
+    void contextMenuEvent(QContextMenuEvent* e);
 
   private slots:
 
@@ -107,6 +110,7 @@ class MainWindow : public QMainWindow
     void onDistanceTriggered();
     void onAreaTriggered();
     void onAngleTriggered();
+    void onSelectionTriggered();
     void onCoordTracked(QPointF& coordinate);
 
   private:
@@ -118,6 +122,7 @@ class MainWindow : public QMainWindow
     std::list<te::map::AbstractLayer*> m_layers;
 
     QToolBar* m_toolBar;
+    QMenu* m_menu;
 
     static std::size_t ms_id;
 };

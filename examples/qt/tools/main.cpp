@@ -120,8 +120,13 @@ int main(int argc, char** argv)
                                                          Select the specified tool. Click on MapDisplay using the left mouse button to fix a point. Move the mouse to see a geometry and the measured value.\
                                                          Double click left button to stop the measuring.</li>\
                                         </ul>\
+                                        <p>Finally, this example also provides a tool called <b>Selection</b>.<br>\
+                                           The only purpose of this tool is to show how you can implement a new tool.<br>\
+                                           Do not consider it as a final application!<br>\
+                                           So, select it and click with the left button. You will see the feature attributes.\
                                         ");
 
+    // Show instructions
     QMessageBox instructions;
     instructions.setWindowTitle("Information");
     instructions.setText(text);

@@ -40,14 +40,6 @@ te::qt::widgets::CoordTracking::~CoordTracking()
 {
 }
 
-void te::qt::widgets::CoordTracking::initialize()
-{
-}
-
-void te::qt::widgets::CoordTracking::finalize()
-{
-}
-
 bool te::qt::widgets::CoordTracking::mouseMoveEvent(QMouseEvent* e)
 {
   QPointF p = e->posF();

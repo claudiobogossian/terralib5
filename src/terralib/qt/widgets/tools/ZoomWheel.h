@@ -74,10 +74,6 @@ namespace te
            */
           //@{
 
-          void initialize();
-
-          void finalize();
-
           bool eventFilter(QObject* watched, QEvent* e);
 
           //@}
