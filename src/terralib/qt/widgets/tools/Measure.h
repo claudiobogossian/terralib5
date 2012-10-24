@@ -104,10 +104,6 @@ namespace te
            */
           //@{
 
-          void initialize();
-
-          void finalize();
-
           bool mousePressEvent(QMouseEvent* e);
 
           bool mouseMoveEvent(QMouseEvent* e);

@@ -41,14 +41,6 @@ te::qt::widgets::ZoomArea::~ZoomArea()
 {
 }
 
-void te::qt::widgets::ZoomArea::initialize()
-{
-}
-
-void te::qt::widgets::ZoomArea::finalize()
-{
-}
-
 bool te::qt::widgets::ZoomArea::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)

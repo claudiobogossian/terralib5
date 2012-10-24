@@ -44,14 +44,6 @@ te::qt::widgets::Pan::~Pan()
 {
 }
 
-void te::qt::widgets::Pan::initialize()
-{
-}
-
-void te::qt::widgets::Pan::finalize()
-{
-}
-
 bool te::qt::widgets::Pan::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)

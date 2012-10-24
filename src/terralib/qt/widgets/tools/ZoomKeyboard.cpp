@@ -40,14 +40,6 @@ te::qt::widgets::ZoomKeyboard::~ZoomKeyboard()
 {
 }
 
-void te::qt::widgets::ZoomKeyboard::initialize()
-{
-}
-
-void te::qt::widgets::ZoomKeyboard::finalize()
-{
-}
-
 bool te::qt::widgets::ZoomKeyboard::eventFilter(QObject* watched, QEvent* e)
 {
   if(watched != m_display)

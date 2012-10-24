@@ -61,14 +61,6 @@ te::qt::widgets::Measure::~Measure()
 {
 }
 
-void te::qt::widgets::Measure::initialize()
-{
-}
-
-void te::qt::widgets::Measure::finalize()
-{
-}
-
 bool te::qt::widgets::Measure::mousePressEvent(QMouseEvent* e)
 {
   if(e->button() != Qt::LeftButton)
