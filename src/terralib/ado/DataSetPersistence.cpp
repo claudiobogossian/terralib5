@@ -203,10 +203,13 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
     te::gm::GeometryProperty* geomProp = 0;
     geomProp = dt->getDefaultGeomProperty();
 
-    for(size_t i = 0; i < props.size(); i++)
+    te::ado::addItem(dt, recset, props, item);
+
+    /*for(size_t i = 0; i < props.size(); i++)
     {
+      te::ado::addItem()
       te::ado::updateAdoColumn(dt, recset, props[i], item);
-    }
+    }*/
   }
   catch(_com_error& e)
   {
