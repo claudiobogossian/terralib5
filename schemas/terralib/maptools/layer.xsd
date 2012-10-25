@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_gm="http://www.terralib.org/geometry"
+            xmlns:te_map="http://www.terralib.org/maptools"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/maptools"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>TerraLib Layer Schema</xsd:appinfo>
+    <xsd:documentation>Layer Schema</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
+
+  <xsd:element name="LayerList" type="te_map:LayerListType" />
+
+  <xsd:complexType name="LayerListType">
+    <xsd:sequence>
+      <xsd:element ref="te_map:AbstractLayer" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="AbstractLayer" type="te_map:AbstractLayerType" abstract="true" />
+
+  <xsd:complexType name="AbstractLayerType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for layers</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Visible" type="xsd:boolean" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+  </xsd:complexType>
+
+  <xsd:element name="DataSetLayer" type="te_map:DataSetLayerType" substitutionGroup="te_map:AbstractLayer" />
+
+  <xsd:complexType name="DataSetLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element name="DataSetName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="StyleId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="QueryLayer" type="te_map:QueryLayerType" substitutionGroup="te_map:AbstractLayer" />
+
+  <xsd:complexType name="QueryLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element name="Query" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+          <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="StyleId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+</xsd:schema>

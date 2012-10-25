@@ -279,7 +279,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Prima
     for(size_t i = 0; i < pk->getProperties().size(); i++)
     {
       te::dt::Property* p = pk->getProperties()[i];
-      TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
+      TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(p->getType()), 256));
 
     }
 
@@ -345,7 +345,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Uniqu
     {
       te::dt::Property* p = uk->getProperties()[i];
 
-      TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
+      TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(p->getType()), 256));
     }
 
     TESTHR(pTable->Keys->Append(_variant_t((IDispatch *)pKey),ADOX::adKeyUnique,vOptional,L"",L""));
@@ -408,7 +408,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Index
       if(idxProps[i]->getType() == te::dt::STRING_TYPE)
         size = (long)((te::dt::StringProperty*)idxProps[i])->size();
 
-      TESTHR(pIndex->Columns->Append(idxProps[i]->getName().c_str(), te::ado::terralib2Ado(idxProps[i]->getType()), size));
+      TESTHR(pIndex->Columns->Append(idxProps[i]->getName().c_str(), te::ado::Convert2Ado(idxProps[i]->getType()), size));
     }
 
     TESTHR(pTable->Indexes->Append(_variant_t((IDispatch *)pIndex)));
@@ -482,7 +482,7 @@ void te::ado::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::Forei
 
       te::dt::Property* p = fk->getProperties()[i];
 
-      TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::terralib2Ado(p->getType()), 256));
+      TESTHR(pKey->Columns->Append(p->getName().c_str(), te::ado::Convert2Ado(p->getType()), 256));
       pKey->Columns->GetItem(p->getName().c_str())->RelatedColumn = fk->getReferencedProperties()[i]->getName().c_str();
 
     }

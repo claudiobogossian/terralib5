@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_cs="http://www.terralib.org/cellspace"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/cellspace"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Cellula Space XML Schemas</xsd:appinfo>
+    <xsd:documentation>Include this file in order to refer to Cellular Space schemas</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:include schemaLocation="cellularspace.xsd" />
+  <xsd:include schemaLocation="layer.xsd" />
+  <xsd:include schemaLocation="neighborhood.xsd" />
+
+</xsd:schema>

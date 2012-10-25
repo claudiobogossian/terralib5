@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_cs="http://www.terralib.org/cellspace"
+            xmlns:te_dt="http://www.terralib.org/datatype"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/cellspace"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Cellular Space Schema</xsd:appinfo>
+    <xsd:documentation>Definition of a cellular space</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
+
+  <xsd:element name="NeighborhoodList" type="te_cs:NeighborhoodListType">
+    <xsd:annotation>
+      <xsd:documentation>This is the root element for a cellular space list</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="NeighborhoodListType">
+    <xsd:sequence>
+      <xsd:element name="Neighborhood" type="te_cs:NeighborhoodType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute name="release" type="xsd:date" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="NeighborhoodType">
+    <xsd:annotation>
+      <xsd:documentation>Neighborhood Definition</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Description" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <!-- <xsd:element name="VertexPropertyList" type="te_cs:VertexPropertyListType" minOccurs="1" maxOccurs="1" /> -->
+      <!-- <xsd:element name="EdgePropertyList" type="te_cs:EdgePropertyListType" minOccurs="1" maxOccurs="1" /> -->
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+    <xsd:attribute name="type" type="te_cs:NeighborhoodTypeType" use="required" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="NeighborhoodTypeType">
+    <xsd:annotation>
+      <xsd:documentation>The type of a neighborhood</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Simple" />
+      <xsd:enumeration value="Weighted" />
+      <xsd:enumeration value="Bipartite" />
+      <xsd:enumeration value="WeightedBipartite" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+<!--
+  <xsd:complexType name="VertexPropertyListType">
+    <xsd:sequence>
+      <xsd:element name="VertexProperty" type="te_cs:VertexPropertyType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="VertexPropertyType">
+    <xsd:annotation>
+      <xsd:documentation>Describes the source of data for a vertex property</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="te_dt:SimplePropertyType" />
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="EdgePropertyListType">
+    <xsd:sequence>
+      <xsd:element name="EdgeProperty" type="te_cs:EdgePropertyType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="EdgePropertyType">
+    <xsd:annotation>
+      <xsd:documentation>Describes the source of data for an edge property</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="te_dt:SimplePropertyType" />
+    </xsd:complexContent>
+  </xsd:complexType>
+-->
+  
+</xsd:schema>

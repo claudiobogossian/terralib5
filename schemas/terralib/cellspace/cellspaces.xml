@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<CellularSpaceList xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:te_common="http://www.terralib.org/common"
+                   xmlns:te_cs="http://www.terralib.org/cellspace"
+                   xmlns:te_da="http://www.terralib.org/dataaccess"
+                   xmlns:te_gm="http://www.terralib.org/geometry"
+                   xmlns:te_rst="http://www.terralib.org/raster"
+                   xmlns="http://www.terralib.org/cellspace"
+                   xsd:schemaLocation="http://www.terralib.org/cellspace cellspace.xsd"
+                   version="5.0.0"
+                   release="2011-01-01">
+
+  <CellularSpace id="65219E8B-D925-4C26-BD38-16FB18B36E0A" type="regular">
+    <Name>queimadas</Name>
+    <Title>Espaço Celular com Dados de Queimadas</Title>
+    <Description>Este espaço celular é formado por imagens de vários anos obtidas do sensor MODIS</Description>
+    <Grid>
+      <te_rst:Extent llx="-180.0" lly="-90.0" urx="180.0" ury="90.0" />
+      <te_rst:NumCols>360</te_rst:NumCols>
+      <te_rst:NumRows>180</te_rst:NumRows>
+      <te_rst:SRID>4326</te_rst:SRID>
+      <te_rst:GeoTransform c1="-180.0" c2="1.0" c3="0.0" c4="90.0" c5="0.0" c6="-1.0" />
+    </Grid>
+    <AttributeList>
+      <Attribute idx="0">
+        <Name>2011</Name>
+        <DataSourceId>179C25E4-AABC-4F63-8C10-AAD00CCE74F9</DataSourceId>
+        <DataSetName>queimadas_2011</DataSetName>
+        <PropertyId>0</PropertyId>
+      </Attribute>
+
+      <Attribute idx="1">
+        <Name>2012</Name>
+        <DataSourceId>2CE5DFE7-F764-4E31-8EE8-9732231B2FFE</DataSourceId>
+        <DataSetName>queimadas_2012</DataSetName>
+        <PropertyId>0</PropertyId>
+      </Attribute>
+    </AttributeList>
+  </CellularSpace>
+
+</CellularSpaceList>

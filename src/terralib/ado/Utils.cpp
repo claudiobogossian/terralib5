@@ -39,7 +39,7 @@ inline void TESTHR( HRESULT hr )
   if( FAILED(hr) ) _com_issue_error( hr );
 }
 
-int te::ado::ado2Terralib(ADOX::DataTypeEnum adoType)
+int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
 {
   switch(adoType)
   {
@@ -120,7 +120,7 @@ int te::ado::ado2Terralib(ADOX::DataTypeEnum adoType)
   }
 }
 
-ADOX::DataTypeEnum te::ado::terralib2Ado(int terralib)
+ADOX::DataTypeEnum te::ado::Convert2Ado(int terralib)
 {
   switch(terralib)
   {
@@ -189,13 +189,13 @@ void te::ado::addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property
       case te::dt::DOUBLE_TYPE:
       case te::dt::BOOLEAN_TYPE:
       case te::dt::BYTE_ARRAY_TYPE:
-        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
         break;
 
       case te::dt::STRING_TYPE:
       {
         te::dt::StringProperty* p = (te::dt::StringProperty*)prop;
-        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), p->size());
+        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), p->size());
         break;
       }
 
@@ -203,11 +203,11 @@ void te::ado::addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property
       //case te::dt::DATETIME_TYPE:
         
       case te::dt::GEOMETRY_TYPE:
-        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
         break;
           
       case te::dt::ARRAY_TYPE:
-        table->Columns->Append(prop->getName().c_str(), te::ado::terralib2Ado(pType), 0);
+        table->Columns->Append(prop->getName().c_str(), te::ado::Convert2Ado(pType), 0);
         break;
 
       default:
@@ -269,7 +269,7 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
   switch(cType)
   {
     case ::adBoolean:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ::adVarWChar:
@@ -279,41 +279,41 @@ te::dt::Property* te::ado::Convert2Terralib(ADOX::_ColumnPtr column)
     case ::adLongVarWChar:
     case ::adBSTR:
     case ::adChar:
-      prop = new te::dt::StringProperty(std::string(cName), (te::dt::StringType)ado2Terralib(cType), cSize);
+      prop = new te::dt::StringProperty(std::string(cName), (te::dt::StringType)Convert2Terralib(cType), cSize);
       break;
 
     case ADOX::adTinyInt:
     case ADOX::adSmallInt:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ADOX::adInteger:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ADOX::adBigInt:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ADOX::adDouble:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ::adUnsignedBigInt:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ::adUnsignedInt:
-      prop = new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType));
       break;
 
     case ::adUnsignedSmallInt:
     case ::adUnsignedTinyInt:
-      prop = new te::dt::SimpleProperty(std::string(cName),ado2Terralib(cType));
+      prop = new te::dt::SimpleProperty(std::string(cName),Convert2Terralib(cType));
       break;
 
     case ADOX::adLongVarBinary:
-      prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), ado2Terralib(cType)));
+      prop = new te::dt::ArrayProperty(std::string(cName), new te::dt::SimpleProperty(std::string(cName), Convert2Terralib(cType)));
       break;
 
     case ADOX::adDate:
@@ -623,27 +623,9 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
 
     if(geomProp && (geomProp->getName() == prop->getName()))
     {
-      te::gm::Geometry* geo = item->getGeometry(prop->getName());
-
-      long size = geo->getWkbSize();
-
-      char* wkb = new char[size];
-
-      geo->getWkb(wkb, te::common::NDR);
-
-      unsigned int newWkbSize = size+4;
-
-      char* newWkb = new char[newWkbSize];
-
-      memcpy(newWkb, wkb, size);
-
-      unsigned int srid = geo->getSRID();
-
-      memcpy(newWkb+size, &srid, 4);
-
       _variant_t var;
-      te::ado::Blob2Variant(newWkb, newWkbSize, var);
-
+      Convert2Ado(item->getGeometry(prop->getName()), var);
+      
       recset->Fields->GetItem(prop->getName().c_str())->AppendChunk (var);
     }
     else
@@ -718,6 +700,94 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
   }
 }
 
+void te::ado::addItem(const te::da::DataSetType* dt, _RecordsetPtr recset, std::vector<te::dt::Property*> props, te::da::DataSetItem* item)
+{
+  try
+  {
+    for(size_t i = 0; i < props.size(); i++)
+    {
+      te::gm::GeometryProperty* geomProp = 0;
+      geomProp = dt->getDefaultGeomProperty();
+
+      if(geomProp && (geomProp->getName() == props[i]->getName()))
+      {
+        _variant_t var;
+        Convert2Ado(item->getGeometry(props[i]->getName()), var);
+
+        recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+      }
+      else
+      {
+
+        int pType = props[i]->getType();
+
+        switch(pType)
+        {
+        case te::dt::CHAR_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
+          break;
+
+          //case te::dt::UCHAR_TYPE:
+
+        case te::dt::INT16_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
+          break;
+
+        case te::dt::INT32_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
+          break;
+
+        case te::dt::INT64_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
+          break;
+
+          //case te::dt::NUMERIC_TYPE:
+          //case te::dt::DATETIME_TYPE:
+        case te::dt::FLOAT_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
+          break;
+
+        case te::dt::DOUBLE_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
+          break;
+
+        case te::dt::STRING_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
+          break;
+
+        case te::dt::BOOLEAN_TYPE:
+          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
+          break;
+
+        case te::dt::BYTE_ARRAY_TYPE:
+          {
+            char * data = ((te::dt::ByteArray*)props[i])->getData();
+
+            _variant_t var;
+            te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
+
+            recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+
+            break;
+          }
+
+          //case te::dt::ARRAY_TYPE:
+
+        default:
+          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+          break;
+        }
+      }
+    }
+
+    recset->Update();
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+}
+
 void te::ado::insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
 {
   te::gm::GeometryProperty* geomProp = 0;
@@ -752,4 +822,25 @@ void te::ado::insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::Data
   {
     throw Exception(TR_ADO(e.Description()));
   }
+}
+
+void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
+{
+  long size = geo->getWkbSize();
+
+  char* wkb = new char[size];
+
+  geo->getWkb(wkb, te::common::NDR);
+
+  unsigned int newWkbSize = size+4;
+
+  char* newWkb = new char[newWkbSize];
+
+  memcpy(newWkb, wkb, size);
+
+  unsigned int srid = geo->getSRID();
+
+  memcpy(newWkb+size, &srid, 4);
+
+  te::ado::Blob2Variant(newWkb, newWkbSize, var);
 }

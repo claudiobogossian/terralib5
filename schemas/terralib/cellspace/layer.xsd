@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_cs="http://www.terralib.org/cellspace"
+            xmlns:te_map="http://www.terralib.org/maptools"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/cellspace"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Cellular Space Layer Schema</xsd:appinfo>
+    <xsd:documentation>Definition of a layer for cellular spaces</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:include schemaLocation="cellularspace.xsd" />
+
+  <xsd:include schemaLocation="neighborhood.xsd" />
+
+  <xsd:import namespace="http://www.terralib.org/maptools" schemaLocation="../maptools/maptools.xsd"/>
+
+  <xsd:element name="CellSpaceLayer" type="te_cs:CellSpaceLayerType" substitutionGroup="te_map:AbstractLayer" />
+
+  <xsd:complexType name="CellSpaceLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element name="CellularSpace" type="te_cs:CellularSpaceType" minOccurs="1" maxOccurs="1"/>
+          <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="StyleId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+          <xsd:element name="AssociatedNeighborhoodList" type="te_cs:AssociatedNeighborhoodListType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="NeighborhoodLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element name="Neighborhood" type="te_cs:NeighborhoodType" minOccurs="1" maxOccurs="1"/>
+          <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+          <xsd:element name="StyleId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="AssociatedNeighborhoodListType">
+    <xsd:sequence>
+      <xsd:element name="NeighborhoodId" type="xsd:string" minOccurs="1" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

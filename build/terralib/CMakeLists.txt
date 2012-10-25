@@ -36,6 +36,7 @@ option (BUILD_FILTER "Build filter module?" ON)
 option (BUILD_GDAL "Build GDAL module?" ON)
 option (BUILD_GEOMETRY "Build geometry module?" ON)
 option (BUILD_GML "Build GML module?" ON)
+option (BUILD_IDL "Build IDL module?" OFF)
 option (BUILD_MAPTOOLS "Build map tools module?" ON)
 option (BUILD_MEMORY "Build memory module?" ON)
 option (BUILD_OGR "Build OGR module?" ON)
@@ -95,6 +96,10 @@ endif()
 
 IF(BUILD_GML)
 	add_subdirectory(terralib_gml)
+endif()
+
+IF(BUILD_IDL)
+  add_subdirectory(terralib_idl)
 endif()
 
 IF(BUILD_MAPTOOLS)

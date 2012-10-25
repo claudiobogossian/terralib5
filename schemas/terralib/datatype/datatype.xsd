@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_dt="http://www.terralib.org/datatype"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/datatype"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>TerraLib Data Type Schema</xsd:appinfo>
+    <xsd:documentation>A schema for the data type module</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:element name="PropertyList" type="te_dt:PropertyListType">
+    <xsd:annotation>
+      <xsd:documentation>A list of properties</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="PropertyListType">
+    <xsd:sequence>
+      <xsd:element ref="te_dt:Property" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Property" type="te_dt:PropertyType" abstract="true" />
+
+  <xsd:complexType name="PropertyType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for properties</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="id" type="xsd:nonNegativeInteger" use="optional" />
+    <xsd:attribute name="type" type="te_dt:DataTypeNameType" use="required" />
+    <xsd:attribute name="name" type="xsd:string" use="required" />
+  </xsd:complexType>
+
+  <xsd:element name="SimpleProperty" type="te_dt:SimplePropertyType" substitutionGroup="te_dt:Property" />
+
+  <xsd:complexType name="SimplePropertyType">
+    <xsd:complexContent>
+      <xsd:extension base="te_dt:PropertyType">
+        <xsd:attribute name="isRequired" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="isAutoNumber" type="xsd:boolean" use="optional" />
+        <xsd:attribute name="defaultValue" type="xsd:string" use="optional" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="CompositeProperty" type="te_dt:CompositePropertyType" substitutionGroup="te_dt:Property" />
+
+  <xsd:complexType name="CompositePropertyType">
+    <xsd:complexContent>
+      <xsd:extension base="te_dt:PropertyType">
+        <xsd:sequence>
+          <xsd:element ref="te_dt:Property" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="cname" type="xsd:string" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:simpleType name="DataTypeNameType">
+    <xsd:annotation>
+      <xsd:documentation>The base set of well known data types</xsd:documentation>
+      <xsd:documentation>In the future we must remove the restriction</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="UNKNOWN_TYPE" />
+      <xsd:enumeration value="VOID_TYPE" />
+      <xsd:enumeration value="BIT_TYPE" />
+      <xsd:enumeration value="CHAR_TYPE" />
+      <xsd:enumeration value="UCHAR_TYPE" />
+      <xsd:enumeration value="INT16_TYPE" />
+      <xsd:enumeration value="UINT16_TYPE" />
+      <xsd:enumeration value="INT32_TYPE" />
+      <xsd:enumeration value="UINT32_TYPE" />
+      <xsd:enumeration value="INT64_TYPE" />
+      <xsd:enumeration value="UINT64_TYPE" />
+      <xsd:enumeration value="BOOLEAN_TYPE" />
+      <xsd:enumeration value="FLOAT_TYPE" />
+      <xsd:enumeration value="DOUBLE_TYPE" />
+      <xsd:enumeration value="NUMERIC_TYPE" />
+      <xsd:enumeration value="STRING_TYPE" />
+      <xsd:enumeration value="BYTE_ARRAY_TYPE" />
+      <xsd:enumeration value="GEOMETRY_TYPE" />
+      <xsd:enumeration value="DATETIME_TYPE" />
+      <xsd:enumeration value="ARRAY_TYPE" />
+      <xsd:enumeration value="COMPOSITE_TYPE" />
+      <xsd:enumeration value="DATASET_TYPE" />
+      <xsd:enumeration value="RASTER_TYPE" />
+      <xsd:enumeration value="CINT16_TYPE" />
+      <xsd:enumeration value="CINT32_TYPE" />
+      <xsd:enumeration value="CFLOAT_TYPE" />
+      <xsd:enumeration value="CDOUBLE_TYPE" />
+      <xsd:enumeration value="XML_TYPE" />
+      <xsd:enumeration value="DATASETITEM_TYPE" />
+      <xsd:enumeration value="POLYMORPHIC_TYPE" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="DataType" type="te_dt:DataTypeType" abstract="true" />
+
+  <xsd:complexType name="DataTypeType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base class for TerraLib data types</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Description" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:nonNegativeInteger" use="required" />
+  </xsd:complexType>
+
+</xsd:schema>

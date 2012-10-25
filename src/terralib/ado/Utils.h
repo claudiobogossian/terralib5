@@ -58,7 +58,24 @@ namespace te
 
   namespace ado
   {
+    /*!
+      \brief Add a ADO propert based on the TerraLib property
 
+      \param table Table target
+      \param prop Property to be added
+    */
+    void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
+
+    /*!
+      \brief Add a Terralib item in a Ado record set
+
+      \param dt DataSetType
+      \param recset The ADO record set where will be added
+      \param props The properties that will be added
+      \param item The TerraLib item referenced
+    */
+    void addItem(const te::da::DataSetType* dt, _RecordsetPtr recset, std::vector<te::dt::Property*> props, te::da::DataSetItem* item);
+    
     /*!
       \brief It returns the geometry OGC names.
 
@@ -75,7 +92,34 @@ namespace te
 
       \return TerraLib Type
     */
-    int ado2Terralib(ADOX::DataTypeEnum adoType);
+    int Convert2Terralib(ADOX::DataTypeEnum adoType);
+
+    /*!
+      \brief Bind ADO column to Terralib property
+
+      \param column Ado Column.
+
+      \return TerraLib Property
+    */
+    te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
+
+    /*!
+      \brief Bind ADO key to Terralib constraint
+
+      \param key Ado key.
+
+      \return TerraLib Constraint
+    */
+    te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
+
+    /*!
+      \brief Bind ADO columns to vector of Terralib properties 
+
+      \param columns Ado columns.
+
+      \return Vector of TerraLib properties
+    */
+    std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);
 
     /*!
       \brief Bind TerraLib Type to ADO Type.
@@ -84,7 +128,15 @@ namespace te
 
       \return ADO Type
     */
-    ADOX::DataTypeEnum terralib2Ado(int terralib);
+    ADOX::DataTypeEnum Convert2Ado(int terralib);
+
+    /*!
+      \brief Bind TerraLib geometry to ADO variant.
+
+      \param geo TerraLib Geometry.
+      \param var Ado variant
+    */
+    void Convert2Ado(const te::gm::Geometry* geo, _variant_t & var);
     
     /*!
       \brief Create TerraLib property from ado property (column)
@@ -104,26 +156,52 @@ namespace te
       \return TerraLib geometry property
     */
     te::gm::GeometryProperty* getDefaultGeomProperty(te::da::DataSetType* dt, _ConnectionPtr adoConn);
+    
+    /*!
+      \brief Verifies whether Z property
+
+      \param type geometry type
+
+      \return if is Z property
+    */
+    bool isZProperty(te::gm::GeomType type);
 
     /*!
-      \brief Add a ADO propert based on the TerraLib property
+      \brief Verifies whether is in the geometry_columns table
 
-      \param table Table target
-      \param prop Property to be added
+      \param adoConn Ado connection
+      \param tableName Ado table name
+      \param columnName Ado column name
+
+      \return if is in geometry_columns table
     */
-    void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
-
-    
-    te::dt::Property* Convert2Terralib(ADOX::_ColumnPtr column);
-    te::da::Constraint* Convert2Terralib(ADOX::_KeyPtr key);
-    std::vector<te::dt::Property*> Convert2Terralib(ADOX::ColumnsPtr columns);
-
-    bool isZProperty(te::gm::GeomType type);
     bool isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName);
 
+    /*!
+      \brief Get the  geometry type in OGC standard
+
+      \param type geometry type
+
+      \return OGC standard type name
+    */
     std::string getOGCType(te::gm::GeomType type);
 
+    /*!
+      \brief Convert a blob to a variant
+
+      \param blob Blob
+      \param size Blob size
+      \param var Result variant
+    */
     void Blob2Variant(const char* blob, int size, _variant_t & var);
+    
+    /*!
+      \brief Convert a variant to a blob
+
+      \param var Variant
+      \param size Variant size
+      \param blob Result variant
+    */
     void Variant2Blob(const _variant_t var, int size, char* & blob);
 
     /*!
@@ -143,7 +221,7 @@ namespace te
       \param dt DataSetType to be inserted
     */
     void insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
-
+    
   } // end namespace ado
 }   // end namespace te
 
