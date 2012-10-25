@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DataSourceList xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                xmlns:te_common="http://www.terralib.org/common"
+                xmlns:te_da="http://www.terralib.org/dataaccess"
+                xmlns="http://www.terralib.org/dataaccess"
+                xsd:schemaLocation="http://www.terralib.org/dataaccess dataaccess.xsd"
+                version="5.0.0"
+                release="2011-01-01">
+
+  <DataSource id="A746930E-DC7b-4C1A-B7B5-3BE35BE385E0" type="POSTGIS_RASTER" access_driver="POSTGIS">
+    <Title>Imagens MODIS - Focos Queimada</Title>
+    <Description>Um banco de dados com imagens do sensor MODIS</Description>
+    <DataSourceInfo type="POSTGIS">
+      <ConnectionInfo>
+        <te_common:Parameter>
+          <te_common:Name>PG_USER</te_common:Name>
+          <te_common:Value>postgres</te_common:Value>
+        </te_common:Parameter>
+        <te_common:Parameter>
+          <te_common:Name>PG_PASSWORD</te_common:Name>
+          <te_common:Value>secreto</te_common:Value>
+        </te_common:Parameter>
+        <te_common:Parameter>
+          <te_common:Name>PG_DB_NAME</te_common:Name>
+          <te_common:Value>mygisdb</te_common:Value>
+        </te_common:Parameter>
+        <te_common:Parameter>
+          <te_common:Name>PG_HOST</te_common:Name>
+          <te_common:Value>localhost</te_common:Value>
+        </te_common:Parameter>
+        <te_common:Parameter>
+          <te_common:Name>PG_CLIENT_ENCODING</te_common:Name>
+          <te_common:Value>LATIN1</te_common:Value>
+        </te_common:Parameter>
+      </ConnectionInfo>
+    </DataSourceInfo>
+  </DataSource>
+
+  <DataSource id="179C25E4-AABC-4F63-8C10-AAD00CCE74F9" type="RASTER_FILE" access_driver="GDAL">
+    <Title>Queimadas 2011</Title>
+    <Description>Intensidade dos focos de queimada de 2011</Description>
+    <DataSourceInfo type="GDAL">
+      <ConnectionInfo>
+        <te_common:Parameter>
+          <te_common:Name>URI</te_common:Name>
+          <te_common:Value>/var/lib/celldb/data/geotiff/queimadas_2011.tif</te_common:Value>
+        </te_common:Parameter>
+      </ConnectionInfo>
+    </DataSourceInfo>
+  </DataSource>
+
+  <DataSource id="2CE5DFE7-F764-4E31-8EE8-9732231B2FFE" type="RASTER_FILE" access_driver="GDAL">
+    <Title>Queimadas 2012</Title>
+    <Description>Intensidade dos focos de queimada de 2012</Description>
+    <DataSourceInfo type="GDAL">
+      <ConnectionInfo>
+        <te_common:Parameter>
+          <te_common:Name>URI</te_common:Name>
+          <te_common:Value>/var/lib/celldb/data/geotiff/queimadas_2012.tif</te_common:Value>
+        </te_common:Parameter>
+      </ConnectionInfo>
+    </DataSourceInfo>
+  </DataSource>
+
+</DataSourceList>

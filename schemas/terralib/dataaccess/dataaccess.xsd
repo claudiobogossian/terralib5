@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/dataaccess"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Data Access XML Schemas</xsd:appinfo>
+    <xsd:documentation>Include this file in order to refer to Data Access schemas</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:include schemaLocation="dataset.xsd" />
+  <xsd:include schemaLocation="datasource.xsd" />
+
+</xsd:schema>

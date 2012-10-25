@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_common="http://www.terralib.org/common"
+            xmlns:te_da="http://www.terralib.org/dataaccess"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/dataaccess"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Data Access - Data Source Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for the data source part of data access module</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
+
+  <xsd:element name="DataSourceInfo" type="te_da:DataSourceInfoType" />
+
+  <xsd:complexType name="DataSourceInfoType">
+    <xsd:annotation>
+      <xsd:documentation>The base type for data sources drivers</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ConnectionInfo" type="te_common:ParameterListType" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="type" type="xsd:string" />
+  </xsd:complexType>
+
+  <xsd:element name="DataSource" type="te_da:DataSourceType" />
+
+  <xsd:complexType name="DataSourceType">
+    <xsd:annotation>
+      <xsd:documentation>Data Source Instance</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" maxOccurs="1" />
+      <xsd:element ref="te_da:DataSourceInfo" minOccurs="0" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" />
+    <xsd:attribute name="type" type="xsd:string" use="required"/>
+    <xsd:attribute name="access_driver" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="DataSourceList" type="te_da:DataSourceListType" />
+
+  <xsd:complexType name="DataSourceListType">
+    <xsd:annotation>
+      <xsd:documentation>A list of data sources</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element ref="te_da:DataSource" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute name="release" type="xsd:date" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="DataSourceTypeType">
+    <xsd:annotation>
+      <xsd:documentation>The type of data source</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

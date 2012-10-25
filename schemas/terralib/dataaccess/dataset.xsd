@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
+            xmlns:te_dt="http://www.terralib.org/datatype"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/dataaccess"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Data Access - DataSet Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for the dataset part of data access module</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd" />
+
+  <xsd:element name="DataSetType" type="te_da:DataSetTypeType" substitutionGroup="te_dt:CompositeProperty" />
+
+  <xsd:complexType name="DataSetTypeType">
+    <xsd:annotation>
+      <xsd:documentation>DataSetType</xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="te_dt:CompositePropertyType">
+        <xsd:sequence>
+          <xsd:element name="Title" type="xsd:string" minOccurs="0" maxOccurs="unbounded" />
+        </xsd:sequence>
+        <xsd:attribute name="category" type="xsd:integer" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+</xsd:schema>
