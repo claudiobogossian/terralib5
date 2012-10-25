@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_common="http://www.terralib.org/common"
+            xmlns:te_cs="http://www.terralib.org/cellspace"
+            xmlns:te_rst="http://www.terralib.org/raster"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/cellspace"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Cellular Space Schema</xsd:appinfo>
+    <xsd:documentation>Definition of a cellular space</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/raster" schemaLocation="../raster/raster.xsd"/>
+
+  <xsd:element name="CellularSpaceList" type="te_cs:CellularSpaceListType">
+    <xsd:annotation>
+      <xsd:documentation>This is the root element for a cellular space list</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="CellularSpaceListType">
+    <xsd:sequence>
+      <xsd:element name="CellularSpace" type="te_cs:CellularSpaceType" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute name="release" type="xsd:date" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="CellularSpaceType">
+    <xsd:annotation>
+      <xsd:documentation>Cellular Space Definition</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Mask" type="te_cs:MaskType" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Description" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Grid" type="te_rst:GridType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="AttributeList" type="te_cs:AttributeListType" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+    <xsd:attribute name="type" type="xsd:string" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="AttributeListType">
+    <xsd:annotation>
+      <xsd:documentation>A simple list of attributes for a cellular space</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Attribute" type="te_cs:AttributeType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="AttributeType">
+    <xsd:annotation>
+      <xsd:documentation>Describes the source of data for an attribute of a cellular space</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="DataSetName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="PropertyId" type="xsd:nonNegativeInteger" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="idx" type="xsd:nonNegativeInteger" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="MaskType">
+    <xsd:annotation>
+      <xsd:documentation>Describes the source of data for a given cell space mask</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="DataSourceId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="DataSetName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="PropertyName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

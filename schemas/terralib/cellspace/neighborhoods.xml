@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<NeighborhoodList xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:te_common="http://www.terralib.org/common"
+                   xmlns:te_cs="http://www.terralib.org/cellspace"
+                   xmlns:te_da="http://www.terralib.org/dataaccess"
+                   xmlns:te_gm="http://www.terralib.org/geometry"
+                   xmlns:te_rst="http://www.terralib.org/raster"
+                   xmlns="http://www.terralib.org/cellspace"
+                   xsd:schemaLocation="http://www.terralib.org/cellspace cellspace.xsd"
+                   version="5.0.0"
+                   release="2011-01-01">
+
+  <Neighborhood id="31D46FE7-C6F9-4667-AC1A-332C8FF2F925" type="Simple">
+    <Name>GPM 1</Name>
+    <Title>Vizinhança ao longo das hidrovias</Title>
+    <Description>Esta vizinhança foi gerada a partir da malha hidroviária</Description>
+    <DataSourceId>503387C9-20AC-4BA1-B8Bf-9B0531D118C6</DataSourceId>
+  </Neighborhood>
+
+  <Neighborhood id="0D018D13-4F80-4EC8-85FB-7914D8E68F13" type="Weighted">
+    <Name>GPM 2</Name>
+    <Title>Inverso do quadrado da distância a hidrovias</Title>
+    <Description>Esta vizinhança foi gerada com pesos proporcionais ao quadrado da distância às hidrovias</Description>
+    <DataSourceId>86AA6A8E-7843-4DA7-AE0E-81B8CC183375</DataSourceId>
+  </Neighborhood>
+
+</NeighborhoodList>
