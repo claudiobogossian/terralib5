@@ -927,6 +927,9 @@ void MyWindow::removeGridSlot(MyGrid* g)
 void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
 {
   MyLayer* layer = (MyLayer*)l;
+  if(layer->getDataSource()->getType() == "OGR")
+    return;
+
   te::map::DataGridOperation* op = layer->getDataGridOperation();
   if(op && layer->isKeepOnMemory() == false)
   {

@@ -26,6 +26,9 @@ MyLayer::~MyLayer()
     delete m_grid;
   if(m_op)
   {
+    if(this->getDataSource()->getType() == "OGR")
+      return;
+ 
     delete m_op->getDataSet()->getTransactor();
     delete m_op->getDataSet();
     delete m_op;
