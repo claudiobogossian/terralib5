@@ -37,50 +37,6 @@
 // STL
 #include <exception>
 #include <iostream>
-#include <locale.h>
-
-
-void LoadGDALModule()
-{
-  try
-  {
-    te::plugin::PluginInfo info;
-    info.m_type = "dll";
-    info.m_name = "GDAL DataSource Driver";
-    info.m_description = "This data source driver supports...";
-      
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-#ifdef NDEBUG
-    info.m_mainFile = "terralib_gdal.dll";
-#else
-    info.m_mainFile = "terralib_gdal_d.dll";
-#endif
-#endif
-      
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
-#ifdef NDEBUG
-    info.m_mainFile = "terralib_gdal.so";
-#else
-    info.m_mainFile = "terralib_gdal_d.so";
-#endif
-#endif 
-      
-#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
-#ifdef NDEBUG
-    info.m_mainFile = "libterralib_gdal.dylib";
-#else
-    info.m_mainFile = "libterralib_gdal_d.dylib";
-#endif
-#endif 
-
-    te::plugin::PluginManager::getInstance().loadPlugin(info);
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "Failed to load data source drivers: unknow exception!" << std::endl;
-  }
-}
-
 
 void LoadOGRModule()
 {
@@ -133,8 +89,6 @@ void LoadOGRModule()
 
 int main(int argc, char** argv)
 {
-  setlocale(LC_ALL,"C");
-
 // initialize Terralib support
   TerraLib::getInstance().initialize();
 
@@ -149,8 +103,6 @@ int main(int argc, char** argv)
     QIcon::setThemeSearchPaths(paths);
 
     LoadOGRModule();
-    LoadGDALModule();
-
 
     // Instructions
     QString text = QString::fromLatin1("<p>Here you have a Map Display component associated with a set of geographic tools.\
