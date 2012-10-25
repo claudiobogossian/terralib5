@@ -1679,6 +1679,12 @@ void MyWindow::addLayerSlot()
   else
   {
     te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+    if(gp == 0)
+    {
+      QMessageBox::information(this, tr("Layer Error."), tr("Has no geometry properties!"));
+      return;
+    }
+
     int srid = gp->getSRID();
     if(srid == -1)
     {

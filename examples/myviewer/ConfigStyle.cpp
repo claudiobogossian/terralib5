@@ -154,7 +154,7 @@ void ConfigStyle::paintEvent(QPaintEvent*)
   canvas.setPolygonContourColor(m_polygonContourColor);
   canvas.setPolygonContourWidth(m_polygonContourWidth);
   te::gm::LinearRing* lr = new te::gm::LinearRing(5, te::gm::LineStringType);
-  te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType);
+  te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType);
   poly->setRingN(0, lr);
   lr->setPoint(0, 5, 5);
   lr->setPoint(1, 94, 5);

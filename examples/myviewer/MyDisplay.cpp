@@ -1123,7 +1123,6 @@ void MyDisplay::setSRID(const int& srid)
 
 void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
 {
-  QRectF recWorld, recDev(rec);
   std::list<te::map::AbstractLayer*> layerList;
   getLayerList(m_layerTree, layerList);
 
@@ -1140,30 +1139,38 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
       continue;
 
     te::qt::widgets::Canvas* canvas = getCanvas(layer);
-    recWorld = canvas->getMatrix().inverted().mapRect(recDev);
-    if(recWorld.isValid() == false)
-      continue;
 
-    //te::gm::Envelope mouseEnv(recWorld.bottomLeft().x(), recWorld.topRight().y(), recWorld.topRight().x(), recWorld.bottomLeft().y());
-    //if(layer->getExtent())
-    //{
-    //  te::gm::Envelope layerEnv(*layer->getExtent());
-    //  if(transform(layerEnv, layer->getSRID(), m_srid))
-    //  {
-    //    if(layerEnv.intersects(mouseEnv) == false)
-    //      continue;
-    //  }
-    //}
+    te::gm::Point worldPoint(0., 0., m_srid);
+    QPointF p(rec.bottomLeft().x(), rec.bottomLeft().y());
+    p = canvas->getMatrix().inverted().map(p);
+    worldPoint.setX(p.x());
+    worldPoint.setY(p.y());
 
-    te::gm::Polygon* mousePolyRec = new te::gm::Polygon(0, te::gm::PolygonType);
+    te::gm::Polygon worldRec(0, te::gm::PolygonType, m_srid);
+    QRectF r(rec);
+    r = canvas->getMatrix().inverted().mapRect(r);
+    // tem que ser ponteiro porque o destrutor de polygon deleta os rings
     te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
-    line->setPoint(0, recWorld.bottomLeft().x(), recWorld.topRight().y()); // lower left
-    line->setPoint(1, recWorld.topLeft().x(), recWorld.bottomLeft().y()); // upper left
-    line->setPoint(2, recWorld.topRight().x(), recWorld.bottomRight().y()); // upper rigth
-    line->setPoint(3, recWorld.bottomRight().x(), recWorld.topRight().y()); // lower rigth
-    line->setPoint(4, recWorld.bottomLeft().x(), recWorld.topRight().y()); // closing
-    mousePolyRec->push_back(line);
-   
+    line->setPoint(0, r.bottomLeft().x(), r.topRight().y()); // lower left
+    line->setPoint(1, r.bottomRight().x(), r.topRight().y()); // lower rigth
+    line->setPoint(2, r.topRight().x(), r.bottomRight().y()); // upper rigth
+    line->setPoint(3, r.topLeft().x(), r.bottomLeft().y()); // upper left
+    line->setPoint(4, r.bottomLeft().x(), r.topRight().y()); // closing
+    worldRec.push_back(line);
+
+    te::gm::Polygon worldRecExpanded(0, te::gm::PolygonType, m_srid);
+    QRectF re(0., 0., 9., 9.);
+    re.moveCenter(rec.center());
+    re = canvas->getMatrix().inverted().mapRect(re);
+    // tem que ser ponteiro porque o destrutor de polygon deleta os rings
+    te::gm::LinearRing* linee = new te::gm::LinearRing(5, te::gm::LineStringType);
+    linee->setPoint(0, re.bottomLeft().x(), re.topRight().y()); // lower left
+    linee->setPoint(1, re.bottomRight().x(), re.topRight().y()); // lower rigth
+    linee->setPoint(2, re.topRight().x(), re.bottomRight().y()); // upper rigth
+    linee->setPoint(3, re.topLeft().x(), re.bottomLeft().y()); // upper left
+    linee->setPoint(4, re.bottomLeft().x(), re.topRight().y()); // closing
+    worldRecExpanded.push_back(linee);
+ 
     te::da::DataSet* dataSet = op->getDataSet();
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
@@ -1185,36 +1192,49 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
         continue;
       g->setSRID(layer->getSRID());
       g->transform(m_srid);
-      if(rec.width() == 1 && rec.height() == 1)
+
+      if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
       {
-        te::gm::Point p(recWorld.x(), recWorld.y());
-        if(g->contains(&p))
+        if(rec.width() == 1 && rec.height() == 1)
         {
-          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-          delete g;
-          break;
+          if(worldRecExpanded.contains(g))
+            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
         }
-      }
-      else if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
-      {
-        QPointF pg(((te::gm::Point*)g)->getX(), ((te::gm::Point*)g)->getY());
-        if(recWorld.contains(pg))
-          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        else
+        {
+          if(worldRec.contains(g))
+            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        }
       }
       else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
       { 
-        if(g->intersects(mousePolyRec))
-          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        if(rec.width() == 1 && rec.height() == 1)
+        {
+          if(g->intersects(&worldRecExpanded))
+            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        }
+        else
+        {
+          if(g->intersects(&worldRec))
+            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        }
       }
       else if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
       {
-        if(g->intersects(mousePolyRec))
-          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        if(rec.width() == 1 && rec.height() == 1)
+        {
+          if(g->contains(&worldPoint))
+            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        }
+        else
+        {
+          if(g->intersects(&worldRec))
+            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        }
       }
 
       delete g;
     }
-    delete mousePolyRec;
 
     if(visRows.empty())
       continue;
@@ -1387,15 +1407,14 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
     te::gm::Point mouseWPos(pw.x(), pw.y(), m_srid);
 
     mouseRectF = canvas->getMatrix().inverted().mapRect(mouseRectF);
-    te::gm::Envelope env(mouseRectF.bottomLeft().x(), mouseRectF.topLeft().y(), mouseRectF.topLeft().x(), mouseRectF.bottomLeft().y());
-    //transform(env, m_srid, layer->getSRID());
-
-    te::gm::Polygon* poly = new te::gm::Polygon(1, te::gm::PolygonType, m_srid);
+    // bottom and top are inverted in device coordenates
+    te::gm::Envelope env(mouseRectF.bottomLeft().x(), mouseRectF.topRight().y(), mouseRectF.topRight().x(), mouseRectF.bottomLeft().y());
+    te::gm::Polygon* poly = new te::gm::Polygon(0, te::gm::PolygonType, m_srid);
     te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType, m_srid);
     line->setPoint(0, env.getLowerLeftX(), env.getLowerLeftY()); // lower left
-    line->setPoint(1, env.getUpperRightX(), env.getLowerLeftY()); // upper left
+    line->setPoint(1, env.getUpperRightX(), env.getLowerLeftY()); // lower rigth
     line->setPoint(2, env.getUpperRightX(), env.getUpperRightY()); // upper rigth
-    line->setPoint(3, env.getLowerLeftX(), env.getUpperRightY()); // lower rigth
+    line->setPoint(3, env.getLowerLeftX(), env.getUpperRightY()); // upper left
     line->setPoint(4, env.getLowerLeftX(), env.getLowerLeftY()); // closing
 
     poly->push_back(line);
