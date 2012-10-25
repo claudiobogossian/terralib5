@@ -353,7 +353,7 @@ void MyDisplay::changeTree(te::map::AbstractLayer* al)
     te::gm::Envelope env = getLayerExtent(*lit);
 
     int srid = (*lit)->getSRID();
-    if(m_srid == -1)
+    if(m_srid <= 0)
       m_srid = srid;
     if(srid != m_srid)
       transform(env, srid, m_srid);
@@ -595,7 +595,7 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
     QPainter painter(m_displayPixmap);
     std::list<te::map::AbstractLayer*>::iterator it;
  
-    if(m_srid == -1 || m_extent == 0)
+    if(m_srid <= 0 || m_extent == 0)
     {
       if(m_extent == 0)
         m_extent = new te::gm::Envelope();
@@ -604,7 +604,7 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
         te::gm::Envelope env = getLayerExtent(*it);
 
         int srid = (*it)->getSRID();
-        if(m_srid == -1)
+        if(m_srid <= 0)
           m_srid = srid;
         if(srid != m_srid)
           transform(env, srid, m_srid);
@@ -619,7 +619,7 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
       }
       m_envelope = *m_extent;
     }
-    if(m_srid == -1)
+    if(m_srid <= 0)
       return;
 
     for(it = layerList.begin(); it != layerList.end(); ++it)
@@ -757,7 +757,7 @@ te::gm::Envelope MyDisplay::getAllExtent(std::list<te::map::AbstractLayer*>& lay
       int srid = (*it)->getSRID();
       if(srid > 0)
       {
-        if(m_srid == -1)
+        if(m_srid <= 0)
           m_srid = srid;
         if(srid != m_srid)
           transform(env, srid, m_srid);
@@ -2102,7 +2102,7 @@ void MyDisplay::fit(std::list<te::map::AbstractLayer*>& layerList)
       te::gm::Envelope env = getLayerExtent(*it);
 
       int srid = (*it)->getSRID();
-      if(m_srid == -1)
+      if(m_srid <= 0)
         m_srid = srid;
       if(srid != m_srid)
       {

@@ -1689,7 +1689,7 @@ void MyWindow::addLayerSlot()
     }
 
     int srid = gp->getSRID();
-    if(srid == -1)
+    if(srid <= 0)
     {
       //srid = 4326; // teste para country.shp
       std::map<int, QString> sridMap;
