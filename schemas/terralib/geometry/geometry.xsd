@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_dt="http://www.terralib.org/datatype"
+            xmlns:te_gm="http://www.terralib.org/geometry"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/geometry"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Geometry Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for the geometry module</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
+
+  <xsd:element name="GeometryProperty" type="te_gm:GeometryPropertyType" substitutionGroup="te_dt:SimpleProperty" />
+
+  <xsd:complexType name="GeometryPropertyType">
+    <xsd:complexContent>
+      <xsd:extension base="te_dt:SimplePropertyType">
+        <xsd:sequence>
+          <xsd:element ref="te_gm:Envelope" minOccurs="1" maxOccurs="1" />
+        </xsd:sequence>
+        <xsd:attribute name="srid" type="xsd:integer" use="required" />
+        <xsd:attribute name="geomType" type="te_gm:GeomTypeType" use="required" />
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:element name="Envelope" type="te_gm:EnvelopeType" />
+
+  <xsd:complexType name="EnvelopeType">
+    <xsd:annotation>
+      <xsd:documentation>A simple rectangle</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="llx" type="xsd:double" use="required"/>
+    <xsd:attribute name="lly" type="xsd:double" use="required"/>
+    <xsd:attribute name="urx" type="xsd:double" use="required"/>
+    <xsd:attribute name="ury" type="xsd:double" use="required"/>
+  </xsd:complexType>
+
+  <xsd:simpleType name="GeomTypeType">
+    <xsd:annotation>
+      <xsd:documentation>The base set of well known geometric data types</xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="GeometryType" />
+      <xsd:enumeration value="GeometryZType" />
+      <xsd:enumeration value="GeometryMType" />
+      <xsd:enumeration value="GeometryZMType" />
+      <xsd:enumeration value="PointType" />
+      <xsd:enumeration value="PointZType" />
+      <xsd:enumeration value="PointMType" />
+      <xsd:enumeration value="PointZMType" />
+      <xsd:enumeration value="PointKdType" />
+      <xsd:enumeration value="LineStringType" />
+      <xsd:enumeration value="LineStringZType" />
+      <xsd:enumeration value="LineStringMType" />
+      <xsd:enumeration value="LineStringZMType" />
+      <xsd:enumeration value="CircularStringType" />
+      <xsd:enumeration value="CircularStringZType" />
+      <xsd:enumeration value="CircularStringMType" />
+      <xsd:enumeration value="CircularStringZMType" />
+      <xsd:enumeration value="CompoundCurveType" />
+      <xsd:enumeration value="CompoundCurveZType" />
+      <xsd:enumeration value="CompoundCurveMType" />
+      <xsd:enumeration value="CompoundCurveZMType" />
+      <xsd:enumeration value="PolygonType" />
+      <xsd:enumeration value="PolygonZType" />
+      <xsd:enumeration value="PolygonMType" />
+      <xsd:enumeration value="PolygonZMType" />
+      <xsd:enumeration value="CurvePolygonType" />
+      <xsd:enumeration value="CurvePolygonZType" />
+      <xsd:enumeration value="CurvePolygonMType" />
+      <xsd:enumeration value="CurvePolygonZMType" />
+      <xsd:enumeration value="GeometryCollectionType" />
+      <xsd:enumeration value="GeometryCollectionZType" />
+      <xsd:enumeration value="GeometryCollectionMType" />
+      <xsd:enumeration value="GeometryCollectionZMType" />
+      <xsd:enumeration value="MultiPointType" />
+      <xsd:enumeration value="MultiPointZType" />
+      <xsd:enumeration value="MultiPointMType" />
+      <xsd:enumeration value="MultiPointZMType" />
+      <xsd:enumeration value="MultiLineStringType" />
+      <xsd:enumeration value="MultiLineStringZType" />
+      <xsd:enumeration value="MultiLineStringMType" />
+      <xsd:enumeration value="MultiLineStringZMType" />
+      <xsd:enumeration value="MultiPolygonType" />
+      <xsd:enumeration value="MultiPolygonZType" />
+      <xsd:enumeration value="MultiPolygonMType" />
+      <xsd:enumeration value="MultiPolygonZMType" />
+      <xsd:enumeration value="PolyhedralSurfaceType" />
+      <xsd:enumeration value="PolyhedralSurfaceZType" />
+      <xsd:enumeration value="PolyhedralSurfaceMType" />
+      <xsd:enumeration value="PolyhedralSurfaceZMType" />
+      <xsd:enumeration value="TINType" />
+      <xsd:enumeration value="TINZType" />
+      <xsd:enumeration value="TINMType" />
+      <xsd:enumeration value="TINZMType" />
+      <xsd:enumeration value="TriangleType" />
+      <xsd:enumeration value="TriangleZType" />
+      <xsd:enumeration value="TriangleMType" />
+      <xsd:enumeration value="TriangleZMType" />
+      <xsd:enumeration value="UnknownGeometryType" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
