@@ -96,8 +96,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   resize(size);
 
   // Adding a hard-coded layer
-  //addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/Muni_SM_Setoresrec_pol.shp");
-  addRasterLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
+  addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/Muni_SM_Setoresrec_pol.shp");
+  //addRasterLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
 }
 
 MainWindow::~MainWindow()
