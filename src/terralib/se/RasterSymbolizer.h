@@ -109,8 +109,16 @@ namespace te
         void setGeometry(te::fe::PropertyName* g);
 
         void setOpacity(ParameterValue* p);
+        
+        void setGain(ParameterValue* p);
+        
+        void setOffset(ParameterValue* p);
 
         ParameterValue* getOpacity() { return m_opacity; }
+
+        ParameterValue* getGain() { return m_gain; }
+
+        ParameterValue* getOffset() { return m_offset; }
 
         void setChannelSelection(ChannelSelection* c);
 
@@ -130,6 +138,8 @@ namespace te
 
         void setImageOutline(ImageOutline* i);
 
+        te::se::ImageOutline* getImageOutline() { return m_imageOutline; }
+
         //@}
 
         /*! \brief It creates a new copy of this object. */
@@ -139,6 +149,8 @@ namespace te
 
         te::fe::PropertyName* m_geometry;           //!< The interpretation of Geometry is system-dependent, as raster data may be organized differently from feature data, though omitting this element selects the default raster-data source. (Optional)
         ParameterValue* m_opacity;                  //!< An Opacity of 0.0 can be selected for the main raster to avoid rendering the main-raster pixels, or an opacity can be used for a PolygonSymbolizer Fill to allow the main-raster data be visible through the fill. (Optional)
+        ParameterValue* m_gain;                     //!< It defines the gain value used to renderer the main raster pixels, a initial value could be 1.0. (Optional)
+        ParameterValue* m_offset;                   //!< It defines the offset value used to renderer the main raster pixels, a initial value could be 0.0. (Optional)
         ChannelSelection* m_channelSelection;       //!< It specifies the false-color channel selection for a multi-spectral raster source (such as a multi-band satellite-imagery source). (Optional)
         OverlapBehavior m_overlapBehavior;          //!< It tells a system how to behave when multiple raster images in a layer overlap each other, for example with satellite-image scenes. (Optional)
         ColorMap* m_colorMap;                       //!< It defines either the colors of a pallette-type raster source or the mapping of numeric pixel values to colors. (Optional)

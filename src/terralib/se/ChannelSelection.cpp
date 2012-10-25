@@ -31,7 +31,8 @@ te::se::ChannelSelection::ChannelSelection()
   : m_redChannel(0),
     m_greenChannel(0),
     m_blueChannel(0),
-    m_grayChannel(0)
+    m_grayChannel(0),
+    m_colorCompType(UNKNOWN_COMPOSITION)
 {
 }
 
@@ -67,9 +68,16 @@ void te::se::ChannelSelection::setGrayChannel(SelectedChannel* c)
   m_grayChannel = c;
 }
 
+void te::se::ChannelSelection::setColorCompositionType(ColorCompositionType cct)
+{
+  m_colorCompType = cct;
+}
+
 te::se::ChannelSelection* te::se::ChannelSelection::clone() const
 {
   ChannelSelection* cs = new ChannelSelection;
+
+  cs->setColorCompositionType(m_colorCompType);
 
   if(m_redChannel)
     cs->setRedChannel(m_redChannel->clone());

@@ -107,11 +107,7 @@ namespace te
          */
         RasterLayerRenderer& operator=(const RasterLayerRenderer& rhs);
 
-
-
         bool hasIntersection(const te::gm::Envelope& bbox, te::rst::Raster* raster, Canvas* canvas, int srid);
-
-        void getResampledRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         void buildRasterCanvas(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
@@ -124,12 +120,16 @@ namespace te
 
         void applyStyle(RasterLayer* layer, Canvas* canvas);
 
+        void applyBackgroundColor();
+
+        void getMinMaxValues(double& rMin, double& rMax, RasterLayer* layer);
+
 
       protected:
 
-        te::rst::Raster* _rasterCanvas;           //!< This raster is used to paint canvas.
-        te::rst::Raster* _rasterCanvasStyled;     //!< This raster is used to paint canvas with the selected styled.
-        te::rst::Raster* _resampledRaster;       //!< This raster is the resampled grid for a given scale
+        te::rst::Raster* m_rasterCanvas;           //!< This raster is used to paint canvas.
+        te::rst::Raster* m_rasterCanvasStyled;     //!< This raster is used to paint canvas with the selected styled.
+        te::rst::Raster* m_resampledRaster;       //!< This raster is the resampled grid for a given scale
 
         //@}
     };

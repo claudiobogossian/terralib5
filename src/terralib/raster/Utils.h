@@ -97,6 +97,30 @@ namespace te
     */
     TERASTEREXPORT void Copy(const Band& bin, Band& bout);
 
+    /*!
+      \brief Copy a subset of the raster, given a box.
+
+      \param method      The method of interpolation. \sa te::rst::Interpolator
+      \param drow        The starting row to make a subset of the image.
+      \param dcolumn     The starting column to make a subset of the image.
+      \param height      The height of the subset.
+      \param width       The width of the subset.
+      \param rin         Pointer to valid output raster.
+      \param rout        Pointer to valid output raster.
+
+    */
+     TERASTEREXPORT void Copy(unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, const Raster& rin, Raster& rout);
+
+    /*!
+      \brief Round a double value to a integer value.
+
+      \param val        The double value.
+
+      \return A integer value.
+    */
+
+     TERASTEREXPORT int Round(double val);
+
   } // end namespace rst
 }   // end namespace te
 

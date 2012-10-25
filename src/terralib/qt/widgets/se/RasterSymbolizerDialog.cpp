@@ -35,6 +35,7 @@
 #include "ImageOutlineWidget.h"
 #include "OverlapBehaviorWidget.h"
 #include "RasterSymbolizerDialog.h"
+#include "RasterVisualWidget.h"
 #include "ShadedReliefWidget.h"
 #include "ui_RasterSymbolizerDialogForm.h"
 
@@ -54,6 +55,7 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
     m_shadedReliefWidget(0),
     m_imageOutlineWidget(0),
     m_sliderWidget(0),
+    m_visualWidget(0),
     m_symbolizer(new te::se::RasterSymbolizer),
     m_property(0),
     m_raster(0),
@@ -63,13 +65,14 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
 
   //connect tool buttons with slot functions
   
-  connect(m_ui->m_opacityToolButton, SIGNAL(clicked()), this, SLOT(onOpacityClicked()));
-  connect(m_ui->m_channelSelectionToolButton, SIGNAL(clicked()), this, SLOT(onChannelSelectionClicked()));
+  //connect(m_ui->m_opacityToolButton, SIGNAL(clicked()), this, SLOT(onOpacityClicked()));
+  //connect(m_ui->m_channelSelectionToolButton, SIGNAL(clicked()), this, SLOT(onChannelSelectionClicked()));
   connect(m_ui->m_colorMapToolButton, SIGNAL(clicked()), this, SLOT(onColorMapClicked()));
-  connect(m_ui->m_contrastToolButton, SIGNAL(clicked()), this, SLOT(onContrastEnhancementClicked()));
+  //connect(m_ui->m_contrastToolButton, SIGNAL(clicked()), this, SLOT(onContrastEnhancementClicked()));
   connect(m_ui->m_imageOutlinetoolButton, SIGNAL(clicked()), this, SLOT(onImageOutlineClicked()));
   connect(m_ui->m_overlapBehaviorToolButton, SIGNAL(clicked()), this, SLOT(onOverlapBehaviorClicked()));
   connect(m_ui->m_shadedReliefToolButton, SIGNAL(clicked()), this, SLOT(onShadedReliefClicked()));
+  connect(m_ui->m_visualToolButton, SIGNAL(clicked()), this, SLOT(onVisualClicked()));
   
   m_ui->m_stackedWidget->setCurrentIndex(0);
 }
@@ -246,6 +249,11 @@ void te::qt::widgets::RasterSymbolizerDialog::onImageOutlineClicked()
 
     layout->setAlignment(Qt::AlignTop);
     layout->addWidget(m_imageOutlineWidget);
+
+    if(m_symbolizer->getImageOutline())
+    {
+      m_imageOutlineWidget->setImageOutline(m_symbolizer->getImageOutline());
+    }
   }
 }
 
@@ -276,5 +284,27 @@ void te::qt::widgets::RasterSymbolizerDialog::onShadedReliefClicked()
 
     layout->setAlignment(Qt::AlignTop);
     layout->addWidget(m_shadedReliefWidget);
+  }
+}
+
+void te::qt::widgets::RasterSymbolizerDialog::onVisualClicked()
+{
+  m_ui->m_stackedWidget->setCurrentIndex(1);
+
+  if(!m_visualWidget)
+  {
+    m_visualWidget = new te::qt::widgets::RasterVisualWidget(m_ui->m_stackedWidget->currentWidget());
+
+    QGridLayout* layout = new QGridLayout(m_ui->m_stackedWidget->currentWidget());
+
+    layout->setAlignment(Qt::AlignTop);
+    layout->addWidget(m_visualWidget);
+
+    if(m_property)
+    {
+      m_visualWidget->setBandProperty(m_property->getBandProperties());
+    }
+
+    m_visualWidget->setRasterSymbolizer(m_symbolizer);
   }
 }

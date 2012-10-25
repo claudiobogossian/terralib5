@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>295</width>
-    <height>151</height>
+    <width>353</width>
+    <height>158</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,13 +41,6 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QRadioButton" name="m_lineSymbolizerRadioButton">
-            <property name="text">
-             <string>Line Symbolizer</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
            <widget class="QRadioButton" name="m_polygonSymbolizerRadioButton">
             <property name="text">
              <string>Polygon Symbolizer</string>
@@ -71,8 +64,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>208</width>
-               <height>89</height>
+               <width>253</width>
+               <height>85</height>
               </rect>
              </property>
             </widget>
@@ -120,7 +113,6 @@
  </widget>
  <tabstops>
   <tabstop>m_NoneSymbolizerRadioButton</tabstop>
-  <tabstop>m_lineSymbolizerRadioButton</tabstop>
   <tabstop>m_polygonSymbolizerRadioButton</tabstop>
  </tabstops>
  <resources/>

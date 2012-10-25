@@ -99,6 +99,7 @@ class MainWindow : public QMainWindow
 
     void setupActions();
     void addLayer(const QString& path);
+    void addRasterLayer(const QString& path);
     void contextMenuEvent(QContextMenuEvent* e);
 
   private slots:
@@ -112,6 +113,7 @@ class MainWindow : public QMainWindow
     void onAngleTriggered();
     void onSelectionTriggered();
     void onCoordTracked(QPointF& coordinate);
+    void onRasterStyleTriggered();
 
   private:
 

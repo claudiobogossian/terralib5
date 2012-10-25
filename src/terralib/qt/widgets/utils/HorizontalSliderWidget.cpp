@@ -81,6 +81,13 @@ void te::qt::widgets::HorizontalSliderWidget::setDefaultValue(int value)
   m_ui->m_slider->setValue(m_defaultValue);
 }
 
+void te::qt::widgets::HorizontalSliderWidget::setCurrentValue(int value)
+{
+  m_ui->m_sliderLabel->setNum(value);
+
+  m_ui->m_slider->setValue(value);
+}
+
 int te::qt::widgets::HorizontalSliderWidget::getValue()
 {
   return m_ui->m_slider->value();

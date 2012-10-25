@@ -44,6 +44,21 @@ namespace te
       TEXT_SYMBOLIZER      /*!< TextSymbolizer type     */
     };
 
+    /*!
+      \enum ColorCompositionType
+
+      \brief Allowed color compositions type.
+    */
+    enum ColorCompositionType
+    {
+      RGB_COMPOSITION,      /*!< Color composition with 3 bands    */
+      RED_COMPOSITION,      /*!< Color composition with 1 band, red channel    */
+      GREEN_COMPOSITION,    /*!< Color composition with 1 band, green channel    */
+      BLUE_COMPOSITION,     /*!< Color composition with 1 band, blue channel    */
+      GRAY_COMPOSITION,     /*!< Color composition with 1 band, gray channel    */
+      UNKNOWN_COMPOSITION   /*!< Color composition unknown or not defined    */
+    };
+
   } // end namespace se
 }   // end namespace te
 

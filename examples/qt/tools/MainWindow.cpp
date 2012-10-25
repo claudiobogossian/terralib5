@@ -32,6 +32,7 @@
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 #include <terralib/maptools.h>
+#include <terralib/raster.h>
 #include <terralib/se.h>
 #include <terralib/qt/widgets/canvas/MapDisplay.h>
 #include <terralib/qt/widgets/tools/CoordTracking.h>
@@ -41,6 +42,7 @@
 #include <terralib/qt/widgets/tools/ZoomClick.h>
 #include <terralib/qt/widgets/tools/ZoomKeyboard.h>
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
+#include <terralib/qt/widgets/se/RasterSymbolizerDialog.h>
 
 // Qt
 #include <QtGui/QAction>
@@ -94,7 +96,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   resize(size);
 
   // Adding a hard-coded layer
-  addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/Muni_SM_Setoresrec_pol.shp");
+  //addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/Muni_SM_Setoresrec_pol.shp");
+  addRasterLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
 }
 
 MainWindow::~MainWindow()
@@ -155,6 +158,12 @@ void MainWindow::setupActions()
   setSelection->setCheckable(true);
   connect(setSelection, SIGNAL(triggered()), SLOT(onSelectionTriggered()));
   actions << setSelection;
+
+  // Raster Style
+  QAction* rasterStyle = new QAction(tr("Raster Visual"), this);
+  rasterStyle->setCheckable(false);
+  connect(rasterStyle, SIGNAL(triggered()), SLOT(onRasterStyleTriggered()));
+  actions << rasterStyle;
 
   // Tools group
   QActionGroup* toolsGroup = new QActionGroup(this);
@@ -233,6 +242,53 @@ void MainWindow::addLayer(const QString& path)
   m_display->setExtent(*extent);
 }
 
+void MainWindow::addRasterLayer(const QString& path)
+{
+  std::string datasetName = path.toStdString();
+    // set input raster name
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = datasetName;
+
+   // open input raster
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
+  ds->open(rinfo);
+
+  te::da::DataSourceTransactor* tr = ds->getTransactor();
+  te::da::DataSourceCatalogLoader* cl = tr->getCatalogLoader();
+  te::da::DataSetType* dt = cl->getDataSetType("cbers2b_rgb342_crop.tif");
+  te::rst::RasterProperty* rasterProperty = static_cast<te::rst::RasterProperty*>(dt->getProperties()[0]->clone());
+
+  te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
+  te::rst::Raster* raster = dataSet->getRaster();
+
+  te::gm::Envelope* extent = raster->getExtent();
+
+ // Creates a Layer
+  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(te::common::Convert2String(ms_id++), datasetName);
+  rasterLayer->setDataSource(ds);
+  rasterLayer->setDataSetName("cbers2b_rgb342_crop.tif");
+  rasterLayer->setVisibility(te::map::VISIBLE);
+
+  // Creates a Layer Renderer
+  te::map::RasterLayerRenderer* r = new te::map::RasterLayerRenderer();
+  rasterLayer->setRenderer(r);
+
+  // Adding layer to layer list
+  m_layers.push_back(rasterLayer);
+
+  // Storing the data source
+  m_ds.push_back(ds);
+
+  // No more necessary
+  delete cl;
+  delete tr;
+
+  // Updates MapDisplay layer list and extent
+  m_display->setLayerList(m_layers);
+  m_display->setSRID(raster->getSRID());
+  m_display->setExtent(*extent);
+}
+
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 {
   m_menu->popup(e->globalPos());
@@ -289,9 +345,26 @@ void MainWindow::onAngleTriggered()
 
 void MainWindow::onSelectionTriggered()
 {
-  delete m_tool;
-  m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(*m_layers.begin()));
-  m_display->installEventFilter(m_tool);
+  std::list<te::map::AbstractLayer*>::iterator it = m_layers.begin();
+
+  te::map::Layer* layer = 0;
+
+  while(it != m_layers.end())
+  {
+    if((*it)->getType() == "LAYER")
+    {
+      layer = dynamic_cast<te::map::Layer*>(*it);
+      break;
+    }
+    ++it;
+  }
+
+  if(layer)
+  {
+    delete m_tool;
+    m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(layer));
+    m_display->installEventFilter(m_tool);
+  }
 }
 
 void MainWindow::onCoordTracked(QPointF& coordinate)
@@ -300,3 +373,53 @@ void MainWindow::onCoordTracked(QPointF& coordinate)
   QStatusBar* sb = statusBar();
   sb->showMessage(text);
 }
+
+void MainWindow::onRasterStyleTriggered()
+{
+ // Creates the rastersymbolizer dialog
+  te::qt::widgets::RasterSymbolizerDialog dlg;
+
+  std::list<te::map::AbstractLayer*>::iterator it = m_layers.begin();
+
+  te::map::RasterLayer* layer = 0;
+
+  while(it != m_layers.end())
+  {
+    if((*it)->getType() == "RASTERLAYER")
+    {
+      layer = dynamic_cast<te::map::RasterLayer*>(*it);
+      break;
+    }
+    ++it;
+  }
+
+  te::rst::RasterProperty* prop = 0;
+  
+  if(layer)
+  {
+    prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
+
+    dlg.setRasterProperty(layer->getRaster(), prop);
+  }
+
+  dlg.setRasterSymbolizer(layer->getRasterSymbolizer());
+
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    te::se::RasterSymbolizer* rs = static_cast<te::se::RasterSymbolizer*>(dlg.getRasterSymbolizer());
+
+    //add symbolizer to a layer style
+    te::se::Rule* rule = new te::se::Rule();
+    rule->push_back(rs);
+
+    te::se::Style* s = new te::se::Style();
+    s->push_back(rule);
+
+    layer->setStyle(s);
+
+    m_display->setExtent(*layer->getRaster()->getExtent());
+  }
+
+  delete prop;
+}
+

@@ -203,6 +203,7 @@ file (
   ${SRCDIR}/widgets/se/PointSymbolizerWidget.h
   ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
   ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
+  ${SRCDIR}/widgets/se/RasterVisualWidget.h
   ${SRCDIR}/widgets/se/SelectedChannelWidget.h
   ${SRCDIR}/widgets/se/ShadedReliefWidget.h
   ${SRCDIR}/widgets/se/SymbolEditorWidget.h

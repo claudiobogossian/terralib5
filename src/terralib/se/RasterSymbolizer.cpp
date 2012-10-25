@@ -37,6 +37,8 @@ te::se::RasterSymbolizer::RasterSymbolizer()
   : te::se::Symbolizer(te::se::RASTER_SYMBOLIZER),
     m_geometry(0),
     m_opacity(0),
+    m_gain(0),
+    m_offset(0),
     m_channelSelection(0),
     m_overlapBehavior(NO_BEHAVIOR),
     m_colorMap(0),
@@ -50,6 +52,8 @@ te::se::RasterSymbolizer::RasterSymbolizer(const te::se::RasterSymbolizer& rhs)
   : te::se::Symbolizer(rhs),
     m_geometry(0),
     m_opacity(0),
+    m_gain(0),
+    m_offset(0),
     m_channelSelection(0),
     m_overlapBehavior(rhs.m_overlapBehavior),
     m_colorMap(0),
@@ -62,6 +66,12 @@ te::se::RasterSymbolizer::RasterSymbolizer(const te::se::RasterSymbolizer& rhs)
 
   if(rhs.m_opacity)
     m_opacity = rhs.m_opacity->clone();
+
+  if(rhs.m_gain)
+    m_gain = rhs.m_gain->clone();
+
+  if(rhs.m_offset)
+    m_offset = rhs.m_offset->clone();
 
   if(rhs.m_channelSelection)
     m_channelSelection = rhs.m_channelSelection->clone();
@@ -83,6 +93,8 @@ te::se::RasterSymbolizer::~RasterSymbolizer()
 {
   delete m_geometry;
   delete m_opacity;
+  delete m_gain;
+  delete m_offset;
   delete m_channelSelection;
   delete m_colorMap;
   delete m_contrastEnhancement;
@@ -100,6 +112,18 @@ void te::se::RasterSymbolizer::setOpacity(ParameterValue* p)
 {
   delete m_opacity;
   m_opacity = p;
+}
+
+void te::se::RasterSymbolizer::setGain(ParameterValue* p)
+{
+  delete m_gain;
+  m_gain = p;
+}
+
+void te::se::RasterSymbolizer::setOffset(ParameterValue* p)
+{
+  delete m_offset;
+  m_offset = p;
 }
 
 void te::se::RasterSymbolizer::setChannelSelection(ChannelSelection* c)

@@ -54,7 +54,6 @@ namespace te
   {
     namespace widgets
     {
-      class LineSymbolizerWidget;
       class PolygonSymbolizerWidget;
       class SymbolizerPreviewWidget;
 
@@ -99,11 +98,7 @@ namespace te
 
           void onNoneSymbolizerClicked();
 
-          void onLineSymbolizerClicked();
-
           void onPolygonSymbolizerClicked();
-
-          void onLineSymbolizerCreated();
 
           void onPolygonSymbolizerCreated();
 
@@ -115,7 +110,6 @@ namespace te
 
           std::auto_ptr<Ui::ImageOutlineWidgetForm> m_ui;             //!< Dialog form.
 
-          te::qt::widgets::LineSymbolizerWidget* m_lsWidget;          //!< Line Symbolizer UI.
           te::qt::widgets::PolygonSymbolizerWidget* m_psWidget;       //!< Polygon Symbolizer UI.
           te::qt::widgets::SymbolizerPreviewWidget* m_preview;        //!< Preview Widget used to visualize the symbol.
 

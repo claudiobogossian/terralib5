@@ -28,23 +28,28 @@
 #include "../fe/Filter.h"
 #include "../geometry.h"
 #include "../raster.h"
+#include "../raster/RasterSummary.h"
+#include "../raster/RasterSummaryManager.h"
 #include "../se.h"
 #include "AbstractLayer.h"
 #include "Canvas.h"
+#include "CanvasConfigurer.h"
 #include "RasterLayer.h"
 #include "RasterLayerRenderer.h"
+#include "RasterTransform.h"
+#include "RasterTransformConfigurer.h"
 #include "Utils.h"
 
 
-te::map::RasterLayerRenderer::RasterLayerRenderer(): _rasterCanvas(0), _rasterCanvasStyled(0), _resampledRaster(0)
+te::map::RasterLayerRenderer::RasterLayerRenderer(): m_rasterCanvas(0), m_rasterCanvasStyled(0), m_resampledRaster(0)
 {
 }
 
 te::map::RasterLayerRenderer::~RasterLayerRenderer()
 {
-  delete _rasterCanvas;
-  delete _resampledRaster;
-  delete _rasterCanvasStyled;
+  delete m_rasterCanvas;
+  delete m_resampledRaster;
+  delete m_rasterCanvasStyled;
 }
 
 void te::map::RasterLayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
@@ -70,9 +75,6 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     createVisualDefault(l);
   }
 
-  //get resampled input raster
- // getResampledRaster(r, canvas, bbox, srid);
-
   //reproject and resample input raster to raster canvas 
   buildRasterCanvas(r, canvas, bbox, srid);
 
@@ -89,43 +91,13 @@ bool te::map::RasterLayerRenderer::hasIntersection(const te::gm::Envelope& bbox,
   return e.intersects(*raster->getExtent());
 }
 
-void te::map::RasterLayerRenderer::getResampledRaster(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int srid)
-{
-  delete _resampledRaster;
-
-  te::gm::Envelope e(bbox);
-
-  e.transform(srid, raster->getSRID());
-
-  double resx = e.getWidth()/canvas->getWidth();
-  double resy = e.getHeight()/canvas->getHeight();
-
-  double x = resx/raster->getResolutionX();
-  double y = resy/raster->getResolutionY();
-
-  int scale = (int) std::min(x,y);
-  
-  std::map<std::string, std::string> rinfo;
-
-  std::vector<te::rst::BandProperty*> bp;
-
-  for(size_t i = 0; i < raster->getNumberOfBands(); ++i)
-  {
-    bp.push_back(new te::rst::BandProperty(*raster->getBand(i)->getProperty()));
-  }
-
-  te::rst::Grid* g = raster->getResampledGrid(scale);
-
-  _resampledRaster = te::rst::RasterFactory::make("MEM", g, bp, rinfo);
-}
-
 void te::map::RasterLayerRenderer::buildRasterCanvas(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
-  delete _rasterCanvas;
+  delete m_rasterCanvas;
 
   std::map<std::string, std::string> rinfo;
-  rinfo["MEM_SRC_RASTER_DRIVER_TYPE"] = "GDAL";
-  rinfo["SOURCE"] = "d:/rasterCanvas.tif";
+  rinfo["FORCE_MEM_DRIVER"] = "TRUE";
+  //rinfo["SOURCE"] = "d:/rasterCanvas.tif";
 
   if(raster->getSRID() != srid)
   {
@@ -135,21 +107,58 @@ void te::map::RasterLayerRenderer::buildRasterCanvas(te::rst::Raster* raster, Ca
     double resx = bbox.getWidth()/canvas->getWidth();
     double resy = bbox.getHeight()/canvas->getHeight();
     
-    _rasterCanvas = raster->transform(srid, env->getLowerLeftX(), env->getLowerLeftY(), env->getUpperRightX(), env->getUpperRightY(), resx, resy, rinfo);
+    m_rasterCanvas = raster->transform(srid, env->getLowerLeftX(), env->getLowerLeftY(), env->getUpperRightX(), env->getUpperRightY(), resx, resy, rinfo);
 
     delete env;
   }
   else
   {
-    te::gm::Coord2D ll = raster->getGrid()->geoToGrid(bbox.getLowerLeftX(), bbox.getLowerLeftY());
-    te::gm::Coord2D ur = raster->getGrid()->geoToGrid(bbox.getUpperRightX(), bbox.getUpperRightY());
+    te::gm::Coord2D ul = raster->getGrid()->geoToGrid(bbox.getLowerLeftX(), bbox.getUpperRightY());
+    te::gm::Coord2D lr = raster->getGrid()->geoToGrid(bbox.getUpperRightX(), bbox.getLowerLeftY());
     
-    int r = ll.x;
-    int c = ur.y;
-    int ih = ll.y - ur.y;
-    int iw = ur.x - ll.x;
+    int r = te::rst::Round(ul.y);
+    if(r < 0)
+      r = 0;
 
-    _rasterCanvas = raster->resample(1, r, c, ih, iw, canvas->getHeight(), canvas->getWidth(), rinfo);
+    int c = te::rst::Round(ul.x);
+    if(c < 0)
+      c = 0;
+
+    int ih = te::rst::Round(lr.y) - te::rst::Round(ul.y);
+    if(ih + r >= raster->getNumberOfRows())
+    {
+      int aux = (ih + r) - raster->getNumberOfRows();
+      ih = ih - aux -1;
+    }
+    
+    int iw = te::rst::Round(lr.x) - te::rst::Round(ul.x);
+    if(iw + c >= raster->getNumberOfColumns())
+    {
+      int aux = (iw + c) - raster->getNumberOfColumns();
+      iw = iw - aux - 1;
+    }
+
+    unsigned int h = canvas->getHeight();
+    unsigned int w = canvas->getWidth();
+
+    //build raster canvas
+    te::gm::Envelope* env = new te::gm::Envelope(bbox);
+    te::rst::Grid* grid = new te::rst::Grid(raster->getResolutionX(), raster->getResolutionY(), env, srid);
+
+    //copy the band definitions
+    std::vector<te::rst::BandProperty*> bands;
+    for (unsigned int b = 0; b < raster->getNumberOfBands(); ++b)
+    {
+      te::rst::BandProperty* bb = new te::rst::BandProperty(b, raster->getBand(b)->getProperty()->getType());
+
+      bands.push_back(bb);
+    }
+
+    m_rasterCanvas = te::rst::RasterFactory::make("MEM", grid, bands, rinfo);
+
+    applyBackgroundColor();
+
+    te::rst::Copy(r, c, ih, iw, *raster, *m_rasterCanvas);
   }
 }
 
@@ -161,13 +170,17 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
 
-  //set transparency
+  //general paramaters
   rs->setOpacity(new te::se::ParameterValue("1.0"));
+  rs->setGain(new te::se::ParameterValue("1.0"));
+  rs->setOffset(new te::se::ParameterValue("0.0"));
 
   //set channel selection
   if(raster->getNumberOfBands() == 1)
   {
     te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
 
     te::se::SelectedChannel* sc = new te::se::SelectedChannel();
     sc->setSourceChannelName("0");
@@ -178,6 +191,8 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
   else if(raster->getNumberOfBands() >= 3)
   {
     te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
 
     //channel R
     te::se::SelectedChannel* scR = new te::se::SelectedChannel();
@@ -197,7 +212,6 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
     rs->setChannelSelection(cs);
   }
 
-
   //add symbolizer to a layer style
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
@@ -208,31 +222,15 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
   layer->setStyle(s);
 }
 
-
-/*
- “Normalize” means to stretch the contrast so that the dimmest color is stretched to black 
- and the brightest color is stretched to white, with all colors in between stretched out linearly. 
- 
- “Histogram” means to stretch the contrast based on a histogram of how many colors are at each 
- brightness level on input, with the goal of producing equal number of pixels in the image at each 
- brightness level on output. This has the effect of revealing many subtle ground features. 
- 
- A “GammaValue” tells how much to brighten (values greater than 1.0) or dim (values less than 1.0) 
- an image. The default GammaValue is 1.0 (no change). If none of Normalize, Histogram, or GammaValue 
- are selected in a ContrastEnhancement, then no enhancement is performed.
-*/
-
 void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas)
 {
-  delete _rasterCanvasStyled;
+  delete m_rasterCanvasStyled;
 
-  assert(_rasterCanvas);
-
-  te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+  assert(m_rasterCanvas);
 
   //create new grid
-  te::gm::Envelope* env = new te::gm::Envelope(*_rasterCanvas->getExtent());
-  te::rst::Grid* grid = new te::rst::Grid(_rasterCanvas->getResolutionX(), _rasterCanvas->getResolutionY(), env, _rasterCanvas->getSRID());
+  te::gm::Envelope* env = new te::gm::Envelope(*m_rasterCanvas->getExtent());
+  te::rst::Grid* grid = new te::rst::Grid(*m_rasterCanvas->getGrid());
 
   //copy the band definitions
   std::vector<te::rst::BandProperty*> bands;
@@ -244,120 +242,91 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
   }
 
   //create the styled raster
-  _rasterCanvasStyled = te::rst::RasterFactory::make("MEM", grid, bands, std::map<std::string, std::string>());
+  std::map<std::string, std::string> rinfo;
+  rinfo["FORCE_MEM_DRIVER"] = "TRUE";
+  
+  m_rasterCanvasStyled = te::rst::RasterFactory::make("MEM", grid, bands, rinfo);
 
+  te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
 
-  assert(rs->getChannelSelection());
+  //create the raster transform
+  RasterTransform rt(m_rasterCanvas, m_rasterCanvasStyled);
 
-  bool isMono = false;
-  int mBand, rBand, gBand, bBand;
-  double mGamma, rGamma, gGamma, bGamma;
-  if(rs->getChannelSelection()->getGrayChannel())
+  double rMin, rMax;
+
+  getMinMaxValues(rMin, rMax, layer);
+
+  rt.setLinearTransfParameters(0, 255, rMin, rMax);
+
+  //configure the raster transformation using the raster symbolizer
+  RasterTransformConfigurer rtc(rs, &rt);
+
+  rtc.configure();
+
+  //fill output raster
+  for(unsigned int r = 0; r < m_rasterCanvas->getNumberOfRows(); ++r)
   {
-    isMono = true;
-    mBand = atoi(rs->getChannelSelection()->getGrayChannel()->getSourceChannelName().c_str()); //MUST VERIFY THIS
-
-    if(rs->getChannelSelection()->getGrayChannel()->getContrastEnhancement())
+    for(unsigned int c = 0; c < m_rasterCanvas->getNumberOfColumns(); ++c)
     {
-      mGamma = rs->getChannelSelection()->getGrayChannel()->getContrastEnhancement()->getGammaValue();
-    }
-    else
-    {
-      mGamma = TE_SE_DEFAULT_GAMMA_VALUE;
-    }
-  }
-  else
-  {
-    if(rs->getChannelSelection()->getRedChannel())
-    {
-      rBand = atoi(rs->getChannelSelection()->getRedChannel()->getSourceChannelName().c_str()); //MUST VERIFY THIS
-
-      if(rs->getChannelSelection()->getRedChannel()->getContrastEnhancement())
-      {
-        rGamma = rs->getChannelSelection()->getRedChannel()->getContrastEnhancement()->getGammaValue();
-      }
-      else
-      {
-        rGamma = TE_SE_DEFAULT_GAMMA_VALUE;
-      }
-    }
-
-    if(rs->getChannelSelection()->getGreenChannel())
-    {
-      gBand = atoi(rs->getChannelSelection()->getGreenChannel()->getSourceChannelName().c_str()); //MUST VERIFY THIS
-
-      if(rs->getChannelSelection()->getGreenChannel()->getContrastEnhancement())
-      {
-        gGamma = rs->getChannelSelection()->getGreenChannel()->getContrastEnhancement()->getGammaValue();
-      }
-      else
-      {
-        gGamma = TE_SE_DEFAULT_GAMMA_VALUE;
-      }
-    }
-
-    if(rs->getChannelSelection()->getBlueChannel())
-    {
-      bBand = atoi(rs->getChannelSelection()->getBlueChannel()->getSourceChannelName().c_str()); //MUST VERIFY THIS
-
-      if(rs->getChannelSelection()->getBlueChannel()->getContrastEnhancement())
-      {
-        bGamma = rs->getChannelSelection()->getBlueChannel()->getContrastEnhancement()->getGammaValue();
-      }
-      else
-      {
-        bGamma = TE_SE_DEFAULT_GAMMA_VALUE;
-      }
-    }
-  }
-
-
-  for(unsigned int r = 0; r < _rasterCanvas->getNumberOfRows(); ++r)
-  {
-    for(unsigned int c = 0; c < _rasterCanvas->getNumberOfColumns(); ++c)
-    {
-      if(isMono)
-      {
-        double val = 0.;
-        _rasterCanvas->getValue(c, r, val, mBand);
-
-        _rasterCanvasStyled->setValue(c, r, val * mGamma, 0);
-        _rasterCanvasStyled->setValue(c, r, val * mGamma, 1);
-        _rasterCanvasStyled->setValue(c, r, val * mGamma, 2);
-      }
-      else
-      {
-        if(rs->getChannelSelection()->getRedChannel())
-        {
-          double val = 0.;
-          _rasterCanvas->getValue(c, r, val, rBand);
-          _rasterCanvasStyled->setValue(c, r, val * rGamma, 0);
-        }
-
-        if(rs->getChannelSelection()->getGreenChannel())
-        {
-          double val = 0.;
-          _rasterCanvas->getValue(c, r, val, gBand);
-          _rasterCanvasStyled->setValue(c, r, val * gGamma, 1);
-        }
-
-        if(rs->getChannelSelection()->getBlueChannel())
-        {
-          double val = 0.;
-          _rasterCanvas->getValue(c, r, val, bBand);
-          _rasterCanvasStyled->setValue(c, r, val * bGamma, 2);
-        }
-      }
+      rt.apply(c, r, c, r);
     }
   }
 
   //get opacity
   std::string opacityStr = te::map::GetString(rs->getOpacity());
-  double opacity = TE_OPAQUE * atof(opacityStr.c_str());
+  double opacity = (double)TE_OPAQUE * atof(opacityStr.c_str());
 
   //paint raster
-  canvas->drawImage(0, 0, canvas->getWidth(), canvas->getHeight(), _rasterCanvasStyled, 
-    0, 0, _rasterCanvasStyled->getNumberOfColumns(), _rasterCanvasStyled->getNumberOfRows(), (int)opacity);
+  canvas->drawImage(0, 0, canvas->getWidth(), canvas->getHeight(), m_rasterCanvasStyled, 
+    0, 0, m_rasterCanvasStyled->getNumberOfColumns(), m_rasterCanvasStyled->getNumberOfRows(), (int)opacity);
+
+  //verify for image outline
+  if(rs->getImageOutline())
+  {
+    te::se::Symbolizer* s = rs->getImageOutline()->getSymbolizer();
+
+    if(s)
+    {
+      // The canvas configurer
+      te::map::CanvasConfigurer cc(canvas);
+      cc.config(s);
+
+      te::gm::Geometry* g = te::gm::GetGeomFromEnvelope(layer->getRaster()->getExtent(), layer->getSRID());
+
+      canvas->draw(g);
+
+      delete g;
+    }
+  }
 
   delete rs;
+}
+
+void te::map::RasterLayerRenderer::applyBackgroundColor()
+{
+  assert(m_rasterCanvas);
+    
+  for( unsigned int b = 0; b < m_rasterCanvas->getNumberOfBands(); ++b)
+  {
+    for( unsigned int r = 0; r < m_rasterCanvas->getNumberOfRows(); ++r)
+    {
+      for( unsigned int c = 0; c < m_rasterCanvas->getNumberOfColumns(); ++c)
+      {
+        m_rasterCanvas->setValue(c , r, 255., b);
+      }
+    }
+  }
+}
+
+void te::map::RasterLayerRenderer::getMinMaxValues(double& rMin, double& rMax, RasterLayer* layer)
+{
+  if(layer->getRaster())
+  {
+    const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(layer->getRaster(), te::rst::SUMMARY_MIN);
+    const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(layer->getRaster(), te::rst::SUMMARY_MAX);
+    const std::complex<double>* cmin = rsMin->at(0).m_minVal;
+    const std::complex<double>* cmax = rsMax->at(0).m_maxVal;
+    rMin = cmin->real();
+    rMax = cmax->real();
+  }
 }

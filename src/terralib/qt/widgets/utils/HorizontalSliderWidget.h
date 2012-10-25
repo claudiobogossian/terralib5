@@ -68,6 +68,8 @@ namespace te
 
           void setDefaultValue(int value);
 
+          void setCurrentValue(int value);
+
           int getValue();
 
           void setDefaultButtonVisible(bool visible);

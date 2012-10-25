@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "Enums.h"
 
 // Boost
 #include <boost/noncopyable.hpp>
@@ -93,6 +94,10 @@ namespace te
         void setGrayChannel(SelectedChannel* c);
 
         SelectedChannel* getGrayChannel() { return m_grayChannel; }
+
+        void setColorCompositionType(ColorCompositionType cct);
+
+        ColorCompositionType getColorCompositionType() { return m_colorCompType; }
         
         //@}
 
@@ -105,6 +110,8 @@ namespace te
         SelectedChannel* m_greenChannel;   //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if grayChannel_ is not informed)
         SelectedChannel* m_blueChannel;    //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if grayChannel_ is not informed)
         SelectedChannel* m_grayChannel;    //!< Either a channel may be selected to display in each of red, green, and blue, or a single channel may be selected to display in grayscale. (Mandatory if redChannel_, greenChannel_ and blueChannel_ is not informed)
+
+        ColorCompositionType m_colorCompType; //!< Define the color composition, this is not defined in SE spec.
     };    
 
   } // end namespace se

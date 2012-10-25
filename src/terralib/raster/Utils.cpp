@@ -230,3 +230,39 @@ void te::rst::Copy(const te::rst::Band& bin, te::rst::Band& bout)
 
   delete [] buffer;
 }
+
+void te::rst::Copy(unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, const Raster& rin, Raster& rout)
+{
+  assert(drow + height <= rin.getNumberOfRows());
+  assert(dcolumn + width <= rin.getNumberOfColumns());
+
+// define variables for interpolation
+  std::vector<std::complex<double> > v;
+
+  for (unsigned r = drow; r < drow + height; r++)
+  {
+    for (unsigned c = dcolumn; c < dcolumn + width; c++)
+    {
+      te::gm::Coord2D inputGeo = rin.getGrid()->gridToGeo(c, r);
+
+      te::gm::Coord2D outputGrid = rout.getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
+
+      int x = Round(outputGrid.x);
+      int y = Round(outputGrid.y);
+
+      if((x >=0 && x < (int)rout.getNumberOfColumns()) && (y >=0 && y < (int)rout.getNumberOfRows()))
+      {
+        rin.getValues(c, r, v);
+        rout.setValues(x, y, v);
+      }
+    }
+  }
+}
+
+int te::rst::Round(double val)
+{
+  if (val>=0)
+    return (int)(val+.5);
+  else
+    return (int)(val-.5);
+}
