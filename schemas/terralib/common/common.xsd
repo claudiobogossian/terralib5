@@ -1,21 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:common="http://www.terralib.org/schemas/common"
+<xsd:schema xmlns:te_common="http://www.terralib.org/common"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/schemas/common"
+            targetNamespace="http://www.terralib.org/common"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
         
   <xsd:annotation>
-    <xsd:appinfo>General Declarations for TerraLib Schemas</xsd:appinfo>
-    <xsd:documentation>This XML Schema contains the basic set of elements and data types for the various Terralib Schema documents.</xsd:documentation>
+    <xsd:appinfo>General declarations for TerraLib schemas</xsd:appinfo>
+    <xsd:documentation>This schema contains the basic set of elements and data types used in other TerraLib schema documents</xsd:documentation>
   </xsd:annotation>
-  
+
   <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
-  
+
   <xsd:complexType name="OnlineResourceType">
-		<xsd:attributeGroup ref="xlink:simpleLink"/>
-	</xsd:complexType>
+    <xsd:attributeGroup ref="xlink:simpleLink"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ParameterListType">
+    <xsd:sequence>
+      <xsd:element name="Parameter" type="te_common:ParameterType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ParameterType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>
 
 </xsd:schema>
