@@ -927,6 +927,9 @@ void MyWindow::removeGridSlot(MyGrid* g)
 void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
 {
   MyLayer* layer = (MyLayer*)l;
+  if(layer->getDataSource()->getType() == "OGR")
+    return;
+
   te::map::DataGridOperation* op = layer->getDataGridOperation();
   if(op && layer->isKeepOnMemory() == false)
   {
@@ -1679,8 +1682,14 @@ void MyWindow::addLayerSlot()
   else
   {
     te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+    if(gp == 0)
+    {
+      QMessageBox::information(this, tr("Layer Error."), tr("Has no geometry properties!"));
+      return;
+    }
+
     int srid = gp->getSRID();
-    if(srid == -1)
+    if(srid <= 0)
     {
       //srid = 4326; // teste para country.shp
       std::map<int, QString> sridMap;

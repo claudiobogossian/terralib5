@@ -25,11 +25,12 @@
 
 // TerraLib
 #include "../geometry/Envelope.h"
+#include "../srs/Config.h"
 #include "MapDisplay.h"
 
 te::map::MapDisplay::MapDisplay()
   : AbstractMapDisplay(),
-    m_srid(-1),
+    m_srid(TE_UNKNOWN_SRS),
     m_extent(0),
     m_hAlign(te::map::Center),
     m_vAlign(te::map::Center)
