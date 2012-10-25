@@ -14,7 +14,7 @@
 
   <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
 
-  <xsd:element name="LayerList" type="te_map:LayerListType" abstract="true" />
+  <xsd:element name="LayerList" type="te_map:LayerListType" />
 
   <xsd:complexType name="LayerListType">
     <xsd:sequence>

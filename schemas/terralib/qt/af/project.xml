@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Project xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:te_map="http://www.terralib.org/maptools"
+         xmlns:te_qt_af="http://www.terralib.org/qt/af"
+         xmlns="http://www.terralib.org/qt/af"
+         xsd:schemaLocation="http://www.terralib.org/qt/af project.xsd"
+         version="5.0.0"
+         release="2011-01-01">
+
+  <Title>Minas Gerais</Title>
+  <Author>Gilberto Ribeiro de Queiroz</Author>
+  <ComponentList>
+    <!-- aqui pode entrar o estado de qualquer componente associado a este projeto basta definir o esquema
+         do componente. Um bom candidato eh o display, a arvore de layers para manter o estado da regiao visivel
+         do scroll view, as grades que estivessem abertas e com o que elas estavam abertas...
+    -->
+  </ComponentList>
+  <te_map:LayerList>
+    <te_map:DataSetLayer id="A746930E-DC7b-4C1A-B7B5-3BE35BE385E0">
+      <te_map:Title>Bairro de Ouro Preto</te_map:Title>
+      <te_map:Visible>true</te_map:Visible>
+      <te_map:DataSetName>bairro_ouro_preto</te_map:DataSetName>
+      <te_map:DataSourceId>179C25E4-AABC-4F63-8C10-AAD00CCE74F9</te_map:DataSourceId>
+      <te_map:SRID>4326</te_map:SRID>
+      <te_map:Extent llx="0.0" lly="0.0" urx="0.0" ury="0.0"/>
+      <te_map:RendererId>9</te_map:RendererId>
+      <te_map:StyleId>89</te_map:StyleId>
+    </te_map:DataSetLayer>
+    
+    <te_map:QueryLayer id="2CE5DFE7-F764-4E31-8EE8-9732231B2FFE">
+      <te_map:Title>Arruamento de Ouro Preto</te_map:Title>
+      <te_map:Visible>true</te_map:Visible>
+      <te_map:Query>SELECT * FROM arruamento_ouro_preto</te_map:Query>
+      <te_map:DataSourceId>179C25E4-AABC-4F63-8C10-AAD00CCE74F9</te_map:DataSourceId>
+      <te_map:SRID>4326</te_map:SRID>
+      <te_map:Extent llx="0.0" lly="0.0" urx="0.0" ury="0.0"/>
+      <te_map:RendererId>9</te_map:RendererId>
+      <te_map:StyleId>89</te_map:StyleId>
+    </te_map:QueryLayer>
+  </te_map:LayerList>
+
+</Project>
