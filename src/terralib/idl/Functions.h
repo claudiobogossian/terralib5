@@ -18,39 +18,39 @@
  */
  
 /*!
-\file terralib/idl/IDLLoad.h
+\file terralib/idl/Functions.h
 
-\brief  IDL module entry point.
+\brief IDL module functions.
 */ 
  
-#ifndef __TERRALIB_IDL_INTERNAL_IDLLOAD_H
-#define __TERRALIB_IDL_INTERNAL_IDLLOAD_H
-  
+#ifndef __TERRALIB_IDL_INTERNAL_FUNCTIONS_H
+#define __TERRALIB_IDL_INTERNAL_FUNCTIONS_H
+
 #include "Config.h"
 
 #include <stdio.h>
+
 #include <idl_export.h>
 
 #ifdef __cplusplus
   extern "C" {
 #endif
-
+  
 /*!
-  \brief IDL module entry point.
-
-  \details Every loadable module sharable library must export a single symbol 
-  called IDL_Load(). This function is called when IDL loads the module, and is expected to do all the work required to load real definitions for the routines supplied by the
-  function and prepare the module for use.
-
-  \return It is expected to return True (non-zero) if it was successful, and 
-  False (0) if some initialization step failed.
-
+  \brief Convert IDL data types to Terralib data types.
+  
+  \param idlType IDL data type.
+  
+  \return Terralib data type.
+  
+  \sa terralib/datetype/Enums.h for more details.
+  
   \ingroup IDLModule
-*/
-int TEIDLEXPORT IDL_Load(void);
-
+  */
+int idl2TerralibType( const UCHAR& idlType );
+  
 #ifdef __cplusplus
   }; // extern "C"
 #endif  
 
-#endif // __TERRALIB_IDL_INTERNAL_IDLLOAD_H
+#endif // __TERRALIB_IDL_INTERNAL_FUNCTIONS_H

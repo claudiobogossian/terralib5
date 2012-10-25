@@ -22,6 +22,11 @@
  */
 
 /*!
+ \defgroup IDLRPAlgorithms IDL Module raster processing features.
+ \ingroup IDLModule
+ */
+
+/*!
   \file terralib/idl/Config.h
 
   \brief Configuration flags for the IDL module of TerraLib.
