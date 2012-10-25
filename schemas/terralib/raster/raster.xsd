@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_dt="http://www.terralib.org/datatype"
+            xmlns:te_gm="http://www.terralib.org/geometry"
+            xmlns:te_rst="http://www.terralib.org/raster"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/raster"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Geometry Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for the geometry module</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
+
+  <xsd:complexType name="GridType">
+    <xsd:sequence>
+      <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="NumCols" type="xsd:positiveInteger" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="NumRows" type="xsd:positiveInteger" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="GeoTransform" type="te_rst:GeoTransformType" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="GeoTransformType">
+    <xsd:attribute name="c1" type="xsd:double" use="required"/>
+    <xsd:attribute name="c2" type="xsd:double" use="required"/>
+    <xsd:attribute name="c3" type="xsd:double" use="required"/>
+    <xsd:attribute name="c4" type="xsd:double" use="required"/>
+    <xsd:attribute name="c5" type="xsd:double" use="required"/>
+    <xsd:attribute name="c6" type="xsd:double" use="required"/>
+  </xsd:complexType>
+
+</xsd:schema>
