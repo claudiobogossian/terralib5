@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_qt_af="http://www.terralib.org/qt/af"
+            xmlns:te_map="http://www.terralib.org/maptools"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/qt/af"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Project Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for a projetc</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/maptools" schemaLocation="../../maptools/maptools.xsd"/>
+
+  <xsd:element name="Project" type="te_qt_af:ProjectType" />
+
+  <xsd:complexType name="ProjectType">
+    <xsd:annotation>
+      <xsd:documentation>A type used to describe a project</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Author" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element ref="te_qt_af:ComponentList" minOccurs="1" maxOccurs="1" />
+      <xsd:element ref="te_map:LayerList" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    <xsd:attribute name="release" type="xsd:date" use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="ComponentList" type="te_qt_af:ComponentListType" />
+
+  <xsd:complexType name="ComponentListType">
+    <xsd:sequence>
+      <xsd:element ref="te_qt_af:Component" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:element name="Component" type="te_qt_af:ComponentType" abstract="true" />
+
+  <xsd:complexType name="ComponentType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for a component</xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+</xsd:schema>
