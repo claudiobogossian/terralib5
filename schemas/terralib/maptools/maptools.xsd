@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_map="http://www.terralib.org/maptools"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/maptools"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>MapTools XML Schemas</xsd:appinfo>
+    <xsd:documentation>Include this file in order to refer to MapTools schemas</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:include schemaLocation="layer.xsd" />
+
+</xsd:schema>
