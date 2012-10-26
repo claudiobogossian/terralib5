@@ -68,6 +68,7 @@ protected slots:
   void changeLineStyleSlot();
   void changePolygonStyleSlot();
   void editLegendSlot();
+  void removeLegendSlot();
 
 protected:
   void AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer*);
@@ -108,6 +109,7 @@ private:
   QAction* m_changeLineStyleAction;
   QAction* m_changePolygonStyleAction;
   QAction* m_editLegendAction;
+  QAction* m_removeLegendAction;
 
   QMenu* m_treeMenu;
   QMenu* m_changeStatusColorMenu;
