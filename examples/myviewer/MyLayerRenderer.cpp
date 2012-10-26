@@ -41,8 +41,8 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
     const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
-    std::string pkName = pkProps[0]->getName();
-    int pkPos = dsType->getPropertyPosition(pkName);
+    //std::string pkName = pkProps[0]->getName();
+    //int pkPos = dsType->getPropertyPosition(pkName);
     std::string pkv;
     int status = -1;
     te::color::RGBAColor defaultColor;
@@ -123,7 +123,10 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     dataSet->moveBeforeFirst();
     while(dataSet->moveNext())
     {
-      pkv = dataSet->getAsString(pkPos);
+      //pkv = dataSet->getAsString(pkPos);
+      pkv.clear();
+      for (size_t i = 0; i < pkProps.size(); ++i)
+        pkv += dataSet->getAsString(pkProps[i]->getName());
 
       if(m_useChanged)
       {
