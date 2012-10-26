@@ -14,18 +14,6 @@
 
   <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
 
-  <xsd:element name="DataSourceInfo" type="te_da:DataSourceInfoType" />
-
-  <xsd:complexType name="DataSourceInfoType">
-    <xsd:annotation>
-      <xsd:documentation>The base type for data sources drivers</xsd:documentation>
-    </xsd:annotation>
-    <xsd:sequence>
-      <xsd:element name="ConnectionInfo" type="te_common:ParameterListType" minOccurs="0" maxOccurs="1" />
-    </xsd:sequence>
-    <xsd:attribute name="type" type="xsd:string" />
-  </xsd:complexType>
-
   <xsd:element name="DataSource" type="te_da:DataSourceType" />
 
   <xsd:complexType name="DataSourceType">
@@ -35,7 +23,7 @@
     <xsd:sequence>
       <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
       <xsd:element name="Description" type="xsd:string" minOccurs="0" maxOccurs="1" />
-      <xsd:element ref="te_da:DataSourceInfo" minOccurs="0" maxOccurs="1" />
+      <xsd:element name="ConnectionInfo" type="te_common:ParameterListType" minOccurs="0" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:string" />
     <xsd:attribute name="type" type="xsd:string" use="required"/>
