@@ -1653,20 +1653,12 @@ void MyWindow::addLayerSlot()
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst);
       pk->add(dst->getProperty(item.toStdString()));
       b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
-      if(b == QMessageBox::Ok)
+      while(b == QMessageBox::Ok)
       {
         item = QInputDialog::getItem(this, "Add another property", "Unique key:", items, 0, false, &ok);
         if(ok && !items.isEmpty())
-        {
           pk->add(dst->getProperty(item.toStdString()));
-          b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
-          if(b == QMessageBox::Ok)
-          {
-            item = QInputDialog::getItem(this, "Add another property", "Unique key:", items, 0, false, &ok);
-            if(ok && !items.isEmpty())
-              pk->add(dst->getProperty(item.toStdString()));
-          }
-        }
+        b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
       }
       dst->add(pk);
     }
