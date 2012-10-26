@@ -41,7 +41,6 @@
 #include <terralib/qt/widgets/tools/ZoomClick.h>
 #include <terralib/qt/widgets/tools/ZoomKeyboard.h>
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
-#include <terralib/qt/widgets/se/RasterSymbolizerDialog.h>
 
 // Qt
 #include <QtGui/QAction>
@@ -290,9 +289,9 @@ void MainWindow::onAngleTriggered()
 
 void MainWindow::onSelectionTriggered()
 {
-    delete m_tool;
-    m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(*m_layers.begin()));
-    m_display->installEventFilter(m_tool);
+  delete m_tool;
+  m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(*m_layers.begin()));
+  m_display->installEventFilter(m_tool);
 
 }
 

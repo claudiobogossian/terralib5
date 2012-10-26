@@ -927,13 +927,12 @@ void MyWindow::removeGridSlot(MyGrid* g)
 void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
 {
   MyLayer* layer = (MyLayer*)l;
-  if(layer->getDataSource()->getType() == "OGR")
-    return;
 
   te::map::DataGridOperation* op = layer->getDataGridOperation();
   if(op && layer->isKeepOnMemory() == false)
   {
-    delete op->getDataSet()->getTransactor();
+    if(layer->getDataSource()->getType() != "OGR")
+      delete op->getDataSet()->getTransactor();
     delete op->getDataSet();
     delete op;
     layer->setDataGridOperation(0);
@@ -1382,9 +1381,9 @@ void MyWindow::AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer* al)
     te::map::DataGridOperation* dataGridOp = layer->getDataGridOperation();
     if(dataGridOp)
     {
-      delete dataGridOp->getDataSet()->getTransactor();
+      if(layer->getDataSource()->getType() != "OGR")
+        delete dataGridOp->getDataSet()->getTransactor();
       delete dataGridOp->getDataSet();
-
       delete dataGridOp;
     }
     layer->setDataGridOperation(0);
@@ -1646,12 +1645,21 @@ void MyWindow::addLayerSlot()
       items.append((*cit)->getName().c_str());
 
     bool ok;
-    QString item = QInputDialog::getItem(this, "Enter a Unique Key", "Unique key:", items, 0, false, &ok);
+    QString item = QInputDialog::getItem(this, "Your data has no primary key! Provide a unique key...", "Unique key:", items, 0, false, &ok);
 
     if(ok && !items.isEmpty())
     {
+      int b;
       te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst);
       pk->add(dst->getProperty(item.toStdString()));
+      b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
+      while(b == QMessageBox::Ok)
+      {
+        item = QInputDialog::getItem(this, "Add another property", "Unique key:", items, 0, false, &ok);
+        if(ok && !items.isEmpty())
+          pk->add(dst->getProperty(item.toStdString()));
+        b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
+      }
       dst->add(pk);
     }
   }
@@ -1765,7 +1773,7 @@ void MyWindow::addLayerSlot()
         items.append(it->second);
 
       bool ok;
-      QString item = QInputDialog::getItem(this, "Config SRID", "SRID:", items, 0, false, &ok);
+      QString item = QInputDialog::getItem(this, "Your data has no projection information. Provide a...", "SRID:", items, 0, false, &ok);
 
       if(ok && !items.isEmpty())
       {
