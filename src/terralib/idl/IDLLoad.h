@@ -49,6 +49,17 @@
 */
 int TEIDLEXPORT IDL_Load(void);
 
+/*!
+  \brief IDL exit handler
+
+  \details IDL maintains a list of exit handler functions that it calls as part of its shutdown
+operations. These handlers perform actions such as closing files, wrapping up
+graphics output, and restoring the user environment to its initial state.
+
+  \ingroup IDLModule
+*/
+void IDL_ExitHandler(void);
+
 #ifdef __cplusplus
   }; // extern "C"
 #endif  

@@ -32,29 +32,38 @@
 
 #include <idl_export.h>
 
-/*!
-  \brief Raster region growing segmentation.
-  
-  \details Raster segmentation following the region growing strategy.
-  
-  \param argc The number of elements in argv.
-  
-  \param argv An array of IDL_VPTRs. These point to the IDL_VARIABLEs which comprise the
-  arguments to the function.
-  
-  \return A IDL_VPTR pointing to the function output (always must be a temporary object).
-  
-  \note The parameters order: argv[ 0 ]-Input array, argv[ 1 ]-minSegmentSize,
-  argv[ 2 ]-segmentsSimilarityThreshold
-  
-  \ingroup IDLRPAlgorithms
-  */
-IDL_VPTR RegionGrowingSegmenter(int argc, IDL_VPTR *argv, char *argk );
+namespace te
+{
+  namespace idl
+  {
+    namespace rp
+    {    
+      /*!
+        \brief Raster region growing segmentation.
+        
+        \details Raster segmentation following the region growing strategy.
+        
+        \param argc The number of elements in argv.
+        
+        \param argv An array of IDL_VPTRs. These point to the IDL_VARIABLEs which comprise the
+        arguments to the function.
+        
+        \return A IDL_VPTR pointing to the function output (always must be a temporary object).
+        
+        \note The parameters order: argv[ 0 ]-Input array, argv[ 1 ]-minSegmentSize,
+        argv[ 2 ]-segmentsSimilarityThreshold
+        
+        \ingroup IDLRPAlgorithms
+        */
+      IDL_VPTR RegionGrowingSegmenter(int argc, IDL_VPTR *argv, char *argk );
 
-/*!
-  \brief A dummy function for internal use.
-  \ingroup IDLRPAlgorithms
-  */
-void dummyFunction( void* );
+      /*!
+        \brief A dummy function for internal use.
+        \ingroup IDLRPAlgorithms
+        */
+      void dummyFunction( void* );
+    }
+  }; // namespace idl
+}; // namespace te
 
 #endif // __TERRALIB_IDL_INTERNAL_RP_SEGMENTER_H
