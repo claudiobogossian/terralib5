@@ -67,6 +67,7 @@ option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)
 option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
 option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
 option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
+option (EXAMPLE_QT_RASTERVISUAL "Build qt/rasterVisual example." ON)
 option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
   
 # Go into sub-directories
@@ -189,6 +190,10 @@ endif()
 
 if(EXAMPLE_QT_TOOLS)
   add_subdirectory(terralib_example_qt/tools)
+endif()
+
+if(EXAMPLE_QT_RASTERVISUAL)
+  add_subdirectory(terralib_example_qt/rasterVisual)
 endif()
 
 if(EXAMPLE_QT_DATASOURCE)

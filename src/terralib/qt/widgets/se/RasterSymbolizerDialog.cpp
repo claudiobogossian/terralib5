@@ -146,6 +146,21 @@ te::se::Symbolizer* te::qt::widgets::RasterSymbolizerDialog::getRasterSymbolizer
     m_symbolizer->setColorMap(m_colorMap);
   }
 
+  if(m_visualWidget)
+  {
+    te::se::RasterSymbolizer* rs = m_visualWidget->getRasterSymbolizer();
+
+    if(rs)
+    {
+      m_symbolizer->setGain(rs->getGain()->clone());
+      m_symbolizer->setOffset(rs->getOffset()->clone());
+      m_symbolizer->setOpacity(rs->getOpacity()->clone());
+      m_symbolizer->setChannelSelection(rs->getChannelSelection()->clone());
+
+      delete rs;
+    }
+  }
+
   return m_symbolizer->clone();
 }
 
