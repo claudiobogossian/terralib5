@@ -56,7 +56,7 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
     m_contrastRed(0),
     m_contrastGreen(0),
     m_contrastBlue(0),
-    m_contrastMono()
+    m_contrastMono(0)
 {
   m_ui->setupUi(this);
 
@@ -73,6 +73,7 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
 
   //connect slots
   connect(m_sliderWidget, SIGNAL(sliderValueChanged(int)), this, SLOT(onOpacityChanged(int)));
+  connect(m_sliderWidget, SIGNAL(sliderReleased()), this, SLOT(onSymbolizerChanged()));
 
   connect(m_ui->m_composeMRadioButton, SIGNAL(clicked()), this, SLOT(onMonoChannelSelectionClicked()));
   connect(m_ui->m_composeRRadioButton, SIGNAL(clicked()), this, SLOT(onRedChannelSelectionClicked()));
@@ -92,6 +93,11 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
   connect(m_ui->m_contrastGHorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onGreenGammaChanged(int)));
   connect(m_ui->m_contrastBHorizontalSlider, SIGNAL(valueChanged(int)), this, SLOT(onBlueGammaChanged(int)));
 
+  connect(m_ui->m_contrastMHorizontalSlider, SIGNAL(sliderReleased()), this, SLOT(onSymbolizerChanged()));
+  connect(m_ui->m_contrastRHorizontalSlider, SIGNAL(sliderReleased()), this, SLOT(onSymbolizerChanged()));
+  connect(m_ui->m_contrastGHorizontalSlider, SIGNAL(sliderReleased()), this, SLOT(onSymbolizerChanged()));
+  connect(m_ui->m_contrastBHorizontalSlider, SIGNAL(sliderReleased()), this, SLOT(onSymbolizerChanged()));
+
   connect(m_ui->m_gainPlusPushButton, SIGNAL(clicked()), this, SLOT(onIncreaseGain()));
   connect(m_ui->m_gainMinusPushButton, SIGNAL(clicked()), this, SLOT(onDecreaseGain()));
   connect(m_ui->m_offsetPlusPushButton, SIGNAL(clicked()), this, SLOT(onIncreaseOffset()));
@@ -104,25 +110,57 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
 te::qt::widgets::RasterVisualWidget::~RasterVisualWidget()
 {
   m_ceNames.clear();
+
+  delete m_symbolizer;
 }
 
-void  te::qt::widgets::RasterVisualWidget::setRasterSymbolizer(te::se::RasterSymbolizer* rs)
+void  te::qt::widgets::RasterVisualWidget::setRasterSymbolizer(const te::se::RasterSymbolizer* rs)
 {
-  m_symbolizer = rs;
+  assert(rs);
+
+  delete m_symbolizer;
+
+  m_symbolizer = static_cast<te::se::RasterSymbolizer*>(rs->clone());
 
   if(m_symbolizer->getChannelSelection())
   {
-    if(m_cs != m_symbolizer->getChannelSelection())
-    {
-      delete m_cs;
-    }
-
     m_cs = m_symbolizer->getChannelSelection();
 
     m_scRed = m_cs->getRedChannel();
     m_scGreen = m_cs->getGreenChannel();
     m_scBlue = m_cs->getBlueChannel();
     m_scMono = m_cs->getGrayChannel();
+
+    if(m_cs->getColorCompositionType() == te::se::RGB_COMPOSITION)
+    {
+      m_ui->m_composeCRadioButton->setChecked(true);
+
+      onCompositionChannelSelectionClicked();
+    }
+    else if(m_cs->getColorCompositionType() == te::se::GRAY_COMPOSITION)
+    {
+      m_ui->m_composeMRadioButton->setChecked(true);
+
+      onMonoChannelSelectionClicked();
+    }
+    else if(m_cs->getColorCompositionType() == te::se::RED_COMPOSITION)
+    {
+      m_ui->m_composeRRadioButton->setChecked(true);
+
+      onRedChannelSelectionClicked();
+    }
+    else if(m_cs->getColorCompositionType() == te::se::GREEN_COMPOSITION)
+    {
+      m_ui->m_composeGRadioButton->setChecked(true);
+
+      onGreenChannelSelectionClicked();
+    }
+    else if(m_cs->getColorCompositionType() == te::se::BLUE_COMPOSITION)
+    {
+      m_ui->m_composeBRadioButton->setChecked(true);
+
+      onBlueChannelSelectionClicked();
+    }
 
     if(m_scRed && m_scRed->getContrastEnhancement())
     {
@@ -186,6 +224,25 @@ void te::qt::widgets::RasterVisualWidget::setBandProperty(std::vector<te::rst::B
 
   m_ui->m_composeBComboBox->clear();
   m_ui->m_composeBComboBox->addItems(bandNames);
+}
+
+void te::qt::widgets::RasterVisualWidget::setVerticalLayout()
+{
+  m_ui->m_mainGridLayout->removeItem(m_ui->m_internalGridLayout);
+  delete m_ui->m_internalGridLayout;
+
+  QGridLayout* verticalLayout = new QGridLayout();
+  verticalLayout->setObjectName(QString::fromUtf8("verticalWidget"));
+  verticalLayout->setContentsMargins(0, 0, 0, 0);
+
+  verticalLayout->addWidget(m_ui->m_opacityWidget, 0, 0);
+  verticalLayout->addWidget(m_ui->m_enhancementGroupBox, 1, 0);
+  verticalLayout->addWidget(m_ui->m_compositionGroupBox, 2, 0);
+  verticalLayout->addWidget(m_ui->m_contrastGroupBox, 3, 0);
+
+  m_ui->m_mainGridLayout->addLayout(verticalLayout, 0, 0);
+
+  m_ui->m_mainGridLayout->setSizeConstraint(QLayout::SetFixedSize);
 }
 
 void te::qt::widgets::RasterVisualWidget::initialize()
@@ -382,6 +439,8 @@ void te::qt::widgets::RasterVisualWidget::onMonoChannelSelectionClicked()
   }
 
   m_cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onRedChannelSelectionClicked()
@@ -398,6 +457,8 @@ void te::qt::widgets::RasterVisualWidget::onRedChannelSelectionClicked()
   }
 
   m_cs->setColorCompositionType(te::se::RED_COMPOSITION);
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onGreenChannelSelectionClicked()
@@ -414,6 +475,8 @@ void te::qt::widgets::RasterVisualWidget::onGreenChannelSelectionClicked()
   }
 
   m_cs->setColorCompositionType(te::se::GREEN_COMPOSITION);
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onBlueChannelSelectionClicked()
@@ -430,6 +493,8 @@ void te::qt::widgets::RasterVisualWidget::onBlueChannelSelectionClicked()
   }
 
   m_cs->setColorCompositionType(te::se::BLUE_COMPOSITION);
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onCompositionChannelSelectionClicked()
@@ -458,26 +523,36 @@ void te::qt::widgets::RasterVisualWidget::onCompositionChannelSelectionClicked()
   }
 
   m_cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onMonoChannelNameChanged(QString s)
 {
   m_scMono->setSourceChannelName(s.toLatin1().data());
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onRedChannelNameChanged(QString s)
 {
   m_scRed->setSourceChannelName(s.toLatin1().data());
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onGreenChannelNameChanged(QString s)
 {
   m_scGreen->setSourceChannelName(s.toLatin1().data());
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onBlueChannelNameChanged(QString s)
 {
   m_scBlue->setSourceChannelName(s.toLatin1().data());
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onTypeConstratChanged(QString s)
@@ -522,6 +597,8 @@ void te::qt::widgets::RasterVisualWidget::onTypeConstratChanged(QString s)
 
     ++it;
   }
+
+  onSymbolizerChanged();
 }
 
 void te::qt::widgets::RasterVisualWidget::onMonoGammaChanged(int v)
@@ -586,6 +663,8 @@ void te::qt::widgets::RasterVisualWidget::onIncreaseGain()
   if(m_symbolizer)
   {
     m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
+
+    onSymbolizerChanged();
   }
 }
 
@@ -599,6 +678,8 @@ void te::qt::widgets::RasterVisualWidget::onDecreaseGain()
   if(m_symbolizer)
   {
     m_symbolizer->setGain(new te::se::ParameterValue(s.toStdString()));
+
+    onSymbolizerChanged();
   }
 }
 
@@ -612,6 +693,8 @@ void te::qt::widgets::RasterVisualWidget::onIncreaseOffset()
   if(m_symbolizer)
   {
     m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
+
+    onSymbolizerChanged();
   }
 }
 
@@ -625,5 +708,12 @@ void te::qt::widgets::RasterVisualWidget::onDecreaseOffset()
   if(m_symbolizer)
   {
     m_symbolizer->setOffset(new te::se::ParameterValue(s.toStdString()));
+
+    onSymbolizerChanged();
   }
+}
+
+void te::qt::widgets::RasterVisualWidget::onSymbolizerChanged()
+{
+  emit symbolizerChanged();
 }

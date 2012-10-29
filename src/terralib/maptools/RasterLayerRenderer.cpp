@@ -31,6 +31,7 @@
 #include "../raster/RasterSummary.h"
 #include "../raster/RasterSummaryManager.h"
 #include "../se.h"
+#include "../srs/Converter.h"
 #include "AbstractLayer.h"
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
@@ -41,15 +42,13 @@
 #include "Utils.h"
 
 
-te::map::RasterLayerRenderer::RasterLayerRenderer(): m_rasterCanvas(0), m_rasterCanvasStyled(0), m_resampledRaster(0)
+te::map::RasterLayerRenderer::RasterLayerRenderer(): m_gridCanvas(0)
 {
 }
 
 te::map::RasterLayerRenderer::~RasterLayerRenderer()
 {
-  delete m_rasterCanvas;
-  delete m_resampledRaster;
-  delete m_rasterCanvasStyled;
+  delete m_gridCanvas;
 }
 
 void te::map::RasterLayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
@@ -75,11 +74,11 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     createVisualDefault(l);
   }
 
-  //reproject and resample input raster to raster canvas 
-  buildRasterCanvas(r, canvas, bbox, srid);
+  //create raster canvas with width and height from canvas 
+  buildRasterCanvas(canvas, bbox, srid);
 
   //apply the raster symbolizer
-  applyStyle(l, canvas);
+  applyStyle(l, canvas, srid);
 }
 
 bool te::map::RasterLayerRenderer::hasIntersection(const te::gm::Envelope& bbox, te::rst::Raster* raster, Canvas* canvas,  int srid)
@@ -91,75 +90,16 @@ bool te::map::RasterLayerRenderer::hasIntersection(const te::gm::Envelope& bbox,
   return e.intersects(*raster->getExtent());
 }
 
-void te::map::RasterLayerRenderer::buildRasterCanvas(te::rst::Raster* raster, Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+void te::map::RasterLayerRenderer::buildRasterCanvas(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
-  delete m_rasterCanvas;
+  delete m_gridCanvas;
 
-  std::map<std::string, std::string> rinfo;
-  rinfo["FORCE_MEM_DRIVER"] = "TRUE";
-  //rinfo["SOURCE"] = "d:/rasterCanvas.tif";
+  unsigned int h = canvas->getHeight();
+  unsigned int w = canvas->getWidth();
 
-  if(raster->getSRID() != srid)
-  {
-    te::gm::Envelope* env = new te::gm::Envelope(bbox);
-    env->transform(srid, raster->getSRID());
-
-    double resx = bbox.getWidth()/canvas->getWidth();
-    double resy = bbox.getHeight()/canvas->getHeight();
-    
-    m_rasterCanvas = raster->transform(srid, env->getLowerLeftX(), env->getLowerLeftY(), env->getUpperRightX(), env->getUpperRightY(), resx, resy, rinfo);
-
-    delete env;
-  }
-  else
-  {
-    te::gm::Coord2D ul = raster->getGrid()->geoToGrid(bbox.getLowerLeftX(), bbox.getUpperRightY());
-    te::gm::Coord2D lr = raster->getGrid()->geoToGrid(bbox.getUpperRightX(), bbox.getLowerLeftY());
-    
-    int r = te::rst::Round(ul.y);
-    if(r < 0)
-      r = 0;
-
-    int c = te::rst::Round(ul.x);
-    if(c < 0)
-      c = 0;
-
-    int ih = te::rst::Round(lr.y) - te::rst::Round(ul.y);
-    if(ih + r >= raster->getNumberOfRows())
-    {
-      int aux = (ih + r) - raster->getNumberOfRows();
-      ih = ih - aux -1;
-    }
-    
-    int iw = te::rst::Round(lr.x) - te::rst::Round(ul.x);
-    if(iw + c >= raster->getNumberOfColumns())
-    {
-      int aux = (iw + c) - raster->getNumberOfColumns();
-      iw = iw - aux - 1;
-    }
-
-    unsigned int h = canvas->getHeight();
-    unsigned int w = canvas->getWidth();
-
-    //build raster canvas
-    te::gm::Envelope* env = new te::gm::Envelope(bbox);
-    te::rst::Grid* grid = new te::rst::Grid(raster->getResolutionX(), raster->getResolutionY(), env, srid);
-
-    //copy the band definitions
-    std::vector<te::rst::BandProperty*> bands;
-    for (unsigned int b = 0; b < raster->getNumberOfBands(); ++b)
-    {
-      te::rst::BandProperty* bb = new te::rst::BandProperty(b, raster->getBand(b)->getProperty()->getType());
-
-      bands.push_back(bb);
-    }
-
-    m_rasterCanvas = te::rst::RasterFactory::make("MEM", grid, bands, rinfo);
-
-    applyBackgroundColor();
-
-    te::rst::Copy(r, c, ih, iw, *raster, *m_rasterCanvas);
-  }
+  //build raster canvas
+  te::gm::Envelope* env = new te::gm::Envelope(bbox);
+  m_gridCanvas = new te::rst::Grid(w, h, env, srid);
 }
 
 void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
@@ -222,63 +162,67 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
   layer->setStyle(s);
 }
 
-void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas)
+void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas, int srid)
 {
-  delete m_rasterCanvasStyled;
+    te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+    
+    te::rst::Raster* raster = layer->getRaster();
 
-  assert(m_rasterCanvas);
+    //create the raster transform
+    RasterTransform rt(raster, 0);
 
-  //create new grid
-  te::gm::Envelope* env = new te::gm::Envelope(*m_rasterCanvas->getExtent());
-  te::rst::Grid* grid = new te::rst::Grid(*m_rasterCanvas->getGrid());
+    double rMin, rMax;
 
-  //copy the band definitions
-  std::vector<te::rst::BandProperty*> bands;
-  for (unsigned int b = 0; b < 3; ++b)
-  {
-    te::rst::BandProperty* bb = new te::rst::BandProperty(b, te::dt::INT32_TYPE);
+    getMinMaxValues(rMin, rMax, layer);
 
-    bands.push_back(bb);
-  }
+    rt.setLinearTransfParameters(0, 255, rMin, rMax);
 
-  //create the styled raster
-  std::map<std::string, std::string> rinfo;
-  rinfo["FORCE_MEM_DRIVER"] = "TRUE";
-  
-  m_rasterCanvasStyled = te::rst::RasterFactory::make("MEM", grid, bands, rinfo);
+    //configure the raster transformation using the raster symbolizer
+    RasterTransformConfigurer rtc(rs, &rt);
 
-  te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+    rtc.configure();
 
-  //create the raster transform
-  RasterTransform rt(m_rasterCanvas, m_rasterCanvasStyled);
+    // define variables for interpolation
+    std::vector<std::complex<double> > v;
+    std::vector<std::complex<double> > vDummy;
+    vDummy.resize(3, 255.);
 
-  double rMin, rMax;
-
-  getMinMaxValues(rMin, rMax, layer);
-
-  rt.setLinearTransfParameters(0, 255, rMin, rMax);
-
-  //configure the raster transformation using the raster symbolizer
-  RasterTransformConfigurer rtc(rs, &rt);
-
-  rtc.configure();
-
-  //fill output raster
-  for(unsigned int r = 0; r < m_rasterCanvas->getNumberOfRows(); ++r)
-  {
-    for(unsigned int c = 0; c < m_rasterCanvas->getNumberOfColumns(); ++c)
+    bool reproject = false;
+    if(srid != layer->getSRID())
     {
-      rt.apply(c, r, c, r);
+      reproject = true;
     }
-  }
 
-  //get opacity
-  std::string opacityStr = te::map::GetString(rs->getOpacity());
-  double opacity = (double)TE_OPAQUE * atof(opacityStr.c_str());
+    for (unsigned r = 0; r < m_gridCanvas->getNumberOfRows(); r++)
+    {
+      for (unsigned c = 0; c < m_gridCanvas->getNumberOfColumns(); c++)
+      {
+        te::gm::Coord2D inputGeo = m_gridCanvas->gridToGeo(c, r);
 
-  //paint raster
-  canvas->drawImage(0, 0, canvas->getWidth(), canvas->getHeight(), m_rasterCanvasStyled, 
-    0, 0, m_rasterCanvasStyled->getNumberOfColumns(), m_rasterCanvasStyled->getNumberOfRows(), (int)opacity);
+        if(reproject)
+        {
+          std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+
+          converter->setSourceSRID(layer->getSRID());
+
+          converter->setTargetSRID(srid);
+
+          converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
+        }
+
+        te::gm::Coord2D outputGrid = raster->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
+
+        int x = te::rst::Round(outputGrid.x);
+        int y = te::rst::Round(outputGrid.y);
+
+        if((x >=0 && x < (int)raster->getNumberOfColumns()) && (y >=0 && y < (int)raster->getNumberOfRows()))
+        {
+          te::color::RGBAColor color = rt.apply(x, y);
+
+          canvas->drawPixel(c, r, color);
+        }
+      }
+    }
 
   //verify for image outline
   if(rs->getImageOutline())
@@ -292,6 +236,11 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
       cc.config(s);
 
       te::gm::Geometry* g = te::gm::GetGeomFromEnvelope(layer->getRaster()->getExtent(), layer->getSRID());
+      
+      if(srid != layer->getSRID())
+      {
+        g->transform(srid);
+      }
 
       canvas->draw(g);
 
@@ -300,22 +249,6 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
   }
 
   delete rs;
-}
-
-void te::map::RasterLayerRenderer::applyBackgroundColor()
-{
-  assert(m_rasterCanvas);
-    
-  for( unsigned int b = 0; b < m_rasterCanvas->getNumberOfBands(); ++b)
-  {
-    for( unsigned int r = 0; r < m_rasterCanvas->getNumberOfRows(); ++r)
-    {
-      for( unsigned int c = 0; c < m_rasterCanvas->getNumberOfColumns(); ++c)
-      {
-        m_rasterCanvas->setValue(c , r, 255., b);
-      }
-    }
-  }
 }
 
 void te::map::RasterLayerRenderer::getMinMaxValues(double& rMin, double& rMax, RasterLayer* layer)

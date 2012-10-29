@@ -187,6 +187,9 @@ void te::map::RasterLayer::loadRasterObjects()
     te::da::DataSet* dataSet = tr->getDataSet(m_datasetName);
     m_raster = dataSet->getRaster();
 
+    setSRID(m_raster->getSRID());
+    setExtent(m_raster->getExtent());
+
     delete dt;
     delete tr;
   }

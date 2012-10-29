@@ -1054,7 +1054,10 @@ void te::qt::widgets::Canvas::drawPixel(int x, int y)
 
 void te::qt::widgets::Canvas::drawPixel(int x, int y, const te::color::RGBAColor& color)
 {
-  m_painter.setPen(QColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+  QColor c(color.getRgba());
+  c.setAlpha(qAlpha(color.getRgba()));
+
+  m_painter.setPen(c);
 
   m_painter.setWorldMatrixEnabled(false);
   m_painter.drawPoint(x, y);

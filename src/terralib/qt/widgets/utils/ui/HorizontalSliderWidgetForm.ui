@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>191</width>
-    <height>98</height>
+    <height>106</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,6 +21,9 @@
     <widget class="QGroupBox" name="m_groupBox">
      <property name="title">
       <string>Label</string>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <property name="leftMargin">
