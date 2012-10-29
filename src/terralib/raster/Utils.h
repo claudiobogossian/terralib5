@@ -37,9 +37,6 @@
 #include <map>
 #include <vector>
 
-// Boost
-#include <boost/shared_ptr.hpp>
-
 namespace te
 {
   namespace rst
@@ -110,34 +107,32 @@ namespace te
       \param width       The width of the subset.
       \param rin         Pointer to valid output raster.
       \param rout        Pointer to valid output raster.
-
     */
-     TERASTEREXPORT void Copy(unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, const Raster& rin, Raster& rout);
+    TERASTEREXPORT void Copy(unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, const Raster& rin, Raster& rout);
 
     /*!
       \brief Round a double value to a integer value.
 
-      \param val        The double value.
+      \param val  The double value.
 
       \return A integer value.
     */
 
      TERASTEREXPORT int Round(double val);
-     
+
     /*!
       \brief Create a new raster from existing one.
 
       \param rin The input raster.
-      
+
       \param uri The output raster URI.
-      
+
       \param rType The name of the specific driver to create the raster. 
-      
+
       \return a valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
     */
-    TERASTEREXPORT boost::shared_ptr< te::rst::Raster > CreateCopy(
-      const te::rst::Raster& rin, const std::string& uri, 
-      const std::string& rType = std::string( "GDAL" ) );     
+    TERASTEREXPORT te::rst::RasterPtr CreateCopy(const te::rst::Raster& rin, const std::string& uri,
+                                                 const std::string& rType = std::string("GDAL"));
 
   } // end namespace rst
 }   // end namespace te
