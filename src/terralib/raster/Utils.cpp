@@ -28,6 +28,7 @@
 #include "../geometry/Coord2D.h"
 #include "Exception.h"
 #include "Utils.h"
+#include "RasterFactory.h"
 
 // Boost
 #include <boost/cstdint.hpp>
@@ -162,10 +163,31 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
   assert(rin.getNumberOfBands() == rout.getNumberOfBands());
 
   const std::size_t nbands = rin.getNumberOfBands();
+  const unsigned int nRows = rin.getNumberOfRows();
+  const unsigned int nCols = rin.getNumberOfColumns();  
+  unsigned int row = 0;
+  unsigned int col = 0;
+  std::complex< double > value;
 
   for(std::size_t b = 0; b < nbands; b++)
   {
-    Copy(*rin.getBand(b), *rout.getBand(b));
+    if( rin.getBand(b)->getProperty()->getType() == rout.getBand(b)->getProperty()->getType() )
+    {
+      Copy(*rin.getBand(b), *rout.getBand(b));      
+    }
+    else
+    {
+      const te::rst::Band& bin = *rin.getBand(b);
+      te::rst::Band& bout = *rout.getBand(b);
+      
+      for( row = 0 ; row < nRows ; ++row )
+        for( col = 0 ; col < nCols ; ++col )
+        {
+          bin.getValue(col, row, value);
+
+          bout.setValue(col, row, value);
+        }
+    }
   }
 }
 
@@ -265,4 +287,31 @@ int te::rst::Round(double val)
     return (int)(val+.5);
   else
     return (int)(val-.5);
+}
+
+boost::shared_ptr< te::rst::Raster > te::rst::CreateCopy(const te::rst::Raster& rin,  
+  const std::string& uri, const std::string &rType)
+{
+  std::map<std::string, std::string> rasterInfo;
+  rasterInfo["URI"] = uri;
+    
+  std::vector< te::rst::BandProperty* > bandsProperties;
+  unsigned int bandIndex = 0;
+  for( bandIndex = 0 ; bandIndex < rin.getNumberOfBands() ; 
+    ++bandIndex )
+  {
+    bandsProperties.push_back( new te::rst::BandProperty( *( rin.getBand( 
+      bandIndex )->getProperty() ) ) );  
+  }
+  
+  boost::shared_ptr< te::rst::Raster > outRasterPtr;
+  
+  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid( 
+    *( rin.getGrid() ) ),  bandsProperties,  rasterInfo, 0, 0 ) ); 
+    
+  if( outRasterPtr.get() == 0 ) return outRasterPtr;
+  
+  Copy( rin, *outRasterPtr );
+  
+  return outRasterPtr;
 }

@@ -37,6 +37,9 @@
 #include <map>
 #include <vector>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
   namespace rst
@@ -120,6 +123,21 @@ namespace te
     */
 
      TERASTEREXPORT int Round(double val);
+     
+    /*!
+      \brief Create a new raster from existing one.
+
+      \param rin The input raster.
+      
+      \param uri The output raster URI.
+      
+      \param rType The name of the specific driver to create the raster. 
+      
+      \return a valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
+    */
+    TERASTEREXPORT boost::shared_ptr< te::rst::Raster > CreateCopy(
+      const te::rst::Raster& rin, const std::string& uri, 
+      const std::string& rType = std::string( "GDAL" ) );     
 
   } // end namespace rst
 }   // end namespace te

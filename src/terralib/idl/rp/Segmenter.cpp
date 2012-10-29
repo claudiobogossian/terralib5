@@ -26,13 +26,17 @@
 #include "Segmenter.h"
 #include "../Functions.h"
 
-#include <terralib/raster/Band.h>
 #include <terralib/memory/Raster.h>
+
 #include <terralib/common/StringUtils.h>
-#include <terralib/raster/RasterFactory.h>
+
 #include <terralib/rp/Segmenter.h>
 #include <terralib/rp/SegmenterRegionGrowingStrategy.h>
+
 #include <terralib/raster/BandProperty.h>
+#include <terralib/raster/RasterFactory.h>
+#include <terralib/raster/Band.h>
+#include <terralib/raster/Utils.h>
 
 #include <memory>
 
@@ -42,14 +46,8 @@ namespace te
   {
     namespace rp
     {
-      void dummyFunction( void* )
-      {
-      }
-
       IDL_VPTR RegionGrowingSegmenter(int argc, IDL_VPTR *argv, char *argk)
       {
-        IDL_VPTR returnValue;
-        
         // getting input parameters 
         
         IDL_VPTR inputArray = argv[ 0 ];
@@ -81,7 +79,9 @@ namespace te
         inputRasterInfo["MEM_BUFFER_NBANDS"] = te::common::Convert2String( nBands );  
         
         std::auto_ptr< te::rst::Raster > inputRasterPtr( te::rst::RasterFactory::make(
-          "MEM", inputRasterInfo, inputArray->value.arr->data, dummyFunction ) );
+          "MEM", inputRasterInfo, inputArray->value.arr->data, te::idl::dummyFunction ) );
+          
+        te::rst::CreateCopy( *inputRasterPtr, "inputRaster.tif" );
           
         // Creating the algorithm parameters
         
@@ -112,23 +112,21 @@ namespace te
         
         if( ! algorithmInstance.initialize( algoInputParams ) )
         {
-          IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP,
-            "Segmenter initialization error" );
-          return returnValue;
+          IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP ,
+            "Terralib segmenter initialization error" );
         }
         
-        IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP,
-          "Segmenter initialized" );        
+        IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_INFO,
+          "Terralib segmenter initialized" );        
         
         if( ! algorithmInstance.execute( algoOutputParams ) )
         {
           IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP,
-            "Segmenter execution error" );
-          return returnValue;
+            "Terralib segmenter execution error" );
         }
         
-        IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP,
-          "Segmentation finished" );          
+        IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_INFO,
+          "Terralib call finished" );          
           
         // creating the output array
         
@@ -136,22 +134,24 @@ namespace te
           algoOutputParams.m_outputRasterPtr->getBand( 0 )->getProperty()->getType() );
           
         IDL_ARRAY_DIM outArrayDims;
-        outArrayDims[ 0 ] = 1;
-        outArrayDims[ 1 ] = (IDL_MEMINT)nCols;
-        outArrayDims[ 2 ] = (IDL_MEMINT)nLines;
+        outArrayDims[ 0 ] = (IDL_MEMINT)nCols;
+        outArrayDims[ 1 ] = (IDL_MEMINT)nLines;
      
-        if( IDL_MakeTempArray( outArrayDataType, 1, outArrayDims,
-          IDL_ARR_INI_NOP, &returnValue ) == 0 )
+        IDL_VPTR outArray;
+        if( IDL_MakeTempArray( outArrayDataType, 2, outArrayDims,
+          IDL_ARR_INI_NOP, &outArray ) == 0 )
         {
           IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP,
             "Output array allocation error" );
-          return returnValue;
         }
         
         algoOutputParams.m_outputRasterPtr->getBand( 0 )->read( 0, 0, 
-          (void*)returnValue->value.arr->data );
+          (void*)outArray->value.arr->data );
+          
+        IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_INFO,
+          "Segmentation finished" );               
         
-        return returnValue;
+        return outArray;
       }
       
     } // namespace rp
