@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DriverCapabilities xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://www.terralib.org/dataaccess"
+                    xsd:schemaLocation="http://www.terralib.org/dataaccess capabilities.xsd"
+                    version="5.0.0-20110110">
+  <Capability>
+    <Name>ACCESS_POLICY</Name>
+    <Value>RW_ACCESS</Value>
+  </Capability>
+
+  <Capability>
+    <Name>TRANSACTION</Name>
+    <Value>TRUE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>DATASET_PERSISTENCE</Name>
+    <Value>FALSE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>DATASETTYPE_PERSISTENCE</Name>
+    <Value>FALSE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>PREPARED_STATEMENT</Name>
+    <Value>FALSE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>BATCH_EXECUTOR</Name>
+    <Value>FALSE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>BIT_DT</Name>
+    <Value>FALSE</Value>
+  </Capability>
+  
+  <Capability>
+    <Name>CHAR_DT</Name>
+    <Value>FALSE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>BYTE_ARRAY_DT</Name>
+    <Value>TRUE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>GEOMETRY_DT</Name>
+    <Value>TRUE</Value>
+  </Capability>
+
+  <Capability>
+    <Name>RASTER_DT</Name>
+    <Value>TRUE</Value>
+  </Capability>
+
+</DriverCapabilities>

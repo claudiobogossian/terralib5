@@ -11,7 +11,9 @@
     <xsd:documentation>Include this file in order to refer to Data Access schemas</xsd:documentation>
   </xsd:annotation>
 
+  <xsd:include schemaLocation="capabilities.xsd" />
   <xsd:include schemaLocation="dataset.xsd" />
   <xsd:include schemaLocation="datasource.xsd" />
+  <xsd:include schemaLocation="query_dialect.xsd" />
 
 </xsd:schema>

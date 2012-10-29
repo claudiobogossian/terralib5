@@ -3,7 +3,7 @@
                 xmlns:te_common="http://www.terralib.org/common"
                 xmlns:te_da="http://www.terralib.org/dataaccess"
                 xmlns="http://www.terralib.org/dataaccess"
-                xsd:schemaLocation="http://www.terralib.org/dataaccess dataaccess.xsd"
+                xsd:schemaLocation="http://www.terralib.org/dataaccess ../schemas/terralib/dataaccess/dataaccess.xsd"
                 version="5.0.0"
                 release="2011-01-01">
 
