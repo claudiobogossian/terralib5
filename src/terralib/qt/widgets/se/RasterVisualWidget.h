@@ -90,9 +90,13 @@ namespace te
 
           //@}
 
-          void setRasterSymbolizer(te::se::RasterSymbolizer* rs);
+          void setRasterSymbolizer(const te::se::RasterSymbolizer* rs);
+
+          te::se::RasterSymbolizer* getRasterSymbolizer() { return (te::se::RasterSymbolizer*)m_symbolizer->clone(); }
 
           void setBandProperty(std::vector<te::rst::BandProperty*> bp);
+
+          void setVerticalLayout();
 
         protected:
 
@@ -131,6 +135,11 @@ namespace te
           void onDecreaseGain();
           void onIncreaseOffset();
           void onDecreaseOffset();
+          void onSymbolizerChanged();
+
+        signals:
+          
+          void symbolizerChanged();
 
         private:
 

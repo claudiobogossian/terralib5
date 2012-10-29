@@ -45,10 +45,29 @@ exportModuleInformation("idl" "${IDL_INC_DIRS}" "${IDL_INC_INST_DIRS}")
 # copying the DLM file to binaries path
 
 IF(WIN32)
-  configure_file( ${SRCDIR}/terralib_idl.dlm ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}/terralib_idl.dlm COPYONLY )
-  configure_file( ${SRCDIR}/terralib_idl.dlm ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}/terralib_idl.dlm COPYONLY )
+  IF(CMAKE_BUILD_TYPE=="Release")
+    configure_file( "${SRCDIR}/terralib_idl.dlm" 
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}/terralib_idl.dlm" COPYONLY )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}/terralib_idl.dlm" )
+  else()
+    configure_file( "${SRCDIR}/terralib_idl.dlm"
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}/terralib_idl_d.dlm" COPYONLY )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}/terralib_idl_d.dlm" )
+  endif()
 else()
-  configure_file( ${SRCDIR}/terralib_idl.dlm ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}/libterralib_idl.dlm COPYONLY )
-  configure_file( ${SRCDIR}/terralib_idl.dlm ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}/libterralib_idl.dlm COPYONLY )
+  IF(CMAKE_BUILD_TYPE=="Release")
+    configure_file( "${SRCDIR}/terralib_idl.dlm"
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}/libterralib_idl.dlm" COPYONLY )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}/libterralib_idl.dlm" )
+  else()
+    configure_file( "${SRCDIR}/terralib_idl.dlm" 
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}/libterralib_idl_d.dlm" COPYONLY )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES 
+      "${CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG}/libterralib_idl_d.dlm" )
+  endif()
 endif()
+
 

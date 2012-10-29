@@ -26,6 +26,7 @@ list (APPEND DEP_LIBS
 		terralib_geometry
 		terralib_gml
 		terralib_raster
+		terralib_srs
 		terralib_symbology
 		terralib_xlink
     )

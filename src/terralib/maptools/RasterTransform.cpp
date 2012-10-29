@@ -26,7 +26,7 @@
 // TerraLib
 #include "RasterTransform.h"
 
-#include "../raster/Raster.h"
+#include "../raster.h"
 #include "../raster/RasterProperty.h"
 #include "../se/RasterSymbolizer.h"
 
@@ -34,6 +34,7 @@
 te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raster* output) :
   m_rasterIn(input),
   m_rasterOut(output),
+  m_transp(TE_OPAQUE),
   m_gain(1.),
   m_offset(0.),
   m_rContrast(TE_SE_DEFAULT_GAMMA_VALUE),
@@ -42,7 +43,8 @@ te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raste
   m_mContrast(TE_SE_DEFAULT_GAMMA_VALUE),
   m_monoBand(0),
   m_monoBandOut(0),
-  m_transfFuncPtr(&RasterTransform::ExtractRGB)
+  m_transfFuncPtr(&RasterTransform::setExtractRGB),
+  m_RGBAFuncPtr(&RasterTransform::getExtractRGB)
 {
 }
 
@@ -85,15 +87,17 @@ void te::map::RasterTransform::setLinearTransfParameters(double vmin, double vma
 
 te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTransfFunction()
 {
-  if (m_transfFuncPtr == 0)
+  if (m_transfFuncPtr == 0 || m_RGBAFuncPtr)
   {
     return NO_TRANSF;
   }
-  else  if (m_transfFuncPtr == &RasterTransform::Mono2ThreeBand)
+  else  if (m_transfFuncPtr == &RasterTransform::setMono2ThreeBand &&
+            m_RGBAFuncPtr == &RasterTransform::getMono2ThreeBand)
   {
     return MONO2THREE_TRANSF;
   }
-  else if (m_transfFuncPtr == &RasterTransform::ExtractRGB)
+  else if (m_transfFuncPtr == &RasterTransform::setExtractRGB &&
+           m_RGBAFuncPtr == &RasterTransform::getExtractRGB)
   {
     return EXTRACT2RGB_TRANSF;
   }
@@ -107,35 +111,61 @@ void te::map::RasterTransform::setTransfFunction(RasterTransfFunctions func)
 {
   if (func == MONO2THREE_TRANSF)
   {
-    m_transfFuncPtr = &RasterTransform::Mono2ThreeBand;
+    m_transfFuncPtr = &RasterTransform::setMono2ThreeBand;
+    m_RGBAFuncPtr = &RasterTransform::getMono2ThreeBand;
   }
   else if (func == EXTRACT2RGB_TRANSF)
   {
-    m_transfFuncPtr = &RasterTransform::ExtractRGB;
+    m_transfFuncPtr = &RasterTransform::setExtractRGB;
+    m_RGBAFuncPtr = &RasterTransform::getExtractRGB;
   }
   else
   {
     m_transfFuncPtr = 0;
+    m_RGBAFuncPtr = 0;
   }
 }
 
-void te::map::RasterTransform::Mono2ThreeBand(double icol, double ilin, double ocol, double olin)
+void te::map::RasterTransform::setMono2ThreeBand(double icol, double ilin, double ocol, double olin)
 {
   double val;
 
   m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
 
-  val = (val * m_gain + m_offset) * m_mContrast;
+  if(checkNoValue(val, m_monoBand) == false)
+  {
+    val = (val * m_gain + m_offset) * m_mContrast;
 
-  fixValue(val);
+    fixValue(val);
 
-  std::vector<double> vecValues;
-  vecValues.resize(3, val);
+    std::vector<double> vecValues;
+    vecValues.resize(3, val);
 
-  m_rasterOut->setValues((int)icol, (int)ilin, vecValues);
+    m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+  }
 }
 
-void te::map::RasterTransform::ExtractRGB(double icol, double ilin, double ocol, double olin)
+te::color::RGBAColor te::map::RasterTransform::getMono2ThreeBand(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  if(checkNoValue(val, m_monoBand) == false)
+  {
+    val = (val * m_gain + m_offset) * m_mContrast;
+
+    fixValue(val);
+
+    te::color::RGBAColor c((int)val, (int)val, (int)val, (int)m_transp);
+
+    return c;
+  }
+
+  return te::color::RGBAColor();
+}
+
+void te::map::RasterTransform::setExtractRGB(double icol, double ilin, double ocol, double olin)
 {
   double valR, valG, valB;
 
@@ -143,21 +173,55 @@ void te::map::RasterTransform::ExtractRGB(double icol, double ilin, double ocol,
   m_rasterIn->getValue((int)icol, (int)ilin, valG, m_rgbMap[GREEN_CHANNEL]);
   m_rasterIn->getValue((int)icol, (int)ilin, valB, m_rgbMap[BLUE_CHANNEL]);
 
-  std::vector<double> vecValues;
+  if(checkNoValue(valR, m_rgbMap[RED_CHANNEL]) == false ||
+     checkNoValue(valG, m_rgbMap[GREEN_CHANNEL]) == false ||
+     checkNoValue(valB, m_rgbMap[BLUE_CHANNEL]) == false)
+  {
+    std::vector<double> vecValues;
 
-  valR = (valR * m_gain + m_offset) * m_rContrast;
-  fixValue(valR);
-  vecValues.push_back(valR);
+    valR = (valR * m_gain + m_offset) * m_rContrast;
+    fixValue(valR);
+    vecValues.push_back(valR);
 
-  valG = (valG * m_gain + m_offset) * m_gContrast;
-  fixValue(valG);
-  vecValues.push_back(valG);
+    valG = (valG * m_gain + m_offset) * m_gContrast;
+    fixValue(valG);
+    vecValues.push_back(valG);
 
-  valB = (valB * m_gain + m_offset) * m_bContrast;
-  fixValue(valB);
-  vecValues.push_back(valB);
+    valB = (valB * m_gain + m_offset) * m_bContrast;
+    fixValue(valB);
+    vecValues.push_back(valB);
 
-  m_rasterOut->setValues((int)icol, (int)ilin, vecValues);
+    m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+  }
+}
+
+te::color::RGBAColor te::map::RasterTransform::getExtractRGB(double icol, double ilin)
+{
+  double valR, valG, valB;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, valR, m_rgbMap[RED_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valG, m_rgbMap[GREEN_CHANNEL]);
+  m_rasterIn->getValue((int)icol, (int)ilin, valB, m_rgbMap[BLUE_CHANNEL]);
+
+  if(checkNoValue(valR, m_rgbMap[RED_CHANNEL]) == false ||
+     checkNoValue(valG, m_rgbMap[GREEN_CHANNEL]) == false ||
+     checkNoValue(valB, m_rgbMap[BLUE_CHANNEL]) == false)
+  {
+    valR = (valR * m_gain + m_offset) * m_rContrast;
+    fixValue(valR);
+
+    valG = (valG * m_gain + m_offset) * m_gContrast;
+    fixValue(valG);
+
+    valB = (valB * m_gain + m_offset) * m_bContrast;
+    fixValue(valB);
+
+    te::color::RGBAColor c((int)valR, (int)valG, (int)valB, (int)m_transp);
+
+    return c;
+  }
+
+  return te::color::RGBAColor();
 }
 
 void te::map::RasterTransform::fixValue(double& value)
@@ -170,5 +234,15 @@ void te::map::RasterTransform::fixValue(double& value)
   {
     value = m_rstMaxValue;
   }
+}
+
+bool te::map::RasterTransform::checkNoValue(double& value, int band)
+{
+  if(m_rasterIn->getBand(band)->getProperty()->m_noDataValue == value)
+  {
+    return true;
+  }
+
+  return false;
 }
 

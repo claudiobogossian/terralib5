@@ -311,6 +311,10 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_editLegendAction);
   connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
 
+  m_removeLegendAction = new QAction("&Remove Legend...", m_treeMenu);
+  m_treeMenu->addAction(m_removeLegendAction);
+  connect(m_removeLegendAction, SIGNAL(triggered()), this, SLOT(removeLegendSlot()));
+
   m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
   m_keepOnMemoryAction->setCheckable(true);
   m_treeMenu->addAction(m_keepOnMemoryAction);
@@ -639,14 +643,19 @@ void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint&
       m_keepOnMemoryAction->setEnabled(false);
       m_keepOnMemoryAction->setChecked(false);
       m_addFolderAction->setEnabled(true);
+      m_addLayerAction->setEnabled(true);
+      m_openGridAction->setEnabled(false);
       m_changeStatusColorMenu->setEnabled(false);
       m_changeDefaultStyleMenu->setEnabled(false);
       m_editLegendAction->setEnabled(false);
+      m_removeLegendAction->setEnabled(false);
     }
-    else
+    else if(m_selectedLayer->getType() == "LAYER")
     {
       MyLayer* layer = (MyLayer*)m_selectedLayer;
+      m_openGridAction->setEnabled(true);
       m_editLegendAction->setEnabled(true);
+      m_removeLegendAction->setEnabled(layer->hasLegend());
       m_keepOnMemoryAction->setEnabled(true);
       m_keepOnMemoryAction->setChecked(layer->isKeepOnMemory());
       m_addFolderAction->setEnabled(false);
@@ -688,6 +697,16 @@ void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint&
         m_changeStatusColorMenu->setEnabled(false);
         m_changeDefaultStyleMenu->setEnabled(false);
       }
+    }
+    else
+    {
+      m_keepOnMemoryAction->setEnabled(false);
+      m_keepOnMemoryAction->setChecked(false);
+      m_addFolderAction->setEnabled(false);
+      m_changeStatusColorMenu->setEnabled(false);
+      m_changeDefaultStyleMenu->setEnabled(false);
+      m_editLegendAction->setEnabled(false);
+      m_removeLegendAction->setEnabled(false);
     }
   }
   
@@ -1782,12 +1801,12 @@ void MyWindow::addLayerSlot()
           if(item == it->second)
           {
             srid = it->first;
-            layer->setSRID(srid);
             break;
           }
         }
       }
     }
+    layer->setSRID(srid);
     layer->setExtent(gp->getExtent());
   }
 
@@ -2060,27 +2079,17 @@ void MyWindow::editLegendSlot()
   if(legendDialog.exec() != QDialog::Accepted)
     return;
 
-    //int frameStyle = QFrame::Sunken | QFrame::Panel;
-
-    //bool ok;
-    //int opac = QInputDialog::getInt(this, tr("QInputDialog::getInteger()"),
-    //                             tr("Color Opacity:"), 120, 0, 255, 10, &ok);
-    //if(ok == false)
-    //  opac = 255;
-
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
-  //std::vector<te::map::LegendItem*> legends = legendDialog.getLegend();
-  //std::vector<te::map::LegendItem*>::iterator it;
-  //for(it = legends.begin(); it != legends.end(); ++it)
-  //{
-  //  te::map::LegendItem* leg = *it;
-  //  te::color::RGBAColor cor = leg->getColor();
-  //  cor.setColor(cor.getRed(), cor.getGreen(), cor.getBlue(), opac);
-  //  leg->setColor(cor);
-  //}
-
   m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legendDialog.getLegend());
-  //m_layerExplorerModel->addLegend(m_layerExplorer->getPopupIndex(), legends);
+  updateDisplays((MyLayer*)(layerItem->getRefLayer()));
+}
+
+void MyWindow::removeLegendSlot()
+{
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
+  m_layerExplorerModel->removeLegend(m_layerExplorer->getPopupIndex());
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
   updateDisplays((MyLayer*)(layerItem->getRefLayer()));
 }

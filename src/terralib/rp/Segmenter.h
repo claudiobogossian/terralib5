@@ -33,8 +33,7 @@
 #include "Matrix.h"
 #include "Config.h"
 
-//#include <boost/thread/thread.hpp>
-//#include <boost/thread/mutex.hpp>
+#include <boost/shared_ptr.hpp>
 
 #include <vector>
 #include <string>
@@ -150,7 +149,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the raster (as described in te::raster::RasterFactory). 
             
-            mutable std::auto_ptr< te::rst::Raster > m_outputRasterPtr; //!< A pointer the ge generated output raster (label image).
+            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< A pointer the ge generated output raster (label image).
             
             OutputParameters();
             

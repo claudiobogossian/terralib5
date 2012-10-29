@@ -32,25 +32,36 @@
 
 #include <idl_export.h>
 
-#ifdef __cplusplus
-  extern "C" {
-#endif
-  
-/*!
-  \brief Convert IDL data types to Terralib data types.
-  
-  \param idlType IDL data type.
-  
-  \return Terralib data type.
-  
-  \sa terralib/datetype/Enums.h for more details.
-  
-  \ingroup IDLModule
-  */
-int idl2TerralibType( const UCHAR& idlType );
-  
-#ifdef __cplusplus
-  }; // extern "C"
-#endif  
+namespace te
+{
+  namespace idl
+  {
+    /*!
+      \brief Convert IDL data types to Terralib data types.
+      
+      \param idlType IDL data type.
+      
+      \return Terralib data type.
+      
+      \sa terralib/datetype/Enums.h for more details.
+      
+      \ingroup IDLModule
+      */
+    int idl2TerralibType( const UCHAR& idlType );
+
+    /*!
+      \brief Convert Terralib data types to IDL data types.
+      
+      \param idlType IDL data type.
+      
+      \return IDL data type.
+      
+      \sa terralib/datetype/Enums.h for more details.
+      
+      \ingroup IDLModule
+      */
+    UCHAR terralib2IdlType( const int& tlType );
+  }; // namespace idl
+}; // namespace te
 
 #endif // __TERRALIB_IDL_INTERNAL_FUNCTIONS_H

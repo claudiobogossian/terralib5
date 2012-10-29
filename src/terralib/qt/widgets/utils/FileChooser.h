@@ -118,12 +118,25 @@ namespace te
         */
         void setResourceType(const ResourceType& type);
 
+      signals:
+
+        /*!
+          \brief Emit a qt signal to inform that a resource was selected or defined.
+          \param s Resource Name.
+        */
+        void resourceSelected(QString s);
+
       protected slots:
         
         /*!
           \brief Shows the file selection dialog.
         */
         void onChooseFileToolButtonClicked();
+
+        /*!
+          \brief Event on return pressed over the resource line edit.
+        */
+        void onReturnPressed();
 
       protected:
 

@@ -47,6 +47,7 @@ te::qt::widgets::HorizontalSliderWidget::HorizontalSliderWidget(QWidget* parent,
 // connect signals and slots
   connect(m_ui->m_defaultPushButton, SIGNAL(released()), this, SLOT(onDefaultButtonPressed()));
   connect(m_ui->m_slider, SIGNAL(valueChanged(int)), this, SLOT(onValueChanged(int)));
+  connect(m_ui->m_slider, SIGNAL(sliderReleased()), this, SLOT(onSliderReleased()));
 }
 
 te::qt::widgets::HorizontalSliderWidget::~HorizontalSliderWidget()
@@ -115,4 +116,9 @@ void te::qt::widgets::HorizontalSliderWidget::onValueChanged(int value)
   m_ui->m_sliderLabel->setNum(value);
 
   emit sliderValueChanged(value);
+}
+
+void te::qt::widgets::HorizontalSliderWidget::onSliderReleased()
+{
+  emit sliderReleased();
 }

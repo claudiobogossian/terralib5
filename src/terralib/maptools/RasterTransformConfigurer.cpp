@@ -58,6 +58,14 @@ void te::map::RasterTransformConfigurer::configure()
 
 void te::map::RasterTransformConfigurer::getGeneralProperties()
 {
+  //get transparency
+  if(m_rstSymbolizer->getOpacity())
+  {
+    double transp = (double)TE_OPAQUE * te::map::GetDouble(m_rstSymbolizer->getOpacity());
+
+    m_rstTransform->setTransparency(transp);
+  }
+
   //get gain
   if(m_rstSymbolizer->getGain())
   {
