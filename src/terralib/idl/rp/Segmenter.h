@@ -56,12 +56,6 @@ namespace te
         \ingroup IDLRPAlgorithms
         */
       IDL_VPTR RegionGrowingSegmenter(int argc, IDL_VPTR *argv, char *argk );
-
-      /*!
-        \brief A dummy function for internal use.
-        \ingroup IDLRPAlgorithms
-        */
-      void dummyFunction( void* );
     }
   }; // namespace idl
 }; // namespace te

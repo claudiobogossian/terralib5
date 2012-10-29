@@ -26,6 +26,7 @@
 #include "IDLLoad.h" 
 
 #include "rp/Segmenter.h"
+#include "Functions.h"
 
 #include <terralib/common/TerraLib.h>
 
@@ -36,6 +37,8 @@ int IDL_Load(void)
   IDL_ExitRegister( IDL_ExitHandler );
   
   TerraLib::getInstance().initialize();
+  
+  te::idl::loadTerralibModules();
   
   static IDL_SYSFUN_DEF2 moduleFunctionsAddrs[ TERRALIB_IDL_FUNCTIONS_NUMBER ];
   

@@ -61,6 +61,18 @@ namespace te
       \ingroup IDLModule
       */
     UCHAR terralib2IdlType( const int& tlType );
+    
+    /*!
+      \brief A dummy function for internal use.
+      \ingroup IDLModule
+      */
+    void dummyFunction( void* );
+    
+    /*!
+      \brief Load the required terralib modules.
+      \ingroup IDLModule
+      */
+    void loadTerralibModules();
   }; // namespace idl
 }; // namespace te
 
