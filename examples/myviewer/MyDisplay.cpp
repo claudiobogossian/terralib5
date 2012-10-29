@@ -1175,8 +1175,6 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
     const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
-    std::string pkName = pkProps[0]->getName();
-    int pkPos = dsType->getPropertyPosition(pkName);
     std::string pkv;
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
     int gtype = dsType->getDefaultGeomProperty()->getGeometryType();
@@ -1185,7 +1183,9 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     dataSet->moveBeforeFirst();
     while(dataSet->moveNext())
     {
-      pkv = dataSet->getAsString(pkPos);
+      pkv.clear();
+      for (size_t i = 0; i < pkProps.size(); ++i)
+        pkv += dataSet->getAsString(pkProps[i]->getName());
 
       te::gm::Geometry* g = dataSet->getGeometry(gPos);
       if(g == 0)
@@ -1583,8 +1583,6 @@ void MyDisplay::drawAllPointedsSlot()
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
     const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
-    std::string pkName = pkProps[0]->getName();
-    int pkPos = dsType->getPropertyPosition(pkName);
     std::string pkv;
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
 
@@ -1595,7 +1593,10 @@ void MyDisplay::drawAllPointedsSlot()
       if(g == 0)
         continue;
 
-      pkv = dataSet->getAsString(pkPos);
+      pkv.clear();
+      for (size_t i = 0; i < pkProps.size(); ++i)
+        pkv += dataSet->getAsString(pkProps[i]->getName());
+
       status = op->getDataSetSelectionStatus(pkv);
       if(status == te::map::DataGridOperation::POINTED || status == te::map::DataGridOperation::POINTED_AND_QUERIED)
       {
@@ -1648,8 +1649,6 @@ void MyDisplay::drawAllQueriedsSlot()
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
     const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
-    std::string pkName = pkProps[0]->getName();
-    int pkPos = dsType->getPropertyPosition(pkName);
     std::string pkv;
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
 
@@ -1660,7 +1659,10 @@ void MyDisplay::drawAllQueriedsSlot()
       if(g == 0)
         continue;
 
-      pkv = dataSet->getAsString(pkPos);
+      pkv.clear();
+      for (size_t i = 0; i < pkProps.size(); ++i)
+        pkv += dataSet->getAsString(pkProps[i]->getName());
+
       status = op->getDataSetSelectionStatus(pkv);
       if(status == te::map::DataGridOperation::QUERIED || status == te::map::DataGridOperation::POINTED_AND_QUERIED)
       {
@@ -1714,8 +1716,6 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
     const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
-    std::string pkName = pkProps[0]->getName();
-    int pkPos = dsType->getPropertyPosition(pkName);
     std::string pkv;
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
 
@@ -1726,7 +1726,10 @@ void MyDisplay::drawAllPointedsAndQueriedsSlot()
       if(g == 0)
         continue;
 
-      pkv = dataSet->getAsString(pkPos);
+      pkv.clear();
+      for (size_t i = 0; i < pkProps.size(); ++i)
+        pkv += dataSet->getAsString(pkProps[i]->getName());
+
       status = op->getDataSetSelectionStatus(pkv);
       if(status == te::map::DataGridOperation::POINTED_AND_QUERIED)
       {

@@ -138,7 +138,7 @@ void te::qt::widgets::SegmenterDialog::on_okPushButton_clicked()
       {
         if( algorithmInstance.execute( algoOutputParams ) )
         {
-          m_outputRasterPtr.reset( algoOutputParams.m_outputRasterPtr.release() );
+          m_outputRasterPtr = algoOutputParams.m_outputRasterPtr;
           QMessageBox::information(this, "", tr("Segmentation ended sucessfully"));
         }
         else

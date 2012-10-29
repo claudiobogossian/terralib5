@@ -499,7 +499,9 @@ void te::qt::widgets::DataGridView::sortColumns(std::string order)
   verticalScrollBar()->setValue(0);
   viewport()->update();
 
-  delete t;
+  delete sortedDataSet;
+  if(ds->getType() != "OGR")
+    delete t;
 
   QApplication::restoreOverrideCursor();
 }

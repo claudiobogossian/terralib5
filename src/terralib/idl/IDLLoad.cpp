@@ -27,20 +27,32 @@
 
 #include "rp/Segmenter.h"
 
+#include <terralib/common/TerraLib.h>
+
+#define TERRALIB_IDL_FUNCTIONS_NUMBER 1
  
 int IDL_Load(void)
 {
-  static IDL_SYSFUN_DEF2 regionGrowingSegmenterFunctionAddr[ 1 ];
+  IDL_ExitRegister( IDL_ExitHandler );
   
-  regionGrowingSegmenterFunctionAddr[ 0 ].arg_max =
-    regionGrowingSegmenterFunctionAddr[ 0 ].arg_min = 3;
-  regionGrowingSegmenterFunctionAddr[ 0 ].extra = 0;
-  regionGrowingSegmenterFunctionAddr[ 0 ].flags = 0;
-  regionGrowingSegmenterFunctionAddr[ 0 ].name = (char*)"TERRALIB_RP_SEGMENTER_RG";
-  regionGrowingSegmenterFunctionAddr[ 0 ].funct_addr.fun = RegionGrowingSegmenter;
+  TerraLib::getInstance().initialize();
   
-  int returnValue = IDL_SysRtnAdd( regionGrowingSegmenterFunctionAddr, TRUE, 1 );
+  static IDL_SYSFUN_DEF2 moduleFunctionsAddrs[ TERRALIB_IDL_FUNCTIONS_NUMBER ];
+  
+  moduleFunctionsAddrs[ 0 ].arg_max =
+    moduleFunctionsAddrs[ 0 ].arg_min = 3;
+  moduleFunctionsAddrs[ 0 ].extra = 0;
+  moduleFunctionsAddrs[ 0 ].flags = 0;
+  moduleFunctionsAddrs[ 0 ].name = (char*)"TERRALIB_RP_SEGMENTER_RG";
+  moduleFunctionsAddrs[ 0 ].funct_addr.fun = te::idl::rp::RegionGrowingSegmenter;
+  
+  int returnValue = IDL_SysRtnAdd( moduleFunctionsAddrs, TRUE, 
+    TERRALIB_IDL_FUNCTIONS_NUMBER );
   
   return returnValue;  
 }
 
+void IDL_ExitHandler(void)
+{
+  TerraLib::getInstance().finalize();
+}
