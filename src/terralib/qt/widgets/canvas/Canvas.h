@@ -63,8 +63,17 @@ namespace te
 
             \param w The internal pixmap width in pixels.
             \param h The internal pixmap height in pixels.
-           */
+          */
           Canvas(int w, int h);
+
+          /*!
+            \brief It initializes a new Canvas associated with the given paint device.
+
+            \param device The paint device that will be associated to this canvas.
+            
+            \note The canvas will NOT take the ownership of the given device.
+          */
+          Canvas(QPaintDevice* device);
 
           /*! \brief Destructor. */
           ~Canvas();
