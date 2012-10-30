@@ -107,6 +107,30 @@ void te::map::RasterTransformConfigurer::getChannelSelection()
 
     getBlueChannelProperties(cs->getBlueChannel());
   }
+  else if(type == te::se::RED_COMPOSITION)
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::RED2THREE_TRANSF);
+
+    m_rstTransform->clearRGBMap();
+
+    getRedChannelProperties(cs->getRedChannel());
+  }
+  else if(type == te::se::GREEN_COMPOSITION)
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::GREEN2THREE_TRANSF);
+
+    m_rstTransform->clearRGBMap();
+
+    getGreenChannelProperties(cs->getGreenChannel());
+  }
+  else if(type == te::se::BLUE_COMPOSITION)
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::BLUE2THREE_TRANSF);
+
+    m_rstTransform->clearRGBMap();
+
+    getBlueChannelProperties(cs->getBlueChannel());
+  }
   else
   {
      m_rstTransform->setTransfFunction(te::map::RasterTransform::NO_TRANSF);

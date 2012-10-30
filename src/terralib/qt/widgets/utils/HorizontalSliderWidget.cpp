@@ -109,6 +109,8 @@ void te::qt::widgets::HorizontalSliderWidget::onDefaultButtonPressed()
   m_ui->m_slider->setValue(m_defaultValue);
   
   onValueChanged(m_defaultValue);
+
+  onSliderReleased();
 }
 
 void te::qt::widgets::HorizontalSliderWidget::onValueChanged(int value)
