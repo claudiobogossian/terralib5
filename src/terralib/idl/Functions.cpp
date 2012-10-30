@@ -28,6 +28,8 @@
 #include <terralib/datatype/Enums.h>
 
 #include <terralib/plugin/PluginManager.h>
+#include <terralib/common/StringUtils.h>
+#include <terralib/raster/RasterFactory.h>
 
 namespace te
 {
@@ -187,10 +189,6 @@ namespace te
       }
     }  
     
-    void dummyFunction( void* )
-    {
-    }
-    
     void loadTerralibModules()
     {
       {
@@ -256,6 +254,65 @@ namespace te
           te::plugin::PluginManager::getInstance().loadPlugin(info);
         #endif
       }    
+    }
+    
+    bool createRasterFromIdlArray( IDL_VPTR idlValuePointer, 
+      const bool takeBufferOwnership,
+      boost::shared_ptr< te::rst::Raster >& outRasterPtr )
+    {
+      if( ! ( idlValuePointer->flags & IDL_V_ARR) )
+      {
+        return false;
+      }
+      else
+      {
+        unsigned int nLines = 0;
+        unsigned int nCols = 0;  
+        unsigned int nBands = 0;
+        
+        if( idlValuePointer->value.arr->n_dim == 2 )
+        {
+          nLines = (unsigned int)idlValuePointer->value.arr->dim[ 1 ];
+          nCols = (unsigned int)idlValuePointer->value.arr->dim[ 0 ];
+          nBands = 1;
+        }
+        else if( idlValuePointer->value.arr->n_dim == 3 )
+        {
+          nLines = (unsigned int)idlValuePointer->value.arr->dim[ 2 ];
+          nCols = (unsigned int)idlValuePointer->value.arr->dim[ 1 ];
+          nBands = (unsigned int)idlValuePointer->value.arr->dim[ 0 ];
+        }
+        else
+        {
+          return false;
+        }
+        
+        const int tlDataType = idl2TerralibType( idlValuePointer->type );
+        
+        std::map<std::string, std::string> rasterInfo;
+        rasterInfo["MEM_IS_DATA_BUFFER"] = "TRUE";
+        rasterInfo["MEM_BUFFER_NCOLS"] = te::common::Convert2String( nCols );
+        rasterInfo["MEM_BUFFER_NROWS"] = te::common::Convert2String( nLines );
+        rasterInfo["MEM_BUFFER_DATATYPE"] = te::common::Convert2String( tlDataType );
+        rasterInfo["MEM_BUFFER_NBANDS"] = te::common::Convert2String( nBands );  
+        
+        outRasterPtr.reset( te::rst::RasterFactory::make(
+            "MEM", 
+            rasterInfo, 
+            idlValuePointer->value.arr->data, 
+            takeBufferOwnership ? te::idl::deleteArray : te::idl::dummyFunction ) );        
+            
+        if( outRasterPtr.get() )
+        {
+          return true;
+        }
+        else
+        {
+          outRasterPtr.reset();
+          return false;
+        }
+        
+      }
     }
     
   } // namespace idl
