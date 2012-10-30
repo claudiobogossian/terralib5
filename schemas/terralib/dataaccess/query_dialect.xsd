@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_common="http://www.terralib.org/common"
+            xmlns:te_da="http://www.terralib.org/dataaccess"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/dataaccess"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>QueryDialect</xsd:appinfo>
+    <xsd:documentation>This XML Schema describes the query dialects provided by Data Access drivers</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
+
+  <xsd:element name="QueryDialect" type="te_da:QueryDialectType">
+    <xsd:annotation>
+      <xsd:documentation>This is the root element for query dialects files.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="QueryDialectType">
+    <xsd:annotation>
+      <xsd:documentation>This type describes a query dialect.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="DriverName" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Functions" type="te_da:FunctionsType" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="FunctionsType">
+    <xsd:sequence>
+      <xsd:element name="Function" type="te_da:FunctionType" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+  <xsd:element name="SQLFunctionEncoder" type="te_da:SQLFunctionEncoderType" abstract="true"/>
+
+  <xsd:complexType name="SQLFunctionEncoderType" abstract="true"/>
+
+  <xsd:element name="BinaryOpEncoder" type="te_da:BinaryOpEncoderType" substitutionGroup="te_da:SQLFunctionEncoder"/>
+
+  <xsd:element name="UnaryOpEncoder" type="te_da:UnaryOpEncoderType" substitutionGroup="te_da:SQLFunctionEncoder"/>
+
+  <xsd:element name="FunctionEncoder" type="te_da:FunctionEncoderType" substitutionGroup="te_da:SQLFunctionEncoder"/>
+
+  <xsd:element name="TemplateEncoder" type="te_da:TemplateEncoderType" substitutionGroup="te_da:SQLFunctionEncoder"/>
+
+  <xsd:complexType name="FunctionType">
+    <xsd:sequence>
+      <xsd:element ref="te_da:SQLFunctionEncoder" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="BinaryOpEncoderType">
+    <xsd:complexContent>
+      <xsd:extension base="te_da:SQLFunctionEncoderType">
+        <xsd:attribute name="alias" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="UnaryOpEncoderType">
+    <xsd:complexContent>
+      <xsd:extension base="te_da:SQLFunctionEncoderType">
+        <xsd:attribute name="alias" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="FunctionEncoderType">
+    <xsd:complexContent>
+      <xsd:extension base="te_da:SQLFunctionEncoderType">
+        <xsd:attribute name="alias" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="TemplateEncoderType">
+    <xsd:complexContent>
+      <xsd:extension base="te_da:SQLFunctionEncoderType">
+        <xsd:attribute name="alias" type="xsd:string" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+</xsd:schema>

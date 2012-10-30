@@ -15,6 +15,7 @@ list (APPEND DEP_LIBS
     terralib_datatype
     terralib_geometry
     terralib_memory
+    terralib_gdal
     terralib_ogr
     terralib_plugin
     terralib_raster

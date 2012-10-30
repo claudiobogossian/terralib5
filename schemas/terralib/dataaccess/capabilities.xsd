@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
+            xmlns:te_common="http://www.terralib.org/common"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/dataaccess"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>DriverCapabilities</xsd:appinfo>
+    <xsd:documentation>This XML Schema describes the information about data access driver capabilities</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
+
+  <xsd:element name="DriverCapabilities" type="te_da:DriverCapabilitiesType">
+    <xsd:annotation>
+      <xsd:documentation>This is the root element for driver capabilities files.</xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+
+  <xsd:complexType name="DriverCapabilitiesType">
+    <xsd:annotation>
+      <xsd:documentation>This type describes a data access driver capabilities.</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Capability" type="te_da:CapabilityType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="CapabilityType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+</xsd:schema>
