@@ -79,7 +79,10 @@ namespace te
         {
           NO_TRANSF=0, 
           MONO2THREE_TRANSF=1, 
-          EXTRACT2RGB_TRANSF=2
+          EXTRACT2RGB_TRANSF=2,
+          RED2THREE_TRANSF=3, 
+          GREEN2THREE_TRANSF=4, 
+          BLUE2THREE_TRANSF=5
         };
 
       public:
@@ -205,6 +208,24 @@ namespace te
 
         /*! This transformation is used to define a particular mapping from input bands to RGB channels */
         te::color::RGBAColor getExtractRGB(double icol, double ilin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        void setRed2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getRed2ThreeBand(double icol, double ilin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        void setGreen2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getGreen2ThreeBand(double icol, double ilin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        void setBlue2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getBlue2ThreeBand(double icol, double ilin);
 
         /*! Function used to adjust the value in raster range */
         void fixValue(double& value);
