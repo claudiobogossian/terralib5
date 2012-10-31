@@ -37,7 +37,6 @@ te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
   *(blocksManager.getRaster()->getBand( idx )->getProperty()) ), idx ),
   m_blocksManager( blocksManager )
 {
-  m_idx = idx;
   m_blkHeight = blocksManager.getRaster()->getBand( idx )->getProperty()->m_blkh;
   m_blkWidth = blocksManager.getRaster()->getBand( idx )->getProperty()->m_blkw;
   m_blkSizeBytes = blocksManager.getRaster()->getBand( idx )->getBlockSize();
@@ -47,10 +46,8 @@ te::mem::CachedBand::CachedBand( CachedBandBlocksManager& blocksManager,
 }
 
 te::mem::CachedBand::CachedBand()
-: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
-  m_idx( 0 ), m_blocksManager( dummyBlocksManager )
+: te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ), m_blocksManager( dummyBlocksManager )
 {
-  m_idx = 0;
   m_blkWidth = 0;
   m_blkHeight = 0;
   m_blkSizeBytes = 0;
@@ -64,7 +61,6 @@ te::mem::CachedBand::CachedBand(const CachedBand& )
 : te::rst::Band( new te::rst::BandProperty( 0, 0 ), 0 ),
   m_blocksManager( dummyBlocksManager )
 {
-  m_idx = 0;
   m_blkWidth = 0;
   m_blkHeight = 0;
   m_blkSizeBytes = 0;
