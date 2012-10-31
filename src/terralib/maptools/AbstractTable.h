@@ -44,6 +44,12 @@
 
 namespace te
 {
+  namespace gm
+  {
+    //! Forward declarations
+    class Geometry;
+  }
+
   namespace map
   {
     /*!
@@ -212,6 +218,14 @@ namespace te
         \return The number of row if it was found, and -1 otherwise.
       */
       int map2Row(std::string pkey) const;
+
+      /*!
+        \brief Returns the geometry in the \a row. 
+        \param row Row searched.
+        \return Returns This default implementation returns a NULL pointer. 
+        \note Subclasses that have access to geometries must re-implement this method.
+      */
+      virtual te::gm::Geometry* getGeometry(const size_t& row) const;
       //@}
 
     protected:

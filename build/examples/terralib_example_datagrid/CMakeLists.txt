@@ -65,8 +65,10 @@ list(REMOVE_ITEM SRCS
      ${SRCDIR}/LoadModules.cpp)
 	
 if(WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS ${QT_DEFINITIONS})
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(WIN32)
+
+add_definitions (${QT_DEFINITIONS})
 	
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
 
@@ -81,7 +83,10 @@ include_directories(
     "${CMAKE_CURRENT_BINARY_DIR}"
     ${DEP_INCLUDES}
     ${Boost_INCLUDE_DIRS}
+    ${QT_INCLUDE_DIR}
 )
+       
+message ("Qt: ${QT_INCLUDE_DIR}")       
        
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
 

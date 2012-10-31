@@ -1,5 +1,6 @@
 #include "AbstractTable.h"
 #include <terralib/common/Exception.h>
+#include <terralib/common/StringUtils.h>
 
 //STL include files
 #include <algorithm>
@@ -128,7 +129,7 @@ void te::map::AbstractTable::preprocessPKeys(char separator)
 {
   m_separator = separator;
 
-  if(!m_pkeys_2rows.empty())
+  if(!m_pkeys_2rows.empty() || m_absPKeys.empty())
     return;
 
   size_t nPkeys = m_absPKeys.size();
@@ -162,6 +163,9 @@ std::string te::map::AbstractTable::map2PKey(size_t row)
   if(row >= numRows())
     throw te::common::Exception("Row out of boundaries.");
 
+  if(m_absPKeys.empty())
+    return te::common::Convert2String(row);
+
   size_t nPkeys = m_absPKeys.size();
   std::string pkey;
 
@@ -178,9 +182,18 @@ std::string te::map::AbstractTable::map2PKey(size_t row)
 
 int te::map::AbstractTable::map2Row(std::string pkey) const
 {
+  if(m_absPKeys.empty())
+    return atoi(pkey.c_str());
+
   std::map<std::string, size_t>::const_iterator it = m_pkeys_2rows.find(pkey);
   return ((it == m_pkeys_2rows.end()) ? -1 : ((int)it->second));
 }
+
+te::gm::Geometry* te::map::AbstractTable::getGeometry(const size_t& row) const
+{
+  return 0;
+}
+
 
 size_t te::map::AbstractTable::getLogicalColumn(size_t column) const
 {

@@ -66,7 +66,8 @@ namespace te
         */
         enum ItemDataRole
         {
-          PKEY = Qt::UserRole +1 //!< Used to tell model that the data requested are the primary keys defined.
+          PKEY = Qt::UserRole +1, //!< Used to tell model that the data requested are the primary keys defined.
+          GEOMETRY
         };
 
 

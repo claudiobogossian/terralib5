@@ -4,20 +4,22 @@
 #include "TemporalDrawingConfig.h"
 
 //TerraLib
-#include <terralib/datatype.h>
 #include <terralib/maptools.h>
+#include <terralib/datatype.h>
 #include <terralib/st/movingobject/MovingObject.h>
 
 //QT
 #include <QSlider>
 #include <QMenu>
 
+class MyDisplay;
+
 class TimeSlider : public QSlider
 {
   Q_OBJECT
 
 public:
-  TimeSlider(te::map::MapDisplay* md, QWidget* parent = 0);
+  TimeSlider(MyDisplay* md, QWidget* parent = 0);
   ~TimeSlider();
 
   //carrega dados vetoriais e inicializa os tempos inicial e final
@@ -66,7 +68,7 @@ public slots:
   void stopSlot();
 
 private:
-  te::map::MapDisplay* m_mapDisplay;
+  MyDisplay* m_display;
   std::vector<te::map::AbstractLayer*> m_layers;
   te::dt::TimeInstant* m_initialTime;
   te::dt::TimeInstant* m_finalTime;

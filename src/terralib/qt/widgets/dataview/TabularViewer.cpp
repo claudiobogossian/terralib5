@@ -4,12 +4,11 @@
 #include "HLDelegateDecorator.h"
 #include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
 
-//TerraLib MapTools include files
+//TerraLib include files
 #include <terralib/maptools/PromoTable.h>
 #include <terralib/maptools/DataSetTable.h>
 #include <terralib/common/Exception.h>
-
-//TerraLib DataSet include files
+#include <terralib/geometry/Geometry.h>
 #include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
 #include <terralib/dataaccess/dataset/PrimaryKey.h>
@@ -19,27 +18,28 @@
 #include <QContextMenuEvent>
 #include <QMenu>
 #include <QAction>
+#include <QStylePainter>
 
 //! STL include files
 #include <vector>
 
-////! Forward declarations
-QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* mainMnu);
+//! Forward declarations
+QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* mainMnu, std::vector<te::qt::widgets::ColorPickerToolButton*>& colors);
 
-QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent);
+QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent, std::vector<QAction*> acts);
 
-QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent);
+QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent, std::vector<QAction*>& acts);
 
 void makeHeaderMenu(QMenu*& mnu, QAction*& col, te::qt::widgets::TabularViewer* viewer, QObject* filter);
 
-QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAction*& rset_hl, QAction*& prmAll, 
-  QAction*& reset_prmAll, QAction*& prm, QAction*& reset_prm);
+QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAction*& rst_hl_all, QAction*& prm_all, QAction*& rst_prm_all, std::vector<QAction*>& prm, 
+  std::vector<QAction*>& reset_prm, std::vector<QAction*>& reset_hl, std::vector<te::qt::widgets::ColorPickerToolButton*>& colors);
 
 QMenu* makeHiddenMenu(QHeaderView* view, QMenu* parent);
 
-std::vector<size_t> getGrpsHLighted(te::qt::widgets::TabularViewer* viewer);
+std::set<size_t> getGrpsHLighted(te::qt::widgets::TabularViewer* viewer);
 
-QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* parent);
+QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* parent, std::vector<QAction*>& rst_hl_grp);
 
 bool isAllPromoted(te::qt::widgets::TabularViewer* viewer);
 
@@ -96,16 +96,19 @@ namespace te
           \brief Contructor.
           \param viewier The te::qt::qwidgets::TabularViewer to be observed.
         */
-        DataViewPopupFilter(TabularViewer* viewer) :
+        DataViewPopupFilter(TabularViewer* viewer, const bool& promotion=false) :
         QObject(viewer),
         m_viewer(viewer),
         m_col(-1),
-        m_hiddenCols(0),
-        m_setPrm(0),
-        m_resetPrm(0),
-        m_rsetHL(0),
         m_data_menu(0),
-        m_head_menu(0)
+        m_head_menu(0),
+        m_prm_all(0),
+        m_reset_prm_all(0),
+        m_show_cols(0),
+        m_reset_hl(0),
+        m_hiddenCols(0),
+        m_colGroup(0),
+        m_promotion(promotion)
         {
           m_viewer->horizontalHeader()->installEventFilter(this);
           m_viewer->viewport()->installEventFilter(this);
@@ -128,6 +131,13 @@ namespace te
         {
         }
 
+        void setPromotionEnabled(const bool& prm)
+        {
+          m_promotion = prm;
+
+          //setupMenus();
+        }
+
         /*!
           \brief Construct menus.
           \details Re-construct the header and data menus. This method MUST be called when item delegate was updated.
@@ -135,19 +145,20 @@ namespace te
         void setupMenus()
         {
           if(m_head_menu != 0)
-          {
             m_head_menu->clear();
-            delete m_head_menu;
-          }
         
           if(m_data_menu != 0)
-          {
             m_data_menu->clear();
-            delete m_data_menu;
-          }
 
-          makeHeaderMenu(m_head_menu, m_colGroup, m_viewer, this);
-          m_data_menu = makeDataMenu(m_viewer, this, m_rset_all, m_prm_all, m_reset_prm_all, m_prmGroup, m_resetPrmGroup);
+          delete m_data_menu;
+          delete m_head_menu;
+
+          m_prm_grp.clear();
+          m_reset_prm_grp.clear();
+          m_reset_hl_grp.clear();
+
+          makeHeaderMenu(m_head_menu, m_show_cols, m_viewer, this);
+          m_data_menu = makeDataMenu(m_viewer, this, m_reset_hl, m_prm_all, m_reset_prm_all, m_prm_grp, m_reset_prm_grp, m_reset_hl_grp, m_colors);
         }
 
         /*!
@@ -170,44 +181,10 @@ namespace te
             {
               case QEvent::ContextMenu:
                 {
-                  m_prm_all->setEnabled(!isAllPromoted(m_viewer));
-                  m_reset_prm_all->setEnabled(!m_viewer->getPromotedGroups().empty());
-                  m_rset_all->setEnabled(!getGrpsHLighted(m_viewer).empty());
-
-                  //! Promote menus
-                  if(m_setPrm != 0)
-                    delete m_setPrm;
-
-                  m_setPrm = makePromoteMenu(m_viewer, m_data_menu);
-
-                  if(m_setPrm != 0)
-                  {
-                    m_data_menu->insertMenu(m_prmGroup, m_setPrm);
-                    connect(m_setPrm, SIGNAL(triggered(QAction*)), SLOT(promote(QAction*)));
-                  }
-
-                  //! Remove promoted menu.
-                  if(m_resetPrm != 0)
-                    delete m_resetPrm;
-
-                  m_resetPrm = makeRemovePromoteMenu(m_viewer, m_data_menu);
-
-                  if(m_resetPrm != 0)
-                  {
-                    m_data_menu->insertMenu(m_resetPrmGroup, m_resetPrm);
-                    connect (m_resetPrm, SIGNAL(triggered(QAction*)), SLOT(resetPromote(QAction*)));
-                  }
-
-                  //! Remove highlights menu.
-                  if(m_rsetHL != 0)
-                    delete m_rsetHL;
-
-                  m_rsetHL = makeResetHLMenu(m_viewer, this, m_data_menu);
-
-                  if(m_rsetHL != 0)
-                    m_data_menu->addMenu(m_rsetHL);
-
                   QContextMenuEvent* evt = static_cast<QContextMenuEvent*>(event);
+
+                  checkMenuEnabling();
+
                   m_data_menu->popup(evt->globalPos());
 
                   return true;
@@ -289,6 +266,48 @@ namespace te
         QMenu* getDataMenu()
         {
           return m_data_menu;
+        }
+
+        /*!
+          \brief Enable / disable menus based on highlighted objects.
+        */
+        void checkMenuEnabling()
+        {
+          te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*> (m_viewer->itemDelegate());
+          size_t cls = dec->getNumberOfClasses();
+          std::set<size_t> prm = m_viewer->getPromotedGroups();
+          std::set<size_t> hl = getGrpsHLighted(m_viewer);
+
+          m_prm_all->setEnabled(m_promotion && (prm.size() != cls) && !hl.empty());
+          m_reset_prm_all->setEnabled(m_promotion && !prm.empty());
+          m_reset_hl->setEnabled(!hl.empty());
+
+          ((QMenu*) (*m_prm_grp.begin())->parent())->setEnabled(m_promotion && !hl.empty());
+          ((QMenu*) (*m_reset_prm_grp.begin())->parent())->setEnabled(m_promotion && !prm.empty());
+
+          ((QMenu*) (*m_reset_hl_grp.begin())->parent())->setEnabled(!hl.empty());
+
+          std::set<size_t> grps = m_viewer->getPromotedGroups();
+
+          if(dec != 0)
+            for(size_t i=0; i<cls; i++)
+            {
+              if(m_promotion)
+              {
+                m_prm_grp[i]->setEnabled(grps.find(i) == grps.end() && (hl.find(i) != hl.end()));
+                m_reset_prm_grp[i]->setEnabled(grps.find(i) != grps.end());
+              }
+
+              m_reset_hl_grp[i]->setEnabled(hl.find(i) != hl.end());
+            }
+        }
+
+        void setColor(const int& g, const QColor& c)
+        {
+          if(g >= (int)m_colors.size())
+            throw te::common::Exception(tr("Group idenitifier out of colors boundaries.").toStdString());
+          
+          m_colors[g]->setColor(c);
         }
 
       protected slots:
@@ -426,19 +445,23 @@ namespace te
 
         QMenu* m_head_menu;         //!< Header menu.                     
         QMenu* m_data_menu;         //!< Data menu.
-        QMenu* m_hiddenCols;        //!< Hide columns menu.
-        QMenu* m_resetPrm;          //!< Reset promoted groups menu.
-        QMenu* m_setPrm;            //!< Set promoted groups menu.
-        QMenu* m_rsetHL;            //!< Reset group highlights menu.
-        
-        QAction* m_colGroup;        //!< Separator of columns menu.
-        QAction* m_prmGroup;        //!< Separator of promote menu.
-        QAction* m_resetPrmGroup;   //!< Separator of reset promote menu.
+
         QAction* m_prm_all;         //!< Promote all action.
         QAction* m_reset_prm_all;   //!< Reset all promotion action.
-        QAction* m_rset_all;        //!< Reset all highlighted action.
+        QAction* m_reset_hl;        //!< Reset all highlighted action.
+
+        std::vector<QAction*> m_prm_grp;        //!< Promote group actions.
+        std::vector<QAction*> m_reset_prm_grp;  //!< Reset promoted groups actions.
+        std::vector<QAction*> m_reset_hl_grp;   //!< Reset highlighted groups actions.
+        std::vector<ColorPickerToolButton*> m_colors; //!< Buttons to set up colors.
+
+        QAction* m_show_cols;       //!< Show hidden columns
+
+        QMenu* m_hiddenCols;        //!< Hide columns menu.
+        QAction* m_colGroup;        //!< Separator of columns menu.
 
         int m_col;                  //!< Visual column position.
+        bool m_promotion;           //!< Promotion can be enable or not.
       };
     }
   }
@@ -472,6 +495,14 @@ namespace te
 
         if(del_old != 0)
           delete del_old;
+
+        QAbstractButton* btn = QTableView::findChild<QAbstractButton*>();
+
+        if(btn != 0)
+        {
+          QIcon icon = QIcon::fromTheme("key");
+          btn->setIcon(icon.pixmap(btn->size())); 
+        }
       }
 
       TabularViewer::~TabularViewer()
@@ -488,11 +519,47 @@ namespace te
         return m_promotedGroups;
       }
 
+      bool TabularViewer::eventFilter(QObject* o, QEvent* e)
+      {
+        if (e->type() == QEvent::Paint) 
+        {
+          QAbstractButton* btn = qobject_cast<QAbstractButton*>(o);
+
+          if (btn != 0) 
+          {
+ // paint by hand (borrowed from QTableCornerButton)
+            QStyleOptionHeader opt;
+            opt.init(btn);
+            QStyle::State styleState = QStyle::State_None;
+
+            if (btn->isEnabled())
+              styleState |= QStyle::State_Enabled;
+            if (btn->isActiveWindow())
+              styleState |= QStyle::State_Active;
+            if (btn->isDown())
+              styleState |= QStyle::State_Sunken;
+
+            opt.state = styleState;
+            opt.rect = btn->rect();
+
+            opt.icon = btn->icon(); // this line is the only difference to QTableCornerButton
+            opt.position = QStyleOptionHeader::OnlyOneSection;
+            QStylePainter painter(btn);
+            painter.drawControl(QStyle::CE_Header, opt);
+            return true; // eat event
+          }
+        }
+
+        return false;      
+      }
+
       void TabularViewer::showData(te::da::DataSet* dset)
       {
         //Making PromoTable
         te::map::DataSetTable* tbl = new te::map::DataSetTable(dset);
         te::map::PromoTable* tbl2 = new te::map::PromoTable(tbl);
+
+        tbl2->resetTable();
 
         //Finding primary keys
         std::vector<size_t> pks = getPKeysPositions(dset);
@@ -509,6 +576,7 @@ namespace te
         QItemSelectionModel* m = QTableView::selectionModel();
         QTableView::setModel(model);
         QTableView::setSortingEnabled(false);
+        QTableView::scrollToTop();
 
         //Reseting params
         delete m;
@@ -520,6 +588,22 @@ namespace te
         setPrimaryKeys(m_table->getPKeysColumns());
 
         resetColumns();
+
+        QAbstractButton* btn = QTableView::findChild<QAbstractButton*>();
+
+        if(btn != 0)
+        {
+          if(m_table->getPKeysColumns().empty())
+          {
+            btn->installEventFilter(this);
+            m_menu_filter->setPromotionEnabled(false);
+          }
+          else
+          {
+            btn->removeEventFilter(this);
+            m_menu_filter->setPromotionEnabled(false);
+          }
+        }
       }
 
       void TabularViewer::setPrimaryKeys(const std::vector<size_t>& pkeys)
@@ -576,32 +660,63 @@ namespace te
         QTableView::viewport()->update();
       }
 
-      void TabularViewer::setHighlightColor(const int& g, const QColor& c)
+      void TabularViewer::setHighlightColor(const int& g, const QColor& c, const bool& emitSignal)
       {
         HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
 
         if(del != 0)
           del->setClassColor(g, c);
 
+        m_menu_filter->setColor(g, c);
+
         QTableView::viewport()->update();
+
+        if(emitSignal)
+          emit groupColorChanged(g, c);
       }
 
       void TabularViewer::pointObjects(const std::vector<int>& rows)
       {
         std::vector<int>::const_iterator it;
         std::set<std::string> ids;
+        std::map<std::string, te::gm::Geometry*> geoms;
 
         for(it=rows.begin(); it!=rows.end(); ++it)
         {
           QModelIndex idx = m_model->index(*it, 0);
 
           if(!idx.isValid())
-            throw te::common::Exception(tr("Invalid index of row.").toLatin1().data());
+            throw te::common::Exception(tr("Invalid index of row.").toStdString());
 
-          ids.insert(m_model->data(idx, DataSetModel::PKEY).toString().toLatin1().data());
+          std::string id = m_model->data(idx, DataSetModel::PKEY).toString().toStdString();
+          ids.insert(id);
         }
 
         setHighlightObjects(Point_Items, ids);
+
+        HLDelegateDecorator* del = dynamic_cast<HLDelegateDecorator*>(QTableView::itemDelegate());
+
+        if(del != 0)
+        {
+          std::set<std::string> hl = del->getDecorated(Point_Items)->getHighlightKeys();
+          std::set<std::string>::iterator hit;
+
+          for(hit = hl.begin(); hit != hl.end(); ++hit)
+          {
+            int row = m_table->map2Row(*hit);
+            QModelIndex idx = m_model->index(row, 0);
+
+            QVariant v = m_model->data(idx, DataSetModel::GEOMETRY);
+            QVariant pkey = m_model->data(idx, DataSetModel::PKEY);
+
+            te::gm::Geometry* geom = static_cast<te::gm::Geometry*>(v.value<void*>());
+            if(geom != 0)
+              geoms[pkey.toString().toStdString()] = geom;
+          }
+
+//          if(!geoms.empty())
+          emit pointObjects(geoms);
+        }
       }
 
       void TabularViewer::resetHighlights()
@@ -618,6 +733,9 @@ namespace te
 
       void TabularViewer::setPromoteEnabled(const bool& enable)
       {
+        if(m_table->getPKeysColumns().empty())
+          return;
+
         if(enable) 
           m_table->preprocessPKeys();
         else
@@ -627,6 +745,8 @@ namespace te
 
           QTableView::viewport()->update();
         }
+
+        m_menu_filter->setPromotionEnabled(enable);
       }
 
       void TabularViewer::promoteHighlighted()

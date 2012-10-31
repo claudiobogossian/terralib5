@@ -3,7 +3,6 @@
 te::map::PromoTable::PromoTable(te::map::AbstractTable* table) :
 te::common::Decorator<te::map::AbstractTable>(table, true)
 {
-  resetTable();
 }
 
 te::map::PromoTable::~PromoTable()
@@ -21,9 +20,6 @@ void te::map::PromoTable::promoteRows(const std::vector<std::string>& pkeys)
   for(pkIt=pkeys.rbegin(); pkIt != pkeys.rend(); ++pkIt)
   {
     size_t dsPos = map2Row(*pkIt);
-
-    if(dsPos < 0)
-      continue;
 
     if(m_logRows_pos[dsPos] != dsPos)
     {
@@ -68,6 +64,14 @@ std::string te::map::PromoTable::dataAsString(size_t row, size_t column)
 std::string te::map::PromoTable::getColumnName(size_t column) const
 {
   return m_decorated->getColumnName(column);
+}
+
+te::gm::Geometry* te::map::PromoTable::getGeometry(const size_t& row) const
+{
+  if (m_decorated != 0)
+    return m_decorated->getGeometry(row);
+
+  return AbstractTable::getGeometry(row);
 }
 
 std::set<size_t> te::map::PromoTable::findGeoColsPositions() const

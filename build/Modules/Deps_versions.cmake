@@ -6,7 +6,7 @@ set (_PostgreSQL_VERSION 9)
 set (_Qwt_VERSION 6.0)
 set (_Proj4_VERSION 4.7)
 set (_Xerces_VERSION 3.1)
-set (_Qt4_VERSION 4.6)
+set (_Qt4_VERSION 4.6.0)
 
 set (PGIS_ENABLED FALSE)
 

@@ -24,12 +24,15 @@
 */
 
 // Terralib
+#include "CreateProgressWidgetItemEvent.h"
 #include "ProgressViewerWidget.h"
 #include "ProgressWidgetItem.h"
+#include "RemoveProgressWidgetItemEvent.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
 #include <QtGui/QApplication>
+#include <QtGui/QCloseEvent>
 #include <QtGui/QScrollBar>
 
 te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent) 
@@ -56,24 +59,14 @@ te::qt::widgets::ProgressViewerWidget::ProgressViewerWidget(QWidget* parent)
 
 te::qt::widgets::ProgressViewerWidget::~ProgressViewerWidget()
 {
-
 }
 
 void te::qt::widgets::ProgressViewerWidget::addTask(te::common::TaskProgress* t, int id)
 {
   m_tasks.insert(std::map<int, te::common::TaskProgress*>::value_type(id, t));
 
-  ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, id);
-
-  item->setLabel(t->getMessage());
-
-  m_itens.insert(std::map<int, ProgressWidgetItem*>::value_type(id, item));
-
-  connect(item, SIGNAL(taskCanceled(int)), this, SLOT(cancel(int)));
-
-  m_widgetLayout->addWidget(item);
-
-  item->show();
+  QCoreApplication::postEvent(this, new CreateProgressWidgetItemEvent(t->getMessage().c_str(), id));
+  QCoreApplication::processEvents();
 }
 
 void te::qt::widgets::ProgressViewerWidget::removeTask(int taskId)
@@ -81,25 +74,14 @@ void te::qt::widgets::ProgressViewerWidget::removeTask(int taskId)
   std::map<int, te::common::TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())
-  {
     m_tasks.erase(it);
-  }
 
-  std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(taskId);
+  QCoreApplication::postEvent(this, new RemoveProgressWidgetItemEvent(taskId));
 
-  if(itItem != m_itens.end())
-  {
-    itItem->second->reset();
+  /*if(m_tasks.empty())
+    QCoreApplication::postEvent(this, new QCloseEvent);*/
 
-    delete itItem->second;
-
-    m_itens.erase(itItem);
-  }
-
-  if(m_tasks.empty())
-  {
-    close();
-  }
+  QCoreApplication::processEvents();
 }
 
 void te::qt::widgets::ProgressViewerWidget::cancelTask(int taskId)
@@ -137,7 +119,41 @@ void te::qt::widgets::ProgressViewerWidget::updateMessage(int taskId)
     if(itItem != m_itens.end())
     {
       itItem->second->setLabel(it->second->getMessage());
-    } 
+    }
+  }
+}
+
+void te::qt::widgets::ProgressViewerWidget::customEvent(QEvent* e)
+{
+  if(e->type() == CreateProgressWidgetItemEvent::type())
+  {
+    CreateProgressWidgetItemEvent* createEvent = static_cast<CreateProgressWidgetItemEvent*>(e);
+    
+    ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, createEvent->m_taskId);
+
+    item->setLabel(createEvent->m_label.toStdString());
+
+    m_itens.insert(std::map<int, ProgressWidgetItem*>::value_type(createEvent->m_taskId, item));
+
+    connect(item, SIGNAL(taskCanceled(int)), this, SLOT(cancel(int)));
+
+    m_widgetLayout->addWidget(item);
+
+    item->show();
+
+    return;
+  }
+
+  if(e->type() == RemoveProgressWidgetItemEvent::type())
+  {
+    RemoveProgressWidgetItemEvent* removeEvent = static_cast<RemoveProgressWidgetItemEvent*>(e);
+    
+    std::map<int, te::qt::widgets::ProgressWidgetItem*>::iterator itItem = m_itens.find(removeEvent->m_taskId);
+    if(itItem == m_itens.end())
+      return;
+
+    delete itItem->second;
+    m_itens.erase(itItem);
   }
 }
 
