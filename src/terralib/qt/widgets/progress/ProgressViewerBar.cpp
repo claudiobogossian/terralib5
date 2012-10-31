@@ -27,6 +27,7 @@
 #include "../../../common/Translator.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
+#include "ProgressResetEvent.h"
 #include "ProgressViewerBar.h"
 
 // Qt
@@ -40,10 +41,10 @@ te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent)
     m_currentStep(0),
     m_propStep(0)
 {
-  m_barProgress = new QProgressBar(this);
-  m_barProgress->setRange(0, 100);
-  m_barProgress->setTextVisible(false);
-  m_barProgress->setFixedHeight(16);
+  m_progressBar = new QProgressBar(this);
+  m_progressBar->setRange(0, 100);
+  m_progressBar->setTextVisible(false);
+  m_progressBar->setFixedHeight(16);
 
   m_button = new QPushButton(this);
   m_button->setText("...");
@@ -53,12 +54,10 @@ te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent)
 
   m_layout->setContentsMargins(0,0,0,0);
   m_layout->setHorizontalSpacing(1);
-  m_layout->addWidget(m_barProgress, 0, 0);
+  m_layout->addWidget(m_progressBar, 0, 0);
   m_layout->addWidget(m_button, 0, 1);
 
-  installEventFilter(this);
-
-  connect(m_button, SIGNAL(released()), this, SLOT(on_Released()));
+  connect(m_button, SIGNAL(released()), this, SLOT(onReleased()));
 }
 
 te::qt::widgets::ProgressViewerBar::~ProgressViewerBar()
@@ -85,7 +84,8 @@ void te::qt::widgets::ProgressViewerBar::removeTask(int taskId)
     m_currentStep = 0;
     m_propStep = 0;
 
-    m_barProgress->reset();
+    QCoreApplication::postEvent(this, new ProgressResetEvent);
+    QCoreApplication::processEvents();
   }
 }
 
@@ -131,22 +131,19 @@ void te::qt::widgets::ProgressViewerBar::updateMessage(int /*taskId*/)
 {
 }
 
-bool te::qt::widgets::ProgressViewerBar::eventFilter(QObject* obj, QEvent* evt)
+void te::qt::widgets::ProgressViewerBar::customEvent(QEvent* e)
 {
-  if(obj == this && evt->type() == ProgressSetValueEvent::type())
+  if(e->type() == ProgressSetValueEvent::type())
   {
-    ProgressSetValueEvent* e = static_cast<ProgressSetValueEvent*>(evt);
-
-    m_barProgress->setValue(e->m_value);
-
-    return true;
+    m_progressBar->setValue(static_cast<ProgressSetValueEvent*>(e)->m_value);
+    return;
   }
 
-  return true;
+  if(e->type() == ProgressResetEvent::type())
+    m_progressBar->reset();
 }
 
-void te::qt::widgets::ProgressViewerBar::on_Released()
+void te::qt::widgets::ProgressViewerBar::onReleased()
 {
   emit clicked();
 }
-

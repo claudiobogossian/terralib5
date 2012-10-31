@@ -26,13 +26,13 @@
 // TerraLib
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
+#include "ProgressResetEvent.h"
 #include "ProgressWidgetItem.h"
 
 // Qt
 #include <QtCore/QCoreApplication>
 #include <QtGui/QSizePolicy>
 #include <QtGui/QStyle>
-
 
 te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId) : 
   QWidget(parent),
@@ -54,7 +54,7 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_frameGridLayout->setVerticalSpacing(1);
 
   m_label = new QLabel(m_frame);
-  m_label->setText("Label Test");
+  m_label->setText("");
 
   m_progressBar = new QProgressBar(m_frame);
 
@@ -70,9 +70,6 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   //set default range
   m_progressBar->setRange(0,100);
 
-  //enable this object to handle events
-  installEventFilter(this);
-
   //connect signal cancel
   connect(m_button, SIGNAL(released()), this, SLOT(cancel()));
 
@@ -86,7 +83,6 @@ te::qt::widgets::ProgressWidgetItem::~ProgressWidgetItem()
 void te::qt::widgets::ProgressWidgetItem::setValue(int step)
 {
   QCoreApplication::postEvent(this, new te::qt::widgets::ProgressSetValueEvent(step));
-
   QCoreApplication::processEvents();
 }
 
@@ -97,7 +93,8 @@ void te::qt::widgets::ProgressWidgetItem::setLabel(std::string message)
 
 void te::qt::widgets::ProgressWidgetItem::reset()
 {
-  m_progressBar->reset();
+  QCoreApplication::postEvent(this, new ProgressResetEvent);
+  QCoreApplication::processEvents();
 }
 
 void te::qt::widgets::ProgressWidgetItem::cancel()
@@ -105,25 +102,20 @@ void te::qt::widgets::ProgressWidgetItem::cancel()
   emit taskCanceled(m_taskId);
 }
 
-bool te::qt::widgets::ProgressWidgetItem::eventFilter(QObject* obj, QEvent* evt)
+void te::qt::widgets::ProgressWidgetItem::customEvent(QEvent* e)
 {
-  if(obj == this && evt->type() == te::qt::widgets::ProgressSetValueEvent::type())
+  if(e->type() == te::qt::widgets::ProgressSetValueEvent::type())
   {
-    te::qt::widgets::ProgressSetValueEvent* e = static_cast<te::qt::widgets::ProgressSetValueEvent*>(evt);
-
-    m_progressBar->setValue(e->m_value);
-
-    return true;
-  }
-  else if(obj == this && evt->type() == ProgressSetMessageEvent::type())
-  {
-    ProgressSetMessageEvent* e = static_cast<ProgressSetMessageEvent*>(evt);
-
-    m_label->setText(e->m_value.c_str());
-
-    return true;
+    m_progressBar->setValue(static_cast<te::qt::widgets::ProgressSetValueEvent*>(e)->m_value);
+    return;
   }
 
-  return true;
+  if(e->type() == ProgressSetMessageEvent::type())
+  {
+    m_label->setText(static_cast<ProgressSetMessageEvent*>(e)->m_value.c_str());
+    return;
+  }
+
+  if(e->type() == ProgressResetEvent::type())
+    m_progressBar->reset();
 }
-

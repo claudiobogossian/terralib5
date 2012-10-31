@@ -108,7 +108,6 @@ namespace te
 
           void setComboBoxText(QComboBox* cb, std::string value);
 
-
         protected slots:
 
           void onOpacityChanged(int value);
@@ -133,9 +132,13 @@ namespace te
 
           void onIncreaseGain();
           void onDecreaseGain();
+          void onDefaultGain();
           void onIncreaseOffset();
           void onDecreaseOffset();
+          void onDefaultOffset();
           void onSymbolizerChanged();
+
+          void setContrastVisibility();
 
         signals:
           
@@ -164,6 +167,8 @@ namespace te
 
           double m_gainValue;                                             //!< Value used to define the gain value.
           double m_offsetValue;                                           //!< Value used to define the offset value.
+          double m_gainOriginalValue;                                     //!< Value used to define the gain value.
+          double m_offsetOriginalValue;                                   //!< Value used to define the offset value.
       };
 
     } // end namespace widgets

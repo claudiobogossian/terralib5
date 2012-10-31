@@ -29,6 +29,7 @@
 // TerraLib
 #include "../color/RGBAColor.h"
 #include "../common/AbstractFactory.h"
+#include "../common/ThreadingPolicies.h"
 #include "Config.h"
 
 namespace te
@@ -55,7 +56,11 @@ namespace te
 
       \sa AbstractFactory
     */
-    class TEMAPEXPORT AbstractMarkFactory : public te::common::AbstractFactory<AbstractMarkFactory, std::string>
+    class TEMAPEXPORT AbstractMarkFactory : public te::common::ClassLevelLockable<AbstractMarkFactory,
+                                                                                 ::boost::recursive_mutex,
+                                                                                 ::boost::lock_guard< ::boost::recursive_mutex>,
+                                                                                 ::boost::lock_guard< ::boost::recursive_mutex> >,
+                                            public te::common::AbstractFactory<AbstractMarkFactory, std::string>
     {
       public:
 
