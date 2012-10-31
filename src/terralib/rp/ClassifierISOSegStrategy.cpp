@@ -295,8 +295,6 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
     m_regions.insert(std::pair<double, Pattern*> (region->m_area, region));
   }
 
-  unsigned tclasses = 0;
-  unsigned tclassified = 0;
   double distance;
   double distance2;
 
@@ -307,7 +305,7 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
 
 // merge similar clusters
   bool stable = false;
-  unsigned int oldid;
+  int oldid;
   std::set<std::pair<unsigned int, unsigned int> > compared;
 
   double maxDistance = getThreshold(m_parameters.m_acceptanceThreshold, inputRasterBands.size());
