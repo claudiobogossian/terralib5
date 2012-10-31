@@ -75,6 +75,8 @@ namespace te
 
       std::string getColumnName(size_t pos) const;
 
+      te::gm::Geometry* getGeometry(const size_t& row) const;
+
     protected:
 
       std::set<size_t> findGeoColsPositions() const;

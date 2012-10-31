@@ -66,6 +66,10 @@ namespace te
           return m_table->map2PKey(index.row()).c_str();
           break;
 
+        case GEOMETRY:
+          return QVariant::fromValue<void*>((void*) m_table->getGeometry(index.row()));
+          break;
+
         default:
           return QVariant();
         }
@@ -83,7 +87,7 @@ namespace te
 
             case Qt::DecorationRole:
               return (isPkey(section, m_table->getPKeysColumns())) ?
-                QIcon::fromTheme("terralib_logo") :
+                QIcon::fromTheme("key") :
                 QVariant();
             break;
 
@@ -92,9 +96,18 @@ namespace te
             break;
           }
         }
+        else
+        {
+          switch(role)
+          {
+            case Qt::DisplayRole:
+              return section+1;
+            break;
 
-        if(orientation == Qt::Vertical && role == Qt::DisplayRole)
-          return section+1;
+            default:
+            break;
+          }
+        }
 
         return QVariant();
       }
