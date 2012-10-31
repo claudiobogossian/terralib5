@@ -186,7 +186,6 @@ double te::rp::ClassifierISOSegStrategy::Pattern::getDistance(Pattern* p)
   }
 
   term1 = prod(term1, m_covarianceInversion);
-
   term1 = prod(term1, term2);
 
   if (term1(0, 0) < 0)

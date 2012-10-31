@@ -150,7 +150,6 @@ te::gdal::Raster::~Raster()
     // deleting who?
     m_deleter = 0;
   }
-
 }
 
 void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p)
