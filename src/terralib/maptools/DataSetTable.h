@@ -73,6 +73,14 @@ namespace te
 
       std::string getColumnName(size_t pos) const;
 
+      /*!
+        \brief Returns the geometry at the given position.
+        \param row Row of the geometry.
+        \return The geometry at given \a row.
+        \exception Exceptions are raised on row out of dataset boundaries, or if its not possible to move dataset to the given \a row.
+      */
+      te::gm::Geometry* getGeometry(const size_t& row) const;
+
     protected:
 
       std::set<size_t> findGeoColsPositions() const;

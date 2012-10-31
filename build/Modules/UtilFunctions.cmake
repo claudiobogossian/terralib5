@@ -413,3 +413,27 @@ MACRO (getPackageName packName)
   set (${packName} ${_pname})
 ENDMACRO(getPackageName)
 
+# Macro te_moc
+#
+# brief Sets the include of the mocs as subfolders of src. 
+# In Visual Studio, depending on your folder structure, the include file may be longer,
+# and generate error. 
+#
+# param input Files to moc.
+# param output Files generated.
+#
+MACRO (te_moc input output)
+  foreach(sfile_ ${input})
+    get_filename_component(fpath_ ${sfile_} PATH)
+    string (FIND ${fpath_} "terralib" te_pos_ REVERSE)
+    string (SUBSTRING "${fpath_}" ${te_pos_} -1 te_path_)
+    qt4_wrap_cpp(moc_ ${sfile_} OPTIONS -p ${te_path_})
+    list(APPEND ${output} ${moc_})
+  endforeach()
+ENDMACRO(te_moc)
+
+MACRO(te_moc2 input prefix output)
+  set (moc_ "")
+  qt4_wrap_cpp(moc_ ${input} OPTIONS -p ${prefix})
+  list(APPEND ${output} ${moc_})
+ENDMACRO()

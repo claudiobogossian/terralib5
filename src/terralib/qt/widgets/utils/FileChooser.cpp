@@ -36,8 +36,9 @@ namespace te
         m_ui(new Ui::FileChooser)
       {
         m_ui->setupUi(this);
-        m_ui->m_ChooseFileToolButton->setIcon(QIcon::fromTheme("terralib_logo"));
-//        m_ui->m_ChooseFileToolButton->setIcon(QIcon::fromTheme("folder").pixmap(m_ui->m_ChooseFileToolButton->iconSize()));
+        m_ui->m_ChooseFileToolButton->setIcon(QIcon::fromTheme("folder"));
+
+        connect(m_ui->m_fileName, SIGNAL(returnPressed()), this, SLOT(onReturnPressed()));
 
         QCompleter* cmp = new QCompleter(this);
         m_fp_model = new QFileSystemModel(cmp);
@@ -98,7 +99,16 @@ namespace te
           QFileDialog::getExistingDirectory(parentWidget(), tr("Choose directory"), getSelectedResource());
 
         if(!fName.isEmpty())
+        {
           m_ui->m_fileName->setText(fName);
+          emit resourceSelected(fName);
+        }
+      }
+
+      void FileChooser::onReturnPressed()
+      {
+        if(!m_ui->m_fileName->text().isEmpty())
+          emit resourceSelected(m_ui->m_fileName->text());
       }
     }
   }

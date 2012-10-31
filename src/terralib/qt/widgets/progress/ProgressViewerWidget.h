@@ -126,6 +126,15 @@ namespace te
 
           //@}
 
+        protected:
+
+          /*!
+            \brief Used to receive custom progress events.
+
+            \param e Event sent to this object.
+          */
+          virtual void customEvent(QEvent* e);
+
         public slots:
 
           /*!

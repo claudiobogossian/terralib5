@@ -58,15 +58,20 @@
 
 namespace te
 {
+  namespace gm
+  {
+    //! Forward declarations
+    class Geometry;
+  }
   namespace map
   {
-    //Forward declarations
+    //! Forward declarations
     class AbstractTable;
   }
 
   namespace da
   {
-    //Forward declarations
+    //! Forward declarations
     class DataSet;
   }
 
@@ -74,7 +79,7 @@ namespace te
   {
     namespace widgets
     {
-      //Forward declarations
+      //! Forward declarations
       class DataSetModel;
       class HLDelegateDecorator;
       class DataViewPopupFilter;
@@ -143,6 +148,13 @@ namespace te
         */
         std::set<size_t> getPromotedGroups() const;
 
+        /*!
+          \brief
+          \param o
+          \param e
+        */
+        bool eventFilter(QObject* o, QEvent* e);
+
       public slots:
 
         /*!
@@ -205,7 +217,7 @@ namespace te
           \param g The highlight group.
           \param c The new color of the group.
         */
-        void setHighlightColor(const int& g, const QColor& c);
+        void setHighlightColor(const int& g, const QColor& c, const bool& emitSignal=true);
 
         /*!
           \brief Points the rows in the vector.
@@ -282,7 +294,18 @@ namespace te
         */
         void resetColumns();
 
+      signals:
+          
+        void pointObjects(const std::map<std::string, te::gm::Geometry*>&);
+        
+        void groupColorChanged(const int&, const QColor&);
+
       protected:
+
+        /*!
+          \brief Sets the color of a group
+        */
+        void setGroupColor(const int& g, const QColor& color);
 
         te::qt::widgets::DataSetModel* m_model;           //!< Model for te::da::DataSet.
         te::map::AbstractTable* m_table;                  //!< Table to use with model.

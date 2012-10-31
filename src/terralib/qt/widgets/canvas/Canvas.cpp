@@ -85,6 +85,39 @@ te::qt::widgets::Canvas::Canvas(int w, int h)
   m_ptPen.setColor(m_ptColor);
 }
 
+te::qt::widgets::Canvas::Canvas(QPaintDevice* device)
+  : m_isDeviceOwner(false),
+    m_bgColor(Qt::transparent),
+    m_erase(false),
+    m_ptWidth(1),
+    m_ptColor(Qt::black),
+    m_ptColorFrom(m_ptColor),
+    m_ptImg(0),
+    m_ptImgRotated(0),
+    m_ptSelectionPatternImg(0),
+    m_ptClearPatternImg(0),
+    m_ptRotation(0),
+    m_ptVOffset(0),
+    m_ptHOffset(0),
+    m_lnColor(Qt::transparent),
+    m_lnPen(Qt::blue),
+    m_polyContourColor(Qt::transparent),
+    m_polyContourPen(Qt::gray),
+    m_polyColor(Qt::red),
+    m_polyBrush(Qt::magenta),
+    m_polyImage(0),
+    m_polyRotatedImage(0),
+    m_polyPatternWidth(16),
+    m_txtContourPen(Qt::black),
+    m_txtContourEnabled(false),
+    m_txtBrush(Qt::black),
+    m_txtLetterSpacing(1),
+    m_txtWordSpacing(1),
+    m_txtLineSpacing(1)
+{
+  m_painter.begin(device);
+}
+
 te::qt::widgets::Canvas::~Canvas()
 {
   if(m_isDeviceOwner)
@@ -1054,7 +1087,10 @@ void te::qt::widgets::Canvas::drawPixel(int x, int y)
 
 void te::qt::widgets::Canvas::drawPixel(int x, int y, const te::color::RGBAColor& color)
 {
-  m_painter.setPen(QColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+  QColor c(color.getRgba());
+  c.setAlpha(qAlpha(color.getRgba()));
+
+  m_painter.setPen(c);
 
   m_painter.setWorldMatrixEnabled(false);
   m_painter.drawPoint(x, y);

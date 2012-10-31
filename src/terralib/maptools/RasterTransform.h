@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "../color/RGBAColor.h"
 
 // STL
 #include <map>
@@ -63,6 +64,7 @@ namespace te
         
         //! One of the available transformation methods 
         typedef void (RasterTransform::*TransformFunction)(double, double, double, double);
+        typedef te::color::RGBAColor (RasterTransform::*RGBAFunction)(double, double);
 
         //! The three channels of a display
         enum RGBChannels 
@@ -77,7 +79,10 @@ namespace te
         {
           NO_TRANSF=0, 
           MONO2THREE_TRANSF=1, 
-          EXTRACT2RGB_TRANSF=2
+          EXTRACT2RGB_TRANSF=2,
+          RED2THREE_TRANSF=3, 
+          GREEN2THREE_TRANSF=4, 
+          BLUE2THREE_TRANSF=5
         };
 
       public:
@@ -95,6 +100,12 @@ namespace te
         /*! \brief Destructor. */
         ~RasterTransform();
 
+
+        /*! \brief Sets the transparency. */
+        void setTransparency(double value) { m_transp = value; }
+
+        /*! \brief Gets the transparency. */
+        double getTransparency() { return m_transp; }
 
         /*! \brief Sets the gain. */
         void setGain(double value) { m_gain = value; }
@@ -176,19 +187,55 @@ namespace te
         /*! Sets the transformation method to be used */
         void setTransfFunction(RasterTransform::TransformFunction transfFuncPtr) { m_transfFuncPtr = transfFuncPtr; }
 
+        /*! Sets the transformation method to be used */
+        void setRGBAFunction(RasterTransform::RGBAFunction transfFuncPtr) { m_RGBAFuncPtr = transfFuncPtr; }
+
         /*! Applies the selected transformation method */
         void apply(double icol, double ilin, double ocol, double olin) {(this->*m_transfFuncPtr)(icol,ilin,ocol,olin); }
+
+        te::color::RGBAColor apply(double icol, double ilin){return (this->*m_RGBAFuncPtr)(icol,ilin); }
 
       protected:
 
         /*! This transformation repeats the value of the first band in input three bands of the output */
-        void Mono2ThreeBand(double icol, double ilin, double ocol, double olin);
+        void setMono2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getMono2ThreeBand(double icol, double ilin);
 
         /*! This transformation is used to define a particular mapping from input bands to RGB channels */
-        void ExtractRGB(double icol, double ilin, double ocol, double olin);
+        void setExtractRGB(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation is used to define a particular mapping from input bands to RGB channels */
+        te::color::RGBAColor getExtractRGB(double icol, double ilin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        void setRed2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getRed2ThreeBand(double icol, double ilin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        void setGreen2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getGreen2ThreeBand(double icol, double ilin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        void setBlue2ThreeBand(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation repeats the value of the first band in input three bands of the output */
+        te::color::RGBAColor getBlue2ThreeBand(double icol, double ilin);
 
         /*! Function used to adjust the value in raster range */
         void fixValue(double& value);
+
+        /*! 
+          \brief Function used to check if value is or not a valid value 
+        
+          \return True if the value is EQUAL to NoValue and false in other case.
+        */
+        bool checkNoValue(double& value, int band);
 
 
       private:
@@ -196,6 +243,7 @@ namespace te
         te::rst::Raster* m_rasterIn;              //!< Pointer to a input raster.
         te::rst::Raster* m_rasterOut;             //!< Pointer to a output raster.
 
+        double m_transp;                          //!< Transparency factor
         double m_gain;                            //!< Gain factor.
         double m_offset;                          //!< Offset factor.
         double m_rstMinValue;                     //!< Min value from input raster.
@@ -210,6 +258,7 @@ namespace te
         short m_monoBandOut;                      //!< Value for output gray band channel.
 
         TransformFunction m_transfFuncPtr;        //!< Function used in transformation operation.
+        RGBAFunction m_RGBAFuncPtr;               //!< Function used in transformation operation.
     };
 
   } // end namespace map

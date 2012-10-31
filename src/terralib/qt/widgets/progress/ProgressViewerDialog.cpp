@@ -27,6 +27,7 @@
 #include "../../../common/Translator.h"
 #include "ProgressSetMessageEvent.h"
 #include "ProgressSetValueEvent.h"
+#include "ProgressResetEvent.h"
 #include "ProgressViewerDialog.h"
 
 // Qt
@@ -43,8 +44,6 @@ te::qt::widgets::ProgressViewerDialog::ProgressViewerDialog(QWidget* parent)
   m_dlgProgress = new QProgressDialog(parent);
   m_dlgProgress->setWindowModality(Qt::NonModal);
   m_dlgProgress->setRange(0, 100);
-
-  installEventFilter(this);
 
   connect(m_dlgProgress, SIGNAL(canceled()), this, SLOT(cancel()));
 }
@@ -77,7 +76,8 @@ void te::qt::widgets::ProgressViewerDialog::removeTask(int taskId)
     m_currentStep = 0;
     m_propStep = 0;
 
-    m_dlgProgress->reset();
+    QCoreApplication::postEvent(this, new ProgressResetEvent);
+    QCoreApplication::processEvents();
   }
 }
 
@@ -133,26 +133,22 @@ void te::qt::widgets::ProgressViewerDialog::updateMessage(int /*taskId*/)
   QCoreApplication::postEvent(this, new ProgressSetMessageEvent(m_message));
 }
 
-bool te::qt::widgets::ProgressViewerDialog::eventFilter(QObject* obj, QEvent* evt)
+void te::qt::widgets::ProgressViewerDialog::customEvent(QEvent* e)
 {
-  if(obj == this && evt->type() == ProgressSetValueEvent::type())
+  if(e->type() == ProgressSetValueEvent::type())
   {
-    ProgressSetValueEvent* e = static_cast<ProgressSetValueEvent*>(evt);
-
-    m_dlgProgress->setValue(e->m_value);
-
-    return true;
+    m_dlgProgress->setValue(static_cast<ProgressSetValueEvent*>(e)->m_value);
+    return;
   }
-  else if(obj == this && evt->type() == ProgressSetMessageEvent::type())
+  
+  if(e->type() == ProgressSetMessageEvent::type())
   {
-    ProgressSetMessageEvent* e = static_cast<ProgressSetMessageEvent*>(evt);
-
-    m_dlgProgress->setLabelText(e->m_value.c_str());
-
-    return true;
+    m_dlgProgress->setLabelText(static_cast<ProgressSetMessageEvent*>(e)->m_value.c_str());
+    return;
   }
 
-  return true;
+  if(e->type() == ProgressResetEvent::type())
+    m_dlgProgress->reset();
 }
 
 void te::qt::widgets::ProgressViewerDialog::cancel()
@@ -162,7 +158,6 @@ void te::qt::widgets::ProgressViewerDialog::cancel()
   while(it != m_tasks.end())
   {
     it->second->cancel();
-
     ++it;
   }
 }

@@ -152,13 +152,13 @@ void te::ogr::Convert2TerraLib(OGRFeatureDefn* featDef,  te::da::DataSetType* dt
     te::dt::Property* p = Convert2TerraLib(fieldDef);
     dt->add(p);
   }
-  
+
   OGRwkbGeometryType ogrGeomType = featDef->GetGeomType();
   
   if(ogrGeomType != wkbNone) // has geometry?
   {
     te::gm::GeomType geomType = Convert2TerraLib(ogrGeomType);
-    te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("geom", -1, geomType);
+    te::gm::GeometryProperty* geomPropertyType = new te::gm::GeometryProperty("geom", TE_UNKNOWN_SRS, geomType);
     dt->add(geomPropertyType);
     dt->setDefaultGeomProperty(geomPropertyType);
   }  

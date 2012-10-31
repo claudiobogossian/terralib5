@@ -1,5 +1,7 @@
 #include "HighlightDelegate.h"
 
+#include "DataSetModel.h"
+
 namespace te 
 {
   namespace qt 
@@ -74,21 +76,7 @@ namespace te
 
       std::string HighlightDelegate::getPKey(const QModelIndex & index, char separator) const
       {
-        std::string key;
-        int row = index.row();
-        QModelIndex aux;
-
-        for(size_t i = 0; i < m_pkeys.size(); i++)
-        {
-          if(i > 0)
-            key += separator;
-
-          aux = index.sibling(row, (int) m_pkeys[i]);
-
-          key += aux.data(Qt::DisplayRole).toString().toAscii().data();
-        }
-
-        return key;
+        return index.data(DataSetModel::PKEY).toString().toStdString();
       }
 
       std::set<std::string> HighlightDelegate::getHighlightKeys()

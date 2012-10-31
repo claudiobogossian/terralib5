@@ -90,9 +90,13 @@ namespace te
 
           //@}
 
-          void setRasterSymbolizer(te::se::RasterSymbolizer* rs);
+          void setRasterSymbolizer(const te::se::RasterSymbolizer* rs);
+
+          te::se::RasterSymbolizer* getRasterSymbolizer() { return (te::se::RasterSymbolizer*)m_symbolizer->clone(); }
 
           void setBandProperty(std::vector<te::rst::BandProperty*> bp);
+
+          void setVerticalLayout();
 
         protected:
 
@@ -103,7 +107,6 @@ namespace te
           void updateUi();
 
           void setComboBoxText(QComboBox* cb, std::string value);
-
 
         protected slots:
 
@@ -129,8 +132,17 @@ namespace te
 
           void onIncreaseGain();
           void onDecreaseGain();
+          void onDefaultGain();
           void onIncreaseOffset();
           void onDecreaseOffset();
+          void onDefaultOffset();
+          void onSymbolizerChanged();
+
+          void setContrastVisibility();
+
+        signals:
+          
+          void symbolizerChanged();
 
         private:
 
@@ -155,6 +167,8 @@ namespace te
 
           double m_gainValue;                                             //!< Value used to define the gain value.
           double m_offsetValue;                                           //!< Value used to define the offset value.
+          double m_gainOriginalValue;                                     //!< Value used to define the gain value.
+          double m_offsetOriginalValue;                                   //!< Value used to define the offset value.
       };
 
     } // end namespace widgets

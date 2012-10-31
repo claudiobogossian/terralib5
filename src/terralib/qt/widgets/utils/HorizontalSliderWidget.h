@@ -82,11 +82,14 @@ namespace te
 
           void onValueChanged(int value);
 
+          void onSliderReleased();
+
 
         signals:
 
           /*! This signal is emitted when the slider value was changed. */
           void sliderValueChanged(int);
+          void sliderReleased();
 
         private:
 

@@ -58,6 +58,14 @@ void te::map::RasterTransformConfigurer::configure()
 
 void te::map::RasterTransformConfigurer::getGeneralProperties()
 {
+  //get transparency
+  if(m_rstSymbolizer->getOpacity())
+  {
+    double transp = (double)TE_OPAQUE * te::map::GetDouble(m_rstSymbolizer->getOpacity());
+
+    m_rstTransform->setTransparency(transp);
+  }
+
   //get gain
   if(m_rstSymbolizer->getGain())
   {
@@ -96,6 +104,30 @@ void te::map::RasterTransformConfigurer::getChannelSelection()
     getRedChannelProperties(cs->getRedChannel());
 
     getGreenChannelProperties(cs->getGreenChannel());
+
+    getBlueChannelProperties(cs->getBlueChannel());
+  }
+  else if(type == te::se::RED_COMPOSITION)
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::RED2THREE_TRANSF);
+
+    m_rstTransform->clearRGBMap();
+
+    getRedChannelProperties(cs->getRedChannel());
+  }
+  else if(type == te::se::GREEN_COMPOSITION)
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::GREEN2THREE_TRANSF);
+
+    m_rstTransform->clearRGBMap();
+
+    getGreenChannelProperties(cs->getGreenChannel());
+  }
+  else if(type == te::se::BLUE_COMPOSITION)
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::BLUE2THREE_TRANSF);
+
+    m_rstTransform->clearRGBMap();
 
     getBlueChannelProperties(cs->getBlueChannel());
   }
