@@ -90,18 +90,18 @@ void loadModules()
 }
 
 
-
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
   int waitVal = EXIT_FAILURE;
-  QStringList paths;
+  QString spaths(ICON_THEME_PATH);
 
-  paths << "D:/funcate/projetos/terralib5_head/resources/themes";
+  QStringList paths = spaths.split(";");
 
   QIcon::setThemeName("terralib");
   QIcon::setThemeSearchPaths(paths);
+
   try
   {
 
