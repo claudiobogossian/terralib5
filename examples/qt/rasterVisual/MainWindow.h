@@ -107,6 +107,7 @@ class MainWindow : public QMainWindow
     void contextMenuEvent(QContextMenuEvent* e);
     void updateDisplay();
     void startTools();
+    void checkToolsStatus();
 
   private slots:
 
@@ -129,6 +130,7 @@ class MainWindow : public QMainWindow
     std::vector<te::da::DataSource*> m_ds;
     std::list<te::map::AbstractLayer*> m_layers;
 
+    QList<QAction*> m_actions;
     QToolBar* m_toolBar;
     QMenu* m_menu;
 

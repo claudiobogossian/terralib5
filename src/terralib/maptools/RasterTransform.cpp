@@ -101,6 +101,21 @@ te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTra
   {
     return EXTRACT2RGB_TRANSF;
   }
+  else  if (m_transfFuncPtr == &RasterTransform::setRed2ThreeBand &&
+            m_RGBAFuncPtr == &RasterTransform::getRed2ThreeBand)
+  {
+    return RED2THREE_TRANSF;
+  }
+  else  if (m_transfFuncPtr == &RasterTransform::setGreen2ThreeBand &&
+            m_RGBAFuncPtr == &RasterTransform::getGreen2ThreeBand)
+  {
+    return GREEN2THREE_TRANSF;
+  }
+  else  if (m_transfFuncPtr == &RasterTransform::setBlue2ThreeBand &&
+            m_RGBAFuncPtr == &RasterTransform::getBlue2ThreeBand)
+  {
+    return BLUE2THREE_TRANSF;
+  }
   else
   {
     return NO_TRANSF;
@@ -118,6 +133,21 @@ void te::map::RasterTransform::setTransfFunction(RasterTransfFunctions func)
   {
     m_transfFuncPtr = &RasterTransform::setExtractRGB;
     m_RGBAFuncPtr = &RasterTransform::getExtractRGB;
+  }
+  else if (func == RED2THREE_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setRed2ThreeBand;
+    m_RGBAFuncPtr = &RasterTransform::getRed2ThreeBand;
+  }
+  else if (func == GREEN2THREE_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setGreen2ThreeBand;
+    m_RGBAFuncPtr = &RasterTransform::getGreen2ThreeBand;
+  }
+  else if (func == BLUE2THREE_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setBlue2ThreeBand;
+    m_RGBAFuncPtr = &RasterTransform::getBlue2ThreeBand;
   }
   else
   {
@@ -219,6 +249,132 @@ te::color::RGBAColor te::map::RasterTransform::getExtractRGB(double icol, double
     te::color::RGBAColor c((int)valR, (int)valG, (int)valB, (int)m_transp);
 
     return c;
+  }
+
+  return te::color::RGBAColor();
+}
+
+void te::map::RasterTransform::setRed2ThreeBand(double icol, double ilin, double ocol, double olin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_rgbMap[RED_CHANNEL]);
+
+  if(checkNoValue(val, m_rgbMap[RED_CHANNEL]) == false)
+  {
+    val = (val * m_gain + m_offset) * m_rContrast;
+
+    fixValue(val);
+
+    std::vector<double> vecValues;
+    vecValues.push_back(val);
+    vecValues.push_back(0.);
+    vecValues.push_back(0.);
+
+    m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+  }
+}
+
+te::color::RGBAColor te::map::RasterTransform::getRed2ThreeBand(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_rgbMap[RED_CHANNEL]);
+
+  if(checkNoValue(val, m_rgbMap[RED_CHANNEL]) == false)
+  {
+    val = (val * m_gain + m_offset) * m_rContrast;
+
+    fixValue(val);
+
+    te::color::RGBAColor c((int)val, (int)0., (int)0., (int)m_transp);
+
+    return c;
+
+  }
+
+  return te::color::RGBAColor();
+}
+
+void te::map::RasterTransform::setGreen2ThreeBand(double icol, double ilin, double ocol, double olin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_rgbMap[GREEN_CHANNEL]);
+
+  if(checkNoValue(val, m_rgbMap[GREEN_CHANNEL]) == false)
+  {
+    val = (val * m_gain + m_offset) * m_gContrast;
+
+    fixValue(val);
+
+    std::vector<double> vecValues;
+    vecValues.push_back(0.);
+    vecValues.push_back(val);
+    vecValues.push_back(0.);
+
+    m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+  }
+}
+
+te::color::RGBAColor te::map::RasterTransform::getGreen2ThreeBand(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_rgbMap[GREEN_CHANNEL]);
+
+  if(checkNoValue(val, m_rgbMap[GREEN_CHANNEL]) == false)
+  {
+    val = (val * m_gain + m_offset) * m_gContrast;
+
+    fixValue(val);
+
+    te::color::RGBAColor c((int)0., (int)val, (int)0., (int)m_transp);
+
+    return c;
+
+  }
+
+  return te::color::RGBAColor();
+}
+
+void te::map::RasterTransform::setBlue2ThreeBand(double icol, double ilin, double ocol, double olin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_rgbMap[BLUE_CHANNEL]);
+
+  if(checkNoValue(val, m_rgbMap[BLUE_CHANNEL]) == false)
+  {
+    val = (val * m_gain + m_offset) * m_bContrast;
+
+    fixValue(val);
+
+    std::vector<double> vecValues;
+    vecValues.push_back(0.);
+    vecValues.push_back(0.);
+    vecValues.push_back(val);
+
+    m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+  }
+}
+
+te::color::RGBAColor te::map::RasterTransform::getBlue2ThreeBand(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_rgbMap[BLUE_CHANNEL]);
+
+  if(checkNoValue(val, m_rgbMap[BLUE_CHANNEL]) == false)
+  {
+    val = (val * m_gain + m_offset) * m_bContrast;
+
+    fixValue(val);
+
+    te::color::RGBAColor c((int)0., (int)0., (int)val, (int)m_transp);
+
+    return c;
+
   }
 
   return te::color::RGBAColor();

@@ -61,25 +61,17 @@ namespace te
         
         // creating the input raster
         
-        const unsigned int nBands = (unsigned int)inputArray->value.arr->n_dim;
-        const unsigned int nLines = (unsigned int)inputArray->value.arr->dim[ 2 ];
-        const unsigned int nCols = (unsigned int)inputArray->value.arr->dim[ 1 ];
-        const int tlDataType = idl2TerralibType( inputArray->type );
+        boost::shared_ptr< te::rst::Raster > inputRasterPtr;
         
-//        std::cout << std::endl << nBands << std::endl;
-//        std::cout << std::endl << nLines << std::endl;
-//        std::cout << std::endl << nCols << std::endl;
-//        std::cout << std::endl << tlDataType << std::endl;        
+        if( ! createRasterFromIdlArray( inputArray, false, inputRasterPtr ) )
+        {
+          IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP ,
+            "Terralib raster creation error" );
+        }
         
-        std::map<std::string, std::string> inputRasterInfo;
-        inputRasterInfo["MEM_IS_DATA_BUFFER"] = "TRUE";
-        inputRasterInfo["MEM_BUFFER_NCOLS"] = te::common::Convert2String( nCols );
-        inputRasterInfo["MEM_BUFFER_NROWS"] = te::common::Convert2String( nLines );
-        inputRasterInfo["MEM_BUFFER_DATATYPE"] = te::common::Convert2String( tlDataType );
-        inputRasterInfo["MEM_BUFFER_NBANDS"] = te::common::Convert2String( nBands );  
-        
-        std::auto_ptr< te::rst::Raster > inputRasterPtr( te::rst::RasterFactory::make(
-          "MEM", inputRasterInfo, inputArray->value.arr->data, te::idl::dummyFunction ) );
+        const unsigned int nBands = inputRasterPtr->getNumberOfBands();
+        const unsigned int nLines = inputRasterPtr->getNumberOfRows();
+        const unsigned int nCols = inputRasterPtr->getNumberOfColumns();
           
         te::rst::CreateCopy( *inputRasterPtr, "inputRaster.tif" );
           
