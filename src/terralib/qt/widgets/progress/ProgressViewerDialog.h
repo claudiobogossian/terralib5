@@ -130,14 +130,11 @@ namespace te
         protected:
 
           /*!
-            \brief Used to receive internal events.
+            \brief Used to receive custom progress events.
 
-            \param obj Object sender.
-            \param evt Event sended by object.
-
-            \return Always return true.
+            \param e Event sent to this object.
           */
-          virtual bool eventFilter(QObject* obj, QEvent* evt);
+          virtual void customEvent(QEvent* e);
 
         public slots:
 
