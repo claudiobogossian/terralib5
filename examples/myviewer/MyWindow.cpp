@@ -1,5 +1,7 @@
 #include "MyWindow.h"
 #include "MyLayer.h"
+#include "MyGrid.h"
+#include "MyDisplay.h"
 #include "SelectLayer.h"
 #include "STExamples.h"
 #include "PlotTemporalDistance.h"
@@ -8,6 +10,7 @@
 #include "LineStyle.h"
 #include "PointStyle.h"
 #include "PolygonStyle.h"
+#include "ConfigStyle.h"
 
 // TerraLib
 #include <terralib/common.h>
@@ -231,25 +234,23 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_layerExplorer->setMinimumWidth(100);
   m_layerExplorer->setMaximumWidth(250);
 
-  m_displayBox = new QGroupBox(this);
-  //QVBoxLayout* displayLayout = new QVBoxLayout(m_displayBox);
-  m_displayLayout = new QVBoxLayout(m_displayBox);
-  QSplitter* splitter = new QSplitter;
-  m_mapDisplay = new MyDisplay(650, 600, m_rootFolderLayer, splitter);
-  m_mapDisplayVec.push_back(m_mapDisplay);
-  m_displayLayout->addWidget(splitter);
-  //m_displayLayout->addWidget(m_mapDisplay);
+  QSplitter* splitter = new QSplitter(this);
+  m_display = new MyDisplay(650, 600, m_rootFolderLayer, splitter);
+  m_mapDisplayVec.push_back(m_display);
 
-  m_mapDisplay->setMinimumWidth(300);
-  m_mapDisplay->setMinimumHeight(200);
-  m_mapDisplay->setLayerTree(m_rootFolderLayer);
+  m_display->setMinimumWidth(300);
+  m_display->setMinimumHeight(200);
+  m_display->setLayerTree(m_rootFolderLayer);
+  m_display->show();
+
   //faca conexao para atualizacao de grid operation
-  QObject::connect(m_mapDisplay, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), m_mapDisplay, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+  QObject::connect(m_display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), m_display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
 
   QHBoxLayout *horizontalLayout = new QHBoxLayout;
   horizontalLayout->addWidget(m_layerExplorer);
-  horizontalLayout->addWidget(m_displayBox);
+  horizontalLayout->addWidget(splitter);
+  //horizontalLayout->addWidget(m_displayBox);
 
   setLayout(horizontalLayout);
 
@@ -323,6 +324,8 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
   m_treeMenu->addAction(m_plotTemporalDistanceAction);
   connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
+
+  setFocusProxy(m_display);
 }
 
 MyWindow::~MyWindow()
@@ -339,13 +342,18 @@ MyWindow::~MyWindow()
   }
 
 // delete map displays
-  std::vector<te::map::MapDisplay*>::iterator it;
+  std::vector<MyDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
+  {
+    (*it)->disconnect();
     delete (*it);
+  }
+  m_mapDisplayVec.clear();
 
   std::set<te::da::DataSource*>::iterator di;
   for(di = m_dataSourceSet.begin(); di != m_dataSourceSet.end(); ++di)
     delete *di;
+  m_dataSourceSet.clear();
 }
 
 void MyWindow::closeEvent(QCloseEvent *event)
@@ -503,12 +511,12 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
     }
 
     //redesenhar os displays afetados
-    std::set<te::map::MapDisplay*> displays;
-    std::vector<te::map::MapDisplay*>::iterator it;
+    std::set<MyDisplay*> displays;
+    std::vector<MyDisplay*>::iterator it;
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
       bool temporal = false;
-      MyDisplay* md = (MyDisplay*)*it;
+      MyDisplay* md = *it;
       std::vector<te::map::AbstractLayer*> mdLayers;
       getLayers(md->getLayerTree(), mdLayers);
       std::vector<te::map::AbstractLayer*>::iterator lit, mdit;
@@ -535,11 +543,13 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
       }
     }
 
-    std::set<te::map::MapDisplay*>::iterator sit;
+    std::set<MyDisplay*>::iterator sit;
     for(sit = displays.begin(); sit != displays.end(); ++sit)
     {
-      ((MyDisplay*)(*sit))->draw();
-      ((MyDisplay*)(*sit))->update();
+      MyDisplay* m = *sit;
+      m->draw();
+      m->setRepaint(true);
+      m->update();
     }
 
     // acabou de mudar para (0 = not visible, 1 = visible, 2 = meio visible)
@@ -573,8 +583,8 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
 void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
 {
   //redesenhar os displays afetados
-  std::set<te::map::MapDisplay*> displays;
-  std::vector<te::map::MapDisplay*>::iterator it;
+  std::set<MyDisplay*> displays;
+  std::vector<MyDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
     MyDisplay* display = (MyDisplay*)*it;
@@ -592,10 +602,10 @@ void MyWindow::reoderDrawing(te::map::AbstractLayer* al)
     }
   }
 
-  std::set<te::map::MapDisplay*>::iterator sit;
+  std::set<MyDisplay*>::iterator sit;
   for(sit = displays.begin(); sit != displays.end(); ++sit)
   {
-    MyDisplay* display = (MyDisplay*)*sit;
+    MyDisplay* display = *sit;
     std::vector<te::map::AbstractLayer*> layers;
     getLayers(display->getLayerTree(), layers);
     display->reorderDrawing(layers);
@@ -698,10 +708,11 @@ void MyWindow::contextMenuActivated(const QModelIndex& popupIndex, const QPoint&
         m_changeDefaultStyleMenu->setEnabled(false);
       }
     }
-    else
+    else if(popupItem->isLegendItem())
     {
       m_keepOnMemoryAction->setEnabled(false);
       m_keepOnMemoryAction->setChecked(false);
+      m_openGridAction->setEnabled(false);
       m_addFolderAction->setEnabled(false);
       m_changeStatusColorMenu->setEnabled(false);
       m_changeDefaultStyleMenu->setEnabled(false);
@@ -842,7 +853,7 @@ void MyWindow::openNewMapDisplaySlot()
   MyDisplay *md = new MyDisplay(300, 250, m_rootFolderLayer, this, Qt::Window);
   QString wtitle = "Display: ";
   wtitle += m_selectedLayer->getTitle().c_str();
-  md->setTitle(wtitle);
+  md->setWindowTitle(wtitle);
   md->setMinimumWidth(300);
   md->setMinimumHeight(250);
   md->setLayerTree(m_selectedLayer);
@@ -857,6 +868,8 @@ void MyWindow::openNewMapDisplaySlot()
 
   md->initTemporal();
   md->draw();
+  md->setRepaint(true);
+  md->show();
 }
 
 void MyWindow::removeDisplaySlot(MyDisplay* d)
@@ -874,10 +887,10 @@ void MyWindow::removeDisplaySlot(MyDisplay* d)
   }
 
   // remova do mapa
-  std::vector<te::map::MapDisplay*>::iterator it;
+  std::vector<MyDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
-    MyDisplay* display = (MyDisplay*)*it;
+    MyDisplay* display = *it;
     if(d == display)
     {
       m_mapDisplayVec.erase(it);
@@ -956,10 +969,10 @@ void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
     delete op;
     layer->setDataGridOperation(0);
 
-    std::vector<te::map::MapDisplay*>::iterator it;
+    std::vector<MyDisplay*>::iterator it;
     for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
     {
-      MyDisplay* display = (MyDisplay*)*it;
+      MyDisplay* display = *it;
       std::vector<te::map::AbstractLayer*> layers;
       getLayers(display->getLayerTree(), layers);
       std::vector<te::map::AbstractLayer*>::iterator lit;
@@ -967,7 +980,7 @@ void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
       {
         if(layer == *lit)
         {
-          ((MyDisplay*)(*it))->removeDrawOnlyChanged(layer);
+          display->removeDrawOnlyChanged(layer);
           break;
         }
       }
@@ -1286,10 +1299,10 @@ void MyWindow::addTooltipSlot(MyGrid* grid)
   int col = operation->getLogicalColumn(visCol);
   glayer->addToTooltipColumns(col);
 
-  std::vector<te::map::MapDisplay*>::  iterator it;
+  std::vector<MyDisplay*>::  iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
-    MyDisplay* d = (MyDisplay*)(*it);
+    MyDisplay* d = *it;
     d->setMouseOperationToTooltipSlot();
   }
 }
@@ -1409,11 +1422,11 @@ void MyWindow::AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer* al)
   }
 
   // Delete all displays with zero layers. Except of the main window
-  std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
+  std::vector<MyDisplay*>::iterator it = m_mapDisplayVec.begin();
   while(it != m_mapDisplayVec.end())
   {
     int c = 0;
-    MyDisplay* display = (MyDisplay*)*it;
+    MyDisplay* display = *it;
     std::vector<te::map::AbstractLayer*> layers;
     getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit;
@@ -1432,23 +1445,23 @@ void MyWindow::AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer* al)
     }
     if(c == layers.size())
     {
-      if(*it == m_mapDisplay)
+      if(*it == m_display)
       {
         if(myLayer->getType() == "FOLDERLAYER")
           // main map display is empty
-          m_mapDisplay->changeTree(0);
+          m_display->changeTree(0);
         else
         {
           // main map display with empty folder
-          m_mapDisplay->draw();
-          m_mapDisplay->update();
+          m_display->draw();
+          m_display->update();
         }
         ++it;
       }
       else
       {
         // delete map display and remove it from the vector
-        te::map::MapDisplay* prox = 0;
+        MyDisplay* prox = 0;
         delete *it;
         ++it;
         if(it != m_mapDisplayVec.end())
@@ -1506,32 +1519,32 @@ void MyWindow::AdjustmentsAfterTakeLayer(te::map::AbstractLayer* parent, te::map
   reoderDrawing(parent);
 
   // Delete all displays with zero layers. Except of the main window
-  std::vector<te::map::MapDisplay*>::iterator it = m_mapDisplayVec.begin();
+  std::vector<MyDisplay*>::iterator it = m_mapDisplayVec.begin();
   while(it != m_mapDisplayVec.end())
   {
-    MyDisplay* display = (MyDisplay*)*it;
+    MyDisplay* display = *it;
     std::vector<te::map::AbstractLayer*> layers;
     getLayers(display->getLayerTree(), layers);
     if(layers.empty())
     {
-      if(*it == m_mapDisplay)
+      if(*it == m_display)
       {
         MyDisplay* display = (MyDisplay*)*it;
         if((display->getLayerTree())->getType() == "FOLDERLAYER")
           // main map display is empty
-          m_mapDisplay->changeTree(0);
+          m_display->changeTree(0);
         else
         {
           // main map display with empty folder
-          m_mapDisplay->draw();
-          m_mapDisplay->update();
+          m_display->draw();
+          m_display->update();
         }
         ++it;
       }
       else
       {
         // delete map display and remove it from the vector
-        te::map::MapDisplay* prox = 0;
+        MyDisplay* prox = 0;
         delete *it;
         ++it;
         if(it != m_mapDisplayVec.end())
@@ -1829,7 +1842,7 @@ void MyWindow::addLayerSlot()
 
 void MyWindow::getLayers(te::map::AbstractLayer* al, std::vector<te::map::AbstractLayer*>& layers)
 {
-  if(al->getType() == "LAYER")
+  if(al && al->getType() == "LAYER")
     layers.push_back(al);
 
   te::map::AbstractLayer::iterator it;
@@ -2038,11 +2051,11 @@ void MyWindow::changePolygonStyleSlot()
 void MyWindow::updateDisplays(MyLayer* layer)
 {
   //redesenhar os displays afetados
-  std::set<te::map::MapDisplay*> displays;
-  std::vector<te::map::MapDisplay*>::iterator it;
+  std::set<MyDisplay*> displays;
+  std::vector<MyDisplay*>::iterator it;
   for(it = m_mapDisplayVec.begin(); it != m_mapDisplayVec.end(); ++it)
   {
-    MyDisplay* display = (MyDisplay*)*it;
+    MyDisplay* display = *it;
     std::vector<te::map::AbstractLayer*> layers;
     getLayers(display->getLayerTree(), layers);
     std::vector<te::map::AbstractLayer*>::iterator lit;
@@ -2056,17 +2069,17 @@ void MyWindow::updateDisplays(MyLayer* layer)
     }
   }
 
-  std::set<te::map::MapDisplay*>::iterator sit;
+  std::set<MyDisplay*>::iterator sit;
   for(sit = displays.begin(); sit != displays.end(); ++sit)
   {
-    MyDisplay* display = (MyDisplay*)*sit;
+    MyDisplay* display = *sit;
     display->removeDrawOnlyChanged(layer);
     display->draw(layer);
 
     std::vector<te::map::AbstractLayer*> layers;
     getLayers(display->getLayerTree(), layers);
     display->reorderDrawing(layers);
-    ((MyDisplay*)(*sit))->update();
+    display->update();
   }
 }
 
