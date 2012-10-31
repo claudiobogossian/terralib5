@@ -56,7 +56,7 @@ namespace te
       public:
 
         /*! \brief Default constructor. */
-        TaskProgress();
+        TaskProgress(const std::string& message = "");
 
         /*! \brief Destructor. */
         ~TaskProgress();
