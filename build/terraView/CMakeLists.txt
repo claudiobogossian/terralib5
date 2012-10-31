@@ -15,14 +15,17 @@ project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 find_package (terralib 5 COMPONENTS annotationtext color common dataaccess datatype filter geometry 
     gml maptools memory plugin qtwidgets raster rp srs st stloader symbology xerces xlink xml af REQUIRED)
 
-#find_package (Boost ${_Boost_VERSION} COMPONENTS system thread REQUIRED)
+set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
+set (ICON_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Lists of directories that contains icon themes.")
+
+add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\")
     
 if(terralib_FOUND)
 
   include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
-  include_directories ("${ROOT}/src" "${TE_INCLUDE_DIRS}" "${INCLDIR}" "${Boost_INCLUDE_DIRS}" ${CMAKE_CURRENT_BINARY_DIR})
-  list (APPEND _dep_libs "${TE_LIBRARIES}" ${QT_LIBRARIES}) # "${Boost_LIBRARIES}")
+  include_directories (${TE_INCLUDE_DIRS} ${INCLDIR} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
+  list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES}) 
   
   file (GLOB SRCS ${SRCDIR}/*.cpp)
   file (GLOB HDRS ${INCLDIR}/*.h)
