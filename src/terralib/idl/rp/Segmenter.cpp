@@ -25,8 +25,9 @@
 
 #include "Segmenter.h"
 #include "../Functions.h"
+#include "../IdlRaster.h"
 
-#include <terralib/memory/Raster.h>
+//#include <terralib/memory/Raster.h>
 
 #include <terralib/common/StringUtils.h>
 
@@ -61,19 +62,13 @@ namespace te
         
         // creating the input raster
         
-        boost::shared_ptr< te::rst::Raster > inputRasterPtr;
+        te::idl::IdlRaster inputRaster( inputArray, false );
         
-        if( ! createRasterFromIdlArray( inputArray, false, inputRasterPtr ) )
-        {
-          IDL_Message(IDL_M_NAMED_GENERIC, IDL_MSG_LONGJMP ,
-            "Terralib raster creation error" );
-        }
-        
-        const unsigned int nBands = inputRasterPtr->getNumberOfBands();
-        const unsigned int nLines = inputRasterPtr->getNumberOfRows();
-        const unsigned int nCols = inputRasterPtr->getNumberOfColumns();
+        const unsigned int nBands = inputRaster.getNumberOfBands();
+        const unsigned int nLines = inputRaster.getNumberOfRows();
+        const unsigned int nCols = inputRaster.getNumberOfColumns();
           
-        te::rst::CreateCopy( *inputRasterPtr, "inputRaster.tif" );
+//        te::rst::CreateCopy( inputRaster, "inputRaster.tif" );
           
         // Creating the algorithm parameters
         
@@ -87,7 +82,7 @@ namespace te
         
         te::rp::Segmenter::InputParameters algoInputParams;
         
-        algoInputParams.m_inputRasterPtr = inputRasterPtr.get();
+        algoInputParams.m_inputRasterPtr = &inputRaster;
         for( unsigned int band = 0 ; band < nBands ; ++band )
           algoInputParams.m_inputRasterBands.push_back( band );
         
