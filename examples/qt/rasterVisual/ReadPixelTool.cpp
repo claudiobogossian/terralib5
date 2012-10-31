@@ -100,7 +100,20 @@ bool ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
   {
     QString information("<h2>Read Pixel</h2><ul>");
 
-    information += "<h3>Orignal Values</h3>";
+    information += "<h3>Location</h3>";
+
+    QString column, line, xCoord, yCoord;
+    column.setNum(x);
+    line.setNum(y);
+    xCoord.setNum(qpoint.x());
+    yCoord.setNum(qpoint.y());
+
+    information += "<li><b>" + QString("Line ") + ":</b> " + line + "</li>";
+    information += "<li><b>" + QString("Column ") + ":</b> " + column + "</li>";
+    information += "<li><b>" + QString("Coord X ") + ":</b> " + xCoord + "</li>";
+    information += "<li><b>" + QString("Coord Y ") + ":</b> " + yCoord + "</li>";
+
+    information += "<h3>Original Values</h3>";
 
     for(size_t t = 0; t < raster->getNumberOfBands(); ++t )
     {
@@ -130,10 +143,10 @@ bool ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
     gBand.setNum(rt.getRGBMap()[te::map::RasterTransform::GREEN_CHANNEL]);
     bBand.setNum(rt.getRGBMap()[te::map::RasterTransform::BLUE_CHANNEL]);
 
-    information += "<li><b>" + QString("Value for Red Channel: ") + rBand + ":</b> " + red + "</li>";
-    information += "<li><b>" + QString("Value for Green Channel: ") + gBand + ":</b> " + green + "</li>";
-    information += "<li><b>" + QString("Value for Blue Channel: ") + bBand + ":</b> " + blue + "</li>";
-    information += "<li><b>" + QString("Value for Alpha Channel") + ":</b> " + alpha + "</li>";
+    information += "<li><b>" + QString("Red Channel: </b>") + rBand + "<b> - Value:</b> " + red + "</li>";
+    information += "<li><b>" + QString("Green Channel: </b>") + gBand + "<b> - Value:</b> " + green + "</li>";
+    information += "<li><b>" + QString("Blue Channel: </b>") + bBand + "<b> - Value:</b> " + blue + "</li>";
+    information += "<li><b>" + QString("Alpha Channel value") + ":</b> " + alpha + "</li>";
 
 
     information += "<h3>Symbolizer</h3>";
@@ -157,9 +170,46 @@ bool ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
     QString gain = te::map::GetString(rs->getGain()).c_str();
     QString offset = te::map::GetString(rs->getOffset()).c_str();
 
+    information += "<li><b>" + QString("Color Composition ") + ":</b> " + type + "</li>";
     information += "<li><b>" + QString("Opacity Value ") + ":</b> " + opacity + "</li>";
     information += "<li><b>" + QString("Gain Value ") + ":</b> " + gain + "</li>";
     information += "<li><b>" + QString("Offset Value ") + ":</b> " + offset + "</li>";
+
+    if(rs->getChannelSelection()->getRedChannel() && 
+       rs->getChannelSelection()->getRedChannel()->getContrastEnhancement())
+    {
+      QString c;
+      c.setNum(rs->getChannelSelection()->getRedChannel()->getContrastEnhancement()->getGammaValue());
+
+      information += "<li><b>" + QString("Red Contrast") + ":</b> " + c + "</li>";
+    }
+
+    if(rs->getChannelSelection()->getGreenChannel() && 
+       rs->getChannelSelection()->getGreenChannel()->getContrastEnhancement())
+    {
+      QString c;
+      c.setNum(rs->getChannelSelection()->getGreenChannel()->getContrastEnhancement()->getGammaValue());
+
+      information += "<li><b>" + QString("Green Contraste") + ":</b> " + c + "</li>";
+    }
+
+    if(rs->getChannelSelection()->getBlueChannel() && 
+       rs->getChannelSelection()->getBlueChannel()->getContrastEnhancement())
+    {
+      QString c;
+      c.setNum(rs->getChannelSelection()->getBlueChannel()->getContrastEnhancement()->getGammaValue());
+
+      information += "<li><b>" + QString("Blue Contraste") + ":</b> " + c + "</li>";
+    }
+
+    if(rs->getChannelSelection()->getGrayChannel() && 
+       rs->getChannelSelection()->getGrayChannel()->getContrastEnhancement())
+    {
+      QString c;
+      c.setNum(rs->getChannelSelection()->getGrayChannel()->getContrastEnhancement()->getGammaValue());
+
+      information += "<li><b>" + QString("Gray Contraste") + ":</b> " + c + "</li>";
+    }
 
     information += "</ul>";
 

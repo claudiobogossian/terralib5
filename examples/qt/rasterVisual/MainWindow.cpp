@@ -76,6 +76,9 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   // Creates the status bar
   statusBar();
 
+  // Setup dock window
+  setupDockWindow();
+
   // Add File Chooser Interface
   te::qt::widgets::FileChooser* fc = new te::qt::widgets::FileChooser(this);
   fc->setFilterPattern("*.tif");
@@ -86,6 +89,8 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
 
   // Setups the tool actions
   setupActions();
+
+  checkToolsStatus();
 
   // Creates the Map Display
   QSize size(512, 512);
@@ -108,50 +113,49 @@ MainWindow::~MainWindow()
 void MainWindow::setupActions()
 {
   // List of created actions
-  QList<QAction*> actions;
 
   // Pan
   QAction* setPan = new QAction(QIcon::fromTheme("pan"), tr("Pan"), this);
   setPan->setCheckable(true);
   connect(setPan, SIGNAL(triggered()), SLOT(onPanTriggered()));
-  actions << setPan;
+  m_actions << setPan;
 
   // Zoom In
   QAction* setZoomIn = new QAction(QIcon::fromTheme("zoom-in"), tr("Zoom In"), this);
   setZoomIn->setCheckable(true);
   connect(setZoomIn, SIGNAL(triggered()), SLOT(onZoomInTriggered()));
-  actions << setZoomIn;
+  m_actions << setZoomIn;
 
   // Zoom In
   QAction* setZoomOut = new QAction(QIcon::fromTheme("zoom-out"), tr("Zoom Out"), this);
   setZoomOut->setCheckable(true);
   connect(setZoomOut, SIGNAL(triggered()), SLOT(onZoomOutTriggered()));
-  actions << setZoomOut;
+  m_actions << setZoomOut;
 
   // Zoom Area
   QAction* setZoomArea = new QAction(QIcon::fromTheme("zoom-area"), tr("Zoom Area"), this);
   setZoomArea->setCheckable(true);
   connect(setZoomArea, SIGNAL(triggered()), SLOT(onZoomAreaTriggered()));
-  actions << setZoomArea;
+  m_actions << setZoomArea;
 
   // Zoom Area
-  QAction* setReadPixel = new QAction(QIcon::fromTheme("zoom-area"), tr("Read Pixel"), this);
+  QAction* setReadPixel = new QAction(QIcon::fromTheme("readPixel"), tr("Read Pixel"), this);
   setReadPixel->setCheckable(true);
   connect(setReadPixel, SIGNAL(triggered()), SLOT(onReadPixelTriggered()));
-  actions << setReadPixel;
+  m_actions << setReadPixel;
 
   // Raster Style
   QAction* rasterStyle = new QAction(QIcon::fromTheme("raster-visual"), tr("Raster Visual"), this);
   rasterStyle->setCheckable(false);
   connect(rasterStyle, SIGNAL(triggered()), SLOT(onRasterStyleTriggered()));
-  actions << rasterStyle;
+  m_actions << rasterStyle;
 
   // Tools group
   QActionGroup* toolsGroup = new QActionGroup(this);
   
   // Add actions on group and toolbar
   QList<QAction*>::iterator it;
-  for(it = actions.begin(); it != actions.end(); ++it)
+  for(it = m_actions.begin(); it != m_actions.end(); ++it)
   {
     toolsGroup->addAction(*it);
     m_toolBar->addAction(*it);
@@ -163,15 +167,6 @@ void MainWindow::setupDockWindow()
 {
   if(m_rvW == 0)
   {
-    //get raster properties
-    te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
-
-    te::rst::RasterProperty* prop = 0;
-  
-    prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
-
-    te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
-
     //create dock
     QDockWidget* dw = new QDockWidget("Raster Visual", this);
 
@@ -181,10 +176,6 @@ void MainWindow::setupDockWindow()
 
     m_rvW->setVerticalLayout();
 
-    m_rvW->setBandProperty(prop->getBandProperties());
-
-    m_rvW->setRasterSymbolizer(rs);
-
     dw->setWidget(m_rvW);
 
     m_rvW->show();
@@ -192,12 +183,9 @@ void MainWindow::setupDockWindow()
     connect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
     addDockWidget(Qt::RightDockWidgetArea, dw);
-
-    delete prop;
-
-    delete rs;
   }
 
+  checkToolsStatus();
 }
 
 
@@ -246,6 +234,27 @@ void MainWindow::addRasterLayer(const QString& path)
   m_display->setLayerList(m_layers);
   m_display->setSRID(raster->getSRID());
   m_display->setExtent(*extent);
+
+
+  if(m_rvW)
+  {
+   //get raster properties
+    te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
+
+    te::rst::RasterProperty* prop = 0;
+  
+    prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
+
+    te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+
+    m_rvW->setBandProperty(prop->getBandProperties());
+
+    m_rvW->setRasterSymbolizer(rs);
+
+    delete rs;
+
+    delete prop;
+  }
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)
@@ -276,6 +285,27 @@ void MainWindow::startTools()
     m_display->installEventFilter(coordTracking);
 
     m_startTools = true;
+  }
+}
+
+void MainWindow::checkToolsStatus()
+{
+  bool status = false;
+  
+  if(m_layers.empty() == false)
+  {
+    status = true;
+  }
+
+  QList<QAction*>::iterator it;
+  for(it = m_actions.begin(); it != m_actions.end(); ++it)
+  {
+    (*it)->setEnabled(status);
+  }
+
+  if(m_rvW)
+  {
+    m_rvW->setEnabled(status);
   }
 }
 
@@ -323,8 +353,6 @@ void MainWindow::onReadPixelTriggered()
 
 void MainWindow::onRasterStyleTriggered()
 {
-  // Setup dock window
-  setupDockWindow();
 
  // Creates the rastersymbolizer dialog
   te::qt::widgets::RasterSymbolizerDialog dlg;
@@ -366,6 +394,8 @@ void MainWindow::onFileSelected(QString s)
   addRasterLayer(s);
 
   startTools();
+
+  checkToolsStatus();
 }
 
 void MainWindow::onSymbolizerUpdated()

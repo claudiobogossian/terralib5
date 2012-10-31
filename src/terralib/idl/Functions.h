@@ -28,6 +28,10 @@
 
 #include "Config.h"
 
+#include <boost/shared_ptr.hpp>
+
+#include <terralib/raster/Raster.h>
+
 #include <stdio.h>
 
 #include <idl_export.h>
@@ -61,6 +65,33 @@ namespace te
       \ingroup IDLModule
       */
     UCHAR terralib2IdlType( const int& tlType );
+    
+    /*!
+      \brief A dummy function for internal use.
+      \details It does nothing
+      \ingroup IDLModule
+      */
+    inline void dummyFunction( void* ) {};
+    
+    /*!
+      \brief Delete an array of elements.
+      \ingroup IDLModule
+      */
+    inline void deleteArray( void* arrayPtr )
+    {
+      delete[] (unsigned char*)arrayPtr;
+    };    
+    
+    /*!
+      \brief Load the required terralib modules.
+      \ingroup IDLModule
+      */
+    void loadTerralibModules();
+    
+    bool createRasterFromIdlArray( IDL_VPTR idlValuePointer, const bool takeBufferOwnership,
+      boost::shared_ptr< te::rst::Raster >& outRasterPtr );
+    
+    
   }; // namespace idl
 }; // namespace te
 

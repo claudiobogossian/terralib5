@@ -27,6 +27,10 @@
 
 #include <terralib/datatype/Enums.h>
 
+#include <terralib/plugin/PluginManager.h>
+#include <terralib/common/StringUtils.h>
+#include <terralib/raster/RasterFactory.h>
+
 namespace te
 {
   namespace idl
@@ -184,7 +188,133 @@ namespace te
         }      
       }
     }  
-  
+    
+    void loadTerralibModules()
+    {
+      {
+        #if TE_USE_OGR == 1
+          te::plugin::PluginInfo info;
+          info.m_name = "OGR DataSource Driver";
+          info.m_description = "This data source driver supports...";
+
+          #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+            info.m_type = "dll";
+            #ifdef NDEBUG
+                  info.m_mainFile = "terralib_ogr.dll";
+            #else
+                  info.m_mainFile = "terralib_ogr_d.dll";
+            #endif
+          #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+            #ifdef NDEBUG
+              info.m_type = "s.o.";
+              info.m_mainFile = "libterralib_ogr.so";
+            #else
+              info.m_type = "s.o.";
+              info.m_mainFile = "libterralib_ogr_d.so";
+            #endif
+          #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+            info.m_type = "dylib";
+            info.m_mainFile = "libterralib_ogr.dylib";
+          #else
+            #error "Platform not supported yet"
+          #endif
+
+          te::plugin::PluginManager::getInstance().loadPlugin(info);
+        #endif
+      }
+
+      {
+        #if TE_USE_GDAL
+          te::plugin::PluginInfo info;
+          info.m_name = "GDAL DataSource Driver";
+          info.m_description = "This data source driver supports...";
+
+          #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+            info.m_type = "dll";
+            #ifdef NDEBUG
+                  info.m_mainFile = "terralib_gdal.dll";
+            #else
+                  info.m_mainFile = "terralib_gdal_d.dll";
+            #endif            
+          #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+            #ifdef NDEBUG
+              info.m_type = "s.o.";
+              info.m_mainFile = "libterralib_gdal.so";
+            #else
+              info.m_type = "s.o.";
+              info.m_mainFile = "libterralib_gdal_d.so";
+            #endif
+          #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+            info.m_type = "dylib";
+            info.m_mainFile = "libterralib_gdal.dylib";
+          #else
+            #error "Platform not supported yet"
+          #endif
+
+          te::plugin::PluginManager::getInstance().loadPlugin(info);
+        #endif
+      }    
+    }
+    
+    bool createRasterFromIdlArray( IDL_VPTR idlValuePointer, 
+      const bool takeBufferOwnership,
+      boost::shared_ptr< te::rst::Raster >& outRasterPtr )
+    {
+      if( ! ( idlValuePointer->flags & IDL_V_ARR) )
+      {
+        return false;
+      }
+      else
+      {
+        unsigned int nLines = 0;
+        unsigned int nCols = 0;  
+        unsigned int nBands = 0;
+        
+        if( idlValuePointer->value.arr->n_dim == 2 )
+        {
+          nLines = (unsigned int)idlValuePointer->value.arr->dim[ 1 ];
+          nCols = (unsigned int)idlValuePointer->value.arr->dim[ 0 ];
+          nBands = 1;
+        }
+        else if( idlValuePointer->value.arr->n_dim == 3 )
+        {
+          nLines = (unsigned int)idlValuePointer->value.arr->dim[ 2 ];
+          nCols = (unsigned int)idlValuePointer->value.arr->dim[ 1 ];
+          nBands = (unsigned int)idlValuePointer->value.arr->dim[ 0 ];
+        }
+        else
+        {
+          return false;
+        }
+        
+        const int tlDataType = idl2TerralibType( idlValuePointer->type );
+        
+        std::map<std::string, std::string> rasterInfo;
+        rasterInfo["MEM_IS_DATA_BUFFER"] = "TRUE";
+        rasterInfo["MEM_BUFFER_NCOLS"] = te::common::Convert2String( nCols );
+        rasterInfo["MEM_BUFFER_NROWS"] = te::common::Convert2String( nLines );
+        rasterInfo["MEM_BUFFER_DATATYPE"] = te::common::Convert2String( tlDataType );
+        rasterInfo["MEM_BUFFER_NBANDS"] = te::common::Convert2String( nBands );  
+        
+        outRasterPtr.reset( te::rst::RasterFactory::make(
+            "MEM", 
+            rasterInfo, 
+            idlValuePointer->value.arr->data, 
+            takeBufferOwnership ? te::idl::deleteArray : te::idl::dummyFunction ) );        
+            
+        if( outRasterPtr.get() )
+        {
+          return true;
+        }
+        else
+        {
+          outRasterPtr.reset();
+          return false;
+        }
+        
+      }
+    }
+    
   } // namespace idl
 } // namespace te  
   

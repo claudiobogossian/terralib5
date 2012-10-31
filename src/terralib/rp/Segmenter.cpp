@@ -333,9 +333,10 @@ namespace te
             
             // Adjusting the block sizes
             
-            TERP_TRUE_OR_THROW( calcBestBlockSize( 
+            TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
               m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
-              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 1000,
+              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 
+              2 * std::max( blocksHOverlapSize, blocksVOverlapSize ),
               maxBlockPixels, blocksHOverlapSize, blocksVOverlapSize,
               maxNonExpandedBlockWidth, maxNonExpandedBlockHeight ), 
               "Error calculating best block size" );   
@@ -352,9 +353,10 @@ namespace te
           {
             // Adjusting the block sizes
             
-            TERP_TRUE_OR_THROW( calcBestBlockSize( 
+            TERP_TRUE_OR_RETURN_FALSE( calcBestBlockSize( 
               m_inputParameters.m_inputRasterPtr->getNumberOfRows(),
-              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 1000,
+              m_inputParameters.m_inputRasterPtr->getNumberOfColumns(), 
+              2 * stratBlocksOverlapSize,
               maxBlockPixels, 0, 0,
               maxNonExpandedBlockWidth, maxNonExpandedBlockHeight ), 
               "Error calculating best block size" );  
@@ -653,8 +655,7 @@ namespace te
       const unsigned int blocksVOverlapSize,
       unsigned int& blockWidth, unsigned int& blockHeight ) const
     {
-      TERP_DEBUG_TRUE_OR_THROW( minBlockPixels < maxBlockPixels, 
-        "Invalid blocl pixels number" )
+      if( minBlockPixels > maxBlockPixels ) return false;
         
       const double rasterRCFactor = ((double)totalImageLines) /
         ((double)totalImageCols);
