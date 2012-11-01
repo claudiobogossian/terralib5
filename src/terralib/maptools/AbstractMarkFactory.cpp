@@ -65,6 +65,8 @@ te::color::RGBAColor** te::map::AbstractMarkFactory::make(const te::se::Mark* ma
 
 te::color::RGBAColor** te::map::AbstractMarkFactory::make(const std::string& factoryKey, const te::se::Mark* mark, std::size_t size)
 {
+  LockWrite l;
+
   assert(mark);
   assert(size > 0);
 

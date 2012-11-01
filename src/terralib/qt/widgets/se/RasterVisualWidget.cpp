@@ -102,6 +102,7 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
   connect(m_ui->m_gainMinusPushButton, SIGNAL(clicked()), this, SLOT(onDecreaseGain()));
   connect(m_ui->m_gainResetPushButton, SIGNAL(clicked()), this, SLOT(onDefaultGain()));
   connect(m_ui->m_offsetPlusPushButton, SIGNAL(clicked()), this, SLOT(onIncreaseOffset()));
+  connect(m_ui->m_offsetMinusPushButton, SIGNAL(clicked()), this, SLOT(onDecreaseOffset()));
   connect(m_ui->m_offsetResetPushButton, SIGNAL(clicked()), this, SLOT(onDefaultOffset()));
 
   connect(m_ui->m_contrastGroupBox, SIGNAL(clicked()), this, SLOT(setContrastVisibility()));
@@ -165,21 +166,25 @@ void  te::qt::widgets::RasterVisualWidget::setRasterSymbolizer(const te::se::Ras
       onBlueChannelSelectionClicked();
     }
 
+    m_contrastRed = 0;
     if(m_scRed && m_scRed->getContrastEnhancement())
     {
       m_contrastRed = m_scRed->getContrastEnhancement();
     }
 
+    m_contrastGreen = 0;
     if(m_scGreen && m_scGreen->getContrastEnhancement())
     {
       m_contrastGreen = m_scGreen->getContrastEnhancement();
     }
 
+    m_contrastBlue = 0;
     if(m_scBlue && m_scBlue->getContrastEnhancement())
     {
       m_contrastBlue = m_scBlue->getContrastEnhancement();
     }
 
+    m_contrastMono = 0;
     if(m_scMono && m_scMono->getContrastEnhancement())
     {
       m_contrastMono = m_scMono->getContrastEnhancement();
@@ -362,6 +367,10 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         m_ui->m_contrastRHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
       }
+      else
+      {
+        m_ui->m_contrastRHorizontalSlider->setValue(100.);
+      }
     }
 
     if(m_cs->getGreenChannel())
@@ -376,6 +385,10 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         double v = ce->getGammaValue() * 100.;
         m_ui->m_contrastGHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
+      }
+      else
+      {
+        m_ui->m_contrastGHorizontalSlider->setValue(100.);
       }
     }
 
@@ -392,6 +405,10 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         m_ui->m_contrastBHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
       }
+      else
+      {
+        m_ui->m_contrastBHorizontalSlider->setValue(100.);
+      }
     }
 
     if(m_cs->getGrayChannel())
@@ -407,6 +424,11 @@ void te::qt::widgets::RasterVisualWidget::updateUi()
         m_ui->m_contrastMHorizontalSlider->setValue((int)v);
         m_ui->m_contrastTypeComboBox->setCurrentIndex(m_ui->m_contrastTypeComboBox->findText(m_ceNames[ce->getContrastEnhancementType()]));
       }
+      else
+      {
+        m_ui->m_contrastMHorizontalSlider->setValue(100.);
+      }
+
     }
 
   }

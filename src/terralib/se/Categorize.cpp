@@ -35,12 +35,45 @@ te::se::Categorize::Categorize()
 {
 }
 
+te::se::Categorize::Categorize(const Categorize& rhs)
+  : m_lookupValue(0),
+    m_value(0),
+    m_threshholdsBelongTo(SUCCEEDING)
+{
+  if(rhs.m_lookupValue)
+  {
+    m_lookupValue = rhs.m_lookupValue->clone();
+  }
+
+  if(rhs.m_value)
+  {
+    m_value = rhs.m_value->clone();
+  }
+
+  for(size_t t = 0; t < rhs.m_thresholds.size(); ++t)
+  {
+    m_thresholds.push_back(rhs.m_thresholds[t]->clone());
+  }
+
+  for(size_t t = 0; t < rhs.m_thresholdValues.size(); ++t)
+  {
+    m_thresholdValues.push_back(rhs.m_thresholdValues[t]->clone());
+  }
+
+  m_threshholdsBelongTo = rhs.m_threshholdsBelongTo;
+}
+
 te::se::Categorize::~Categorize()
 {
   delete m_lookupValue;
   delete m_value;
   te::common::FreeContents(m_thresholds);
   te::common::FreeContents(m_thresholdValues);
+}
+
+te::se::Categorize* te::se::Categorize::clone() const
+{
+  return new Categorize(*this);
 }
 
 void te::se::Categorize::setLookupValue(ParameterValue* v)

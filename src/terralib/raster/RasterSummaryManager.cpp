@@ -69,7 +69,8 @@ const te::rst::RasterSummary* te::rst::RasterSummaryManager::get(const Raster* r
     add(raster, rs);
   }
   else
-    rs = new te::rst::RasterSummary(*find(raster));
+    rs = it->second;
+    //rs = new te::rst::RasterSummary(*find(raster));
 
   for (std::size_t b = 0; b < raster->getNumberOfBands(); b++)
   {

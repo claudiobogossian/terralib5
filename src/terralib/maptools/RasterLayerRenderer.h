@@ -75,7 +75,7 @@ namespace te
         //@{
 
         /*!
-          \brief It draws the layer geographic objects in the given canvas using the informed SRS.
+          \brief It draws the layer raster objects in the given canvas using the informed SRS.
 
           The informed bounding box (bbox) is used to constraint the Layer objects to be drawn.
           The bbox coordinates must be in the Spatial Reference System given by srid.
@@ -112,8 +112,30 @@ namespace te
          */
         RasterLayerRenderer& operator=(const RasterLayerRenderer& rhs);
 
+        /*!
+          \brief Function used to verify if the drawing area has intersection with the layer objects.
+
+          \param bbox  Area to be painted.
+
+          \param raster  Raster object
+
+          \param canvas  Pointer to canvas
+
+          \param srid  SRID identifier
+
+          \return True if has intersection and false in other case.
+        */
         bool hasIntersection(const te::gm::Envelope& bbox, te::rst::Raster* raster, Canvas* canvas, int srid);
 
+        /*!
+          \brief Function used to create a GRID with canvas dimensions (width and height)
+
+          \param canvas  Pointer to canvas
+
+          \param bbox  Area to be painted.
+
+          \param srid  SRID identifier
+        */
         void buildRasterCanvas(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
@@ -123,8 +145,26 @@ namespace te
         */
         void createVisualDefault(RasterLayer* layer);
 
+        /*!
+          \brief Function used to apply the raster symbolizes associated to layer
+
+          \param layer  Layer with the raster object
+
+          \param canvas  Pointer to canvas
+
+          \param srid  SRID identifier
+        */
         void applyStyle(RasterLayer* layer, Canvas* canvas, int srid);
 
+        /*!
+          \brief Function used to apply the raster symbolizes associated to layer
+
+          \param rMin  Define the minimum value in raster
+
+          \param rMax  Define the maximum value in raster
+
+          \param layer  Layer with the raster object
+        */
         void getMinMaxValues(double& rMin, double& rMax, RasterLayer* layer);
 
 

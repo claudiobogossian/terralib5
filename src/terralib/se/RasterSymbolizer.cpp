@@ -76,8 +76,8 @@ te::se::RasterSymbolizer::RasterSymbolizer(const te::se::RasterSymbolizer& rhs)
   if(rhs.m_channelSelection)
     m_channelSelection = rhs.m_channelSelection->clone();
 
-  //if(rhs.m_colorMap)
-    //m_colorMap = rhs.m_colorMap->clone();
+  if(rhs.m_colorMap)
+    m_colorMap = rhs.m_colorMap->clone();
 
   if(rhs.m_contrastEnhancement)
     m_contrastEnhancement = rhs.m_contrastEnhancement->clone();

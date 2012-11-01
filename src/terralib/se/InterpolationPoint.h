@@ -56,6 +56,13 @@ namespace te
         /*! \brief It initializes a new InterpolationPoint.  */
         InterpolationPoint();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other InterpolationPoint.
+        */
+        InterpolationPoint(const InterpolationPoint& rhs);
+
         /*! \brief Destructor. */
         ~InterpolationPoint();
 
@@ -64,7 +71,7 @@ namespace te
           
           \return A clone of this object.
         */
-        virtual InterpolationPoint* clone() const { return 0; }
+        virtual InterpolationPoint* clone() const;
 
         //@}
 
@@ -87,13 +94,6 @@ namespace te
          *  No copy allowed. 
          */
         //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other InterpolationPoint.
-        */
-        InterpolationPoint(const InterpolationPoint& rhs);
 
         /*!
           \brief No assignment operator allowed.

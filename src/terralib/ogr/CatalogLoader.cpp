@@ -71,6 +71,12 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
   OGRLayer* layer = ogrDS->GetLayerByName(datasetName.c_str());
  
   te::da::DataSetType* dt = Convert2TerraLib(layer->GetLayerDefn());
+  if(dt->hasGeom())
+  {
+    OGRSpatialReference* osrs = layer->GetSpatialRef();
+    if(osrs)
+      dt->getDefaultGeomProperty()->setSRID(Convert2TerraLibProjection(osrs));
+  }
 
   if(full)
   {

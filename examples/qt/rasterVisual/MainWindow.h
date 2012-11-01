@@ -28,6 +28,7 @@
 
 // TerarLib
 #include <terralib/geometry/Enums.h>
+#include "terralib/qt/widgets/progress/ProgressViewerDialog.h"
 
 // Qt
 #include <QtGui/QMainWindow>
@@ -139,6 +140,10 @@ class MainWindow : public QMainWindow
     bool m_startTools;
 
     te::qt::widgets::RasterVisualWidget* m_rvW;
+
+    int m_dlgViewerId;
+    te::qt::widgets::ProgressViewerDialog* m_dlgViewer;
+
 };
 
 #endif  // __TERRALIB_EXAMPLES_QT_TOOLS_INTERNAL_TOOLS_H

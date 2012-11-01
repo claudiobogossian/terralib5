@@ -23,7 +23,7 @@
   \brief It contains the main routine of TerraView.
 */
 
-#include "MainDialog.h"
+#include "MainWindow.h"
 
 //! TerraLib include files
 #include <terralib/common/TerraLib.h>
@@ -33,8 +33,8 @@
 #include <QtGui/QApplication>
 
 //! STL include files
-#include <cstdlib>
-#include <exception>
+//#include <cstdlib>
+//#include <exception>
 
 void loadModules()
 {
@@ -81,36 +81,6 @@ void loadModules()
 #endif
 
       te::plugin::PluginManager::getInstance().loadPlugin(info);
-
-
-      info.m_name = "PostGIS DataSource Driver";
-      info.m_description = "This data source driver supports...";
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-#ifdef NDEBUG
-      info.m_mainFile = "terralib_postgis.dll";
-#else
-      info.m_mainFile = "terralib_postgis_d.dll";
-#endif
-#endif
-
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
-#ifdef NDEBUG
-      info.m_mainFile = "libterralib_postgis.so";
-#else
-      info.m_mainFile = "libterralib_postgis_d.so";
-#endif
-#endif
-
-#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
-#ifdef NDEBUG
-      info.m_mainFile = "libterralib_postgis.dylib";
-#else
-      info.m_mainFile = "libterralib_postgis_d.dylib";
-#endif
-#endif
-
-      te::plugin::PluginManager::getInstance().loadPlugin(info);
     }
   }
   catch(const te::common::Exception& e)
@@ -125,6 +95,12 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
 
   int waitVal = EXIT_FAILURE;
+  QString spaths(ICON_THEME_PATH);
+
+  QStringList paths = spaths.split(";");
+
+  QIcon::setThemeName("terralib");
+  QIcon::setThemeSearchPaths(paths);
 
   try
   {
@@ -134,8 +110,8 @@ int main(int argc, char** argv)
     loadModules();
 
 // initialize the application
-    MainDialog dlg;
-    dlg.show();
+    MainWindow dlg;
+    dlg.showMaximized();
 
     waitVal = app.exec();
   }

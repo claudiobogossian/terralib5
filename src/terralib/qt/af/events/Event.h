@@ -18,9 +18,23 @@
  */
 
 /*!
-  \file terralib/qt/af/events/Event.h
+  \defgroup afevents Application Framework Events
+  \ingroup appframework
+  \brief Default events used with application framework.
+  \details These are default event classes that can be sent by the application framework.
+  Event classes can contain anything as members, such as pointers, instances or any information that can be usefull
+  for the application. These may be classes as simple as possible with public members to facilitate the access. 
+  \note Events MAY NOT gets the ownership of its internal pointers. 
+*/
 
+/*!
+  \file Event.h
   \brief A base class for application events.
+  \details 
+  \version 5.0
+  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
+  \date 2001-2012
+  \copyright GNU Lesser General Public License.
 */
 
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_EVENT_H
@@ -34,6 +48,7 @@ namespace te
     {
       /*!
         \class Event
+        \ingroup afevents
 
         \brief A base class for application events.
 
@@ -46,17 +61,28 @@ namespace te
       {
         public:
 
+          /*!
+            \brief Returns the event identifier.
+            \return Identifier of the event.
+          */
           int getId() const;
 
         protected:
 
+          /*!
+            \brief Contructor.
+            \param id The identifier.
+          */
           Event(int id);
 
+          /*!
+            \brief Virtual destructor.
+          */
           virtual ~Event();
 
         private:
 
-          int m_id;
+          int m_id;         //!< Identifier.
       };
 
       inline int Event::getId() const

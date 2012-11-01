@@ -41,6 +41,8 @@ namespace te
     class ContrastEnhancement;
     class RasterSymbolizer;
     class SelectedChannel;
+    class Interpolate;
+    class Categorize;
   }
   
   namespace rst 
@@ -65,8 +67,8 @@ namespace te
         /*!
           \brief Constructor
 
-          \param rs   
-          \param rt  
+          \param rs  Valid raster symbolizer pointer
+          \param rt  Pointer to a raster transform object that will be configurated
 
           \note 
         */
@@ -80,7 +82,7 @@ namespace te
 
       protected:
 
-        /*! Function used to get the commun properties (gain, offset) */
+        /*! Function used to get the commun properties (gain, offset, opacity) */
         void getGeneralProperties();
 
         /*! Function used to get channel selection order */
@@ -100,6 +102,15 @@ namespace te
 
         /*! Function used to get gamma value from a Contrast Enhancement */
         double getGammaProperty(te::se::ContrastEnhancement* ce);
+
+        /*! Function used to get the color map information */
+        void getColorMapInformation();
+
+        /*! Function used to get the color map Interpolated information */
+        void getInterpolatedMap(te::se::Interpolate* interpolate);
+
+        /*! Function used to get the color map Categorized information */
+        void getCategorizedMap(te::se::Categorize* caterogize);
 
 
       private:

@@ -29,6 +29,7 @@
 // TerraLib
 #include "Config.h"
 #include "../color/RGBAColor.h"
+#include "../color/ColorBar.h"
 
 // STL
 #include <map>
@@ -61,10 +62,14 @@ namespace te
     class TEMAPEXPORT RasterTransform
     {
       public:
-        
-        //! One of the available transformation methods 
+
         typedef void (RasterTransform::*TransformFunction)(double, double, double, double);
         typedef te::color::RGBAColor (RasterTransform::*RGBAFunction)(double, double);
+
+        typedef std::pair<double, double> RasterThreshold;
+
+        typedef std::map<RasterThreshold, te::color::RGBAColor> CategorizedMap;
+        typedef std::map<RasterThreshold, te::color::ColorBar> InterpolatedMap;
 
         //! The three channels of a display
         enum RGBChannels 
@@ -82,7 +87,9 @@ namespace te
           EXTRACT2RGB_TRANSF=2,
           RED2THREE_TRANSF=3, 
           GREEN2THREE_TRANSF=4, 
-          BLUE2THREE_TRANSF=5
+          BLUE2THREE_TRANSF=5,
+          CATEGORIZE_TRANSF=6,
+          INTERPOLATE_TRANSF=7
         };
 
       public:
@@ -167,6 +174,18 @@ namespace te
         /*! Gets the destination of the mono band */
         short getDestBand() { return m_monoBandOut; }
 
+        /*! Sets the categorize map information */
+        void setCategorizedMap(CategorizedMap map) { m_categorizeMap = map; }
+
+        /*! Gets the categorize map information */
+        CategorizedMap& getCategorizedMap() { return m_categorizeMap; }
+
+        /*! Sets the interpolate map information */
+        void setInterpolatedMap(InterpolatedMap map) { m_interpolateMap = map; }
+
+        /*! Gets the categorize map information */
+        InterpolatedMap& getInterpolatedMap() { return m_interpolateMap; }
+
         /*! 
           \brief Set parameters of linear transformation
         
@@ -227,6 +246,18 @@ namespace te
         /*! This transformation repeats the value of the first band in input three bands of the output */
         te::color::RGBAColor getBlue2ThreeBand(double icol, double ilin);
 
+        /*! This transformation get the value of the selected band in input  and set the categorized value in output bands of the output */
+        void setCategorize(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation get the value of the selected band in input  and get the categorized value */
+        te::color::RGBAColor getCategorize(double icol, double ilin);
+
+        /*! This transformation get the value of the selected band in input  and set the interpolated value in output bands of the output */
+        void setInterpolate(double icol, double ilin, double ocol, double olin);
+
+        /*! This transformation get the value of the selected band in input  and get the interpolated value */
+        te::color::RGBAColor getInterpolate(double icol, double ilin);
+
         /*! Function used to adjust the value in raster range */
         void fixValue(double& value);
 
@@ -237,6 +268,11 @@ namespace te
         */
         bool checkNoValue(double& value, int band);
 
+        /*! Function used to get the interpolated color given a pixel value */
+        te::color::RGBAColor getInterpolatedColor(double value);
+
+        /*! Function used to get the categorized color given a pixel value */
+        te::color::RGBAColor getCategorizedColor(double value);
 
       private:
 
@@ -259,6 +295,9 @@ namespace te
 
         TransformFunction m_transfFuncPtr;        //!< Function used in transformation operation.
         RGBAFunction m_RGBAFuncPtr;               //!< Function used in transformation operation.
+
+        CategorizedMap m_categorizeMap;           //!< Attribute to define the categorized transformation.
+        InterpolatedMap m_interpolateMap;         //!< Attribute to define the interpolated transformation.
     };
 
   } // end namespace map

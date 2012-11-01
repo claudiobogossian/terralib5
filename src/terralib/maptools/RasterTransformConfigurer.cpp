@@ -32,6 +32,9 @@
 #include "../se/ChannelSelection.h"
 #include "../se/ContrastEnhancement.h"
 #include "../se/SelectedChannel.h"
+#include "../se.h"
+
+#include <limits>
 
 
 te::map::RasterTransformConfigurer::RasterTransformConfigurer(te::se::RasterSymbolizer* rs, te::map::RasterTransform* rt) :
@@ -53,6 +56,11 @@ void te::map::RasterTransformConfigurer::configure()
   if(m_rstSymbolizer->getChannelSelection())
   {
     getChannelSelection();
+  }
+
+  if(m_rstSymbolizer->getColorMap())
+  {
+    getColorMapInformation();
   }
 }
 
@@ -199,4 +207,102 @@ double te::map::RasterTransformConfigurer::getGammaProperty(te::se::ContrastEnha
   {
     return TE_SE_DEFAULT_GAMMA_VALUE;
   }
+}
+
+void te::map::RasterTransformConfigurer::getColorMapInformation()
+{
+  te::se::ChannelSelection* cs = m_rstSymbolizer->getChannelSelection();
+
+  if(cs && cs->getGrayChannel())
+  {
+    getGrayChannelProperties(cs->getGrayChannel());
+  }
+  else
+  {
+    return;
+  }
+
+  if(m_rstSymbolizer->getColorMap()->getCategorize())
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::CATEGORIZE_TRANSF);
+
+    getCategorizedMap(m_rstSymbolizer->getColorMap()->getCategorize());
+  }
+  else if(m_rstSymbolizer->getColorMap()->getInterpolate())
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::INTERPOLATE_TRANSF);
+
+    getInterpolatedMap(m_rstSymbolizer->getColorMap()->getInterpolate());
+  }
+  else
+  {
+    m_rstTransform->setTransfFunction(te::map::RasterTransform::NO_TRANSF);
+  }
+}
+
+void te::map::RasterTransformConfigurer::getInterpolatedMap(te::se::Interpolate* interpolate)
+{
+  te::map::RasterTransform::InterpolatedMap map;
+
+  std::vector<te::se::InterpolationPoint*> ip = interpolate->getInterpolationPoints();
+
+  for(size_t i = 0; i < ip.size() - 1; ++i)
+  {
+    te::se::InterpolationPoint* ipItemInit = ip[i];
+
+    std::string colorName = te::map::GetString(ipItemInit->getValue());
+    te::color::RGBAColor colorInit(colorName);
+    colorInit.setColor(colorInit.getRed(), colorInit.getGreen(), colorInit.getBlue());
+    double lowerLimit = ipItemInit->getData();
+
+    te::se::InterpolationPoint* ipItemEnd = ip[i + 1];
+
+    colorName = te::map::GetString(ipItemEnd->getValue());
+    te::color::RGBAColor colorEnd(colorName);
+    colorEnd.setColor(colorEnd.getRed(), colorEnd.getGreen(), colorEnd.getBlue());
+    double upperLimit = ipItemEnd->getData();
+
+    te::color::ColorBar cb(colorInit, colorEnd, (int)(upperLimit - lowerLimit));
+
+    map.insert(te::map::RasterTransform::InterpolatedMap::value_type(std::pair<double, double>(lowerLimit, upperLimit), cb)); 
+  }
+
+  m_rstTransform->setInterpolatedMap(map);
+}
+
+void te::map::RasterTransformConfigurer::getCategorizedMap(te::se::Categorize* caterogize)
+{
+  te::map::RasterTransform::CategorizedMap map;
+
+  std::vector<te::se::ParameterValue*> t = caterogize->getThresholds();
+  std::vector<te::se::ParameterValue*> tV = caterogize->getThresholdValues();
+
+  for(size_t i = 0; i < tV.size(); ++i)
+  {
+    double lowerLimit, upperLimit;
+
+    if(i == 0)
+    {
+      lowerLimit = std::numeric_limits<double>::min();
+      upperLimit = te::map::GetDouble(t[i]);
+    }
+    else if(i == tV.size() - 1)
+    {
+      lowerLimit = te::map::GetDouble(t[i - 1]);
+      upperLimit = std::numeric_limits<double>::max();
+    }
+    else
+    {
+      lowerLimit = te::map::GetDouble(t[i - 1]);
+      upperLimit = te::map::GetDouble(t[i]);
+    }
+
+    std::string colorName = te::map::GetString(tV[i]);
+    te::color::RGBAColor color(colorName);
+    color.setColor(color.getRed(), color.getGreen(), color.getBlue());
+
+    map.insert(te::map::RasterTransform::CategorizedMap::value_type(std::pair<double, double>(lowerLimit, upperLimit), color)); 
+  }
+
+  m_rstTransform->setCategorizedMap(map);
 }

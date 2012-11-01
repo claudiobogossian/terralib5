@@ -27,27 +27,54 @@ set (
   terralib_geometry 
   terralib_memory
   terralib_qtwidgets
+  terralib_maptools
   ${QT_LIBRARIES}
 )
 
 set (
   _DIRS 
-  af
-  af/events
+  .
+  events
+  connectors
 )
 
-# Files in build tree
-appPrefix ("${SRCDIR}" "${_DIRS}" QT_INC_DIRS)
+file (
+  GLOB HDRS_TO_MOC
+  ${SRCDIR}/CoreApplication.h
+  ${SRCDIR}/connectors/MapDisplay.h
+  ${SRCDIR}/connectors/TabularViewer.h
+  ${SRCDIR}/connectors/LayerExplorer.h
+)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/CoreApplication.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/af" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/connectors/MapDisplay.h
+  ${SRCDIR}/connectors/TabularViewer.h
+  ${SRCDIR}/connectors/LayerExplorer.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
+
+source_group("Generated Files" FILES ${MOC})
 
 # Files in build tree
-appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
+appPrefix ("${SRCDIR}" "${_DIRS}" AF_INC_DIRS)
+
+# Files in build tree
+appPrefix ("qt/af" "${_DIRS}" AF_INC_INST_DIRS)
 
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
+list (APPEND SRCS "${MOC}")
+
 # Include directory of the image files
 list (APPEND AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
-list (APPEND AF_INC_INST_DIRS "qt/af")
 list (APPEND DEP_INCLUDES "${AF_INC_DIRS}")
 
 #exporting module information

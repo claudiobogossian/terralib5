@@ -287,7 +287,14 @@ void te::mem::Raster::create(te::rst::Grid* g,
         te::rst::Raster* iraster = static_cast<te::rst::Raster*> (h);
 
         if (iraster == 0)
+        {
+          delete m_grid;
+          m_grid = 0;
+
+          te::common::FreeContents(bands);
+
           throw Exception(TR_MEMORY("You must provide a valid input raster in the 'h' parameter"));
+        }
 
 // copy raster bands
         const std::size_t nbands = bands.size();
@@ -338,11 +345,15 @@ void te::mem::Raster::create(te::rst::Grid* g,
 // is tiled
         for(std::size_t b = 0; b < bands.size(); ++b)
         {
-          if (bands[b]->m_blkw == 0)
-            throw Exception(TR_MEMORY("You must provide the block width parameter"));
+          if (bands[b]->m_blkw == 0 || bands[b]->m_blkh == 0)
+          {
+            delete m_grid;
+            m_grid = 0;
 
-          if (bands[b]->m_blkh == 0)
-            throw Exception(TR_MEMORY("You must provide the block height parameter"));
+            te::common::FreeContents(bands);
+
+            throw Exception(TR_MEMORY("You must provide the parameters of block height and width"));
+          }
 
           m_bands.push_back(new te::mem::TiledBand(this, bands[b], b));
         }

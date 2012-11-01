@@ -57,6 +57,8 @@ void te::common::ProgressManager::removeViewer(int viewerId)
 
 int te::common::ProgressManager::addTask(TaskProgress* tp)
 {
+  LockWrite l(this);
+
   int id = generateTaskId();
 
   m_tasks.insert(std::map<int, TaskProgress*>::value_type(id, tp));
@@ -76,6 +78,8 @@ int te::common::ProgressManager::addTask(TaskProgress* tp)
 
 void te::common::ProgressManager::removeTask(int taskId)
 {
+  LockWrite l(this);
+
   std::map<int, TaskProgress*>::iterator it = m_tasks.find(taskId);
 
   if(it != m_tasks.end())

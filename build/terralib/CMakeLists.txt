@@ -27,6 +27,7 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
 endif()
 
 #-----------------------------------------------------------------------
+option (BUILD_AF "Build application framework module?" ON)
 option (BUILD_ANNOTATIONTEXT "Build annotation text module?" ON)
 option (BUILD_COLOR "Build color module?" ON)
 option (BUILD_COMMON "Build common module?" ON)
@@ -60,6 +61,10 @@ endif()
 
 if(WIN32)
   option (BUILD_ADO "Build ADO module?" ON)
+endif()
+
+IF(BUILD_AF)
+	add_subdirectory(terralib_af)
 endif()
 
 IF(BUILD_ANNOTATIONTEXT)

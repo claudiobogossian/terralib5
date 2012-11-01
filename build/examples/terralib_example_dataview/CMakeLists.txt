@@ -13,6 +13,9 @@ set(PROJ_NAME "terralib_example_dataview")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_datagrid
 
+#find_package(Qt4 ${_Qt4_VERSION} COMPONENTS QtCore QtGui REQUIRED)
+#include (${QT_USE_FILE})
+#add_definitions (${QT_DEFINITIONS})
 
 #Definitions for Windows compiling
 if(WIN32)
@@ -63,8 +66,6 @@ if(WIN32)
 	add_definitions( -D_CRT_SECURE_NO_WARNINGS )
 endif()
 
-add_definitions(${QT_DEFINITIONS})
-
 qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
 
 qt4_wrap_ui(UI ${FORMS})
@@ -79,6 +80,7 @@ include_directories(
     ${Boost_INCLUDE_DIRS}
     ${INCLDIR}
     ${CMAKE_CURRENT_BINARY_DIR}
+    ${QT_INCLUDE_DIR}
 )
        
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${MOC} ${UI})

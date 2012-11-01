@@ -28,11 +28,12 @@
 #include "ProgressTimer.h"
 #include "TaskProgress.h"
 
-te::common::TaskProgress::TaskProgress()
+te::common::TaskProgress::TaskProgress(const std::string& message)
   : m_id(-1),
     m_totalSteps(0),
     m_currentStep(0),
     m_currentPropStep(0),
+    m_message(message),
     m_hasToUpdate(false),
     m_isActive(true),
     m_isMultiThread(false),

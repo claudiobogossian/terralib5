@@ -24,6 +24,7 @@
  */
 
 // TerraLib
+#include "../common/progress/TaskProgress.h"
 #include "../dataaccess.h"
 #include "../fe/Filter.h"
 #include "../geometry.h"
@@ -164,65 +165,83 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
 
 void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas, int srid)
 {
-    te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+  te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
     
-    te::rst::Raster* raster = layer->getRaster();
+  te::rst::Raster* raster = layer->getRaster();
 
-    //create the raster transform
-    RasterTransform rt(raster, 0);
+  //create the raster transform
+  RasterTransform rt(raster, 0);
 
-    double rMin, rMax;
+  double rMin, rMax;
 
-    getMinMaxValues(rMin, rMax, layer);
+  getMinMaxValues(rMin, rMax, layer);
 
-    rt.setLinearTransfParameters(0, 255, rMin, rMax);
+  rt.setLinearTransfParameters(0, 255, rMin, rMax);
 
-    //configure the raster transformation using the raster symbolizer
-    RasterTransformConfigurer rtc(rs, &rt);
+  //configure the raster transformation using the raster symbolizer
+  RasterTransformConfigurer rtc(rs, &rt);
 
-    rtc.configure();
+  rtc.configure();
 
-    // define variables for interpolation
-    std::vector<std::complex<double> > v;
-    std::vector<std::complex<double> > vDummy;
-    vDummy.resize(3, 255.);
+  bool reproject = false;
+  if(srid != layer->getSRID())
+  {
+    reproject = true;
+  }
 
-    bool reproject = false;
-    if(srid != layer->getSRID())
+  te::common::TaskProgress t;
+  t.setMessage(TR_MAP("Drawing Raster..."));
+  t.setTotalSteps(m_gridCanvas->getNumberOfRows());
+
+  te::color::RGBAColor** rgba = new te::color::RGBAColor*[m_gridCanvas->getNumberOfRows()];
+
+  for (unsigned r = 0; r < m_gridCanvas->getNumberOfRows(); r++)
+  {
+    if(t.isActive() == false)
     {
-      reproject = true;
+      break;
     }
 
-    for (unsigned r = 0; r < m_gridCanvas->getNumberOfRows(); r++)
+    te::color::RGBAColor* s = new te::color::RGBAColor[m_gridCanvas->getNumberOfColumns()];
+
+    for (unsigned c = 0; c < m_gridCanvas->getNumberOfColumns(); c++)
     {
-      for (unsigned c = 0; c < m_gridCanvas->getNumberOfColumns(); c++)
+      te::gm::Coord2D inputGeo = m_gridCanvas->gridToGeo(c, r);
+
+      if(reproject)
       {
-        te::gm::Coord2D inputGeo = m_gridCanvas->gridToGeo(c, r);
+        std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
 
-        if(reproject)
-        {
-          std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+        converter->setSourceSRID(layer->getSRID());
 
-          converter->setSourceSRID(layer->getSRID());
+        converter->setTargetSRID(srid);
 
-          converter->setTargetSRID(srid);
-
-          converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
-        }
-
-        te::gm::Coord2D outputGrid = raster->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
-
-        int x = te::rst::Round(outputGrid.x);
-        int y = te::rst::Round(outputGrid.y);
-
-        if((x >=0 && x < (int)raster->getNumberOfColumns()) && (y >=0 && y < (int)raster->getNumberOfRows()))
-        {
-          te::color::RGBAColor color = rt.apply(x, y);
-
-          canvas->drawPixel(c, r, color);
-        }
+        converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
       }
+
+      te::gm::Coord2D outputGrid = raster->getGrid()->geoToGrid(inputGeo.x, inputGeo.y);
+
+      int x = te::rst::Round(outputGrid.x);
+      int y = te::rst::Round(outputGrid.y);
+
+      te::color::RGBAColor color(255, 255, 255, 0);
+
+      if((x >=0 && x < (int)raster->getNumberOfColumns()) && (y >=0 && y < (int)raster->getNumberOfRows()))
+      {
+         color = rt.apply(x, y);
+      }
+
+      s[c] = color;
     }
+
+    rgba[r] = s;
+
+    t.pulse();
+  }
+
+  canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());
+
+  te::common::Free(rgba, m_gridCanvas->getNumberOfRows());
 
   //verify for image outline
   if(rs->getImageOutline())
