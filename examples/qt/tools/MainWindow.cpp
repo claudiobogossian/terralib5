@@ -29,11 +29,15 @@
 
 // TerraLib
 #include <terralib/common.h>
+#include <terralib/common/progress/ProgressManager.h>
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 #include <terralib/maptools.h>
 #include <terralib/se.h>
-#include <terralib/qt/widgets/canvas/MapDisplay.h>
+#include <terralib/raster/Raster.h>
+#include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
+#include <terralib/qt/widgets/progress/ProgressViewerBar.h>
+#include <terralib/qt/widgets/progress/ProgressViewerWidget.h>
 #include <terralib/qt/widgets/tools/CoordTracking.h>
 #include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/tools/Pan.h>
@@ -46,12 +50,50 @@
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
 #include <QtGui/QContextMenuEvent>
+#include <QtGui/QDockWidget>
+#include <QtGui/QFileDialog>
 #include <QtGui/QMenu>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
 
 // STL
 #include <cassert>
+
+te::se::Symbolizer* BuildSymbolizer(const te::gm::GeomType& geomType)
+{
+  switch(geomType)
+  {
+    case te::gm::PolygonType:
+    {
+      QColor color(rand() % 255, rand() % 255, rand() % 255);
+      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
+      symbolizer->setFill(te::se::CreateFill(color.name().toStdString(), "1.0"));
+      symbolizer->setStroke(te::se::CreateStroke("#000000", "1", "1.0"));
+      return symbolizer;
+    }
+
+    case te::gm::LineStringType:
+    {
+      QColor color(rand() % 255, rand() % 255, rand() % 255);
+      te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
+      symbolizer->setStroke(te::se::CreateStroke(color.name().toStdString(), "1", "1.0"));
+      return symbolizer;
+    }
+
+    case te::gm::PointType:
+    {
+      QColor color(rand() % 255, rand() % 255, rand() % 255);
+      te::se::Fill* markFill = te::se::CreateFill(color.name().toStdString(), "1.0");
+      te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "1");
+      te::se::Mark* mark = te::se::CreateMark("circle", markStroke, markFill);
+      te::se::Graphic* graphic = te::se::CreateGraphic(mark, "12", "", "");
+      te::se::PointSymbolizer* symbolizer = te::se::CreatePointSymbolizer(graphic);
+      return symbolizer;
+    }
+  }
+
+  return 0;
+}
 
 std::size_t MainWindow::ms_id = 0;
 
@@ -65,15 +107,12 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   // Creates the menu
   m_menu = new QMenu(this);
 
-  // Creates the status bar
-  statusBar();
-
   // Setups the tool actions
   setupActions();
 
   // Creates the Map Display
-  QSize size(512, 512);
-  m_display = new te::qt::widgets::MapDisplay(size, this);
+  QSize size(800, 600);
+  m_display = new te::qt::widgets::MultiThreadMapDisplay(size, this);
   m_display->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   setCentralWidget(m_display);
 
@@ -88,13 +127,26 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   connect(coordTracking, SIGNAL(coordTracked(QPointF&)), SLOT(onCoordTracked(QPointF&)));
   m_display->installEventFilter(coordTracking);
 
+  // Creates the status progress bar
+  te::qt::widgets::ProgressViewerBar* pb = new te::qt::widgets::ProgressViewerBar(this);
+  te::common::ProgressManager::getInstance().addViewer(pb);
+  statusBar()->addPermanentWidget(pb);
+
+  // Creates the multi task progress bar
+  te::qt::widgets::ProgressViewerWidget* pbw = new te::qt::widgets::ProgressViewerWidget(this);
+  te::common::ProgressManager::getInstance().addViewer(pbw);
+
+  QDockWidget* docWidget = new QDockWidget(this);
+  docWidget->setWidget(pbw);
+  docWidget->setFixedWidth(250);
+  docWidget->setAllowedAreas(Qt::RightDockWidgetArea);
+  docWidget->setWindowTitle(tr("Threads Progress"));
+  addDockWidget(Qt::RightDockWidgetArea, docWidget);
+
   // Adjusting
   setWindowTitle(tr("TerraLib Qt Tools Example"));
   setMinimumSize(60, 60);
   resize(size);
-
-  // Adding a hard-coded layer
-  addLayer(""TE_DATA_EXAMPLE_LOCALE"/data/shp/Muni_SM_Setoresrec_pol.shp");
 }
 
 MainWindow::~MainWindow()
@@ -105,6 +157,16 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupActions()
 {
+  // Add Vector Layer
+  QAction* addVectorLayer = new QAction(QIcon::fromTheme("list-add"), tr("Add Vector Layer..."), this);
+  connect(addVectorLayer, SIGNAL(triggered()), SLOT(onAddVectorLayerTriggered()));
+  m_toolBar->addAction(addVectorLayer);
+
+  // Add Raster Layer
+  /*QAction* addRasterLayer = new QAction(QIcon::fromTheme("list-add"), tr("Add Raster Layer..."), this);
+  connect(addRasterLayer, SIGNAL(triggered()), SLOT(onAddRasterLayerTriggered()));
+  m_toolBar->addAction(addRasterLayer);*/
+
   // List of created actions
   QList<QAction*> actions;
 
@@ -169,7 +231,7 @@ void MainWindow::setupActions()
   }
 }
 
-void MainWindow::addLayer(const QString& path)
+void MainWindow::addVectorLayer(const QString& path)
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
@@ -187,42 +249,46 @@ void MainWindow::addLayer(const QString& path)
   transactor->getCatalogLoader()->getDataSets(datasets);
   assert(!datasets.empty());
 
-  // Gets DataSet Type
-  te::da::DataSetType* dt = cl->getDataSetType(datasets[0]);
+  // MapDisplay extent
+  te::gm::Envelope env;
 
-  // Default geometry property
-  te::gm::GeometryProperty* geomProperty = dt->getDefaultGeomProperty();
+  for(std::size_t i = 0; i < datasets.size(); ++i)
+  {
+    // Gets DataSet Type
+    te::da::DataSetType* dt = cl->getDataSetType(datasets[i]);
 
-  // Creates a Layer
-  te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(static_cast<unsigned int>(ms_id++)), datasets[0]);
-  layer->setDataSource(ds);
-  layer->setDataSetName(datasets[0]);
-  layer->setVisibility(te::map::VISIBLE);
+    // Updates MapDisplay extent
+    te::gm::Envelope* e = cl->getExtent(dt->getDefaultGeomProperty());
+    env.Union(*e);
+    delete e;
 
-  // Creates a hard-coded style
-  te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-  symbolizer->setFill(te::se::CreateFill("#339966", "1.0"));
-  symbolizer->setStroke(te::se::CreateStroke("#000000", "2", "1.0"));
+    // Creates a Layer
+    te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(static_cast<unsigned int>(ms_id++)), datasets[i]);
+    layer->setDataSource(ds);
+    layer->setDataSetName(datasets[i]);
+    layer->setVisibility(te::map::VISIBLE);
 
-  te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(symbolizer);
+    // Creates a hard-coded style
+    te::se::Symbolizer* symbolizer = BuildSymbolizer(dt->getDefaultGeomProperty()->getGeometryType());
 
-  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-  style->push_back(rule);
+    te::se::Rule* rule = new te::se::Rule;
+    rule->push_back(symbolizer);
 
-  layer->setStyle(style);
+    te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+    style->push_back(rule);
 
-  // Creates a Layer Renderer
-  te::map::LayerRenderer* r = new te::map::LayerRenderer();
-  layer->setRenderer(r);
+    layer->setStyle(style);
 
-  // Adding layer to layer list
-  m_layers.push_back(layer);
+    // Creates a Layer Renderer
+    te::map::LayerRenderer* r = new te::map::LayerRenderer();
+    layer->setRenderer(r);
+
+    // Adding layer to layer list
+    m_layers.push_back(layer);
+  }
+
   // Storing the data source
   m_ds.push_back(ds);
-
-  // Calculates new extent to MapDisplay
-  te::gm::Envelope* extent = cl->getExtent(geomProperty);
 
   // No more necessary
   delete cl;
@@ -230,12 +296,78 @@ void MainWindow::addLayer(const QString& path)
 
   // Updates MapDisplay layer list and extent
   m_display->setLayerList(m_layers);
-  m_display->setExtent(*extent);
+  m_display->setExtent(env);
+}
+
+void MainWindow::addRasterLayer(const QString& path)
+{
+  // Creates and connects data source
+  std::map<std::string, std::string> connInfo;
+  connInfo["URI"] = path.toStdString();
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
+  ds->open(connInfo);
+
+  // Transactor and catalog loader
+  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+  te::da::DataSourceCatalogLoader* cl = transactor->getCatalogLoader();
+  cl->loadCatalog();
+
+  // Get the number of data set types that belongs to the data source
+  boost::ptr_vector<std::string> datasets;
+  transactor->getCatalogLoader()->getDataSets(datasets);
+  assert(!datasets.empty());
+
+  // Gets DataSet, raster and extent
+  te::da::DataSet* dataSet = transactor->getDataSet(datasets[0]);
+  te::rst::Raster* raster = dataSet->getRaster();
+  te::gm::Envelope env(*raster->getExtent());
+
+ // Creates a Raster Layer
+  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(te::common::Convert2String(ms_id++), datasets[0]);
+  rasterLayer->setDataSource(ds);
+  rasterLayer->setDataSetName(datasets[0]);
+  rasterLayer->setVisibility(te::map::VISIBLE);
+
+  // Creates a Raster Layer Renderer
+  te::map::RasterLayerRenderer* r = new te::map::RasterLayerRenderer();
+  rasterLayer->setRenderer(r);
+
+  // Adding layer to layer list
+  m_layers.push_back(rasterLayer);
+
+  // Storing the data source
+  m_ds.push_back(ds);
+
+   m_display->setSRID(raster->getSRID());
+
+  // No more necessary
+  delete dataSet;
+  delete raster;
+  delete cl;
+  delete transactor;
+
+  // Updates MapDisplay layer list and extent
+  m_display->setLayerList(m_layers);
+  m_display->setExtent(env);
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 {
   m_menu->popup(e->globalPos());
+}
+
+void MainWindow::onAddVectorLayerTriggered()
+{
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/shp/");
+  if(!path.isNull())
+    addVectorLayer(path);
+}
+
+void MainWindow::onAddRasterLayerTriggered()
+{
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a raster file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/");
+  if(!path.isNull())
+    addRasterLayer(path);
 }
 
 void MainWindow::onPanTriggered()
@@ -292,7 +424,6 @@ void MainWindow::onSelectionTriggered()
   delete m_tool;
   m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(*m_layers.begin()));
   m_display->installEventFilter(m_tool);
-
 }
 
 void MainWindow::onCoordTracked(QPointF& coordinate)
