@@ -7,7 +7,6 @@ te::map::DataSetTable::DataSetTable(te::da::DataSet* dset) :
 te::map::AbstractTable(),
 m_dataSet(dset)
 {
-	resetTable();
 }
 
 te::map::DataSetTable::~DataSetTable()
@@ -25,6 +24,7 @@ void te::map::DataSetTable::resetTable()
   }
 
   m_currentRow = 0;
+  m_nextRow = m_currentRow+1;
 
   m_dataSet->moveFirst();
 }
@@ -71,6 +71,31 @@ std::string te::map::DataSetTable::getColumnName(size_t column) const
   std::string pName = type->getProperty(m_presentOrder[c])->getName();
 
   return pName;
+}
+
+te::gm::Geometry* te::map::DataSetTable::getGeometry(const size_t& row) const
+{
+  if(row >= m_dataSet->size())
+    throw te::common::Exception("Row index out of boundaries.");
+
+  if(!m_geoColumns.empty())
+  {
+    size_t col = *m_geoColumns.begin();
+
+    if(row != m_currentRow)
+      if(!m_dataSet->move(row))
+        throw te::common::Exception("Fail to move dataSet forward.");
+
+    te::gm::Geometry* g = m_dataSet->getGeometry((int) col);
+
+    if(row != m_currentRow)
+      if(!m_dataSet->move(m_currentRow))
+        throw te::common::Exception("Fail to move dataSet backward.");
+
+    return g;
+  }
+
+  return AbstractTable::getGeometry(row);
 }
 
 std::set<size_t> te::map::DataSetTable::findGeoColsPositions() const

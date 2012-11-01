@@ -8,6 +8,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QGroupBox>
+#include <QVBoxLayout>
 
 // TerraLib
 #include <terralib/common.h>
@@ -17,9 +18,11 @@
 #include <terralib/qt/widgets.h>
 #include <terralib/st.h>
 
-#include "MyGrid.h"
-#include "MyLayer.h"
-#include "ConfigStyle.h"
+class MyGrid;
+class MyLayer;
+class MyDisplay;
+class ConfigStyle;
+class QwtPlot;
 
 class MyWindow : public QWidget
 {
@@ -84,8 +87,8 @@ private:
   te::map::FolderLayer* m_rootFolderLayer;
   te::qt::widgets::LayerExplorerModel* m_layerExplorerModel;
   te::qt::widgets::LayerExplorer* m_layerExplorer;
-  std::vector<te::map::MapDisplay*> m_mapDisplayVec;
-  MyDisplay* m_mapDisplay;
+  std::vector<MyDisplay*> m_mapDisplayVec;
+  MyDisplay* m_display;
 //  std::map<MyLayer*, MyGrid*> m_gridMap; // para que cada layer tenha apenas um unico grid correspondente
                                          // se o grid ja foi aberto nao cria outro DataSet - apenas da' show
   te::map::AbstractLayer* m_selectedLayer;

@@ -29,6 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "../Singleton.h"
+#include "../ThreadingPolicies.h"
 
 // STL
 #include <map>
@@ -53,7 +54,11 @@ namespace te
 
       \sa AbstractProgressViewer, TaskProgress
     */
-    class TECOMMONEXPORT ProgressManager : public te::common::Singleton<ProgressManager>
+    class TECOMMONEXPORT ProgressManager : public te::common::ObjectLevelLockable<ProgressManager,
+                                                                                  ::boost::recursive_mutex,
+                                                                                  ::boost::lock_guard< ::boost::recursive_mutex>,
+                                                                                  ::boost::lock_guard< ::boost::recursive_mutex> >,
+                                           public te::common::Singleton<ProgressManager>
     {
       friend class te::common::Singleton<ProgressManager>;
 
@@ -86,6 +91,8 @@ namespace te
           \param tp TaskProgress instance
 
           \return  Task identifier
+
+          \note Thread-safe!
         */
         int addTask(TaskProgress* tp);
 
@@ -93,6 +100,8 @@ namespace te
           \brief Used in TaskProgress destructor, remove task from singleton.
 
           \param taskId Task identifier.
+
+          \note Thread-safe!
         */
         void removeTask(int taskId);
 

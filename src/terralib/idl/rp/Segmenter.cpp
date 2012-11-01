@@ -25,8 +25,9 @@
 
 #include "Segmenter.h"
 #include "../Functions.h"
+#include "../IdlRaster.h"
 
-#include <terralib/memory/Raster.h>
+//#include <terralib/memory/Raster.h>
 
 #include <terralib/common/StringUtils.h>
 
@@ -61,27 +62,13 @@ namespace te
         
         // creating the input raster
         
-        const unsigned int nBands = (unsigned int)inputArray->value.arr->n_dim;
-        const unsigned int nLines = (unsigned int)inputArray->value.arr->dim[ 2 ];
-        const unsigned int nCols = (unsigned int)inputArray->value.arr->dim[ 1 ];
-        const int tlDataType = idl2TerralibType( inputArray->type );
+        te::idl::IdlRaster inputRaster( inputArray, false );
         
-//        std::cout << std::endl << nBands << std::endl;
-//        std::cout << std::endl << nLines << std::endl;
-//        std::cout << std::endl << nCols << std::endl;
-//        std::cout << std::endl << tlDataType << std::endl;        
-        
-        std::map<std::string, std::string> inputRasterInfo;
-        inputRasterInfo["MEM_IS_DATA_BUFFER"] = "TRUE";
-        inputRasterInfo["MEM_BUFFER_NCOLS"] = te::common::Convert2String( nCols );
-        inputRasterInfo["MEM_BUFFER_NROWS"] = te::common::Convert2String( nLines );
-        inputRasterInfo["MEM_BUFFER_DATATYPE"] = te::common::Convert2String( tlDataType );
-        inputRasterInfo["MEM_BUFFER_NBANDS"] = te::common::Convert2String( nBands );  
-        
-        std::auto_ptr< te::rst::Raster > inputRasterPtr( te::rst::RasterFactory::make(
-          "MEM", inputRasterInfo, inputArray->value.arr->data, te::idl::dummyFunction ) );
+        const unsigned int nBands = inputRaster.getNumberOfBands();
+        const unsigned int nLines = inputRaster.getNumberOfRows();
+        const unsigned int nCols = inputRaster.getNumberOfColumns();
           
-        te::rst::CreateCopy( *inputRasterPtr, "inputRaster.tif" );
+//        te::rst::CreateCopy( inputRaster, "inputRaster.tif" );
           
         // Creating the algorithm parameters
         
@@ -95,7 +82,7 @@ namespace te
         
         te::rp::Segmenter::InputParameters algoInputParams;
         
-        algoInputParams.m_inputRasterPtr = inputRasterPtr.get();
+        algoInputParams.m_inputRasterPtr = &inputRaster;
         for( unsigned int band = 0 ; band < nBands ; ++band )
           algoInputParams.m_inputRasterBands.push_back( band );
         

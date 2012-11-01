@@ -40,6 +40,16 @@ namespace te
         enum
         {
           APP_CLOSE,
+          NEW_TOOLBAR,
+          DISPLAY_RESIZED,
+          LAYER_ADDED,
+          UPDATE_LAYER_VISIBILTY,
+          TOOL_CHANGED,
+          LAYER_SELECTED,
+          TRACK_COORDINATE,
+          POINT_GEOMETRIES,
+          VISIBLE_BBOX_CHANGED,
+          STYLE_CHANGED,
           CUSTOM = 1024
         };
 

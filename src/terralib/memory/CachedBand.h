@@ -88,8 +88,6 @@ namespace te
 
       protected :
         
-        std::size_t m_idx; //!< This band index.
-        
         unsigned int m_blkWidth; //!< The current band blocks width
         
         unsigned int m_blkHeight; //!< The current band blocks height

@@ -99,9 +99,25 @@ te::gdal::Raster::Raster(GDALDataset* gdataset, te::common::AccessPolicy p)
 
 te::gdal::Raster::Raster(const Raster& rhs)
   : te::rst::Raster(rhs),
-    m_gdataset(rhs.m_gdataset),
-    m_bands(rhs.m_bands)
+    m_gdataset(0),
+    m_bands(0)
 {
+  if(rhs.m_gdataset)
+  {
+    GDALDriver* driverPtr = rhs.m_gdataset->GetDriver();
+
+    char** papszOptions = 0;
+
+    m_gdataset = driverPtr->CreateCopy(rhs.m_gdataset->GetDescription(),
+                                       rhs.m_gdataset, 1, papszOptions,
+                                       NULL, NULL);
+
+    GDALFlushCache(m_gdataset);
+
+    m_policy = te::common::RAccess;
+
+    GetBands(this, m_bands);
+  }
 }
 
 te::gdal::Raster::~Raster()
@@ -120,11 +136,9 @@ te::gdal::Raster::~Raster()
       GDALDriver* driverPtr = GetGDALDriverManager()->GetDriverByName(driverName.c_str());
 
       GDALDataset* poDataset = driverPtr->CreateCopy(m_gdataset->GetDescription(),
-                                                     m_gdataset,
-                                                     0,
-                                                     papszOptions,
-                                                     NULL,
-                                                     NULL);
+                                                     m_gdataset, 0, papszOptions,
+                                                     NULL, NULL);
+
       GDALClose(poDataset);
     }
 
@@ -136,7 +150,6 @@ te::gdal::Raster::~Raster()
     // deleting who?
     m_deleter = 0;
   }
-
 }
 
 void te::gdal::Raster::open(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p)
@@ -414,6 +427,9 @@ void te::gdal::Raster::create(te::rst::Grid* g,
 
     if (!m_gdataset)
     {
+      delete g;
+      g = 0;
+
       std::string mess = TR_GDAL("Raster couldn't be created:");
       mess += m_name;
       throw Exception(mess);

@@ -100,9 +100,11 @@ appPrefix ("qt" "${_DIRS}" QT_INC_INST_DIRS)
 # Get files by structured by folders.
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
+set (MOC "")
+
 # Select the header files for moc'ing
-file (
-  GLOB HDRS_TO_MOC
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/qwt/HistogramDisplay.h
   ${SRCDIR}/qwt/HistogramSelectionCursor.h
   ${SRCDIR}/qwt/Legend.h
@@ -111,23 +113,47 @@ file (
   ${SRCDIR}/qwt/ScatterSelectionCursor.h
   ${SRCDIR}/qwt/TimeSeriesDisplay.h
   ${SRCDIR}/qwt/ColorBar.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/qwt" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/canvas/MapDisplay.h
-  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnector.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h  
-  ${SRCDIR}/widgets/datasource/connector/gdal/GDALType.h  
-  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnector.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/gdal" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h  
-  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileType.h
-  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnector.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/geofile" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h  
-  ${SRCDIR}/widgets/datasource/connector/ogr/OGRType.h
-  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnector.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/ogr" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
-  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISType.h
-  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnector.h
-  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnectorDialog.h  
-  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileType.h
-  ${SRCDIR}/widgets/datasource/core/DataSourceType.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
+
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/shp" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
   ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
@@ -148,32 +174,72 @@ file (
   ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
   ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/explorer" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorDialog.h
   ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWidget.h
-  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h  
+  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h 
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/selector" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
   ${SRCDIR}/widgets/layer/LayerExplorerModel.h
   ${SRCDIR}/widgets/layer/LayerItem.h
   ${SRCDIR}/widgets/layer/LegendItem.h
   ${SRCDIR}/widgets/layer/Legend.h
-  ${SRCDIR}/widgets/layer/FolderLayerItem.h
+#  ${SRCDIR}/widgets/layer/FolderLayerItem.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/dataset/CreateDataSet.h
   ${SRCDIR}/widgets/dataset/AddIndex.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataset" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/datagrid/DataGridModel.h
   ${SRCDIR}/widgets/datagrid/DataGridView.h
   ${SRCDIR}/widgets/datagrid/HeaderView.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datagrid" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/property/AddProperty.h
   ${SRCDIR}/widgets/property/RemoveProperty.h
   ${SRCDIR}/widgets/property/RenameProperty.h
   ${SRCDIR}/widgets/property/UpdateProperty.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/property" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/progress/ProgressViewerBar.h
   ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
   ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
   ${SRCDIR}/widgets/progress/ProgressViewerWidget.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/progress" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/help/AssistantHelpManagerImpl.h
   ${SRCDIR}/widgets/help/HelpPushButton.h
   ${SRCDIR}/widgets/help/HelpToolButton.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/help" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/utils/DoubleListWidget.h
   ${SRCDIR}/widgets/utils/HorizontalSliderWidget.h
   ${SRCDIR}/widgets/utils/ListWidget.h
@@ -181,9 +247,19 @@ file (
   ${SRCDIR}/widgets/utils/ParameterTableWidget.h
   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
   ${SRCDIR}/widgets/utils/FileChooser.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
   ${SRCDIR}/widgets/se/BasicFillWidget.h
   ${SRCDIR}/widgets/se/BasicStrokeWidget.h
@@ -210,13 +286,28 @@ file (
   ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
   ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
   ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
+)  
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/srs/SRSDialog.h
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/dataview/TabularViewer.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataview" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
   ${SRCDIR}/widgets/tools/Measure.h
-#  ${SRCDIR}/widgets/dataview/DataViewPopupFilter.cpp
 )
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 
 # Select the FORMS widgets
 file(
@@ -245,19 +336,10 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DQWT_DLL)
 endif()
 
-qt4_wrap_cpp(MOC ${HDRS_TO_MOC})
-
 set (MOC2 ${CMAKE_CURRENT_BINARY_DIR}/moc_DataViewPopupFilter.cpp)
-QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-f")
+QT4_CREATE_MOC_COMMAND("${SRCDIR}/widgets/dataview/TabularViewer.cpp" "${MOC2}" "" "-fterralib/qt/widgets/dataview/TabularViewer.cpp" )
 
 qt4_wrap_ui(UI ${FORMS})
-#qt4_add_resources( RSC_IMG "${ROOT}/images/terra_icons.qrc")
-
-# Usando o temas de icones.
-#set (ICON_THEME_NAME "Terralib" CACHE STRING "Name of the theme of icons to be used.")
-#set (ICON_THEMES_DIRS "${ROOT}/resources/themes" CACHE STRING "Directories to search for themes.")
-
-#add_definitions (-DICO_THEME_NAME=${ICON_THEME_NAME} -DICO_THEME_DIRS=${ICON_THEMES_DIRS})
 
 install (
   FILES ${UI}
@@ -266,14 +348,14 @@ install (
 )
 
 source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})# ${RSC_IMG})
+source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})
 
 # Include directory of the image files
-list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")# "${ROOT}/images")
+list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
 
-list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")# "${RSC_IMG}")
+list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")
 
 list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 

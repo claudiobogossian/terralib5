@@ -26,9 +26,3 @@ include ( ${T5_MODULEPATH}/UtilFunctions.cmake )
 foreach(DEP ${DEPS})
   find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
 endforeach()
-
-list (FIND DEPS "Qt4" HAS_QT4)
-
-if(HAS_QT4)
-  include (${QT_USE_FILE})
-endif()

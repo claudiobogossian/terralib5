@@ -184,6 +184,9 @@ void te::qt::widgets::MapDisplay::resizeEvent(QResizeEvent* e)
 
 QPointF te::qt::widgets::MapDisplay::transform(const QPointF& p)
 {
+  if(m_layerCanvasMap.empty())
+    return QPointF();
+
   te::qt::widgets::Canvas* canvas = m_layerCanvasMap.begin()->second;
   if(canvas == 0)
     return QPointF();

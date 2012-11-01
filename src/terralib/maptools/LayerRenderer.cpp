@@ -24,6 +24,9 @@
  */
 
 // TerraLib
+#include "../common/StringUtils.h"
+#include "../common/Translator.h"
+#include "../common/progress/TaskProgress.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSource.h"
@@ -166,7 +169,21 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
 
     // Gets the set of symbolizers
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
-    for(std::size_t j = 0; j < symbolizers.size(); ++j) // for each <Symbolizer>
+    std::size_t nSymbolizers = style->getNRules();
+
+    // Building task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
+    std::string message = TR_MAP("Drawing the layer");
+    message += " " + layer->getTitle() + ". ";
+    message += TR_MAP("Rule");
+    message += " " + te::common::Convert2String(i + 1) + " " + TR_MAP("of") + " ";
+    message += te::common::Convert2String(nRules) + ".";
+
+    // Draw task
+    te::common::TaskProgress task(message);
+    // Setups task
+    task.setTotalSteps(nSymbolizers * dataset->size());
+
+    for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {
       te::se::Symbolizer* symb = symbolizers[j];
 
@@ -176,6 +193,9 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
       // Let's draw!
       while(dataset->moveNext())
       {
+        // Updates the draw task
+        task.pulse();
+
         /* How can we get anothers or a specified, for example? And others data sets? <Geometry> element? 
            For while, Default Geometry. */
         te::gm::Geometry* g = dataset->getGeometry();

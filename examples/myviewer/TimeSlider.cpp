@@ -20,9 +20,9 @@
 
 #include "STExamples.h"
 
-TimeSlider::TimeSlider(te::map::MapDisplay* md, QWidget* parent) : 
+TimeSlider::TimeSlider(MyDisplay* md, QWidget* parent) : 
   QSlider(Qt::Horizontal, parent),
-  m_mapDisplay(md),
+  m_display(md),
   m_lines(false),
   m_loop(false),
   m_timerId(0),
@@ -43,7 +43,7 @@ TimeSlider::TimeSlider(te::map::MapDisplay* md, QWidget* parent) :
 
   int w = m_playPixmap->width();
 
-  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_playPixmap);
+  m_display->setTimeSliderIcon(m_playPixmap);
 
   connect(this, SIGNAL(valueChanged(int)), this, SLOT(valueChangedSlot(int)));
   stop();
@@ -151,7 +151,7 @@ void TimeSlider::timerEvent(QTimerEvent* e)
   m_value = this->value();
   if(m_value == 0)
   {
-    ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
+    m_display->clearTemporalPixmaps(m_layers);
     clearLastPointMap();
   }
 
@@ -168,7 +168,7 @@ void TimeSlider::timerEvent(QTimerEvent* e)
 
   draw(tInitial, tFinal);
   if(m_stop)
-    ((MyDisplay*)m_mapDisplay)->clearTimeLineEdit();
+    m_display->clearTimeLineEdit();
 
   int fvalue = m_value + m_minuteInterval;
   if(fvalue >= maximum())
@@ -192,7 +192,7 @@ void TimeSlider::valueChangedSlot(int v)
 
   m_value = v;
   
-  ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
+  m_display->clearTemporalPixmaps(m_layers);
 
   te::dt::TimeInstant* ti = (te::dt::TimeInstant*)m_initialTime;
   boost::gregorian::date initialDate(ti->getDate().getDate());
@@ -281,7 +281,7 @@ void TimeSlider::draw(te::dt::TimeInstant* tini, te::dt::TimeInstant* tfim)
         }
       }
 
-      ((MyDisplay*)m_mapDisplay)->drawTemporalData(layer, geoms, m_lines);
+      m_display->drawTemporalData(layer, geoms, m_lines);
       if(m_lines)
         te::common::FreeContents(geoms);
       geoms.clear();
@@ -294,7 +294,7 @@ void TimeSlider::draw(te::dt::TimeInstant* tini, te::dt::TimeInstant* tfim)
       if(layer)
       {
         rasterDrawed = true;
-        ((MyDisplay*)m_mapDisplay)->drawTemporalData(layer, geoms, false);
+        m_display->drawTemporalData(layer, geoms, false);
       }
     }
 
@@ -432,10 +432,10 @@ void TimeSlider::clearDrawing()
 
   std::vector<te::map::AbstractLayer*>::iterator it;
   for(it = m_layers.begin(); it != m_layers.end(); ++it)
-     ((MyDisplay*)m_mapDisplay)->clearTemporalCanvas(*it);
+     m_display->clearTemporalCanvas(*it);
 
-  ((MyDisplay*)m_mapDisplay)->clearTemporalPixmaps(m_layers);
-  ((MyDisplay*)m_mapDisplay)->update();
+  m_display->clearTemporalPixmaps(m_layers);
+  m_display->update();
 }
 
 void TimeSlider::configDrawing()
@@ -568,7 +568,7 @@ void TimeSlider::stopSlot()
 
 void TimeSlider::play()
 {
-  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_pausePixmap);
+  m_display->setTimeSliderIcon(m_pausePixmap);
   m_play = true;
   int value = m_value;
 
@@ -589,7 +589,7 @@ void TimeSlider::play()
 
 void TimeSlider::pause()
 {
-  ((MyDisplay*)m_mapDisplay)->setTimeSliderIcon(m_playPixmap);
+  m_display->setTimeSliderIcon(m_playPixmap);
   m_play = false;
 }
 
@@ -597,7 +597,7 @@ void TimeSlider::stop()
 {
   m_stop = true;
   pause();
-  ((MyDisplay*)m_mapDisplay)->clearTimeLineEdit();
+  m_display->clearTimeLineEdit();
   clearDrawing();
   setEnabled(false);
 }

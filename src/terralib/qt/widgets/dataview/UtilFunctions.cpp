@@ -16,7 +16,9 @@
 #include <set>
 #include <vector>
 
-QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* mainMnu)
+QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* parent, std::vector<QAction*>& rst_hl_grp);
+
+QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* mainMnu, std::vector<te::qt::widgets::ColorPickerToolButton*>& colors)
 {
   te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
 
@@ -34,6 +36,7 @@ QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filte
   {
     te::qt::widgets::ColorPickerToolButton* btn = new te::qt::widgets::ColorPickerToolButton(mnu);
     te::qt::widgets::HighlightDelegate* hl = dec->getDecorated(i);
+    colors.push_back(btn);
 
     btn->setColor(hl->getHighlightColor());
 
@@ -52,7 +55,7 @@ QMenu* makeGroupColorMenu(te::qt::widgets::TabularViewer* viewer, QObject* filte
   return mnu;
 }
 
-QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent)
+QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent, std::vector<QAction*>& acts)
 {
   te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
 
@@ -72,25 +75,23 @@ QMenu* makePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent)
   QMenu* mnu = new QMenu(QObject::tr("Promote"), parent);
 
   for(size_t i=0; i<nGrps; i++)
-    if(grps.find(i) == grps.end())
-    {
-      QAction* act = new QAction(mnu);
-      QString gName = dec->getDecorated(i)->getGroupName();
-      act->setText(gName);
-      act->setToolTip(QObject::tr("Promote the ")+gName + QObject::tr(" objects."));
-      act->setData(QVariant((int)i));
-      mnu->addAction(act);
-    }
+  {
+    QAction* act = new QAction(mnu);
+    QString gName = dec->getDecorated(i)->getGroupName();
+    act->setText(gName);
+    act->setToolTip(QObject::tr("Promote the ")+gName + QObject::tr(" objects."));
+    act->setData(QVariant((int)i));
+    mnu->addAction(act);
+
+    acts.push_back(act);
+  }
 
   return mnu;
 }
 
-QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent)
+QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* parent, std::vector<QAction*>& acts)
 {
   std::set<size_t> grps = viewer->getPromotedGroups();
-
-  if(grps.empty())
-    return 0;
 
   te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
 
@@ -99,16 +100,16 @@ QMenu* makeRemovePromoteMenu(te::qt::widgets::TabularViewer* viewer, QMenu* pare
 
   QMenu* mnu = new QMenu(QObject::tr("Reset promotion"), parent);
 
-  std::set<size_t>::iterator it;
-
-  for(it=grps.begin(); it!=grps.end(); ++it)
+  for(size_t i=0; i < dec->getNumberOfClasses(); i++)
   {
     QAction* act = new QAction(mnu);
-    QString gName = dec->getDecorated(*it)->getGroupName();
+    QString gName = dec->getDecorated(i)->getGroupName();
     act->setText(gName);
     act->setToolTip(QObject::tr("Removes the promotion of the ")+gName + QObject::tr(" objects."));
-    act->setData(QVariant((int)*it));
+    act->setData(QVariant((int)i));
     mnu->addAction(act);
+
+    acts.push_back(act);
   }
 
   return mnu;
@@ -134,20 +135,26 @@ void makeHeaderMenu(QMenu*& mnu, QAction*& col, te::qt::widgets::TabularViewer* 
   col = act;
 }
 
-QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAction*& rset_hl, QAction*& prmAll, QAction*& reset_prmAll, QAction*& prm, QAction*& reset_prm)
+QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAction*& rst_hl_all, QAction*& prm_all, QAction*& rst_prm_all, std::vector<QAction*>& prm, 
+  std::vector<QAction*>& reset_prm, std::vector<QAction*>& reset_hl, std::vector<te::qt::widgets::ColorPickerToolButton*>& colors)
 {
   QMenu* mnu = new QMenu(viewer);
+  QAction* act = 0;
 
   //! Promote actions
-  QAction* act = new QAction(mnu);
+  act = new QAction(mnu);
   act->setText(QObject::tr("Promote all"));
   act->setToolTip(QObject::tr("Promote all objects in all groups of highlighted objects."));
   mnu->addAction(act);
   viewer->connect(act, SIGNAL(triggered()), SLOT(promoteHighlighted()));
+  prm_all = act;
 
-  prmAll = act;
-  prm = mnu->addSeparator();
-  prm->setParent(mnu);
+  QMenu* prm_mnu = makePromoteMenu(viewer, mnu, prm);
+  filter->connect(prm_mnu, SIGNAL(triggered(QAction*)), SLOT(promote(QAction*)));
+
+  mnu->addMenu(prm_mnu);
+
+  mnu->addSeparator()->setParent(mnu);
 
   //! Reset promote actions
   act = new QAction(mnu);
@@ -156,11 +163,16 @@ QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAc
   mnu->addAction(act);
   viewer->connect(act, SIGNAL(triggered()), SLOT(resetPromote()));
 
-  reset_prmAll = act;
-  reset_prm = mnu->addSeparator();
-  reset_prm->setParent(mnu);
+  rst_prm_all = act;
 
-  mnu->addMenu(makeGroupColorMenu(viewer, filter, mnu));
+  QMenu* rst_prm_mnu = makeRemovePromoteMenu(viewer, mnu, reset_prm);
+  filter->connect (rst_prm_mnu, SIGNAL(triggered(QAction*)), SLOT(resetPromote(QAction*)));
+
+  mnu->addMenu(rst_prm_mnu);
+
+  mnu->addSeparator()->setParent(mnu);
+
+  mnu->addMenu(makeGroupColorMenu(viewer, filter, mnu, colors));
 
   mnu->addSeparator()->setParent(mnu);
 
@@ -171,7 +183,11 @@ QMenu* makeDataMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QAc
   mnu->addAction(act);
   viewer->connect(act, SIGNAL(triggered()), SLOT(resetHighlights()));
 
-  rset_hl = act;
+  rst_hl_all = act;
+
+  QMenu* rst_hl_mnu = makeResetHLMenu(viewer, filter, mnu, reset_hl);
+
+  mnu->addMenu(rst_hl_mnu);
 
   return mnu;
 }
@@ -199,9 +215,9 @@ QMenu* makeHiddenMenu(QHeaderView* view, QMenu* parent)
   return mnu;
 }
 
-std::vector<size_t> getGrpsHLighted(te::qt::widgets::TabularViewer* viewer)
+std::set<size_t> getGrpsHLighted(te::qt::widgets::TabularViewer* viewer)
 {
-  std::vector<size_t> grps;
+  std::set<size_t> grps;
   te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*>(viewer->itemDelegate());
 
   if(dec != 0)
@@ -211,28 +227,28 @@ std::vector<size_t> getGrpsHLighted(te::qt::widgets::TabularViewer* viewer)
     if(nC > 0)
       for(size_t i=0; i<nC; i++)
         if(!dec->getDecorated(i)->getHighlightKeys().empty())
-          grps.push_back(i);
+          grps.insert(i);
   }
 
   return grps;
 }
 
-QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* parent)
+QMenu* makeResetHLMenu(te::qt::widgets::TabularViewer* viewer, QObject* filter, QMenu* parent, std::vector<QAction*>& rst_hl_grp)
 {
-  std::vector<size_t> hls = getGrpsHLighted(viewer);
-  
-  if(hls.empty())
-    return 0;
+  std::set<size_t> hls = getGrpsHLighted(viewer);
+
+  te::qt::widgets::HLDelegateDecorator* dec = dynamic_cast<te::qt::widgets::HLDelegateDecorator*> (viewer->itemDelegate());
 
   QMenu* mnu = new QMenu(QObject::tr("Clear group"), parent);
 
-  for(size_t i=0; i<hls.size(); i++)
+  for(size_t i=0; i<dec->getNumberOfClasses(); i++)
   {
-    QString gName = ((te::qt::widgets::HLDelegateDecorator*)viewer->itemDelegate())->getDecorated(hls[i])->getGroupName();
+    QString gName = dec->getDecorated(i)->getGroupName();
     QAction* act = new QAction(gName, mnu);
     act->setToolTip(QObject::tr("Removes the objects from the group of ")+gName+QObject::tr(" objects."));
-    act->setData(QVariant((int)hls[i]));
+    act->setData(QVariant((int)i));
     mnu->addAction(act);
+    rst_hl_grp.push_back(act);
   }
 
   filter->connect(mnu, SIGNAL(triggered(QAction*)), SLOT(clearGroup(QAction*)));
