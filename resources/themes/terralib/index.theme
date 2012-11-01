@@ -3,7 +3,12 @@ Name=Terralib
 Name[pt]=Terralib
 Comment=Default icons for TerraLib applications
 Comment[pt]=Ícones padrão para aplicativos Terralib
-Directories=21x21,32x32,48x48,64x64,128x128,scalable
+Directories=16x16,21x21,32x32,48x48,64x64,128x128,scalable
+
+[16x16]
+Size=16
+Type=Fixed
+Context=Applications
 
 [21x21]
 Size=21
@@ -31,7 +36,7 @@ Type=Fixed
 Context=Applications
 
 [scalable]
-Size=16
+Size=12
 Type=Scalable
 MinSize=1
 MaxSize=256
