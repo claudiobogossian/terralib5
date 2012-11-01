@@ -67,6 +67,13 @@ namespace te
         /*! \brief It initializes a new ColorMap. */
         ColorMap();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other color map.
+        */
+        ColorMap(const ColorMap& rhs);
+
         /*! \brief Destructor. */
         ~ColorMap();
 
@@ -86,6 +93,8 @@ namespace te
         Interpolate* getInterpolate();
 
         //@}
+
+        ColorMap* clone() const;
 
       private:
 

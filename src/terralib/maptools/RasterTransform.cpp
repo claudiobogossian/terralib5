@@ -30,7 +30,6 @@
 #include "../raster/RasterProperty.h"
 #include "../se/RasterSymbolizer.h"
 
-
 te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raster* output) :
   m_rasterIn(input),
   m_rasterOut(output),
@@ -50,6 +49,8 @@ te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raste
 
 te::map::RasterTransform::~RasterTransform()
 {
+  m_categorizeMap.clear();
+  m_interpolateMap.clear();
   m_rgbMap.clear();
 }
 
@@ -116,6 +117,16 @@ te::map::RasterTransform::RasterTransfFunctions te::map::RasterTransform::getTra
   {
     return BLUE2THREE_TRANSF;
   }
+  else  if (m_transfFuncPtr == &RasterTransform::setCategorize &&
+            m_RGBAFuncPtr == &RasterTransform::getCategorize)
+  {
+    return CATEGORIZE_TRANSF;
+  }
+  else  if (m_transfFuncPtr == &RasterTransform::setInterpolate &&
+            m_RGBAFuncPtr == &RasterTransform::getInterpolate)
+  {
+    return INTERPOLATE_TRANSF;
+  }
   else
   {
     return NO_TRANSF;
@@ -148,6 +159,16 @@ void te::map::RasterTransform::setTransfFunction(RasterTransfFunctions func)
   {
     m_transfFuncPtr = &RasterTransform::setBlue2ThreeBand;
     m_RGBAFuncPtr = &RasterTransform::getBlue2ThreeBand;
+  }
+  else if (func == CATEGORIZE_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setCategorize;
+    m_RGBAFuncPtr = &RasterTransform::getCategorize;
+  }
+  else if (func == INTERPOLATE_TRANSF)
+  {
+    m_transfFuncPtr = &RasterTransform::setInterpolate;
+    m_RGBAFuncPtr = &RasterTransform::getInterpolate;
   }
   else
   {
@@ -380,6 +401,56 @@ te::color::RGBAColor te::map::RasterTransform::getBlue2ThreeBand(double icol, do
   return te::color::RGBAColor();
 }
 
+void te::map::RasterTransform::setCategorize(double icol, double ilin, double ocol, double olin)
+{
+   double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  te::color::RGBAColor c=  getCategorizedColor(val);
+
+  std::vector<double> vecValues;
+  vecValues.push_back(c.getRed());
+  vecValues.push_back(c.getGreen());
+  vecValues.push_back(c.getBlue());
+
+  m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+}
+
+te::color::RGBAColor te::map::RasterTransform::getCategorize(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  return getCategorizedColor(val);
+}
+
+void te::map::RasterTransform::setInterpolate(double icol, double ilin, double ocol, double olin)
+{
+   double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  te::color::RGBAColor c=  getInterpolatedColor(val);
+
+  std::vector<double> vecValues;
+  vecValues.push_back(c.getRed());
+  vecValues.push_back(c.getGreen());
+  vecValues.push_back(c.getBlue());
+
+  m_rasterOut->setValues((int)ocol, (int)olin, vecValues);
+}
+
+te::color::RGBAColor te::map::RasterTransform::getInterpolate(double icol, double ilin)
+{
+  double val;
+
+  m_rasterIn->getValue((int)icol, (int)ilin, val, m_monoBand);
+
+  return getInterpolatedColor(val);
+}
+
 void te::map::RasterTransform::fixValue(double& value)
 {
   if (value < m_rstMinValue)
@@ -402,3 +473,51 @@ bool te::map::RasterTransform::checkNoValue(double& value, int band)
   return false;
 }
 
+te::color::RGBAColor te::map::RasterTransform::getInterpolatedColor(double value)
+{
+  InterpolatedMap::iterator it = m_interpolateMap.begin();
+
+  while(it != m_interpolateMap.end())
+  {
+    RasterThreshold rt = it->first;
+
+    if(rt.first<= value && rt.second > value)
+    {
+      int distance = int(value - it->first.first);
+
+      if(distance < 0)
+      {
+        distance = 0;
+      }
+      else if(distance >= it->second.getColorBar().size())
+      {
+        distance = it->second.getColorBar().size() - 1;
+      }
+
+      return it->second.getColorBar()[distance];
+    }
+
+    ++it;
+  }
+
+  return te::color::RGBAColor();
+}
+
+te::color::RGBAColor te::map::RasterTransform::getCategorizedColor(double value)
+{
+  CategorizedMap::iterator it = m_categorizeMap.begin();
+
+  while(it != m_categorizeMap.end())
+  {
+    RasterThreshold rt = it->first;
+
+    if(rt.first<= value && rt.second > value)
+    {
+      return it->second;
+    }
+
+    ++it;
+  }
+
+  return te::color::RGBAColor();
+}

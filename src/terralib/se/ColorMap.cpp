@@ -34,6 +34,21 @@ te::se::ColorMap::ColorMap()
 {
 }
 
+te::se::ColorMap::ColorMap(const ColorMap& rhs)
+  : m_categorize(0),
+    m_interpolate(0)
+{
+  if(rhs.m_categorize)
+  {
+    m_categorize = rhs.m_categorize->clone();
+  }
+
+  if(rhs.m_interpolate)
+  {
+    m_interpolate = rhs.m_interpolate->clone();
+  }
+}
+
 te::se::ColorMap::~ColorMap()
 {
   delete m_categorize;
@@ -60,5 +75,10 @@ void te::se::ColorMap::setInterpolate(Interpolate* i)
 te::se::Interpolate* te::se::ColorMap::getInterpolate()
 {
   return m_interpolate;
+}
+
+te::se::ColorMap* te::se::ColorMap::clone() const
+{
+  return new ColorMap(*this);
 }
 

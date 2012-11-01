@@ -29,6 +29,7 @@
 
 // TerraLib
 #include <terralib/common.h>
+#include <terralib/common/progress/ProgressManager.h>
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 #include <terralib/maptools.h>
@@ -98,14 +99,21 @@ MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
   m_display->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   setCentralWidget(m_display);
 
+  //progress
+  m_dlgViewer = new te::qt::widgets::ProgressViewerDialog(this);
+  m_dlgViewerId = te::common::ProgressManager::getInstance().addViewer(m_dlgViewer);
+
   // Adjusting
   setWindowTitle(tr("TerraLib Qt Raster Visual Example"));
-  setMinimumSize(60, 60);
+  setMinimumSize(400, 400);
   resize(size);
 }
 
 MainWindow::~MainWindow()
 {
+  te::common::ProgressManager::getInstance().removeViewer(m_dlgViewerId);
+  delete m_dlgViewer;
+
   te::common::FreeContents(m_layers);
   te::common::FreeContents(m_ds);
 }
@@ -192,20 +200,29 @@ void MainWindow::setupDockWindow()
 void MainWindow::addRasterLayer(const QString& path)
 {
   std::string datasetName = path.toStdString();
-    // set input raster name
+  
+  // set input raster name
   std::map<std::string, std::string> rinfo;
   rinfo["URI"] = datasetName;
-
+    
    // open input raster
   te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
   ds->open(rinfo);
 
   te::da::DataSourceTransactor* tr = ds->getTransactor();
   te::da::DataSourceCatalogLoader* cl = tr->getCatalogLoader();
-  te::da::DataSetType* dt = cl->getDataSetType("cbers2b_rgb342_crop.tif");
-  te::rst::RasterProperty* rasterProperty = static_cast<te::rst::RasterProperty*>(dt->getProperties()[0]->clone());
 
-  te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
+  cl->loadCatalog();
+
+  // Gets the number of data set types that belongs to the data source
+  boost::ptr_vector<std::string> datasets;
+  tr->getCatalogLoader()->getDataSets(datasets);
+  assert(!datasets.empty());
+
+  // Gets the first dataset
+  std::string dataSetName(datasets[0]);
+  te::da::DataSetType* dt = cl->getDataSetType(dataSetName);
+  te::da::DataSet* dataSet = tr->getDataSet(dataSetName);
   te::rst::Raster* raster = dataSet->getRaster();
 
   te::gm::Envelope* extent = raster->getExtent();
@@ -213,7 +230,7 @@ void MainWindow::addRasterLayer(const QString& path)
  // Creates a Layer
   te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(te::common::Convert2String(ms_id++), datasetName);
   rasterLayer->setDataSource(ds);
-  rasterLayer->setDataSetName("cbers2b_rgb342_crop.tif");
+  rasterLayer->setDataSetName(dataSetName);
   rasterLayer->setVisibility(te::map::VISIBLE);
 
   // Creates a Layer Renderer
@@ -247,9 +264,13 @@ void MainWindow::addRasterLayer(const QString& path)
 
     te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
 
+    disconnect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+
     m_rvW->setBandProperty(prop->getBandProperties());
 
     m_rvW->setRasterSymbolizer(rs);
+
+    connect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
     delete rs;
 
@@ -389,7 +410,12 @@ void MainWindow::onRasterStyleTriggered()
 void MainWindow::onFileSelected(QString s)
 {
   te::common::FreeContents(m_layers);
+  m_layers.clear();
+
   te::common::FreeContents(m_ds);
+  m_ds.clear();
+
+  m_display->setExtent(te::gm::Envelope());
 
   addRasterLayer(s);
 

@@ -65,16 +65,19 @@ void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
 {
   te::map::MapDisplay::setExtent(e);
 
-  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
-  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+  if(m_extent)
   {
-    te::qt::widgets::Canvas* canvas = it->second;
-    canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
-    canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
-    canvas->clear();
-  }
+    std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+    for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+    {
+      te::qt::widgets::Canvas* canvas = it->second;
+      canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
+      canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
+      canvas->clear();
+    }
 
-  draw();
+    draw();
+  }
 
   emit extentChanged();
 }

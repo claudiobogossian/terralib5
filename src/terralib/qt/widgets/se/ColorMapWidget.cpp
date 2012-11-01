@@ -114,7 +114,7 @@ te::se::ColorMap* te::qt::widgets::ColorMapWidget::getColorMap()
 
 void te::qt::widgets::ColorMapWidget::initialize()
 {
-  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(255, 255, 255, TE_OPAQUE), 256);
+  m_cb = new te::color::ColorBar(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), te::color::RGBAColor(0, 0, 0, TE_OPAQUE), 256);
 
   m_cbWidget->setHeight(20);
   m_cbWidget->setColorBar(m_cb);
@@ -236,8 +236,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());
   vec.push_back(m_ui->m_maxValueLineEdit->text().toDouble());
 
-  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, 6);
-
+  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, 1);
 
   te::se::Categorize* c = new te::se::Categorize();
 
@@ -254,7 +253,7 @@ void te::qt::widgets::ColorMapWidget::buildCategorizationMap()
     QColor color(colorVec[i].getRed(), colorVec[i].getGreen(), colorVec[i].getBlue(), colorVec[i].getAlpha());
 
     std::string rangeStr = legVec[i]->getLowerLimit();
-    std::string colorStr = color.name().toLatin1().data();
+    std::string colorStr = color.name().toStdString();
 
     c->addThreshold(new te::se::ParameterValue(rangeStr));
     c->addValue(new te::se::ParameterValue(colorStr));
@@ -288,7 +287,7 @@ void te::qt::widgets::ColorMapWidget::buildInterpolationMap()
   vec.push_back(m_ui->m_minValueLineEdit->text().toDouble());
   vec.push_back(m_ui->m_maxValueLineEdit->text().toDouble());
 
-  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, 6);
+  te::map::GroupingByEqualSteps(vec.begin(), vec.end(), sliceValue, legVec, 1);
 
 
   te::se::Interpolate* interpolate = new te::se::Interpolate();

@@ -239,8 +239,6 @@ namespace te
         /*!
           \brief Try to get the raster objects (raster and raster property) from data source
 
-          \param renderer The renderer to be used to paint this layer.
-
           \note The data source and data set name must be already defined.
         */
         void loadRasterObjects();

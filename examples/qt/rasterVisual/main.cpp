@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 
     // Example MainWindow
     MainWindow window;
-    window.show();
+    window.showMaximized();
 
     app.exec();
   }

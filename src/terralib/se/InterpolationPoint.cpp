@@ -33,9 +33,26 @@ te::se::InterpolationPoint::InterpolationPoint()
 {
 }
 
+te::se::InterpolationPoint::InterpolationPoint(const InterpolationPoint& rhs)
+  : m_data(0.0),
+    m_value(0)
+{
+  if(rhs.m_value)
+  {
+    m_value = rhs.m_value->clone();
+  }
+
+  m_data = rhs.m_data;
+}
+
 te::se::InterpolationPoint::~InterpolationPoint()
 {
   delete m_value;
+}
+
+te::se::InterpolationPoint* te::se::InterpolationPoint::clone() const
+{
+  return new InterpolationPoint(*this);
 }
 
 void te::se::InterpolationPoint::setData(const double& d)

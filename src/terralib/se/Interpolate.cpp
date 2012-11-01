@@ -36,10 +36,34 @@ te::se::Interpolate::Interpolate()
 {
 }
 
+te::se::Interpolate::Interpolate(const Interpolate& rhs)
+  : m_lookupValue(0),
+    m_mode(LINEAR),
+    m_method(NUMERIC)
+{
+  if(rhs.m_lookupValue)
+  {
+    m_lookupValue = rhs.m_lookupValue->clone();
+  }
+
+  for(size_t t = 0; t < rhs.m_interpolationPoints.size(); ++t)
+  {
+    m_interpolationPoints.push_back(rhs.m_interpolationPoints[t]->clone());
+  }
+
+  m_mode = rhs.m_mode;
+  m_method = rhs.m_method;
+}
+
 te::se::Interpolate::~Interpolate()
 {
   delete m_lookupValue;
   te::common::FreeContents(m_interpolationPoints);
+}
+
+te::se::Interpolate* te::se::Interpolate::clone() const
+{
+  return new Interpolate(*this);
 }
 
 void te::se::Interpolate::setLookupValue(ParameterValue* v)
