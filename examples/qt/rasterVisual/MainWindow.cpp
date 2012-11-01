@@ -409,13 +409,13 @@ void MainWindow::onRasterStyleTriggered()
 
 void MainWindow::onFileSelected(QString s)
 {
-  te::common::FreeContents(m_layers);
-  m_layers.clear();
+  //te::common::FreeContents(m_layers);
+  //m_layers.clear();
 
-  te::common::FreeContents(m_ds);
-  m_ds.clear();
+  //te::common::FreeContents(m_ds);
+  //m_ds.clear();
 
-  m_display->setExtent(te::gm::Envelope());
+  //m_display->setExtent(te::gm::Envelope());
 
   addRasterLayer(s);
 
