@@ -128,10 +128,9 @@ void SelectionTool::drawGeometries()
   draft->fill(Qt::transparent);
 
   // Prepares the canvas
-  const te::gm::Envelope* env = m_display->getExtent();
-  te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
-  canvas.setDevice(draft, false);
-  canvas.setWindow(env->m_llx, env->m_lly, env->m_urx, env->m_ury);
+  te::gm::Envelope env(*m_display->getExtent());
+  te::qt::widgets::Canvas canvas(draft);
+  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
   canvas.setPolygonFillColor(te::color::RGBAColor(0, 200, 0, TE_OPAQUE));
   canvas.setPolygonContourColor(te::color::RGBAColor(0, 120, 0, TE_OPAQUE));
   canvas.setPolygonContourWidth(3);

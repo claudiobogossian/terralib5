@@ -31,6 +31,7 @@
 #include <terralib/plugin.h>
 
 // Qt
+#include <QtCore/QMetaType>
 #include <QtGui/QApplication>
 #include <QtGui/QMessageBox>
 
@@ -83,7 +84,56 @@ void LoadOGRModule()
   }
   catch(...)
   {
-    std::cout << std::endl << "Failed to load data source drivers: unknow exception!" << std::endl;
+    std::cout << std::endl << "Failed to load data source OGR driver: unknow exception!" << std::endl;
+  }
+}
+
+void LoadGDALModule()
+{
+  try
+  {
+    te::plugin::PluginInfo info;
+    #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+      info.m_type = "dll";
+    #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
+      info.m_type = "s.o.";
+    #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
+      info.m_type = "dylib";
+    #else
+      #error "Platform not supported yet"
+    #endif
+
+    info.m_name = "GDAL DataSource Driver";
+    info.m_description = "The GDAL data source driver.";
+
+    #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+    #ifdef NDEBUG
+      info.m_mainFile = "terralib_gdal.dll";
+    #else
+      info.m_mainFile = "terralib_gdal_d.dll";
+    #endif
+    #endif
+
+    #if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+    #ifdef NDEBUG
+      info.m_mainFile = "libterralib_gdal.dylib";
+    #else
+      info.m_mainFile = "libterralib_gdal_d.dylib";
+    #endif
+    #endif
+
+    #if TE_PLATFORM == TE_PLATFORMCODE_LINUX
+    #ifdef NDEBUG
+      info.m_mainFile = "libterralib_gdal.so";
+    #else
+      info.m_mainFile = "libterralib_gdal_d.so";
+    #endif
+    #endif
+      te::plugin::PluginManager::getInstance().loadPlugin(info);
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Failed to load data source GDAL driver: unknow exception!" << std::endl;
   }
 }
 
@@ -96,6 +146,8 @@ int main(int argc, char** argv)
   {
     QApplication app(argc, argv);
 
+    qRegisterMetaType<QImage>("QImage");
+
     // Adjusting icons theme
     QString spaths = std::string(ICON_THEME_PATH).c_str();
     QStringList paths = spaths.split(";");
@@ -103,6 +155,7 @@ int main(int argc, char** argv)
     QIcon::setThemeSearchPaths(paths);
 
     LoadOGRModule();
+    LoadGDALModule();
 
     // Instructions
     QString text = QString::fromLatin1("<p>Here you have a Map Display component associated with a set of geographic tools.\
