@@ -34,6 +34,8 @@
 #include "../se/SelectedChannel.h"
 #include "../se.h"
 
+#include <limits>
+
 
 te::map::RasterTransformConfigurer::RasterTransformConfigurer(te::se::RasterSymbolizer* rs, te::map::RasterTransform* rt) :
   m_rstSymbolizer(rs),
