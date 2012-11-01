@@ -90,7 +90,7 @@ namespace te
           MapDisplay(const QSize& size, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           /*! \brief Destructor. */
-          ~MapDisplay();
+          virtual ~MapDisplay();
 
           //@}
 
@@ -110,7 +110,7 @@ namespace te
 
             \note The caller of this method will NOT take the ownership of the returned pixmap.
           */
-          QPixmap* getDisplayPixmap() const;
+          virtual QPixmap* getDisplayPixmap() const;
 
           /*!
             \brief It returns the map display draft pixmap.
@@ -120,21 +120,21 @@ namespace te
             \note This pixmap can be used to draw some feedback on map display.
             \note The caller of this method will NOT take the ownership of the returned pixmap.
           */
-          QPixmap* getDraftPixmap() const;
+          virtual QPixmap* getDraftPixmap() const;
 
           /*!
             \brief Sets the resize policy to this map display.
 
             \param policy The resize policy.
           */
-          void setResizePolicy(const ResizePolicy& policy);
+          virtual void setResizePolicy(const ResizePolicy& policy);
 
           /*!
             \brief Sets the timeout interval in milliseconds to redraw on resize event.
 
             \param msec The timeout interval in milliseconds.
           */
-          void setResizeInterval(int msec);
+          virtual void setResizeInterval(int msec);
 
           /*!
             \brief Transforms the given point, in screen coordinates, to a point in world coordinates.
@@ -145,7 +145,7 @@ namespace te
 
             \note This method will return a null point if the transform can not be done.
           */
-          QPointF transform(const QPointF& p);
+          virtual QPointF transform(const QPointF& p);
 
         protected:
 
@@ -178,7 +178,9 @@ namespace te
           */
           virtual te::qt::widgets::Canvas* getCanvas(te::map::AbstractLayer* layer);
 
-          /*! \brief It resizes all canvas of map display. */
+          /*!
+            \brief It resizes all canvas of map display.
+          */
           virtual void resizeAllCanvas();
 
           /*!
@@ -187,7 +189,7 @@ namespace te
             \param oldSize The size before the resize. 
             \param size The size after the resize.
           */
-          void adjustExtent(const QSize& oldSize, const QSize& size);
+          virtual void adjustExtent(const QSize& oldSize, const QSize& size);
 
           /*!
             \brief It assembles the final image and draws the widget.
@@ -201,11 +203,11 @@ namespace te
 
             \param e The resize event.
           */
-          void resizeEvent(QResizeEvent* e);
+          virtual void resizeEvent(QResizeEvent* e);
 
         protected slots:
 
-          void onResizeTimeout();
+          virtual void onResizeTimeout();
 
         signals:
 
@@ -253,4 +255,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_BASICMAPDISPLAY_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_MAPDISPLAY_H
