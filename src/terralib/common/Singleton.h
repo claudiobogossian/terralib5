@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Singleton.h
+  \file terralib/common/Singleton.h
 
   \brief Template support for singleton pattern.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_SINGLETON_H
 #define __TERRALIB_COMMON_INTERNAL_SINGLETON_H
