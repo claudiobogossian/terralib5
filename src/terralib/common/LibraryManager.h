@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LibraryManager.h
+  \file terralib/common/LibraryManager.h
 
   \brief A singleton that can be used to register the available libraries in the system.
  */
