@@ -116,7 +116,7 @@ te::dt::Property* te::dt::CompositeProperty::getProperty(const std::string& name
   return 0;
 }
 
-size_t te::dt::CompositeProperty::getPropertyPosition(const std::string& name) const
+std::size_t te::dt::CompositeProperty::getPropertyPosition(const std::string& name) const
 {
   const std::size_t size = m_properties.size();
 
@@ -127,7 +127,7 @@ size_t te::dt::CompositeProperty::getPropertyPosition(const std::string& name) c
   return std::string::npos;
 }
 
-size_t te::dt::CompositeProperty::getPropertyPosition(const Property* p) const
+std::size_t te::dt::CompositeProperty::getPropertyPosition(const Property* p) const
 {
   const std::size_t size = m_properties.size();
 
@@ -138,7 +138,18 @@ size_t te::dt::CompositeProperty::getPropertyPosition(const Property* p) const
   return std::string::npos;
 }
 
-te::dt::Property* te::dt::CompositeProperty::getPropertyById(unsigned int id) const
+const te::dt::Property* te::dt::CompositeProperty::getPropertyById(unsigned int id) const
+{
+  const std::size_t size = m_properties.size();
+
+  for(std::size_t i = 0; i < size; ++i)
+    if(m_properties[i]->getId() == id)
+      return m_properties[i];
+
+  return 0;
+}
+
+te::dt::Property* te::dt::CompositeProperty::getPropertyById(unsigned int id)
 {
   const std::size_t size = m_properties.size();
 
