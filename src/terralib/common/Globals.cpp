@@ -18,8 +18,8 @@
  */
 
 /*!
-  \file Globals.cpp
-   
+  \file terralib/common/Globals.cpp
+
   \brief An static class with global definitions.
 */
 
