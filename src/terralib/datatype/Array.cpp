@@ -37,9 +37,6 @@ te::dt::Array::Array(std::size_t d, int t)
   : m_dimension(d),
     m_type(t)
 {
-// check if data type is accepted
-  assert(t >=3 && t <=22 && t != 19);
-
   for (std::size_t i = 0; i < m_dimension; i++)
     m_dimensionSizes.push_back(0);
 }
@@ -91,7 +88,7 @@ te::dt::Array::~Array()
   te::common::FreeContents(m_data);
 }
     
-std::size_t te::dt::Array::getDimension()
+std::size_t te::dt::Array::getDimension() const
 {
   return m_dimension;
 }
@@ -101,7 +98,7 @@ int te::dt::Array::getElementsTypeCode()
   return m_type;
 }
 
-std::size_t te::dt::Array::getDimensionSize(std::size_t i)
+std::size_t te::dt::Array::getDimensionSize(std::size_t i) const
 {
   assert(i < getDimension());
   
@@ -111,7 +108,6 @@ std::size_t te::dt::Array::getDimensionSize(std::size_t i)
 void te::dt::Array::insert(te::dt::AbstractData* data, const std::vector<std::size_t>& pos)
 {
   assert(pos.size() == getDimension());
-  assert(data->getTypeCode() == getElementsTypeCode());
 
 // check if pos is out of current bounds, and expand the array dimension info if needed
   for (std::size_t i = 0; i < getDimension(); i++)
@@ -137,12 +133,12 @@ te::dt::AbstractData& te::dt::Array::operator[](const std::vector<std::size_t>& 
   return *te::common::GetPValue(m_data, i);
 }
 
-te::dt::Array* te::dt::Array::clone() const
+te::dt::AbstractData* te::dt::Array::clone() const
 {
   return new Array(*this);
 }
 
-std::string te::dt::Array::toString()
+std::string te::dt::Array::toString() const
 {
   std::ostringstream output;
   
@@ -180,10 +176,10 @@ std::string te::dt::Array::toString()
 
   for (std::size_t i = 0; i < poses.size(); i++)
   {
-    if (m_data.find(poses[i]) != m_data.end())
-      output << m_data[poses[i]]->toString() << " ";
-    else
-      output << "0 ";
+    std::map<std::vector<std::size_t>, te::dt::AbstractData*>::const_iterator it = m_data.find(poses[i]);
+    
+    if(it != m_data.end())
+      output << it->second->toString() << " ";
   }
   output << std::endl;
 
