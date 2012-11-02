@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Comparators.h
+  \file terralib/common/Comparators.h
 
   \brief Several functor types for comparing objects.
  */
@@ -33,13 +33,54 @@ namespace te
 {
   namespace common
   {
+    /*!
+      \struct LessCmp
+
+      \brief It implements several compare functions.
+    */
+    template<class T> struct LessCmp
+    {
+      /*!
+        \brief It compares two NULL terminated C-strings.
+
+        \param f The first string.
+        \param s The second string.
+
+        \return True if the first string comes first in lexicographic order.        
+      */
+      bool operator()(const T& f, const T& s) const
+      {
+        return f < s;
+      }
+    };
+
+    /*!
+      \struct LessCmp
+
+      \brief It implements several compare functions.
+    */
+    template<class T> struct LessCmp<T*>
+    {
+      /*!
+        \brief It compares two NULL terminated C-strings.
+
+        \param f The first string.
+        \param s The second string.
+
+        \return True if the first string comes first in lexicographic order.        
+      */
+      bool operator()(const T* f, const T* s) const
+      {
+        return *f < *s;
+      }
+    };
     
     /*!
       \struct LessCmp
 
       \brief It implements several compare functions.
-     */
-    struct LessCmp
+    */
+    template<> struct LessCmp<const char*>
     {
       /*!
         \brief It compares two NULL terminated C-strings.
@@ -54,7 +95,6 @@ namespace te
         return (strcmp(f, s) < 0 ? true : false);
       }
     };
-
   } // end namespace common
 }   // end namespace te
 
