@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BaseVisitor.h
+  \file terralib/common/BaseVisitor.h
 
   \brief A general root class for a visitor hierarchy.
 */

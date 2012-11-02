@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.cpp
+  \file terralib/common/Exception.cpp
 
   \brief This class is designed to declare objects to be thrown as exceptions by TerraLib.  
 */
