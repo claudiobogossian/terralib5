@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Logger.cpp
+  \file terralib/common/Logger.cpp
 
   \brief This class is designed to manage the log of information in TerraLib.
  */
