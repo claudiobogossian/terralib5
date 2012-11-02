@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file UnitOfMeasure.cpp
- 
+  \file terralib/common/UnitOfMeasure.cpp
+
   \brief A class for representing a unit of measure.
- */
+*/
 
 // TerraLib
 #include "StringUtils.h"
@@ -32,30 +32,30 @@
 #include <sstream> 
 
 te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol,
-                                         te::common::MeasureType type, const std::string& description):
-  m_id(id),  
-  m_symbol(symbol),
-  m_type(type),
-  m_description(description),
-  m_baseUnitId(id)
+                                         te::common::MeasureType type, const std::string& description)
+  : m_id(id),
+    m_symbol(symbol),
+    m_type(type),
+    m_description(description),
+    m_baseUnitId(id)
 {
   m_name = te::common::Convert2UCase(name);
 }
 
 te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol, te::common::MeasureType type,
                                          unsigned int baseUnitid,
-                                         double A, double B, double C , double D, const std::string& description):
-  m_id(id),
-  m_symbol(symbol),
-  m_type(type),
-  m_description(description),
-  m_baseUnitId(baseUnitid),
-  m_a(A),
-  m_b(B),
-  m_c(C),
-  m_d(D)
+                                         double A, double B, double C , double D, const std::string& description)
+  : m_id(id),
+    m_symbol(symbol),
+    m_type(type),
+    m_description(description),
+    m_baseUnitId(baseUnitid),
+    m_a(A),
+    m_b(B),
+    m_c(C),
+    m_d(D)
 {
-  assert((m_c+m_d) != 0);
+  assert((m_c + m_d) != 0);
   m_name = te::common::Convert2UCase(name);
 }
 
@@ -115,20 +115,20 @@ void te::common::UnitOfMeasure::getConversionFactors(double& A, double& B, doubl
 
 double te::common::UnitOfMeasure::getConversionValue()
 {
-  return ((m_a+m_b)/(m_c+m_d));
+  return ((m_a + m_b) / (m_c + m_d));
 }
 
 std::string te::common::UnitOfMeasure::getWKT() const
 {
-  double convf = (m_a + m_b)/(m_c + m_d);
+  double convf = (m_a + m_b) / (m_c + m_d);
   std::string wkt;
   wkt = "UNIT[\"";
   wkt += this->getName();
   wkt += "\", ";
   std::ostringstream sstr;
   sstr.precision(10);
-  sstr << convf;  
-  wkt += sstr.str();  
+  sstr << convf;
+  wkt += sstr.str();
   wkt += "]";
   return wkt;
 }

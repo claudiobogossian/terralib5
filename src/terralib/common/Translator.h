@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Translator.h
+  \file terralib/common/Translator.h
 
   \brief This class is designed for dealing with multi-language text translation in TerraLib.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_TRANSLATOR_H
 #define __TERRALIB_COMMON_INTERNAL_TRANSLATOR_H

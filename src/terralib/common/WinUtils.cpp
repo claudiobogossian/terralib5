@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file WinUtils.cpp
+  \file terralib/common/WinUtils.cpp
 
   \brief This file contains several utility functions when dealing with Microsoft Windows specific API.
- */
+*/
 
 // TerraLib
 #include "WinUtils.h"

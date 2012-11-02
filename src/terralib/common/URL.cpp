@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file URL.cpp
-  
+  \file terralib/common/URL.cpp
+
   \brief A Uniform Resource Locator.
- */
+*/
 
 // TerraLib
 #include "Exception.h"

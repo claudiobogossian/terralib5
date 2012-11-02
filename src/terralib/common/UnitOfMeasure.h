@@ -18,81 +18,83 @@
  */
 
 /*!
-  \file UnitOfMeasure.h
- 
+  \file terralib/common/UnitOfMeasure.h
+
   \brief A class for representing a unit of measure.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_UNITOFMEASURE_H
 #define __TERRALIB_COMMON_INTERNAL_UNITOFMEASURE_H
 
-#include <vector>
-#include <string>
-
+// TerraLib
 #include "Config.h"
 #include "Enums.h"
+
+// STL
+#include <vector>
+#include <string>
 
 namespace te
 {
   namespace common
   {
     /*!
-    \class UnitOfMeasure
+      \class UnitOfMeasure
 
-    \brief A class to represent units of measure.
-     
-     The use of a unit of measure is meant to encompass the means by which a 
-     measured value is tied explicitly to its unit of measure.
-     
-     Units of measure can be Base or Derived. Base units are well-defined units 
-     which by convention are regarded as dimensionally independent. There is only 
-     one Base Unit per type of measure.
-     
-     Derived units are those formed by combining base units according to the algebraic 
-     relations linking the corresponding quantities.
-     
-     Units have an unique numerical identification, an oficial name, a symbol, the
-     type of measures that they refer to and an optional description. Derived Units 
-     also have the identification of its Base Unit and 4 factors to relate them,
-     using the following formula:
-     \code
-     Y = (AX + B) / (CX + D)
-     \endcode
-     where Y is the measure in the derived unit and X is measure in base unit.
-      
-    \sa UnitsOfMeasureManager
+      \brief A class to represent units of measure.
 
-     */
+       The use of a unit of measure is meant to encompass the means by which a 
+       measured value is tied explicitly to its unit of measure.
+
+       Units of measure can be Base or Derived. Base units are well-defined units 
+       which by convention are regarded as dimensionally independent. There is only 
+       one Base Unit per type of measure.
+
+       Derived units are those formed by combining base units according to the algebraic 
+       relations linking the corresponding quantities.
+
+       Units have an unique numerical identification, an oficial name, a symbol, the
+       type of measures that they refer to and an optional description. Derived Units 
+       also have the identification of its Base Unit and 4 factors to relate them,
+       using the following formula:
+       \code
+       Y = (AX + B) / (CX + D)
+       \endcode
+       where Y is the measure in the derived unit and X is measure in base unit.
+
+      \sa UnitsOfMeasureManager
+    */
     class TECOMMONEXPORT UnitOfMeasure
     {
       public:
       
       /*!
-       \brief Creates a new base unit of measure.
-       
-       \param id       Unique identification number.
-       \param name     Unit official name.
-       \param symbol   Unit symbol.
-       \param type     Unit type of measure.
-       \param description Unit description (by default empty).
+        \brief Creates a new base unit of measure.
+
+        \param id       Unique identification number.
+        \param name     Unit official name.
+        \param symbol   Unit symbol.
+        \param type     Unit type of measure.
+        \param description Unit description (by default empty).
       */
       UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol,
                     MeasureType type, const std::string& description = "");
       
       /*!
-       \brief Creates a new derived unit of measure.
-       
-       \param id          Unit unique identification number for a unit of measure.
-       \param name        Unit official name.
-       \param symbol      Unit symbol.
-       \param type        Unit type of measure
-       \param baseUnitId  Identification of the base unit from which this is derived of.
-       \param A           A factor in the conversion formula.          
-       \param B           B factor in the conversion formula (by default it is equal to zero).
-       \param C           C factor in the conversion formula (by default it is equal to zero).
-       \param D           D factor in the conversion formula (by default it is equal to one).
-       \param description Unit description (by default empty).
-       \note (C+D) can not be zero.
+        \brief Creates a new derived unit of measure.
+
+        \param id          Unit unique identification number for a unit of measure.
+        \param name        Unit official name.
+        \param symbol      Unit symbol.
+        \param type        Unit type of measure
+        \param baseUnitId  Identification of the base unit from which this is derived of.
+        \param A           A factor in the conversion formula.          
+        \param B           B factor in the conversion formula (by default it is equal to zero).
+        \param C           C factor in the conversion formula (by default it is equal to zero).
+        \param D           D factor in the conversion formula (by default it is equal to one).
+        \param description Unit description (by default empty).
+
+        \note (C+D) can not be zero.
        */
        UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol, MeasureType type, 
                      unsigned int baseUnitid, 
@@ -110,83 +112,85 @@ namespace te
       unsigned int getId() const;
 
       /*!
-       \brief Returns the unit of measure oficial name.
-        
-       \return The unit of measure oficial name.
+        \brief Returns the unit of measure oficial name.
+
+        \return The unit of measure oficial name.
       */
       const std::string& getName() const;
 
       /*!
-       \brief Sets the unit of measure description.
-          
-       \param description The unit of measure description.
+        \brief Sets the unit of measure description.
+
+        \param description The unit of measure description.
       */
       void setDescription(const std::string& description);
 
       /*!
-       \brief Returns the unit of measure description.
-      
-       \return The unit of measure description.
+        \brief Returns the unit of measure description.
+
+        \return The unit of measure description.
       */
       const std::string& getDescription() const;
 
       /*!
-       \brief Returns the unit of measure symbol.
-       
-       \return The unit of measure symbol (e.g. kg, m or km).
+        \brief Returns the unit of measure symbol.
+
+        \return The unit of measure symbol (e.g. kg, m or km).
       */
       const std::string& getSymbol() const;
 
       /*!
-       \brief Returns the unit of measure type.
-       
-       \return The unit of measure type.
+        \brief Returns the unit of measure type.
+
+        \return The unit of measure type.
       */
       MeasureType getType() const;
-        
+
       /*! \brief Returns true if this is a base unit; otherwise returns false. */
         bool isBaseUnit() const;
 
       /*!
-       \brief Returns the base unit id from which this unit derives of. 
-       
-       \return The base unit id from which this unit derives of. 
+        \brief Returns the base unit id from which this unit derives of. 
+
+        \return The base unit id from which this unit derives of. 
       */
       const unsigned int getBaseUnitId() const;
 
       /*!
-       \brief Returns the conversion factors to convert the unit to its base unit.
-       
-       \param A To return the A factor in the conversion formula (output).          
-       \param B To return the B factor in the conversion formula (output).          
-       \param C To return the C factor in the conversion formula (output).          
-       \param D To return the D factor in the conversion formula (output).
-       
-       \note If this is a base unit, the return values are A=1, B=0, C=0 and D=1.
+        \brief Returns the conversion factors to convert the unit to its base unit.
+
+        \param A To return the A factor in the conversion formula (output).          
+        \param B To return the B factor in the conversion formula (output).          
+        \param C To return the C factor in the conversion formula (output).          
+        \param D To return the D factor in the conversion formula (output).
+
+        \note If this is a base unit, the return values are A=1, B=0, C=0 and D=1.
       */
       void getConversionFactors(double& A, double& B, double& C, double& D);
       
-      /*! Returns a multiplicative value to convert the unit to its base unit.
-       The retuned value is calculated as (A + B)/(C + D) rounded to a double.
-       
-       \return A multiplicative value to convert the unit to its base unit.
-       \note If this is a base unit, the returned value is 1.
-       */
+      /*!
+        \brief Returns a multiplicative value to convert the unit to its base unit.
+
+        The retuned value is calculated as (A + B)/(C + D) rounded to a double.
+
+        \return A multiplicative value to convert the unit to its base unit.
+
+        \note If this is a base unit, the returned value is 1.
+      */
       double getConversionValue();
       
       /*!
-       \brief Returns the WKT description of a unit of measure.
-       
-       \return The WKT description of a unit of measure.
+        \brief Returns the WKT description of a unit of measure.
+
+        \return The WKT description of a unit of measure.
       */
       std::string getWKT() const;
-
 
       private:
 
         unsigned int m_id;                 //!< Unique identification number for a unit of measure.
         std::string  m_name;               //!< unit of measure name according to SI.
-        std::string  m_symbol;             //!< Unit symbol.        
+        std::string  m_symbol;             //!< Unit symbol.
         MeasureType  m_type;               //!< Unit type of measure.
         std::string  m_description;        //!< unit of measure description.
         
@@ -195,7 +199,9 @@ namespace te
         double m_b;
         double m_c;
         double m_d;
-    }; // end class    
+
+    }; // end class
+
   }    // end namespace common
 }      // end namespace te
 
