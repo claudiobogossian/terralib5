@@ -121,7 +121,7 @@ namespace te
       private:
 
         std::vector<const char*> m_comparisonOperators;  //!< Optional.
-        static std::set<const char*, te::common::LessCmp>  sm_validComparisonOperators; //!< The list of valid comparison operators.
+        static std::set<const char*, te::common::LessCmp<const char*> >  sm_validComparisonOperators; //!< The list of valid comparison operators.
     };    
 
   } // end namespace fe
