@@ -97,7 +97,7 @@ te::rst::Raster* te::rst::RasterFactory::open(const std::string& rType, const st
   if(f == 0)
     throw Exception(TR_RASTER("Could not find concrete factory! Check if it was initialized!"));
 
-  return f->iOpen(rType, rinfo, p);
+  return f->iOpen(rinfo, p);
 }
 
 te::rst::Raster* te::rst::RasterFactory::open(const std::string& key, const std::string& value, te::common::AccessPolicy p)
@@ -119,9 +119,9 @@ te::rst::RasterFactory::RasterFactory(const std::string& factoryKey)
 {
 }
 
-te::rst::Raster* te::rst::RasterFactory::iOpen(const std::string& rType, const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p)
+te::rst::Raster* te::rst::RasterFactory::iOpen(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p)
 {
-  std::auto_ptr<Raster> r(make(rType));
+  std::auto_ptr<Raster> r(make(getKey()));
 
   r->open(rinfo, p);
 
