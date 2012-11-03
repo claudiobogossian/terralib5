@@ -41,12 +41,6 @@ namespace te
 {
   namespace rst
   {
-// Forward declaration
-    class Band;
-    class BandProperty;
-    class Grid;
-    class Raster;
-
     /*! \brief Returns the byte size of a given datatype. */
     TERASTEREXPORT int GetPixelSize(int datatype);
 
@@ -113,7 +107,7 @@ namespace te
     /*!
       \brief Round a double value to a integer value.
 
-      \param val  The double value.
+      \param val The double value.
 
       \return A integer value.
     */
@@ -124,7 +118,6 @@ namespace te
       \brief Create a new raster from existing one.
 
       \param rin The input raster.
-
       \param uri The output raster URI.
 
       \param rType The name of the specific driver to create the raster. 

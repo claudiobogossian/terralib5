@@ -27,8 +27,8 @@
 #include "../datatype/Enums.h"
 #include "../geometry/Coord2D.h"
 #include "Exception.h"
-#include "Utils.h"
 #include "RasterFactory.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/cstdint.hpp>
@@ -302,19 +302,18 @@ te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
 
   for(bandIndex = 0; bandIndex < rin.getNumberOfBands(); ++bandIndex)
   {
-    bandsProperties.push_back( new te::rst::BandProperty( *( rin.getBand( 
-      bandIndex )->getProperty() ) ) );  
+    bandsProperties.push_back(new te::rst::BandProperty(*(rin.getBand(bandIndex )->getProperty())));
   }
 
   te::rst::RasterPtr outRasterPtr;
 
-  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid( 
-    *( rin.getGrid() ) ),  bandsProperties,  rasterInfo, 0, 0 ) ); 
+  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid(*(rin.getGrid())), bandsProperties, rasterInfo, 0, 0)); 
 
-  if( outRasterPtr.get() == 0 )
+  if(outRasterPtr.get() == 0)
     return outRasterPtr;
 
-  Copy( rin, *outRasterPtr );
+  Copy(rin, *outRasterPtr);
 
   return outRasterPtr;
 }
+
