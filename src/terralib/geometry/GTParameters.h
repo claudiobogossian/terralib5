@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/geometry/GTParameters.h
-  
+
   \brief 2D Geometric transformation parameters.
 */
 
