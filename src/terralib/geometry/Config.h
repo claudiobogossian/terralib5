@@ -37,7 +37,7 @@
 //@{
 
 /*!
-  \def TE_GEOMETRY_TEXT_DOMAIN
+  \def TE_GEOM_TEXT_DOMAIN
 
   \brief It contains the name of the text domain used in the translation of messages in TerraLib Vector Geometry module.
  */
