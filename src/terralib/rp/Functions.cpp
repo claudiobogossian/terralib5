@@ -549,16 +549,16 @@ namespace te
       };
     }
 
-    template<class T> bool InvertMatrix(const boost::numeric::ublas::matrix<T>& input,
-                                        boost::numeric::ublas::matrix<T>& inverse)
+    bool InvertMatrix(const boost::numeric::ublas::matrix<double>& input,
+                      boost::numeric::ublas::matrix<double>& inverse)
     {
-      boost::numeric::ublas::matrix<T> A(input);
+      boost::numeric::ublas::matrix<double> A(input);
       boost::numeric::ublas::permutation_matrix<std::size_t> pm(A.size1());
 
       if (lu_factorize(A, pm) != 0)
         return false;
 
-      inverse.assign(boost::numeric::ublas::identity_matrix<T> (A.size1()));
+      inverse.assign(boost::numeric::ublas::identity_matrix<double> (A.size1()));
       lu_substitute(A, pm, inverse);
 
       return true;

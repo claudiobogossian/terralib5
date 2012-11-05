@@ -133,8 +133,8 @@ namespace te
       \return Returns true in success or false otherwise.
       \note The sizes of both matrices must be equal, and square.
     */
-    template<class T> bool InvertMatrix(const boost::numeric::ublas::matrix<T>& input,
-                                        boost::numeric::ublas::matrix<T>& inverse);
+    bool InvertMatrix(const boost::numeric::ublas::matrix<double>& input,
+                      boost::numeric::ublas::matrix<double>& inverse);
 
   } // end namespace rp
 }   // end namespace te
