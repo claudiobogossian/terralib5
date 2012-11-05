@@ -24,12 +24,9 @@
 */
 
 // TerraLib
-#include "../geometry/Coord2D.h"
-#include "../geometry/Envelope.h"
-#include "../geometry/Point.h"
-#include "../geometry/Polygon.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
+#include "Functions.h"
 #include "MixtureModelLinearStrategy.h"
 #include "Macros.h"
 #include "PositionIterator.h"
@@ -67,14 +64,11 @@ const te::rp::MixtureModelLinearStrategy::Parameters& te::rp::MixtureModelLinear
 {
   reset();
 
-  m_acceptanceThreshold = rhs.m_acceptanceThreshold;
-
   return *this;
 }
 
 void te::rp::MixtureModelLinearStrategy::Parameters::reset() throw(te::rp::Exception)
 {
-  m_acceptanceThreshold = 0;
 }
 
 te::common::AbstractParameters* te::rp::MixtureModelLinearStrategy::Parameters::clone() const
@@ -102,7 +96,7 @@ bool te::rp::MixtureModelLinearStrategy::initialize(te::rp::StrategyParameters c
 
   m_parameters = *(paramsPtr);
 
-  TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_acceptanceThreshold > 0 && m_parameters.m_acceptanceThreshold <= 100, "Invalid acceptance threshold [0, 100].")
+  // TERP_TRUE_OR_RETURN_FALSE(m_parameters.m_acceptanceThreshold > 0 && m_parameters.m_acceptanceThreshold <= 100, "Invalid acceptance threshold [0, 100].")
 
   m_isInitialized = true;
 
@@ -110,11 +104,25 @@ bool te::rp::MixtureModelLinearStrategy::initialize(te::rp::StrategyParameters c
 }
 
 bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
-                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
+                                                 const std::map<std::string, std::vector<double> >& components, te::rst::Raster& outputRaster,
+                                                 const bool enableProgressInterface) throw(te::rp::Exception)
 {
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
-  TERP_TRUE_OR_RETURN_FALSE(inputPolygons.size() > 0, "Linear algorithm needs polygons")
+
+  const unsigned int nComponents = components.size();
+  boost::numeric::ublas::matrix<double> matrixA (nComponents, nComponents);
+
+  std::map<std::string, std::vector<double> >::const_iterator it;
+  unsigned i;
+  for (i = 0, it = components.begin(); it != components.end(); it++, i++)
+    for (unsigned j = 0; j < matrixA.size2 (); j++)
+      matrixA(i, j) = it->second[j];
+
+  std::cout << matrixA << std::endl;
+
+  boost::numeric::ublas::matrix<double> invertA = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixA.size2());
+
+  InvertMatrix(matrixA, invertA);
 
   return true;
 }

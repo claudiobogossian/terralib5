@@ -24,10 +24,6 @@
 */
 
 // TerraLib
-#include "../geometry/Coord2D.h"
-#include "../geometry/Envelope.h"
-#include "../geometry/Point.h"
-#include "../geometry/Polygon.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "MixtureModelPCAStrategy.h"
@@ -110,11 +106,10 @@ bool te::rp::MixtureModelPCAStrategy::initialize(te::rp::StrategyParameters cons
 }
 
 bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                               const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
-                                               const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception)
+                                              const std::map<std::string, std::vector<double> >& components, te::rst::Raster& outputRaster,
+                                              const bool enableProgressInterface) throw(te::rp::Exception)
 {
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
-  TERP_TRUE_OR_RETURN_FALSE(inputPolygons.size() > 0, "PCA algorithm needs polygons")
 
   return true;
 }

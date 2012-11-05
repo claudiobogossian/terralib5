@@ -64,16 +64,15 @@ namespace te
 
           \param inputRaster                Input raster.
           \param inputRasterBands           Input raster bands.
-          \param inputPolygons              The polygons to be classified when using object-based image analysis (OBIA).
+          \param components                 The set of endmembers and its radiances.
           \param outputRaster               Output raster.
-          \param outputRasterBand           Output raster band.
           \param enableProgressInterface    Enable the internal strategy to update the progress interface.
 
           \return true if OK, false on errors.
         */
         virtual bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                             const std::vector<te::gm::Polygon*>& inputPolygons, te::rst::Raster& outputRaster,
-                             const unsigned int outputRasterBand, const bool enableProgressInterface) throw(te::rp::Exception) = 0;
+                             const std::map<std::string, std::vector<double> >& components, te::rst::Raster& outputRaster,
+                             const bool enableProgressInterface) throw(te::rp::Exception) = 0;
 
       protected:
 
