@@ -659,14 +659,14 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
       te::da::DataSource* ds = layer->getDataSource();
       te::da::DataSourceTransactor* t = ds->getTransactor();
       te::da::DataSet* dataSet = t->getDataSet(name);
-      te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
+      te::da::DataSetTypePtr dsType = ds->getCatalog()->getDataSetType(name);
 
       assert(dataSet);
 
       if(dsType->getPrimaryKey())
       {
         op = new te::map::DataGridOperation();
-        op->init(dsType, dataSet);
+        op->init(dsType.get(), dataSet);
         layer->setDataGridOperation(op);
       }
     }
