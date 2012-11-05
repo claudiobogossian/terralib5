@@ -31,6 +31,7 @@
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "ClassifierISOSegStrategy.h"
+#include "Functions.h"
 #include "Macros.h"
 #include "PositionIterator.h"
 #include "RasterAttributes.h"
@@ -89,20 +90,6 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern()
   m_myCluster = 0;
 
   m_area = 0.0;
-}
-
-template<class T> bool InvertMatrix(const boost::numeric::ublas::matrix<T>& input, boost::numeric::ublas::matrix<T>& inverse)
-{
-  boost::numeric::ublas::matrix<T> A(input);
-  boost::numeric::ublas::permutation_matrix<std::size_t> pm(A.size1());
-
-  if (lu_factorize(A, pm) != 0)
-    return false;
-
-  inverse.assign(boost::numeric::ublas::identity_matrix<T> (A.size1()));
-  lu_substitute(A, pm, inverse);
-
-  return true;
 }
 
 te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<std::complex<double> > mv, boost::numeric::ublas::matrix<double> cm)

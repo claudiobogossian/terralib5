@@ -30,6 +30,11 @@
 
 #include "../dataaccess/datasource/DataSource.h"
 
+// Boost
+#include <boost/numeric/ublas/lu.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
+
+// STL
 #include <vector>
 
 namespace te
@@ -39,11 +44,11 @@ namespace te
     class BandProperty;
     class Grid;
   };
-  
+
   namespace rp
   {
     class RasterHandler;
-    
+
     /*!
       \brief Create a new raster into the givem data source.
       \param rasterGrid The template grid used to create the output raster.
@@ -54,13 +59,13 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool createNewRaster( const te::rst::Grid& rasterGrid, 
+    bool createNewRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
-      const std::string& outDataSetName, 
-      te::da::DataSource& outDataSource, 
+      const std::string& outDataSetName,
+      te::da::DataSource& outDataSource,
       RasterHandler& outRasterHandler );
-      
-    
+
+
     /*!
       \brief Create a new raster into a new memory datasource.
       \param rasterGrid The template grid used to create the output raster.
@@ -69,10 +74,10 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool createNewMemRaster( const te::rst::Grid& rasterGrid, 
+    bool createNewMemRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
-      RasterHandler& outRasterHandler );  
-      
+      RasterHandler& outRasterHandler );
+
     /*!
       \brief Create a new geotiff raster.
       \param rasterGrid The template grid used to create the output raster.
@@ -82,43 +87,55 @@ namespace te
       \return true if OK, false on errors.
       \note All bandsProperties pointed objects will be acquired by this function and must not be deleted.
      */
-    bool createNewGeotifRaster( const te::rst::Grid& rasterGrid, 
+    bool createNewGeotifRaster( const te::rst::Grid& rasterGrid,
       std::vector< te::rst::BandProperty* > bandsProperties,
       const std::string& fileName,
-      RasterHandler& outRasterHandler );        
-      
+      RasterHandler& outRasterHandler );
+
     /*!
       \brief Returns the real data type range (all values that can be represented by the given data type).
       \param dataType The data type.
       \param min The minimum value.
       \param max The maximum value.
-      \note The types are listed in terralib/datatype/DataTypes.h  
+      \note The types are listed in terralib/datatype/DataTypes.h
     */
     void getDataTypeRange( const int dataType, double& min, double& max );
-    
+
     /*!
       \brief Convert vector elements.
       \param inputVector Input vector.
       \param inputVectorDataType Input vector data type.
       \param inputVectorSize The numer of input vector elements.
       \param outputVector A pré-allocated output vector.
-      \note The types are listed in terralib/datatype/DataTypes.h  
-    */    
+      \note The types are listed in terralib/datatype/DataTypes.h
+    */
     void convert2DoublesVector( void* inputVector, const int inputVectorDataType,
       unsigned int inputVectorSize, double* outputVector );
-      
+
     /*!
       \brief Convert a doubles vector.
       \param inputVector Input vector.
       \param inputVectorSize The numer of input vector elements.
       \param inputVectorDataType Input vector data type.
       \param outputVector A pré-allocated output vector.
-      \note The types are listed in terralib/datatype/DataTypes.h  
-    */    
-    void convertDoublesVector( double* inputVector, 
-      unsigned int inputVectorSize, const int outputVectorDataType, 
-      void* outputVector );      
-    
+      \note The types are listed in terralib/datatype/DataTypes.h
+    */
+    void convertDoublesVector( double* inputVector,
+      unsigned int inputVectorSize, const int outputVectorDataType,
+      void* outputVector );
+
+    /*!
+      \brief Inverts an ublas matrix.
+
+      \param input The input matrix.
+      \param output The empty output matrix, previously created.
+
+      \return Returns true in success or false otherwise.
+      \note The sizes of both matrices must be equal, and square.
+    */
+    template<class T> bool InvertMatrix(const boost::numeric::ublas::matrix<T>& input,
+                                        boost::numeric::ublas::matrix<T>& inverse);
+
   } // end namespace rp
 }   // end namespace te
 
