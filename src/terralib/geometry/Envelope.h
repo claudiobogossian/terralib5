@@ -359,7 +359,7 @@ namespace te
 
     inline te::gm::Envelope::Envelope(const std::vector<double>& vectd)
     {
-       std::vector<double>::iterator it;
+       std::vector<double>::const_iterator it;
 
        double d[4] = { 0.0, 0.0, 0.0, 0.0 };
 
