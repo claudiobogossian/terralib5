@@ -54,6 +54,18 @@ namespace te
     }
     
     /*!
+     \brief It converts a size_t value to a string.
+     
+     \return The size_t value converted to a string.
+     */
+    inline std::string Convert2String(size_t value)
+    {
+      char name[std::numeric_limits<boost::int32_t>::digits10 + 2];
+      sprintf(name, "%d", value);
+      return name;
+    }    
+    
+    /*!
       \brief It converts a unsigned short integer value to a string.
 
       \return The integer value converted to a string.
