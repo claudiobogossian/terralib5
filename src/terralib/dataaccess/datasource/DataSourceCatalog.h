@@ -28,11 +28,20 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../Definitions.h"
+//#include "../dataset/DataSetType.h"
 
 // STL
 #include <map>
 #include <string>
 #include <vector>
+
+// Boost
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/noncopyable.hpp>
 
 namespace te
 {
@@ -46,7 +55,7 @@ namespace te
     class DataSetType;
     class ForeignKey;
     class Sequence;
-    class DataSource;    
+    class DataSource;
 
     /*!
       \class DataSourceCatalog
@@ -55,7 +64,7 @@ namespace te
 
       \sa DataSource, Property, DataSetType, Sequence
     */
-    class TEDATAACCESSEXPORT DataSourceCatalog
+    class TEDATAACCESSEXPORT DataSourceCatalog : public boost::noncopyable
     {
       public:
 
@@ -65,7 +74,7 @@ namespace te
         //@{
 
         /*! \brief It creates a new DataSourceCatalog. */
-        DataSourceCatalog();        
+        DataSourceCatalog();
 
         /*! \brief Destructor. */
         ~DataSourceCatalog();
@@ -77,7 +86,7 @@ namespace te
 
           \warning This value will be used by data source driver implementeers. So, don't rely on its value!
         */
-        unsigned int getId() const { return m_id; }
+        unsigned int getId() const;
 
         /*!
           \brief It sets the catalog identifier.
@@ -87,7 +96,7 @@ namespace te
           \warning This value will be used by data source driver implementeers. So, don't
                    rely on its value nor call it if you are not implementing a data source!
         */
-        void setId(unsigned int id) { m_id = id; }
+        void setId(unsigned int id);
 
         /*!
           \brief It returns the DataSource associated to the catalog.
@@ -96,7 +105,7 @@ namespace te
 
           \note Every catalog that belongs to a DataSource will have an explicit association. If it has no parent, it doesn't belong to any store.
         */
-        DataSource* getDataSource() const { return m_ds; }
+        DataSource* getDataSource() const;
 
         /*!
           \brief It sets the DataSource associated to the catalog.
@@ -105,22 +114,10 @@ namespace te
 
           \note Don't call this method in your code, it will be used by the driver developers!
         */
-        void setDataSource(DataSource* ds) { m_ds = ds; }
+        void setDataSource(DataSource* ds);
 
         /*! \brief It clears the catalog, releasing all the resources used by it. */
         void clear();
-
-        /*!
-          \brief It creates a copy (clone) of the catalog.
-
-          \return A copy of the catalog.
-
-          \note The new catalog instance will not be associated to any DataSource.
-
-          \note This method will preserve the identifier of the objects. Bu if you
-                persist them into a DataSource their values can be changed by the persistence implementation.
-        */
-        DataSourceCatalog* clone() const;
 
         //@}
 
@@ -134,155 +131,85 @@ namespace te
 
           \return The number of datasets in the catalog.
         */
-        std::size_t getNumberOfDataSets() const { return m_dsets.size(); }        
+        std::size_t getNumberOfDataSets() const;
 
         /*!
-          \brief It adds a new DataSetType to the catalog.
+          \brief It checks if a dataset schema with the given name is in the catalog.
 
-          \param dt The DataSetType to be added to the list of DataSetTypes of the catalog.
+          \param name The dataset schema name to be cheked in the catalog.
+
+          \return True if a dataset with the given name exists in the catalog.
+        */
+        bool datasetExists(const std::string& name) const;
+
+        /*!
+          \brief It adds a new dataset schema to the catalog.
+
+          \param dt The dataset schema to be added to the catalog.
 
           \pre The dt must not be associated to another catalog before calling this method.
-          \pre There is not a DataSetType in the catalog with the same name as the DataSetType to be added.
-          \pre There is not a DataSetType in the catalog with the same id as the DataSetType to be added.
-          \pre If the DataSetType has foreign keys the referenced DataSetTypes must be already in the catalog.
+          \pre There is not a dataset schema in the catalog with the same name as dt.
+          \pre If the dataset schema has foreign keys the referenced schema must be already in the catalog.
 
-          \post The DataSetType will have the catalog associated to it.
-          \post The catalog will take the ownership of the informed DataSetType.
-          \post The catalog will keep track of foreign keys and the referenced DataSetTypes.
+          \post The dataset schema will be associated to the catalog.
+          \post The catalog will keep track of foreign keys and the referenced dataset schema.
 
-          \exception Exception It throws an exception if the DataSetType can not be added.
-          \exception Exception It throws an exception if the DataSetType has foreign keys and the referenced DataSetTypes is not already in the catalog.
+          \exception Exception It throws an exception if the dataset schema can not be added.
         */
-        void add(DataSetType* dt);
+        void add(const DataSetTypePtr& dt);
 
         /*!
-          \brief It adds the list of DataSetTypes to the catalog.
+          \brief It removes the dataset schema from the catalog.
 
-          \param dsets The list of DataSetTypes to be added to the catalog.
+          \param dt      The dataset schema to be removed from the catalog.
+          \param cascade If true the method will remove also all objects that depends on the dataset schema (like sequences and foreign keys).
 
-          \pre The DataSetTypes to be added must not be associated to a catalog before calling this method.
-               In other words, don't inform a DataSetType belonging to a catalog.
-          \pre There is not a DataSetType in the catalog with the same name as the DataSetTypes to be added.
-          \pre There is not a DataSetType in the catalog with the same id as the DataSetTypes to be added.
-          \pre If any DataSetType has foreign keys, the referenced DataSetTypes must be already in the catalog. So, the list order of DataSetType entries is very important.
-
-          \post The catalog will take the ownership of the informed DataSetTypes.
-          \post The DataSetTypes will have the catalog associated to it.
-          \post The catalog will keep track of foreign keys and the referenced DataSetTypes.
-
-          \exception Exception It throws an exception if a DataSetType can not be added.
-          \exception Exception It throws an exception if any DataSetType has foreign keys and the referenced DataSetTypes is not already in the catalog.
-        */
-        void add(const std::vector<DataSetType*>& dsets);
-
-        /*!
-          \brief It removes the DataSetType from the catalog.
-
-          \param dt      The DataSetType to be removed from the catalog.
-          \param cascade If true the method will remove also all objects that depends on the DataSetType (like sequences and foreign keys).
-
-          \pre The DataSetType must associated to the catalog.
+          \pre The dataset schema must be associated to the catalog.
           
-          \post It will drop any association to the DataSetType or to the DataSetType attributes (like sequences and foreign keys) if casacade is true.
-          \post Any association of the DataSetType with foreign keys will also be removed.
-          \post The dt pointer will be invalidated.
+          \post It will drop any association to the dataset schema or its attributes (like sequences and foreign keys) if casacade is true.
         */
         void remove(DataSetType* dt, const bool cascade = false);
 
         /*!
-          \brief It will detaches the DataSetType from the catalog.
+          \brief It renames the dataset schema in the catalog.
 
-          \param dt The DataSetType to be detached from the catalog.
+          \param dt      The dataset schema to be renamed.
+          \param newName The new name to be assigned to dt.
 
-          \pre The DataSetType must associated to the catalog.
-          
-          \post It will drop any association to the DataSetType or to the DataSetType attributes (like sequences and foreign keys).
-          \post The caller of this method will take the ownership of dt pointer.
-        */
-        void detach(DataSetType* dt, const bool cascade = false);
-
-        /*!
-          \brief It renames the DataSetType in the catalog.
-
-          \param dt      The DataSetType to be renamed.
-          \param newName The new name to be assigned to the DataSetType.
-
-          \pre The DataSetType must associated to the catalog.
-          \pre There is not a DataSetType in the catalog with the same value as newName.
+          \pre The dataset schema must be associated to the catalog.
+          \pre There is not a dataset schema in the catalog with the same value as newName.
 
           \post All internal indexes pointing to dt will be fixed and the dt will have newName set.
 
           \exception Exception It throws an exception if there is already
-                               a DataSetType with the new name in the catalog, or if the DataSetType
+                               a dataset schema with the new name in the catalog, or if it
                                doesn't belong to the catalog.
         */
         void rename(DataSetType* dt, const std::string& newName);
 
         /*!
-          \brief It changes the DataSetType id in the catalog.
+          \brief It returns the i-th dataset schema.
 
-          \param dt    The DataSetType to change its id.
-          \param newId The new id for the DataSetType.
+          \param i The dataset schema index.
 
-          \pre The DataSetType must associated to the catalog.
-          \pre There is not a DataSetType in the catalog with the same value as newId.
+          \return The i-th dataset schema.
 
-          \post All internal indexes pointing to dt will be fixed and the dt will have newId set.
+          \pre i must be in the range: [0, getNumberOfDataSets()).
 
-          \exception Exception It throws an exception if there is already
-                               a DataSetType with the new id in the catalog, or if the DataSetType
-                               doesn't belong to the catalog.
-        */
-        void setId(DataSetType* dt, unsigned int newId);
-
-        /*!
-          \brief It returns the i-th DataSetType.
-
-          \param i The DataSetType index.
-
-          \return The i-th DataSetType.
-
-          \pre i must be in the range of [0, getNumberOfDataSets()).
-
-          \note The caller will not take the ownership of the returned DataSetType.
           \note It doesn't check index range.
         */
-        DataSetType* getDataSetType(std::size_t i) const { return m_dsets[i]; }
+        const DataSetTypePtr& getDataSetType(std::size_t i) const;
 
         /*!
-          \brief It searches for a DataSetType with the given name in the catalog.
+          \brief It searches for a dataset schema with the given name in the catalog.
 
-          \param name The name of the searched DataSetType.
+          \param name The name of the searched dataset schema.
 
-          \return A DataSetType with the given name, or NULL if none is found.
-
-          \note The caller will not take the ownership of the returned DataSetType.
+          \return A dataset schema with the given name or NULL if none is found.
         */
-        DataSetType* getDataSetType(const std::string& name) const;
+        const DataSetTypePtr& getDataSetType(const std::string& name) const;
 
-        /*!
-          \brief It returns the DataSetType with the given identifier.          
-
-          \param id The DataSetType identifier.
-
-          \return A DataSetType with the given id, or NULL if none is found.
-
-          \note The caller will not take the ownership of the returned DataSetType.
-        */
-        DataSetType* getDataSetTypeById(std::size_t id) const;
-
-        /*!
-          \brief It returns the DataSetType position in the internal conteiner.
-
-          \param dt The DataSetType we are looking its position in internal conteiner.
-
-          \return The DataSetType position.
-
-          \note If the DataSetType position is unknown this method return npos.
-         */
-        std::size_t getDataSetTypePos(DataSetType* dt) const;        
-
-        //@}        
+        //@}
 
         /** @name Sequence Management Methods
          *  Methods for managing Sequences.
@@ -294,7 +221,7 @@ namespace te
 
           \return The number of sequences in the catalog.
         */
-        std::size_t getNumberOfSequences() const { return m_sequences.size(); }
+        std::size_t getNumberOfSequences() const;
 
         /*!
           \brief It adds a new sequence to the catalog.
@@ -316,23 +243,6 @@ namespace te
         void add(Sequence* s);
 
         /*!
-          \brief It adds a list of sequences to the catalog.
-
-          \param sqs The list of sequences to be added to the catalog.
-
-          \pre The sequences to be added must not be associated to a catalog before calling this method.
-               In other words, don't inform a sequence belonging to a catalog.
-          \pre There is not a sequence in the catalog with the same name as the sequences to be added.
-          \pre There is not a sequence in the catalog with the same id as the sequences to be added.
-
-          \post The catalog will take the ownership of the informed sequences.
-          \post The sequences will have the catalog associated to it.
-
-          \exception Exception It throws an exception if a sequence can not be added.
-        */
-        void add(const std::vector<Sequence*>& sqs);
-
-        /*!
           \brief It removes the sequence from the catalog.
 
           \param s The sequence to be removed from the catalog.
@@ -342,23 +252,6 @@ namespace te
           \post The s pointer will be invalidated.
         */
         void remove(Sequence* s);
-
-        /*!
-          \brief It changes the DataSetTypeSequnce id in the catalog.
-
-          \param s     The DataSetTypeSequnce to change its id.
-          \param newId The new id for the Sequence.
-
-          \pre The Sequence must associated to the catalog.
-          \pre There is not a Sequence in the catalog with the same value as newId.
-
-          \post All internal indexes pointing to s will be fixed and the s will have newId set.
-
-          \exception Exception It throws an exception if there is already
-                               a Sequence with the new id in the catalog, or if the Sequence
-                               doesn't belong to the catalog.
-        */
-        void setId(Sequence* s, unsigned int newId);
 
         /*!
           \brief It will detaches the Sequence from the catalog.
@@ -384,7 +277,7 @@ namespace te
           \note The caller will not take the ownership of the returned Sequence.
           \note It doesn't check the index range.
         */
-        Sequence* getSequence(std::size_t i) const { return m_sequences[i]; }
+        Sequence* getSequence(std::size_t i) const;
 
         /*!
           \brief It searches for a Sequence with the given name in the catalog.
@@ -396,28 +289,6 @@ namespace te
           \note The caller will not take the ownership of the returned Sequence.
         */
         Sequence* getSequence(const std::string& name) const;
-        
-        /*!
-          \brief It returns the Sequence with the given identifier.
-
-          \param id The Sequence identifier.
-
-          \return A Sequence with the given id, or NULL if none is found.
-
-          \note The caller will not take the ownership of the returned Sequence.
-         */
-        Sequence* getSequenceById(std::size_t id) const;
-
-        /*!
-          \brief It returns the Sequence position in the internal conteiner.
-
-          \param s The Sequence we are looking its position in internal conteiner.
-
-          \return The Sequence position.
-
-          \note If the Sequence position is unknown this method return npos.
-        */
-        std::size_t getSequencePos(Sequence* s) const;
 
         //@}
 
@@ -479,13 +350,6 @@ namespace te
         //@}
 
       protected:
-
-        /*!
-          \brief Copy constructor.
-
-          \param rhs Right-hand-side instance.
-        */
-        DataSourceCatalog(const DataSourceCatalog& rhs);
 
         /** @name Helper Methods for Sequences
          *  Methods used in the internals of DataSourceCatalog to manage Sequences.
@@ -578,34 +442,82 @@ namespace te
 
       private:
 
-        /*!
-          \brief Assignment operator not allowed.
+        struct dataset_name_cmp
+        {
+          typedef std::string result_type;
 
-          \param rhs Right-hand-side instance.
+          result_type operator()(const DataSetTypePtr& dt) const;
+        };
 
-          \return A reference to this object.
-        */
-        DataSourceCatalog& operator=(const DataSourceCatalog& rhs);
+        typedef boost::multi_index::multi_index_container<
+                  DataSetTypePtr,
+                  boost::multi_index::indexed_by<
+                    boost::multi_index::ordered_unique<dataset_name_cmp>,
+                    boost::multi_index::random_access<>
+                  >
+                > dataset_idx_type;
 
-      private:
+        struct sequence_name_cmp
+        {
+          typedef std::string result_type;
 
-        unsigned int m_id;                                  //!< An identification number inside the DataSource.
-        DataSource* m_ds;                                   //!< The DataSource associated to the Catalog.
+          result_type operator()(const Sequence* const s) const;
+        };
+
+        typedef boost::multi_index::multi_index_container<
+                  Sequence*,
+                  boost::multi_index::indexed_by<
+                    boost::multi_index::ordered_unique<sequence_name_cmp>,
+                    boost::multi_index::random_access<>
+                  >
+                > sequence_idx_type;
 
 // DataSetType objects
-        std::vector<DataSetType*> m_dsets;                  //!< The list of DataSetTypes.
-        std::map<std::size_t, std::size_t> m_dtIdIdx;       //!< A map : dt-id -> dt-pos.
-        std::map<std::string, std::size_t> m_dtNameIdx;     //!< A map : dt-name -> dt-pos.
+        dataset_idx_type m_datasets;
 
 // Sequence objects
-        std::vector<Sequence*> m_sequences;                     //!< The list of sequences.
-        std::map<std::string, std::size_t> m_seqNameIdx;        //!< A map : sequence-name -> sequence-pos.
-        std::map<std::size_t, std::size_t> m_seqIdIdx;          //!< A map : sequence-id -> sequence-pos.
-        std::multimap<DataSetType*, std::size_t> m_seqFTIdx;    //!< A multimap : owner-dt -> sequence-pos.
+        sequence_idx_type m_sequences;
+
+        std::multimap<DataSetType*, sequence_idx_type::iterator> m_seqFTIdx;    //!< A multimap : owner-dt -> sequence-it.
 
 // Foreign-key objects
         std::multimap<DataSetType*, ForeignKey*> m_dependentFkIdx;   //!< A multimap : datasettype -> fk. It tells for a DataSetType the list of fk referencing it.
-   };
+
+        unsigned int m_id;     //!< An identification number inside the DataSource.
+        DataSource* m_ds;      //!< The DataSource associated to the Catalog.
+
+        static DataSetTypePtr sm_nullds;
+    };
+
+    inline unsigned int DataSourceCatalog::getId() const
+    {
+      return m_id;
+    }
+
+    inline void DataSourceCatalog::setId(unsigned int id)
+    {
+      m_id = id;
+    }
+
+    inline DataSource* DataSourceCatalog::getDataSource() const
+    {
+      return m_ds;
+    }
+
+    inline void DataSourceCatalog::setDataSource(DataSource* ds)
+    {
+      m_ds = ds;
+    }
+
+    inline std::size_t DataSourceCatalog::getNumberOfDataSets() const
+    {
+      return m_datasets.size();
+    } 
+
+    inline std::size_t DataSourceCatalog::getNumberOfSequences() const
+    {
+      return m_sequences.size();
+    }
 
   } // end namespace da
 }   // end namespace te
