@@ -56,6 +56,8 @@
 #include "LayerRenderer.h"
 #include "QueryEncoder.h"
 
+#include <boost/lexical_cast.hpp>
+
 te::map::LayerRenderer::LayerRenderer()
 {}
 
@@ -175,8 +177,8 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     std::string message = TR_MAP("Drawing the layer");
     message += " " + layer->getTitle() + ". ";
     message += TR_MAP("Rule");
-    message += " " + te::common::Convert2String(i + 1) + " " + TR_MAP("of") + " ";
-    message += te::common::Convert2String(nRules) + ".";
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += boost::lexical_cast<std::string>(nRules) + ".";
 
     // Draw task
     te::common::TaskProgress task(message);

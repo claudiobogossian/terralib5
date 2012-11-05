@@ -5,6 +5,8 @@
 //STL include files
 #include <algorithm>
 
+#include <boost/lexical_cast.hpp>
+
 te::map::AbstractTable::AbstractTable() :
 m_separator('#')
 {
@@ -164,7 +166,7 @@ std::string te::map::AbstractTable::map2PKey(size_t row)
     throw te::common::Exception("Row out of boundaries.");
 
   if(m_absPKeys.empty())
-    return te::common::Convert2String(row);
+    return boost::lexical_cast<std::string>(row);
 
   size_t nPkeys = m_absPKeys.size();
   std::string pkey;
