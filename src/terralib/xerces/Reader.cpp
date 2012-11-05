@@ -273,6 +273,19 @@ std::size_t te::xerces::Reader::getAttrPosition(const std::string& name) const
   return m_readerH->getElementAttrs()->getIndex(StrToXMLCh(name).getXMLCh());
 }
 
+std::size_t te::xerces::Reader::getNumberOfNamespaces() const
+{
+  return m_readerH->getNumberOfNamespaces();
+}
+
+void te::xerces::Reader::getNamespace(std::size_t i, std::pair<std::string, std::string>& ns) const
+{
+  const std::pair<const XMLCh*, const XMLCh*>& nns = m_readerH->getNamespace(i);
+
+  ns.first = ToString(nns.first);
+  ns.second = ToString(nns.second);
+}
+
 void te::xerces::Reader::setInternalBufferSize(const std::size_t size)
 {
   m_parser->setInputBufferSize(size);
