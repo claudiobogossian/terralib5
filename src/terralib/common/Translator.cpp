@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Translator.cpp
+  \file terralib/common/Translator.cpp
 
   \brief This class is designed for dealing with multi-language text translation in TerraLib.
  */

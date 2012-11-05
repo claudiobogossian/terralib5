@@ -80,11 +80,9 @@ namespace te
         
       private:
         
-        /*!
-          \brief RANSAC iterations counter type.
-        */        
-        typedef unsigned int RansacItCounterT;        
-        
+        /*! \brief RANSAC iterations counter type. */
+        typedef unsigned int RansacItCounterT;
+
         /*! \brief Default constructor. */
         GTFilter();
 

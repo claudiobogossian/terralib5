@@ -70,6 +70,24 @@ namespace te
           \warning The identifier value (id) may be used by data source implementations.
                    So, don't rely on its value!
         */
+        RasterProperty(const std::string& name,
+                       bool isRequired = false,
+                       unsigned int id = 0,
+                       te::dt::Property* parent = 0);
+
+        /*!
+          \brief It constructs a new raster property.
+
+          \param grid        The grid definition. Do not pass a null pointer.
+          \param bands       Information about raster bands (This RasterProperty instance will acquire the ownership of all band properties objects).
+          \param rinfo       Detailed information about the raster data.
+          \param isRequired  Tells if the the property is required (mandatory) or not.
+          \param id          The property identifier.
+          \param parent      A reference to the parent Property of the new object if it has one.
+
+          \warning The identifier value (id) may be used by data source implementations.
+                   So, don't rely on its value!
+        */
         RasterProperty(Grid* grid,
                        const std::vector<BandProperty*>& bands,
                        const std::map<std::string, std::string>& rinfo,

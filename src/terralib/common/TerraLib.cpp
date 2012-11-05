@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file TerraLib.cpp
-   
+  \file terralib/common/TerraLib.cpp
+
   \brief An utility class to control the startup and cleanup of the TerraLib Platform and its resources.
- */
+*/
 
 // TerraLib
 #include "TerraLib.h"

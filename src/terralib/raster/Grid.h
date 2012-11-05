@@ -29,10 +29,18 @@
 // TerraLib
 #include "Config.h"
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
 // Forward declaration
-  namespace gm { class Envelope; struct Coord2D; }
+  namespace gm
+  {
+    class Envelope;
+
+    struct Coord2D;
+  }
 
   namespace rst
   {
@@ -249,6 +257,8 @@ namespace te
         int m_srid;                         //!< The associated SRS.
         double m_geoT[6];                   //!< A list of 6 coefficients describing an affine transformation to georeference a grid.
     };
+
+    typedef boost::shared_ptr<Grid> GridPtr;
 
     inline bool Grid::isPointInGrid(unsigned int col, unsigned int row) const
     {

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ParameterizedAbstractFactory.h
+  \file terralib/common/ParameterizedAbstractFactory.h
 
   \brief A class that defines the basic interface of an abstract factory that makes use of parameters to construct the objects.
  */

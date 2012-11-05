@@ -110,6 +110,13 @@ namespace te
         /*! \brief It initializes a new Categorize. */
         Categorize();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other Categorize.
+        */
+        Categorize(const Categorize& rhs);
+        
         /*! \brief Destructor. */
         ~Categorize();
 
@@ -118,7 +125,7 @@ namespace te
           
           \return A clone of this object.
         */
-        virtual Categorize* clone() const { return 0; }
+        virtual Categorize* clone() const;
 
         //@}
 

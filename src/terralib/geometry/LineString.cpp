@@ -76,15 +76,30 @@ te::gm::LineString::LineString(std::size_t size, GeomType t, int srid, Envelope*
 }
 
 te::gm::LineString::LineString(const LineString& rhs)
-  : Curve(rhs)
+  : Curve(rhs),
+    m_zA(0),
+    m_mA(0),
+    m_nPts(0)
 {
   m_nPts = rhs.m_nPts;
 
-  m_coords = rhs.m_coords ? static_cast<Coord2D*>(malloc(16 * rhs.m_nPts)) : 0;
+  if(rhs.m_coords)
+  {
+    m_coords = static_cast<Coord2D*>(malloc(16 * rhs.m_nPts));
+    memcpy(m_coords, rhs.m_coords, 16 * rhs.m_nPts);
+  }
 
-  m_zA = rhs.m_zA ? static_cast<double*>(malloc(8 * rhs.m_nPts)) : 0;
+  if(rhs.m_zA)
+  {
+    m_zA = static_cast<double*>(malloc(8 * rhs.m_nPts));
+    memcpy(m_zA, rhs.m_zA, 8 * rhs.m_nPts);
+  }
 
-  m_mA = rhs.m_mA ? static_cast<double*>(malloc(8 * rhs.m_nPts)) : 0;
+  if(rhs.m_mA)
+  {
+    m_mA = static_cast<double*>(malloc(8 * rhs.m_nPts));
+    memcpy(m_mA, rhs.m_mA, 8 * rhs.m_nPts);
+  }
 }
 
 te::gm::LineString::~LineString()

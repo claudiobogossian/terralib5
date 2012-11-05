@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file PlatformUtils.cpp
+  \file terralib/common/PlatformUtils.cpp
 
   \brief This file contains several utility functions when dealing with Linux specific API.
 */

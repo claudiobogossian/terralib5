@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LoggedException.cpp
+  \file terralib/common/LoggedException.cpp
 
   \brief A class that automatically logs the exception message.
- */
+*/
 
 // TerraLib
 #include "LoggedException.h"

@@ -18,14 +18,9 @@
  */
 
 /*! 
-  \file Decorator.h
-  \brief Defines an abstraction for a Decorator.
-  \details Decorators are classes that can change object behavioral in run-time. For more informations about decorator pattern, 
-  see <A HREF="http://en.wikipedia.org/wiki/Decorator_pattern">Decorator pattern on Wikipedia.</A>
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
+  \file terralib/common/Decorator.h
+
+  \brief Defines a decorator abstraction.
  */
 #ifndef __TERRALIB_COMMON_INTERNAL_DECORATOR_H
 #define __TERRALIB_COMMON_INTERNAL_DECORATOR_H
@@ -37,55 +32,60 @@ namespace te
 
     /*!
       \class Decorator
-      \copydoc Decorator.h 
+
+      Decorators are classes that can change object behavioral in run-time.
+      For more informations about decorator pattern, see:
+      <A HREF="http://en.wikipedia.org/wiki/Decorator_pattern">Decorator pattern on Wikipedia.</A>
     */
-    template<class T>
-    class Decorator : public T 
+    template<class T> class Decorator : public T 
     {
-    public:
-      /*! 
-        \brief Constructor.    
-        \details The \a deleteDecorated argument tells if the decorator HAS or NOT the ownership of the decorated pointer.
-        A \a true value gives the ownership to the decorator and the client do not need manage memory of the decorated pointer.
-        Otherwise, the client needs manage the memory of the decorated pointer.
-        \param decorated The object to be decorated.
-        \param deleteDecorated Tells to decorator to also delete decorated pointer. 
-      */
-      Decorator(T * decorated, const bool& deleteDecorated=false);
+      public:
 
-      /*! 
-        \brief Virtual destructor.
-      */
-      virtual ~Decorator();
+        /*! 
+          \brief Constructor.
 
-      /*! 
-        \brief Copy constructor.    
-        \param source Object to be copied.
-      */
-      Decorator(const Decorator<T> & source);
+          The \a deleteDecorated argument tells if the decorator HAS or NOT the ownership of the decorated pointer.
+          A \a true value gives the ownership to the decorator and the client do not need manage memory of the decorated pointer.
+          Otherwise, the client needs manage the memory of the decorated pointer.
 
-      /*! 
-        \brief Copy operator.    
-        \param source Object to be copied.
-      */
-      Decorator<T> & operator=(const Decorator<T> & source);
+          \param decorated The object to be decorated.
+          \param deleteDecorated Tells to decorator to also delete decorated pointer. 
+        */
+        Decorator(T* decorated, bool deleteDecorated = false);
 
-      /*! 
-        \brief Returns the pointer of decorated object.    
-      */
-      T* getDecorated();
+        /*! \brief Virtual destructor. */
+        virtual ~Decorator();
 
-    protected:
-      T * m_decorated;      //!< The object decorated.
-      bool m_delDecorated;  //!< If true, also delete decorated pointer.
+        /*! 
+          \brief Copy constructor.
+
+          \param rhs Object to be copied.
+        */
+        Decorator(const Decorator& rhs);
+
+        /*! 
+          \brief Copy operator.
+
+          \param rhs Object to be copied.
+        */
+        Decorator & operator=(const Decorator& rhs);
+
+        /*! 
+          \brief Returns the pointer of decorated object.    
+        */
+        T* getDecorated();
+
+      protected:
+
+        T * m_decorated;      //!< The object decorated.
+        bool m_delDecorated;  //!< If true, also delete decorated pointer.
     };
 
-    //! Methods implementation
     template<class T>
-    Decorator<T>::Decorator(T * decorated, const bool& deleteDecorated) :
-    T(),
-    m_decorated(decorated),
-    m_delDecorated(deleteDecorated)
+    Decorator<T>::Decorator(T* decorated, bool deleteDecorated)
+      : T(),
+        m_decorated(decorated),
+        m_delDecorated(deleteDecorated)
     {
     }
 
@@ -97,17 +97,17 @@ namespace te
     }
 
     template<class T>
-    Decorator<T>::Decorator(const Decorator<T> & source) : 
-    m_decorated(source.m_decorated),
-    m_delDecorated(source.m_delDecorated)
+    Decorator<T>::Decorator(const Decorator<T> & rhs)
+      : m_decorated(rhs.m_decorated),
+        m_delDecorated(rhs.m_delDecorated)
     {
     }
 
     template<class T>
-    Decorator<T> & Decorator<T>::operator=(const Decorator<T> & source) 
+    Decorator<T> & Decorator<T>::operator=(const Decorator<T> & rhs)
     {
-      m_decorated = source.m_decorated;
-      m_delDecorated = source.m_delDecorated;
+      m_decorated = rhs.m_decorated;
+      m_delDecorated = rhs.m_delDecorated;
 
       return *this;
     }
@@ -117,7 +117,8 @@ namespace te
     {
       return m_decorated;
     }
-  } 
-}
+
+  } // end namespace common
+}   // end namespace te
 
 #endif //__TERRALIB_COMMON_INTERNAL_DECORATOR_H

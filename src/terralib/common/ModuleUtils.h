@@ -18,8 +18,8 @@
  */
 
 /*!
-  \file ModuleUtils.h
-   
+  \file terralib/common/ModuleUtils.h
+
   \brief Utility functions for module definition.
 */
 

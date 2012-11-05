@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,52 @@
  */
 
 /*!
-  \file terralib/common/MatrixUtils.cpp
+  \file Identifiable.cpp
 
-  \brief Matrix manipulation utils.
+  \brief A base class for XSD classes that must provide a unique ID property.
 */
 
 // TerraLib
-#include "Exception.h"
-#include "MatrixUtils.h"
+#include "Identifiable.h"
 
-namespace te
+void te::xsd::Identifiable::setId(std::string* id)
 {
-  namespace common
-  {
+  delete m_id;
+  m_id = id;
+}
 
-  }     // end namespace common
-}       // end namespace te
+std::string* te::xsd::Identifiable::getId() const
+{
+  return m_id;
+}
+
+te::xsd::Identifiable::Identifiable(std::string* id)
+  : m_id(id)
+{
+}
+
+te::xsd::Identifiable::Identifiable(const Identifiable& rhs)
+  : m_id(0)
+{
+  m_id = rhs.m_id ? new std::string(*rhs.m_id) : 0;
+}
+
+te::xsd::Identifiable::~Identifiable()
+{
+  delete m_id;
+}
+
+te::xsd::Identifiable& te::xsd::Identifiable::operator=(const Identifiable& rhs)
+{
+  if(this != &rhs)
+  {
+    delete m_id;
+
+    m_id = rhs.m_id ? new std::string(*rhs.m_id) : 0;
+  }
+
+  return *this;
+}
+
+
 

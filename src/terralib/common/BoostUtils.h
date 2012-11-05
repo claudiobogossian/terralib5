@@ -28,15 +28,16 @@
 
 // TerraLib
 #include "Config.h"
-#include "../geometry/Envelope.h"
+
 // STL
 #include <map>
 #include <string>
 #include <vector>
 
 // Boost
-#include <boost/unordered_map.hpp>
 #include <boost/property_tree/ptree_fwd.hpp>
+#include <boost/unordered_map.hpp>
+
 
 namespace te
 {

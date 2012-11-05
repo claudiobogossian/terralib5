@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Library.h
+  \file terralib/common/Library.h
 
   \brief A class for handling shared libraries.
  */

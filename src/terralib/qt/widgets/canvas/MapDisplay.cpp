@@ -59,11 +59,20 @@ te::qt::widgets::MapDisplay::~MapDisplay()
 {
   delete m_displayPixmap;
   delete m_draftPixmap;
+
+  std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
+  for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
+    delete it->second;
+
+  m_layerCanvasMap.clear();
 }
 
 void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
 {
   te::map::MapDisplay::setExtent(e);
+
+  if(m_extent == 0)
+    return;
 
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)

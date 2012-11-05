@@ -127,12 +127,12 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 
   boost::numeric::ublas::matrix< double > A( 2*tiepointsSize, 6 );
   
-  for ( unsigned int A_block_offset = 0 ; (A_block_offset < tiepointsSize) ; 
-        ++A_block_offset) 
+  for ( unsigned int A_block_offset = 0 ; (A_block_offset < tiepointsSize) ;
+        ++A_block_offset)
   {
-        
-    const Coord2D& x_y = params.m_tiePoints[ A_block_offset ].first;    
-    
+
+    const Coord2D& x_y = params.m_tiePoints[ A_block_offset ].first;
+
     A( A_block_offset*2  , 0 ) = x_y.x ;
     A( A_block_offset*2  , 1 ) = x_y.y ;
     A( A_block_offset*2  , 2 ) = 1 ;
@@ -200,13 +200,15 @@ bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
       params.m_inverseParameters[5] = XExpandedInv(1,2);
       
       return true;
-    } 
-    else 
+    }
+    else
     {
       return false;
     }
-  } else {
-    return false;   
+  }
+  else
+  {
+    return false;
   }
 }
 

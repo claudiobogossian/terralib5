@@ -58,6 +58,8 @@ namespace te
         */
         CompositeData(std::size_t nComponents);
 
+        CompositeData(const std::string& name);
+
         /*!
           \brief Copy constructor.
 
@@ -76,6 +78,10 @@ namespace te
           \return A reference to this composite.
         */
         CompositeData& operator=(const CompositeData& rhs);
+
+        void setName(const std::string& name);
+
+        void add(const std::string& name, AbstractData* value);
 
         /*!
           \brief It returns the i-th component value of the composite data.
@@ -133,6 +139,8 @@ namespace te
       private:
 
         std::vector<AbstractData*> m_values;  //!< The component values.
+        std::vector<std::string> m_names;     //!< The component names.
+        std::string m_name;                   //!< The composite name.
     };
 
   } // end namespace dt

@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "Enums.h"
 
 // STL
 #include <map>
@@ -70,7 +71,7 @@ namespace te
         Property(const std::string& name,
                  int datatype,
                  unsigned int id = 0,
-                 Property* parent = 0);        
+                 Property* parent = 0);
 
         /*!
           \brief Copy constructor.

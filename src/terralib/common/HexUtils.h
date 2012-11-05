@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file HexUtils.h
+  \file terralib/common/HexUtils.h
 
   \brief This file contains several utilities functions for dealing with HEX strings.
  */

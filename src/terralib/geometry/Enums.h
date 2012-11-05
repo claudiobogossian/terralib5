@@ -109,9 +109,7 @@ namespace te
         TriangleType   =   17,              /*!< A Triangle in R2 with coordinate values for x and y.       */
         TriangleZType  = 1017,              /*!< A Triangle in R3 with coordinate values for x, y and z.    */
         TriangleMType  = 2017,              /*!< A Triangle in R3 with coordinate values for x, y and m.    */
-        TriangleZMType = 3017,              /*!< A Triangle in R4 with coordinate values for x, y, z and m. */   
-
-        QuadrilateralGridType = 0xFFFFFFFE, /*!< A quadrilateral grid is a rectified grid based on two straight lines (or axes) that intersect each other at right angles.     */
+        TriangleZMType = 3017,              /*!< A Triangle in R4 with coordinate values for x, y, z and m. */
 
         UnknownGeometryType = 0xFFFFFFFF    /*!< Just a marker for an unknown geometry type. */
     };

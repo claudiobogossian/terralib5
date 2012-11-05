@@ -118,7 +118,9 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/qwt" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/canvas/DrawLayerThread.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
+  ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 

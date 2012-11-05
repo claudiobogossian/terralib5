@@ -54,7 +54,7 @@ namespace te
 
       \sa ArrayProperty, AbstractData
     */
-    class TEDATATYPEEXPORT Array
+    class TEDATATYPEEXPORT Array : public AbstractData
     {
       public:
         /*!
@@ -85,7 +85,7 @@ namespace te
         ~Array();
 
         /*! \brief Returns the numbe of dimensions of the array. */
-        std::size_t getDimension();
+        std::size_t getDimension() const;
 
         /*!
           \brief Returns the data type of the elements of the array. 
@@ -101,7 +101,7 @@ namespace te
 
           \return The number of elements in the i-th dimension.
         */
-        std::size_t getDimensionSize(std::size_t i);
+        std::size_t getDimensionSize(std::size_t i) const;
 
         /*!
           \brief Inserts data into specified position.
@@ -136,13 +136,13 @@ namespace te
 
           \return A new clone of the array. The caller will take its ownership.
         */
-        Array* clone() const;
+        AbstractData* clone() const;
 
         /*! \brief Returns the type code for array data: ARRAY_TYPE. */
         int getTypeCode() const { return ARRAY_TYPE; }
 
         /*! \brief Return a string with all the data inside array. */
-        std::string toString();
+        std::string toString() const;
 
       protected:
 

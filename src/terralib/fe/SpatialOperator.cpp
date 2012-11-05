@@ -31,7 +31,7 @@
 // STL
 #include <cassert>
 
-std::set<const char*, te::common::LessCmp>  te::fe::SpatialOperator::sm_validSpatialOperators;
+std::set<const char*, te::common::LessCmp<const char*> >  te::fe::SpatialOperator::sm_validSpatialOperators;
 
 te::fe::SpatialOperator::SpatialOperator(const char* opName)
   : m_name(opName),
@@ -65,7 +65,7 @@ const char* te::fe::SpatialOperator::findOperator(const char* o)
 {
   assert(o);
 
-  std::set<const char*, te::common::LessCmp>::const_iterator it = sm_validSpatialOperators.find(o);
+  std::set<const char*, te::common::LessCmp<const char*> >::const_iterator it = sm_validSpatialOperators.find(o);
 
   if(it != sm_validSpatialOperators.end())
     return *it;

@@ -120,6 +120,13 @@ namespace te
         /*! \brief It initializes a new Interpolate. */
         Interpolate();
 
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The other Interpolate.
+        */
+        Interpolate(const Interpolate& rhs);
+
         /*! \brief Destructor. */
         ~Interpolate();
 
@@ -128,7 +135,7 @@ namespace te
           
           \return A clone of this object.
         */
-        virtual Interpolate* clone() const { return 0; }
+        virtual Interpolate* clone() const;
 
         //@}
 

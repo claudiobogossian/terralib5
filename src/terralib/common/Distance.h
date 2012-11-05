@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Distance.h
-  
+  \file terralib/common/Distance.h
+
   \brief A given distance has a measurement and a unit-of-measure.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_DISTANCE_H
 #define __TERRALIB_COMMON_INTERNAL_DISTANCE_H

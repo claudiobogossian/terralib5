@@ -28,8 +28,8 @@
 
 // Boost
 #include <boost/foreach.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::string, std::string>& dict)
 {

@@ -98,11 +98,14 @@ class MainWindow : public QMainWindow
   private:
 
     void setupActions();
-    void addLayer(const QString& path);
+    void addVectorLayer(const QString& path);
+    void addRasterLayer(const QString& path);
     void contextMenuEvent(QContextMenuEvent* e);
 
   private slots:
 
+    void onAddVectorLayerTriggered();
+    void onAddRasterLayerTriggered();
     void onPanTriggered();
     void onZoomInTriggered();
     void onZoomOutTriggered();

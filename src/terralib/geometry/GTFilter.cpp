@@ -24,15 +24,16 @@
 */
 
 // TerraLib
-#include "GTFilter.h"
 #include "GTFactory.h"
+#include "GTFilter.h"
 #include "MultiPoint.h"
 #include "Point.h"
 #include "Surface.h"
 
-#include <limits>
+// STL
 #include <cmath>
 #include <cstdlib>
+#include <limits>
 
 te::gm::GTFilter::~GTFilter()
 {
@@ -52,10 +53,10 @@ te::gm::GTFilter& te::gm::GTFilter::operator=( const GTFilter& )
 }
 
 bool te::gm::GTFilter::applyRansac(const std::string& transfName, 
-  const GTParameters& inputParams, const double maxDMapError, 
-  const double maxIMapError, const double maxDMapRmse, const double maxIMapRmse,
-  std::auto_ptr< GeometricTransformation >& outTransf,
-  const std::vector< double > tiePointsWeights )
+                                   const GTParameters& inputParams, const double maxDMapError, 
+                                   const double maxIMapError, const double maxDMapRmse, const double maxIMapRmse,
+                                   std::auto_ptr< GeometricTransformation >& outTransf,
+                                   const std::vector< double > tiePointsWeights )
 {
   if( maxDMapError < 0 ) return false;
   if( maxIMapError < 0 ) return false;

@@ -965,11 +965,17 @@ void te::qt::widgets::Canvas::drawImage(int x, int y, char* src, std::size_t siz
 
 void te::qt::widgets::Canvas::drawImage(int x, int y, te::color::RGBAColor** src, int w, int h)
 {
-  QImage img(w, h, QImage::Format_RGB32);
+  QImage img(w, h, QImage::Format_ARGB32);
 
   for(int l = 0; l < h; ++l)
+  {
     for(int c = 0; c < w; ++c)
-      img.setPixel(c, l, src[l][c].getRgba());
+    {
+      QRgb val = qRgba(src[l][c].getRed(), src[l][c].getGreen(), src[l][c].getBlue(), src[l][c].getAlpha());
+
+      img.setPixel(c, l, val);
+    }
+  }
 
   m_painter.setWorldMatrixEnabled(false);
   m_painter.drawImage(x, y, img);

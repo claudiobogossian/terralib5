@@ -80,7 +80,11 @@ namespace te
       STRING        /*!< For variable unlimited length string.               */
     };
 
-    /*! \brief An anonymous union for all the basic data types supported by TerraLib */
+    /*!
+      \brief An anonymous union for all the basic data types supported by TerraLib.
+
+      \warning If you change this list, please, update all code dependencies (for example: LAST_DATATYPE_CODE).
+    */
     enum
     {
       UNKNOWN_TYPE = 0,     /*!< Used when the data type is unknown.                         */
@@ -110,7 +114,15 @@ namespace te
       CINT32_TYPE = 24,     /*!< Complex signed integer number data type (4 + 4 bytes long). */
       CFLOAT_TYPE = 25,     /*!< Complex float number (32 + 32 bits) data type.              */
       CDOUBLE_TYPE = 26,    /*!< Complex double number (64 + 64 bits) data type.             */
-      XML_TYPE = 27         /*!< XML data type                                               */
+      XML_TYPE = 27,        /*!< XML data type                                               */
+      DATASETITEM_TYPE = 28,/*!< When the type is a DataSetItem                              */
+      POLYMORPHIC_TYPE = 29 /*!< When the type is polymorphic                                */
+    };
+
+    /*! \brief An anonymous union that marks the last common data type supported by TerraLib. */
+    enum
+    {
+      LAST_COMMON_DATATYPE_CODE = POLYMORPHIC_TYPE
     };
 
   } // end namespace dt
