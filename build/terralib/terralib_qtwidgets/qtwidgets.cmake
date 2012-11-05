@@ -158,8 +158,6 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
-  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/CheckConstraintItem.h
   ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
   ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
@@ -173,7 +171,6 @@ set (
   ${SRCDIR}/widgets/datasource/explorer/DataSourceItem.h
   ${SRCDIR}/widgets/datasource/explorer/PropertyItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceToolBox.h
-  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
   ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
 )
