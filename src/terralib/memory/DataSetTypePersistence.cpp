@@ -68,6 +68,11 @@ void te::mem::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
   ds->add(dt->getName(), dataset);
 }
 
+void te::mem::DataSetTypePersistence::clone(const std::string& /*datasetName*/, const std::string& /*newDatasetName*/, const std::map<std::string, std::string>& /*options*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
 void te::mem::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 {
   DataSource* ds = m_t->getMemDataSource();
@@ -80,7 +85,12 @@ void te::mem::DataSetTypePersistence::drop(te::da::DataSetType* dt)
   ds->remove(dt->getName());
 
   if(dt->getCatalog())
-    ds->getCatalog()->remove(dt); 
+    ds->getCatalog()->remove(dt);
+}
+
+void te::mem::DataSetTypePersistence::drop(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
 void te::mem::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)
@@ -453,7 +463,7 @@ void te::mem::DataSetTypePersistence::create(te::da::Sequence* sequence)
   newSeq->setCatalog(ds->getCatalog());
 
   //getting the datasettype by the name of the sequence datasettype property involved
-  te::da::DataSetType* dsDt = ds->getCatalog()->getDataSetType(static_cast<te::da::DataSetType*>(sequence->getOwner()->getParent())->getName());
+  const te::da::DataSetTypePtr& dsDt = ds->getCatalog()->getDataSetType(static_cast<te::da::DataSetType*>(sequence->getOwner()->getParent())->getName());
 
   newSeq->setOwner(dsDt->getProperty(sequence->getOwner()->getName()));
 }

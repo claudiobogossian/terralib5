@@ -32,12 +32,12 @@
 #include "../dataaccess/query/SQLDialect.h"
 #include "Config.h"
 
+// STL
+#include <vector>
+
 // Boost
 #include <boost/ptr_container/ptr_map.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
-
-// STL
-#include <vector>
 
 namespace te
 {
@@ -152,7 +152,7 @@ namespace te
 
           \note In-Memory driver extended method.
         */
-        boost::ptr_vector<std::string> getDataSets() const;
+        void getDataSets(boost::ptr_vector<std::string>& datasets) const;
 
         /*!
           \brief It checks if a given dataset exists.
@@ -185,13 +185,6 @@ namespace te
           \note In-Memory driver extended method.
         */
         void rename(const std::string& oldName, std::string newName);
-      
-        /*!
-         \brief It return true if the data source has any dataset.
-         
-         \return True if the data source has datasets otherwise, false.
-         */      
-        bool hasDataSets();      
 
       protected:
 
