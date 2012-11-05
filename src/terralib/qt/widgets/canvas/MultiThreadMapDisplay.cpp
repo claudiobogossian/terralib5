@@ -37,6 +37,7 @@ te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size,
   : te::qt::widgets::MapDisplay(size, parent, f),
     m_showFeedback(showFeedback)
 {
+  setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
 
 te::qt::widgets::MultiThreadMapDisplay::~MultiThreadMapDisplay()

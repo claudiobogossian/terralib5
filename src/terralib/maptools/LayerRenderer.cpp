@@ -171,7 +171,7 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
 
     // Gets the set of symbolizers
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
-    std::size_t nSymbolizers = style->getNRules();
+    std::size_t nSymbolizers = symbolizers.size();
 
     // Building task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
     std::string message = TR_MAP("Drawing the layer");
