@@ -321,6 +321,10 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_keepOnMemoryAction);
   connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
 
+  m_getFreeMemoryAction = new QAction("&Get Free Memory", m_treeMenu);
+  m_treeMenu->addAction(m_getFreeMemoryAction);
+  connect(m_getFreeMemoryAction, SIGNAL(triggered()), this, SLOT(getFreeMemorySlot()));
+
   m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
   m_treeMenu->addAction(m_plotTemporalDistanceAction);
   connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
@@ -1729,9 +1733,8 @@ void MyWindow::addLayerSlot()
     }
 
     int srid = gp->getSRID();
-    if(srid <= 0)
+    if(srid == 4269 || srid <= 0) // na lib projection nao tem 4269
     {
-      //srid = 4326; // teste para country.shp
       std::map<int, QString> sridMap;
       std::map<int, QString>::iterator it;
 
@@ -2105,4 +2108,42 @@ void MyWindow::removeLegendSlot()
   m_layerExplorerModel->removeLegend(m_layerExplorer->getPopupIndex());
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
   updateDisplays((MyLayer*)(layerItem->getRefLayer()));
+}
+
+void MyWindow::getFreeMemorySlot()
+{
+  int size = getFreeMemory();
+  size /= (1<<20);
+  QString msg;
+  msg.setNum(size);
+  msg.insert(0, "Free Memory: ");
+  msg += " MBytes";
+  QMessageBox::information(this, "Free Memory Size", msg);
+}
+
+int MyWindow::getFreeMemory()
+{
+  int i, j;
+  char* c[1<<14];
+
+  try
+  {
+    i = 0;
+    while(c[i] = new char[1<<20])
+      ++i;
+
+    j = 0;
+    while(j != i)
+      delete []c[j++];
+  }
+  catch(const std::exception&)
+  {
+    j = 0;
+    while(j != i)
+      delete []c[j++];
+  }
+
+  if(i > 0)
+    --i;
+  return i * (1<<20);
 }
