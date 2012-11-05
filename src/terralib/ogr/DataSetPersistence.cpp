@@ -64,11 +64,11 @@ te::ogr::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::ogr::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t /*limit*/)
+void te::ogr::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
 {
   te::ogr::DataSetTypePersistence* pers = new te::ogr::DataSetTypePersistence(m_t);
   pers->create(dt, options);
-  add(dt,d);
+  add(dt, d, options, limit);
   delete pers;
 }
 
