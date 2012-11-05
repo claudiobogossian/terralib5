@@ -41,6 +41,11 @@
 namespace te
 {
 // Forward declarations
+  namespace dt
+  {
+    class Property;
+  }
+
   namespace gm
   {
     class Envelope;
@@ -111,17 +116,29 @@ namespace te
                 if you want that information you should call getExtent method.
         */
         virtual DataSetType* getDataSetType(const std::string& datasetName, const bool full = false) = 0;
-      
+
         /*!
-         \brief It retrieves the properties of the dataset.
-         
-         \param dt The dataset we are looking for the properties.
-         
-         \exception Exception It throws an exception if something goes wrong during data source search.
-         
-         \post The dataset will contain information only about properties (no pk, no uk nor check-constraints).
-         */
+          \brief It retrieves the properties of the dataset.
+
+          \param dt The dataset we are looking for the properties.
+
+          \exception Exception It throws an exception if something goes wrong during data source search.
+
+          \post The dataset will contain information only about properties (no pk, no uk nor check-constraints).
+        */
         virtual void getProperties(DataSetType* dt) = 0;
+
+        /*!
+          \brief It retrieves a property from a dataset.
+
+          \param datasetName  The name of a dataset.
+          \param propertyName The name of the property.
+
+          \return The property information. The caller will take the property ownership.
+
+          \exception Exception It throws an exception if something goes wrong during data source search.
+        */
+        virtual te::dt::Property* getProperty(const std::string& datasetName, const std::string& propertyName) = 0;
 
         /*!
           \brief It retrieves the dataset's primary key.
@@ -249,12 +266,12 @@ namespace te
           \note Calling this method will refresh any previously loaded catalog information.
         */
         virtual void loadCatalog(const bool full = false) = 0;
-      
+
         /*!
-         \brief It return true if the data source has any dataset.
-         
-         \return True if the data source has datasets otherwise, false.
-         */
+          \brief It return true if the data source has any dataset.
+
+          \return True if the data source has datasets otherwise, false.
+        */
         virtual bool hasDataSets() = 0;
 
         /*!
