@@ -359,13 +359,11 @@ namespace te
 
     inline te::gm::Envelope::Envelope(const std::vector<double>& vectd)
     {
-       std::vector<double>::const_iterator it;
-
        double d[4] = { 0.0, 0.0, 0.0, 0.0 };
 
        int i = 0;
 
-       for(it = vectd.begin(); it < vectd.end(); ++it)
+       for(std::vector<double>::const_iterator it = vectd.begin(); it < vectd.end(); ++it)
        {
            d[i] = (*it);
            i += 1;
