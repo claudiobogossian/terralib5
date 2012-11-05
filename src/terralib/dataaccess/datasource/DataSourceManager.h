@@ -27,12 +27,13 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEMANAGER_H
 
 // TerraLib
+#include "../../common/Comparators.h"
 #include "../../common/Singleton.h"
 #include "../../common/ThreadingPolicies.h"
-#include "../Config.h"
+#include "../Definitions.h"
+#include "DataSource.h"
 
 // STL
-#include <list>
 #include <map>
 #include <string>
 
@@ -40,9 +41,6 @@ namespace te
 {
   namespace da
   {
-// Forward class
-    class DataSource;
-
     /*!
       \class DataSourceManager
 
@@ -69,8 +67,11 @@ namespace te
 
       public:
 
+        typedef std::map<std::string, DataSourcePtr>::const_iterator const_iterator;
+        typedef std::map<std::string, DataSourcePtr>::iterator iterator;
+
         /*!
-          \brief It creates a new data source, store a reference to it in the manager and then return a pointer to it.
+          \brief It creates a new data source, stores a reference to it in the manager and then returns a pointer to it.
 
           \param id       The identification to be assigned to the data source.
           \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
@@ -81,10 +82,10 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSource* make(const std::string& id, const std::string& dsType);
+        DataSourcePtr make(const std::string& id, const std::string& dsType);
 
         /*!
-          \brief It opens the data source, makes it ready for use, store a reference to it in the manager and return a pointer to it.
+          \brief It opens the data source, makes it ready for use, stores a reference to it in the manager and returns a pointer to it.
 
           \param id       The identification to be assigned to the data source.
           \param dsType   The data source type name (example: PostGIS, Oracle, WFS).
@@ -98,7 +99,7 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSource* open(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo);
+        DataSourcePtr open(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo);
 
         /*!
           \brief It opens the data source, makes it ready for use, store a reference to it in the manager and return a pointer to it.
@@ -115,7 +116,7 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSource* open(const std::string& id, const std::string& dsType, const std::string& connInfo);
+        DataSourcePtr open(const std::string& id, const std::string& dsType, const std::string& connInfo);
 
         /*!
           \brief It searches for an opened data source with the given id or it opens a new one if it doesn't exists
@@ -132,7 +133,7 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSource* get(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo);
+        DataSourcePtr get(const std::string& id, const std::string& dsType, const std::map<std::string, std::string>& connInfo);
 
         /*!
           \brief It returns the number of data sources that the manager are keeping track of.
@@ -152,25 +153,13 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSource* find(const std::string& id) const;
-
-        /*!
-          \brief It returns the data source identifier.
-
-          \param ds The data source.
-
-          \return The data source identifier, or an empty string if none is found.
-
-          \note Thread-safe!
-        */
-        std::string find(DataSource* ds) const;
+        DataSourcePtr find(const std::string& id) const;
 
         /*!
           \brief It stores the data source in the manager.
 
           The data source must have an identification in order to be inserted.
 
-          \param id The data source identification.
           \param ds The data source to be stored in the manager.
 
           \note The manager will take the ownership of the data source.
@@ -179,7 +168,7 @@ namespace te
 
           \note Thread-safe!
         */
-        void insert(const std::string& id, DataSource* ds);
+        void insert(const DataSourcePtr& ds);
 
         /*!
           \brief It changes the ownership of the data source to the caller.
@@ -191,13 +180,10 @@ namespace te
 
           \note Thread-safe!
         */
-        void detach(DataSource* ds);
+        void detach(const DataSourcePtr& ds);
 
         /*!
           \brief It changes the ownership of the data source with the given identifier to the caller.
-
-          The memory used by the given data source will NOT BE released.
-          In other words, you will take the ownership of the data source pointer.
 
           \param id The data source identifier.
 
@@ -205,72 +191,49 @@ namespace te
 
           \note Thread-safe!
         */
-        DataSource* detach(const std::string& id);
+        DataSourcePtr detach(const std::string& id);
+
+        /*!
+          \brief All data sources of the specified type are detached from the manager.
+
+          \note Thread-safe!
+        */
+        void detachAll(const std::string& dsType);
 
         /*!
           \brief All data sources are detached from the manager.
-
-          The memory used by the data sources will NOT BE released.
-          In other words, you will take the ownership of all data source pointers.
 
           \note Thread-safe!
         */
         void detachAll();
 
         /*!
-          \brief It removes the data source from the manager and clears all the resources used by it.
+          \brief It returns an iterator to the beginning of the conteiner.
 
-          The memory used by the given data source will be released.
-          In other words, the data source will be destroyed.
-
-          \param ds The data source to be erased.
-
-          \note Thread-safe!
+          \return An iterator to the beginning of the conteiner.
         */
-        void remove(DataSource* ds);
+        const_iterator begin() const;
 
         /*!
-          \brief It removes the data source with the given identifier and clears all the resources used by it.
+          \brief It returns an iterator to the beginning of the conteiner.
 
-          The memory used by the given data source will be released.
-          In other words, the data source will be destroyed.
-
-          \param id The data source identifier.
-
-          \note Thread-safe!
+          \return An iterator to the beginning of the conteiner.
         */
-        void remove(const std::string& id);
+        iterator begin();
 
         /*!
-          \brief It removes all data sources having type 'dsType' from the manager and clears all the resources used by them.
+          \brief It returns an iterator to the end of the conteiner.
 
-          The memory used by the given data sources will be released.
-          In other words, the data sources will be destroyed.
-
-          \param dsType The type of data sources to be release. Example; "PostGIS".
-
-          \note Thread-safe!
+          \return An iterator to the beginning of the conteiner.
         */
-        void removeAll(const std::string& dsType);
+        const_iterator end() const;
 
         /*!
-          \brief It removes all the data sources from the manager and clears all the resources used by them.
+          \brief It returns an iterator to the end of the conteiner.
 
-          The memory used by the given data sources will be released.
-          In other words, the data sources will be destroyed.
-
-          \note Thread-safe!
+          \return An iterator to the beginning of the conteiner.
         */
-        void removeAll();
-
-        /*!
-          \brief It return the list of opened data sources keept in the manager.
-
-          \return The list of opened data sources keept in the manager.
-
-          \note Thread-safe!
-        */
-        const std::list<DataSource*>& getOpenedList() const;
+        iterator end();
 
       protected:
 
@@ -282,9 +245,7 @@ namespace te
 
       private:
         
-        std::map<std::string, DataSource*> m_dss;       //!< The list of registered data sources.
-        std::map<DataSource*, std::string> m_invIndex;  //!< An inverted-index from data sources to id.
-        std::list<DataSource*> m_openedDss;             //!< The list 
+        std::map<std::string, DataSourcePtr> m_dss;   //!< The data sources kept in the manager.
     };
 
     inline std::size_t DataSourceManager::size() const
@@ -292,9 +253,24 @@ namespace te
       return m_dss.size();
     }
 
-    inline const std::list<DataSource*>& DataSourceManager::getOpenedList() const
+    inline DataSourceManager::const_iterator DataSourceManager::begin() const
     {
-      return m_openedDss;
+      return m_dss.begin();
+    }
+
+    inline DataSourceManager::iterator DataSourceManager::begin()
+    {
+      return m_dss.begin();
+    }
+
+    inline DataSourceManager::const_iterator DataSourceManager::end() const
+    {
+      return m_dss.end();
+    }
+
+    inline DataSourceManager::iterator DataSourceManager::end()
+    {
+      return m_dss.end();
     }
 
   } // end namespace da
