@@ -92,6 +92,11 @@ void te::gdal::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/)
   throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
 }
 
+void te::gdal::DataSetPersistence::remove(const std::string& /*datasetName*/)
+{
+  throw te::common::Exception(TR_GDAL("Not implemented yet!"));
+}
+
 void te::gdal::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
 {
   throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
@@ -102,7 +107,7 @@ void te::gdal::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te:
   throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
 }
 
-void te::gdal::DataSetPersistence::add(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
+void te::gdal::DataSetPersistence::add(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
   throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
 }
@@ -115,6 +120,7 @@ void te::gdal::DataSetPersistence::add(const te::da::DataSetType* /*dt*/, te::da
 void te::gdal::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
                                           te::da::DataSet* /*f*/,
                                           const std::vector<te::dt::Property*>& /*properties*/,
+                                          const std::map<std::string, std::string>& /*options*/,
                                           std::size_t /*limit*/)
 {
   throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));

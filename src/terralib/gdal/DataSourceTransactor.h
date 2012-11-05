@@ -100,6 +100,8 @@ namespace te
 
         void cancel();
 
+        boost::int64_t getLastInsertId();
+
         te::da::DataSourceCatalogLoader* getCatalogLoader();
         te::da::DataSetTypePersistence*  getDataSetTypePersistence();
         te::da::DataSetPersistence*      getDataSetPersistence();
