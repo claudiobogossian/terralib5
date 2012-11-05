@@ -77,6 +77,11 @@ void te::ogr::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/)
   throw te::common::Exception(TR_OGR("OGR driver: not implemented yet."));  
 }
 
+void te::ogr::DataSetPersistence::remove(const std::string& /*datasetName*/)
+{
+  throw te::common::Exception(TR_OGR("OGR driver: not implemented yet."));  
+}
+
 void te::ogr::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
 {
   throw te::common::Exception(TR_OGR("OGR driver: not implemented yet."));
@@ -87,7 +92,7 @@ void te::ogr::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::
   throw te::common::Exception(TR_OGR("OGR driver does not support the concept of data set item."));
 }
 
-void te::ogr::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
+void te::ogr::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
   OGRLayer* layer = m_t->getOGRDataSource()->GetLayer(dt->getId());
   if(layer == 0)
@@ -113,7 +118,8 @@ void te::ogr::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
         continue;
       }
 
-      te::dt::Property* p = dt->getProperty(i);
+      const te::dt::Property* p = dt->getProperty(i);
+
       switch(p->getType())
       {
         case te::dt::INT32_TYPE:
@@ -225,7 +231,8 @@ void te::ogr::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
       continue;
     }
 
-    te::dt::Property* p = dt->getProperty(i);
+    const te::dt::Property* p = dt->getProperty(i);
+
     switch(p->getType())
     {
       case te::dt::INT32_TYPE:
@@ -316,9 +323,10 @@ void te::ogr::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 }
 
 void te::ogr::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-            te::da::DataSet* /*f*/,
-            const std::vector<te::dt::Property*>& /*properties*/,
-            std::size_t /*limit*/)
+                                         te::da::DataSet* /*f*/,
+                                         const std::vector<te::dt::Property*>& /*properties*/,
+                                         const std::map<std::string, std::string>& /*options*/,
+                                         std::size_t /*limit*/)
 {
   throw te::common::Exception(TR_OGR("OGR driver does not support this method."));
 }
