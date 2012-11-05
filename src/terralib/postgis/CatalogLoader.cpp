@@ -34,8 +34,13 @@
 #include "../dataaccess/dataset/Sequence.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
+#include "../datatype/Array.h"
 #include "../datatype/Property.h"
+#include "../datatype/SimpleData.h"
 #include "../geometry/GeometryProperty.h"
+#include "../raster/Grid.h"
+#include "../raster/BandProperty.h"
+#include "../raster/RasterProperty.h"
 #include "CatalogLoader.h"
 #include "Connection.h"
 #include "DataSet.h"
@@ -90,6 +95,52 @@ te::da::DataSetType* te::pgis::CatalogLoader::getDataSetType(const std::string& 
 
   dt->setFullLoaded(full);
   return dt.release();
+}
+
+void te::pgis::CatalogLoader::getProperties(te::da::DataSetType* dt)
+{
+  if(dt->getId() == 0)
+  {
+    unsigned int dtid = getTableId(dt->getName());
+
+    dt->setId(dtid);
+  }
+
+  std::auto_ptr<te::da::DataSet> result(getProperties(dt->getId()));
+
+  while(result->moveNext())
+  {
+    unsigned int attNum = result->getInt16(0);
+    std::string attName = result->getString(1);
+    unsigned int attType = result->getInt32(2);
+    bool attNotNull = result->getBool(3);
+    std::string fmt = result->getString(4);
+    bool attHasDefault = result->getBool(5);
+    std::string attDefValue = result->getString(6);
+    int ndims = result->getInt32(7);
+
+    te::dt::Property* p =  Convert2TerraLib(attNum, attName.c_str(), attType, attNotNull,
+                                            fmt.c_str(), attHasDefault, attDefValue.c_str(),
+                                            ndims, m_t->getPGDataSource()->getGeomTypeId(),
+                                            m_t->getPGDataSource()->getRasterTypeId());
+    dt->add(p);
+
+    if(p->getType() == te::dt::GEOMETRY_TYPE)
+    {
+      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
+      getGeometryInfo(dt->getName(), dt->getDefaultGeomProperty());
+    }
+    else if(p->getType() == te::dt::RASTER_TYPE)
+    {
+      dt->setDefaultRasterProperty(static_cast<te::rst::RasterProperty*>(p));
+      getRasterInfo(dt->getName(), dt->getDefaultRasterProperty());
+    }
+  }
+}
+
+te::dt::Property* te::pgis::CatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
 void te::pgis::CatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
@@ -270,14 +321,14 @@ void te::pgis::CatalogLoader::loadCatalog(const bool full)
 
     std::string name(tables->getString(1) + "." + tables->getString(2));
 
-    te::da::DataSetType* dt = new te::da::DataSetType(name, dtid);
+    te::da::DataSetTypePtr dt(new te::da::DataSetType(name, dtid));
     dt->setTitle(name);
     dt->setFullLoaded(full);
 
     catalog->add(dt);
 
 // now, let's load properties information for the table/view
-    getProperties(dt);
+    getProperties(dt.get());
   }
 
   if(!full)
@@ -288,10 +339,10 @@ void te::pgis::CatalogLoader::loadCatalog(const bool full)
 
   for(std::size_t i = 0; i < ndsets; ++i)
   {
-    te::da::DataSetType* dt = catalog->getDataSetType(i);
+    const te::da::DataSetTypePtr& dt = catalog->getDataSetType(i);
 
-    getConstraints(dt);
-    getIndexes(dt);
+    getConstraints(dt.get());
+    getIndexes(dt.get());
   }
 
 // and finally... let's load all sequences in the database
@@ -307,24 +358,13 @@ bool te::pgis::CatalogLoader::hasDataSets()
                   "AND pg_class.relkind in ('r','v') "
                   "AND pg_class.relnamespace = pg_namespace.oid "
                   "AND pg_namespace.nspname NOT IN ('information_schema', 'pg_toast', 'pg_temp_1', 'pg_catalog', 'topology')");
-  
-  PGresult* result = PQexec(m_t->getConnection()->getConn(), sql.c_str());
-  
-  if(PQresultStatus(result) != PGRES_TUPLES_OK)
-  {
-    std::string errmsg(TR_PGIS("Could not find the tables the following error: "));
-    errmsg += PQerrorMessage(m_t->getConnection()->getConn());
-    PQclear(result);
-    throw Exception(errmsg);
-  }
-  
-  const char* ndatasets = PQgetvalue(result, 0, 0);
-  
-  int ndts = atoi(ndatasets);
 
-  PQclear(result);
-  
-  return ndts > 0;
+  std::auto_ptr<te::da::DataSet> datasets(m_t->query(sql));
+
+  if(!datasets->moveNext())
+    return false;
+
+  return datasets->getInt64(0) != 0;
 }
 
 bool te::pgis::CatalogLoader::datasetExists(const std::string& name)
@@ -558,31 +598,7 @@ te::da::DataSet* te::pgis::CatalogLoader::getProperties(unsigned int dtid)
   return m_t->query(sql);
 }
 
-void te::pgis::CatalogLoader::getProperties(te::da::DataSetType* dt)
-{
-  std::auto_ptr<te::da::DataSet> result(getProperties(dt->getId()));
 
-  while(result->moveNext())
-  {
-    unsigned int attNum = result->getInt16(0);
-    std::string attName = result->getString(1);
-    unsigned int attType = result->getInt32(2);
-    bool attNotNull = result->getBool(3);
-    std::string fmt = result->getString(4);
-    bool attHasDefault = result->getBool(5);
-    std::string attDefValue = result->getString(6);
-    int ndims = result->getInt32(7);
-
-    te::dt::Property* p =  Convert2TerraLib(attNum, attName.c_str(), attType, attNotNull, fmt.c_str(), attHasDefault, attDefValue.c_str(), ndims, m_t->getPGDataSource()->getGeomTypeId());
-    dt->add(p);
-
-    if(p->getType() == te::dt::GEOMETRY_TYPE)
-    {
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
-      getGeometryInfo(dt->getName(), dt->getDefaultGeomProperty());
-    }
-  }
-}
 
 void te::pgis::CatalogLoader::getGeometryInfo(const std::string& datasetName, te::gm::GeometryProperty* gp)
 {
@@ -617,6 +633,98 @@ void te::pgis::CatalogLoader::getGeometryInfo(const std::string& datasetName, te
 // Don't throw: someone can create a geometry column without using AddGeometryColumn function!!
     gp->setSRID(-1);
     gp->setGeometryType(te::gm::GeometryType);
+  }
+}
+
+void te::pgis::CatalogLoader::getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp)
+{
+  std::string sql = "SELECT * FROM raster_columns as r WHERE r.r_table_name = '";
+
+  std::string tname, sname;
+
+  SplitTableName(datasetName, m_t->getPGDataSource()->getCurrentSchema(), sname, tname);
+
+  sql += tname;
+  sql += "' AND r.r_table_schema = '";
+  sql += sname;
+  sql += "' AND r_raster_column = '";
+  sql += rp->getName();
+  sql += "'";
+
+  std::auto_ptr<te::da::DataSet> result(m_t->query(sql));
+
+  if(result->moveNext())
+  {
+    int srid = result->getInt32("srid");
+
+    double scale_x = result->getDouble("scale_x");
+
+    double scale_y = result->getDouble("scale_y");
+
+    int blocksize_x = result->getInt32("blocksize_x");
+
+    int blocksize_y = result->getInt32("blocksize_y");
+
+    //bool regular_blocking = result->getBool("regular_blocking");
+
+    int nbands = result->getInt32("num_bands");
+
+    std::unique_ptr<te::dt::Array> pixel_types(result->getArray("pixel_types"));
+
+    std::unique_ptr<te::dt::Array> nodata_values(result->getArray("nodata_values"));
+
+    std::unique_ptr<te::gm::Geometry> g(result->getGeometry("extent"));
+
+    const te::gm::Envelope* e = g->getMBR();
+
+    std::unique_ptr<te::rst::Grid> grid(new te::rst::Grid(scale_x, scale_y, new te::gm::Envelope(*e), srid));
+
+    rp->set(grid.release());
+
+    for(int i = 0; i != nbands; ++i)
+    {
+      std::vector<std::size_t> pos(1, i);
+
+      std::string st = pixel_types->getData(pos)->toString();
+
+      int t = te::dt::UNKNOWN_TYPE;
+
+      if(st == "8BI")
+        t = te::dt::CHAR_TYPE;
+      else if(st == "8BUI")
+        t = te::dt::UCHAR_TYPE;
+      else if(st == "16BI")
+        t = te::dt::INT16_TYPE;
+      else if(st == "16BUI")
+        t = te::dt::UINT16_TYPE;
+      else if(st == "32BI")
+        t = te::dt::INT32_TYPE;
+      else if(st == "32BUI")
+        t = te::dt::UINT32_TYPE;
+      else if(st == "32BF")
+        t = te::dt::FLOAT_TYPE;
+      else if(st == "64BF")
+        t = te::dt::DOUBLE_TYPE;
+      else
+        throw Exception(TR_PGIS("Band data type not supported by PostGIS driver!"));
+
+      te::rst::BandProperty* bp = new te::rst::BandProperty(i, t);
+
+      bp->m_blkh = blocksize_y;
+
+      bp->m_blkw = blocksize_x;
+
+      te::dt::AbstractData* ab = nodata_values->getData(pos);
+
+      if(ab)
+        bp->m_noDataValue = static_cast<te::dt::Double*>(ab)->getValue();
+
+      rp->add(bp);
+    }
+  }
+  else
+  {
+    //throw Exception(TR_PGIS("We must add support for rasters that don't have constraints!"));
   }
 }
 
@@ -813,9 +921,11 @@ te::da::ForeignKey* te::pgis::CatalogLoader::addForeignKey(te::da::DataSet* fkIn
 
   assert(fkCols.size() == fkRefCols.size());
 
-  te::da::DataSetType* refFT = dt->getCatalog()->getDataSetTypeById(refFTId);
+  std::string refName = getTableName(refFTId);
 
-  if(refFT == 0)
+  const te::da::DataSetTypePtr& refFT = dt->getCatalog()->getDataSetType(refName);
+
+  if(refFT.get() == 0)
     return 0;
 
   std::string fkName  = fkInfo->getString(1);
@@ -825,7 +935,7 @@ te::da::ForeignKey* te::pgis::CatalogLoader::addForeignKey(te::da::DataSet* fkIn
   te::da::ForeignKey* fk = new te::da::ForeignKey(fkName, id);
   fk->setOnUpdateAction(GetAction(onUpdate));
   fk->setOnDeleteAction(GetAction(onDeletion));
-  fk->setReferencedDataSetType(refFT);
+  fk->setReferencedDataSetType(refFT.get());
   
   std::size_t size = fkCols.size();
 

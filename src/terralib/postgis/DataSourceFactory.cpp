@@ -49,22 +49,22 @@ const std::string& te::pgis::DataSourceFactory::getType() const
 
 void te::pgis::DataSourceFactory::getConnectionParameters(std::vector<std::string>& params) const
 {
-  params.push_back("host");
-  params.push_back("hostaddr");
-  params.push_back("port");
-  params.push_back("dbname");
-  params.push_back("user");
-  params.push_back("password");
-  params.push_back("connect_timeout");
-  params.push_back("options");
-  params.push_back("sslmode");
-  params.push_back("krbsrvname");
-  params.push_back("gsslib");
-  params.push_back("InitialPoolSize");
-  params.push_back("MinPoolSize");
-  params.push_back("MaxPoolSize");
-  params.push_back("MaxIdleTime");
-  params.push_back("CLIENT_ENCODING");
+  params.push_back("PG_HOST");
+  params.push_back("PG_HOST_ADDR");
+  params.push_back("PG_PORT");
+  params.push_back("PG_DB_NAME");
+  params.push_back("PG_USER");
+  params.push_back("PG_PASSWORD");
+  params.push_back("PG_CONNECT_TIMEOUT");
+  params.push_back("PG_OPTIONS");
+  params.push_back("PG_SSL_MODE");
+  params.push_back("PG_KRBSRVNAME");
+  params.push_back("PG_GSSLIB");
+  params.push_back("PG_INITIAL_POOL_SIZE");
+  params.push_back("PG_MIN_POOL_SIZE");
+  params.push_back("PG_MAX_POOL_SIZE");
+  params.push_back("PG_MAX_IDLE_TIME");
+  params.push_back("PG_CLIENT_ENCODING");
 }
 
 te::pgis::DataSourceFactory::~DataSourceFactory()
