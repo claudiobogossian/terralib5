@@ -43,6 +43,7 @@
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
+#include "../raster/RasterProperty.h"
 #include "Config.h"
 
 // STL
@@ -67,6 +68,7 @@ namespace te
 // Forward declarations
   namespace da
   {
+    class DataSet;
     class DataSetType;
   }
 
@@ -211,7 +213,7 @@ namespace te
       return mbr;
     }
 
-    /*!      
+    /*!
       \brief It converts the envelope into a PostGIS BOX3D.
 
       \param e      The envelope to be converted.
@@ -235,7 +237,7 @@ namespace te
       output += ")";
     }
 
-    /*!      
+    /*!
       \brief It converts the geometry into a PostGIS geometry.
 
       \param conn   The connection to be used with bytearray.
@@ -244,7 +246,7 @@ namespace te
     */
     void Convert2PostGIS(PGconn* conn, const te::gm::Geometry* g, std::string& output);
 
-    /*!      
+    /*!
       \brief It escapes a string for use within an SQL command.
 
       \param conn   The connection to be used with bytearray.
@@ -253,7 +255,7 @@ namespace te
      */
     void ScapeString(PGconn* conn, const std::string& s, std::string& output);
 
-    /*!      
+    /*!
       \brief It returns a julian date (in seconds) from a gregorian date.
 
       It returns a julian date (in seconds) from a gregorian date.
@@ -289,7 +291,7 @@ namespace te
       return julian;
     }   
 
-     /*!      
+     /*!
       \brief It returns a gregorian date from a julian date (in seconds).
 
       It returns a gregorian date from a julian date (in seconds).
@@ -324,7 +326,7 @@ namespace te
       return;
     }
     
-    /*!      
+    /*!
       \brief It returns a DateTime type from a date loaded by PostgreSQL.
 
       It returns a DateTime type from a date loaded by PostgreSQL. Internelly,
@@ -347,7 +349,7 @@ namespace te
       return result;
     }
 
-    /*!      
+    /*!
       \brief It returns a DateTime type from a time loaded by PostgreSQL.
 
       It returns a DateTime type from a time loaded by PostgreSQL. Internelly,
@@ -397,8 +399,8 @@ namespace te
      
       return result; 
     }
-    
-    /*!      
+
+    /*!
       \brief It returns a DateTime type from a timestamp loaded by PostgreSQL.
 
       It returns a DateTime type from a timestamp loaded by PostgreSQL. Internelly,
@@ -429,7 +431,7 @@ namespace te
       te::dt::DateTime* result = new te::dt::TimeInstant(*static_cast<te::dt::Date*>(aux1), *static_cast<te::dt::TimeDuration*>(aux2));
       delete aux1;
       delete aux2;
-      return result;       
+      return result;
     }
 
 
@@ -454,7 +456,8 @@ namespace te
     inline te::dt::Property* Convert2TerraLib(unsigned int attNum, const char* attName, unsigned int attType,
                                                   bool attNotNull, const char* fmt,
                                                   bool attHasDefault, const char* attDefValue,
-                                                  unsigned int pgisGeomTypeOid)
+                                                  unsigned int pgisGeomTypeOid,
+                                                  unsigned int pgisRasterTypeOid)
     {
       te::dt::Property* p = 0;
       te::dt::SimpleProperty* simpleP = 0;
@@ -464,6 +467,8 @@ namespace te
 
       if(attType == pgisGeomTypeOid)
           return new te::gm::GeometryProperty(name, attNotNull, defaultValue, attNum);
+      else if(attType == pgisRasterTypeOid)
+        return new te::rst::RasterProperty(name, attNotNull, attNum);
 
       switch(attType)
       {
@@ -586,10 +591,13 @@ namespace te
     inline te::dt::Property* Convert2TerraLib(unsigned int attNum, const char* attName, unsigned int attType,
                                                   bool attNotNull, const char* fmt,
                                                   bool attHasDefault, const char* attDefValue,
-                                                  int ndims, unsigned int pgisGeomTypeOid)
+                                                  int ndims, unsigned int pgisGeomTypeOid,
+                                                  unsigned int pgisRasterTypeOid)
     {
       if(ndims == 0)
-        return Convert2TerraLib(attNum, attName, attType, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+        return Convert2TerraLib(attNum, attName, attType, attNotNull, fmt,
+                                attHasDefault, attDefValue,
+                                pgisGeomTypeOid, pgisRasterTypeOid);
 
       std::string* defaultValue = (attHasDefault ? new std::string(attDefValue) : 0);
       std::string name = std::string(attName);
@@ -605,7 +613,7 @@ namespace te
       {
         case PG_BOOL_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_BOOL_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_BOOL_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -615,7 +623,7 @@ namespace te
 
         case PG_BYTEA_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_BYTEA_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_BYTEA_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -625,7 +633,7 @@ namespace te
 
         case PG_CHAR_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_CHAR_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_CHAR_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -635,7 +643,7 @@ namespace te
 
         case PG_INT8_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_INT8_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_INT8_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -647,7 +655,7 @@ namespace te
         case PG_INT2_VECTOR_TYPE:
         case PG__INT2_VECTOR_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_INT2_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_INT2_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -659,7 +667,7 @@ namespace te
         case PG_OID_ARRAY_TYPE:
         case PG_OID_VECTOR_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_INT4_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_INT4_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -669,7 +677,7 @@ namespace te
 
         case PG_TEXT_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TEXT_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TEXT_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -679,7 +687,7 @@ namespace te
 
         case PG_FLOAT4_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_FLOAT4_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_FLOAT4_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -689,7 +697,7 @@ namespace te
 
         case PG_FLOAT8_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_FLOAT8_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_FLOAT8_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -700,7 +708,7 @@ namespace te
         case PG_CHARACTER_ARRAY_TYPE:
         case PG_NAME_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_CHARACTER_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_CHARACTER_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -710,7 +718,7 @@ namespace te
 
         case PG_VARCHAR_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_VARCHAR_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_VARCHAR_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -720,7 +728,7 @@ namespace te
 
         case PG_DATE_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_DATE_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_DATE_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -730,7 +738,7 @@ namespace te
 
         case PG_TIME_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIME_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIME_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
              else
@@ -740,7 +748,7 @@ namespace te
 
         case PG_TIMETZ_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIMETZ_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIMETZ_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
              else
@@ -750,7 +758,7 @@ namespace te
 
         case PG_TIMESTAMP_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIMESTAMP_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIMESTAMP_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -760,7 +768,7 @@ namespace te
 
         case PG_TIMESTAMPTZ_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIMESTAMPTZ_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_TIMESTAMPTZ_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -770,7 +778,7 @@ namespace te
 
         case PG_NUMERIC_ARRAY_TYPE:
           {
-            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_NUMERIC_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            te::dt::Property* p = Convert2TerraLib(attNum, attName, PG_NUMERIC_TYPE, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
             if(arrayElementProperty)
               arrayElementProperty->setElementType(p);
             else
@@ -779,7 +787,7 @@ namespace te
           }
         
         default:
-            return Convert2TerraLib(attNum, attName, attType, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid);
+            return Convert2TerraLib(attNum, attName, attType, attNotNull, fmt, attHasDefault, attDefValue, pgisGeomTypeOid, pgisRasterTypeOid);
         }
 
       return at;
@@ -958,6 +966,12 @@ namespace te
       \return A comma (',') connected expression with bindable parameters ($1) that can be used in an UPDATE query.
     */
     std::string GetBindableUpdateSQL(const std::vector<te::dt::Property*>& properties);
+
+    std::string GetSQLValues(const te::da::DataSetType* dt, te::da::DataSet* d, PGconn *conn);
+
+    std::string GetSQLValue(const te::dt::Property* p, std::size_t propertyPos, te::da::DataSet* d, PGconn *conn);
+
+    std::string GetLoadDataRow(const te::da::DataSetType* dt, te::da::DataSet* d, PGconn *conn);
 
   } // end namespace pgis
 }   // end namespace te
