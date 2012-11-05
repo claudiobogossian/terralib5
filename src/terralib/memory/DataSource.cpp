@@ -317,6 +317,11 @@ void te::mem::DataSource::rename(const std::string& oldName, std::string newName
   m_datasets.insert(newName, ptr.release());
 }
 
+bool te::mem::DataSource::hasDataSets()
+{
+  return m_ndatasets > 0;
+}
+
 void te::mem::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
   m_connInfo = dsInfo;

@@ -186,6 +186,13 @@ namespace te
         */
         void rename(const std::string& oldName, std::string newName);
 
+        /*!
+          \brief It return true if the data source has any dataset.
+
+          \return True if the data source has datasets otherwise, false.
+        */
+        bool hasDataSets();
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
