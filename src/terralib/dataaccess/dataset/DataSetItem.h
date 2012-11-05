@@ -38,7 +38,7 @@
 #include <boost/cstdint.hpp>
 
 // Forward declarations
-namespace te { namespace dt { class Array; class ByteArray; class DateTime; } }
+namespace te { namespace dt { class AbstractData; class Array; class ByteArray; class DateTime; } }
 namespace te { namespace gm { class Geometry; } }
 namespace te { namespace rst { class Raster; } }
 
