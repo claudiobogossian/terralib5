@@ -102,12 +102,12 @@ void te::qt::widgets::ShapeFileConnector::remove(std::list<DataSourcePtr>& datas
     DataSourceManager::getInstance().remove((*it)->getId());
 
 //remove from data access manager if one exists
-    te::da::DataSource* rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
+    te::da::DataSourcePtr rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
 
-    if(rds)
+    if(rds.get())
     {
       te::da::DataSourceManager::getInstance().detach(rds);
-      //rds.reset();
+      rds.reset();
     }
   }
 }
