@@ -37,6 +37,7 @@ class MyWindow : public QWidget
   void deleteGridOperation(te::map::AbstractLayer*);
   bool isUsed(te::map::AbstractLayer*);
   void updateDisplays(MyLayer*);
+  int getFreeMemory(); // retorna quanto tem de memoria
 
   Q_SIGNALS:
     void selectionChanged(te::map::DataGridOperation*);
@@ -62,6 +63,7 @@ protected slots:
   void clearTooltipSlot(MyGrid*);
   void removePlotSlot(QwtPlot*);
   void keepOnMemorySlot();
+  void getFreeMemorySlot();
   void selectionChangedSlot(te::map::DataGridOperation*);
   //void changeDefaultColorSlot();
   void changePointedColorSlot();
@@ -104,6 +106,7 @@ private:
   QAction* m_addLayerAction;
   QAction* m_plotTemporalDistanceAction;
   QAction* m_keepOnMemoryAction;
+  QAction* m_getFreeMemoryAction;
   //QAction* m_changeDefaultColorAction;
   QAction* m_changePointedColorAction;
   QAction* m_changeQueriedColorAction;
