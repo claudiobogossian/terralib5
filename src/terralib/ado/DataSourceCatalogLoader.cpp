@@ -202,6 +202,11 @@ void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
   getUniqueKeys(dt);
 }
 
+te::dt::Property* te::ado::DataSourceCatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 {
   _ConnectionPtr adoConn = m_t->getADOConnection();

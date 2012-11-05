@@ -112,7 +112,7 @@ void te::ado::Platform::finalize()
     return;
 
 // Free ADO resources
-  te::da::DataSourceManager::getInstance().removeAll(getDriverID());
+  te::da::DataSourceManager::getInstance().detachAll(getDriverID());
   //DataSource::setDialect(0);
   //DataSource::setCapabilities(0);
 
