@@ -30,6 +30,7 @@
 #include <terralib/qt/widgets/datasource/connector/gdal/GDALConnectorDialog.h>
 #include <terralib/qt/widgets/datasource/connector/ogr/OGRConnectorDialog.h>
 #include <terralib/qt/widgets/datasource/connector/postgis/PostGISConnectorDialog.h>
+#include <terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h>
 
 // Qt
 #include <QtGui/QAction>
@@ -74,6 +75,10 @@ void MainWindow::setupActions()
   m_openPostGIS = new QAction(tr("PostGIS"), this);
   m_openPostGIS->setCheckable(true);
   connect(m_openPostGIS, SIGNAL(triggered()), SLOT(onOpenPostGISTriggered()));
+
+  m_openDataSourceSelector = new QAction(tr("DataSource Selector"), this);
+  m_openDataSourceSelector->setCheckable(true);
+  connect(m_openPostGIS, SIGNAL(triggered()), SLOT(onOpenDatasourceSelectorTriggered()));
   
   m_toolBar->addAction(m_openGDAL); 
   m_toolBar->addAction(m_openOGR);
@@ -135,4 +140,11 @@ void MainWindow::onOpenGDALTriggered()
     //    msgBox.setText(mess);
     //    msgBox.exec();
   }
+}
+
+void MainWindow::onOpenDataSourceSelectorTriggered()
+{
+  std::unique_ptr<te::qt::widgets::DataSourceSelectorDialog> selector(new te::qt::widgets::DataSourceSelectorDialog(this));
+
+  selector->exec();
 }

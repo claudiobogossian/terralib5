@@ -77,6 +77,9 @@ set (
   widgets/datasource/connector/ogr  
   widgets/datasource/connector/postgis
   widgets/datasource/connector/shp
+  widgets/datasource/connector/wcs
+  widgets/datasource/connector/wfs
+  widgets/datasource/connector/wms
   widgets/datasource/core
   widgets/datasource/explorer
   widgets/datasource/selector
@@ -147,6 +150,24 @@ set (
   ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/datasource/connector/wcs/WCSConnectorDialog.h  
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wcs" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/datasource/connector/wfs/WFSConnectorDialog.h  
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wfs" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/datasource/connector/wms/WMSConnectorDialog.h  
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wms" MOC)
 
 #set (
 #  HDRS_TO_MOC
@@ -320,6 +341,9 @@ file(
   ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
   ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
   ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
+  ${SRCDIR}/widgets/datasource/connector/wcs/ui/*.ui
+  ${SRCDIR}/widgets/datasource/connector/wfs/ui/*.ui
+  ${SRCDIR}/widgets/datasource/connector/wms/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui  
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
