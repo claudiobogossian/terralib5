@@ -51,8 +51,8 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 {
   setWindowTitle("My Main Window - Display: Root Folder");
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
-  std::string dsInfo("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+  std::string dsInfo("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
   ds->open(dsInfo);
 
   m_dataSourceSet.insert(ds);

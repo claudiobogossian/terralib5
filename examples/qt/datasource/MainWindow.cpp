@@ -72,7 +72,7 @@ void MainWindow::setupActions()
   m_openOGR->setCheckable(true);
   connect(m_openOGR, SIGNAL(triggered()), SLOT(onOpenOGRTriggered()));
   
-  m_openPostGIS = new QAction(tr("PostGIS"), this);
+  m_openPostGIS = new QAction(tr("POSTGIS"), this);
   m_openPostGIS->setCheckable(true);
   connect(m_openPostGIS, SIGNAL(triggered()), SLOT(onOpenPostGISTriggered()));
 

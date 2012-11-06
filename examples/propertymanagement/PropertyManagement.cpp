@@ -31,18 +31,18 @@ PropertyManagement::PropertyManagement(QWidget* parent)
   setupUi(this);
 
   std::map<std::string, std::string> connInfo;
-  connInfo["host"] = "atlas.dpi.inpe.br";
-  //connInfo["host"] = "localhost";
-  connInfo["user"] = "postgres";
-  connInfo["password"] = "sitim110";
-  connInfo["dbname"] = "terralib4";
-  connInfo["connect_timeout"] = "4"; 
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br";
+  //connInfo["PG_HOST"] = "localhost";
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_DB_NAME"] = "terralib4";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
   ds->open(connInfo);
   m_ds = ds;
 
-  m_dataSourceName = connInfo["dbname"];
+  m_dataSourceName = connInfo["PG_DB_NAME"];
 
   // Connect signal/slots
   connect(addPropertyPushButton, SIGNAL(clicked()), this, SLOT(addPropertyPushButtonClicked()));
