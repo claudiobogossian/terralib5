@@ -510,13 +510,13 @@ void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
 
   for(size_t i = 0; i < datasets.size(); i++)
   {
-    te::da::DataSetType* dt = new te::da::DataSetType(datasets[i]);
+    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasets[i]));
     dt->setTitle(datasets[i]);
     dt->setFullLoaded(full);
 
     catalog->add(dt);
 
-    getProperties(dt);
+    getProperties(dt.get());
   }
 
   if(!full)
@@ -527,10 +527,10 @@ void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
 
   for(std::size_t i = 0; i < ndsets; ++i)
   {
-    te::da::DataSetType* dt = catalog->getDataSetType(i);
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(i);
 
-    getCheckConstraints(dt);
-    getIndexes(dt);
+    getCheckConstraints(dt.get());
+    getIndexes(dt.get());
   }
 
 }

@@ -572,7 +572,7 @@ te::dt::Property* te::pgis::CatalogLoader::getProperty(unsigned int dtid, unsign
     std::string attDefValue = result->getString(6);
     int ndims = result->getInt32(7);
 
-    p.reset(Convert2TerraLib(attNum, attName.c_str(), attType, attNotNull, fmt.c_str(), attHasDefault, attDefValue.c_str(), ndims, m_t->getPGDataSource()->getGeomTypeId()));
+    p.reset(Convert2TerraLib(attNum, attName.c_str(), attType, attNotNull, fmt.c_str(), attHasDefault, attDefValue.c_str(), ndims, m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId()));
 
     if(p->getType() == te::dt::GEOMETRY_TYPE)
     {

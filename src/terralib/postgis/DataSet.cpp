@@ -175,7 +175,7 @@ te::da::DataSetType* te::pgis::DataSet::getType()
   if(m_dt)
     return m_dt;
 
-  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId());
+  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId());
 
   if(m_name)
     m_dt->setName(*m_name);
@@ -194,7 +194,7 @@ const te::da::DataSetType* te::pgis::DataSet::getType() const
   if(m_dt)
     return m_dt;
 
-  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId());
+  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId());
 
   if(m_name)
     m_dt->setName(*m_name);

@@ -885,7 +885,7 @@ namespace te
       \return The data set type created.
 
     */
-    te::da::DataSetType* Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid);
+    te::da::DataSetType* Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid, unsigned int pgisRasterTypeOid);
 
     /*!
       \brief It converts the PostGIS geometry type to a pure OGC WKB code.
