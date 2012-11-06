@@ -78,16 +78,18 @@ void MainWindow::setupActions()
 
   m_openDataSourceSelector = new QAction(tr("DataSource Selector"), this);
   m_openDataSourceSelector->setCheckable(true);
-  connect(m_openPostGIS, SIGNAL(triggered()), SLOT(onOpenDatasourceSelectorTriggered()));
+  connect(m_openDataSourceSelector, SIGNAL(triggered()), SLOT(onOpenDataSourceSelectorTriggered()));
   
-  m_toolBar->addAction(m_openGDAL); 
+  m_toolBar->addAction(m_openGDAL);
   m_toolBar->addAction(m_openOGR);
-  m_toolBar->addAction(m_openPostGIS);   
+  m_toolBar->addAction(m_openPostGIS);
+  m_toolBar->addAction(m_openDataSourceSelector);
   
   QActionGroup* toolsGroup = new QActionGroup(this);
   toolsGroup->addAction(m_openGDAL);
   toolsGroup->addAction(m_openOGR); 
-  toolsGroup->addAction(m_openPostGIS);    
+  toolsGroup->addAction(m_openPostGIS);
+  toolsGroup->addAction(m_openDataSourceSelector);
 }
 
 

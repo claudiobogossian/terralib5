@@ -156,7 +156,7 @@ void TsCanvas::tcPerformance()
   {
     
 // get DataSetType information: geometry-column, feature-name, feature extent
-    te::da::DataSetType* dt = catalog->getDataSetType(i);
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(i);
 
     //if(!(ft->getName() == "public.goias_geologia" || dt->getName() == "public.br_uf_2010" || dt->getName() == "public.sp_setores_censitarios"))
     //  continue;
