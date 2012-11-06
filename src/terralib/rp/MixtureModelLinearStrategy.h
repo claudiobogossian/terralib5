@@ -84,8 +84,8 @@ namespace te
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                     const std::map<std::string, std::vector<double> >& components, te::rst::Raster& outputRaster,
-                     const bool enableProgressInterface) throw(te::rp::Exception);
+                     const std::vector<std::string>& inputSensorBands, const std::map<std::string, std::vector<double> >& components,
+                     te::rst::Raster& outputRaster, const bool enableProgressInterface) throw(te::rp::Exception);
 
       protected:
 

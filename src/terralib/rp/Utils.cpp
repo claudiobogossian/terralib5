@@ -18,29 +18,32 @@
  */
 
 /*!
-  \file RPExamples.h
+  \file terralib/rp/Utils.cpp
 
-  \brief These routines show how to use the RP (raster processing) module.
- */
+  \brief Utility functions for the raster processor module.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_INTERNAL_RP_EXAMPLES_H
-#define __TERRALIB_EXAMPLES_INTERNAL_RP_EXAMPLES_H
+// TerraLib
+#include "Utils.h"
 
-#include "Config.h"
+std::pair<double, double> te::rp::GetSpectralBandInfo(std::string bandName)
+{
+  static std::map<std::string, std::pair<double, double> > BandInfo;
 
-/*! \brief It loads the data source drivers. */
-void LoadModules();
+  BandInfo["CBERS2_CCD_BLUE"] = std::pair<double, double> (0.450000, 0.520000);
+  BandInfo["CBERS2_CCD_GREEN"] = std::pair<double, double> (0.520000, 0.590000);
+  BandInfo["CBERS2_CCD_RED"] = std::pair<double, double> (0.630000, 0.690000);
+// needs more Band Info from other sensors/bands
 
-/* \brief Segmentation example using Raster Processing module. */
-void Segmenter();
+  return BandInfo[bandName];
+}
 
-/* \brief Contrast example using Raster Processing module. */
-void Contrast();
+double te::rp::GetSpectralBandMin(std::string bandName)
+{
+  return GetSpectralBandInfo(bandName).first;
+}
 
-/* \brief Classification example using ISOSeg module. */
-void Classifier();
-
-/* \brief Raster decomposition using Mixture Model module. */
-void MixtureModel();
-
-#endif
+double te::rp::GetSpectralBandMax(std::string bandName)
+{
+  return GetSpectralBandInfo(bandName).second;
+}
