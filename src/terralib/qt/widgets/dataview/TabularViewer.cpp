@@ -99,15 +99,15 @@ namespace te
         DataViewPopupFilter(TabularViewer* viewer, const bool& promotion=false) :
         QObject(viewer),
         m_viewer(viewer),
-        m_col(-1),
-        m_data_menu(0),
         m_head_menu(0),
-        m_prm_all(0),
+        m_data_menu(0),
+        m_prm_all(0),      
         m_reset_prm_all(0),
-        m_show_cols(0),
         m_reset_hl(0),
+        m_show_cols(0),          
         m_hiddenCols(0),
         m_colGroup(0),
+        m_col(-1),
         m_promotion(promotion)
         {
           m_viewer->horizontalHeader()->installEventFilter(this);

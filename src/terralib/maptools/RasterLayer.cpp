@@ -46,11 +46,11 @@ te::map::RasterLayer::RasterLayer(const std::string& id,
                       const std::string& title,
                       AbstractLayer* parent)
   : te::map::AbstractLayer(id, title, parent),
+    m_srid(-1),
     m_ds(0),
     m_mbr(0),
     m_style(0),
     m_renderer(0),
-    m_srid(-1),
     m_raster(0),
     m_rasterProperty(0),
     m_symbolizer(0)
