@@ -26,6 +26,8 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../datatype/SimpleProperty.h"
 #include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
@@ -144,8 +146,7 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
     if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
     {
       te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
-      geop->getParent()->setName(dt->getName());
-      dt->setDefaultGeomProperty(geop);
+      getGeometryColumn(dt.get(), geop);      
     }
   }
   
@@ -200,6 +201,11 @@ void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
   getPrimaryKey(dt);
   getIndexes(dt);
   getUniqueKeys(dt);
+}
+
+te::dt::Property* te::ado::DataSourceCatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
@@ -292,6 +298,16 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
     }
   }
   
+}
+
+void te::ado::DataSourceCatalogLoader::getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* geomp)
+{
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  geomp->getParent()->setName(dt->getName());
+  geomp->setSRID(te::ado::getSRID(adoConn, geomp));
+  geomp->setGeometryType(te::ado::getType(adoConn, geomp));
+  dt->setDefaultGeomProperty(geomp);
 }
 
 void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, std::vector<std::string>& fkNames, std::vector<std::string>& rdts)
@@ -484,7 +500,39 @@ te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::gm::Geom
 
 void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  te::da::DataSourceCatalog* catalog = m_t->getDataSource()->getCatalog();
+  catalog->clear();
+
+  // get the list of tables in the database and create a DataSetType for each table or view
+  
+  boost::ptr_vector<std::string> datasets;
+  getDataSets(datasets);
+
+  for(size_t i = 0; i < datasets.size(); i++)
+  {
+    te::da::DataSetTypePtr dt(new te::da::DataSetType(datasets[i]));
+    dt->setTitle(datasets[i]);
+    dt->setFullLoaded(full);
+
+    catalog->add(dt);
+
+    getProperties(dt.get());
+  }
+
+  if(!full)
+    return;
+
+  // for each table in the catalog, finish loading its information: pk, fk, uk, indexes (note: !!this will avoid the need to load tables in the right order to insert into the catalog!!)
+  std::size_t ndsets = catalog->getNumberOfDataSets();
+
+  for(std::size_t i = 0; i < ndsets; ++i)
+  {
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(i);
+
+    getCheckConstraints(dt.get());
+    getIndexes(dt.get());
+  }
+
 }
 
 bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)

@@ -87,32 +87,31 @@ void te::pgis::ConnectionPool::initialize()
 // check for pool parameters...
   const std::map<std::string, std::string>& connInfo = m_pImpl->m_ds->getConnectionInfo();
 
-  std::map<std::string, std::string>::const_iterator it_end = connInfo.end();
+  std::map<std::string, std::string>::const_iterator itend = connInfo.end();
 
-  {
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("InitialPoolSize");
-    m_pImpl->m_initialPoolSize = (it != connInfo.end() && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_INITIAL_POOL_SIZE;
-  }
+  std::map<std::string, std::string>::const_iterator it = connInfo.find("PG_INITIAL_POOL_SIZE");
+  m_pImpl->m_initialPoolSize = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_INITIAL_POOL_SIZE;
+  
+  it = connInfo.find("PG_MIN_POOL_SIZE");
+  m_pImpl->m_minPoolSize = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MIN_POOL_SIZE;
+  
+  it = connInfo.find("PG_MAX_POOL_SIZE");
+  m_pImpl->m_maxPoolSize = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_POOL_SIZE;
 
-  {
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("MinPoolSize");
-    m_pImpl->m_minPoolSize = (it != connInfo.end() && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MIN_POOL_SIZE;
-  }
+// assure valid values for pool parameters
+  if(m_pImpl->m_minPoolSize > m_pImpl->m_maxPoolSize)
+    m_pImpl->m_minPoolSize = m_pImpl->m_maxPoolSize;
 
-  {
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("MaxPoolSize");
-    m_pImpl->m_maxPoolSize = (it != connInfo.end() && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_POOL_SIZE;
-  }
+  if(m_pImpl->m_initialPoolSize > m_pImpl->m_maxPoolSize)
+    m_pImpl->m_initialPoolSize = m_pImpl->m_maxPoolSize;
+  else if(m_pImpl->m_initialPoolSize < m_pImpl->m_minPoolSize)
+    m_pImpl->m_initialPoolSize = m_pImpl->m_minPoolSize;
 
-  {
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("MaxIdleTime");
-    m_pImpl->m_maxIdleTime = (it != connInfo.end() && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_IDLE_TIME;
-  }
+  it = connInfo.find("PG_MAX_IDLE_TIME");
+  m_pImpl->m_maxIdleTime = (it != itend && !it->second.empty()) ? atoi(it->second.c_str()) : PGIS_DEFAULT_MAX_IDLE_TIME;
 
-  {
-    std::map<std::string, std::string>::const_iterator it = connInfo.find("CLIENT_ENCODING");
-    m_pImpl->m_cencoding = (it != connInfo.end() ? it->second : std::string(""));
-  }
+  it = connInfo.find("PG_CLIENT_ENCODING");
+  m_pImpl->m_cencoding = (it != itend ? it->second : std::string(""));
 
 // make connection info
   m_pImpl->m_conninfo = MakeConnectionStr(connInfo);

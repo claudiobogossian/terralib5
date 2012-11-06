@@ -76,12 +76,13 @@ namespace te
 
         std::string getName() const;
 
-        void prepare(const te::da::Query& query, const std::map<std::string, te::dt::Property*>& paramTypes);
+        void prepare(const te::da::Query& query, const std::vector<te::dt::Property*>& paramTypes);
 
-        void execute(const std::map<std::string, te::dt::AbstractData*>& paramValues);
+        void prepare(const std::string& query, const std::vector<te::dt::Property*>& paramTypes);
 
-        te::da::DataSet* query(const std::map<std::string, te::dt::AbstractData*>& paramValues,
-                               te::common::TraverseType travType = te::common::FORWARDONLY, 
+        void execute();
+
+        te::da::DataSet* query(te::common::TraverseType travType = te::common::FORWARDONLY, 
                                te::common::AccessPolicy rwRole = te::common::RAccess);
 
         void bind(int i, char value);
@@ -116,29 +117,41 @@ namespace te
 
         void bind(int i, const te::dt::AbstractData& ad);
 
-        void execute();
-
-        te::da::DataSet* query(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                               te::common::AccessPolicy rwRole = te::common::RAccess);
-
         te::da::DataSourceTransactor* getTransactor() const;
 
-        void prepare(const std::string& query, const std::vector<te::dt::Property*>& queryParams);
-
-        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d);
-
-        void bind(const te::da::DataSetType* dt, te::da::DataSet* d);
-
+        /*!
+          \note PostgeSQL driver extended method.
+        */
         void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
+        /*!
+          \note PostgeSQL driver extended method.
+        */
         void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
+        /*!
+          \note PostgeSQL driver extended method.
+        */
         void bind(const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
-        
+        /*!
+          \note PostgeSQL driver extended method.
+        */
+        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d);
 
+        /*!
+          \note PostgeSQL driver extended method.
+        */
+        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d);
+
+        /*!
+          \note PostgeSQL driver extended method.
+        */
+        void bind(const te::da::DataSetType* dt, te::da::DataSet* d);
+
+        /*!
+          \note PostgeSQL driver extended method.
+        */
         void clear();
 
       private:

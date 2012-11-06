@@ -31,6 +31,8 @@
 
 #define TE_QTWIDGETS_MODULE_NAME "TEQTWIDGETS"
 
+#define TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION 10
+
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.
  */

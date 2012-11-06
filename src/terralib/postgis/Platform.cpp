@@ -115,7 +115,7 @@ void te::pgis::Platform::finalize()
     return;
 
 // Free PostGIS resources
-  te::da::DataSourceManager::getInstance().removeAll(getDriverID());
+  te::da::DataSourceManager::getInstance().detachAll(getDriverID());
   DataSource::setDialect(0);
   //DataSource::setCapabilities(0);
 

@@ -13,8 +13,8 @@ void MovingObjectsFromPostGIS(std::vector<te::st::MovingObject*>& output)
 {
   try
   { 
-    std::string pgInfo = "DataSource=PostGIS&host=localhost&port=5432&dbname=dygeo_database&user=postgres&connect_timeout=5";
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
+    std::string pgInfo = "DataSource=POSTGIS&PG_HOST=localhost&PG_PORT=5432&PG_DB_NAME=dygeo_database&PG_USER=postgres&PG_CONNECT_TIMEOUT=5";
+    te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
     ds->open(pgInfo);
 
     //TO DO: carregar metadato do banco

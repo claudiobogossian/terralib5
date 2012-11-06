@@ -145,15 +145,15 @@ void TsManagerPostGIS::initialize()
 // the static variables sm_* can be read from a file (in the future)
 
 // let's get PostGIS data source instance using the DataSourceFactory
-  sm_datasource = te::da::DataSourceFactory::make("PostGIS");
+  sm_datasource = te::da::DataSourceFactory::make("POSTGIS");
   sm_datasource->getCapabilities(sm_capabilit);
 
 // let´s give the minimal server connection information used to connect
-  sm_connInfo["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  sm_connInfo["user"] = "postgres";
-  sm_connInfo["password"] = "sitim110";
-  sm_connInfo["dbname"] = "terralib4";
-  sm_connInfo["connect_timeout"] = "4"; 
+  sm_connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  sm_connInfo["PG_USER"] = "postgres";
+  sm_connInfo["PG_PASSWORD"] = "sitim110";
+  sm_connInfo["PG_DB_NAME"] = "terralib4";
+  sm_connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
 // Other static memory variables used to check datasource recovered data
   sm_dsType = te::pgis::Platform::getDriverID();
@@ -199,11 +199,11 @@ void TsManagerPostGIS::initialize()
 // End of definition of geometries
 
 // Minimal Server connection information to create a newDB POSTGIS
-  sm_connInfoNewDs["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  sm_connInfoNewDs["user"] = "postgres";
-  sm_connInfoNewDs["password"] = "sitim110";
-  sm_connInfoNewDs["dbname"] = "postgres";
-  sm_connInfoNewDs["connect_timeout"] = "4";
+  sm_connInfoNewDs["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  sm_connInfoNewDs["PG_USER"] = "postgres";
+  sm_connInfoNewDs["PG_PASSWORD"] = "sitim110";
+  sm_connInfoNewDs["PG_DB_NAME"] = "postgres";
+  sm_connInfoNewDs["PG_CONNECT_TIMEOUT"] = "4";
   sm_connInfoNewDs["template"] = "template_postgis";
 
   //newdb parameters added to connection info
@@ -216,11 +216,11 @@ void TsManagerPostGIS::initialize()
   sm_connInfoNewDs["newdb_connection_timeout"] = "4";
 
 // Minimal Server connection information to create a new postgres DB (without postgis extension)
-  sm_connInfoNewPostgresDb["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  sm_connInfoNewPostgresDb["user"] = "postgres";
-  sm_connInfoNewPostgresDb["password"] = "sitim110";
-  sm_connInfoNewPostgresDb["dbname"] = "postgres";
-  sm_connInfoNewPostgresDb["connect_timeout"] = "4";
+  sm_connInfoNewPostgresDb["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  sm_connInfoNewPostgresDb["PG_USER"] = "postgres";
+  sm_connInfoNewPostgresDb["PG_PASSWORD"] = "sitim110";
+  sm_connInfoNewPostgresDb["PG_DB_NAME"] = "postgres";
+  sm_connInfoNewPostgresDb["PG_CONNECT_TIMEOUT"] = "4";
  
   //newdb parameters added to connection info
   sm_connInfoNewPostgresDb["newdb_name"] = "terralib5_postgresdb";
@@ -230,11 +230,11 @@ void TsManagerPostGIS::initialize()
   sm_connInfoNewPostgresDb["newdb_conn_limit"] = "16";
 
 // Minimal Server connection information to drop the postgis created before
-  sm_connInfoDropDs["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  sm_connInfoDropDs["user"] = "postgres";
-  sm_connInfoDropDs["password"] = "sitim110";
-  sm_connInfoDropDs["dbname"] = "terralib4";
-  sm_connInfoDropDs["connect_timeout"] = "4";
+  sm_connInfoDropDs["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  sm_connInfoDropDs["PG_USER"] = "postgres";
+  sm_connInfoDropDs["PG_PASSWORD"] = "sitim110";
+  sm_connInfoDropDs["PG_DB_NAME"] = "terralib4";
+  sm_connInfoDropDs["PG_CONNECT_TIMEOUT"] = "4";
   sm_connInfoDropDs["db_todrop"] = "terralib5_newdb";
  
 // Specific variables to use in DataSetTypePersistence tests

@@ -87,7 +87,7 @@ void te::ogr::Platform::finalize()
 // it finalizes the OGR factory support.
   te::ogr::DataSourceFactory::finalize();
 // Free PostGIS resources
-  te::da::DataSourceManager::getInstance().removeAll(getDriverID());
+  te::da::DataSourceManager::getInstance().detachAll(getDriverID());
  
   sm_ogrInitialized = false;
 }

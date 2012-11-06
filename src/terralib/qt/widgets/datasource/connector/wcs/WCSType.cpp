@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/DataSetLayerSelector.h"
+//#include "../../../layer/selector/core/DataSetLayerSelector.h"
 #include "WCSConnector.h"
 #include "WCSType.h"
 
@@ -62,8 +62,8 @@ QWidget* te::qt::widgets::WCSType::getWidget(int widgetType, QWidget* parent, Qt
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WCSConnector(parent, f);
 
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new DataSetLayerSelector(parent, f);
+    //case DataSourceType::WIDGET_LAYER_SELECTOR:
+      //return new DataSetLayerSelector(parent, f);
 
     default:
       return 0;

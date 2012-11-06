@@ -54,9 +54,9 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 
   if(catalog != 0)
   {
-    te::da::DataSetType* dt = catalog->getDataSetType(name);
+    const te::da::DataSetTypePtr& dt = catalog->getDataSetType(name);
 
-    if(dt != 0)
+    if(dt.get() != 0)
     {
       p = dt->getDefaultGeomProperty();
     
@@ -70,7 +70,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 // still looking for the property?
   std::auto_ptr<DataSourceCatalogLoader> cloader(getCatalogLoader());
 
-  std::auto_ptr<te::da::DataSetType> dt(cloader->getDataSetType(name, false));
+  DataSetTypePtr dt(cloader->getDataSetType(name, false));
 
   p = dt->getDefaultGeomProperty();
 
@@ -80,7 +80,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
   {
 // let's cache the data set type if there is a catalog!
     if(catalog)
-      catalog->add(dt.release());
+      catalog->add(dt);
 
     return getDataSet(name, p, e, r, travType, rwRole);
   }
@@ -103,9 +103,9 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 
   if(catalog != 0)
   {
-    te::da::DataSetType* dt = catalog->getDataSetType(name);
+    const te::da::DataSetTypePtr& dt = catalog->getDataSetType(name);
 
-    if(dt != 0)
+    if(dt.get() != 0)
     {
       p = dt->getDefaultGeomProperty();
     
@@ -119,7 +119,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
 // still looking for the property?
   std::auto_ptr<DataSourceCatalogLoader> cloader(getCatalogLoader());
 
-  std::auto_ptr<te::da::DataSetType> dt(cloader->getDataSetType(name, false));
+  DataSetTypePtr dt(cloader->getDataSetType(name, false));
 
   p = dt->getDefaultGeomProperty();
 
@@ -129,7 +129,7 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
   {
 // let's cache the data set type if there is a catalog!
     if(catalog)
-      catalog->add(dt.release());
+      catalog->add(dt);
 
     return getDataSet(name, p, g, r, travType, rwRole);
   }

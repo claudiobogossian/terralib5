@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../common/UnitOfMeasure.h"
 #include "../common/UnitsOfMeasureManager.h"
@@ -503,18 +504,24 @@ std::string te::gdal::GetDriverName(const std::string& name)
 {
 // check if it is a filename, and tries to use its extension
   boost::filesystem::path mpath(name.c_str());
-  std::string ext = mpath.extension().string();
 
-  if (ext == ".tif" || ext == ".TIF")
+  std::string ext = te::common::Convert2UCase(mpath.extension().string());
+
+  if(ext == ".TIF" || ext == ".TIFF")
     return std::string("GTiff");
-  if (ext == ".jpg" || ext == ".JPG")
+
+  if(ext == ".JPG")
     return std::string("JPEG");
-  if (ext == ".nft" || ext == ".NTF")
+
+  if(ext == ".NTF")
     return std::string("NITF");
-  if (ext == ".grb" || ext == ".GRB")
+
+  if(ext == ".GRB")
     return std::string("GRIB");
-  if (ext == ".png" || ext == ".PNG")
+
+  if(ext == ".PNG")
     return std::string("PNG");
+
   return "";
 }
 

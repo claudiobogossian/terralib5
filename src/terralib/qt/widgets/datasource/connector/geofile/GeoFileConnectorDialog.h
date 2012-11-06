@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../../dataaccess/Definitions.h"
 #include "../../core/DataSource.h"
 
 // STL

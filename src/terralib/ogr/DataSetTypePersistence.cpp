@@ -74,20 +74,25 @@ void te::ogr::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
     throw(te::common::Exception(TR_OGR("Error when attempting create the dataset type.")));
 
 // add the feature-type to the catalog if needed
-  unsigned int id = m_t->getOGRDataSource()->GetLayerCount() - 1;
-  if(dt->getCatalog())
-  {
-    dt->getCatalog()->setId(dt, id);
-  }
-  else
-  {
-    dt->setId(id);
-    m_t->getDataSource()->getCatalog()->add(dt);
-  }
+  //unsigned int id = m_t->getOGRDataSource()->GetLayerCount() - 1;
+  //if(dt->getCatalog())
+  //{
+    //dt->getCatalog()->setId(dt, id);
+  //}
+  //else
+  //{
+    //dt->setId(id);
+    //m_t->getDataSource()->getCatalog()->add(dt);
+  //}
 
 // add the properties
   for(size_t i = 0; i < dt->size(); ++i)
     add(dt, dt->getProperty(i));
+}
+
+void te::ogr::DataSetTypePersistence::clone(const std::string& /*datasetName*/, const std::string& /*newDatasetName*/, const std::map<std::string, std::string>& /*options*/)
+{
+  throw te::common::Exception(TR_OGR("Not implemented yet!"));
 }
 
 void te::ogr::DataSetTypePersistence::drop(te::da::DataSetType* dt)
@@ -111,6 +116,11 @@ void te::ogr::DataSetTypePersistence::drop(te::da::DataSetType* dt)
   {
     delete dt;
   }
+}
+
+void te::ogr::DataSetTypePersistence::drop(const std::string& /*datasetName*/)
+{
+  throw te::common::Exception(TR_OGR("Not implemented yet!"));
 }
 
 void te::ogr::DataSetTypePersistence::add(te::da::DataSetType* dt, te::dt::Property* p)

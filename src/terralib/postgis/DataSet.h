@@ -234,9 +234,13 @@ namespace te
 
         void setDateTime(int i, const te::dt::DateTime& value); 
 
-        void getArray(int i, std::vector<boost::int16_t>& a) const;
+        void getArray(int i, std::vector<boost::int16_t>& values) const;
 
-        void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
+        void getArray(const std::string& name, std::vector<boost::int16_t>& values) const;
+
+        te::dt::Array* getArray(int i) const;
+
+        te::dt::Array* getArray(const std::string& name) const;
 
         const unsigned char* getWKB(int i) const;
 
@@ -248,7 +252,7 @@ namespace te
 
         void setDataSet(int i, const te::da::DataSet& value);
 
-        void setValue(int i, te::dt::AbstractData* ad);
+        void setValue(int i, te::dt::AbstractData* value);
 
         bool isNull(int i) const;
 

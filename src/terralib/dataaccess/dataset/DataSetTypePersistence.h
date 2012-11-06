@@ -38,14 +38,14 @@
 
 namespace te
 {
-// Forward declarations    
+// Forward declarations
   namespace dt { class Property; }
 
   namespace da
   {
 // Forward declarations 
     class DataSetType;
-    class CheckConstraint;    
+    class CheckConstraint;
     class ForeignKey;
     class Index;
     class DataSetTypePersistence;
@@ -53,8 +53,8 @@ namespace te
     class Sequence;
     class UniqueKey;
     class DataSource;
-    class DataSourceTransactor;    
-    
+    class DataSourceTransactor;
+
     /*!
       \class DataSetTypePersistence
 
@@ -78,7 +78,7 @@ namespace te
       public:
 
         /*! \brief Constructor. */
-        DataSetTypePersistence() {}        
+        DataSetTypePersistence() {}
 
         /*! \brief Virtual destructor. */
         virtual ~DataSetTypePersistence() {}
@@ -158,6 +158,12 @@ namespace te
         */
         virtual void create(DataSetType* dt, const std::map<std::string, std::string>& options) = 0;
 
+        virtual void clone(const std::string& datasetName,
+                           const std::string& newDatasetName,
+                           const std::map<std::string, std::string>& options) = 0;
+
+        //virtual void clone(const std::string& datasetName, DataSetType* newDatasetDef) = 0;
+
         /*!
           \brief It drops the DataSetType from the data source.
 
@@ -184,6 +190,8 @@ namespace te
           \exception Exception It throws an exception if the DataSetType can not be removed.
         */
         virtual void drop(DataSetType* dt) = 0;
+
+        virtual void drop(const std::string& datasetName) = 0;
 
         /*!
           \brief It renames the DataSetType.

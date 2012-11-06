@@ -31,8 +31,8 @@
 #include "../Config.h"
 
 // STL
-#include <map>
 #include <string>
+#include <vector>
 
 // Boost
 #include <boost/cstdint.hpp>
@@ -84,7 +84,7 @@ namespace te
         virtual std::string getName() const = 0;
 
         /*!
-          \brief It prepares the query that may be used for commands (select, insert, update and delete) that are used repeatedly.
+          \brief It prepares the query that may be used for commands that are used mutiple times (select, insert, update and delete).
 
           This command will submit a request to create a prepared query with the given parameters.
 
@@ -94,21 +94,33 @@ namespace te
           \exception Exception It throws an exception if the prepared query can not be created. For example
                                if another prepared query with the same name already exists, this may throws an exception.
         */
-        virtual void prepare(const Query& query, const std::map<std::string, te::dt::Property*>& paramTypes) = 0;
+        virtual void prepare(const Query& query, const std::vector<te::dt::Property*>& paramTypes) = 0;
+
+        /*!
+          \brief It prepares the query using native dialect.
+
+          This command may be used for commands that are used mutiple times (select, insert, update and delete).
+
+          This command will submit a request to create a prepared query with the given parameters.
+
+          \param query      The query to be prepared.
+          \param paramTypes The list of parameters data type.
+
+          \exception Exception It throws an exception if the prepared query can not be created. For example
+                               if another prepared query with the same name already exists, this may throws an exception.
+        */
+        virtual void prepare(const std::string& query, const std::vector<te::dt::Property*>& paramTypes) = 0;
 
         /*
-          \brief It executes a prepared query with given parameters.
-          
-          \param paramValues The list of arguments to the prepared query.
+          \brief It executes a prepared query with parameters informed by bind methods.
 
           \exception Excpetion It throws na exception if something goes wrong.
         */
-        virtual void execute(const std::map<std::string, te::dt::AbstractData*>& paramValues) = 0;
+        virtual void execute() = 0;
 
         /*
-          \brief It executes a retrieval prepared query with given parameters.
+          \brief It executes a retrieval prepared query with parameters informed by bind methods.
           
-          \param paramValues The list of arguments to ne used in the query execution.
           \param travType    The traverse type associated to the returned dataset (if any is returned). 
           \param rwRole      The read and write permission associated to the returned dataset (if any is returned). 
 
@@ -116,8 +128,7 @@ namespace te
 
           \exception Excpetion It throws na exception if something goes wrong.
         */
-        virtual DataSet* query(const std::map<std::string, te::dt::AbstractData*>& paramValues,
-                               te::common::TraverseType travType = te::common::FORWARDONLY, 
+        virtual DataSet* query(te::common::TraverseType travType = te::common::FORWARDONLY, 
                                te::common::AccessPolicy rwRole = te::common::RAccess) = 0;
 
         /*!
@@ -248,27 +259,7 @@ namespace te
           \param i     The parameter index.
           \param value The parameter value.
         */
-        virtual void bind(int i, const te::dt::AbstractData& ad) = 0;
-
-        /*
-          \brief It executes a prepared query with parameters informed by bind methods.
-
-          \exception Excpetion It throws na exception if something goes wrong.
-        */
-        virtual void execute() = 0;
-
-        /*
-          \brief It executes a retrieval prepared query with parameters informed by bind methods.
-          
-          \param travType    The traverse type associated to the returned dataset (if any is returned). 
-          \param rwRole      The read and write permission associated to the returned dataset (if any is returned). 
-
-          \return A dataset with the result of the given query. The caller will take its ownership.
-
-          \exception Excpetion It throws na exception if something goes wrong.
-        */
-        virtual DataSet* query(te::common::TraverseType travType = te::common::FORWARDONLY, 
-                               te::common::AccessPolicy rwRole = te::common::RAccess) = 0;
+        virtual void bind(int i, const te::dt::AbstractData& ad);
 
         /*!
           \brief It returns a pointer to the underlying data source transactor.

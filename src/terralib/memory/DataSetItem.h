@@ -255,9 +255,9 @@ namespace te
 
         void setDateTime(const std::string& name, const te::dt::DateTime& value);
 
-        void getArray(int i, std::vector<boost::int16_t>& a) const;
+        void getArray(int i, std::vector<boost::int16_t>& values) const;
 
-        void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
+        void getArray(const std::string& name, std::vector<boost::int16_t>& values) const;
 
         const unsigned char* getWKB(int i) const;
 
@@ -293,7 +293,7 @@ namespace te
     */
     inline DataSetItem* new_clone(const DataSetItem& a)
     {
-      return a.clone();
+      return static_cast<DataSetItem*>(a.clone());
     }
 
   } // end namespace mem
