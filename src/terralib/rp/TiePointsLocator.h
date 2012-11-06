@@ -244,47 +244,37 @@ namespace te
         class MatchedInterestPointsT
         {
           public :
-            unsigned int m_x1; //!< Point X1 coord.
-
-            unsigned int m_y1; //!< Point Y2 coord.
             
-            unsigned int m_x2; //!< Point X1 coord.
-
-            unsigned int m_y2; //!< Point Y2 coord.
-
-            double m_weight; //!< Matched interest points weight (valid range: positive (non-zero) real values.
+            InterestPointT m_point1; //!< Interest point 1
+            
+            InterestPointT m_point2; //!< Interest point 2
+            
+            double m_feature; //!< Matched interest feature.
             
             MatchedInterestPointsT() {};
             
             MatchedInterestPointsT( const MatchedInterestPointsT& other )
             {
-              m_x1 = other.m_x1;
-              m_y1 = other.m_y1;
-              m_x2 = other.m_x2;
-              m_y2 = other.m_y2;
-              m_weight = other.m_weight;
+              operator=( other );
             };
             
-            MatchedInterestPointsT( const unsigned int& x1, const unsigned int& y1,
-              const unsigned int& x2, const unsigned int& y2,
-              const double& weight ) : m_x1( x1 ), m_y1( y1 ),
-              m_x2( x2 ), m_y2( y2 ),
-              m_weight( weight ) {};
+            MatchedInterestPointsT( const InterestPointT& point1, 
+              const InterestPointT& point2, const double& feature ) : 
+              m_point1( point1 ), m_point2( point2 ),
+              m_feature( feature ) {};
             
             ~MatchedInterestPointsT() {};
             
             bool operator<( const MatchedInterestPointsT& other ) const
             {
-              return ( m_weight < other.m_weight );
+              return ( m_feature < other.m_feature );
             };
             
             const MatchedInterestPointsT& operator=( const MatchedInterestPointsT& other )
             {
-              m_x1 = other.m_x1;
-              m_y1 = other.m_y1;
-              m_x2 = other.m_x2;
-              m_y2 = other.m_y2;
-              m_weight = other.m_weight;
+              m_point1 = other.m_point1;
+              m_point2 = other.m_point2;
+              m_feature = other.m_feature;
               return other;
             };            
         };        
@@ -819,6 +809,8 @@ namespace te
           \param enableMultiThread Enable/disable the use of threads.
           
           \param matchedPoints The matched points.
+          
+          \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the absolute value of the correlation between then.
         */          
         static bool executeMatchingByCorrelation( 
           const Matrix< double >& featuresSet1,
@@ -853,6 +845,8 @@ namespace te
           \param enableMultiThread Enable/disable the use of threads.
           
           \param matchedPoints The matched points.
+          
+          \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the inverse normalized distance in the range (0,1].
         */          
         static bool executeMatchingByEuclideanDist( 
           const Matrix< double >& featuresSet1,
