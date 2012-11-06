@@ -32,11 +32,17 @@
 
 namespace te
 {
+
+  namespace gm
+  {
+    class GeometryProperty;
+  }
+
   namespace ado
   {
 // Forward declaration
     class DataSourceTransactor;
-
+    
     /*!
       \class DataSourceCatalogLoader
 
@@ -75,6 +81,14 @@ namespace te
         te::da::Sequence* getSequence(const std::string& seqName);
 
         te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp);
+
+        /*!
+          \brief It load informations about the geometry property
+
+          \param dt The TerraLib DataSetType
+          \param geomp The TerraLib Geometry Property to load
+        */
+        void getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* geomp);
 
         void loadCatalog(const bool full = false);
 
