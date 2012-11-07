@@ -27,24 +27,13 @@
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "Functions.h"
-#include "MixtureModelLinearStrategy.h"
 #include "Macros.h"
-#include "PositionIterator.h"
-#include "RasterAttributes.h"
-
-// STL
-#include <complex>
-#include <iostream>
-#include <set>
-#include <stdlib.h>
+#include "MixtureModelLinearStrategy.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
-
-// STL
-#include <cfloat>
 
 namespace
 {
@@ -104,25 +93,71 @@ bool te::rp::MixtureModelLinearStrategy::initialize(te::rp::StrategyParameters c
 }
 
 bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                                 const std::map<std::string, std::vector<double> >& components, te::rst::Raster& outputRaster,
-                                                 const bool enableProgressInterface) throw(te::rp::Exception)
+                                                 const std::vector<std::string>& inputSensorBands, const std::map<std::string, std::vector<double> >& components,
+                                                 te::rst::Raster& outputRaster, const bool enableProgressInterface) throw(te::rp::Exception)
 {
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
 
   const unsigned int nComponents = components.size();
   boost::numeric::ublas::matrix<double> matrixA (nComponents, nComponents);
 
+// by definition, A * X = [1], we have A, so that X = inv(A) * [1]
+
+  std::vector<double> Lmin;
+  std::vector<double> Lmax;
+  for (unsigned i = 0; i < inputSensorBands.size(); i++)
+  {
+    Lmin.push_back(GetSpectralBandMin(inputSensorBands[i]));
+    Lmax.push_back(GetSpectralBandMax(inputSensorBands[i]));
+  }
+  const double Qmin = 0.0;
+  const double Qmax = 255.0;
+
+// retrieve A matrix, normalizing values using band/sensor info
   std::map<std::string, std::vector<double> >::const_iterator it;
   unsigned i;
   for (i = 0, it = components.begin(); it != components.end(); it++, i++)
     for (unsigned j = 0; j < matrixA.size2 (); j++)
-      matrixA(i, j) = it->second[j];
+      matrixA(j, i) = (Lmax[i] - Lmin[i]) * (it->second[j] - Qmin) / (Qmax - Qmin) + Lmin[i];
 
-  std::cout << matrixA << std::endl;
-
+// calculate the inverse of A
   boost::numeric::ublas::matrix<double> invertA = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixA.size2());
-
   InvertMatrix(matrixA, invertA);
+
+// create matrix [1]
+  boost::numeric::ublas::matrix<double> matrixONES = boost::numeric::ublas::matrix<double>(matrixA.size1(), 1);
+  for (i = 0; i < matrixA.size1(); i++)
+    matrixONES(i, 0) = 1;
+
+// create matrix X
+  boost::numeric::ublas::matrix<double> matrixX = boost::numeric::ublas::matrix<double>(matrixA.size1(), 1);
+  matrixX = boost::numeric::ublas::prod(invertA, matrixONES);
+
+  double value;
+  std::vector<double> values;
+  std::vector<double> fractions;
+  for (unsigned r = 0; r < inputRaster.getNumberOfRows(); r++)
+    for (unsigned c = 0; c < inputRaster.getNumberOfColumns(); c++)
+    {
+// read input values
+      values.clear();
+
+      for (unsigned b = 0; b < inputRasterBands.size(); b++)
+      {
+        inputRaster.getValue(c, r, value, inputRasterBands[b]);
+        values.push_back(value);
+      }
+
+// compute fractions and write output
+      fractions.clear();
+      fractions.resize(matrixX.size1(), 0.0);
+
+      for (unsigned x = 0; x < matrixX.size1(); x++)
+        for (unsigned b = 0; b < values.size(); b++)
+          fractions[x] += (values[b] * matrixX(x, 0));
+
+      outputRaster.setValues(c, r, fractions);
+    }
 
   return true;
 }

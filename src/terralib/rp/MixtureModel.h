@@ -112,6 +112,7 @@ namespace te
 
             te::rst::Raster const* m_inputRasterPtr;                      //!< Input raster.
             std::vector<unsigned int> m_inputRasterBands;                 //!< Bands to be processed from the input raster.
+            std::vector<std::string> m_inputSensorBands;                  //!< The names of the sensor/bands.
             std::map<std::string, std::vector<double> > m_components;     //!< A set of endmembers and its radiances.
             std::string m_strategyName;                                   //!< The mixture model strategy name see each te::rp::MixtureModelStrategyFactory inherited classes documentation for reference.
             StrategyParameters* m_mixtureModelStrategyParamsPtr;          //!< Internal specific mixture model strategy parameters.

@@ -24,17 +24,14 @@
  */
 
 // TerraLib
-#include "../raster/Raster.h"
-#include "../raster/RasterFactory.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Grid.h"
-#include "Algorithm.h"
+#include "../raster/Raster.h"
+#include "../raster/RasterFactory.h"
 #include "MixtureModel.h"
 #include "MixtureModelStrategy.h"
 #include "MixtureModelStrategyFactory.h"
-#include "Config.h"
-#include "Matrix.h"
 
 te::rp::MixtureModel::InputParameters::InputParameters()
   : m_mixtureModelStrategyParamsPtr(0)
@@ -75,6 +72,7 @@ void te::rp::MixtureModel::InputParameters::reset() throw(te::rp::Exception)
 {
   m_inputRasterPtr = 0;
   m_inputRasterBands.clear();
+  m_inputSensorBands.clear();
   m_components.clear();
   m_strategyName.clear();
 
@@ -91,6 +89,7 @@ const te::rp::MixtureModel::InputParameters& te::rp::MixtureModel::InputParamete
 
   m_inputRasterPtr = params.m_inputRasterPtr;
   m_inputRasterBands = params.m_inputRasterBands;
+  m_inputSensorBands = params.m_inputSensorBands;
   m_components = params.m_components;
   m_strategyName = params.m_strategyName;
 
@@ -189,7 +188,8 @@ bool te::rp::MixtureModel::execute(AlgorithmOutputParameters& outputParams) thro
   TERP_TRUE_OR_RETURN_FALSE(strategyPtr->initialize(m_inputParameters.getMixtureModelStrategyParams()),
                             "Unable to initialize the mixture model strategy");
   TERP_TRUE_OR_RETURN_FALSE(strategyPtr->execute(*m_inputParameters.m_inputRasterPtr, m_inputParameters.m_inputRasterBands,
-                                                 m_inputParameters.m_components, *outputParamsPtr->m_outputRasterPtr, true),
+                                                 m_inputParameters.m_inputSensorBands, m_inputParameters.m_components,
+                                                 *outputParamsPtr->m_outputRasterPtr, true),
                             "Unable to execute the mixture model strategy");
 
   return true;
@@ -220,15 +220,23 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
   TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputRasterBands.size() > 0,
                             "Invalid raster bands number");
 
+// check if input sensor/bands information fits
+  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputSensorBands.size() == inputParamsPtr->m_inputRasterBands.size(),
+                            "Invalid raster bands number");
+
   for(unsigned int i = 0; i < inputParamsPtr->m_inputRasterBands.size(); i++)
+  {
     TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputRasterBands[i] <
                               inputParamsPtr->m_inputRasterPtr->getNumberOfBands(),
                               "Invalid raster bands" );
+  }
 
   std::map<std::string, std::vector<double> >::const_iterator it;
-  for (it = inputParamsPtr->m_components.begin(); it != inputParamsPtr->m_components.end(); it++)
+  for (it = inputParamsPtr->m_components.begin(); it != inputParamsPtr->m_components.end(); ++it)
+  {
     TERP_TRUE_OR_RETURN_FALSE(it->second.size() == inputParamsPtr->m_inputRasterBands.size(),
-                            "Endmember's number of channels is different from input raster bands number");
+                              "Endmember's number of channels is different from input raster bands number");
+  }
 
 // everything is ok
   m_instanceInitialized = true;

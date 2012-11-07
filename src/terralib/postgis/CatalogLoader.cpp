@@ -669,15 +669,15 @@ void te::pgis::CatalogLoader::getRasterInfo(const std::string& datasetName, te::
 
     int nbands = result->getInt32("num_bands");
 
-    std::unique_ptr<te::dt::Array> pixel_types(result->getArray("pixel_types"));
+    std::auto_ptr<te::dt::Array> pixel_types(result->getArray("pixel_types"));
 
-    std::unique_ptr<te::dt::Array> nodata_values(result->getArray("nodata_values"));
+    std::auto_ptr<te::dt::Array> nodata_values(result->getArray("nodata_values"));
 
-    std::unique_ptr<te::gm::Geometry> g(result->getGeometry("extent"));
+    std::auto_ptr<te::gm::Geometry> g(result->getGeometry("extent"));
 
     const te::gm::Envelope* e = g->getMBR();
 
-    std::unique_ptr<te::rst::Grid> grid(new te::rst::Grid(scale_x, scale_y, new te::gm::Envelope(*e), srid));
+    std::auto_ptr<te::rst::Grid> grid(new te::rst::Grid(scale_x, scale_y, new te::gm::Envelope(*e), srid));
 
     rp->set(grid.release());
 

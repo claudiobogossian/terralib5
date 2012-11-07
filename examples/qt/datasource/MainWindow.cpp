@@ -146,7 +146,7 @@ void MainWindow::onOpenGDALTriggered()
 
 void MainWindow::onOpenDataSourceSelectorTriggered()
 {
-  std::unique_ptr<te::qt::widgets::DataSourceSelectorDialog> selector(new te::qt::widgets::DataSourceSelectorDialog(this));
+  std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> selector(new te::qt::widgets::DataSourceSelectorDialog(this));
 
   selector->exec();
 }

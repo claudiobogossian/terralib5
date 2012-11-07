@@ -24,26 +24,8 @@
 */
 
 // TerraLib
-#include "../raster/Grid.h"
-#include "../raster/Utils.h"
-#include "MixtureModelPCAStrategy.h"
 #include "Macros.h"
-#include "PositionIterator.h"
-#include "RasterAttributes.h"
-
-// STL
-#include <complex>
-#include <iostream>
-#include <set>
-#include <stdlib.h>
-
-// Boost
-#include <boost/numeric/ublas/io.hpp>
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/matrix.hpp>
-
-// STL
-#include <cfloat>
+#include "MixtureModelPCAStrategy.h"
 
 namespace
 {
@@ -106,8 +88,8 @@ bool te::rp::MixtureModelPCAStrategy::initialize(te::rp::StrategyParameters cons
 }
 
 bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,
-                                              const std::map<std::string, std::vector<double> >& components, te::rst::Raster& outputRaster,
-                                              const bool enableProgressInterface) throw(te::rp::Exception)
+                                              const std::vector<std::string>& inputSensorBands, const std::map<std::string, std::vector<double> >& components,
+                                              te::rst::Raster& outputRaster, const bool enableProgressInterface) throw(te::rp::Exception)
 {
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
 

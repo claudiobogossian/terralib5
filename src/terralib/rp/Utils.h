@@ -18,29 +18,32 @@
  */
 
 /*!
-  \file RPExamples.h
+  \file terralib/rp/Utils.h
 
-  \brief These routines show how to use the RP (raster processing) module.
- */
+  \brief Utility functions for the raster processor module.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_INTERNAL_RP_EXAMPLES_H
-#define __TERRALIB_EXAMPLES_INTERNAL_RP_EXAMPLES_H
+#ifndef __TERRALIB_RP_INTERNAL_UTILS_H
+#define __TERRALIB_RP_INTERNAL_UTILS_H
 
-#include "Config.h"
+// STL
+#include <map>
+#include <string>
 
-/*! \brief It loads the data source drivers. */
-void LoadModules();
+namespace te
+{
+  namespace rp
+  {
+    /*! \brief Returns the maximun and minimum reflectance values of a given sensor/band. */
+    std::pair<double, double> GetSpectralBandInfo(std::string bandName);
 
-/* \brief Segmentation example using Raster Processing module. */
-void Segmenter();
+    /*! \brief Returns the minimum reflectance value of a given sensor/band. */
+    double GetSpectralBandMin(std::string bandName);
 
-/* \brief Contrast example using Raster Processing module. */
-void Contrast();
+    /*! \brief Returns the maximum reflectance value of a given sensor/band. */
+    double GetSpectralBandMax(std::string bandName);
 
-/* \brief Classification example using ISOSeg module. */
-void Classifier();
+  } // end namespace rp
+}   // end namespace te
 
-/* \brief Raster decomposition using Mixture Model module. */
-void MixtureModel();
-
-#endif
+#endif  // __TERRALIB_RP_INTERNAL_UTILS_H
