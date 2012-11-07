@@ -1018,7 +1018,7 @@ te::dt::Array* te::pgis::DataSet::getArray(int i) const
     case PG_VARCHAR_TYPE:
     case PG_NAME_TYPE:
       {
-        std::unique_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::STRING_TYPE));
+        std::auto_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::STRING_TYPE));
 
         std::vector<std::size_t> pos(ndim, 0);
 
@@ -1064,7 +1064,7 @@ te::dt::Array* te::pgis::DataSet::getArray(int i) const
 
     case PG_FLOAT8_TYPE:
       {
-        std::unique_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::DOUBLE_TYPE));
+        std::auto_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::DOUBLE_TYPE));
 
         std::vector<std::size_t> pos(ndim, 0);
 
