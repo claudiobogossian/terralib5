@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,117 +18,76 @@
  */
 
 /*!
-  \file Plugin.h
-  
-  \brief An abstract interface for TerraLib Plugins.
- */
+  \file terralib/plugin/Plugin.h
+
+  \brief A base class for plugin types.
+*/
 
 #ifndef __TERRALIB_PLUGIN_INTERNAL_PLUGIN_H
 #define __TERRALIB_PLUGIN_INTERNAL_PLUGIN_H
 
 // TerraLib
+#include "AbstractPlugin.h"
 #include "Config.h"
 #include "PluginInfo.h"
 
 namespace te
 {
   namespace plugin
-  {     
+  { 
     /*!
       \class Plugin
-      
-      \brief An abstract interface for TerraLib Plugins.
 
-      As can be seen in Wikipedia, a plugin (also called plug-in, addin, add-in, addon,
-      add-on, snap-in or suplement) is a computer program that interacts with a
-      host application (as TerraView) adding new capabilities/functionalities to it.
-      <br>
-      For more information on plugin definitions,
-      see Wikipedia at: http://en.wikipedia.org/wiki/Plug-in_%28computing%29.
-      <br>
-      In TerraLib, the easy way to create a plugin for TerraView is to use
-      the Plugin class interface. This is the same interface for C++, PHP, Lua
-      and other languages plugins. In order to easily load
-      a plugin, follow these steps:
-      <ul>
-      <li></li>
-      <li></li>
-      </ul>
-      Note that in TerraLib any plugin will have access to all other system parts. We put no restrictions
-      on it, so you can easily use all TerraLib/TerraView API without worry about doing trickies!
+      \brief A base class for plugin types.
 
-      \sa PluginManager
+      This class already provides a default implementation
+      for all plugin methods and some attributes.
+
+      \sa AbstractPlugin, PluginManager, PluginInfo, PluginEngine
      */
-    class TEPLUGINEXPORT Plugin
+    class TEPLUGINEXPORT Plugin : public AbstractPlugin
     {
       public:
 
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
+        const PluginInfo& getInfo() const;
 
-        /*! \brief It creates a new plugin. */
-        Plugin();
+        bool isStarted() const;
+
+        /*! \brief Do nothing! Just set plugin as started */
+        virtual void startup();
+
+        /*! \brief Do nothing! Just set plugin as stopped */
+        virtual void shutdown();
 
         /*! \brief Virtual destructor. */
         virtual ~Plugin();
 
-        //@}
-
-        /** @name Plugin Interface
-         *  Plugins must implement this interface in order to be loaded by TerraLib.
-         */
-        //@{
+      protected:
 
         /*!
-          \brief This method will be called by TerraLib to startup some plugin's functionality.
-                  
-          \exception Exception It throws and exception if the plugin can not be started.
+          \brief It initializes a new plugin.
+
+          \param pInfo Basic plugin information.
          */
-        virtual void startup() = 0;
+        Plugin(const PluginInfo& pInfo);
 
-        /*!
-          \brief This method will be called by TerraLib to shutdown plugin's functionality.
-          
-          \exception Exception It throws and exception if the plugin can not be shutdown.
-         */
-        virtual void shutdown() = 0;
+      protected:
 
-        /*!
-          \brief It return the information associated to the plugin.
-
-          \return The information associated to the plugin.
-         */
-        virtual const PluginInfo& getInfo() const = 0;
-
-        //@}
-
-      private:
-
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other instance.
-         */
-        Plugin(const Plugin& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other instance.
-
-          \return A reference for this instance.
-         */
-        Plugin& operator=(const Plugin& rhs);
-
-        //@}
+        PluginInfo m_pluginInfo;   //!< Information about the plugin.
+        bool m_initialized;        //!< A flag that indicates if the plugin was started or not.
     };
+
+    /*!
+      \typedef CppPlugin* (*GetPluginFPtr)(void);
+          
+      \brief It exports Plugin's access function type.
+
+      When you are building a C++ Plugin, you will have to define a special function
+      (that has a special name convention)
+      to be called by TerraLib in order to load your plugin.
+      Please, see the documentation HowTo Create C++ TerraLib Plugins for more information.
+    */
+    typedef Plugin* (*GetPluginFPtr)(const PluginInfo& info);
 
   } // end namespace plugin
 }   // end namespace te

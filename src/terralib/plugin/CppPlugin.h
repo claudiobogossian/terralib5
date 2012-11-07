@@ -73,21 +73,6 @@ namespace te
 
         /*! \brief Virtual destructor. */
         virtual ~CppPlugin();
-
-        //@}
-
-        /** @name Re-Implmentation from Plugin Interface
-         *  Re-Implmentation from Plugin Interface.
-         */
-        //@{
-
-        /*!
-          \brief It return the information associated to the plugin.
-
-          \return The information associated to the plugin.
-         */
-        const PluginInfo& getInfo() const;
-
         //@}
 
       private:
@@ -112,14 +97,8 @@ namespace te
           \return A reference for this instance.
          */
         CppPlugin& operator=(const CppPlugin& rhs);
-
         //@}
-
-      private:
-
-        PluginInfo m_info;    //!< Information about a C++ plugin.
     };
-
   } // end namespace plugin
 }   // end namespace te
 

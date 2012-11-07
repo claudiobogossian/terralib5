@@ -41,6 +41,11 @@ namespace te
     class Fill;
     class ParameterValue;
     class Stroke;
+    class FeatureTypeStyle;
+  }
+  namespace gm
+  {
+    enum GeomType;
   }
 
   namespace map
@@ -134,6 +139,10 @@ namespace te
     */
     TEMAPEXPORT void GetDashStyle(const std::string& dasharray, std::vector<double>& style);
 
+    /*!
+      \brief Returns a default symbolizer for the given \a geomType
+    */
+    TEMAPEXPORT te::se::FeatureTypeStyle* getDefaultStyle(const te::gm::GeomType& geomType);
   } // end namespace map
 }   // end namespace te
 

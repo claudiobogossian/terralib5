@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,27 +18,39 @@
  */
 
 /*!
-  \file terralib/plugin/Exception.h
+  \file PluginInfo.h
+  
+  \brief Information about a given Plugin.
+ */
 
-  \brief An exception class for the Plugin module.
-*/
+#ifndef __TERRALIB_PLUGIN_INTERNAL_PLUGININFO_H
+#define __TERRALIB_PLUGIN_INTERNAL_PLUGININFO_H
 
-#ifndef __TERRALIB_PLUGIN_INTERNAL_EXCEPTION_H
-#define __TERRALIB_PLUGIN_INTERNAL_EXCEPTION_H
-
-// TerraLib
-#include "../common/Exception.h"
-#include "Config.h"
-
+// STL
+#include <string>
 
 namespace te
 {
   namespace plugin
   {
-    TE_DECLARE_EXCEPTION_CLASS(TEPLUGINEXPORT, Exception, te::common::Exception)
+    /*!
+      \struct PluginInfo
+      
+      \brief Information about a given Plugin.
+
+      \sa Plugin, PluginFactory
+     */
+    struct PluginInfo
+    {
+      std::string m_name;
+      std::string m_displayName;
+      std::string m_description;
+      std::string m_mainFile;
+      std::string m_type;
+    };
 
   } // end namespace plugin
 }   // end namespace te
 
-#endif  // __TERRALIB_PLUGIN_INTERNAL_EXCEPTION_H
+#endif  // __TERRALIB_PLUGIN_INTERNAL_PLUGININFO_H
 

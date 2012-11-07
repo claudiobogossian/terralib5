@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,8 +18,8 @@
  */
 
 /*!
-  \file terralib/plugin/Module.h
-
+  \file Module.h
+   
   \brief This singleton defines the TerraLib Plugin module entry.
 */
 

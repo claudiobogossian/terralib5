@@ -24,8 +24,10 @@ if(terralib_FOUND)
 
   include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
+  find_package(Boost REQUIRED COMPONENTS system)
+  
   include_directories (${TE_INCLUDE_DIRS} ${INCLDIR} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-  list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES}) 
+  list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
   
   file (GLOB SRCS ${SRCDIR}/*.cpp)
   file (GLOB HDRS ${INCLDIR}/*.h)

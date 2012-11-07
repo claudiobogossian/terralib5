@@ -18,46 +18,27 @@
  */
 
 /*!
-  \file terralib/plugin/CppPluginProxy.cpp
+  \file Exception.h
 
-  \brief An abstract interface for Plugins written in C++.
+  \brief An exception class for the Plugin module.
 */
 
+#ifndef __TERRALIB_PLUGIN_INTERNAL_EXCEPTION_H
+#define __TERRALIB_PLUGIN_INTERNAL_EXCEPTION_H
+
 // TerraLib
-#include "CppPluginProxy.h"
-#include "Plugin.h"
+#include "../common/Exception.h"
+#include "Config.h"
 
-te::plugin::CppPluginProxy::CppPluginProxy(const te::common::LibraryPtr& lib, Plugin* plugin)
-  : m_lib(lib),
-    m_plugin(plugin)
+
+namespace te
 {
-}
+  namespace plugin
+  {
+    TE_DECLARE_EXCEPTION_CLASS(TEPLUGINEXPORT, Exception, te::common::Exception)
 
-te::plugin::CppPluginProxy::~CppPluginProxy()
-{
-// if we need to assure that plugin goes out of scope
-// before the library, we will need to remove the following comment
-//  m_plugin.release();
-}
+  } // end namespace plugin
+}   // end namespace te
 
-const te::plugin::PluginInfo& te::plugin::CppPluginProxy::getInfo() const
-{
-  return m_plugin->getInfo();
-}
-
-bool te::plugin::CppPluginProxy::isStarted() const
-{
-  return m_plugin->isStarted();
-}
-
-void te::plugin::CppPluginProxy::startup()
-{
-  m_plugin->startup();
-}
-
-void te::plugin::CppPluginProxy::shutdown()
-{
-  m_plugin->shutdown();
-}
-
+#endif  // __TERRALIB_PLUGIN_INTERNAL_EXCEPTION_H
 

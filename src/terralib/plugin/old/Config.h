@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/plugin/Config.h
+  \file Config.h
 
-  \brief Configuration flags for the TerraLib Plugin module.
+  \brief Configuration flags for the Plugin module of TerraLib.
 */
 
 #ifndef __TERRALIB_PLUGIN_INTERNAL_CONFIG_H
@@ -81,6 +81,12 @@
  */
 #define TE_DEFAULT_PLUGIN_FILE_NAME "plugin_info.xml"
 
+//#ifdef NDEBUG
+//  #define TE_DEFAULT_PLUGIN_FILE_NAME "plugin.xml"
+//#else
+//  #define TE_DEFAULT_PLUGIN_FILE_NAME "plugin_d.xml"
+//#endif
+
 /*!
   \def TE_AUTOMATICALLY_LOAD_DEFAULT_XML_PLUGIN
 
@@ -116,6 +122,13 @@
  */
 #define TR_PLUGIN(message) TR(message, TE_PLUGIN_TEXT_DOMAIN)
 
+/*!
+  \def TR_PLURAL_PLUGIN
+
+  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Plugin module of TerraLib. 
+ */
+#define TR_PLURAL_PLUGIN(message1, message2, n) TR_PLURAL(TE_PLUGIN_TEXT_DOMAIN, message1, message2, n)
+
 //@}
 
 /** @name DLL/LIB Module
@@ -131,7 +144,7 @@
   \note If you want to compile TerraLib as DLL in Windows, remember to insert TEPLUGINDLL into the project's list of defines.
 
   \note If you want to compile TerraLib as an Static Library under Windows, remember to insert the TEPLUGINSTATIC flag into the project list of defines.
-*/
+ */
 #ifdef WIN32
 
   #ifdef _MSC_VER 
@@ -151,7 +164,7 @@
   #define TEPLUGINEXPORT
 #endif
 
-//@}
+//@}        
 
 #endif  // __TERRALIB_PLUGIN_INTERNAL_CONFIG_H
 

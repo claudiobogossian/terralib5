@@ -3,15 +3,16 @@
 //! Terralib include files
 #include <terralib/qt/widgets/utils/FileChooser.h>
 #include <terralib/maptools/Layer.h>
-//#include <terralib/dataaccess/dataset/DataSet.h>
+#include <terralib/maptools/Utils.h>
+#include <terralib/maptools/LayerRenderer.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
 #include <terralib/dataaccess/datasource/DataSourceManager.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceCatalogLoader.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
-#include <terralib/se.h>
+#include <terralib/geometry/GeometryProperty.h>
+#include <terralib/se/FeatureTypeStyle.h>
 
-#include <terralib/maptools/LayerRenderer.h>
 
 //! Qt include files
 #include <QPushButton>
@@ -29,7 +30,7 @@ namespace te
   }
 }
 
-std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box) 
+std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box, te::gm::GeomType& geomType) 
 {
 // get a transactor to interact to the data source
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
@@ -51,6 +52,8 @@ std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box)
   // Default geometry property
   te::gm::GeometryProperty* geomProperty = dt->getDefaultGeomProperty();
 
+  geomType = geomProperty->getGeometryType();
+
   std::string datasetName = datasets[0];
 
 //  te::da::DataSet* dataset = transactor->getDataSet(datasetName);
@@ -67,7 +70,7 @@ std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box)
 }
 
 
-te::map::Layer* NewOGRLayer::getNewLayer(QWidget* parent)
+te::map::AbstractLayer* NewOGRLayer::getNewLayer(QWidget* parent)
 {
   NewOGRLayer dlg(parent);
 
@@ -94,31 +97,24 @@ te::map::Layer* NewOGRLayer::getNewLayer(QWidget* parent)
       if(ds->isValid() && ds->isOpened())
       {
         te::gm::Envelope* env = 0;
+        te::gm::GeomType gtype;
 
-        std::string dset = getDataSetName(ds, env);
+        std::string dset = getDataSetName(ds, env, gtype);
 
-        std::auto_ptr<te::map::Layer> layer(new te::map::Layer(id.toLatin1().data(), info.baseName().toLatin1().data()));
+        te::map::Layer* layer = new te::map::Layer(id.toLatin1().data(), info.baseName().toLatin1().data());
 
         layer->setDataSetName(dset);
         layer->setDataSource(ds);
 
-        // Creates a hard-coded style
-        te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-        symbolizer->setFill(te::se::CreateFill("#339966", "1.0"));
-        symbolizer->setStroke(te::se::CreateStroke("#000000", "3", "1.0"));
+        te::se::FeatureTypeStyle* style = te::map::getDefaultStyle(gtype);
 
-        te::se::Rule* rule = new te::se::Rule;
-        rule->push_back(symbolizer);
-
-        te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-        style->push_back(rule);
-
-        layer->setStyle(style);
+        if(style != 0)
+          layer->setStyle(style);
 
         layer->setRenderer(new te::map::LayerRenderer());
         layer->setExtent(env);
 
-        return layer.release();
+        return layer;
       }
     }
   }

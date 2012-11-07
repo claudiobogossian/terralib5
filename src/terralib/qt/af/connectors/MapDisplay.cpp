@@ -197,9 +197,33 @@ namespace te
           size_t pos = vgIt - m_geoms.begin();
           QColor* c = &(*(m_colors.begin()+pos));
 
-          canvas.setPolygonFillColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
-          canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
-          canvas.setPolygonContourWidth(1);
+          switch((*g->begin())->getGeomTypeId())
+          {
+            case te::gm::PolygonType:
+            case te::gm::MultiPolygonType:
+              canvas.setPolygonFillColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
+              canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
+              canvas.setPolygonContourWidth(1);
+            break;
+
+            case te::gm::LineStringType:
+            case te::gm::MultiLineStringType:
+            {
+              canvas.setLineColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
+              canvas.setLineWidth(2);
+            }
+            break;
+
+            case te::gm::PointType:
+            case te::gm::MultiPointType:
+            {
+              canvas.setPointColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
+            }
+            break;
+
+            default:
+            break;
+          }
 
           for(gIt = g->begin(); gIt != g->end(); ++gIt)
           {

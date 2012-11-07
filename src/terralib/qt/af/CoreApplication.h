@@ -67,6 +67,7 @@
 //! STL include files
 #include <map>
 #include <set>
+#include <vector>
 
 //! Forward declarations
 class QToolBar;
@@ -142,6 +143,30 @@ namespace te
         */
         void removeListener(QObject* obj);
 
+        /*!
+          \brief
+          \param
+        */
+        void setApplicationInfo(const std::vector< std::pair<std::string, std::string> >& info);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::vector< std::pair<std::string, std::string> >* getApplicationInfo() const;
+
+        /*!
+          \brief
+          \param
+        */
+        void setApplicationName(const std::string& appName);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::string* getApplicationName() const;
+
       public slots:
 
         /*!
@@ -159,8 +184,10 @@ namespace te
 
       protected:
 
-        std::map<QString, QToolBar*> m_toolbars;  //!< Toolbars registered.
-        std::set<QObject*> m_reg_coms;            //!< Registered objects.
+        std::map<QString, QToolBar*> m_toolbars;                                             //!< Toolbars registered.
+        std::set<QObject*> m_reg_coms;                                                       //!< Registered objects.
+        std::vector< std::pair<std::string, std::string> > m_app_info;                       //!< Configurations.
+        std::string m_app_name;                                                              //!< Name of the application.
       };
 
       /*!

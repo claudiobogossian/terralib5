@@ -31,6 +31,13 @@
 #include "../se/Stroke.h"
 #include "../se/SvgParameter.h"
 #include "Utils.h"
+#include <terralib/se/PolygonSymbolizer.h>
+#include <terralib/se/LineSymbolizer.h>
+#include <terralib/se/PointSymbolizer.h>
+#include <terralib/se/Rule.h>
+#include <terralib/se/FeatureTypeStyle.h>
+#include <terralib/se/Utils.h>
+#include <terralib/geometry/Enums.h>
 
 // STL
 #include <cassert>
@@ -104,4 +111,58 @@ void te::map::GetDashStyle(const std::string& dasharray, std::vector<double>& st
   te::common::Tokenize(dasharray, values);
   for(std::size_t i = 0; i < values.size(); ++i)
     style.push_back(atof(values[i].c_str()));
+}
+
+te::se::FeatureTypeStyle* te::map::getDefaultStyle(const te::gm::GeomType& geomType)
+{
+  te::se::Symbolizer* symb=0;
+  te::se::FeatureTypeStyle* style = 0;
+
+  switch(geomType)
+  {
+    case te::gm::PolygonType:
+    case te::gm::MultiPolygonType:
+    {
+      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
+      symbolizer->setFill(te::se::CreateFill("", "1.0"));
+      symbolizer->setStroke(te::se::CreateStroke("#000000", "1", "1.0"));
+      symb = symbolizer;
+    }
+    break;
+
+    case te::gm::LineStringType:
+    case te::gm::MultiLineStringType:
+    {
+      te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
+      symbolizer->setStroke(te::se::CreateStroke("", "1", "1.0"));
+      symb = symbolizer;
+    }
+    break;
+
+    case te::gm::PointType:
+    case te::gm::MultiPointType:
+    {
+      te::se::Fill* markFill = te::se::CreateFill("", "1.0");
+      te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "1");
+      te::se::Mark* mark = te::se::CreateMark("circle", markStroke, markFill);
+      te::se::Graphic* graphic = te::se::CreateGraphic(mark, "12", "", "");
+      te::se::PointSymbolizer* symbolizer = te::se::CreatePointSymbolizer(graphic);
+      symb = symbolizer;
+    }
+    break;
+
+    default:
+    break;
+  }
+
+  if(symb != 0)
+  {
+    te::se::Rule* rule = new te::se::Rule;
+    rule->push_back(symb);
+
+    style = new te::se::FeatureTypeStyle;
+    style->push_back(rule);
+  }
+
+  return style;
 }

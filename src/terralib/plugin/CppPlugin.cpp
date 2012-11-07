@@ -26,17 +26,12 @@
 // TerraLib
 #include "CppPlugin.h"
 
-te::plugin::CppPlugin::CppPlugin(const PluginInfo& info)
-  : m_info(info)
+te::plugin::CppPlugin::CppPlugin(const te::plugin::PluginInfo& info) : 
+te::plugin::Plugin(info)
 {
 }
 
 te::plugin::CppPlugin::~CppPlugin()
 {
-}
-
-const te::plugin::PluginInfo& te::plugin::CppPlugin::getInfo() const
-{
-  return m_info;
 }
 

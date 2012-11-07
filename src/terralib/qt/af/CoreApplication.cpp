@@ -71,9 +71,25 @@ namespace te
         }
       }
 
-      //void CoreApplication::setCurrentTool(te::qt::widgets::AbstractTool* tool)
-      //{
-      //}
+      void CoreApplication::setApplicationInfo(const std::vector< std::pair<std::string, std::string> >& info)
+      {
+        m_app_info = info;
+      }
+
+      const std::vector< std::pair<std::string, std::string> >* CoreApplication::getApplicationInfo() const
+      {
+        return &m_app_info;
+      }
+
+      void CoreApplication::setApplicationName(const std::string& appName)
+      {
+        m_app_name = appName;
+      }
+
+      const std::string* CoreApplication::getApplicationName() const
+      {
+        return &m_app_name;
+      }
 
       void CoreApplication::broadCast(te::qt::af::Event* evt)
       {

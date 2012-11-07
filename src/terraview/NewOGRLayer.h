@@ -9,7 +9,7 @@ namespace te
 {
   namespace map
   {
-    class Layer;
+    class AbstractLayer;
   }
 
   namespace qt
@@ -25,7 +25,7 @@ class NewOGRLayer : public QDialog
 {
 public:
 
-  static te::map::Layer* getNewLayer(QWidget* parent=0);
+  static te::map::AbstractLayer* getNewLayer(QWidget* parent=0);
 
 protected:
 
