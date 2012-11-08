@@ -68,11 +68,14 @@ namespace te
 
         const std::string* getCoverageName() const;
 
+        const std::string& getType() const;
+
         //@}
 
       private:
 
-        std::string* m_coverageName;  //!< It identifies the specific coverage that the coverage style is for. (Optional)
+        std::string* m_coverageName;       //!< It identifies the specific coverage that the coverage style is for. (Optional)
+        static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
     };
 
   } // end namespace se

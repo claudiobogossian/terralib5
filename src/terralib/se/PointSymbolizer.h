@@ -86,6 +86,8 @@ namespace te
 
         const Graphic* getGraphic() const;
 
+        const std::string& getType() const;
+
         //@}
 
         /*! \brief It creates a new copy of this object. */
@@ -95,7 +97,9 @@ namespace te
 
         te::fe::PropertyName* m_geometry;  //!< A Geometry gives reference to a (the) geometry property of a feature to be used for rendering. (Optional)
         Graphic* m_graphic;                //!< A Graphic specifies or refers to a graphic Symbolizer with inherent shape, size, and coloring. (Optional)
-    };    
+
+        static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
+    };
 
   } // end namespace se
 }   // end namespace te
