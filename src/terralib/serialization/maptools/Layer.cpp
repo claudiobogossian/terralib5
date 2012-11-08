@@ -159,8 +159,8 @@ te::map::AbstractLayer* LayerReader(te::xml::Reader& reader)
   layer->setExtent(mbr.release());
   layer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
   layer->setDataSetName(dataset);
-  layer->setDataSource(datasourceId);
-  layer->setRenderer(rendererId);
+  //layer->setDataSource(datasourceId); Uba
+  //layer->setRenderer(rendererId); Uba
 
   return layer.release();
 }
@@ -233,9 +233,9 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   layer->setSRID(srid);
   layer->setExtent(mbr.release());
   layer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
-  layer->setQuery(query);
-  layer->setDataSource(datasourceId);
-  layer->setRenderer(rendererId);
+  //layer->setQuery(query); Uba
+  //layer->setDataSource(datasourceId); Uba
+  //layer->setRenderer(rendererId); Uba
 
   return layer.release();
 }
@@ -255,7 +255,7 @@ void LayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
   te::serialize::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
   writer.writeElement("DataSet", layer->getDataSetName());
-  writer.writeElement("DataSourceId", layer->getDataSource());
+  //writer.writeElement("DataSourceId", layer->getDataSource()); Uba
   writer.writeElement("Renderer", "k");
   writer.writeElement("Style", "x");
 
@@ -276,8 +276,8 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeElement("SRID", layer->getSRID());
   te::serialize::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  writer.writeElement("Query", layer->getQuery());
-  writer.writeElement("DataSourceId", layer->getDataSource());
+  //writer.writeElement("Query", layer->getQuery()); Uba
+  //writer.writeElement("DataSourceId", layer->getDataSource()); Uba
   writer.writeElement("Renderer", "x");
   writer.writeElement("Style", "z");
 
