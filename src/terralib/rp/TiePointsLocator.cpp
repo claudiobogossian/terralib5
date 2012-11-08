@@ -338,6 +338,9 @@ namespace te
           m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
+          0,
+          0.9,
+          m_inputParameters.m_enableMultiThread,
           transfPtr,
           tiePointsWeights ), "Outliers remotion error" );
         

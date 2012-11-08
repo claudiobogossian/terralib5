@@ -45,6 +45,8 @@ class TsGTFilter : public CPPUNIT_NS::TestFixture
 
 // It registers the class methods as Test Cases belonging to the suit 
   CPPUNIT_TEST( tcApplyRansac );
+  
+  CPPUNIT_TEST( tcApplyRansacMultiThread );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -76,6 +78,9 @@ class TsGTFilter : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: ApplyRansac */
     void tcApplyRansac();
+    
+    /*! \brief Test Case: tcApplyRansacMultiThread */
+    void tcApplyRansacMultiThread();    
 };
 
 #endif  // __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_GTFILTER_H
