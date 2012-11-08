@@ -28,6 +28,7 @@
 #include "../../common/Translator.h"
 #include "../../datatype/Enums.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../../raster/RasterProperty.h"
 #include "../datasource/DataSourceCatalog.h"
 #include "../Exception.h"
 #include "CheckConstraint.h"
@@ -230,31 +231,29 @@ te::da::DataSetType& te::da::DataSetType::operator=(const DataSetType& /*rhs*/)
   //return *this;
 }
 
-bool te::da::DataSetType::hasGeom() const
-{
-  const std::size_t size = m_properties.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i]->getType() == te::dt::GEOMETRY_TYPE)
-      return true;
-
-  return false;
-}
-
 te::gm::GeometryProperty* te::da::DataSetType::findFirstGeomProperty() const
 {
-  const std::size_t size = m_properties.size();
+  te::dt::Property* p = findFirstPropertyOfType(te::dt::GEOMETRY_TYPE);
 
-  for(std::size_t i = 0; i < size; ++i)
-    if(m_properties[i]->getType() == te::dt::GEOMETRY_TYPE)
-      return static_cast<te::gm::GeometryProperty*>(m_properties[i]);
-
+  if(p != 0)
+    return static_cast<te::gm::GeometryProperty*>(p);
+  
   return 0;
 }
 
 std::size_t te::da::DataSetType::getDefaultGeomPropertyPos() const
 {
   return CompositeProperty::getPropertyPosition(m_defaultGeom);
+}
+
+te::rst::RasterProperty* te::da::DataSetType::findFirstRasterProperty() const
+{
+  te::dt::Property* p = findFirstPropertyOfType(te::dt::RASTER_TYPE);
+
+  if(p != 0)
+    return static_cast<te::rst::RasterProperty*>(p);
+
+  return 0;
 }
 
 void te::da::DataSetType::setPrimaryKey(PrimaryKey* pk)
@@ -615,7 +614,7 @@ void te::da::DataSetType::replace(Property* p, Property* pp)
 
       for(std::size_t i = 0; i < size; ++i)
       {
-        DataSetType* dt = m_catalog->getDataSetType(i);
+        const DataSetTypePtr& dt = m_catalog->getDataSetType(i);
 
         std::size_t ssize = dt->getNumberOfForeignKeys();
 

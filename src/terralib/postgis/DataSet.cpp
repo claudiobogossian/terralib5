@@ -29,8 +29,10 @@
 #include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../datatype/Array.h"
 #include "../datatype/ByteArray.h"
 #include "../datatype/DateTime.h"
+#include "../datatype/SimpleData.h"
 #include "../geometry/Geometry.h"
 #include "../memory/DataSetItem.h"
 #include "Connection.h"
@@ -44,6 +46,9 @@
 
 // STL
 #include <memory>
+
+// Boost
+#include <boost/dynamic_bitset.hpp>
 
 // libpq
 #include <libpq-fe.h>
@@ -170,7 +175,7 @@ te::da::DataSetType* te::pgis::DataSet::getType()
   if(m_dt)
     return m_dt;
 
-  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId());
+  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId());
 
   if(m_name)
     m_dt->setName(*m_name);
@@ -189,7 +194,7 @@ const te::da::DataSetType* te::pgis::DataSet::getType() const
   if(m_dt)
     return m_dt;
 
-  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId());
+  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId());
 
   if(m_name)
     m_dt->setName(*m_name);
@@ -260,6 +265,30 @@ te::da::DataSet* te::pgis::DataSet::getParent() const
 
 te::gm::Envelope* te::pgis::DataSet::getExtent(const te::dt::Property* p)
 {
+  if(p == 0)
+    throw Exception(TR_PGIS("The property is missing!"));
+
+  if(p->getType() != te::dt::GEOMETRY_TYPE)
+    throw Exception(TR_PGIS("Not a geometry column to calculate the MBR!"));
+
+  if(m_sql == 0)
+  {
+    std::size_t ii = getType()->getPropertyPosition(p);
+
+    std::auto_ptr<te::gm::Envelope> mbr;
+
+    for(int i = 0; i < m_size; ++i)
+    {
+      std::auto_ptr<te::gm::Geometry> g(EWKBReader::read(PQgetvalue(m_result, i, ii)));
+
+      const te::gm::Envelope* box = g->getMBR();
+
+      mbr->Union(*box);
+    }
+
+    return mbr.release();
+  }
+
   const te::gm::GeometryProperty* gp = static_cast<const te::gm::GeometryProperty*>(p);
 
   std::string sql("SELECT ST_Extent(");
@@ -304,6 +333,9 @@ void te::pgis::DataSet::setFilter(te::dt::Property* p, const te::gm::Geometry* g
   if(p->getType() != te::dt::GEOMETRY_TYPE)
     throw Exception(TR_PGIS("The property is not geometric!"));
 
+  if(m_sql == 0)
+    throw Exception(TR_PGIS("Can not set filter over this type of query. Probably it is a result of a prepared query!"));
+
   te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
 
 // see if it is possible to retrieve the geometry property srid... let's try this otherwise we go ahead!
@@ -341,6 +373,9 @@ void te::pgis::DataSet::setFilter(te::dt::Property* p, const te::gm::Envelope* e
 
   if(p->getParent() == 0)
     throw Exception(TR_PGIS("The property is not associated to a dataset type!"));
+
+  if(m_sql == 0)
+    throw Exception(TR_PGIS("Can not set filter over this type of query. Probably it is a result of a prepared query!"));
 
   te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
 
@@ -902,15 +937,214 @@ void te::pgis::DataSet::setDateTime(int /*i*/, const te::dt::DateTime& /*value*/
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
-void te::pgis::DataSet::getArray(int i, std::vector<boost::int16_t>& a) const
+void te::pgis::DataSet::getArray(int i, std::vector<boost::int16_t>& values) const
 {
-  GetArray<short int, int>(m_i, i, m_result, a);
+  GetArray<short int, int>(m_i, i, m_result, values);
 }
 
-void te::pgis::DataSet::getArray(const std::string& name, std::vector<boost::int16_t>& a) const
+void te::pgis::DataSet::getArray(const std::string& name, std::vector<boost::int16_t>& values) const
 {
   int i = PQfnumber(m_result, name.c_str());
-  getArray(i, a);
+  getArray(i, values);
+}
+
+te::dt::Array* te::pgis::DataSet::getArray(int i) const
+{
+  char* value = PQgetvalue(m_result, m_i, i);
+
+  int ndim = *((int*)value);
+  value += sizeof(int);
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+  te::common::SwapBytes(ndim);
+#endif
+
+  int dataoffset = *((int*)value);
+  value += sizeof(int);
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+  te::common::SwapBytes(dataoffset);
+#endif
+
+  unsigned int elemtype = *((unsigned int*)value);
+  value += sizeof(unsigned int);
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+  te::common::SwapBytes(elemtype);
+#endif
+
+  int* dimensions = (int*)value;
+  value += ndim * sizeof(int);
+
+  int* lowerbounds = (int*)value;
+  value += ndim * sizeof(int);
+
+  uint32_t* null_bitmap = (unsigned int*)value;
+
+  boost::dynamic_bitset<> mask;
+
+  if(dataoffset != 0)
+  {
+    int nmasks = (dataoffset + 3) / 4;
+
+    mask.resize(nmasks * 8 * sizeof(uint32_t));
+
+    int pos = 0;
+
+    for(int i = 0; i != nmasks; ++i)
+    {
+      value += sizeof(uint32_t);
+
+      uint32_t umask = null_bitmap[i];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+      te::common::SwapBytes(umask);
+#endif
+
+      for(int j = 0; j != 32; ++j)
+      {
+        mask[pos] = ((umask >> j) & 1) == 0;
+
+        bool bittttt = mask[pos];
+
+        ++pos;
+      }
+    }
+  }
+
+  switch(elemtype)
+  {
+    case PG_TEXT_TYPE:
+    case PG_VARCHAR_TYPE:
+    case PG_NAME_TYPE:
+      {
+        std::auto_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::STRING_TYPE));
+
+        std::vector<std::size_t> pos(ndim, 0);
+
+        for(int d = 0; d != ndim; ++d)
+        {
+          int d_size = dimensions[d];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+          te::common::SwapBytes(d_size);
+#endif
+          int d_lower_boundary = lowerbounds[d];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+          te::common::SwapBytes(d_lower_boundary);
+#endif
+
+          for(i = 0; i != d_size; ++i)
+          {
+            if((dataoffset != 0) && (mask[i] == false))
+            {
+              arr->insert(0, pos);
+              continue;
+            }
+
+            pos[d] = i;
+
+            int text_size = *(int*)value;
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+            te::common::SwapBytes(text_size);
+#endif
+            value += sizeof(int);
+
+            arr->insert(new te::dt::String(value), pos);
+
+            value += text_size;
+          }
+        }
+
+        return arr.release();
+      }
+    break;
+
+    case PG_FLOAT8_TYPE:
+      {
+        std::auto_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::DOUBLE_TYPE));
+
+        std::vector<std::size_t> pos(ndim, 0);
+
+        for(int d = 0; d != ndim; ++d)
+        {
+          int d_size = dimensions[d];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+          te::common::SwapBytes(d_size);
+#endif
+          int d_lower_boundary = lowerbounds[d];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+          te::common::SwapBytes(d_lower_boundary);
+#endif
+
+          for(i = 0; i != d_size; ++i)
+          {
+            if((dataoffset != 0) && (mask[i] == false))
+            {
+              arr->insert(0, pos);
+              continue;
+            }
+
+            pos[d] = i;
+
+            double val = *(double*)value;
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+            te::common::SwapBytes(val);
+#endif
+
+            arr->insert(new te::dt::Double(val), pos);
+
+            value += sizeof(double);
+          }
+        }
+
+        return arr.release();
+      }
+    break;
+
+    default:
+      throw Exception(TR_PGIS("The array element type is not supported yet!"));
+  }
+
+  //    {
+  //      te::common::SwapBytes(ndim);
+  //      te::common::SwapBytes(dataoffset);
+  //      te::common::SwapBytes(elemtype);
+  //      te::common::SwapBytes(dimension);
+  //      te::common::SwapBytes(lowerbnds);
+
+  //      a.reserve(dimension);
+
+  //      for(int k = 0; k < dimension; ++k)
+  //      {
+  //        T v = *((T*)value);
+  //        te::common::SwapBytes(v);
+  //        a.push_back(v);
+  //        value += sizeof(ALIGN);
+  //      }
+  //    }
+  //    else
+  //    {
+  //      a.reserve(dimension);
+
+  //      for(int k = 0; k < dimension; ++k)
+  //      {
+  //        T v = *((T*)value);
+  //        a.push_back(v);
+  //        value += sizeof(ALIGN);
+  //      }
+  //    }
+}
+
+te::dt::Array* te::pgis::DataSet::getArray(const std::string& name) const
+{
+  int i = PQfnumber(m_result, name.c_str());
+  return getArray(i);
 }
 
 const unsigned char* te::pgis::DataSet::getWKB(int i) const

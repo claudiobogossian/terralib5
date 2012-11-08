@@ -76,7 +76,7 @@ te::rp::ClassifierDummyStrategy::~ClassifierDummyStrategy()
 {
 }
 
-bool te::rp::ClassifierDummyStrategy::initialize(te::rp::ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception)
+bool te::rp::ClassifierDummyStrategy::initialize(te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
   return true;
 }

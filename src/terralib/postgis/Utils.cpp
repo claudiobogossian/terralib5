@@ -24,8 +24,11 @@
 */
 
 // TerraLib
+#include "../common/HexUtils.h"
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
+#include "../datatype/ByteArray.h"
 #include "EWKBWriter.h"
 #include "Exception.h"
 #include "Globals.h"
@@ -316,7 +319,7 @@ void te::pgis::ScapeString(PGconn* conn, const std::string& s, std::string& outp
   delete [] to;
 }
 
-te::da::DataSetType* te::pgis::Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid)
+te::da::DataSetType* te::pgis::Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid, unsigned int pgisRasterTypeOid)
 {
   int ncols = PQnfields(result);
   te::da::DataSetType* dt = new te::da::DataSetType("");
@@ -324,7 +327,7 @@ te::da::DataSetType* te::pgis::Convert2TerraLib(PGresult* result, unsigned int p
   for(int i = 0; i < ncols; ++i)
   {
     te::dt::Property* p = Convert2TerraLib(i, PQfname(result, i), PQftype(result, i),
-                                               false, 0, false, 0, -1, pgisGeomTypeOid);
+                                               false, 0, false, 0, -1, pgisGeomTypeOid, pgisRasterTypeOid);
 
     unsigned int pid = PQftablecol(result, i);
 
@@ -341,59 +344,59 @@ te::da::DataSetType* te::pgis::Convert2TerraLib(PGresult* result, unsigned int p
 
 std::string te::pgis::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = dsInfo.find("host");
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PG_HOST");
   std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
   std::string connInfo;
 
   if(it != it_end)
     connInfo += " host = " + it->second;
 
-  it = dsInfo.find("hostaddr");
+  it = dsInfo.find("PG_HOST_ADDR");
 
   if(it != it_end)
     connInfo += " hostaddr = " + it->second;
 
-  it = dsInfo.find("port");
+  it = dsInfo.find("PG_PORT");
 
   if(it != it_end)
     connInfo += " port = " + it->second;
 
-  it = dsInfo.find("dbname");
+  it = dsInfo.find("PG_DB_NAME");
 
   if(it != it_end)
     connInfo += " dbname = " + it->second;
 
-  it = dsInfo.find("user");
+  it = dsInfo.find("PG_USER");
 
   if(it != it_end)
     connInfo += " user = " + it->second;
 
-  it = dsInfo.find("password");
+  it = dsInfo.find("PG_PASSWORD");
 
   if((it != it_end) && (!it->second.empty()))
     connInfo += " password = " +  it->second;
 
-  it = dsInfo.find("connect_timeout");
+  it = dsInfo.find("PG_CONNECT_TIMEOUT");
 
   if(it != it_end)
     connInfo += " connect_timeout = " + it->second;
 
-  it = dsInfo.find("options");
+  it = dsInfo.find("PG_OPTIONS");
 
   if(it != it_end)
     connInfo += " options = " + it->second;
 
-  it = dsInfo.find("sslmode");
+  it = dsInfo.find("PG_SSL_MODE");
 
   if(it != it_end)
     connInfo += " sslmode = " + it->second;
 
-  it = dsInfo.find("krbsrvname");
+  it = dsInfo.find("PG_KRBSRVNAME");
 
   if(it != it_end)
     connInfo += " krbsrvname = " + it->second;
 
-  it = dsInfo.find("gsslib");
+  it = dsInfo.find("PG_GSSLIB");
 
   if(it != it_end)
     connInfo += " gsslib = " + it->second;
@@ -494,5 +497,177 @@ std::string te::pgis::GetBindableUpdateSQL(const std::vector<te::dt::Property*>&
   }
 
   return sql;
+}
+
+std::string te::pgis::GetSQLValues(const te::da::DataSetType* dt, te::da::DataSet* d, PGconn *conn)
+{
+  std::string values("(");
+
+  const std::size_t np = dt->size();
+
+  for(std::size_t i = 0; i < np; ++i)
+  {
+    if(i != 0)
+      values += ",";
+
+    values += GetSQLValue(dt->getProperty(i), i, d, conn);
+  }
+
+  values += ")";
+
+  return values;
+}
+
+std::string te::pgis::GetSQLValue(const te::dt::Property* p, std::size_t propertyPos, te::da::DataSet* d, PGconn *conn)
+{
+  std::string value;
+
+  switch(p->getType())
+  {
+    case te::dt::CHAR_TYPE :
+      value += boost::lexical_cast<std::string>(static_cast<boost::int16_t>(d->getChar(propertyPos)));
+    break;
+
+    case te::dt::UCHAR_TYPE :
+      value += boost::lexical_cast<std::string>(static_cast<boost::uint16_t>(d->getUChar(propertyPos)));
+    break;
+
+    case te::dt::INT16_TYPE :
+      value += boost::lexical_cast<std::string>(d->getInt16(propertyPos));
+    break;
+
+    case te::dt::INT32_TYPE :
+      value += boost::lexical_cast<std::string>(d->getInt32(propertyPos));
+    break;
+
+    case te::dt::INT64_TYPE :
+      value += boost::lexical_cast<std::string>(d->getInt64(propertyPos));
+    break;
+
+    case te::dt::BOOLEAN_TYPE :
+      value += d->getBool(propertyPos) ? "1" : "0";
+    break;
+
+    case te::dt::FLOAT_TYPE :
+      value += boost::lexical_cast<std::string>(d->getFloat(propertyPos));
+    break;
+
+    case te::dt::DOUBLE_TYPE :
+      value += boost::lexical_cast<std::string>(d->getDouble(propertyPos));
+    break;
+
+    case te::dt::NUMERIC_TYPE :
+      value += d->getNumeric(propertyPos);
+    break;
+
+    case te::dt::STRING_TYPE :
+      {
+        std::string dvalue = d->getString(propertyPos);
+
+        char* valueto = new char[dvalue.length() * 2  + 1];
+
+        int pgerror = 0;
+
+        PQescapeStringConn(conn, valueto, dvalue.c_str(), dvalue.length(), &pgerror);
+
+        if(pgerror != 0)
+        {
+          delete [] valueto;
+          throw Exception(TR_PGIS("Could not escape string!"));
+        }
+
+        value += "'";
+        value += valueto;
+        value += "'";
+
+        delete [] valueto;
+      }
+    break;
+
+    case te::dt::BYTE_ARRAY_TYPE :
+      {
+        //std::auto_ptr<te::dt::ByteArray> ba(d->getByteArray(propertyPos));
+        //char* hexba = new char[ba->bytesUsed() * 2  + 1];
+        //te::common::Binary2Hex(ba->getData(), ba->bytesUsed(), hexba);
+
+        //value += "E'\\\\x";
+        //value += hexba;
+        //value += "'";
+
+        //delete [] hexba;
+
+        std::auto_ptr<te::dt::ByteArray> ba(d->getByteArray(propertyPos));
+
+        std::size_t tolen;
+
+        unsigned char* pgba = PQescapeByteaConn(conn, (const unsigned char*)(ba->getData()), ba->bytesUsed(), &tolen);
+
+        value += "'";
+        value += (char*)pgba;
+        value += "'";
+
+        PQfreemem(pgba);
+      }
+    break;
+
+    case te::dt::GEOMETRY_TYPE :
+      {
+        std::auto_ptr<te::gm::Geometry> geom(d->getGeometry(propertyPos));
+
+// get ewkb
+        std::size_t ewkbsize = geom->getWkbSize() + 4;
+
+        char* ewkb = new char[ewkbsize];
+
+        EWKBWriter::write(geom.get(), ewkb);
+
+        char* hewkb = new char[ewkbsize * 2  + 1];
+
+        te::common::Binary2Hex(ewkb, ewkbsize, hewkb);
+
+        //value += "GeomFromEWKB(E'\\\\x";
+        value += "'";
+        value += hewkb;
+        value += "'";
+        //value += "')";
+
+        delete [] ewkb;
+        delete [] hewkb;
+      }
+    break;
+
+    case te::dt::DATETIME_TYPE :
+      {
+        std::auto_ptr<te::dt::DateTime> dt(d->getDateTime(propertyPos));
+        value += "'";
+        value += dt->toString();
+        value += "'";
+      }
+    break;
+
+    default :
+      throw Exception(TR_PGIS("The TerraLib data type is not supported by the PostgreSQL driver!"));
+  }
+
+  return value;
+}
+
+std::string te::pgis::GetLoadDataRow(const te::da::DataSetType* dt, te::da::DataSet* d, PGconn *conn)
+{
+  std::string values;
+
+  const std::size_t np = dt->size();
+
+  for(std::size_t i = 0; i < np; ++i)
+  {
+    if(i != 0)
+      values += ",";
+
+    values += GetSQLValue(dt->getProperty(i), i, d, conn);
+  }
+
+  values += "\n";
+
+  return values;
 }
 

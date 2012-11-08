@@ -19,7 +19,7 @@ void PersistenceExample()
     std::cout << std::endl << "A data set in memory has been created! " << std::endl;
     
     //It creates the data set 'ds' in a data source
-    std::string dsInfo("DataSource=POSTGIS&host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=5");  
+    std::string dsInfo("DataSource=POSTGIS&PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=5");
     CopyingDataSetToDataSource(ds, "POSTGIS", dsInfo);
   
     //============= Adds a new property and its values     

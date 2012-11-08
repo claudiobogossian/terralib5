@@ -72,7 +72,11 @@ namespace te
        
         void create(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
 
+        void clone(const std::string& datasetName, const std::string& newDatasetName, const std::map<std::string, std::string>& options);
+
         void drop(te::da::DataSetType* dt);
+
+        void drop(const std::string& datasetName);
 
         void rename(te::da::DataSetType* dt, const std::string& newName);
 

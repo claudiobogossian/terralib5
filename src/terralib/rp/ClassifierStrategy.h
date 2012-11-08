@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../raster/Raster.h"
-#include "ClassifierStrategyParameters.h"
+#include "StrategyParameters.h"
 #include "Config.h"
 #include "Exception.h"
 
@@ -57,7 +57,7 @@ namespace te
 
           \return true if OK, false on errors.
         */
-        virtual bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception) = 0;
+        virtual bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception) = 0;
 
         /*!
           \brief Executes the segmentation strategy.

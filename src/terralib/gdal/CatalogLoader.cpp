@@ -75,12 +75,17 @@ te::da::DataSetType* te::gdal::CatalogLoader::getDataSetType(const std::string& 
 {
   te::da::DataSourceCatalog* catalog = initCatalog();
 
-  te::da::DataSetType* dt = catalog->getDataSetType(datasetName);
+  const te::da::DataSetTypePtr& dt = catalog->getDataSetType(datasetName);
 
-  if (dt == 0) 
+  if(dt.get() == 0)
     throw Exception((boost::format(TR_GDAL("Dataset %1% doesn't exist!")) % datasetName).str()); 
 
   return static_cast<te::da::DataSetType*>(dt->clone());
+}
+
+te::dt::Property* te::gdal::CatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
 te::gm::Envelope* te::gdal::CatalogLoader::getExtent(const te::gm::GeometryProperty* /*gp*/)
@@ -128,7 +133,7 @@ void te::gdal::CatalogLoader::loadCatalog(const bool /*full*/)
 
   for(std::size_t i = 0; i < dts.size(); ++i)
   {
-    te::da::DataSetType* dt = dts[i];
+    te::da::DataSetTypePtr dt(dts[i]);
     dt->setId(static_cast<unsigned int>(i));
     ds->getCatalog()->add(dt);
   }  

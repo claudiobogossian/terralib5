@@ -89,8 +89,8 @@ te::pgis::Connection::Connection(ConnectionPool* pool, const std::string& connin
     m_inuse(inuse),
     m_lastuse(boost::posix_time::second_clock::local_time())
 {
-  if(conninfo.empty())
-    return;
+  //if(conninfo.empty())
+  //  return;
 
 // it tries to create the connection object  
   m_pgconn = PQconnectdb(conninfo.c_str());

@@ -30,7 +30,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/WFSConnectorDialogForm.h"
+#include "ui_WFSConnectorDialogForm.h"
 #include "WFSConnectorDialog.h"
 
 // Qt

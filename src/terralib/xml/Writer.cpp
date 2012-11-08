@@ -26,8 +26,9 @@
 // Boost
 #include <boost/lexical_cast.hpp>
 
-te::xml::Writer::Writer()
-  : m_isOpened(false)
+te::xml::Writer::Writer(std::ostream& ostr)
+  : m_ostr(ostr),
+    m_isOpened(false)
 {
 }
 
@@ -35,96 +36,96 @@ te::xml::Writer::~Writer()
 {
 }
 
-void te::xml::Writer::writeStartDocument(std::ostream& ostr, const std::string& encoding, const std::string& standalone)
+void te::xml::Writer::writeStartDocument(const std::string& encoding, const std::string& standalone)
 {
-  ostr << "<?xml version=\"1.0\" encoding=\"" << encoding << "\" standalone=\"" << standalone << "\"?>";
+  m_ostr << "<?xml version=\"1.0\" encoding=\"" << encoding << "\" standalone=\"" << standalone << "\"?>";
 }
 
-void te::xml::Writer::writeStartElement(std::ostream& ostr, const std::string& qName)
+void te::xml::Writer::writeStartElement(const std::string& qName)
 {
   if(m_isOpened)
-    ostr << ">";
+    m_ostr << ">";
 
-  ostr << "<" << qName;
+  m_ostr << "<" << qName;
 
   m_isOpened = true;
 }
 
-void te::xml::Writer::writeElement(std::ostream& ostr, const std::string& qName, const std::string& value)
+void te::xml::Writer::writeElement(const std::string& qName, const std::string& value)
 {
   if(m_isOpened)
   {
-    ostr << ">";
+    m_ostr << ">";
     m_isOpened = false;
   }
 
-  ostr << "<" << qName << ">" << value << "</" << qName << ">";
+  m_ostr << "<" << qName << ">" << value << "</" << qName << ">";
 }
 
-void te::xml::Writer::writeElement(std::ostream& ostr, const std::string& qName, const double& value)
+void te::xml::Writer::writeElement(const std::string& qName, const double& value)
 {
-  writeElement(ostr, qName, boost::lexical_cast<std::string>(value));
+  writeElement(qName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeElement(std::ostream& ostr, const std::string& qName, boost::int32_t value)
+void te::xml::Writer::writeElement(const std::string& qName, boost::int32_t value)
 {
-  writeElement(ostr, qName, boost::lexical_cast<std::string>(value));
+  writeElement(qName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeElement(std::ostream& ostr, const std::string& qName, boost::uint32_t value)
+void te::xml::Writer::writeElement(const std::string& qName, boost::uint32_t value)
 {
-  writeElement(ostr, qName, boost::lexical_cast<std::string>(value));
+  writeElement(qName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeElement(std::ostream& ostr, const std::string& qName, boost::int64_t value)
+void te::xml::Writer::writeElement(const std::string& qName, boost::int64_t value)
 {
-  writeElement(ostr, qName, boost::lexical_cast<std::string>(value));
+  writeElement(qName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeElement(std::ostream& ostr, const std::string& qName, boost::uint64_t value)
+void te::xml::Writer::writeElement(const std::string& qName, boost::uint64_t value)
 {
-  writeElement(ostr, qName, boost::lexical_cast<std::string>(value));
+  writeElement(qName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeAttribute(std::ostream& ostr, const std::string& attName, const std::string& value)
+void te::xml::Writer::writeAttribute(const std::string& attName, const std::string& value)
 {
-  ostr << " " << attName << "=\"" << value << "\"";
+  m_ostr << " " << attName << "=\"" << value << "\"";
 }
 
-void te::xml::Writer::writeAttribute(std::ostream& ostr, const std::string& attName, const double& value)
+void te::xml::Writer::writeAttribute(const std::string& attName, const double& value)
 {
-  writeAttribute(ostr, attName, boost::lexical_cast<std::string>(value));
+  writeAttribute(attName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeAttribute(std::ostream& ostr, const std::string& attName, boost::int32_t value)
+void te::xml::Writer::writeAttribute(const std::string& attName, boost::int32_t value)
 {
-  writeAttribute(ostr, attName, boost::lexical_cast<std::string>(value));
+  writeAttribute(attName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeAttribute(std::ostream& ostr, const std::string& attName, boost::uint32_t value)
+void te::xml::Writer::writeAttribute(const std::string& attName, boost::uint32_t value)
 {
-  writeAttribute(ostr, attName, boost::lexical_cast<std::string>(value));
+  writeAttribute(attName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeAttribute(std::ostream& ostr, const std::string& attName, boost::int64_t value)
+void te::xml::Writer::writeAttribute(const std::string& attName, boost::int64_t value)
 {
-  writeAttribute(ostr, attName, boost::lexical_cast<std::string>(value));
+  writeAttribute(attName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeAttribute(std::ostream& ostr, const std::string& attName, boost::uint64_t value)
+void te::xml::Writer::writeAttribute(const std::string& attName, boost::uint64_t value)
 {
-  writeAttribute(ostr, attName, boost::lexical_cast<std::string>(value));
+  writeAttribute(attName, boost::lexical_cast<std::string>(value));
 }
 
-void te::xml::Writer::writeEndElement(std::ostream& ostr, const std::string& qName)
+void te::xml::Writer::writeEndElement(const std::string& qName)
 {
   if(m_isOpened)
   {
-    ostr << ">";
+    m_ostr << ">";
     m_isOpened = false;
   }
 
-  ostr << "</" << qName << ">";
+  m_ostr << "</" << qName << ">";
 }
 
 //void te::xml::Writer::writeEndDocument(std::ostream& ostr)

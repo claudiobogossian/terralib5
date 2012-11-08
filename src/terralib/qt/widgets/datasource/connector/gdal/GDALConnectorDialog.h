@@ -27,9 +27,8 @@
 #define __TERRALIB_QT_WIDGETS_CONNECTOR_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
 
 // TerraLib
-// #include "../../../../../dataaccess/Definitions.h"
+#include "../../../../../dataaccess/Definitions.h"
 #include "../../core/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSource.h"
 
 // STL
 #include <memory>

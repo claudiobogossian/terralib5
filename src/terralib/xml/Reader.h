@@ -185,6 +185,15 @@ namespace te
 
           \return The element data value in the case of VALUE node.
 
+          \note Just call this method if you know that the element value can be converted to a boolean.
+        */
+        virtual bool getElementValueAsBoolean() const;
+
+        /*!
+          \brief It returns the element data value in the case of VALUE node.
+
+          \return The element data value in the case of VALUE node.
+
           \note Just call this method if you know that the element value can be converted to a bool.
         */
         //virtual bool getElementValueAsBool() const;
@@ -318,6 +327,10 @@ namespace te
           \return The attribute position.
         */
         virtual std::size_t getAttrPosition(const std::string& name) const = 0;
+
+        virtual std::size_t getNumberOfNamespaces() const = 0;
+
+        virtual void getNamespace(std::size_t i, std::pair<std::string, std::string>& ns) const = 0;
 
         /*!
           \brief It sets the maximal allowed buffer size used for parsing.

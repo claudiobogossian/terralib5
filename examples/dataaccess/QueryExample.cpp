@@ -14,11 +14,11 @@ void QueryExample()
 #if TE_EXAMPLE_USE_PGIS
 // let's give the minimal server connection information needed to connect to the database server
   std::map<std::string, std::string> connInfo;
-  connInfo["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  connInfo["user"] = "postgres";
-  connInfo["password"] = "sitim110";
-  connInfo["dbname"] = "terralib4";
-  connInfo["connect_timeout"] = "4"; 
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_DB_NAME"] = "terralib4";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
   try
   {

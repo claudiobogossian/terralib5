@@ -62,6 +62,8 @@ namespace te
 
         te::da::DataSetType* getDataSetType(const std::string& datasetName, const bool full = false);
 
+        te::dt::Property* getProperty(const std::string& datasetName, const std::string& propertyName);
+
         void getPrimaryKey(te::da::DataSetType* dt);
 
         void getUniqueKeys(te::da::DataSetType* dt);

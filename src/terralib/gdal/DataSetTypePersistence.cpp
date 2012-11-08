@@ -94,7 +94,19 @@ void te::gdal::DataSetTypePersistence::create(te::da::DataSetType* dt, const std
 
   dt->setId(m_t->getDataSource()->getCatalog()->getNumberOfDataSets());
 
-  m_t->getDataSource()->getCatalog()->add(dt);
+  te::da::DataSetTypePtr ndt(static_cast<te::da::DataSetType*>(dt->clone()));
+
+  m_t->getDataSource()->getCatalog()->add(ndt);
+}
+
+void te::gdal::DataSetTypePersistence::clone(const std::string& /*datasetName*/, const std::string& /*newDatasetName*/, const std::map<std::string, std::string>& /*options*/)
+{
+  throw te::common::Exception(TR_GDAL("Not implemented yet!"));
+}
+
+void te::gdal::DataSetTypePersistence::drop(const std::string& /*datasetName*/)
+{
+  throw te::common::Exception(TR_GDAL("Not implemented yet!"));
 }
 
 void te::gdal::DataSetTypePersistence::drop(te::dt::Property* p)

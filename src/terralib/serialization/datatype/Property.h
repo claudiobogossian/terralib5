@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,21 +18,35 @@
  */
 
 /*!
-  \file terralib/rp/ClassifierStrategyParameters.cpp
-
-  \brief Raster classifier strategy parameters base class.
+  \file terralib/serialization/datatype/Property.h
+ 
+  \brief Support for Property serialization.
 */
 
-#include "ClassifierStrategyParameters.h"
+#ifndef __TERRALIB_SERIALIZATION_DATATYPE_INTERNAL_PROPERTY_H
+#define __TERRALIB_SERIALIZATION_DATATYPE_INTERNAL_PROPERTY_H
 
-te::rp::ClassifierStrategyParameters::ClassifierStrategyParameters()
-{
-}
+// TerraLib
+#include "../Config.h"
 
-te::rp::ClassifierStrategyParameters::~ClassifierStrategyParameters()
+namespace te
 {
-}
+  namespace dt { class Property; }
 
-te::rp::ClassifierStrategyParameters::ClassifierStrategyParameters(const te::rp::ClassifierStrategyParameters&)
-{
-}
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
+
+  namespace serialize
+  {
+    TESERIALIZATIONEXPORT te::dt::Property* ReadProperty(te::xml::Reader& reader);
+
+    TESERIALIZATIONEXPORT void Save(const te::dt::Property* p, te::xml::Writer& writer);
+
+  } // end namespace serialize
+}   // end namespace te
+
+#endif  // __TERRALIB_SERIALIZATION_DATATYPE_INTERNAL_PROPERTY_H
+

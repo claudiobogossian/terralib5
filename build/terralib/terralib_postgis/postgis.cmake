@@ -23,6 +23,7 @@ list (APPEND DEP_LIBS
 		terralib_geometry
 		terralib_memory
 		terralib_plugin
+    terralib_raster
 		terralib_srs
     )
     

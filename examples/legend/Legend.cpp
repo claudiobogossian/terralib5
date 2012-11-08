@@ -40,14 +40,14 @@ Legend::Legend(QWidget* parent)
 {
   // Get a connection to a data source and a data source name
   std::map<std::string, std::string> connInfo;
-  connInfo["host"] = "atlas.dpi.inpe.br";
-  //connInfo["host"] = "localhost";
-  connInfo["user"] = "postgres";
-  connInfo["password"] = "sitim110";
-  connInfo["dbname"] = "terralib4";
-  connInfo["connect_timeout"] = "4"; 
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br";
+  //connInfo["PG_HOST"] = "localhost";
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_DB_NAME"] = "terralib4";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
-  m_ds = te::da::DataSourceFactory::make("PostGIS");
+  m_ds = te::da::DataSourceFactory::make("POSTGIS");
   m_ds->open(connInfo);
 
   // Get a data source catalog loader to access the datasource catalog

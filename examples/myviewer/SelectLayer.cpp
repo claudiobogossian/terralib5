@@ -111,7 +111,7 @@ void SelectLayer::populeWidgets(te::da::DataSource* ds)
 
 //    QString s = ds->getConnectionStr().c_str();
 //    m_connectionStringLineEdit->setText(s);
-    m_connectionStringLineEdit->setText("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
+    m_connectionStringLineEdit->setText("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
 
     te::da::DataSourceCatalog* catalog = ds->getCatalog();
     te::da::DataSourceTransactor* transactor = ds->getTransactor();

@@ -30,7 +30,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/WCSConnectorDialogForm.h"
+#include "ui_WCSConnectorDialogForm.h"
 #include "WCSConnectorDialog.h"
 
 // Qt

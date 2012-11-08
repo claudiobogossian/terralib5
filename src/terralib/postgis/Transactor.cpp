@@ -222,6 +222,11 @@ void te::pgis::Transactor::cancel()
   return;
 }
 
+boost::int64_t te::pgis::Transactor::getLastInsertId()
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
+}
+
 te::da::DataSource* te::pgis::Transactor::getDataSource() const
 {
   return m_ds;
@@ -240,6 +245,20 @@ te::pgis::PreparedQuery* te::pgis::Transactor::getPGPrepared(const std::string& 
 unsigned int te::pgis::Transactor::getGeomTypeId()
 {
   std::string sql("SELECT oid FROM pg_type WHERE typname = 'geometry'");
+
+  std::auto_ptr<te::da::DataSet> result(query(sql));
+
+  if(result->moveNext() == false)
+    return 0;
+
+  unsigned int id = result->getInt32(0);
+
+  return id;
+}
+
+unsigned int te::pgis::Transactor::getRasterTypeId()
+{
+  std::string sql("SELECT oid FROM pg_type WHERE typname = 'raster'");
 
   std::auto_ptr<te::da::DataSet> result(query(sql));
 

@@ -238,6 +238,11 @@ void te::ado::DataSourceTransactor::cancel()
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
+boost::int64_t te::ado::DataSourceTransactor::getLastInsertId()
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 te::da::DataSource* te::ado::DataSourceTransactor::getDataSource() const
 {
   return m_ds;

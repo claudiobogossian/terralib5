@@ -31,7 +31,7 @@ void DrawPNG()
     te::da::DataSourceCatalogLoader* cl = t->getCatalogLoader();
     cl->loadCatalog();
 
-    te::da::DataSetType* dt = dsOGR->getCatalog()->getDataSetType("munic_2001");
+    te::da::DataSetTypePtr dt(dsOGR->getCatalog()->getDataSetType("munic_2001"));
 
     te::gm::GeometryProperty* gcol = dt->getDefaultGeomProperty(); 
     const te::gm::Envelope* extent = cl->getExtent(gcol);

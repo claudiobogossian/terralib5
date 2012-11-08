@@ -57,7 +57,7 @@ te::rp::Classifier::InputParameters::~InputParameters()
   reset();
 }
 
-void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const ClassifierStrategyParameters& p)
+void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const StrategyParameters& p)
 {
   if(m_classifierStrategyParamsPtr)
   {
@@ -65,10 +65,10 @@ void te::rp::Classifier::InputParameters::setClassifierStrategyParams(const Clas
     m_classifierStrategyParamsPtr = 0;
   }
 
-  m_classifierStrategyParamsPtr = (ClassifierStrategyParameters*)p.clone();
+  m_classifierStrategyParamsPtr = (StrategyParameters*)p.clone();
 }
 
-te::rp::ClassifierStrategyParameters const* te::rp::Classifier::InputParameters::getClassifierStrategyParams() const
+te::rp::StrategyParameters const* te::rp::Classifier::InputParameters::getClassifierStrategyParams() const
 {
   return m_classifierStrategyParamsPtr;
 }

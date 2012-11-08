@@ -511,12 +511,12 @@ void te::mem::DataSetItem::setDateTime(const std::string& name, const te::dt::Da
   m_data.replace(i, value.clone());
 }
 
-void te::mem::DataSetItem::getArray(int /*i*/, std::vector<boost::int16_t>& /*a*/) const
+void te::mem::DataSetItem::getArray(int /*i*/, std::vector<boost::int16_t>& /*values*/) const
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSetItem::getArray(const std::string& /*name*/, std::vector<boost::int16_t>& /*a*/) const
+void te::mem::DataSetItem::getArray(const std::string& /*name*/, std::vector<boost::int16_t>& /*values*/) const
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }

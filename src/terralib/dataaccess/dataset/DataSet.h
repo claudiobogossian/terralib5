@@ -42,7 +42,7 @@
 #include <boost/shared_ptr.hpp>
 
 // Forward declarations
-namespace te { namespace dt { class ByteArray; class DateTime; class Property; } }
+namespace te { namespace dt { class Array; class ByteArray; class DateTime; class Property; } }
 namespace te { namespace gm { class Envelope;  class Geometry; } }
 namespace te { namespace rst { class Raster; } }
 
@@ -1004,6 +1004,26 @@ namespace te
           \todo We need a multi-dimensional array class
         */
         virtual void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
+
+        /*!
+          \brief Method for retrieving an array.
+
+          \param i The attribute index.
+
+          \return An array. The caller will take its ownership.
+        */
+        virtual te::dt::Array* getArray(int /*i*/) const { return 0; }
+
+        /*!
+          \brief Method for retrieving an array.
+
+          \param name The attribute name.
+
+          \return An array. The caller will take its ownership.
+
+          \return An array. The caller will take its ownership.
+        */
+        virtual te::dt::Array* getArray(const std::string& name) const;
 
         /*!
           \brief It returns the geometric attribute value in a serialized form.

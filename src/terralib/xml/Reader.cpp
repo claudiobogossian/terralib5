@@ -39,6 +39,13 @@ double te::xml::Reader::getElementValueAsDouble() const
   return boost::lexical_cast<double>(getElementValue());
 }
 
+bool te::xml::Reader::getElementValueAsBoolean() const
+{
+  std::string value = getElementValue();
+
+  return (value == "true") || (value == "TRUE"); 
+}
+
 boost::int32_t te::xml::Reader::getAttrAsInt32(const std::string& name) const
 {
   return boost::lexical_cast<boost::int32_t>(getAttr(name));
