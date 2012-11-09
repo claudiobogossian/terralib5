@@ -43,45 +43,28 @@ void MixtureModel()
       mmInputParameters.setMixtureModelStrategyParams(lmmParameters);
 
 // defining endmembers
-      mmInputParameters.m_components["clouds"].push_back(1.0);
-      mmInputParameters.m_components["clouds"].push_back(0.725);
-      mmInputParameters.m_components["clouds"].push_back(1.0);
+      mmInputParameters.m_components["clouds"].push_back(255.0);
+      mmInputParameters.m_components["clouds"].push_back(184.875);
+      mmInputParameters.m_components["clouds"].push_back(255.0);
 
-      mmInputParameters.m_components["vegetation"].push_back(0.392);
-      mmInputParameters.m_components["vegetation"].push_back(0.251);
-      mmInputParameters.m_components["vegetation"].push_back(0.604);
+      mmInputParameters.m_components["shadow"].push_back(42.075);
+      mmInputParameters.m_components["shadow"].push_back(24.99);
+      mmInputParameters.m_components["shadow"].push_back(49.98);
 
-      mmInputParameters.m_components["shadow"].push_back(0.165);
-      mmInputParameters.m_components["shadow"].push_back(0.098);
-      mmInputParameters.m_components["shadow"].push_back(0.196);
+      mmInputParameters.m_components["vegetation"].push_back(99.96);
+      mmInputParameters.m_components["vegetation"].push_back(64.005);
+      mmInputParameters.m_components["vegetation"].push_back(154.02);
 
-
-/*
-  componentList.insertComponent(0, "nuvem");
-  componentList.insertPixel(0, 0, 1.000);
-  componentList.insertPixel(0, 1, 0.725);
-  componentList.insertPixel(0, 2, 1.000);
-
-  componentList.insertComponent(1, "vegetacao");
-  componentList.insertPixel(1, 0, 0.392);
-  componentList.insertPixel(1, 1, 0.251);
-  componentList.insertPixel(1, 2, 0.604);
-
-  componentList.insertComponent(2, "sombra");
-  componentList.insertPixel(2, 0, 0.165);
-  componentList.insertPixel(2, 1, 0.098);
-  componentList.insertPixel(2, 2, 0.196);
-
-  TePDIMixModelSpectralBandList spectralBandList;
-  spectralBandList.insertSpectralBand(TePDIMixModelSpectralBand(250, 2, 0.450000, 0.520000, "CBERS2_CCD_BLUE"));
-  spectralBandList.insertSpectralBand(TePDIMixModelSpectralBand(250, 3, 0.520000, 0.590000, "CBERS2_CCD_GREEN"));
-  spectralBandList.insertSpectralBand(TePDIMixModelSpectralBand(250, 4, 0.630000, 0.690000, "CBERS2_CCD_RED"));
-
-*/
+// defining sensor information
+      mmInputParameters.m_inputSensorBands.push_back("CBERS2_CCD_3_RED");
+      mmInputParameters.m_inputSensorBands.push_back("CBERS2_CCD_4_NIR");
+      mmInputParameters.m_inputSensorBands.push_back("CBERS2_CCD_2_GREEN");
 
 // defining output parameters
       mmOutputParameters.m_rInfo = orinfo;
       mmOutputParameters.m_rType = "GDAL";
+      mmOutputParameters.m_normalizeOutput = true;
+      mmOutputParameters.m_createErrorRaster = true;
 
 // execute the algorithm
       te::rp::MixtureModel mmInstance;
@@ -94,6 +77,9 @@ void MixtureModel()
       if (!executeok)
         std::cout << "Problems in linear mixture model." << std::endl;
 
+      // te::rst::Raster* rout = te::rst::RasterFactory::open(orinfo);
+      std::cout << mmOutputParameters.m_outputRasterPtr->toString() << std::endl;
+      // delete rout;
     }
 
     // clean up
