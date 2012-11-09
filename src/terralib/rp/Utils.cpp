@@ -106,9 +106,9 @@ bool te::rp::NormalizeRaster(te::rst::Raster& inraster, double nmin, double nmax
 // computing old maximuns and minimums for each band
   std::vector<double> omins;
   std::vector<double> omaxs;
-  std::vector<unsigned int> bands;
+  std::vector<std::size_t> bands;
 
-  for (unsigned int b = 0; b < inraster.getNumberOfBands(); b++)
+  for (std::size_t b = 0; b < inraster.getNumberOfBands(); b++)
   {
     omins.push_back(inraster.getBand(b)->getMinValue().real());
     omaxs.push_back(inraster.getBand(b)->getMaxValue().real());
