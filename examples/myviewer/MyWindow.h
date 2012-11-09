@@ -63,7 +63,7 @@ protected slots:
   void clearTooltipSlot(MyGrid*);
   void removePlotSlot(QwtPlot*);
   void keepOnMemorySlot();
-  void getFreeMemorySlot();
+  void getAvailableMemorySlot();
   void selectionChangedSlot(te::map::DataGridOperation*);
   //void changeDefaultColorSlot();
   void changePointedColorSlot();
@@ -116,6 +116,7 @@ private:
   QAction* m_changePolygonStyleAction;
   QAction* m_editLegendAction;
   QAction* m_removeLegendAction;
+  QAction* m_getAvailableMemoryAction;
 
   QMenu* m_treeMenu;
   QMenu* m_changeStatusColorMenu;

@@ -1704,7 +1704,7 @@ void MyWindow::addLayerSlot()
   if(ds && (lastConnectionStringMap.find(ds->getType().c_str()) != lastConnectionStringMap.end()))
     lastConnectionString = lastConnectionStringMap[ds->getType().c_str()];
 
-  SelectLayer* sel = new SelectLayer(ds, this, lastConnectionString);
+  SelectLayer* sel = new SelectLayer(ds, lastConnectionString, this);
   if(sel->exec() == QDialog::Rejected)
     return;
 
@@ -2207,9 +2207,11 @@ void MyWindow::removeLegendSlot()
 
 void MyWindow::getAvailableMemorySlot()
 {
+  QString msg, msgg;
+
+#ifdef WIN32
   unsigned long long size = getAvailableMemory();
   size /= (1<<10);
-  QString msg, msgg;
   msg.setNum((qulonglong)size);
   msg.insert(0, "Available Memory Size: ");
   msg += " KBytes";
@@ -2229,6 +2231,9 @@ void MyWindow::getAvailableMemorySlot()
     msg += msgg + " KBytes";
   }
   lastMemoryMeasured = size;
+#else
+  msg = "Sorry...\nNot yet implemented for this operating system!";
+#endif
 
   QMessageBox::information(this, "Memory Size", msg);
 }

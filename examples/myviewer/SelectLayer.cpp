@@ -11,7 +11,7 @@
 #include <QAction>
 #include <QMessageBox>
 
-SelectLayer::SelectLayer(te::da::DataSource* ds, QWidget* parent, QString lastConnectionString, Qt::WindowFlags f) : 
+SelectLayer::SelectLayer(te::da::DataSource* ds, QString lastConnectionString, QWidget* parent, Qt::WindowFlags f) : 
   QDialog(parent, f)
 {
   setWindowTitle("Add Layer");
