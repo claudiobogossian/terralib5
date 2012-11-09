@@ -2,7 +2,7 @@
 find_package(Boost ${_Boost_VERSION} COMPONENTS thread REQUIRED)
 if(Boost_FOUND)
   list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-  list (APPEND DEP_INCLUDES $${Boost_INCLUDE_DIRS})
+  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 find_package(Geos ${_Geos_VERSION})
