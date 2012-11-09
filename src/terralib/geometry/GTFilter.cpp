@@ -261,7 +261,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   double bestParamsDRMSE = paramsPtr->m_maxDMapRmse;
   double bestParamsIRMSE = paramsPtr->m_maxIMapRmse;
   double bestParamsConvexHullArea = -1.0;
-  RansacItCounterT bestParamsGeneratedNumber = 0; // the number of acceptable generated parameters
   
   // variables used by the ransac loop
 
@@ -396,7 +395,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(
           bestParamsDRMSE = consensusSetDRMSE;
           bestParamsIRMSE = consensusSetIRMSE;
           bestParamsConvexHullArea = -1.0;
-          ++bestParamsGeneratedNumber;
         }
         else if( consensusSetSize == bestParams.m_tiePoints.size() )
         {
@@ -418,7 +416,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(
             bestParams = consensusSetParams;
             bestParamsDRMSE = consensusSetDRMSE;
             bestParamsIRMSE = consensusSetIRMSE;
-            ++bestParamsGeneratedNumber;
           }
         }
       }
@@ -426,27 +423,33 @@ void te::gm::GTFilter::applyRansacThreadEntry(
     
     // Updating iteration related variables
     
-    if( dynamicMaxIterations && ( bestParamsGeneratedNumber > 0 ) )
+    if( dynamicMaxIterations )
     {
       maxIterations = 
         (
-          (RansacItCounterT)
-          ( 
-            ( (long double)std::log( 1.0 - assurance )) 
-            / 
-            (long double)std::log( 
-              1.0 
-              - 
-              (  
-                ((long double)bestParams.m_tiePoints.size() )
-                /
-                ((long double)inputTPNmb)
-              ) 
+          maxIterations
+          +
+          (
+            (
+              (RansacItCounterT)
+              ( 
+                ( (long double)std::log( 1.0 - assurance )) 
+                / 
+                (long double)std::log( 
+                  1.0 
+                  - 
+                  (  
+                    ((long double)bestParams.m_tiePoints.size() )
+                    /
+                    ((long double)inputTPNmb)
+                  ) 
+                )
+              )
             )
+            /
+            maxIterationsDivFactor
           )
-        )
-        /
-        maxIterationsDivFactor;
+        ) / 2;
     }
     
     ++currentIteration;
