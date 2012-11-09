@@ -249,9 +249,12 @@ void TsGTFilter::tcApplyRansac()
   
   boost::timer timerInstance;
   CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 
-    0.01,  0.01, 0.01, 0, false, transfPtr, tiePointsWeights ) );
+    0.01,  0.01, 0.01, 0, 0.9, false, transfPtr, tiePointsWeights ) );
   std::cout << std::endl << "Elapsed time:";
   std::cout << timerInstance.elapsed() << std::endl;
+  
+  std::cout << std::endl << "Final Number of tie-points:";
+  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   
@@ -299,9 +302,12 @@ void TsGTFilter::tcApplyRansacMultiThread()
   
   boost::timer timerInstance;
   CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 
-    0.01,  0.01, 0.01, 0, true, transfPtr, tiePointsWeights ) );
+    0.01,  0.01, 0.01, 0, 0.9, true, transfPtr, tiePointsWeights ) );
   std::cout << std::endl << "Elapsed time:";
   std::cout << timerInstance.elapsed() << std::endl;
+  
+  std::cout << std::endl << "Final Number of tie-points:";
+  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   
