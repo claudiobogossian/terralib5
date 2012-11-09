@@ -128,6 +128,9 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
       for (size_t i = 0; i < pkProps.size(); ++i)
         pkv += dataSet->getAsString(pkProps[i]->getName());
 
+      if(pkv.empty())
+        continue;
+
       if(m_useChanged)
       {
         if(size <= 0)

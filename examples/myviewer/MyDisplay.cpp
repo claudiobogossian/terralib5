@@ -2,7 +2,7 @@
 #include "MyLayer.h"
 #include "MyLayerRenderer.h"
 #include "PrintInFile.h"
-#include <terralib/common/PlatformUtils.h>
+#include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
 #include <terralib/raster.h>
@@ -28,6 +28,8 @@
 #include <QPrinter>
 #include <QUrl>
 #include <QToolTip>
+
+extern unsigned long long getAvailableMemory();
 
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(QSize(w, h), parent, f),
@@ -248,7 +250,7 @@ void MyDisplay::dragEnterEvent(QDragEnterEvent* e)
   if(s.isEmpty())
     return;
 
-  unsigned long long v = s.toULongLong();
+  unsigned long v = s.toULongLong();
   te::map::AbstractLayer* al = (te::map::AbstractLayer*)v;
   te::map::AbstractLayer* laux = al;
   while((te::map::AbstractLayer*)laux->getParent())
@@ -284,7 +286,7 @@ void MyDisplay::dropEvent(QDropEvent* e)
 {
   const QMimeData* mime = e->mimeData();
   QString s = mime->data("application/layer-explorer").constData();
-  unsigned long long v = s.toULongLong();
+  unsigned long v = s.toULongLong();
   te::map::AbstractLayer* al = (te::map::AbstractLayer*)v;
   changeTree(al);
 }
@@ -658,17 +660,47 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
       std::string name = layer->getId();
       te::da::DataSource* ds = layer->getDataSource();
       te::da::DataSourceTransactor* t = ds->getTransactor();
+//te::common::Logger::initialize("MyDisplay");
+//QString msg, msgg, sname = name.c_str();
+//unsigned long maa, mbb;
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before getDataSet " + sname + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
       te::da::DataSet* dataSet = t->getDataSet(name);
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after getDataSet " + sname + ":");
+//msgg.setNum((qulonglong)((maa - mbb) / (1<<10)));
+//msg += "  KBytes, consumiu:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyDisplay", "\n");
+      //te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
       te::da::DataSetTypePtr dsType = ds->getCatalog()->getDataSetType(name);
 
       assert(dataSet);
 
       if(dsType->getPrimaryKey())
       {
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before new DataGridOperation " + sname + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
         op = new te::map::DataGridOperation();
+        //op->init(dsType, dataSet);
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after new DataGridOperation " + sname + ":");
+//msgg.setNum((qulonglong)((maa - mbb) / (1<<10)));
+//msg += " KBytes, consumiu:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyDisplay", "\n");
         op->init(dsType.get(), dataSet);
         layer->setDataGridOperation(op);
       }
+//te::common::Logger::finalize("MyDisplay");
     }
 
     bool b = false;
@@ -1180,6 +1212,9 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
       pkv.clear();
       for (size_t i = 0; i < pkProps.size(); ++i)
         pkv += dataSet->getAsString(pkProps[i]->getName());
+
+      if(pkv.empty())
+        continue;
 
       te::gm::Geometry* g = dataSet->getGeometry(gPos);
       if(g == 0)
@@ -2443,7 +2478,7 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
 //  if(s.isEmpty())
 //    return;
 //
-//  unsigned long long v = s.toULongLong();
+//  unsigned long v = s.toULongLong();
 //  te::map::AbstractLayer* al = (te::map::AbstractLayer*)v;
 //  te::map::AbstractLayer* laux = al;
 //  while((te::map::AbstractLayer*)laux->getParent())
@@ -2479,7 +2514,7 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
 //{
 //  const QMimeData* mime = e->mimeData();
 //  QString s = mime->data("application/layer-explorer").constData();
-//  unsigned long long v = s.toULongLong();
+//  unsigned long v = s.toULongLong();
 //  te::map::AbstractLayer* al = (te::map::AbstractLayer*)v;
 //  changeTree(al);
 //}
@@ -4338,8 +4373,3 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
 //  return m_mouseHandler;
 //}
 //
-
-
-
-
-

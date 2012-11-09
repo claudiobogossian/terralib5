@@ -3,8 +3,11 @@
 #include "MyGrid.h"
 
 #include <terralib/dataaccess.h>
+#include <terralib/common.h>
 
 #include <terralib/qt/widgets.h>
+
+extern unsigned long long getAvailableMemory();
 
 MyLayer::MyLayer(const std::string& id, const std::string& title, AbstractLayer* parent) : 
   te::map::Layer(id, title, parent),
@@ -26,10 +29,40 @@ MyLayer::~MyLayer()
     delete m_grid;
   if(m_op)
   {
+//te::common::Logger::initialize("MyLayer");
+//QString msg, msgg, name = getId().c_str();
+//unsigned long maa, mbb;
+
     if(this->getDataSource()->getType() != "OGR")
       delete m_op->getDataSet()->getTransactor();
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before delete dataset " + name + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyLayer", msg.toStdString().c_str());
     delete m_op->getDataSet();
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after delete dataset " + name + ":");
+//msgg.setNum((qulonglong)((mbb - maa) / (1<<10)));
+//msg += "  KBytes, liberou:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyLayer", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyLayer", "\n");
+
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before delete datagridoperation " + name + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyLayer", msg.toStdString().c_str());
     delete m_op;
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after delete datagridoperation");
+//msgg.setNum((qulonglong)((mbb - maa) / (1<<10)));
+//msg += "  KBytes, liberou:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyLayer", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyLayer", "\n");
+//te::common::Logger::finalize("MyLayer");
   }
 }
 
@@ -82,15 +115,44 @@ void MyLayer::createGrid(QWidget* w)
 
     m_grid->setWindowTitle(getId().c_str());
 
-
+//te::common::Logger::initialize("MyLayer CreateGrid");
+//QString msg, msgg, sname = getId().c_str();
+//unsigned long maa, mbb;
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before getDataSet " + sname + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyLayer CreateGrid", msg.toStdString().c_str());
     te::da::DataSet* dataSet = t->getDataSet(getId());
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after getDataSet " + sname + ":");
+//msgg.setNum((qulonglong)((maa - mbb) / (1<<10)));
+//msg += "  KBytes, consumiu:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyLayer CreateGrid", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyLayer CreateGrid", "\n");
 
     assert(dataSet);
     if(dsType->getPrimaryKey())
     {
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before new DataGridOperation " + sname + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyLayer CreateGrid", msg.toStdString().c_str());
       m_op = new te::map::DataGridOperation();
       m_op->init(dsType.get(), dataSet);
+      //m_op->init(dsType, dataSet);
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after new DataGridOperation init " + sname + ":");
+//msgg.setNum((qulonglong)((maa - mbb) / (1<<10)));
+//msg += "  KBytes, consumiu:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyLayer CreateGrid", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyLayer CreateGrid", "\n");
     }
+//te::common::Logger::finalize("MyLayer CreateGrid");
+    //te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(dsType, dataSet, m_op);
     te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(dsType.get(), dataSet, m_op);
     m_grid->setModel(gridModel);
     m_grid->setVisible(true);

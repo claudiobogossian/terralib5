@@ -11,7 +11,7 @@
 #include <QAction>
 #include <QMessageBox>
 
-SelectLayer::SelectLayer(te::da::DataSource* ds, QWidget* parent, Qt::WindowFlags f) : 
+SelectLayer::SelectLayer(te::da::DataSource* ds, QWidget* parent, QString lastConnectionString, Qt::WindowFlags f) : 
   QDialog(parent, f)
 {
   setWindowTitle("Add Layer");
@@ -74,8 +74,10 @@ SelectLayer::SelectLayer(te::da::DataSource* ds, QWidget* parent, Qt::WindowFlag
   QObject::connect(m_cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelSlot()));
   QObject::connect(m_dataSourceTypeComboBox, SIGNAL(activated (int)), this, SLOT(dataSourceChangedSlot(int)));
   QObject::connect(m_connectionStringLineEdit, SIGNAL(editingFinished()), this, SLOT(connectionStringEditedSlot()));
+  QObject::connect(m_layerNameComboBox, SIGNAL(activated(int)), this, SLOT(layerNameChangedSlot(int)));
 
   populeWidgets(ds);
+  m_connectionStringLineEdit->setText(lastConnectionString);
 
   show();
   setFixedHeight(height());
@@ -108,10 +110,6 @@ void SelectLayer::populeWidgets(te::da::DataSource* ds)
     QString type = ds->getType().c_str();
     int ind = m_dataSourceTypeComboBox->findText(type);
     m_dataSourceTypeComboBox->setCurrentIndex(ind);
-
-//    QString s = ds->getConnectionStr().c_str();
-//    m_connectionStringLineEdit->setText(s);
-    m_connectionStringLineEdit->setText("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
 
     te::da::DataSourceCatalog* catalog = ds->getCatalog();
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
@@ -155,10 +153,18 @@ void SelectLayer::connectionStringEditedSlot()
     std::string cs = m_connectionStringLineEdit->text().toStdString();
     m_connectionWithError = m_connectionStringLineEdit->text();
     std::string dsInfo;
-    //if(dstype == "GDAL")
-    //  dsInfo = "URI=" + cs;
-    //else
-    //dsInfo = "connection_string=" + cs;
+
+    // para POSTGIS o connection string deve ter um "host=". Ele cai se nao tiver!
+    if(dstype == "POSTGIS")
+    {
+      QString s = cs.c_str();
+      if(!(s.toUpper().startsWith("PG_HOST=") || s.toUpper().contains("&PG_HOST=")))
+      {
+        QMessageBox::information(this, tr("Connection Error"), tr("Connection String Error"));
+        return;  
+      }
+    }
+
     if(dstype == "GDAL")
     {
       int p = cs.find("host=");
@@ -192,6 +198,11 @@ void SelectLayer::connectionStringEditedSlot()
     m_connectionStringLineEdit->clear();
     QMessageBox::information(this, tr("Connection String Error"), tr(e.what()));
   }
+}
+
+void SelectLayer::layerNameChangedSlot(int)
+{
+  m_titleNameLineEdit->setText(m_layerNameComboBox->currentText());
 }
 
 void SelectLayer::okSlot()
