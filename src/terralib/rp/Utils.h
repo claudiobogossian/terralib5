@@ -26,6 +26,9 @@
 #ifndef __TERRALIB_RP_INTERNAL_UTILS_H
 #define __TERRALIB_RP_INTERNAL_UTILS_H
 
+// TerraLib
+#include "../raster.h"
+
 // STL
 #include <map>
 #include <string>
@@ -43,6 +46,22 @@ namespace te
     /*! \brief Returns the maximum reflectance value of a given sensor/band. */
     double GetSpectralBandMax(std::string bandName);
 
+    /*! \brief Returns the maximun and minimum digital numbers of a given sensor/band. */
+    std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName);
+
+    /*! \brief Returns the maximum digital number of a given sensor/band. */
+    double GetDigitalNumberBandMax(std::string bandName);
+
+    /*!
+      \brief Normalizes one raster in a given interval.
+
+      \param rst   The given raster.
+      \param nmin  The new minimum value (default = 0.0).
+      \param nmax  The new maximum value (default = 255.0).
+
+      \return true if normalization occurs and false otherwise.
+    */
+    bool NormalizeRaster(te::rst::Raster& inraster, double nmin = 0.0, double nmax = 255.0);
   } // end namespace rp
 }   // end namespace te
 

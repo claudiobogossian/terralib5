@@ -19,6 +19,7 @@ int main()
     Segmenter();
     Contrast();
     Classifier();
+    MixtureModel();
 
     TerraLib::getInstance().finalize();
   }
