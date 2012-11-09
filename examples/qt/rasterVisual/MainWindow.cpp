@@ -258,23 +258,26 @@ void MainWindow::addRasterLayer(const QString& path)
    //get raster properties
     te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
 
-    te::rst::RasterProperty* prop = 0;
+    if(layer->getRasterSymbolizer())
+    {
+      te::rst::RasterProperty* prop = 0;
   
-    prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
+      prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
 
-    te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+      te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
 
-    disconnect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+      disconnect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
-    m_rvW->setBandProperty(prop->getBandProperties());
+      m_rvW->setBandProperty(prop->getBandProperties());
 
-    m_rvW->setRasterSymbolizer(rs);
+      m_rvW->setRasterSymbolizer(rs);
 
-    connect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+      connect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
-    delete rs;
+      delete rs;
 
-    delete prop;
+      delete prop;
+    }
   }
 }
 
@@ -409,13 +412,13 @@ void MainWindow::onRasterStyleTriggered()
 
 void MainWindow::onFileSelected(QString s)
 {
-  //te::common::FreeContents(m_layers);
-  //m_layers.clear();
+  te::common::FreeContents(m_layers);
+  m_layers.clear();
 
-  //te::common::FreeContents(m_ds);
-  //m_ds.clear();
+  te::common::FreeContents(m_ds);
+  m_ds.clear();
 
-  //m_display->setExtent(te::gm::Envelope());
+  m_display->setExtent(te::gm::Envelope());
 
   addRasterLayer(s);
 

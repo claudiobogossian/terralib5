@@ -195,6 +195,10 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
 
   te::color::RGBAColor** rgba = new te::color::RGBAColor*[m_gridCanvas->getNumberOfRows()];
 
+  std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+  converter->setSourceSRID(srid);
+  converter->setTargetSRID(layer->getSRID());
+
   for (unsigned r = 0; r < m_gridCanvas->getNumberOfRows(); r++)
   {
     if(t.isActive() == false)
@@ -210,12 +214,6 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
 
       if(reproject)
       {
-        std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
-
-        converter->setSourceSRID(layer->getSRID());
-
-        converter->setTargetSRID(srid);
-
         converter->convert(inputGeo.x, inputGeo.y, inputGeo.x, inputGeo.y);
       }
 

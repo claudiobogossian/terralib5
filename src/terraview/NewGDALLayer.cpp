@@ -1,17 +1,19 @@
-#include "NewOGRLayer.h"
+#include "NewGDALLayer.h"
 
 //! Terralib include files
 #include <terralib/qt/widgets/utils/FileChooser.h>
 #include <terralib/qt/widgets/srs/SRSManagerDialog.h>
-#include <terralib/maptools/Layer.h>
+#include <terralib/maptools/RasterLayer.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
+#include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/datasource/DataSourceManager.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceCatalogLoader.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
+#include <terralib/raster.h>
 #include <terralib/se.h>
 
-#include <terralib/maptools/LayerRenderer.h>
+#include <terralib/maptools/RasterLayerRenderer.h>
 
 //! Qt include files
 #include <QPushButton>
@@ -20,25 +22,26 @@
 #include <QGridLayout>
 #include <QFileInfo>
 #include <QMessageBox>
+#include <QCheckBox>
 
-NewOGRLayer::NewOGRLayer(QWidget* parent) :
+NewGDALLayer::NewGDALLayer(QWidget* parent) :
 QDialog(parent)
 {
   makeDialog();
 
-  setWindowTitle(tr("Add an OGR layer"));
+  setWindowTitle(tr("Add an GDAL layer"));
 }
 
-NewOGRLayer::~NewOGRLayer()
+NewGDALLayer::~NewGDALLayer()
 {
 }
 
-te::map::Layer* NewOGRLayer::getNewLayer()
+te::map::RasterLayer* NewGDALLayer::getNewLayer()
 {
   return m_layer.release();
 }
 
-std::string NewOGRLayer::getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box) 
+std::string NewGDALLayer::getDataSetRasterName(te::da::DataSource* ds, te::gm::Envelope*& extent) 
 {
 // get a transactor to interact to the data source
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
@@ -54,17 +57,16 @@ std::string NewOGRLayer::getDataSetName(te::da::DataSource* ds, te::gm::Envelope
 
   assert(!datasets.empty());
 
+  std::string datasetName = datasets[0];
+
   // Gets DataSet Type
   te::da::DataSetType* dt = cloader->getDataSetType(datasets[0]);
 
-  // Default geometry property
-  te::gm::GeometryProperty* geomProperty = dt->getDefaultGeomProperty();
+  te::da::DataSet* dataSet = transactor->getDataSet(datasetName);
 
-  std::string datasetName = datasets[0];
+  te::rst::Raster* raster = dataSet->getRaster();
 
-//  te::da::DataSet* dataset = transactor->getDataSet(datasetName);
-
-  box = cloader->getExtent(geomProperty);
+  extent = raster->getExtent();
 
   delete dt;
 
@@ -75,31 +77,42 @@ std::string NewOGRLayer::getDataSetName(te::da::DataSource* ds, te::gm::Envelope
   return datasetName;
 }
 
-void NewOGRLayer::makeDialog()
+void NewGDALLayer::makeDialog()
 {
   te::qt::widgets::FileChooser* fc = new te::qt::widgets::FileChooser(this);
-  fc->setFilterPattern(tr("Shape Files (*.shp *.SHP)"));
+  fc->setFilterPattern(tr("Image Files (*.tif *.TIF)"));
 
   connect(fc, SIGNAL(resourceSelected(QString)), this, SLOT(onFileSelected(QString)));
 
-  QPushButton* ok_btn = new QPushButton(tr("&Ok"), this);
-  QPushButton* can_btn = new QPushButton(tr("&Cancel"), this);
+  QPushButton* okBtn = new QPushButton(tr("&Ok"), this);
+  QPushButton* canBtn = new QPushButton(tr("&Cancel"), this);
 
   QPushButton* sridBtn = new QPushButton(tr("&SRID..."), this);
   m_sridLnEdt = new QLineEdit(this);
   m_sridLnEdt->setEnabled(false);
+
+  QCheckBox* noValueChkBox = new QCheckBox(tr("Set No Value"), this);
+  m_noValueLnEdt = new QLineEdit("0", this);
+  m_noValueLnEdt->setEnabled(false);
+
+  connect(noValueChkBox, SIGNAL(clicked(bool)), m_noValueLnEdt, SLOT(setEnabled(bool)));
+
+  QHBoxLayout* hNoValueLay = new QHBoxLayout;
+  hNoValueLay->addWidget(noValueChkBox);
+  hNoValueLay->addWidget(m_noValueLnEdt);
 
   QHBoxLayout* hSRIDLay = new QHBoxLayout;
   hSRIDLay->addWidget(sridBtn);
   hSRIDLay->addWidget(m_sridLnEdt);
 
   QHBoxLayout* hLay = new QHBoxLayout;
-  hLay->addWidget(ok_btn);
-  hLay->addWidget(can_btn);
+  hLay->addWidget(okBtn);
+  hLay->addWidget(canBtn);
   hLay->insertSpacing(0, 10);
 
   QVBoxLayout* vLay = new QVBoxLayout;
   vLay->addWidget(fc);
+  vLay->addLayout(hNoValueLay);
   vLay->addLayout(hSRIDLay);
   vLay->addLayout(hLay);
   vLay->insertSpacing(1, 10);
@@ -107,18 +120,18 @@ void NewOGRLayer::makeDialog()
   QGridLayout* grid = new QGridLayout(this);
   grid->addLayout(vLay, 0, 0, 1, 1);
 
-  connect(ok_btn, SIGNAL(pressed()), SLOT(accept()));
-  connect(can_btn, SIGNAL(pressed()), SLOT(reject()));
+  connect(okBtn, SIGNAL(pressed()), SLOT(onOkPushButtonClicked()));
+  connect(canBtn, SIGNAL(pressed()), SLOT(reject()));
   connect(sridBtn, SIGNAL(pressed()), SLOT(showProjDlg()));
 }
 
-void NewOGRLayer::onFileSelected(QString s)
+void NewGDALLayer::onFileSelected(QString s)
 {
   QString f = s;
   QFileInfo info(f);
 
   if(!info.exists() || !info.isFile())
-    QMessageBox::information(this, tr("Fail to open shape file"), tr("Selected resource is not valid."));
+    QMessageBox::information(this, tr("Fail to open image file"), tr("Selected resource is not valid."));
   else
   {
     te::da::DataSourceManager& man = te::da::DataSourceManager::getInstance();
@@ -127,42 +140,58 @@ void NewOGRLayer::onFileSelected(QString s)
     std::map<std::string, std::string> connInfo;
     connInfo["SOURCE"] = f.toLatin1().data();  
 
-    te::da::DataSource* ds = man.get(id.toLatin1().data(), "OGR", connInfo);
+    te::da::DataSource* ds = man.get(id.toLatin1().data(), "GDAL", connInfo);
 
     if(!ds->isOpened())
       ds->open(connInfo);
       
     if(ds->isValid() && ds->isOpened())
     {
-      te::gm::Envelope* env = 0;
+      te::gm::Envelope* extent;
 
-      std::string dset = getDataSetName(ds, env);
+      std::string dset = getDataSetRasterName(ds, extent);
 
-      m_layer.reset(new te::map::Layer(id.toLatin1().data(), info.baseName().toLatin1().data()));
+      m_layer.reset(new te::map::RasterLayer(id.toLatin1().data(), info.baseName().toLatin1().data()));
 
-      m_layer->setDataSetName(dset);
       m_layer->setDataSource(ds);
+      m_layer->setDataSetName(dset);
 
-      // Creates a hard-coded style
-      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-      symbolizer->setFill(te::se::CreateFill("#339966", "0.3"));
-      symbolizer->setStroke(te::se::CreateStroke("#000000", "3", "1.0"));
+      m_layer->setRenderer(new te::map::RasterLayerRenderer());
+      m_layer->setExtent(extent);
 
-      te::se::Rule* rule = new te::se::Rule;
-      rule->push_back(symbolizer);
+      //set srid information in interface
+      QString sridStr;
+      sridStr.setNum(m_layer->getSRID());
 
-      te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-      style->push_back(rule);
-
-      m_layer->setStyle(style);
-
-      m_layer->setRenderer(new te::map::LayerRenderer());
-      m_layer->setExtent(env);
+      m_sridLnEdt->setText(sridStr);
     }
   }
 }
 
-void NewOGRLayer::showProjDlg()
+void NewGDALLayer::setNoValue(QString s)
+{
+  if(s.isEmpty())
+    return;
+
+  bool ok = false;
+
+  double val = s.toDouble(&ok);
+
+  if(ok)
+  {
+    if(m_layer.get())
+    {
+      te::rst::Raster* raster = m_layer->getRaster();
+
+      for(size_t t = 0; t < raster->getNumberOfBands(); ++t)
+      {
+        raster->getBand(t)->getProperty()->m_noDataValue = val;
+      }
+    }
+  }
+}
+
+void NewGDALLayer::showProjDlg()
 {
   te::qt::widgets::SRSManagerDialog* srsManDialog = new te::qt::widgets::SRSManagerDialog();
   
@@ -184,3 +213,13 @@ void NewOGRLayer::showProjDlg()
   }
 }
 
+void NewGDALLayer::onOkPushButtonClicked()
+{
+  //set no value
+  if(m_noValueLnEdt->isEnabled())
+  {
+    setNoValue(m_noValueLnEdt->text());
+  }
+
+  accept();
+}

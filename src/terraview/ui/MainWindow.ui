@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>919</width>
     <height>600</height>
    </rect>
   </property>
@@ -19,8 +19,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>21</height>
+     <width>919</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -28,6 +28,7 @@
      <string>&amp;File</string>
     </property>
     <addaction name="m_addOGRLayer_act"/>
+    <addaction name="m_addGDALLayer_act"/>
     <addaction name="m_actionOpen_project"/>
     <addaction name="actionNew_project"/>
     <addaction name="m_actionSave_project"/>
@@ -227,6 +228,14 @@
     <string>Sets the area measure tool</string>
    </property>
   </action>
+  <action name="m_addGDALLayer_act">
+   <property name="text">
+    <string>Add GDAL Layer...</string>
+   </property>
+   <property name="toolTip">
+    <string>Creates a new GDAL layer.</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -333,11 +342,27 @@
    <slot>setDistanceTool(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>399</x>
-     <y>299</y>
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_addGDALLayer_act</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>addGDALLayer()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
      <y>299</y>
     </hint>
    </hints>
@@ -351,5 +376,6 @@
   <slot>setDistanceTool(bool)</slot>
   <slot>setAreaMeasureTool(bool)</slot>
   <slot>setAngleTool(bool)</slot>
+  <slot>addGDALLayer()</slot>
  </slots>
 </ui>

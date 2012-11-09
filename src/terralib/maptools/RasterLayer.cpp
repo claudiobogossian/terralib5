@@ -31,6 +31,7 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Raster.h"
+#include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/RasterSymbolizer.h"
@@ -121,6 +122,8 @@ int te::map::RasterLayer::getSRID() const
 void te::map::RasterLayer::setSRID(int srid)
 {
   m_srid = srid;
+
+  m_raster->getGrid()->setSRID(m_srid);
 }
 
 te::da::DataSource* te::map::RasterLayer::getDataSource() const
@@ -187,8 +190,11 @@ void te::map::RasterLayer::loadRasterObjects()
     te::da::DataSet* dataSet = tr->getDataSet(m_datasetName);
     m_raster = dataSet->getRaster();
 
-    setSRID(m_raster->getSRID());
-    setExtent(m_raster->getExtent());
+    m_srid = m_raster->getSRID();
+
+    te::gm::Envelope* e = new te::gm::Envelope(*m_raster->getExtent());
+
+    setExtent(e);
 
     delete dt;
     delete tr;

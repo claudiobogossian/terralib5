@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include <ui_MainWindow.h>
 #include "NewOGRLayer.h"
+#include "NewGDALLayer.h"
 
 //! TerraLib include files
 #include <terralib/qt/af/events/NewToolBar.h>
@@ -12,11 +13,13 @@
 #include <terralib/qt/af/connectors/TabularViewer.h>
 #include <terralib/qt/widgets/layer/AbstractTreeItem.h>
 #include <terralib/maptools/Layer.h>
+#include <terralib/maptools/RasterLayer.h>
+#include <terralib/srs/Config.h>
 
 #include <terralib/qt/widgets/layer/LayerExplorer.h>
 #include <terralib/maptools/FolderLayer.h>
 #include <terralib/qt/widgets/layer/LayerExplorerModel.h>
-#include <terralib/qt/widgets/canvas/MapDisplay.h>
+#include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
 #include <terralib/qt/widgets/dataview/TabularViewer.h>
 #include <terralib/qt/widgets/tools/Pan.h>
 #include <terralib/qt/widgets/tools/ZoomArea.h>
@@ -68,10 +71,42 @@ void MainWindow::onApplicationTriggered(te::qt::af::Event* evt)
 
 void MainWindow::addOGRLayer()
 {
-  te::map::AbstractLayer* layer = NewOGRLayer::getNewLayer(this);
+  NewOGRLayer w(this);
 
-  if(layer != 0)
-    te::qt::af::teApp::getInstance().broadCast(&te::qt::af::LayerAdded(layer));
+  if(w.exec() == QDialog::Accepted)
+  {
+    te::map::AbstractLayer* layer = w.getNewLayer();
+
+    if(m_display->getDisplayComponent()->getSRID() == -1 ||
+       m_display->getDisplayComponent()->getSRID() == TE_UNKNOWN_SRS)
+    {  
+      m_display->getDisplayComponent()->setSRID(layer->getSRID());
+      m_display->getDisplayComponent()->setExtent(*layer->getExtent());
+    }
+
+    if(layer != 0)
+      te::qt::af::teApp::getInstance().broadCast(&te::qt::af::LayerAdded(layer));
+  }
+}
+
+void MainWindow::addGDALLayer()
+{
+  NewGDALLayer w(this);
+
+  if(w.exec() == QDialog::Accepted)
+  {
+    te::map::AbstractLayer* layer = w.getNewLayer();
+
+    if(m_display->getDisplayComponent()->getSRID() == -1 ||
+       m_display->getDisplayComponent()->getSRID() == TE_UNKNOWN_SRS)
+    {  
+      m_display->getDisplayComponent()->setSRID(layer->getSRID());
+      m_display->getDisplayComponent()->setExtent(*layer->getExtent());
+    }
+
+    if(layer != 0)
+      te::qt::af::teApp::getInstance().broadCast(&te::qt::af::LayerAdded(layer));
+  }
 }
 
 void MainWindow::layerVisibilityChanged(const QModelIndex& idx)
@@ -149,7 +184,7 @@ void MainWindow::makeDialog()
   exp->setModel(new te::qt::widgets::LayerExplorerModel(new te::map::FolderLayer("MainLayer", tr("My Layers").toStdString()), exp));
   connect(exp, SIGNAL(checkBoxWasClicked(const QModelIndex&)), SLOT(layerVisibilityChanged(const QModelIndex&)));
 
-  te::qt::widgets::MapDisplay* map = new te::qt::widgets::MapDisplay(QSize(512, 512), this);
+  te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   map->setMouseTracking(true);
   

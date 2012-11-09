@@ -76,6 +76,8 @@ protected slots:
 
   void addOGRLayer();
 
+  void addGDALLayer();
+
   void layerVisibilityChanged(const QModelIndex& idx);
 
   void drawLayers();
