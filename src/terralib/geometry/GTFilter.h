@@ -117,12 +117,11 @@ namespace te
             bool* m_returnValuePtr;
             boost::mutex* m_mutexPtr;
             bool* m_keepRunningFlagPtr;
-            std::map< double, GTParameters::TiePoint > const* m_tpsMapPtr;
+            std::map< double, GTParameters::TiePoint > const* m_tpsMapPtr; //!< A map from accumulated probabilities (normalized between 0 and 1) to tie-points data.
             std::auto_ptr< GeometricTransformation >* m_bestTransformationPtrPtr;
             double* m_bestParamsDRMSEPtr;
             double* m_bestParamsIRMSEPtr;
             double* m_bestParamsConvexHullAreaPtr;
-            int m_randSeed;
             
             ApplyRansacThreadEntryThreadParams() {};
             
@@ -153,7 +152,6 @@ namespace te
               m_bestParamsDRMSEPtr = other.m_bestParamsDRMSEPtr;
               m_bestParamsIRMSEPtr = other.m_bestParamsIRMSEPtr;
               m_bestParamsConvexHullAreaPtr = other.m_bestParamsConvexHullAreaPtr;
-              m_randSeed = other.m_randSeed;
               
               return other;
             };
