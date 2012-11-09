@@ -32,6 +32,7 @@
 #include "MixtureModel.h"
 #include "MixtureModelStrategy.h"
 #include "MixtureModelStrategyFactory.h"
+#include "Utils.h"
 
 te::rp::MixtureModel::InputParameters::InputParameters()
   : m_mixtureModelStrategyParamsPtr(0)
@@ -125,6 +126,8 @@ void te::rp::MixtureModel::OutputParameters::reset() throw(te::rp::Exception)
   m_rType.clear();
   m_rInfo.clear();
   m_outputRasterPtr.reset();
+  m_normalizeOutput = false;
+  m_createErrorRaster = false;
 }
 
 const te::rp::MixtureModel::OutputParameters& te::rp::MixtureModel::OutputParameters::operator=(const te::rp::MixtureModel::OutputParameters& params)
@@ -134,6 +137,8 @@ const te::rp::MixtureModel::OutputParameters& te::rp::MixtureModel::OutputParame
   m_rType = params.m_rType;
   m_rInfo = params.m_rInfo;
   m_outputRasterPtr = params.m_outputRasterPtr;
+  m_normalizeOutput = params.m_normalizeOutput;
+  m_createErrorRaster = params.m_createErrorRaster;
 
   return *this;
 }
@@ -175,12 +180,31 @@ bool te::rp::MixtureModel::execute(AlgorithmOutputParameters& outputParams) thro
     bandsProperties.push_back(newbprop);
   }
 
+  if (outputParamsPtr->m_createErrorRaster)
+  {
+    for (it = m_inputParameters.m_components.begin(); it != m_inputParameters.m_components.end(); it++)
+    {
+      te::rst::BandProperty* newbprop = new te::rst::BandProperty(*(m_inputParameters.m_inputRasterPtr->getBand(
+        m_inputParameters.m_inputRasterBands[0])->getProperty()));
+      newbprop->m_colorInterp = te::rst::GrayIdxCInt;
+      newbprop->m_type = te::dt::DOUBLE_TYPE;
+      newbprop->m_noDataValue = -1;
+      newbprop->m_description = "Error raster for class " + it->first;
+
+      bandsProperties.push_back(newbprop);
+    }
+  }
+
   te::rst::Grid* newgrid = new te::rst::Grid(*(m_inputParameters.m_inputRasterPtr->getGrid()));
 
   outputParamsPtr->m_outputRasterPtr.reset(
     te::rst::RasterFactory::make(outputParamsPtr->m_rType, newgrid, bandsProperties, outputParamsPtr->m_rInfo, 0, 0));
   TERP_TRUE_OR_RETURN_FALSE(outputParamsPtr->m_outputRasterPtr.get(),
     "Output raster creation error");
+
+  if (m_inputParameters.m_inputSensorBands.size() == 0)
+    for (unsigned b = 0; b < m_inputParameters.m_inputRasterBands.size(); b++)
+      m_inputParameters.m_inputSensorBands.push_back("default_sensor");
 
 // instantiating the segmentation strategy
   boost::shared_ptr<te::rp::MixtureModelStrategy> strategyPtr(MixtureModelStrategyFactory::make(m_inputParameters.m_strategyName));
@@ -191,6 +215,9 @@ bool te::rp::MixtureModel::execute(AlgorithmOutputParameters& outputParams) thro
                                                  m_inputParameters.m_inputSensorBands, m_inputParameters.m_components,
                                                  *outputParamsPtr->m_outputRasterPtr, true),
                             "Unable to execute the mixture model strategy");
+
+  if (outputParamsPtr->m_normalizeOutput)
+    NormalizeRaster(*outputParamsPtr->m_outputRasterPtr);
 
   return true;
 }
@@ -221,8 +248,13 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
                             "Invalid raster bands number");
 
 // check if input sensor/bands information fits
-  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputSensorBands.size() == inputParamsPtr->m_inputRasterBands.size(),
-                            "Invalid raster bands number");
+  if (inputParamsPtr->m_inputSensorBands.size() == 0)
+  {
+    TERP_LOGWARN("No information about sensors were provided, using defaults.");
+  }
+  else
+    TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputSensorBands.size() == inputParamsPtr->m_inputRasterBands.size(),
+                              "Invalid raster bands number");
 
   for(unsigned int i = 0; i < inputParamsPtr->m_inputRasterBands.size(); i++)
   {
