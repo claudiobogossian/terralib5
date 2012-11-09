@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file URL.h
+  \file terralib/common/URL.h
 
   \brief A helper class for URL encode/decode.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_URL_H
 #define __TERRALIB_COMMON_INTERNAL_URL_H

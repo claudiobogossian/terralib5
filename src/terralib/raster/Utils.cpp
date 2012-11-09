@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/Utils.cpp
- 
+
   \brief Utility functions for the raster module.
 */
 
@@ -27,8 +27,8 @@
 #include "../datatype/Enums.h"
 #include "../geometry/Coord2D.h"
 #include "Exception.h"
-#include "Utils.h"
 #include "RasterFactory.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/cstdint.hpp>
@@ -289,29 +289,31 @@ int te::rst::Round(double val)
     return (int)(val-.5);
 }
 
-boost::shared_ptr< te::rst::Raster > te::rst::CreateCopy(const te::rst::Raster& rin,  
-  const std::string& uri, const std::string &rType)
+te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
+                                       const std::string& uri,
+                                       const std::string &rType)
 {
   std::map<std::string, std::string> rasterInfo;
   rasterInfo["URI"] = uri;
-    
-  std::vector< te::rst::BandProperty* > bandsProperties;
+
+  std::vector<te::rst::BandProperty*> bandsProperties;
+
   unsigned int bandIndex = 0;
-  for( bandIndex = 0 ; bandIndex < rin.getNumberOfBands() ; 
-    ++bandIndex )
+
+  for(bandIndex = 0; bandIndex < rin.getNumberOfBands(); ++bandIndex)
   {
-    bandsProperties.push_back( new te::rst::BandProperty( *( rin.getBand( 
-      bandIndex )->getProperty() ) ) );  
+    bandsProperties.push_back(new te::rst::BandProperty(*(rin.getBand(bandIndex )->getProperty())));
   }
-  
-  boost::shared_ptr< te::rst::Raster > outRasterPtr;
-  
-  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid( 
-    *( rin.getGrid() ) ),  bandsProperties,  rasterInfo, 0, 0 ) ); 
-    
-  if( outRasterPtr.get() == 0 ) return outRasterPtr;
-  
-  Copy( rin, *outRasterPtr );
-  
+
+  te::rst::RasterPtr outRasterPtr;
+
+  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid(*(rin.getGrid())), bandsProperties, rasterInfo, 0, 0)); 
+
+  if(outRasterPtr.get() == 0)
+    return outRasterPtr;
+
+  Copy(rin, *outRasterPtr);
+
   return outRasterPtr;
 }
+

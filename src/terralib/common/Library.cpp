@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Library.cpp
+  \file terralib/common/Library.cpp
 
   \brief A class for handling shared libraries.
 */

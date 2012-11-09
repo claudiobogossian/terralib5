@@ -32,6 +32,9 @@
 
 #include <memory>
 #include <vector>
+#include <map>
+
+#include <boost/thread.hpp>
 
 namespace te
 {
@@ -45,6 +48,9 @@ namespace te
     class TEGEOMEXPORT GTFilter
     {
       public:
+        
+        /*! \brief RANSAC iterations counter type. */
+        typedef unsigned long long int RansacItCounterT;        
 
         /*! \brief Destructor. */
         ~GTFilter();
@@ -64,27 +70,96 @@ namespace te
           
           \param maxIMapRmse The maximum allowed inverse mapping root mean square error.
           
+          \param maxIterations The maximum number of iterations (Use 0-zero to let this number be automatically found).
+          
+          \param assurance The error-free selection percent assurance - valid range (0-1] - Suggested value: 0.9.
+          
+          \param enableMultiThread Enable multi-threaded processing (good for multi-processor or multi-core systems).
+          
           \param outTransf The generated output transformation.
           
-          \param tiePointsWeights Optional tie-points weights (non-zero, positive values).
+          \param tiePointsWeights Optional tie-points weights (non-zero, positive values) or an empty vector if no weights must be used.
 
           \return true if OK, false on errors.
           
           \note Reference: Martin A. Fischler and Robert C. Bolles, Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography, Communications of the ACM  archive, Volume 24 , Issue 6  (June 1981).
         */
-        static bool applyRansac(const std::string& transfName, const GTParameters& inputParams,
+        static bool applyRansac(const std::string& transfName, 
+          const GTParameters& inputParams,
           const double maxDMapError, const double maxIMapError,
           const double maxDMapRmse, const double maxIMapRmse,
+          const RansacItCounterT& maxIterations,
+          const double& assurance,
+          const bool enableMultiThread,
           std::auto_ptr< GeometricTransformation >& outTransf,
-          const std::vector< double > tiePointsWeights = std::vector< double >() );
+          const std::vector< double >& tiePointsWeights );
         
       private:
         
         /*!
-          \brief RANSAC iterations counter type.
+          \class ApplyRansacThreadEntryThreadParams
+          
+          \brief Parameters used by the GTFilter::applyRansacThreadEntry method.
         */        
-        typedef unsigned int RansacItCounterT;        
+        class ApplyRansacThreadEntryThreadParams
+        {
+          public:
+            
+            std::string const* m_transfNamePtr;
+            GTParameters const* m_inputGTParamsPtr;
+            double m_maxDMapError;
+            double m_maxIMapError;
+            double m_maxDMapRmse;
+            double m_maxIMapRmse;
+            double m_assurance;
+            RansacItCounterT m_maxIterations;
+            RansacItCounterT m_maxIterationsDivFactor;
+            bool* m_returnValuePtr;
+            boost::mutex* m_mutexPtr;
+            bool* m_keepRunningFlagPtr;
+            std::map< double, GTParameters::TiePoint > const* m_tpsMapPtr;
+            std::auto_ptr< GeometricTransformation >* m_bestTransformationPtrPtr;
+            double* m_bestParamsDRMSEPtr;
+            double* m_bestParamsIRMSEPtr;
+            double* m_bestParamsConvexHullAreaPtr;
+            int m_randSeed;
+            
+            ApplyRansacThreadEntryThreadParams() {};
+            
+            ApplyRansacThreadEntryThreadParams( const ApplyRansacThreadEntryThreadParams& other )
+            {
+              operator=( other );
+            };
+            
+            ~ApplyRansacThreadEntryThreadParams() {};
+            
+            const ApplyRansacThreadEntryThreadParams& operator=(
+              const ApplyRansacThreadEntryThreadParams& other )
+            {
+              m_transfNamePtr = other.m_transfNamePtr;
+              m_inputGTParamsPtr = other.m_inputGTParamsPtr;
+              m_maxDMapError = other.m_maxDMapError;
+              m_maxIMapError = other.m_maxIMapError;
+              m_maxDMapRmse = other.m_maxDMapRmse;
+              m_maxIMapRmse = other.m_maxIMapRmse;
+              m_assurance = other.m_assurance;
+              m_maxIterations = other.m_maxIterations;
+              m_maxIterationsDivFactor = other.m_maxIterationsDivFactor;
+              m_returnValuePtr = other.m_returnValuePtr;
+              m_mutexPtr = other.m_mutexPtr;
+              m_keepRunningFlagPtr = other.m_keepRunningFlagPtr;
+              m_tpsMapPtr = other.m_tpsMapPtr;
+              m_bestTransformationPtrPtr = other.m_bestTransformationPtrPtr;
+              m_bestParamsDRMSEPtr = other.m_bestParamsDRMSEPtr;
+              m_bestParamsIRMSEPtr = other.m_bestParamsIRMSEPtr;
+              m_bestParamsConvexHullAreaPtr = other.m_bestParamsConvexHullAreaPtr;
+              m_randSeed = other.m_randSeed;
+              
+              return other;
+            };
+        };
         
+
         /*! \brief Default constructor. */
         GTFilter();
 
@@ -113,6 +188,14 @@ namespace te
         */
         static double getPt1ConvexHullArea( 
           const std::vector< GTParameters::TiePoint >& tiePoints );
+          
+        /*! 
+          \brief Surf locator thread entry.
+          
+          \param paramsPtr A pointer to the thread parameters.
+        */      
+        static void applyRansacThreadEntry( 
+          te::gm::GTFilter::ApplyRansacThreadEntryThreadParams* paramsPtr);          
 
     };
   } // end namespace gm

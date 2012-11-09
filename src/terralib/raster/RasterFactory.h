@@ -211,7 +211,6 @@ namespace te
         /*!
           \brief This method may be re-implemented by subclasses in order to have a finner control for the raster object instantiation.
 
-          \param rType  The name of the specific driver to create the raster.
           \param rinfo  The necessary information to open the raster.
           \param p      The access policy.
 
@@ -219,7 +218,7 @@ namespace te
 
           \note The caller will take the ownership of the returned pointer.
         */
-        virtual Raster* iOpen(const std::string& rType, const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p = te::common::RAccess);
+        virtual Raster* iOpen(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p = te::common::RAccess);
 
         /*!
           \brief This method must be implemented by subclasses (raster drivers).

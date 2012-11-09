@@ -60,17 +60,20 @@ namespace te
 
         void remove(const te::da::DataSetType* dt);
 
+        void remove(const std::string& datasetName);
+
         void remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t limit = 0); 
 
         void remove(const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
-        void add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t limit = 0);
+        void add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
 
         void add(const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
         void update(const te::da::DataSetType* dt,
                     te::da::DataSet* f,
                     const std::vector<te::dt::Property*>& properties,
+                    const std::map<std::string, std::string>& options,
                     std::size_t limit = 0);
 
         void update(const te::da::DataSetType* dt, 

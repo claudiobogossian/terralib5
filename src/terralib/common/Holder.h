@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Holder.h
+  \file terralib/common/Holder.h
 
   \brief An auxiliary data structure for helping to control the garbage collection of C++ objects.
 */

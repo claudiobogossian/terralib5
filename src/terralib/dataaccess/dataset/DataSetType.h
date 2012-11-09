@@ -33,24 +33,23 @@
 // STL
 #include <string>
 
-// Boost
-#include <boost/shared_ptr.hpp>
-
 namespace te
 {
 // Forward declarations 
   namespace gm { class GeometryProperty; }
 
+  namespace rst { class RasterProperty; }
+
   namespace da
   {
     class CheckConstraint;
-    class Constraint;    
-    class DataSourceCatalog;    
-    class ForeignKey;    
+    class Constraint;
+    class DataSourceCatalog;
+    class ForeignKey;
     class Index;
     class PrimaryKey;
     class Sequence;
-    class UniqueKey;    
+    class UniqueKey;
 
     /*!
       \class DataSetType
@@ -103,7 +102,7 @@ namespace te
         DataSetType(const DataSetType& rhs);
 
         /*! Destructor */
-        ~DataSetType();        
+        ~DataSetType();
 
         /*!
           \brief Assignment operator not allowed.
@@ -120,7 +119,7 @@ namespace te
         /** @name General Descriptive Methods
          *  Methods for obtainning information about a given dataset.
          */
-        //@{        
+        //@{
 
         /*!
           \brief A human descriptive title for the DataSetType.
@@ -136,20 +135,20 @@ namespace te
         */
         void setTitle(const std::string& title) { m_title = title; }
 
-         /*!
+        /*!
           \brief It returns true if the DataSetType has at least one geometry property; otherwise, it returns false.
 
           \return True if the DataSetType has at least one geometry property; otherwise, it returns false.
         */
-        bool hasGeom() const;        
-        
+        bool hasGeom() const;
+
         /*!
           \brief It returns true if the DataSetType has a default geometry property; otherwise, it returns false.
 
           \return True if the DataSetType has a default geometry property; otherwise, it returns false.
         */
         bool hasDefaultGeom() const { return m_defaultGeom != 0; }
-                
+
         /*!
           \brief It returns the default geometric attribute of the dataset.
 
@@ -177,10 +176,56 @@ namespace te
           \brief It returns the index of the default geometric attribute of the dataset.
 
           \return The index of the default geometric attribute of the dataset.
-          
+
           \note The returned value will be npos if it doesn't have a geometry property or if it belongs to a nested dataset.
         */
         std::size_t getDefaultGeomPropertyPos() const;
+
+        /*!
+          \brief It returns true if the DataSetType has at least one raster property; otherwise, it returns false.
+
+          \return True if the DataSetType has at least one raster property; otherwise, it returns false.
+        */
+        bool hasRaster() const;
+
+        /*!
+          \brief It returns true if the DataSetType has a default raster property; otherwise, it returns false.
+
+          \return True if the DataSetType has a default raster property; otherwise, it returns false.
+        */
+        bool hasDefaultRaster() const { return m_defaultRaster != 0; }
+
+        /*!
+          \brief It returns the default raster attribute of the dataset.
+
+          \return The default raster attribute of the dataset.
+          
+          \pre Call this method only if it has a default raster property.
+        */
+        te::rst::RasterProperty* getDefaultRasterProperty() const { return m_defaultRaster; }
+
+        /*!
+          \brief It sets the default raster property.
+
+          \param p The default raster property.
+        */
+        void setDefaultRasterProperty(te::rst::RasterProperty* p) { m_defaultRaster = p; }
+
+        /*!
+          \brief Finds the first raster property or returns NULL if none is found.
+
+          \return The first raster property or NULL if none is found.
+        */
+        te::rst::RasterProperty* findFirstRasterProperty() const;
+
+        /*!
+          \brief It returns the index of the default raster attribute of the dataset.
+
+          \return The index of the default raster attribute of the dataset.
+
+          \note The returned value will be npos if it doesn't have a raster property or if it belongs to a nested dataset.
+        */
+        std::size_t getDefaultRasterPropertyPos() const;
 
         /*!
           \brief It returns the catalog that owns the DataSetType.
@@ -198,7 +243,7 @@ namespace te
                    remember to detach it from the catalog before calling this method.
         */
         void setCatalog(DataSourceCatalog* catalog) { m_catalog = catalog; }
-        
+
         /*!
           \brief It returns if the DataSetType was full loaded from data source.
 
@@ -228,7 +273,7 @@ namespace te
           \param c The dataset category.
         */
         void setCategory(int c) { m_category = c; }
-       
+
         //@}
 
         /** @name Primary Key Methods
@@ -285,7 +330,7 @@ namespace te
           \exception Exception For foreign keys, it throws an exception if the DataSetType is associated to a DataSourceCatalog
                                and the foreign key is referencing another DataSetType that is not.
         */
-        void add(Constraint* c);     
+        void add(Constraint* c);
 
          /*!
           \brief It removes the constraint.
@@ -312,8 +357,8 @@ namespace te
 
           \return The number of unique keys defined for the dataset type.
         */
-        std::size_t getNumberOfUniqueKeys() const { return m_uniqueKeys.size(); }           
-        
+        std::size_t getNumberOfUniqueKeys() const { return m_uniqueKeys.size(); }
+
          /*!
           \brief It returns the i-th unique key.
 
@@ -576,7 +621,7 @@ namespace te
 
           \param p The Property to be removed.
 
-          \post Any association with Primary Keys, and other stuffs will be automatically removed.          
+          \post Any association with Primary Keys, and other stuffs will be automatically removed.
           \post The Property pointer will be invalidated.
 
           \todo Update CheckConstraint entries!
@@ -675,6 +720,7 @@ namespace te
       private:
 
         te::gm::GeometryProperty* m_defaultGeom;            //!< A pointer to the default geometry property.
+        te::rst::RasterProperty* m_defaultRaster;           //!< A pointer to the default raster property.
         DataSourceCatalog* m_catalog;                       //!< The associated catalog.        
         PrimaryKey* m_pk;                                   //!< The DataSetType primary key.
         std::string m_title;                                //!< A brief description of the DataSetType.
@@ -686,7 +732,15 @@ namespace te
         int m_category;                                     //!< A category
     };
 
-    typedef boost::shared_ptr<DataSetType> DataSetTypePtr;
+    inline bool te::da::DataSetType::hasGeom() const
+    {
+      return hasPropertyOfType(te::dt::GEOMETRY_TYPE);
+    }
+
+    inline bool DataSetType::hasRaster() const
+    {
+      return hasPropertyOfType(te::dt::RASTER_TYPE);
+    }
 
   } // end namespace da
 }   // end namespace te

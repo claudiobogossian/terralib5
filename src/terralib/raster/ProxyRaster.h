@@ -65,6 +65,8 @@ namespace te
         /*! \brief Destructor. */
         ~ProxyRaster();
 
+        void swap(std::size_t first, std::size_t second);
+
         void open(const std::map<std::string, std::string>& rinfo, te::common::AccessPolicy p = te::common::RAccess);
 
         std::map<std::string, std::string> getInfo() const;
@@ -89,6 +91,8 @@ namespace te
         std::vector<Band*> m_bands;                 //!< The proxy raster bands.
         std::map<std::string, std::string> m_rinfo; //!< Proxy raster additional information.
     };
+
+    typedef boost::shared_ptr<ProxyRaster> ProxyRasterPtr;
 
   } // end namespace rst
 }   // end namespace te

@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/common/AbstractParameters.h
-  
+
   \brief Abstract parameters base interface.
 */
 
@@ -36,7 +36,7 @@ namespace te
   {
     /*!
       \class AbstractParameters
-      
+
       \brief Abstract parameters base interface.
     */
     class TECOMMONEXPORT AbstractParameters
@@ -54,10 +54,10 @@ namespace te
 
         /*!
           \brief Create a clone copy of this instance.
-          
+
           \return A clone copy of this instance.
-          
-          \note The returned pointer must be deleted by the caller of this method when necessary.
+
+          \note The caller will take the ownership of the returned pointer.
         */
         virtual AbstractParameters* clone() const = 0;
     };

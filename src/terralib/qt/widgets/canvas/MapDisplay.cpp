@@ -224,7 +224,10 @@ void te::qt::widgets::MapDisplay::onResizeTimeout()
 void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize& size)
 {
   if(m_extent == 0)
+  {
+    update();
     return;
+  }
 
   te::gm::Envelope e = *m_extent;
   if(m_resizePolicy == te::qt::widgets::MapDisplay::Fixed)

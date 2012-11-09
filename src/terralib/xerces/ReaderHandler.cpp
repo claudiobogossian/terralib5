@@ -46,6 +46,7 @@ te::xerces::ReaderHandler::ReaderHandler()
 void te::xerces::ReaderHandler::reset()
 {
   m_nodeType = te::xml::UNKNOWN;
+  m_nspaces.clear();
 }
 
 void te::xerces::ReaderHandler::characters(const XMLCh* const chars, const XMLSize_t length)
@@ -66,6 +67,7 @@ void te::xerces::ReaderHandler::endElement(const XMLCh* const /*uri*/, const XML
     return;
 
   m_nodeType = te::xml::UNKNOWN;
+  m_nspaces.clear();
   //m_uri = uri;
   //m_localname = localname;
   //m_qname = qname;
@@ -78,7 +80,7 @@ void te::xerces::ReaderHandler::ignorableWhitespace(const XMLCh* const /*chars*/
   //m_len = length;
 }
 
-void te::xerces::ReaderHandler::processingInstruction(const XMLCh* const /*target*/, const XMLCh* const /*data*/)
+void te::xerces::ReaderHandler::processingInstruction(const XMLCh* const target, const XMLCh* const data)
 {
   m_nodeType = te::xml::UNKNOWN;
 }
@@ -102,12 +104,14 @@ void te::xerces::ReaderHandler::startElement(const XMLCh* const uri, const XMLCh
   m_attrs = &attrs;  
 }
 
-void te::xerces::ReaderHandler::startPrefixMapping(const XMLCh* const /*prefix*/, const XMLCh* const /*uri*/)
+void te::xerces::ReaderHandler::startPrefixMapping(const XMLCh* const prefix, const XMLCh* const uri)
 {
   m_nodeType = te::xml::UNKNOWN;
+
+  m_nspaces.push_back(std::pair<const XMLCh*, const XMLCh*>(prefix, uri));
 }
 
-void te::xerces::ReaderHandler::endPrefixMapping(const XMLCh* const /*prefix*/)
+void te::xerces::ReaderHandler::endPrefixMapping(const XMLCh* const prefix)
 {
   m_nodeType = te::xml::UNKNOWN;
 }

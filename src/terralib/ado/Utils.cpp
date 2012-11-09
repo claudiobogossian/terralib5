@@ -28,7 +28,11 @@
 #include "../datatype.h"
 #include "../dataaccess.h"
 #include "../geometry/GeometryProperty.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/Enums.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
+#include "DataSet.h"
 #include "Config.h"
 #include "Utils.h"
 #include "Exception.h"
@@ -529,6 +533,156 @@ const std::string& te::ado::GetGeometryName(te::gm::GeomType t)
   }
 }
 
+const te::gm::GeomType te::ado::GetGeometryType(std::string t)
+{
+  
+  if(t == Globals::sm_geometryTypeName)
+    return te::gm::GeometryType;
+
+  else if(t == Globals::sm_pointTypeName)
+    return te::gm::PointType;
+
+
+  else if(t == Globals::sm_lineStringTypeName)
+    return te::gm::LineStringType;
+
+
+  else if(t == Globals::sm_polygonTypeName)
+    return te::gm::PolygonType;
+
+
+  else if(t == Globals::sm_multiPointTypeName)
+    return te::gm::MultiPointType;
+
+
+  else if(t == Globals::sm_multiLineStringTypeName)
+    return te::gm::MultiLineStringType;
+
+
+  else if(t == Globals::sm_multiPolygonTypeName)
+    return te::gm::MultiPolygonType;
+
+
+  else if(t == Globals::sm_curvePolygonTypeName)
+    return te::gm::CurvePolygonType;
+
+
+  else if(t == Globals::sm_polyhedralSurfaceTypeName)
+    return te::gm::PolyhedralSurfaceType;
+
+
+  else if(t == Globals::sm_geometryZTypeName)
+    return te::gm::GeometryZType;
+
+
+  else if(t == Globals::sm_pointZTypeName)
+    return te::gm::PointZType;
+
+
+  else if(t == Globals::sm_lineStringZTypeName)
+    return te::gm::LineStringZType;
+
+
+  else if(t == Globals::sm_polygonZTypeName)
+    return te::gm::PolygonZType;
+
+
+  else if(t == Globals::sm_multiPointZTypeName)
+    return te::gm::MultiPointZType;
+
+
+  else if(t == Globals::sm_multiLineStringZTypeName)
+    return te::gm::MultiLineStringZType;
+
+
+  else if(t == Globals::sm_multiPolygonZTypeName)
+    return te::gm::MultiPolygonZType;
+
+
+  else if(t == Globals::sm_curvePolygonZTypeName)
+
+    return te::gm::CurvePolygonZType;
+
+  else if(t == Globals::sm_polyhedralSurfaceZTypeName)
+    return te::gm::PolyhedralSurfaceZType;
+
+
+  else if(t == Globals::sm_geometryMTypeName)
+    return te::gm::GeometryMType;
+
+
+  else if(t == Globals::sm_pointMTypeName)
+    return te::gm::PointMType;
+
+
+  else if(t == Globals::sm_lineStringMTypeName)
+    return te::gm::LineStringMType;
+
+
+  else if(t == Globals::sm_polygonMTypeName)
+    return te::gm::PolygonMType;
+
+
+  else if(t == Globals::sm_multiPointMTypeName)
+    return te::gm::MultiPointMType;
+
+
+  else if(t == Globals::sm_multiLineStringMTypeName)
+    return te::gm::MultiLineStringMType;
+
+
+  else if(t == Globals::sm_multiPolygonMTypeName)
+    return te::gm::MultiPolygonMType;
+
+
+  else if(t == Globals::sm_curvePolygonMTypeName)
+    return te::gm::CurvePolygonMType;
+
+
+  else if(t == Globals::sm_polyhedralSurfaceMTypeName)
+    return te::gm::PolyhedralSurfaceMType;
+
+
+  else if(t == Globals::sm_geometryZMTypeName)
+    return te::gm::GeometryZMType;
+
+
+  else if(t == Globals::sm_pointZMTypeName)
+    return te::gm::PointZMType;
+
+
+  else if(t == Globals::sm_lineStringZMTypeName)
+    return te::gm::LineStringZMType;
+
+
+  else if(t == Globals::sm_polygonZMTypeName)
+    return te::gm::PolygonZMType;
+
+
+  else if(t == Globals::sm_multiPointZMTypeName)
+    return te::gm::MultiPointZMType;
+
+
+  else if(t == Globals::sm_multiLineStringZMTypeName)
+    return te::gm::MultiLineStringZMType;
+
+
+  else if(t == Globals::sm_multiPolygonZMTypeName)
+    return te::gm::MultiPolygonZMType;
+
+
+  else if(t == Globals::sm_curvePolygonZMTypeName)
+    return te::gm::CurvePolygonZMType;
+
+
+  else if(t == Globals::sm_polyhedralSurfaceZMTypeName)
+    return te::gm::PolyhedralSurfaceZMType;
+
+  else
+    return te::gm::UnknownGeometryType;
+  
+}
+
 bool te::ado::isGeomProperty(_ConnectionPtr adoConn, std::string tableName, std::string columnName)
 {
   ADOX::_CatalogPtr pCatalog;
@@ -843,4 +997,52 @@ void te::ado::Convert2Ado(const te::gm::Geometry* geo, _variant_t & var)
   memcpy(newWkb+size, &srid, 4);
 
   te::ado::Blob2Variant(newWkb, newWkbSize, var);
+}
+
+int te::ado::getSRID(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp)
+{
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
+    sel += geomp->getParent()->getName() + "' and f_geometry_column = 'spatial_data'";
+    
+   _variant_t variantSel;
+   variantSel.SetString(sel.c_str());
+     
+  try
+  {
+    TESTHR(recset->Open(variantSel, _variant_t((IDispatch *)adoConn), 
+      adOpenStatic, adLockReadOnly, adCmdText));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return (int32_t)recset->GetFields()->GetItem("srid")->GetValue();
+}
+
+te::gm::GeomType te::ado::getType(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp)
+{
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset))); 
+
+  std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
+  sel += geomp->getParent()->getName() + "' and f_geometry_column = 'spatial_data'";
+
+  _variant_t variantSel;
+  variantSel.SetString(sel.c_str());
+
+  try
+  {
+    TESTHR(recset->Open(variantSel, _variant_t((IDispatch *)adoConn), 
+      adOpenStatic, adLockReadOnly, adCmdText));
+  }
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  return GetGeometryType((LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue());
 }

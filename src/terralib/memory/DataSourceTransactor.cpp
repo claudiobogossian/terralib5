@@ -148,6 +148,11 @@ void te::mem::DataSourceTransactor::cancel()
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
+boost::int64_t te::mem::DataSourceTransactor::getLastInsertId()
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
 te::da::DataSource* te::mem::DataSourceTransactor::getDataSource() const
 {
   return m_ds;

@@ -37,13 +37,13 @@ void CopyingData()
 
 // let's open the destination datasource
   std::map<std::string, std::string> pgisInfo;
-  pgisInfo["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  pgisInfo["user"] = "postgres";
-  pgisInfo["password"] = "sitim110";
-  pgisInfo["dbname"] = "terralib4";
-  pgisInfo["connect_timeout"] = "4"; 
+  pgisInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  pgisInfo["PG_USER"] = "postgres";
+  pgisInfo["PG_PASSWORD"] = "sitim110";
+  pgisInfo["PG_DB_NAME"] = "terralib4";
+  pgisInfo["PG_CONNECT_TIMEOUT"] = "4"; 
 
-  te::da::DataSource* dsDestination = te::da::DataSourceFactory::make("PostGIS");
+  te::da::DataSource* dsDestination = te::da::DataSourceFactory::make("POSTGIS");
   dsDestination->open(pgisInfo);
 
 // get a transactor to interact to the data source

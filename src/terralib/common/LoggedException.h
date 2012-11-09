@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LoggedException.h
+  \file terralib/common/LoggedException.h
 
   \brief A class that automatically logs the exception message.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_LOGGEDEXCEPTION_H
 #define __TERRALIB_COMMON_INTERNAL_LOGGEDEXCEPTION_H

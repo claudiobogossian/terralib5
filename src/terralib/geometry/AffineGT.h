@@ -40,17 +40,17 @@ namespace te
   {
     /*!
       \class AffineGT
-      
+
       \brief 2D Affine Geometric transformation.
-      
+
       \note The transformation parameters (inside GTParameters::m_directParameters) are disposed on the following form:
-      
+
       \code
-| u | = | a b c | * | x |
-| v |   | d e f |   | y |
-        | 0 0 1 |
-        
-GTParameters::m_directParameters = [ a b c d e f ]
+        | u | = | a b c | * | x |
+        | v |   | d e f |   | y |
+                | 0 0 1 |
+
+        GTParameters::m_directParameters = [ a b c d e f ]
       \endcode
     */
     class TEGEOMEXPORT AffineGT : public GeometricTransformation
@@ -67,37 +67,27 @@ GTParameters::m_directParameters = [ a b c d e f ]
 
         bool isValid( const GTParameters& params ) const;
 
-        void directMap( const GTParameters& params, const Coord2D& pt1, 
-          Coord2D& pt2 ) const;
+        void directMap( const GTParameters& params, const Coord2D& pt1, Coord2D& pt2 ) const;
           
-        void inverseMap( const GTParameters& params, const Coord2D& pt2, 
-          Coord2D& pt1 ) const;
+        void inverseMap( const GTParameters& params, const Coord2D& pt2, Coord2D& pt1 ) const;
 
         unsigned int getMinRequiredTiePoints() const;
         
         /*!
           \brief Returns the basic set of transform parameters given by the decomposition of a given affine transformation parameters as described above.
-          
-          \param transfParams Input affine transformation parameters.
-        
-          \param translationX X axis translation (combination of a squeeze and scaling).
-          
-          \param translationY Y axis translation (combination of a squeeze and scaling).
-          
-          \param scalingFactorX X axis scaling.
-          
-          \param scalingFactorX Y axis scaling.
-          
-          \param skew Skew.
-          
-          \param squeeze Aspect ratio changes.
-          
-          \param scaling Uniform scaling.
-          
-          \param rotation Rotation angle (radians).
-          
+
+          \param transfParams    Input affine transformation parameters.
+          \param translationX    X axis translation (combination of a squeeze and scaling).
+          \param translationY    Y  axis translation (combination of a squeeze and scaling).
+          \param scalingFactorX  X axis scaling.
+          \param scalingFactorX  Y axis scaling.
+          \param skew            Skew.
+          \param squeeze         Aspect ratio changes.
+          \param scaling         Uniform scaling.
+          \param rotation        Rotation angle (radians).
+
           \return true if ok, false on errors.
-        */       
+        */
         static bool decompose(const std::vector< double >& transfParams,
                               double& translationX, double& translationY,
                               double& scalingFactorX, double& scalingFactorY, double& skew,

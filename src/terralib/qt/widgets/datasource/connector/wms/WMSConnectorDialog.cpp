@@ -30,7 +30,7 @@
 #include "../../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../Exception.h"
 #include "../../core/DataSource.h"
-#include "ui/WMSConnectorDialogForm.h"
+#include "ui_WMSConnectorDialogForm.h"
 #include "WMSConnectorDialog.h"
 
 // Qt

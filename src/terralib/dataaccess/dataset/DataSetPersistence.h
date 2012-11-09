@@ -48,8 +48,8 @@ namespace te
     class DataSet;
     class DataSetItem;
     class DataSetType;
-    class DataSourceTransactor;    
-      
+    class DataSourceTransactor;
+
     /*!
       \brief This class is responsible for persisting datasets in a data source.
 
@@ -58,7 +58,7 @@ namespace te
       persistence support. 
 
       \note Some methods of this class need the full DataSetType information (Primary Keys and other stuffs).
-      
+
       \sa DataSet, DataSetPersistence, DataSetType, DataSourceTransactor
     */
     class TEDATAACCESSEXPORT DataSetPersistence : public boost::noncopyable
@@ -77,7 +77,7 @@ namespace te
           \return A pointer to the underlying data source transactor.
         */
         virtual DataSourceTransactor* getTransactor() const = 0;
-        
+
         /** @name Pure Virtual Methods
          *  Methods that subclasses must implement in order to support the persistence interface.
          */
@@ -157,7 +157,7 @@ namespace te
           save all the dataset data.
 
           \param dt       The source dataset definition.
-          \param d        The source dataset data.          
+          \param d        The source dataset data.
           \param options  A list of optional modifiers. It is driver specific.
           \param limit    The number of items to be used from the input dataset. If set to 0 (default) all items are used.
 
@@ -186,6 +186,8 @@ namespace te
           \exception Exception It throws an exception if the elements of the dataset can not be removed.
         */
         virtual void remove(const DataSetType* dt) = 0;
+
+        virtual void remove(const std::string& datasetName) = 0;
 
         /*!
           \brief It removes all data from the dataset.
@@ -288,7 +290,29 @@ namespace te
                 current position. So, keep in mind that it is the caller responsability
                 to inform the dataset 'd' in the right position (and a valid one) to start processing it.
         */
-        virtual void add(const DataSetType* dt, DataSet* d, std::size_t limit = 0) = 0;
+        virtual void add(const DataSetType* dt, DataSet* d, std::size_t limit = 0);
+
+        /*!
+          \brief It adds more data items to the dataset in the data source.
+
+          \param dt       The source dataset definition.
+          \param d        The data items to be added to the dataset.
+          \param options  A list of optional modifiers. It is driver specific.
+          \param limit    The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+          
+          \pre All parameters must be valid pointers.
+          \pre The DataSetType must be a valid in the transactor data source catalog.
+
+          \post All data items in dataset will be added to data source using DataSetType 'dt' definition.
+          \post It is the caller responsability to release the dataset 'd' pointer.
+
+          \exception Exception It throws an exception if the data items can not be added.
+
+          \note DataSetPersistence will start reading the dataset 'd' in the
+                current position. So, keep in mind that it is the caller responsability
+                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+        */
+        virtual void add(const DataSetType* dt, DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0) = 0;
 
         /*!
           \brief It adds a dataset item to the dataset in the data source.
@@ -332,6 +356,7 @@ namespace te
         virtual void update(const DataSetType* dt,
                             DataSet* dataset,
                             const std::vector<te::dt::Property*>& properties,
+                            const std::map<std::string, std::string>& options,
                             std::size_t limit = 0) = 0;
 
         /*!

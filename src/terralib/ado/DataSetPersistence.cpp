@@ -73,7 +73,7 @@ void te::ado::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSe
 
   dtp->create(dt);
 
-  add(dt, d);
+  add(dt, d, options, limit);
 }
 
 void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
@@ -102,6 +102,11 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
 
   te::da::DataSet* ds = m_t->getDataSet(dt->getName());
 
+}
+
+void te::ado::DataSetPersistence::remove(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
@@ -175,7 +180,7 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::
 
 }
 
-void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
+void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
   do
   {
@@ -219,9 +224,10 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 }
 
 void te::ado::DataSetPersistence::update(const te::da::DataSetType* dt,
-                      te::da::DataSet* dataset,
-                      const std::vector<te::dt::Property*>& properties,
-                      std::size_t /*limit*/)
+                                         te::da::DataSet* dataset,
+                                         const std::vector<te::dt::Property*>& properties,
+                                         const std::map<std::string, std::string>& options,
+                                         std::size_t /*limit*/)
 {
   try
   {

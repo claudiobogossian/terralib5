@@ -37,6 +37,15 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
+te::rst::RasterProperty::RasterProperty(const std::string& name,
+                                        bool isRequired,
+                                        unsigned int id,
+                                        te::dt::Property* parent)
+  : te::dt::SimpleProperty(name, te::dt::RASTER_TYPE, isRequired, 0, id, parent),
+    m_grid(0)
+{
+}
+
 te::rst::RasterProperty::RasterProperty(Grid* grid,
                                         const std::vector<BandProperty*>& bands,
                                         const std::map<std::string, std::string>& rinfo,

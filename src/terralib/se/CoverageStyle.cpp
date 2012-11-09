@@ -26,6 +26,8 @@
 // TerraLib
 #include "CoverageStyle.h"
 
+const std::string te::se::CoverageStyle::sm_type("CoverageStyle");
+
 te::se::CoverageStyle::CoverageStyle()
   : m_coverageName(0)
 {
@@ -47,3 +49,7 @@ const std::string* te::se::CoverageStyle::getCoverageName() const
   return m_coverageName;
 }
 
+const std::string& te::se::CoverageStyle::getType() const
+{
+  return sm_type;
+}

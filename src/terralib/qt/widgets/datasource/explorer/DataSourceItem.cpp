@@ -54,7 +54,7 @@ QVariant te::qt::widgets::DataSourceItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
   {
-    te::da::DataSource* ds = te::da::DataSourceManager::getInstance().find(m_ds->getId());
+    te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().find(m_ds->getId());
 
     if(ds == 0 || !ds->isOpened())
       return QVariant(QIcon::fromTheme("closed-datasource"));

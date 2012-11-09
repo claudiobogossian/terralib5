@@ -44,7 +44,7 @@
 #include <limits>
 
 te::mem::DataSet::DataSet(te::da::DataSetType* dt, DataSourceTransactor* t)
-  : m_items(new boost::ptr_vector<DataSetItem>),
+  : m_items(new boost::ptr_vector<te::mem::DataSetItem>),
     m_dt(dt),
     m_parent(0),
     m_t(t),
@@ -53,7 +53,7 @@ te::mem::DataSet::DataSet(te::da::DataSetType* dt, DataSourceTransactor* t)
 }
 
 te::mem::DataSet::DataSet(te::da::DataSet& rhs)
-  : m_items(new boost::ptr_vector<DataSetItem>),
+  : m_items(new boost::ptr_vector<te::mem::DataSetItem>),
     m_dt(0),
     m_parent(0),
     m_t(0),
@@ -76,7 +76,7 @@ te::mem::DataSet::DataSet(const DataSet& rhs, const bool deepCopy)
     m_dt.reset(static_cast<te::da::DataSetType*>(rhs.getType()->clone()));
 
   if(deepCopy)
-    m_items.reset(new boost::ptr_vector<DataSetItem>(*(rhs.m_items)));
+    m_items.reset(new boost::ptr_vector<te::mem::DataSetItem>(*(rhs.m_items)));
   else
     m_items = rhs.m_items;
 }
@@ -119,7 +119,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, std::size_t limit)
 
   do
   {
-    std::auto_ptr<DataSetItem> item(new DataSetItem(this, m_dt.get(), false));
+    std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(this, m_dt.get(), false));
 
     for(std::size_t c = 0; c < nproperties; ++c)
     {
@@ -163,7 +163,7 @@ void te::mem::DataSet::copy(te::da::DataSet& src, const std::vector<te::dt::Prop
 
   do
   {
-    std::auto_ptr<DataSetItem> item(new DataSetItem(this, m_dt.get(), false));
+    std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(this, m_dt.get(), false));
 
     for(std::size_t c = 0; c < nproperties; ++c)
     {
@@ -311,14 +311,14 @@ void te::mem::DataSet::setFilter(te::dt::Property* /*p*/, const te::gm::Envelope
 
 te::da::DataSetItem* te::mem::DataSet::getItem() const
 {
-  return (*m_items)[m_i].clone();
+  return static_cast<te::da::DataSetItem*>((*m_items)[m_i].clone());
 }
 
 void te::mem::DataSet::add(te::da::DataSetItem* item)
 {
   std::auto_ptr<te::da::DataSetItem> pitem(item);
 
-  m_items->push_back(new DataSetItem(*item, this, m_dt.get(), false));
+  m_items->push_back(new te::mem::DataSetItem(*item, this, m_dt.get(), false));
 }
 
 bool te::mem::DataSet::isEmpty() const
@@ -673,14 +673,14 @@ void te::mem::DataSet::setDateTime(const std::string& name, const te::dt::DateTi
   (*m_items)[m_i].setDateTime(name, value);
 }
 
-void te::mem::DataSet::getArray(int i, std::vector<boost::int16_t>& a) const
+void te::mem::DataSet::getArray(int i, std::vector<boost::int16_t>& values) const
 {
-  return (*m_items)[m_i].getArray(i, a);
+  return (*m_items)[m_i].getArray(i, values);
 }
 
-void te::mem::DataSet::getArray(const std::string& name, std::vector<boost::int16_t>& a) const
+void te::mem::DataSet::getArray(const std::string& name, std::vector<boost::int16_t>& values) const
 {
-  return (*m_items)[m_i].getArray(name, a);
+  return (*m_items)[m_i].getArray(name, values);
 }
 
 const unsigned char* te::mem::DataSet::getWKB(int i) const
@@ -723,9 +723,9 @@ te::dt::AbstractData* te::mem::DataSet::getValue(const std::string& name) const
   return (*m_items)[m_i].getValue(name);
 }
 
-void te::mem::DataSet::setValue(int i, te::dt::AbstractData* ad)
+void te::mem::DataSet::setValue(int i, te::dt::AbstractData* value)
 {
-  (*m_items)[m_i].setValue(i, ad);
+  (*m_items)[m_i].setValue(i, value);
 }
 
 void te::mem::DataSet::setValue(const std::string& name, te::dt::AbstractData* ad)

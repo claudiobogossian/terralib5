@@ -111,6 +111,8 @@ namespace te
 
         void cancel();
 
+        boost::int64_t getLastInsertId();
+
         te::da::DataSource* getDataSource() const;
 
         _ConnectionPtr getADOConnection();

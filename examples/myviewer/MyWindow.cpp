@@ -51,8 +51,8 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 {
   setWindowTitle("My Main Window - Display: Root Folder");
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
-  std::string dsInfo("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+  std::string dsInfo("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
   ds->open(dsInfo);
 
   m_dataSourceSet.insert(ds);
@@ -81,7 +81,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     if(id.find("public.br_focos") != std::string::npos ||
       id.find("public.br_munic") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -92,7 +92,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.rj_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -102,7 +102,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.mg_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -112,7 +112,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.goias_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -122,7 +122,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.sp_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -147,7 +147,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
 //alterar este codigo para pegar todos os layers (por enquanto vou pegar apenas o 40 e o 41)
   std::string name = "40: locations";
-  te::da::DataSetType* dst = loader->getDataSetType(name, true);
+  te::da::DataSetTypePtr dst(loader->getDataSetType(name, true));
   dst->setId(2340);  // teste
   if(catalog->getDataSetType(name) == 0)
     catalog->add(dst);
@@ -159,7 +159,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   //layer->setSRID(gp->getSRID());
 
   name = "41: locations";
-  dst = loader->getDataSetType(name, true);
+  dst.reset(loader->getDataSetType(name, true));
   dst->setId(2341);  // teste
   if(catalog->getDataSetType(name) == 0)
     catalog->add(dst);
@@ -197,7 +197,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     std::string& id = (datasets[i]);
     if(id.find("hidro_") == std::string::npos)
       continue;
-    te::da::DataSetType* dst = loader->getDataSetType(id, true);
+    te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
     if(catalog->getDataSetType(id) == 0)
       catalog->add(dst);
     MyLayer* layer = new MyLayer(id, id, temporalImagesFolderLayer);
@@ -320,6 +320,10 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_keepOnMemoryAction->setCheckable(true);
   m_treeMenu->addAction(m_keepOnMemoryAction);
   connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
+
+  m_getFreeMemoryAction = new QAction("&Get Free Memory", m_treeMenu);
+  m_treeMenu->addAction(m_getFreeMemoryAction);
+  connect(m_getFreeMemoryAction, SIGNAL(triggered()), this, SLOT(getFreeMemorySlot()));
 
   m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
   m_treeMenu->addAction(m_plotTemporalDistanceAction);
@@ -1666,7 +1670,7 @@ void MyWindow::addLayerSlot()
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
   te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
 
-  te::da::DataSetType* dst = loader->getDataSetType(lname, true);
+  te::da::DataSetTypePtr dst(loader->getDataSetType(lname, true));
   dst->setCatalog(catalog);
   if(dst->getPrimaryKey() == 0)
   {
@@ -1682,7 +1686,7 @@ void MyWindow::addLayerSlot()
     if(ok && !items.isEmpty())
     {
       int b;
-      te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst);
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst.get());
       pk->add(dst->getProperty(item.toStdString()));
       b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
       while(b == QMessageBox::Ok)
@@ -1729,9 +1733,8 @@ void MyWindow::addLayerSlot()
     }
 
     int srid = gp->getSRID();
-    if(srid <= 0)
+    if(srid == 4269 || srid <= 0) // na lib projection nao tem 4269
     {
-      //srid = 4326; // teste para country.shp
       std::map<int, QString> sridMap;
       std::map<int, QString>::iterator it;
 
@@ -2105,4 +2108,42 @@ void MyWindow::removeLegendSlot()
   m_layerExplorerModel->removeLegend(m_layerExplorer->getPopupIndex());
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
   updateDisplays((MyLayer*)(layerItem->getRefLayer()));
+}
+
+void MyWindow::getFreeMemorySlot()
+{
+  int size = getFreeMemory();
+  size /= (1<<20);
+  QString msg;
+  msg.setNum(size);
+  msg.insert(0, "Free Memory: ");
+  msg += " MBytes";
+  QMessageBox::information(this, "Free Memory Size", msg);
+}
+
+int MyWindow::getFreeMemory()
+{
+  int i, j;
+  char* c[1<<14];
+
+  try
+  {
+    i = 0;
+    while(c[i] = new char[1<<20])
+      ++i;
+
+    j = 0;
+    while(j != i)
+      delete []c[j++];
+  }
+  catch(const std::exception&)
+  {
+    j = 0;
+    while(j != i)
+      delete []c[j++];
+  }
+
+  if(i > 0)
+    --i;
+  return i * (1<<20);
 }

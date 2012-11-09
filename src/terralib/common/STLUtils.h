@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file STLUtils.h
+  \file terralib/common/STLUtils.h
 
   \brief This file contains several utility functions for dealing with STL containers.
 */

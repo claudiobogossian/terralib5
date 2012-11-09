@@ -49,15 +49,15 @@ void TsDataSourceCatalog::tcCreateEmptyCatalog()
 //#ifdef TE_COMPILE_ALL
   {
     te::da::DataSourceCatalog catalog;
-    catalog.setId(101010);    
+    catalog.setId(101010);
 
     CPPUNIT_ASSERT(catalog.getId() == 101010);
 
     CPPUNIT_ASSERT(catalog.getDataSource() == 0);
 
-    CPPUNIT_ASSERT(catalog.getDataSetTypeById(10010) == 0);
+    //CPPUNIT_ASSERT(catalog.getDataSetTypeById(10010) == 0);
     CPPUNIT_ASSERT(catalog.getDataSetType("10010") == 0);
-    CPPUNIT_ASSERT(catalog.getSequenceById(11010) == 0);
+    //CPPUNIT_ASSERT(catalog.getSequenceById(11010) == 0);
     CPPUNIT_ASSERT(catalog.getSequence("11010") == 0);
   }
 //#endif  // TE_COMPILE_ALL
@@ -71,7 +71,7 @@ void TsDataSourceCatalog::tcOneDataSetType()
   {
     te::da::DataSourceCatalog catalog;
 
-    te::da::DataSetType* dt = new te::da::DataSetType("dataset_type", 666);
+    te::da::DataSetTypePtr dt(new te::da::DataSetType("dataset_type", 666));
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt));
 
@@ -86,7 +86,7 @@ void TsDataSourceCatalog::tcOneDataSetType()
   {
     te::da::DataSourceCatalog catalog;
 
-    te::da::DataSetType* dt = new te::da::DataSetType("dataset_type", 666);
+    te::da::DataSetTypePtr dt(new te::da::DataSetType("dataset_type", 666));
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt));
 
@@ -97,13 +97,13 @@ void TsDataSourceCatalog::tcOneDataSetType()
     dt->add(new te::gm::GeometryProperty("attribute_geom_polm", 4326, te::gm::PolygonMType, true, 0, 23331));
     dt->add(new te::dt::SimpleProperty("attribute_int_serial", te::dt::INT32_TYPE, false, 0, 23));
 
-    CPPUNIT_ASSERT_NO_THROW(catalog.remove(dt));
+    CPPUNIT_ASSERT_NO_THROW(catalog.remove(dt.get()));
   }
 
   {
     te::da::DataSourceCatalog catalog;
 
-    te::da::DataSetType* dt = new te::da::DataSetType("dataset_type", 666);
+    te::da::DataSetTypePtr dt(new te::da::DataSetType("dataset_type", 666));
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt));
 
@@ -114,23 +114,18 @@ void TsDataSourceCatalog::tcOneDataSetType()
     dt->add(new te::gm::GeometryProperty("attribute_geom_polm", 4326, te::gm::PolygonMType, true, 0, 23331));
     dt->add(new te::dt::SimpleProperty("attribute_int_serial", te::dt::INT32_TYPE, false, 0, 23));
 
-    CPPUNIT_ASSERT_NO_THROW(catalog.rename(dt, "abacaxi"));
+    CPPUNIT_ASSERT_NO_THROW(catalog.rename(dt.get(), "abacaxi"));
     CPPUNIT_ASSERT(dt->getName() == "abacaxi");
     CPPUNIT_ASSERT(catalog.getDataSetType("abacaxi") == dt);
 
-    CPPUNIT_ASSERT_NO_THROW(catalog.setId(dt, 667));
+    dt->setId(667);
     CPPUNIT_ASSERT(dt->getId() == 667);
-    CPPUNIT_ASSERT(catalog.getDataSetTypeById(667) == dt);
-
-    CPPUNIT_ASSERT_THROW(catalog.setId(dt, 667), te::common::Exception);
-    CPPUNIT_ASSERT(dt->getId() == 667);
-    CPPUNIT_ASSERT(catalog.getDataSetTypeById(667) == dt);
   }
 
   {
     te::da::DataSourceCatalog catalog;
 
-    te::da::DataSetType* dt = new te::da::DataSetType("dataset_type", 666);
+    te::da::DataSetTypePtr dt(new te::da::DataSetType("dataset_type", 666));
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt));
 
@@ -161,7 +156,7 @@ void TsDataSourceCatalog::tcDataSetTypes()
   {
     te::da::DataSourceCatalog catalog;
 
-    te::da::DataSetType* dt1 = new te::da::DataSetType("table_1", 666);
+    te::da::DataSetTypePtr dt1(new te::da::DataSetType("table_1", 666));
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt1));
 
@@ -172,7 +167,7 @@ void TsDataSourceCatalog::tcDataSetTypes()
     dt1->add(new te::gm::GeometryProperty("attribute_geom_polm", 4326, te::gm::PolygonMType, true, 0, 23331));
     dt1->add(new te::dt::SimpleProperty("attribute_int_serial", te::dt::INT32_TYPE, false, 0, 23));
 
-    te::da::DataSetType* dt2 = new te::da::DataSetType("table_N", 777);
+    te::da::DataSetTypePtr dt2(new te::da::DataSetType("table_N", 777));
 
     dt2->add(new te::dt::NumericProperty("attribute_numeric", 10, 3, true, new std::string("34.78"), 1));
     dt2->add(new te::dt::StringProperty("attribute_fixed_string", te::dt::FIXED_STRING, 50));
@@ -187,11 +182,11 @@ void TsDataSourceCatalog::tcDataSetTypes()
     fk->add(dt2->getProperty(2));
     fk->addRefProperty(dt1->getProperty(1));
     fk->addRefProperty(dt1->getProperty(2));
-    fk->setReferencedDataSetType(dt1);
+    fk->setReferencedDataSetType(dt1.get());
 
     CPPUNIT_ASSERT_NO_THROW(dt2->add(fk));
-    CPPUNIT_ASSERT(fk->getDataSetType() == dt2);
-    CPPUNIT_ASSERT(fk->getReferencedDataSetType() == dt1);
+    CPPUNIT_ASSERT(fk->getDataSetType() == dt2.get());
+    CPPUNIT_ASSERT(fk->getReferencedDataSetType() == dt1.get());
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt2));
 
@@ -201,7 +196,7 @@ void TsDataSourceCatalog::tcDataSetTypes()
     fk2->add(dt2->getProperty(2));
     fk2->addRefProperty(dt1->getProperty(1));
     fk2->addRefProperty(dt1->getProperty(2));
-    fk2->setReferencedDataSetType(dt1);
+    fk2->setReferencedDataSetType(dt1.get());
 
     CPPUNIT_ASSERT_NO_THROW(dt2->add(fk2));
 
@@ -212,7 +207,7 @@ void TsDataSourceCatalog::tcDataSetTypes()
     {
     te::da::DataSourceCatalog catalog;
 
-    te::da::DataSetType* dt1 = new te::da::DataSetType("table_1", 666);
+    te::da::DataSetTypePtr dt1(new te::da::DataSetType("table_1", 666));
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt1));
 
@@ -223,7 +218,7 @@ void TsDataSourceCatalog::tcDataSetTypes()
     dt1->add(new te::gm::GeometryProperty("attribute_geom_polm", 4326, te::gm::PolygonMType, true, 0, 23331));
     dt1->add(new te::dt::SimpleProperty("attribute_int_serial", te::dt::INT32_TYPE, false, 0, 23));
 
-    te::da::DataSetType* dt2 = new te::da::DataSetType("table_N", 777);
+    te::da::DataSetTypePtr dt2(new te::da::DataSetType("table_N", 777));
 
     dt2->add(new te::dt::NumericProperty("attribute_numeric", 10, 3, true, new std::string("34.78"), 1));
     dt2->add(new te::dt::StringProperty("attribute_fixed_string", te::dt::FIXED_STRING, 50));
@@ -238,11 +233,11 @@ void TsDataSourceCatalog::tcDataSetTypes()
     fk->add(dt2->getProperty(2));
     fk->addRefProperty(dt1->getProperty(1));
     fk->addRefProperty(dt1->getProperty(2));
-    fk->setReferencedDataSetType(dt1);
+    fk->setReferencedDataSetType(dt1.get());
 
     CPPUNIT_ASSERT_NO_THROW(dt2->add(fk));
-    CPPUNIT_ASSERT(fk->getDataSetType() == dt2);
-    CPPUNIT_ASSERT(fk->getReferencedDataSetType() == dt1);
+    CPPUNIT_ASSERT(fk->getDataSetType() == dt2.get());
+    CPPUNIT_ASSERT(fk->getReferencedDataSetType() == dt1.get());
 
     CPPUNIT_ASSERT_NO_THROW(catalog.add(dt2));
 
@@ -252,11 +247,11 @@ void TsDataSourceCatalog::tcDataSetTypes()
     fk2->add(dt2->getProperty(2));
     fk2->addRefProperty(dt1->getProperty(1));
     fk2->addRefProperty(dt1->getProperty(2));
-    fk2->setReferencedDataSetType(dt1);
+    fk2->setReferencedDataSetType(dt1.get());
 
     CPPUNIT_ASSERT_NO_THROW(dt2->add(fk2));
 
-    CPPUNIT_ASSERT_NO_THROW(catalog.remove(dt1, true));
+    CPPUNIT_ASSERT_NO_THROW(catalog.remove(dt1.get(), true));
   }
 //#endif  // TE_COMPILE_ALL
 }

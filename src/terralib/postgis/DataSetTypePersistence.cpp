@@ -49,6 +49,9 @@
 #include <cassert>
 #include <memory>
 
+// Boost
+#include <boost/algorithm/string.hpp>
+
 te::pgis::DataSetTypePersistence::DataSetTypePersistence(Transactor* t)
   : m_t(t)
 {
@@ -69,14 +72,11 @@ void te::pgis::DataSetTypePersistence::create(te::da::DataSetType* dt, const std
 
 // let's find table oid!
   std::auto_ptr<CatalogLoader> loader(m_t->getPGCatalogLoader());
+
   unsigned int dtid = loader->getTableId(dt->getName());
- 
-// add the dataset-type to the catalog if needed
-  if(dt->getCatalog())
-    dt->getCatalog()->setId(dt, dtid);
-  else
-    dt->setId(dtid);
-    
+
+  dt->setId(dtid);
+
 // add the properties
   std::size_t ncols = dt->size();
 
@@ -115,6 +115,11 @@ void te::pgis::DataSetTypePersistence::create(te::da::DataSetType* dt, const std
   loader->getCheckConstraints(dt);
 }
 
+void te::pgis::DataSetTypePersistence::clone(const std::string& /*datasetName*/, const std::string& /*newDatasetName*/, const std::map<std::string, std::string>& /*options*/)
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
+}
+
 void te::pgis::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 {
   std::string sql;
@@ -145,6 +150,11 @@ void te::pgis::DataSetTypePersistence::drop(te::da::DataSetType* dt)
   }
   else
     delete dt;
+}
+
+void te::pgis::DataSetTypePersistence::drop(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
 void te::pgis::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)
@@ -453,12 +463,10 @@ void te::pgis::DataSetTypePersistence::create(te::da::Sequence* sequence)
   m_t->execute(sql);
 
   std::auto_ptr<CatalogLoader> loader(m_t->getPGCatalogLoader());
+
   unsigned int id = loader->getTableId(sequence->getName());
 
-  if(sequence->getCatalog() == 0)
-    sequence->setId(id);
-  else
-    sequence->getCatalog()->setId(sequence, id);
+  sequence->setId(id);
 }
 
 void te::pgis::DataSetTypePersistence::drop(te::da::Sequence* sequence)
@@ -776,6 +784,15 @@ void te::pgis::DataSetTypePersistence::update(te::dt::Property* oldP, te::dt::Pr
         
 void te::pgis::DataSetTypePersistence::add(te::da::DataSetType* dt, te::da::PrimaryKey* pk, const bool refresh)
 {
+  if(pk->getName().empty())
+  {
+    std::string pkname = dt->getName() + "_pk";
+
+    boost::replace_all(pkname, ".", "_");
+
+    pk->setName(pkname);
+  }
+
   std::string sql("ALTER TABLE ");
               sql += dt->getName();
               sql += " ADD CONSTRAINT ";

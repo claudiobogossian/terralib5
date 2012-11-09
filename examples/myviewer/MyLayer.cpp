@@ -78,7 +78,7 @@ void MyLayer::createGrid(QWidget* w)
     //dsType->setCatalog(ds->getCatalog());
     //assert(dsType);
     //delete loader;
-    te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(getId());
+    te::da::DataSetTypePtr dsType = ds->getCatalog()->getDataSetType(getId());
 
     m_grid->setWindowTitle(getId().c_str());
 
@@ -89,9 +89,9 @@ void MyLayer::createGrid(QWidget* w)
     if(dsType->getPrimaryKey())
     {
       m_op = new te::map::DataGridOperation();
-      m_op->init(dsType, dataSet);
+      m_op->init(dsType.get(), dataSet);
     }
-    te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(dsType, dataSet, m_op);
+    te::qt::widgets::DataGridModel* gridModel = new te::qt::widgets::DataGridModel(dsType.get(), dataSet, m_op);
     m_grid->setModel(gridModel);
     m_grid->setVisible(true);
 

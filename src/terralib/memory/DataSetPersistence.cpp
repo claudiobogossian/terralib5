@@ -55,7 +55,7 @@ te::mem::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::mem::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t /*limit*/)
+void te::mem::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
 {
   DataSource* ds = m_t->getMemDataSource();
 
@@ -68,7 +68,7 @@ void te::mem::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSe
 
   dtp->create(dt, options);
 
-  add(dt, d);
+  add(dt, d, options, limit);
 }
 
 void te::mem::DataSetPersistence::remove(const te::da::DataSetType* dt)
@@ -81,6 +81,11 @@ void te::mem::DataSetPersistence::remove(const te::da::DataSetType* dt)
     throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
 
   ds->remove(dt->getName());
+}
+
+void te::mem::DataSetPersistence::remove(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
 void te::mem::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
@@ -100,7 +105,7 @@ void te::mem::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::
   ds->getDataSet(dt->getName())->remove(dynamic_cast<DataSetItem*>(item));
 }
 
-void te::mem::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
+void te::mem::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
   DataSource* ds = m_t->getMemDataSource();
 
@@ -129,6 +134,7 @@ void te::mem::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 void te::mem::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
                                          te::da::DataSet* /*dataset*/,
                                          const std::vector<te::dt::Property*>& /*properties*/,
+                                         const std::map<std::string, std::string>& options,
                                          std::size_t /*limit*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));

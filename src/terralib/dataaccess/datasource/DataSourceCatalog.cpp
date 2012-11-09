@@ -38,6 +38,11 @@
 // STL
 #include <cassert>
 
+// Boost
+#include <boost/format.hpp>
+
+te::da::DataSetTypePtr te::da::DataSourceCatalog::sm_nullds;
+
 te::da::DataSourceCatalog::DataSourceCatalog()
   : m_id(0),
     m_ds(0)
@@ -46,67 +51,67 @@ te::da::DataSourceCatalog::DataSourceCatalog()
 
 te::da::DataSourceCatalog::~DataSourceCatalog()
 {
-  te::common::FreeContents(m_dsets);
-  te::common::FreeContents(m_sequences);  
+  te::common::FreeContents(m_sequences.begin(), m_sequences.end());
 }
 
 void te::da::DataSourceCatalog::clear()
 {
-// FT
-  te::common::FreeContents(m_dsets);
-  m_dsets.clear();
-  m_dtIdIdx.clear();
-  m_dtNameIdx.clear();
+// datasets
+  m_datasets.clear();
 
-// Sequences
-  te::common::FreeContents(m_sequences);  
+// sequences
+  te::common::FreeContents(m_sequences.begin(), m_sequences.end());
   m_sequences.clear();
-  m_seqNameIdx.clear();  
-  m_seqIdIdx.clear();
+
   m_seqFTIdx.clear();
 
-// FK
+// foreign key
   m_dependentFkIdx.clear();
 }
 
-te::da::DataSourceCatalog* te::da::DataSourceCatalog::clone() const
+bool te::da::DataSourceCatalog::datasetExists(const std::string& name) const
 {
-  return new DataSourceCatalog(*this);
+  dataset_idx_type::const_iterator it = m_datasets.find(name);
+
+  return (it != m_datasets.end());
 }
 
-void te::da::DataSourceCatalog::add(DataSetType* dt)
+void te::da::DataSourceCatalog::add(const DataSetTypePtr& dt)
 {
-  if(getDataSetType(dt->getName()))
-    throw Exception(TR_DATAACCESS("Could not add DataSetType because there is already another DataSetType with the same name in the catalog!"));
+  if(dt.get() == 0)
+    throw Exception(TR_DATAACCESS("Can not add a NULL dataset schema to the catalog!"));
 
-  if(getDataSetTypeById(dt->getId()))
-    throw Exception(TR_DATAACCESS("Could not add DataSetType because there is already another DataSetType with the same id in the catalog!"));
+  if(dt->getName().empty())
+    throw Exception(TR_DATAACCESS("Can not add a dataset schema with an empty name to the catalog!"));
 
-  checkFKsDependency(dt);  
-  std::size_t pos = m_dsets.size();
-  m_dtIdIdx[dt->getId()] = pos;
-  m_dtNameIdx[dt->getName()] = pos;
+  if(datasetExists(dt->getName()))
+    throw Exception((boost::format(TR_DATAACCESS("Can not add dataset schema %1% to the catalog. There is already another one with this name!")) % dt->getName()).str());
+
+  if(dt->getCatalog() != 0)
+    throw Exception((boost::format(TR_DATAACCESS("Can not add dataset schema %1% to the catalog. It is already attached to one!")) % dt->getName()).str());
+
+  checkFKsDependency(dt.get());
+
+  m_datasets.insert(dt);
   dt->setCatalog(this);
-  m_dsets.push_back(dt);
-  indexFKs(dt);
-}
-
-void te::da::DataSourceCatalog::add(const std::vector<DataSetType*>& dsets)
-{
-  std::size_t size = dsets.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    add(dsets[i]);
+  indexFKs(dt.get());
 }
 
 void te::da::DataSourceCatalog::remove(DataSetType* dt, const bool cascade)
 {
-  detach(dt, cascade);
-  delete dt;
-}
+  if(dt == 0)
+    throw Exception(TR_DATAACCESS("Can not remove a NULL dataset schema from the catalog!"));
 
-void te::da::DataSourceCatalog::detach(DataSetType* dt, const bool cascade)
-{
+  if(dt->getName().empty())
+    throw Exception(TR_DATAACCESS("Can not remove a dataset schema with an empty name from the catalog!"));
+
+  if(dt->getCatalog() != this)
+    throw Exception(TR_DATAACCESS("Can not remove a dataset from another catalog!"));
+
+  assert(datasetExists(dt->getName()));
+  assert(m_datasets.find(dt->getName()) != m_datasets.end());
+  assert((*m_datasets.find(dt->getName())).get() == dt);
+
   if(cascade)
   {
     dropDependentSequences(dt);
@@ -118,68 +123,56 @@ void te::da::DataSourceCatalog::detach(DataSetType* dt, const bool cascade)
     m_dependentFkIdx.erase(dt);
   }
 
-  std::size_t pos = getDataSetTypePos(dt);
-  m_dtNameIdx.erase(dt->getName());
-  m_dtIdIdx.erase(dt->getId());
-  m_dsets.erase(m_dsets.begin() + pos);
+  m_datasets.erase(dt->getName());
 }
 
 void te::da::DataSourceCatalog::rename(DataSetType* dt, const std::string& newName)
 {
-  if(getDataSetType(newName))
+  if(dt == 0)
+    throw Exception(TR_DATAACCESS("Can not rename a NULL dataset schema!"));
+
+  if(datasetExists(newName))
     throw Exception(TR_DATAACCESS("Could not rename DataSetType because the new name already exist in the catalog!"));
 
-  if((dt == 0) || (getDataSetType(dt->getName()) != dt))
-    throw Exception(TR_DATAACCESS("Could not rename DataSetType because it was not found in the catalog a DataSetType with the given name to change its name!"));
+  if(dt->getCatalog() != this)
+    throw Exception(TR_DATAACCESS("Could not rename a dataset from another catalog!"));
 
-  std::size_t pos = getDataSetTypePos(dt);
-  m_dtNameIdx.erase(dt->getName());
-  dt->setName(newName);
-  m_dtNameIdx[dt->getName()] = pos;
+  dataset_idx_type::iterator it = m_datasets.find(dt->getName());
+
+  if(it == m_datasets.end())
+    throw Exception(TR_DATAACCESS("Could not find dataset schema in the catalog!"));
+
+  if((*it).get() != dt)
+    throw Exception(TR_DATAACCESS("The dataset schema is not registered in this catalog!"));
+
+  DataSetTypePtr aux = *it;
+
+  m_datasets.erase(it);
+
+  aux->setName(newName);
+
+  m_datasets.insert(aux);
 }
 
-void te::da::DataSourceCatalog::setId(DataSetType* dt, unsigned int newId)
+const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(std::size_t i) const
 {
-  if(getDataSetTypeById(newId))
-    throw Exception(TR_DATAACCESS("Could not change the DataSetType id because the new id already exist in the catalog!"));
+  assert(i < m_datasets.size());
 
-  if((dt == 0) || (getDataSetTypeById(dt->getId()) != dt))
-    throw Exception(TR_DATAACCESS("Could not change DataSetType id because it was not found in the catalog a DataSetType with the given id to change its id!"));
+  const dataset_idx_type::nth_index<1>::type& pos_idx = m_datasets.get<1>();
 
-  std::size_t pos = getDataSetTypePos(dt);
-  m_dtIdIdx.erase(dt->getId());
-  dt->setId(newId);
-  m_dtIdIdx[dt->getId()] = pos;
+  return pos_idx[i];
 }
 
-te::da::DataSetType* te::da::DataSourceCatalog::getDataSetType(const std::string& name) const
+const te::da::DataSetTypePtr& te::da::DataSourceCatalog::getDataSetType(const std::string& name) const
 {
-  std::map<std::string, std::size_t>::const_iterator it = m_dtNameIdx.find(name);
+  assert(!name.empty());
 
-  if(it != m_dtNameIdx.end())
-    return m_dsets[it->second];
+  dataset_idx_type::const_iterator it = m_datasets.find(name);
 
-  return 0;
-}
+  if(it != m_datasets.end())
+    return *it;
 
-te::da::DataSetType* te::da::DataSourceCatalog::getDataSetTypeById(std::size_t id) const
-{
-  std::map<std::size_t, std::size_t>::const_iterator it = m_dtIdIdx.find(id);
-
-  if(it != m_dtIdIdx.end())
-    return m_dsets[it->second];
-
-  return 0;
-}
-
-std::size_t te::da::DataSourceCatalog::getDataSetTypePos(DataSetType* dt) const
-{
-  std::map<std::size_t, std::size_t>::const_iterator it = m_dtIdIdx.find(dt->getId());
-
-  if(it != m_dtIdIdx.end())
-    return it->second;
-
-  return std::string::npos;
+  return sm_nullds;
 }
 
 void te::da::DataSourceCatalog::add(Sequence* s)
@@ -187,24 +180,10 @@ void te::da::DataSourceCatalog::add(Sequence* s)
   if(getSequence(s->getName()))
     throw Exception(TR_DATAACCESS("Could not add Sequence because there is already another Sequence with the same name in the catalog!"));
 
-  if(getSequenceById(s->getId()))
-    throw Exception(TR_DATAACCESS("Could not add Sequence because there is already another Sequence with the same id in the catalog!"));
-
   checkSequenceDependency(s);
-  std::size_t pos = m_sequences.size();
-  m_seqIdIdx[s->getId()] = pos;
-  m_seqNameIdx[s->getName()] = pos;
+  m_sequences.insert(s);
   s->setCatalog(this);
-  m_sequences.push_back(s);
   indexSequenceDependency(s);
-}
-
-void te::da::DataSourceCatalog::add(const std::vector<Sequence*>& sqs)
-{
-  std::size_t size = sqs.size();
-
-  for(std::size_t i = 0; i < size; ++i)
-    add(sqs[i]);
 }
 
 void te::da::DataSourceCatalog::remove(Sequence* s)
@@ -213,64 +192,34 @@ void te::da::DataSourceCatalog::remove(Sequence* s)
   delete s;
 }
 
-void te::da::DataSourceCatalog::setId(Sequence* s, unsigned int newId)
-{
-  if(getSequenceById(newId))
-    throw Exception(TR_DATAACCESS("Could not change the sequence id because the new id already exist in the catalog!"));
-
-  if((s == 0) || (getSequenceById(s->getId()) != s))
-    throw Exception(TR_DATAACCESS("Could not change sequence id because it was not found in the catalog a sequence with the given id to change its id!"));
-
-  std::size_t pos = getSequencePos(s);
-  m_seqIdIdx.erase(s->getId());
-  s->setId(newId);
-  m_seqIdIdx[s->getId()] = pos;
-}
-
 void te::da::DataSourceCatalog::detach(Sequence* s)
 {
-  std::size_t pos = getSequencePos(s);
-  m_seqNameIdx.erase(s->getName());
-  m_seqIdIdx.erase(s->getId());
-  m_sequences.erase(m_sequences.begin() + pos);
+  m_sequences.erase(s->getName());
   dropDependentSequenceEntry(s);
+}
+
+te::da::Sequence* te::da::DataSourceCatalog::getSequence(std::size_t i) const
+{
+  const sequence_idx_type::nth_index<1>::type& pos_idx = m_sequences.get<1>();
+
+  return pos_idx[i];
 }
 
 te::da::Sequence* te::da::DataSourceCatalog::getSequence(const std::string& name) const
 {
-  std::map<std::string, std::size_t>::const_iterator it = m_seqNameIdx.find(name);
+  sequence_idx_type::const_iterator it = m_sequences.find(name);
 
-  if(it != m_seqNameIdx.end())
-    return m_sequences[it->second];
-
-  return 0;
-}
-
-te::da::Sequence* te::da::DataSourceCatalog::getSequenceById(std::size_t id) const
-{
-  std::map<std::size_t, std::size_t>::const_iterator it = m_seqIdIdx.find(id);
-
-  if(it != m_seqIdIdx.end())
-    return m_sequences[it->second];
+  if(it != m_sequences.end())
+    return *it;
 
   return 0;
-}
-
-std::size_t te::da::DataSourceCatalog::getSequencePos(Sequence* s) const
-{
-  std::map<std::size_t, std::size_t>::const_iterator it = m_seqIdIdx.find(s->getId());
-
-  if(it != m_seqIdIdx.end())
-    return it->second;
-
-  return std::string::npos;
 }
 
 void te::da::DataSourceCatalog::addRef(ForeignKey* fk)
 {
   te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
-  if((refFT == 0) || (getDataSetTypeById(refFT->getId()) != refFT))
+  if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
     throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
 
   m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
@@ -280,7 +229,7 @@ void te::da::DataSourceCatalog::removeRef(ForeignKey* fk)
 {
   te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
-  if((refFT == 0) || (getDataSetTypeById(refFT->getId()) != refFT))
+  if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
     throw Exception(TR_DATAACCESS("Could not find the DataSetType referenced in foreign key!"));
 
   std::pair<std::multimap<DataSetType*, ForeignKey*>::iterator,
@@ -313,28 +262,25 @@ void te::da::DataSourceCatalog::dropDependentSequences(te::dt::Property* p)
 
     if(parent &&
        (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetTypeById(parent->getId()) == parent))
+       (getDataSetType(parent->getName()).get() == parent))
     {
       te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
 
 // is the dt owner of a sequence?
-      std::pair<std::multimap<DataSetType*, std::size_t>::iterator,
-                std::multimap<DataSetType*, std::size_t>::iterator> range = m_seqFTIdx.equal_range(dt);
+      std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
+                std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
 
       while(range.first != range.second)
       {
-        std::multimap<DataSetType*, std::size_t>::iterator it = range.first;
+        std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
         ++range.first;
 
-        std::size_t pos = it->second;
-        te::da::Sequence* s = m_sequences[pos];
+        te::da::Sequence* s = *(it->second);
 
 // is the property owner of the sequence?
         if(s->getOwner() == p)
         {
-          m_seqNameIdx.erase(s->getName());
-          m_seqIdIdx.erase(s->getId());
-          m_sequences.erase(m_sequences.begin() + pos);
+          m_sequences.erase(it->second);
           delete s;
           m_seqFTIdx.erase(it);
         }
@@ -343,12 +289,6 @@ void te::da::DataSourceCatalog::dropDependentSequences(te::dt::Property* p)
       return;
     }
   }
-
-}
-
-te::da::DataSourceCatalog::DataSourceCatalog(const DataSourceCatalog& /*rhs*/)
-{
-  ////////IMPLEMENTAR
 }
 
 void te::da::DataSourceCatalog::checkSequenceDependency(Sequence* s) const
@@ -365,7 +305,7 @@ void te::da::DataSourceCatalog::checkSequenceDependency(Sequence* s) const
 // if the parent is a FetaureType and it is in the catalog, stop!
     if(parent &&
        (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetTypeById(parent->getId()) == parent))
+       (getDataSetType(parent->getName()).get() == parent))
         return;
   }
 
@@ -378,7 +318,8 @@ void te::da::DataSourceCatalog::indexSequenceDependency(Sequence* s)
     return;
 
   te::dt::Property* parent = s->getOwner();
-  std::size_t pos = getSequencePos(s);
+
+  sequence_idx_type::iterator it = m_sequences.find(s->getName());
 
   while(parent)
   {
@@ -387,10 +328,10 @@ void te::da::DataSourceCatalog::indexSequenceDependency(Sequence* s)
 // if the parent is a FetaureType and it is in the catalog, make index and stop!
     if(parent &&
        (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetTypeById(parent->getId()) == parent))
+       (getDataSetType(parent->getName()).get() == parent))
       {
-        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);        
-        m_seqFTIdx.insert(std::pair<DataSetType*, std::size_t>(dt, pos));
+        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
+        m_seqFTIdx.insert(std::pair<DataSetType*, sequence_idx_type::iterator>(dt, it));
         return;
       }
   }
@@ -400,21 +341,18 @@ void te::da::DataSourceCatalog::indexSequenceDependency(Sequence* s)
 
 void te::da::DataSourceCatalog::dropDependentSequences(DataSetType* dt)
 {
-  std::pair<std::multimap<DataSetType*, std::size_t>::iterator,
-            std::multimap<DataSetType*, std::size_t>::iterator> range = m_seqFTIdx.equal_range(dt);
+  std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
+            std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
 
   while(range.first != range.second)
   {
-    std::multimap<DataSetType*, std::size_t>::iterator it = range.first;
+    std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
     ++range.first;
 
 // remove sequence and all its entry in the catalog
 // !! DON'T CALL remove(s) THIS WILL NEED EXTRA COMPUTATIONS AND ALSO WILL NEED TO CHANGE THE LOGIC OF CODE BLOCK!!
-    std::size_t pos = it->second;
-    te::da::Sequence* s = m_sequences[pos];
-    m_seqNameIdx.erase(s->getName());
-    m_seqIdIdx.erase(s->getId());
-    m_sequences.erase(m_sequences.begin() + pos);
+    te::da::Sequence* s = *(it->second);
+    m_sequences.erase(it->second);
     delete s;
     m_seqFTIdx.erase(it);
   }
@@ -422,11 +360,12 @@ void te::da::DataSourceCatalog::dropDependentSequences(DataSetType* dt)
 
 void te::da::DataSourceCatalog::dropDependentSequenceEntry(Sequence* s)
 {
-   if(s->getOwner() == 0)
+  if(s->getOwner() == 0)
     return;
 
   te::dt::Property* parent = s->getOwner();
-  std::size_t pos = getSequencePos(s);
+  
+  sequence_idx_type::iterator itpos = m_sequences.find(s->getName());
 
   while(parent)
   {
@@ -435,19 +374,19 @@ void te::da::DataSourceCatalog::dropDependentSequenceEntry(Sequence* s)
 // if the parent is a FetaureType and it is in the catalog, make index and stop!
     if(parent &&
        (parent->getType() == te::dt::DATASET_TYPE) &&
-       (getDataSetTypeById(parent->getId()) == parent))
+       (getDataSetType(parent->getName()).get() == parent))
       {
-        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);        
+        te::da::DataSetType* dt = static_cast<te::da::DataSetType*>(parent);
 
-        std::pair<std::multimap<DataSetType*, std::size_t>::iterator,
-                  std::multimap<DataSetType*, std::size_t>::iterator> range = m_seqFTIdx.equal_range(dt);
+        std::pair<std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator,
+                  std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator> range = m_seqFTIdx.equal_range(dt);
 
         while(range.first != range.second)
         {
-          std::multimap<DataSetType*, std::size_t>::iterator it = range.first;
+          std::multimap<DataSetType*, sequence_idx_type::iterator>::iterator it = range.first;
           ++range.first;
 
-          if(it->second == pos)
+          if(*(it->second) == *itpos)
           {
             m_seqFTIdx.erase(it);
             return;
@@ -468,7 +407,7 @@ void te::da::DataSourceCatalog::checkFKsDependency(DataSetType* dt) const
     te::da::ForeignKey* fk = dt->getForeignKey(i);
     te::da::DataSetType* refFT = fk->getReferencedDataSetType();
 
-    if((refFT == 0) || (getDataSetTypeById(refFT->getId()) != refFT))
+    if((refFT == 0) || (getDataSetType(refFT->getName()).get() != refFT))
       throw Exception(TR_DATAACCESS("There is a foreign key in the DataSetType referencing another DataSetType that is not in the catalog!"));
   }
 }
@@ -482,7 +421,7 @@ void te::da::DataSourceCatalog::indexFKs(DataSetType* dt)
     te::da::ForeignKey* fk = dt->getForeignKey(i);
     te::da::DataSetType* refFT = fk->getReferencedDataSetType();
     
-    assert(getDataSetTypeById(refFT->getId()) == refFT);
+    assert(getDataSetType(refFT->getName()).get() == refFT);
 
     m_dependentFkIdx.insert(std::pair<DataSetType*, ForeignKey*>(refFT, fk));
   }
@@ -506,4 +445,13 @@ void te::da::DataSourceCatalog::dropDependentFKs(DataSetType* dt)
   }
 }
 
+te::da::DataSourceCatalog::dataset_name_cmp::result_type te::da::DataSourceCatalog::dataset_name_cmp::operator()(const DataSetTypePtr& dt) const
+{
+  return dt->getName();
+}
+
+te::da::DataSourceCatalog::sequence_name_cmp::result_type te::da::DataSourceCatalog::sequence_name_cmp::operator()(const Sequence* const s) const
+{
+  return s->getName();
+}
 

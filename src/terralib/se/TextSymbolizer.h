@@ -108,6 +108,8 @@ namespace te
 
         const Fill* getFill() const;
 
+        const std::string& getType() const;
+
         //@}
 
         /*! \brief It creates a new copy of this object. */
@@ -121,6 +123,8 @@ namespace te
         LabelPlacement* m_labelPlacement;  //!< The label placement specifies where and how a text label should be rendered relative to a geometry. (Optional)
         Halo* m_halo;                      //!< A Halo is a type of Fill that is applied to the backgrounds of font glyphs. (Optional)
         Fill* m_fill;                      //!< It specifies how the text area will be filled. (Optional)
+
+        static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
     };
 
   } // end namespace se

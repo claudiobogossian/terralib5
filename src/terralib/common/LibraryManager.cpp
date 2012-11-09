@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LibraryManager.cpp
+  \file terralib/common/LibraryManager.cpp
 
   \brief A singleton that can be used to register the available libraries in the system.
  */

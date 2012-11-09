@@ -386,9 +386,9 @@ namespace te
 
         void setDateTime(const std::string& name, const te::dt::DateTime& value);
 
-        void getArray(int i, std::vector<boost::int16_t>& a) const;
+        void getArray(int i, std::vector<boost::int16_t>& values) const;
 
-        void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
+        void getArray(const std::string& name, std::vector<boost::int16_t>& values) const;
 
         const unsigned char* getWKB(int i) const;
 
@@ -406,7 +406,7 @@ namespace te
 
         te::dt::AbstractData* getValue(const std::string& name) const;
 
-        void setValue(int i, te::dt::AbstractData* ad);
+        void setValue(int i, te::dt::AbstractData* value);
 
         void setValue(const std::string& name, te::dt::AbstractData* ad);
 
@@ -418,11 +418,11 @@ namespace te
 
       protected:
 
-        boost::shared_ptr<boost::ptr_vector<DataSetItem> > m_items;   //!< The list of dataset items.
-        std::auto_ptr<te::da::DataSetType> m_dt;                      //!< The associated dataset type.
-        DataSet* m_parent;                                            //!< A parent dataset.
-        DataSourceTransactor* m_t;                                    //!< The associated datasource transactor.
-        int m_i;                                                      //!< The index of the current item.
+        boost::shared_ptr<boost::ptr_vector<te::mem::DataSetItem> > m_items;   //!< The list of dataset items.
+        std::auto_ptr<te::da::DataSetType> m_dt;                               //!< The associated dataset type.
+        DataSet* m_parent;                                                     //!< A parent dataset.
+        DataSourceTransactor* m_t;                                             //!< The associated datasource transactor.
+        int m_i;                                                               //!< The index of the current item.
     };
 
   } // end namespace mem

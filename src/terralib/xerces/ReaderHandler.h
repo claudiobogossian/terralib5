@@ -30,6 +30,9 @@
 #include "../xml/Enums.h"
 #include "Config.h"
 
+// STL
+#include <vector>
+
 // Xerces-C++
 #include <xercesc/sax2/ContentHandler.hpp>
 
@@ -201,6 +204,10 @@ namespace te
 
         XMLSize_t getDataLen() const { return m_len; }
 
+        std::size_t getNumberOfNamespaces() const { return m_nspaces.size(); }
+
+        const std::pair<const XMLCh*, const XMLCh*>& getNamespace(std::size_t i) const { return m_nspaces[i]; }
+
       protected:
 
         const XMLCh* m_uri;                   //!< URI of the associated namespace for the current element.
@@ -209,8 +216,7 @@ namespace te
         const xercesc::Attributes* m_attrs;   //!< The attributes attached to the current element, if any.
         const XMLCh* m_value;                 //!< May be characters from the XML document, ignorable white spaces, CDATA or any other string.
         XMLSize_t m_len;                      //!< The number of characters in the m_value array.
-
-        //const xercesc::Locator* m_locator;  //!< TODO
+        std::vector<std::pair<const XMLCh*, const XMLCh*> > m_nspaces;  //!< A vector of namespaces (prefix, uri).
         te::xml::NodeType m_nodeType;       //!< The type of node read by the parser.
 
     };

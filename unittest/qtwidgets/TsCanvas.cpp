@@ -124,16 +124,16 @@ void TsCanvas::tcPerformance()
 
 // connecting to a PostGIS database
   std::map<std::string, std::string> connInfo;
-  connInfo["host"] = "atlas.dpi.inpe.br" ;   // or "localhost";
-  connInfo["user"] = "postgres";
-  connInfo["password"] = "sitim110";
-  connInfo["dbname"] = "terralib4";
-  connInfo["connect_timeout"] = "4";
+  connInfo["PG_HOST"] = "atlas.dpi.inpe.br" ;   // or "localhost";
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_DB_NAME"] = "terralib4";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4";
 
   te::da::DataSource* ds = 0;
 
   CPPUNIT_ASSERT_NO_THROW_MESSAGE("Could not instantiate the PostGIS data source!",
-                                  ds = te::da::DataSourceFactory::make("PostGIS"));
+                                  ds = te::da::DataSourceFactory::make("POSTGIS"));
 
   CPPUNIT_ASSERT_NO_THROW_MESSAGE("Could not open the PostGIS data source!",
                                   ds->open(connInfo));
@@ -156,7 +156,7 @@ void TsCanvas::tcPerformance()
   {
     
 // get DataSetType information: geometry-column, feature-name, feature extent
-    te::da::DataSetType* dt = catalog->getDataSetType(i);
+    te::da::DataSetTypePtr dt = catalog->getDataSetType(i);
 
     //if(!(ft->getName() == "public.goias_geologia" || dt->getName() == "public.br_uf_2010" || dt->getName() == "public.sp_setores_censitarios"))
     //  continue;

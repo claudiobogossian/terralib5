@@ -131,6 +131,11 @@ void te::ado::DataSetTypePersistence::create(te::da::DataSetType* dt, const std:
 
 }
 
+void te::ado::DataSetTypePersistence::clone(const std::string& /*datasetName*/, const std::string& /*newDatasetName*/, const std::map<std::string, std::string>& /*options*/)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
 void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
 {
 
@@ -150,6 +155,11 @@ void te::ado::DataSetTypePersistence::drop(te::da::DataSetType* dt)
   {
     throw Exception(TR_ADO(e.Description()));
   }
+}
+
+void te::ado::DataSetTypePersistence::drop(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
 }
 
 void te::ado::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)

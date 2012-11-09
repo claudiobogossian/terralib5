@@ -68,10 +68,20 @@ void te::se::Mark::setOnlineResource(te::xl::SimpleLink* link)
   m_onlineResource = link;
 }
 
+const te::xl::SimpleLink* te::se::Mark::getOnlineResource() const
+{
+  return m_onlineResource;
+}
+
 void te::se::Mark::setInlineContent(InlineContent* iContent)
 {
   delete m_inlineContent;
   m_inlineContent = iContent;
+}
+
+te::se::InlineContent* te::se::Mark::getInlineContent() const
+{
+  return m_inlineContent;
 }
 
 void te::se::Mark::setFormat(std::string* f)
@@ -80,9 +90,19 @@ void te::se::Mark::setFormat(std::string* f)
   m_format = f;
 }
 
+const std::string* te::se::Mark::getFormat() const
+{
+  return m_format;
+}
+
 void te::se::Mark::setMarkIndex(int i)
 {
   m_markIndex = i;
+}
+
+int te::se::Mark::getMarkIndex() const
+{
+  return m_markIndex;
 }
 
 void te::se::Mark::setFill(Fill* f)

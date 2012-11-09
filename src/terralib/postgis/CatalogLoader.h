@@ -46,7 +46,7 @@ namespace te
 
       \brief It allows to retrieve information about datasets in a PostGIS data source.
 
-      \sa te::da::DataSourceCatalogLoader, te::da::DataSetType , Transactor
+      \sa te::da::DataSourceCatalogLoader, te::da::DataSetType, Transactor
     */
     class TEPGISEXPORT CatalogLoader : public te::da::DataSourceCatalogLoader
     {
@@ -59,6 +59,10 @@ namespace te
         void getDataSets(boost::ptr_vector<std::string>& datasets);
 
         te::da::DataSetType* getDataSetType(const std::string& datasetName, const bool full = false);
+
+        void getProperties(te::da::DataSetType* dt);
+
+        te::dt::Property* getProperty(const std::string& datasetName, const std::string& propertyName);
 
         void getPrimaryKey(te::da::DataSetType* dt);
 
@@ -80,9 +84,9 @@ namespace te
 
         void loadCatalog(const bool full = false);
 
-        bool datasetExists(const std::string& name);
-      
         bool hasDataSets();
+
+        bool datasetExists(const std::string& name);
 
         bool primarykeyExists(const std::string& name);
 
@@ -196,22 +200,22 @@ namespace te
         */
         te::da::DataSet* getProperties(unsigned int dtid);
 
-        /*!
-          \brief It loads information about properties of the given dataset type.
+        ///*!
+        //  \brief It loads information about properties of the given dataset type.
 
-          Before calling this method, make sure that datasetType doesn't have associated properties.
-          It must have just a name and a valid ID before calling this method.
+        //  Before calling this method, make sure that datasetType doesn't have associated properties.
+        //  It must have just a name and a valid ID before calling this method.
 
-          \param dt The dataset type to load its properties.
+        //  \param dt The dataset type to load its properties.
 
-          \pre The informed DataSetType must have a valid id and name.
+        //  \pre The informed DataSetType must have a valid id and name.
 
-          \exception It throws an exception if it can not load the information.
+        //  \exception It throws an exception if it can not load the information.
 
-          \note This method will not load information about primary keys, foreign keys, sequences, indexes, unique keys and check-constraints.
-          \note PostGIS driver extended method.
-        */
-        void getProperties(te::da::DataSetType* dt);
+        //  \note This method will not load information about primary keys, foreign keys, sequences, indexes, unique keys and check-constraints.
+        //  \note PostGIS driver extended method.
+        //*/
+        //void getProperties(te::da::DataSetType* dt);
 
         /*!
           \brief It loads information about a given geometry column.
@@ -222,6 +226,16 @@ namespace te
           \exception It throws an exception if it can not load the information.
         */
         void getGeometryInfo(const std::string& datasetName, te::gm::GeometryProperty* gp);
+
+        /*!
+          \brief It loads information about a given raster column.
+
+          \param datasetName The name of the dataset containing the geometric property.
+          \param rp          The raster column to load its information.
+
+          \exception It throws an exception if it can not load the information.
+        */
+        void getRasterInfo(const std::string& datasetName, te::rst::RasterProperty* rp);
 
         /*!
           \brief It returns the list of constraints (primary key, unique key, foreign key and check constraints) of the given table or view.
@@ -422,7 +436,7 @@ namespace te
 
            \note PostGIS driver extended method.
         */
-        static te::da::ForeignKey* addForeignKey(te::da::DataSet* fkInfo, te::da::DataSetType* dt);
+        te::da::ForeignKey* addForeignKey(te::da::DataSet* fkInfo, te::da::DataSetType* dt);
 
         /*!
           \brief It returns the list of indexes for the given table or view.

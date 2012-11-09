@@ -76,13 +76,13 @@ te::da::DataSet* te::gdal::DataSourceTransactor::getDataSet(const std::string& n
                                                             te::common::TraverseType /*travType*/, 
                                                             te::common::AccessPolicy rwRole) 
 {
-  te::da::DataSetType* dt = m_ds->getCatalog()->getDataSetType(name);
+  const te::da::DataSetTypePtr& dt = m_ds->getCatalog()->getDataSetType(name);
 
-  if(dt)
+  if(dt.get())
     return new DataSet(this, static_cast<te::da::DataSetType*>(dt->clone()), rwRole);  // return a full loaded dataset type
   
 // create a datset type with basic raster info: just type and name!
-  dt = new te::da::DataSetType(name);
+  te::da::DataSetType* ndt = new te::da::DataSetType(name);
 
   te::rst::Grid* grid = new te::rst::Grid();
 
@@ -92,9 +92,9 @@ te::da::DataSet* te::gdal::DataSourceTransactor::getDataSet(const std::string& n
 
   te::rst::RasterProperty* rp = new te::rst::RasterProperty(grid, bprops, rinfo);
   
-  dt->add(rp);
+  ndt->add(rp);
 
-  return new DataSet(this, dt, rwRole);  // return a full loaded dataset type
+  return new DataSet(this, ndt, rwRole);  // return a full loaded dataset type
 }
 
 te::da::DataSet* 
@@ -174,6 +174,11 @@ te::da::DataSetTypePersistence* te::gdal::DataSourceTransactor::getDataSetTypePe
 te::da::DataSetPersistence* te::gdal::DataSourceTransactor::getDataSetPersistence()
 {
   return new te::gdal::DataSetPersistence(this);;
+}
+
+boost::int64_t te::gdal::DataSourceTransactor::getLastInsertId()
+{
+  throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
 te::da::DataSource* te::gdal::DataSourceTransactor::getDataSource() const

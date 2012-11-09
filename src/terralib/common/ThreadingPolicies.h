@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ThreadingPolicies.h
+  \file terralib/common/ThreadingPolicies.h
 
   \brief Threading policies that can be applied to TerraLib classes that need some synchronization schema.
 */

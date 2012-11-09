@@ -65,13 +65,17 @@ namespace te
         //@{
 
         void setFeatureTypeName(std::string* name);
+
         const std::string* getFeatureTypeName() const;
+
+        const std::string& getType() const;
 
         //@}
 
       private:
 
-        std::string* m_featureTypeName; //!< It identifies the specific feature type that the style is for. (Optional)
+        std::string* m_featureTypeName;    //!< It identifies the specific feature type that the style is for. (Optional)
+        static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
     };
 
   } // end namespace se

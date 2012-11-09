@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/common/AbstractParameters.cpp
-  
+
   \brief Abstract parameters base interface.
 */
 
