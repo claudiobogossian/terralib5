@@ -157,7 +157,7 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   layer->setStyle(s);

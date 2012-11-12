@@ -99,64 +99,82 @@ bool te::rp::MixtureModelLinearStrategy::execute(const te::rst::Raster& inputRas
   TERP_TRUE_OR_RETURN_FALSE(m_isInitialized, "Instance not initialized")
 
   const unsigned int nComponents = components.size();
-  boost::numeric::ublas::matrix<double> matrixA (nComponents, nComponents);
+  const unsigned int nBands = inputRasterBands.size();
 
-// by definition, A * X = [1], we have A, so that X = inv(A) * [1]
+  boost::numeric::ublas::matrix<double> transposeA = boost::numeric::ublas::matrix<double>(nComponents + 1, nBands + 1);
+  boost::numeric::ublas::matrix<double> matrixA (transposeA.size2(), transposeA.size1());
 
-  std::vector<double> Lmin;
-  std::vector<double> Lmax;
+// by definition, A * X = R, we have A, so that X = inv(A' * A) * A' * R
+// A is the set of known reflectances for each component
+// R is the reflectances of a specific pixel
+// X is the proportion of each component
+
+  std::vector<double> Qmax;
   for (unsigned i = 0; i < inputSensorBands.size(); i++)
-  {
-    Lmin.push_back(GetSpectralBandMin(inputSensorBands[i]));
-    Lmax.push_back(GetSpectralBandMax(inputSensorBands[i]));
-  }
-  const double Qmin = 0.0;
-  const double Qmax = 255.0;
+    Qmax.push_back(GetDigitalNumberBandMax(inputSensorBands[i]));
 
-// retrieve A matrix, normalizing values using band/sensor info
+// retrieve the transposed A matrix, normalizing values using band/sensor info
+  unsigned row = 0;
+  for (unsigned j = 0; j < nBands; j++)
+    transposeA(row, j) = 1.0;
+  transposeA(row, nBands) = 0.0;
   std::map<std::string, std::vector<double> >::const_iterator it;
-  unsigned i;
-  for (i = 0, it = components.begin(); it != components.end(); it++, i++)
-    for (unsigned j = 0; j < matrixA.size2 (); j++)
-      matrixA(j, i) = (Lmax[i] - Lmin[i]) * (it->second[j] - Qmin) / (Qmax - Qmin) + Lmin[i];
+  for (row = 1, it = components.begin(); it != components.end(); row++, it++)
+  {
+    for (unsigned j = 0; j < nBands; j++)
+      transposeA(row, j) = it->second[j] / Qmax[j];
+    transposeA(row, nBands) = 1.0;
+  }
 
-// calculate the inverse of A
-  boost::numeric::ublas::matrix<double> invertA = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixA.size2());
-  InvertMatrix(matrixA, invertA);
+// calculate the matrixA from the transpose of A
+  matrixA = boost::numeric::ublas::trans(transposeA);
 
-// create matrix [1]
-  boost::numeric::ublas::matrix<double> matrixONES = boost::numeric::ublas::matrix<double>(matrixA.size1(), 1);
-  for (i = 0; i < matrixA.size1(); i++)
-    matrixONES(i, 0) = 1;
+// calculate the product A' * A
+  boost::numeric::ublas::matrix<double> productAtA = boost::numeric::ublas::matrix<double>(transposeA.size1(), matrixA.size2());
+  productAtA = boost::numeric::ublas::prod(transposeA, matrixA);
 
-// create matrix X
-  boost::numeric::ublas::matrix<double> matrixX = boost::numeric::ublas::matrix<double>(matrixA.size1(), 1);
-  matrixX = boost::numeric::ublas::prod(invertA, matrixONES);
+// calculate the inverse of A' * A
+  boost::numeric::ublas::matrix<double> invertAtA = boost::numeric::ublas::matrix<double>(productAtA.size1(), productAtA.size2());
+  InvertMatrix(productAtA, invertAtA);
+
+  boost::numeric::ublas::matrix<double> matrixR = boost::numeric::ublas::matrix<double>(matrixA.size1(), 1);
+  boost::numeric::ublas::matrix<double> productAtR = boost::numeric::ublas::matrix<double>(transposeA.size1(), matrixR.size2());
+  boost::numeric::ublas::matrix<double> matrixX = boost::numeric::ublas::matrix<double>(invertAtA.size1(), productAtR.size2());
+  boost::numeric::ublas::matrix<double> productAX = boost::numeric::ublas::matrix<double>(matrixA.size1(), matrixX.size2());
+  boost::numeric::ublas::matrix<double> matrixE = boost::numeric::ublas::matrix<double>(matrixR.size1(), matrixR.size2());
 
   double value;
-  std::vector<double> values;
-  std::vector<double> fractions;
   for (unsigned r = 0; r < inputRaster.getNumberOfRows(); r++)
     for (unsigned c = 0; c < inputRaster.getNumberOfColumns(); c++)
     {
 // read input values
-      values.clear();
-
-      for (unsigned b = 0; b < inputRasterBands.size(); b++)
+      for (unsigned b = 0; b < nBands; b++)
       {
         inputRaster.getValue(c, r, value, inputRasterBands[b]);
-        values.push_back(value);
+        matrixR(b, 0) = value / Qmax[b];
       }
 
-// compute fractions and write output
-      fractions.clear();
-      fractions.resize(matrixX.size1(), 0.0);
+// calculate the product A' * R
+      productAtR = boost::numeric::ublas::prod(transposeA, matrixR);
 
-      for (unsigned x = 0; x < matrixX.size1(); x++)
-        for (unsigned b = 0; b < values.size(); b++)
-          fractions[x] += (values[b] * matrixX(x, 0));
+// compute matrix X
+      matrixX = boost::numeric::ublas::prod(invertAtA, productAtR);
 
-      outputRaster.setValues(c, r, fractions);
+// write output fractions
+      for (unsigned b = 0; b < nComponents; b++)
+        outputRaster.setValue(c, r, matrixX(b + 1, 0), b);
+
+
+// compute error matrix
+      if (nComponents < outputRaster.getNumberOfBands())
+      {
+        productAX = boost::numeric::ublas::prod(matrixA, matrixX);
+        matrixE = matrixR - productAX;
+
+// write output errors
+        for (unsigned b = nComponents, e = 0; b < outputRaster.getNumberOfBands(); b++, e++)
+          outputRaster.setValue(c, r, matrixE(e, 0), b);
+      }
     }
 
   return true;

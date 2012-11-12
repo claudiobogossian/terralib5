@@ -44,6 +44,7 @@ namespace te
   namespace se
   {
 // Forward declaration
+    class Description;
     class Graphic;
     class Symbolizer;
 

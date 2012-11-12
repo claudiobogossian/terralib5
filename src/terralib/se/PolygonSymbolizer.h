@@ -174,6 +174,8 @@ namespace te
 
         const ParameterValue* getPerpendicularOffset() const;
 
+        const std::string& getType() const;
+
         //@}
 
         /*! \brief It creates a new copy of this object. */
@@ -186,6 +188,8 @@ namespace te
         Stroke* m_stroke;                      //!< A "Stroke" specifies the appearance of a linear geometry. (Optional)
         Displacement* m_displacement;          //!< The Displacement gives the X and Y displacements from the original geometry. (Optional)
         ParameterValue* m_perpendicularOffset; //!< A "PerpendicularOffset" gives the perpendicular distance away from a line to draw a label. (Optional)
+
+        static const std::string sm_type;      //!< A static data member used in the implementation of getType method.
     };
 
   } // namespace se

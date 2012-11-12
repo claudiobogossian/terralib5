@@ -140,6 +140,8 @@ namespace te
 
         te::se::ImageOutline* getImageOutline() { return m_imageOutline; }
 
+        const std::string& getType() const;
+
         //@}
 
         /*! \brief It creates a new copy of this object. */
@@ -157,6 +159,8 @@ namespace te
         ContrastEnhancement* m_contrastEnhancement; //!< It defines contrast enhancement for a channel of a false-color image or for a color image. (Optional)
         ShadedRelief* m_shadedRelief;               //!< It selects the application of relief shading (or "hill shading") to an image for a three-dimensional visual effect. (Optional)
         ImageOutline* m_imageOutline;               //!< It specifies how individual source rasters in a multi-raster set (such as a set of satellite-image scenes) should be outlined to make the individual-image locations visible. (Optional)
+
+        static const std::string sm_type;           //!< A static data member used in the implementation of getType method.
     };
 
   } // end namespace se

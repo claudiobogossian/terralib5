@@ -29,8 +29,10 @@
 #include "ParameterValue.h"
 #include "Stroke.h"
 
+const std::string te::se::LineSymbolizer::sm_type("LineSymbolizer");
+
 te::se::LineSymbolizer::LineSymbolizer()
-  : te::se::Symbolizer(te::se::LINE_SYMBOLIZER),
+  : te::se::Symbolizer(),
     m_geometry(0),
     m_stroke(0),
     m_perpendicularOffset(0)
@@ -91,6 +93,11 @@ void te::se::LineSymbolizer::setPerpendicularOffset(ParameterValue* perpendicula
 const te::se::ParameterValue* te::se::LineSymbolizer::getPerpendicularOffset() const
 {
   return m_perpendicularOffset;
+}
+
+const std::string& te::se::LineSymbolizer::getType() const
+{
+  return sm_type;
 }
 
 te::se::Symbolizer* te::se::LineSymbolizer::clone() const

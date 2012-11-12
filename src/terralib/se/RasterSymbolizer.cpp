@@ -33,8 +33,10 @@
 #include "RasterSymbolizer.h"
 #include "ShadedRelief.h"
 
+const std::string te::se::RasterSymbolizer::sm_type("RasterSymbolizer");
+
 te::se::RasterSymbolizer::RasterSymbolizer()
-  : te::se::Symbolizer(te::se::RASTER_SYMBOLIZER),
+  : te::se::Symbolizer(),
     m_geometry(0),
     m_opacity(0),
     m_gain(0),
@@ -159,6 +161,11 @@ void te::se::RasterSymbolizer::setImageOutline(ImageOutline* i)
 {
   delete m_imageOutline;
   m_imageOutline = i;
+}
+
+const std::string& te::se::RasterSymbolizer::getType() const
+{
+  return sm_type;
 }
 
 te::se::Symbolizer* te::se::RasterSymbolizer::clone() const
