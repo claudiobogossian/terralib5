@@ -28,6 +28,8 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "ExternalGraphic.h"
+#include "InlineContent.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -44,6 +46,21 @@ void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& wri
     return;
 
   writer.writeStartElement("ExternalGraphic");
+
+  const te::xl::SimpleLink* link = eg->getOnlineResource();
+  if(link)
+    te::serialize::WriteOnlineResourceHelper(link, writer);
+  else
+  {
+    const te::se::InlineContent* ic = eg->getInlineContent();
+    assert(ic);
+    Save(ic, writer);
+  }
+  const std::string& format = eg->getFormat();
+  assert(!format.empty());
+  writer.writeElement("Format", format);
+
+  // Recodes (...)
 
   writer.writeEndElement("ExternalGraphic");
 }

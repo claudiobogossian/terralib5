@@ -117,6 +117,11 @@ void te::se::TextSymbolizer::setLabelPlacement(LabelPlacement* l)
   m_labelPlacement = l;
 }
 
+const te::se::LabelPlacement* te::se::TextSymbolizer::getLabelPlacement() const
+{
+  return m_labelPlacement;
+}
+
 void te::se::TextSymbolizer::setHalo(Halo* h)
 {
   delete m_halo;

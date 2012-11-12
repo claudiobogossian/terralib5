@@ -31,14 +31,14 @@
 te::se::Categorize::Categorize()
   : m_lookupValue(0),
     m_value(0),
-    m_threshholdsBelongTo(SUCCEEDING)
+    m_threshholdsBelongTo(NONE)
 {
 }
 
 te::se::Categorize::Categorize(const Categorize& rhs)
   : m_lookupValue(0),
     m_value(0),
-    m_threshholdsBelongTo(SUCCEEDING)
+    m_threshholdsBelongTo(NONE)
 {
   if(rhs.m_lookupValue)
   {
@@ -104,12 +104,12 @@ void te::se::Categorize::setThresholdsBelongTo(ThresholdsBelongToType t)
   m_threshholdsBelongTo = t;
 }
 
-std::vector<te::se::ParameterValue*>& te::se::Categorize::getThresholds()
+const std::vector<te::se::ParameterValue*>& te::se::Categorize::getThresholds() const
 {
   return m_thresholds;
 }
 
-std::vector<te::se::ParameterValue*>& te::se::Categorize::getThresholdValues()
+const std::vector<te::se::ParameterValue*>& te::se::Categorize::getThresholdValues() const
 {
   return m_thresholdValues;
 }

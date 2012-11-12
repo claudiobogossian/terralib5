@@ -60,6 +60,8 @@
 // STL
 #include <cassert>
 
+#include <boost/lexical_cast.hpp>
+
 std::size_t MainWindow::ms_id = 0;
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
@@ -221,14 +223,13 @@ void MainWindow::addRasterLayer(const QString& path)
 
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
-  te::da::DataSetType* dt = cl->getDataSetType(dataSetName);
   te::da::DataSet* dataSet = tr->getDataSet(dataSetName);
   te::rst::Raster* raster = dataSet->getRaster();
 
   te::gm::Envelope* extent = raster->getExtent();
 
  // Creates a Layer
-  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(te::common::Convert2String(ms_id++), datasetName);
+  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(boost::lexical_cast<std::string>(ms_id++), datasetName);
   rasterLayer->setDataSource(ds);
   rasterLayer->setDataSetName(dataSetName);
   rasterLayer->setVisibility(te::map::VISIBLE);
@@ -399,7 +400,7 @@ void MainWindow::onRasterStyleTriggered()
     te::se::Rule* rule = new te::se::Rule();
     rule->push_back(rs);
 
-    te::se::Style* s = new te::se::Style();
+    te::se::Style* s = new te::se::CoverageStyle();
     s->push_back(rule);
 
     layer->setStyle(s);
@@ -433,7 +434,7 @@ void MainWindow::onSymbolizerUpdated()
   te::se::Rule* rule = new te::se::Rule();
   rule->push_back(m_rvW->getRasterSymbolizer());
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(rule);
 
   te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());

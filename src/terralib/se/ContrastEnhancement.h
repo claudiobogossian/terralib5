@@ -105,11 +105,11 @@ namespace te
 
         void setContrastEnhancementType(ContrastEnhancementType t);
 
-        ContrastEnhancementType getContrastEnhancementType() { return m_contrast; } 
+        ContrastEnhancementType getContrastEnhancementType() const { return m_contrast; } 
 
         void setGammaValue(const double& v);
 
-        double getGammaValue() { return m_gammaValue; }
+        double getGammaValue() const { return m_gammaValue; }
 
         //@}
 

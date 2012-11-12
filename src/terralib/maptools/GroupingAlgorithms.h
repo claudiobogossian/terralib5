@@ -96,7 +96,6 @@ namespace te
 
       iterator it = begin;
 
-      double a = *it;
       while(it < end)
       {
 	      min = MIN(min, *it);

@@ -61,8 +61,8 @@ namespace te
           */
           CurrentToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool) : 
           Event(te::qt::af::evt::TOOL_CHANGED),
-          m_newTool(newTool),
-          m_oldTool(oldTool)
+          m_oldTool(oldTool),
+          m_newTool(newTool)
           {
           }
 

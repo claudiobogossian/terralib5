@@ -109,6 +109,11 @@ void te::se::Rule::disableElseFilter()
   m_elseFilter = false;
 }
 
+bool te::se::Rule::hasElseFilter() const
+{
+  return m_elseFilter;
+}
+
 void te::se::Rule::setMinScaleDenominator(const double& minScaleDenominator)
 {
   m_minScaleDenominator = minScaleDenominator;

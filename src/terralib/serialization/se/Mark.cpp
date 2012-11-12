@@ -27,11 +27,11 @@
 #include "../../se/Mark.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../xlink/SimpleLink.h"
 #include "Fill.h"
 #include "InlineContent.h"
 #include "Mark.h"
 #include "Stroke.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -56,23 +56,18 @@ void te::serialize::Save(const te::se::Mark* mark, te::xml::Writer& writer)
   {
     const te::xl::SimpleLink* link = mark->getOnlineResource();
     if(link)
-    {
-      writer.writeStartElement("OnlineResource");
-      Save(link, writer);
-      writer.writeEndElement("OnlineResource");
-    }
+      WriteOnlineResourceHelper(link, writer);
     else
     {
       const te::se::InlineContent* ic = mark->getInlineContent();
       assert(ic);
       Save(ic, writer);
-
-      const std::string* format = mark->getFormat();
-      assert(format);
-      writer.writeElement("Format", *format);
-
-      writer.writeElement("MarkIndex", mark->getMarkIndex());
     }
+    const std::string* format = mark->getFormat();
+    assert(format);
+    writer.writeElement("Format", *format);
+
+    writer.writeElement("MarkIndex", mark->getMarkIndex());
   }
 
   Save(mark->getStroke(), writer);

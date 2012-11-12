@@ -73,11 +73,11 @@ namespace te
         
         void setSourceChannelName(const std::string& name);
 
-        std::string getSourceChannelName() { return m_sourceChannelName; }
+        std::string getSourceChannelName() const { return m_sourceChannelName; }
 
         void setContrastEnhancement(ContrastEnhancement* c);
 
-        ContrastEnhancement* getContrastEnhancement() { return m_contrastEnhancement; }
+        ContrastEnhancement* getContrastEnhancement() const { return m_contrastEnhancement; }
         
         //@}
 

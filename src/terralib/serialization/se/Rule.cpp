@@ -28,6 +28,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "Description.h"
+#include "Graphic.h"
 #include "Rule.h"
 #include "Symbolizer.h"
 #include "Utils.h"
@@ -38,29 +39,6 @@
 
 te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
 {
-  /*assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSetType");
-
-  unsigned int id = reader.getAttrAsUInt32(0);
-  std::string name = reader.getAttr(1);
-  std::string title = reader.getAttr(2);
-
-  reader.next();
-
-  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(name, id));
-
-  dt->setTitle(title);
-
-  while(reader.getNodeType() == te::xml::START_ELEMENT &&
-        reader.getElementLocalName() == "Property")
-  {
-    te::dt::Property* p = ReadProperty(reader);
-
-    dt->add(p);
-  }
-
-  return dt.release();*/
-
   return 0;
 }
 
@@ -73,9 +51,20 @@ void te::serialize::Save(const te::se::Rule* rule, te::xml::Writer& writer)
 
   WriteStringPtrHelper("Name", rule->getName(), writer);
   Save(rule->getDescription(), writer);
-  //Save(rule->getLegendGraphic(), writer);
-  //Save(rule->getFilter(), writer);
-  //Save(rule->getElseFilter(), writer);
+
+  const te::se::Graphic* legendGraphic = rule->getLegendGraphic();
+  if(legendGraphic)
+  {
+    writer.writeStartElement("LegendGraphic");
+    Save(rule->getLegendGraphic(), writer);
+    writer.writeEndElement("LegendGraphic");
+  }
+
+  if(rule->getFilter())
+    /* Save(rule->getFilter(), writer); TODO: fe serialize! */ int x = 0;
+  else if(rule->hasElseFilter())
+    writer.writeElement("ElseFilter", "");
+
   writer.writeElement("MinScaleDenominator", rule->getMinScaleDenominator());
   writer.writeElement("MaxScaleDenominator", rule->getMaxScaleDenominator());
 

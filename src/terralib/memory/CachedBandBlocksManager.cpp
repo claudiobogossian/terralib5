@@ -128,9 +128,7 @@ bool te::mem::CachedBandBlocksManager::initialize(
   m_dataPrefetchThreshold = dataPrefetchThreshold;
   m_maxNumberOfCacheBlocks = std::min( maxNumberOfCacheBlocks, numberOfRasterBlocks );
   
-  unsigned int blockBIdx = 0;
-  unsigned int blockYIdx = 0;
-  
+  unsigned int blockBIdx = 0;  
   m_blocksPointers.resize( externalRaster.getNumberOfBands() );
   
   for( blockBIdx = 0 ; blockBIdx < m_blocksPointers.size() ;  ++blockBIdx )

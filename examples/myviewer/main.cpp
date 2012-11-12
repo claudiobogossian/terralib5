@@ -18,26 +18,59 @@
  */
 
 // TerraLib
-//#include <terralib/common.h>
+#include <terralib/common.h>
 //#include <terralib/color.h>
 //#include <terralib/geometry.h>
 //#include <terralib/srs.h>
 //#include <terralib/dataaccess.h>
 //#include <terralib/maptools.h>
 //#include <terralib/postgis.h>
-#include <terralib/common/TerraLib.h>
+//#include <terralib/common/TerraLib.h>
 #include <terralib/qt/widgets.h>
 
 //Qt
 #include <QtGui/QApplication>
+#include <QtCore/QFile>
 
 #include "MyWindow.h"
 #include "STExamples.h"
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+ 
+unsigned long long lastMemoryMeasured = 0;
+unsigned long long getAvailableMemory()
+{
+  unsigned long long size = 0;
+
+#ifdef WIN32
+  MEMORYSTATUSEX ms;
+  ms.dwLength = sizeof(ms);
+  GlobalMemoryStatusEx(&ms);
+  size =  ms.ullAvailPhys;
+#endif
+
+  return size;
+}
+
 int main(int argc, char *argv[])
 {
   TerraLib::getInstance().initialize();
-  //te::pgis::Platform::initialize();
+
+//te::common::Logger::initialize("main");
+//QString name = te::common::Logger::getDefaultConfigFile().c_str();
+//te::common::Logger::logInfo("main", "..............................................");
+//te::common::Logger::logInfo("main", ".................INIT MY_VIEWER...............");
+//te::common::Logger::logInfo("main", "..............................................");
+//QString msg, msgg;
+//unsigned long long maa, mbb;
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before main:");
+//msg += " KBytes";
+//te::common::Logger::logInfo("main", msg.toStdString().c_str());
+
   LoadModules();
 
   QApplication app(argc, argv);
@@ -46,8 +79,13 @@ int main(int argc, char *argv[])
   myWindow->show();
   int ret = app.exec();
 
-//  delete myWindow;
-  //te::pgis::Platform::finalize();
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after main:");
+//msgg.setNum((qulonglong)((mbb - maa) / (1<<10)));
+//msg += "  KBytes, liberou:" + msgg + " KBytes";
+//te::common::Logger::logInfo("main", msg.toStdString().c_str());
+//te::common::Logger::finalize("main");
   TerraLib::getInstance().finalize();
 
   return ret;

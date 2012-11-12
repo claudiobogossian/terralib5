@@ -38,6 +38,7 @@
 
 // boost
 #include <boost/math/special_functions/binomial.hpp>
+#include <boost/random.hpp>
 
 te::gm::GTFilter::~GTFilter()
 {
@@ -70,15 +71,13 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
   if( maxIMapRmse < 0 ) return false;
   if( ( assurance <= 0.0 ) || ( assurance >= 1.0 ) ) return false;
   
-  // initializing the random numbers generator
-  srand( rand() );    
-  
   // generating the tie-points accumulated probabilities map
-  // with positive values up to RAND_MAX + 1
+  // with positive values between 0 and 1
   std::map< double, GTParameters::TiePoint > tpsMap;
   {
     const unsigned int inputTPNmb = (unsigned int)
       inputParams.m_tiePoints.size();
+    double tiePointsWeightsSum = 0;
       
     if( tiePointsWeights.size() > 0 )
     {
@@ -87,18 +86,16 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
       
       // finding normalization factors
 
-      double originalWSum = 0.0;
       unsigned int tpIdx = 0;
-
 
       for( tpIdx = 0 ; tpIdx < inputTPNmb ; ++tpIdx )
       {
         if( tiePointsWeights[ tpIdx ] <= 0.0 ) return false;
         
-        originalWSum += tiePointsWeights[ tpIdx ];
+        tiePointsWeightsSum += tiePointsWeights[ tpIdx ];
       }
 
-      if( originalWSum <= 0.0 ) return false;
+      if( tiePointsWeightsSum <= 0.0 ) return false;
 
       // map fill 
       
@@ -108,8 +105,7 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
       for( tpIdx = 0 ; tpIdx < inputTPNmb ; ++tpIdx )
       {
         newW = tiePointsWeights[ tpIdx ];
-        newW /= originalWSum;
-        newW *= ((double)RAND_MAX) + 1.0;
+        newW /= tiePointsWeightsSum;
 
         newWSum += newW;
 
@@ -160,7 +156,6 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
   baseThreadParams.m_assurance = assurance;
   baseThreadParams.m_bestParamsConvexHullAreaPtr = &bestParamsConvexHullArea;
   baseThreadParams.m_bestTransformationPtrPtr = &bestTransformationPtr;
-  baseThreadParams.m_randSeed = rand();
   baseThreadParams.m_maxIterations = maxIterations;
   baseThreadParams.m_maxIterationsDivFactor = enableMultiThread ?
     ((RansacItCounterT)procsNumber) : 1;
@@ -176,7 +171,6 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
     for( unsigned int threadIdx = 0 ; threadIdx < procsNumber ;
       ++threadIdx )
     {
-      threadsParameters[ threadIdx ].m_randSeed = rand();
       threads.add_thread( new boost::thread( applyRansacThreadEntry, 
         &threadsParameters[ threadIdx ] ) );
     }
@@ -263,6 +257,9 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   double bestParamsConvexHullArea = -1.0;
   
   // variables used by the ransac loop
+  
+  boost::random::uniform_01< double > distribution;
+  boost::random::mt19937 generator( time(0) );
 
   const bool dynamicMaxIterations = ( paramsPtr->m_maxIterations == 0 );
   RansacItCounterT maxIterations = paramsPtr->m_maxIterations ? 
@@ -273,6 +270,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
         (unsigned int)tiePoints.size(), 
         bestTransfPtr->getMinRequiredTiePoints() )
     ) / maxIterationsDivFactor;
+  RansacItCounterT maxIterationsEstimation = maxIterations;
     
   GTParameters consensusSetParams;  
   consensusSetParams.m_tiePoints.reserve( tiePoints.size() );
@@ -296,7 +294,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   selectedTpsPtrsVec.resize( reqTPsNmb, 0 );
   unsigned int selectedTpsPtrsVecIdx = 0;
   bool selectedTpsNotSelectedBefore = false;
-  unsigned int randSeed = 0;
   RansacItCounterT currentIteration = 0;
     
   while( ( currentIteration < maxIterations ) && keepRunningFlag )
@@ -310,7 +307,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
 
     while( selectedTpsCounter < reqTPsNmb )
     {
-      tpsMapIt = tpsMap.upper_bound( (double)rand_r( &randSeed ) );
+      tpsMapIt = tpsMap.upper_bound( distribution( generator  ) );
       assert( tpsMapIt != tpsMap.end() );
         
       // Checking if this TP was already selected before
@@ -423,17 +420,19 @@ void te::gm::GTFilter::applyRansacThreadEntry(
     
     // Updating iteration related variables
     
-    if( dynamicMaxIterations )
+    if( dynamicMaxIterations && ( bestParams.m_tiePoints.size() != 0 ) )
     {
-      maxIterations = 
-        (
-          maxIterations
-          +
+      if( bestParams.m_tiePoints.size() == inputTPNmb )
+      {
+        maxIterations = 0;
+      }
+      else
+      {
+        maxIterationsEstimation =
           (
             (
-              (RansacItCounterT)
-              ( 
-                ( (long double)std::log( 1.0 - assurance )) 
+              (RansacItCounterT) std::ceil(
+                ( (long double)std::log( assurance ) ) 
                 / 
                 (long double)std::log( 
                   1.0 
@@ -448,8 +447,10 @@ void te::gm::GTFilter::applyRansacThreadEntry(
             )
             /
             maxIterationsDivFactor
-          )
-        ) / 2;
+          );
+        
+        maxIterations = ( maxIterations + maxIterationsEstimation ) / 2;
+      }
     }
     
     ++currentIteration;

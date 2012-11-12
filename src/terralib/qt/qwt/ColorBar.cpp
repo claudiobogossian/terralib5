@@ -25,13 +25,13 @@ using namespace std;
 
 te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::BottomScale, parent),
   m_colorBar(0),
+  m_currentPinPos(0),
   m_colorBarMenu(0),
   m_pinMenu(0),
-  m_currentPinPos(0),
-  m_pinPicker(0),
   m_colorBarPicker(0),
-  m_editPinAction(0),
+  m_pinPicker(0),
   m_addPinAction(0),
+  m_editPinAction(0),
   m_removePinAction(0)
 {
   this->setColorBarEnabled(true);
@@ -316,8 +316,6 @@ void te::qt::qwt::ColorBar::mouseMoveEvent(QMouseEvent* e)
 void te::qt::qwt::ColorBar::wheelEvent(QWheelEvent* e)
 {
   double pin = getPin(e->x());
-
-  int amplitude = 10;
 
   if(pin != -1)
   {

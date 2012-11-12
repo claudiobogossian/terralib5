@@ -146,13 +146,19 @@ namespace te
 
         void setLookupValue(ParameterValue* v);
 
+        ParameterValue* getLookupValue() const { return m_lookupValue; }
+
         void add(InterpolationPoint* i);
 
         void setModeType(ModeType t);
 
+        const ModeType& getModeType() const { return m_mode; }
+
         void setMethodType(MethodType t);
 
-        std::vector<InterpolationPoint*>& getInterpolationPoints();
+        const MethodType& geMethodType() const { return m_method; }
+
+        const std::vector<InterpolationPoint*>& getInterpolationPoints() const;
 
         //@}
 

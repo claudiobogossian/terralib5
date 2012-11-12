@@ -32,7 +32,22 @@
 #include "../../se/PolygonSymbolizer.h"
 #include "../../se/RasterSymbolizer.h"
 #include "../../se/TextSymbolizer.h"
+#include "../xlink/SimpleLink.h"
 #include "../Exception.h"
+#include "ChannelSelection.h"
+#include "ColorMap.h"
+#include "ContrastEnhancement.h"
+#include "Description.h"
+#include "Displacement.h"
+#include "Fill.h"
+#include "Font.h"
+#include "Graphic.h"
+#include "Halo.h"
+#include "ImageOutline.h"
+#include "LabelPlacement.h"
+#include "OverlapBehavior.h"
+#include "ShadedRelief.h"
+#include "Stroke.h"
 #include "Symbolizer.h"
 #include "Utils.h"
 
@@ -132,6 +147,18 @@ void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer&
 
   if(ls == 0)
     return;
+
+  writer.writeStartElement("LineSymbolizer");
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::WriterSymbolizerHelper(ls, writer);
+
+  // Specific elements of LineSymbolizer
+  //te::serialize::Save(ls->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::Save(ls->getStroke(), writer);
+  te::serialize::WriteParameterValuePtrHelper("PerpendicularOffset", ls->getPerpendicularOffset(), writer);
+
+  writer.writeEndElement("LineSymbolizer");
 }
 
 void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
@@ -140,6 +167,17 @@ void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer
 
   if(ps == 0)
     return;
+
+  writer.writeStartElement("PointSymbolizer");
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::WriterSymbolizerHelper(ps, writer);
+
+  // Specific elements of PointSymbolizer
+  //te::serialize::Save(ps->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::Save(ps->getGraphic(), writer);
+
+  writer.writeEndElement("PointSymbolizer");
 }
 
 void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
@@ -148,6 +186,20 @@ void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writ
 
   if(ps == 0)
     return;
+
+  writer.writeStartElement("PolygonSymbolizer");
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::WriterSymbolizerHelper(ps, writer);
+
+  // Specific elements of PolygonSymbolizer
+  //te::serialize::Save(ps->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::Save(ps->getFill(), writer);
+  te::serialize::Save(ps->getStroke(), writer);
+  te::serialize::Save(ps->getDisplacement(), writer);
+  te::serialize::WriteParameterValuePtrHelper("PerpendicularOffset", ps->getPerpendicularOffset(), writer);
+
+  writer.writeEndElement("PolygonSymbolizer");
 }
 
 void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
@@ -156,6 +208,25 @@ void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Write
 
   if(rs == 0)
     return;
+
+  writer.writeStartElement("RasterSymbolizer");
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::WriterSymbolizerHelper(rs, writer);
+
+  // Specific elements of RasterSymbolizer
+  //te::serialize::Save(rs->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::WriteParameterValuePtrHelper("Opacity", rs->getOpacity(), writer);
+  te::serialize::WriteParameterValuePtrHelper("Gain", rs->getGain(), writer);
+  te::serialize::WriteParameterValuePtrHelper("Offset", rs->getOffset(), writer);
+  te::serialize::Save(rs->getChannelSelection(), writer);
+  te::serialize::Save(rs->getOverlapBehavior(), writer);
+  te::serialize::Save(rs->getColorMap(), writer);
+  te::serialize::Save(rs->getContrastEnhancement(), writer);
+  te::serialize::Save(rs->getShadedRelief(), writer);
+  te::serialize::Save(rs->getImageOutline(), writer);
+
+  writer.writeEndElement("RasterSymbolizer");
 }
 
 void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
@@ -164,4 +235,18 @@ void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer&
 
   if(ts == 0)
     return;
+
+  writer.writeStartElement("TextSymbolizer");
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::WriterSymbolizerHelper(ts, writer);
+
+  //te::serialize::Save(ts->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::WriteParameterValuePtrHelper("Label", ts->getLabel(), writer);
+  te::serialize::Save(ts->getFont(), writer);
+  te::serialize::Save(ts->getLabelPlacement(), writer);
+  te::serialize::Save(ts->getHalo(), writer);
+  te::serialize::Save(ts->getFill(), writer);
+
+  writer.writeEndElement("TextSymbolizer");
 }
