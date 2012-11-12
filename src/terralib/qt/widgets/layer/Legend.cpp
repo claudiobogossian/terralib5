@@ -336,7 +336,6 @@ void te::qt::widgets::Legend::legendTableItemChanged(QTableWidgetItem* item)
   if((typeComboBox->currentIndex() == te::map::UNIQUE_VALUE && item->column() == 2) ||
      (typeComboBox->currentIndex() != te::map::UNIQUE_VALUE && item->column() == 3))
   {
-    te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer());
     m_changedItemLabel[item->row()] = item->text().toStdString();
   }
 }

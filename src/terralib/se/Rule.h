@@ -127,6 +127,8 @@ namespace te
 
         void disableElseFilter();
 
+        bool hasElseFilter() const;
+
         void setMinScaleDenominator(const double& minScaleDenominator);
 
         const double& getMinScaleDenominator() const;

@@ -35,7 +35,21 @@
 
 te::se::InlineContent* te::serialize::ReadInlineContent(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "InlineContent");
+
+  std::string encondingValue = reader.getAttr("enconding");
+  assert(encondingValue == "xml" || encondingValue == "base64");
+
+  te::se::InlineContent::EncodingType encodingType;
+  encondingValue == "xml" ? encodingType = te::se::InlineContent::XML : encodingType = te::se::InlineContent::BASE64;
+
+  std::string data = reader.getElementValue();
+
+  std::auto_ptr<te::se::InlineContent> ic(new te::se::InlineContent(encodingType));
+  ic->setData(data);
+
+  return ic.release();
 }
 
 void te::serialize::Save(const te::se::InlineContent* ic, te::xml::Writer& writer)
@@ -44,10 +58,7 @@ void te::serialize::Save(const te::se::InlineContent* ic, te::xml::Writer& write
     return;
 
   writer.writeStartElement("InlineContent");
-
   ic->getEncoding() == te::se::InlineContent::XML ? writer.writeAttribute("enconding", "xml") : writer.writeAttribute("enconding", "base64");
-
-  // writer.writeText(ic->getData());
-
+  writer.writeValue(ic->getData());
   writer.writeEndElement("InlineContent");
 }

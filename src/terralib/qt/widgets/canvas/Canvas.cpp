@@ -310,6 +310,8 @@ void te::qt::widgets::Canvas::draw(const te::gm::Geometry* geom)
     case te::gm::GeometryCollectionZMType:
       draw(static_cast<const te::gm::GeometryCollection*>(geom));
     break;
+    default:
+    break;
   }
 }
 

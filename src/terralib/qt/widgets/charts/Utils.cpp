@@ -38,7 +38,6 @@
 double te::qt::widgets::getDouble(const std::string& value, std::vector<std::string>& sVector)
 {
   //verify if it exists 
-  double result = 0.;
   for(std::size_t i=0;i<sVector.size();++i)
   {
     if(value==sVector[i])

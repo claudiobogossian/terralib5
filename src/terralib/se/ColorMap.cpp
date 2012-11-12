@@ -61,7 +61,7 @@ void te::se::ColorMap::setCategorize(Categorize* c)
   m_categorize = c;
 }
 
-te::se::Categorize* te::se::ColorMap::getCategorize()
+te::se::Categorize* te::se::ColorMap::getCategorize() const
 {
   return m_categorize;
 }
@@ -72,7 +72,7 @@ void te::se::ColorMap::setInterpolate(Interpolate* i)
   m_interpolate = i;
 }
 
-te::se::Interpolate* te::se::ColorMap::getInterpolate()
+te::se::Interpolate* te::se::ColorMap::getInterpolate() const
 {
   return m_interpolate;
 }

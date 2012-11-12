@@ -117,6 +117,42 @@ void te::xml::Writer::writeAttribute(const std::string& attName, boost::uint64_t
   writeAttribute(attName, boost::lexical_cast<std::string>(value));
 }
 
+void te::xml::Writer::writeValue(const std::string& value)
+{
+  if(m_isOpened)
+  {
+    m_ostr << ">";
+    m_isOpened = false;
+  }
+
+  m_ostr << value;
+}
+
+void te::xml::Writer::writeValue(const double& value)
+{
+  writeValue(boost::lexical_cast<std::string>(value));
+}
+
+void te::xml::Writer::writeValue(boost::int32_t value)
+{
+  writeValue(boost::lexical_cast<std::string>(value));
+}
+
+void te::xml::Writer::writeValue(boost::uint32_t value)
+{
+  writeValue(boost::lexical_cast<std::string>(value));
+}
+
+void te::xml::Writer::writeValue(boost::int64_t value)
+{
+  writeValue(boost::lexical_cast<std::string>(value));
+}
+
+void te::xml::Writer::writeValue(boost::uint64_t value)
+{
+  writeValue(boost::lexical_cast<std::string>(value));
+}
+
 void te::xml::Writer::writeEndElement(const std::string& qName)
 {
   if(m_isOpened)

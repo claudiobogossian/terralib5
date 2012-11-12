@@ -27,6 +27,8 @@
 #include "../../se/Stroke.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "Graphic.h"
+#include "GraphicStroke.h"
 #include "Stroke.h"
 #include "SvgParameter.h"
 
@@ -46,6 +48,15 @@ void te::serialize::Save(const te::se::Stroke* stroke, te::xml::Writer& writer)
 
   writer.writeStartElement("Stroke");
 
+  if(stroke->getGraphicFill())
+  {
+    writer.writeStartElement("GraphicFill");
+    Save(stroke->getGraphicFill(), writer);
+    writer.writeEndElement("GraphicFill");
+  }
+  else if(stroke->getGraphicStroke())
+    Save(stroke->getGraphicStroke(), writer);
+
   Save(stroke->getColor(), writer);
   Save(stroke->getOpacity(), writer);
   Save(stroke->getWidth(), writer);
@@ -53,8 +64,6 @@ void te::serialize::Save(const te::se::Stroke* stroke, te::xml::Writer& writer)
   Save(stroke->getLineCap(), writer);
   Save(stroke->getDashArray(), writer);
   Save(stroke->setDashOffset(), writer);
-
-  // GraphicFill & GraphicStroke (...)
 
   writer.writeEndElement("Stroke");
 }

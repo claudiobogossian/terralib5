@@ -368,8 +368,6 @@ void te::qt::widgets::ColorMapWidget::onBandSelected(QString value)
     return;
   }
 
-  int band = value.toInt();
-
   const te::rst::RasterSummary* rsMin = te::rst::RasterSummaryManager::getInstance().get(m_raster, te::rst::SUMMARY_MIN);
   const te::rst::RasterSummary* rsMax = te::rst::RasterSummaryManager::getInstance().get(m_raster, te::rst::SUMMARY_MAX);
   const std::complex<double>* cmin = rsMin->at(0).m_minVal;

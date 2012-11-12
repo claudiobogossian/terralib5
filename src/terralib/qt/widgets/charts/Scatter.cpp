@@ -28,13 +28,12 @@
 #include <limits>
 
 te::qt::widgets::Scatter::Scatter(const std::vector<double>& axisX, const std::vector<double>& axisY)
-  : m_minX(std::numeric_limits<double>::max()),
+  : m_xValues(axisX),
+    m_yValues(axisY),
+    m_minX(std::numeric_limits<double>::max()),
     m_maxX(-std::numeric_limits<double>::max()),
     m_minY(std::numeric_limits<double>::max()),
-    m_maxY(-std::numeric_limits<double>::max()),
-    m_xValues(axisX),
-    m_yValues(axisY)
-
+    m_maxY(-std::numeric_limits<double>::max())
 {
   
 }

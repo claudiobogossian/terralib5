@@ -24,14 +24,21 @@
 */
 
 // TerraLib
+#include "../../se/Symbolizer.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../xlink/SimpleLink.h"
+#include "Description.h"
 #include "ParameterValue.h"
+#include "SelectedChannel.h"
 #include "Utils.h"
+
+// STL
+#include <cassert>
 
 void te::serialize::WriteStringPtrHelper(const std::string& elementName, const std::string* s, te::xml::Writer& writer)
 {
-  if(s != 0) writer.writeElement(elementName, *s);
+  if(s != 0 && !s->empty()) writer.writeElement(elementName, *s);
 }
 
 void te::serialize::WriteParameterValuePtrHelper(const std::string& elementName, const te::se::ParameterValue* p, te::xml::Writer& writer)
@@ -41,5 +48,46 @@ void te::serialize::WriteParameterValuePtrHelper(const std::string& elementName,
 
   writer.writeStartElement(elementName);
   Save(p, writer);
+  writer.writeEndElement(elementName);
+}
+
+void te::serialize::WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer)
+{
+  if(link == 0)
+    return;
+
+  writer.writeStartElement("BaseSymbolizer");
+  WriteOnlineResourceHelper(link, writer);
+  writer.writeEndElement("BaseSymbolizer");
+}
+
+void te::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer)
+{
+  if(link == 0)
+    return;
+
+  writer.writeStartElement("OnlineResource");
+  Save(link, writer);
+  writer.writeEndElement("OnlineResource");
+}
+
+void te::serialize::WriterSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+{
+  assert(symbolizer);
+
+  writer.writeAttribute("version", symbolizer->getVersion());
+  //writer.writeAttribute("uom", symbolizer->getUom()); // TODO: URI from te::common:: UnitOfMeasure!
+  WriteStringPtrHelper("Name", &symbolizer->getName(), writer);
+  Save(symbolizer->getDescription(), writer);
+  WriteBaseSymbolizerHelper(symbolizer->getBaseSymbolizer(), writer);
+}
+
+void te::serialize::WriterSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer)
+{
+  if(sc == 0)
+    return;
+
+  writer.writeStartElement(elementName);
+  Save(sc, writer);
   writer.writeEndElement(elementName);
 }
