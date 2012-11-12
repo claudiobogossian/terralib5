@@ -152,7 +152,7 @@ void RGB_012_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -194,7 +194,7 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, t
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -236,7 +236,7 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, t
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -282,7 +282,7 @@ void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* 
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -336,7 +336,7 @@ void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -368,7 +368,7 @@ void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::E
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -400,7 +400,7 @@ void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::E
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
@@ -432,7 +432,7 @@ void RED_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Enve
   te::se::Rule* r = new te::se::Rule();
   r->push_back(rs);
 
-  te::se::Style* s = new te::se::Style();
+  te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(r);
 
   l->setStyle(s);
