@@ -37,7 +37,7 @@
 #include "ado/DataSourceTransactor.h"
 #include "ado/Exception.h"
 #include "ado/Globals.h"
-#include "ado/Platform.h"
+#include "ado/Module.h"
 #include "ado/SQLVisitor.h"
 #include "ado/Utils.h"
 

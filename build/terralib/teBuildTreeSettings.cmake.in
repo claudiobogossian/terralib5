@@ -18,6 +18,8 @@ set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 # Include the dependencies. 
 include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
 
+set (TERRALIB_BIN_DIR @CMAKE_RUNTIME_OUTPUT_DIRECTORY@)
+
 set (DEPS @TE_3DS@)
 
 include ( ${T5_MODULEPATH}/Deps_versions.cmake )	

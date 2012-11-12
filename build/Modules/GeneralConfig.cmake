@@ -15,8 +15,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${_binOutdir}")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${_binOutdir}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${_libOutdir}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${_libOutdir}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${_binOutdir}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${_binOutdir}")  
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${_binOutdir}")
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${_binOutdir}")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${_libOutdir}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${_binOutdir}")  
 
 if(UNIX)
 # On Linux-based systems, by default uses release configuration. Change CMAKE_BUILD_TYPE value to "Debug" to change to debug configuration.

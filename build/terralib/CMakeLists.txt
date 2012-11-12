@@ -26,6 +26,11 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
 endif()
 
+file(RELATIVE_PATH _tePath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${ROOT}" )
+
+# Configuring plugin
+set (TEPLUGIN_SCHEMALOCATION "${_tePath}/schemas/terralib/plugin/plugin_info.xsd" CACHE STRING "Location of the plugin_info.xsd file.")
+
 #-----------------------------------------------------------------------
 option (BUILD_AF "Build application framework module?" ON)
 option (BUILD_ANNOTATIONTEXT "Build annotation text module?" ON)

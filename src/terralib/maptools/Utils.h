@@ -27,8 +27,9 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_UTILS_H
 
 // TerraLib
-#include "../color/RGBAColor.h"
 #include "Config.h"
+#include <terralib/geometry/Enums.h>
+#include <terralib/color/RGBAColor.h>
 
 // STL
 #include <vector>
@@ -42,10 +43,6 @@ namespace te
     class ParameterValue;
     class Stroke;
     class FeatureTypeStyle;
-  }
-  namespace gm
-  {
-    enum GeomType;
   }
 
   namespace map

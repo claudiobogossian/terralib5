@@ -35,7 +35,7 @@ namespace te
     class DataSource; 
     class DataSourceFactory;
     class DataSourceTransactor;
-    class Platform;
+    class Module;
 
   } // end namespace org
 }   // end namespace te

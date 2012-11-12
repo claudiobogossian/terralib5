@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,48 +18,40 @@
  */
 
 /*!
-  \file terralib/postgis/Platform.h
+  \file Module.h
    
-  \brief A utility class to initialize and terminate TerraLib PostGIS driver support.  
+  \brief The TerraLib PostGIS driver is a plugin.
 */
 
-#ifndef __TERRALIB_POSTGIS_INTERNAL_PLATFORM_H
-#define __TERRALIB_POSTGIS_INTERNAL_PLATFORM_H
+#ifndef __TERRALIB_PGIS_INTERNAL_MODULE_H
+#define __TERRALIB_PGIS_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/CppPlugin.h"
+#include "../plugin/Plugin.h"
 #include "Config.h"
-
-// STL
-#include <string>
 
 namespace te
 {
   namespace pgis
   {
     /*!
-      \class Platform
+      \class Module
 
-      \brief A utility class to initialize and terminate TerraLib PostGIS driver support.
-
-      \sa te::plugin::CppPlugin
-     */
-    class TEPGISEXPORT Platform : public te::plugin::CppPlugin
+      \brief The TerraLib PostGIS driver is a plugin.    
+    */
+    class Module : public te::plugin::Plugin
     {
       public:
 
-        /** @name Initializer Methods
-         *  Constructor/Destructor.
-         */
-        //@{
+        /*!
+          \brief Plugin constructor.
+            
+          \param pInfo Basic information provided to initialize this module through the plugin API.
+        */
+        Module(const te::plugin::PluginInfo& pluginInfo);
 
-        /*! \brief It creates a new C++ module. */
-        Platform(const te::plugin::PluginInfo& pluginInfo);
-
-        /*! \brief destructor. */
-        ~Platform();
-
-        //@}
+        /*! \brief Destructor. */
+        ~Module();
 
         /** @name Re-Implmentation from Plugin Interface
          *  Re-Implementation from Plugin Interface.
@@ -79,51 +71,7 @@ namespace te
           \exception Exception It throws an exception if the plugin can not be shutdown.
          */
         void shutdown();
-
         //@}
-
-        /** @name Static Methods
-         *  Methods that can be used to initialize the PostGIS module.
-         */
-        //@{
-
-        /*! \brief It initializes all TerraLib PostGIS driver support.       
-           
-            The initialization includes:
-            <ul>
-            <li>Multilanguage support;</li>
-            <li>Logger initialization.</li>
-            </ul>
-           
-            \note This function must be called once in your program. I think that the best
-                  place to call it, is inside the main routine of your application.
-
-            \warning Not thread safe!
-         */
-        static void initialize();
-
-        /*! \brief It finalizes all TerraLib PostGIS driver support.
-           
-            \note This function must be called once in your program. This must
-                  be the last call to TerraLib PostGIS driver. As the Initialize function, this
-                  can be called at the end of the main routine of your application.
-
-            \warning Not thread safe!
-         */
-        static void finalize();
-
-        /*!
-          \brief It returns a reference to the driver identifier.
-
-          \return A reference to the driver identifier.
-         */
-        static const std::string& getDriverID();
-
-        //@}
-
-      public:
-
-        static bool sm_pgisInitialized;                           //!< A flag that indicates if the PostGIS driver is initialized or not.
 
 // PostgreSQL type names
         static const std::string sm_unknownTypeName;              //!< The string literal representation for the unknown type.
@@ -159,11 +107,10 @@ namespace te
         static const std::string sm_multiPolygonMTypeName;        //!< The string literal representation for PostGIS multi-polygon with m geometry type
         static const std::string sm_geometryTypeName;             //!< The string literal representation for PostGIS base geometry type
     };
-
   } // end namespace pgis
 }   // end namespace te
 
 PLUGIN_CALL_BACK_DECLARATION(TEPGISEXPORT);
 
-#endif  // __TERRALIB_POSTGIS_INTERNAL_PLATFORM_H
+#endif  // __TERRALIB_OGR_INTERNAL_MODULE_H
 

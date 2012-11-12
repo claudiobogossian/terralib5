@@ -57,32 +57,34 @@ void te::qt::af::UserPlugins::load()
   {
     boost::property_tree::ptree& p = ApplicationPlugins::getInstance().getAllSettings();
 
-    BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Plugins"))
-    {
-      if(v.second.data().empty())
-        continue;
+    if(!p.empty())
+      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Plugins"))
+      {
+        if(v.second.data().empty())
+          continue;
 
-      const std::string& pname = v.second.get<std::string>("Name");
-      const std::string& pdir = v.second.get<std::string>("Path.<xmlattr>.xlink:href");
+        const std::string& pname = v.second.get<std::string>("Name");
+        const std::string& pdir = v.second.get<std::string>("Path.<xmlattr>.xlink:href");
 
-      sPlugins.insert(std::pair<std::string, std::string>(pname, pdir));
-    }
+        sPlugins.insert(std::pair<std::string, std::string>(pname, pdir));
+      }
   }
 
 // get specific user plugins
   {
     boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
 
-    BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("UserSettings.SpecificPlugins"))
-    {
-      if(v.second.data().empty())
-        continue;
+    if(!p.empty())
+      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("UserSettings.SpecificPlugins"))
+      {
+        if(v.second.data().empty())
+          continue;
 
-      const std::string& pname = v.second.get<std::string>("Name");
-      const std::string& pdir = v.second.get<std::string>("Path.<xmlattr>.xlink:href");
+        const std::string& pname = v.second.get<std::string>("Name");
+        const std::string& pdir = v.second.get<std::string>("Path.<xmlattr>.xlink:href");
 
-      sPlugins.insert(std::pair<std::string, std::string>(pname, pdir));
-    }
+        sPlugins.insert(std::pair<std::string, std::string>(pname, pdir));
+      }
   }
 
 // the plugins enabled by the user
@@ -91,13 +93,14 @@ void te::qt::af::UserPlugins::load()
   {
     boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
 
-    BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("UserSettings.EnabledPlugins"))
-    {
-      if(v.second.data().empty())
-        continue;
+    if(!p.empty())
+      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("UserSettings.EnabledPlugins"))
+      {
+        if(v.second.data().empty())
+          continue;
 
-      uPlugins.insert(v.second.data());
-    }
+        uPlugins.insert(v.second.data());
+      }
   }
 
 // retrieve plugin information about each user plugin

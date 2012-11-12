@@ -89,7 +89,7 @@ te::map::AbstractLayer* NewOGRLayer::getNewLayer(QWidget* parent)
       std::map<std::string, std::string> connInfo;
       connInfo["SOURCE"] = f.toLatin1().data();  
 
-      te::da::DataSource* ds = man.get(id.toLatin1().data(), "OGR", connInfo);
+      te::da::DataSource* ds = man.get(id.toLatin1().data(), "OGR", connInfo).get();
 
       if(!ds->isOpened())
         ds->open(connInfo);

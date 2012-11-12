@@ -90,6 +90,8 @@ protected slots:
 
   void setDistanceTool(bool status);
 
+  void openPluginsManager();
+
 protected:
 
   void makeDialog();

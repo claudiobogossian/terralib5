@@ -27,7 +27,6 @@
 
 //! Qt include files
 #include <QtGui/QApplication>
-#include <QStyle>
 
 //! STL include files
 #include <exception>
@@ -37,15 +36,6 @@ int main(int argc, char** argv)
   QApplication app(argc, argv);
 
   int waitVal = EXIT_FAILURE;
-  //QString spaths(ICON_THEME_PATH);
-
-  //QStringList paths = spaths.split(";");
-
-  //QIcon::setThemeName("terralib");
-  //QIcon::setThemeSearchPaths(paths);
-
-//  app.setStyleSheet();
-
   try
   {
 // initialize the application

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,17 @@
  */
 
 /*!
-  \file terralib/postgis/Platform.h
+  \file Module.h
    
   \brief A utility class to initialize and terminate TerraLib ADO driver support.  
 */
 
-#ifndef __TERRALIB_ADO_INTERNAL_PLATFORM_H
-#define __TERRALIB_ADO_INTERNAL_PLATFORM_H
+#ifndef __TERRALIB_ADO_INTERNAL_MODULE_H
+#define __TERRALIB_ADO_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/CppPlugin.h"
+#include "../plugin/Plugin.h"
 #include "Config.h"
-
-// STL
-#include <string>
 
 namespace te
 {
@@ -42,9 +39,9 @@ namespace te
 
       \brief A utility class to initialize and terminate TerraLib ADO driver support.
 
-      \sa te::plugin::CppPlugin
+      \sa te::plugin::Plugin
      */
-    class TEADOEXPORT Platform : public te::plugin::CppPlugin
+    class Module : public te::plugin::Plugin
     {
       public:
 
@@ -54,10 +51,10 @@ namespace te
         //@{
 
         /*! \brief It creates a new C++ module. */
-        Platform(const te::plugin::PluginInfo& pluginInfo);
+        Module(const te::plugin::PluginInfo& pluginInfo);
 
-        /*! \brief destructor. */
-        ~Platform();
+        /*! \brief Destructor. */
+        ~Module();
 
         //@}
 
@@ -79,53 +76,9 @@ namespace te
           \exception Exception It throws an exception if the plugin can not be shutdown.
          */
         void shutdown();
-
         //@}
 
-        /** @name Static Methods
-         *  Methods that can be used to initialize the ADO module.
-         */
-        //@{
 
-        /*! \brief It initializes all TerraLib ADO driver support.       
-           
-            The initialization includes:
-            <ul>
-            <li>Multilanguage support;</li>
-            <li>Logger initialization.</li>
-            </ul>
-           
-            \note This function must be called once in your program. I think that the best
-                  place to call it, is inside the main routine of your application.
-
-            \warning Not thread safe!
-         */
-        static void initialize();
-
-        /*! \brief It finalizes all TerraLib ADO driver support.
-           
-            \note This function must be called once in your program. This must
-                  be the last call to TerraLib ADO driver. As the Initialize function, this
-                  can be called at the end of the main routine of your application.
-
-            \warning Not thread safe!
-         */
-        static void finalize();
-
-        /*!
-          \brief It returns a reference to the driver identifier.
-
-          \return A reference to the driver identifier.
-         */
-        static const std::string& getDriverID();
-
-        //@}
-
-      public:
-
-        static bool sm_adoInitialized;                           //!< A flag that indicates if the ADO driver is initialized or not.
-
-// PostgreSQL type names
         static const std::string sm_unknownTypeName;              //!< The string literal representation for the unknown type.
         static const std::string sm_int2TypeName;                 //!< The string literal representation for the int2 type
         static const std::string sm_intTypeName;                  //!< The string literal representation for the int type
@@ -159,11 +112,10 @@ namespace te
         static const std::string sm_multiPolygonMTypeName;        //!< The string literal representation for ADO multi-polygon with m geometry type
         static const std::string sm_geometryTypeName;             //!< The string literal representation for ADO base geometry type
     };
-
   } // end namespace ado
 }   // end namespace te
 
 PLUGIN_CALL_BACK_DECLARATION(TEADOEXPORT);
 
-#endif  // __TERRALIB_ADO_INTERNAL_PLATFORM_H
+#endif  // __TERRALIB_ADO_INTERNAL_MODULE_H
 

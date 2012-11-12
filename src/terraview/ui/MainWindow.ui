@@ -51,9 +51,16 @@
     <addaction name="m_show_display"/>
     <addaction name="m_show_table"/>
    </widget>
+   <widget class="QMenu" name="menu_Settings">
+    <property name="title">
+     <string>&amp;Settings</string>
+    </property>
+    <addaction name="m_plg_mger_act"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_View_2"/>
    <addaction name="menu_View"/>
+   <addaction name="menu_Settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="m_tools_TB">
@@ -227,6 +234,14 @@
     <string>Sets the area measure tool</string>
    </property>
   </action>
+  <action name="m_plg_mger_act">
+   <property name="text">
+    <string>Open plug-ins manager...</string>
+   </property>
+   <property name="toolTip">
+    <string>Management of the applications plug-ins</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -333,8 +348,24 @@
    <slot>setDistanceTool(bool)</slot>
    <hints>
     <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_plg_mger_act</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openPluginsManager()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
     <hint type="destinationlabel">
      <x>399</x>
@@ -351,5 +382,6 @@
   <slot>setDistanceTool(bool)</slot>
   <slot>setAreaMeasureTool(bool)</slot>
   <slot>setAngleTool(bool)</slot>
+  <slot>openPluginsManager()</slot>
  </slots>
 </ui>

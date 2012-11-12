@@ -18,39 +18,40 @@
  */
 
 /*!
-  \file Platform.cpp
+  \file Module.h
    
-  \brief A utility class to initialize and terminate TerraLib GDAL driver support.  
- */
+  \brief The TerraLib OGR driver is a plugin.
+*/
 
+// TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
-
-#include "DataSourceFactory.h"
+#include "../dataaccess/datasource/DataSourceManager.h"
 #include "DataSource.h"
-#include "Platform.h"
+#include "DataSourceFactory.h"
+#include "Globals.h"
+#include "Module.h"
 #include "RasterFactory.h"
 
+// GDAL
 #include <gdal_priv.h>
 
-bool te::gdal::Platform::sm_gdalInitialized = false;
-const std::string te::gdal::Platform::sm_driverIdentifier(GDAL_DRIVER_IDENTIFIER);
-
-te::gdal::Platform::Platform(const te::plugin::PluginInfo& pluginInfo)
-  : te::plugin::CppPlugin(pluginInfo)
-{}
-
-te::gdal::Platform::~Platform()
-{}
-
-void te::gdal::Platform::initialize()
+te::gdal::Module::Module(const te::plugin::PluginInfo& pluginInfo)
+  : te::plugin::Plugin(pluginInfo)
 {
-  if(sm_gdalInitialized)
+}
+
+te::gdal::Module::~Module()
+{
+}
+
+void te::gdal::Module::startup()
+{
+  if(m_initialized)
     return;
 
-  //te::common::Translator::addTextDomain(TE_GDAL_TEXT_DOMAIN, TE_GDAL_TEXT_DOMAIN_DIR);
-
-  //te::common::Logger::initialize(TE_GDAL_LOGGER_NAME);
+// it initializes the Translator support for the TerraLib GDAL driver support
+  TE_ADD_TEXT_DOMAIN(TE_GDAL_TEXT_DOMAIN, TE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
 
   GDALAllRegister();
 
@@ -122,32 +123,28 @@ void te::gdal::Platform::initialize()
 
   te::gdal::DataSource::setCapabilities(gdalCapabilities);
 
-  sm_gdalInitialized = true;
+  TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver startup!"));
+
+  m_initialized = true;
 }
 
-void te::gdal::Platform::finalize()
+void te::gdal::Module::shutdown()
 {
-  if(!sm_gdalInitialized)
+  if(!m_initialized)
     return;
 
-  DataSourceFactory::finalize();
+//! it finalizes the GDAL factory support.
+  te::gdal::DataSourceFactory::finalize();
 
   RasterFactory::finalize();
 
-  sm_gdalInitialized = false;
+//! free GDAL registered drivers
+  te::da::DataSourceManager::getInstance().detachAll(GDAL_DRIVER_IDENTIFIER);
+ 
+  TE_LOG_TRACE(TR_GDAL("TerraLib GDAL driver shutdown!"));
 
-// it finalizes the Logger support
-  //te::common::Logger::finalize(TE_GDAL_LOGGER_NAME);
+  m_initialized = false;
 }
 
-void te::gdal::Platform::startup()
-{
-  te::gdal::Platform::initialize();
-}
+PLUGIN_CALL_BACK_IMPL(te::gdal::Module)
 
-void te::gdal::Platform::shutdown()
-{
-  te::gdal::Platform::finalize();
-}
-
-PLUGIN_CALL_BACK_IMPL(te::gdal::Platform)

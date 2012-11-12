@@ -34,6 +34,8 @@ add_definitions(
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
 )
 
+add_definitions(-DPLUGINS_PATH=\"${TERRALIB_BIN_DIR}\")
+
 set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
 set (ICON_THEME_PATH "" CACHE STRING "Lists of directories that contains icon themes.")
 

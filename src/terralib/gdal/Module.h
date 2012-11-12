@@ -18,45 +18,40 @@
  */
 
 /*!
-  \file Platform.h
+  \file Module.h
    
-  \brief A utility class to initialize and terminate TerraLib GDAL driver support.  
- */
+  \brief The TerraLib GDAL driver is a plugin.
+*/
 
-#ifndef __TERRALIB_GDAL_INTERNAL_PLATFORM_H
-#define __TERRALIB_GDAL_INTERNAL_PLATFORM_H
+#ifndef __TERRALIB_GDAL_INTERNAL_MODULE_H
+#define __TERRALIB_GDAL_INTERNAL_MODULE_H
 
 // TerraLib
-#include "../plugin/CppPlugin.h"
+#include "../plugin/Plugin.h"
 #include "Config.h"
-
-// STL
-#include <string>
 
 namespace te
 {
   namespace gdal
   {
     /*!
-      \class Platform
+      \class Module
 
-      \brief A utility class to initialize and terminate TerraLib GDAL driver support.      
-     */
-    class TEGDALEXPORT Platform : public te::plugin::CppPlugin
+      \brief The TerraLib GDAL driver is a plugin.    
+    */
+    class Module : public te::plugin::Plugin
     {
       public:
 
+        /*!
+          \brief Plugin constructor.
+            
+          \param pInfo Basic information provided to initialize this module through the plugin API.
+        */
+        Module(const te::plugin::PluginInfo& pluginInfo);
 
-        /** @name Initializer Methods
-         *  Constructor/Destructor.
-         */
-        //@{
-
-        /*! \brief It creates a new C++ module. */
-        Platform(const te::plugin::PluginInfo& pluginInfo);
-
-        /*! \brief destructor. */
-        ~Platform();
+        /*! \brief Destructor. */
+        ~Module();
 
         //@}
 
@@ -78,35 +73,12 @@ namespace te
           \exception Exception It throws an exception if the plugin can not be shutdown.
          */
         void shutdown();
-
         //@}
-
-        /*! \brief It initializes all TerraLib GDAL driver support.       
-            \note This function must be called once in your program. I think that the best
-                  place to call it, is inside the main routine of your application.
-            \warning Not thread safe!
-         */
-        static void initialize();
-
-        /*! \brief It finalizes all TerraLib GDAL driver support.
-           
-            \note This function must be called once in your program. This must
-                  be the last call to TerraLib GDAL driver. As the Initialize function, this
-                  can be called at the end of the main routine of your application.
-            \warning Not thread safe!
-         */
-        static void finalize();
-
-
-      public:
-        static bool  sm_gdalInitialized;              //!< A flag that indicates whether the GDAL driver is initialized or not.
-        static const std::string sm_driverIdentifier; //!< The GDAL driver identifier.
     };
-
   } // end namespace gdal
 }   // end namespace te
 
 PLUGIN_CALL_BACK_DECLARATION(TEGDALEXPORT);
 
-#endif  // __TERRALIB_GDAL_INTERNAL_PLATFORM_H
+#endif  // __TERRALIB_GDAL_INTERNAL_MODULE_H
 

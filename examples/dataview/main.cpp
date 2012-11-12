@@ -23,6 +23,7 @@
 #include <terralib/common/TerraLib.h>
 #include <terralib/common/Exception.h>
 #include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
+#include <terralib/plugin/PluginManager.h>
 //#include <terralib/qt/widgets/dataview/TabularViewer.h>
 
 //! Qt include files
@@ -55,6 +56,8 @@ int main(int argc, char** argv)
   {
     return -1;
   }
+
+  te::plugin::PluginManager::getInstance().unloadAll();
 
   TerraLib::getInstance().finalize();
 

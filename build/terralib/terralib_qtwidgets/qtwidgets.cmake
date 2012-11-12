@@ -14,10 +14,10 @@ if(Boost_FOUND)
   list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
-find_package(PostgreSQL ${_PostgreSQL_VERSION})
-if(PostgreSQL_FOUND)
-	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
-endif()
+#find_package(PostgreSQL ${_PostgreSQL_VERSION})
+#if(PostgreSQL_FOUND)
+#	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
+#endif()
 
 find_package(Qwt ${_Qwt_VERSION} REQUIRED)
 if(Qwt_FOUND)
@@ -49,13 +49,14 @@ list (APPEND DEP_LIBS
 		terralib_dataaccess
 		terralib_datatype
 		terralib_filter
-    terralib_gdal
+#    terralib_gdal
 		terralib_geometry
 		terralib_maptools
 		terralib_raster
 		terralib_symbology
 		terralib_srs
 		terralib_rp
+    terralib_plugin
 		terralib_xlink
     )
 
@@ -71,15 +72,15 @@ set (
   widgets/datagrid
   widgets/dataview
   widgets/dataset
-  widgets/datasource/connector/core
-  widgets/datasource/connector/gdal
-  widgets/datasource/connector/geofile
-  widgets/datasource/connector/ogr  
-  widgets/datasource/connector/postgis
-  widgets/datasource/connector/shp
-  widgets/datasource/core
-  widgets/datasource/explorer
-  widgets/datasource/selector
+#  widgets/datasource/connector/core
+#  widgets/datasource/connector/gdal
+#  widgets/datasource/connector/geofile
+#  widgets/datasource/connector/ogr  
+#  widgets/datasource/connector/postgis
+#  widgets/datasource/connector/shp
+#  widgets/datasource/core
+#  widgets/datasource/explorer
+#  widgets/datasource/selector
   widgets/layer
   widgets/progress
   widgets/property
@@ -88,6 +89,7 @@ set (
   widgets/srs
   widgets/tools
   widgets/help
+  widgets/plugin/manager
   widgets/utils
 )
 
@@ -124,68 +126,62 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/gdal" MOC)
-
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/geofile" MOC)
-
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/ogr" MOC)
-
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/gdal" MOC)
 
 #set (
 #  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnectorDialog.h  
+#  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h  
 #)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/shp" MOC)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/geofile" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
-  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintItem.h
-  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
-  ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
-  ${SRCDIR}/widgets/datasource/explorer/IndexGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSetGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/IndexItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSetItem.h
-  ${SRCDIR}/widgets/datasource/explorer/PrimaryKeyItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSourceExplorer.h
-  ${SRCDIR}/widgets/datasource/explorer/PropertyGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSourceItem.h
-  ${SRCDIR}/widgets/datasource/explorer/PropertyItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSourceToolBox.h
-  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
-  ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
-  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/explorer" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/ogr" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorDialog.h
-  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWidget.h
-  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h 
-)  
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/selector" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
+
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
+#  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/IndexGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSetGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/IndexItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSetItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/PrimaryKeyItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSourceExplorer.h
+#  ${SRCDIR}/widgets/datasource/explorer/PropertyGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSourceItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/PropertyItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSourceToolBox.h
+#  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
+#  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/explorer" MOC)
+
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorDialog.h
+#  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWidget.h
+#  ${SRCDIR}/widgets/datasource/selector/DataSourceSelectorWizardPage.h 
+#)  
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/selector" MOC)
 
 set (
   HDRS_TO_MOC
@@ -311,6 +307,12 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/plugin/manager/PluginManagerDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/plugin/manager" MOC)
+
 # Select the FORMS widgets
 file(
   GLOB FORMS
@@ -319,17 +321,18 @@ file(
   ${SRCDIR}/widgets/charts/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
-  ${SRCDIR}/widgets/datasource/connector/gdal/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
-  ${SRCDIR}/widgets/datasource/selector/ui/*.ui  
+#  ${SRCDIR}/widgets/datasource/connector/gdal/ui/*.ui
+#  ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
+#  ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
+#  ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
+#  ${SRCDIR}/widgets/datasource/selector/ui/*.ui  
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
+  ${SRCDIR}/widgets/plugin/manager/ui/*.ui
 )
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)

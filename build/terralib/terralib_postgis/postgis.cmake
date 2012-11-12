@@ -29,8 +29,14 @@ list (APPEND DEP_LIBS
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${SRCDIR}/*.h)
-	
-list(REMOVE_ITEM SRCS ${SRCDIR}/Module.cpp)
- 
+
 #exporting module information
 exportModuleInformation("postgis" "${SRCDIR}" "postgis")
+
+set (TEPLUGIN_NAME "te.da.pgis")
+set (TEPLUGIN_DISPLAYNAME "PostGIS Data Source Driver")
+set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via PostGIS")
+set (TEPLUGIN_LIBRARY "terralib_postgis")
+set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis")
+
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_pgis_info.xml)

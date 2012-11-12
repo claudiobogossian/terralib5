@@ -37,7 +37,6 @@
 #include <terralib/se/Rule.h>
 #include <terralib/se/FeatureTypeStyle.h>
 #include <terralib/se/Utils.h>
-#include <terralib/geometry/Enums.h>
 
 // STL
 #include <cassert>

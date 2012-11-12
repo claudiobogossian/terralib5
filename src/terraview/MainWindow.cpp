@@ -3,8 +3,6 @@
 #include "NewOGRLayer.h"
 
 //! TerraLib include files
-#include <terralib/common/TerraLib.h>
-#include <terralib/common/OSSettingsDir.h>
 #include <terralib/common/SystemApplicationSettings.h>
 
 #include <terralib/qt/af/events/NewToolBar.h>
@@ -25,11 +23,12 @@
 #include <terralib/qt/widgets/tools/Pan.h>
 #include <terralib/qt/widgets/tools/ZoomArea.h>
 #include <terralib/qt/widgets/tools/Measure.h>
+#include <terralib/qt/widgets/plugin/manager/PluginManagerDialog.h>
 
 //! Qt include files
 #include <QDockWidget>
 #include <QActionGroup>
-#include <QFileInfo>
+#include <QDir>
 
 void getConfigurations(std::vector< std::pair<std::string, std::string> >& configs)
 {
@@ -43,16 +42,13 @@ void getConfigurations(std::vector< std::pair<std::string, std::string> >& confi
   configs.push_back(std::pair<std::string, std::string>("Application.Title", "TerraView"));
   configs.push_back(std::pair<std::string, std::string>("Application.IconName", "terralib_logo"));
 
-  std::string user_set_path = te::common::OSSettingsDir::getInstance().getUserSettingsPath() + "/terraView/user_settings.xml";
-  std::string app_plg_path = te::common::OSSettingsDir::getInstance().getSystemSettingsPath() + "/terraView/application_plugins.xml";
+  QString user_set_path = QDir::toNativeSeparators(qApp->applicationDirPath() + "/user_settings.xml");
+  QString app_plg_path = QDir::toNativeSeparators(qApp->applicationDirPath() + "/application_plugins.xml");
 
-  QFileInfo info_us(user_set_path.c_str());
-  QFileInfo info_plg(app_plg_path.c_str());
-
-  configs.push_back(std::pair<std::string, std::string>("Application.UserSettingsFile.<xmlattr>.xlink:href", info_us.absoluteFilePath().toStdString()));
-  configs.push_back(std::pair<std::string, std::string>("Application.PluginsFile.<xmlattr>.xlink:href", info_plg.absoluteFilePath().toStdString()));
-  configs.push_back(std::pair<std::string, std::string>("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href", ICON_THEME_PATH));
-  configs.push_back(std::pair<std::string, std::string>("Application.IconThemeInfo.DefaultTheme", "terralib"));
+  configs.push_back(std::pair<std::string, std::string>("Application.UserSettingsFile.<xmlattr>.xlink:href", user_set_path.toStdString()));
+  configs.push_back(std::pair<std::string, std::string>("Application.PluginsFile.<xmlattr>.xlink:href", app_plg_path.toStdString()));
+  configs.push_back(std::pair<std::string, std::string>("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href", QDir::toNativeSeparators(ICON_THEME_PATH).toStdString()));
+  configs.push_back(std::pair<std::string, std::string>("Application.IconThemeInfo.DefaultTheme", ICON_THEME));
   configs.push_back(std::pair<std::string, std::string>("Application.ToolBarDefaultIconSize", "24"));
   configs.push_back(std::pair<std::string, std::string>("Application.DefaultPluginsCategory.Category", "Cellular Space"));
   configs.push_back(std::pair<std::string, std::string>("Application.DefaultPluginsCategory.Category", "Data Access"));
@@ -79,10 +75,9 @@ QMainWindow(parent, 0),
   std::vector< std::pair<std::string, std::string> > configs;
   getConfigurations(configs);
 
-  te::qt::af::teApp::getInstance().setApplicationName("terraView");
   te::qt::af::teApp::getInstance().setApplicationInfo(configs);
 
-  TerraLib::getInstance().initialize();
+  te::qt::af::teApp::getInstance().initialize();
 
   std::string iconThemePath = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href");
   std::string iconTheme = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme");
@@ -120,7 +115,7 @@ QMainWindow(parent, 0),
 MainWindow::~MainWindow()
 {
   delete m_display;
-  TerraLib::getInstance().finalize();
+  te::qt::af::teApp::getInstance().finalize();
 }
 
 void MainWindow::onApplicationTriggered(te::qt::af::Event* evt)
@@ -197,6 +192,12 @@ void MainWindow::setDistanceTool(bool status)
 {
   if(status)
     m_display->setCurrentTool(new te::qt::widgets::Measure(m_display->getDisplayComponent(), te::qt::widgets::Measure::Distance, this));
+}
+
+void MainWindow::openPluginsManager()
+{
+  te::qt::widgets::PluginManagerDialog dlg(this);
+  dlg.exec();
 }
 
 void MainWindow::makeDialog()
