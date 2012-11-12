@@ -72,7 +72,7 @@ namespace te
           
           \param maxIterations The maximum number of iterations (Use 0-zero to let this number be automatically found).
           
-          \param assurance The error-free selection percent assurance - valid range (0-1] - Suggested value: 0.9.
+          \param assurance The error-free selection percent assurance - valid range (0-1) - Suggested value: 0.9.
           
           \param enableMultiThread Enable multi-threaded processing (good for multi-processor or multi-core systems).
           
