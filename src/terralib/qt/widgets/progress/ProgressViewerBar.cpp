@@ -48,7 +48,7 @@ te::qt::widgets::ProgressViewerBar::ProgressViewerBar(QWidget* parent)
 
   m_button = new QPushButton(this);
   m_button->setText("...");
-  m_button->setFixedSize(20, 16);
+  m_button->setFixedSize(24, 18);
 
   m_layout = new QGridLayout(this);
 
@@ -129,6 +129,11 @@ void te::qt::widgets::ProgressViewerBar::updateValue(int /*taskId*/)
 
 void te::qt::widgets::ProgressViewerBar::updateMessage(int /*taskId*/)
 {
+}
+
+void te::qt::widgets::ProgressViewerBar::setButtonText(std::string value)
+{
+  m_button->setText(value.c_str());
 }
 
 void te::qt::widgets::ProgressViewerBar::customEvent(QEvent* e)

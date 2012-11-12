@@ -82,27 +82,6 @@ void te::map::RasterLayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
   applyStyle(l, canvas, srid);
 }
 
-bool te::map::RasterLayerRenderer::hasIntersection(const te::gm::Envelope& bbox, te::rst::Raster* raster, Canvas* canvas,  int srid)
-{
-  te::gm::Envelope e(bbox);
-
-  e.transform(srid, raster->getSRID());
-
-  return e.intersects(*raster->getExtent());
-}
-
-void te::map::RasterLayerRenderer::buildRasterCanvas(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
-{
-  delete m_gridCanvas;
-
-  unsigned int h = canvas->getHeight();
-  unsigned int w = canvas->getWidth();
-
-  //build raster canvas
-  te::gm::Envelope* env = new te::gm::Envelope(bbox);
-  m_gridCanvas = new te::rst::Grid(w, h, env, srid);
-}
-
 void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
 {
   te::rst::Raster* raster = layer->getRaster();
@@ -163,6 +142,27 @@ void te::map::RasterLayerRenderer::createVisualDefault(RasterLayer* layer)
   layer->setStyle(s);
 }
 
+bool te::map::RasterLayerRenderer::hasIntersection(const te::gm::Envelope& bbox, te::rst::Raster* raster, Canvas* canvas,  int srid)
+{
+  te::gm::Envelope e(bbox);
+
+  e.transform(srid, raster->getSRID());
+
+  return e.intersects(*raster->getExtent());
+}
+
+void te::map::RasterLayerRenderer::buildRasterCanvas(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+{
+  delete m_gridCanvas;
+
+  unsigned int h = canvas->getHeight();
+  unsigned int w = canvas->getWidth();
+
+  //build raster canvas
+  te::gm::Envelope* env = new te::gm::Envelope(bbox);
+  m_gridCanvas = new te::rst::Grid(w, h, env, srid);
+}
+
 void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas, int srid)
 {
   te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
@@ -189,8 +189,8 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
     reproject = true;
   }
 
-  te::common::TaskProgress t;
-  t.setMessage(TR_MAP("Drawing Raster..."));
+  std::string message = TR_MAP("Drawing the Raster Layer...");
+  te::common::TaskProgress t(message);
   t.setTotalSteps(m_gridCanvas->getNumberOfRows());
 
   te::color::RGBAColor** rgba = new te::color::RGBAColor*[m_gridCanvas->getNumberOfRows()];
@@ -237,9 +237,11 @@ void te::map::RasterLayerRenderer::applyStyle(RasterLayer* layer, Canvas* canvas
     t.pulse();
   }
 
-  canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());
-
-  te::common::Free(rgba, m_gridCanvas->getNumberOfRows());
+  if(t.isActive() == true)
+  {
+    canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());
+    te::common::Free(rgba, m_gridCanvas->getNumberOfRows());
+  }
 
   //verify for image outline
   if(rs->getImageOutline())

@@ -172,6 +172,14 @@ const te::rst::RasterProperty* te::map::RasterLayer::getRasterProperty()
 
 const te::se::RasterSymbolizer* te::map::RasterLayer::getRasterSymbolizer()
 {
+  if(m_symbolizer == 0)
+  {
+    if(m_renderer.get() != 0)
+    {
+      m_renderer->createVisualDefault(this);
+    }
+  }
+
   return m_symbolizer;
 }
 

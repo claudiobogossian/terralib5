@@ -6,6 +6,7 @@
 //! TerraLib include files
 #include <terralib/qt/af/events/NewToolBar.h>
 #include <terralib/qt/af/events/LayerAdded.h>
+#include <terralib/qt/af/events/LayerSelected.h>
 #include <terralib/qt/af/events/TrackedCoordinate.h>
 #include <terralib/qt/af/CoreApplication.h>
 #include <terralib/qt/af/connectors/LayerExplorer.h>
@@ -24,6 +25,14 @@
 #include <terralib/qt/widgets/tools/Pan.h>
 #include <terralib/qt/widgets/tools/ZoomArea.h>
 #include <terralib/qt/widgets/tools/Measure.h>
+
+#include <terralib/common/progress/TaskProgress.h>
+#include <terralib/common/progress/ProgressManager.h>
+#include <terralib/qt/widgets/progress/ProgressViewerDialog.h>
+#include <terralib/qt/widgets/progress/ProgressViewerWidget.h>
+#include <terralib/qt/widgets/progress/ProgressViewerBar.h>
+
+#include <terralib/qt/widgets/se/RasterVisualDockWidget.h>
 
 
 //! Qt include files
@@ -56,12 +65,24 @@ void MainWindow::onApplicationTriggered(te::qt::af::Event* evt)
     break;
 
     case te::qt::af::evt::TRACK_COORDINATE:
+    {
+      te::qt::af::TrackedCoordinate* e = static_cast<te::qt::af::TrackedCoordinate*>(evt);
+      QString text = tr("Coordinates: ") + "(" + QString::number(e->m_pos.x()) + " , " + QString::number(e->m_pos.y()) + ")";
+      QStatusBar* sb = statusBar();
+      sb->showMessage(text);
+    }
+    break;
+
+    //PROVISORIO
+    case te::qt::af::evt::LAYER_SELECTED:
+    {
+      te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
+      
+      if(e->m_layer->getType() == "RASTERLAYER")
       {
-        te::qt::af::TrackedCoordinate* e = static_cast<te::qt::af::TrackedCoordinate*>(evt);
-        QString text = tr("Coordinates: ") + "(" + QString::number(e->m_pos.x()) + " , " + QString::number(e->m_pos.y()) + ")";
-        QStatusBar* sb = statusBar();
-        sb->showMessage(text);
+        m_rasterVisualDock->setRasterLayer(dynamic_cast<te::map::RasterLayer*>(e->m_layer));
       }
+    }
     break;
 
     default :
@@ -156,19 +177,32 @@ void MainWindow::setDistanceTool(bool status)
     m_display->setCurrentTool(new te::qt::widgets::Measure(m_display->getDisplayComponent(), te::qt::widgets::Measure::Distance, this));
 }
 
+void MainWindow::showProgressDock()
+{
+  if(m_progressDock->isVisible())
+  {
+    m_progressDock->setVisible(false);
+  }
+  else
+  {
+    m_progressDock->setVisible(true);
+  }
+}
 
 void MainWindow::makeDialog()
 {
   //! Setting icons
-  m_ui->m_show_explorer->setIcon(QIcon::fromTheme("layerExplorer"));
-  m_ui->m_show_display->setIcon(QIcon::fromTheme("mapDisplay"));
-  m_ui->m_show_table->setIcon(QIcon::fromTheme("table"));
-  m_ui->m_drawlayers_act->setIcon(QIcon::fromTheme("drawLayers"));
+  m_ui->m_show_explorer->setIcon(QIcon::fromTheme("tree-visible"));
+  m_ui->m_show_display->setIcon(QIcon::fromTheme("display-visible"));
+  m_ui->m_show_table->setIcon(QIcon::fromTheme("grid-visible"));
+  m_ui->m_drawlayers_act->setIcon(QIcon::fromTheme("draw-layer"));
   m_ui->m_actionPan->setIcon(QIcon::fromTheme("pan"));
   m_ui->m_actionZoom_area->setIcon(QIcon::fromTheme("zoom-in"));
+  m_ui->m_actionPointing->setIcon(QIcon::fromTheme("pointer"));
   m_ui->m_area_act->setIcon(QIcon::fromTheme("area-measure"));
   m_ui->m_angle_act->setIcon(QIcon::fromTheme("angle-measure"));
   m_ui->m_distance_act->setIcon(QIcon::fromTheme("distance-measure"));
+  m_ui->m_actionRasterVisual->setIcon(QIcon::fromTheme("raster-visual"));
 
   //! Putting tools on excluse group
   QActionGroup* vis_tools_group = new QActionGroup(this);
@@ -206,18 +240,50 @@ void MainWindow::makeDialog()
   doc->setWidget(exp);
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, doc);
   doc->connect(m_ui->m_show_explorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_show_explorer->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_ui->m_show_explorer->setChecked(true);
 
   doc = new QDockWidget(tr("Main display"), this);
   doc->setWidget(map);
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_ui->m_show_display, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_show_display->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_ui->m_show_display->setChecked(true);
 
   doc = new QDockWidget(tr("Tabular data viewer"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
   doc->connect(m_ui->m_show_table, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_show_table->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_ui->m_show_table->setChecked(false);
   doc->setVisible(false);
+
+  //! Raster Visual Dock widget
+  m_rasterVisualDock = new te::qt::widgets::RasterVisualDockWidget(tr("Raster Enhancement"), this);
+  connect(m_rasterVisualDock, SIGNAL(symbolizerChanged()), this, SLOT(drawLayers()));
+  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, m_rasterVisualDock);
+  m_rasterVisualDock->connect(m_ui->m_actionRasterVisual, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_actionRasterVisual->connect(m_rasterVisualDock, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
+  m_ui->m_actionRasterVisual->setChecked(false);
+  m_rasterVisualDock->setVisible(false);
+
+  //! Progress support
+  te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
+  te::common::ProgressManager::getInstance().addViewer(pvb);
+
+  te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
+  te::common::ProgressManager::getInstance().addViewer(pvw);
+
+  statusBar()->addPermanentWidget(pvb);
+
+  connect(pvb, SIGNAL(clicked()), this, SLOT(showProgressDock()));
+
+  m_progressDock = new QDockWidget(this);
+  m_progressDock->setWidget(pvw);
+  m_progressDock->setMinimumWidth(250);
+  m_progressDock->setAllowedAreas(Qt::RightDockWidgetArea);
+  m_progressDock->setWindowTitle(tr("Tasks Progress"));
+  addDockWidget(Qt::RightDockWidgetArea, m_progressDock);
+
+  m_progressDock->setVisible(false);
 }

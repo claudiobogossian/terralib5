@@ -140,7 +140,7 @@ void NewGDALLayer::onFileSelected(QString s)
     std::map<std::string, std::string> connInfo;
     connInfo["SOURCE"] = f.toLatin1().data();  
 
-    te::da::DataSource* ds = man.get(id.toLatin1().data(), "GDAL", connInfo);
+    te::da::DataSourcePtr ds = man.get(id.toLatin1().data(), "GDAL", connInfo);
 
     if(!ds->isOpened())
       ds->open(connInfo);
@@ -149,11 +149,11 @@ void NewGDALLayer::onFileSelected(QString s)
     {
       te::gm::Envelope* extent;
 
-      std::string dset = getDataSetRasterName(ds, extent);
+      std::string dset = getDataSetRasterName(ds.get(), extent);
 
       m_layer.reset(new te::map::RasterLayer(id.toLatin1().data(), info.baseName().toLatin1().data()));
 
-      m_layer->setDataSource(ds);
+      m_layer->setDataSource(ds.get());
       m_layer->setDataSetName(dset);
 
       m_layer->setRenderer(new te::map::RasterLayerRenderer());

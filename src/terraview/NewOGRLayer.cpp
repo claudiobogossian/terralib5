@@ -127,7 +127,7 @@ void NewOGRLayer::onFileSelected(QString s)
     std::map<std::string, std::string> connInfo;
     connInfo["SOURCE"] = f.toLatin1().data();  
 
-    te::da::DataSource* ds = man.get(id.toLatin1().data(), "OGR", connInfo);
+    te::da::DataSourcePtr ds = man.get(id.toLatin1().data(), "OGR", connInfo);
 
     if(!ds->isOpened())
       ds->open(connInfo);
@@ -136,12 +136,12 @@ void NewOGRLayer::onFileSelected(QString s)
     {
       te::gm::Envelope* env = 0;
 
-      std::string dset = getDataSetName(ds, env);
+      std::string dset = getDataSetName(ds.get(), env);
 
       m_layer.reset(new te::map::Layer(id.toLatin1().data(), info.baseName().toLatin1().data()));
 
       m_layer->setDataSetName(dset);
-      m_layer->setDataSource(ds);
+      m_layer->setDataSource(ds.get());
 
       // Creates a hard-coded style
       te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
