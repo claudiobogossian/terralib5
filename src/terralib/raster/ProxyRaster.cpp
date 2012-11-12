@@ -33,6 +33,7 @@
 
 // STL
 #include <cassert>
+#include <utility>
 
 te::rst::ProxyRaster::ProxyRaster(const std::vector<RasterPtr>& rasters)
   : m_rasters(rasters)
@@ -66,6 +67,12 @@ te::rst::ProxyRaster::ProxyRaster(const ProxyRaster& /*rhs*/)
 
 te::rst::ProxyRaster::~ProxyRaster()
 {
+}
+
+void te::rst::ProxyRaster::swap(std::size_t first, std::size_t second)
+{
+  std::swap(m_bands[first], m_bands[second]);
+  std::swap(m_rasters[first], m_rasters[second]);
 }
 
 void te::rst::ProxyRaster::open(const std::map<std::string, std::string>& /*rinfo*/, te::common::AccessPolicy /*p*/)

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LinuxUtils.cpp
+  \file terralib/common/LinuxUtils.cpp
 
   \brief This file contains several utility functions when dealing with Linux specific API.
- */
+*/
 
 // TerraLib
 #include "LinuxUtils.h"

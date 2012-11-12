@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Static.h
+  \file terralib/common/Static.h
 
   \brief A base type for static classes.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_STATIC_H
 #define __TERRALIB_COMMON_INTERNAL_STATIC_H

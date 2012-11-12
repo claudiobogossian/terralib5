@@ -48,13 +48,23 @@ te::mem::DataSourceCatalogLoader::~DataSourceCatalogLoader()
 
 void te::mem::DataSourceCatalogLoader::getDataSets(boost::ptr_vector<std::string>& datasets)
 {
-  datasets = m_t->getMemDataSource()->getDataSets();
+  m_t->getMemDataSource()->getDataSets(datasets);
 }
 
 te::da::DataSetType* te::mem::DataSourceCatalogLoader::getDataSetType(const std::string& datasetName,
                                                                       const bool /*full*/)
 {
   return m_t->getMemDataSource()->getDataSetType(datasetName);
+}
+
+void te::mem::DataSourceCatalogLoader::getProperties(te::da::DataSetType* /*dt*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+te::dt::Property* te::mem::DataSourceCatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
 void te::mem::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* /*dt*/)
@@ -108,26 +118,23 @@ void te::mem::DataSourceCatalogLoader::loadCatalog(const bool /*full*/)
   
   catalog->clear();
 
-  boost::ptr_vector<std::string> datasets = m_t->getMemDataSource()->getDataSets();
+  boost::ptr_vector<std::string> datasets;
+  
+  m_t->getMemDataSource()->getDataSets(datasets);
 
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
-    te::da::DataSetType* dt = m_t->getMemDataSource()->getDataSetType(datasets[i]);
+    te::da::DataSetTypePtr dt(m_t->getMemDataSource()->getDataSetType(datasets[i]));
 
-    dt->setId(i);
+    dt->setId(static_cast<unsigned int>(i));
 
     catalog->add(dt);
   }
 }
 
-void te::mem::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
-{
-  return;
-}
-
 bool te::mem::DataSourceCatalogLoader::hasDataSets()
 {
-  return (m_t->getMemDataSource()->hasDataSets());
+  throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
 bool te::mem::DataSourceCatalogLoader::datasetExists(const std::string& name)

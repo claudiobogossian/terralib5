@@ -30,6 +30,7 @@
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
+#include "../dataaccess/datasource/ScopedTransaction.h"
 #include "../datatype/Utils.h"
 #include "Connection.h"
 #include "DataSetPersistence.h"
@@ -42,6 +43,8 @@
 // STL
 #include <algorithm>
 #include <cassert>
+#include <fstream>
+#include <iostream>
 #include <memory>
 
 // Boost
@@ -61,13 +64,13 @@ te::pgis::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::pgis::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t /*limit*/)
+void te::pgis::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
 {
   std::auto_ptr<te::da::DataSetTypePersistence> dtp(m_t->getDataSetTypePersistence());
 
   dtp->create(dt, options);
   
-  add(dt, d);
+  add(dt, d, options, limit);
 }
 
 void te::pgis::DataSetPersistence::remove(const te::da::DataSetType* dt)
@@ -76,6 +79,11 @@ void te::pgis::DataSetPersistence::remove(const te::da::DataSetType* dt)
               sql += dt->getName();
 
   m_t->execute(sql);  
+}
+
+void te::pgis::DataSetPersistence::remove(const std::string& /*datasetName*/)
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
 void te::pgis::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
@@ -107,13 +115,18 @@ void te::pgis::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da:
 
   std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
 
+  te::da::ScopedTransaction st(*m_t);
+
   pq->prepare(sql, *keyProperties);
 
   do
   {
     pq->bind(propertiesPos, dt, d);
     pq->execute();
+
   }while(d->moveNext());
+
+  st.commit();
 }
 
 void te::pgis::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
@@ -150,7 +163,7 @@ void te::pgis::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da:
   pq->execute();
 }
 
-void te::pgis::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
+void te::pgis::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
 // create a prepared statement
   std::string sql  = "INSERT INTO ";
@@ -161,13 +174,18 @@ void te::pgis::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Da
 
   std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
 
+  te::da::ScopedTransaction st(*m_t);
+
   pq->prepare(sql, dt->getProperties());
 
   do
   {
     pq->bind(dt, d);
     pq->execute();
+
   }while(d->moveNext());
+
+  st.commit();
 }
 
 void te::pgis::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
@@ -189,6 +207,7 @@ void te::pgis::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Da
 void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
                                           te::da::DataSet* dataset,
                                           const std::vector<te::dt::Property*>& properties,
+                                          const std::map<std::string, std::string>& /*options*/,
                                           std::size_t /*limit*/)
 {
   const std::vector<te::dt::Property*>* keyProperties = 0;
@@ -209,7 +228,7 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
 // create a prepared statement
   std::string sql  = "UPDATE ";
               sql += dt->getName();
-              sql += " ";
+              sql += " SET ";
               sql += GetBindableUpdateSQL(properties);
               sql += " WHERE ";
               sql += GetBindableWhereSQL(*keyProperties, properties.size());
@@ -226,13 +245,18 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
 
   std::copy(keyProperties->begin(), keyProperties->end(), allprops.end());
 
+  te::da::ScopedTransaction st(*m_t);
+
   pq->prepare(sql, allprops);
   
   do
   {
     pq->bind(propertiesPos, dt, dataset);
     pq->execute();
+
   }while(dataset->moveNext());
+
+  st.commit();
 }
                     
 void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
@@ -259,7 +283,7 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
 // create a prepared statement
   std::string sql  = "UPDATE ";
               sql += dt->getName();
-              sql += " ";
+              sql += " SET ";
               sql += GetBindableUpdateSQL(properties);
               sql += " WHERE ";
               sql += GetBindableWhereSQL(*keyProperties, properties.size());
@@ -278,6 +302,8 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
 
   std::auto_ptr<PreparedQuery> pq(m_t->getPGPrepared("a" + boost::lexical_cast<std::string>((boost::int64_t)(this))));
 
+  te::da::ScopedTransaction st(*m_t);
+
   pq->prepare(sql, allprops);
 
   do
@@ -285,7 +311,10 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
     pq->bind(propertiesPos, dt, newD);
     pq->bind(keysPos, propertiesPos.size(), dt, oldD);
     pq->execute();
+
   }while(oldD->moveNext() && newD->moveNext());
+
+  st.commit();
 }
             
 void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
@@ -310,7 +339,7 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
 // create a prepared statement
   std::string sql  = "UPDATE ";
               sql += dt->getName();
-              sql += " ";
+              sql += " SET ";
               sql += GetBindableUpdateSQL(properties);
               sql += " WHERE ";
               sql += GetBindableWhereSQL(*keyProperties, properties.size());
@@ -356,7 +385,7 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
 // create a prepared statement
   std::string sql  = "UPDATE ";
               sql += dt->getName();
-              sql += " ";
+              sql += " SET ";
               sql += GetBindableUpdateSQL(properties);
               sql += " WHERE ";
               sql += GetBindableWhereSQL(*keyProperties, properties.size());
@@ -380,8 +409,8 @@ void te::pgis::DataSetPersistence::update(const te::da::DataSetType* dt,
   pq->bind(propertiesPos, dt, newItem);
   pq->bind(keysPos, propertiesPos.size(), dt, oldItem);
   pq->execute();
-}                                
-            
+}
+
 te::da::DataSourceTransactor* te::pgis::DataSetPersistence::getTransactor() const
 {
   return m_t;

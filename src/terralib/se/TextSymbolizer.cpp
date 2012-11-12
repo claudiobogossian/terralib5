@@ -32,8 +32,10 @@
 #include "ParameterValue.h"
 #include "TextSymbolizer.h"
 
+const std::string te::se::TextSymbolizer::sm_type("TextSymbolizer");
+
 te::se::TextSymbolizer::TextSymbolizer()
-  : te::se::Symbolizer(te::se::TEXT_SYMBOLIZER),
+  : te::se::Symbolizer(),
     m_geometry(0),
     m_label(0),
     m_font(0),
@@ -115,6 +117,11 @@ void te::se::TextSymbolizer::setLabelPlacement(LabelPlacement* l)
   m_labelPlacement = l;
 }
 
+const te::se::LabelPlacement* te::se::TextSymbolizer::getLabelPlacement() const
+{
+  return m_labelPlacement;
+}
+
 void te::se::TextSymbolizer::setHalo(Halo* h)
 {
   delete m_halo;
@@ -135,6 +142,11 @@ void te::se::TextSymbolizer::setFill(Fill* f)
 const te::se::Fill* te::se::TextSymbolizer::getFill() const
 {
   return m_fill;
+}
+
+const std::string& te::se::TextSymbolizer::getType() const
+{
+  return sm_type;
 }
 
 te::se::Symbolizer* te::se::TextSymbolizer::clone() const

@@ -31,8 +31,10 @@
 #include "PolygonSymbolizer.h"
 #include "Stroke.h"
 
+const std::string te::se::PolygonSymbolizer::sm_type("PolygonSymbolizer");
+
 te::se::PolygonSymbolizer::PolygonSymbolizer()
-  : te::se::Symbolizer(te::se::POLYGON_SYMBOLIZER),
+  : te::se::Symbolizer(),
     m_geometry(0),
     m_fill(0),
     m_stroke(0),
@@ -127,6 +129,11 @@ void te::se::PolygonSymbolizer::setPerpendicularOffset(ParameterValue* perpendic
 const te::se::ParameterValue* te::se::PolygonSymbolizer::getPerpendicularOffset() const
 {
   return m_perpendicularOffset;
+}
+
+const std::string& te::se::PolygonSymbolizer::getType() const
+{
+  return sm_type;
 }
 
 te::se::Symbolizer* te::se::PolygonSymbolizer::clone() const

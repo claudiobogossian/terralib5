@@ -87,6 +87,13 @@ namespace te
          */
         virtual void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
+        /*!
+          \brief Create a default raster symbolizer to a raster object
+
+          \param layer Pointer to a Raster Layer with the raster object
+        */
+        void createVisualDefault(RasterLayer* layer);
+
         //@}
 
       private:
@@ -137,13 +144,6 @@ namespace te
           \param srid  SRID identifier
         */
         void buildRasterCanvas(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
-
-        /*!
-          \brief Create a default raster symbolizer to a raster object
-
-          \param layer Pointer to a Raster Layer with the raster object
-        */
-        void createVisualDefault(RasterLayer* layer);
 
         /*!
           \brief Function used to apply the raster symbolizes associated to layer

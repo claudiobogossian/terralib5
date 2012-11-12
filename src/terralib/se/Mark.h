@@ -108,11 +108,19 @@ namespace te
 
         void setOnlineResource(te::xl::SimpleLink* link);
 
+        const te::xl::SimpleLink* getOnlineResource() const;
+
         void setInlineContent(InlineContent* iContent);
+
+        InlineContent* getInlineContent() const;
 
         void setFormat(std::string* f);
 
+        const std::string* getFormat() const;
+
         void setMarkIndex(int i);
+
+        int getMarkIndex() const;
 
         void setFill(Fill* f);
 

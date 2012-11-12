@@ -57,9 +57,10 @@ te::qt::widgets::RasterSymbolizerDialog::RasterSymbolizerDialog(QWidget* parent,
     m_sliderWidget(0),
     m_visualWidget(0),
     m_symbolizer(new te::se::RasterSymbolizer),
+    m_colorMap(0),
     m_property(0),
-    m_raster(0),
-    m_colorMap(0)
+    m_raster(0)
+   
 {
   m_ui->setupUi(this);
 

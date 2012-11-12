@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Visitor.h
+  \file terralib/common/Visitor.h
 
   \brief A generic class for visitors.
 */

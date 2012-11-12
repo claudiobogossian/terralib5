@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file LinuxUtils.h
+  \file terralib/common/LinuxUtils.h
 
   \brief This file contains several utility functions when dealing with Linux specific API.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_LINUXUTILS_H
 #define __TERRALIB_COMMON_INTERNAL_LINUXUTILS_H

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1252</width>
     <height>600</height>
    </rect>
   </property>
@@ -19,8 +19,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
-     <height>21</height>
+     <width>1252</width>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -28,9 +28,13 @@
      <string>&amp;File</string>
     </property>
     <addaction name="m_addOGRLayer_act"/>
+    <addaction name="m_addGDALLayer_act"/>
+    <addaction name="separator"/>
     <addaction name="m_actionOpen_project"/>
     <addaction name="actionNew_project"/>
     <addaction name="m_actionSave_project"/>
+    <addaction name="separator"/>
+    <addaction name="m_actionQuit"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
@@ -50,17 +54,11 @@
     <addaction name="m_show_explorer"/>
     <addaction name="m_show_display"/>
     <addaction name="m_show_table"/>
-   </widget>
-   <widget class="QMenu" name="menu_Settings">
-    <property name="title">
-     <string>&amp;Settings</string>
-    </property>
-    <addaction name="m_plg_mger_act"/>
+    <addaction name="m_actionRasterVisual"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_View_2"/>
    <addaction name="menu_View"/>
-   <addaction name="menu_Settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="m_tools_TB">
@@ -76,9 +74,11 @@
    <addaction name="m_actionPan"/>
    <addaction name="m_actionZoom_area"/>
    <addaction name="m_actionPointing"/>
+   <addaction name="separator"/>
    <addaction name="m_distance_act"/>
    <addaction name="m_angle_act"/>
    <addaction name="m_area_act"/>
+   <addaction name="separator"/>
    <addaction name="m_drawlayers_act"/>
   </widget>
   <widget class="QToolBar" name="m_viewComp_tb">
@@ -94,6 +94,7 @@
    <addaction name="m_show_explorer"/>
    <addaction name="m_show_display"/>
    <addaction name="m_show_table"/>
+   <addaction name="m_actionRasterVisual"/>
   </widget>
   <action name="actionNew_project">
    <property name="text">
@@ -234,12 +235,28 @@
     <string>Sets the area measure tool</string>
    </property>
   </action>
-  <action name="m_plg_mger_act">
+  <action name="m_addGDALLayer_act">
    <property name="text">
-    <string>Open plug-ins manager...</string>
+    <string>Add GDAL Layer...</string>
    </property>
    <property name="toolTip">
-    <string>Management of the applications plug-ins</string>
+    <string>Creates a new GDAL layer.</string>
+   </property>
+  </action>
+  <action name="m_actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="m_actionRasterVisual">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show/hide raster visual...</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows or hides the raster visual window.</string>
    </property>
   </action>
  </widget>
@@ -358,17 +375,33 @@
    </hints>
   </connection>
   <connection>
-   <sender>m_plg_mger_act</sender>
+   <sender>m_addGDALLayer_act</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
-   <slot>openPluginsManager()</slot>
+   <slot>addGDALLayer()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>399</x>
+     <x>459</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
      <y>299</y>
     </hint>
    </hints>
@@ -382,6 +415,6 @@
   <slot>setDistanceTool(bool)</slot>
   <slot>setAreaMeasureTool(bool)</slot>
   <slot>setAngleTool(bool)</slot>
-  <slot>openPluginsManager()</slot>
+  <slot>addGDALLayer()</slot>
  </slots>
 </ui>

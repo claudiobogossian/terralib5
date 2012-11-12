@@ -138,7 +138,7 @@ namespace te
 
         std::vector<const char*> m_operands; //!< A vector of const pointer to geometry operand type name. Mandatory at least one operand type.
 
-        static std::set<const char*, te::common::LessCmp>  sm_validGeometryOperands; //!< The list of valid bynary geometry operands.
+        static std::set<const char*, te::common::LessCmp<const char*> >  sm_validGeometryOperands; //!< The list of valid bynary geometry operands.
     };    
 
   } // end namespace fe

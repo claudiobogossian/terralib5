@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file WinUtils.h
+  \file terralib/common/WinUtils.h
 
   \brief This file contains several utility functions when dealing with Microsoft Windows specific API.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_WINUTILS_H
 #define __TERRALIB_COMMON_INTERNAL_WINUTILS_H

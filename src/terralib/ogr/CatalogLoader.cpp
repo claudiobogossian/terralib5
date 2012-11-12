@@ -109,6 +109,11 @@ void te::ogr::CatalogLoader::getProperties(te::da::DataSetType* dt)
   Convert2TerraLib(layer->GetLayerDefn(),dt);
 }
 
+te::dt::Property* te::ogr::CatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
+{
+  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+}
+
 void te::ogr::CatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 {
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
@@ -187,7 +192,7 @@ void te::ogr::CatalogLoader::loadCatalog(const bool full)
   for(int i = 0; i < ogrDS->GetLayerCount(); i++) // for each layer
   {
     OGRLayer* layer = ogrDS->GetLayer(i);
-    te::da::DataSetType* dt = getDataSetType(layer->GetLayerDefn()->GetName(), full);
+    te::da::DataSetTypePtr dt(getDataSetType(layer->GetLayerDefn()->GetName(), full));
     dt->setId(i);
     catalog->add(dt);
   }

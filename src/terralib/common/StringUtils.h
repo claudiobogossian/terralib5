@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file StringUtils.h
+  \file terralib/common/StringUtils.h
 
   \brief Utility functions for dealing with strings.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_STRINGUTILS_H
 #define __TERRALIB_COMMON_INTERNAL_STRINGUTILS_H

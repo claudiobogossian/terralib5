@@ -48,7 +48,7 @@ namespace te
 
           \brief Classifier Parameters
         */
-        class TERPEXPORT Parameters : public ClassifierStrategyParameters
+        class TERPEXPORT Parameters : public StrategyParameters
         {
           public:
 
@@ -75,7 +75,7 @@ namespace te
         ~ClassifierDummyStrategy();
 
         //overload
-        bool initialize(ClassifierStrategyParameters const* const strategyParams) throw(te::rp::Exception);
+        bool initialize(StrategyParameters const* const strategyParams) throw(te::rp::Exception);
 
         //overload
         bool execute(const te::rst::Raster& inputRaster, const std::vector<unsigned int>& inputRasterBands,

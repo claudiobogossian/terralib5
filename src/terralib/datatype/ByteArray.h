@@ -30,6 +30,9 @@
 #include "AbstractData.h"
 #include "Enums.h"
 
+// Boost
+#include <boost/cstdint.hpp>
+
 namespace te
 {
   namespace dt
@@ -210,6 +213,21 @@ namespace te
 
   } // end namespace dt
 }   // end namespace te
+
+/*!
+  \brief It writes the bytes from val to the byte array.
+
+  \param barray A byte array container.
+  \param val    A simple data type value like: an int, a double or a float.
+
+  \return The byte array.
+*/
+template<class T> inline te::dt::ByteArray& operator<<(te::dt::ByteArray& barray, T val)
+{
+  barray.copy((char*)(&val), sizeof(T), barray.bytesUsed());
+
+  return barray;
+}
 
 
 #endif  // __TERRALIB_DATATYPE_INTERNAL_BYTEARRAY_H

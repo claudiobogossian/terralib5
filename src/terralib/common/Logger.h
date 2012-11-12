@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Logger.h
+  \file terralib/common/Logger.h
 
   \brief This class is designed to manage the log of information in TerraLib.
  */

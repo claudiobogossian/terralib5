@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AbstractFactory.h
+  \file terralib/common/AbstractFactory.h
 
   \brief A class that defines the interface of an abstract factory.
  */

@@ -62,11 +62,12 @@ void AddingDataSetPropertyValues(te::da::DataSet* ds)
     props.push_back(newP);
     
     memDs->moveBeforeFirst();
-    dsPersistence->update(dt, memDs, props);
-    
+    const std::map<std::string, std::string> options;
+    dsPersistence->update(dt, memDs, props, options);
+
     delete memDs;
     delete dsPersistence; 
-    return;      
+    return;
   }
   catch(const std::exception& e)
   {

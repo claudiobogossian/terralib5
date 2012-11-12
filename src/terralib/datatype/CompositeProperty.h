@@ -200,6 +200,16 @@ namespace te
         Property* getPropertyById(unsigned int id) const;
 
         /*!
+          \brief Tells if there is a property of the given data type.
+        */
+        bool hasPropertyOfType(const int t) const;
+
+        /*!
+          \brief returns the first property of the given data type.
+        */
+        Property* findFirstPropertyOfType(const int t) const;
+
+        /*!
           \brief It copies the properties from the vector.
 
           \param ps The list of properties to be copied.
@@ -252,6 +262,22 @@ namespace te
         std::string m_cname;                  //!< The composite type name.
         std::vector<Property*> m_properties;  //!< The list of property types that make the CompositeProperty.
     };
+
+    inline bool CompositeProperty::hasPropertyOfType(const int t) const
+    {
+      return findFirstPropertyOfType(t) != 0;
+    }
+
+    inline Property* CompositeProperty::findFirstPropertyOfType(const int t) const
+    {
+      const std::size_t size = m_properties.size();
+
+      for(std::size_t i = 0; i != size; ++i)
+        if(m_properties[i]->getType() == t)
+          return m_properties[i];
+
+      return 0;
+    }
 
   } // end namespace dt
 }   // end namespace te

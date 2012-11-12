@@ -96,6 +96,8 @@ namespace te
 
         const std::string& getSemanticTypeIdentifier(size_t i);
 
+        const std::vector<std::string>* getSemanticTypeIdentifiers() const;
+
         void push_back(Rule* rule);
 
         size_t getNRules() const;
@@ -109,6 +111,13 @@ namespace te
         void setVersion(const std::string& v);
 
         const std::string& getVersion() const;
+
+        /*!
+          \brief It returns the style type.
+
+          \return The style type.
+        */
+        virtual const std::string& getType() const = 0;
 
         //@}
 

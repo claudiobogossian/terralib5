@@ -48,15 +48,15 @@ te::qt::widgets::RasterVisualWidget::RasterVisualWidget(QWidget* parent, Qt::Win
     m_ui(new Ui::RasterVisualWidgetForm),
     m_sliderWidget(0),
     m_symbolizer(0),
-    m_cs(new te::se::ChannelSelection),
+    m_contrastRed(0),
+    m_contrastGreen(0),
+    m_contrastBlue(0),
+    m_contrastMono(0),
     m_scRed(0),
     m_scGreen(0),
     m_scBlue(0),
     m_scMono(0),
-    m_contrastRed(0),
-    m_contrastGreen(0),
-    m_contrastBlue(0),
-    m_contrastMono(0)
+    m_cs(new te::se::ChannelSelection)
 {
   m_ui->setupUi(this);
 

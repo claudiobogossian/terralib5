@@ -30,7 +30,7 @@
 // STL
 #include <cassert>
 
-std::set<const char*, te::common::LessCmp>  te::fe::ComparisonOperators::sm_validComparisonOperators;
+std::set<const char*, te::common::LessCmp<const char*> >  te::fe::ComparisonOperators::sm_validComparisonOperators;
 
 te::fe::ComparisonOperators::ComparisonOperators()
 {
@@ -57,7 +57,7 @@ const char* te::fe::ComparisonOperators::findOperator(const char* o)
 {
   assert(o);
 
-  std::set<const char*, te::common::LessCmp>::const_iterator it = sm_validComparisonOperators.find(o);
+  std::set<const char*, te::common::LessCmp<const char*> >::const_iterator it = sm_validComparisonOperators.find(o);
 
   if(it != sm_validComparisonOperators.end())
     return *it;

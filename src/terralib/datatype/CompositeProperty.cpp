@@ -116,7 +116,7 @@ te::dt::Property* te::dt::CompositeProperty::getProperty(const std::string& name
   return 0;
 }
 
-size_t te::dt::CompositeProperty::getPropertyPosition(const std::string& name) const
+std::size_t te::dt::CompositeProperty::getPropertyPosition(const std::string& name) const
 {
   const std::size_t size = m_properties.size();
 
@@ -127,7 +127,7 @@ size_t te::dt::CompositeProperty::getPropertyPosition(const std::string& name) c
   return std::string::npos;
 }
 
-size_t te::dt::CompositeProperty::getPropertyPosition(const Property* p) const
+std::size_t te::dt::CompositeProperty::getPropertyPosition(const Property* p) const
 {
   const std::size_t size = m_properties.size();
 

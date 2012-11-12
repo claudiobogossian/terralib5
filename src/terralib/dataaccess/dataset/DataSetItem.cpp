@@ -47,11 +47,25 @@ char te::da::DataSetItem::getChar(const std::string& name) const
   return getChar(pos);
 }
 
+void te::da::DataSetItem::setChar(const std::string& name, char value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setChar(pos, value);
+}
+
 unsigned char te::da::DataSetItem::getUChar(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
   return getUChar(pos);
+}
+
+void te::da::DataSetItem::setUChar(const std::string& name, unsigned char value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setUChar(pos, value);
 }
 
 boost::int16_t te::da::DataSetItem::getInt16(const std::string& name) const
@@ -61,11 +75,25 @@ boost::int16_t te::da::DataSetItem::getInt16(const std::string& name) const
   return getInt16(pos);
 }
 
+void te::da::DataSetItem::setInt16(const std::string& name, boost::int16_t value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setInt16(pos, value);
+}
+
 boost::int32_t te::da::DataSetItem::getInt32(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
   return getInt32(pos);
+}
+
+void te::da::DataSetItem::setInt32(const std::string& name, boost::int32_t value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setInt32(pos, value);
 }
 
 boost::int64_t te::da::DataSetItem::getInt64(const std::string& name) const
@@ -75,6 +103,14 @@ boost::int64_t te::da::DataSetItem::getInt64(const std::string& name) const
   return getInt64(pos);
 }
 
+void te::da::DataSetItem::setInt64(const std::string& name, boost::int64_t value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setInt64(pos, value);
+}
+
+
 bool te::da::DataSetItem::getBool(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
@@ -82,11 +118,26 @@ bool te::da::DataSetItem::getBool(const std::string& name) const
   return getBool(pos);
 }
 
+void te::da::DataSetItem::setBool(const std::string& name, bool value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setBool(pos, value);
+}
+
+
 float te::da::DataSetItem::getFloat(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
   return getFloat(pos);
+}
+
+void te::da::DataSetItem::setFloat(const std::string& name, float value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setFloat(pos, value);
 }
 
 double te::da::DataSetItem::getDouble(const std::string& name) const
@@ -96,11 +147,25 @@ double te::da::DataSetItem::getDouble(const std::string& name) const
   return getDouble(pos);
 }
 
+void te::da::DataSetItem::setDouble(const std::string& name, double value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setDouble(pos, value);
+}
+
 std::string te::da::DataSetItem::getNumeric(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
   return getNumeric(pos);
+}
+
+void te::da::DataSetItem::setNumeric(const std::string& name, const std::string& value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setNumeric(pos, value);
 }
 
 std::string te::da::DataSetItem::getString(const std::string& name) const
@@ -110,11 +175,25 @@ std::string te::da::DataSetItem::getString(const std::string& name) const
   return getString(pos);
 }
 
+void te::da::DataSetItem::setString(const std::string& name, const std::string& value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setString(pos, value);
+}
+
 te::dt::ByteArray* te::da::DataSetItem::getByteArray(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
   return getByteArray(pos);
+}
+
+void te::da::DataSetItem::setByteArray(const std::string& name, const te::dt::ByteArray& value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setByteArray(pos, value);
 }
 
 te::gm::Geometry* te::da::DataSetItem::getGeometry(const std::string& name) const
@@ -131,6 +210,13 @@ te::gm::Geometry* te::da::DataSetItem::getGeometry() const
   int pos = static_cast<int>(dt->getDefaultGeomPropertyPos());
 
   return getGeometry(pos);
+}
+
+void te::da::DataSetItem::setGeometry(const std::string& name, const te::gm::Geometry& value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setGeometry(pos, value);
 }
 
 te::rst::Raster* te::da::DataSetItem::getRaster(const std::string& name) const
@@ -153,6 +239,13 @@ te::rst::Raster* te::da::DataSetItem::getRaster() const
   return 0;
 }
 
+void te::da::DataSetItem::setRaster(const std::string& name, const te::rst::Raster& value)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setRaster(pos, value);
+}
+
 te::dt::DateTime* te::da::DataSetItem::getDateTime(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
@@ -160,11 +253,25 @@ te::dt::DateTime* te::da::DataSetItem::getDateTime(const std::string& name) cons
   return getDateTime(pos);
 }
 
-void te::da::DataSetItem::getArray(const std::string& name, std::vector<boost::int16_t>& a) const
+void te::da::DataSetItem::setDateTime(const std::string& name, const te::dt::DateTime& value)
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
-  return getArray(pos, a);
+  return setDateTime(pos, value);
+}
+
+void te::da::DataSetItem::getArray(const std::string& name, std::vector<boost::int16_t>& values) const
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return getArray(pos, values);
+}
+
+te::dt::Array* te::da::DataSetItem::getArray(const std::string& name) const
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return getArray(pos);
 }
 
 const unsigned char* te::da::DataSetItem::getWKB(const std::string& name) const
@@ -190,112 +297,11 @@ te::da::DataSet* te::da::DataSetItem::getDataSet(const std::string& name)
   return getDataSet(pos);
 }
 
-std::string te::da::DataSetItem::getAsString(int i) const
+void te::da::DataSetItem::setDataSet(const std::string& name, const DataSet& value)
 {
-  const DataSetType* dt = getType();
-  std::string value;
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
 
-  if(dt == 0)
-    return value;
-
-  const te::dt::Property* p = dt->getProperty(i);
-
-  switch(p->getType())
-  {
-    case te::dt::CHAR_TYPE:
-      value = getChar(i);
-    break;
-
-    case te::dt::INT16_TYPE:
-      value = te::common::Convert2String(getInt16(i));
-    break;
-
-    case te::dt::INT32_TYPE:
-      value = te::common::Convert2String(getInt32(i));
-    break;
-
-    case te::dt::INT64_TYPE:
-      value = te::common::Convert2String(getInt64(i));
-    break;
-
-    case te::dt::BOOLEAN_TYPE:
-      value = getBool(i) ? "t" : "f";
-    break;
-
-    case te::dt::FLOAT_TYPE:
-      value = te::common::Convert2String(getFloat(i));
-    break;
-
-    case te::dt::DOUBLE_TYPE:
-      value = te::common::Convert2String(getDouble(i));
-    break;
-
-    case te::dt::NUMERIC_TYPE:
-      value = getNumeric(i);
-    break;
-
-    case te::dt::STRING_TYPE:
-      value = getString(i);
-    break;
-
-    case te::dt::BYTE_ARRAY_TYPE:
-      {
-        std::auto_ptr<te::dt::AbstractData> b(getByteArray(i));
-        value = b->toString();
-      }
-    break;
-
-    case te::dt::GEOMETRY_TYPE:
-      {
-        std::auto_ptr<te::dt::AbstractData> g(getGeometry(i));
-        value = g->toString();
-      }
-    break;
-
-    case te::dt::DATETIME_TYPE:
-      {
-        std::auto_ptr<te::dt::AbstractData> dTime(getDateTime(i));
-        value = dTime->toString();
-      }
-    break;   
-
-    /*case ARRAY:
-        value = te::common::Convert2String(getInt(i));
-    break;*/
-
-    /*case COMPLEX:
-        value = te::common::Convert2String(getInt(i));
-    break;*/
-
-    /*case DATASET:
-        value = te::common::Convert2String(getInt(i));
-    break;*/
-
-    case te::dt::RASTER_TYPE:
-      {
-        std::auto_ptr<te::dt::AbstractData> g(getRaster(i));
-        value = g->toString();
-      }
-    break;
-
-    default:
-    break;
-  }
-
-  return value;
-}
-
-std::string te::da::DataSetItem::getAsString(const std::string& name) const
-{
-  const DataSetType* dt = getType();
-
-  if(dt == 0)
-    return std::string("");
-
-  const te::dt::Property* p = dt->getProperty(name);
-  int i = static_cast<int>(dt->getPropertyPosition(p));
-
-  return getAsString(i);
+  return setDataSet(pos, value);
 }
 
 te::dt::AbstractData* te::da::DataSetItem::getValue(int i) const
@@ -397,6 +403,126 @@ te::dt::AbstractData* te::da::DataSetItem::getValue(const std::string& name) con
   int i = static_cast<int>(dt->getPropertyPosition(p));
 
   return getValue(i);
+}
+
+void te::da::DataSetItem::setValue(const std::string& name, te::dt::AbstractData* ad)
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return setValue(pos, ad);
+}
+
+std::string te::da::DataSetItem::getAsString(int i) const
+{
+  const DataSetType* dt = getType();
+
+  std::string value;
+
+  if(dt == 0)
+    return value;
+
+  const te::dt::Property* p = dt->getProperty(i);
+
+  switch(p->getType())
+  {
+    case te::dt::CHAR_TYPE:
+      value = getChar(i);
+    break;
+
+    case te::dt::UCHAR_TYPE:
+      value = getUChar(i);
+    break;
+
+    case te::dt::INT16_TYPE:
+      value = te::common::Convert2String(getInt16(i));
+    break;
+
+    case te::dt::INT32_TYPE:
+      value = te::common::Convert2String(getInt32(i));
+    break;
+
+    case te::dt::INT64_TYPE:
+      value = te::common::Convert2String(getInt64(i));
+    break;
+
+    case te::dt::BOOLEAN_TYPE:
+      value = getBool(i) ? "t" : "f";
+    break;
+
+    case te::dt::FLOAT_TYPE:
+      value = te::common::Convert2String(getFloat(i));
+    break;
+
+    case te::dt::DOUBLE_TYPE:
+      value = te::common::Convert2String(getDouble(i));
+    break;
+
+    case te::dt::NUMERIC_TYPE:
+      value = getNumeric(i);
+    break;
+
+    case te::dt::STRING_TYPE:
+      value = getString(i);
+    break;
+
+    case te::dt::BYTE_ARRAY_TYPE:
+      {
+        std::auto_ptr<te::dt::AbstractData> b(getByteArray(i));
+        value = b->toString();
+      }
+    break;
+
+    case te::dt::GEOMETRY_TYPE:
+      {
+        std::auto_ptr<te::dt::AbstractData> g(getGeometry(i));
+        value = g->toString();
+      }
+    break;
+
+    case te::dt::DATETIME_TYPE:
+      {
+        std::auto_ptr<te::dt::AbstractData> dTime(getDateTime(i));
+        value = dTime->toString();
+      }
+    break;   
+
+    /*case ARRAY:
+        value = te::common::Convert2String(getInt(i));
+    break;*/
+
+    /*case COMPLEX:
+        value = te::common::Convert2String(getInt(i));
+    break;*/
+
+    /*case DATASET:
+        value = te::common::Convert2String(getInt(i));
+    break;*/
+
+    case te::dt::RASTER_TYPE:
+      {
+        std::auto_ptr<te::dt::AbstractData> g(getRaster(i));
+        value = g->toString();
+      }
+    break;
+
+    default:
+    break;
+  }
+
+  return value;
+}
+
+std::string te::da::DataSetItem::getAsString(const std::string& name) const
+{
+  const DataSetType* dt = getType();
+
+  if(dt == 0)
+    return std::string("");
+
+  const te::dt::Property* p = dt->getProperty(name);
+  int i = static_cast<int>(dt->getPropertyPosition(p));
+
+  return getAsString(i);
 }
 
 bool te::da::DataSetItem::isNull(const std::string& name) const

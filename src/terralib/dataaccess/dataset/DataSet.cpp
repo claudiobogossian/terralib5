@@ -292,6 +292,13 @@ void te::da::DataSet::getArray(const std::string& name, std::vector<boost::int16
   return getArray(pos, a);
 }
 
+te::dt::Array* te::da::DataSet::getArray(const std::string& name) const
+{
+  int pos = static_cast<int>(getType()->getPropertyPosition(name));
+
+  return getArray(pos);
+}
+
 const unsigned char* te::da::DataSet::getWKB(const std::string& name) const
 {
   int pos = static_cast<int>(getType()->getPropertyPosition(name));

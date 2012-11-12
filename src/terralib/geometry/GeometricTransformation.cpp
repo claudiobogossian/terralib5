@@ -74,9 +74,8 @@ double te::gm::GeometricTransformation::getMaxDirectMappingError(
   
   for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
   {
-    currentError = getDirectMappingError( params.m_tiePoints[ tpIndex ], 
-      params );
-    
+    currentError = getDirectMappingError( params.m_tiePoints[ tpIndex ], params );
+
     if( currentError > maxError ) 
     {
       maxError = currentError;
@@ -86,37 +85,35 @@ double te::gm::GeometricTransformation::getMaxDirectMappingError(
   return maxError;
 }
 
-double te::gm::GeometricTransformation::getMaxInverseMappingError( 
-  const GTParameters& params ) const
+double te::gm::GeometricTransformation::getMaxInverseMappingError( const GTParameters& params ) const
 {
   assert( isValid( params ) );
     
   const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
-  
+
   double maxError = 0;
+
   double currentError = 0;
   
   for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
   {
-    currentError = getInverseMappingError( params.m_tiePoints[ tpIndex ], 
-      params );
-    
+    currentError = getInverseMappingError( params.m_tiePoints[ tpIndex ], params );
+
     if( currentError > maxError ) 
     {
       maxError = currentError;
     }
   }
-  
+
   return maxError;
 }
 
-double te::gm::GeometricTransformation::getDirectMapRMSE( 
-  const GTParameters& params ) const
+double te::gm::GeometricTransformation::getDirectMapRMSE( const GTParameters& params ) const
 {
   assert( isValid( params ) );
-    
+
   const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
-  
+
   if( tiepointsSize == 0 )
   {
     return 0;
@@ -124,27 +121,26 @@ double te::gm::GeometricTransformation::getDirectMapRMSE(
   else
   {
     double error2Sum = 0;
+
     double currentError = 0;
-    
+
     for( unsigned int tpIndex = 0 ; tpIndex < tiepointsSize ; ++tpIndex ) 
     {
-      currentError = getDirectMappingError( params.m_tiePoints[ tpIndex ], 
-        params );
-        
+      currentError = getDirectMappingError( params.m_tiePoints[ tpIndex ], params );
+
       error2Sum += ( currentError * currentError );
     }
-    
+
     return sqrt( error2Sum / ( (double)tiepointsSize ) );
   }
 }
 
-double te::gm::GeometricTransformation::getInverseMapRMSE( 
-  const GTParameters& params ) const
+double te::gm::GeometricTransformation::getInverseMapRMSE( const GTParameters& params ) const
 {
   assert( isValid( params ) );
-    
+
   const unsigned int tiepointsSize = (unsigned int)params.m_tiePoints.size();
-  
+
   if( tiepointsSize == 0 )
   {
     return 0;
@@ -163,26 +159,24 @@ double te::gm::GeometricTransformation::getInverseMapRMSE(
     }
     
     return sqrt( error2Sum / ( (double)tiepointsSize ) );
-  }  
+  }
 }
 
-double te::gm::GeometricTransformation::getDirectMappingError( 
-  const GTParameters::TiePoint& tiePoint, const GTParameters& params ) const
+double te::gm::GeometricTransformation::getDirectMappingError( const GTParameters::TiePoint& tiePoint, const GTParameters& params ) const
 {
   assert( isValid( params ) );
-    
+
   Coord2D directMappedPoint;
 
   directMap( params, tiePoint.first, directMappedPoint );
-    
+
   double diffX = tiePoint.second.x - directMappedPoint.x;
   double diffY = tiePoint.second.y - directMappedPoint.y;
-    
+
   return hypot( diffX, diffY );
 }
 
-double te::gm::GeometricTransformation::getInverseMappingError( 
-  const GTParameters::TiePoint& tiePoint, const GTParameters& params ) const
+double te::gm::GeometricTransformation::getInverseMappingError( const GTParameters::TiePoint& tiePoint, const GTParameters& params ) const
 {
   assert( isValid( params ) );
     
@@ -196,6 +190,6 @@ double te::gm::GeometricTransformation::getInverseMappingError(
   return hypot( diffX, diffY );
 }
 te::gm::GeometricTransformation::GeometricTransformation()
-{  
+{
 }
 

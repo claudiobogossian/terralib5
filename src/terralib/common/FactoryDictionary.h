@@ -17,7 +17,7 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 /*!
-  \file FactoryDictionary.h
+  \file terralib/common/FactoryDictionary.h
 
   \brief A dictionary for a Factory.
  */

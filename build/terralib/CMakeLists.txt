@@ -52,6 +52,7 @@ option (BUILD_QTWIDGETS "Build Qt widgets module?" ON)
 option (BUILD_RASTER "Build raster module?" ON)
 option (BUILD_RP "Build raster processing module?" ON)
 option (BUILD_SAM "Build SAM module?" ON)
+option (BUILD_SERIALIZATION "Build SERIALIZATION module?" OFF)
 option (BUILD_SRS "Build spatial reference system module?" ON)
 option (BUILD_ST "Build spatial-temporal module?" ON)
 option (BUILD_STLOADER "Build ST loader module?" ON)
@@ -146,6 +147,10 @@ endif()
 
 IF(BUILD_SAM)
 	add_subdirectory(terralib_sam)
+endif()
+
+IF(BUILD_SERIALIZATION)
+	add_subdirectory(terralib_serialization)
 endif()
 
 IF(BUILD_SRS)

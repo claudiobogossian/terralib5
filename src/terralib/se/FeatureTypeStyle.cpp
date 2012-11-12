@@ -26,6 +26,8 @@
 // TerraLib
 #include "FeatureTypeStyle.h"
 
+const std::string te::se::FeatureTypeStyle::sm_type("FeatureTypeStyle");
+
 te::se::FeatureTypeStyle::FeatureTypeStyle()
   : m_featureTypeName(0)
 {
@@ -47,3 +49,7 @@ const std::string* te::se::FeatureTypeStyle::getFeatureTypeName() const
   return m_featureTypeName;
 }
 
+const std::string& te::se::FeatureTypeStyle::getType() const
+{
+  return sm_type;
+}

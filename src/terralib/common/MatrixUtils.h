@@ -33,12 +33,12 @@
 #include <cassert>
 
 // Boost
-#include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/vector_proxy.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/lu.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/triangular.hpp>
-#include <boost/numeric/ublas/lu.hpp>
-#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/vector_proxy.hpp>
 
 namespace te
 {
@@ -46,9 +46,8 @@ namespace te
   {
     /*!
       \brief Matrix inversion.
-      
-      \param inputMatrix Input matrix.
-      
+
+      \param inputMatrix  Input matrix.
       \param outputMatrix Output matrix.
 
       \return true if ok, false on errors.
@@ -77,7 +76,7 @@ namespace te
 
         // backsubstitute to get the inverse
         try
-        {          
+        {
           boost::numeric::ublas::lu_substitute( A, pm, outputMatrix );
         }
         catch(...)
@@ -91,15 +90,13 @@ namespace te
     
     /*!
       \brief Pseudo matrix inversion.
-      
-      \note PinvX = Inv( Xt * X ) * Xt, where Inv=Inverse and Xt is the transposed matrix of X.
-      
-      \param inputMatrix Input matrix.
-      
+
+      \param inputMatrix  Input matrix.
       \param outputMatrix Output matrix.
-      
+
       \return true if ok, false on errors.
-      
+
+      \note PinvX = Inv( Xt * X ) * Xt, where Inv=Inverse and Xt is the transposed matrix of X.
       \note A* = inv(trasnp(A) * A) * transp(A)    (i>j)
       \note A* = transp(A) * inv(A * trasnp(A))    (i<j)
     */

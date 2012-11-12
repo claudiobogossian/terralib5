@@ -32,11 +32,18 @@
 #include <sstream>
 
 te::dt::CompositeData::CompositeData(std::size_t nComponents)
-  : m_values(nComponents)
+  : m_values(nComponents),
+    m_names(nComponents)
+{
+}
+
+te::dt::CompositeData::CompositeData(const std::string& name)
+  : m_name(name)
 {
 }
 
 te::dt::CompositeData::CompositeData(const CompositeData& rhs)
+  : m_names(rhs.m_names)
 {
   te::common::Clone(rhs.m_values, m_values);
 }
@@ -55,9 +62,22 @@ te::dt::CompositeData& te::dt::CompositeData::operator=(const CompositeData& rhs
     m_values.clear();
 
     te::common::Clone(rhs.m_values, m_values);
+
+    m_names = rhs.m_names;
   }
 
   return *this;
+}
+
+void te::dt::CompositeData::setName(const std::string& name)
+{
+  m_name = name;
+}
+
+void te::dt::CompositeData::add(const std::string& name, AbstractData* value)
+{
+  m_names.push_back(name);
+  m_values.push_back(value);
 }
 
 te::dt::AbstractData* te::dt::CompositeData::getValue(std::size_t i) const

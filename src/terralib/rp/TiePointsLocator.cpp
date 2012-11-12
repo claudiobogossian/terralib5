@@ -338,6 +338,9 @@ namespace te
           m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
+          0,
+          0.9,
+          m_inputParameters.m_enableMultiThread,
           transfPtr,
           tiePointsWeights ), "Outliers remotion error" );
         
@@ -570,39 +573,78 @@ namespace te
         MatchedInterestPointsSetT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsSetT::const_iterator itE = matchedPoints.end();
         
-        double minFeatureValue = DBL_MAX;
-        double maxFeatureValue = (-1.0) * DBL_MAX;
+        double minFeatureValue1 = DBL_MAX;
+        double maxFeatureValue1 = (-1.0) * DBL_MAX;
+        double minFeatureValue2 = DBL_MAX;
+        double maxFeatureValue2 = (-1.0) * DBL_MAX;
+        double tiePointWeight = 0;
+        
         itB = matchedPoints.begin();
         while( itB != itE )
         {
-          if( minFeatureValue > itB->m_weight )
-            minFeatureValue = itB->m_weight;
-          if( maxFeatureValue < itB->m_weight )
-            maxFeatureValue = itB->m_weight;
-          
+          if( minFeatureValue1 > itB->m_point1.m_feature1 )
+            minFeatureValue1 = itB->m_point1.m_feature1;
+          if( maxFeatureValue1 < itB->m_point1.m_feature1 )
+            maxFeatureValue1 = itB->m_point1.m_feature1;
+
+          if( minFeatureValue2 > itB->m_point2.m_feature1 )
+            minFeatureValue2 = itB->m_point2.m_feature1;
+          if( maxFeatureValue2 < itB->m_point2.m_feature1 )
+            maxFeatureValue2 = itB->m_point2.m_feature1;
+
           ++itB;
         }
         
-        if( maxFeatureValue == minFeatureValue )
+        if( maxFeatureValue1 == minFeatureValue1 )
         {
-          minFeatureValue = 0;
-          maxFeatureValue = 1.0;          
+          minFeatureValue1 = 0;
+          maxFeatureValue1 = 1.0;          
         }
+        
+        if( maxFeatureValue2 == minFeatureValue2 )
+        {
+          minFeatureValue2 = 0;
+          maxFeatureValue2 = 1.0;          
+        }
+        
         
         itB = matchedPoints.begin();
         while( itB != itE )
         {
-          auxTP.first.x = ( itB->m_x1 / raster1XRescFact ) + 
+          auxTP.first.x = ( itB->m_point1.m_x / raster1XRescFact ) + 
             (double)m_inputParameters.m_raster1TargetAreaColStart;
-          auxTP.first.y = ( itB->m_y1 / raster1YRescFact ) + 
+          auxTP.first.y = ( itB->m_point1.m_y / raster1YRescFact ) + 
             (double)m_inputParameters.m_raster1TargetAreaLineStart;          
-          auxTP.second.x = ( itB->m_x2 / raster2XRescFact ) + 
+          auxTP.second.x = ( itB->m_point2.m_x / raster2XRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaColStart;
-          auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
-            (double)m_inputParameters.m_raster2TargetAreaLineStart;   
+          auxTP.second.y = ( itB->m_point2.m_y / raster2YRescFact ) + 
+            (double)m_inputParameters.m_raster2TargetAreaLineStart; 
+            
+          tiePointWeight = 
+            (
+              ( 
+                (
+                  ( 
+                    ( itB->m_point1.m_feature1 - minFeatureValue1 ) 
+                    /
+                    ( maxFeatureValue1 - minFeatureValue1 )
+                  )
+                  +
+                  ( 
+                    ( itB->m_point1.m_feature2 - minFeatureValue2 ) 
+                    /
+                    ( maxFeatureValue2 - minFeatureValue2 )
+                  )                  
+                )
+                /
+                2.0
+              )
+              +
+              itB->m_feature
+            ) / 2.0;
+            
            
-          tiePointsWeights.push_back( std::max( 0.1, ( itB->m_weight - 
-            minFeatureValue ) / ( maxFeatureValue - minFeatureValue ) ) );
+          tiePointsWeights.push_back( tiePointWeight );
             
           outParamsPtr->m_tiePoints.push_back( auxTP );
           
@@ -833,19 +875,72 @@ namespace te
         te::gm::GTParameters::TiePoint auxTP;
         MatchedInterestPointsSetT::const_iterator itB = matchedPoints.begin();
         const MatchedInterestPointsSetT::const_iterator itE = matchedPoints.end();
+        double minFeature1 = DBL_MAX;
+        double maxFeature1 = (-1.0) * DBL_MAX;
+        double minFeature2 = DBL_MAX;
+        double maxFeature2 = (-1.0) * DBL_MAX;
         
         while( itB != itE )
         {
-          auxTP.first.x = ( itB->m_x1 / raster1XRescFact ) + 
+          if( minFeature1 > itB->m_point1.m_feature1 )
+            minFeature1 = itB->m_point1.m_feature1;
+          if( maxFeature1 < itB->m_point1.m_feature1 )
+            maxFeature1 = itB->m_point1.m_feature1;
+          if( minFeature2 > itB->m_point2.m_feature1 )
+            minFeature2 = itB->m_point2.m_feature1;
+          if( maxFeature2 < itB->m_point2.m_feature1 )
+            maxFeature2 = itB->m_point2.m_feature1;
+          
+          ++itB;
+        }
+        
+        if( minFeature1 == maxFeature1 )
+        {
+          minFeature1 = 0;
+          maxFeature1 = 1.0;
+        }
+        if( minFeature2 == maxFeature2 )
+        {
+          minFeature2 = 0;
+          maxFeature2 = 1.0;
+        }        
+        
+        itB = matchedPoints.begin();
+        
+        while( itB != itE )
+        {
+          auxTP.first.x = ( itB->m_point1.m_x / raster1XRescFact ) + 
             (double)m_inputParameters.m_raster1TargetAreaColStart;
-          auxTP.first.y = ( itB->m_y1 / raster1YRescFact ) + 
+          auxTP.first.y = ( itB->m_point1.m_y / raster1YRescFact ) + 
             (double)m_inputParameters.m_raster1TargetAreaLineStart;          
-          auxTP.second.x = ( itB->m_x2 / raster2XRescFact ) + 
+          auxTP.second.x = ( itB->m_point2.m_x / raster2XRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaColStart;
-          auxTP.second.y = ( itB->m_y2 / raster2YRescFact ) + 
+          auxTP.second.y = ( itB->m_point2.m_y / raster2YRescFact ) + 
             (double)m_inputParameters.m_raster2TargetAreaLineStart;   
            
-          tiePointsWeights.push_back( itB->m_weight );
+          tiePointsWeights.push_back( 
+              (
+                itB->m_feature 
+                +
+                (
+                  (
+                    (
+                      ( itB->m_point1.m_feature1 - minFeature1 ) /
+                      ( maxFeature1 - minFeature1 )
+                    )
+                    +
+                    (
+                      ( itB->m_point2.m_feature1 - minFeature2 ) /
+                      ( maxFeature2 - minFeature2 )
+                    )
+                  )
+                  /
+                  2.0
+                )
+              )
+              /
+              2.0
+            );
             
           outParamsPtr->m_tiePoints.push_back( auxTP );
           
@@ -2120,16 +2215,15 @@ namespace te
                     {
                       isLocalMaxima = true;
                       
-                      auxInterestPoint.m_feature1 = windowCenterPixelValue;
-                      auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
-                        octaveIdx, scaleIdx );
-                      auxInterestPoint.m_feature3 = (double)
-                        laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
-                        maxGausFilterRadius ][ windCenterCol ] ;
-                        
-                      // breaking the loops
-                      octaveIdx = paramsPtr->m_octavesNumber;
-                      break;
+                      if( windowCenterPixelValue > auxInterestPoint.m_feature1 )
+                      {
+                        auxInterestPoint.m_feature1 = windowCenterPixelValue;
+                        auxInterestPoint.m_feature2 = (double)getSurfFilterSize(
+                          octaveIdx, scaleIdx );
+                        auxInterestPoint.m_feature3 = (double)
+                          laplacianSignBufferHandlers[ octaveIdx ][ scaleIdx ][ 
+                          maxGausFilterRadius ][ windCenterCol ] ;
+                      }
                     }
                   }
                 }
@@ -3237,9 +3331,6 @@ namespace te
       
       // Creating internal objects
       
-      double maxTiePoints1FeatureValue = DBL_MAX * (-1.0);
-      double minTiePoints1FeatureValue = DBL_MAX;
-      
       InterestPointsSetT::const_iterator it1 = interestPointsSet1.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet1( 
         new InterestPointT[ interestPointsSet1Size ] );
@@ -3247,17 +3338,10 @@ namespace te
       {
         internalInterestPointsSet1[ idx1 ] = *it1;
         
-        if( it1->m_feature1 > maxTiePoints1FeatureValue )
-          maxTiePoints1FeatureValue = it1->m_feature1;
-        if( it1->m_feature1 < minTiePoints1FeatureValue )
-          minTiePoints1FeatureValue = it1->m_feature1;        
-        
         ++it1;
       }
       
       te::sam::rtree::Index< unsigned int > interestPointsSet2RTree;
-      double maxTiePoints2FeatureValue = DBL_MAX * (-1.0);
-      double minTiePoints2FeatureValue = DBL_MAX;            
 
       InterestPointsSetT::const_iterator it2 = interestPointsSet2.begin();
       boost::scoped_array< InterestPointT > internalInterestPointsSet2( 
@@ -3265,11 +3349,6 @@ namespace te
       for( unsigned int idx2 = 0 ; idx2 < interestPointsSet2Size ; ++idx2 )
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
-
-        if( it2->m_feature1 > maxTiePoints2FeatureValue )
-          maxTiePoints2FeatureValue = it2->m_feature1;
-        if( it2->m_feature1 < minTiePoints2FeatureValue )
-          minTiePoints2FeatureValue = it2->m_feature1;
         
         if( maxPt1ToPt2Distance )
           interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
@@ -3384,12 +3463,6 @@ namespace te
       
       // Finding tiepoints
       
-      const double tiePoints1FeatureValueRange = ( maxTiePoints1FeatureValue != 
-        minTiePoints1FeatureValue ) ? ( maxTiePoints1FeatureValue -
-        minTiePoints1FeatureValue ) : 1.0;
-      const double tiePoints2FeatureValueRange = ( maxTiePoints2FeatureValue != 
-        minTiePoints2FeatureValue ) ? ( maxTiePoints2FeatureValue -
-        minTiePoints2FeatureValue ) : 1.0;        
       const double correlationABSValueRange = ( maxCorrelationABSValue != 
         minCorrelationABSValue ) ? ( maxCorrelationABSValue -
         minCorrelationABSValue ) : 1.0;
@@ -3399,38 +3472,11 @@ namespace te
       {
         if( eachColMaxABSIndexes[ eachLineMaxABSIndexes[ line ] ] == line )
         {
-          const InterestPointT& iPoint1 = internalInterestPointsSet1[ line ];
-          const InterestPointT& iPoint2 = internalInterestPointsSet2[ eachLineMaxABSIndexes[ line ] ];
-          
-          auxMatchedPoints.m_x1 = iPoint1.m_x;
-          auxMatchedPoints.m_y1 = iPoint1.m_y,
-          auxMatchedPoints.m_x2 = iPoint2.m_x;
-          auxMatchedPoints.m_y2 = iPoint2.m_y;
-          auxMatchedPoints.m_weight = 
-            ( 
-              ( 
-                (
-                  ( 
-                    ( iPoint1.m_feature1 - minTiePoints1FeatureValue ) 
-                    /
-                    tiePoints1FeatureValueRange 
-                  )
-                  +
-                  ( 
-                    ( iPoint2.m_feature1 - minTiePoints2FeatureValue ) 
-                    /
-                    tiePoints2FeatureValueRange 
-                  )                  
-                )
-                /
-                2.0
-              )
-              +
-              (
-                ( std::abs( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) ) - 
-                minCorrelationABSValue ) / correlationABSValueRange
-              )
-            ) / 2.0;
+          auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+          auxMatchedPoints.m_point2 = internalInterestPointsSet2[ eachLineMaxABSIndexes[ line ] ];
+          auxMatchedPoints.m_feature = 
+            ( std::abs( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) ) - 
+              minCorrelationABSValue ) / correlationABSValueRange;
           
           matchedPoints.insert( auxMatchedPoints );
         }
@@ -3726,18 +3772,12 @@ namespace te
           
           if( distValue != DBL_MAX )
           {
-            const InterestPointT& iPoint1 = internalInterestPointsSet1[ line ];
-            const InterestPointT& iPoint2 = internalInterestPointsSet2[ col ];
-            
-            auxMatchedPoints.m_x1 = iPoint1.m_x;
-            auxMatchedPoints.m_y1 = iPoint1.m_y,
-            auxMatchedPoints.m_x2 = iPoint2.m_x;
-            auxMatchedPoints.m_y2 = iPoint2.m_y;
-            
-            auxMatchedPoints.m_weight = ( maxDistValue - distValue )  / 
+            auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+            auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
+            auxMatchedPoints.m_feature = ( maxDistValue - distValue )  / 
               distValueRange;
-            auxMatchedPoints.m_weight = std::max( 0.0000001, 
-              auxMatchedPoints.m_weight );
+            auxMatchedPoints.m_feature = std::max( 0.0000001, 
+              auxMatchedPoints.m_feature );
             
             matchedPoints.insert( auxMatchedPoints );
           }

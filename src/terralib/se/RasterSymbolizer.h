@@ -114,31 +114,37 @@ namespace te
         
         void setOffset(ParameterValue* p);
 
-        ParameterValue* getOpacity() { return m_opacity; }
+        ParameterValue* getOpacity() const { return m_opacity; }
 
-        ParameterValue* getGain() { return m_gain; }
+        ParameterValue* getGain() const { return m_gain; }
 
-        ParameterValue* getOffset() { return m_offset; }
+        ParameterValue* getOffset() const { return m_offset; }
 
         void setChannelSelection(ChannelSelection* c);
 
-        te::se::ChannelSelection* getChannelSelection() { return m_channelSelection; }
+        te::se::ChannelSelection* getChannelSelection() const { return m_channelSelection; }
 
         void setOverlapBehavior(OverlapBehavior b);
 
+        OverlapBehavior getOverlapBehavior() const { return m_overlapBehavior; }
+
         void setColorMap(ColorMap* c);
 
-        te::se::ColorMap* getColorMap() { return m_colorMap; }
+        te::se::ColorMap* getColorMap() const { return m_colorMap; }
 
         void setContrastEnhancement(ContrastEnhancement* c);
 
-        te::se::ContrastEnhancement* getContrastEnhancement() { return m_contrastEnhancement; }
+        te::se::ContrastEnhancement* getContrastEnhancement() const { return m_contrastEnhancement; }
 
         void setShadedRelief(ShadedRelief* s);
 
+        ShadedRelief* getShadedRelief() const { return m_shadedRelief; }
+
         void setImageOutline(ImageOutline* i);
 
-        te::se::ImageOutline* getImageOutline() { return m_imageOutline; }
+        te::se::ImageOutline* getImageOutline() const { return m_imageOutline; }
+
+        const std::string& getType() const;
 
         //@}
 
@@ -157,6 +163,8 @@ namespace te
         ContrastEnhancement* m_contrastEnhancement; //!< It defines contrast enhancement for a channel of a false-color image or for a color image. (Optional)
         ShadedRelief* m_shadedRelief;               //!< It selects the application of relief shading (or "hill shading") to an image for a three-dimensional visual effect. (Optional)
         ImageOutline* m_imageOutline;               //!< It specifies how individual source rasters in a multi-raster set (such as a set of satellite-image scenes) should be outlined to make the individual-image locations visible. (Optional)
+
+        static const std::string sm_type;           //!< A static data member used in the implementation of getType method.
     };
 
   } // end namespace se

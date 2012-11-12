@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BaseVisitable.h
+  \file terralib/common/BaseVisitable.h
 
   \brief The root of all hierarchies that can be visited.
 */

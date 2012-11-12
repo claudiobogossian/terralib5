@@ -135,7 +135,7 @@ namespace te
         const char* m_name;                   //!< Spatial operator name.
         GeometryOperands* m_geometryOperands; //!< Optional.          
 
-        static std::set<const char*, te::common::LessCmp>  sm_validSpatialOperators; //!< The list of valid spatial operators.
+        static std::set<const char*, te::common::LessCmp<const char*> >  sm_validSpatialOperators; //!< The list of valid spatial operators.
     };
 
     

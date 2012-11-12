@@ -28,8 +28,10 @@
 #include "Graphic.h"
 #include "PointSymbolizer.h"
 
+const std::string te::se::PointSymbolizer::sm_type("PointSymbolizer");
+
 te::se::PointSymbolizer::PointSymbolizer()
-  : te::se::Symbolizer(te::se::POINT_SYMBOLIZER),
+  : te::se::Symbolizer(),
     m_geometry(0),
     m_graphic(0)
 {
@@ -75,6 +77,11 @@ const te::se::Graphic* te::se::PointSymbolizer::getGraphic() const
   return m_graphic;
 }
 
+const std::string& te::se::PointSymbolizer::getType() const
+{
+  return sm_type;
+
+}
 te::se::Symbolizer* te::se::PointSymbolizer::clone() const
 {
   return new PointSymbolizer(*this);

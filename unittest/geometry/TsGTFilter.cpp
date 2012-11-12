@@ -26,7 +26,10 @@
 #include <terralib/geometry/GTFactory.h>
 #include <terralib/geometry/GTFilter.h>
 
-#include <cmath>
+// boost
+#include <boost/timer.hpp>
+
+#include <cmath> 
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsGTFilter );
 
@@ -238,10 +241,73 @@ void TsGTFilter::tcApplyRansac()
     te::gm::Coord2D( 0, 10 ), te::gm::Coord2D( 0, 10 ) ) );
   transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
     te::gm::Coord2D( 10, 10 ), te::gm::Coord2D( 10, 10 ) ) );
+    
+  std::vector< double > tiePointsWeights;
+  tiePointsWeights.resize( transfParams.m_tiePoints.size(), 1.0 );
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
-  CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 0.01,
-    0.01, 0.01, transfPtr ) );
+  
+  boost::timer timerInstance;
+  CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 
+    0.01,  0.01, 0.01, 0, 0.9, false, transfPtr, tiePointsWeights ) );
+  std::cout << std::endl << "Elapsed time:";
+  std::cout << timerInstance.elapsed() << std::endl;
+  
+  std::cout << std::endl << "Final Number of tie-points:";
+  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
+  
+  CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
+  
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
+    te::gm::Coord2D( 0, 0 ), 0.0000001 );
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 10, 0 ), 
+    te::gm::Coord2D( 10, 0 ), 0.0000001 );        
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 0, 10 ), 
+    te::gm::Coord2D( 0, 10 ), 0.0000001 );    
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 10, 10 ), 
+    te::gm::Coord2D( 10, 10 ), 0.0000001 );    
+  testDirectMapping( transfPtr.get(), te::gm::Coord2D( 5, 5 ), 
+    te::gm::Coord2D( 5, 5 ), 0.0000001 );    
+    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
+    te::gm::Coord2D( 0, 0 ), 0.0000001 );
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 10, 0 ), 
+    te::gm::Coord2D( 10, 0 ), 0.0000001 );        
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 0, 10 ), 
+    te::gm::Coord2D( 0, 10 ), 0.0000001 );    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 10, 10 ), 
+    te::gm::Coord2D( 10, 10 ), 0.0000001 );    
+  testInverseMapping( transfPtr.get(), te::gm::Coord2D( 5, 5 ), 
+    te::gm::Coord2D( 5, 5 ), 0.0000001 );    
+}
+
+void TsGTFilter::tcApplyRansacMultiThread()
+{
+  te::gm::GTParameters transfParams;
+  generateTestTPSet1( transfParams.m_tiePoints );
+  
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 0, 0 ), te::gm::Coord2D( 0, 0 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 10, 0 ), te::gm::Coord2D( 10, 0 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 0, 10 ), te::gm::Coord2D( 0, 10 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 10, 10 ), te::gm::Coord2D( 10, 10 ) ) );
+    
+  std::vector< double > tiePointsWeights;
+  tiePointsWeights.resize( transfParams.m_tiePoints.size(), 1.0 );
+
+  std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
+  
+  boost::timer timerInstance;
+  CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 
+    0.01,  0.01, 0.01, 0, 0.9, true, transfPtr, tiePointsWeights ) );
+  std::cout << std::endl << "Elapsed time:";
+  std::cout << timerInstance.elapsed() << std::endl;
+  
+  std::cout << std::endl << "Final Number of tie-points:";
+  std::cout << transfPtr->getParameters().m_tiePoints.size() << std::endl;
   
   CPPUNIT_ASSERT( transfPtr->getName() == "Affine" );
   

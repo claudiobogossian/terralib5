@@ -65,3 +65,10 @@ void te::da::DataSetPersistence::remove(DataSetItem* item)
   remove(item->getType(), item);
 }
 
+void te::da::DataSetPersistence::add(const DataSetType* dt, DataSet* d, std::size_t limit)
+{
+  std::map<std::string, std::string> options;
+
+  add(dt, d, options, limit);
+}
+

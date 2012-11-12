@@ -38,7 +38,7 @@
 #include <boost/cstdint.hpp>
 
 // Forward declarations
-namespace te { namespace dt { class AbstractData; class ByteArray; class DateTime; } }
+namespace te { namespace dt { class AbstractData; class Array; class ByteArray; class DateTime; } }
 namespace te { namespace gm { class Geometry; } }
 namespace te { namespace rst { class Raster; } }
 
@@ -154,7 +154,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setChar(const std::string& name, char value) = 0;
+        virtual void setChar(const std::string& name, char value);
 
         /*!
           \brief Method for retrieving an unsigned character attribute value (1 byte long).
@@ -192,7 +192,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setUChar(const std::string& name, unsigned char value) = 0;
+        virtual void setUChar(const std::string& name, unsigned char value);
         
         /*!
           \brief Method for retrieving a 16-bit integer attribute value (2 bytes long).
@@ -230,7 +230,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setInt16(const std::string& name, boost::int16_t value) = 0;
+        virtual void setInt16(const std::string& name, boost::int16_t value);
 
         /*!
           \brief Method for retrieving a 32-bit integer attribute value (4 bytes long).
@@ -268,7 +268,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setInt32(const std::string& name, boost::int32_t value) = 0;
+        virtual void setInt32(const std::string& name, boost::int32_t value);
 
         /*!
           \brief Method for retrieving a 64-bit integer attribute value (8 bytes long).
@@ -306,7 +306,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setInt64(const std::string& name, boost::int64_t value) = 0;
+        virtual void setInt64(const std::string& name, boost::int64_t value);
 
         /*!
           \brief Method for retrieving a boolean attribute value.
@@ -344,7 +344,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setBool(const std::string& name, bool value) = 0;
+        virtual void setBool(const std::string& name, bool value);
 
         /*!
           \brief Method for retrieving a float attribute value.
@@ -382,7 +382,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setFloat(const std::string& name, float value) = 0;
+        virtual void setFloat(const std::string& name, float value);
 
         /*!
           \brief Method for retrieving a double attribute value.
@@ -420,7 +420,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setDouble(const std::string& name, double value) = 0;
+        virtual void setDouble(const std::string& name, double value);
 
         /*!
           \brief Method for retrieving a numeric attribute value.
@@ -458,7 +458,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setNumeric(const std::string& name, const std::string& value) = 0;
+        virtual void setNumeric(const std::string& name, const std::string& value);
 
         /*!
           \brief Method for retrieving a string value attribute.
@@ -496,7 +496,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setString(const std::string& name, const std::string& value) = 0;
+        virtual void setString(const std::string& name, const std::string& value);
 
         /*!
           \brief Method for retrieving a byte array.
@@ -542,7 +542,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setByteArray(const std::string& name, const te::dt::ByteArray& value) = 0;
+        virtual void setByteArray(const std::string& name, const te::dt::ByteArray& value);
 
         /*!
           \brief Method for retrieving a geometric attribute value.
@@ -593,7 +593,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setGeometry(const std::string& name, const te::gm::Geometry& value) = 0;
+        virtual void setGeometry(const std::string& name, const te::gm::Geometry& value);
 
         /*!
           \brief Method for retrieving a raster attribute value.
@@ -646,7 +646,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setRaster(const std::string& name, const te::rst::Raster& value) = 0;
+        virtual void setRaster(const std::string& name, const te::rst::Raster& value);
 
         /*!
           \brief Method for retrieving a date and time attribute value.
@@ -688,23 +688,47 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setDateTime(const std::string& name, const te::dt::DateTime& value) = 0; 
-                 
+        virtual void setDateTime(const std::string& name, const te::dt::DateTime& value); 
+
         /*!
           \brief Method for retrieving an unidimensional array of integers (2 bytes long).
 
           \param i The attribute index.
           \param a The list of integers (2 bytes long).
+
+          \todo We need a multi-dimensional array class
         */
-        virtual void getArray(int i, std::vector<boost::int16_t>& a) const = 0;
+        virtual void getArray(int i, std::vector<boost::int16_t>& values) const = 0;
 
         /*!
           \brief Method for retrieving an unidimensional array of integers (2 bytes long).
 
           \param name The attribute name.
           \param a    The list of integers (2 bytes long).
+
+          \todo We need a multi-dimensional array class
         */
-        virtual void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
+        virtual void getArray(const std::string& name, std::vector<boost::int16_t>& values) const;
+
+        /*!
+          \brief Method for retrieving an array.
+
+          \param i The attribute index.
+
+          \return An array. The caller will take its ownership.
+        */
+        virtual te::dt::Array* getArray(int /*i*/) const { return 0; }
+
+        /*!
+          \brief Method for retrieving an array.
+
+          \param name The attribute name.
+
+          \return An array. The caller will take its ownership.
+
+          \return An array. The caller will take its ownership.
+        */
+        virtual te::dt::Array* getArray(const std::string& name) const;
 
         /*!
           \brief It returns the geometric attribute value in a serialized form.
@@ -718,7 +742,7 @@ namespace te
 
           \return The WKB representing the geometric attribute value.
 
-          \note The caller of this method will not take the ownership of the returned pointer.          
+          \note The caller of this method will not take the ownership of the returned pointer.
         */
         virtual const unsigned char* getWKB(int i) const = 0;
 
@@ -734,7 +758,7 @@ namespace te
 
           \return The WKB representing the geometric attribute value.
 
-          \note The caller of this method will not take the ownership of the returned pointer.          
+          \note The caller of this method will not take the ownership of the returned pointer.
         */
         virtual const unsigned char* getWKB(const std::string& name) const;
 
@@ -748,7 +772,7 @@ namespace te
 
           \return The WKB representing the geometric attribute value.
 
-          \note The caller of this method will not take the ownership of the returned pointer.          
+          \note The caller of this method will not take the ownership of the returned pointer.
         */
         virtual const unsigned char* getWKB() const;
 
@@ -792,7 +816,7 @@ namespace te
 
           \note This method has effect just for datasets opened with read-write policy. 
         */
-        virtual void setDataSet(const std::string& name, const DataSet& value) = 0;
+        virtual void setDataSet(const std::string& name, const DataSet& value);
 
         /*!
           \brief Method for retrieving any other type of data value stored in the data source.
@@ -817,32 +841,32 @@ namespace te
           \return A pointer to the data value.
 
           \note The caller of this method will take the ownership of the returned pointer.
-        */
+         */
         virtual te::dt::AbstractData* getValue(const std::string& name) const;
         
         /*!
-          \brief Sets an abstract data to the i-th data set item.
+          \brief Sets an abstract data to the i-th data set attribute.
 
           This method can be used for extensible datatypes.
 
           \param i  The attribute index.
-          \param ad The abstract data to be set in the data set item.
+          \param ad The abstract data to be set in the data set.
 
           \note The data set will take the ownership of the given abstract data.
         */
-        virtual void setValue(int i, te::dt::AbstractData* ad) = 0;
+        virtual void setValue(int i, te::dt::AbstractData* value) = 0;
         
         /*!
-          \brief Sets an abstract data to a data set item.
+          \brief Sets an abstract data to a data set attribute.
 
           This method can be used for extensible datatypes.
 
           \param name The attribute name.
-          \param ad   The abstract data to be set in the data set item.
+          \param ad   The abstract data to be set in the data set.
 
           \note The data set will take the ownership of the given abstract data.
         */
-        virtual void setValue(const std::string& name, te::dt::AbstractData* ad) = 0;                
+        virtual void setValue(const std::string& name, te::dt::AbstractData* ad);                
 
         /*!
           \brief Method for retrieving a data value as a string plain representation.

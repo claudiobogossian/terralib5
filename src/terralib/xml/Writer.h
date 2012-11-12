@@ -52,45 +52,58 @@ namespace te
       public:
 
         /*! \brief Constructor. */
-        Writer();
+        Writer(std::ostream& ostr);
 
         /*! \brief Virtual destructor. */
         virtual ~Writer();
 
-        virtual void writeStartDocument(std::ostream& ostr, const std::string& encoding, const std::string& standalone);
+        virtual void writeStartDocument(const std::string& encoding, const std::string& standalone);
 
-        virtual void writeStartElement(std::ostream& ostr, const std::string& qName);
+        virtual void writeStartElement(const std::string& qName);
 
-        virtual void writeElement(std::ostream& ostr, const std::string& qName, const std::string& value);
+        virtual void writeElement(const std::string& qName, const std::string& value);
 
-        virtual void writeElement(std::ostream& ostr, const std::string& qName, const double& value);
+        virtual void writeElement(const std::string& qName, const double& value);
 
-        virtual void writeElement(std::ostream& ostr, const std::string& qName, boost::int32_t value);
+        virtual void writeElement(const std::string& qName, boost::int32_t value);
 
-        virtual void writeElement(std::ostream& ostr, const std::string& qName, boost::uint32_t value);
+        virtual void writeElement(const std::string& qName, boost::uint32_t value);
 
-        virtual void writeElement(std::ostream& ostr, const std::string& qName, boost::int64_t value);
+        virtual void writeElement(const std::string& qName, boost::int64_t value);
 
-        virtual void writeElement(std::ostream& ostr, const std::string& qName, boost::uint64_t value);
+        virtual void writeElement(const std::string& qName, boost::uint64_t value);
 
-        virtual void writeAttribute(std::ostream& ostr, const std::string& attName, const std::string& value);
+        virtual void writeAttribute(const std::string& attName, const std::string& value);
 
-        virtual void writeAttribute(std::ostream& ostr, const std::string& attName, const double& value);
+        virtual void writeAttribute(const std::string& attName, const double& value);
 
-        virtual void writeAttribute(std::ostream& ostr, const std::string& attName, boost::int32_t value);
+        virtual void writeAttribute(const std::string& attName, boost::int32_t value);
 
-        virtual void writeAttribute(std::ostream& ostr, const std::string& attName, boost::uint32_t value);
+        virtual void writeAttribute(const std::string& attName, boost::uint32_t value);
 
-        virtual void writeAttribute(std::ostream& ostr, const std::string& attName, boost::int64_t value);
+        virtual void writeAttribute(const std::string& attName, boost::int64_t value);
 
-        virtual void writeAttribute(std::ostream& ostr, const std::string& attName, boost::uint64_t value);
+        virtual void writeAttribute(const std::string& attName, boost::uint64_t value);
 
-        virtual void writeEndElement(std::ostream& ostr, const std::string& qName);
+        virtual void writeValue(const std::string& value);
+
+        virtual void writeValue(const double& value);
+
+        virtual void writeValue(boost::int32_t value);
+
+        virtual void writeValue(boost::uint32_t value);
+
+        virtual void writeValue(boost::int64_t value);
+
+        virtual void writeValue(boost::uint64_t value);
+
+        virtual void writeEndElement(const std::string& qName);
 
         /*virtual void writeEndDocument(std::ostream& ostr);*/
 
       private:
 
+        std::ostream& m_ostr;
         bool m_isOpened;
     };
 

@@ -5,6 +5,8 @@
 //STL include files
 #include <algorithm>
 
+#include <boost/lexical_cast.hpp>
+
 te::map::AbstractTable::AbstractTable() :
 m_separator('#')
 {
@@ -74,9 +76,9 @@ void te::map::AbstractTable::moveColumn(size_t fromPos, size_t toPos)
 {
   size_t s = numColumns();
 
-  if(fromPos < 0 || fromPos >= s)
+  if(fromPos >= s)
     throw te::common::Exception("fromPos index out of boundaries.");
-  if(toPos < 0 || toPos >= s)
+  if(toPos >= s)
     throw te::common::Exception("toPos index out of boundaries.");;
 
   size_t value = m_presentOrder[fromPos];
@@ -132,7 +134,6 @@ void te::map::AbstractTable::preprocessPKeys(char separator)
   if(!m_pkeys_2rows.empty() || m_absPKeys.empty())
     return;
 
-  size_t nPkeys = m_absPKeys.size();
   size_t nRows = numRows();
 
   for(size_t i=0; i<nRows; i++)
@@ -164,7 +165,7 @@ std::string te::map::AbstractTable::map2PKey(size_t row)
     throw te::common::Exception("Row out of boundaries.");
 
   if(m_absPKeys.empty())
-    return te::common::Convert2String(row);
+    return boost::lexical_cast<std::string>(row);
 
   size_t nPkeys = m_absPKeys.size();
   std::string pkey;
@@ -197,9 +198,7 @@ te::gm::Geometry* te::map::AbstractTable::getGeometry(const size_t& row) const
 
 size_t te::map::AbstractTable::getLogicalColumn(size_t column) const
 {
-  size_t cols = numColumns();
-
-  if(cols < 0 || column >= cols)
+  if(column >= numColumns())
     throw te::common::Exception("Index out of boundaries.");
 
   if(m_colVisiblity[column])

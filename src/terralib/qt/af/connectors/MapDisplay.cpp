@@ -80,7 +80,8 @@ namespace te
             case QEvent::Resize:
               {
                 QResizeEvent* e = static_cast<QResizeEvent*>(evt);
-                te::qt::af::teApp::getInstance().broadCast(&te::qt::af::DisplayResized(m_display, e->size(), e->oldSize()));
+                te::qt::af::DisplayResized dr_ev(m_display, e->size(), e->oldSize());
+                te::qt::af::teApp::getInstance().broadCast(&dr_ev);
               }
             break;
 
@@ -97,17 +98,31 @@ namespace te
         std::list<te::map::AbstractLayer*> lay_list;
         std::map<int, te::map::AbstractLayer*>::const_reverse_iterator it;
 
+        te::gm::Envelope env;
+
         for(it=layers.rbegin(); it!=layers.rend(); ++it)
+        {
           lay_list.push_back(it->second);
+
+          te::gm::Envelope e(*it->second->getExtent());
+
+          if(it->second->getSRID() != m_display->getSRID())
+          {
+            e.transform(it->second->getSRID(), m_display->getSRID());
+          }
+
+          env.Union(e);
+        }
 
         m_display->setLayerList(lay_list);
 
-        m_display->setExtent(*(*lay_list.begin())->getExtent());
+        m_display->setExtent(env);
       }
 
       void MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
       {
-        teApp::getInstance().broadCast(&CurrentToolChanged(tool, m_current_tool));
+        te::qt::af::CurrentToolChanged ctc_ev(tool, m_current_tool);
+        teApp::getInstance().broadCast(&ctc_ev);
 
         delete m_current_tool;
         m_current_tool = tool;
@@ -165,7 +180,8 @@ namespace te
 
       void MapDisplay::onCoordTracked(QPointF& pos)
       {
-        teApp::getInstance().broadCast(&TrackedCoordinate(pos));
+        te::qt::af::TrackedCoordinate tc_ev(pos);
+        teApp::getInstance().broadCast(&tc_ev);
       }
 
       void MapDisplay::redrawHighlight()

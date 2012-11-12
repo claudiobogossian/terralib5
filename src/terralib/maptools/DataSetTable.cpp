@@ -36,10 +36,10 @@ size_t te::map::DataSetTable::numRows()
 
 std::string te::map::DataSetTable::dataAsString(size_t row, size_t column)
 {
-  if(row < 0 || row >= numRows())
+  if(row >= numRows())
     throw te::common::Exception("row index out of boundaries.");
 
-  if(column < 0 || column >= numColumns())
+  if(column >= numColumns())
     throw te::common::Exception("row index out of boundaries.");
 
   size_t logCol = getLogicalColumn(column);

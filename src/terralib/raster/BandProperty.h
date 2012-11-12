@@ -35,6 +35,9 @@
 #include <string>
 #include <vector>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
 // Forward declaration
@@ -146,6 +149,8 @@ namespace te
 
       const te::common::UnitOfMeasure* m_unit;                       //!< The unit of values.
     };
+
+    typedef boost::shared_ptr<BandProperty> BandPropertyPtr;
     
   } // end namespace rst
 }   // end namespace te

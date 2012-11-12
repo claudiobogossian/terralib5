@@ -52,6 +52,14 @@ namespace te
       class MapDisplay;
       class TabularViewer;
     }
+
+    namespace widgets
+    {
+      class ProgressViewerDialog;
+      class ProgressViewerWidget;
+      class ProgressViewerBar;
+      class RasterVisualDockWidget;
+    }
   }
 }
 
@@ -76,6 +84,8 @@ protected slots:
 
   void addOGRLayer();
 
+  void addGDALLayer();
+
   void layerVisibilityChanged(const QModelIndex& idx);
 
   void drawLayers();
@@ -92,6 +102,8 @@ protected slots:
 
   void openPluginsManager();
 
+  void showProgressDock();
+
 protected:
 
   void makeDialog();
@@ -102,6 +114,10 @@ protected:
   te::qt::af::MapDisplay* m_display;
   te::qt::af::TabularViewer* m_viewer;
   std::map<int, te::map::AbstractLayer*> m_layers;
+
+  QDockWidget* m_progressDock;                                    //!< Dock widget used to show progress information
+
+  te::qt::widgets::RasterVisualDockWidget* m_rasterVisualDock;    //!< Used to raster enhancement operations
 
 private:
   Ui::MainWindow* m_ui;

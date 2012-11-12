@@ -15,13 +15,14 @@ class SelectLayer : public QDialog
   Q_OBJECT
 
 public:
-  SelectLayer(te::da::DataSource* = 0, QWidget* parent = 0, Qt::WindowFlags f = 0);
+  SelectLayer(te::da::DataSource* = 0, QString lastConnectionString = "", QWidget* parent = 0, Qt::WindowFlags f = 0);
   ~SelectLayer();
   void populeWidgets(te::da::DataSource*);
 
 public slots:
   void dataSourceChangedSlot(int);
   void connectionStringEditedSlot();
+  void layerNameChangedSlot(int);
   void okSlot();
   void cancelSlot();
 

@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file Distance.cpp
-  
+  \file terralib/common/Distance.cpp
+
   \brief A given distance has a measurement and a unit-of-measure.
- */
+*/
 
 // TerraLib
 #include "Distance.h"

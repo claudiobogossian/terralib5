@@ -41,6 +41,7 @@ if(terralib_FOUND)
     HDRS_TO_MOC 
     ${INCLDIR}/MainWindow.h
     ${INCLDIR}/NewGDALLayer.h
+	${INCLDIR}/NewOGRLayer.h
   )
   te_moc2("${HDRS_TO_MOC}" "terraview" MOC)
   

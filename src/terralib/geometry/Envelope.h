@@ -33,6 +33,7 @@
 #include <cassert>
 #include <limits>
 #include <vector>
+
 namespace te
 {
   namespace gm
@@ -69,18 +70,18 @@ namespace te
                  const double& urx, const double& ury);
 
         /*!
+          \brief Constructor.
+
+          \param vectd Vector of doubles representing the envelope lower left and upper right corners.
+        */
+        Envelope(const std::vector<double>& vectd);
+
+        /*!
           \brief Copy constructor.
 
           \param rhs The source object to copy from.
         */
         Envelope(const Envelope& rhs);
-
-        /*!
-          \brief Constructor.
-
-          \param vectd Vector of doubles representing the envelope Lower left and upper right corner.
-        */
-        Envelope(std::vector<double>& vectd);
 
         /*!
           \brief It initializes (sets) the envelope bounds.
@@ -356,6 +357,21 @@ namespace te
       init(llx, lly, urx, ury);
     }
 
+    inline te::gm::Envelope::Envelope(const std::vector<double>& vectd)
+    {
+       double d[4] = { 0.0, 0.0, 0.0, 0.0 };
+
+       int i = 0;
+
+       for(std::vector<double>::const_iterator it = vectd.begin(); it < vectd.end(); ++it)
+       {
+           d[i] = (*it);
+           i += 1;
+       }
+
+       init(d[0], d[1], d[2], d[3]);
+    }
+
     inline Envelope::Envelope(const Envelope& rhs)
     {
       init(rhs.m_llx, rhs.m_lly, rhs.m_urx, rhs.m_ury);
@@ -550,17 +566,6 @@ namespace te
         m_ury = rhs.m_ury;
     }
 
-    inline te::gm::Envelope::Envelope(std::vector<double>& vectd)
-    {
-       std::vector<double>::iterator it;
-       double  d[4]={0.0,0.0,0.0,0.0}; int i=0;
-       for(it = vectd.begin(); it < vectd.end(); it++)
-       {
-           d[i] = (*it);       
-           i+= 1;
-       }
-        init(d[0],d[1],d[2],d[3]);
-    }
   } // end namespace gm
 }   // end namespace te
 

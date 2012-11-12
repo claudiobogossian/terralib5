@@ -3,39 +3,57 @@
 
 //! Qt include files
 #include <QDialog>
+#include <QLineEdit>
 
 //! Forward declarations
 namespace te
 {
-  namespace map
-  {
-    class AbstractLayer;
-  }
+  namespace map { class Layer; }
+
+  namespace da { class DataSource; }
+
+  namespace gm { class Envelope; }
 
   namespace qt
   {
     namespace widgets
     {
-      class FileChooser;
+      class SRSManagerDialog;
     }
   }
 }
 
 class NewOGRLayer : public QDialog
 {
-public:
+  Q_OBJECT
 
-  static te::map::AbstractLayer* getNewLayer(QWidget* parent=0);
+  public:
 
-protected:
-
-  NewOGRLayer(QWidget* parent=0);
+   NewOGRLayer(QWidget* parent=0);
 
   ~NewOGRLayer();
 
-  void makeDialog();
+  te::map::Layer* getNewLayer();
 
-  te::qt::widgets::FileChooser* m_fc;
+  protected:
+
+    std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box);
+
+    void makeDialog();
+
+  protected slots:
+
+    void onFileSelected(QString s);
+
+    void showProjDlg();
+
+  protected:
+
+    std::auto_ptr<te::map::Layer> m_layer;
+
+    QLineEdit* m_sridLnEdt;
+
+    te::qt::widgets::SRSManagerDialog* m_srs;
 };
 
 #endif //__TERRAVIEW_NEWOGRLAYER_H

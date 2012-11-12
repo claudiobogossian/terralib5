@@ -115,6 +115,8 @@ namespace te
 
         void cancel();
 
+        boost::int64_t getLastInsertId();
+
         te::da::DataSource* getDataSource() const;
 
         /** @name OGR Transactor Specific Methods

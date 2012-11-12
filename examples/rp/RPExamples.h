@@ -37,7 +37,10 @@ void Segmenter();
 /* \brief Contrast example using Raster Processing module. */
 void Contrast();
 
-/* \brief Classification example using Dummy module. */
+/* \brief Classification example using ISOSeg module. */
 void Classifier();
+
+/* \brief Raster decomposition using Mixture Model module. */
+void MixtureModel();
 
 #endif

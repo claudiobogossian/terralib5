@@ -38,6 +38,7 @@ namespace te
 {
   namespace da
   {
+    class DataSet;
     class DataSetType;
     class DataSetItem;
     class PrimaryKey;
@@ -84,6 +85,15 @@ namespace te
       \return The geometry OGC names.
     */
     const std::string& GetGeometryName(te::gm::GeomType t);
+
+    /*!
+      \brief It returns the geometry type concerning the OGC name
+
+      \param t The OGC type name
+
+      \return The Terralib geometry type
+    */
+    const te::gm::GeomType GetGeometryType(std::string t);
 
     /*!
       \brief Bind ADO Type to TerraLib Type.
@@ -221,6 +231,26 @@ namespace te
       \param dt DataSetType to be inserted
     */
     void insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt);
+
+    /*!
+      \brief Read the geometry_columns table end return a SRID
+
+      \param adoConn Ado connection
+      \param geomp The geometry property
+
+      \return SRID of the geometry
+    */
+    int getSRID(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp);
+
+    /*!
+      \brief Read the geometry_columns table end return a geometry type
+
+      \param adoConn Ado connection
+      \param geomp The geometry property
+
+      \return The geometry type
+    */
+    te::gm::GeomType getType(_ConnectionPtr adoConn, te::gm::GeometryProperty* geomp);
     
   } // end namespace ado
 }   // end namespace te

@@ -78,7 +78,7 @@ namespace te
 
           \return The data value in a string notation.
         */
-        virtual std::string toString() const = 0;        
+        virtual std::string toString() const = 0;
     };
 
     /*!

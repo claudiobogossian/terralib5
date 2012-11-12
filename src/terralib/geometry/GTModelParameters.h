@@ -36,7 +36,7 @@ namespace te
   {
     /*!
       \class GTModelParameters
-      
+
       \brief 2D Geometric transformation model parameters.
     */
     class TEGEOMEXPORT GTModelParameters : public te::common::AbstractParameters

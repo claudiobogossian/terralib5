@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ByteSwapUtils.h
+  \file terralib/common/ByteSwapUtils.h
 
   \brief Utility functions to swap bytes: double, int and unsigned int.
  */

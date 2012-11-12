@@ -128,6 +128,9 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
       for (size_t i = 0; i < pkProps.size(); ++i)
         pkv += dataSet->getAsString(pkProps[i]->getName());
 
+      if(pkv.empty())
+        continue;
+
       if(m_useChanged)
       {
         if(size <= 0)
@@ -286,7 +289,7 @@ void MyLayerRenderer::draw(te::map::AbstractLayer* al, te::map::Canvas* canvas,
     te::da::DataSet* dataSet = t->getDataSet(name);
     //te::da::DataSourceCatalogLoader* loader = t->getCatalogLoader();
     //te::da::DataSetType* dsType = loader->getDataSetType(name, true);
-    te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
+    te::da::DataSetTypePtr dsType = ds->getCatalog()->getDataSetType(name);
     te::gm::GeometryProperty* gProp = dsType->getDefaultGeomProperty();
     int gtype = gProp->getGeometryType();
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();

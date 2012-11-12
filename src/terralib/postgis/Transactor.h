@@ -114,6 +114,8 @@ namespace te
 
         void cancel();
 
+        boost::int64_t getLastInsertId();
+
         te::da::DataSource* getDataSource() const;
 
         /*!
@@ -151,13 +153,24 @@ namespace te
         /*!
           \brief It will check in the database catalog the number that identifies the PostGIS Geometry type.
 
-          \return The oid of the geometry type of 0 if it is not found.
+          \return The oid of the geometry type or 0 if it is not found.
 
           \exception Exception It may throws an exception.
 
           \note PostGIS driver extended method.
         */
         unsigned int getGeomTypeId();
+
+        /*!
+          \brief It will check in the database catalog the number that identifies the PostGIS Raster type.
+
+          \return The oid of the raster type or 0 if it is not found.
+
+          \exception Exception It may throws an exception.
+
+          \note PostGIS driver extended method.
+        */
+        unsigned int getRasterTypeId();
 
         /*!
           \brief It retrieves some information about the database such as the default schema used when no one is provided.

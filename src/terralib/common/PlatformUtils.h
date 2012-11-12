@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file PlatformUtils.h
+  \file terralib/common/PlatformUtils.h
 
   \brief This file is a wrapper around platform specific include files.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_PLATFORMUTILS_H
 #define __TERRALIB_COMMON_INTERNAL_PLATFORMUTILS_H

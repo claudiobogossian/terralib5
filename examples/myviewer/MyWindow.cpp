@@ -46,13 +46,26 @@
 //STL
 #include <string>
 
+extern unsigned long long lastMemoryMeasured;
+extern unsigned long long getAvailableMemory();
+
 MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_configStyle(0)
 {
+//te::common::Logger::initialize("MyWindow");
+//QString msg;
+//unsigned long maa;
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before MyWindow:");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyWindow", msg.toStdString().c_str());
+//te::common::Logger::finalize("MyWindow");
+
   setWindowTitle("My Main Window - Display: Root Folder");
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("PostGIS");
-  std::string dsInfo("host=atlas.dpi.inpe.br&port=5432&dbname=terralib4&user=postgres&password=sitim110&connect_timeout=20&MaxPoolSize=15");
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+  std::string dsInfo("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
   ds->open(dsInfo);
 
   m_dataSourceSet.insert(ds);
@@ -81,7 +94,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     if(id.find("public.br_focos") != std::string::npos ||
       id.find("public.br_munic") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -92,7 +105,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.rj_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -102,7 +115,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.mg_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -112,7 +125,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.goias_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -122,7 +135,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     }
     else if(id.find("public.sp_") != std::string::npos)
     {
-      te::da::DataSetType* dst = loader->getDataSetType(id, true);
+      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
       if(catalog->getDataSetType(id) == 0)
         catalog->add(dst);
       te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
@@ -147,7 +160,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
 //alterar este codigo para pegar todos os layers (por enquanto vou pegar apenas o 40 e o 41)
   std::string name = "40: locations";
-  te::da::DataSetType* dst = loader->getDataSetType(name, true);
+  te::da::DataSetTypePtr dst(loader->getDataSetType(name, true));
   dst->setId(2340);  // teste
   if(catalog->getDataSetType(name) == 0)
     catalog->add(dst);
@@ -159,7 +172,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   //layer->setSRID(gp->getSRID());
 
   name = "41: locations";
-  dst = loader->getDataSetType(name, true);
+  dst.reset(loader->getDataSetType(name, true));
   dst->setId(2341);  // teste
   if(catalog->getDataSetType(name) == 0)
     catalog->add(dst);
@@ -197,7 +210,7 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
     std::string& id = (datasets[i]);
     if(id.find("hidro_") == std::string::npos)
       continue;
-    te::da::DataSetType* dst = loader->getDataSetType(id, true);
+    te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
     if(catalog->getDataSetType(id) == 0)
       catalog->add(dst);
     MyLayer* layer = new MyLayer(id, id, temporalImagesFolderLayer);
@@ -321,6 +334,10 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_keepOnMemoryAction);
   connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
 
+  m_getAvailableMemoryAction = new QAction("&Get Available Memory", m_treeMenu);
+  m_treeMenu->addAction(m_getAvailableMemoryAction);
+  connect(m_getAvailableMemoryAction, SIGNAL(triggered()), this, SLOT(getAvailableMemorySlot()));
+
   m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
   m_treeMenu->addAction(m_plotTemporalDistanceAction);
   connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
@@ -330,6 +347,15 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
 MyWindow::~MyWindow()
 {
+//te::common::Logger::initialize("~MyWindow");
+//QString msg, msgg;
+//unsigned long maa, mbb;
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before ~MyWindow:");
+//msg + " KBytes";
+//te::common::Logger::logInfo("~MyWindow", msg.toStdString().c_str());
+
 // delete m_rootFolderLayer; //como deletar isto???????
 // acho que o LayerExplorer deveria fazer isso, mas, vou varrer a arvore e fazer aqui...
   std::vector<te::map::AbstractLayer*> layers;
@@ -352,8 +378,21 @@ MyWindow::~MyWindow()
 
   std::set<te::da::DataSource*>::iterator di;
   for(di = m_dataSourceSet.begin(); di != m_dataSourceSet.end(); ++di)
-    delete *di;
+  {
+    //tem algum problema com OGR quando eu ja deletei DataSet.
+    if((*di)->getType() != "OGR")
+      delete *di;
+  }
+
   m_dataSourceSet.clear();
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after ~MyWindow:");
+//msgg.setNum((qulonglong)((mbb - maa) / (1<<10)));
+//msg += "  KBytes, liberou:" + msgg + " KBytes";
+//te::common::Logger::logInfo("~MyWindow", msg.toStdString().c_str());
+//te::common::Logger::logInfo("~MyWindow", "\n");
+//te::common::Logger::finalize("~MyWindow");
 }
 
 void MyWindow::closeEvent(QCloseEvent *event)
@@ -367,7 +406,8 @@ void MyWindow::generatePNGs(std::vector<MyLayer*>& layers)
   // calcular min e max global para esticar os valores entre 0 e 255
   // criar lut de azul para verde para vermelho.
 
-  double mmax = -(std::numeric_limits<double>::max());
+  double mmax = -1000000000000.;
+  //double mmax = -(std::numeric_limits<double>::max());
   double mmin = -mmax;
   double ganho;
 
@@ -965,8 +1005,37 @@ void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
   {
     if(layer->getDataSource()->getType() != "OGR")
       delete op->getDataSet()->getTransactor();
+//te::common::Logger::initialize("MyWindow");
+//QString msg, msgg, sname = layer->getId().c_str();
+//unsigned long maa, mbb;
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before delete DataSet " + sname + ":");
+//msg += " KBytes";
+//te::common::Logger::logInfo("MyWindow", msg.toStdString().c_str());
     delete op->getDataSet();
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after delete DataSet " + sname + ":");
+//msgg.setNum((qulonglong)((mbb - maa) / (1<<10)));
+//msg += "  KBytes, liberou:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyWindow", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyWindow", "\n");
+
+//maa = getAvailableMemory();
+//msg.setNum((qulonglong)maa/(1<<10));
+//msg.insert(0, "before delete DataGridOperation " + sname + ":");
+//msg +=  " KBytes";
+//te::common::Logger::logInfo("MyWindow", msg.toStdString().c_str());
     delete op;
+//mbb = getAvailableMemory();
+//msg.setNum((qulonglong)mbb/(1<<10));
+//msg.insert(0, "after delete DataGridOperation " + sname + ":");
+//msgg.setNum((qulonglong)((mbb - maa) / (1<<10)));
+//msg += "  KBytes, liberou:" + msgg + " KBytes";
+//te::common::Logger::logInfo("MyWindow", msg.toStdString().c_str());
+//te::common::Logger::logInfo("MyWindow", "\n");
+//te::common::Logger::finalize("MyWindow");
     layer->setDataGridOperation(0);
 
     std::vector<MyDisplay*>::iterator it;
@@ -991,6 +1060,7 @@ void MyWindow::deleteGridOperation(te::map::AbstractLayer* l)
 bool MyWindow::isUsed(te::map::AbstractLayer* l)
 {
   MyLayer* layer = (MyLayer*)l;
+
   if(layer->getVisibility() == 0 && layer->getGrid() == 0)
   {
     std::set<QwtPlot*> plots = layer->getPlots();
@@ -1609,6 +1679,10 @@ void MyWindow::addFolderSlot()
 
 void MyWindow::addLayerSlot()
 {
+  static std::map<QString, QString> lastConnectionStringMap;
+  QString lastConnectionString;
+
+  MyLayer* layer = 0;
   QString folderName;
   te::map::FolderLayer* folderLayer;
   te::da::DataSource* ds = 0;
@@ -1618,18 +1692,19 @@ void MyWindow::addLayerSlot()
     folderLayer = (te::map::FolderLayer*)m_selectedLayer->getParent();
     folderName = folderLayer->getId().c_str();
   }
-  else
+  else if(m_selectedLayer->getType() == "FOLDERLAYER")
   {
+    folderLayer = (te::map::FolderLayer*)m_selectedLayer;
     std::vector<te::map::AbstractLayer*> layers;
-    getLayers(m_rootFolderLayer, layers);
+    getLayers(m_selectedLayer, layers);
     if(layers.begin() != layers.end())
       ds = ((te::map::Layer*)(*layers.begin()))->getDataSource();
-    folderLayer = (te::map::FolderLayer*)m_selectedLayer;
-    folderName = folderLayer->getId().c_str();
-
   }
 
-  SelectLayer* sel = new SelectLayer(ds, this);
+  if(ds && (lastConnectionStringMap.find(ds->getType().c_str()) != lastConnectionStringMap.end()))
+    lastConnectionString = lastConnectionStringMap[ds->getType().c_str()];
+
+  SelectLayer* sel = new SelectLayer(ds, lastConnectionString, this);
   if(sel->exec() == QDialog::Rejected)
     return;
 
@@ -1642,11 +1717,9 @@ void MyWindow::addLayerSlot()
   std::string conInfo = sel->m_connectionStringLineEdit->text().toStdString();
   std::string lname = sel->m_layerNameComboBox->currentText().toStdString();
   std::string tname = sel->m_titleNameLineEdit->text().toStdString();
+  lastConnectionStringMap[dstype.c_str()] = conInfo.c_str();
 
   delete sel;
-
-  ds = te::da::DataSourceFactory::make(dstype);
-  m_dataSourceSet.insert(ds);
 
   std::string dsInfo;
   //if(dstype == "GDAL")
@@ -1660,14 +1733,32 @@ void MyWindow::addLayerSlot()
       conInfo.replace(p, 5, "URI=");
   }
   dsInfo = conInfo;
-  ds->open(dsInfo);
+
+  std::set<te::da::DataSource*>::iterator dsit;
+  for(dsit = m_dataSourceSet.begin(); dsit != m_dataSourceSet.end(); ++dsit)
+  {
+    // na verdade tem que comparar toda string de connection. Por enquanto
+    // fica assim porque temos apenas um banco postgis. (O OGR esta com problema e tem que ter um DS por layer).
+    if((*dsit)->getType() == dstype)
+    {
+      ds = *dsit;
+      break;
+    }
+  }
+
+  if(dstype == "OGR" || ds == 0) // o OGR precisa de um datasource por layer (mas, isto deve ser arrumado!)
+  {
+    ds = te::da::DataSourceFactory::make(dstype);
+    m_dataSourceSet.insert(ds);
+    ds->open(dsInfo);
+  }
 
   te::da::DataSourceCatalog* catalog = ds->getCatalog();
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
   te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
 
-  te::da::DataSetType* dst = loader->getDataSetType(lname, true);
-  dst->setCatalog(catalog);
+  te::da::DataSetTypePtr dst(loader->getDataSetType(lname, true));
+//  dst->setCatalog(catalog);
   if(dst->getPrimaryKey() == 0)
   {
     QStringList items;
@@ -1682,7 +1773,7 @@ void MyWindow::addLayerSlot()
     if(ok && !items.isEmpty())
     {
       int b;
-      te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst);
+      te::da::PrimaryKey* pk = new te::da::PrimaryKey(lname + "_pk", dst.get());
       pk->add(dst->getProperty(item.toStdString()));
       b = QMessageBox::question(this, "More properties to form a unique key", "You need more properties to its unique key?", QMessageBox::Ok, QMessageBox::No);
       while(b == QMessageBox::Ok)
@@ -1698,15 +1789,15 @@ void MyWindow::addLayerSlot()
 
   if(catalog->getDataSetType(lname) == 0)
     catalog->add(dst);
-  MyLayer* layer = new MyLayer(lname, tname, folderLayer);
-
-  if(folderName.toUpper() == "MOVINGOBJECTS" || folderName.toUpper() == "TEMPORALIMAGES")
-    layer->setTemporal(true);
-
-  layer->setDataSource(ds);
 
   if(dstype == "GDAL")
   {
+    layer = new MyLayer(lname, tname, folderLayer);
+
+    if(folderName.toUpper() == "MOVINGOBJECTS" || folderName.toUpper() == "TEMPORALIMAGES")
+      layer->setTemporal(true);
+
+    layer->setDataSource(ds);
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
     te::da::DataSet* dataSet = transactor->getDataSet(lname);
     te::rst::Raster* raster = dataSet->getRaster();
@@ -1729,9 +1820,10 @@ void MyWindow::addLayerSlot()
     }
 
     int srid = gp->getSRID();
+    if(srid == 4269 || srid == 4267) // na lib projection nao tem esses srid, entao, faca de conta que eh wgs84
+      srid = TE_SRS_WGS84;
     if(srid <= 0)
     {
-      //srid = 4326; // teste para country.shp
       std::map<int, QString> sridMap;
       std::map<int, QString>::iterator it;
 
@@ -1819,6 +1911,12 @@ void MyWindow::addLayerSlot()
         }
       }
     }
+    layer = new MyLayer(lname, tname, folderLayer);
+
+    if(folderName.toUpper() == "MOVINGOBJECTS" || folderName.toUpper() == "TEMPORALIMAGES")
+      layer->setTemporal(true);
+
+    layer->setDataSource(ds);
     layer->setSRID(srid);
     layer->setExtent(gp->getExtent());
   }
@@ -2105,4 +2203,37 @@ void MyWindow::removeLegendSlot()
   m_layerExplorerModel->removeLegend(m_layerExplorer->getPopupIndex());
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
   updateDisplays((MyLayer*)(layerItem->getRefLayer()));
+}
+
+void MyWindow::getAvailableMemorySlot()
+{
+  QString msg, msgg;
+
+#ifdef WIN32
+  unsigned long long size = getAvailableMemory();
+  size /= (1<<10);
+  msg.setNum((qulonglong)size);
+  msg.insert(0, "Available Memory Size: ");
+  msg += " KBytes";
+
+  if(lastMemoryMeasured != 0)
+  {
+    if(size >= lastMemoryMeasured)
+    {
+      msgg.setNum((qulonglong)(size - lastMemoryMeasured));
+      msgg.insert(0, "\nSince the last measure ... released: ");
+    }
+    else
+    {
+      msgg.setNum((qulonglong)(lastMemoryMeasured - size));
+      msgg.insert(0, "\nSince the last measure ... consumed: ");
+    }
+    msg += msgg + " KBytes";
+  }
+  lastMemoryMeasured = size;
+#else
+  msg = "Sorry...\nNot yet implemented for this operating system!";
+#endif
+
+  QMessageBox::information(this, "Memory Size", msg);
 }

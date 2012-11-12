@@ -120,15 +120,15 @@ void DataGrid::serverComboBoxChanged(const QString& server)
   } 
   
   std::map<std::string, std::string> connInfo;
-  connInfo["host"] = server.toStdString();
-  connInfo["user"] = "postgres";
-  connInfo["password"] = "sitim110";
-  connInfo["dbname"] = "terralib4";
-  connInfo["connect_timeout"] = "4";
+  connInfo["PG_HOST"] = server.toStdString();
+  connInfo["PG_USER"] = "postgres";
+  connInfo["PG_PASSWORD"] = "sitim110";
+  connInfo["PG_DB_NAME"] = "terralib4";
+  connInfo["PG_CONNECT_TIMEOUT"] = "4";
 
   try
   {
-    m_ds = te::da::DataSourceFactory::make("PostGIS");
+    m_ds = te::da::DataSourceFactory::make("POSTGIS");
     m_ds->open(connInfo);
   }
   catch(te::common::Exception& e)

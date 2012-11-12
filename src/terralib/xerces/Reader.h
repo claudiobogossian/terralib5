@@ -115,6 +115,10 @@ namespace te
 
         std::size_t getAttrPosition(const std::string& name) const;
 
+        std::size_t getNumberOfNamespaces() const;
+
+        void getNamespace(std::size_t i, std::pair<std::string, std::string>& ns) const;
+
         void setInternalBufferSize(const std::size_t size);
 
         /*!

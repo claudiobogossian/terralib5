@@ -81,6 +81,8 @@ namespace te
 
         void setFallbackValue(const std::string& v);
 
+        const std::string& getFallbackValue() const;
+
       protected:
 
         std::string m_fallbackValue;  //!< The value of the fallbackValue attribute is used as a default value, if the SE implementation does not support the function. If the implementation supports the function, then the result value is determined by executing the function. (Mandatory)

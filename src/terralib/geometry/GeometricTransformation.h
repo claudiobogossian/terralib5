@@ -41,8 +41,9 @@ namespace te
   namespace gm
   {
 // Forward declaration
-    class GTParameters;
     class GTFilter;
+    class GTParameters;
+
     struct Coord2D;
 
     /*!

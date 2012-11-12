@@ -56,6 +56,8 @@
 #include "LayerRenderer.h"
 #include "QueryEncoder.h"
 
+#include <boost/lexical_cast.hpp>
+
 te::map::LayerRenderer::LayerRenderer()
 {}
 
@@ -97,8 +99,14 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
 
   // Adjusting box...
   te::gm::Envelope box(bbox);
-  if(gcol->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && gcol->getSRID() != srid)
-    box.transform(srid, gcol->getSRID());
+  
+  bool remap = false;
+  
+  if(layer->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && layer->getSRID() != srid)
+  {
+    box.transform(srid, layer->getSRID());
+    remap = true;
+  }
 
   // Gets the associated layer style
   te::se::Style* style = l->getStyle();
@@ -169,14 +177,14 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
 
     // Gets the set of symbolizers
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
-    std::size_t nSymbolizers = style->getNRules();
+    std::size_t nSymbolizers = symbolizers.size();
 
     // Building task message; e.g. ("Drawing the layer Countries. Rule 1 of 3.")
     std::string message = TR_MAP("Drawing the layer");
     message += " " + layer->getTitle() + ". ";
     message += TR_MAP("Rule");
-    message += " " + te::common::Convert2String(i + 1) + " " + TR_MAP("of") + " ";
-    message += te::common::Convert2String(nRules) + ".";
+    message += " " + boost::lexical_cast<std::string>(i + 1) + " " + TR_MAP("of") + " ";
+    message += boost::lexical_cast<std::string>(nRules) + ".";
 
     // Draw task
     te::common::TaskProgress task(message);
@@ -203,9 +211,11 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
           continue;
 
         // Verifies the SRID. Case differents, converts coordinates...
-        int gsrid = g->getSRID();
-        if(gsrid != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && gsrid != srid)
+        if(remap)
+        {
+          g->setSRID(layer->getSRID());
           g->transform(srid);
+        }
 
         canvas->draw(g);
 

@@ -68,6 +68,7 @@ class MainWindow : public QMainWindow
     void onOpenGDALTriggered();
     void onOpenOGRTriggered();
     void onOpenPostGISTriggered();
+    void onOpenDataSourceSelectorTriggered();
 
   private:
 
@@ -76,6 +77,7 @@ class MainWindow : public QMainWindow
     QAction* m_openGDAL;
     QAction* m_openOGR;
     QAction* m_openPostGIS;
+    QAction* m_openDataSourceSelector;
 };
 
 #endif  // __TERRALIB_EXAMPLES_QT_DATASOURCE_INTERNAL_H

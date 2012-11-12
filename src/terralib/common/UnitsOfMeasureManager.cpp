@@ -18,8 +18,8 @@
  */
 
 /*!
-  \file UnitsOfMeasureManager.cpp
- 
+  \file terralib/common/UnitsOfMeasureManager.cpp
+
   \brief A singleton class for dealing with units-of-measurement.  
 */
 
@@ -32,36 +32,40 @@
 #include "UnitsOfMeasureManager.h"
 
 // STL
-#include <cassert>
 #include <algorithm>
+#include <cassert>
 
 void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom)
 {
   assert(uom);
 
   std::vector<UnitOfMeasure*>::const_iterator it = std::find(m_uoms.begin(),m_uoms.end(),uom);
-  if (it != m_uoms.end())
+
+  if(it != m_uoms.end())
     throw Exception(TR_COMMON("Unit already exists in the manager."));
-  
+
   m_uoms.push_back(uom);
+
   m_uomsIdxByName.insert(std::map<std::string, UnitOfMeasure*>::value_type(uom->getName(), uom));
 }
 
 void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom,
-                                                    const std::vector<std::string>& alternativeNames)
+                                               const std::vector<std::string>& alternativeNames)
 {
   assert(uom);
 
   std::vector<UnitOfMeasure*>::const_iterator it = std::find(m_uoms.begin(),m_uoms.end(),uom);
-  if (it != m_uoms.end())
+
+  if(it != m_uoms.end())
     throw Exception(TR_COMMON("Unit already exists in the manager."));
-  
+
   m_uoms.push_back(uom);
+
   m_uomsIdxByName.insert(std::map<std::string, UnitOfMeasure*>::value_type(uom->getName(), uom));
 
-  size_t size = alternativeNames.size();
+  std::size_t size = alternativeNames.size();
 
-  for(size_t i = 0; i < size; ++i)
+  for(std::size_t i = 0; i < size; ++i)
   {
     std::string upName = te::common::Convert2UCase(alternativeNames[i]);
     m_uomsIdxByAlternativeName.insert(std::map<std::string, UnitOfMeasure*>::value_type(upName, uom));
@@ -99,11 +103,11 @@ void te::common::UnitsOfMeasureManager::remove(UnitOfMeasure* uom)
     }
   }
 
-// remove from the list and free it resources
+// remove from the list and free its resources
 
-  size_t size = m_uoms.size();
+  std::size_t size = m_uoms.size();
 
-  for(size_t i = 0; i < size; ++i)
+  for(std::size_t i = 0; i < size; ++i)
     if(uom->getId() == m_uoms[i]->getId())
     {
       delete m_uoms[i];

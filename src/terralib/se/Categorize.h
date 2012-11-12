@@ -98,6 +98,7 @@ namespace te
          */
         enum ThresholdsBelongToType
         {
+          NONE,       /*!<  */
           SUCCEEDING, /*!<  */
           PRECEDING   /*!<  */
         };
@@ -130,20 +131,31 @@ namespace te
         //@}
 
         void setLookupValue(ParameterValue* v);
+
+        ParameterValue* getLookupValue() const { return m_lookupValue; }
+
         void setValue(ParameterValue* v);
+
+        ParameterValue* getValue() const { return m_value; }
+
         void addThreshold(ParameterValue* v);
+
         void addValue(ParameterValue* v);
+
         void setThresholdsBelongTo(ThresholdsBelongToType t);
 
-        std::vector<ParameterValue*>& getThresholds();
-        std::vector<ParameterValue*>& getThresholdValues();
+        const ThresholdsBelongToType& getThresholdsBelongTo() const { return m_threshholdsBelongTo; }
+
+        const std::vector<ParameterValue*>& getThresholds() const;
+
+        const std::vector<ParameterValue*>& getThresholdValues() const;
 
       private:
 
         ParameterValue* m_lookupValue;                  //!< Mandatory.
         ParameterValue* m_value;                        //!< Mandatory.
-        std::vector<ParameterValue*> m_thresholds;      //!< A vector of pairs (Threshold, Value). (Optional)
-        std::vector<ParameterValue*> m_thresholdValues;
+        std::vector<ParameterValue*> m_thresholds;      //!< A vector of threshold. (Optional)
+        std::vector<ParameterValue*> m_thresholdValues; //!< A vector of threshold values. (Optional)
         ThresholdsBelongToType m_threshholdsBelongTo;   //!< (Optional)
     };
 

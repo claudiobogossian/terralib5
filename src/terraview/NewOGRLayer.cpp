@@ -2,17 +2,16 @@
 
 //! Terralib include files
 #include <terralib/qt/widgets/utils/FileChooser.h>
+#include <terralib/qt/widgets/srs/SRSManagerDialog.h>
 #include <terralib/maptools/Layer.h>
-#include <terralib/maptools/Utils.h>
-#include <terralib/maptools/LayerRenderer.h>
 #include <terralib/dataaccess/dataset/DataSetType.h>
 #include <terralib/dataaccess/datasource/DataSourceManager.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceCatalogLoader.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
-#include <terralib/geometry/GeometryProperty.h>
-#include <terralib/se/FeatureTypeStyle.h>
+#include <terralib/se.h>
 
+#include <terralib/maptools/LayerRenderer.h>
 
 //! Qt include files
 #include <QPushButton>
@@ -22,15 +21,24 @@
 #include <QFileInfo>
 #include <QMessageBox>
 
-namespace te
+NewOGRLayer::NewOGRLayer(QWidget* parent) :
+QDialog(parent)
 {
-  namespace gm
-  {
-    class Envelope;
-  }
+  makeDialog();
+
+  setWindowTitle(tr("Add an OGR layer"));
 }
 
-std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box, te::gm::GeomType& geomType) 
+NewOGRLayer::~NewOGRLayer()
+{
+}
+
+te::map::Layer* NewOGRLayer::getNewLayer()
+{
+  return m_layer.release();
+}
+
+std::string NewOGRLayer::getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box) 
 {
 // get a transactor to interact to the data source
   te::da::DataSourceTransactor* transactor = ds->getTransactor();
@@ -52,8 +60,6 @@ std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box, te::g
   // Default geometry property
   te::gm::GeometryProperty* geomProperty = dt->getDefaultGeomProperty();
 
-  geomType = geomProperty->getGeometryType();
-
   std::string datasetName = datasets[0];
 
 //  te::da::DataSet* dataset = transactor->getDataSet(datasetName);
@@ -69,78 +75,23 @@ std::string getDataSetName(te::da::DataSource* ds, te::gm::Envelope*& box, te::g
   return datasetName;
 }
 
-
-te::map::AbstractLayer* NewOGRLayer::getNewLayer(QWidget* parent)
-{
-  NewOGRLayer dlg(parent);
-
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    QString f = dlg.m_fc->getSelectedResource();
-    QFileInfo info(f);
-
-    if(!info.exists() || !info.isFile())
-      QMessageBox::information(&dlg, tr("Fail to open shape file"), tr("Selected resource is not valid."));
-    else
-    {
-      te::da::DataSourceManager& man = te::da::DataSourceManager::getInstance();
-      QString id("ds_");
-      id += QString::number(man.size());
-      std::map<std::string, std::string> connInfo;
-      connInfo["SOURCE"] = f.toLatin1().data();  
-
-      te::da::DataSource* ds = man.get(id.toLatin1().data(), "OGR", connInfo).get();
-
-      if(!ds->isOpened())
-        ds->open(connInfo);
-      
-      if(ds->isValid() && ds->isOpened())
-      {
-        te::gm::Envelope* env = 0;
-        te::gm::GeomType gtype;
-
-        std::string dset = getDataSetName(ds, env, gtype);
-
-        te::map::Layer* layer = new te::map::Layer(id.toLatin1().data(), info.baseName().toLatin1().data());
-
-        layer->setDataSetName(dset);
-        layer->setDataSource(ds);
-
-        te::se::FeatureTypeStyle* style = te::map::getDefaultStyle(gtype);
-
-        if(style != 0)
-          layer->setStyle(style);
-
-        layer->setRenderer(new te::map::LayerRenderer());
-        layer->setExtent(env);
-
-        return layer;
-      }
-    }
-  }
-
-  return 0;
-}
-
-NewOGRLayer::NewOGRLayer(QWidget* parent) :
-QDialog(parent)
-{
-  makeDialog();
-
-  setWindowTitle(tr("Add an OGR layer"));
-}
-
-NewOGRLayer::~NewOGRLayer()
-{
-}
-
 void NewOGRLayer::makeDialog()
 {
-  m_fc = new te::qt::widgets::FileChooser(this);
-  m_fc->setFilterPattern(tr("Shape Files (*.shp *.SHP)"));
+  te::qt::widgets::FileChooser* fc = new te::qt::widgets::FileChooser(this);
+  fc->setFilterPattern(tr("Shape Files (*.shp *.SHP)"));
+
+  connect(fc, SIGNAL(resourceSelected(QString)), this, SLOT(onFileSelected(QString)));
 
   QPushButton* ok_btn = new QPushButton(tr("&Ok"), this);
   QPushButton* can_btn = new QPushButton(tr("&Cancel"), this);
+
+  QPushButton* sridBtn = new QPushButton(tr("&SRID..."), this);
+  m_sridLnEdt = new QLineEdit(this);
+  m_sridLnEdt->setEnabled(false);
+
+  QHBoxLayout* hSRIDLay = new QHBoxLayout;
+  hSRIDLay->addWidget(sridBtn);
+  hSRIDLay->addWidget(m_sridLnEdt);
 
   QHBoxLayout* hLay = new QHBoxLayout;
   hLay->addWidget(ok_btn);
@@ -148,7 +99,8 @@ void NewOGRLayer::makeDialog()
   hLay->insertSpacing(0, 10);
 
   QVBoxLayout* vLay = new QVBoxLayout;
-  vLay->addWidget(m_fc);
+  vLay->addWidget(fc);
+  vLay->addLayout(hSRIDLay);
   vLay->addLayout(hLay);
   vLay->insertSpacing(1, 10);
 
@@ -157,4 +109,78 @@ void NewOGRLayer::makeDialog()
 
   connect(ok_btn, SIGNAL(pressed()), SLOT(accept()));
   connect(can_btn, SIGNAL(pressed()), SLOT(reject()));
+  connect(sridBtn, SIGNAL(pressed()), SLOT(showProjDlg()));
 }
+
+void NewOGRLayer::onFileSelected(QString s)
+{
+  QString f = s;
+  QFileInfo info(f);
+
+  if(!info.exists() || !info.isFile())
+    QMessageBox::information(this, tr("Fail to open shape file"), tr("Selected resource is not valid."));
+  else
+  {
+    te::da::DataSourceManager& man = te::da::DataSourceManager::getInstance();
+    QString id("ds_");
+    id += QString::number(man.size());
+    std::map<std::string, std::string> connInfo;
+    connInfo["SOURCE"] = f.toLatin1().data();  
+
+    te::da::DataSourcePtr ds = man.get(id.toLatin1().data(), "OGR", connInfo);
+
+    if(!ds->isOpened())
+      ds->open(connInfo);
+      
+    if(ds->isValid() && ds->isOpened())
+    {
+      te::gm::Envelope* env = 0;
+
+      std::string dset = getDataSetName(ds.get(), env);
+
+      m_layer.reset(new te::map::Layer(id.toLatin1().data(), info.baseName().toLatin1().data()));
+
+      m_layer->setDataSetName(dset);
+      m_layer->setDataSource(ds.get());
+
+      // Creates a hard-coded style
+      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
+      symbolizer->setFill(te::se::CreateFill("#339966", "0.3"));
+      symbolizer->setStroke(te::se::CreateStroke("#000000", "3", "1.0"));
+
+      te::se::Rule* rule = new te::se::Rule;
+      rule->push_back(symbolizer);
+
+      te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+      style->push_back(rule);
+
+      m_layer->setStyle(style);
+
+      m_layer->setRenderer(new te::map::LayerRenderer());
+      m_layer->setExtent(env);
+    }
+  }
+}
+
+void NewOGRLayer::showProjDlg()
+{
+  te::qt::widgets::SRSManagerDialog* srsManDialog = new te::qt::widgets::SRSManagerDialog();
+  
+  if(srsManDialog->exec() == QDialog::Accepted)
+  {
+    const std::pair<int, std::string>& srid = srsManDialog->getSelectedSRS();
+    srid.first;
+
+    QString sridStr;
+    sridStr.setNum(srid.first);
+
+    m_sridLnEdt->setText(sridStr);
+
+    //set the new srid in raster layer
+    if(m_layer.get())
+    {
+      m_layer->setSRID(srid.first);
+    }
+  }
+}
+

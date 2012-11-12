@@ -44,6 +44,7 @@ namespace te
   namespace se
   {
 // Forward declaration
+    class Description;
     class Graphic;
     class Symbolizer;
 
@@ -125,6 +126,8 @@ namespace te
         void enableElseFilter();
 
         void disableElseFilter();
+
+        bool hasElseFilter() const;
 
         void setMinScaleDenominator(const double& minScaleDenominator);
 

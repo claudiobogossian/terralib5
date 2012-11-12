@@ -30,6 +30,7 @@
 #include <terralib/qt/widgets/datasource/connector/gdal/GDALConnectorDialog.h>
 #include <terralib/qt/widgets/datasource/connector/ogr/OGRConnectorDialog.h>
 #include <terralib/qt/widgets/datasource/connector/postgis/PostGISConnectorDialog.h>
+#include <terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h>
 
 // Qt
 #include <QtGui/QAction>
@@ -71,18 +72,24 @@ void MainWindow::setupActions()
   m_openOGR->setCheckable(true);
   connect(m_openOGR, SIGNAL(triggered()), SLOT(onOpenOGRTriggered()));
   
-  m_openPostGIS = new QAction(tr("PostGIS"), this);
+  m_openPostGIS = new QAction(tr("POSTGIS"), this);
   m_openPostGIS->setCheckable(true);
   connect(m_openPostGIS, SIGNAL(triggered()), SLOT(onOpenPostGISTriggered()));
+
+  m_openDataSourceSelector = new QAction(tr("DataSource Selector"), this);
+  m_openDataSourceSelector->setCheckable(true);
+  connect(m_openDataSourceSelector, SIGNAL(triggered()), SLOT(onOpenDataSourceSelectorTriggered()));
   
-  m_toolBar->addAction(m_openGDAL); 
+  m_toolBar->addAction(m_openGDAL);
   m_toolBar->addAction(m_openOGR);
-  m_toolBar->addAction(m_openPostGIS);   
+  m_toolBar->addAction(m_openPostGIS);
+  m_toolBar->addAction(m_openDataSourceSelector);
   
   QActionGroup* toolsGroup = new QActionGroup(this);
   toolsGroup->addAction(m_openGDAL);
   toolsGroup->addAction(m_openOGR); 
-  toolsGroup->addAction(m_openPostGIS);    
+  toolsGroup->addAction(m_openPostGIS);
+  toolsGroup->addAction(m_openDataSourceSelector);
 }
 
 
@@ -135,4 +142,11 @@ void MainWindow::onOpenGDALTriggered()
     //    msgBox.setText(mess);
     //    msgBox.exec();
   }
+}
+
+void MainWindow::onOpenDataSourceSelectorTriggered()
+{
+  std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> selector(new te::qt::widgets::DataSourceSelectorDialog(this));
+
+  selector->exec();
 }

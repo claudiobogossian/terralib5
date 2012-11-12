@@ -32,12 +32,11 @@
 #include "Description.h"
 #include "Symbolizer.h"
 
-te::se::Symbolizer::Symbolizer(const te::se::SymbolizerType& type)
+te::se::Symbolizer::Symbolizer()
   : m_description(0),
     m_baseSymbolizer(0),
     m_version(TE_SE_DEFAULT_VERSION),
-    m_uom(0),
-    m_type(type)
+    m_uom(0)
 {
 }
 
@@ -46,8 +45,7 @@ te::se::Symbolizer::Symbolizer(const te::se::Symbolizer& rhs)
     m_description(0),
     m_baseSymbolizer(0),
     m_version(rhs.m_version),
-    m_uom(0),
-    m_type(rhs.getType())
+    m_uom(0)
 {
   if(rhs.m_description)
     m_description = rhs.m_description->clone();
@@ -116,9 +114,4 @@ void te::se::Symbolizer::setUom(const te::common::BaseUnitOfMeasure* uom)
 const te::common::BaseUnitOfMeasure* te::se::Symbolizer::getUom() const
 {
   return m_uom;
-}
-
-te::se::SymbolizerType te::se::Symbolizer::getType() const
-{
-  return m_type;
 }
