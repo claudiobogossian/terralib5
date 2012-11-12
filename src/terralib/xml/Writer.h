@@ -85,6 +85,18 @@ namespace te
 
         virtual void writeAttribute(const std::string& attName, boost::uint64_t value);
 
+        virtual void writeValue(const std::string& value);
+
+        virtual void writeValue(const double& value);
+
+        virtual void writeValue(boost::int32_t value);
+
+        virtual void writeValue(boost::uint32_t value);
+
+        virtual void writeValue(boost::int64_t value);
+
+        virtual void writeValue(boost::uint64_t value);
+
         virtual void writeEndElement(const std::string& qName);
 
         /*virtual void writeEndDocument(std::ostream& ostr);*/

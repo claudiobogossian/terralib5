@@ -18,49 +18,37 @@
  */
 
 /*!
-  \file terralib/serialization/se/ExternalGraphic.cpp
+  \file terralib/serialization/se/ShadedRelief.cpp
  
-  \brief Support for ExternalGraphic serialization.
+  \brief Support for ShadedRelief serialization.
 */
 
 // TerraLib
-#include "../../se/ExternalGraphic.h"
+#include "../../se/ShadedRelief.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "ExternalGraphic.h"
-#include "InlineContent.h"
-#include "Utils.h"
+#include "ShadedRelief.h"
 
 // STL
-#include <cassert>
 #include <memory>
 
-te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& reader)
+te::se::ShadedRelief* te::serialize::ReadShadedRelief(te::xml::Reader& reader)
 {
   return 0;
 }
 
-void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)
+void te::serialize::Save(const te::se::ShadedRelief* sr, te::xml::Writer& writer)
 {
-  if(eg == 0)
+  if(sr == 0)
     return;
 
-  writer.writeStartElement("ExternalGraphic");
+  writer.writeStartElement("ShadedRelief");
 
-  const te::xl::SimpleLink* link = eg->getOnlineResource();
-  if(link)
-    te::serialize::WriteOnlineResourceHelper(link, writer);
-  else
-  {
-    const te::se::InlineContent* ic = eg->getInlineContent();
-    assert(ic);
-    Save(ic, writer);
-  }
-  const std::string& format = eg->getFormat();
-  assert(!format.empty());
-  writer.writeElement("Format", format);
+  std::string brightnessOnlyValue;
+  sr->isBrightnessOnly() ? brightnessOnlyValue = "true" : brightnessOnlyValue = "false";
 
-  // Recodes (...)
+  writer.writeElement("BrightnessOnly", brightnessOnlyValue);
+  writer.writeElement("ReliefFactor", sr->getReliefFactor());
 
-  writer.writeEndElement("ExternalGraphic");
+  writer.writeEndElement("ShadedRelief");
 }

@@ -18,49 +18,37 @@
  */
 
 /*!
-  \file terralib/serialization/se/ExternalGraphic.cpp
+  \file terralib/serialization/se/Halo.cpp
  
-  \brief Support for ExternalGraphic serialization.
+  \brief Support for Halo serialization.
 */
 
 // TerraLib
-#include "../../se/ExternalGraphic.h"
+#include "../../se/Halo.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "ExternalGraphic.h"
-#include "InlineContent.h"
+#include "Fill.h"
+#include "Halo.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& reader)
+te::se::Halo* te::serialize::ReadHalo(te::xml::Reader& reader)
 {
   return 0;
 }
 
-void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)
+void te::serialize::Save(const te::se::Halo* halo, te::xml::Writer& writer)
 {
-  if(eg == 0)
+  if(halo == 0)
     return;
 
-  writer.writeStartElement("ExternalGraphic");
+  writer.writeStartElement("Halo");
 
-  const te::xl::SimpleLink* link = eg->getOnlineResource();
-  if(link)
-    te::serialize::WriteOnlineResourceHelper(link, writer);
-  else
-  {
-    const te::se::InlineContent* ic = eg->getInlineContent();
-    assert(ic);
-    Save(ic, writer);
-  }
-  const std::string& format = eg->getFormat();
-  assert(!format.empty());
-  writer.writeElement("Format", format);
+  WriteParameterValuePtrHelper("Radius", halo->getRadius(), writer);
+  Save(halo->getFill(), writer);
 
-  // Recodes (...)
-
-  writer.writeEndElement("ExternalGraphic");
+  writer.writeEndElement("Halo");
 }

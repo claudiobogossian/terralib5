@@ -81,23 +81,23 @@ namespace te
 
         void setRedChannel(SelectedChannel* c);
 
-        SelectedChannel* getRedChannel() { return m_redChannel; }
+        SelectedChannel* getRedChannel() const { return m_redChannel; }
 
         void setGreenChannel(SelectedChannel* c);
 
-        SelectedChannel* getGreenChannel() { return m_greenChannel; }
+        SelectedChannel* getGreenChannel() const { return m_greenChannel; }
 
         void setBlueChannel(SelectedChannel* c);
 
-        SelectedChannel* getBlueChannel() { return m_blueChannel; }
+        SelectedChannel* getBlueChannel() const { return m_blueChannel; }
 
         void setGrayChannel(SelectedChannel* c);
 
-        SelectedChannel* getGrayChannel() { return m_grayChannel; }
+        SelectedChannel* getGrayChannel() const { return m_grayChannel; }
 
         void setColorCompositionType(ColorCompositionType cct);
 
-        ColorCompositionType getColorCompositionType() { return m_colorCompType; }
+        ColorCompositionType getColorCompositionType() const { return m_colorCompType; }
         
         //@}
 

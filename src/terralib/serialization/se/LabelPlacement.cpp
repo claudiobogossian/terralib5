@@ -18,49 +18,44 @@
  */
 
 /*!
-  \file terralib/serialization/se/ExternalGraphic.cpp
+  \file terralib/serialization/se/LabelPlacement.cpp
  
-  \brief Support for ExternalGraphic serialization.
+  \brief Support for LabelPlacement serialization.
 */
 
 // TerraLib
-#include "../../se/ExternalGraphic.h"
+#include "../../se/LabelPlacement.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "ExternalGraphic.h"
-#include "InlineContent.h"
-#include "Utils.h"
+#include "LabelPlacement.h"
+#include "LinePlacement.h"
+#include "PointPlacement.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& reader)
+te::se::LabelPlacement* te::serialize::ReadLabelPlacement(te::xml::Reader& reader)
 {
   return 0;
 }
 
-void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)
+void te::serialize::Save(const te::se::LabelPlacement* lp, te::xml::Writer& writer)
 {
-  if(eg == 0)
+  if(lp == 0)
     return;
 
-  writer.writeStartElement("ExternalGraphic");
+  writer.writeStartElement("LabelPlacement");
 
-  const te::xl::SimpleLink* link = eg->getOnlineResource();
-  if(link)
-    te::serialize::WriteOnlineResourceHelper(link, writer);
+  const te::se::PointPlacement* pp = lp->getPointPlacement();
+  if(pp)
+    Save(pp, writer);
   else
   {
-    const te::se::InlineContent* ic = eg->getInlineContent();
-    assert(ic);
-    Save(ic, writer);
+    const te::se::LinePlacement* linePlacement = lp->getLinePlacement();
+    assert(linePlacement);
+    Save(linePlacement, writer);
   }
-  const std::string& format = eg->getFormat();
-  assert(!format.empty());
-  writer.writeElement("Format", format);
 
-  // Recodes (...)
-
-  writer.writeEndElement("ExternalGraphic");
+  writer.writeEndElement("LabelPlacement");
 }

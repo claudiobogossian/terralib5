@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,28 +18,35 @@
  */
 
 /*!
-  \file terralib/se/Function.cpp
-  
-  \brief Symbology Encoding functions.
+  \file terralib/serialization/se/Interpolate.h
+ 
+  \brief Support for Interpolate serialization.
 */
 
+#ifndef __TERRALIB_SERIALIZATION_SE_INTERNAL_INTERPOLATE_H
+#define __TERRALIB_SERIALIZATION_SE_INTERNAL_INTERPOLATE_H
+
 // TerraLib
-#include "Function.h"
+#include "../Config.h"
 
-te::se::Function::Function()
+namespace te
 {
-}
+  namespace se { class Interpolate; }
 
-te::se::Function::~Function()
-{
-}
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
 
-void te::se::Function::setFallbackValue(const std::string& v)
-{
-  m_fallbackValue = v;
-}
+  namespace serialize
+  {
+    TESERIALIZATIONEXPORT te::se::Interpolate* ReadInterpolate(te::xml::Reader& reader);
 
-const std::string& te::se::Function::getFallbackValue() const
-{
-  return m_fallbackValue;
-}
+    TESERIALIZATIONEXPORT void Save(const te::se::Interpolate* interpolate, te::xml::Writer& writer);
+
+  } // end namespace serialize
+}   // end namespace te
+
+#endif  // __TERRALIB_SERIALIZATION_SE_INTERNAL_INTERPOLATE_H
+

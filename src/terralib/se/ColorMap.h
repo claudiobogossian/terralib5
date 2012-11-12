@@ -86,11 +86,11 @@ namespace te
 
         void setCategorize(Categorize* c);
 
-        Categorize* getCategorize();
+        Categorize* getCategorize() const;
 
         void setInterpolate(Interpolate* i);
 
-        Interpolate* getInterpolate();
+        Interpolate* getInterpolate() const;
 
         //@}
 
