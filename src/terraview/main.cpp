@@ -87,6 +87,44 @@ void loadModules()
   {
     throw e;
   }
+
+  try
+  {
+    te::plugin::PluginInfo info;
+    info.m_type = "dll";
+    info.m_name = "GDAL DataSource Driver";
+    info.m_description = "This data source driver supports...";
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
+#ifdef NDEBUG
+    info.m_mainFile = "terralib_gdal.dll";
+#else
+    info.m_mainFile = "terralib_gdal_d.dll";
+#endif
+#endif
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
+#ifdef NDEBUG
+    info.m_mainFile = "terralib_gdal.so";
+#else
+    info.m_mainFile = "terralib_gdal_d.so";
+#endif
+#endif 
+      
+#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
+#ifdef NDEBUG
+    info.m_mainFile = "libterralib_gdal.dylib";
+#else
+    info.m_mainFile = "libterralib_gdal_d.dylib";
+#endif
+#endif 
+
+    te::plugin::PluginManager::getInstance().loadPlugin(info);
+  }
+  catch(const te::common::Exception& e)
+  {
+    throw e;
+  }
 }
 
 

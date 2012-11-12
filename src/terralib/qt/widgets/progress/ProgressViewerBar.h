@@ -131,6 +131,8 @@ namespace te
           */
           virtual void updateMessage(int taskId);
 
+          void setButtonText(std::string value);
+
           //@}
 
         protected:

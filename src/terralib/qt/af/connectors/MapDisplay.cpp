@@ -98,12 +98,25 @@ namespace te
         std::list<te::map::AbstractLayer*> lay_list;
         std::map<int, te::map::AbstractLayer*>::const_reverse_iterator it;
 
+        te::gm::Envelope env;
+
         for(it=layers.rbegin(); it!=layers.rend(); ++it)
+        {
           lay_list.push_back(it->second);
+
+          te::gm::Envelope e(*it->second->getExtent());
+
+          if(it->second->getSRID() != m_display->getSRID())
+          {
+            e.transform(it->second->getSRID(), m_display->getSRID());
+          }
+
+          env.Union(e);
+        }
 
         m_display->setLayerList(lay_list);
 
-        m_display->setExtent(*(*lay_list.begin())->getExtent());
+        m_display->setExtent(env);
       }
 
       void MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
