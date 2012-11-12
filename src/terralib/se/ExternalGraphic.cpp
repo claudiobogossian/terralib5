@@ -50,7 +50,7 @@ void te::se::ExternalGraphic::setOnlineResource(te::xl::SimpleLink* onlineResour
   m_onlineResource = onlineResource;
 }
 
-const te::xl::SimpleLink* te::se::ExternalGraphic::getOnlineResource()
+const te::xl::SimpleLink* te::se::ExternalGraphic::getOnlineResource() const
 {
   return m_onlineResource;
 }
@@ -61,9 +61,19 @@ void te::se::ExternalGraphic::setInlineContent(InlineContent* inlineContent)
   m_inlineContent = inlineContent;
 }
 
+const te::se::InlineContent* te::se::ExternalGraphic::getInlineContent() const
+{
+  return m_inlineContent;
+}
+
 void te::se::ExternalGraphic::setFormat(const std::string& f)
 {
   m_format = f;
+}
+
+const std::string& te::se::ExternalGraphic::getFormat() const
+{
+  return m_format;
 }
 
 void te::se::ExternalGraphic::add(Recode* r)

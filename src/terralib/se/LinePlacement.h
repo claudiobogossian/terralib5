@@ -82,15 +82,27 @@ namespace te
 
         void setPerpendicularOffset(ParameterValue* p);
 
+        const ParameterValue* getPerpendicularOffset() const { return m_perpendicularOffset; }
+
         void setIsRepeated(bool i);
+
+        bool isRepeated() const { return m_isRepeated; }
 
         void setInitialGap(ParameterValue* p);
 
+        const ParameterValue* getInitialGap() const { return m_gap; }
+
         void setGap(ParameterValue* p);
+
+        const ParameterValue* getGap() const { return m_gap; }
 
         void setIsAligned(bool i);
 
+        bool isAligned() const { return m_isAligned; }
+
         void setGeneralizeLine(bool g);
+
+        bool getGeneralizeLine() const { return m_generalizeLine; }
 
         //@}
 
