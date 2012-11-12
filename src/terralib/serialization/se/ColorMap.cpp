@@ -18,49 +18,45 @@
  */
 
 /*!
-  \file terralib/serialization/se/ExternalGraphic.cpp
+  \file terralib/serialization/se/ColorMap.cpp
  
-  \brief Support for ExternalGraphic serialization.
+  \brief Support for ColorMap serialization.
 */
 
 // TerraLib
-#include "../../se/ExternalGraphic.h"
+#include "../../se/ColorMap.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "ExternalGraphic.h"
-#include "InlineContent.h"
+#include "Categorize.h"
+#include "ColorMap.h"
+#include "Interpolate.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& reader)
+te::se::ColorMap* te::serialize::ReadColorMap(te::xml::Reader& reader)
 {
   return 0;
 }
 
-void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)
+void te::serialize::Save(const te::se::ColorMap* cm, te::xml::Writer& writer)
 {
-  if(eg == 0)
+  if(cm == 0)
     return;
 
-  writer.writeStartElement("ExternalGraphic");
+  writer.writeStartElement("ColorMap");
 
-  const te::xl::SimpleLink* link = eg->getOnlineResource();
-  if(link)
-    te::serialize::WriteOnlineResourceHelper(link, writer);
+  te::se::Categorize* categorize = cm->getCategorize();
+  if(categorize)
+    Save(categorize, writer);
   else
   {
-    const te::se::InlineContent* ic = eg->getInlineContent();
-    assert(ic);
-    Save(ic, writer);
+    te::se::Interpolate* interpolate = cm->getInterpolate();
+    assert(interpolate);
+    Save(interpolate, writer);
   }
-  const std::string& format = eg->getFormat();
-  assert(!format.empty());
-  writer.writeElement("Format", format);
 
-  // Recodes (...)
-
-  writer.writeEndElement("ExternalGraphic");
+  writer.writeEndElement("ColorMap");
 }

@@ -18,49 +18,39 @@
  */
 
 /*!
-  \file terralib/serialization/se/ExternalGraphic.cpp
+  \file terralib/serialization/se/SelectedChannel.cpp
  
-  \brief Support for ExternalGraphic serialization.
+  \brief Support for SelectedChannel serialization.
 */
 
 // TerraLib
-#include "../../se/ExternalGraphic.h"
+#include "../../se/SelectedChannel.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "ExternalGraphic.h"
-#include "InlineContent.h"
+#include "ContrastEnhancement.h"
+#include "SelectedChannel.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& reader)
+te::se::SelectedChannel* te::serialize::ReadSelectedChannel(te::xml::Reader& reader)
 {
   return 0;
 }
 
-void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)
+void te::serialize::Save(const te::se::SelectedChannel* sc, te::xml::Writer& writer)
 {
-  if(eg == 0)
+  if(sc == 0)
     return;
 
-  writer.writeStartElement("ExternalGraphic");
+  writer.writeStartElement("SelectedChannel");
+  
+  assert(sc->getSourceChannelName().empty());
+  writer.writeElement("SourceChannelName", sc->getSourceChannelName());
+  
+  Save(sc->getContrastEnhancement(), writer);
 
-  const te::xl::SimpleLink* link = eg->getOnlineResource();
-  if(link)
-    te::serialize::WriteOnlineResourceHelper(link, writer);
-  else
-  {
-    const te::se::InlineContent* ic = eg->getInlineContent();
-    assert(ic);
-    Save(ic, writer);
-  }
-  const std::string& format = eg->getFormat();
-  assert(!format.empty());
-  writer.writeElement("Format", format);
-
-  // Recodes (...)
-
-  writer.writeEndElement("ExternalGraphic");
+  writer.writeEndElement("SelectedChannel");
 }

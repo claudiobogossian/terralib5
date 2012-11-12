@@ -31,7 +31,14 @@
 
 namespace te
 {
-  namespace se { class ParameterValue; }
+  namespace se
+  {
+    class ParameterValue;
+    class SelectedChannel;
+    class Symbolizer;
+  }
+
+  namespace xl { class SimpleLink; }
 
   namespace xml
   {
@@ -44,6 +51,14 @@ namespace te
     void WriteStringPtrHelper(const std::string& elementName, const std::string* s, te::xml::Writer& writer);
 
     void WriteParameterValuePtrHelper(const std::string& elementName, const te::se::ParameterValue* p, te::xml::Writer& writer);
+
+    void WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer);
+    
+    void WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer);
+
+    void WriterSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
+
+    void WriterSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer);
 
   } // end namespace serialize
 }   // end namespace te

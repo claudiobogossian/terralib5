@@ -18,41 +18,34 @@
  */
 
 /*!
-  \file terralib/serialization/se/GraphicStroke.cpp
+  \file terralib/serialization/se/OverlapBehavior.h
  
-  \brief Support for GraphicStroke serialization.
+  \brief Support for OverlapBehavior serialization.
 */
 
+#ifndef __TERRALIB_SERIALIZATION_SE_INTERNAL_OVERLAPBEHAVIOR_H
+#define __TERRALIB_SERIALIZATION_SE_INTERNAL_OVERLAPBEHAVIOR_H
+
 // TerraLib
-#include "../../se/GraphicStroke.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-#include "Graphic.h"
-#include "GraphicStroke.h"
-#include "Utils.h"
+#include "../../se/RasterSymbolizer.h"
+#include "../Config.h"
 
-// STL
-#include <cassert>
-#include <memory>
-
-te::se::GraphicStroke* te::serialize::ReadGraphicStroke(te::xml::Reader& reader)
+namespace te
 {
-  return 0;
-}
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
 
-void te::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::Writer& writer)
-{
-  if(graphicStroke == 0)
-    return;
+  namespace serialize
+  {
+    TESERIALIZATIONEXPORT te::se::RasterSymbolizer::OverlapBehavior ReadOverlapBehavior(te::xml::Reader& reader);
 
-  writer.writeStartElement("GraphicStroke");
+    TESERIALIZATIONEXPORT void Save(const te::se::RasterSymbolizer::OverlapBehavior& type, te::xml::Writer& writer);
 
-  const te::se::Graphic* graphic = graphicStroke->getGraphic();
-  assert(graphic);
-  Save(graphic, writer);
+  } // end namespace serialize
+}   // end namespace te
 
-  WriteParameterValuePtrHelper("InitialGap", graphicStroke->getInitialGap(), writer);
-  WriteParameterValuePtrHelper("Gap", graphicStroke->getGap(), writer);
+#endif  // __TERRALIB_SERIALIZATION_SE_INTERNAL_OVERLAPBEHAVIOR_H
 
-  writer.writeEndElement("GraphicStroke");
-}

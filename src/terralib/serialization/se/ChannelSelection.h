@@ -18,41 +18,35 @@
  */
 
 /*!
-  \file terralib/serialization/se/GraphicStroke.cpp
+  \file terralib/serialization/se/ChannelSelection.h
  
-  \brief Support for GraphicStroke serialization.
+  \brief Support for ChannelSelection serialization.
 */
 
+#ifndef __TERRALIB_SERIALIZATION_SE_INTERNAL_CHANNELSELECTION_H
+#define __TERRALIB_SERIALIZATION_SE_INTERNAL_CHANNELSELECTION_H
+
 // TerraLib
-#include "../../se/GraphicStroke.h"
-#include "../../xml/Reader.h"
-#include "../../xml/Writer.h"
-#include "Graphic.h"
-#include "GraphicStroke.h"
-#include "Utils.h"
+#include "../Config.h"
 
-// STL
-#include <cassert>
-#include <memory>
-
-te::se::GraphicStroke* te::serialize::ReadGraphicStroke(te::xml::Reader& reader)
+namespace te
 {
-  return 0;
-}
+  namespace se { class ChannelSelection; }
 
-void te::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::Writer& writer)
-{
-  if(graphicStroke == 0)
-    return;
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
 
-  writer.writeStartElement("GraphicStroke");
+  namespace serialize
+  {
+    TESERIALIZATIONEXPORT te::se::ChannelSelection* ReadChannelSelection(te::xml::Reader& reader);
 
-  const te::se::Graphic* graphic = graphicStroke->getGraphic();
-  assert(graphic);
-  Save(graphic, writer);
+    TESERIALIZATIONEXPORT void Save(const te::se::ChannelSelection* cs, te::xml::Writer& writer);
 
-  WriteParameterValuePtrHelper("InitialGap", graphicStroke->getInitialGap(), writer);
-  WriteParameterValuePtrHelper("Gap", graphicStroke->getGap(), writer);
+  } // end namespace serialize
+}   // end namespace te
 
-  writer.writeEndElement("GraphicStroke");
-}
+#endif  // __TERRALIB_SERIALIZATION_SE_INTERNAL_CHANNELSELECTION_H
+
