@@ -20,11 +20,6 @@
 // TerraLib
 #include <terralib/rp_fw.h>
 
-//#include <terralib/common/Module.h>
-//#include <terralib/dataaccess/Module.h>
-//#include <terralib/geometry/Module.h>
-//#include <terralib/plugin.h>
-
 // cppUnit
 #include <cppunit/BriefTestProgressListener.h>
 #include <cppunit/CompilerOutputter.h>
@@ -44,10 +39,6 @@
 // Unit-Test TerraLib includes by platform
 #include "LoadModules.h"
 #include "Config.h"
-
-#if TE_USE_GDAL
-  #include <terralib/gdal/Platform.h>
-#endif
 
 #include <cstdlib>
 

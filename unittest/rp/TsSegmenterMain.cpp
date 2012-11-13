@@ -45,10 +45,6 @@
 #include "LoadModules.h"
 #include "Config.h"
 
-#if TE_USE_GDAL
-  #include <terralib/gdal/Platform.h>
-#endif
-
 #include <cstdlib>
 
 #define TS_TEST_NAME "terralib_unittest_rp_segmenter"

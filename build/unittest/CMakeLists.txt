@@ -44,6 +44,8 @@ add_definitions(
 
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
+add_definitions(-DPLUGINS_PATH=\"${TERRALIB_BIN_DIR}\")
+
 # Go into sub-directories
 
 add_subdirectory(terralib_unittest_common)
