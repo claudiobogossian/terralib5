@@ -156,6 +156,30 @@ namespace te
         const std::vector< std::pair<std::string, std::string> >* getApplicationInfo() const;
 
         /*!
+          \brief
+          \param
+        */
+        void setApplicationPlgInfo(const std::vector< std::pair<std::string, std::string> >& info);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::vector< std::pair<std::string, std::string> >* getApplicationPlgInfo() const;
+
+        /*!
+          \brief
+          \param
+        */
+        void setUserInfo(const std::vector< std::pair<std::string, std::string> >& info);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::vector< std::pair<std::string, std::string> >* getUserInfo() const;
+
+        /*!
           \brief Initializes the application framework.
           \details Initializes the application framework, reading configurations files and updating the applications. This also initializes the available terralib modules.
           This means that applications that uses the application framework, does not need to initialize terralib modules, by calling TerraLib::getinstance().initialize() and 
@@ -192,9 +216,11 @@ namespace te
 
       protected:
 
-        std::map<QString, QToolBar*> m_toolbars;                                             //!< Toolbars registered.
-        std::set<QObject*> m_reg_coms;                                                       //!< Registered objects.
-        std::vector< std::pair<std::string, std::string> > m_app_info;                       //!< Configurations.
+        std::map<QString, QToolBar*> m_toolbars;                                                //!< Toolbars registered.
+        std::set<QObject*> m_reg_coms;                                                          //!< Registered objects.
+        std::vector< std::pair<std::string, std::string> > m_app_info;                          //!< Configurations.
+        std::vector< std::pair<std::string, std::string> > m_user_info;                         //!< User configurations.
+        std::vector< std::pair<std::string, std::string> > m_app_plg_info;                      //!< Application Plug-insConfigurations.
       };
 
       /*!

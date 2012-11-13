@@ -18,6 +18,8 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTAFDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
+add_definitions (-DTERRALIB_SCHEMA_LOCATION=\"${TERRALIB_SCHEMA_LOCATION}\")
+
 list ( APPEND
   DEP_LIBS 
   terralib_common 

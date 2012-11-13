@@ -5,6 +5,7 @@
 
 //! TerraLib include files
 #include <terralib/common/SystemApplicationSettings.h>
+#include <terralib/common/UserApplicationSettings.h>
 
 #include <terralib/qt/af/events/NewToolBar.h>
 #include <terralib/qt/af/events/LayerAdded.h>
@@ -47,7 +48,7 @@ void getConfigurations(std::vector< std::pair<std::string, std::string> >& confi
 {
   configs.push_back(std::pair<std::string, std::string>("Application.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance"));
   configs.push_back(std::pair<std::string, std::string>("Application.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af"));
-  configs.push_back(std::pair<std::string, std::string>("Application.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af ../myschemas/terralib/af/af.xsd"));
+  configs.push_back(std::pair<std::string, std::string>("Application.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + std::string(TERRALIB_SCHEMA_LOCATION) + "/terralib/af/af.xsd"));
   configs.push_back(std::pair<std::string, std::string>("Application.<xmlattr>.version", "5.0.0"));
   configs.push_back(std::pair<std::string, std::string>("Application.<xmlattr>.release", "2011-01-01"));
   configs.push_back(std::pair<std::string, std::string>("Application.Organization", "INPE"));
@@ -75,6 +76,49 @@ void getConfigurations(std::vector< std::pair<std::string, std::string> >& confi
   configs.push_back(std::pair<std::string, std::string>("Application.DefaultPluginsCategory.Category", "Web Services"));
 }
 
+void getPluginsConfigurations(std::vector< std::pair<std::string, std::string> >& configs)
+{
+  configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + std::string(TERRALIB_SCHEMA_LOCATION) + "/terralib/af/af.xsd"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.version", "5.0.0"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.release", "2011-01-01"));
+  //! ado
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.ado"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_ado_info.xml"));
+  //! gdal
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.gdal"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_ogr_info.xml"));
+  //! ogr
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.ogr"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_gdal_info.xml"));
+  //! pgis
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.pgis"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_pgis_info.xml"));
+}
+
+void getUserConfigurations(std::vector< std::pair<std::string, std::string> >& configs)
+{
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.<xmlattr>.xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.<xmlattr>.xmlns", "http://www.terralib.org/schemas/af"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + std::string(TERRALIB_SCHEMA_LOCATION) + "/terralib/af/af.xsd"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.<xmlattr>.version", "5.0.0"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.<xmlattr>.release", "2011-01-01"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.SelectedIconTheme", "terralib"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.LastSearchedFolder.<xmlattr>.xlink:href", qApp->applicationDirPath().toStdString()));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.ToolBarIconSize", "24"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.SpecificPlugins", ""));
+
+#ifdef _MSC_VER
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.EnabledPlugins.Plugin", "te.da.ado"));
+#endif
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.EnabledPlugins.Plugin", "te.da.gdal"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.EnabledPlugins.Plugin", "te.da.ogr"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.EnabledPlugins.Plugin", "te.da.pgis"));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.DataSourcesFile", ""));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.MostRecentProject.<xmlattr>.xlink:href", ""));
+  configs.push_back(std::pair<std::string, std::string>("UserSettings.RecentProjects", ""));
+}
 
 MainWindow::MainWindow(QWidget* parent) :
 QMainWindow(parent, 0),
@@ -87,16 +131,27 @@ QMainWindow(parent, 0),
 
   std::vector< std::pair<std::string, std::string> > configs;
   getConfigurations(configs);
-
   te::qt::af::teApp::getInstance().setApplicationInfo(configs);
+
+  configs.clear();
+  getPluginsConfigurations(configs);
+  te::qt::af::teApp::getInstance().setApplicationPlgInfo(configs);
+
+  configs.clear();
+  getUserConfigurations(configs);
+  te::qt::af::teApp::getInstance().setUserInfo(configs);
 
   te::qt::af::teApp::getInstance().initialize();
 
+  std::string iconTheme;// = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectedThemeIcon");
+  std::string iconSize;// = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.ToolBarIconSize");
   std::string iconThemePath = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href");
-  std::string iconTheme = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme");
+  if(iconTheme.empty())
+    iconTheme = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme");
   std::string icon = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName");
   std::string title = te::common::SystemApplicationSettings::getInstance().getValue("Application.Title");
-  std::string iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
+  if(iconSize.empty())
+    iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
 
   if(!iconThemePath.empty())
   {

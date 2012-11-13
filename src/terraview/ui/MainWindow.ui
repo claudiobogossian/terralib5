@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1252</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -56,9 +56,16 @@
     <addaction name="m_show_table"/>
     <addaction name="m_actionRasterVisual"/>
    </widget>
+   <widget class="QMenu" name="menu_Setttings">
+    <property name="title">
+     <string>&amp;Setttings</string>
+    </property>
+    <addaction name="m_openPlgMger_act"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu_View_2"/>
    <addaction name="menu_View"/>
+   <addaction name="menu_Setttings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="m_tools_TB">
@@ -259,6 +266,14 @@
     <string>Shows or hides the raster visual window.</string>
    </property>
   </action>
+  <action name="m_openPlgMger_act">
+   <property name="text">
+    <string>Open plug-ins manager...</string>
+   </property>
+   <property name="toolTip">
+    <string>Opens the plug-ins manager dialog.</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -406,6 +421,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_openPlgMger_act</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openPluginsManager()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>625</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>addOGRLayer()</slot>
@@ -416,5 +447,6 @@
   <slot>setAreaMeasureTool(bool)</slot>
   <slot>setAngleTool(bool)</slot>
   <slot>addGDALLayer()</slot>
+  <slot>openPluginsManager()</slot>
  </slots>
 </ui>

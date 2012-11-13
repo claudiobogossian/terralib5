@@ -2,7 +2,7 @@
 <PluginInfo xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
-            xsd:schemaLocation="http://www.terralib.org/schemas/plugin ${TEPLUGIN_SCHEMALOCATION}"
+            xsd:schemaLocation="http://www.terralib.org/schemas/plugin ${TERRALIB_SCHEMA_LOCATION}/plugin/plugin_info.xsd"
             version="5.0.0-20110110"
             release="2011-01-01"
             engine="C++">

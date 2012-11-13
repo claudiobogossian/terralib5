@@ -29,7 +29,7 @@ endif()
 file(RELATIVE_PATH _tePath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${ROOT}" )
 
 # Configuring plugin
-set (TEPLUGIN_SCHEMALOCATION "${_tePath}/schemas/terralib/plugin/plugin_info.xsd" CACHE STRING "Location of the plugin_info.xsd file.")
+set (TERRALIB_SCHEMA_LOCATION "${_tePath}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
 
 #-----------------------------------------------------------------------
 option (BUILD_AF "Build application framework module?" ON)
