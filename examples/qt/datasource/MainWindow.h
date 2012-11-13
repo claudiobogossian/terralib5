@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_EXAMPLES_QT_DATASOURCE_INTERNAL_H
 #define __TERRALIB_EXAMPLES_QT_DATASOURCE_INTERNAL_H
 
-// TerarLib
-#include <terralib/geometry/Enums.h>
 
 // Qt
 #include <QtGui/QMainWindow>
@@ -68,16 +66,13 @@ class MainWindow : public QMainWindow
     void onOpenGDALTriggered();
     void onOpenOGRTriggered();
     void onOpenPostGISTriggered();
-    void onOpenDataSourceSelectorTriggered();
 
   private:
-
 
     QToolBar* m_toolBar;
     QAction* m_openGDAL;
     QAction* m_openOGR;
     QAction* m_openPostGIS;
-    QAction* m_openDataSourceSelector;
 };
 
 #endif  // __TERRALIB_EXAMPLES_QT_DATASOURCE_INTERNAL_H
