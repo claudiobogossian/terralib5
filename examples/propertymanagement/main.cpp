@@ -45,29 +45,56 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
-//#include <terralib/geometry/Platform.h>
-#include <terralib/postgis/Platform.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/plugin.h>
 
 //Qt
 #include <QApplication>
 
 #include "PropertyManagement.h"
 
+void LoadModules()
+{
+  try
+  {
+    {
+      te::plugin::PluginInfo info;
+      
+      info.m_name = "te.da.pgis";
+      info.m_displayName = "POSTGIS DataSource Driver";
+      info.m_description = "This data source driver supports...";
+      info.m_engine = "C++";
+      info.m_folder = PLUGINS_PATH;
+      
+      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_postgis");
+      
+      info.m_resources.push_back(rsc);
+      
+      te::plugin::PluginManager::getInstance().load(info);
+    }
+  }
+  catch(const te::common::Exception& e)
+  {
+    throw e;
+  }
+}
+
 
 int main(int argc, char* argv[])
 {
-  te::pgis::Platform::initialize();  
+  TerraLib::getInstance().initialize();  
+  
+  LoadModules();
 
   QApplication app(argc, argv);
 
   PropertyManagement* mainWindow = new PropertyManagement;
-  //PropertyManagement::propertyManagementWindow = mainWindow;
+
   mainWindow->show();
 
   app.exec();
 
-  te::pgis::Platform::finalize();  
+  TerraLib::getInstance().finalize();  
 
   return 0;
 }

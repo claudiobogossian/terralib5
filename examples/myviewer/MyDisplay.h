@@ -143,6 +143,7 @@ public Q_SLOTS:
   void fitAllLayersSlot();
   void setSRIDSlot();
   void onResizeTimeout();
+  void layerFrozenSlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -174,6 +175,7 @@ private:
   QAction* m_mouseZoomInAction;
   QAction* m_mouseZoomOutAction;
   QAction* m_mousePanAction;
+  QAction* m_layerFrozenAction;
   QAction* m_mouseSelectionAction;
   QAction* m_mouseAddSelectionAction;
   QAction* m_mouseToggleSelectionAction;
@@ -193,6 +195,7 @@ private:
   TimeSlider* m_timeSlider;
   QLineEdit* m_timeLineEdit;
   QHBoxLayout* m_timeLayout;
+  std::set<MyLayer*> m_frozenLayerSet;
 };
 
 #endif

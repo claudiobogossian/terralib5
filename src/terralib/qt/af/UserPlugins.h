@@ -57,8 +57,8 @@ namespace te
       class TEQTAFEXPORT UserPlugins
         : public te::common::ObjectLevelLockable<UserPlugins,
                                                  ::boost::mutex,
-                                                 ::boost::lock_guard<::boost::mutex>,
-                                                 ::boost::lock_guard<::boost::mutex> >,
+                                                 ::boost::lock_guard< ::boost::mutex >,
+                                                 ::boost::lock_guard< ::boost::mutex > >,
           public te::common::Singleton<UserPlugins>
       {
         friend class te::common::Singleton<UserPlugins>;

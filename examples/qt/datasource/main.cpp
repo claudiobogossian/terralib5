@@ -26,16 +26,45 @@
 #include "MainWindow.h"
 
 #include <terralib/common.h>
+#include <terralib/plugin.h>
 
 #include <QtGui/QApplication>
 #include <QtGui/qmessagebox.h>
 
-int main(int argc, char** argv)
+void LoadDrivers()
 {
-  TerraLib::getInstance().initialize();  
-  
   try
   {
+    {
+      te::plugin::PluginInfo info;
+      
+      info.m_name = "te.da.ogr";
+      info.m_displayName = "OGR DataSource Driver";
+      info.m_description = "This data source driver supports...";
+      info.m_engine = "C++";
+      info.m_folder = PLUGINS_PATH;
+      
+      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
+      
+      info.m_resources.push_back(rsc);
+      
+      te::plugin::PluginManager::getInstance().load(info);
+    }
+  }
+  catch(const te::common::Exception& e)
+  {
+    throw e;
+  }
+}
+
+int main(int argc, char** argv)
+{
+  try
+  {  
+    TerraLib::getInstance().initialize();  
+
+    LoadDrivers();
+    
     QApplication app(argc, argv);
     
     MainWindow window;
@@ -43,6 +72,15 @@ int main(int argc, char** argv)
     
     app.exec();
     
+  }
+  catch(const te::common::Exception& e)
+  {
+    std::cout << std::endl << "An exception has occuried:" << std::endl;
+    std::cout << e.what() << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+    
+    return EXIT_FAILURE;
   }
   catch(const std::exception& e)
   {
@@ -52,6 +90,8 @@ int main(int argc, char** argv)
     
     return EXIT_FAILURE;
   }
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
   
   // finalize Terralib support
   TerraLib::getInstance().finalize();

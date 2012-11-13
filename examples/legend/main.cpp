@@ -45,8 +45,6 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
-//#include <terralib/geometry/Platform.h>
-#include <terralib/postgis/Platform.h>
 #include <terralib/qt/widgets.h>
 #include <terralib/qt/widgets/layer/Legend.h>
 
@@ -54,21 +52,79 @@
 
 //Qt
 #include <QApplication>
+#include <terralib/plugin.h>
+
+// STL
+#include <iostream>
+
+void LoadModules()
+{
+  try
+  {   
+    {      
+      te::plugin::PluginInfo info;      
+      info.m_name = "te.da.pgis";
+      info.m_displayName = "POSTGIS DataSource Driver";
+      info.m_description = "This data source driver supports data stored in a PostGIS database";
+      info.m_engine = "C++";
+      info.m_folder = PLUGINS_PATH;
+      
+      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_postgis");
+      
+      info.m_resources.push_back(rsc);
+      
+      te::plugin::PluginManager::getInstance().load(info);
+    }
+  }
+  catch(const te::common::Exception& e)
+  {
+    throw e;
+  }
+}
 
 
 int main(int argc, char* argv[])
 {
-  te::pgis::Platform::initialize();  
+  try
+  {  
+    TerraLib::getInstance().initialize();  
+    
+    LoadModules();
+  
+    QApplication app(argc, argv);
+    
+    Legend* legend = new Legend;
+    
+    legend->show();
+    
+    app.exec();
+  }
+  catch(const te::common::Exception& e)
+  {
+    std::cout << std::endl << "An exception has occuried:" << std::endl;
+    std::cout << e.what() << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+    
+    return EXIT_FAILURE;
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+    
+    return EXIT_FAILURE;
+  }
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
+  
+  // finalize Terralib support
+  TerraLib::getInstance().finalize();
+  
+  std::cout << "Press Enter to exit..." << std::endl;
+  std::cin.get();
+  
+  return EXIT_SUCCESS;
 
-  QApplication app(argc, argv);
-
-  Legend* legend = new Legend;
-
-  legend->show();
-
-  app.exec();
-
-  te::pgis::Platform::finalize();  
-
-  return 0;
 }

@@ -30,13 +30,14 @@
 #include <terralib/qt/widgets/datasource/connector/gdal/GDALConnectorDialog.h>
 #include <terralib/qt/widgets/datasource/connector/ogr/OGRConnectorDialog.h>
 #include <terralib/qt/widgets/datasource/connector/postgis/PostGISConnectorDialog.h>
-#include <terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
 
 // Qt
 #include <QtGui/QAction>
 #include <QtGui/QActionGroup>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
+#include <QtGui/qmessagebox.h>
 
 // STL
 #include <cassert>
@@ -76,20 +77,15 @@ void MainWindow::setupActions()
   m_openPostGIS->setCheckable(true);
   connect(m_openPostGIS, SIGNAL(triggered()), SLOT(onOpenPostGISTriggered()));
 
-  m_openDataSourceSelector = new QAction(tr("DataSource Selector"), this);
-  m_openDataSourceSelector->setCheckable(true);
-  connect(m_openDataSourceSelector, SIGNAL(triggered()), SLOT(onOpenDataSourceSelectorTriggered()));
   
   m_toolBar->addAction(m_openGDAL);
   m_toolBar->addAction(m_openOGR);
   m_toolBar->addAction(m_openPostGIS);
-  m_toolBar->addAction(m_openDataSourceSelector);
   
   QActionGroup* toolsGroup = new QActionGroup(this);
   toolsGroup->addAction(m_openGDAL);
   toolsGroup->addAction(m_openOGR); 
   toolsGroup->addAction(m_openPostGIS);
-  toolsGroup->addAction(m_openDataSourceSelector);
 }
 
 
@@ -97,16 +93,13 @@ void MainWindow::onOpenPostGISTriggered()
 {
   te::qt::widgets::PostGISConnectorDialog* pgisDialog = new te::qt::widgets::PostGISConnectorDialog(this);
   
-  while (pgisDialog->exec() == QDialog::Accepted)
+  if (pgisDialog->exec() == QDialog::Accepted)
   {
-    te::qt::widgets::DataSourcePtr dsP = pgisDialog->getDataSource();
-    
-    te::da::DataSourcePtr daDsP = pgisDialog->getDriver();
-    
-    //    QMessageBox msgBox;
-    //    QString mess = QString("SRId: %1, Authority: %2").arg(srid.first).arg(srid.second.c_str()); 
-    //    msgBox.setText(mess);
-    //    msgBox.exec();
+    QMessageBox msgBox;
+    QString mess = QString("DS Connection string: %1").arg(pgisDialog->getDriver()->getConnectionStr().c_str()); 
+    msgBox.setText(mess);
+    msgBox.exec();
+
   }
 }
 
@@ -114,16 +107,13 @@ void MainWindow::onOpenOGRTriggered()
 {
   te::qt::widgets::OGRConnectorDialog* ogrDialog = new te::qt::widgets::OGRConnectorDialog();
   
-  while (ogrDialog->exec() == QDialog::Accepted)
+  if (ogrDialog->exec() == QDialog::Accepted)
   {
-    te::qt::widgets::DataSourcePtr dsP = ogrDialog->getDataSource();
-    
-    te::da::DataSourcePtr daDsP = ogrDialog->getDriver();
-    
-    //    QMessageBox msgBox;
-    //    QString mess = QString("SRId: %1, Authority: %2").arg(srid.first).arg(srid.second.c_str()); 
-    //    msgBox.setText(mess);
-    //    msgBox.exec();
+    std::string conStr = ogrDialog->getDriver()->getConnectionStr();
+    QMessageBox msgBox;
+    QString mess = QString("DS Connection string: %1").arg(conStr.c_str()); 
+    msgBox.setText(mess);
+    msgBox.exec();
   }
 }
 
@@ -131,22 +121,11 @@ void MainWindow::onOpenGDALTriggered()
 {
   te::qt::widgets::GDALConnectorDialog* gdalDialog = new te::qt::widgets::GDALConnectorDialog();
   
-  while (gdalDialog->exec() == QDialog::Accepted)
+  if (gdalDialog->exec() == QDialog::Accepted)
   {
-    te::qt::widgets::DataSourcePtr dsP = gdalDialog->getDataSource();
-    
-    te::da::DataSourcePtr daDsP = gdalDialog->getDriver();
-    
-    //    QMessageBox msgBox;
-    //    QString mess = QString("SRId: %1, Authority: %2").arg(srid.first).arg(srid.second.c_str()); 
-    //    msgBox.setText(mess);
-    //    msgBox.exec();
+    QMessageBox msgBox;
+    QString mess = QString("DS Connection string: %1").arg(gdalDialog->getDriver()->getConnectionStr().c_str()); 
+    msgBox.setText(mess);
+    msgBox.exec();
   }
-}
-
-void MainWindow::onOpenDataSourceSelectorTriggered()
-{
-  std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> selector(new te::qt::widgets::DataSourceSelectorDialog(this));
-
-  selector->exec();
 }

@@ -45,8 +45,8 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
-#include <terralib/postgis/Platform.h>
 #include <terralib/qt/widgets.h>
+#include <terralib/plugin.h>
 
 //Qt
 #include <QApplication>
@@ -54,22 +54,46 @@
 //#include "Config.h"
 #include "DataGrid.h"
 
+void LoadDrivers()
+{
+  try
+  {
+    {
+      te::plugin::PluginInfo info;
+      
+      info.m_name = "te.da.pgis";
+      info.m_displayName = "POSTGIS DataSource Driver";
+      info.m_description = "This data source driver supports...";
+      info.m_engine = "C++";
+      info.m_folder = PLUGINS_PATH;
+      
+      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_postgis");
+      
+      info.m_resources.push_back(rsc);
+      
+      te::plugin::PluginManager::getInstance().load(info);
+    }
+  }
+  catch(const te::common::Exception& e)
+  {
+    throw e;
+  }
+}
+
 int main(int argc, char* argv[])
 {
   QApplication app(argc, argv);
 
-  te::pgis::Platform::initialize(); 
-  //TerraLib::getInstance().initialize();
+  TerraLib::getInstance().initialize();
 
-  //LoadModules();
+  LoadDrivers();
 
   DataGrid* mainWindow = new DataGrid;
   mainWindow->show();
 
   app.exec();
-
-  te::pgis::Platform::finalize();  
-  //TerraLib::getInstance().finalize();
-
+ 
+  TerraLib::getInstance().finalize();
+  
   return 0;
 }
