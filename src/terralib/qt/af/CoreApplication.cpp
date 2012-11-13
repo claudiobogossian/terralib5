@@ -1,6 +1,7 @@
 #include "CoreApplication.h"
 #include "UserPlugins.h"
 #include "ApplicationPlugins.h"
+#include "SplashScreenManager.h"
 
 //! TerraLib include files
 #include <terralib/common/Exception.h>
@@ -12,6 +13,7 @@
 #include <terralib/plugin/PluginManager.h>
 
 #include <terralib/qt/af/events/NewToolBar.h>
+#include <terralib/qt/af/events/AFInitialized.h>
 
 //! Qt include files
 #include <QDir>
@@ -156,6 +158,8 @@ namespace te
 
       void CoreApplication::initialize()
       {
+        SplashScreenManager::getInstance().showMessage(tr("Initializing TerraLib modules..."));
+
         TerraLib::getInstance().initialize();
 
         TE_LOG_TRACE(TR_QT_AF("TerraLib Application Framework module initialized!"));
@@ -166,6 +170,8 @@ namespace te
 
         if(!fs::exists(p) || !fs::is_regular_file(p))
         {
+          SplashScreenManager::getInstance().showMessage(tr("Creating configuration file for application..."));
+
           if(!fs::exists(p.branch_path()))
             fs::create_directories(p.branch_path());
 
@@ -181,7 +187,14 @@ namespace te
             configureFile(*af_configs, p.generic_string());
         }
 
+        SplashScreenManager::getInstance().showMessage(tr("Loading configuration file..."));
         te::common::SystemApplicationSettings::getInstance().load(p.generic_string());
+        
+        //! Setting SplashScreenManager
+        QFileInfo logo(QDir::toNativeSeparators(te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href").c_str()));
+
+        if(logo.exists())
+          SplashScreenManager::getInstance().setLogo(QPixmap(logo.filePath(), logo.suffix().toLatin1().data()));
 
         //! Application plug-ins configurations file generation
         fName = QDir::toNativeSeparators(te::common::SystemApplicationSettings::getInstance().getValue("Application.PluginsFile.<xmlattr>.xlink:href").c_str());
@@ -189,6 +202,7 @@ namespace te
 
         if(!fs::exists(p) || !fs::is_regular_file(p))
         {
+          SplashScreenManager::getInstance().showMessage(tr("Creating application plug-ins configuration file..."));
           if(!fs::exists(p.branch_path()))
             fs::create_directories(p.branch_path());
 
@@ -198,12 +212,14 @@ namespace te
             configureFile(*af_configs, p.generic_string());
         }
 
-        //! Application plug-ins configurations file generation
+        //! User settings configurations file generation
         fName = QDir::toNativeSeparators(te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href").c_str());
         p = fs::path(fName.toStdString());
 
         if(!fs::exists(p) || !fs::is_regular_file(p))
         {
+          SplashScreenManager::getInstance().showMessage(tr("Creating user settings configuration file..."));
+
           if(!fs::exists(p.branch_path()))
             fs::create_directories(p.branch_path());
 
@@ -213,15 +229,21 @@ namespace te
             configureFile(*af_configs, p.generic_string());
         }
 
+        SplashScreenManager::getInstance().showMessage(tr("Loading user configuration file..."));
         te::common::UserApplicationSettings::getInstance().load(te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href"));
 
+        SplashScreenManager::getInstance().showMessage(tr("Loading application plug-ins..."));
         ApplicationPlugins::getInstance().load(te::common::SystemApplicationSettings::getInstance().getValue("Application.PluginsFile.<xmlattr>.xlink:href"));
 
+        SplashScreenManager::getInstance().showMessage(tr("Loading user plug-ins..."));
         UserPlugins::getInstance().load();
 
         m_app_info.clear();
         m_app_plg_info.clear();
         m_user_info.clear();
+
+        AFInitialized evt;
+        broadCast(&evt);
       }
 
       void CoreApplication::finalize()
