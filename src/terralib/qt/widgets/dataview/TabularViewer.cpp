@@ -543,6 +543,10 @@ namespace te
             opt.rect = btn->rect();
 
             opt.icon = btn->icon(); // this line is the only difference to QTableCornerButton
+
+            if (opt.icon.isNull())
+                btn->setIcon(QIcon::fromTheme("key"));
+
             opt.position = QStyleOptionHeader::OnlyOneSection;
             QStylePainter painter(btn);
             painter.drawControl(QStyle::CE_Header, opt);

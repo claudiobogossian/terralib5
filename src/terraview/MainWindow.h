@@ -110,6 +110,8 @@ protected:
 
   void updateIcons();
 
+  void initialize();
+
   te::qt::af::LayerExplorer* m_explorer;
   te::qt::af::MapDisplay* m_display;
   te::qt::af::TabularViewer* m_viewer;

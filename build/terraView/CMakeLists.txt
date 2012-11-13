@@ -50,9 +50,7 @@ if(terralib_FOUND)
   source_group("Form Files" FILES ${FORMS})
   source_group("Generated Files" FILES ${UI} ${MOC})
   
-  message("te_dir: ${TERRALIB_BIN_DIR}")
-  
-  add_definitions (-DBOOST_ALL_NO_LIB -DTERRALIB_BIN_DIR=\"${TERRALIB_BIN_DIR}\")
+  add_definitions (-DBOOST_ALL_NO_LIB -DTERRALIB_BIN_DIR=\"${TERRALIB_BIN_DIR}\" -DTERRALIB_LOGO=\"${TERRALIB_LOGO}\")
   add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
   set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
   target_link_libraries(${PROJ_NAME} ${_dep_libs})
