@@ -29,6 +29,8 @@
 #include <QUrl>
 #include <QToolTip>
 
+#include "FrozenLayersSelection.h"
+
 extern unsigned long long getAvailableMemory();
 
 MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
@@ -72,6 +74,12 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   m_mousePanAction->setCheckable(true);
   m_mouseOperationMenu->addAction(m_mousePanAction);
   connect(m_mousePanAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToPanSlot()));
+  m_mouseOperationMenu->addSeparator();
+
+  m_layerFrozenAction = new QAction("Frozen Layers...", m_mouseOperationMenu);
+  m_mouseOperationMenu->addAction(m_layerFrozenAction);
+  connect(m_layerFrozenAction, SIGNAL(triggered()), this, SLOT(layerFrozenSlot()));
+  m_mouseOperationMenu->addSeparator();
 
   m_mouseSelectionAction = new QAction("Object Selection", m_mouseOperationMenu);
   m_mouseSelectionAction->setCheckable(true);
@@ -87,16 +95,19 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   m_mouseToggleSelectionAction->setCheckable(true);
   m_mouseOperationMenu->addAction(m_mouseToggleSelectionAction);
   connect(m_mouseToggleSelectionAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToToggleObjectSelectionSlot()));
+  m_mouseOperationMenu->addSeparator();
 
   m_mouseTooltipAction = new QAction("Tooltip", m_mouseOperationMenu);
   m_mouseTooltipAction->setCheckable(true);
   m_mouseOperationMenu->addAction(m_mouseTooltipAction);
   connect(m_mouseTooltipAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToTooltipSlot()));
+  m_mouseOperationMenu->addSeparator();
 
   m_mouseShowCoordAction = new QAction("Show Coordenates", m_mouseOperationMenu);
   m_mouseShowCoordAction->setCheckable(true);
   m_mouseOperationMenu->addAction(m_mouseShowCoordAction);
   connect(m_mouseShowCoordAction, SIGNAL(triggered()), this, SLOT(setMouseOperationToShowCoordSlot()));
+  m_mouseOperationMenu->addSeparator();
 
   QAction* drawAllPointedsAction = new QAction("Fit All &Pointeds", m_menu);
   m_menu->addAction(drawAllPointedsAction);
@@ -109,10 +120,12 @@ MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent
   QAction* drawAllPointedsAndQueriedsAction = new QAction("Fit &All Pointeds And Querieds", m_menu);
   m_menu->addAction(drawAllPointedsAndQueriedsAction);
   connect(drawAllPointedsAndQueriedsAction, SIGNAL(triggered()), this, SLOT(drawAllPointedsAndQueriedsSlot()));
+  m_mouseOperationMenu->addSeparator();
 
   QAction* showRootFolderAction = new QAction("Show Root Folder", m_menu);
   m_menu->addAction(showRootFolderAction);
   connect(showRootFolderAction, SIGNAL(triggered()), this, SLOT(showRootFolderSlot()));
+  m_mouseOperationMenu->addSeparator();
 
   QAction* printAction = new QAction("Print...", m_menu);
   m_menu->addAction(printAction);
@@ -1160,6 +1173,8 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
   for(it = layerList.begin(); it != layerList.end(); ++it)
   {
     MyLayer* layer = (MyLayer*)*it;
+    if(m_frozenLayerSet.find(layer) != m_frozenLayerSet.end())
+      continue;
     te::map::DataGridOperation* op = layer->getDataGridOperation();
     if(op == 0)
       continue;
@@ -2310,6 +2325,20 @@ bool MyDisplay::transform(te::gm::Envelope& e, int oldsrid, int newsrid)
     QMessageBox::information(this, tr("Projection convertion error..."), tr(e.what()));
     return false;
   }
+}
+
+void MyDisplay::layerFrozenSlot()
+{
+  std::list<te::map::AbstractLayer*> layerList;
+  getLayerList(m_layerTree, layerList);
+ 
+  FrozenLayersSelection w(layerList, m_frozenLayerSet, this, Qt::Window);
+
+  if(w.exec() != QDialog::Accepted)
+    return;
+
+  m_frozenLayerSet.clear();
+  m_frozenLayerSet = w.m_layerSet;
 }
 
 
