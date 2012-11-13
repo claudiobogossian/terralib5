@@ -56,6 +56,7 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 # Select the header files for moc'ing
 file(GLOB HDRS_TO_MOC 
      ${SRCDIR}/ConfigStyle.h
+     ${SRCDIR}/FrozenLayersSelection.h
      ${SRCDIR}/MyWindow.h
 	 ${SRCDIR}/MyDisplay.h
 	 ${SRCDIR}/MyGrid.h
