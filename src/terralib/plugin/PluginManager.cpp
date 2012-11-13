@@ -235,6 +235,12 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
     if(plugin.get() == 0)
       throw Exception((boost::format("Could not load plugin %1%!") % pInfo.m_name).str());
   }
+  catch(const std::exception& e)
+  {
+    moveToBrokenList(pInfo);
+    Exception ee(e.what());
+    throw ee;
+  }
   catch(...)
   {
     moveToBrokenList(pInfo);
