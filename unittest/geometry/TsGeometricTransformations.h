@@ -62,16 +62,6 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
     void tearDown();
 
   protected:
-    
-    /*! \brief Direct mapping test. */
-    static void testDirectMapping( te::gm::GeometricTransformation const * transfPtr,
-      const te::gm::Coord2D& pt1, const te::gm::Coord2D& pt2, 
-      const double& maxError );
-
-    /*! \brief Inverse mapping test. */  
-    static void testInverseMapping( te::gm::GeometricTransformation const * transfPtr,
-      const te::gm::Coord2D& pt1, const te::gm::Coord2D& pt2, 
-      const double& maxError );
       
 // Test Cases:
 
