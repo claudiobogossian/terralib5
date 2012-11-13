@@ -74,6 +74,8 @@ protected slots:
   void changePolygonStyleSlot();
   void editLegendSlot();
   void removeLegendSlot();
+  void m_removeAllPointedSlot();
+  void m_removeAllQueriedSlot();
 
 protected:
   void AdjustmentsBeforeRemoveLayer(te::map::AbstractLayer*);
@@ -117,10 +119,13 @@ private:
   QAction* m_editLegendAction;
   QAction* m_removeLegendAction;
   QAction* m_getAvailableMemoryAction;
+  QAction* m_removeAllPointedAction;
+  QAction* m_removeAllQueriedAction;
 
   QMenu* m_treeMenu;
   QMenu* m_changeStatusColorMenu;
   QMenu* m_changeDefaultStyleMenu;
+  QMenu* m_removeSelectionMenu;
   ConfigStyle* m_configStyle;
   std::vector<te::st::MovingObject*> m_movObjOutput;
 };

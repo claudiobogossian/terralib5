@@ -14,7 +14,7 @@ FrozenLayersSelection::FrozenLayersSelection(std::list<te::map::AbstractLayer*> 
   QDialog(parent, f),
   m_list(list)
 {
-  setWindowTitle("Frozen Layers Selection");
+  setWindowTitle("Selectable layers on the map display");
 
   QVBoxLayout* layout = new QVBoxLayout(this);
   QSplitter* splitter = new QSplitter(this);
@@ -59,10 +59,13 @@ FrozenLayersSelection::FrozenLayersSelection(std::list<te::map::AbstractLayer*> 
  
   QHBoxLayout* hlayout = new QHBoxLayout(gb);
   QPushButton* okPushButton = new QPushButton("Ok", gb);
+  hlayout->addStretch();
   hlayout->addWidget(okPushButton);
 
   QPushButton* cancelPushButton = new QPushButton("Cancel", gb);
+  hlayout->addStretch();
   hlayout->addWidget(cancelPushButton);
+  hlayout->addStretch();
 
   layout->addWidget(gb);
 
@@ -84,7 +87,7 @@ void FrozenLayersSelection::okSlot()
   {
     MyLayer* layer = (MyLayer*)(*lit);
     QCheckBox* cb = (QCheckBox*) m_table->cellWidget(i, 0);
-    if(cb->checkState() == Qt::Checked)
+    if(cb->checkState() == Qt::Unchecked)
       m_layerSet.insert(layer);
   }
 
