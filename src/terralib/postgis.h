@@ -36,7 +36,7 @@
 #include "postgis/DataTypes.h"
 #include "postgis/EWKBReader.h"
 #include "postgis/EWKBWriter.h"
-#include "postgis/Platform.h"
+#include "postgis/Module.h"
 #include "postgis/SQLVisitor.h"
 #include "postgis/Transactor.h"
 #include "postgis/Utils.h"

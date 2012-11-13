@@ -27,7 +27,7 @@
 #include "../../../../plugin/AbstractPlugin.h"
 #include "../../../../plugin/PluginInfo.h"
 #include "../../../../plugin/PluginManager.h"
-#include "ui/PluginManagerDialogForm.h"
+#include "ui_PluginManagerDialogForm.h"
 #include "PluginManagerDialog.h"
 //#include "Utils.h"
 
@@ -94,9 +94,9 @@ void te::qt::widgets::PluginManagerDialog::applyPushButtonPressed()
       te::plugin::PluginManager::getInstance().load(pluginName.toStdString());
   }
 
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("For now we are not installing plugins from Internet!\nWe will provide this functionality soon!"));
+//  QMessageBox::warning(this,
+  //                     tr("TerraLib Qt Components"),
+    //                   tr("For now we are not installing plugins from Internet!\nWe will provide this functionality soon!"));
 
   accept();
 }

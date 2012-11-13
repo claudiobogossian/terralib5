@@ -33,7 +33,7 @@
 #include "ogr/DataSource.h"
 #include "ogr/DataSourceFactory.h"
 #include "ogr/DataSourceTransactor.h"
-#include "ogr/Platform.h"
+#include "ogr/Module.h"
 
 namespace te
 {

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,33 +18,28 @@
  */
 
 /*!
-  \file terralib/sqlite/Module.h
+  \file Module.h
    
-  \brief The TerraLib SQLite Data Access driver implements the plugin interface.
+  \brief The TerraLib OGR driver is a plugin.
 */
 
-#ifndef __TERRALIB_SQLITE_INTERNAL_MODULE_H
-#define __TERRALIB_SQLITE_INTERNAL_MODULE_H
+#ifndef __TERRALIB_OGR_INTERNAL_MODULE_H
+#define __TERRALIB_OGR_INTERNAL_MODULE_H
 
 // TerraLib
 #include "../plugin/Plugin.h"
 #include "Config.h"
 
-// STL
-#include <string>
-
 namespace te
 {
-  namespace sqlite
+  namespace ogr
   {
     /*!
       \class Module
 
-      \brief This is only an utility class to implement the plugin API for the SQLite Data Access driver.
-
-      \sa te::plugin::Plugin
+      \brief The TerraLib OGR driver is a plugin.    
     */
-    class TESQLITEEXPORT Module : public te::plugin::Plugin
+    class Module : public te::plugin::Plugin
     {
       public:
 
@@ -58,36 +53,47 @@ namespace te
         /*! \brief Destructor. */
         ~Module();
 
-        /*! 
-          \brief It initializes the TerraLib SQLite driver support.
+        /*!
+          \brief It initializes all TerraLib OGR driver support.       
            
           The initialization includes:
           <ul>
           <li>Multilanguage support</li>
-          <li>SQLite capabilities</li>
-          <li>SQLite query dialect</li>
+          <li>OGRRegisterAll</li>
           </ul>
            
           \exception Exception It may throws an exception.
          
+          \note This function must be called at least once in your program. The best
+                place to call it is inside the main routine of your application.
+
           \warning Not thread safe!
+
+          \warning If this method throws an exception we recommend you to
+                    quit the program, don't try to resume it because you can have intermittent errors!
         */
         void startup();
 
         /*!
-          \brief It finalizes the TerraLib SQLite driver support.
+          \brief It finalizes all TerraLib OGR driver support.
            
           \exception Exception It may throws an exception.
+           
+          \note This function must be called in your program at least the same times you have called
+                initialize. In general this must be the last call to TerraLib API. As in case of the initialize method,
+                this routine can be called at the end of the main routine of your application.
 
           \warning Not thread safe!
+
+          \warning If this method throws an exception we recommend you to
+                   quit the program, don't try to resume it because you can have intermittent errors!
         */
         void shutdown();
     };
-
-  } // end namespace sqlite
+  } // end namespace ogr
 }   // end namespace te
 
-PLUGIN_CALL_BACK_DECLARATION(TESQLITEEXPORT);
+PLUGIN_CALL_BACK_DECLARATION(TEOGREXPORT);
 
-#endif  // __TERRALIB_SQLITE_INTERNAL_MODULE_H
+#endif  // __TERRALIB_OGR_INTERNAL_MODULE_H
 

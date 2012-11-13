@@ -16,16 +16,6 @@ void LoadModules()
 #if TE_EXAMPLE_USE_OGR
       te::plugin::PluginInfo info;
 
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-      info.m_type = "dll";
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-      info.m_type = "s.o.";
-#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-      info.m_type = "dylib";      
-#else
-  #error "Platform not supported yet"
-#endif
-
       info.m_name = "OGR DataSource Driver";
       info.m_description = "This data source driver supports...";
 
@@ -53,7 +43,7 @@ void LoadModules()
 #endif
 #endif
 
-      te::plugin::PluginManager::getInstance().loadPlugin(info);
+      te::plugin::PluginManager::getInstance().load(info);
 #endif    
     }
 

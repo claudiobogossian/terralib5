@@ -35,7 +35,7 @@
 #include "gdal/DataSource.h"
 #include "gdal/DataSourceFactory.h"
 #include "gdal/DataSourceTransactor.h"
-#include "gdal/Platform.h"
+#include "gdal/Module.h"
 #include "gdal/Raster.h"
 
 namespace te

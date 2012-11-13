@@ -100,6 +100,8 @@ namespace te
 
         void setLabelPlacement(LabelPlacement* l);
 
+        const LabelPlacement* getLabelPlacement() const;
+
         void setHalo(Halo* h);
 
         const Halo* getHalo() const;

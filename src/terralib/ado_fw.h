@@ -30,19 +30,18 @@ namespace te
 {
   namespace ado
   {
-	class Config.h
-	class DataSet.h
-	class DataSetPersistence.h
-	class DataSetTypePersistence.h
-	class DataSource.h
-	class DataSourceCatalogLoader.h
-	class DataSourceFactory.h
-	class DataSourceTransactor.h
-	class Exception.h
-	class Globals.h
-	class Platform.h
-	class SQLVisitor.h
-	class Utils.h
+	class Config;
+	class DataSet;
+	class DataSetPersistence;
+	class DataSetTypePersistence;
+	class DataSource;
+	class DataSourceCatalogLoader;
+	class DataSourceFactory;
+	class DataSourceTransactor;
+	class Exception;
+	class Globals;
+	class Module;
+	class SQLVisitor;
 
     struct VersionInfo;
   }

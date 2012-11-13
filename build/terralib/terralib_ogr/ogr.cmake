@@ -31,3 +31,11 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 
 #exporting module information
 exportModuleInformation("ogr" "${SRCDIR}" "ogr")
+
+set (TEPLUGIN_NAME "te.da.ogr")
+set (TEPLUGIN_DISPLAYNAME "OGR Data Source Driver")
+set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via OGR")
+set (TEPLUGIN_LIBRARY "terralib_ogr")
+set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:ogr")
+
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_ogr_info.xml)

@@ -31,6 +31,7 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../geometry/Envelope.h"
 #include "../raster/Raster.h"
+#include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
 #include "../se/FeatureTypeStyle.h"
 #include "../se/RasterSymbolizer.h"
@@ -46,11 +47,11 @@ te::map::RasterLayer::RasterLayer(const std::string& id,
                       const std::string& title,
                       AbstractLayer* parent)
   : te::map::AbstractLayer(id, title, parent),
+    m_srid(-1),
     m_ds(0),
     m_mbr(0),
     m_style(0),
     m_renderer(0),
-    m_srid(-1),
     m_raster(0),
     m_rasterProperty(0),
     m_symbolizer(0)
@@ -121,6 +122,8 @@ int te::map::RasterLayer::getSRID() const
 void te::map::RasterLayer::setSRID(int srid)
 {
   m_srid = srid;
+
+  m_raster->getGrid()->setSRID(m_srid);
 }
 
 te::da::DataSource* te::map::RasterLayer::getDataSource() const
@@ -169,6 +172,14 @@ const te::rst::RasterProperty* te::map::RasterLayer::getRasterProperty()
 
 const te::se::RasterSymbolizer* te::map::RasterLayer::getRasterSymbolizer()
 {
+  if(m_symbolizer == 0)
+  {
+    if(m_renderer.get() != 0)
+    {
+      m_renderer->createVisualDefault(this);
+    }
+  }
+
   return m_symbolizer;
 }
 
@@ -187,8 +198,11 @@ void te::map::RasterLayer::loadRasterObjects()
     te::da::DataSet* dataSet = tr->getDataSet(m_datasetName);
     m_raster = dataSet->getRaster();
 
-    setSRID(m_raster->getSRID());
-    setExtent(m_raster->getExtent());
+    m_srid = m_raster->getSRID();
+
+    te::gm::Envelope* e = new te::gm::Envelope(*m_raster->getExtent());
+
+    setExtent(e);
 
     delete dt;
     delete tr;

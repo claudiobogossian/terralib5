@@ -35,7 +35,7 @@ namespace te
     class DataSet;
     class DataSource;
     class DataSourceFactory;
-    class Platform;
+    class Module;
     class Transactor;
 
     struct VersionInfo;

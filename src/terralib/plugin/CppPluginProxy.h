@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,125 +18,66 @@
  */
 
 /*!
-  \file CppPluginProxy.h
+  \file terralib/plugin/CppPluginProxy.h
   
-  \brief A Proxy ....
- */
+  \brief A proxy class for C++ plugins.
+*/
 
 #ifndef __TERRALIB_PLUGIN_INTERNAL_CPPPLUGINPROXY_H
 #define __TERRALIB_PLUGIN_INTERNAL_CPPPLUGINPROXY_H
 
 // TerraLib
-#include "../common/Config.h"
-#include "Plugin.h"
+#include "../common/Library.h"
+#include "AbstractPlugin.h"
 
-// Windows
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-#include <windows.h>
-#endif
+// STL
+#include <memory>
 
 namespace te
 {
   namespace plugin
   {     
-    class CppPlugin;
+// Forward declaration
+    class Plugin;
 
     /*!
       \class CppPluginProxy
       
-      \brief An abstract interface for Plugins written in C++.
+      \brief A proxy class for C++ plugins.
 
-      Remember to implement the startup and shutdown methods from the base
-      class: Plugin.
-
-      \sa Plugin, PluginManager
+      \sa AbstractPlugin, Plugin, CppPlugin
      */
-    class TEPLUGINEXPORT CppPluginProxy : public Plugin
+    class TEPLUGINEXPORT CppPluginProxy : public AbstractPlugin
     {
       public:
 
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
         /*!
-          \brief It creates a new C++ plugin.
+          \brief Construct a proxy for the real C++ plugin.
 
+          \param lib    A pointer to the library that contains the plugin.
           \param plugin The real C++ plugin. The CppPluginProxy will take the ownership of the given plugin.
-         */
-        CppPluginProxy(CppPlugin* plugin);
+        */
+        CppPluginProxy(const te::common::LibraryPtr& lib, Plugin* plugin);
 
         /*! \brief Destructor. */
         ~CppPluginProxy();
 
-        //@}
-
-        /** @name Re-Implmentation from Plugin Interface
-         *  Re-Implmentation from Plugin Interface.
-         */
-        //@{
-
-        /*!
-          \brief This method will be called by TerraLib to startup some plugin's functionality.
-                  
-          \exception Exception It throws and exception if the plugin can not be started.
-         */
-        void startup();
-
-        /*!
-          \brief This method will be called by TerraLib to shutdown plugin's functionality.
-          
-          \exception Exception It throws and exception if the plugin can not be shutdown.
-         */
-        void shutdown();
-
-        /*!
-          \brief It return the information associated to the plugin.
-
-          \return The information associated to the plugin.
-         */
+        /*! \brief Forward the info retrieval to the real plugin. */
         const PluginInfo& getInfo() const;
 
-        //@}
+        /*! \brief Forward the info retrieval to the real plugin. */
+        bool isStarted() const;
+
+        /*! \brief Forward the startup to the real plugin . */
+        void startup();
+
+        /*! \brief Forward the shutdown to the real plugin. */
+        void shutdown();
 
       private:
 
-        /** @name Not Allowed Methods
-         *  No copy allowed. 
-         */
-        //@{
-
-        /*!
-          \brief No copy constructor allowed.
-
-          \param rhs The other instance.
-         */
-        CppPluginProxy(const CppPluginProxy& rhs);
-
-        /*!
-          \brief No assignment operator allowed.
-
-          \param rhs The other instance.
-
-          \return A reference for this instance.
-         */
-        CppPluginProxy& operator=(const CppPluginProxy& rhs);
-
-        //@}
-
-      private:
-
-        CppPlugin* m_plugin;  //!< The real C++ plugin.
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-        HMODULE m_module;  //!< Windows plugin's instance.
-#endif
-
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX || TE_PLATFORM == TE_PLATFORMCODE_APPLE
-        void* m_module; //!< Linux plugin's instance
-#endif
-        friend class CppPluginProxyFactory;
+        te::common::LibraryPtr m_lib;    //!< The library that contains the real plugin.
+        std::auto_ptr<Plugin> m_plugin;  //!< The real C++ plugin.
     };
 
   } // end namespace plugin

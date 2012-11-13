@@ -14,10 +14,10 @@ if(Boost_FOUND)
   list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
-find_package(PostgreSQL ${_PostgreSQL_VERSION})
-if(PostgreSQL_FOUND)
-	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
-endif()
+#find_package(PostgreSQL ${_PostgreSQL_VERSION})
+#if(PostgreSQL_FOUND)
+#	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
+#endif()
 
 find_package(Qwt ${_Qwt_VERSION} REQUIRED)
 if(Qwt_FOUND)
@@ -49,13 +49,14 @@ list (APPEND DEP_LIBS
 		terralib_dataaccess
 		terralib_datatype
 		terralib_filter
-    terralib_gdal
+#    terralib_gdal
 		terralib_geometry
 		terralib_maptools
 		terralib_raster
 		terralib_symbology
 		terralib_srs
 		terralib_rp
+    terralib_plugin
 		terralib_xlink
     )
 
@@ -91,6 +92,7 @@ set (
   widgets/srs
   widgets/tools
   widgets/help
+  widgets/plugin/manager
   widgets/utils
 )
 
@@ -169,16 +171,12 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wms" MOC)
 
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/shp/ShapeFileConnectorDialog.h  
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/shp" MOC)
-
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
+#  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
+#  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/CheckConstraintItem.h
   ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
   ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
@@ -192,6 +190,7 @@ set (
   ${SRCDIR}/widgets/datasource/explorer/DataSourceItem.h
   ${SRCDIR}/widgets/datasource/explorer/PropertyItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceToolBox.h
+#  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
   ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
 )
@@ -300,6 +299,7 @@ set (
   ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
   ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
   ${SRCDIR}/widgets/se/RasterVisualWidget.h
+  ${SRCDIR}/widgets/se/RasterVisualDockWidget.h
   ${SRCDIR}/widgets/se/SelectedChannelWidget.h
   ${SRCDIR}/widgets/se/ShadedReliefWidget.h
   ${SRCDIR}/widgets/se/SymbolEditorWidget.h
@@ -329,6 +329,12 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/plugin/manager/PluginManagerDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/plugin/manager" MOC)
+
 # Select the FORMS widgets
 file(
   GLOB FORMS
@@ -351,6 +357,7 @@ file(
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
+  ${SRCDIR}/widgets/plugin/manager/ui/*.ui
 )
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)

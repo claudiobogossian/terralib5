@@ -27,7 +27,9 @@
 #include "../../se/GraphicStroke.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "Graphic.h"
 #include "GraphicStroke.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -44,6 +46,13 @@ void te::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::Wr
     return;
 
   writer.writeStartElement("GraphicStroke");
+
+  const te::se::Graphic* graphic = graphicStroke->getGraphic();
+  assert(graphic);
+  Save(graphic, writer);
+
+  WriteParameterValuePtrHelper("InitialGap", graphicStroke->getInitialGap(), writer);
+  WriteParameterValuePtrHelper("Gap", graphicStroke->getGap(), writer);
 
   writer.writeEndElement("GraphicStroke");
 }

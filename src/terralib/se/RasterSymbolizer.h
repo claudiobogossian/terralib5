@@ -114,31 +114,35 @@ namespace te
         
         void setOffset(ParameterValue* p);
 
-        ParameterValue* getOpacity() { return m_opacity; }
+        ParameterValue* getOpacity() const { return m_opacity; }
 
-        ParameterValue* getGain() { return m_gain; }
+        ParameterValue* getGain() const { return m_gain; }
 
-        ParameterValue* getOffset() { return m_offset; }
+        ParameterValue* getOffset() const { return m_offset; }
 
         void setChannelSelection(ChannelSelection* c);
 
-        te::se::ChannelSelection* getChannelSelection() { return m_channelSelection; }
+        te::se::ChannelSelection* getChannelSelection() const { return m_channelSelection; }
 
         void setOverlapBehavior(OverlapBehavior b);
 
+        OverlapBehavior getOverlapBehavior() const { return m_overlapBehavior; }
+
         void setColorMap(ColorMap* c);
 
-        te::se::ColorMap* getColorMap() { return m_colorMap; }
+        te::se::ColorMap* getColorMap() const { return m_colorMap; }
 
         void setContrastEnhancement(ContrastEnhancement* c);
 
-        te::se::ContrastEnhancement* getContrastEnhancement() { return m_contrastEnhancement; }
+        te::se::ContrastEnhancement* getContrastEnhancement() const { return m_contrastEnhancement; }
 
         void setShadedRelief(ShadedRelief* s);
 
+        ShadedRelief* getShadedRelief() const { return m_shadedRelief; }
+
         void setImageOutline(ImageOutline* i);
 
-        te::se::ImageOutline* getImageOutline() { return m_imageOutline; }
+        te::se::ImageOutline* getImageOutline() const { return m_imageOutline; }
 
         const std::string& getType() const;
 

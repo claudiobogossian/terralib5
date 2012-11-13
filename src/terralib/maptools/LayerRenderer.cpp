@@ -99,8 +99,14 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
 
   // Adjusting box...
   te::gm::Envelope box(bbox);
-  if(gcol->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && gcol->getSRID() != srid)
-    box.transform(srid, gcol->getSRID());
+  
+  bool remap = false;
+  
+  if(layer->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && layer->getSRID() != srid)
+  {
+    box.transform(srid, layer->getSRID());
+    remap = true;
+  }
 
   // Gets the associated layer style
   te::se::Style* style = l->getStyle();
@@ -205,9 +211,11 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
           continue;
 
         // Verifies the SRID. Case differents, converts coordinates...
-        int gsrid = g->getSRID();
-        if(gsrid != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && gsrid != srid)
+        if(remap)
+        {
+          g->setSRID(layer->getSRID());
           g->transform(srid);
+        }
 
         canvas->draw(g);
 

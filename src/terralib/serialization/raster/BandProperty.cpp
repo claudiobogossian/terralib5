@@ -32,6 +32,9 @@
 // STL
 #include <cassert>
 
+// Boost
+#include <boost/lexical_cast.hpp>
+
 std::vector<te::rst::BandProperty*> te::serialize::ReadBandPropertyVector(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -88,7 +91,7 @@ void te::serialize::Save(const te::rst::BandProperty* bp, te::xml::Writer& write
 {
   writer.writeStartElement("Band");
 
-  writer.writeAttribute("num", bp->m_idx);
+  writer.writeAttribute("num", boost::lexical_cast<std::string>(bp->m_idx));
   writer.writeAttribute("datatype", bp->m_type);
   writer.writeAttribute("no_data", bp->m_noDataValue);
 

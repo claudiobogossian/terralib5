@@ -18,14 +18,16 @@ find_package (terralib 5 COMPONENTS annotationtext color common dataaccess datat
 set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
 set (ICON_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Lists of directories that contains icon themes.")
 
-add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\")
+add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\" -DTERRALIB_SCHEMA_LOCATION=\"${TERRALIB_SCHEMA_LOCATION}\")
     
 if(terralib_FOUND)
 
   include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
+  find_package(Boost REQUIRED COMPONENTS system)
+  
   include_directories (${TE_INCLUDE_DIRS} ${INCLDIR} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-  list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES}) 
+  list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
   
   file (GLOB SRCS ${SRCDIR}/*.cpp)
   file (GLOB HDRS ${INCLDIR}/*.h)
@@ -39,6 +41,7 @@ if(terralib_FOUND)
     HDRS_TO_MOC 
     ${INCLDIR}/MainWindow.h
     ${INCLDIR}/NewGDALLayer.h
+    ${INCLDIR}/NewOGRLayer.h
   )
   te_moc2("${HDRS_TO_MOC}" "terraview" MOC)
   
@@ -47,7 +50,9 @@ if(terralib_FOUND)
   source_group("Form Files" FILES ${FORMS})
   source_group("Generated Files" FILES ${UI} ${MOC})
   
-  add_definitions (-DBOOST_ALL_NO_LIB)
+  message("te_dir: ${TERRALIB_BIN_DIR}")
+  
+  add_definitions (-DBOOST_ALL_NO_LIB -DTERRALIB_BIN_DIR=\"${TERRALIB_BIN_DIR}\")
   add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
   set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
   target_link_libraries(${PROJ_NAME} ${_dep_libs})

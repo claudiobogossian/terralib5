@@ -95,9 +95,15 @@ namespace te
 
         void setAnchorPoint(AnchorPoint* a);
 
+        const AnchorPoint* getAnchorPoint() const { return m_anchorPoint; }
+
         void setDisplacement(Displacement* d);
 
+        const Displacement* getDisplacement() const { return m_displacement; }
+
         void setRotation(ParameterValue* r);
+
+        const ParameterValue* getRotation() const { return m_rotation; }
 
         //@}
 

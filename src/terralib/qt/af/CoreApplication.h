@@ -67,6 +67,7 @@
 //! STL include files
 #include <map>
 #include <set>
+#include <vector>
 
 //! Forward declarations
 class QToolBar;
@@ -142,6 +143,62 @@ namespace te
         */
         void removeListener(QObject* obj);
 
+        /*!
+          \brief
+          \param
+        */
+        void setApplicationInfo(const std::vector< std::pair<std::string, std::string> >& info);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::vector< std::pair<std::string, std::string> >* getApplicationInfo() const;
+
+        /*!
+          \brief
+          \param
+        */
+        void setApplicationPlgInfo(const std::vector< std::pair<std::string, std::string> >& info);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::vector< std::pair<std::string, std::string> >* getApplicationPlgInfo() const;
+
+        /*!
+          \brief
+          \param
+        */
+        void setUserInfo(const std::vector< std::pair<std::string, std::string> >& info);
+
+        /*!
+          \brief
+          \return
+        */
+        const std::vector< std::pair<std::string, std::string> >* getUserInfo() const;
+
+        /*!
+          \brief Initializes the application framework.
+          \details Initializes the application framework, reading configurations files and updating the applications. This also initializes the available terralib modules.
+          This means that applications that uses the application framework, does not need to initialize terralib modules, by calling TerraLib::getinstance().initialize() and 
+          consequently TerraLib::getinstance().finalize() methods.
+          \note If a client of this class has objects which want to know about the initialization events - like any information that a plug-in can send in its loading process 
+          for example, make sure that these objects are connected to the framework, BEFORE calling this method.
+          \note Make sure that the application calls this method BEFORE it uses any terralib modules or functions.
+          \note Make sure that the application calls the method setApplicationInfo() BEFORE calling initialize. This method saves the application configuration file if
+          it not exists. See sections of Configuring Applications Using the application framework for details about the configurations available.
+        */
+        void initialize();
+
+        /*!
+          \brief Finalizes the application framework.
+          \details This method will unload all terralib modules, plug-ins, and dynamic libraries that are loaded.
+          \note Make sure that the application calls this method BEFORE it finishes.
+        */
+        void finalize();
+
       public slots:
 
         /*!
@@ -159,8 +216,11 @@ namespace te
 
       protected:
 
-        std::map<QString, QToolBar*> m_toolbars;  //!< Toolbars registered.
-        std::set<QObject*> m_reg_coms;            //!< Registered objects.
+        std::map<QString, QToolBar*> m_toolbars;                                                //!< Toolbars registered.
+        std::set<QObject*> m_reg_coms;                                                          //!< Registered objects.
+        std::vector< std::pair<std::string, std::string> > m_app_info;                          //!< Configurations.
+        std::vector< std::pair<std::string, std::string> > m_user_info;                         //!< User configurations.
+        std::vector< std::pair<std::string, std::string> > m_app_plg_info;                      //!< Application Plug-insConfigurations.
       };
 
       /*!

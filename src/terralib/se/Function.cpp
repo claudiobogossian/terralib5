@@ -39,4 +39,7 @@ void te::se::Function::setFallbackValue(const std::string& v)
   m_fallbackValue = v;
 }
 
-
+const std::string& te::se::Function::getFallbackValue() const
+{
+  return m_fallbackValue;
+}

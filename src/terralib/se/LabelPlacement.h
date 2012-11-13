@@ -71,7 +71,11 @@ namespace te
 
         void setPointPlacement(PointPlacement* p);
 
+        const PointPlacement* getPointPlacement() const { return m_pointPlacement; }
+
         void setLinePlacement(LinePlacement* l);
+
+        const LinePlacement* getLinePlacement() const { return m_linePlacement; }
 
         //@}
 

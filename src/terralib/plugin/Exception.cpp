@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.cpp
+  \file terralib/plugin/Exception.cpp
 
   \brief An exception class for the Plugin module.
 */

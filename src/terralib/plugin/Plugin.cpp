@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,19 +18,41 @@
  */
 
 /*!
-  \file Plugin.cpp
-  
+  \file terralib/plugin/Plugin.cpp
+
   \brief An abstract interface for TerraLib Plugins.
- */
+*/
 
 // TerraLib
 #include "Plugin.h"
 
-te::plugin::Plugin::Plugin()
+const te::plugin::PluginInfo& te::plugin::Plugin::getInfo() const
 {
+  return m_pluginInfo;
+}
+
+bool te::plugin::Plugin::isStarted() const
+{
+  return m_initialized;
+}
+
+void te::plugin::Plugin::startup()
+{
+  m_initialized = true;
+}
+
+void te::plugin::Plugin::shutdown()
+{
+  m_initialized = false;
 }
 
 te::plugin::Plugin::~Plugin()
+{
+}
+
+te::plugin::Plugin::Plugin(const PluginInfo& pInfo)
+  : m_pluginInfo(pInfo),
+    m_initialized(false)
 {
 }
 

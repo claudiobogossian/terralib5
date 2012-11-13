@@ -25,90 +25,19 @@
 
 #include "MainWindow.h"
 
-//! TerraLib include files
-#include <terralib/common/TerraLib.h>
-#include <terralib/plugin.h>
-
 //! Qt include files
 #include <QtGui/QApplication>
 
 //! STL include files
-//#include <cstdlib>
-//#include <exception>
-
-void loadModules()
-{
-  try
-  {
-    {
-      te::plugin::PluginInfo info;
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-      info.m_type = "dll";
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-      info.m_type = "s.o.";
-#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-      info.m_type = "dylib";      
-#else
-  #error "Platform not supported yet"
-#endif
-
-      info.m_name = "OGR DataSource Driver";
-      info.m_description = "This data source driver supports...";
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-#ifdef NDEBUG
-      info.m_mainFile = "terralib_ogr.dll";
-#else
-      info.m_mainFile = "terralib_ogr_d.dll";
-#endif
-#endif
-
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
-#ifdef NDEBUG
-      info.m_mainFile = "libterralib_ogr.so";
-#else
-      info.m_mainFile = "libterralib_ogr_d.so";
-#endif
-#endif
-
-#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
-#ifdef NDEBUG
-      info.m_mainFile = "libterralib_ogr.dylib";
-#else
-      info.m_mainFile = "libterralib_ogr.dylib";
-#endif
-#endif
-
-      te::plugin::PluginManager::getInstance().loadPlugin(info);
-    }
-  }
-  catch(const te::common::Exception& e)
-  {
-    throw e;
-  }
-}
-
+#include <exception>
 
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
   int waitVal = EXIT_FAILURE;
-  QString spaths(ICON_THEME_PATH);
-
-  QStringList paths = spaths.split(";");
-
-  QIcon::setThemeName("terralib");
-  QIcon::setThemeSearchPaths(paths);
-
   try
   {
-
-    TerraLib::getInstance().initialize();
-
-    loadModules();
-
 // initialize the application
     MainWindow dlg;
     dlg.showMaximized();
@@ -123,8 +52,6 @@ int main(int argc, char** argv)
   {
     return EXIT_FAILURE;
   }
-
-  TerraLib::getInstance().finalize();
 
   return waitVal;
 }

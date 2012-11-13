@@ -270,6 +270,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
         (unsigned int)tiePoints.size(), 
         bestTransfPtr->getMinRequiredTiePoints() )
     ) / maxIterationsDivFactor;
+  RansacItCounterT maxIterationsEstimation = maxIterations;
     
   GTParameters consensusSetParams;  
   consensusSetParams.m_tiePoints.reserve( tiePoints.size() );
@@ -419,17 +420,19 @@ void te::gm::GTFilter::applyRansacThreadEntry(
     
     // Updating iteration related variables
     
-    if( dynamicMaxIterations )
+    if( dynamicMaxIterations && ( bestParams.m_tiePoints.size() != 0 ) )
     {
-      maxIterations = 
-        (
-          maxIterations
-          +
+      if( bestParams.m_tiePoints.size() == inputTPNmb )
+      {
+        maxIterations = 0;
+      }
+      else
+      {
+        maxIterationsEstimation =
           (
             (
-              (RansacItCounterT)
-              ( 
-                ( (long double)std::log( 1.0 - assurance )) 
+              (RansacItCounterT) std::ceil(
+                ( (long double)std::log( assurance ) ) 
                 / 
                 (long double)std::log( 
                   1.0 
@@ -444,8 +447,10 @@ void te::gm::GTFilter::applyRansacThreadEntry(
             )
             /
             maxIterationsDivFactor
-          )
-        ) / 2;
+          );
+        
+        maxIterations = ( maxIterations + maxIterationsEstimation ) / 2;
+      }
     }
     
     ++currentIteration;

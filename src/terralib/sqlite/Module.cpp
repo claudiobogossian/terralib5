@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,114 +18,66 @@
  */
 
 /*!
-  \file terralib/sqlite/Module.cpp
+  \file Module.h
    
-  \brief The TerraLib SQLite Data Access driver implements the plugin interface.
+  \brief The TerraLib OGR driver is a plugin.
 */
 
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "../dataaccess/query/SQLDialect.h"
-#include "../serialization/dataaccess/SQLDialect.h"
-#include "rlite/RasterFactory.h"
-#include "terralib/RasterFactory.h"
 #include "DataSource.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
-#include "Utils.h"
 
-// Boost
-#include <boost/filesystem.hpp>
+// OGR
+#include <ogrsf_frmts.h>
 
-// SQLite
-#include <sqlite3.h>
-
-#ifdef TE_ENABLE_SPATIALITE
-// SpatiaLite
-#include <spatialite.h>
-#endif
-
-#ifdef TE_ENABLE_RASTERLITE
-// RasterLite
-#include <rasterlite.h>
-#endif
-
-te::sqlite::Module::Module(const te::plugin::PluginInfo& pluginInfo)
+te::ogr::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
 {
 }
 
-te::sqlite::Module::~Module()
+te::ogr::Module::~Module()
 {
 }
 
-void te::sqlite::Module::startup() 
+void te::ogr::Module::startup()
 {
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib SQLite driver
-  TE_ADD_TEXT_DOMAIN(TE_SQLITE_TEXT_DOMAIN, TE_SQLITE_TEXT_DOMAIN_DIR, "UTF-8");
+// it initializes the Translator support for the TerraLib PostGIS driver support
+  TE_ADD_TEXT_DOMAIN(TE_OGR_TEXT_DOMAIN, TE_OGR_TEXT_DOMAIN_DIR, "UTF-8");
 
-// we need to initialize al the factories
-  DataSourceFactory::initialize();
-  te::sqlite::rlite::RasterFactory::initialize();
-  te::sqlite::terralib::RasterFactory::initialize();
+// registers all format drivers built into OGR.
+  OGRRegisterAll();
 
-// it initializes the SQLite library
-  sqlite3_initialize();
-  
-#ifdef TE_ENABLE_SPATIALITE
-// it initializes the SpatiaLite library
-  spatialite_init(0);
-#endif
+// it initializes the OGR Factory support
+  te::ogr::DataSourceFactory::initialize();
 
-// retrieve the SQL dialect
-  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
-
-  boost::filesystem::path spatialiteDialectFile = driverpath / "spatialite_dialect.xml";
-  
-  boost::filesystem::path nonspatialDialectFile = driverpath / "nonspatial_dialect.xml";
-
-  Globals::sm_spatiaLiteDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
-
-  Globals::sm_nonspatialDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
-
-  TE_LOG_TRACE(TR_SQLITE("TerraLib SQLite driver startup!"));
+  TE_LOG_TRACE(TR_OGR("TerraLib OGR driver startup!"));
 
   m_initialized = true;
 }
 
-void te::sqlite::Module::shutdown() 
+void te::ogr::Module::shutdown()
 {
   if(!m_initialized)
     return;
 
-// we need to finalize all the factories registered by the driver
-  te::sqlite::terralib::RasterFactory::finalize();
-  te::sqlite::rlite::RasterFactory::finalize();  
-  DataSourceFactory::finalize();
+// it finalizes the OGR factory support.
+  te::ogr::DataSourceFactory::finalize();
 
-// we release all registered SQLite data sources
-  te::da::DataSourceManager::getInstance().detachAll(Globals::sm_driverIdentifier);
-
-// release SQL dialect
-  delete Globals::sm_spatiaLiteDialect;
-  Globals::sm_spatiaLiteDialect = 0;
-
-  delete Globals::sm_nonspatialDialect;
-  Globals::sm_nonspatialDialect = 0;
-
-// shutdowns the SQLite library
-  sqlite3_shutdown();
-
-  TE_LOG_TRACE(TR_SQLITE("TerraLib SQLite driver shutdown!"));
+// free OGR registered drivers
+  te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);
+ 
+  TE_LOG_TRACE(TR_OGR("TerraLib OGR driver shutdown!"));
 
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::sqlite::Module)
+PLUGIN_CALL_BACK_IMPL(te::ogr::Module)
 

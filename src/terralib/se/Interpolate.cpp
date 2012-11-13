@@ -87,7 +87,7 @@ void te::se::Interpolate::setMethodType(MethodType t)
   m_method = t;
 }
 
-std::vector<te::se::InterpolationPoint*>& te::se::Interpolate::getInterpolationPoints()
+const std::vector<te::se::InterpolationPoint*>& te::se::Interpolate::getInterpolationPoints() const
 {
   return m_interpolationPoints;
 }

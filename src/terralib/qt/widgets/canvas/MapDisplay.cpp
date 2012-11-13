@@ -257,6 +257,8 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
       e.m_ury = center.y + (newHeightW * 0.5);
     }
     break;
+    default:
+      break;
   }
 
   setExtent(e);

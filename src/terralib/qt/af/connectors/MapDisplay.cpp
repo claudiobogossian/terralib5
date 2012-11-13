@@ -98,12 +98,25 @@ namespace te
         std::list<te::map::AbstractLayer*> lay_list;
         std::map<int, te::map::AbstractLayer*>::const_reverse_iterator it;
 
+        te::gm::Envelope env;
+
         for(it=layers.rbegin(); it!=layers.rend(); ++it)
+        {
           lay_list.push_back(it->second);
+
+          te::gm::Envelope e(*it->second->getExtent());
+
+          if(it->second->getSRID() != m_display->getSRID())
+          {
+            e.transform(it->second->getSRID(), m_display->getSRID());
+          }
+
+          env.Union(e);
+        }
 
         m_display->setLayerList(lay_list);
 
-        m_display->setExtent(*(*lay_list.begin())->getExtent());
+        m_display->setExtent(env);
       }
 
       void MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
@@ -200,9 +213,33 @@ namespace te
           size_t pos = vgIt - m_geoms.begin();
           QColor* c = &(*(m_colors.begin()+pos));
 
-          canvas.setPolygonFillColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
-          canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
-          canvas.setPolygonContourWidth(1);
+          switch((*g->begin())->getGeomTypeId())
+          {
+            case te::gm::PolygonType:
+            case te::gm::MultiPolygonType:
+              canvas.setPolygonFillColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
+              canvas.setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_OPAQUE));
+              canvas.setPolygonContourWidth(1);
+            break;
+
+            case te::gm::LineStringType:
+            case te::gm::MultiLineStringType:
+            {
+              canvas.setLineColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
+              canvas.setLineWidth(2);
+            }
+            break;
+
+            case te::gm::PointType:
+            case te::gm::MultiPointType:
+            {
+              canvas.setPointColor(te::color::RGBAColor(c->red(), c->green(), c->blue(), c->alpha()));
+            }
+            break;
+
+            default:
+            break;
+          }
 
           for(gIt = g->begin(); gIt != g->end(); ++gIt)
           {

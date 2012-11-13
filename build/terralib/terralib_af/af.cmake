@@ -7,7 +7,7 @@ if(QT4_FOUND)
   set (DEP_LIBS ${QT_LIBRARIES})
 endif()
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS thread REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS system filesystem REQUIRED)
 if(Boost_FOUND)
   list (APPEND DEP_LIBS ${Boost_LIBRARIES})
   list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
@@ -18,7 +18,9 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTAFDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-set (
+add_definitions (-DTERRALIB_SCHEMA_LOCATION=\"${TERRALIB_SCHEMA_LOCATION}\")
+
+list ( APPEND
   DEP_LIBS 
   terralib_common 
   terralib_dataaccess 
@@ -28,7 +30,6 @@ set (
   terralib_memory
   terralib_qtwidgets
   terralib_maptools
-  ${QT_LIBRARIES}
 )
 
 set (

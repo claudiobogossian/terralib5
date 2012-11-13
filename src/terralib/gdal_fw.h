@@ -37,7 +37,7 @@ namespace te
     class DataSource;
     class DataSourceFactory;
     class DataSourceTransactor;
-    class Platform;
+    class Module;
     class Raster;
   }
 }

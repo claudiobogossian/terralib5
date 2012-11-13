@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.h
+  \file terralib/plugin/Exception.h
 
   \brief An exception class for the Plugin module.
 */
