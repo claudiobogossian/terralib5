@@ -152,7 +152,7 @@ std::string te::common::Library::getNativeName(const std::string& name) throw()
   std::string nativeName = "lib" + name + ".so";
 
 #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  std::string nativeName = name + ".dylib";
+  std::string nativeName = "lib" + name + ".dylib";
   
 #else
   #error "Platform not supported! Please, contact the TerraLib team (terralib-team@dpi.inpe.br) for helping support this platform!"
