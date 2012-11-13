@@ -1773,7 +1773,7 @@ void MyWindow::addLayerSlot()
     QStringList items;
     const std::vector<te::dt::Property*>& props = dst->getProperties();
     std::vector<te::dt::Property*>::const_iterator cit;
-    for(cit = props.cbegin(); cit != props.cend(); ++cit)
+    for(cit = props.begin(); cit != props.end(); ++cit)
       items.append((*cit)->getName().c_str());
 
     bool ok;
