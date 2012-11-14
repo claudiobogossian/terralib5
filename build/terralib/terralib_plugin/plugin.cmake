@@ -10,6 +10,8 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEPLUGINDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
+add_definitions(-DTERRALIB_PLUGIN_DIR=\"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}\")
+
 list (APPEND DEP_LIBS terralib_common terralib_xml)
 
 # Select the source and header files

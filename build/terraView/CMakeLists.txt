@@ -12,8 +12,8 @@ set(INCLDIR ${SRCDIR})                            # directory where the header f
 set(PROJ_NAME "terraView")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 
-find_package (terralib 5 COMPONENTS annotationtext color common dataaccess datatype filter geometry 
-    gml maptools memory plugin qtwidgets raster rp srs st stloader symbology xerces xlink xml af REQUIRED)
+find_package (terralib 5 COMPONENTS color common dataaccess datatype filter geometry
+    maptools memory plugin qtwidgets raster rp srs st stloader symbology af REQUIRED)
 
 set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
 set (ICON_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Lists of directories that contains icon themes.")

@@ -5,6 +5,9 @@
 #include <QDialog>
 #include <QLineEdit>
 
+//! STL include files
+#include <memory>
+
 //! Forward declarations
 namespace te
 {

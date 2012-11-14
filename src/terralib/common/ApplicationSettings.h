@@ -188,7 +188,14 @@ namespace te
     {
       LockRead l(this);
 
-      return m_settings.get<std::string>(key);
+      try
+      {
+        return m_settings.get<std::string>(key);
+      }
+      catch(...)
+      {
+        return "";
+      }
     }
 
     inline void ApplicationSettings::load(const std::string& settingsFile)

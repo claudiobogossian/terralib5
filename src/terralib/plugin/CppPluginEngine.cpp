@@ -79,11 +79,7 @@ te::plugin::AbstractPlugin* te::plugin::CppPluginEngine::load(const PluginInfo& 
   }
   
   if(!slib->isLoaded())
-  {
-    slib->addSearchDir(pInfo.m_folder);
     slib->load();
-    slib->resetSearchPath();
-  }
 
 // now we need to get the plugin constructor function address
   GetPluginFPtr getPluginFptr = (GetPluginFPtr) (slib->getAddress("CppPluginGetInstance"));

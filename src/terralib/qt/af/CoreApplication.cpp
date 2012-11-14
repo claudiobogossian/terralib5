@@ -13,11 +13,11 @@
 #include <terralib/plugin/PluginManager.h>
 
 #include <terralib/qt/af/events/NewToolBar.h>
-#include <terralib/qt/af/events/AFInitialized.h>
 
 //! Qt include files
 #include <QDir>
 #include <QApplication>
+#include <QIcon>
 
 //! Boost include files
 #include <boost/filesystem.hpp>
@@ -242,13 +242,44 @@ namespace te
         m_app_plg_info.clear();
         m_user_info.clear();
 
-        AFInitialized evt;
-        broadCast(&evt);
+        //! Setting application configurations.
+
+        //! Icon theme path
+        std::string ithemedir = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.BaseDirectory.<xmlattr>.xlink:href");
+        if(!ithemedir.empty())
+        {
+          QStringList ithemes = QIcon::themeSearchPaths();
+          ithemes.push_back(ithemedir.c_str());
+          QIcon::setThemeSearchPaths(ithemes);
+        }
+        //! Icon theme
+        std::string iconTheme = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.SelectedIconTheme");
+        if(iconTheme.empty())
+          iconTheme = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconThemeInfo.DefaultTheme");
+        if(!iconTheme.empty())
+          QIcon::setThemeName(iconTheme.c_str());
+
+        //! Icon size
+        std::string iconSize = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.ToolBarIconSize");
+        if(iconSize.empty())
+          iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
+        if(!iconSize.empty())
+        {
+          QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.c_str() + "px " + iconSize.c_str() + "px; }";
+          qApp->setStyleSheet(sh);
+        }
+
+        //! Application name
+        std::string app_name = te::common::SystemApplicationSettings::getInstance().getValue("Application.Name");
+        qApp->setApplicationName(app_name.c_str());
+
+        //! Application organization
+        std::string app_org = te::common::SystemApplicationSettings::getInstance().getValue("Application.Organization");
+        qApp->setOrganizationName(app_org.c_str());
       }
 
       void CoreApplication::finalize()
       {
-        te::plugin::PluginManager::getInstance().shutdownAll();
         te::plugin::PluginManager::getInstance().unloadAll();
         TerraLib::getInstance().finalize();
       }
