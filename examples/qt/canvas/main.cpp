@@ -25,6 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
 #include "CanvasExamples.h"
 
 // STL
@@ -63,7 +64,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     return EXIT_FAILURE;
   }
-
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
 // shutdown Terralib support
   TerraLib::getInstance().finalize();
 

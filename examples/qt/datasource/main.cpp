@@ -27,6 +27,8 @@
 
 #include <terralib/common.h>
 #include <terralib/plugin.h>
+#include <terralib/plugin/Utils.h>
+
 
 #include <QtGui/QApplication>
 #include <QtGui/qmessagebox.h>
@@ -35,21 +37,12 @@ void LoadDrivers()
 {
   try
   {
-    {
-      te::plugin::PluginInfo info;
-      
-      info.m_name = "te.da.ogr";
-      info.m_displayName = "OGR DataSource Driver";
-      info.m_description = "This data source driver supports...";
-      info.m_engine = "C++";
-      info.m_folder = PLUGINS_PATH;
-      
-      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
-      
-      info.m_resources.push_back(rsc);
-      
-      te::plugin::PluginManager::getInstance().load(info);
-    }
+    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
+    
+    te::plugin::PluginManager::getInstance().add(info);   
+    
+    te::plugin::PluginManager::getInstance().loadAll();
+    
   }
   catch(const te::common::Exception& e)
   {

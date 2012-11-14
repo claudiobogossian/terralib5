@@ -507,10 +507,6 @@ void MyWindow::generatePNGs(std::vector<MyLayer*>& layers)
     int nrows = raster->getNumberOfRows();
     te::rst::Band* band0 = raster->getBand(0);
     te::rst::BandProperty* prop = band0->getProperty();
-    int hsize = prop->m_blkw;
-    int vsize = prop->m_blkh;
-    int numblocksx = prop->m_nblocksx;
-    int numblocksy = prop->m_nblocksy;  
 
     int size = ncols * nrows;
     double* buf = new double[size];

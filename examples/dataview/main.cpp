@@ -23,12 +23,20 @@
 #include <terralib/common/TerraLib.h>
 #include <terralib/common/Exception.h>
 #include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
-#include <terralib/plugin/PluginManager.h>
+#include <terralib/plugin.h>
 //#include <terralib/qt/widgets/dataview/TabularViewer.h>
 
 //! Qt include files
 #include <QApplication>
 #include <QIcon>
+
+void LoadDrivers()
+{
+  te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
+  te::plugin::PluginManager::getInstance().add(info);   
+  
+  te::plugin::PluginManager::getInstance().loadAll();
+}
 
 int main(int argc, char** argv)
 {
@@ -37,12 +45,14 @@ int main(int argc, char** argv)
   try
   {
     TerraLib::getInstance().initialize();
+    
+    LoadDrivers();
+    
 
     QApplication app(argc, argv);
 
     QString spaths = std::string(ICON_THEME_PATH).c_str();
     QStringList paths = spaths.split(";");
-//    paths << "D:/funcate/projetos/terralib5/resources/themes";
 
     QIcon::setThemeName(ICON_THEME);
     QIcon::setThemeSearchPaths(paths);

@@ -38,13 +38,8 @@ void Mask(te::rst::Raster* iraster,
           const te::gm::Polygon* poly,
           te::rst::Raster* oraster)
 {
-  const te::gm::Envelope* mbr = iraster->getExtent();
-
   double resx = iraster->getResolutionX();
   double resy = iraster->getResolutionY();
-
-  int nrows = iraster->getNumberOfRows();
-  int ncols = iraster->getNumberOfColumns();
 
   const te::rst::Grid* grid = iraster->getGrid();
 

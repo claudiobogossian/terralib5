@@ -213,7 +213,6 @@ void ConfigStyle::paintEvent(QPaintEvent*)
 
 void ConfigStyle::setLayer(te::map::AbstractLayer* layer)
 {
-  te::se::Style* style = layer->getStyle();
   update();
 }
 

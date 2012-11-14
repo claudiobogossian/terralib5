@@ -46,7 +46,6 @@ te::map::RasterLayer* CreateRasterLayer(const std::string& path)
 
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
-  te::da::DataSetType* dt = catalogLoader->getDataSetType(dataSetName);
   te::da::DataSet* ds = transactor->getDataSet(dataSetName);
   te::rst::Raster* raster = ds->getRaster();
 

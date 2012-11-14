@@ -108,9 +108,7 @@ int main(int /*argc*/, char** /*argv*/)
     std::string idademed = "IDADE_MED";
     std::string data = "DATA";
 
-//     int rendaIdx = type->getPropertyPosition(renda);
-//     int anosestIdx = type->getPropertyPosition(anosest);
-    int idademedIdx = type->getPropertyPosition(idademed);
+
     int dataIdx= type->getPropertyPosition(data);
 
     int argc = 1;

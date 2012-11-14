@@ -25,6 +25,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
 
 // Examples
 #include "DataAccessExamples.h"
@@ -37,60 +38,58 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
-// It initializes all the data source drivers (see LoadModule.cpp)
+  // It initializes all the data source drivers (see LoadModule.cpp)
   try
   {
-// initialize Terralib support
+    // initialize Terralib support
     TerraLib::getInstance().initialize();
-
+    
     LoadModules();
-
- //   OGRExampleRead();
-
-//    ORGExampleWrite();
-
+    
+    OGRExampleRead();
+    
+    ORGExampleWrite();
+    
     PostGISExample();     
-
-//    QueryExample(); //??? tem codigo comentado - cai...
-
-//    CopyingData();
-	
-//    GDALExample();
-
-//    MemoryExample();
-
-//    PersistenceExample(); //??? Está caindo - em ======Adds a new property and its values  
-
+    
+    QueryExample(); //??? tem codigo comentado - cai...
+    
+    CopyingData();
+    
+    GDALExample();
+    
+    MemoryExample();
+    
+    //   PersistenceExample(); //??? Está caindo - em ======Adds a new property and its values  
+    
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
   {
     std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
-
+    
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
-
+    
     return EXIT_FAILURE;
   }
   catch(...)
   {
     std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
-
+    
     std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get();
-
+    
     return EXIT_FAILURE;
   }
-
-// shutdown Terralib support
-  //te::plugin::Platform::finalize();
-  //te::da::Platform::finalize();
-  //te::gm::Platform::finalize();
-  //te::common::Platform::finalize();
-
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
+  
+  TerraLib::getInstance().finalize();
+  
   std::cout << "Press Enter to exit..." << std::endl;
   std::cin.get();
-
+  
   return EXIT_SUCCESS;
 }
 

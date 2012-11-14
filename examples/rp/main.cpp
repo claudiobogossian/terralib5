@@ -3,6 +3,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
 
 // STL
 #include <cstdlib>
@@ -21,6 +22,8 @@ int main()
     Classifier();
     MixtureModel();
 
+    te::plugin::PluginManager::getInstance().unloadAll();
+    
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

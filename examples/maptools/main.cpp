@@ -28,7 +28,6 @@
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
-//#include <terralib/qt/widgets/Platform.h>
 #include "MapToolsExamples.h"
 
 // STL
@@ -81,7 +80,9 @@ int main(int /*argc*/, char** /*argv*/)
 
     return EXIT_FAILURE;
   }
-
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
+  
   TerraLib::getInstance().finalize();
 
   std::cout << "Press Enter to exit..." << std::endl;
