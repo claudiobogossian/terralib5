@@ -18,39 +18,35 @@
  */
 
 /*!
-  \file terralib/serialization/se/SelectedChannel.cpp
+  \file terralib/serialization/fe/Filter.cpp
  
-  \brief Support for SelectedChannel serialization.
+  \brief Support for Filter serialization.
 */
 
 // TerraLib
-#include "../../se/SelectedChannel.h"
+#include "../../fe/Filter.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "ContrastEnhancement.h"
-#include "SelectedChannel.h"
-#include "Utils.h"
+#include "AbstractOp.h"
+#include "Filter.h"
 
 // STL
 #include <cassert>
 #include <memory>
 
-te::se::SelectedChannel* te::serialize::ReadSelectedChannel(te::xml::Reader& reader)
+te::fe::Filter* te::serialize::ReadFilter(te::xml::Reader& reader)
 {
   return 0;
 }
 
-void te::serialize::Save(const te::se::SelectedChannel* sc, te::xml::Writer& writer)
+void te::serialize::Save(const te::fe::Filter* filter, te::xml::Writer& writer)
 {
-  if(sc == 0)
+  if(filter == 0)
     return;
 
-  writer.writeStartElement("SelectedChannel");
-  
-  assert(!sc->getSourceChannelName().empty());
-  writer.writeElement("SourceChannelName", sc->getSourceChannelName());
-  
-  Save(sc->getContrastEnhancement(), writer);
+  writer.writeStartElement("Filter");
 
-  writer.writeEndElement("SelectedChannel");
+  AbstractOp::getInstance().write(filter->getOp(), writer);
+
+  writer.writeEndElement("Filter");
 }

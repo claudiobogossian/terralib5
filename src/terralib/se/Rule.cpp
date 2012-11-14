@@ -40,6 +40,7 @@ te::se::Rule::Rule()
     m_description(0),
     m_legendGraphic(0),
     m_filter(0),
+    m_elseFilter(false),
     m_minScaleDenominator(0.0),
     m_maxScaleDenominator(std::numeric_limits<double>::infinity())
 {

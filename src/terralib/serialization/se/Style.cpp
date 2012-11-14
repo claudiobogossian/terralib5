@@ -39,7 +39,6 @@
 #include <cassert>
 
 // Boost
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
 
 te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader);
@@ -55,7 +54,7 @@ void te::serialize::Style::reg(const std::string& styleType, const StyleFnctSeri
 
 te::se::Style* te::serialize::Style::read(te::xml::Reader& reader) const
 {
-  std::string styleType = boost::to_upper_copy(reader.getElementLocalName());
+  std::string styleType = reader.getElementLocalName();
 
   StyleFnctIdxType::const_iterator it = m_fncts.find(styleType);
 
@@ -87,161 +86,17 @@ te::serialize::Style::~Style()
 
 te::serialize::Style::Style()
 {
-  m_fncts["FEATURETYPESTYLE"] = std::make_pair(StyleReadFnctType(&FeatureTypeStyleReader), StyleWriteFnctType(&FeatureTypeStyleWriter));
-  m_fncts["COVERAGESTYLE"] = std::make_pair(StyleReadFnctType(&CoverageStyleReader), StyleWriteFnctType(&CoverageStyleWriter));
+  m_fncts["FeatureTypeStyle"] = std::make_pair(StyleReadFnctType(&FeatureTypeStyleReader), StyleWriteFnctType(&FeatureTypeStyleWriter));
+  m_fncts["CoverageStyle"] = std::make_pair(StyleReadFnctType(&CoverageStyleReader), StyleWriteFnctType(&CoverageStyleWriter));
 }
 
 te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
 {
-  //std::string id = reader.getAttr(0);
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Title");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string title = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "SRID");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //int srid = reader.getElementValueAsInt32();
-
-  //reader.next();
-  //assert(reader.getElementLocalName() == "Extent");
-  //std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
-
-  //reader.next();
-  //assert(reader.getElementLocalName() == "Visible");
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //bool visible = reader.getElementValueAsBoolean();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "DataSet");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string dataset = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "DataSourceId");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string datasourceId = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Renderer");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string rendererId = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Style");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string style = reader.getElementValue();
-
-  //reader.next();
-
-  //std::auto_ptr<te::map::Layer> layer(new te::map::Layer(id, title, 0));
-  //layer->setSRID(srid);
-  //layer->setExtent(mbr.release());
-  //layer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
-  //layer->setDataSetName(dataset);
-  ////layer->setDataSource(datasourceId); Uba
-  ////layer->setRenderer(rendererId); Uba
-
-  //return layer.release();
-
   return 0;
 }
 
 te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
 {
-  //std::string id = reader.getAttr(0);
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Title");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string title = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "SRID");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //int srid = reader.getElementValueAsInt32();
-
-  //reader.next();
-  //assert(reader.getElementLocalName() == "Extent");
-  //std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
-
-  //reader.next();
-  //assert(reader.getElementLocalName() == "Visible");
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //bool visible = reader.getElementValueAsBoolean();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Query");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string query = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "DataSourceId");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string datasourceId = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Renderer");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string rendererId = reader.getElementValue();
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  //assert(reader.getElementLocalName() == "Style");
-
-  //reader.next();
-  //assert(reader.getNodeType() == te::xml::VALUE);
-  //std::string style = reader.getElementValue();
-
-  //reader.next();
-
-  //std::auto_ptr<te::map::QueryLayer> layer(new te::map::QueryLayer(id, title, 0));
-  //layer->setSRID(srid);
-  //layer->setExtent(mbr.release());
-  //layer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
-  ////layer->setQuery(query); Uba
-  ////layer->setDataSource(datasourceId); Uba
-  ////layer->setRenderer(rendererId); Uba
-
-  //return layer.release();
-
   return 0;
 }
 

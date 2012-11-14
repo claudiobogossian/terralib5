@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Config.h"
+#include "Font.h"
 
 // STL
 #include <string>
@@ -37,6 +38,7 @@ namespace te
   namespace se
   {
 // Forward declarations
+    class Description;
     class Fill;
     class Graphic;
     class LineSymbolizer;
@@ -44,6 +46,7 @@ namespace te
     class PointSymbolizer;
     class PolygonSymbolizer;
     class Stroke;
+    class TextSymbolizer;
 
     /*!
       \brief Creates a stroke.
@@ -204,6 +207,47 @@ namespace te
       \note The caller of this method will take the ownership of the returned pointer.
     */
     TESEEXPORT PointSymbolizer* CreatePointSymbolizer(Graphic* graphic);
+
+    /*!
+      \brief Creates a font.
+
+      \param family The font family.
+      \param size The font size.
+      \param style The font style.
+      \param weight The font weight.
+
+      \return The Symbology Enconding Font element.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+    */
+    TESEEXPORT Font* CreateFont(const std::string& family, const std::string& size,
+                                const te::se::Font::FontStyleType& style = te::se::Font::StyleNormal,
+                                const te::se::Font::FontWeightType& weight = te::se::Font::WeightNormal);
+
+    /*!
+      \brief Creates a text symbolizer.
+
+      \param label The property name that will be labelled.
+      \param fill The text symbolizer fill.
+      \param font The text symbolizer font.
+
+      \return The Symbology Enconding TextSymbolizer element.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+    */
+    TESEEXPORT TextSymbolizer* CreateTextSymbolizer(const std::string& label, Fill* fill, Font* font);
+
+    /*!
+      \brief Creates a description.
+
+      \param title The title of description.
+      \param abst The abstratc of description.
+
+      \return The Symbology Enconding Description element.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+    */
+    TESEEXPORT Description* CreateDescription(const std::string& title, const std::string& abst);
 
   } // end namespace se
 }   // end namespace te
