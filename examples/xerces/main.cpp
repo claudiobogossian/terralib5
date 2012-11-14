@@ -25,6 +25,7 @@
 
 // TerraLib
 #include <terralib/common.h>
+#include <terralib/plugin.h>
 
 // Examples
 #include "ReaderExample.h"
@@ -38,8 +39,7 @@ int main(int /*argc*/, char** /*argv*/)
   try
   {
     TerraLib::getInstance().initialize();
-    LoadModules();
-    Read();
+    Read(); 
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
