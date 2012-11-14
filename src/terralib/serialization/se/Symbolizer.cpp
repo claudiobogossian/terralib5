@@ -55,7 +55,6 @@
 #include <cassert>
 
 // Boost
-#include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
 
 te::se::Symbolizer* LineSymbolizerReader(te::xml::Reader& reader);
@@ -77,7 +76,7 @@ void te::serialize::Symbolizer::reg(const std::string& symbolizerType, const Sym
 
 te::se::Symbolizer* te::serialize::Symbolizer::read(te::xml::Reader& reader) const
 {
-  std::string symbolizerType = boost::to_upper_copy(reader.getElementLocalName());
+  std::string symbolizerType = reader.getElementLocalName();
 
   SymbolizerFnctIdxType::const_iterator it = m_fncts.find(symbolizerType);
 
@@ -109,11 +108,11 @@ te::serialize::Symbolizer::~Symbolizer()
 
 te::serialize::Symbolizer::Symbolizer()
 {
-  m_fncts["LINESYMBOLIZER"] = std::make_pair(SymbolizerReadFnctType(&LineSymbolizerReader), SymbolizerWriteFnctType(&LineSymbolizerWriter));
-  m_fncts["POINTSYMBOLIZER"] = std::make_pair(SymbolizerReadFnctType(&PointSymbolizerReader), SymbolizerWriteFnctType(&PointSymbolizerWriter));
-  m_fncts["POLYGONSYMBOLIZER"] = std::make_pair(SymbolizerReadFnctType(&PolygonSymbolizerReader), SymbolizerWriteFnctType(&PolygonSymbolizerWriter));
-  m_fncts["RASTERSYMBOLIZER"] = std::make_pair(SymbolizerReadFnctType(&RasterSymbolizerReader), SymbolizerWriteFnctType(&RasterSymbolizerWriter));
-  m_fncts["TEXTSYMBOLIZER"] = std::make_pair(SymbolizerReadFnctType(&TextSymbolizerReader), SymbolizerWriteFnctType(&TextSymbolizerWriter));
+  m_fncts["LineSymbolizer"] = std::make_pair(SymbolizerReadFnctType(&LineSymbolizerReader), SymbolizerWriteFnctType(&LineSymbolizerWriter));
+  m_fncts["PointSymbolizer"] = std::make_pair(SymbolizerReadFnctType(&PointSymbolizerReader), SymbolizerWriteFnctType(&PointSymbolizerWriter));
+  m_fncts["PolygonSymbolizer"] = std::make_pair(SymbolizerReadFnctType(&PolygonSymbolizerReader), SymbolizerWriteFnctType(&PolygonSymbolizerWriter));
+  m_fncts["RasterSymbolizer"] = std::make_pair(SymbolizerReadFnctType(&RasterSymbolizerReader), SymbolizerWriteFnctType(&RasterSymbolizerWriter));
+  m_fncts["TextSymbolizer"] = std::make_pair(SymbolizerReadFnctType(&TextSymbolizerReader), SymbolizerWriteFnctType(&TextSymbolizerWriter));
 }
 
 te::se::Symbolizer* LineSymbolizerReader(te::xml::Reader& reader)
@@ -151,10 +150,10 @@ void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer&
   writer.writeStartElement("LineSymbolizer");
 
   // Common elements & attributes of Symbolizers
-  te::serialize::WriterSymbolizerHelper(ls, writer);
+  te::serialize::WriteSymbolizerHelper(ls, writer);
 
   // Specific elements of LineSymbolizer
-  //te::serialize::Save(ls->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::WriteGeometryPropertyHelper(ls->getGeometry(), writer);
   te::serialize::Save(ls->getStroke(), writer);
   te::serialize::WriteParameterValuePtrHelper("PerpendicularOffset", ls->getPerpendicularOffset(), writer);
 
@@ -171,10 +170,10 @@ void PointSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer
   writer.writeStartElement("PointSymbolizer");
 
   // Common elements & attributes of Symbolizers
-  te::serialize::WriterSymbolizerHelper(ps, writer);
+  te::serialize::WriteSymbolizerHelper(ps, writer);
 
   // Specific elements of PointSymbolizer
-  //te::serialize::Save(ps->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::WriteGeometryPropertyHelper(ps->getGeometry(), writer);
   te::serialize::Save(ps->getGraphic(), writer);
 
   writer.writeEndElement("PointSymbolizer");
@@ -190,10 +189,10 @@ void PolygonSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writ
   writer.writeStartElement("PolygonSymbolizer");
 
   // Common elements & attributes of Symbolizers
-  te::serialize::WriterSymbolizerHelper(ps, writer);
+  te::serialize::WriteSymbolizerHelper(ps, writer);
 
   // Specific elements of PolygonSymbolizer
-  //te::serialize::Save(ps->getGeometry(), writer); // TODO: fe serialize!
+  te::serialize::WriteGeometryPropertyHelper(ps->getGeometry(), writer);
   te::serialize::Save(ps->getFill(), writer);
   te::serialize::Save(ps->getStroke(), writer);
   te::serialize::Save(ps->getDisplacement(), writer);
@@ -212,10 +211,9 @@ void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Write
   writer.writeStartElement("RasterSymbolizer");
 
   // Common elements & attributes of Symbolizers
-  te::serialize::WriterSymbolizerHelper(rs, writer);
+  te::serialize::WriteSymbolizerHelper(rs, writer);
 
   // Specific elements of RasterSymbolizer
-  //te::serialize::Save(rs->getGeometry(), writer); // TODO: fe serialize!
   te::serialize::WriteParameterValuePtrHelper("Opacity", rs->getOpacity(), writer);
   te::serialize::WriteParameterValuePtrHelper("Gain", rs->getGain(), writer);
   te::serialize::WriteParameterValuePtrHelper("Offset", rs->getOffset(), writer);
@@ -239,9 +237,9 @@ void TextSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer&
   writer.writeStartElement("TextSymbolizer");
 
   // Common elements & attributes of Symbolizers
-  te::serialize::WriterSymbolizerHelper(ts, writer);
+  te::serialize::WriteSymbolizerHelper(ts, writer);
 
-  //te::serialize::Save(ts->getGeometry(), writer); // TODO: fe serialize!
+  // Specific elements of TextSymbolizer
   te::serialize::WriteParameterValuePtrHelper("Label", ts->getLabel(), writer);
   te::serialize::Save(ts->getFont(), writer);
   te::serialize::Save(ts->getLabelPlacement(), writer);

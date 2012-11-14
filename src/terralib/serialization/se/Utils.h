@@ -31,6 +31,8 @@
 
 namespace te
 {
+  namespace fe { class PropertyName; } 
+
   namespace se
   {
     class ParameterValue;
@@ -56,9 +58,11 @@ namespace te
     
     void WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer);
 
-    void WriterSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
+    void WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
 
-    void WriterSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer);
+    void WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer);
+
+    void WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::Writer& writer);
 
   } // end namespace serialize
 }   // end namespace te

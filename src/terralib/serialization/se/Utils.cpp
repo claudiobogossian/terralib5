@@ -24,10 +24,12 @@
 */
 
 // TerraLib
+#include "../../fe/PropertyName.h"
 #include "../../se/Symbolizer.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "../xlink/SimpleLink.h"
+#include "../fe/Expression.h"
 #include "Description.h"
 #include "ParameterValue.h"
 #include "SelectedChannel.h"
@@ -71,7 +73,7 @@ void te::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te
   writer.writeEndElement("OnlineResource");
 }
 
-void te::serialize::WriterSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
+void te::serialize::WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
 {
   assert(symbolizer);
 
@@ -82,7 +84,7 @@ void te::serialize::WriterSymbolizerHelper(const te::se::Symbolizer* symbolizer,
   WriteBaseSymbolizerHelper(symbolizer->getBaseSymbolizer(), writer);
 }
 
-void te::serialize::WriterSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer)
+void te::serialize::WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer)
 {
   if(sc == 0)
     return;
@@ -90,4 +92,14 @@ void te::serialize::WriterSelectedChannelHelper(const std::string& elementName, 
   writer.writeStartElement(elementName);
   Save(sc, writer);
   writer.writeEndElement(elementName);
+}
+
+void te::serialize::WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::Writer& writer)
+{
+  if(p == 0)
+    return;
+
+  writer.writeStartElement("Geometry");
+  te::serialize::Expression::getInstance().write(p, writer);
+  writer.writeEndElement("Geometry");
 }
