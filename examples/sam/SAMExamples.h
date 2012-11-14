@@ -39,8 +39,5 @@
 /*! \brief This example shows how to index a set of points using the R-tree spatial access method. */
 void IndexPointUsingRTree();
 
-/*! \brief It loads the data source drivers. */
-void LoadModules();
-
 #endif  // __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
 
