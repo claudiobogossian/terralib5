@@ -47,7 +47,7 @@ void te::serialize::Save(const te::se::SelectedChannel* sc, te::xml::Writer& wri
 
   writer.writeStartElement("SelectedChannel");
   
-  assert(sc->getSourceChannelName().empty());
+  assert(!sc->getSourceChannelName().empty());
   writer.writeElement("SourceChannelName", sc->getSourceChannelName());
   
   Save(sc->getContrastEnhancement(), writer);

@@ -13,6 +13,7 @@ list (APPEND DEP_LIBS
 		terralib_common
 		terralib_dataaccess
 		terralib_datatype
+		terralib_filter
 		terralib_geometry
 		terralib_maptools
 		terralib_qtwidgets
@@ -28,6 +29,7 @@ set (
   .
   dataaccess
   datatype
+  fe
   geometry
   maptools
   qt

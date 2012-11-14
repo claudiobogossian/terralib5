@@ -28,8 +28,6 @@ void DrawingRasterObject()
   ds->open(rinfo);
 
   te::da::DataSourceTransactor* tr = ds->getTransactor();
-  te::da::DataSetType* dt = tr->getCatalogLoader()->getDataSetType("cbers2b_rgb342_crop.tif");
-  te::rst::RasterProperty* rstp = static_cast<te::rst::RasterProperty*>(dt->getProperties()[0]->clone());
 
   te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
   te::rst::Raster* raster = dataSet->getRaster();

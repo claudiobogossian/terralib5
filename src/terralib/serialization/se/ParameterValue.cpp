@@ -27,6 +27,7 @@
 #include "../../se/ParameterValue.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../fe/Expression.h"
 #include "ParameterValue.h"
 
 // STL
@@ -47,6 +48,6 @@ void te::serialize::Save(const te::se::ParameterValue* p, te::xml::Writer& write
   for(std::size_t i = 0; i < n; ++i)
   {
     const te::se::ParameterValue::Parameter* param = p->getParameter(i);
-      //Save(param->m_expression); TODO: fe serialize!
+    Expression::getInstance().write(param->m_expression, writer);
   }
 }

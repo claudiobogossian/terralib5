@@ -24,7 +24,6 @@
  */
 
 #include "Config.h"
-#include "LoadModules.h"
 
 // TerraLib
 #include <terralib/common.h>
@@ -72,9 +71,10 @@ int main(int argc, char** argv)
   {
       // initialize Terralib support
     TerraLib::getInstance().initialize();
-    LoadModules();
     
     SRSManagerDialogExample(argc, argv);
+    
+    TerraLib::getInstance().finalize();
     
   }
   catch(const std::exception& e)
@@ -88,10 +88,6 @@ int main(int argc, char** argv)
     std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
     
     return EXIT_FAILURE;
-  }
-  
-    // finalize Terralib support
-  TerraLib::getInstance().finalize();
-  
+  }  
   return EXIT_SUCCESS;
 }

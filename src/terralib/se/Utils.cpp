@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "Description.h"
 #include "Fill.h"
 #include "Graphic.h"
 #include "LineSymbolizer.h"
@@ -32,6 +33,7 @@
 #include "PointSymbolizer.h"
 #include "PolygonSymbolizer.h"
 #include "Stroke.h"
+#include "TextSymbolizer.h"
 #include "Utils.h"
 
 te::se::Stroke* te::se::CreateStroke(const std::string& color, const std::string& width)
@@ -168,4 +170,34 @@ te::se::PointSymbolizer* te::se::CreatePointSymbolizer(te::se::Graphic* graphic)
   symbolizer->setGraphic(graphic);
 
   return symbolizer;
+}
+
+te::se::Font* te::se::CreateFont(const std::string& family, const std::string& size, const te::se::Font::FontStyleType& style, const te::se::Font::FontWeightType& weight)
+{
+  te::se::Font* font = new te::se::Font;
+  font->setFamily(family);
+  font->setSize(size);
+  font->setStyle(style);
+  font->setWeight(weight);
+
+  return font;
+}
+
+te::se::TextSymbolizer* te::se::CreateTextSymbolizer(const std::string& label, te::se::Fill* fill, te::se::Font* font)
+{
+  te::se::TextSymbolizer* symbolizer = new te::se::TextSymbolizer;
+  symbolizer->setLabel(new te::se::ParameterValue(label));
+  symbolizer->setFill(fill);
+  symbolizer->setFont(font);
+
+  return symbolizer;
+}
+
+te::se::Description* te::se::CreateDescription(const std::string& title, const std::string& abst)
+{
+  te::se::Description* description = new te::se::Description;
+  description->setTitle(title);
+  description->setAbstract(abst);
+  
+  return description;
 }

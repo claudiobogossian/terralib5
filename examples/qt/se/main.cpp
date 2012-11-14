@@ -25,11 +25,35 @@
 
 // TerraLib
 #include <terralib/common.h>
+#include <terralib/plugin.h>
 #include "SymbologyWidgets.h"
 
 // STL
 #include <exception>
 #include <iostream>
+
+void LoadGDALModule()
+{
+  try
+  {
+    te::plugin::PluginInfo info; 
+    info.m_name = "te.da.gdal";
+    info.m_displayName = "GDAL DataSource Driver";
+    info.m_description = "This data source driver supports spatial data managed by GDAL";
+    info.m_engine = "C++";
+    info.m_folder = PLUGINS_PATH;
+    
+    std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
+    
+    info.m_resources.push_back(rsc);
+    
+    te::plugin::PluginManager::getInstance().load(info);
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Failed to load data source drivers: unknow exception!" << std::endl;
+  }
+}
 
 int main(int /*argc*/, char** /*argv*/)
 {
@@ -38,6 +62,8 @@ int main(int /*argc*/, char** /*argv*/)
 
   try
   {
+    LoadGDALModule();
+    
     SymbologyWidgets();
 
     RasterSymbologyWidgets();

@@ -3,6 +3,7 @@
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
 
 // STL
 #include <cstdlib>
@@ -28,6 +29,8 @@ int main()
     RasterInMemory();
     ExemplifyIterators();
     GribPolygonExample();
+    
+    te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();
   }

@@ -47,10 +47,10 @@ void te::serialize::Save(const te::se::ChannelSelection* cs, te::xml::Writer& wr
 
   writer.writeStartElement("ChannelSelection");
 
-  WriterSelectedChannelHelper("GrayChannel", cs->getGrayChannel(), writer);
-  WriterSelectedChannelHelper("RedChannel", cs->getRedChannel(), writer);
-  WriterSelectedChannelHelper("GreenChannel", cs->getGreenChannel(), writer);
-  WriterSelectedChannelHelper("BlueChannel", cs->getBlueChannel(), writer);
+  WriteSelectedChannelHelper("GrayChannel", cs->getGrayChannel(), writer);
+  WriteSelectedChannelHelper("RedChannel", cs->getRedChannel(), writer);
+  WriteSelectedChannelHelper("GreenChannel", cs->getGreenChannel(), writer);
+  WriteSelectedChannelHelper("BlueChannel", cs->getBlueChannel(), writer);
 
   writer.writeEndElement("ChannelSelection");
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,26 +18,35 @@
  */
 
 /*!
-  \file SAMExamples.h
+  \file terralib/serialization/fe/Filter.cpp
+ 
+  \brief Support for Filter serialization.
+*/
 
-  \brief Several examples on how to use Spatial Access Methods in TerraLib.
- */
+// TerraLib
+#include "../../fe/Filter.h"
+#include "../../xml/Reader.h"
+#include "../../xml/Writer.h"
+#include "AbstractOp.h"
+#include "Filter.h"
 
-#ifndef __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
-#define __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
+// STL
+#include <cassert>
+#include <memory>
 
-//#define TE_EXAMPLE_USE_GDAL
-#define TE_EXAMPLE_USE_OGR
-//#define TE_EXAMPLE_USE_PGIS
-//#define TE_EXAMPLE_USE_T3
-//#define TE_EXAMPLE_USE_SQLITE
-//#define TE_EXAMPLE_USE_QTSQL
-//#define TE_EXAMPLE_USE_SPRING
+te::fe::Filter* te::serialize::ReadFilter(te::xml::Reader& reader)
+{
+  return 0;
+}
 
-#define TE_DATA_LOCALE "."
+void te::serialize::Save(const te::fe::Filter* filter, te::xml::Writer& writer)
+{
+  if(filter == 0)
+    return;
 
-/*! \brief This example shows how to index a set of points using the R-tree spatial access method. */
-void IndexPointUsingRTree();
+  writer.writeStartElement("Filter");
 
-#endif  // __TERRALIB_EXAMPLES_SAM_INTERNAL_SAMEXAMPLES_H
+  AbstractOp::getInstance().write(filter->getOp(), writer);
 
+  writer.writeEndElement("Filter");
+}

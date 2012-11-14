@@ -29,11 +29,10 @@
 // TerraLib
 #include "plugin/Config.h"
 #include "plugin/CppPlugin.h"
-//#include "plugin/CppPluginProxyFactory.h"
 #include "plugin/Plugin.h"
-//#include "plugin/PluginFactory.h"
 #include "plugin/PluginInfo.h"
 #include "plugin/PluginManager.h"
+#include "plugin/Utils.h"
 
 namespace te
 {

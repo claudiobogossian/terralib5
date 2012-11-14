@@ -60,7 +60,7 @@ namespace te
 
           \note The PropertyIsLessThanOrEqualTo operator will take the ownership of the given arguments.
          */
-        PropertyIsLessThanOrEqualTo(Expression* arg1, Expression* arg2) : BinaryComparisonOp(Globals::sm_lessThanEqualTo, arg1, arg2) {}
+        PropertyIsLessThanOrEqualTo(Expression* arg1, Expression* arg2) : BinaryComparisonOp(Globals::sm_propertyIsLessThanOrEqualTo, arg1, arg2) {}
 
         /*! \brief Destructor. */
         ~PropertyIsLessThanOrEqualTo() {}

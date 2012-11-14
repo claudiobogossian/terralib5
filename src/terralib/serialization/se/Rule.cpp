@@ -27,6 +27,7 @@
 #include "../../se/Rule.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../fe/Filter.h"
 #include "Description.h"
 #include "Graphic.h"
 #include "Rule.h"
@@ -35,6 +36,7 @@
 
 // STL
 #include <cassert>
+#include <limits>
 #include <memory>
 
 te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
@@ -61,12 +63,15 @@ void te::serialize::Save(const te::se::Rule* rule, te::xml::Writer& writer)
   }
 
   if(rule->getFilter())
-    /* Save(rule->getFilter(), writer); TODO: fe serialize! */ int x = 0;
+    Save(rule->getFilter(), writer);
   else if(rule->hasElseFilter())
     writer.writeElement("ElseFilter", "");
 
-  writer.writeElement("MinScaleDenominator", rule->getMinScaleDenominator());
-  writer.writeElement("MaxScaleDenominator", rule->getMaxScaleDenominator());
+  if(rule->getMinScaleDenominator() != 0.0)
+    writer.writeElement("MinScaleDenominator", rule->getMinScaleDenominator());
+
+  if(rule->getMaxScaleDenominator() != std::numeric_limits<double>::infinity())
+    writer.writeElement("MaxScaleDenominator", rule->getMaxScaleDenominator());
 
   const std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
   for(std::size_t i = 0; i < symbs.size(); ++i)

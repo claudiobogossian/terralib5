@@ -33,69 +33,44 @@
 /*!
   \brief Load terralib modules.
  */
+
 void LoadModules()
 {
   {
     #if TE_USE_OGR == 1
-      te::plugin::PluginInfo info;
-      info.m_name = "OGR DataSource Driver";
-      info.m_description = "This data source driver supports...";
-
-      #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-        info.m_type = "dll";
-        #ifdef NDEBUG
-              info.m_mainFile = "terralib_ogr.dll";
-        #else
-              info.m_mainFile = "terralib_ogr_d.dll";
-        #endif
-      #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-        #ifdef NDEBUG
-          info.m_type = "s.o.";
-          info.m_mainFile = "libterralib_ogr.so";
-        #else
-          info.m_type = "s.o.";
-          info.m_mainFile = "libterralib_ogr_d.so";
-        #endif
-      #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-        info.m_type = "dylib";
-        info.m_mainFile = "libterralib_ogr.dylib";
-      #else
-        #error "Platform not supported yet"
-      #endif
-
-      te::plugin::PluginManager::getInstance().loadPlugin(info);
+    {
+      te::plugin::PluginInfo info; 
+      info.m_name = "te.da.ogr";
+      info.m_displayName = "OGR DataSource Driver";
+      info.m_description = "This data source driver supports spatial data managed by OGR";
+      info.m_engine = "C++";
+      info.m_folder = PLUGINS_PATH;
+      
+      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
+      
+      info.m_resources.push_back(rsc);
+      
+      te::plugin::PluginManager::getInstance().load(info);
+    }
     #endif
   }
 
   {
     #if TE_USE_GDAL
-      te::plugin::PluginInfo info;
-      info.m_name = "GDAL DataSource Driver";
-      info.m_description = "This data source driver supports...";
-
-      #if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-        info.m_type = "dll";
-        #ifdef NDEBUG
-              info.m_mainFile = "terralib_gdal.dll";
-        #else
-              info.m_mainFile = "terralib_gdal_d.dll";
-        #endif            
-      #elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-        #ifdef NDEBUG
-          info.m_type = "s.o.";
-          info.m_mainFile = "libterralib_gdal.so";
-        #else
-          info.m_type = "s.o.";
-          info.m_mainFile = "libterralib_gdal_d.so";
-        #endif
-      #elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-        info.m_type = "dylib";
-        info.m_mainFile = "libterralib_gdal.dylib";
-      #else
-        #error "Platform not supported yet"
-      #endif
-
-      te::plugin::PluginManager::getInstance().loadPlugin(info);
+    {
+      te::plugin::PluginInfo info; 
+      info.m_name = "te.da.gdal";
+      info.m_displayName = "GDAL DataSource Driver";
+      info.m_description = "This data source driver supports spatial data managed by GDAL";
+      info.m_engine = "C++";
+      info.m_folder = PLUGINS_PATH;
+      
+      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
+      
+      info.m_resources.push_back(rsc);
+      
+      te::plugin::PluginManager::getInstance().load(info);
+    }
     #endif
   }
 

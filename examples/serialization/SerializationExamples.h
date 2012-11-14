@@ -18,15 +18,21 @@
  */
 
 /*!
-  \file LoadModules.h
+  \file SerializationExample.h
 
-  \brief Load the required runtime modules.
- */
+  \brief Several examples declarations.
+*/
 
-#ifndef __TERRALIB_EXAMPLES_QT_SRS_LOADMODULES_H
-#define __TERRALIB_EXAMPLES_QT_SRS_LOADMODULES_H
+#ifndef __TERRALIB_EXAMPLES_SERIALIZATION_INTERNAL_SERIALIZATIONEXAMPLES_H
+#define __TERRALIB_EXAMPLES_SERIALIZATION_INTERNAL_SERIALIZATIONEXAMPLES_H
 
-/*! \brief Load the required runtime modules. */
-void LoadModules();
+// STL
+#include <string>
 
-#endif
+/*! \brief It creates an OGC Filter Enconding and encode it to XML format. */
+void EncodeFilter(const std::string& path = "");
+
+/*! \brief It creates an OGC Symbology Enconding Style and encode it to XML format. */
+void EncodeStyle(const std::string& path = "");
+
+#endif  // __TERRALIB_EXAMPLES_SERIALIZATION_INTERNAL_SERIALIZATIONEXAMPLES_H

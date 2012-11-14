@@ -31,9 +31,10 @@
 #include "DataGrid.h"
 
 DataGrid::DataGrid(QWidget* parent)
-  : m_ds(0), m_transactor(0), m_catalogLoader(0),
+  : QDialog(parent),
+    m_ds(0), m_transactor(0), m_catalogLoader(0),
     m_dataGridOp(0), m_opTableView(0), m_dataSetType(0),
-    m_dataSet(0), QDialog(parent)
+    m_dataSet(0)
 {
   setupUi(this);
 

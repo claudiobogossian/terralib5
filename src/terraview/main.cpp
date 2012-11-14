@@ -41,12 +41,16 @@ int main(int argc, char** argv)
 
   try
   {
-    MainWindow dlg;
+    QSplashScreen* splash = new QSplashScreen(QPixmap(), Qt::WindowStaysOnTopHint);
+    splash->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    QSplashScreen* splash = new QSplashScreen(&dlg, QPixmap(), Qt::WindowStaysOnTopHint);
     te::qt::af::SplashScreenManager::getInstance().set(splash, 1, Qt::white);
     splash->show();
     qApp->processEvents();
+
+    te::qt::af::SplashScreenManager::getInstance().showMessage(QObject::tr("Initializing TerraLib."));
+
+    MainWindow dlg;
 
     dlg.showMaximized();
     splash->finish(&dlg);

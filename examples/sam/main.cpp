@@ -44,10 +44,12 @@ int main(int /*argc*/, char** /*argv*/)
 // It initializes all the data source drivers (see LoadModule.cpp)
   try
   {
-    LoadModules();
+    TerraLib::getInstance().initialize();
 
 // R-tree examples
     IndexPointUsingRTree();
+    
+    TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
   {
@@ -67,7 +69,7 @@ int main(int /*argc*/, char** /*argv*/)
 
     return EXIT_FAILURE;
   }
-
+  
   std::cout << "Press Enter to exit..." << std::endl;
   std::cin.get();
 

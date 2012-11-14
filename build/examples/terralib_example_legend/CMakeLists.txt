@@ -35,16 +35,17 @@ endif(WIN32)
 
 set(DEP_LIBS
 	 terralib_color
-		 terralib_common
-		 terralib_dataaccess
-		 terralib_datatype
-		 terralib_geometry
-		 terralib_maptools
-		 terralib_postgis
-		 terralib_qtwidgets
-		 terralib_xlink
-		 ${QT_LIBRARIES}
-		 ${POSTGRESQL_LIBRARIES})
+         terralib_common
+	terralib_dataaccess
+	terralib_datatype
+	terralib_geometry
+	terralib_maptools
+        terralib_plugin
+	terralib_postgis
+	terralib_qtwidgets
+	terralib_xlink
+	${QT_LIBRARIES}
+	${POSTGRESQL_LIBRARIES})
  	
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)

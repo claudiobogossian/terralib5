@@ -20,38 +20,53 @@
 /*!
   \file main.cpp
 
-  \brief A list of examples for the TerraLib Spatial Reference Systems Module.
- */
+  \brief A list of examples for the TerraLib Serialization.
+*/
+
+#include "SerializationExamples.h"
 
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/plugin.h>
 
-// Examples
-#include "ReaderExample.h"
-
 // STL
+#include <exception>
 #include <iostream>
 
 int main(int /*argc*/, char** /*argv*/)
-{ 
-// It initializes all the data source drivers (see LoadModule.cpp)
+{
+// Initializes Terralib support
+  TerraLib::getInstance().initialize();
+
   try
   {
-    TerraLib::getInstance().initialize();
-    Read(); 
-    TerraLib::getInstance().finalize();
+    EncodeFilter(/*"D:/filter.xml"*/); // Uncomment the path paramater to save the serialization result to file.
+    EncodeStyle(/*"D:/style.xml"*/);   // Uncomment the path paramater to save the serialization result to file.
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occurried: " << e.what() << std::endl;
+    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
+
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
+    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+
     return EXIT_FAILURE;
   }
+
+// Finalizes Terralib support
+  TerraLib::getInstance().finalize();
+
+  std::cout << "Press Enter to exit..." << std::endl;
+  std::cin.get();
+
   return EXIT_SUCCESS;
 }
-

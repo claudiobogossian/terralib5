@@ -67,32 +67,6 @@ te::da::DataSet* getDataSet(te::da::DataSource* ds)
   return dataset;
 }
 
-void loadModules()
-{
-  try
-  {
-    {
-      te::plugin::PluginInfo info;
-
-      info.m_name = "te.da.ogr";
-      info.m_displayName = "OGR DataSource Driver";
-      info.m_description = "This data source driver supports...";
-      info.m_engine = "C++";
-      info.m_folder = PLUGINS_PATH;
-
-      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
-
-      info.m_resources.push_back(rsc);
-
-      te::plugin::PluginManager::getInstance().load(info);
-    }
-  }
-  catch(const te::common::Exception& e)
-  {
-    throw e;
-  }
-}
-
 //! Function for initialize the TabularViewerEx dialog.
 void initDialog(TabularViewerEx* wd, QTabWidget* tab, te::qt::widgets::FileChooser*& fc, te::qt::widgets::TabularViewer*& tv, SelectPKey*& pkeySel)
 {
@@ -159,8 +133,6 @@ QMainWindow(parent),
 m_dsrc(0),
 m_tab(new QTabWidget(this))
 {
-  loadModules();
-
   initDialog(this, m_tab, m_fchooser, m_viewer, m_pkey_sel);
 
   QMainWindow::setWindowTitle(tr("Shapefile tabular viewer"));
@@ -207,8 +179,6 @@ void TabularViewerEx::updateViewer()
 
 void TabularViewerEx::pkeysChanged(const std::vector<size_t>& ids)
 {
-  bool idsEmpty = ids.empty();
-
   if(!ids.empty())
     m_tab->setTabEnabled(2, true);
 }

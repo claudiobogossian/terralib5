@@ -14,10 +14,27 @@ FrozenLayersSelection::FrozenLayersSelection(std::list<te::map::AbstractLayer*> 
   QDialog(parent, f),
   m_list(list)
 {
-  setWindowTitle("Frozen Layers Selection");
+  setWindowTitle("Selectable layers on the map display");
 
   QVBoxLayout* layout = new QVBoxLayout(this);
+
   QSplitter* splitter = new QSplitter(this);
+
+  QGroupBox* gb = new QGroupBox(splitter);
+  gb->setMaximumWidth(90);
+  QVBoxLayout* layoutb = new QVBoxLayout(gb);
+
+  QPushButton* checkAllPushButton = new QPushButton("Check All", gb);
+  QPushButton* uncheckAllPushButton = new QPushButton("Uncheck All", gb);
+  QPushButton* togglePushButton = new QPushButton("Togle", gb);
+
+  layoutb->addStretch();
+  layoutb->addWidget(checkAllPushButton);
+  layoutb->addStretch();
+  layoutb->addWidget(uncheckAllPushButton);
+  layoutb->addStretch();
+  layoutb->addWidget(togglePushButton);
+  layoutb->addStretch();
 
   std::string name, fname;
   int rows = list.size();
@@ -44,36 +61,80 @@ FrozenLayersSelection::FrozenLayersSelection(std::list<te::map::AbstractLayer*> 
     {
       fname = (*sit)->getTitle();
       if(name == fname)
-      {
-        cb->setCheckState(Qt::Checked);
         break;
-      }
     }
+    if(sit == lset.end())
+      cb->setCheckState(Qt::Checked);
   }
   m_table->adjustSize();
   m_table->resizeColumnsToContents();
 
   layout->addWidget(splitter);
 
-  QGroupBox* gb = new QGroupBox(this);
- 
-  QHBoxLayout* hlayout = new QHBoxLayout(gb);
-  QPushButton* okPushButton = new QPushButton("Ok", gb);
+  QGroupBox* gb1 = new QGroupBox(this);
+  gb1->setMaximumHeight(50);
+
+  QHBoxLayout* hlayout = new QHBoxLayout(gb1);
+  QPushButton* okPushButton = new QPushButton("Ok", gb1);
+  hlayout->addStretch();
   hlayout->addWidget(okPushButton);
 
-  QPushButton* cancelPushButton = new QPushButton("Cancel", gb);
+  QPushButton* cancelPushButton = new QPushButton("Cancel", gb1);
+  hlayout->addStretch();
   hlayout->addWidget(cancelPushButton);
+  hlayout->addStretch();
 
-  layout->addWidget(gb);
+  layout->addWidget(gb1);
 
   setLayout(layout);
 
   connect(okPushButton, SIGNAL(clicked()), this, SLOT(okSlot()));
   connect(cancelPushButton, SIGNAL(clicked()), this, SLOT(cancelSlot()));
+  connect(checkAllPushButton, SIGNAL(clicked()), this, SLOT(checkAllSlot()));
+  connect(uncheckAllPushButton, SIGNAL(clicked()), this, SLOT(uncheckAllSlot()));
+  connect(togglePushButton, SIGNAL(clicked()), this, SLOT(toggleSlot()));
 }
 
 FrozenLayersSelection::~FrozenLayersSelection()
 {
+}
+
+void FrozenLayersSelection::checkAllSlot()
+{
+  std::list<te::map::AbstractLayer*>::iterator lit;
+  int i;
+  for(i = 0, lit = m_list.begin(); lit != m_list.end(); ++i, ++lit)
+  {
+    QCheckBox* cb = (QCheckBox*) m_table->cellWidget(i, 0);
+    if(cb->checkState() == Qt::Unchecked)
+      cb->setCheckState(Qt::Checked);
+  }
+}
+
+void FrozenLayersSelection::uncheckAllSlot()
+{
+  std::list<te::map::AbstractLayer*>::iterator lit;
+  int i;
+  for(i = 0, lit = m_list.begin(); lit != m_list.end(); ++i, ++lit)
+  {
+    QCheckBox* cb = (QCheckBox*) m_table->cellWidget(i, 0);
+    if(cb->checkState() == Qt::Checked)
+      cb->setCheckState(Qt::Unchecked);
+  }
+}
+
+void FrozenLayersSelection::toggleSlot()
+{
+  std::list<te::map::AbstractLayer*>::iterator lit;
+  int i;
+  for(i = 0, lit = m_list.begin(); lit != m_list.end(); ++i, ++lit)
+  {
+    QCheckBox* cb = (QCheckBox*) m_table->cellWidget(i, 0);
+    if(cb->checkState() == Qt::Unchecked)
+      cb->setCheckState(Qt::Checked);
+    else
+      cb->setCheckState(Qt::Unchecked);
+  }
 }
 
 void FrozenLayersSelection::okSlot()
@@ -84,7 +145,7 @@ void FrozenLayersSelection::okSlot()
   {
     MyLayer* layer = (MyLayer*)(*lit);
     QCheckBox* cb = (QCheckBox*) m_table->cellWidget(i, 0);
-    if(cb->checkState() == Qt::Checked)
+    if(cb->checkState() == Qt::Unchecked)
       m_layerSet.insert(layer);
   }
 

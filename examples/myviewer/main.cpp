@@ -24,6 +24,7 @@
 //#include <terralib/srs.h>
 //#include <terralib/dataaccess.h>
 //#include <terralib/maptools.h>
+#include <terralib/plugin.h>
 //#include <terralib/postgis.h>
 //#include <terralib/common/TerraLib.h>
 #include <terralib/qt/widgets.h>
@@ -86,6 +87,8 @@ int main(int argc, char *argv[])
 //msg += "  KBytes, liberou:" + msgg + " KBytes";
 //te::common::Logger::logInfo("main", msg.toStdString().c_str());
 //te::common::Logger::finalize("main");
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
 
   return ret;

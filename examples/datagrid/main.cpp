@@ -51,28 +51,18 @@
 //Qt
 #include <QApplication>
 
-//#include "Config.h"
 #include "DataGrid.h"
 
 void LoadDrivers()
 {
   try
   {
-    {
-      te::plugin::PluginInfo info;
-      
-      info.m_name = "te.da.pgis";
-      info.m_displayName = "POSTGIS DataSource Driver";
-      info.m_description = "This data source driver supports...";
-      info.m_engine = "C++";
-      info.m_folder = PLUGINS_PATH;
-      
-      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_postgis");
-      
-      info.m_resources.push_back(rsc);
-      
-      te::plugin::PluginManager::getInstance().load(info);
-    }
+    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_pgis_info.xml"));
+    
+    te::plugin::PluginManager::getInstance().add(info);   
+    
+    te::plugin::PluginManager::getInstance().loadAll();
+    
   }
   catch(const te::common::Exception& e)
   {
@@ -82,18 +72,43 @@ void LoadDrivers()
 
 int main(int argc, char* argv[])
 {
-  QApplication app(argc, argv);
-
-  TerraLib::getInstance().initialize();
-
-  LoadDrivers();
-
-  DataGrid* mainWindow = new DataGrid;
-  mainWindow->show();
-
-  app.exec();
- 
+  try 
+  {
+    TerraLib::getInstance().initialize();
+    
+    LoadDrivers();
+    
+    QApplication app(argc, argv);
+    
+    DataGrid* mainWindow = new DataGrid;
+    mainWindow->show();
+    
+    app.exec();
+  }
+  catch(const te::common::Exception& e)
+  {
+    std::cout << std::endl << "An exception has occuried:" << std::endl;
+    std::cout << e.what() << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+    
+    return EXIT_FAILURE;
+  }
+  catch(const std::exception& e)
+  {
+    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
+    std::cin.get();
+    
+    return EXIT_FAILURE;
+  }
+  
+  te::plugin::PluginManager::getInstance().unloadAll();
+  
   TerraLib::getInstance().finalize();
   
-  return 0;
+  std::cout << "Press Enter to exit..." << std::endl;
+  std::cin.get();
+  
+  return EXIT_SUCCESS;
 }

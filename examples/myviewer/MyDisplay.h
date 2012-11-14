@@ -30,7 +30,7 @@ public:
   void dragEnterEvent(QDragEnterEvent*);
   void dropEvent(QDropEvent*);
   void setLayerTree(te::map::AbstractLayer* layer);
-  te::gm::Envelope MyDisplay::getLayerExtent(te::map::AbstractLayer* al);
+  te::gm::Envelope getLayerExtent(te::map::AbstractLayer* al);
   void changeTree(te::map::AbstractLayer*);
   void contextMenuEvent(QContextMenuEvent*);
   void changeObjectStatus(QRect rec, const std::string& mode);

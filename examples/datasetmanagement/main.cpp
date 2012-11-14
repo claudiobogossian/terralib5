@@ -45,7 +45,6 @@
 #include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/maptools.h>
-#include <terralib/postgis/Platform.h>
 #include <terralib/qt/widgets.h>
 
 //Qt
@@ -56,7 +55,6 @@
 
 int main(int argc, char* argv[])
 {
-  te::pgis::Platform::initialize();  
 
   QApplication app(argc, argv);
 
@@ -64,8 +62,6 @@ int main(int argc, char* argv[])
   mainWindow->show();
 
   app.exec();
-
-  te::pgis::Platform::finalize();  
 
   return 0;
 }

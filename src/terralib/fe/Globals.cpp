@@ -61,12 +61,12 @@ const char* te::fe::Globals::sm_contains = "Contains";
 const char* te::fe::Globals::sm_dWithin = "DWithin";
 const char* te::fe::Globals::sm_beyond = "Beyond";
 
-const char* te::fe::Globals::sm_lessThan = "PropertyIsLessThan";
-const char* te::fe::Globals::sm_greaterThan = "PropertyIsGreaterThan";
-const char* te::fe::Globals::sm_lessThanEqualTo = "PropertyIsLessThanEqualTo";
-const char* te::fe::Globals::sm_greaterThanEqualTo = "PropertyIsGreaterThanEqualTo";
+const char* te::fe::Globals::sm_lessThan = "LessThan";
+const char* te::fe::Globals::sm_greaterThan = "GreaterThan";
+const char* te::fe::Globals::sm_lessThanEqualTo = "LessThanEqualTo";
+const char* te::fe::Globals::sm_greaterThanEqualTo = "GreaterThanEqualTo";
 const char* te::fe::Globals::sm_equalTo = "EqualTo";
-const char* te::fe::Globals::sm_notEqualTo = "PropertyIsNotEqualTo";
+const char* te::fe::Globals::sm_notEqualTo = "NotEqualTo";
 const char* te::fe::Globals::sm_like = "Like";
 const char* te::fe::Globals::sm_between = "Between";
 const char* te::fe::Globals::sm_nullCheck = "NullCheck";

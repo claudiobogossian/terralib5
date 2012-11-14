@@ -34,6 +34,7 @@
 #include <terralib/qt/widgets/rp/ContrastDialog.h>
 #include <terralib/qt/widgets/rp/SegmenterDialog.h>
 #include <terralib/raster/RasterFactory.h>
+#include <terralib/plugin.h>
 
 // QT
 #include <QtGui/QApplication>
@@ -171,6 +172,8 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
+  te::plugin::PluginManager::getInstance().unloadAll();
+  
 // finalize Terralib support
   TerraLib::getInstance().finalize();
 

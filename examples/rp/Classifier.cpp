@@ -19,7 +19,6 @@
 std::vector<te::gm::Polygon*> CreatePolygons(te::rst::Raster* rin)
 {
 // create 4 input polygons
-  te::gm::Envelope* mbr = new te::gm::Envelope(*rin->getExtent());
   std::vector<te::gm::Polygon*> pin;
 
   double xc = (rin->getExtent()->getUpperRightX() + rin->getExtent()->getLowerLeftX())/2;

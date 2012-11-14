@@ -111,7 +111,6 @@ void SelectLayer::populeWidgets(te::da::DataSource* ds)
     int ind = m_dataSourceTypeComboBox->findText(type);
     m_dataSourceTypeComboBox->setCurrentIndex(ind);
 
-    te::da::DataSourceCatalog* catalog = ds->getCatalog();
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
     te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
     boost::ptr_vector<std::string> names;
