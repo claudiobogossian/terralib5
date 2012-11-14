@@ -19,6 +19,9 @@ public:
   ~FrozenLayersSelection();
 
 public slots:
+  void checkAllSlot();
+  void uncheckAllSlot();
+  void toggleSlot();
   void okSlot();
   void cancelSlot();
 

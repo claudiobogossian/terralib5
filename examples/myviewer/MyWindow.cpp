@@ -329,6 +329,15 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
   m_treeMenu->addAction(m_removeLegendAction);
   connect(m_removeLegendAction, SIGNAL(triggered()), this, SLOT(removeLegendSlot()));
 
+  m_removeSelectionMenu = m_treeMenu->addMenu("Remove Selection");
+  m_removeAllPointedAction = new QAction("Pointed...", m_removeSelectionMenu);
+  m_removeSelectionMenu->addAction(m_removeAllPointedAction);
+  connect(m_removeAllPointedAction, SIGNAL(triggered()), this, SLOT(m_removeAllPointedSlot()));
+
+  m_removeAllQueriedAction = new QAction("Queried...", m_removeSelectionMenu);
+  m_removeSelectionMenu->addAction(m_removeAllQueriedAction);
+  connect(m_removeAllQueriedAction, SIGNAL(triggered()), this, SLOT(m_removeAllQueriedSlot()));
+
   m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
   m_keepOnMemoryAction->setCheckable(true);
   m_treeMenu->addAction(m_keepOnMemoryAction);
@@ -2203,6 +2212,34 @@ void MyWindow::removeLegendSlot()
   m_layerExplorerModel->removeLegend(m_layerExplorer->getPopupIndex());
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
   updateDisplays((MyLayer*)(layerItem->getRefLayer()));
+}
+
+void MyWindow::m_removeAllPointedSlot()
+{
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
+  MyLayer* layer = (MyLayer*)(layerItem->getRefLayer());
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+  op->removePointedStatusOfAllRows();
+
+  selectionChanged(op);
+}
+
+void MyWindow::m_removeAllQueriedSlot()
+{
+  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+
+  te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(m_layerExplorerModel->getItem(m_layerExplorer->getPopupIndex()));
+  MyLayer* layer = (MyLayer*)(layerItem->getRefLayer());
+  te::map::DataGridOperation* op = layer->getDataGridOperation();
+  if(op == 0)
+    return;
+  op->removeQueriedStatusOfAllRows();
+
+  selectionChanged(op);
 }
 
 void MyWindow::getAvailableMemorySlot()
