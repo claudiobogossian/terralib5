@@ -48,6 +48,12 @@ void te::qt::af::SplashScreenManager::set(QSplashScreen* impl, int alignment, co
   m_msgColor = color;
 }
 
+void te::qt::af::SplashScreenManager::setLogo(const QPixmap& pix)
+{
+  if(m_sc != 0)
+    m_sc->setPixmap(pix);
+}
+
 te::qt::af::SplashScreenManager::SplashScreenManager()
   : m_sc(0),
     m_msgAlignment(Qt::AlignLeft),

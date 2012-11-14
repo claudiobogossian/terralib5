@@ -72,6 +72,12 @@ namespace te
           */
           void set(QSplashScreen* impl, int alignment = Qt::AlignLeft, const QColor& color = Qt::black);
 
+          /*!
+            \brief Updates the image to be presented on splash screen.
+            \param pix New image to be presented.
+          */
+          void setLogo(const QPixmap& pix);
+
         protected:
 
           /*! \brief It initializes the singleton. */

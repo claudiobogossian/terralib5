@@ -45,6 +45,29 @@
 #include <exception>
 #include <iostream>
 
+void LoadOGRModule()
+{
+  try
+  {
+    te::plugin::PluginInfo info; 
+    info.m_name = "te.da.ogr";
+    info.m_displayName = "OGR DataSource Driver";
+    info.m_description = "This data source driver supports spatial data managed by OGR";
+    info.m_engine = "C++";
+    info.m_folder = PLUGINS_PATH;
+    
+    std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
+    
+    info.m_resources.push_back(rsc);
+    
+    te::plugin::PluginManager::getInstance().load(info);
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Failed to load data source OGR driver: unknow exception!" << std::endl;
+  }
+}
+
 int main(int /*argc*/, char** /*argv*/)
 {
 // initialize Terralib support
@@ -52,14 +75,7 @@ int main(int /*argc*/, char** /*argv*/)
 
   try
   {
-    //======== load plugin ogr
-    te::plugin::PluginInfo info;
-    info.m_type = "dll";
-    info.m_name = "OGR DataSource Driver";
-    info.m_description = "This data source driver supports...";
-    info.m_mainFile = "terralib_ogr_d.dll";
-    te::plugin::PluginManager::getInstance().loadPlugin(info);
-    //========
+    LoadOGRModule();
     
     //pegar um data set
     //std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Solutions/examples/data/charts");

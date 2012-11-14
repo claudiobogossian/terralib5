@@ -44,36 +44,18 @@ void LoadGDALModule()
 {
   try
   {
-    te::plugin::PluginInfo info;
-    info.m_type = "dll";
-    info.m_name = "GDAL DataSource Driver";
-    info.m_description = "This data source driver supports...";
-      
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-#ifdef NDEBUG
-    info.m_mainFile = "terralib_gdal.dll";
-#else
-    info.m_mainFile = "terralib_gdal_d.dll";
-#endif
-#endif
-      
-#if TE_PLATFORM == TE_PLATFORMCODE_LINUX
-#ifdef NDEBUG
-    info.m_mainFile = "terralib_gdal.so";
-#else
-    info.m_mainFile = "terralib_gdal_d.so";
-#endif
-#endif 
-      
-#if TE_PLATFORM == TE_PLATFORMCODE_APPLE
-#ifdef NDEBUG
-    info.m_mainFile = "libterralib_gdal.dylib";
-#else
-    info.m_mainFile = "libterralib_gdal_d.dylib";
-#endif
-#endif 
-
-    te::plugin::PluginManager::getInstance().loadPlugin(info);
+    te::plugin::PluginInfo info; 
+    info.m_name = "te.da.gdal";
+    info.m_displayName = "GDAL DataSource Driver";
+    info.m_description = "This data source driver supports spatial data managed by GDAL";
+    info.m_engine = "C++";
+    info.m_folder = PLUGINS_PATH;
+    
+    std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
+    
+    info.m_resources.push_back(rsc);
+    
+    te::plugin::PluginManager::getInstance().load(info);
   }
   catch(...)
   {
@@ -90,6 +72,8 @@ int main(int argc, char** argv)
 
   try
   {
+    LoadGDALModule();
+    
     QApplication app(argc, argv);
 
     // Adjusting icons theme
@@ -97,8 +81,6 @@ int main(int argc, char** argv)
     QStringList paths = spaths.split(";");
     QIcon::setThemeName(ICON_THEME);
     QIcon::setThemeSearchPaths(paths);
-
-    LoadGDALModule();
 
     // Example MainWindow
     MainWindow window;

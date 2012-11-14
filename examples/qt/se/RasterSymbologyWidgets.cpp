@@ -6,7 +6,6 @@
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/se.h>
-#include <terralib/gdal/Platform.h>
 
 // Qt
 #include <QtGui/QApplication>
@@ -15,9 +14,6 @@ void RasterSymbologyWidgets()
 {
   int argc = 1;
   QApplication app(argc, 0);
-
-  // open raster
-  te::gdal::Platform::initialize();
 
   // set input raster name
   std::map<std::string, std::string> rinfo;
@@ -46,5 +42,4 @@ void RasterSymbologyWidgets()
     rs = static_cast<te::se::RasterSymbolizer*>(dlg.getRasterSymbolizer());
   }
 
-  te::gdal::Platform::finalize();
 }

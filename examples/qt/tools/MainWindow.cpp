@@ -59,6 +59,8 @@
 // STL
 #include <cassert>
 
+#include <boost/lexical_cast.hpp>
+
 te::se::Symbolizer* BuildSymbolizer(const te::gm::GeomType& geomType)
 {
   switch(geomType)
@@ -323,7 +325,7 @@ void MainWindow::addRasterLayer(const QString& path)
   te::gm::Envelope env(*raster->getExtent());
 
  // Creates a Raster Layer
-  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(te::common::Convert2String(ms_id++), datasets[0]);
+  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(boost::lexical_cast<std::string>(ms_id++), datasets[0]);
   rasterLayer->setDataSource(ds);
   rasterLayer->setDataSetName(datasets[0]);
   rasterLayer->setVisibility(te::map::VISIBLE);
