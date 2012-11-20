@@ -5,32 +5,17 @@
 #include <terralib/se.h>
 #include <terralib/serialization/fe/Filter.h>
 #include <terralib/serialization/se/Style.h>
+#include <terralib/serialization/xlink/SimpleLink.h>
+#include <terralib/xml/Reader.h>
+#include <terralib/xml/ReaderFactory.h>
 #include <terralib/xml/Writer.h>
+#include <terralib/xlink/SimpleLink.h>
 
 // STL
 #include <cassert>
-#include <fstream>
-#include <iostream>
 #include <sstream>
 
-// Shows the serialization result on console
-void ShowResult(const std::string& s)
-{
-  std::cout << "Result:" << std::endl;
-  std::cout << s << std::endl;
-}
-
-// Saves the serialization result to a file path
-void SaveResult(const std::string& s, const std::string& path)
-{
-  if(path.empty())
-    return;
-
-  std::ofstream ofs(path);
-  ofs << s;
-}
-
-void EncodeFilter(const std::string& path)
+std::string EncodeFilter()
 {
   /* Creating an OGC Filter Expression */
   
@@ -66,16 +51,12 @@ void EncodeFilter(const std::string& path)
   te::xml::Writer writer(oss);
   te::serialize::Save(filter, writer);
 
-  // Shows the serialization result
-  ShowResult(oss.str());
-  
-  // Case path not empty, saves the serialization result to a file
-  SaveResult(oss.str(), path);
-
   delete filter;
+
+  return oss.str();
 }
 
-void EncodeStyle(const std::string& path)
+std::string EncodeStyle()
 {
   /* Creating an OGC Symbology Enconding Style */
 
@@ -118,11 +99,29 @@ void EncodeStyle(const std::string& path)
   cs->setGreenChannel(scG);
   cs->setBlueChannel(scB);
 
+  te::se::Categorize* categorize = new te::se::Categorize;
+  categorize->setThresholdsBelongTo(te::se::Categorize::PRECEDING);
+  categorize->setFallbackValue("0");
+  categorize->setLookupValue(new te::se::ParameterValue("Rasterdata"));
+  categorize->setValue(new te::se::ParameterValue("#00FF00"));
+  categorize->addThreshold(new te::se::ParameterValue("-417"));
+  categorize->addValue(new te::se::ParameterValue("#00FA00"));
+  categorize->addThreshold(new te::se::ParameterValue("-333"));
+  categorize->addValue(new te::se::ParameterValue("#14F500"));
+  categorize->addThreshold(new te::se::ParameterValue("-250"));
+  categorize->addValue(new te::se::ParameterValue("#28F502"));
+  categorize->addThreshold(new te::se::ParameterValue("-167"));
+  categorize->addValue(new te::se::ParameterValue("#3CF505"));
+
+  te::se::ColorMap* colorMap = new te::se::ColorMap;
+  colorMap->setCategorize(categorize);
+
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer;
   rs->setOpacity(new te::se::ParameterValue("1.0"));
   rs->setGain(new te::se::ParameterValue("1.0"));
   rs->setOffset(new te::se::ParameterValue("0.0"));
   rs->setChannelSelection(cs);
+  rs->setColorMap(colorMap);
   rs->setDescription(te::se::CreateDescription("A simple raster symbolizer example", "This symbolizer was created to show the power of TerraLib serialization module."));
 
   // Creates a Rule
@@ -143,6 +142,11 @@ void EncodeStyle(const std::string& path)
   style->setName(new std::string("Style 1"));
   style->setDescription(te::se::CreateDescription("A simple style example", "This style was created to show the power of TerraLib serialization module."));
 
+  return EncodeStyle(style);
+}
+
+std::string EncodeStyle(te::se::Style* style)
+{
   /* Let's serialize! */
   std::ostringstream oss;
 
@@ -150,11 +154,36 @@ void EncodeStyle(const std::string& path)
   te::xml::Writer writer(oss);
   te::serialize::Style::getInstance().write(style, writer);
 
-  // Shows the serialization result
-  ShowResult(oss.str());
-  
-  // Case path not empty, saves the serialization result to a file
-  SaveResult(oss.str(), path);
-
   delete style;
+
+  return oss.str();
+}
+
+te::se::Style* DecodeStyle(const std::string& path)
+{
+  te::xml::Reader* reader = te::xml::ReaderFactory::make("XERCES");
+  reader->read(path);
+  reader->next();
+
+  te::se::Style* style = te::serialize::Style::getInstance().read(*reader);
+
+  return style;
+}
+
+std::string EncodeSimpleLink()
+{
+  te::xl::SimpleLink* link = new te::xl::SimpleLink;
+  link->setTitle("TerraLib Logotype");
+  link->setHref("http://www.dpi.inpe.br/terralib5/terralib_logo.png");
+  link->setShow(te::xl::SHOW_NEW);
+  link->setActuate(te::xl::ACTUATE_ONREQUEST);
+
+  // Serializing...
+  std::ostringstream oss;
+  te::xml::Writer writer(oss);
+  te::serialize::Save(link, writer);
+
+  delete link;
+
+  return oss.str();
 }
