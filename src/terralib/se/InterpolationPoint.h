@@ -81,10 +81,10 @@ namespace te
         //@{
 
         void setData(const double& d);
-        double getData();
+        double getData() const;
 
         void setValue(ParameterValue* v);
-        ParameterValue* getValue();
+        ParameterValue* getValue() const;
 
         //@}
 

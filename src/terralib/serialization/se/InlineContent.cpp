@@ -49,6 +49,8 @@ te::se::InlineContent* te::serialize::ReadInlineContent(te::xml::Reader& reader)
   std::auto_ptr<te::se::InlineContent> ic(new te::se::InlineContent(encodingType));
   ic->setData(data);
 
+  reader.next();
+
   return ic.release();
 }
 

@@ -114,6 +114,11 @@ void te::se::Style::push_back(te::xl::SimpleLink* onlineResource)
   m_onlineResources.push_back(onlineResource);
 }
 
+size_t te::se::Style::getNOnlineResources() const
+{
+  return m_onlineResources.size();
+}
+
 const te::xl::SimpleLink* te::se::Style::getOnlineResource(size_t i) const
 {
   assert(i < m_onlineResources.size());

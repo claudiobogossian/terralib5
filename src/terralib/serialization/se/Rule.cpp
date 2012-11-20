@@ -41,7 +41,69 @@
 
 te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Rule");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Rule> rule(new te::se::Rule);
+
+  // Name
+  if(reader.getElementLocalName() == "Name")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    rule->setName(new std::string(reader.getElementValue()));
+    reader.next();
+  }
+
+  // Description
+  if(reader.getElementLocalName() == "Description")
+    rule->setDescription(ReadDescription(reader));
+
+  // LegendGraphic
+  if(reader.getElementLocalName() == "LegendGraphic")
+  {
+    reader.next();
+    rule->setLegendGraphic(ReadGraphic(reader));
+    reader.next();
+  }
+
+  // Filter / ElseFilter
+  if(reader.getElementLocalName() == "Filter")
+    rule->setFilter(ReadFilter(reader));
+  else if(reader.getElementLocalName() == "ElseFilter")
+  {
+    rule->enableElseFilter();
+    reader.next();
+  }
+
+  // MinScaleDenominator
+  if(reader.getElementLocalName() == "MinScaleDenominator")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    double minScale = reader.getElementValueAsDouble();
+    rule->setMinScaleDenominator(minScale);
+    reader.next();
+  }
+
+  // MaxScaleDenominator
+  if(reader.getElementLocalName() == "MaxScaleDenominator")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    double maxScale = reader.getElementValueAsDouble();
+    rule->setMaxScaleDenominator(maxScale);
+    reader.next();
+  }
+
+  // Symbolizers
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+    reader.getElementLocalName().find("Symbolizer") != std::string::npos) // TODO: For while using find("Symbolizer")... Actually, I would like to search by the registered names of symbolizer.
+    rule->push_back(te::serialize::Symbolizer::getInstance().read(reader));
+
+  return rule.release();
 }
 
 void te::serialize::Save(const te::se::Rule* rule, te::xml::Writer& writer)

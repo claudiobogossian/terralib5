@@ -36,7 +36,17 @@
 
 te::se::ParameterValue* te::serialize::ReadParameterValue(te::xml::Reader& reader)
 {
-  return 0;
+  std::auto_ptr<te::se::ParameterValue> param(new te::se::ParameterValue);
+
+  // Expression TODO: (n's expressions?)
+  te::se::ParameterValue::Parameter* p = new te::se::ParameterValue::Parameter;
+  p->m_expression = Expression::getInstance().read(reader);
+  
+  // TODO: and mixed data?!
+  
+  param->add(p);
+
+  return param.release();
 }
 
 void te::serialize::Save(const te::se::ParameterValue* p, te::xml::Writer& writer)

@@ -28,6 +28,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "AnchorPoint.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -36,7 +37,22 @@
 
 te::se::AnchorPoint* te::serialize::ReadAnchorPoint(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "AnchorPoint");
+
+  reader.next();
+
+  std::auto_ptr<te::se::AnchorPoint> ap(new te::se::AnchorPoint);
+
+  assert(reader.getElementLocalName() == "AnchorPointX");
+  reader.next();
+  ap->setAnchorPointX(ReadParameterValue(reader));
+
+  assert(reader.getElementLocalName() == "AnchorPointY");
+  reader.next();
+  ap->setAnchorPointY(ReadParameterValue(reader));
+
+  return ap.release();
 }
 
 void te::serialize::Save(const te::se::AnchorPoint* ap, te::xml::Writer& writer)
