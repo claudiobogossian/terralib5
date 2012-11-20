@@ -27,6 +27,7 @@
 #include "../../se/Mark.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../xlink/SimpleLink.h"
 #include "Fill.h"
 #include "InlineContent.h"
 #include "Mark.h"
@@ -39,7 +40,35 @@
 
 te::se::Mark* te::serialize::ReadMark(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Mark");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Mark> mark(new te::se::Mark);
+
+  // WellKnownName
+  if(reader.getElementLocalName() == "WellKnownName")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    mark->setWellKnownName(new std::string(reader.getElementValue()));
+    reader.next();
+  }
+  else if(reader.getElementLocalName() == "OnlineResource")
+    mark->setOnlineResource(ReadSimpleLink(reader));
+  else // InlineContent
+    mark->setInlineContent(ReadInlineContent(reader));
+
+  // Fill
+  if(reader.getElementLocalName() == "Fill")
+    mark->setFill(ReadFill(reader));
+
+  // Stroke
+  if(reader.getElementLocalName() == "Stroke")
+    mark->setStroke(ReadStroke(reader));
+
+  return mark.release();
 }
 
 void te::serialize::Save(const te::se::Mark* mark, te::xml::Writer& writer)
@@ -70,8 +99,8 @@ void te::serialize::Save(const te::se::Mark* mark, te::xml::Writer& writer)
     writer.writeElement("MarkIndex", mark->getMarkIndex());
   }
 
-  Save(mark->getStroke(), writer);
   Save(mark->getFill(), writer);
+  Save(mark->getStroke(), writer);
 
   writer.writeEndElement("Mark");
 }

@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/serialization/se/Displacement.cpp
+  \file terralib/serialization/se/InterpolationPoint.cpp
  
-  \brief Support for Displacement serialization.
+  \brief Support for InterpolationPoint serialization.
 */
 
 // TerraLib
-#include "../../se/Displacement.h"
+#include "../../se/InterpolationPoint.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "Displacement.h"
+#include "InterpolationPoint.h"
 #include "ParameterValue.h"
 #include "Utils.h"
 
@@ -35,35 +35,39 @@
 #include <cassert>
 #include <memory>
 
-te::se::Displacement* te::serialize::ReadDisplacement(te::xml::Reader& reader)
+te::se::InterpolationPoint* te::serialize::ReadInterpolationPoint(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Displacement");
+  assert(reader.getElementLocalName() == "InterpolationPoint");
+
+  std::auto_ptr<te::se::InterpolationPoint> ip(new te::se::InterpolationPoint);
+
+  reader.next();
+  assert(reader.getElementLocalName() == "Data");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  double data = reader.getElementValueAsDouble();
+  ip->setData(data);
 
   reader.next();
 
-  std::auto_ptr<te::se::Displacement> d(new te::se::Displacement);
-
-  assert(reader.getElementLocalName() == "DisplacementX");
+  assert(reader.getElementLocalName() == "Value");
   reader.next();
-  d->setDisplacementX(ReadParameterValue(reader));
+  ip->setValue(ReadParameterValue(reader));
 
-  assert(reader.getElementLocalName() == "DisplacementY");
-  reader.next();
-  d->setDisplacementY(ReadParameterValue(reader));
-
-  return d.release();
+  return ip.release();
 }
 
-void te::serialize::Save(const te::se::Displacement* d, te::xml::Writer& writer)
+void te::serialize::Save(const te::se::InterpolationPoint* ip, te::xml::Writer& writer)
 {
-  if(d == 0)
+  if(ip == 0)
     return;
 
-  writer.writeStartElement("Displacement");
+  writer.writeStartElement("InterpolationPoint");
+  
+  writer.writeElement("Data", ip->getData());
+  assert(ip->getValue());
+  WriteParameterValuePtrHelper("Value", ip->getValue(), writer);
 
-  WriteParameterValuePtrHelper("DisplacementX", d->getDisplacementX(), writer);
-  WriteParameterValuePtrHelper("DisplacementY", d->getDisplacementY(), writer);
-
-  writer.writeEndElement("Displacement");
+  writer.writeEndElement("InterpolationPoint");
 }

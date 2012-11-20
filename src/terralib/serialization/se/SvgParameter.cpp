@@ -27,6 +27,7 @@
 #include "../../se/SvgParameter.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../fe/Expression.h"
 #include "ParameterValue.h"
 #include "SvgParameter.h"
 
@@ -36,7 +37,26 @@
 
 te::se::SvgParameter* te::serialize::ReadSvgParameter(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "SvgParameter");
+  assert(reader.hasAttrs());
+
+  std::string name = reader.getAttr("name");
+  assert(!name.empty());
+
+  reader.next();
+
+  std::auto_ptr<te::se::SvgParameter> svgParam(new te::se::SvgParameter(name));
+
+  // Expression TODO: (n's expressions?)
+  te::se::ParameterValue::Parameter* p = new te::se::ParameterValue::Parameter;
+  p->m_expression = Expression::getInstance().read(reader);
+  
+  // TODO: and mixed data?!
+
+  svgParam->add(p);
+
+  return svgParam.release();
 }
 
 void te::serialize::Save(const te::se::SvgParameter* p, te::xml::Writer& writer)

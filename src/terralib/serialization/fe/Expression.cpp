@@ -57,7 +57,8 @@ void te::serialize::Expression::reg(const std::string& expName, const Expression
 
 te::fe::Expression* te::serialize::Expression::read(te::xml::Reader& reader) const
 {
-  std::string name = reader.getElementLocalName();
+  std::string name;
+  reader.getNodeType() == te::xml::VALUE ? name = "Literal" : name = reader.getElementLocalName();
 
   ExpressionFnctIdxType::const_iterator it = m_fncts.find(name);
 
@@ -102,13 +103,13 @@ void te::serialize::Expression::visit(const te::fe::Function& visited)
 
 void te::serialize::Expression::visit(const te::fe::Literal& visited)
 {
-  //m_writer->writeElement("Literal", visited.getValue());
-  m_writer->writeValue(visited.getValue());
+  m_writer->writeElement("ogc:Literal", visited.getValue());
+  //m_writer->writeValue(visited.getValue());
 }
 
 void te::serialize::Expression::visit(const te::fe::PropertyName& visited)
 {
-  m_writer->writeElement("PropertyName", visited.getName());
+  m_writer->writeElement("ogc:PropertyName", visited.getName());
 }
 
 te::serialize::Expression::~Expression()
@@ -140,10 +141,35 @@ te::fe::Expression* BinaryOperatorReader(te::xml::Reader& reader)
 
 te::fe::Expression* LiteralReader(te::xml::Reader& reader)
 {
-  return 0;
+  std::auto_ptr<te::fe::Literal> exp(new te::fe::Literal(""));
+  if(reader.getElementLocalName() == "Literal")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string value = reader.getElementValue();
+    exp->setValue(value);
+    reader.next();
+    
+    return exp.release();
+  }
+
+  // Else, no <Literal> tags
+  std::string value = reader.getElementValue();
+  exp->setValue(value);
+
+  return exp.release();
 }
 
 te::fe::Expression* PropertyNameReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  reader.next();
+  
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string value = reader.getElementValue();
+  std::auto_ptr<te::fe::PropertyName> exp(new te::fe::PropertyName(value));
+
+  return exp.release();
 }

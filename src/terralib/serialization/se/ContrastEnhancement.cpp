@@ -36,7 +36,34 @@
 
 te::se::ContrastEnhancement* te::serialize::ReadContrastEnhancement(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ContrastEnhancement");
+
+  reader.next();
+
+  std::auto_ptr<te::se::ContrastEnhancement> ce(new te::se::ContrastEnhancement);
+  ce->setContrastEnhancementType(te::se::ContrastEnhancement::ENHANCEMENT_NONE);
+
+  if(reader.getElementLocalName() == "Histogram")
+  {
+    ce->setContrastEnhancementType(te::se::ContrastEnhancement::ENHANCEMENT_HISTOGRAM);
+    reader.next();
+  }
+  else if(reader.getElementLocalName() == "Normalize")
+  {
+    ce->setContrastEnhancementType(te::se::ContrastEnhancement::ENHANCEMENT_NORMALIZE);
+    reader.next();
+  }
+
+  if(reader.getElementLocalName() == "GammaValue")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    ce->setGammaValue(reader.getElementValueAsDouble());
+    reader.next();
+  }
+
+  return ce.release();
 }
 
 void te::serialize::Save(const te::se::ContrastEnhancement* ce, te::xml::Writer& writer)
