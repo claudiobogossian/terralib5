@@ -97,6 +97,7 @@ namespace te
       m_scalesNumber = 3;
       m_octavesNumber = 2;
       m_rastersRescaleFactor = 1.0;
+      m_maxNormEuclideanDist = 0.5;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -134,6 +135,7 @@ namespace te
       m_scalesNumber = params.m_scalesNumber;
       m_octavesNumber = params.m_octavesNumber;
       m_rastersRescaleFactor = params.m_rastersRescaleFactor;
+      m_maxNormEuclideanDist = params.m_maxNormEuclideanDist;
 
       return *this;
     }
@@ -859,6 +861,7 @@ namespace te
         raster1InterestPoints,
         raster2InterestPoints,
         m_inputParameters.m_maxR1ToR2Offset,
+        m_inputParameters.m_maxNormEuclideanDist * 2.0, /* since surf feature vectors are unitary verctors */
         m_inputParameters.m_enableMultiThread,
         matchedPoints ),
         "Error matching features" );
@@ -1186,6 +1189,13 @@ namespace te
         
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_octavesNumber > 0,
         "Invalid m_octavesNumber" );           
+        
+      TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_rastersRescaleFactor > 0,
+        "Invalid m_octavesNumber" );  
+        
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_maxNormEuclideanDist >= 0 ) &&
+        ( m_inputParameters.m_maxNormEuclideanDist <= 1.0 ),
+        "Invalid m_octavesNumber" );          
         
       m_isInitialized = true;
 
@@ -3205,13 +3215,18 @@ namespace te
           
           featureElementsNormalizeFactor = std::sqrt( featureElementsNormalizeFactor );
           
-          for( currIPointFeatureElementIndex = 0 ; currIPointFeatureElementIndex < 64 ;
-            ++currIPointFeatureElementIndex )
+          if( featureElementsNormalizeFactor != 0 )
           {
-            currentFeaturePtr[ currIPointFeatureElementIndex ] /=
-              featureElementsNormalizeFactor;
-            assert( currentFeaturePtr[ currIPointFeatureElementIndex ] <= 1.0 );
-            assert( currentFeaturePtr[ currIPointFeatureElementIndex ] >= -1.0 );
+            for( currIPointFeatureElementIndex = 0 ; currIPointFeatureElementIndex < 64 ;
+              ++currIPointFeatureElementIndex )
+            {
+              currentFeaturePtr[ currIPointFeatureElementIndex ] /=
+                featureElementsNormalizeFactor;
+              TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currIPointFeatureElementIndex ] <= 1.0 ),
+                currentFeaturePtr[ currIPointFeatureElementIndex ] );
+              TERP_DEBUG_TRUE_OR_THROW( ( currentFeaturePtr[ currIPointFeatureElementIndex ] >= -1.0 ),
+                currentFeaturePtr[ currIPointFeatureElementIndex ] );
+            }
           }
           
           // Adding an attribute based on the sign of the Laplacian to 
@@ -3382,7 +3397,7 @@ namespace te
       unsigned int nextFeatureIdx1ToProcess = 0;
 //      unsigned int nextFeatureIdx2ToProcess = 0;
       
-      ExecuteMatchingByCorrelationThreadEntry params;
+      ExecuteMatchingByCorrelationThreadEntryParams params;
       params.m_featuresSet1Ptr = &featuresSet1;
       params.m_featuresSet2Ptr = &featuresSet2;
       params.m_interestPointsSet1Ptr = internalInterestPointsSet1.get();
@@ -3486,7 +3501,7 @@ namespace te
     }
     
     void TiePointsLocator::executeMatchingByCorrelationThreadEntry(
-      ExecuteMatchingByCorrelationThreadEntry* paramsPtr)
+      ExecuteMatchingByCorrelationThreadEntryParams* paramsPtr)
     {
       assert( paramsPtr->m_featuresSet1Ptr->getMemPolicy() == 
         Matrix< double >::RAMMemPol );
@@ -3613,7 +3628,8 @@ namespace te
       const Matrix< double >& featuresSet2,
       const InterestPointsSetT& interestPointsSet1,
       const InterestPointsSetT& interestPointsSet2,
-      const unsigned int maxPt1ToPt2Distance,
+      const unsigned int maxPt1ToPt2PixelDistance,
+      const double maxEuclideanDist,
       const unsigned int enableMultiThread,
       MatchedInterestPointsSetT& matchedPoints )
     {
@@ -3646,7 +3662,7 @@ namespace te
       {
         internalInterestPointsSet2[ idx2 ] = *it2;
         
-        if( maxPt1ToPt2Distance )
+        if( maxPt1ToPt2PixelDistance )
           interestPointsSet2RTree.insert( te::gm::Envelope( it2->m_x, it2->m_y,
             it2->m_x, it2->m_y ), idx2 );
         
@@ -3685,7 +3701,8 @@ namespace te
       params.m_nextFeatureIdx1ToProcessPtr = &nextFeatureIdx1ToProcess;
       params.m_distMatrixPtr = &distMatrix;
       params.m_syncMutexPtr = &syncMutex;
-      params.m_maxPt1ToPt2Distance = maxPt1ToPt2Distance;
+      params.m_maxPt1ToPt2PixelDistance = maxPt1ToPt2PixelDistance;
+      params.m_maxEuclideanDist = maxEuclideanDist;
       params.m_interestPointsSet2RTreePtr = &interestPointsSet2RTree;
       
       if( enableMultiThread )
@@ -3770,7 +3787,7 @@ namespace te
         {
           const double& distValue = distMatrix( line, col );
           
-          if( distValue != DBL_MAX )
+          if( ( distValue != DBL_MAX ) && ( distValue <= maxEuclideanDist ) )
           {
             auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
             auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ],
@@ -3825,7 +3842,7 @@ namespace te
       std::vector< unsigned int > selectedFeaturesSet2Indexes;
       unsigned int selectedFeaturesSet2IndexesSize = 0;
       
-      if( paramsPtr->m_maxPt1ToPt2Distance == 0 )
+      if( paramsPtr->m_maxPt1ToPt2PixelDistance == 0 )
       {
         selectedFeaturesSet2Indexes.resize( featuresSet2Size );
         selectedFeaturesSet2IndexesSize = featuresSet2Size;
@@ -3845,16 +3862,16 @@ namespace te
         {
           ++(*paramsPtr->m_nextFeatureIdx1ToProcessPtr);
           
-          if( paramsPtr->m_maxPt1ToPt2Distance )
+          if( paramsPtr->m_maxPt1ToPt2PixelDistance )
           {
             auxEnvelope.m_llx = auxEnvelope.m_urx = 
               paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_x;
-            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2Distance;
-            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2Distance;
+            auxEnvelope.m_llx -= (double)paramsPtr->m_maxPt1ToPt2PixelDistance;
+            auxEnvelope.m_urx += (double)paramsPtr->m_maxPt1ToPt2PixelDistance;
             auxEnvelope.m_lly = auxEnvelope.m_ury = 
               paramsPtr->m_interestPointsSet1Ptr[ feat1Idx ].m_y;
-            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2Distance;;
-            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2Distance;;
+            auxEnvelope.m_lly -= (double)paramsPtr->m_maxPt1ToPt2PixelDistance;;
+            auxEnvelope.m_ury += (double)paramsPtr->m_maxPt1ToPt2PixelDistance;;
             
             selectedFeaturesSet2Indexes.clear();
             paramsPtr->m_interestPointsSet2RTreePtr->search( auxEnvelope,

@@ -130,6 +130,8 @@ namespace te
             
             double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
+            double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
+            
             InputParameters();
             
             InputParameters( const InputParameters& );
@@ -373,7 +375,7 @@ namespace te
         /*! 
           \brief The parameters passed to the matchCorrelationEuclideanThreadEntry method.
         */     
-        class ExecuteMatchingByCorrelationThreadEntry
+        class ExecuteMatchingByCorrelationThreadEntryParams
         {
           public :
             
@@ -395,9 +397,9 @@ namespace te
             
             te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
             
-            ExecuteMatchingByCorrelationThreadEntry() {};
+            ExecuteMatchingByCorrelationThreadEntryParams() {};
             
-            ~ExecuteMatchingByCorrelationThreadEntry() {};
+            ~ExecuteMatchingByCorrelationThreadEntryParams() {};
         };     
         
         /*! 
@@ -421,7 +423,9 @@ namespace te
             
             boost::mutex* m_syncMutexPtr;
             
-            unsigned int m_maxPt1ToPt2Distance; //!< Zero (disabled) or the maximum distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+            unsigned int m_maxPt1ToPt2PixelDistance; //!< Zero (disabled) or the maximum pixel distance between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+            
+            double m_maxEuclideanDist; //!< The maximum acceptable euclidean distance when matching features.
             
             te::sam::rtree::Index< unsigned int > const* m_interestPointsSet2RTreePtr; //!> A pointer to a RTree indexing interest point set points to their respective indexes.
             
@@ -596,6 +600,10 @@ namespace te
           \param interestPoints The found interest points (coords related to rasterData lines/cols).          
 
           \return true if ok, false on errors.
+          
+          \note InterestPointT::m_feature1 will be the maximum value of Hessian matrix determinant,
+          InterestPointT::m_feature2 will be used filter width (pixels),
+          InterestPointT::m_feature3 will 1 if the laplacian sign is positive or zero if negative.
         */             
         static bool locateSurfInterestPoints( 
           const Matrix< double >& integralRasterData,
@@ -804,7 +812,7 @@ namespace te
           
           \param interestPointsSet2 The interest pionts set 2.
           
-          \param maxPt1ToPt2Distance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          \param maxPt1ToPt2PixelDistance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
           
           \param enableMultiThread Enable/disable the use of threads.
           
@@ -817,8 +825,9 @@ namespace te
           const Matrix< double >& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
-          const unsigned int maxPt1ToPt2Distance,
+          const unsigned int maxPt1ToPt2PixelDistance,
           const unsigned int enableMultiThread,
+          
           MatchedInterestPointsSetT& matchedPoints );
           
         /*! 
@@ -827,7 +836,7 @@ namespace te
           \param paramsPtr A pointer to the thread parameters.
         */      
         static void executeMatchingByCorrelationThreadEntry(
-          ExecuteMatchingByCorrelationThreadEntry* paramsPtr);
+          ExecuteMatchingByCorrelationThreadEntryParams* paramsPtr);
           
         /*!
           \brief Match each feature using eucliean distance.
@@ -840,7 +849,9 @@ namespace te
           
           \param interestPointsSet2 The interest pionts set 2.
           
-          \param maxPt1ToPt2Distance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          \param maxPt1ToPt2PixelDistance Zero (disabled) or the maximum distance (pixels) between a point from set 1 to a point from set 1 (points beyond this distance will not be correlated and will have zero as correlation value).
+          
+          \param maxEuclideanDist //!< The maximum acceptable euclidean distance when matching features.
           
           \param enableMultiThread Enable/disable the use of threads.
           
@@ -853,7 +864,8 @@ namespace te
           const Matrix< double >& featuresSet2,
           const InterestPointsSetT& interestPointsSet1,
           const InterestPointsSetT& interestPointsSet2,
-          const unsigned int maxPt1ToPt2Distance,
+          const unsigned int maxPt1ToPt2PixelDistance,
+          const double maxEuclideanDist,
           const unsigned int enableMultiThread,
           MatchedInterestPointsSetT& matchedPoints ); 
           
