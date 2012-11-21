@@ -35,7 +35,8 @@
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::MapDisplay(size, parent, f),
-    m_showFeedback(showFeedback)
+    m_showFeedback(showFeedback),
+    m_isDrawing(false)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
@@ -68,6 +69,11 @@ void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::ma
 
 void te::qt::widgets::MultiThreadMapDisplay::setExtent(const te::gm::Envelope& e)
 {
+  if(m_isDrawing)
+    return;
+
+  m_isDrawing = true;
+
   te::map::MapDisplay::setExtent(e);
 
   if(m_extent == 0)
@@ -164,4 +170,6 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   m_images.clear();
 
   repaint(); // or update()? Which is the best here?!
+
+  m_isDrawing = false;
 }

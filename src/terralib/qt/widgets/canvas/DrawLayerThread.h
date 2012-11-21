@@ -36,9 +36,6 @@
 #include <QtCore/QThread>
 #include <QtGui/QImage>
 
-// Forward declarations
-class QImage;
-
 namespace te
 {
 // Forward declarations
@@ -70,7 +67,7 @@ namespace te
 
             \param parent The thread's parent.
           */
-          DrawLayerThread(QWidget* parent = 0);
+          DrawLayerThread(QObject* parent = 0);
 
           /*! \brief Destructor. */
           ~DrawLayerThread();
@@ -95,11 +92,14 @@ namespace te
 
         protected slots:
 
+          /* \brief Called right before thread start execution. */
+          void onStarted();
+
           /* \brief Used to send a draw feedback. */
           void sendFeedback();
 
-          /* \brief Stops the send of feedback. */
-          void stopSendFeedback();
+          /* \brief Called right after thread stop execution. */
+          void onFinished();
 
         signals:
 
@@ -125,9 +125,9 @@ namespace te
           int m_srid;                      //!< The SRS to be used to draw the layer objects.
           int m_index;                     //!< An optional index that can be provided by the caller to keep the draw order.
           QImage m_image;                  //!< The image that will be generated during the draw process.
-          bool m_abort;                    //!< Not used yet!
           QMutex m_mutex;                  //!< Controls the serialization between threads.
           QTimer m_feedback;               //!< Timer used to send feedback. The feedback will be sent right after timeout() QTimer's signal.
+          int m_interval;                  //!< Interval used to send feedbacks.
       };
 
     } // end namespace widgets
