@@ -113,6 +113,13 @@ namespace te
         void cancelTask(int taskId);
 
         /*!
+          \brief Cancels the task with the given task type and inform all viewers that a task was canceled.
+
+          \param type The task type.
+        */
+        void cancelTasks(unsigned int type);
+
+        /*!
           \brief Inform all viewers that a task set the total values.
 
           \param taskId Task identifier.
