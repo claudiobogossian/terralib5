@@ -99,6 +99,7 @@ namespace te
       m_rastersRescaleFactor = 1.0;
       m_maxNormEuclideanDist = 0.75;
       m_minAbsCorrelation = 0.25;
+      m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -138,6 +139,7 @@ namespace te
       m_rastersRescaleFactor = params.m_rastersRescaleFactor;
       m_maxNormEuclideanDist = params.m_maxNormEuclideanDist;
       m_minAbsCorrelation = params.m_minAbsCorrelation;
+      m_interpMethod = params.m_interpMethod;
 
       return *this;
     }
@@ -396,6 +398,7 @@ namespace te
         m_inputParameters.m_raster1TargetAreaHeight,
         raster1XRescFact,
         raster1YRescFact,
+        m_inputParameters.m_interpMethod,
         raster1Data,
         maskRaster1Data ),
         "Error loading raster data" );
@@ -411,6 +414,7 @@ namespace te
         m_inputParameters.m_raster2TargetAreaHeight,                                                
         raster2XRescFact,
         raster2YRescFact,
+        m_inputParameters.m_interpMethod,
         raster2Data,
         maskRaster2Data ),
         "Error loading raster data" );
@@ -699,6 +703,7 @@ namespace te
           m_inputParameters.m_raster1TargetAreaHeight,
           raster1XRescFact,
           raster1YRescFact,
+          m_inputParameters.m_interpMethod,
           rasterData,
           maskRasterData ),
           "Error loading raster data" );
@@ -786,6 +791,7 @@ namespace te
           m_inputParameters.m_raster2TargetAreaHeight,
           raster2XRescFact,
           raster2YRescFact,
+          m_inputParameters.m_interpMethod,
           rasterData,
           maskRasterData ),
           "Error loading raster data" );
@@ -1225,6 +1231,7 @@ namespace te
       const unsigned int rasterTargetAreaHeight,
       const double rescaleFactorX,
       const double rescaleFactorY,
+      const te::rst::Interpolator::Method rasterInterpMethod,
       std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
       Matrix< unsigned char >& loadedMaskRasterData )
     {
@@ -1301,32 +1308,40 @@ namespace te
       
       // loading raster data     
       {
-        te::rst::Band const* inRasterBand = 0;
+        const double rasterTargetAreaLineStartDouble = (double)
+          rasterTargetAreaLineStart;
+        const double rasterTargetAreaColStartDouble = (double)
+          rasterTargetAreaColStart;
+        te::rst::Interpolator interpInstance( rasterPtr, rasterInterpMethod );
         double* outLinePtr = 0;
         unsigned int outLine = 0;
         unsigned int outCol = 0;
-        unsigned int inLine = 0;
-        unsigned int inCol = 0;      
+        double inLine = 0;
+        double inCol = 0;     
+        std::complex< double > interpolatedValue;
+        unsigned int bandIdx = 0;
         
         for( unsigned int rasterBandsIdx = 0 ; rasterBandsIdx < rasterBands.size() ;
           ++rasterBandsIdx )
         {
-          inRasterBand = rasterPtr->getBand( rasterBands[ rasterBandsIdx ] );
-          assert( inRasterBand );
+          bandIdx= rasterBands[ rasterBandsIdx ];
           
           for( outLine = 0 ; outLine < rescaledNLines ; ++outLine ) 
           {
-            inLine = (unsigned int)( ( ( (double)outLine ) / 
-              rescaleFactorY ) + ( (double)rasterTargetAreaLineStart ) );      
+            inLine = ( ( (double)outLine ) /  rescaleFactorY ) + 
+              rasterTargetAreaLineStartDouble;
               
             outLinePtr = loadedRasterData[ rasterBandsIdx ]->operator[]( outLine  );
             
             for( outCol = 0 ; outCol < rescaledNCols ; ++outCol ) 
             {          
-              inCol = (unsigned int)( ( ( (double)outCol ) / 
-                  rescaleFactorX ) + ( (double)rasterTargetAreaColStart ) );        
+              inCol = ( ( (double)outCol ) / rescaleFactorX ) + 
+                rasterTargetAreaColStartDouble;
 
-              inRasterBand->getValue( inCol, inLine, outLinePtr[ outCol ] );
+              interpInstance.getValue( inCol, inLine, interpolatedValue,
+                bandIdx );
+              
+              outLinePtr[ outCol ] = interpolatedValue.real();
             }
           }
         }
