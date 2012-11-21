@@ -72,18 +72,18 @@ set (
   widgets/datagrid
   widgets/dataview
   widgets/dataset
-  widgets/datasource/connector/core
-  widgets/datasource/connector/gdal
-  widgets/datasource/connector/geofile
-  widgets/datasource/connector/ogr  
-  widgets/datasource/connector/postgis
-  widgets/datasource/connector/shp
-  widgets/datasource/connector/wcs
-  widgets/datasource/connector/wfs
-  widgets/datasource/connector/wms
+#  widgets/datasource/connector/gdal
+#  widgets/datasource/connector/geofile
+#  widgets/datasource/connector/ogr  
+#  widgets/datasource/connector/postgis
+#  widgets/datasource/connector/shp
+#  widgets/datasource/connector/wcs
+#  widgets/datasource/connector/wfs
+#  widgets/datasource/connector/wms
   widgets/datasource/core
   widgets/datasource/explorer
   widgets/datasource/selector
+  widgets/datasource/connector
   widgets/layer
   widgets/progress
   widgets/property
@@ -129,47 +129,47 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/gdal" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/gdal" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/geofile" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/geofile" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/ogr" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/ogr" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/wcs/WCSConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wcs" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/wcs/WCSConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wcs" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/wfs/WFSConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wfs" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/wfs/WFSConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wfs" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/datasource/connector/wms/WMSConnectorDialog.h  
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wms" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/datasource/connector/wms/WMSConnectorDialog.h  
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wms" MOC)
 
 set (
   HDRS_TO_MOC
@@ -343,13 +343,13 @@ file(
   ${SRCDIR}/widgets/charts/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
-  ${SRCDIR}/widgets/datasource/connector/gdal/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/wcs/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/wfs/ui/*.ui
-  ${SRCDIR}/widgets/datasource/connector/wms/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/gdal/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/wcs/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/wfs/ui/*.ui
+ # ${SRCDIR}/widgets/datasource/connector/wms/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui  
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui

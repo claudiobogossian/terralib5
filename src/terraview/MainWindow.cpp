@@ -31,6 +31,8 @@
 #include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/plugin/manager/PluginManagerDialog.h>
 
+#include <terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h>
+
 #include <terralib/common/progress/TaskProgress.h>
 #include <terralib/common/progress/ProgressManager.h>
 #include <terralib/qt/widgets/progress/ProgressViewerDialog.h>
@@ -307,6 +309,14 @@ void MainWindow::showProgressDock()
     m_progressDock->setVisible(true);
   }
 }
+
+void MainWindow::openDSrcManager()
+{
+  te::qt::widgets::DataSourceSelectorDialog dlg(this);
+
+  dlg.exec();
+}
+
 
 void MainWindow::makeDialog()
 {

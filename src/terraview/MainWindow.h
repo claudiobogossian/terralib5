@@ -102,6 +102,8 @@ protected slots:
 
   void openPluginsManager();
 
+  void openDSrcManager();
+
   void showProgressDock();
 
 protected:
