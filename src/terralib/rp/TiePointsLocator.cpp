@@ -377,135 +377,91 @@ namespace te
       outParamsPtr->m_tiePoints.clear();
       tiePointsWeights.clear();
       
-      if( m_inputParameters.m_enableProgress )
-        progress.setTotalSteps( progress.getTotalSteps() + 5 );
-      
-      // Loading image data
-      
-      std::vector< boost::shared_ptr< Matrix< double > > > raster1Data;
-      Matrix< unsigned char > maskRaster1Data;
-      std::vector< boost::shared_ptr< Matrix< double > > > raster2Data;
-      Matrix< unsigned char > maskRaster2Data;
-      
-      TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
-        m_inputParameters.m_inRaster1Ptr,
-        m_inputParameters.m_inRaster1Bands,
-        m_inputParameters.m_inMaskRaster1Ptr,
-        0,
-        m_inputParameters.m_raster1TargetAreaLineStart,
-        m_inputParameters.m_raster1TargetAreaColStart,
-        m_inputParameters.m_raster1TargetAreaWidth,
-        m_inputParameters.m_raster1TargetAreaHeight,
-        raster1XRescFact,
-        raster1YRescFact,
-        m_inputParameters.m_interpMethod,
-        raster1Data,
-        maskRaster1Data ),
-        "Error loading raster data" );
-        
-      TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
-        m_inputParameters.m_inRaster2Ptr,
-        m_inputParameters.m_inRaster2Bands,
-        m_inputParameters.m_inMaskRaster2Ptr,
-        0,
-        m_inputParameters.m_raster2TargetAreaLineStart,
-        m_inputParameters.m_raster2TargetAreaColStart,
-        m_inputParameters.m_raster2TargetAreaWidth,
-        m_inputParameters.m_raster2TargetAreaHeight,                                                
-        raster2XRescFact,
-        raster2YRescFact,
-        m_inputParameters.m_interpMethod,
-        raster2Data,
-        maskRaster2Data ),
-        "Error loading raster data" );
-        
-//      createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "loadedRaster1");
-//      createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "loadedRaster2");       
-      
-      // applying the noise filter
-      
-      if( m_inputParameters.m_gaussianFilterIterations )
-      {
-        boost::shared_ptr< Matrix< double > > tempMatrix( 
-          new Matrix< double > );
-        TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
-          0, 0,
-          Matrix< double >::AutoMemPol, 
-          raster1Data[ 0 ]->getMaxTmpFileSize(),
-          raster1Data[ 0 ]->getMaxMemPercentUsage() ),
-          "Cannot allocate image matrix" );
-        
-        TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
-          *(raster1Data[ 0 ]), 
-          *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
-          "Gaussian filter error" );
-
-        raster1Data[ 0 ] = tempMatrix;
-        
-        tempMatrix.reset( new Matrix< double > );
-        TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
-          0, 0,
-          Matrix< double >::AutoMemPol, 
-          raster2Data[ 0 ]->getMaxTmpFileSize(),
-          raster2Data[ 0 ]->getMaxMemPercentUsage() ),
-          "Cannot allocate image matrix" );          
-        
-        TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
-          *(raster2Data[ 0 ]), 
-          *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
-          "Gaussian filter error" );
-
-        raster2Data[ 0 ] = tempMatrix;          
-        
-//        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "raster1Filtered");
-//        createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "raster2Filtered");  
-      }
+      // Updating the progress interface steps number
       
       if( m_inputParameters.m_enableProgress )
-      {
-        progress.pulse();
-        if( ! progress.isActive() ) return false;
-      }      
+        progress.setTotalSteps( progress.getTotalSteps() + 10 );
       
-      // locating interest points
-      
-      InterestPointsSetT raster1InterestPoints;
-      InterestPointsSetT raster2InterestPoints;      
-
-      TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
-        *(raster1Data[ 0 ]), 
-        maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
-        m_inputParameters.m_moravecWindowWidth,
-        raster1MaxInterestPoints,
-        m_inputParameters.m_enableMultiThread,
-        raster1InterestPoints ),
-        "Error locating raster 1 interest points" );
-      TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
-        *(raster2Data[ 0 ]), 
-        maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
-        m_inputParameters.m_moravecWindowWidth,
-        raster2MaxInterestPoints,
-        m_inputParameters.m_enableMultiThread,
-        raster2InterestPoints ),
-        "Error locating raster 2 interest points" );             
-      
-      if( m_inputParameters.m_enableProgress )
-      {
-        progress.pulse();
-        if( ! progress.isActive() ) return false;
-      }      
-      
-//      createTifFromMatrix( *(raster1Data[ 0 ]), raster1InterestPoints, "raster1InterestPoints");
-//      createTifFromMatrix( *(raster2Data[ 0 ]), raster2InterestPoints, "raster2InterestPoints");
-        
-      // Generting features (one feature per line)
+      // Generating raster 1 features
       
       Matrix< double > raster1Features;
-      raster1Features.reset( Matrix< double >::RAMMemPol );
-      Matrix< double > raster2Features;
-      raster2Features.reset( Matrix< double >::RAMMemPol );
-      
+      InterestPointsSetT raster1InterestPoints;
       {
+        // loading raster data
+        std::vector< boost::shared_ptr< Matrix< double > > > raster1Data;
+        Matrix< unsigned char > maskRaster1Data;
+        
+        TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+          m_inputParameters.m_inRaster1Ptr,
+          m_inputParameters.m_inRaster1Bands,
+          m_inputParameters.m_inMaskRaster1Ptr,
+          0,
+          m_inputParameters.m_raster1TargetAreaLineStart,
+          m_inputParameters.m_raster1TargetAreaColStart,
+          m_inputParameters.m_raster1TargetAreaWidth,
+          m_inputParameters.m_raster1TargetAreaHeight,
+          raster1XRescFact,
+          raster1YRescFact,
+          m_inputParameters.m_interpMethod,
+          raster1Data,
+          maskRaster1Data ),
+          "Error loading raster data" );        
+          
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }
+          
+        // applying the noise filter
+
+        if( m_inputParameters.m_gaussianFilterIterations )
+        {
+          boost::shared_ptr< Matrix< double > > tempMatrix( 
+            new Matrix< double > );
+          TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+            0, 0,
+            Matrix< double >::AutoMemPol, 
+            raster1Data[ 0 ]->getMaxTmpFileSize(),
+            raster1Data[ 0 ]->getMaxMemPercentUsage() ),
+            "Cannot allocate image matrix" );
+          
+          TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
+            *(raster1Data[ 0 ]), 
+            *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+            "Gaussian filter error" );
+
+          raster1Data[ 0 ] = tempMatrix;
+          
+//        createTifFromMatrix( *(raster1Data[ 0 ]), InterestPointsSetT(), "raster1Filtered");          
+        }
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }        
+        
+        // locating interest points
+        
+        TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
+          *(raster1Data[ 0 ]), 
+          maskRaster1Data.getLinesNumber() ? (&maskRaster1Data) : 0, 
+          m_inputParameters.m_moravecWindowWidth,
+          raster1MaxInterestPoints,
+          m_inputParameters.m_enableMultiThread,
+          raster1InterestPoints ),
+          "Error locating raster 1 interest points" );
+          
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }          
+          
+        // Generting features (one feature per line)
+        
+        raster1Features.reset( Matrix< double >::RAMMemPol );
         InterestPointsSetT auxInterestPoints;
         
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
@@ -516,9 +472,103 @@ namespace te
           raster1Features,
           auxInterestPoints ),
           "Error generating raster 1 features" );
-        raster1InterestPoints = auxInterestPoints;
+          
+        raster1InterestPoints = auxInterestPoints;        
         
-        auxInterestPoints.clear();
+//      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );        
+
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }
+      }
+      
+      // Generating raster 2 features
+      
+      Matrix< double > raster2Features;
+      InterestPointsSetT raster2InterestPoints;
+      {
+        // Loading image data
+      
+        std::vector< boost::shared_ptr< Matrix< double > > > raster2Data;
+        Matrix< unsigned char > maskRaster2Data;
+                     
+        TERP_TRUE_OR_RETURN_FALSE( loadRasterData( 
+          m_inputParameters.m_inRaster2Ptr,
+          m_inputParameters.m_inRaster2Bands,
+          m_inputParameters.m_inMaskRaster2Ptr,
+          0,
+          m_inputParameters.m_raster2TargetAreaLineStart,
+          m_inputParameters.m_raster2TargetAreaColStart,
+          m_inputParameters.m_raster2TargetAreaWidth,
+          m_inputParameters.m_raster2TargetAreaHeight,                                                
+          raster2XRescFact,
+          raster2YRescFact,
+          m_inputParameters.m_interpMethod,
+          raster2Data,
+          maskRaster2Data ),
+          "Error loading raster data" );
+          
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }          
+          
+        // applying the noise filter
+        
+        if( m_inputParameters.m_gaussianFilterIterations )
+        {
+          boost::shared_ptr< Matrix< double > > tempMatrix( 
+            new Matrix< double > );
+          
+          tempMatrix.reset( new Matrix< double > );
+          TERP_TRUE_OR_RETURN_FALSE( tempMatrix->reset( 
+            0, 0,
+            Matrix< double >::AutoMemPol, 
+            raster2Data[ 0 ]->getMaxTmpFileSize(),
+            raster2Data[ 0 ]->getMaxMemPercentUsage() ),
+            "Cannot allocate image matrix" );          
+          
+          TERP_TRUE_OR_RETURN_FALSE( applyMeanFilter( 
+            *(raster2Data[ 0 ]), 
+            *tempMatrix, m_inputParameters.m_gaussianFilterIterations ),
+            "Gaussian filter error" );
+
+          raster2Data[ 0 ] = tempMatrix;          
+          
+//        createTifFromMatrix( *(raster2Data[ 0 ]), InterestPointsSetT(), "raster2Filtered");  
+        }
+        
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }        
+        
+        // locating interest points        
+        
+        TERP_TRUE_OR_RETURN_FALSE( locateMoravecInterestPoints( 
+          *(raster2Data[ 0 ]), 
+          maskRaster2Data.getLinesNumber() ? (&maskRaster2Data) : 0, 
+          m_inputParameters.m_moravecWindowWidth,
+          raster2MaxInterestPoints,
+          m_inputParameters.m_enableMultiThread,
+          raster2InterestPoints ),
+          "Error locating raster 2 interest points" );
+          
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }          
+          
+        // Generting features (one feature per line)
+
+        raster2Features.reset( Matrix< double >::RAMMemPol );
+        InterestPointsSetT auxInterestPoints;        
+        
         TERP_TRUE_OR_RETURN_FALSE( generateCorrelationFeatures( 
           raster2InterestPoints,
           m_inputParameters.m_correlationWindowWidth,
@@ -529,23 +579,15 @@ namespace te
           "Error generating raster 2 features" );
           
         raster2InterestPoints = auxInterestPoints;
-      }
-      
-      if( m_inputParameters.m_enableProgress )
-      {
-        progress.pulse();
-        if( ! progress.isActive() ) return false;
-      }      
-      
-//      features2Tiff( raster1Features, raster1InterestPoints, "raster1features" );
-//      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );
+        
+//      features2Tiff( raster2Features, raster2InterestPoints, "raster2features" );        
 
-      // Clean unused data
-      
-      raster1Data.clear();
-      maskRaster1Data.clear();
-      raster2Data.clear();
-      maskRaster2Data.clear();
+        if( m_inputParameters.m_enableProgress )
+        {
+          progress.pulse();
+          if( ! progress.isActive() ) return false;
+        }
+      }
 
       // Matching features
       
@@ -614,8 +656,7 @@ namespace te
         {
           minFeatureValue2 = 0;
           maxFeatureValue2 = 1.0;          
-        }
-        
+        }        
         
         itB = matchedPoints.begin();
         while( itB != itE )
@@ -650,8 +691,7 @@ namespace te
               )
               +
               itB->m_feature
-            ) / 2.0;
-            
+            ) / 2.0;            
            
           tiePointsWeights.push_back( tiePointWeight );
             
@@ -659,7 +699,13 @@ namespace te
           
           ++itB;
         }        
-      }            
+      }
+      
+      if( m_inputParameters.m_enableProgress )
+      {
+        progress.pulse();
+        if( ! progress.isActive() ) return false;
+      }       
       
       return true;
     }
