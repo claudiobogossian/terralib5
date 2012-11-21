@@ -97,7 +97,8 @@ namespace te
       m_scalesNumber = 3;
       m_octavesNumber = 2;
       m_rastersRescaleFactor = 1.0;
-      m_maxNormEuclideanDist = 0.5;
+      m_maxNormEuclideanDist = 0.75;
+      m_minAbsCorrelation = 0.25;
     }
 
     const TiePointsLocator::InputParameters& TiePointsLocator::InputParameters::operator=(
@@ -136,6 +137,7 @@ namespace te
       m_octavesNumber = params.m_octavesNumber;
       m_rastersRescaleFactor = params.m_rastersRescaleFactor;
       m_maxNormEuclideanDist = params.m_maxNormEuclideanDist;
+      m_minAbsCorrelation = params.m_minAbsCorrelation;
 
       return *this;
     }
@@ -336,12 +338,12 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
           m_inputParameters.m_geomTransfName, 
           transfParams,
-          m_inputParameters.m_geomTransfMaxError,
-          m_inputParameters.m_geomTransfMaxError,
+          2.0 * m_inputParameters.m_geomTransfMaxError,
+          2.0 * m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
           0,
-          0.9,
+          0.5,
           m_inputParameters.m_enableMultiThread,
           transfPtr,
           tiePointsWeights ), "Outliers remotion error" );
@@ -552,6 +554,7 @@ namespace te
         raster2InterestPoints,
         m_inputParameters.m_maxR1ToR2Offset,
         m_inputParameters.m_enableMultiThread,
+        m_inputParameters.m_minAbsCorrelation,
         matchedPoints ),
         "Error matching features" );
       
@@ -1195,7 +1198,11 @@ namespace te
         
       TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_maxNormEuclideanDist >= 0 ) &&
         ( m_inputParameters.m_maxNormEuclideanDist <= 1.0 ),
-        "Invalid m_octavesNumber" );          
+        "Invalid m_octavesNumber" );         
+        
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_minAbsCorrelation >= 0 ) &&
+        ( m_inputParameters.m_minAbsCorrelation <= 1.0 ),
+        "Invalid m_minAbsCorrelation" );             
         
       m_isInitialized = true;
 
@@ -3333,6 +3340,7 @@ namespace te
       const InterestPointsSetT& interestPointsSet2,
       const unsigned int maxPt1ToPt2Distance,
       const unsigned int enableMultiThread,
+      const double minAllowedAbsCorrelation,
       MatchedInterestPointsSetT& matchedPoints )
     {
       matchedPoints.clear();
@@ -3482,18 +3490,25 @@ namespace te
         minCorrelationABSValue ) ? ( maxCorrelationABSValue -
         minCorrelationABSValue ) : 1.0;
       MatchedInterestPointsT auxMatchedPoints;
+      double correlationAbs = 0;
         
       for( line = 0 ; line < interestPointsSet1Size ; ++line )
       {
-        if( eachColMaxABSIndexes[ eachLineMaxABSIndexes[ line ] ] == line )
+        col = eachLineMaxABSIndexes[ line ];
+        
+        if( eachColMaxABSIndexes[ col ] == line )
         {
-          auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
-          auxMatchedPoints.m_point2 = internalInterestPointsSet2[ eachLineMaxABSIndexes[ line ] ];
-          auxMatchedPoints.m_feature = 
-            ( std::abs( corrMatrix( line, eachLineMaxABSIndexes[ line ] ) ) - 
-              minCorrelationABSValue ) / correlationABSValueRange;
+          correlationAbs = std::abs( corrMatrix( line, col ) );
           
-          matchedPoints.insert( auxMatchedPoints );
+          if( correlationAbs >= minAllowedAbsCorrelation )
+          {
+            auxMatchedPoints.m_point1 = internalInterestPointsSet1[ line ];
+            auxMatchedPoints.m_point2 = internalInterestPointsSet2[ col ];
+            auxMatchedPoints.m_feature = 
+              ( correlationAbs - minCorrelationABSValue ) / correlationABSValueRange;
+            
+            matchedPoints.insert( auxMatchedPoints );
+          }
         }
       }
         

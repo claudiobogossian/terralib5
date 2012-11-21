@@ -130,7 +130,9 @@ namespace te
             
             double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
-            double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
+            double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
+            
+            double m_minAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.25, valid range: [0,1].
             
             InputParameters();
             
@@ -816,6 +818,8 @@ namespace te
           
           \param enableMultiThread Enable/disable the use of threads.
           
+          \param minAllowedAbsCorrelation The minimum acceptable absolute correlation value when matching features (when applicable).
+          
           \param matchedPoints The matched points.
           
           \note Each matched point feature value ( MatchedInterestPoint::m_feature ) will be set to the absolute value of the correlation between then.
@@ -827,7 +831,7 @@ namespace te
           const InterestPointsSetT& interestPointsSet2,
           const unsigned int maxPt1ToPt2PixelDistance,
           const unsigned int enableMultiThread,
-          
+          const double minAllowedAbsCorrelation,
           MatchedInterestPointsSetT& matchedPoints );
           
         /*! 
