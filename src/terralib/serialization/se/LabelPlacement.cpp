@@ -37,7 +37,19 @@
 
 te::se::LabelPlacement* te::serialize::ReadLabelPlacement(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "LabelPlacement");
+
+  reader.next();
+
+  std::auto_ptr<te::se::LabelPlacement> lp(new te::se::LabelPlacement);
+
+  if(reader.getElementLocalName() == "PointPlacement")
+    lp->setPointPlacement(ReadPointPlacement(reader));
+  else // LinePlacement
+    lp->setLinePlacement(ReadLinePlacement(reader));
+
+  return lp.release();
 }
 
 void te::serialize::Save(const te::se::LabelPlacement* lp, te::xml::Writer& writer)

@@ -25,10 +25,11 @@
 
 // TerraLib
 #include "../../se/Interpolate.h"
-#include "../../se/InterpolationPoint.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "Interpolate.h"
+#include "InterpolationPoint.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -38,7 +39,49 @@
 
 te::se::Interpolate* te::serialize::ReadInterpolate(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Interpolate");
+
+  assert(reader.hasAttrs());
+
+  std::auto_ptr<te::se::Interpolate> interpolate(new te::se::Interpolate);
+
+  // FallBackValue Attribute
+  std::string fbv = reader.getAttr("fallbackValue");
+  assert(!fbv.empty());
+  interpolate->setFallbackValue(fbv);
+
+  // Mode Attribute
+  std::string mode = reader.getAttr("mode");
+  assert(!mode.empty() && (mode == "linear" || mode == "cosine" || mode == "cubic"));
+  if(mode == "linear")
+    interpolate->setModeType(te::se::Interpolate::LINEAR);
+  else if(mode == "cosine")
+    interpolate->setModeType(te::se::Interpolate::COSINE);
+  else
+    interpolate->setModeType(te::se::Interpolate::CUBIC);
+
+  // Method Attribute
+  std::string method = reader.getAttr("method");
+  assert(!method.empty() && (method == "numeric" || method == "color"));
+  method == "numeric" ? interpolate->setMethodType(te::se::Interpolate::NUMERIC) : interpolate->setMethodType(te::se::Interpolate::COLOR);
+
+  reader.next();
+
+  // LookupValue
+  assert(reader.getElementLocalName() == "LookupValue");
+  reader.next();
+  interpolate->setLookupValue(ReadParameterValue(reader));
+
+  // InterpolationPoints
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "InterpolationPoint")
+  {
+    reader.next();
+    interpolate->add(ReadInterpolationPoint(reader));
+  }
+
+  return interpolate.release();
 }
 
 void te::serialize::Save(const te::se::Interpolate* interpolate, te::xml::Writer& writer)
@@ -78,17 +121,12 @@ void te::serialize::Save(const te::se::Interpolate* interpolate, te::xml::Writer
     break;
   }
 
-  const std::vector<te::se::InterpolationPoint*> ipts = interpolate->getInterpolationPoints();
-  for(std::size_t i = 0; i < ipts.size(); ++i)
-  {
-    writer.writeStartElement("InterpolationPoint");
-    writer.writeElement("Data", ipts[i]->getData());
-    assert(ipts[i]->getValue());
-    WriteParameterValuePtrHelper("Value", ipts[i]->getValue(), writer);
-    writer.writeEndElement("InterpolationPoint");
-  }
+  WriteParameterValuePtrHelper("LookupValue", interpolate->getLookupValue(), writer);
 
-   WriteParameterValuePtrHelper("LookupValue", interpolate->getLookupValue(), writer);
+  const std::vector<te::se::InterpolationPoint*> ipts = interpolate->getInterpolationPoints();
+  assert(!ipts.empty());
+  for(std::size_t i = 0; i < ipts.size(); ++i)
+    Save(ipts[i], writer);
 
   writer.writeEndElement("Interpolate");
 }

@@ -36,7 +36,10 @@ te::se::RasterSymbolizer::OverlapBehavior te::serialize::ReadOverlapBehavior(te:
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "OverlapBehavior");
 
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
   std::string type = reader.getElementValue();
+  reader.next();
 
   if(type == "AVERAGE")
     return te::se::RasterSymbolizer::AVERAGE;

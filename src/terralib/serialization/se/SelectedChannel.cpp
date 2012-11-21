@@ -37,7 +37,28 @@
 
 te::se::SelectedChannel* te::serialize::ReadSelectedChannel(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "GrayChannel" || reader.getElementLocalName() == "RedChannel" ||
+         reader.getElementLocalName() == "GreenChannel" || reader.getElementLocalName() == "BlueChannel");
+
+  reader.next();
+
+  std::auto_ptr<te::se::SelectedChannel> sc(new te::se::SelectedChannel);
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "SourceChannelName");
+  
+  // SourceChannelName
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  sc->setSourceChannelName(reader.getElementValue());
+  reader.next();
+
+  // ContrastEnhancement
+  if(reader.getElementLocalName() == "ContrastEnhancement")
+    sc->setContrastEnhancement(ReadContrastEnhancement(reader));
+
+  return sc.release();
 }
 
 void te::serialize::Save(const te::se::SelectedChannel* sc, te::xml::Writer& writer)
@@ -45,12 +66,8 @@ void te::serialize::Save(const te::se::SelectedChannel* sc, te::xml::Writer& wri
   if(sc == 0)
     return;
 
-  writer.writeStartElement("SelectedChannel");
-  
   assert(!sc->getSourceChannelName().empty());
   writer.writeElement("SourceChannelName", sc->getSourceChannelName());
   
   Save(sc->getContrastEnhancement(), writer);
-
-  writer.writeEndElement("SelectedChannel");
 }

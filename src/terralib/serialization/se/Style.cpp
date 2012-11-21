@@ -92,7 +92,57 @@ te::serialize::Style::Style()
 
 te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
 {
-  return 0;
+  std::auto_ptr<te::se::FeatureTypeStyle> fts(new te::se::FeatureTypeStyle);
+
+  // Version
+  if(reader.getNumberOfAttrs() > 0)
+  {
+    std::string version = reader.getAttr(0);
+    fts->setVersion(version);
+  }
+  
+  reader.next();
+
+  // Name
+  if(reader.getElementLocalName() == "Name")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    fts->setName(new std::string(reader.getElementValue()));
+    reader.next();
+  }
+
+  // Description
+  if(reader.getElementLocalName() == "Description")
+    fts->setDescription(te::serialize::ReadDescription(reader));
+
+  // FeatureTypeName
+  if(reader.getElementLocalName() == "FeatureTypeName")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    fts->setFeatureTypeName(new std::string(reader.getElementValue()));
+    reader.next();
+  }
+  
+  // SemanticTypeIdentifier
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "SemanticTypeIdentifier")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    fts->push_back(reader.getElementValue());
+    reader.next();
+  }
+
+  // Rules
+  while(reader.getNodeType() == te::xml::START_ELEMENT && 
+        reader.getElementLocalName() == "Rule")
+    fts->push_back(te::serialize::ReadRule(reader));
+
+  // TODO: OnlineResource
+
+  return fts.release();
 }
 
 te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
@@ -107,9 +157,20 @@ void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
   if(fts == 0)
     return;
 
+  // Starting...
+  writer.writeStartDocument("UTF-8", "no");
+
   writer.writeStartElement("FeatureTypeStyle");
   // Version
   writer.writeAttribute("version", fts->getVersion());
+  // Namespace + Schema Location
+  writer.writeAttribute("xmlns", "http://www.opengis.net/se");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.opengis.net/se D:/terralib5/terralib5/schemas/ogc/se/1.1.0/FeatureStyle.xsd");
+  writer.writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
+  // xlink
+  writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+  writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+
   // Name
   te::serialize::WriteStringPtrHelper("Name", fts->getName(), writer);
   // Description
@@ -123,11 +184,20 @@ void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
     for(std::size_t i = 0; i < semantics->size(); ++i)
       writer.writeElement("SemanticTypeIdentifier", semantics->at(i));
   }
-  // Rules
-  for(std::size_t i = 0; i < fts->getNRules(); ++i)
-    te::serialize::Save(fts->getRule(i), writer);
 
-  // Online Resources (...)
+  // Rules
+  std::size_t nRules = fts->getNRules();
+  if(nRules > 0)
+  {
+    for(std::size_t i = 0; i < fts->getNRules(); ++i)
+      te::serialize::Save(fts->getRule(i), writer);
+  }
+  else // OnlineResources
+  {
+    assert(fts->getNOnlineResources() > 0);
+    for(std::size_t i = 0; i < fts->getNOnlineResources(); ++i)
+      te::serialize::WriteOnlineResourceHelper(fts->getOnlineResource(i), writer);
+  }
 
   writer.writeEndElement("FeatureTypeStyle");
 }
@@ -156,11 +226,20 @@ void CoverageStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
     for(std::size_t i = 0; i < semantics->size(); ++i)
       writer.writeElement("SemanticTypeIdentifier", semantics->at(i));
   }
-  // Rules
-  for(std::size_t i = 0; i < cs->getNRules(); ++i)
-    te::serialize::Save(cs->getRule(i), writer);
 
-  // Online Resources (...)
+  // Rules
+  std::size_t nRules = cs->getNRules();
+  if(nRules > 0)
+  {
+    for(std::size_t i = 0; i < cs->getNRules(); ++i)
+      te::serialize::Save(cs->getRule(i), writer);
+  }
+  else // OnlineResources
+  {
+    assert(cs->getNOnlineResources() > 0);
+    for(std::size_t i = 0; i < cs->getNOnlineResources(); ++i)
+      te::serialize::WriteOnlineResourceHelper(cs->getOnlineResource(i), writer);
+  }
 
   writer.writeEndElement("CoverageStyle");
 }

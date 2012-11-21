@@ -37,7 +37,56 @@
 
 te::se::ChannelSelection* te::serialize::ReadChannelSelection(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ChannelSelection");
+
+  reader.next();
+
+  std::auto_ptr<te::se::ChannelSelection> cs(new te::se::ChannelSelection);
+  cs->setColorCompositionType(te::se::UNKNOWN_COMPOSITION);
+
+  // GrayChannel
+  if(reader.getElementLocalName() == "GrayChannel")
+  {
+    cs->setGrayChannel(ReadSelectedChannel(reader));
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+
+    return cs.release();
+  }
+
+  std::size_t nChannels = 0; // To count the number of channels
+
+  // RedChannel
+  if(reader.getElementLocalName() == "RedChannel")
+  {
+    cs->setRedChannel(ReadSelectedChannel(reader));
+    cs->setColorCompositionType(te::se::RED_COMPOSITION);
+    nChannels++;
+  }
+
+  // GreenChannel
+  if(reader.getElementLocalName() == "GreenChannel")
+  {
+    cs->setGreenChannel(ReadSelectedChannel(reader));
+    cs->setColorCompositionType(te::se::GREEN_COMPOSITION);
+    nChannels++;
+  }
+
+  // BlueChannel
+  if(reader.getElementLocalName() == "BlueChannel")
+  {
+    cs->setBlueChannel(ReadSelectedChannel(reader));
+    cs->setColorCompositionType(te::se::BLUE_COMPOSITION);
+    nChannels++;
+  }
+
+  assert(nChannels > 0);
+
+  // Adjusting...
+  if(nChannels > 1)
+    nChannels == 3 ? cs->setColorCompositionType(te::se::RGB_COMPOSITION) : cs->setColorCompositionType(te::se::UNKNOWN_COMPOSITION);
+
+  return cs.release();
 }
 
 void te::serialize::Save(const te::se::ChannelSelection* cs, te::xml::Writer& writer)

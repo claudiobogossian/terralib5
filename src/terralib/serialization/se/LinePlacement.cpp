@@ -28,6 +28,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "LinePlacement.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -36,7 +37,65 @@
 
 te::se::LinePlacement* te::serialize::ReadLinePlacement(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "LinePlacement");
+
+  reader.next();
+
+  std::auto_ptr<te::se::LinePlacement> lp(new te::se::LinePlacement);
+
+  // PerpendicularOffset
+  if(reader.getElementLocalName() == "PerpendicularOffset")
+  {
+    reader.next();
+    lp->setPerpendicularOffset(ReadParameterValue(reader));
+  }
+
+  // IsRepeated
+  if(reader.getElementLocalName() == "IsRepeated")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    bool isRepeated = reader.getElementValueAsBoolean();
+    lp->setIsRepeated(isRepeated);
+    reader.next();
+  }
+
+  // InitialGap
+  if(reader.getElementLocalName() == "InitialGap")
+  {
+    reader.next();
+    lp->setInitialGap(ReadParameterValue(reader));
+  }
+
+  // Gap
+  if(reader.getElementLocalName() == "Gap")
+  {
+    reader.next();
+    lp->setGap(ReadParameterValue(reader));
+  }
+
+  // IsAligned
+  if(reader.getElementLocalName() == "IsAligned")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    bool isAligned = reader.getElementValueAsBoolean();
+    lp->setIsAligned(isAligned);
+    reader.next();
+  }
+
+  // GeneralizeLine
+  if(reader.getElementLocalName() == "GeneralizeLine")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    bool generalizeLine = reader.getElementValueAsBoolean();
+    lp->setGeneralizeLine(generalizeLine);
+    reader.next();
+  }
+
+  return lp.release();
 }
 
 void te::serialize::Save(const te::se::LinePlacement* lp, te::xml::Writer& writer)

@@ -28,6 +28,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "Categorize.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -37,7 +38,48 @@
 
 te::se::Categorize* te::serialize::ReadCategorize(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Categorize");
+
+  assert(reader.hasAttrs());
+
+  std::auto_ptr<te::se::Categorize> c(new te::se::Categorize);
+
+  // FallBackValue Attribute
+  std::string fbv = reader.getAttr("fallbackValue");
+  assert(!fbv.empty());
+  c->setFallbackValue(fbv);
+
+  // ThreshholdsBelongTo Attribute
+  std::string tbt = reader.getAttr("threshholdsBelongTo");
+  assert(!tbt.empty() && (tbt == "preceding" || tbt == "succeeding"));
+  tbt == "preceding" ? c->setThresholdsBelongTo(te::se::Categorize::PRECEDING) : c->setThresholdsBelongTo(te::se::Categorize::SUCCEEDING);
+
+  reader.next();
+
+  // LookupValue
+  assert(reader.getElementLocalName() == "LookupValue");
+  reader.next();
+  c->setLookupValue(ReadParameterValue(reader));
+
+  // Value
+  assert(reader.getElementLocalName() == "Value");
+  reader.next();
+  c->setValue(ReadParameterValue(reader));
+
+  // Threshold + Value
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "Threshold")
+  {
+    reader.next();
+    c->addThreshold(ReadParameterValue(reader));
+
+    assert(reader.getElementLocalName() == "Value");
+    reader.next();
+    c->addValue(ReadParameterValue(reader));
+  }
+
+  return c.release();
 }
 
 void te::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
@@ -73,7 +115,7 @@ void te::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
 
   for(std::size_t i = 0; i < thresholds.size(); ++i)
   {
-    WriteParameterValuePtrHelper("Thresold", thresholds[i], writer);
+    WriteParameterValuePtrHelper("Threshold", thresholds[i], writer);
     WriteParameterValuePtrHelper("Value", values[i], writer);
   }
 

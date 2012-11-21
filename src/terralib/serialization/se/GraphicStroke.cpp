@@ -29,6 +29,7 @@
 #include "../../xml/Writer.h"
 #include "Graphic.h"
 #include "GraphicStroke.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -37,7 +38,31 @@
 
 te::se::GraphicStroke* te::serialize::ReadGraphicStroke(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "GraphicStroke");
+
+  reader.next();
+
+  std::auto_ptr<te::se::GraphicStroke> graphicStroke(new te::se::GraphicStroke);
+
+  assert(reader.getElementLocalName() == "Graphic");
+  graphicStroke->setGraphic(ReadGraphic(reader));
+
+  // InitialGap
+  if(reader.getElementLocalName() == "InitialGap")
+  {
+    reader.next();
+    graphicStroke->setInitialGap(ReadParameterValue(reader));
+  }
+
+  // Gap
+  if(reader.getElementLocalName() == "Gap")
+  {
+    reader.next();
+    graphicStroke->setGap(ReadParameterValue(reader));
+  }
+
+  return graphicStroke.release();
 }
 
 void te::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::Writer& writer)

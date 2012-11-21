@@ -30,11 +30,35 @@
 #include "ShadedRelief.h"
 
 // STL
+#include <cassert>
 #include <memory>
 
 te::se::ShadedRelief* te::serialize::ReadShadedRelief(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ShadedRelief");
+
+  reader.next();
+
+  std::auto_ptr<te::se::ShadedRelief> sr(new te::se::ShadedRelief);
+
+  if(reader.getElementLocalName() == "BrightnessOnly")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    sr->setBrightnessOnly(reader.getElementValueAsBoolean());
+    reader.next();
+  }
+
+  if(reader.getElementLocalName() == "ReliefFactor")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    sr->setReliefFactor(reader.getElementValueAsDouble());
+    reader.next();
+  }
+
+  return sr.release();
 }
 
 void te::serialize::Save(const te::se::ShadedRelief* sr, te::xml::Writer& writer)

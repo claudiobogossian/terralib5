@@ -27,6 +27,7 @@
 #include "../../se/ExternalGraphic.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../xlink/SimpleLink.h"
 #include "ExternalGraphic.h"
 #include "InlineContent.h"
 #include "Utils.h"
@@ -37,7 +38,28 @@
 
 te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ExternalGraphic");
+
+  reader.next();
+
+  std::auto_ptr<te::se::ExternalGraphic> eg(new te::se::ExternalGraphic);
+
+  if(reader.getElementLocalName() == "OnlineResource")
+    eg->setOnlineResource(ReadSimpleLink(reader));
+  else // InlineContent
+    eg->setInlineContent(ReadInlineContent(reader));
+
+  // Format
+  assert(reader.getElementLocalName() == "Format");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  eg->setFormat(reader.getElementValue());
+  reader.next();
+
+  // Recodes (...)
+
+  return eg.release();
 }
 
 void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& writer)

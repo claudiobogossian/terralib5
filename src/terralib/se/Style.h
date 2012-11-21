@@ -106,6 +106,8 @@ namespace te
 
         void push_back(te::xl::SimpleLink* onlineResource);
 
+        size_t getNOnlineResources() const;
+
         const te::xl::SimpleLink* getOnlineResource(size_t i) const;
 
         void setVersion(const std::string& v);
