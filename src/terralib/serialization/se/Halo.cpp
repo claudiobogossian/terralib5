@@ -29,6 +29,7 @@
 #include "../../xml/Writer.h"
 #include "Fill.h"
 #include "Halo.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -37,7 +38,25 @@
 
 te::se::Halo* te::serialize::ReadHalo(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Halo");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Halo> halo(new te::se::Halo);
+
+  // Radius
+  if(reader.getElementLocalName() == "Radius")
+  {
+    reader.next();
+    halo->setRadius(ReadParameterValue(reader));
+  }
+  
+  // Fill
+  if(reader.getElementLocalName() == "Fill")
+    halo->setFill(ReadFill(reader));
+
+  return halo.release();
 }
 
 void te::serialize::Save(const te::se::Halo* halo, te::xml::Writer& writer)

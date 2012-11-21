@@ -40,17 +40,27 @@ te::se::Description* te::serialize::ReadDescription(te::xml::Reader& reader)
 
   reader.next();
 
-  assert(reader.getElementLocalName() == "Title");
-  std::string title = reader.getElementValue();
-
-  reader.next();
-
-  assert(reader.getElementLocalName() == "Abstract");
-  std::string abs = reader.getElementValue();
-
   std::auto_ptr<te::se::Description> description(new te::se::Description);
-  description->setTitle(title);
-  description->setAbstract(abs);
+
+  // Title
+  if(reader.getElementLocalName() == "Title")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string title = reader.getElementValue();
+    description->setTitle(title);
+    reader.next();
+  }
+
+  // Abstract
+  if(reader.getElementLocalName() == "Abstract")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string abs = reader.getElementValue();
+    description->setAbstract(abs);
+    reader.next();
+  }
 
   return description.release();
 }
@@ -61,8 +71,13 @@ void te::serialize::Save(const te::se::Description* d, te::xml::Writer& writer)
     return;
 
   writer.writeStartElement("Description");
-  writer.writeElement("Title", d->getTitle());
-  writer.writeElement("Abstract", d->getAbstract());
+  
+  if(!d->getTitle().empty())
+    writer.writeElement("Title", d->getTitle());
+  
+  if(!d->getAbstract().empty())
+    writer.writeElement("Abstract", d->getAbstract());
+
   writer.writeEndElement("Description");
 }
 

@@ -37,7 +37,26 @@
 
 te::se::Fill* te::serialize::ReadFill(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Fill");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Fill> fill(new te::se::Fill);
+
+  // GraphicFill
+  if(reader.getElementLocalName() == "GraphicFill")
+  {
+    reader.next();
+    fill->setGraphicFill(ReadGraphic(reader));
+  }
+
+  // SvgParameters
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "SvgParameter")
+    fill->add(ReadSvgParameter(reader));
+
+  return fill.release();
 }
 
 void te::serialize::Save(const te::se::Fill* fill, te::xml::Writer& writer)

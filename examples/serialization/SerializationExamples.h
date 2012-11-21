@@ -29,10 +29,28 @@
 // STL
 #include <string>
 
-/*! \brief It creates an OGC Filter Enconding and encode it to XML format. */
-void EncodeFilter(const std::string& path = "");
+// Forward declarations
+namespace te
+{
+  namespace se
+  {
+    class Style;
+  }
+}
 
-/*! \brief It creates an OGC Symbology Enconding Style and encode it to XML format. */
-void EncodeStyle(const std::string& path = "");
+/*! \brief It creates an OGC Filter Encoding and encode it to XML format. */
+std::string EncodeFilter();
+
+/*! \brief It creates an OGC Symbology Encoding Style and encode it to XML format. */
+std::string EncodeStyle();
+
+/*! \brief It encodes the given OGC Symbology Encoding Style to XML format. */
+std::string EncodeStyle(te::se::Style* style);
+
+/*! \brief It decodes a given OGC Symbology Encoding Style file. */
+te::se::Style* DecodeStyle(const std::string& path);
+
+/*! \brief It creates an xlink:SimpleLink and encode it to XML format. */
+std::string EncodeSimpleLink();
 
 #endif  // __TERRALIB_EXAMPLES_SERIALIZATION_INTERNAL_SERIALIZATIONEXAMPLES_H

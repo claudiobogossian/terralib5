@@ -29,6 +29,7 @@
 #include "../../xml/Writer.h"
 #include "AnchorPoint.h"
 #include "Displacement.h"
+#include "ParameterValue.h"
 #include "PointPlacement.h"
 #include "Utils.h"
 
@@ -38,7 +39,29 @@
 
 te::se::PointPlacement* te::serialize::ReadPointPlacement(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PointPlacement");
+
+  reader.next();
+
+  std::auto_ptr<te::se::PointPlacement> pp(new te::se::PointPlacement);
+
+  // AnchorPoint
+  if(reader.getElementLocalName() == "AnchorPoint")
+    pp->setAnchorPoint(ReadAnchorPoint(reader));
+
+  // Displacement
+  if(reader.getElementLocalName() == "Displacement")
+    pp->setDisplacement(ReadDisplacement(reader));
+
+  // Rotation
+  if(reader.getElementLocalName() == "Rotation")
+  {
+    reader.next();
+    pp->setRotation(ReadParameterValue(reader));
+  }
+
+  return pp.release();
 }
 
 void te::serialize::Save(const te::se::PointPlacement* pp, te::xml::Writer& writer)

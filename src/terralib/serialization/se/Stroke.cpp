@@ -38,7 +38,28 @@
 
 te::se::Stroke* te::serialize::ReadStroke(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Stroke");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Stroke> stroke(new te::se::Stroke);
+
+  // GraphicFill
+  if(reader.getElementLocalName() == "GraphicFill")
+  {
+    reader.next();
+    stroke->setGraphicFill(ReadGraphic(reader));
+  } // GraphicStroke
+  else if(reader.getElementLocalName() == "GraphicStroke")
+    stroke->setGraphicStroke(ReadGraphicStroke(reader));
+
+  // SvgParameters
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "SvgParameter")
+    stroke->add(ReadSvgParameter(reader));
+
+  return stroke.release();
 }
 
 void te::serialize::Save(const te::se::Stroke* stroke, te::xml::Writer& writer)

@@ -60,9 +60,13 @@ namespace te
 
     void WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer);
 
+    void ReadSymbolizerHelper(te::se::Symbolizer* symbolizer, te::xml::Reader& reader);
+
     void WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer);
 
     void WriteGeometryPropertyHelper(const te::fe::PropertyName* p, te::xml::Writer& writer);
+
+    te::fe::PropertyName* ReadGeometryPropertyHelper(te::xml::Reader& reader);
 
   } // end namespace serialize
 }   // end namespace te

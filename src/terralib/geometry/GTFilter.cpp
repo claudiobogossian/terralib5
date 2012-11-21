@@ -261,16 +261,18 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   boost::random::uniform_01< double > distribution;
   boost::random::mt19937 generator( time(0) );
 
-  const bool dynamicMaxIterations = ( paramsPtr->m_maxIterations == 0 );
-  RansacItCounterT maxIterations = paramsPtr->m_maxIterations ? 
-    ( paramsPtr->m_maxIterations / maxIterationsDivFactor ) 
-    :
+  const bool useDynamicMaxIterations = ( paramsPtr->m_maxIterations == 0 );
+  const RansacItCounterT fixedMaxIterations = useDynamicMaxIterations ? 
     ( 
       (RansacItCounterT)boost::math::binomial_coefficient< long double >(
         (unsigned int)tiePoints.size(), 
         bestTransfPtr->getMinRequiredTiePoints() )
-    ) / maxIterationsDivFactor;
-  RansacItCounterT maxIterationsEstimation = maxIterations;
+    ) / maxIterationsDivFactor
+    :
+    ( paramsPtr->m_maxIterations / maxIterationsDivFactor );
+  const RansacItCounterT fixedMaxConsecutiveInvalidIterations = std::max( 
+    (RansacItCounterT)1,
+    fixedMaxIterations / 2 );
     
   GTParameters consensusSetParams;  
   consensusSetParams.m_tiePoints.reserve( tiePoints.size() );
@@ -295,8 +297,14 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   unsigned int selectedTpsPtrsVecIdx = 0;
   bool selectedTpsNotSelectedBefore = false;
   RansacItCounterT currentIteration = 0;
+  const long double iterationsFactor = std::log( (long double)( 1.0 - assurance ) );
+  RansacItCounterT dynamicMaxIterations = fixedMaxIterations;
+  RansacItCounterT dynamicMaxConsecutiveInvalidIterations = fixedMaxConsecutiveInvalidIterations;
+  RansacItCounterT dynamicMaxIterationsEstimation = fixedMaxIterations;
+  RansacItCounterT consecutiveInvalidIterations = 0;
     
-  while( ( currentIteration < maxIterations ) && keepRunningFlag )
+  while( keepRunningFlag && ( currentIteration < dynamicMaxIterations ) && 
+    ( consecutiveInvalidIterations < dynamicMaxConsecutiveInvalidIterations ) )
   {
     // Trying to find a valid base consensus set
     // with the minimum number of required tie-points
@@ -338,8 +346,6 @@ void te::gm::GTFilter::applyRansacThreadEntry(
     
     if( bestTransfPtr->computeParameters( consensusSetParams ) ) 
     {
-//        consecutiveInvalidBaseSetsLeft = maxConsecutiveInvalidBaseSets;
-      
       // finding those tie-points in agreement with the generated
       // consensus basic transformation
 
@@ -356,8 +362,8 @@ void te::gm::GTFilter::applyRansacThreadEntry(
         tiePointDMapErr = bestTransfPtr->getDirectMappingError( curTP, consensusSetParams );
         tiePointIMapErr = bestTransfPtr->getInverseMappingError( curTP, consensusSetParams );
 
-        if( ( tiePointDMapErr < maxDMapError ) && 
-          ( tiePointIMapErr < maxIMapError ) )
+        if( ( tiePointDMapErr <= maxDMapError ) && 
+          ( tiePointIMapErr <= maxIMapError ) )
         {
           consensusSetParams.m_tiePoints.push_back( curTP );
           consensusSetDRMSE += ( tiePointDMapErr * tiePointDMapErr );
@@ -370,16 +376,16 @@ void te::gm::GTFilter::applyRansacThreadEntry(
       }
       
       consensusSetSize = (unsigned int)consensusSetParams.m_tiePoints.size();
-      
       consensusSetDRMSE = sqrt( consensusSetDRMSE );
       consensusSetIRMSE = sqrt( consensusSetIRMSE );
       
       /* Is this an acceptable consensus set ?? */      
       
-      if( ( consensusSetDRMSE < maxDMapRmse ) &&
-          ( consensusSetIRMSE < maxIMapRmse ) &&
-          ( consensusSetMaxDMapErr < maxDMapError ) &&
-          ( consensusSetMaxIMapErr < maxIMapError ) )
+      if( ( consensusSetSize >= reqTPsNmb ) &&
+          ( consensusSetDRMSE <= maxDMapRmse ) &&
+          ( consensusSetIRMSE <= maxIMapRmse ) &&
+          ( consensusSetMaxDMapErr <= maxDMapError ) &&
+          ( consensusSetMaxIMapErr <= maxIMapError ) )
       {
         // Is this consensus set better than the current better one ??
         // (by using the number of tie-points as parameter
@@ -392,6 +398,8 @@ void te::gm::GTFilter::applyRansacThreadEntry(
           bestParamsDRMSE = consensusSetDRMSE;
           bestParamsIRMSE = consensusSetIRMSE;
           bestParamsConvexHullArea = -1.0;
+          
+          consecutiveInvalidIterations = 0;
         }
         else if( consensusSetSize == bestParams.m_tiePoints.size() )
         {
@@ -413,43 +421,74 @@ void te::gm::GTFilter::applyRansacThreadEntry(
             bestParams = consensusSetParams;
             bestParamsDRMSE = consensusSetDRMSE;
             bestParamsIRMSE = consensusSetIRMSE;
+            
+            consecutiveInvalidIterations = 0;
+          }
+          else
+          {
+            ++consecutiveInvalidIterations;
           }
         }
-      }
-    }
-    
-    // Updating iteration related variables
-    
-    if( dynamicMaxIterations && ( bestParams.m_tiePoints.size() != 0 ) )
-    {
-      if( bestParams.m_tiePoints.size() == inputTPNmb )
-      {
-        maxIterations = 0;
+        else
+        {
+          ++consecutiveInvalidIterations;
+        }
       }
       else
       {
-        maxIterationsEstimation =
+        ++consecutiveInvalidIterations;
+      }
+    }
+    else
+    {
+      ++consecutiveInvalidIterations;
+    };
+    
+    // Updating iteration related variables
+    
+    if( useDynamicMaxIterations && ( currentIteration != 0 ) &&
+      ( bestParams.m_tiePoints.size() != 0 ) )
+    {
+      if( bestParams.m_tiePoints.size() == inputTPNmb )
+      {
+        dynamicMaxIterations = 0;
+      }
+      else
+      {
+        dynamicMaxIterationsEstimation =
           (
             (
-              (RansacItCounterT) std::ceil(
-                ( (long double)std::log( assurance ) ) 
+              (RansacItCounterT)(
+                iterationsFactor
                 / 
-                (long double)std::log( 
-                  1.0 
+                std::log( 
+                  ((long double)1.0) 
                   - 
-                  (  
-                    ((long double)bestParams.m_tiePoints.size() )
-                    /
-                    ((long double)inputTPNmb)
-                  ) 
+                  std::pow(
+                    (  
+                      ((long double)bestParams.m_tiePoints.size() )
+                      /
+                      ((long double)inputTPNmb)
+                    )
+                    ,
+                    ((long double)reqTPsNmb)
+                  )
                 )
               )
             )
             /
             maxIterationsDivFactor
           );
-        
-        maxIterations = ( maxIterations + maxIterationsEstimation ) / 2;
+          
+        dynamicMaxIterationsEstimation = std::min( dynamicMaxIterationsEstimation,
+          fixedMaxIterations );                                                   
+
+        dynamicMaxIterations = ( dynamicMaxIterationsEstimation > dynamicMaxIterations ) ?
+          ( dynamicMaxIterations + ( ( dynamicMaxIterationsEstimation - dynamicMaxIterations ) / 2 ) )
+          :
+          ( dynamicMaxIterationsEstimation + ( ( dynamicMaxIterations - dynamicMaxIterationsEstimation ) / 2 ) );
+          
+        dynamicMaxConsecutiveInvalidIterations = std::max( (RansacItCounterT)1, dynamicMaxIterations / 2 );
       }
     }
     
