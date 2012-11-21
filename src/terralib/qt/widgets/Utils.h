@@ -33,6 +33,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QMessageBox>
 
 // Forward declarations
 class QTreeWidgetItem;
@@ -104,7 +105,6 @@ namespace te
         \note The caller of this method will take the ownership of the returned pointer.
       */
       TEQTWIDGETSEXPORT te::color::RGBAColor** GetImage(QImage* img);
-
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
