@@ -146,6 +146,7 @@ namespace te
           std::vector<DrawLayerThread*> m_threads; // The set of threads used to draw the layer list.
           std::map<int, QImage> m_images;          // The set of images built by each thread. It will be used to compose the final result, keeping the layer list order.
           bool m_showFeedback;                     // A flag that indicates if the map display will show drawing feedback.
+          bool m_isDrawing;                        // A flag that indicates if the map display is drawing.
 
           QMatrix m_matrix; /*  Used to converts coordinates screen -> world. Note: For while... I need the class CoordTransform! */
       };

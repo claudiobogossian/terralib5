@@ -100,12 +100,11 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
   // Adjusting box...
   te::gm::Envelope box(bbox);
   
-  bool remap = false;
-  
-  if(layer->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && layer->getSRID() != srid)
+  bool needRemap = false;
+  if(layer->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS)
   {
     box.transform(srid, layer->getSRID());
-    remap = true;
+    needRemap = true;
   }
 
   // Gets the associated layer style
@@ -187,7 +186,7 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     message += boost::lexical_cast<std::string>(nRules) + ".";
 
     // Draw task
-    te::common::TaskProgress task(message);
+    te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
     // Setups task
     task.setTotalSteps(nSymbolizers * dataset->size());
 
@@ -201,6 +200,13 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
       // Let's draw!
       while(dataset->moveNext())
       {
+        if(!task.isActive())
+        {
+          delete dataset;
+          delete t;
+          return;
+        }
+
         // Updates the draw task
         task.pulse();
 
@@ -210,8 +216,8 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
         if(g == 0)
           continue;
 
-        // Verifies the SRID. Case differents, converts coordinates...
-        if(remap)
+        // Need remap?
+        if(needRemap)
         {
           g->setSRID(layer->getSRID());
           g->transform(srid);

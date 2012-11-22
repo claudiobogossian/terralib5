@@ -28,8 +28,9 @@
 #include "ProgressTimer.h"
 #include "TaskProgress.h"
 
-te::common::TaskProgress::TaskProgress(const std::string& message)
+te::common::TaskProgress::TaskProgress(const std::string& message, const unsigned int& type)
   : m_id(-1),
+    m_type(type),
     m_totalSteps(0),
     m_currentStep(0),
     m_currentPropStep(0),
@@ -54,6 +55,11 @@ te::common::TaskProgress::~TaskProgress()
 int te::common::TaskProgress::getId()
 {
   return m_id;
+}
+
+unsigned int te::common::TaskProgress::getType()
+{
+  return m_type;
 }
 
 int te::common::TaskProgress::getTotalSteps()

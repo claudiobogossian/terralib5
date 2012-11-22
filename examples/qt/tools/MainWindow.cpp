@@ -30,6 +30,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/common/progress/ProgressManager.h>
+#include <terralib/common/progress/TaskProgress.h>
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
 #include <terralib/maptools.h>
@@ -169,6 +170,8 @@ void MainWindow::setupActions()
   connect(addRasterLayer, SIGNAL(triggered()), SLOT(onAddRasterLayerTriggered()));
   m_toolBar->addAction(addRasterLayer);*/
 
+  m_toolBar->addSeparator();
+
   // List of created actions
   QList<QAction*> actions;
 
@@ -231,6 +234,13 @@ void MainWindow::setupActions()
     m_toolBar->addAction(*it);
     m_menu->addAction(*it);
   }
+
+  m_toolBar->addSeparator();
+
+  // Stop All
+  QAction* stopAll = new QAction(QIcon::fromTheme("process-stop"), tr("Stop All"), this);
+  connect(stopAll, SIGNAL(triggered()), SLOT(onStopAllTriggered()));
+  m_toolBar->addAction(stopAll);
 }
 
 void MainWindow::addVectorLayer(const QString& path)
@@ -426,6 +436,11 @@ void MainWindow::onSelectionTriggered()
   delete m_tool;
   m_tool = new SelectionTool(m_display, dynamic_cast<te::map::Layer*>(*m_layers.begin()));
   m_display->installEventFilter(m_tool);
+}
+
+void MainWindow::onStopAllTriggered()
+{
+  te::common::ProgressManager::getInstance().cancelTasks(te::common::TaskProgress::DRAW);
 }
 
 void MainWindow::onCoordTracked(QPointF& coordinate)

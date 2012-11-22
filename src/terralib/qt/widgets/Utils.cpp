@@ -30,6 +30,7 @@
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QTreeWidgetItemIterator>
 #include <QtGui/QImage>
+#include <QApplication>
 
 void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state)
 {
@@ -80,4 +81,26 @@ te::color::RGBAColor** te::qt::widgets::GetImage(QImage* img)
   }
 
   return rgba;
+}
+
+QStyle::StandardPixmap toQStyle(const QMessageBox::Icon& icon)
+{
+  switch(icon)
+  {
+    case QMessageBox::Question:
+      return QStyle::SP_MessageBoxQuestion;
+    break;
+
+    case QMessageBox::Warning:
+      return QStyle::SP_MessageBoxWarning;
+    break;
+
+    case QMessageBox::Critical:
+      return QStyle::SP_MessageBoxCritical;    
+    break;
+
+    default:
+      return QStyle::SP_MediaVolumeMuted;
+    break;
+  }
 }

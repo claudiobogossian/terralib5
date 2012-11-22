@@ -28,6 +28,7 @@
 #include "Algorithm.h"
 #include "Matrix.h"
 #include "../raster/Raster.h"
+#include "../raster/Interpolator.h"
 #include "../geometry/GTParameters.h"
 #include "../sam/rtree.h"
 #include "../common/progress/TaskProgress.h"
@@ -133,6 +134,8 @@ namespace te
             double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
             
             double m_minAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.25, valid range: [0,1].
+            
+            te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
             InputParameters();
             
@@ -539,13 +542,15 @@ namespace te
           
           \param rescaleFactorY Scale factor to be applied on the loaded data.
           
+          \param rasterInterpMethod The interpolation used when loading the input raster.
+          
           \param loadedRasterData The loaded raster data.
           
           \param loadedMaskRasterData The loaded mask raster data.
 
           \return true if ok, false on errors.
         */             
-        bool loadRasterData( 
+        static bool loadRasterData( 
           te::rst::Raster const* rasterPtr,
           const std::vector< unsigned int >& rasterBands,
           te::rst::Raster const* maskRasterPtr,
@@ -556,6 +561,7 @@ namespace te
           const unsigned int rasterTargetAreaHeight,
           const double rescaleFactorX,
           const double rescaleFactorY,
+          const te::rst::Interpolator::Method rasterInterpMethod,
           std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
           Matrix< unsigned char >& loadedMaskRasterData );
           

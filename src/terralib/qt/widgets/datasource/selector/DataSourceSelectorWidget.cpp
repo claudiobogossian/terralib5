@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
-#include "../connector/core/AbstractDataSourceConnector.h"
+#include "../connector/AbstractDataSourceConnector.h"
 #include "../core/DataSourceManager.h"
 #include "../core/DataSourceType.h"
 #include "../core/DataSourceTypeManager.h"
@@ -56,7 +56,7 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
   m_ui->m_addDataSourceToolButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removeDataSourceToolButton->setIcon(QIcon::fromTheme("list-remove"));
   m_ui->m_editDataSourceToolButton->setIcon(QIcon::fromTheme("preferences-system"));
-  m_ui->m_createDataSourceToolButton->setIcon(QIcon::fromTheme("tools-spanner-hammer"));
+  m_ui->m_createDataSourceToolButton->setIcon(QIcon::fromTheme("folder-new"));
 
 // add the list of data sources available in the system
   std::map<std::string, DataSourceType*>::const_iterator it = DataSourceTypeManager::getInstance().begin();

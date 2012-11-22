@@ -60,6 +60,7 @@
     <property name="title">
      <string>&amp;Setttings</string>
     </property>
+    <addaction name="m_open_dsrc_mger_act"/>
     <addaction name="m_openPlgMger_act"/>
    </widget>
    <addaction name="menuFile"/>
@@ -274,6 +275,14 @@
     <string>Opens the plug-ins manager dialog.</string>
    </property>
   </action>
+  <action name="m_open_dsrc_mger_act">
+   <property name="text">
+    <string>Open data source manager ...</string>
+   </property>
+   <property name="toolTip">
+    <string>Opens the data source manager.</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -437,6 +446,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_open_dsrc_mger_act</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openDSrcManager()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>625</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>addOGRLayer()</slot>
@@ -448,5 +473,6 @@
   <slot>setAngleTool(bool)</slot>
   <slot>addGDALLayer()</slot>
   <slot>openPluginsManager()</slot>
+  <slot>openDSrcManager()</slot>
  </slots>
 </ui>
