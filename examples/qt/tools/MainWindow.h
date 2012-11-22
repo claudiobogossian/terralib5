@@ -114,6 +114,7 @@ class MainWindow : public QMainWindow
     void onAreaTriggered();
     void onAngleTriggered();
     void onSelectionTriggered();
+    void onStopAllTriggered();
     void onCoordTracked(QPointF& coordinate);
 
   private:

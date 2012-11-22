@@ -29,23 +29,18 @@
 #include "DrawLayerThread.h"
 #include "Canvas.h"
 
-te::qt::widgets::DrawLayerThread::DrawLayerThread(QWidget* parent)
+te::qt::widgets::DrawLayerThread::DrawLayerThread(QObject* parent)
   : QThread(parent),
-    m_abort(false)
+    m_interval(100)
 {
   // Signals & slots
   connect(&m_feedback, SIGNAL(timeout()), SLOT(sendFeedback()));
-  connect(this, SIGNAL(finished()), SLOT(stopSendFeedback())); 
+  connect(this, SIGNAL(started()), SLOT(onStarted()));
+  connect(this, SIGNAL(finished()), SLOT(onFinished()));
 }
 
 te::qt::widgets::DrawLayerThread::~DrawLayerThread()
 {
-  m_mutex.lock();
-
-  m_abort = true;
-
-  m_mutex.unlock();
-
   wait();
 }
 
@@ -54,8 +49,6 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
   /* Note: For while... Actually, I would like to can stop the current draw process and restart with the new request box! te::common::TaskProgress?! */
   if(isRunning())
     return;
-
-  m_abort = false;
 
   // Storing the values
   m_layer = layer;
@@ -69,9 +62,6 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
     m_image = QImage(size, QImage::Format_ARGB32_Premultiplied);
     m_image.fill(qRgba(0, 0, 0, 0));
   }
-
-  // Starts the timer feedback
-  m_feedback.start(100);
 
   // Requests the thread execution!
   start();
@@ -87,10 +77,11 @@ void te::qt::widgets::DrawLayerThread::run()
 
   // Let's draw!
   m_layer->draw(&canvas, m_env, m_srid);
+}
 
-  // Draw finished!
-  emit drawLayerFinished(m_index, m_image);
-  m_image.fill(qRgba(0, 0, 0, 0));
+void te::qt::widgets::DrawLayerThread::onStarted()
+{
+  m_feedback.start(m_interval);
 }
 
 void te::qt::widgets::DrawLayerThread::sendFeedback()
@@ -98,7 +89,9 @@ void te::qt::widgets::DrawLayerThread::sendFeedback()
   emit feedback(m_image);
 }
 
-void te::qt::widgets::DrawLayerThread::stopSendFeedback()
+void te::qt::widgets::DrawLayerThread::onFinished()
 {
+  emit drawLayerFinished(m_index, m_image);
+  m_image.fill(qRgba(0, 0, 0, 0));
   m_feedback.stop();
 }

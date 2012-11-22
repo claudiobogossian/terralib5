@@ -55,8 +55,15 @@ namespace te
     {
       public:
 
+        /*! \brief Defines some task types. */
+        enum
+        {
+          UNDEFINED = 0, /*!< Undefined task type. */
+          DRAW   = 1     /*!< Draw task type.      */
+        };
+
         /*! \brief Default constructor. */
-        TaskProgress(const std::string& message = "");
+        TaskProgress(const std::string& message = "", const unsigned int& type = UNDEFINED);
 
         /*! \brief Destructor. */
         ~TaskProgress();
@@ -72,6 +79,13 @@ namespace te
           \return Task id as integer value.
         */
         int getId();
+
+        /*!
+          \brief Get the task type.
+
+          \return The task type.
+        */
+        unsigned int getType();
 
         /*!
           \brief Get the task total stepes.
@@ -161,6 +175,7 @@ namespace te
       protected:
 
         int m_id;                   //!< Task identification.
+        unsigned int m_type;        //!< Task type.
         int m_totalSteps;           //!< Task total steps.
         int m_currentStep;          //!< Task current step.
         int m_currentPropStep;      //!< Current proportinal step.
