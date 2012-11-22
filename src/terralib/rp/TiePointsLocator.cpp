@@ -93,6 +93,7 @@ namespace te
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
+      m_geometryFilterAssurance = 0.0;
       m_gaussianFilterIterations = 1;
       m_scalesNumber = 3;
       m_octavesNumber = 2;
@@ -133,6 +134,7 @@ namespace te
       m_moravecWindowWidth = params.m_moravecWindowWidth;
       m_maxR1ToR2Offset = params.m_maxR1ToR2Offset;
       m_enableGeometryFilter = params.m_enableGeometryFilter;
+      m_geometryFilterAssurance = params.m_geometryFilterAssurance;
       m_gaussianFilterIterations = params.m_gaussianFilterIterations;
       m_scalesNumber = params.m_scalesNumber;
       m_octavesNumber = params.m_octavesNumber;
@@ -345,7 +347,7 @@ namespace te
           m_inputParameters.m_geomTransfMaxError,
           m_inputParameters.m_geomTransfMaxError,
           0,
-          0.5,
+          m_inputParameters.m_geometryFilterAssurance,
           m_inputParameters.m_enableMultiThread,
           transfPtr,
           tiePointsWeights ), "Outliers remotion error" );
@@ -1254,7 +1256,11 @@ namespace te
         
       TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_minAbsCorrelation >= 0 ) &&
         ( m_inputParameters.m_minAbsCorrelation <= 1.0 ),
-        "Invalid m_minAbsCorrelation" );             
+        "Invalid m_minAbsCorrelation" );         
+        
+      TERP_TRUE_OR_RETURN_FALSE( ( m_inputParameters.m_geometryFilterAssurance >= 0 ) &&
+        ( m_inputParameters.m_geometryFilterAssurance <= 1.0 ),
+        "Invalid m_geometryFilterAssurance" );          
         
       m_isInitialized = true;
 

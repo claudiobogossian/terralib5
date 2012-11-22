@@ -123,6 +123,8 @@ namespace te
             
             bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
             
+            double m_geometryFilterAssurance; //! < Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0 (the value will be automatically found).
+            
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
             unsigned int m_scalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3).
