@@ -69,7 +69,7 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
   if( maxIMapError < 0 ) return false;
   if( maxDMapRmse < 0 ) return false;
   if( maxIMapRmse < 0 ) return false;
-  if( ( assurance <= 0.0 ) || ( assurance >= 1.0 ) ) return false;
+  if( ( assurance < 0.0 ) || ( assurance > 1.0 ) ) return false;
   
   // generating the tie-points accumulated probabilities map
   // with positive values between 0 and 1
@@ -115,8 +115,8 @@ bool te::gm::GTFilter::applyRansac( const std::string& transfName,
     else
     {
       double wSum = 0;
-      const double increment = ( ((double)RAND_MAX) + 1.0 ) / 
-        ((double)inputParams.m_tiePoints.size());
+      const double increment = 1.0 / 
+        ( (double)inputParams.m_tiePoints.size() );
       
       for( unsigned int tpIdx = 0 ; tpIdx < inputTPNmb ; ++tpIdx )
       {
@@ -223,6 +223,10 @@ void te::gm::GTFilter::applyRansacThreadEntry(
     paramsPtr->m_inputGTParamsPtr->m_tiePoints;
   std::map< double, GTParameters::TiePoint > tpsMap = *(paramsPtr->m_tpsMapPtr);  
   
+  // initializing the random number generator to assure that each thread has
+  // a different seed
+  boost::random::mt19937 generator( time(0) );
+  
   paramsPtr->m_mutexPtr->unlock();
   
   // external globals
@@ -258,8 +262,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   
   // variables used by the ransac loop
   
-  boost::random::uniform_01< double > distribution;
-  boost::random::mt19937 generator( time(0) );
+  boost::random::uniform_01< double > distribution; 
 
   const bool useDynamicMaxIterations = ( paramsPtr->m_maxIterations == 0 );
   const RansacItCounterT fixedMaxIterations = useDynamicMaxIterations ? 
@@ -297,7 +300,25 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   unsigned int selectedTpsPtrsVecIdx = 0;
   bool selectedTpsNotSelectedBefore = false;
   RansacItCounterT currentIteration = 0;
-  const long double iterationsFactor = std::log( (long double)( 1.0 - assurance ) );
+  const long double iterationsFactor = ( assurance != 0.0 ) ?
+    std::log( (long double)( 1.0 - assurance ) )
+    :
+    std::log( 
+      (long double) 
+      ( 
+        ((long double)1.0)  
+        - 
+        ( 
+          std::pow(
+            ( (long double)reqTPsNmb ) 
+            /
+            ( (long double)inputTPNmb ) 
+            ,
+            ( (long double)reqTPsNmb )
+          )
+        )
+      )
+    );
   RansacItCounterT dynamicMaxIterations = fixedMaxIterations;
   RansacItCounterT dynamicMaxConsecutiveInvalidIterations = fixedMaxConsecutiveInvalidIterations;
   RansacItCounterT dynamicMaxIterationsEstimation = fixedMaxIterations;
