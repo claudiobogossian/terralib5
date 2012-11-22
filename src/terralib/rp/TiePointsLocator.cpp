@@ -88,18 +88,18 @@ namespace te
       m_pixelSizeXRelation = 1;
       m_pixelSizeYRelation = 1;
       m_geomTransfName = "Affine";
-      m_geomTransfMaxError = 1;
+      m_geomTransfMaxError = 2;
       m_correlationWindowWidth = 11;
       m_moravecWindowWidth = 5;
       m_maxR1ToR2Offset = 0;
       m_enableGeometryFilter = true;
-      m_geometryFilterAssurance = 0.0;
+      m_geometryFilterAssurance = 0.5;
       m_gaussianFilterIterations = 1;
       m_scalesNumber = 3;
       m_octavesNumber = 2;
       m_rastersRescaleFactor = 1.0;
-      m_maxNormEuclideanDist = 0.75;
-      m_minAbsCorrelation = 0.25;
+      m_maxNormEuclideanDist = 0.5;
+      m_minAbsCorrelation = 0.5;
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
     }
 
@@ -212,6 +212,8 @@ namespace te
       double raster1YRescFact = 1.0;
       double raster2XRescFact = 1.0;
       double raster2YRescFact = 1.0;
+      double ransacExpectedDirectMapRmse = m_inputParameters.m_geomTransfMaxError;
+      double ransacExpectedInverseMapRmse = m_inputParameters.m_geomTransfMaxError;
       {
         const double meanPixelRelation = ( m_inputParameters.m_pixelSizeXRelation
           + m_inputParameters.m_pixelSizeYRelation ) /
@@ -224,6 +226,7 @@ namespace te
           
           raster2XRescFact = 1.0 / m_inputParameters.m_pixelSizeXRelation;
           raster2YRescFact = 1.0 / m_inputParameters.m_pixelSizeYRelation;
+          ransacExpectedDirectMapRmse *= meanPixelRelation;
         } 
         else if( meanPixelRelation < 1.0 ) 
         {
@@ -232,6 +235,7 @@ namespace te
           
           raster1XRescFact = m_inputParameters.m_pixelSizeXRelation;
           raster1YRescFact = m_inputParameters.m_pixelSizeYRelation;
+          ransacExpectedInverseMapRmse /= meanPixelRelation;
         }
       }
       
@@ -342,10 +346,8 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
           m_inputParameters.m_geomTransfName, 
           transfParams,
-          2.0 * m_inputParameters.m_geomTransfMaxError,
-          2.0 * m_inputParameters.m_geomTransfMaxError,
-          m_inputParameters.m_geomTransfMaxError,
-          m_inputParameters.m_geomTransfMaxError,
+          ransacExpectedDirectMapRmse,
+          ransacExpectedInverseMapRmse,
           0,
           m_inputParameters.m_geometryFilterAssurance,
           m_inputParameters.m_enableMultiThread,

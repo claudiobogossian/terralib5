@@ -43,8 +43,9 @@ class TsGTFilter : public CPPUNIT_NS::TestFixture
 // It registers this class as a Test Suit
   CPPUNIT_TEST_SUITE( TsGTFilter );
 
-// It registers the class methods as Test Cases belonging to the suit 
-  CPPUNIT_TEST( tcApplyRansac );
+  CPPUNIT_TEST( tcApplyRansacWithTPSet1 );
+  
+  CPPUNIT_TEST( tcApplyRansacWithTPSet2 );
   
   CPPUNIT_TEST( tcApplyRansacMultiThread );
 
@@ -73,11 +74,18 @@ class TsGTFilter : public CPPUNIT_NS::TestFixture
     /*! \brief Generate a tie-points set 1. */  
     void generateTestTPSet1( std::vector< te::gm::GTParameters::TiePoint >& 
       tiePoints );
+      
+    /*! \brief Generate a tie-points set 2. */  
+    void generateTestTPSet2( std::vector< te::gm::GTParameters::TiePoint >& 
+      tiePoints );      
     
 // Test Cases:
 
     /*! \brief Test Case: ApplyRansac */
-    void tcApplyRansac();
+    void tcApplyRansacWithTPSet1();
+    
+    /*! \brief Test Case: ApplyRansac */
+    void tcApplyRansacWithTPSet2();
     
     /*! \brief Test Case: tcApplyRansacMultiThread */
     void tcApplyRansacMultiThread();    

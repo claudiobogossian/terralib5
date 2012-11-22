@@ -62,17 +62,13 @@ namespace te
           
           \param inputParams Input transformation parameters.
           
-          \param maxDMapError The maximum allowed direct mapping error.
+          \param expectedDirectMapRmse The expected direct mapping root mean square error.
           
-          \param maxIMapError The maximum allowed inverse mapping error.
-          
-          \param maxDMapRmse The maximum allowed direct mapping root mean square error.
-          
-          \param maxIMapRmse The maximum allowed inverse mapping root mean square error.
+          \param expectedInverseMapRmse The expected inverse mapping root mean square error.
           
           \param maxIterations The maximum number of iterations (Use 0-zero to let this number be automatically found).
           
-          \param assurance The error-free selection percent assurance - valid range (0-1) - Use Lower values good tie-points sets - Use 0-zero to let this number be automatically found - Default:0.
+          \param assurance The error-free selection percent assurance - valid range (0-1) - Use Lower values good tie-points sets - Use 0-zero to let this number be automatically found.
           
           \param enableMultiThread Enable multi-threaded processing (good for multi-processor or multi-core systems).
           
@@ -86,8 +82,7 @@ namespace te
         */
         static bool applyRansac(const std::string& transfName, 
           const GTParameters& inputParams,
-          const double maxDMapError, const double maxIMapError,
-          const double maxDMapRmse, const double maxIMapRmse,
+          const double expectedDirectMapRmse, const double expectedInverseMapRmse,
           const RansacItCounterT& maxIterations,
           const double& assurance,
           const bool enableMultiThread,
@@ -107,10 +102,8 @@ namespace te
             
             std::string const* m_transfNamePtr;
             GTParameters const* m_inputGTParamsPtr;
-            double m_maxDMapError;
-            double m_maxIMapError;
-            double m_maxDMapRmse;
-            double m_maxIMapRmse;
+            double m_expectedDirectMapRmse;
+            double m_expectedInverseMapRmse;
             double m_assurance;
             RansacItCounterT m_maxIterations;
             RansacItCounterT m_maxIterationsDivFactor;
@@ -137,10 +130,8 @@ namespace te
             {
               m_transfNamePtr = other.m_transfNamePtr;
               m_inputGTParamsPtr = other.m_inputGTParamsPtr;
-              m_maxDMapError = other.m_maxDMapError;
-              m_maxIMapError = other.m_maxIMapError;
-              m_maxDMapRmse = other.m_maxDMapRmse;
-              m_maxIMapRmse = other.m_maxIMapRmse;
+              m_expectedDirectMapRmse = other.m_expectedDirectMapRmse;
+              m_expectedInverseMapRmse = other.m_expectedInverseMapRmse;
               m_assurance = other.m_assurance;
               m_maxIterations = other.m_maxIterations;
               m_maxIterationsDivFactor = other.m_maxIterationsDivFactor;
