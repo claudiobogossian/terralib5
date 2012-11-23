@@ -69,16 +69,6 @@ int main(int /*argc*/, char** /*argv*/)
     
     // Comparing the results...
     encodedStyle == backData ? std::cout << "Great job!" << std::endl : std::cout << "You are doing it wrong!" << std::endl;
-
-    /* OGC Filter Encoding */
-
-    std::string encodedFilter = EncodeFilter();
-    ShowResult(encodedFilter); // Shows the serializaton result.
-
-    /* xlink */
-
-    std::string encodedLink = EncodeSimpleLink();
-    ShowResult(encodedLink); // Shows the serializaton result.
   }
   catch(const std::exception& e)
   {
