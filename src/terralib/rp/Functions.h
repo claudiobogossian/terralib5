@@ -136,6 +136,18 @@ namespace te
     bool InvertMatrix(const boost::numeric::ublas::matrix<double>& input,
                       boost::numeric::ublas::matrix<double>& inverse);
 
+    /*!
+      \brief Computes the eigenvectors of a given matrix.
+
+      \param inputMatrix          The input matrix.
+      \param eigenVectorsMatrix   The matrix where the eigenvectors will be stored.
+      \param eigenValuesMatrix    The matrix where the eigenvalues will be stored.
+
+      \return Returns true in success or false otherwise.
+    */
+    bool EigenVectors(boost::numeric::ublas::matrix<double> inputMatrix,
+                      boost::numeric::ublas::matrix<double> &eigenVectorsMatrix,
+                      boost::numeric::ublas::matrix<double> &eigenValuesMatrix);
   } // end namespace rp
 }   // end namespace te
 
