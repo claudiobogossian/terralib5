@@ -15,47 +15,6 @@
 #include <cassert>
 #include <sstream>
 
-std::string EncodeFilter()
-{
-  /* Creating an OGC Filter Expression */
-  
-  // (1): nome = 'MINAS GERAIS'
-  te::fe::PropertyName* state = new te::fe::PropertyName("state");
-  te::fe::Literal* stateName = new te::fe::Literal("MINAS GERAIS");
-  te::fe::BinaryComparisonOp* stateEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, state, stateName);
-
-  // (2): populacao < '2.000'
-  te::fe::PropertyName* pop = new te::fe::PropertyName("population");
-  te::fe::Literal* popValue = new te::fe::Literal("2.000");
-  te::fe::BinaryComparisonOp* popLessThan = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsLessThan, pop, popValue);
-
-  // (3): Joins the expression (1) and (2) using a binary logic operator AND
-  te::fe::BinaryLogicOp* andOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_and, stateEqual, popLessThan);
-
-  // (4): cidade = 'SERITINGA'
-  te::fe::PropertyName* city = new te::fe::PropertyName("city");
-  te::fe::Literal* cityName = new te::fe::Literal("SERITINGA");
-  te::fe::BinaryComparisonOp* cityEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, city, cityName);
-  
-  // (5): Joins the expression (3) and (4) using a binary logic operator OR
-  te::fe::BinaryLogicOp* orOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_or, andOp, cityEqual);
-
-  // We have a Filter!
-  te::fe::Filter* filter = new te::fe::Filter;
-  filter->setOp(orOp); // (state = 'MINAS GERAIS' AND populacao < '2.000') OR (city = 'SERITINGA')
-
-  /* Let's serialize! */
-   std::ostringstream oss;
-
-  // Serializing...
-  te::xml::Writer writer(oss);
-  te::serialize::Save(filter, writer);
-
-  delete filter;
-
-  return oss.str();
-}
-
 std::string EncodeStyle()
 {
   /* Creating an OGC Symbology Enconding Style */
@@ -136,6 +95,35 @@ std::string EncodeStyle()
   rule->push_back(rs);
   rule->setDescription(te::se::CreateDescription("A simple rule example", "This rule was created to show the power of TerraLib serialization module."));
 
+  /* Creating an OGC Filter Expression to Rule */
+  
+  // (1): nome = 'MINAS GERAIS'
+  te::fe::PropertyName* state = new te::fe::PropertyName("state");
+  te::fe::Literal* stateName = new te::fe::Literal("MINAS GERAIS");
+  te::fe::BinaryComparisonOp* stateEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, state, stateName);
+
+  // (2): populacao < '2.000'
+  te::fe::PropertyName* pop = new te::fe::PropertyName("population");
+  te::fe::Literal* popValue = new te::fe::Literal("2.000");
+  te::fe::BinaryComparisonOp* popLessThan = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsLessThan, pop, popValue);
+
+  // (3): Joins the expression (1) and (2) using a binary logic operator AND
+  te::fe::BinaryLogicOp* andOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_and, stateEqual, popLessThan);
+
+  // (4): cidade = 'SERITINGA'
+  te::fe::PropertyName* city = new te::fe::PropertyName("city");
+  te::fe::Literal* cityName = new te::fe::Literal("SERITINGA");
+  te::fe::BinaryComparisonOp* cityEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, city, cityName);
+  
+  // (5): Joins the expression (3) and (4) using a binary logic operator OR
+  te::fe::BinaryLogicOp* orOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_or, andOp, cityEqual);
+
+  // We have a Filter!
+  te::fe::Filter* filter = new te::fe::Filter;
+  filter->setOp(orOp); // (state = 'MINAS GERAIS' AND populacao < '2.000') OR (city = 'SERITINGA')
+
+  rule->setFilter(filter);
+
   // We have a Style!
   te::se::Style* style = new te::se::FeatureTypeStyle;
   style->push_back(rule);
@@ -168,22 +156,4 @@ te::se::Style* DecodeStyle(const std::string& path)
   te::se::Style* style = te::serialize::Style::getInstance().read(*reader);
 
   return style;
-}
-
-std::string EncodeSimpleLink()
-{
-  te::xl::SimpleLink* link = new te::xl::SimpleLink;
-  link->setTitle("TerraLib Logotype");
-  link->setHref("http://www.dpi.inpe.br/terralib5/terralib_logo.png");
-  link->setShow(te::xl::SHOW_NEW);
-  link->setActuate(te::xl::ACTUATE_ONREQUEST);
-
-  // Serializing...
-  std::ostringstream oss;
-  te::xml::Writer writer(oss);
-  te::serialize::Save(link, writer);
-
-  delete link;
-
-  return oss.str();
 }

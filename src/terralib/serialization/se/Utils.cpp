@@ -150,7 +150,5 @@ te::fe::PropertyName* te::serialize::ReadGeometryPropertyHelper(te::xml::Reader&
   std::auto_ptr<te::fe::PropertyName> pName(dynamic_cast<te::fe::PropertyName*>(exp));
   assert(pName.get());
 
-  reader.next();
-
   return pName.release();
 }
