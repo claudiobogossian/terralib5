@@ -55,7 +55,7 @@ namespace te
 
       public:
 
-        typedef boost::function<te::fe::AbstractOp* (te::xml::Reader&)> AbstractOpReadFnctType;
+        typedef boost::function<te::fe::AbstractOp* (const char* opName, te::xml::Reader&)> AbstractOpReadFnctType;
         typedef boost::function<void (const te::fe::AbstractOp*, te::xml::Writer&)> AbstractOpWriteFnctType;
         typedef std::pair<AbstractOpReadFnctType, AbstractOpWriteFnctType> AbstractOpFnctSerializeType;
         typedef std::map<std::string, AbstractOpFnctSerializeType> AbstractOpFnctIdxType;
@@ -75,6 +75,7 @@ namespace te
       private:
 
         AbstractOpFnctIdxType m_fncts;
+        std::map<std::string, const char*> m_names; //!< Auxiliary map of string to te::fe::Global names pointers.
     };
 
   } // end namespace serialize
