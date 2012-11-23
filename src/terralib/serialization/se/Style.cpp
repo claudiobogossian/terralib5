@@ -207,9 +207,6 @@ void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
   if(fts == 0)
     return;
 
-  // Starting...
-  writer.writeStartDocument("UTF-8", "no");
-
   writer.writeStartElement("FeatureTypeStyle");
   // Version
   writer.writeAttribute("version", fts->getVersion());
@@ -260,9 +257,16 @@ void CoverageStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
     return;
 
   writer.writeStartElement("CoverageStyle");
-
   // Version
   writer.writeAttribute("version", cs->getVersion());
+  // Namespace + Schema Location
+  writer.writeAttribute("xmlns", "http://www.opengis.net/se");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.opengis.net/se D:/terralib5/terralib5/schemas/ogc/se/1.1.0/FeatureStyle.xsd");
+  writer.writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
+  // xlink
+  writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+  writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+
   // Name
   te::serialize::WriteStringPtrHelper("Name", cs->getName(), writer);
   // Description
