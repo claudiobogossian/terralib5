@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/MatrixUtils.h"
 #include "../raster/Grid.h"
 #include "../raster/Utils.h"
 #include "Functions.h"
@@ -181,7 +182,7 @@ bool te::rp::MixtureModelPCAStrategy::execute(const te::rst::Raster& inputRaster
   boost::numeric::ublas::matrix<double> auxMatrix(covarianceMatrix);
   boost::numeric::ublas::matrix<double> tmpMatrix;
 
-  if(!EigenVectors(covarianceMatrix, auxMatrix, tmpMatrix))
+  if(!te::common::EigenVectors(covarianceMatrix, auxMatrix, tmpMatrix))
     return false; // print error in eigenvectors
 
 // keep only significant eigenvectors (nComponents - 1): results eigenReduced

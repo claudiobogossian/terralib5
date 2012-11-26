@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../common/MatrixUtils.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Point.h"
@@ -101,7 +102,7 @@ te::rp::ClassifierISOSegStrategy::Pattern::Pattern(int i, double a, std::vector<
 {
   m_covarianceInversion = boost::numeric::ublas::matrix<double>(m_covarianceMatrix.size1(), m_covarianceMatrix.size2());
 
-  InvertMatrix(m_covarianceMatrix, m_covarianceInversion);
+  te::common::getInverseMatrix(m_covarianceMatrix, m_covarianceInversion);
 }
 
 te::rp::ClassifierISOSegStrategy::Pattern::Pattern(Pattern& rhs)
