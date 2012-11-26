@@ -112,8 +112,8 @@ void TsMixtureModel::PCA()
   mmInputParameters.m_strategyName = "pca";
 
 // link specific parameters with chosen implementation
-  te::rp::MixtureModelPCAStrategy::Parameters lmmParameters;
-  mmInputParameters.setMixtureModelStrategyParams(lmmParameters);
+  te::rp::MixtureModelPCAStrategy::Parameters pcammParameters;
+  mmInputParameters.setMixtureModelStrategyParams(pcammParameters);
 
 // defining endmembers
   mmInputParameters.m_components["clouds"].push_back(255.0);
