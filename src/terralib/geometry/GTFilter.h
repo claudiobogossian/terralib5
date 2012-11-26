@@ -50,7 +50,10 @@ namespace te
       public:
         
         /*! \brief RANSAC iterations counter type. */
-        typedef unsigned long long int RansacItCounterT;        
+        typedef unsigned long long int RansacItCounterT;    
+
+        /*! \brief Default constructor. */
+        GTFilter();
 
         /*! \brief Destructor. */
         ~GTFilter();
@@ -80,7 +83,7 @@ namespace te
           
           \note Reference: Martin A. Fischler and Robert C. Bolles, Random Sample Consensus: A Paradigm for Model Fitting with Applications to Image Analysis and Automated Cartography, Communications of the ACM  archive, Volume 24 , Issue 6  (June 1981).
         */
-        static bool applyRansac(const std::string& transfName, 
+        bool applyRansac(const std::string& transfName, 
           const GTParameters& inputParams,
           const double expectedDirectMapRmse, const double expectedInverseMapRmse,
           const RansacItCounterT& maxIterations,
@@ -146,11 +149,8 @@ namespace te
               
               return other;
             };
-        };
-        
+        };     
 
-        /*! \brief Default constructor. */
-        GTFilter();
 
         /*!
           \brief Copy constructor.

@@ -343,7 +343,8 @@ namespace te
         
         std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
         
-        TERP_TRUE_OR_RETURN_FALSE( te::gm::GTFilter::applyRansac( 
+        te::gm::GTFilter filter;
+        TERP_TRUE_OR_RETURN_FALSE( filter.applyRansac( 
           m_inputParameters.m_geomTransfName, 
           transfParams,
           ransacExpectedDirectMapRmse,

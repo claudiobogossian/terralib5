@@ -220,7 +220,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
   
   // initializing the random number generator to assure that each thread has
   // a different seed
-  boost::random::mt19937 generator( time(0) );
+  boost::random::mt19937 generator( (boost::random::mt19937::result_type)time(0) );
   
   paramsPtr->m_mutexPtr->unlock();
   

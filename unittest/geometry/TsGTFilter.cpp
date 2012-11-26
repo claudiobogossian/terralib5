@@ -1686,8 +1686,11 @@ void TsGTFilter::tcApplyRansacWithTPSet1()
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
   
+  te::gm::GTFilter filter;
+
   boost::timer timerInstance;
-  CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 
+
+  CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 0.01, 
     0.01, 0, 0, false, transfPtr, tiePointsWeights ) );
   std::cout << std::endl << "Elapsed time:";
   std::cout << timerInstance.elapsed() << std::endl;
@@ -1730,8 +1733,10 @@ void TsGTFilter::tcApplyRansacWithTPSet2()
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
   
+  te::gm::GTFilter filter;
+
   boost::timer timerInstance;
-  CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 1, 
+  CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 1, 
     1, 0, 0, false, transfPtr, tiePointsWeights ) );
   std::cout << std::endl << "Elapsed time:";
   std::cout << timerInstance.elapsed() << std::endl;
@@ -1763,8 +1768,10 @@ void TsGTFilter::tcApplyRansacMultiThread()
 
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr;
   
+  te::gm::GTFilter filter;
+
   boost::timer timerInstance;
-  CPPUNIT_ASSERT( te::gm::GTFilter::applyRansac( "Affine", transfParams, 0.01, 
+  CPPUNIT_ASSERT( filter.applyRansac( "Affine", transfParams, 0.01, 
     0.01, 0, 0, true, transfPtr, tiePointsWeights ) );
   std::cout << std::endl << "Elapsed time:";
   std::cout << timerInstance.elapsed() << std::endl;
