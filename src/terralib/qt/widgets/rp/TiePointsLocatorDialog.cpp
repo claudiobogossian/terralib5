@@ -25,30 +25,92 @@
 
 
 #include "TiePointsLocatorDialog.h"
+#include "TiePointsLocatorAdvancedDialog.h"
+#include "../Exception.h"
 
 #include <ui_TiePointsLocatorForm.h>
 
-te::qt::widgets::TiePointsLocatorDialog::TiePointsLocatorDialog(
-  te::rst::Raster const* inRaster1Ptr, te::rst::Raster const* inRaster2Ptr,
-  QWidget* parent, Qt::WindowFlags f )
-  : QDialog( parent, f ),
-    m_inRaster1Ptr( inRaster1Ptr ),
-    m_inRaster2Ptr( inRaster2Ptr )
+#include <QtCore/QString>
+
+namespace te
 {
-  m_uiPtr = new Ui::TiePointsLocatorForm;
-  m_uiPtr->setupUi(this);
-  
-  // Signals & slots
-  connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));   
+  namespace qt
+  {
+    namespace widgets
+    {
+      namespace rp
+      {
+        TiePointsLocatorDialog::TiePointsLocatorDialog(
+          te::rst::Raster const* inRaster1Ptr, te::rst::Raster const* inRaster2Ptr,
+          QWidget* parent, Qt::WindowFlags f )
+          : QDialog( parent, f ),
+            m_inRaster1Ptr( inRaster1Ptr ),
+            m_inRaster2Ptr( inRaster2Ptr )
+        {
+          if( inRaster1Ptr == 0 ) throw te::qt::widgets::Exception( 
+            "Invalid raster pointer" );
+          if( inRaster2Ptr == 0 ) throw te::qt::widgets::Exception( 
+            "Invalid raster pointer" );  
+            
+          m_uiPtr = new Ui::TiePointsLocatorForm;
+          m_uiPtr->setupUi(this);
+          
+          m_advDialogPtr = new TiePointsLocatorAdvancedDialog( this );
+          m_advDialogPtr->m_inputParameters.m_inMaskRaster1Ptr = inRaster1Ptr;
+          m_advDialogPtr->m_inputParameters.m_inMaskRaster2Ptr = inRaster2Ptr;
+          
+          // Signals & slots
+          connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));
+          connect(m_uiPtr->m_acquireTiePointsPushButton, SIGNAL(clicked()), SLOT(on_acquireTiePointsPushButton_clicked()));
+          connect(m_uiPtr->m_selectAllPushButton, SIGNAL(clicked()), SLOT(on_selectAllPushButton_clicked()));   
+          connect(m_uiPtr->m_unselectAllPushButton, SIGNAL(clicked()), SLOT(on_unselectAllPushButton_clicked()));
+          connect(m_uiPtr->m_deleteSelectedPushButton, SIGNAL(clicked()), SLOT(on_deleteSelectedPushButton_clicked()));
+          connect(m_uiPtr->m_advancedOptionsPushButton, SIGNAL(clicked()), SLOT(on_advancedOptionsPushButton_clicked()));
+          
+          // fill form
+          
+          for( unsigned band1Idx = 0 ; band1Idx < inRaster1Ptr->getNumberOfBands() ;
+            ++band1Idx )
+            m_uiPtr->m_referenceBand1ComboBox->addItem( QString::number( band1Idx ) );
+          
+          for( unsigned band2Idx = 0 ; band2Idx < inRaster2Ptr->getNumberOfBands() ;
+            ++band2Idx )
+            m_uiPtr->m_referenceBand1ComboBox->addItem( QString::number( band2Idx ) );  
+        }
+
+        TiePointsLocatorDialog::~TiePointsLocatorDialog()
+        {
+          delete m_uiPtr;
+        }
+
+
+        void TiePointsLocatorDialog::on_okPushButton_clicked()
+        {
+
+        }
+        
+        void TiePointsLocatorDialog::on_acquireTiePointsPushButton_clicked()
+        {
+        }
+        
+        void TiePointsLocatorDialog::on_selectAllPushButton_clicked()
+        {
+        }
+        
+        void TiePointsLocatorDialog::on_unselectAllPushButton_clicked()
+        {
+        }
+        
+        void TiePointsLocatorDialog::on_deleteSelectedPushButton_clicked()
+        {
+        }
+        
+        void TiePointsLocatorDialog::on_advancedOptionsPushButton_clicked()
+        {
+          m_advDialogPtr->exec();
+        }
+      }
+    }
+  }
 }
 
-te::qt::widgets::TiePointsLocatorDialog::~TiePointsLocatorDialog()
-{
-  delete m_uiPtr;
-}
-
-
-void te::qt::widgets::TiePointsLocatorDialog::on_okPushButton_clicked()
-{
-
-}

@@ -22,7 +22,7 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <layout class="QGridLayout" name="gridLayout_5">
+  <layout class="QGridLayout" name="gridLayout_4">
    <item row="0" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
@@ -186,15 +186,15 @@
     </layout>
    </item>
    <item row="3" column="1">
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
       <widget class="QPushButton" name="m_acquireTiePointsPushButton">
        <property name="text">
         <string>Acquire Tie Points</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
+     <item>
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QLabel" name="label_4">
@@ -211,6 +211,9 @@
            <height>0</height>
           </size>
          </property>
+         <property name="text">
+          <string>0</string>
+         </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
@@ -220,19 +223,22 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="label_5">
+        <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Current Transformation</string>
+          <string>Transformation RMSE (all)</string>
          </property>
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QLineEdit" name="m_currentTransformationLineEdit">
+        <widget class="QLineEdit" name="m_transformationRMSEAllLineEdit">
          <property name="minimumSize">
           <size>
            <width>150</width>
            <height>0</height>
           </size>
+         </property>
+         <property name="text">
+          <string>0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -243,19 +249,22 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="label_6">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Transformation RMSE (all)</string>
+          <string>Transformation RMSE (selected)</string>
          </property>
         </widget>
        </item>
        <item row="2" column="1">
-        <widget class="QLineEdit" name="m_transformationRMSEAllLineEdit">
+        <widget class="QLineEdit" name="m_transformationRMSESelectedLineEdit">
          <property name="minimumSize">
           <size>
            <width>150</width>
            <height>0</height>
           </size>
+         </property>
+         <property name="text">
+          <string>0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -266,42 +275,22 @@
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Transformation RMSE (selected)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="m_transformationRMSESelectedLineEdit">
-         <property name="minimumSize">
-          <size>
-           <width>150</width>
-           <height>0</height>
-          </size>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
         <widget class="QLabel" name="label_8">
          <property name="text">
           <string>Transformation RMSE (unselected)</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
+       <item row="3" column="1">
         <widget class="QLineEdit" name="m_transformationRMSEunselectedLineEdit">
          <property name="minimumSize">
           <size>
            <width>150</width>
            <height>0</height>
           </size>
+         </property>
+         <property name="text">
+          <string>0</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -313,7 +302,7 @@
        </item>
       </layout>
      </item>
-     <item row="2" column="0">
+     <item>
       <widget class="QPushButton" name="m_advancedOptionsPushButton">
        <property name="text">
         <string>Advanced Options</string>

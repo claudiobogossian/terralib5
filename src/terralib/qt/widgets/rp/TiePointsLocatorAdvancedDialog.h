@@ -18,29 +18,26 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/TiePointsLocatorDialog.h
+  \file terralib/qt/widgets/rp/TiePointsLocatorAdvancedDialog.h
 
-  \brief A dialog used to execute tie points location.
+  \brief A dialog used to execute tie points location advanced options.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTSLOCATORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTSLOCATORDIALOG_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTSLOCATORADVANCEDDIALOG_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_TIEPOINTSLOCATORADVANCEDDIALOG_H
 
 // TerraLib
 #include "../Config.h"
-#include "../../../raster/Raster.h"
+#include "../../../rp/TiePointsLocator.h"
 
 // Qt
 #include <QtGui/QDialog>
 
-// STL
-
-#include <vector>
 
 // Forward user interface declaration
 namespace Ui
 {
-  class TiePointsLocatorForm;
+  class TiePointsLocatorAdvancedForm;
 }
 
 namespace te
@@ -51,58 +48,44 @@ namespace te
     {
       namespace rp
       {
-        class TiePointsLocatorAdvancedDialog;
-        
         /*!
-          \class TiePointsLocatorDialog
+          \class TiePointsLocatorAdvancedDialog
 
-          \brief A dialog used to execute tie points location.
+          \brief A dialog used to execute tie points location advanced options.
         */
-        class TEQTWIDGETSEXPORT TiePointsLocatorDialog : public QDialog
+        class TEQTWIDGETSEXPORT TiePointsLocatorAdvancedDialog : public QDialog
         {
           Q_OBJECT
           
           public:
+            
+            te::rp::TiePointsLocator::InputParameters m_inputParameters;
 
             /*! \brief Constructs a basic dialog which is a child of parent, with widget flags set to f. 
-            
-                \param inRaster1Ptr Input raster 1 pointer.
-                
-                \param inRaster1Ptr Input raster 2 pointer.
                 
                 \param parent Parent widget pointer.
                 
                 \param f Widget flags.
             */
-            TiePointsLocatorDialog(
-              te::rst::Raster const* inRaster1Ptr,
-              te::rst::Raster const* inRaster2Ptr,
-              QWidget* parent = 0, 
+            TiePointsLocatorAdvancedDialog( QWidget* parent = 0,
               Qt::WindowFlags f = 0);
 
             /*! \brief Destructor. */
-            ~TiePointsLocatorDialog();
+            ~TiePointsLocatorAdvancedDialog();
 
           protected slots:
 
             void on_okPushButton_clicked();
-            void on_acquireTiePointsPushButton_clicked();
-            void on_selectAllPushButton_clicked();
-            void on_unselectAllPushButton_clicked();
-            void on_deleteSelectedPushButton_clicked();
-            void on_advancedOptionsPushButton_clicked();
 
           private:
 
-            Ui::TiePointsLocatorForm* m_uiPtr; //! User interface.
-            TiePointsLocatorAdvancedDialog* m_advDialogPtr; //!< Advanced options dialog.
-            te::rst::Raster const* m_inRaster1Ptr; //! Input raster 1 pointer.
-            te::rst::Raster const* m_inRaster2Ptr; //! Input raster 2 pointer.
+            Ui::TiePointsLocatorAdvancedForm* m_uiPtr; //!< User interface.
+            
         }; 
-      };
-    };
-  };
-};
+      }
+    }
+  }
+}
 
 
 
