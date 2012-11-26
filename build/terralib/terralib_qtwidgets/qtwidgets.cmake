@@ -266,6 +266,7 @@ set (
   ${SRCDIR}/widgets/utils/ParameterTableWidget.h
   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
   ${SRCDIR}/widgets/utils/FileChooser.h
+  ${SRCDIR}/widgets/utils/ResourceChooser.h
 )  
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
 

@@ -76,6 +76,10 @@ namespace te
 
           void replyFinished(QNetworkReply*);
 
+          void addPlugins();
+
+          void removePlugins();
+
         protected:
 
           void fillInstalledPlugins();
