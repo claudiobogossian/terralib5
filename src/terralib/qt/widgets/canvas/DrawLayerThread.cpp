@@ -71,6 +71,7 @@ void te::qt::widgets::DrawLayerThread::run()
 {
   // Prepares the canvas
   Canvas canvas(&m_image);
+  //canvas.setRenderHint(QPainter::Antialiasing);
   canvas.calcAspectRatio(m_env.m_llx, m_env.m_lly, m_env.m_urx, m_env.m_ury);
   canvas.setWindow(m_env.m_llx, m_env.m_lly, m_env.m_urx, m_env.m_ury);
   canvas.clear();
