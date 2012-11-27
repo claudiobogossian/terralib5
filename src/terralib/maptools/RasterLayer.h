@@ -219,6 +219,13 @@ namespace te
           \return  A pointer to a raster
         */
         te::rst::Raster* getRaster();
+        
+        /*!
+          \brief Get the raster object from a data source
+
+          \return  A pointer to a raster
+        */
+        te::rst::Raster const* getRaster() const;
 
         /*!
           \brief Get the raster property from a data source
