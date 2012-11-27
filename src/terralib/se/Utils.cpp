@@ -24,7 +24,9 @@
 */
 
 // TerraLib
+#include "../color/RGBAColor.h"
 #include "Description.h"
+#include "FeatureTypeStyle.h"
 #include "Fill.h"
 #include "Graphic.h"
 #include "LineSymbolizer.h"
@@ -32,9 +34,18 @@
 #include "ParameterValue.h"
 #include "PointSymbolizer.h"
 #include "PolygonSymbolizer.h"
+#include "Rule.h"
 #include "Stroke.h"
 #include "TextSymbolizer.h"
 #include "Utils.h"
+
+// Boost
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+
+// STL
+#include <cassert>
+#include <ctime>
 
 te::se::Stroke* te::se::CreateStroke(const std::string& color, const std::string& width)
 {
@@ -200,4 +211,81 @@ te::se::Description* te::se::CreateDescription(const std::string& title, const s
   description->setAbstract(abst);
   
   return description;
+}
+
+te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
+{
+  switch(geomType)
+  {
+    case te::gm::PolygonType:
+    case te::gm::PolygonMType:
+    case te::gm::PolygonZType:
+    case te::gm::PolygonZMType:
+    case te::gm::MultiPolygonType:
+    case te::gm::MultiPolygonMType:
+    case te::gm::MultiPolygonZType:
+    case te::gm::MultiPolygonZMType:
+    {
+      te::se::Fill* fill = CreateFill(GenerateRandomColor(), "1.0");
+      te::se::Stroke* stroke = CreateStroke("#000000", "1");
+      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
+      symbolizer->setFill(fill);
+      symbolizer->setStroke(stroke);
+      return symbolizer;
+    }
+
+    case te::gm::LineStringType:
+    case te::gm::LineStringMType:
+    case te::gm::LineStringZType:
+    case te::gm::LineStringZMType:
+    case te::gm::MultiLineStringType:
+    case te::gm::MultiLineStringMType:
+    case te::gm::MultiLineStringZType:
+    case te::gm::MultiLineStringZMType:
+    {
+      te::se::Stroke* stroke = CreateStroke(GenerateRandomColor(), "1");
+      te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
+      symbolizer->setStroke(stroke);
+      return symbolizer;
+    }
+
+    case te::gm::PointType:
+    case te::gm::PointMType:
+    case te::gm::PointZType:
+    case te::gm::PointZMType:
+    case te::gm::MultiPointType:
+    case te::gm::MultiPointMType:
+    case te::gm::MultiPointZType:
+    case te::gm::MultiPointZMType:
+    {
+      te::se::Fill* markFill = CreateFill(GenerateRandomColor(), "1.0");
+      te::se::Stroke* markStroke = CreateStroke("#000000", "1");
+      te::se::Mark* mark = CreateMark("circle", markStroke, markFill);
+      te::se::Graphic* graphic = CreateGraphic(mark, "12", "", "");
+      return CreatePointSymbolizer(graphic);
+    }
+
+    default:
+      return 0;
+  }
+}
+
+te::se::Style* te::se::CreateFeatureTypeStyle(const te::gm::GeomType& geomType)
+{
+  te::se::Rule* rule = new te::se::Rule;
+  rule->push_back(CreateSymbolizer(geomType));
+
+  te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
+  style->push_back(rule);
+
+  return style;
+}
+
+std::string te::se::GenerateRandomColor()
+{
+  boost::random::mt19937 gen(static_cast<boost::uint32_t>(std::time(0)));
+  boost::random::uniform_int_distribution<> dist(0, 128);
+  // Creates random pastel colours
+  te::color::RGBAColor color(dist(gen) + 127, dist(gen) + 127, dist(gen) + 127, TE_OPAQUE);
+  return color.getColor();
 }
