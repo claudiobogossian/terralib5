@@ -29,6 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "../../../raster/Raster.h"
+#include "../../../maptools/RasterLayer.h"
 
 // Qt
 #include <QtGui/QDialog>
@@ -49,6 +50,10 @@ namespace te
   {
     namespace widgets
     {
+      class MapDisplay;
+      class ZoomLeftAndRightClick;
+      class CoordTracking;
+      
       namespace rp
       {
         class TiePointsLocatorAdvancedDialog;
@@ -66,17 +71,17 @@ namespace te
 
             /*! \brief Constructs a basic dialog which is a child of parent, with widget flags set to f. 
             
-                \param inRaster1Ptr Input raster 1 pointer.
+                \param inRaster1Ptr Input raster layer 1 pointer.
                 
-                \param inRaster1Ptr Input raster 2 pointer.
+                \param inRaster1Ptr Input raster layer 2 pointer.
                 
                 \param parent Parent widget pointer.
                 
                 \param f Widget flags.
             */
             TiePointsLocatorDialog(
-              te::rst::Raster const* inRaster1Ptr,
-              te::rst::Raster const* inRaster2Ptr,
+              te::map::RasterLayer const* inRasterLayer1Ptr,
+              te::map::RasterLayer const* inRasterLayer2Ptr,
               QWidget* parent = 0, 
               Qt::WindowFlags f = 0);
 
@@ -86,18 +91,26 @@ namespace te
           protected slots:
 
             void on_okPushButton_clicked();
-            void on_acquireTiePointsPushButton_clicked();
+            void on_autoAcquireTiePointsPushButton_clicked();
             void on_selectAllPushButton_clicked();
             void on_unselectAllPushButton_clicked();
             void on_deleteSelectedPushButton_clicked();
             void on_advancedOptionsPushButton_clicked();
+            void on_manualRadioButton_toggled( bool checked );
+            void on_addPushButton_clicked();
 
           private:
 
             Ui::TiePointsLocatorForm* m_uiPtr; //! User interface.
             TiePointsLocatorAdvancedDialog* m_advDialogPtr; //!< Advanced options dialog.
-            te::rst::Raster const* m_inRaster1Ptr; //! Input raster 1 pointer.
-            te::rst::Raster const* m_inRaster2Ptr; //! Input raster 2 pointer.
+            te::qt::widgets::MapDisplay* m_mapDisplay1; //!< Map display 1.
+            te::qt::widgets::MapDisplay* m_mapDisplay2; //!< Map display 2.
+            te::map::RasterLayer const* m_inRasterLayer1Ptr; //! Input raster layer 1 pointer.
+            te::map::RasterLayer const* m_inRasterLayer2Ptr; //! Input raster layer 2 pointer.
+            te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent1; //!< Zoom click event (map display 1).
+            te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent2; //!< Zoom click event (map display 2).
+            te::qt::widgets::CoordTracking* m_coordTrackingEvent1; //!< Coord tracking event (map display 1).
+            te::qt::widgets::CoordTracking* m_coordTrackingEvent2; //!< Coord tracking event (map display 2).
         }; 
       };
     };

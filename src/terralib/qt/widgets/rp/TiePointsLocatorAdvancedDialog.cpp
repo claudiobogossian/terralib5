@@ -47,7 +47,7 @@ namespace te
           m_uiPtr->setupUi(this);
           
           // Signals & slots
-          connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));   
+          connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), this, SLOT(on_okPushButton_clicked()));   
           
           // fill form
           
