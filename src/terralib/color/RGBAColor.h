@@ -33,6 +33,7 @@
 // STL 
 #include <cassert>
 #include <string>
+#include <cstdio>
 
 namespace te
 {
