@@ -22,7 +22,7 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <layout class="QGridLayout" name="gridLayout_4">
+  <layout class="QGridLayout" name="gridLayout_7">
    <item row="0" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
@@ -61,7 +61,7 @@
       <widget class="QFrame" name="m_image1Frame">
        <property name="minimumSize">
         <size>
-         <width>250</width>
+         <width>393</width>
          <height>250</height>
         </size>
        </property>
@@ -77,7 +77,7 @@
       <widget class="QFrame" name="m_image2Frame">
        <property name="minimumSize">
         <size>
-         <width>250</width>
+         <width>393</width>
          <height>250</height>
         </size>
        </property>
@@ -186,15 +186,127 @@
     </layout>
    </item>
    <item row="3" column="1">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QPushButton" name="m_acquireTiePointsPushButton">
-       <property name="text">
-        <string>Acquire Tie Points</string>
+    <layout class="QGridLayout" name="gridLayout_6">
+     <item row="0" column="0">
+      <widget class="QFrame" name="frame">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>40</height>
+        </size>
        </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Acquisition mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QRadioButton" name="m_manualRadioButton">
+          <property name="text">
+           <string>Manual</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QRadioButton" name="m_automaticRadioButton">
+          <property name="text">
+           <string>Automatic</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
-     <item>
+     <item row="1" column="0">
+      <widget class="QFrame" name="frame_2">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>X1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="m_x1LineEdit"/>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_12">
+          <property name="text">
+           <string>Y1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLineEdit" name="m_y1LineEdit"/>
+        </item>
+        <item row="0" column="4">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>X2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLineEdit" name="m_x2LineEdit"/>
+        </item>
+        <item row="0" column="6">
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Y2</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QLineEdit" name="m_y2LineEdit"/>
+        </item>
+        <item row="0" column="8">
+         <widget class="QPushButton" name="m_addPushButton">
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QPushButton" name="m_autoAcquireTiePointsPushButton">
+         <property name="text">
+          <string>Auto acquire tie points</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="m_advancedOptionsPushButton">
+         <property name="text">
+          <string>Advanced options</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="0">
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QLabel" name="label_4">
@@ -301,13 +413,6 @@
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="QPushButton" name="m_advancedOptionsPushButton">
-       <property name="text">
-        <string>Advanced Options</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

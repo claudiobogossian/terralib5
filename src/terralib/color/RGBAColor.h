@@ -198,6 +198,15 @@ namespace te
         void setColor(const std::string& hexColor);
 
         /*!
+          \brief It gets the color encoded using two hexadecimal digits per primary-color component, in the order Red, Green, Blue, prefixed with a hash (#) sign.
+
+          \return A string that represents the color encoded using two hexadecimal digits per primary-color component. e.g. #FF0000
+
+          \note The hexadecimal digits between A and F will be uppercase.
+         */
+        std::string getColor() const;
+
+        /*!
           \brief It sets the color.
 
           \param r Red component (range from 0 to 255).
@@ -332,6 +341,14 @@ namespace te
       int b = int((highB << 4) + lowB);
 
       m_rgba = (r << 16) + (g << 8) + b;
+    }
+
+    inline std::string RGBAColor::getColor() const
+    {
+      char buffer[8];
+      sprintf(buffer, "#%02X%02X%02X", getRed(), getGreen(), getBlue());
+      std::string result(buffer);
+      return result;
     }
 
     inline void RGBAColor::setColor(int r, int g, int b, int a)

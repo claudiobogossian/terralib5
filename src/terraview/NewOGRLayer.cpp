@@ -143,19 +143,6 @@ void NewOGRLayer::onFileSelected(QString s)
       m_layer->setDataSetName(dset);
       m_layer->setDataSource(ds.get());
 
-      // Creates a hard-coded style
-      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-      symbolizer->setFill(te::se::CreateFill("#339966", "0.3"));
-      symbolizer->setStroke(te::se::CreateStroke("#000000", "3", "1.0"));
-
-      te::se::Rule* rule = new te::se::Rule;
-      rule->push_back(symbolizer);
-
-      te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-      style->push_back(rule);
-
-      m_layer->setStyle(style);
-
       m_layer->setRenderer(new te::map::LayerRenderer());
       m_layer->setExtent(env);
     }
