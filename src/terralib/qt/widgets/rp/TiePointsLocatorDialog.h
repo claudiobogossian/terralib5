@@ -30,9 +30,12 @@
 #include "../Config.h"
 #include "../../../raster/Raster.h"
 #include "../../../maptools/RasterLayer.h"
+#include "../../../geometry/GTParameters.h"
 
 // Qt
 #include <QtGui/QDialog>
+#include <QtCore/QObject>
+#include <QtCore/QPoint>
 
 // STL
 
@@ -87,6 +90,9 @@ namespace te
 
             /*! \brief Destructor. */
             ~TiePointsLocatorDialog();
+            
+            // overload
+            void keyPressEvent ( QKeyEvent * event );
 
           protected slots:
 
@@ -96,8 +102,11 @@ namespace te
             void on_unselectAllPushButton_clicked();
             void on_deleteSelectedPushButton_clicked();
             void on_advancedOptionsPushButton_clicked();
-            void on_manualRadioButton_toggled( bool checked );
             void on_addPushButton_clicked();
+            void on_insertKeyPressed1( QPointF& coordinate );
+            void on_insertKeyPressed2( QPointF& coordinate );
+            void on_coordTracked1(QPointF &coordinate);
+            void on_coordTracked2(QPointF &coordinate);
 
           private:
 
@@ -109,8 +118,9 @@ namespace te
             te::map::RasterLayer const* m_inRasterLayer2Ptr; //! Input raster layer 2 pointer.
             te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent1; //!< Zoom click event (map display 1).
             te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent2; //!< Zoom click event (map display 2).
-            te::qt::widgets::CoordTracking* m_coordTrackingEvent1; //!< Coord tracking event (map display 1).
-            te::qt::widgets::CoordTracking* m_coordTrackingEvent2; //!< Coord tracking event (map display 2).
+            CoordTracking* m_coordTracking1; //!< Coord tracking (map display 1);
+            CoordTracking* m_coordTracking2; //!< Coord tracking (map display 2);
+            te::gm::GTParameters::TiePoint m_lastTrackedTiePoint; //!< The last mouse tracked tie-point;
         }; 
       };
     };

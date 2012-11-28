@@ -22,7 +22,7 @@
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
   </property>
-  <layout class="QGridLayout" name="gridLayout_7">
+  <layout class="QGridLayout" name="gridLayout_6">
    <item row="0" column="0" colspan="2">
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
@@ -44,7 +44,7 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
+     <item row="0" column="1">
       <widget class="QLabel" name="label_2">
        <property name="maximumSize">
         <size>
@@ -57,7 +57,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="2">
+     <item row="1" column="0">
       <widget class="QFrame" name="m_image1Frame">
        <property name="minimumSize">
         <size>
@@ -73,7 +73,7 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="2" colspan="2">
+     <item row="1" column="1">
       <widget class="QFrame" name="m_image2Frame">
        <property name="minimumSize">
         <size>
@@ -90,24 +90,248 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Image 1 Reference Band</string>
+      <widget class="QFrame" name="frame">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_5">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Line</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage1LineLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_15">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Column</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage1ColumnLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_16">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>X</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage1XLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_17">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Y</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage1YLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="m_referenceBand1ComboBox"/>
-     </item>
-     <item row="2" column="2">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>Image 2 Reference Band</string>
+      <widget class="QFrame" name="frame_3">
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
        </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QLabel" name="label_18">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Line</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage2LineLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_19">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Column</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage2ColumnLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_20">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>X</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage2XLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_21">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Y</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="m_currentImage2YLineEdit">
+          <property name="font">
+           <font>
+            <pointsize>7</pointsize>
+           </font>
+          </property>
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
-     <item row="2" column="3">
-      <widget class="QComboBox" name="m_referenceBand2ComboBox"/>
+     <item row="3" column="0">
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Image 1 Reference Band</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="m_referenceBand1ComboBox"/>
+       </item>
+      </layout>
+     </item>
+     <item row="3" column="1">
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>Image 2 Reference Band</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="m_referenceBand2ComboBox"/>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -118,7 +342,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" rowspan="2">
+   <item row="2" column="0">
     <layout class="QGridLayout" name="gridLayout_3">
      <item row="0" column="0">
       <widget class="QLabel" name="label_3">
@@ -137,12 +361,12 @@
        </property>
        <column>
         <property name="text">
-         <string>New Column</string>
+         <string>ID</string>
         </property>
        </column>
        <column>
         <property name="text">
-         <string>ID</string>
+         <string>Error</string>
         </property>
        </column>
        <column>
@@ -153,6 +377,11 @@
        <column>
         <property name="text">
          <string>Y1</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>X2</string>
         </property>
        </column>
        <column>
@@ -185,51 +414,9 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="1">
-    <layout class="QGridLayout" name="gridLayout_6">
+   <item row="2" column="1">
+    <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
-      <widget class="QFrame" name="frame">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>40</height>
-        </size>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::StyledPanel</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Raised</enum>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_4">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Acquisition mode</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QRadioButton" name="m_manualRadioButton">
-          <property name="text">
-           <string>Manual</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QRadioButton" name="m_automaticRadioButton">
-          <property name="text">
-           <string>Automatic</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item row="1" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
@@ -288,7 +475,7 @@
        </layout>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QPushButton" name="m_autoAcquireTiePointsPushButton">
@@ -306,7 +493,7 @@
        </item>
       </layout>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <layout class="QGridLayout" name="gridLayout_2">
        <item row="0" column="0">
         <widget class="QLabel" name="label_4">
@@ -416,14 +603,14 @@
      </item>
     </layout>
    </item>
-   <item row="4" column="0" colspan="2">
+   <item row="3" column="0" colspan="2">
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="2">
+   <item row="4" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="m_helpPushButton">

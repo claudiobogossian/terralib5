@@ -29,11 +29,14 @@
 #include "../canvas/MapDisplay.h"
 #include "../../widgets/tools/ZoomLeftAndRightClick.h"
 #include "../../widgets/tools/CoordTracking.h"
+#include "../../../raster/Grid.h"
 
 #include <ui_TiePointsLocatorForm.h>
 
 #include <QtCore/QString>
 #include <QtGui/QGridLayout>
+#include <QtGui/QKeyEvent>
+#include <QtGui/QLineEdit>
 
 namespace te
 {
@@ -70,6 +73,7 @@ namespace te
           
           m_mapDisplay1 = new te::qt::widgets::MapDisplay( 
             m_uiPtr->m_image1Frame->size(),  m_uiPtr->m_image1Frame );
+          m_mapDisplay1->setMouseTracking ( true );
           gridLayout1->addWidget( m_mapDisplay1 );  
           m_mapDisplay1->setResizePolicy(te::qt::widgets::MapDisplay::Center);
           std::list< te::map::AbstractLayer* >  layerList1;  
@@ -82,6 +86,7 @@ namespace te
             
           m_mapDisplay2 = new te::qt::widgets::MapDisplay( 
             m_uiPtr->m_image2Frame->size(),  m_uiPtr->m_image2Frame );
+          m_mapDisplay2->setMouseTracking ( true );
           gridLayout2->addWidget( m_mapDisplay2 );  
           m_mapDisplay2->setResizePolicy(te::qt::widgets::MapDisplay::Center);
           std::list< te::map::AbstractLayer* >  layerList2;  
@@ -94,22 +99,27 @@ namespace te
           
           m_zoomClickEvent1 = new te::qt::widgets::ZoomLeftAndRightClick( m_mapDisplay1, 1.5, m_mapDisplay1 );
           m_zoomClickEvent2 = new te::qt::widgets::ZoomLeftAndRightClick( m_mapDisplay2, 1.5, m_mapDisplay2 );
-          m_coordTrackingEvent1 = new te::qt::widgets::CoordTracking(m_mapDisplay1, m_mapDisplay1);
-          m_coordTrackingEvent2 = new te::qt::widgets::CoordTracking(m_mapDisplay2, m_mapDisplay2);
           
+          m_coordTracking1 = new te::qt::widgets::CoordTracking( m_mapDisplay1, m_mapDisplay1 );
+          m_coordTracking2 = new te::qt::widgets::CoordTracking( m_mapDisplay2, m_mapDisplay2 );
+                    
           m_mapDisplay1->installEventFilter( m_zoomClickEvent1 );
           m_mapDisplay2->installEventFilter( m_zoomClickEvent2 );
+          
+          m_mapDisplay1->installEventFilter( m_coordTracking1 );
+          m_mapDisplay2->installEventFilter( m_coordTracking2 );          
           
           // Signals & slots
           
           connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), this, SLOT(on_okPushButton_clicked()));
-          connect(m_uiPtr->m_autoAcquireTiePointsPushButton, SIGNAL(clicked()), this, SLOT(on_acquireTiePointsPushButton_clicked()));
+          connect(m_uiPtr->m_autoAcquireTiePointsPushButton, SIGNAL(clicked()), this, SLOT(on_autoAcquireTiePointsPushButton_clicked()));
           connect(m_uiPtr->m_selectAllPushButton, SIGNAL(clicked()), this, SLOT(on_selectAllPushButton_clicked()));   
           connect(m_uiPtr->m_unselectAllPushButton, SIGNAL(clicked()), this, SLOT(on_unselectAllPushButton_clicked()));
           connect(m_uiPtr->m_deleteSelectedPushButton, SIGNAL(clicked()), this, SLOT(on_deleteSelectedPushButton_clicked()));
           connect(m_uiPtr->m_advancedOptionsPushButton, SIGNAL(clicked()), this, SLOT(on_advancedOptionsPushButton_clicked()));
-          connect(m_uiPtr->m_manualRadioButton, SIGNAL(toggled(bool)), this, SLOT(on_manualRadioButton_toggled(bool)));
           connect(m_uiPtr->m_addPushButton, SIGNAL(clicked()), this, SLOT(on_addPushButton_clicked()));
+          connect(m_coordTracking1, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked1(QPointF&)));
+          connect(m_coordTracking2, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked2(QPointF&)));
           
           // fill form
           
@@ -120,6 +130,10 @@ namespace te
           for( unsigned band2Idx = 0 ; band2Idx < m_inRasterLayer2Ptr->getRaster()->getNumberOfBands() ;
             ++band2Idx )
             m_uiPtr->m_referenceBand2ComboBox->addItem( QString::number( band2Idx ) );  
+          
+          // Grab keyboard
+          
+          grabKeyboard();
         }
 
         TiePointsLocatorDialog::~TiePointsLocatorDialog()
@@ -127,6 +141,10 @@ namespace te
           delete m_uiPtr;
         }
 
+        void TiePointsLocatorDialog::keyPressEvent ( QKeyEvent * event )
+        {
+
+        }
 
         void TiePointsLocatorDialog::on_okPushButton_clicked()
         {
@@ -154,30 +172,66 @@ namespace te
           m_advDialogPtr->exec();
         }
         
-        void TiePointsLocatorDialog::on_manualRadioButton_toggled( bool checked )
-        {
-          if( checked )
-          {
-            m_mapDisplay1->removeEventFilter( m_zoomClickEvent1 );
-            m_mapDisplay2->removeEventFilter( m_zoomClickEvent2 );            
-            
-            m_mapDisplay1->installEventFilter( m_coordTrackingEvent1 );
-            m_mapDisplay2->installEventFilter( m_coordTrackingEvent2 ); 
-          }
-          else
-          {
-            m_mapDisplay1->removeEventFilter( m_coordTrackingEvent1 );
-            m_mapDisplay2->removeEventFilter( m_coordTrackingEvent2 );            
-            
-            m_mapDisplay1->installEventFilter( m_zoomClickEvent1 );
-            m_mapDisplay2->installEventFilter( m_zoomClickEvent2 );            
-          }
-        }
-        
         void TiePointsLocatorDialog::on_addPushButton_clicked()
         {
           
         }
+        
+        void TiePointsLocatorDialog::on_insertKeyPressed1( QPointF& coordinate )
+        {
+          m_uiPtr->m_x1LineEdit->setText( QString::number( coordinate.rx() ) );
+          m_uiPtr->m_y1LineEdit->setText( QString::number( coordinate.ry() ) );
+        }    
+        
+        void TiePointsLocatorDialog::on_insertKeyPressed2( QPointF& coordinate )
+        {
+          m_uiPtr->m_x2LineEdit->setText( QString::number( coordinate.rx() ) );
+          m_uiPtr->m_y2LineEdit->setText( QString::number( coordinate.ry() ) );
+        }        
+        
+        
+        void TiePointsLocatorDialog::on_coordTracked1( QPointF& coordinate )
+        {
+          m_lastTrackedTiePoint.first.x = coordinate.rx();
+          m_lastTrackedTiePoint.first.y = coordinate.ry();
+          
+          m_uiPtr->m_currentImage1XLineEdit->setText( QString::number( 
+            m_lastTrackedTiePoint.first.x ) );
+          m_uiPtr->m_currentImage1YLineEdit->setText( QString::number( 
+            m_lastTrackedTiePoint.first.y ) );
+          
+          te::gm::Coord2D auxCoord = 
+            m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
+              m_lastTrackedTiePoint.first.x, m_lastTrackedTiePoint.first.y );
+          
+          m_uiPtr->m_currentImage1LineLineEdit->setText( QString::number( 
+            auxCoord.y ) );
+          m_uiPtr->m_currentImage1ColumnLineEdit->setText( QString::number( 
+            auxCoord.x ) );            
+        }          
+        
+        void TiePointsLocatorDialog::on_coordTracked2( QPointF& coordinate )
+        {
+          m_lastTrackedTiePoint.second.x = coordinate.rx();
+          m_lastTrackedTiePoint.second.y = coordinate.ry();
+          
+          m_uiPtr->m_currentImage2XLineEdit->setText( QString::number( 
+            m_lastTrackedTiePoint.second.x ) );
+          m_uiPtr->m_currentImage2YLineEdit->setText( QString::number( 
+            m_lastTrackedTiePoint.second.y ) );
+          
+          te::gm::Coord2D auxCoord = 
+            m_inRasterLayer2Ptr->getRaster()->getGrid()->geoToGrid( 
+              m_lastTrackedTiePoint.second.x, m_lastTrackedTiePoint.second.y );
+          
+          m_uiPtr->m_currentImage2LineLineEdit->setText( QString::number( 
+            auxCoord.y ) );
+          m_uiPtr->m_currentImage2ColumnLineEdit->setText( QString::number( 
+            auxCoord.x ) );    
+          
+        }     
+        
+        
       }
     }
   }
