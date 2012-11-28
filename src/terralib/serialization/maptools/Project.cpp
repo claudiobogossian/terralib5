@@ -29,6 +29,8 @@
 #include "../Exception.h"
 #include "Project.h"
 
+#include <memory>
+
 void te::serialize::ReadProject(const std::string& projectFileName)
 {
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());

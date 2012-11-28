@@ -95,7 +95,7 @@ te::qt::af::Project* te::qt::af::ProjectXmlRW::read(std::string path)
 
 void te::qt::af::ProjectXmlRW::write(te::qt::af::Project* project, std::string path)
 {
-  std::ofstream stream(path);
+  std::ofstream stream(path.c_str());
 
   assert(stream.good());
 
