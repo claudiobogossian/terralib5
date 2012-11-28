@@ -12,6 +12,7 @@
 #include <terralib/qt/af/events/LayerSelected.h>
 #include <terralib/qt/af/events/TrackedCoordinate.h>
 #include <terralib/qt/af/CoreApplication.h>
+#include <terralib/qt/af/ApplicationPlugins.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 #include <terralib/qt/af/connectors/LayerExplorer.h>
 #include <terralib/qt/af/connectors/MapDisplay.h>
@@ -296,8 +297,14 @@ void MainWindow::setDistanceTool(bool status)
 void MainWindow::openPluginsManager()
 {
   te::qt::widgets::PluginManagerDialog dlg(this);
+
+  te::qt::af::ApplicationPlugins::getInstance().connect(&dlg, SIGNAL(pluginsAdded(const std::map<std::string, std::string>&)), 
+    SLOT(addPlugins(const std::map<std::string, std::string>&)));
+  te::qt::af::ApplicationPlugins::getInstance().connect(&dlg, SIGNAL(pluginsRemoved(const std::vector<std::string>&)), SLOT(removePlugins(const std::vector<std::string>&)));
+
   dlg.exec();
 }
+
 void MainWindow::showProgressDock()
 {
   if(m_progressDock->isVisible())

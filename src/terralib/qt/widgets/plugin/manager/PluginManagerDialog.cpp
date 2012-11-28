@@ -31,7 +31,6 @@
 #include "PluginManagerDialog.h"
 #include <terralib/qt/widgets/utils/ResourceChooser.h>
 #include <terralib/plugin/Utils.h>
-//#include "Utils.h"
 
 // STL
 #include <algorithm>
@@ -80,7 +79,7 @@ bool pluginExists(const std::string& pluginName)
   }
 }
 
-void addPlugin(const QString& fileName)
+void addPlugin(const QString& fileName, std::map<std::string, std::string>& added)
 {
   te::plugin::PluginInfo* pInfo = te::plugin::GetInstalledPlugin(QDir::toNativeSeparators(fileName).toStdString());
 
@@ -89,9 +88,11 @@ void addPlugin(const QString& fileName)
 
   size_t pos = te::plugin::PluginManager::getInstance().getNumPlugins();
   te::plugin::PluginManager::getInstance().add(pInfo);
+
+  added[pInfo->m_name] = fileName.toStdString();
 }
 
-void removePluginsImpl(const QModelIndexList& lst, QTableWidget* table)
+void removePluginsImpl(const QModelIndexList& lst, QTableWidget* table, std::vector<std::string>& removed)
 {
   table->clearSelection();
 
@@ -114,8 +115,8 @@ void removePluginsImpl(const QModelIndexList& lst, QTableWidget* table)
     std::string plg_name = table->item(row, 9)->text().toStdString();
 
     te::plugin::PluginManager::getInstance().remove(plg_name);
-
     table->removeRow(row);
+    removed.push_back(plg_name);
   }
 
   for(int i=0; i<table->rowCount(); i++)
@@ -313,6 +314,7 @@ void te::qt::widgets::PluginManagerDialog::replyFinished(QNetworkReply* reply)
 void te::qt::widgets::PluginManagerDialog::addPlugins()
 {
   QString rsc = ResourceChooser::getResource(qApp->applicationDirPath(), tr("XML Plug-in Files (*.xml *.XML)"), this);
+  std::map<std::string, std::string> added;
 
   try
   {
@@ -322,7 +324,7 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
     QFileInfo info(rsc);
 
     if(info.isFile())
-      addPlugin(info.absoluteFilePath());
+      addPlugin(info.absoluteFilePath(), added);
     else
     {
       if(!info.isDir())
@@ -343,8 +345,11 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
       QStringList::iterator it;
 
       for(it = plgs.begin(); it != plgs.end(); ++it)
-        addPlugin(dir.absoluteFilePath(*it));
+        addPlugin(dir.absoluteFilePath(*it), added);
     }
+
+    if(!added.empty())
+      emit pluginsAdded(added);
 
     fillInstalledPlugins();
   }
@@ -369,7 +374,7 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
 void te::qt::widgets::PluginManagerDialog::removePlugins()
 {
   QModelIndexList lst = m_ui->m_installedPluginsTableWidget->selectionModel()->selectedRows(0);
-
+  std::vector<std::string> removed;
   QMessageBox q(this);
 
   if(lst.isEmpty())
@@ -388,7 +393,10 @@ void te::qt::widgets::PluginManagerDialog::removePlugins()
   q.setStandardButtons(QMessageBox::Yes|QMessageBox::No);
 
   if(q.exec() == QMessageBox::Yes)
-    removePluginsImpl(lst, m_ui->m_installedPluginsTableWidget);
+    removePluginsImpl(lst, m_ui->m_installedPluginsTableWidget, removed);
+
+  if(!removed.empty())
+    emit pluginsRemoved(removed);
 }
 
 void te::qt::widgets::PluginManagerDialog::fillInstalledPlugins()

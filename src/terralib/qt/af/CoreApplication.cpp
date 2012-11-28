@@ -11,6 +11,7 @@
 #include <terralib/common/UserApplicationSettings.h>
 #include <terralib/common/Logger.h>
 #include <terralib/plugin/PluginManager.h>
+#include <terralib/plugin/PluginInfo.h>
 
 #include <terralib/qt/af/events/NewToolBar.h>
 
@@ -21,6 +22,10 @@
 
 //! Boost include files
 #include <boost/filesystem.hpp>
+#include <boost/property_tree/ptree.hpp>
+//#include <boost/property_tree/xml_parser.hpp>
+#include <boost/foreach.hpp>
+
 
 const te::qt::af::CoreApplication& sm_core = te::qt::af::teApp::getInstance();
 
@@ -38,6 +43,16 @@ void getDefaultConfigurations(std::vector< std::pair<std::string, std::string> >
   configs.push_back(std::pair<std::string, std::string>("Application.Name", "TerraLib"));
 }
 
+b_prop::ptree getPluginRef(const std::string& pluginName, const std::string pluginFileName)
+{
+  b_prop::ptree tree;
+
+  tree.add("Name", pluginName);
+  tree.add("Path.<xmlattr>.xlink:href", pluginFileName);
+
+  return tree;
+}
+
 void configureFile(const std::vector< std::pair<std::string, std::string> >& configs, const std::string& fileName)
 {
   std::vector< std::pair<std::string, std::string> >::const_iterator it;
@@ -47,11 +62,9 @@ void configureFile(const std::vector< std::pair<std::string, std::string> >& con
   {
     if(it->first.find("Plugins.Plugin.Name") != std::string::npos)
     {
-      b_prop::ptree sub_p;
-      sub_p.add("Name", it->second);
-      it++;
-      sub_p.add("Path.<xmlattr>.xlink:href", it->second);
-      p.add_child("Plugins.Plugin", sub_p);
+      std::string plg_name = it->second;
+      std::string plg_file_name = (++it)->second;
+      p.add_child("Plugins.Plugin", getPluginRef(plg_name, plg_file_name));
     }
     else
       p.add(it->first, it->second);
@@ -59,6 +72,114 @@ void configureFile(const std::vector< std::pair<std::string, std::string> >& con
 
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(fileName, p, std::locale(), settings);
+}
+
+void saveEnabledPlugins(const std::vector<std::string>& enabled_plgs)
+{
+  std::string settingsFile = te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
+
+  if(!boost::filesystem::is_regular_file(settingsFile))
+    return;
+
+  b_prop::ptree new_sett;
+  b_prop::ptree plgs;
+  b_prop::ptree old_plgs;
+  b_prop::ptree only_plgs;
+  b_prop::ptree::iterator it;
+  std::vector<std::string>::const_iterator it2;
+
+  b_prop::read_xml(settingsFile, new_sett);
+  old_plgs = new_sett.get_child("UserSettings");
+
+  //! Empty plugins file
+  for(it = old_plgs.begin(); it != old_plgs.end(); ++it)
+  {
+    if(it->first != "EnabledPlugins")
+      plgs.add_child(it->first, it->second);
+  }
+
+  for(it2=enabled_plgs.begin(); it2 != enabled_plgs.end(); ++it2)
+    only_plgs.add("Plugin", *it2);
+
+  plgs.insert(plgs.to_iterator(plgs.find("DataSourcesFile")), std::pair<std::string, b_prop::ptree>("EnabledPlugins", only_plgs));
+
+  new_sett.put_child("UserSettings", plgs);
+
+  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::write_xml(settingsFile, new_sett, std::locale(), settings);
+
+  //b_prop::ptree p;    //! old file
+  //b_prop::ptree new_p;  //! new file
+  //b_prop::ptree sub_p;  //! plug-in sub-tree
+  //b_prop::ptree old_p;  //! old plug-ins
+  //b_prop::ptree::iterator p_it;
+  //std::vector<std::string>::const_iterator it; 
+
+  //b_prop::read_xml(settingsFile, p);
+  //old_p = p.get_child("UserSettings");
+
+  //for(p_it = old_p.begin(); p_it != old_p.end(); ++p_it)
+  //{
+  //  std::cout << std::endl << "tag: "<<p_it->first <<", value: " <<p_it->second.data();
+  //  if(p_it->first != "EnabledPlugins")
+  //    new_p.add_child(p_it->first, p_it->second);
+  //}
+  //
+  //for(it=plgs.begin(); it != plgs.end(); ++it)
+  //  sub_p.add("Plugin", *it);
+
+  //old_p.add_child("EnabledPlugins", sub_p);
+  //new_p.put_child("UserSettings", old_p);
+
+  //boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  //boost::property_tree::write_xml(settingsFile, new_p, std::locale(), settings);
+}
+
+void savePluginsFiles()
+{
+  b_prop::ptree& new_sett = te::qt::af::ApplicationPlugins::getInstance().getAllSettings();
+
+  b_prop::ptree::iterator it;
+  b_prop::ptree plgs;
+  b_prop::ptree old_plgs = new_sett.get_child("Plugins");
+  std::vector<std::string> enabled_plgs;
+
+  //! Empty plugins file
+  for(it = old_plgs.begin(); it != old_plgs.end(); ++it)
+  {
+    if(it->first != "Plugin")
+      plgs.add_child(it->first, it->second);
+  }
+
+  //! Now adds the used plug-ins
+  std::map<std::string, std::string> plg_files = te::qt::af::ApplicationPlugins::getInstance().getPluginsFiles();
+  std::map<std::string, std::string>::iterator it2;
+
+  for(it2=plg_files.begin(); it2!=plg_files.end(); ++it2)
+  {
+    plgs.add_child("Plugin", getPluginRef(it2->first, it2->second));
+    if(te::plugin::PluginManager::getInstance().isLoaded(it2->first))
+      enabled_plgs.push_back(it2->first);
+  }
+
+  new_sett.put_child("Plugins", plgs);
+
+  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::write_xml(te::common::SystemApplicationSettings::getInstance().getValue("Application.PluginsFile.<xmlattr>.xlink:href"), new_sett, std::locale(), settings);
+
+  saveEnabledPlugins(enabled_plgs);
+}
+
+void updatePluginsFiles()
+{
+  b_prop::ptree& sett = te::qt::af::ApplicationPlugins::getInstance().getAllSettings().get_child("Plugins");
+  b_prop::ptree::iterator it;
+
+  for(it = sett.begin(); it != sett.end(); ++it)
+  {
+    if(it->first == "Plugin")
+      te::qt::af::ApplicationPlugins::getInstance().addPlugin(it->second.get_child("Name").data(), it->second.get_child("Path.<xmlattr>.xlink:href").data());
+  }
 }
 
 namespace te
@@ -70,6 +191,7 @@ namespace te
       CoreApplication::CoreApplication(QObject* parent) :
       QObject(parent)
       {
+        m_initialized = false;
       }
 
       CoreApplication::~CoreApplication()
@@ -158,6 +280,9 @@ namespace te
 
       void CoreApplication::initialize()
       {
+        if(m_initialized)
+          return;
+
         SplashScreenManager::getInstance().showMessage(tr("Initializing TerraLib modules..."));
 
         TerraLib::getInstance().initialize();
@@ -276,12 +401,22 @@ namespace te
         //! Application organization
         std::string app_org = te::common::SystemApplicationSettings::getInstance().getValue("Application.Organization");
         qApp->setOrganizationName(app_org.c_str());
+
+        m_initialized = true;
+
+        updatePluginsFiles();
       }
 
       void CoreApplication::finalize()
       {
+        if(!m_initialized)
+          return;
+
+        savePluginsFiles();
         te::plugin::PluginManager::getInstance().unloadAll();
         TerraLib::getInstance().finalize();
+
+        m_initialized = false;
       }
 
       void CoreApplication::broadCast(te::qt::af::Event* evt)

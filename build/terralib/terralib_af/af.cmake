@@ -50,6 +50,7 @@ file (
 set (
   HDRS_TO_MOC
   ${SRCDIR}/CoreApplication.h
+  ${SRCDIR}/ApplicationPlugins.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af" MOC)
 

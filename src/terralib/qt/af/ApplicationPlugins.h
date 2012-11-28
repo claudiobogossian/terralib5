@@ -26,10 +26,13 @@
 #ifndef __TERRALIB_QT_AF_INTERNAL_APPLICATIONPLUGINS_H
 #define __TERRALIB_QT_AF_INTERNAL_APPLICATIONPLUGINS_H
 
-// TerraLib
+//! TerraLib
 #include "../../common/ApplicationSettings.h"
 #include "../../common/Singleton.h"
 #include "Config.h"
+
+//! Qt
+#include <QObject>
 
 namespace te
 {
@@ -54,9 +57,12 @@ namespace te
         </ul>
       */
       class TEQTAFEXPORT ApplicationPlugins
-        : public te::common::ApplicationSettings,
+        : public QObject,
+          public te::common::ApplicationSettings,
           public te::common::Singleton<ApplicationPlugins>
       {
+        Q_OBJECT
+
         friend class te::common::Singleton<ApplicationPlugins>;
 
         public:
@@ -65,6 +71,18 @@ namespace te
 
           void load(const std::string& fileName);
 
+          const std::map<std::string, std::string>& getPluginsFiles() const;
+
+          void addPlugin(const std::string& pluginName, const std::string& pluginFileName);
+
+          void removePlugin(const std::string& pluginName);
+
+        public slots:
+
+          void addPlugins(const std::map<std::string, std::string>& plgs);
+
+          void removePlugins(const std::vector<std::string>& plgs);
+
         protected:
 
           /*! \brief It initializes the singleton. */
@@ -72,6 +90,8 @@ namespace te
 
           /*! \brief Destructor. */
           ~ApplicationPlugins();
+
+          std::map<std::string, std::string> m_plugins_files;
       };
 
     } // end namespace af
