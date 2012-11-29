@@ -74,6 +74,7 @@ namespace te
       std::string m_site;                                             //!< An URL pointing to the plugin site.
       Provider m_provider;                                            //!< Information about the plugin provider.
       std::string m_folder;                                           //!< The plugin folder (where the plugin is installed).
+//      std::string m_file_name;                                        //!< File with the definition of the plug-in.   
       std::vector<std::string> m_requiredPlugins;                     //!< The list of required plugins in order to lunch the plugin.
       std::vector<std::string> m_requiredPluginCategories;            //!< The list of required category of plugins in order to lunch the plugin.
       std::vector<std::string> m_requiredModules;                     //!< The list of required category of plugins in order to lunch the plugin.

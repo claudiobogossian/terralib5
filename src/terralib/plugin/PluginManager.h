@@ -107,11 +107,34 @@ namespace te
         */
         bool isLoaded(const std::string& pname) const;
 
-        // add plugin to unload list!
+        /*!
+          \brief Adds plug-in to unload list.
+
+          \param plugin Information of the plug-in.
+        */
         void add(const PluginInfo& plugin);
 
-        // add plugin to unload list and take its ownership
+        /*!
+          \brief Adds plugin to unload list and take its ownership.
+
+          \param plugin Information of the plug-in.
+        */
         void add(PluginInfo* plugin);
+
+        /*
+          \brief Removes plug-in from the manager.
+
+          \details This method removes the plug-in from the manager. If the plug-in was loaded, unload it and remove it from the manager.
+          If it was unloaded or broked, just removes it from the correct list. Note that all its dependents will be moved to the broken list.
+
+          \param plugin Name of the plug-in to be removed.
+
+          \exception This method can raise te::plugin::Exception, because internally it calls te::plugin::PluginManager::detach and 
+          te::plugin::PluginManager::getPlugin methods and don't handle exceptions raised by it;
+
+          \sa te::plugin::PluginManager::detach, te::plugin::PluginManager::getPlugin
+        */
+        void remove(const std::string& plugin);
 
         /*!
           \brief It loads all the plugins in the not-loaded list or searchs for installed plugin with installed finders.
@@ -292,6 +315,10 @@ namespace te
 
         void removeFromUnloadedList(const PluginInfo& pInfo);
 
+        void moveDependentsToBrokenList(const std::string& plugin, const bool& unloadPlugin=false);
+
+        void updateDependents(const std::string& plugin);
+      
       private:
 
         /*! \brief It creates a new plugin. */

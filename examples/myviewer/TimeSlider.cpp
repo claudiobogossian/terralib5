@@ -3,7 +3,7 @@
 #include "QPixmap"
 #include "QPainter"
 #include "QHBoxLayout"
-#include "QDir.h"
+#include "QDir"
 
 #include "MyLayer.h"
 #include "MyDisplay.h"

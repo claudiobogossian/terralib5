@@ -180,6 +180,14 @@ namespace te
         const std::vector< std::pair<std::string, std::string> >* getUserInfo() const;
 
         /*!
+          \brief
+          \param fileName
+          \param start
+          \param connect2AF
+        */
+        void addPlugin(const std::string fileName, const bool& start=false, const bool& connect2AF=false);
+
+        /*!
           \brief Initializes the application framework.
           \details Initializes the application framework, reading configurations files and updating the applications. This also initializes the available terralib modules.
           This means that applications that uses the application framework, does not need to initialize terralib modules, by calling TerraLib::getinstance().initialize() and 
@@ -221,6 +229,8 @@ namespace te
         std::vector< std::pair<std::string, std::string> > m_app_info;                          //!< Configurations.
         std::vector< std::pair<std::string, std::string> > m_user_info;                         //!< User configurations.
         std::vector< std::pair<std::string, std::string> > m_app_plg_info;                      //!< Application Plug-insConfigurations.
+        std::map<std::string, std::string> m_plg_files;
+        bool m_initialized;
       };
 
       /*!

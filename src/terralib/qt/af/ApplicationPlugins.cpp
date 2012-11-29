@@ -116,7 +116,43 @@ void te::qt::af::ApplicationPlugins::load(const std::string& fileName)
   ApplicationSettings::load(fileName);
 }
 
-te::qt::af::ApplicationPlugins::ApplicationPlugins()
+const std::map<std::string, std::string>& te::qt::af::ApplicationPlugins::getPluginsFiles() const
+{
+  return m_plugins_files;
+}
+
+void te::qt::af::ApplicationPlugins::addPlugin(const std::string& pluginName, const std::string& pluginFileName)
+{
+  if(m_plugins_files.find(pluginName) == m_plugins_files.end())
+    m_plugins_files[pluginName] = pluginFileName;
+}
+
+void te::qt::af::ApplicationPlugins::removePlugin(const std::string& pluginName)
+{
+  std::map<std::string, std::string>::iterator it = m_plugins_files.find(pluginName);
+
+  if(it != m_plugins_files.end())
+    m_plugins_files.erase(it);
+}
+
+void te::qt::af::ApplicationPlugins::addPlugins(const std::map<std::string, std::string>& plgs)
+{
+  std::map<std::string, std::string>::const_iterator it;
+
+  for(it=plgs.begin(); it!=plgs.end(); ++it)
+    addPlugin(it->first, it->second);
+}
+
+void te::qt::af::ApplicationPlugins::removePlugins(const std::vector<std::string>& plgs)
+{
+  std::vector<std::string>::const_iterator it;
+
+  for(it=plgs.begin(); it!=plgs.end(); ++it)
+    removePlugin(*it);
+}
+
+te::qt::af::ApplicationPlugins::ApplicationPlugins() :
+QObject()
 {
 }
 
