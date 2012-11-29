@@ -30,6 +30,7 @@
 #include "../../widgets/tools/ZoomLeftAndRightClick.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../../raster/Grid.h"
+#include "../../../geometry/GTFactory.h"
 
 #include <ui_TiePointsLocatorForm.h>
 
@@ -46,13 +47,46 @@ namespace te
     {
       namespace rp
       {
+        TiePointsLocatorDialogMDEventFilter::TiePointsLocatorDialogMDEventFilter(
+          te::qt::widgets::MapDisplay* parent )
+          : QObject( parent ), m_mDisplay( parent )
+        {
+        }
+        
+        TiePointsLocatorDialogMDEventFilter::~TiePointsLocatorDialogMDEventFilter()
+        {
+        }
+        
+        bool TiePointsLocatorDialogMDEventFilter::eventFilter( QObject * watched, 
+          QEvent * event )
+        {
+          if( event->type() == QEvent::Enter )
+          {  
+            m_mDisplay->grabKeyboard();
+          }
+          else if( event->type() == QEvent::Leave )
+          {  
+            m_mDisplay->releaseKeyboard();
+          }          
+          else if( event->type() == QEvent::KeyPress )
+          {
+            if( m_mDisplay->underMouse() )
+            {
+              emit( keyPressedOverMapDisplay( ((QKeyEvent*)event)->key() ) );
+            }
+          }
+            
+          return false;
+        }        
+        
         TiePointsLocatorDialog::TiePointsLocatorDialog(
           te::map::RasterLayer const* inRasterLayer1Ptr,
           te::map::RasterLayer const* inRasterLayer2Ptr,
           QWidget* parent, Qt::WindowFlags f )
           : QDialog( parent, f ),
             m_inRasterLayer1Ptr( inRasterLayer1Ptr ),
-            m_inRasterLayer2Ptr( inRasterLayer2Ptr )
+            m_inRasterLayer2Ptr( inRasterLayer2Ptr ),
+            m_lastSelectedTiePointHasFirstOk( false )
         {
           if( inRasterLayer1Ptr == 0 ) throw te::qt::widgets::Exception( 
             "Invalid raster layer pointer" );
@@ -102,12 +136,19 @@ namespace te
           
           m_coordTracking1 = new te::qt::widgets::CoordTracking( m_mapDisplay1, m_mapDisplay1 );
           m_coordTracking2 = new te::qt::widgets::CoordTracking( m_mapDisplay2, m_mapDisplay2 );
+          
+          m_mDEventFilter1 = new TiePointsLocatorDialogMDEventFilter( m_mapDisplay1 );
+          m_mDEventFilter2 = new TiePointsLocatorDialogMDEventFilter( m_mapDisplay2 );
                     
           m_mapDisplay1->installEventFilter( m_zoomClickEvent1 );
           m_mapDisplay2->installEventFilter( m_zoomClickEvent2 );
           
           m_mapDisplay1->installEventFilter( m_coordTracking1 );
           m_mapDisplay2->installEventFilter( m_coordTracking2 );          
+          
+          m_mapDisplay1->installEventFilter( m_mDEventFilter1 );
+          m_mapDisplay2->installEventFilter( m_mDEventFilter2 );
+          
           
           // Signals & slots
           
@@ -120,6 +161,8 @@ namespace te
           connect(m_uiPtr->m_addPushButton, SIGNAL(clicked()), this, SLOT(on_addPushButton_clicked()));
           connect(m_coordTracking1, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked1(QPointF&)));
           connect(m_coordTracking2, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked2(QPointF&)));
+          connect(m_mDEventFilter1, SIGNAL(keyPressedOverMapDisplay(int)), this, SLOT(on_keyPressedOverMapDisplay1(int)));
+          connect(m_mDEventFilter2, SIGNAL(keyPressedOverMapDisplay(int)), this, SLOT(on_keyPressedOverMapDisplay2(int)));
           
           // fill form
           
@@ -130,20 +173,14 @@ namespace te
           for( unsigned band2Idx = 0 ; band2Idx < m_inRasterLayer2Ptr->getRaster()->getNumberOfBands() ;
             ++band2Idx )
             m_uiPtr->m_referenceBand2ComboBox->addItem( QString::number( band2Idx ) );  
-          
-          // Grab keyboard
-          
-          grabKeyboard();
         }
 
         TiePointsLocatorDialog::~TiePointsLocatorDialog()
         {
+          m_mapDisplay1->releaseKeyboard();
+          m_mapDisplay2->releaseKeyboard();
+          
           delete m_uiPtr;
-        }
-
-        void TiePointsLocatorDialog::keyPressEvent ( QKeyEvent * event )
-        {
-
         }
 
         void TiePointsLocatorDialog::on_okPushButton_clicked()
@@ -177,60 +214,106 @@ namespace te
           
         }
         
-        void TiePointsLocatorDialog::on_insertKeyPressed1( QPointF& coordinate )
+        void TiePointsLocatorDialog::on_keyPressedOverMapDisplay1( int key )
         {
-          m_uiPtr->m_x1LineEdit->setText( QString::number( coordinate.rx() ) );
-          m_uiPtr->m_y1LineEdit->setText( QString::number( coordinate.ry() ) );
+          m_lastSelectedTiePoint.first = m_lastTrackedTiePoint.first;
+          m_lastSelectedTiePointHasFirstOk = true;
         }    
         
-        void TiePointsLocatorDialog::on_insertKeyPressed2( QPointF& coordinate )
+        void TiePointsLocatorDialog::on_keyPressedOverMapDisplay2( int key )
         {
-          m_uiPtr->m_x2LineEdit->setText( QString::number( coordinate.rx() ) );
-          m_uiPtr->m_y2LineEdit->setText( QString::number( coordinate.ry() ) );
+          if( m_lastSelectedTiePointHasFirstOk )
+          {
+            m_lastSelectedTiePointHasFirstOk = false;
+            m_lastSelectedTiePoint.second = m_lastTrackedTiePoint.second;
+            
+            unsigned int tpID = ( (unsigned int)m_tiePoints.size() ) + 1;
+            
+            m_tiePoints[ tpID ] = m_lastSelectedTiePoint;
+            
+            update();
+          }
         }        
         
         
         void TiePointsLocatorDialog::on_coordTracked1( QPointF& coordinate )
         {
-          m_lastTrackedTiePoint.first.x = coordinate.rx();
-          m_lastTrackedTiePoint.first.y = coordinate.ry();
-          
-          m_uiPtr->m_currentImage1XLineEdit->setText( QString::number( 
-            m_lastTrackedTiePoint.first.x ) );
-          m_uiPtr->m_currentImage1YLineEdit->setText( QString::number( 
-            m_lastTrackedTiePoint.first.y ) );
-          
-          te::gm::Coord2D auxCoord = 
-            m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
-              m_lastTrackedTiePoint.first.x, m_lastTrackedTiePoint.first.y );
+          m_lastTrackedTiePoint.first = m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
+            (double)coordinate.rx(), (double)coordinate.ry() );
           
           m_uiPtr->m_currentImage1LineLineEdit->setText( QString::number( 
-            auxCoord.y ) );
+            m_lastTrackedTiePoint.first.y ) );
           m_uiPtr->m_currentImage1ColumnLineEdit->setText( QString::number( 
-            auxCoord.x ) );            
+            m_lastTrackedTiePoint.first.x ) );            
         }          
         
         void TiePointsLocatorDialog::on_coordTracked2( QPointF& coordinate )
         {
-          m_lastTrackedTiePoint.second.x = coordinate.rx();
-          m_lastTrackedTiePoint.second.y = coordinate.ry();
-          
-          m_uiPtr->m_currentImage2XLineEdit->setText( QString::number( 
-            m_lastTrackedTiePoint.second.x ) );
-          m_uiPtr->m_currentImage2YLineEdit->setText( QString::number( 
-            m_lastTrackedTiePoint.second.y ) );
-          
-          te::gm::Coord2D auxCoord = 
-            m_inRasterLayer2Ptr->getRaster()->getGrid()->geoToGrid( 
-              m_lastTrackedTiePoint.second.x, m_lastTrackedTiePoint.second.y );
+          m_lastTrackedTiePoint.second = m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
+            (double)coordinate.rx(), (double)coordinate.ry() );
           
           m_uiPtr->m_currentImage2LineLineEdit->setText( QString::number( 
-            auxCoord.y ) );
+            m_lastTrackedTiePoint.second.y ) );
           m_uiPtr->m_currentImage2ColumnLineEdit->setText( QString::number( 
-            auxCoord.x ) );    
-          
+            m_lastTrackedTiePoint.second.x ) );
         }     
         
+        void TiePointsLocatorDialog::update()
+        {
+          // building the geometric transformations
+          
+          te::gm::GTParameters transParams;
+                    
+          TPContainerT::const_iterator tPIt = m_tiePoints.begin();
+          const TPContainerT::const_iterator tPItEnd = m_tiePoints.end(); 
+          
+          while( tPIt != tPItEnd )   
+          {
+            transParams.m_tiePoints.push_back( tPIt->second );
+            ++tPIt;
+          }
+          
+          std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+            te::gm::GTFactory::make( m_advDialogPtr->m_inputParameters.m_geomTransfName ) );
+            
+          if( transfPtr.get() ) 
+          {
+            if( ! transfPtr->initialize( transParams ) )
+              transfPtr.reset();
+          }
+          
+          // updating the tie points table
+          
+          tPIt = m_tiePoints.begin();
+          unsigned int currentRow = 0;
+          m_uiPtr->m_tiePointsTableWidget->clearContents ();
+          m_uiPtr->m_tiePointsTableWidget->setRowCount( (int)m_tiePoints.size() );
+          double currTPError = 0;
+          
+          while( tPIt != tPItEnd )
+          {
+            const te::gm::GTParameters::TiePoint& currTP = tPIt->second;
+            currTPError = transfPtr.get() ? transfPtr->getDirectMappingError( 
+              currTP ) : 0.0;
+            
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 0, new
+              QTableWidgetItem( QString::number( tPIt->first ) ) );
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 1, new
+              QTableWidgetItem( QString::number( currTPError ) ) );              
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 2, new
+              QTableWidgetItem( QString::number( currTP.first.x ) ) );              
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 3, new
+              QTableWidgetItem( QString::number( currTP.first.y ) ) );              
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 4, new
+              QTableWidgetItem( QString::number( currTP.second.x ) ) );              
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 5, new
+              QTableWidgetItem( QString::number( currTP.second.y ) ) );              
+            
+            ++currentRow;
+            ++tPIt;
+          }
+        }
+
         
       }
     }
