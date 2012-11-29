@@ -266,8 +266,8 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
   std::map<std::string, std::vector<double> >::const_iterator it;
   for (it = inputParamsPtr->m_components.begin(); it != inputParamsPtr->m_components.end(); ++it)
   {
-    TERP_TRUE_OR_RETURN_FALSE(it->second.size() == inputParamsPtr->m_inputRasterBands.size(),
-                              "Endmember's number of channels is different from input raster bands number");
+    TERP_TRUE_OR_RETURN_FALSE(it->second.size() <= inputParamsPtr->m_inputRasterBands.size(),
+                              "Endmember's number of channels is bigger from input raster bands number");
   }
 
 // everything is ok
