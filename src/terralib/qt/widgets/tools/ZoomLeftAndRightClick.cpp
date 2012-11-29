@@ -65,8 +65,6 @@ bool te::qt::widgets::ZoomLeftAndRightClick::mousePressEvent(QMouseEvent* e)
 
     // Updates the map display with the new extent
     m_display->setExtent(e);
-    
-    return true;
   }
   else if( e->button() == Qt::RightButton)
   {
@@ -88,12 +86,7 @@ bool te::qt::widgets::ZoomLeftAndRightClick::mousePressEvent(QMouseEvent* e)
 
     // Updates the map display with the new extent
     m_display->setExtent(e);
-    
-   
-    return true;
   }
-  else
-  {
-    return false;
-  }
+  
+  return false;
 }
