@@ -26,6 +26,7 @@
 // TerraLib
 #include "AbstractProgressViewer.h"
 #include "ProgressManager.h"
+#include "TaskProgress.h"
 
 int te::common::ProgressManager::addViewer(AbstractProgressViewer* apv)
 {
@@ -114,6 +115,25 @@ void te::common::ProgressManager::cancelTask(int taskId)
       ++itV;
     }
   }
+}
+
+void te::common::ProgressManager::cancelTasks(unsigned int type)
+{
+  LockWrite l(this);
+
+  std::vector<TaskProgress*> cancelled;
+  std::map<int, TaskProgress*>::iterator it = m_tasks.begin();
+
+  while(it != m_tasks.end())
+  {
+    if(it->second->getType() == type)
+      cancelled.push_back(it->second);
+
+    ++it;
+  }
+
+  for(std::size_t i = 0; i < cancelled.size(); ++i)
+    cancelled[i]->cancel();
 }
 
 void te::common::ProgressManager::setTotalValues(int taskId)

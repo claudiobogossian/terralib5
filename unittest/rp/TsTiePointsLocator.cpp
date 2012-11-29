@@ -204,7 +204,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   saveImagesAndTiePoints( *inputRaster1Pointer, 0, *inputRaster2Pointer, 0,
     algoOutputParams.m_tiePoints, "terralib_rp_tiepointslocator_test_MoravecStrategyHalfRotated90Image" );
     
-  CPPUNIT_ASSERT_EQUAL( (size_t)900, algoOutputParams.m_tiePoints.size() );    
+  CPPUNIT_ASSERT_EQUAL( (size_t)906, algoOutputParams.m_tiePoints.size() );    
 }
 
 void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()

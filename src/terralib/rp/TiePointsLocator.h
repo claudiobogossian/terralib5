@@ -28,6 +28,7 @@
 #include "Algorithm.h"
 #include "Matrix.h"
 #include "../raster/Raster.h"
+#include "../raster/Interpolator.h"
 #include "../geometry/GTParameters.h"
 #include "../sam/rtree.h"
 #include "../common/progress/TaskProgress.h"
@@ -112,7 +113,7 @@ namespace te
             
             std::string m_geomTransfName; //!< The name of the geometric transformation used to ensure tie-points consistency (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
             
-            double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:1).
+            double m_geomTransfMaxError; //!< The maximum allowed transformation error (pixel units, default:2).
             
             unsigned int m_correlationWindowWidth; //!< The correlation window width used to correlate points between the images (minimum 3, default: 11).
             
@@ -122,6 +123,8 @@ namespace te
             
             bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
             
+            double m_geometryFilterAssurance; //! < Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.5 - Use 0-zero to let this number be automatically found.
+            
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
             unsigned int m_scalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3).
@@ -130,9 +133,11 @@ namespace te
             
             double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
-            double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.75, valid range: [0,1].
+            double m_maxNormEuclideanDist; //!< The maximum acceptable euclidean distance when matching features (when applicable),  default:0.5, valid range: [0,1].
             
-            double m_minAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.25, valid range: [0,1].
+            double m_minAbsCorrelation; //!< The minimum acceptable absolute correlation value when matching features (when applicable),  default:0.5, valid range: [0,1].
+            
+            te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
             
             InputParameters();
             
@@ -539,13 +544,15 @@ namespace te
           
           \param rescaleFactorY Scale factor to be applied on the loaded data.
           
+          \param rasterInterpMethod The interpolation used when loading the input raster.
+          
           \param loadedRasterData The loaded raster data.
           
           \param loadedMaskRasterData The loaded mask raster data.
 
           \return true if ok, false on errors.
         */             
-        bool loadRasterData( 
+        static bool loadRasterData( 
           te::rst::Raster const* rasterPtr,
           const std::vector< unsigned int >& rasterBands,
           te::rst::Raster const* maskRasterPtr,
@@ -556,6 +563,7 @@ namespace te
           const unsigned int rasterTargetAreaHeight,
           const double rescaleFactorX,
           const double rescaleFactorY,
+          const te::rst::Interpolator::Method rasterInterpMethod,
           std::vector< boost::shared_ptr< Matrix< double > > >& loadedRasterData,
           Matrix< unsigned char >& loadedMaskRasterData );
           

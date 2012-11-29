@@ -275,6 +275,8 @@ set (
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
+  ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
+  ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
 )  
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
 

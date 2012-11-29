@@ -59,8 +59,6 @@ namespace te
         {
           public:
 
-            double m_acceptanceThreshold;   //!< The acceptance threshold (the closer to 100\%, few clusters are created).
-
             Parameters();
 
             ~Parameters();

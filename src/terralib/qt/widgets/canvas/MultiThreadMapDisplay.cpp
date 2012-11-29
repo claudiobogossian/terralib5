@@ -29,13 +29,12 @@
 #include "MultiThreadMapDisplay.h"
 
 // Qt
-#include <QtCore/QTimer>
 #include <QtGui/QPainter>
-#include <QtGui/QResizeEvent>
 
 te::qt::widgets::MultiThreadMapDisplay::MultiThreadMapDisplay(const QSize& size, const bool& showFeedback, QWidget* parent, Qt::WindowFlags f)
   : te::qt::widgets::MapDisplay(size, parent, f),
-    m_showFeedback(showFeedback)
+    m_showFeedback(showFeedback),
+    m_isDrawing(false)
 {
   setAttribute(Qt::WA_OpaquePaintEvent, true);
 }
@@ -68,12 +67,20 @@ void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::ma
 
 void te::qt::widgets::MultiThreadMapDisplay::setExtent(const te::gm::Envelope& e)
 {
+  if(m_isDrawing)
+    return;
+
   te::map::MapDisplay::setExtent(e);
 
   if(m_extent == 0)
     return;
 
   updateTransform(); /*  For while... I need the class CoordTransform! */
+
+  if(m_layerList.empty())
+    return;
+
+  m_isDrawing = true;
 
   draw();
 
@@ -143,6 +150,7 @@ void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
 void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)
 {
   QPainter painter(m_displayPixmap);
+  painter.setOpacity(0.1); // To improve user visual experience!
   painter.drawImage(0, 0, image);
   repaint(); // or update()? Which is the best here?!
 }
@@ -164,4 +172,6 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   m_images.clear();
 
   repaint(); // or update()? Which is the best here?!
+
+  m_isDrawing = false;
 }
