@@ -63,6 +63,8 @@ namespace te
 
           void remove(const std::string& id);
 
+          void removeByType(const std::string& dsTypeName);
+
           void getByType(const std::string& dsTypeName, std::vector<DataSourcePtr>& datasources) const;
 
           std::size_t size() const;

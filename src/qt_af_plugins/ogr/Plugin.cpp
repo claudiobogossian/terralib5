@@ -5,6 +5,7 @@
 #include <terralib/common/Config.h>
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
 #include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
 
 namespace plg_ogr = qt_af::plugin::ogr;
@@ -39,9 +40,10 @@ void plg_ogr::Plugin::shutdown()
   if(!m_initialized)
     return;
 
+  te_qt::DataSourceManager::getInstance().removeByType("OGR");
   te_qt::DataSourceTypeManager::getInstance().remove("OGR");
 
-  TE_LOG_TRACE(AF_TR_OGR("TerraLib OGR driver shutdown!"));
+  TE_LOG_TRACE(AF_TR_OGR("TerraLib Qt OGR driver shutdown!"));
 
   m_initialized = false;
 }

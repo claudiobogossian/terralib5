@@ -5,6 +5,7 @@
 #include <terralib/common/Config.h>
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
 #include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
 
 namespace plg_pgis = qt_af::plugin::pgis;
@@ -39,6 +40,7 @@ void plg_pgis::Plugin::shutdown()
   if(!m_initialized)
     return;
 
+  te_qt::DataSourceManager::getInstance().removeByType("POSTGIS");
   te_qt::DataSourceTypeManager::getInstance().remove("POSTGIS");
 
   TE_LOG_TRACE(AF_TR_PGIS("TerraLib PGIS driver shutdown!"));

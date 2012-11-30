@@ -413,6 +413,7 @@ namespace te
           return;
 
         savePluginsFiles();
+        te::plugin::PluginManager::getInstance().shutdownAll();
         te::plugin::PluginManager::getInstance().unloadAll();
         TerraLib::getInstance().finalize();
 

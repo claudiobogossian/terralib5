@@ -5,6 +5,7 @@
 #include <terralib/common/Config.h>
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
 #include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
 
 namespace plg_wcs = qt_af::plugin::wcs;
@@ -39,6 +40,7 @@ void plg_wcs::Plugin::shutdown()
   if(!m_initialized)
     return;
 
+  te_qt::DataSourceManager::getInstance().removeByType("WCS");
   te_qt::DataSourceTypeManager::getInstance().remove("WCS");
 
   TE_LOG_TRACE(AF_TR_WCS("TerraLib WCS driver shutdown!"));

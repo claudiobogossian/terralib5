@@ -5,6 +5,7 @@
 #include <terralib/common/Config.h>
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
 #include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
 
 namespace plg_wms = qt_af::plugin::wms;
@@ -39,6 +40,7 @@ void plg_wms::Plugin::shutdown()
   if(!m_initialized)
     return;
 
+  te_qt::DataSourceManager::getInstance().removeByType("WMS");
   te_qt::DataSourceTypeManager::getInstance().remove("WMS");
 
   TE_LOG_TRACE(AF_TR_WMS("TerraLib WMS driver shutdown!"));

@@ -5,6 +5,7 @@
 #include <terralib/common/Config.h>
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
 #include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
 
 namespace plg_gdal = qt_af::plugin::gdal;
@@ -39,6 +40,7 @@ void plg_gdal::Plugin::shutdown()
   if(!m_initialized)
     return;
 
+  te_qt::DataSourceManager::getInstance().removeByType("GDAL");
   te_qt::DataSourceTypeManager::getInstance().remove("GDAL");
 
   TE_LOG_TRACE(AF_TR_GDAL("TerraLib GDAL driver shutdown!"));

@@ -204,7 +204,7 @@ void plg_ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp, *.kml, *.geojson, *.gml);; Shapefile (*.shp);; GML (*.gml);; Web Feature Service - WFS (*.xml, *.wfs);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Feature File"), QString(""), tr("Common Formats (*.shp *.SHP *.kml *.KML *.geojson *.GEOJSON *.gml *.GML);; Shapefile (*.shp *.SHP);; GML (*.gml *.GML);; Web Feature Service - WFS (*.xml *.XML *.wfs *.WFS);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
     if(fileName.isEmpty())
       return;

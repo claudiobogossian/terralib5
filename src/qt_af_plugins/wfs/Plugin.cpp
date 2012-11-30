@@ -5,6 +5,7 @@
 #include <terralib/common/Config.h>
 #include <terralib/common/Translator.h>
 #include <terralib/common/Logger.h>
+#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
 #include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
 
 namespace plg_wfs = qt_af::plugin::wfs;
@@ -39,6 +40,7 @@ void plg_wfs::Plugin::shutdown()
   if(!m_initialized)
     return;
 
+  te_qt::DataSourceManager::getInstance().removeByType("WFS");
   te_qt::DataSourceTypeManager::getInstance().remove("WFS");
 
   TE_LOG_TRACE(AF_TR_WFS("TerraLib WFS driver shutdown!"));
