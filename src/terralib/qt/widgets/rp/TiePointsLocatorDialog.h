@@ -122,7 +122,9 @@ namespace te
             /*! \brief Destructor. */
             ~TiePointsLocatorDialog();
             
-            void update();
+            void tiePointsTableUpdate();
+            
+            void transformationErrorsUpdate();
             
           protected slots:
 
@@ -137,6 +139,7 @@ namespace te
             void on_keyPressedOverMapDisplay2( int key );
             void on_coordTracked1(QPointF &coordinate);
             void on_coordTracked2(QPointF &coordinate);
+            void on_itemSelectionChanged();
 
           private:
             
@@ -157,7 +160,8 @@ namespace te
             bool m_lastSelectedTiePointHasFirstOk; //!< true if the last selected tie-point has the first part set;
             TiePointsLocatorDialogMDEventFilter* m_mDEventFilter1; //!< Map display 1 event filter.
             TiePointsLocatorDialogMDEventFilter* m_mDEventFilter2; //!< Map display 2 event filter.
-            TPContainerT m_tiePoints;
+            TPContainerT m_tiePoints; //!< Internal tie-points container.
+            unsigned int m_lastInsertedTPID; //!< A ID counter for new tie pointes inserted into m_tiePoints;
         }; 
         
 
