@@ -40,6 +40,7 @@
 // STL
 
 #include <vector>
+#include <map>
 
 // Forward user interface declaration
 namespace Ui
@@ -60,6 +61,36 @@ namespace te
       namespace rp
       {
         class TiePointsLocatorAdvancedDialog;
+        
+        /*!
+          \class TiePointsLocatorDialogMDEventFilter
+
+          \brief A event filter to handle map display events.
+        */
+        class TEQTWIDGETSEXPORT TiePointsLocatorDialogMDEventFilter : public QObject
+        {
+          Q_OBJECT
+          
+          public:
+            
+
+            TiePointsLocatorDialogMDEventFilter( te::qt::widgets::MapDisplay* parent );
+            
+            ~TiePointsLocatorDialogMDEventFilter();
+            
+            //overload
+            bool eventFilter( QObject * watched, QEvent * event );
+            
+          signals:
+            
+            /*! This signal is emitted when a keyboar key was pressed. */
+            void keyPressedOverMapDisplay( int key );     
+            
+          protected :
+            
+            te::qt::widgets::MapDisplay* m_mDisplay;
+            
+        };        
         
         /*!
           \class TiePointsLocatorDialog
@@ -91,9 +122,10 @@ namespace te
             /*! \brief Destructor. */
             ~TiePointsLocatorDialog();
             
-            // overload
-            void keyPressEvent ( QKeyEvent * event );
-
+            void tiePointsTableUpdate();
+            
+            void transformationErrorsUpdate();
+            
           protected slots:
 
             void on_okPushButton_clicked();
@@ -103,12 +135,15 @@ namespace te
             void on_deleteSelectedPushButton_clicked();
             void on_advancedOptionsPushButton_clicked();
             void on_addPushButton_clicked();
-            void on_insertKeyPressed1( QPointF& coordinate );
-            void on_insertKeyPressed2( QPointF& coordinate );
+            void on_keyPressedOverMapDisplay1( int key );
+            void on_keyPressedOverMapDisplay2( int key );
             void on_coordTracked1(QPointF &coordinate);
             void on_coordTracked2(QPointF &coordinate);
+            void on_itemSelectionChanged();
 
           private:
+            
+            typedef std::map< unsigned int, te::gm::GTParameters::TiePoint >  TPContainerT;
 
             Ui::TiePointsLocatorForm* m_uiPtr; //! User interface.
             TiePointsLocatorAdvancedDialog* m_advDialogPtr; //!< Advanced options dialog.
@@ -120,8 +155,17 @@ namespace te
             te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent2; //!< Zoom click event (map display 2).
             CoordTracking* m_coordTracking1; //!< Coord tracking (map display 1);
             CoordTracking* m_coordTracking2; //!< Coord tracking (map display 2);
-            te::gm::GTParameters::TiePoint m_lastTrackedTiePoint; //!< The last mouse tracked tie-point;
+            te::gm::GTParameters::TiePoint m_lastTrackedTiePoint; //!< The last mouse tracked tie-point by analysing the mouse move over the map areas.
+            te::gm::GTParameters::TiePoint m_lastSelectedTiePoint; //!< The last mouse tracked tie-point by pressing any key over the map areas.
+            bool m_lastSelectedTiePointHasFirstOk; //!< true if the last selected tie-point has the first part set;
+            TiePointsLocatorDialogMDEventFilter* m_mDEventFilter1; //!< Map display 1 event filter.
+            TiePointsLocatorDialogMDEventFilter* m_mDEventFilter2; //!< Map display 2 event filter.
+            TPContainerT m_tiePoints; //!< Internal tie-points container.
+            unsigned int m_lastInsertedTPID; //!< A ID counter for new tie pointes inserted into m_tiePoints;
         }; 
+        
+
+        
       };
     };
   };
