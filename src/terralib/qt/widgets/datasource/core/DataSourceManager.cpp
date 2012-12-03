@@ -71,7 +71,11 @@ void te::qt::widgets::DataSourceManager::removeByType(const std::string& dsTypeN
 
   while(it!=m_datasources.end())
     if(it->second->getType() == dsTypeName)
-      m_datasources.erase(it++);
+    {
+      eraseIt = it;
+      ++it;
+      m_datasources.erase(eraseIt);
+    }
     else
       ++it;
 }

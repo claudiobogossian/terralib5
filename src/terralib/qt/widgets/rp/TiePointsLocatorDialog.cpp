@@ -27,10 +27,12 @@
 #include "TiePointsLocatorAdvancedDialog.h"
 #include "../Exception.h"
 #include "../canvas/MapDisplay.h"
+#include "../canvas/Canvas.h"
 #include "../../widgets/tools/ZoomLeftAndRightClick.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../../raster/Grid.h"
 #include "../../../geometry/GTFactory.h"
+#include "../../../geometry/Point.h"
 
 #include <ui_TiePointsLocatorForm.h>
 
@@ -47,6 +49,18 @@ namespace te
     {
       namespace rp
       {
+        
+        te::color::RGBAColor TiePointsLocatorDialog::m_selectedPointPattern[ 1 ][ 1 ] =
+        {
+          { te::color::RGBAColor( 000, 000, 000, 000) }
+        };
+        
+        
+        te::color::RGBAColor TiePointsLocatorDialog::m_unselectedPointPattern[ 1 ][ 1 ] =
+        {
+          { te::color::RGBAColor( 000, 000, 000, 000) }
+        };        
+        
         TiePointsLocatorDialogMDEventFilter::TiePointsLocatorDialogMDEventFilter(
           te::qt::widgets::MapDisplay* parent )
           : QObject( parent ), m_mDisplay( parent )
@@ -72,7 +86,7 @@ namespace te
           {
             if( m_mDisplay->underMouse() )
             {
-              emit( keyPressedOverMapDisplay( ((QKeyEvent*)event)->key() ) );
+              emit( keyPressed( ((QKeyEvent*)event)->key() ) );
             }
           }
             
@@ -160,11 +174,13 @@ namespace te
           connect(m_uiPtr->m_deleteSelectedPushButton, SIGNAL(clicked()), this, SLOT(on_deleteSelectedPushButton_clicked()));
           connect(m_uiPtr->m_advancedOptionsPushButton, SIGNAL(clicked()), this, SLOT(on_advancedOptionsPushButton_clicked()));
           connect(m_uiPtr->m_addPushButton, SIGNAL(clicked()), this, SLOT(on_addPushButton_clicked()));
-          connect(m_coordTracking1, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked1(QPointF&)));
-          connect(m_coordTracking2, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked2(QPointF&)));
-          connect(m_mDEventFilter1, SIGNAL(keyPressedOverMapDisplay(int)), this, SLOT(on_keyPressedOverMapDisplay1(int)));
-          connect(m_mDEventFilter2, SIGNAL(keyPressedOverMapDisplay(int)), this, SLOT(on_keyPressedOverMapDisplay2(int)));
-          connect(m_uiPtr->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(on_itemSelectionChanged()));
+          connect(m_coordTracking1, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_mapDisplay1_coordTracked(QPointF&)));
+          connect(m_coordTracking2, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_mapDisplay2_coordTracked(QPointF&)));
+          connect(m_mDEventFilter1, SIGNAL(keyPressed(int)), this, SLOT(on_mapDisplay1_keyPressed(int)));
+          connect(m_mDEventFilter2, SIGNAL(keyPressed(int)), this, SLOT(on_mapDisplay2_keyPressed(int)));
+          connect(m_uiPtr->m_tiePointsTableWidget, SIGNAL(itemSelectionChanged()), this, SLOT(on_tiePointsTableWidget_itemSelectionChanged()));
+          connect(m_mapDisplay1, SIGNAL(extentChanged()), this, SLOT(on_mapDisplay1_extentChanged()));
+          connect(m_mapDisplay2, SIGNAL(extentChanged()), this, SLOT(on_mapDisplay2_extentChanged()));
           
           // fill form
           
@@ -197,7 +213,6 @@ namespace te
         void TiePointsLocatorDialog::on_selectAllPushButton_clicked()
         {
           m_uiPtr->m_tiePointsTableWidget->selectAll();
-          m_lastInsertedTPID = 0;
         }
         
         void TiePointsLocatorDialog::on_unselectAllPushButton_clicked()
@@ -207,13 +222,13 @@ namespace te
         
         void TiePointsLocatorDialog::on_deleteSelectedPushButton_clicked()
         {
-          const unsigned int rowCount = (unsigned int)
+          const int rowCount = 
             m_uiPtr->m_tiePointsTableWidget->rowCount();
           QTableWidgetItem* itemPtr = 0;
           unsigned int tpID = 0;
           TPContainerT::iterator deletionIt;
             
-          for( unsigned int row = 0 ; row < rowCount ; ++row )
+          for( int row = 0 ; row < rowCount ; ++row )
           {
             itemPtr = m_uiPtr->m_tiePointsTableWidget->item( row, 0 );
             
@@ -246,39 +261,40 @@ namespace te
             ( ! m_uiPtr->m_x2LineEdit->text().isEmpty() ) &&
             ( ! m_uiPtr->m_y2LineEdit->text().isEmpty() ) )
           {
-            m_lastSelectedTiePoint.first.x = m_uiPtr->m_x1LineEdit->text().toDouble();
-            m_lastSelectedTiePoint.first.y = m_uiPtr->m_y1LineEdit->text().toDouble();
-            m_lastSelectedTiePoint.second.x = m_uiPtr->m_x2LineEdit->text().toDouble();
-            m_lastSelectedTiePoint.second.y = m_uiPtr->m_y2LineEdit->text().toDouble();
+            te::gm::GTParameters::TiePoint auxTP;
+            auxTP.first.x = m_uiPtr->m_x1LineEdit->text().toDouble();
+            auxTP.first.y = m_uiPtr->m_y1LineEdit->text().toDouble();
+            auxTP.second.x = m_uiPtr->m_x2LineEdit->text().toDouble();
+            auxTP.second.y = m_uiPtr->m_y2LineEdit->text().toDouble();
             
-            m_tiePoints[ ++m_lastInsertedTPID ] = 
-              m_lastSelectedTiePoint;
+            ++m_lastInsertedTPID;
+            m_tiePoints[ m_lastInsertedTPID ] = auxTP;
             
             tiePointsTableUpdate();
           }
         }
         
-        void TiePointsLocatorDialog::on_keyPressedOverMapDisplay1( int key )
+        void TiePointsLocatorDialog::on_mapDisplay1_keyPressed( int key )
         {
           m_lastSelectedTiePoint.first = m_lastTrackedTiePoint.first;
           m_lastSelectedTiePointHasFirstOk = true;
         }    
         
-        void TiePointsLocatorDialog::on_keyPressedOverMapDisplay2( int key )
+        void TiePointsLocatorDialog::on_mapDisplay2_keyPressed( int key )
         {
           if( m_lastSelectedTiePointHasFirstOk )
           {
             m_lastSelectedTiePointHasFirstOk = false;
             m_lastSelectedTiePoint.second = m_lastTrackedTiePoint.second;
             
-            m_tiePoints[ ++m_lastInsertedTPID ] = m_lastSelectedTiePoint;
+            ++m_lastInsertedTPID;
+            m_tiePoints[ m_lastInsertedTPID ] = m_lastSelectedTiePoint;
             
             tiePointsTableUpdate();
-            transformationErrorsUpdate();
           }
         }
         
-        void TiePointsLocatorDialog::on_coordTracked1( QPointF& coordinate )
+        void TiePointsLocatorDialog::on_mapDisplay1_coordTracked( QPointF& coordinate )
         {
           m_lastTrackedTiePoint.first = m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
             (double)coordinate.rx(), (double)coordinate.ry() );
@@ -289,7 +305,7 @@ namespace te
             m_lastTrackedTiePoint.first.x ) );            
         }          
         
-        void TiePointsLocatorDialog::on_coordTracked2( QPointF& coordinate )
+        void TiePointsLocatorDialog::on_mapDisplay2_coordTracked( QPointF& coordinate )
         {
           m_lastTrackedTiePoint.second = m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
             (double)coordinate.rx(), (double)coordinate.ry() );
@@ -326,9 +342,11 @@ namespace te
           
           // updating the tie points table
           
+          m_uiPtr->m_tiePointsTableWidget->blockSignals( true );
+          
           const int rowCount = m_uiPtr->m_tiePointsTableWidget->rowCount();
             
-          for( int row = 0 ; row < rowCount ; ++row )
+          for( int row = rowCount - 1 ; row >= 0 ; --row )
           {
             m_uiPtr->m_tiePointsTableWidget->removeRow( row );
           }          
@@ -346,6 +364,8 @@ namespace te
               const te::gm::GTParameters::TiePoint& currTP = tPIt->second;
               currTPError = transfPtr.get() ? transfPtr->getDirectMappingError( 
                 currTP ) : 0.0;
+                
+              currentRow = m_uiPtr->m_tiePointsTableWidget->rowCount();
                 
               m_uiPtr->m_tiePointsTableWidget->insertRow( currentRow );
               
@@ -373,13 +393,16 @@ namespace te
               newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
               m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 5, newItemPtr );              
               
-              ++currentRow;
               ++tPIt;
             }
             
             m_uiPtr->m_tiePointsTableWidget->setSortingEnabled( true );
             m_uiPtr->m_tiePointsTableWidget->sortByColumn( 1, Qt::DescendingOrder );
           }
+          
+          m_uiPtr->m_tiePointsTableWidget->blockSignals( false );
+          
+          transformationErrorsUpdate();
         }
         
         void TiePointsLocatorDialog::transformationErrorsUpdate()
@@ -390,16 +413,17 @@ namespace te
           te::gm::GTParameters transParamsSelectedTP;
           te::gm::GTParameters transParamsUnselectedTP;
           
-          const unsigned int rowCount = (unsigned int)
-            m_uiPtr->m_tiePointsTableWidget->rowCount();
+          const int rowCount = m_uiPtr->m_tiePointsTableWidget->rowCount();
           QTableWidgetItem* itemPtr = 0;
+          TPContainerT::const_iterator it;
             
-          for( unsigned int row = 0 ; row < rowCount ; ++row )
+          for( int row = 0 ; row < rowCount ; ++row )
           {
             itemPtr = m_uiPtr->m_tiePointsTableWidget->item( row, 0 );
+            it = m_tiePoints.find( itemPtr->text().toUInt() );
+            assert( it != m_tiePoints.end() );
             
-            const te::gm::GTParameters::TiePoint& tiePoint = m_tiePoints[  
-              itemPtr->text().toUInt() ];
+            const te::gm::GTParameters::TiePoint& tiePoint = it->second;
             
             if( itemPtr->isSelected() )
             {
@@ -460,13 +484,58 @@ namespace te
             m_uiPtr->m_transformationRMSEunselectedLineEdit->setText( QString::number( 
             transfUnselectedTPPtr->getDirectMapRMSE() ) );
           else
-            m_uiPtr->m_transformationRMSEunselectedLineEdit->setText("N/A");            
+            m_uiPtr->m_transformationRMSEunselectedLineEdit->setText("N/A");     
         }
         
-        void TiePointsLocatorDialog::on_itemSelectionChanged()
+        void TiePointsLocatorDialog::on_tiePointsTableWidget_itemSelectionChanged()
         {
           transformationErrorsUpdate();
         }
+        
+        void TiePointsLocatorDialog::on_mapDisplay1_extentChanged()
+        {
+          te::qt::widgets::Canvas canvasInstance( m_mapDisplay1->getDraftPixmap() );
+          
+          // Drawing the colected points
+          
+          canvasInstance.setPointColor( te::color::RGBAColor(  ) );
+          
+          const int rowCount = 
+            m_uiPtr->m_tiePointsTableWidget->rowCount();
+          QTableWidgetItem* itemPtr = 0;
+          unsigned int tpID = 0;
+          TPContainerT::iterator tiePointsIt;
+          te::gm::Point auxPoint;
+            
+          for( int row = 0 ; row < rowCount ; ++row )
+          {
+            itemPtr = m_uiPtr->m_tiePointsTableWidget->item( row, 0 );
+            
+            if( itemPtr->isSelected() )
+            {
+              canvasInstance.setPointColor( te::color::RGBAColor( 255, 0, 0, TE_OPAQUE ) );
+              
+              tpID = itemPtr->text().toUInt();
+              
+              tiePointsIt = m_tiePoints.find( tpID );
+              assert( tiePointsIt != m_tiePoints.end() );
+              
+              auxPoint.setX( tiePointsIt->second.first.x );
+              auxPoint.setY( tiePointsIt->second.first.y );
+              canvasInstance.draw( &auxPoint );
+            }
+            else
+            {
+              
+            }
+          }          
+        }
+
+        void TiePointsLocatorDialog::on_mapDisplay2_extentChanged()
+        {
+
+        }
+
       } // namespace rp
     } // namespace qt
   } // namespace qt
