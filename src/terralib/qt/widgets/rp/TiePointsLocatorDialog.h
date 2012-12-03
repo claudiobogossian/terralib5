@@ -31,6 +31,7 @@
 #include "../../../raster/Raster.h"
 #include "../../../maptools/RasterLayer.h"
 #include "../../../geometry/GTParameters.h"
+#include "../../../color/RGBAColor.h"
 
 // Qt
 #include <QtGui/QDialog>
@@ -84,7 +85,7 @@ namespace te
           signals:
             
             /*! This signal is emitted when a keyboar key was pressed. */
-            void keyPressedOverMapDisplay( int key );     
+            void keyPressed( int key );     
             
           protected :
             
@@ -135,16 +136,19 @@ namespace te
             void on_deleteSelectedPushButton_clicked();
             void on_advancedOptionsPushButton_clicked();
             void on_addPushButton_clicked();
-            void on_keyPressedOverMapDisplay1( int key );
-            void on_keyPressedOverMapDisplay2( int key );
-            void on_coordTracked1(QPointF &coordinate);
-            void on_coordTracked2(QPointF &coordinate);
-            void on_itemSelectionChanged();
+            void on_mapDisplay1_keyPressed( int key );
+            void on_mapDisplay2_keyPressed( int key );
+            void on_mapDisplay1_coordTracked(QPointF &coordinate);
+            void on_mapDisplay2_coordTracked(QPointF &coordinate);
+            void on_tiePointsTableWidget_itemSelectionChanged();
+            void on_mapDisplay1_extentChanged();
+            void on_mapDisplay2_extentChanged();
 
           private:
             
-            typedef std::map< unsigned int, te::gm::GTParameters::TiePoint >  TPContainerT;
-
+            typedef std::map< unsigned int, te::gm::GTParameters::TiePoint >  TPContainerT; //!< Tie-pints container type definition.
+            static te::color::RGBAColor m_selectedPointPattern[1][1];
+            static te::color::RGBAColor m_unselectedPointPattern[1][1];
             Ui::TiePointsLocatorForm* m_uiPtr; //! User interface.
             TiePointsLocatorAdvancedDialog* m_advDialogPtr; //!< Advanced options dialog.
             te::qt::widgets::MapDisplay* m_mapDisplay1; //!< Map display 1.
