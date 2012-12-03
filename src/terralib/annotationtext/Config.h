@@ -29,7 +29,7 @@
 // TerraLib
 #include "../Config.h"
 
-#define TE_ANNOTATIONTEXT_MODULE_NAME "TEANNOTATIONTEXT"
+#define TE_ANNOTATIONTEXT_MODULE_NAME "te.annotationtext"
 
 /** @name Internationalization Defines
  *  Flags for TerraLib code internationalization.

@@ -78,6 +78,12 @@ namespace te
           */
           void setLogo(const QPixmap& pix);
 
+          /*!
+            \brief Closes the splash screen.
+            \details This function can be used when something fails and the splash screen is visible.
+          */
+          void close();
+
         protected:
 
           /*! \brief It initializes the singleton. */

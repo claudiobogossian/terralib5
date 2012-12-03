@@ -6,6 +6,7 @@
 //! TerraLib include files
 #include <terralib/common/SystemApplicationSettings.h>
 #include <terralib/common/UserApplicationSettings.h>
+#include <terralib/common/Exception.h>
 
 #include <terralib/qt/af/events/NewToolBar.h>
 #include <terralib/qt/af/events/LayerAdded.h>
@@ -46,6 +47,7 @@
 #include <QDockWidget>
 #include <QActionGroup>
 #include <QDir>
+#include <QMessageBox>
 
 void getConfigurations(std::vector< std::pair<std::string, std::string> >& configs)
 {
@@ -88,15 +90,18 @@ void getPluginsConfigurations(std::vector< std::pair<std::string, std::string> >
   configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.xsd:schemaLocation", "http://www.terralib.org/schemas/af " + std::string(TERRALIB_SCHEMA_LOCATION) + "/terralib/af/af.xsd"));
   configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.version", "5.0.0"));
   configs.push_back(std::pair<std::string, std::string>("Plugins.<xmlattr>.release", "2011-01-01"));
+
   //! ado
+#ifdef _MSC_VER
   configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.ado"));
   configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_ado_info.xml"));
+#endif
   //! gdal
   configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.gdal"));
-  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_ogr_info.xml"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_gdal_info.xml"));
   //! ogr
   configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.ogr"));
-  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_gdal_info.xml"));
+  configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_ogr_info.xml"));
   //! pgis
   configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Name", "te.da.pgis"));
   configs.push_back(std::pair<std::string, std::string>("Plugins.Plugin.Path.<xmlattr>.xlink:href", std::string(TERRALIB_BIN_DIR) + "/plugin_pgis_info.xml"));
@@ -146,7 +151,16 @@ QMainWindow(parent, 0),
   getUserConfigurations(configs);
   te::qt::af::teApp::getInstance().setUserInfo(configs);
 
-  te::qt::af::teApp::getInstance().initialize();
+  QString err_msg;
+
+  try
+  {
+    te::qt::af::teApp::getInstance().initialize();
+  }
+  catch(te::common::Exception& e)
+  {
+    err_msg = QString(e.what());
+  }
 
   std::string icon = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName");
   std::string title = te::common::SystemApplicationSettings::getInstance().getValue("Application.Title");
@@ -158,6 +172,9 @@ QMainWindow(parent, 0),
     QMainWindow::setWindowTitle(title.c_str());
 
   makeDialog();
+
+  if(!err_msg.isEmpty())
+    QMessageBox::warning(this, tr("TerraView warning"), err_msg);
 }
 
 MainWindow::~MainWindow()
