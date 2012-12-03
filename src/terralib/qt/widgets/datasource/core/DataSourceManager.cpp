@@ -67,11 +67,16 @@ void te::qt::widgets::DataSourceManager::remove(const std::string& id)
 
 void te::qt::widgets::DataSourceManager::removeByType(const std::string& dsTypeName)
 {
-  std::map<std::string, DataSourcePtr>::const_iterator it = m_datasources.begin();
+  std::map<std::string, DataSourcePtr>::iterator it = m_datasources.begin();
+  std::map<std::string, DataSourcePtr>::iterator eraseIt;
 
   while(it!=m_datasources.end())
     if(it->second->getType() == dsTypeName)
-      m_datasources.erase(it++);
+    {
+      eraseIt = it;
+      ++it;
+      m_datasources.erase(eraseIt);
+    }
     else
       ++it;
 }
