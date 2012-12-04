@@ -147,8 +147,9 @@ namespace te
           private:
             
             typedef std::map< unsigned int, te::gm::GTParameters::TiePoint >  TPContainerT; //!< Tie-pints container type definition.
-            static te::color::RGBAColor m_selectedPointPattern[1][1];
-            static te::color::RGBAColor m_unselectedPointPattern[1][1];
+            te::color::RGBAColor** m_selectedPointPattern;
+            te::color::RGBAColor** m_unselectedPointPattern;
+            te::color::RGBAColor** m_tempPointPattern;
             Ui::TiePointsLocatorForm* m_uiPtr; //! User interface.
             TiePointsLocatorAdvancedDialog* m_advDialogPtr; //!< Advanced options dialog.
             te::qt::widgets::MapDisplay* m_mapDisplay1; //!< Map display 1.

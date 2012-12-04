@@ -33,6 +33,7 @@
 #include "../../../raster/Grid.h"
 #include "../../../geometry/GTFactory.h"
 #include "../../../geometry/Point.h"
+#include "../../../geometry/Envelope.h"
 
 #include <ui_TiePointsLocatorForm.h>
 
@@ -40,6 +41,9 @@
 #include <QtGui/QGridLayout>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QLineEdit>
+#include <QtGui/QColor>
+
+#define TPLDIALOG_P_PATTERN_W 11
 
 namespace te
 {
@@ -49,18 +53,6 @@ namespace te
     {
       namespace rp
       {
-        
-        te::color::RGBAColor TiePointsLocatorDialog::m_selectedPointPattern[ 1 ][ 1 ] =
-        {
-          { te::color::RGBAColor( 000, 000, 000, 000) }
-        };
-        
-        
-        te::color::RGBAColor TiePointsLocatorDialog::m_unselectedPointPattern[ 1 ][ 1 ] =
-        {
-          { te::color::RGBAColor( 000, 000, 000, 000) }
-        };        
-        
         TiePointsLocatorDialogMDEventFilter::TiePointsLocatorDialogMDEventFilter(
           te::qt::widgets::MapDisplay* parent )
           : QObject( parent ), m_mDisplay( parent )
@@ -191,12 +183,58 @@ namespace te
           for( unsigned band2Idx = 0 ; band2Idx < m_inRasterLayer2Ptr->getRaster()->getNumberOfBands() ;
             ++band2Idx )
             m_uiPtr->m_referenceBand2ComboBox->addItem( QString::number( band2Idx ) );  
+          
+          // create points draw patterns
+          
+          m_selectedPointPattern = new te::color::RGBAColor*[ TPLDIALOG_P_PATTERN_W ];
+          m_unselectedPointPattern = new te::color::RGBAColor*[ TPLDIALOG_P_PATTERN_W ];
+          m_tempPointPattern = new te::color::RGBAColor*[ TPLDIALOG_P_PATTERN_W ];
+          
+          for( unsigned int line = 0 ; line < TPLDIALOG_P_PATTERN_W ; ++line )
+          {
+            m_selectedPointPattern[ line ] = new te::color::RGBAColor[ TPLDIALOG_P_PATTERN_W ];
+            m_unselectedPointPattern[ line ] = new te::color::RGBAColor[ TPLDIALOG_P_PATTERN_W ];
+            m_tempPointPattern[ line ] = new te::color::RGBAColor[ TPLDIALOG_P_PATTERN_W ];
+            
+            for( unsigned int col = 0 ; col < TPLDIALOG_P_PATTERN_W ; ++col )
+            {
+              if( ( line == col ) || ( line == ( TPLDIALOG_P_PATTERN_W - col - 1 ) ) )
+              {
+                m_selectedPointPattern[ line ][ col ].setColor( 255, 0, 0, TE_OPAQUE );
+                m_unselectedPointPattern[ line ][ col ].setColor( 0, 255, 0, TE_OPAQUE );
+                m_tempPointPattern[ line ][ col ].setColor( 0, 0, 255, TE_OPAQUE );
+              }
+              else
+              {
+                m_selectedPointPattern[ line ][ col ].setColor( 0, 0, 0, TE_TRANSPARENT  );
+                m_unselectedPointPattern[ line ][ col ].setColor( 0, 0, 0, TE_TRANSPARENT  );
+                m_tempPointPattern[ line ][ col ].setColor( 0, 0, 0, TE_TRANSPARENT  );
+              }
+            }
+          }
         }
 
         TiePointsLocatorDialog::~TiePointsLocatorDialog()
         {
+          // assuring that the keyboard is released from the map displays
+          
           m_mapDisplay1->releaseKeyboard();
           m_mapDisplay2->releaseKeyboard();
+          
+          // delete points draw patterns
+          
+          for( unsigned int line = 0 ; line < TPLDIALOG_P_PATTERN_W ; ++line )
+          {
+            delete[] m_selectedPointPattern[ line ];
+            delete[] m_unselectedPointPattern[ line ];
+            delete[] m_tempPointPattern[ line ];
+          }
+          
+          delete[] m_selectedPointPattern;
+          delete[] m_unselectedPointPattern;
+          delete[] m_tempPointPattern;
+          
+          // detroying the UI
           
           delete m_uiPtr;
         }
@@ -403,6 +441,12 @@ namespace te
           m_uiPtr->m_tiePointsTableWidget->blockSignals( false );
           
           transformationErrorsUpdate();
+          
+          te::gm::Envelope auxEnvelope( *m_mapDisplay1->getExtent() );
+          m_mapDisplay1->setExtent( auxEnvelope );
+          
+          auxEnvelope = (*m_mapDisplay2->getExtent());
+          m_mapDisplay2->setExtent( auxEnvelope );
         }
         
         void TiePointsLocatorDialog::transformationErrorsUpdate()
@@ -494,11 +538,17 @@ namespace te
         
         void TiePointsLocatorDialog::on_mapDisplay1_extentChanged()
         {
+          te::gm::Envelope const* mapDisplayExtentPtr = 
+            m_mapDisplay1->getExtent();
+            
+          m_mapDisplay1->getDraftPixmap()->fill( QColor( 0, 0, 0, 0 ) );
+            
           te::qt::widgets::Canvas canvasInstance( m_mapDisplay1->getDraftPixmap() );
+          canvasInstance.setWindow( mapDisplayExtentPtr->m_llx,
+            mapDisplayExtentPtr->m_lly, mapDisplayExtentPtr->m_urx,
+            mapDisplayExtentPtr->m_ury );
           
           // Drawing the colected points
-          
-          canvasInstance.setPointColor( te::color::RGBAColor(  ) );
           
           const int rowCount = 
             m_uiPtr->m_tiePointsTableWidget->rowCount();
@@ -506,6 +556,7 @@ namespace te
           unsigned int tpID = 0;
           TPContainerT::iterator tiePointsIt;
           te::gm::Point auxPoint;
+          te::gm::Coord2D auxCoord2D;
             
           for( int row = 0 ; row < rowCount ; ++row )
           {
@@ -513,27 +564,82 @@ namespace te
             
             if( itemPtr->isSelected() )
             {
-              canvasInstance.setPointColor( te::color::RGBAColor( 255, 0, 0, TE_OPAQUE ) );
-              
-              tpID = itemPtr->text().toUInt();
-              
-              tiePointsIt = m_tiePoints.find( tpID );
-              assert( tiePointsIt != m_tiePoints.end() );
-              
-              auxPoint.setX( tiePointsIt->second.first.x );
-              auxPoint.setY( tiePointsIt->second.first.y );
-              canvasInstance.draw( &auxPoint );
+              canvasInstance.setPointPattern( m_selectedPointPattern, 
+                TPLDIALOG_P_PATTERN_W, TPLDIALOG_P_PATTERN_W );
             }
             else
             {
-              
+              canvasInstance.setPointPattern( m_unselectedPointPattern, 
+                TPLDIALOG_P_PATTERN_W, TPLDIALOG_P_PATTERN_W );
             }
+            
+            tpID = itemPtr->text().toUInt();
+            
+            tiePointsIt = m_tiePoints.find( tpID );
+            assert( tiePointsIt != m_tiePoints.end() );
+            
+            m_inRasterLayer1Ptr->getRaster()->getGrid()->gridToGeo( 
+              tiePointsIt->second.first.x, tiePointsIt->second.first.y,
+              auxCoord2D.x, auxCoord2D.y );
+              
+            auxPoint.setX( auxCoord2D.x );
+            auxPoint.setY( auxCoord2D.y );
+            
+            canvasInstance.draw( &auxPoint );            
           }          
         }
 
         void TiePointsLocatorDialog::on_mapDisplay2_extentChanged()
         {
-
+          te::gm::Envelope const* mapDisplayExtentPtr = 
+            m_mapDisplay2->getExtent();
+            
+          m_mapDisplay2->getDraftPixmap()->fill( QColor( 0, 0, 0, 0 ) );
+            
+          te::qt::widgets::Canvas canvasInstance( m_mapDisplay2->getDraftPixmap() );
+          canvasInstance.setWindow( mapDisplayExtentPtr->m_llx,
+            mapDisplayExtentPtr->m_lly, mapDisplayExtentPtr->m_urx,
+            mapDisplayExtentPtr->m_ury );          
+          
+          // Drawing the colected points
+          
+          const int rowCount = 
+            m_uiPtr->m_tiePointsTableWidget->rowCount();
+          QTableWidgetItem* itemPtr = 0;
+          unsigned int tpID = 0;
+          TPContainerT::iterator tiePointsIt;
+          te::gm::Point auxPoint;
+          te::gm::Coord2D auxCoord2D;
+            
+          for( int row = 0 ; row < rowCount ; ++row )
+          {
+            itemPtr = m_uiPtr->m_tiePointsTableWidget->item( row, 0 );
+            
+            if( itemPtr->isSelected() )
+            {
+              canvasInstance.setPointPattern( m_selectedPointPattern, 
+                TPLDIALOG_P_PATTERN_W, TPLDIALOG_P_PATTERN_W );
+            }
+            else
+            {
+              canvasInstance.setPointPattern( m_unselectedPointPattern, 
+                TPLDIALOG_P_PATTERN_W, TPLDIALOG_P_PATTERN_W );
+            }
+            
+            tpID = itemPtr->text().toUInt();
+            
+            tiePointsIt = m_tiePoints.find( tpID );
+            assert( tiePointsIt != m_tiePoints.end() );
+            
+            m_inRasterLayer2Ptr->getRaster()->getGrid()->gridToGeo( 
+              tiePointsIt->second.second.x, tiePointsIt->second.second.y,
+              auxCoord2D.x, auxCoord2D.y );
+              
+            auxPoint.setX( auxCoord2D.x );
+            auxPoint.setY( auxCoord2D.y );
+            
+            canvasInstance.draw( &auxPoint );            
+          }    
         }
 
       } // namespace rp
