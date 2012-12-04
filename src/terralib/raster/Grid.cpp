@@ -279,18 +279,32 @@ void te::rst::Grid::computeExtent() const
   return;
 }
 
-te::gm::Coord2D te::rst::Grid::gridToGeo(int col, int row) const
+void te::rst::Grid::gridToGeo( const double& col, const double& row,
+  double& x, double& y ) const
 {
-  return te::gm::Coord2D(m_geoT[0] + col * m_geoT[1] + row * m_geoT[2],
-                         m_geoT[3] + col * m_geoT[4] + row * m_geoT[5]);
+  x = m_geoT[0] + col * m_geoT[1] + row * m_geoT[2];
+  y = m_geoT[3] + col * m_geoT[4] + row * m_geoT[5];
+}
+
+te::gm::Coord2D te::rst::Grid::gridToGeo( const double& col, const double& row ) const
+{
+  te::gm::Coord2D auxCoord2D;
+  gridToGeo( col, row, auxCoord2D.x, auxCoord2D.y );
+  return auxCoord2D;
+}
+
+void te::rst::Grid::geoToGrid(const double& x, const double& y, double& col, 
+  double& line ) const
+{
+  col = (m_geoT[5] * (x - m_geoT[0]) - m_geoT[2] * (y - m_geoT[3])) / (m_geoT[1] * m_geoT[5] - m_geoT[2] * m_geoT[4]);
+  line = (y - m_geoT[3] - col * m_geoT[4]) / m_geoT[5];
 }
 
 te::gm::Coord2D te::rst::Grid::geoToGrid(double x, double y) const
 {
-  double c = (m_geoT[5] * (x - m_geoT[0]) - m_geoT[2] * (y - m_geoT[3])) / (m_geoT[1] * m_geoT[5] - m_geoT[2] * m_geoT[4]);
-  double l = (y - m_geoT[3] - c * m_geoT[4]) / m_geoT[5];
-
-  return te::gm::Coord2D(c,l);
+  te::gm::Coord2D auxCoord2D;
+  geoToGrid( x, y, auxCoord2D.x, auxCoord2D.y );  
+  return auxCoord2D;
 }
 
 bool te::rst::Grid::operator==(const Grid& rhs) const

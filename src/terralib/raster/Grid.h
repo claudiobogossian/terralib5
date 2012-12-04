@@ -209,7 +209,18 @@ namespace te
 
         /*! \brief Computes the geographic extension of the grid. */
         void computeExtent() const;
+        
+        /*!
+          \brief Get the spatial location of a grid point.
 
+          \param col The grid point column.
+          \param row The grid point row.
+          \param x The spatial location (X axis).
+          \param y The spatial location (Y axis).
+        */
+        void gridToGeo( const double& col, const double& row,
+          double& x, double& y ) const;
+        
         /*!
           \brief Returns the spatial location of a grid point.
 
@@ -218,10 +229,21 @@ namespace te
 
           \return A spatial location.
         */
-        te::gm::Coord2D gridToGeo(int col, int row) const;
+        te::gm::Coord2D gridToGeo( const double& col, const double& row) const;
+        
+        /*!
+          \brief Get the grid point associated to a spatial location.
+
+          \param x The spatial x-coordiante.
+          \param y The spatial y-coordiante.
+          \param col The grid point column.
+          \param row The grid point row.
+        */
+        void geoToGrid(const double& x, const double& y,
+          double& col, double& line ) const;
 
         /*!
-          \brief Returns the grid point associated to a grid location.
+          \brief Returns the grid point associated to a spatial location.
 
           \param x The spatial x-coordiante.
           \param y The spatial y-coordiante.
