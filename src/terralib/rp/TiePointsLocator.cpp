@@ -1197,6 +1197,17 @@ namespace te
             == 1, "Invalid number of raster 1 bands" );
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
             == 1, "Invalid number of raster 2 bands" );
+            
+          // Defining the number of tie points
+          
+          if( m_inputParameters.m_maxTiePoints == 0 )
+          {
+            m_inputParameters.m_maxTiePoints = 
+              ( m_inputParameters.m_raster1TargetAreaWidth *
+              m_inputParameters.m_raster1TargetAreaWidth ) /
+              ( 50 * m_inputParameters.m_correlationWindowWidth *
+              m_inputParameters.m_correlationWindowWidth );
+          }
           
           break;
         }          
@@ -1207,6 +1218,20 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
             == 1, "Invalid number of raster 2 bands" );
             
+          // Defining the number of tie points
+          
+          if( m_inputParameters.m_maxTiePoints == 0 )
+          {
+            m_inputParameters.m_maxTiePoints = 
+              getSurfFilterSize( m_inputParameters.m_octavesNumber - 1, 
+                 m_inputParameters.m_scalesNumber - 1 );
+            m_inputParameters.m_maxTiePoints = 
+              ( m_inputParameters.m_raster1TargetAreaWidth *
+              m_inputParameters.m_raster1TargetAreaWidth ) /            
+              ( 50 * m_inputParameters.m_maxTiePoints *
+              m_inputParameters.m_maxTiePoints );
+          }            
+            
           break;
         }
         default :
@@ -1214,7 +1239,15 @@ namespace te
           TERP_LOG_AND_RETURN_FALSE( "Invalid strategy" );
           break;
         }
-      };      
+      };
+      
+      // Checking the number of tie-points
+      
+      if( m_inputParameters.m_maxTiePoints == 0 )
+      {
+        
+        
+      }
       
       // Checking other parameters
       

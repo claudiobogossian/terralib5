@@ -105,7 +105,7 @@ namespace te
             
             bool m_enableProgress; //!< Enable/Disable the progress interface (default:false).
             
-            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=0).
+            unsigned int m_maxTiePoints; //!< The maximum number of tie-points to generate (default=0 - Automatically found).
             
             double m_pixelSizeXRelation; //!< The pixel resolution relation m_pixelSizeXRelation = raster1_pixel_res_x / raster2_pixel_res_x (default=1.0).
             

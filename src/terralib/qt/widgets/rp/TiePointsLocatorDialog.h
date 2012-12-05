@@ -123,9 +123,12 @@ namespace te
             /*! \brief Destructor. */
             ~TiePointsLocatorDialog();
             
-            void tiePointsTableUpdate();
-            
-            void transformationErrorsUpdate();
+            /*! 
+              \brief Get the current acquired tie-points. 
+              \param tiePoints The current acquired tie-points.
+            */
+            void getTiePoints( std::vector< te::gm::GTParameters::TiePoint >&
+              tiePoints ) const;
             
           protected slots:
 
@@ -144,7 +147,7 @@ namespace te
             void on_mapDisplay1_extentChanged();
             void on_mapDisplay2_extentChanged();
 
-          private:
+          protected:
             
             typedef std::map< unsigned int, te::gm::GTParameters::TiePoint >  TPContainerT; //!< Tie-pints container type definition.
             te::color::RGBAColor** m_selectedPointPattern;
@@ -167,6 +170,18 @@ namespace te
             TiePointsLocatorDialogMDEventFilter* m_mDEventFilter2; //!< Map display 2 event filter.
             TPContainerT m_tiePoints; //!< Internal tie-points container.
             unsigned int m_lastInsertedTPID; //!< A ID counter for new tie pointes inserted into m_tiePoints;
+            
+            /*! \brief Uptate the tie-points table widget. */
+            void tiePointsTableUpdate();
+            
+            /*! \brief Uptate the current transformation information widgets. */
+            void transformationInfoUpdate();
+            
+            /*! \brief Refresh map display 1. */
+            void refreshMapDisplay1();
+            
+            /*! \brief Refresh map display 2. */
+            void refreshMapDisplay2();            
         }; 
         
 

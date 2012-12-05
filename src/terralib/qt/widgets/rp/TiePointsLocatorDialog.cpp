@@ -34,6 +34,7 @@
 #include "../../../geometry/GTFactory.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Envelope.h"
+#include "../../../rp/TiePointsLocator.h"
 
 #include <ui_TiePointsLocatorForm.h>
 
@@ -238,6 +239,22 @@ namespace te
           
           delete m_uiPtr;
         }
+        
+        void TiePointsLocatorDialog::getTiePoints( std::vector< te::gm::GTParameters::TiePoint >&
+          tiePoints ) const
+        {
+          tiePoints.clear();
+          
+          TPContainerT::const_iterator itB = m_tiePoints.begin();
+          const TPContainerT::const_iterator itE = m_tiePoints.end();
+          tiePoints.reserve( m_tiePoints.size() );
+          
+          while( itB != itE )
+          {
+            tiePoints.push_back( itB->second );
+            ++itB;
+          }
+        }
 
         void TiePointsLocatorDialog::on_okPushButton_clicked()
         {
@@ -246,6 +263,85 @@ namespace te
         
         void TiePointsLocatorDialog::on_autoAcquireTiePointsPushButton_clicked()
         {
+          // creating the algorithm parameters
+          
+          te::rp::TiePointsLocator::InputParameters inputParams = 
+            m_advDialogPtr->m_inputParameters;
+            
+          inputParams.m_inRaster1Ptr = m_inRasterLayer1Ptr->getRaster();
+          inputParams.m_inRaster2Ptr = m_inRasterLayer2Ptr->getRaster();
+            
+          te::gm::Envelope auxEnvelope1( *m_mapDisplay1->getExtent() );
+          double r1LLX = 0;
+          double r1LLY = 0;
+          double r1URX = 0;
+          double r1URY = 0;
+          inputParams.m_inRaster1Ptr->getGrid()->geoToGrid(
+            auxEnvelope1.m_llx, auxEnvelope1.m_lly, r1LLX, r1LLY );
+          inputParams.m_inRaster1Ptr->getGrid()->geoToGrid(
+            auxEnvelope1.m_urx, auxEnvelope1.m_ury, r1URX, r1URY );
+          inputParams.m_raster1TargetAreaColStart = (unsigned int)std::max( 0.0,
+            r1LLX );
+          inputParams.m_raster1TargetAreaLineStart = (unsigned int)std::max( 0.0,
+            r1URY );
+          inputParams.m_raster1TargetAreaWidth = ( (unsigned int)std::min(
+            (double)inputParams.m_inRaster1Ptr->getNumberOfColumns(),
+            r1URX ) ) - inputParams.m_raster1TargetAreaColStart + 1;
+          inputParams.m_raster1TargetAreaHeight = ( (unsigned int)std::min(
+            (double)inputParams.m_inRaster1Ptr->getNumberOfRows(),
+            r1LLY ) ) - inputParams.m_raster1TargetAreaColStart + 1;
+            
+          te::gm::Envelope auxEnvelope2( *m_mapDisplay2->getExtent() );
+          double r2LLX = 0;
+          double r2LLY = 0;
+          double r2URX = 0;
+          double r2URY = 0;
+          inputParams.m_inRaster2Ptr->getGrid()->geoToGrid(
+            auxEnvelope2.m_llx, auxEnvelope2.m_lly, r2LLX, r2LLY );
+          inputParams.m_inRaster2Ptr->getGrid()->geoToGrid(
+            auxEnvelope2.m_urx, auxEnvelope2.m_ury, r2URX, r2URY );
+          inputParams.m_raster2TargetAreaColStart = (unsigned int)std::max( 0.0,
+            r2LLX );
+          inputParams.m_raster2TargetAreaLineStart = (unsigned int)std::max( 0.0,
+            r2URY );
+          inputParams.m_raster2TargetAreaWidth = ( (unsigned int)std::min(
+            (double)inputParams.m_inRaster2Ptr->getNumberOfColumns(),
+            r2URX ) ) - inputParams.m_raster2TargetAreaColStart + 1;
+          inputParams.m_raster2TargetAreaHeight = ( (unsigned int)std::min(
+            (double)inputParams.m_inRaster2Ptr->getNumberOfRows(),
+            r2LLY ) ) - inputParams.m_raster2TargetAreaColStart + 1;
+            
+          inputParams.m_inRaster1Bands.push_back( 
+            m_uiPtr->m_referenceBand1ComboBox->currentText().toUInt() );
+          inputParams.m_inRaster2Bands.push_back( 
+            m_uiPtr->m_referenceBand2ComboBox->currentText().toUInt() );
+            
+          te::rp::TiePointsLocator::OutputParameters outputParams;
+          
+          // Executing the algorithm
+          
+          te::rp::TiePointsLocator algorithmInstance;          
+          
+          if( algorithmInstance.initialize( inputParams ) )
+          {
+            if( algorithmInstance.execute( outputParams ) )
+            {
+              const unsigned int tpsNmb = (unsigned int)
+                outputParams.m_tiePoints.size();
+                
+              if( tpsNmb )
+              {
+                for( unsigned int tpIdx = 0 ; tpIdx < tpsNmb ; ++tpIdx )
+                {
+                  ++m_lastInsertedTPID;
+                  m_tiePoints[ m_lastInsertedTPID ] = 
+                    outputParams.m_tiePoints[ tpIdx ];
+                }
+                
+                tiePointsTableUpdate();
+              }
+            }
+          }
         }
         
         void TiePointsLocatorDialog::on_selectAllPushButton_clicked()
@@ -316,6 +412,8 @@ namespace te
         {
           m_lastSelectedTiePoint.first = m_lastTrackedTiePoint.first;
           m_lastSelectedTiePointHasFirstOk = true;
+          
+          refreshMapDisplay1();
         }    
         
         void TiePointsLocatorDialog::on_mapDisplay2_keyPressed( int key )
@@ -440,16 +538,12 @@ namespace te
           
           m_uiPtr->m_tiePointsTableWidget->blockSignals( false );
           
-          transformationErrorsUpdate();
-          
-          te::gm::Envelope auxEnvelope( *m_mapDisplay1->getExtent() );
-          m_mapDisplay1->setExtent( auxEnvelope );
-          
-          auxEnvelope = (*m_mapDisplay2->getExtent());
-          m_mapDisplay2->setExtent( auxEnvelope );
+          transformationInfoUpdate();
+          refreshMapDisplay1();
+          refreshMapDisplay2();
         }
         
-        void TiePointsLocatorDialog::transformationErrorsUpdate()
+        void TiePointsLocatorDialog::transformationInfoUpdate()
         {
           // creating the transformations parameters
           
@@ -531,9 +625,23 @@ namespace te
             m_uiPtr->m_transformationRMSEunselectedLineEdit->setText("N/A");     
         }
         
+        void TiePointsLocatorDialog::refreshMapDisplay1()
+        {
+          te::gm::Envelope auxEnvelope( *m_mapDisplay1->getExtent() );
+          m_mapDisplay1->setExtent( auxEnvelope );
+        }
+        
+        void TiePointsLocatorDialog::refreshMapDisplay2()
+        {
+          te::gm::Envelope auxEnvelope( *m_mapDisplay2->getExtent() );
+          m_mapDisplay2->setExtent( auxEnvelope );
+        }
+        
         void TiePointsLocatorDialog::on_tiePointsTableWidget_itemSelectionChanged()
         {
-          transformationErrorsUpdate();
+          transformationInfoUpdate();
+          refreshMapDisplay1();
+          refreshMapDisplay2();
         }
         
         void TiePointsLocatorDialog::on_mapDisplay1_extentChanged()
@@ -586,7 +694,24 @@ namespace te
             auxPoint.setY( auxCoord2D.y );
             
             canvasInstance.draw( &auxPoint );            
-          }          
+          }     
+          
+          // Drawing the selected temporary point
+          
+          if( m_lastSelectedTiePointHasFirstOk )
+          {
+            m_inRasterLayer1Ptr->getRaster()->getGrid()->gridToGeo( 
+              m_lastSelectedTiePoint.first.x, m_lastSelectedTiePoint.first.y,
+              auxCoord2D.x, auxCoord2D.y );
+              
+            auxPoint.setX( auxCoord2D.x );
+            auxPoint.setY( auxCoord2D.y );
+          
+            canvasInstance.setPointPattern( m_tempPointPattern, 
+              TPLDIALOG_P_PATTERN_W, TPLDIALOG_P_PATTERN_W );            
+            
+            canvasInstance.draw( &auxPoint );  
+          }
         }
 
         void TiePointsLocatorDialog::on_mapDisplay2_extentChanged()
