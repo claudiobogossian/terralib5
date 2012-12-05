@@ -34,10 +34,10 @@
 #include <cassert>
 
 te::se::Style::Style()
-  : m_version(TE_SE_DEFAULT_VERSION),
-    m_name(0),
+  : m_name(0),
     m_description(0),
-    m_semanticTypeIdentifiers(0)
+    m_semanticTypeIdentifiers(0),
+  m_version(TE_SE_DEFAULT_VERSION)
 {
 }
 

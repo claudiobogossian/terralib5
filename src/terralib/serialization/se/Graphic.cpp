@@ -49,8 +49,8 @@ te::se::Graphic* te::serialize::ReadGraphic(te::xml::Reader& reader)
   std::auto_ptr<te::se::Graphic> graphic(new te::se::Graphic);
 
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
-        reader.getElementLocalName() == "Mark" ||
-        reader.getElementLocalName() == "ExternalGraphic")
+        (reader.getElementLocalName() == "Mark" ||
+        reader.getElementLocalName() == "ExternalGraphic"))
     reader.getElementLocalName() == "Mark" ? graphic->add(ReadMark(reader)) : graphic->add(ReadExternalGraphic(reader));
 
   // Opacity
