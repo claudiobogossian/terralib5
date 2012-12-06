@@ -48,7 +48,7 @@
 #include <cassert>
 #include <algorithm>
 
-te::qt::widgets::Canvas::Canvas(int w, int h)
+te::qt::widgets::Canvas::Canvas(int w, int h, int devType)
   : m_isDeviceOwner(true),
     m_bgColor(Qt::transparent),
     m_erase(false),
@@ -78,9 +78,19 @@ te::qt::widgets::Canvas::Canvas(int w, int h)
     m_txtWordSpacing(1),
     m_txtLineSpacing(1)
 {
-  QPixmap* pixmap = new QPixmap(w, h);
-  pixmap->fill(m_bgColor);
-  m_painter.begin(pixmap);
+  if(devType == QInternal::Pixmap)
+  {
+    QPixmap* p = new QPixmap(w, h);
+    p->fill(m_bgColor);
+    m_painter.begin(p);
+  }
+  else
+  {
+    //QImage* i = new QImage(w, h, QImage::Format_ARGB32);
+    QImage* i = new QImage(w, h, QImage::Format_ARGB32_Premultiplied);
+    i->fill(m_bgColor);
+    m_painter.begin(i);
+  }
 
   m_ptPen.setColor(m_ptColor);
 }
@@ -211,16 +221,29 @@ te::color::RGBAColor te::qt::widgets::Canvas::getBackgroundColor() const
 
 void te::qt::widgets::Canvas::clear()
 {
-  if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
+  int devType = m_painter.device()->devType();
+
+  if(devType != QInternal::Image && devType != QInternal::Pixmap)
     return;
 
-  QPixmap* pix = getPixmap();
-  if(pix)
+  QPaintDevice* device = m_painter.device();
+
+  if(device)
   {
     m_painter.end();
-    pix->fill(m_bgColor);
-    m_painter.begin(pix);
+    if(devType == QInternal::Image)
+      static_cast<QImage*>(device)->fill(m_bgColor);
+    else
+      static_cast<QPixmap*>(device)->fill(m_bgColor);
+    m_painter.begin(device);
   }
+  //QPixmap* pix = getPixmap();
+  //if(pix)
+  //{
+  //  m_painter.end();
+  //  pix->fill(m_bgColor);
+  //  m_painter.begin(pix);
+  //}
   m_painter.setMatrix(m_matrix);
 
   m_ptPen.setColor(m_ptColor);
@@ -231,21 +254,33 @@ void te::qt::widgets::Canvas::clear()
 
 void te::qt::widgets::Canvas::resize(int w, int h)
 {
-  if(m_painter.device()->devType() != 2)  // is the device different of a pixmap?
+  int devType = m_painter.device()->devType();
+
+  if(devType != QInternal::Image && devType != QInternal::Pixmap)
     return;
 
   if(!m_isDeviceOwner)
     return;
 
-  QPixmap* pixmap = static_cast<QPixmap*>(m_painter.device());
-  m_painter.end();
-
-  delete pixmap;
-
-  pixmap = new QPixmap(w, h);
-  pixmap->fill(m_bgColor);
-
-  m_painter.begin(pixmap);
+  if(devType == QInternal :: Pixmap)
+  {
+    QPixmap* pixmap = static_cast<QPixmap*>(m_painter.device());
+    m_painter.end();
+    delete pixmap;
+    pixmap = new QPixmap(w, h);
+    pixmap->fill(m_bgColor);
+    m_painter.begin(pixmap);
+  }
+  else
+  {
+    QImage* image = static_cast<QImage*>(m_painter.device());
+    m_painter.end();
+    delete image;
+    //image = new QImage(w, h, QImage::Format_ARGB32);
+    image = new QImage(w, h, QImage::Format_ARGB32_Premultiplied);
+    image->fill(m_bgColor);
+    m_painter.begin(image);
+  }
 }
 
 int te::qt::widgets::Canvas::getWidth() const
@@ -826,7 +861,9 @@ void te::qt::widgets::Canvas::draw(const te::gm::GeometryCollection* g)
 
 void te::qt::widgets::Canvas::save(const char* fileName, te::map::ImageType t, int quality, int /*fg*/) const
 {
-  if(m_painter.device()->devType() != QInternal::Pixmap)
+  int devType = m_painter.device()->devType();
+
+  if(devType != QInternal::Image && devType != QInternal::Pixmap)
     return;
 
   static_cast<QPixmap*>(m_painter.device())->save(fileName, GetFormat(t), quality);
@@ -834,7 +871,9 @@ void te::qt::widgets::Canvas::save(const char* fileName, te::map::ImageType t, i
 
 char* te::qt::widgets::Canvas::getImage(te::map::ImageType t, std::size_t& size, int quality, int /*fg*/) const
 {
-  if(m_painter.device()->devType() != QInternal::Pixmap)
+  int devType = m_painter.device()->devType();
+
+  if(devType != QInternal::Image && devType != QInternal::Pixmap)
     return 0;
 
   QByteArray bytes;
@@ -884,19 +923,22 @@ char* te::qt::widgets::Canvas::getImage(te::map::ImageType t, std::size_t& size,
 
 te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int y, const int w, const int h) const
 {
-  if(m_painter.device()->devType() != QInternal::Pixmap)
+  int devType = m_painter.device()->devType();
+
+  if(devType != QInternal::Image && devType != QInternal::Pixmap)
     return 0;
 
   te::color::RGBAColor** colors = 0;
-
-  QPixmap* pixmap = static_cast<QPixmap*>(m_painter.device());
+  QImage img;
+  if(devType == QInternal::Pixmap)
+    img = static_cast<QPixmap*>(m_painter.device())->toImage();
+  else
+    img = *(static_cast<QImage*>(m_painter.device()));
 
   if(x == 0 && y == 0 && w == 0 && y == 0)
   {
-    QImage img = pixmap->toImage();
-
-    int width = pixmap->width();
-    int height = pixmap->height();
+    int width = img.width();
+    int height = img.height();
 
     for(int i = 0; i < height; ++i)
     {
@@ -915,9 +957,7 @@ te::color::RGBAColor** te::qt::widgets::Canvas::getImage(const int x, const int 
   }
   else
   {
-    QPixmap pix = pixmap->copy(x, y, w, h);
-
-    QImage img = pix.toImage();
+    img = img.copy(x, y, w, h);
 
     for(int i = 0; i < h; ++i)
     {
@@ -1970,6 +2010,19 @@ QPixmap* te::qt::widgets::Canvas::getPixmap() const
     return static_cast<QPixmap*>(m_painter.device());
   else
     return 0;
+}
+
+QImage* te::qt::widgets::Canvas::getImage() const
+{
+  if(m_painter.device()->devType() == QInternal::Image)
+    return static_cast<QImage*>(m_painter.device());
+  else
+    return 0;
+}
+
+QPaintDevice* te::qt::widgets::Canvas::getDevice() const
+{
+  return m_painter.device();
 }
 
 void te::qt::widgets::Canvas::setDevice(QPaintDevice* device, bool takeOwnerShip)

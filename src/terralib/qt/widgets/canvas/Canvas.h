@@ -63,8 +63,9 @@ namespace te
 
             \param w The internal pixmap width in pixels.
             \param h The internal pixmap height in pixels.
+            \param devType The internal device. It can be Pixmap or Image.
           */
-          Canvas(int w, int h);
+          Canvas(int w, int h, int devType = QInternal::Pixmap);
 
           /*!
             \brief It initializes a new Canvas associated with the given paint device.
@@ -346,13 +347,35 @@ namespace te
           /*!
             \brief It returns the internal pixmap used to draw geographical objects.
 
-            \return The internal pixmap used to draw geographical objects. Don't delete it!
+            \return The internal pixmap used to draw geographical objects. Don't delete it! Null is returned if device is not a pixmap.
 
             \warning Qt Canvas extended method.
 
             \note You can not delete this pointer.
            */
           QPixmap* getPixmap() const; 
+
+          /*!
+            \brief It returns the internal image used to draw geographical objects.
+
+            \return The internal image used to draw geographical objects. Don't delete it! Null is returned if device is not a image.
+
+            \warning Qt Canvas extended method.
+
+            \note You can not delete this pointer.
+           */
+          QImage* getImage() const; 
+
+          /*!
+            \brief It returns the internal device used to draw geographical objects.
+
+            \return The internal device used to draw geographical objects. Don't delete it!
+
+            \warning Qt Canvas extended method.
+
+            \note You can not delete this pointer.
+           */
+          QPaintDevice* getDevice() const; 
 
           /*!
             \brief It sets new device as QPrinter.

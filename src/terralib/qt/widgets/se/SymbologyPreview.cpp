@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/StylePreview.cpp
+  \file terralib/qt/widgets/se/SymbologyPreview.cpp
 
-  \brief Static methods used to generate preview of Symbology Enconding style elements.
+  \brief Static methods used to generate preview of Symbology elements.
 */
 
 // TerraLib
@@ -28,13 +28,13 @@
 #include "../../../se/Rule.h"
 #include "../../../se/Symbolizer.h"
 #include "../canvas/Canvas.h"
-#include "StylePreview.h"
+#include "SymbologyPreview.h"
 #include "Symbol.h"
 
 // STL
 #include <cassert>
 
-QPixmap te::qt::widgets::StylePreview::build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size)
 {
   assert(symb);
   assert(geom);
@@ -55,7 +55,7 @@ QPixmap te::qt::widgets::StylePreview::build(te::se::Symbolizer* symb, te::gm::G
   return *canvas.getPixmap();
 }
 
-QPixmap te::qt::widgets::StylePreview::build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size)
 {
   QPixmap result(size);
   result.fill(Qt::transparent);
@@ -71,14 +71,14 @@ QPixmap te::qt::widgets::StylePreview::build(const std::vector<te::se::Symbolize
   return result;
 }
 
-QPixmap te::qt::widgets::StylePreview::build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size)
 {
   assert(rule);
 
   return build(rule->getSymbolizers(), geom, size);
 }
 
-QPixmap te::qt::widgets::StylePreview::build(te::qt::widgets::Symbol* symbol, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(te::qt::widgets::Symbol* symbol, te::gm::Geometry* geom, const QSize& size)
 {
   assert(symbol);
 

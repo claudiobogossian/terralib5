@@ -263,10 +263,10 @@ const te::gm::Envelope* te::rst::Grid::getExtent() const
 
 void te::rst::Grid::computeExtent() const
 {
-  te::gm::Coord2D ll = gridToGeo(0,m_nRows-1);
-  te::gm::Coord2D lr = gridToGeo(m_nCols-1,m_nRows-1);
-  te::gm::Coord2D ur = gridToGeo(m_nCols-1,0);
-  te::gm::Coord2D ul = gridToGeo(0,0);
+  te::gm::Coord2D ll = gridToGeo(0, m_nRows - 1);
+  te::gm::Coord2D lr = gridToGeo(m_nCols - 1, m_nRows - 1);
+  te::gm::Coord2D ur = gridToGeo(m_nCols - 1, 0);
+  te::gm::Coord2D ul = gridToGeo(0, 0);
 
   if(!m_extent)
     m_extent = new te::gm::Envelope;
@@ -279,32 +279,16 @@ void te::rst::Grid::computeExtent() const
   return;
 }
 
-void te::rst::Grid::gridToGeo( const double& col, const double& row,
-  double& x, double& y ) const
+void te::rst::Grid::gridToGeo(const double& col, const double& row, double& x, double& y) const
 {
   x = m_geoT[0] + col * m_geoT[1] + row * m_geoT[2];
   y = m_geoT[3] + col * m_geoT[4] + row * m_geoT[5];
 }
 
-te::gm::Coord2D te::rst::Grid::gridToGeo( const double& col, const double& row ) const
-{
-  te::gm::Coord2D auxCoord2D;
-  gridToGeo( col, row, auxCoord2D.x, auxCoord2D.y );
-  return auxCoord2D;
-}
-
-void te::rst::Grid::geoToGrid(const double& x, const double& y, double& col, 
-  double& line ) const
+void te::rst::Grid::geoToGrid(const double& x, const double& y, double& col, double& row) const
 {
   col = (m_geoT[5] * (x - m_geoT[0]) - m_geoT[2] * (y - m_geoT[3])) / (m_geoT[1] * m_geoT[5] - m_geoT[2] * m_geoT[4]);
-  line = (y - m_geoT[3] - col * m_geoT[4]) / m_geoT[5];
-}
-
-te::gm::Coord2D te::rst::Grid::geoToGrid(double x, double y) const
-{
-  te::gm::Coord2D auxCoord2D;
-  geoToGrid( x, y, auxCoord2D.x, auxCoord2D.y );  
-  return auxCoord2D;
+  row = (y - m_geoT[3] - col * m_geoT[4]) / m_geoT[5];
 }
 
 bool te::rst::Grid::operator==(const Grid& rhs) const

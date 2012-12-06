@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/StylePreview.h
+  \file terralib/qt/widgets/se/SymbologyPreview.h
 
-  \brief Static methods used to generate preview of Symbology Enconding style elements.
+  \brief Static methods used to generate preview of Symbology elements.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_STYLEPREVIEW_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_STYLEPREVIEW_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYPREVIEW_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYPREVIEW_H
 
 // TerraLib
 #include "../Config.h"
@@ -56,7 +56,7 @@ namespace te
 // Forward declarations
       class Symbol;
 
-      namespace StylePreview
+      namespace SymbologyPreview
       {
 
         /*!
@@ -103,9 +103,9 @@ namespace te
         */
         TEQTWIDGETSEXPORT QPixmap build(Symbol* symbol, te::gm::Geometry* geom, const QSize& size);
 
-      } // end namespace StylePreview
+      } // end namespace SymbologyPreview
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_STYLEPREVIEW_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYPREVIEW_H

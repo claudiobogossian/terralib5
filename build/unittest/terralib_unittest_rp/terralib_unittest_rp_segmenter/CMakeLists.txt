@@ -30,7 +30,7 @@ set (
 
 # Select the source and header files
 set(SRCS ${SRCDIR}/TsSegmenter.cpp ${SRCDIR}/TsSegmenterMain.cpp)
-set(HDRS ${SRCDIR}/Config.h ${SRCDIR}/LoadModules.h ${SRCDIR}/TsSegmenter.h)
+set(HDRS ${SRCDIR}/Config.h ${SRCDIR}/Loadmodules.h ${SRCDIR}/TsSegmenter.h)
 
 # Select the include directories
 include_directories(
