@@ -29,7 +29,7 @@ class MyWindow : public QWidget
   Q_OBJECT
 
   public:
-  MyWindow(QWidget* parent = 0);
+  MyWindow(int canvasType = QInternal::Pixmap, QWidget* parent = 0);
   ~MyWindow();
 
   void getLayers(te::map::AbstractLayer*, std::vector<te::map::AbstractLayer*>& layers);
@@ -87,6 +87,7 @@ private:
   void generatePNGs(std::vector<MyLayer*>&);
 
 private:
+  int m_canvasType;
   std::set<te::da::DataSource*> m_dataSourceSet;
   te::map::FolderLayer* m_rootFolderLayer;
   te::qt::widgets::LayerExplorerModel* m_layerExplorerModel;

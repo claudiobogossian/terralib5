@@ -72,10 +72,22 @@ int main(int argc, char *argv[])
 //msg += " KBytes";
 //te::common::Logger::logInfo("main", msg.toStdString().c_str());
 
+FILE* fp = fopen("timeDrawing.txt", "a");
+time_t rawtime;
+time(&rawtime);
+struct tm* timeinfo = localtime(&rawtime);
+QString s = asctime(timeinfo);
+s.insert(0, "\n\nSTARTING **************** ");
+s += "\n";
+fwrite(s.toStdString().c_str(), sizeof(char), s.length(), fp);
+fclose(fp);
+
   LoadModules();
 
+  //QApplication::setGraphicsSystem("native");
   QApplication app(argc, argv);
-  MyWindow* myWindow = new MyWindow;
+  MyWindow* myWindow = new MyWindow();
+  //MyWindow* myWindow = new MyWindow(QInternal::Image);
   myWindow->resize(900, 600);
   myWindow->show();
   int ret = app.exec();

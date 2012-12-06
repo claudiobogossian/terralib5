@@ -11,6 +11,7 @@
 #include "PointStyle.h"
 #include "PolygonStyle.h"
 #include "ConfigStyle.h"
+#include "MyLayerRenderer.h"
 
 // TerraLib
 #include <terralib/common.h>
@@ -39,6 +40,7 @@
 #include <QInputDialog>
 #include <QDir>
 #include <QImage>
+#include <QPixmap>
 #include <QCloseEvent>
 #include <QColorDialog>
 #include <QScrollBar>
@@ -49,9 +51,104 @@
 extern unsigned long long lastMemoryMeasured;
 extern unsigned long long getAvailableMemory();
 
-MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
+MyWindow::MyWindow(int canvasType, QWidget* parent) : QWidget(parent),
+  m_canvasType(canvasType),
   m_configStyle(0)
 {
+//{
+//  static unsigned long long oldsize = 0;
+//  FILE* fp;
+//  if(m_canvasType == QInternal::Pixmap)
+//    fp = fopen("C:/lixo/pixmapTeste.txt", "w");
+//  else
+//    fp = fopen("C:/lixo/qimageTeste.txt", "w");
+//  QString s, ss, ssc, sss, msg;
+//
+//  QPaintDevice* p;
+//  if(m_canvasType == QInternal::Pixmap)
+//    p = new QPixmap(1024, 1024);
+//  else
+//    //p = new QImage(1024, 1024, QImage::Format_ARGB32);
+//    p = new QImage(1024, 1024, QImage::Format_ARGB32_Premultiplied);
+//  std::vector<QPaintDevice*> deviceVec;
+//  std::vector<char*> charVec;
+//  try
+//  {
+//    int i = 0;
+//    while(p && p->width() == 1024 && p->height() == 1024)
+//    {
+//      deviceVec.push_back(p);
+//      i++;
+//      if(m_canvasType == QInternal::Pixmap)
+//      {
+//        p = new QPixmap(1024, 1024);
+//        static_cast<QPixmap*>(p)->fill(Qt::yellow);
+//      }
+//      else
+//      {
+//        //p = new QImage(1024, 1024, QImage::Format_ARGB32);
+//        p = new QImage(1024, 1024, QImage::Format_ARGB32_Premultiplied);
+//        static_cast<QImage*>(p)->fill(Qt::yellow);
+//      }
+//      ss.setNum(i);
+//      ssc.setNum(4*i);
+//      sss.setNum(p->depth());
+//      if(m_canvasType == QInternal::Pixmap)
+//        s = ss + " QPixmaps de " + sss + " bits alocados. Consumo de " + ssc + "MBytes\n";
+//      else
+//        s = ss + " QImage de " + sss + " bits alocados Consumo de " + ssc + "MBytes\n";
+//      fwrite(s.toStdString().c_str(), sizeof(char), s.length(), fp);
+//
+//      unsigned long long size = getAvailableMemory();
+//      size /= (1<<20);
+//      msg.setNum((qulonglong)size);
+//      msg.insert(0, "Available Memory Size: ");
+//      msg += " MBytes\n\n";
+//      fwrite(msg.toStdString().c_str(), sizeof(char), msg.length(), fp);
+//      if(oldsize == size)
+//        break;
+//      oldsize = size;
+//    }
+//
+//    char *c = new char[1<<20];
+//    i = 0;
+//    while(c)
+//    {
+//      charVec.push_back(c);
+//      ++i;
+//      ss.setNum(i);
+//      s = "ainda consigo alocar mais 1 MBytes. Total alocado: " + ss + " MBytes\n";;
+//      fwrite(s.toStdString().c_str(), sizeof(char), s.length(), fp);
+//      unsigned long long size = getAvailableMemory();
+//      size /= (1<<20);
+//      msg.setNum((qulonglong)size);
+//      msg.insert(0, "Available Memory Size: ");
+//      msg += " MBytes\n\n";
+//      fwrite(msg.toStdString().c_str(), sizeof(char), msg.length(), fp);
+//      c = new char[1<<20];
+//    }
+//    fclose(fp);
+//  }
+//  catch(std::exception&)
+//  {
+//    std::vector<QPaintDevice*>::iterator dit;
+//    for(dit = deviceVec.begin(); dit != deviceVec.end(); ++dit)
+//      delete *dit;
+//
+//    std::vector<char*>::iterator cit; charVec;
+//    for(cit = charVec.begin(); cit != charVec.end(); ++cit)
+//      delete *cit;
+//    
+//    unsigned long long size = getAvailableMemory();
+//    size /= (1<<20);
+//    msg.setNum((qulonglong)size);
+//    msg.insert(0, "Apos liberar tudo... Available Memory Size: ");
+//    msg += " MBytes\n\n";
+//    fwrite(msg.toStdString().c_str(), sizeof(char), msg.length(), fp);
+//    fclose(fp);
+//  }
+//}
+//
 //te::common::Logger::initialize("MyWindow");
 //QString msg;
 //unsigned long maa;
@@ -64,294 +161,425 @@ MyWindow::MyWindow(QWidget* parent) : QWidget(parent),
 
   setWindowTitle("My Main Window - Display: Root Folder");
 
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
-  std::string dsInfo("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
-  ds->open(dsInfo);
-
-  m_dataSourceSet.insert(ds);
-
-  te::da::DataSourceCatalog* catalog = ds->getCatalog();
-  te::da::DataSourceTransactor* transactor = ds->getTransactor();
-  te::da::DataSourceCatalogLoader* loader = transactor->getCatalogLoader();
-//--------------------------------------------------------------------------------
-// create the root layer
+  te::da::DataSourceCatalog* catalog;
+  te::da::DataSourceTransactor* transactor;
+  te::da::DataSourceCatalogLoader* loader;
+  boost::ptr_vector<std::string> datasets;
+  int size;
+  // create the root layer
   m_rootFolderLayer = new te::map::FolderLayer("Root Folder", "Root Folder");
 
-// create the folders
-  te::map::FolderLayer *brFolderLayer = new te::map::FolderLayer("Brasil", "Brasil", m_rootFolderLayer);
-  te::map::FolderLayer *goFolderLayer = new te::map::FolderLayer("Goias", "Goias", brFolderLayer);
-  te::map::FolderLayer *mgFolderLayer = new te::map::FolderLayer("Minas Gerais", "Minas Gerais", brFolderLayer);
-  te::map::FolderLayer *spFolderLayer = new te::map::FolderLayer("Sao Paulo", "Sao Paulo", brFolderLayer);
-  te::map::FolderLayer *rjFolderLayer = new te::map::FolderLayer("Rio de Janeiro", "Rio de Janeiro", brFolderLayer);
-
-// create the layers
-  boost::ptr_vector<std::string> datasets;
-  loader->getDataSets(datasets);
-  int size = datasets.size();
-  for(int i = 0; i < size; ++i)
+  te::da::DataSource* ds = te::da::DataSourceFactory::make("POSTGIS");
+  std::string dsInfo("PG_HOST=atlas.dpi.inpe.br&PG_PORT=5432&PG_DB_NAME=terralib4&PG_USER=postgres&PG_PASSWORD=sitim110&PG_CONNECT_TIMEOUT=20&PG_MAX_POOL_SIZE=15");
+  try
   {
-    std::string& id = (datasets[i]);
-    if(id.find("public.br_focos") != std::string::npos ||
-      id.find("public.br_munic") != std::string::npos)
+    ds->open(dsInfo);
+
+    m_dataSourceSet.insert(ds);
+
+    catalog = ds->getCatalog();
+    transactor = ds->getTransactor();
+    loader = transactor->getCatalogLoader();
+  //--------------------------------------------------------------------------------
+
+  // create the folders
+    te::map::FolderLayer *brFolderLayer = new te::map::FolderLayer("Brasil", "Brasil", m_rootFolderLayer);
+    te::map::FolderLayer *goFolderLayer = new te::map::FolderLayer("Goias", "Goias", brFolderLayer);
+    te::map::FolderLayer *mgFolderLayer = new te::map::FolderLayer("Minas Gerais", "Minas Gerais", brFolderLayer);
+    te::map::FolderLayer *spFolderLayer = new te::map::FolderLayer("Sao Paulo", "Sao Paulo", brFolderLayer);
+    te::map::FolderLayer *rjFolderLayer = new te::map::FolderLayer("Rio de Janeiro", "Rio de Janeiro", brFolderLayer);
+
+  // create the layers
+    loader->getDataSets(datasets);
+    size = datasets.size();
+    for(int i = 0; i < size; ++i)
     {
-      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
-      if(catalog->getDataSetType(id) == 0)
-        catalog->add(dst);
-      te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-      MyLayer* f = new MyLayer(id, id, brFolderLayer);
-      f->setDataSource(ds);
-      f->setSRID(gp->getSRID());
+      std::string& id = (datasets[i]);
+      if(id.find("public.br_focos") != std::string::npos ||
+        id.find("public.br_munic") != std::string::npos)
+      {
+        te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
+        if(catalog->getDataSetType(id) == 0)
+          catalog->add(dst);
+        te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+        MyLayer* f = new MyLayer(id, id, brFolderLayer);
+        f->setDataSource(ds);
+        f->setSRID(gp->getSRID());
 
+      }
+      else if(id.find("public.rj_") != std::string::npos)
+      {
+        te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
+        if(catalog->getDataSetType(id) == 0)
+          catalog->add(dst);
+        te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+        MyLayer* f = new MyLayer(id, id, rjFolderLayer);
+        f->setDataSource(ds);
+        f->setSRID(gp->getSRID());
+      }
+      else if(id.find("public.mg_") != std::string::npos)
+      {
+        te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
+        if(catalog->getDataSetType(id) == 0)
+          catalog->add(dst);
+        te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+        MyLayer* f = new MyLayer(id, id, mgFolderLayer);
+        f->setDataSource(ds);
+        f->setSRID(gp->getSRID());
+      }
+      else if(id.find("public.goias_") != std::string::npos)
+      {
+        te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
+        if(catalog->getDataSetType(id) == 0)
+          catalog->add(dst);
+        te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+        MyLayer* f = new MyLayer(id, id, goFolderLayer);
+        f->setDataSource(ds);
+        f->setSRID(gp->getSRID());
+      }
+      else if(id.find("public.sp_") != std::string::npos)
+      {
+        te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
+        if(catalog->getDataSetType(id) == 0)
+          catalog->add(dst);
+        te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+        MyLayer* f = new MyLayer(id, id, spFolderLayer);
+        f->setDataSource(ds);
+        f->setSRID(gp->getSRID());
+      }
     }
-    else if(id.find("public.rj_") != std::string::npos)
-    {
-      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
-      if(catalog->getDataSetType(id) == 0)
-        catalog->add(dst);
-      te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-      MyLayer* f = new MyLayer(id, id, rjFolderLayer);
-      f->setDataSource(ds);
-      f->setSRID(gp->getSRID());
-    }
-    else if(id.find("public.mg_") != std::string::npos)
-    {
-      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
-      if(catalog->getDataSetType(id) == 0)
-        catalog->add(dst);
-      te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-      MyLayer* f = new MyLayer(id, id, mgFolderLayer);
-      f->setDataSource(ds);
-      f->setSRID(gp->getSRID());
-    }
-    else if(id.find("public.goias_") != std::string::npos)
-    {
-      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
-      if(catalog->getDataSetType(id) == 0)
-        catalog->add(dst);
-      te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-      MyLayer* f = new MyLayer(id, id, goFolderLayer);
-      f->setDataSource(ds);
-      f->setSRID(gp->getSRID());
-    }
-    else if(id.find("public.sp_") != std::string::npos)
-    {
-      te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
-      if(catalog->getDataSetType(id) == 0)
-        catalog->add(dst);
-      te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-      MyLayer* f = new MyLayer(id, id, spFolderLayer);
-      f->setDataSource(ds);
-      f->setSRID(gp->getSRID());
-    }
-  }
-  delete loader;
-// Create MovingObjects folder
-  te::map::FolderLayer *movingObjectsFolderLayer = new te::map::FolderLayer("MovingObjects", "MovingObjects", m_rootFolderLayer);
+    delete loader;
+    delete transactor;
 
-// Create MovingObjects layer 40 and 41
-  ds = te::da::DataSourceFactory::make("OGR");
-//  ds->open("connection_string=./data/kml/t_40_41.kml");
-  ds->open("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/kml/t_40_41.kml");
-  m_dataSourceSet.insert(ds);
-
-  catalog = ds->getCatalog();
-  transactor = ds->getTransactor();
-  loader = transactor->getCatalogLoader();
-
-//alterar este codigo para pegar todos os layers (por enquanto vou pegar apenas o 40 e o 41)
-  std::string name = "40: locations";
-  te::da::DataSetTypePtr dst(loader->getDataSetType(name, true));
-  dst->setId(2340);  // teste
-  if(catalog->getDataSetType(name) == 0)
-    catalog->add(dst);
-  te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
-  MyLayer* layer = new MyLayer(name, name, movingObjectsFolderLayer);
-  layer->setTemporal(true);
-  layer->setDataSource(ds);
-  layer->setSRID(4291);  // teste
-  //layer->setSRID(gp->getSRID());
-
-  name = "41: locations";
-  dst.reset(loader->getDataSetType(name, true));
-  dst->setId(2341);  // teste
-  if(catalog->getDataSetType(name) == 0)
-    catalog->add(dst);
-  gp = dst->getDefaultGeomProperty();
-  layer = new MyLayer(name, name, movingObjectsFolderLayer);
-  layer->setTemporal(true);
-  layer->setDataSource(ds);
-  layer->setSRID(4291);  // teste
-
-//NOTA: o tempo inicial e o tempo final sao calculados em TimeSlider (loadMovingObjects)
-// este metodo pega todos os layers existentes debaixo da pasta MovingObjects e calcula o tempo inicial e final.
-// Talves o correto seja calcular de acordo com a visibilidade dos layers temporais.
-
-  delete loader;
-  delete transactor;
-
-  //Create TemporalImages Folder
-  te::map::FolderLayer *temporalImagesFolderLayer = new te::map::FolderLayer("TemporalImages", "TemporalImages", m_rootFolderLayer);
-
-// Create TemporalImages layers
-  std::vector<MyLayer*> mylayers;
-  ds = te::da::DataSourceFactory::make("GDAL");
-  std::string path = "URI=";
-  path += TE_DATA_EXAMPLE_LOCALE"/data/rasters";
-  ds->open(path);
-  m_dataSourceSet.insert(ds);
-  catalog = ds->getCatalog();
-  transactor = ds->getTransactor();
-  loader = transactor->getCatalogLoader();
-  datasets.clear();
-  loader->getDataSets(datasets);
-  size = datasets.size();
-  for(int i = 0; i < size; ++i)
-  {
-    std::string& id = (datasets[i]);
-    if(id.find("hidro_") == std::string::npos)
-      continue;
-    te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
-    if(catalog->getDataSetType(id) == 0)
-      catalog->add(dst);
-    MyLayer* layer = new MyLayer(id, id, temporalImagesFolderLayer);
-    layer->setTemporal(true);
-    layer->setDataSource(ds);
-    te::da::DataSet* dataSet = transactor->getDataSet(id);
-    te::rst::Raster* raster = dataSet->getRaster();
-    int srid = raster->getSRID();
-    layer->setSRID(srid);
-    te::gm::Envelope* env = raster->getExtent();
-    layer->setExtent(env);
-    mylayers.push_back(layer);
-//    delete raster; //se deletar isto, parece que perde o Envelope????
-    delete dataSet;
- }
-  //Na verdade estas imagens deveriam ser geradas na projecao de visualizacao (por enquanto fica fixa nesta projecao).
-  generatePNGs(mylayers);
-//NOTA: o tempo inicial e o tempo final sao calculados em TimeSlider (calculateTemporalImageTimes)
-// este metodo pega todos os layers existentes debaixo da pasta TemporalImages e calcula o tempo inicial e final.
-
-  delete loader;
-  delete transactor;
-
-// create the explorer model and set the layer tree
-  m_layerExplorerModel = new te::qt::widgets::LayerExplorerModel(m_rootFolderLayer, 0);
+    // create the explorer model and set the layer tree
+    m_layerExplorerModel = new te::qt::widgets::LayerExplorerModel(m_rootFolderLayer, 0);
   
-// create the explorer view and set its model
-  m_layerExplorer = new te::qt::widgets::LayerExplorer(m_layerExplorerModel);
+    // create the explorer view and set its model
+    m_layerExplorer = new te::qt::widgets::LayerExplorer(m_layerExplorerModel);
 
-  m_layerExplorer->setDragEnabled(true);
-  m_layerExplorer->setAcceptDrops(true);
-  m_layerExplorer->setDropIndicatorShown(true);
+    m_layerExplorer->setDragEnabled(true);
+    m_layerExplorer->setAcceptDrops(true);
+    m_layerExplorer->setDropIndicatorShown(true);
 
-  m_layerExplorer->setMinimumWidth(100);
-  m_layerExplorer->setMaximumWidth(250);
+    m_layerExplorer->setMinimumWidth(100);
+    m_layerExplorer->setMaximumWidth(250);
 
-  QSplitter* splitter = new QSplitter(this);
-  m_display = new MyDisplay(650, 600, m_rootFolderLayer, splitter);
-  m_mapDisplayVec.push_back(m_display);
+    QSplitter* splitter = new QSplitter(this);
+    m_display = new MyDisplay(650, 600, m_rootFolderLayer, m_canvasType, splitter);
+    m_mapDisplayVec.push_back(m_display);
 
-  m_display->setMinimumWidth(300);
-  m_display->setMinimumHeight(200);
-  m_display->setLayerTree(m_rootFolderLayer);
-  m_display->show();
+    m_display->setMinimumWidth(300);
+    m_display->setMinimumHeight(200);
+    m_display->setLayerTree(m_rootFolderLayer);
+    m_display->show();
 
-  //faca conexao para atualizacao de grid operation
-  QObject::connect(m_display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
-  QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), m_display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+    //faca conexao para atualizacao de grid operation
+    QObject::connect(m_display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+    QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), m_display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
 
-  QHBoxLayout *horizontalLayout = new QHBoxLayout;
-  horizontalLayout->addWidget(m_layerExplorer);
-  horizontalLayout->addWidget(splitter);
-  //horizontalLayout->addWidget(m_displayBox);
+    QHBoxLayout *horizontalLayout = new QHBoxLayout;
+    horizontalLayout->addWidget(m_layerExplorer);
+    horizontalLayout->addWidget(splitter);
+    //horizontalLayout->addWidget(m_displayBox);
 
-  setLayout(horizontalLayout);
+    setLayout(horizontalLayout);
 
-  connect(m_layerExplorer, SIGNAL(contextMenuActivated(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuActivated(const QModelIndex&, const QPoint&)));
-  connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChanged(const QModelIndex&)));
-  connect(m_layerExplorerModel, SIGNAL(dragDropEnded(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)), this, SLOT(takeLayerSlot(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)));
+    connect(m_layerExplorer, SIGNAL(contextMenuActivated(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuActivated(const QModelIndex&, const QPoint&)));
+    connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChanged(const QModelIndex&)));
+    connect(m_layerExplorerModel, SIGNAL(dragDropEnded(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)), this, SLOT(takeLayerSlot(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)));
 
-  m_treeMenu = new QMenu(this);
-  m_openNewMapDisplayAction = new QAction("&Open New MapDisplay...", m_treeMenu);
-  m_treeMenu->addAction(m_openNewMapDisplayAction);
-  connect(m_openNewMapDisplayAction, SIGNAL(triggered()), this, SLOT(openNewMapDisplaySlot()));
+    m_treeMenu = new QMenu(this);
+    m_openNewMapDisplayAction = new QAction("&Open New MapDisplay...", m_treeMenu);
+    m_treeMenu->addAction(m_openNewMapDisplayAction);
+    connect(m_openNewMapDisplayAction, SIGNAL(triggered()), this, SLOT(openNewMapDisplaySlot()));
 
-  m_openGridAction = new QAction("Open &Grid...", m_treeMenu);
-  m_treeMenu->addAction(m_openGridAction);
-  connect(m_openGridAction, SIGNAL(triggered()), this, SLOT(openGridSlot()));
+    m_openGridAction = new QAction("Open &Grid...", m_treeMenu);
+    m_treeMenu->addAction(m_openGridAction);
+    connect(m_openGridAction, SIGNAL(triggered()), this, SLOT(openGridSlot()));
 
-  m_changeStatusColorMenu = m_treeMenu->addMenu("Change Color");
-  //m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeStatusColorMenu);
-  //m_changeStatusColorMenu->addAction(m_changeDefaultColorAction);
-  //connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
-  m_changePointedColorAction = new QAction("Pointed Color...", m_changeStatusColorMenu);
-  m_changeStatusColorMenu->addAction(m_changePointedColorAction);
-  connect(m_changePointedColorAction, SIGNAL(triggered()), this, SLOT(changePointedColorSlot()));
-  m_changeQueriedColorAction = new QAction("Queried Color...", m_changeStatusColorMenu);
-  m_changeStatusColorMenu->addAction(m_changeQueriedColorAction);
-  connect(m_changeQueriedColorAction, SIGNAL(triggered()), this, SLOT(changeQueriedColorSlot()));
-  m_changePointedAndQueriedColorAction = new QAction("Pointed And Queried Color...", m_changeStatusColorMenu);
-  m_changeStatusColorMenu->addAction(m_changePointedAndQueriedColorAction);
-  connect(m_changePointedAndQueriedColorAction, SIGNAL(triggered()), this, SLOT(changePointedAndQueriedColorSlot()));
+    m_changeStatusColorMenu = m_treeMenu->addMenu("Change Color");
+    //m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeStatusColorMenu);
+    //m_changeStatusColorMenu->addAction(m_changeDefaultColorAction);
+    //connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
+    m_changePointedColorAction = new QAction("Pointed Color...", m_changeStatusColorMenu);
+    m_changeStatusColorMenu->addAction(m_changePointedColorAction);
+    connect(m_changePointedColorAction, SIGNAL(triggered()), this, SLOT(changePointedColorSlot()));
+    m_changeQueriedColorAction = new QAction("Queried Color...", m_changeStatusColorMenu);
+    m_changeStatusColorMenu->addAction(m_changeQueriedColorAction);
+    connect(m_changeQueriedColorAction, SIGNAL(triggered()), this, SLOT(changeQueriedColorSlot()));
+    m_changePointedAndQueriedColorAction = new QAction("Pointed And Queried Color...", m_changeStatusColorMenu);
+    m_changeStatusColorMenu->addAction(m_changePointedAndQueriedColorAction);
+    connect(m_changePointedAndQueriedColorAction, SIGNAL(triggered()), this, SLOT(changePointedAndQueriedColorSlot()));
 
-  m_changeDefaultStyleMenu = m_treeMenu->addMenu("Change Default Style");
-  m_changePointStyleAction = new QAction("Point Style...", m_changeDefaultStyleMenu);
-  m_changeDefaultStyleMenu->addAction(m_changePointStyleAction);
-  connect(m_changePointStyleAction, SIGNAL(triggered()), this, SLOT(changePointStyleSlot()));
-  m_changeLineStyleAction = new QAction("Line Style...", m_changeDefaultStyleMenu);
-  m_changeDefaultStyleMenu->addAction(m_changeLineStyleAction);
-  connect(m_changeLineStyleAction, SIGNAL(triggered()), this, SLOT(changeLineStyleSlot()));
-  m_changePolygonStyleAction = new QAction("Polygon Style...", m_changeDefaultStyleMenu);
-  m_changeDefaultStyleMenu->addAction(m_changePolygonStyleAction);
-  connect(m_changePolygonStyleAction, SIGNAL(triggered()), this, SLOT(changePolygonStyleSlot()));
+    m_changeDefaultStyleMenu = m_treeMenu->addMenu("Change Default Style");
+    m_changePointStyleAction = new QAction("Point Style...", m_changeDefaultStyleMenu);
+    m_changeDefaultStyleMenu->addAction(m_changePointStyleAction);
+    connect(m_changePointStyleAction, SIGNAL(triggered()), this, SLOT(changePointStyleSlot()));
+    m_changeLineStyleAction = new QAction("Line Style...", m_changeDefaultStyleMenu);
+    m_changeDefaultStyleMenu->addAction(m_changeLineStyleAction);
+    connect(m_changeLineStyleAction, SIGNAL(triggered()), this, SLOT(changeLineStyleSlot()));
+    m_changePolygonStyleAction = new QAction("Polygon Style...", m_changeDefaultStyleMenu);
+    m_changeDefaultStyleMenu->addAction(m_changePolygonStyleAction);
+    connect(m_changePolygonStyleAction, SIGNAL(triggered()), this, SLOT(changePolygonStyleSlot()));
 
-  m_renameAction = new QAction("Re&name...", m_treeMenu);
-  m_treeMenu->addAction(m_renameAction);
-  connect(m_renameAction, SIGNAL(triggered()), this, SLOT(renameSlot()));
+    m_renameAction = new QAction("Re&name...", m_treeMenu);
+    m_treeMenu->addAction(m_renameAction);
+    connect(m_renameAction, SIGNAL(triggered()), this, SLOT(renameSlot()));
 
-  m_addFolderAction = new QAction("&Add Folder...", m_treeMenu);
-  m_treeMenu->addAction(m_addFolderAction);
-  connect(m_addFolderAction, SIGNAL(triggered()), this, SLOT(addFolderSlot()));
+    m_addFolderAction = new QAction("&Add Folder...", m_treeMenu);
+    m_treeMenu->addAction(m_addFolderAction);
+    connect(m_addFolderAction, SIGNAL(triggered()), this, SLOT(addFolderSlot()));
 
-  m_addLayerAction = new QAction("Add &Layer...", m_treeMenu);
-  m_treeMenu->addAction(m_addLayerAction);
-  connect(m_addLayerAction, SIGNAL(triggered()), this, SLOT(addLayerSlot()));
+    m_addLayerAction = new QAction("Add &Layer...", m_treeMenu);
+    m_treeMenu->addAction(m_addLayerAction);
+    connect(m_addLayerAction, SIGNAL(triggered()), this, SLOT(addLayerSlot()));
 
-  m_removeAction = new QAction("&Remove...", m_treeMenu);
-  m_treeMenu->addAction(m_removeAction);
-  connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
+    m_removeAction = new QAction("&Remove...", m_treeMenu);
+    m_treeMenu->addAction(m_removeAction);
+    connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
 
-  m_editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
-  m_treeMenu->addAction(m_editLegendAction);
-  connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
+    m_editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
+    m_treeMenu->addAction(m_editLegendAction);
+    connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
 
-  m_removeLegendAction = new QAction("&Remove Legend...", m_treeMenu);
-  m_treeMenu->addAction(m_removeLegendAction);
-  connect(m_removeLegendAction, SIGNAL(triggered()), this, SLOT(removeLegendSlot()));
+    m_removeLegendAction = new QAction("&Remove Legend...", m_treeMenu);
+    m_treeMenu->addAction(m_removeLegendAction);
+    connect(m_removeLegendAction, SIGNAL(triggered()), this, SLOT(removeLegendSlot()));
 
-  m_removeSelectionMenu = m_treeMenu->addMenu("Remove Selection");
-  m_removeAllPointedAction = new QAction("Pointed...", m_removeSelectionMenu);
-  m_removeSelectionMenu->addAction(m_removeAllPointedAction);
-  connect(m_removeAllPointedAction, SIGNAL(triggered()), this, SLOT(m_removeAllPointedSlot()));
+    m_removeSelectionMenu = m_treeMenu->addMenu("Remove Selection");
+    m_removeAllPointedAction = new QAction("Pointed...", m_removeSelectionMenu);
+    m_removeSelectionMenu->addAction(m_removeAllPointedAction);
+    connect(m_removeAllPointedAction, SIGNAL(triggered()), this, SLOT(m_removeAllPointedSlot()));
 
-  m_removeAllQueriedAction = new QAction("Queried...", m_removeSelectionMenu);
-  m_removeSelectionMenu->addAction(m_removeAllQueriedAction);
-  connect(m_removeAllQueriedAction, SIGNAL(triggered()), this, SLOT(m_removeAllQueriedSlot()));
+    m_removeAllQueriedAction = new QAction("Queried...", m_removeSelectionMenu);
+    m_removeSelectionMenu->addAction(m_removeAllQueriedAction);
+    connect(m_removeAllQueriedAction, SIGNAL(triggered()), this, SLOT(m_removeAllQueriedSlot()));
 
-  m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
-  m_keepOnMemoryAction->setCheckable(true);
-  m_treeMenu->addAction(m_keepOnMemoryAction);
-  connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
+    m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
+    m_keepOnMemoryAction->setCheckable(true);
+    m_treeMenu->addAction(m_keepOnMemoryAction);
+    connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
 
-  m_getAvailableMemoryAction = new QAction("&Get Available Memory", m_treeMenu);
-  m_treeMenu->addAction(m_getAvailableMemoryAction);
-  connect(m_getAvailableMemoryAction, SIGNAL(triggered()), this, SLOT(getAvailableMemorySlot()));
+    m_getAvailableMemoryAction = new QAction("&Get Available Memory", m_treeMenu);
+    m_treeMenu->addAction(m_getAvailableMemoryAction);
+    connect(m_getAvailableMemoryAction, SIGNAL(triggered()), this, SLOT(getAvailableMemorySlot()));
 
-  m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
-  m_treeMenu->addAction(m_plotTemporalDistanceAction);
-  connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
+    m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
+    m_treeMenu->addAction(m_plotTemporalDistanceAction);
+    connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
 
-  setFocusProxy(m_display);
+    setFocusProxy(m_display);
+  }
+  catch(std::exception&)
+  {
+    //// Create MovingObjects folder
+    //te::map::FolderLayer *movingObjectsFolderLayer = new te::map::FolderLayer("MovingObjects", "MovingObjects", m_rootFolderLayer);
+
+    //// Create MovingObjects layer 40 and 41
+    //ds = te::da::DataSourceFactory::make("OGR");
+    ////  ds->open("connection_string=./data/kml/t_40_41.kml");
+    //ds->open("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/kml/t_40_41.kml");
+    //m_dataSourceSet.insert(ds);
+
+    //catalog = ds->getCatalog();
+    //transactor = ds->getTransactor();
+    //loader = transactor->getCatalogLoader();
+
+    ////alterar este codigo para pegar todos os layers (por enquanto vou pegar apenas o 40 e o 41)
+    //std::string name = "40: locations";
+    //te::da::DataSetTypePtr dst(loader->getDataSetType(name, true));
+    //dst->setId(2340);  // teste
+    //if(catalog->getDataSetType(name) == 0)
+    //  catalog->add(dst);
+    //te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
+    //MyLayer* layer = new MyLayer(name, name, movingObjectsFolderLayer);
+    //layer->setTemporal(true);
+    //layer->setDataSource(ds);
+    //layer->setSRID(4291);  // teste
+    ////layer->setSRID(gp->getSRID());
+
+    //name = "41: locations";
+    //dst.reset(loader->getDataSetType(name, true));
+    //dst->setId(2341);  // teste
+    //if(catalog->getDataSetType(name) == 0)
+    //  catalog->add(dst);
+    //gp = dst->getDefaultGeomProperty();
+    //layer = new MyLayer(name, name, movingObjectsFolderLayer);
+    //layer->setTemporal(true);
+    //layer->setDataSource(ds);
+    //layer->setSRID(4291);  // teste
+
+    ////NOTA: o tempo inicial e o tempo final sao calculados em TimeSlider (loadMovingObjects)
+    //// este metodo pega todos os layers existentes debaixo da pasta MovingObjects e calcula o tempo inicial e final.
+    //// Talves o correto seja calcular de acordo com a visibilidade dos layers temporais.
+
+    //delete loader;
+    //delete transactor;
+
+    ////Create TemporalImages Folder
+    //te::map::FolderLayer *temporalImagesFolderLayer = new te::map::FolderLayer("TemporalImages", "TemporalImages", m_rootFolderLayer);
+
+    //// Create TemporalImages layers
+    //std::vector<MyLayer*> mylayers;
+    //ds = te::da::DataSourceFactory::make("GDAL");
+    //std::string path = "URI=";
+    //path += TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    //ds->open(path);
+    //m_dataSourceSet.insert(ds);
+    //catalog = ds->getCatalog();
+    //transactor = ds->getTransactor();
+    //loader = transactor->getCatalogLoader();
+    //datasets.clear();
+    //loader->getDataSets(datasets);
+    //size = datasets.size();
+    //for(int i = 0; i < size; ++i)
+    //{
+    //  std::string& id = (datasets[i]);
+    //  if(id.find("hidro_") == std::string::npos)
+    //    continue;
+    //  te::da::DataSetTypePtr dst(loader->getDataSetType(id, true));
+    //  if(catalog->getDataSetType(id) == 0)
+    //    catalog->add(dst);
+    //  MyLayer* layer = new MyLayer(id, id, temporalImagesFolderLayer);
+    //  layer->setTemporal(true);
+    //  layer->setDataSource(ds);
+    //  te::da::DataSet* dataSet = transactor->getDataSet(id);
+    //  te::rst::Raster* raster = dataSet->getRaster();
+    //  int srid = raster->getSRID();
+    //  layer->setSRID(srid);
+    //  te::gm::Envelope* env = raster->getExtent();
+    //  layer->setExtent(env);
+    //  mylayers.push_back(layer);
+    //  //    delete raster; //se deletar isto, parece que perde o Envelope????
+    //  delete dataSet;
+    //}
+    ////Na verdade estas imagens deveriam ser geradas na projecao de visualizacao (por enquanto fica fixa nesta projecao).
+    //generatePNGs(mylayers);
+    ////NOTA: o tempo inicial e o tempo final sao calculados em TimeSlider (calculateTemporalImageTimes)
+    //// este metodo pega todos os layers existentes debaixo da pasta TemporalImages e calcula o tempo inicial e final.
+
+    //delete loader;
+    //delete transactor;
+
+    // create the explorer model and set the layer tree
+    m_layerExplorerModel = new te::qt::widgets::LayerExplorerModel(m_rootFolderLayer, 0);
+  
+    // create the explorer view and set its model
+    m_layerExplorer = new te::qt::widgets::LayerExplorer(m_layerExplorerModel);
+
+    m_layerExplorer->setDragEnabled(true);
+    m_layerExplorer->setAcceptDrops(true);
+    m_layerExplorer->setDropIndicatorShown(true);
+
+    m_layerExplorer->setMinimumWidth(100);
+    m_layerExplorer->setMaximumWidth(250);
+
+    QSplitter* splitter = new QSplitter(this);
+    m_display = new MyDisplay(650, 600, m_rootFolderLayer, m_canvasType, splitter);
+    m_mapDisplayVec.push_back(m_display);
+
+    m_display->setMinimumWidth(300);
+    m_display->setMinimumHeight(200);
+    m_display->setLayerTree(m_rootFolderLayer);
+    m_display->show();
+
+    //faca conexao para atualizacao de grid operation
+    QObject::connect(m_display, SIGNAL(selectionChanged(te::map::DataGridOperation*)), this, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+    QObject::connect(this, SIGNAL(selectionChanged(te::map::DataGridOperation*)), m_display, SLOT(selectionChangedSlot(te::map::DataGridOperation*)));
+
+    QHBoxLayout *horizontalLayout = new QHBoxLayout;
+    horizontalLayout->addWidget(m_layerExplorer);
+    horizontalLayout->addWidget(splitter);
+    //horizontalLayout->addWidget(m_displayBox);
+
+    setLayout(horizontalLayout);
+
+    connect(m_layerExplorer, SIGNAL(contextMenuActivated(const QModelIndex&, const QPoint&)), this, SLOT(contextMenuActivated(const QModelIndex&, const QPoint&)));
+    connect(m_layerExplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), this, SLOT(layerVisibilityChanged(const QModelIndex&)));
+    connect(m_layerExplorerModel, SIGNAL(dragDropEnded(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)), this, SLOT(takeLayerSlot(te::qt::widgets::AbstractTreeItem*, te::qt::widgets::AbstractTreeItem*)));
+
+    m_treeMenu = new QMenu(this);
+    m_openNewMapDisplayAction = new QAction("&Open New MapDisplay...", m_treeMenu);
+    m_treeMenu->addAction(m_openNewMapDisplayAction);
+    connect(m_openNewMapDisplayAction, SIGNAL(triggered()), this, SLOT(openNewMapDisplaySlot()));
+
+    m_openGridAction = new QAction("Open &Grid...", m_treeMenu);
+    m_treeMenu->addAction(m_openGridAction);
+    connect(m_openGridAction, SIGNAL(triggered()), this, SLOT(openGridSlot()));
+
+    m_changeStatusColorMenu = m_treeMenu->addMenu("Change Color");
+    //m_changeDefaultColorAction = new QAction("Change Default Color...", m_changeStatusColorMenu);
+    //m_changeStatusColorMenu->addAction(m_changeDefaultColorAction);
+    //connect(m_changeDefaultColorAction, SIGNAL(triggered()), this, SLOT(changeDefaultColorSlot()));
+    m_changePointedColorAction = new QAction("Pointed Color...", m_changeStatusColorMenu);
+    m_changeStatusColorMenu->addAction(m_changePointedColorAction);
+    connect(m_changePointedColorAction, SIGNAL(triggered()), this, SLOT(changePointedColorSlot()));
+    m_changeQueriedColorAction = new QAction("Queried Color...", m_changeStatusColorMenu);
+    m_changeStatusColorMenu->addAction(m_changeQueriedColorAction);
+    connect(m_changeQueriedColorAction, SIGNAL(triggered()), this, SLOT(changeQueriedColorSlot()));
+    m_changePointedAndQueriedColorAction = new QAction("Pointed And Queried Color...", m_changeStatusColorMenu);
+    m_changeStatusColorMenu->addAction(m_changePointedAndQueriedColorAction);
+    connect(m_changePointedAndQueriedColorAction, SIGNAL(triggered()), this, SLOT(changePointedAndQueriedColorSlot()));
+
+    m_changeDefaultStyleMenu = m_treeMenu->addMenu("Change Default Style");
+    m_changePointStyleAction = new QAction("Point Style...", m_changeDefaultStyleMenu);
+    m_changeDefaultStyleMenu->addAction(m_changePointStyleAction);
+    connect(m_changePointStyleAction, SIGNAL(triggered()), this, SLOT(changePointStyleSlot()));
+    m_changeLineStyleAction = new QAction("Line Style...", m_changeDefaultStyleMenu);
+    m_changeDefaultStyleMenu->addAction(m_changeLineStyleAction);
+    connect(m_changeLineStyleAction, SIGNAL(triggered()), this, SLOT(changeLineStyleSlot()));
+    m_changePolygonStyleAction = new QAction("Polygon Style...", m_changeDefaultStyleMenu);
+    m_changeDefaultStyleMenu->addAction(m_changePolygonStyleAction);
+    connect(m_changePolygonStyleAction, SIGNAL(triggered()), this, SLOT(changePolygonStyleSlot()));
+
+    m_renameAction = new QAction("Re&name...", m_treeMenu);
+    m_treeMenu->addAction(m_renameAction);
+    connect(m_renameAction, SIGNAL(triggered()), this, SLOT(renameSlot()));
+
+    m_addFolderAction = new QAction("&Add Folder...", m_treeMenu);
+    m_treeMenu->addAction(m_addFolderAction);
+    connect(m_addFolderAction, SIGNAL(triggered()), this, SLOT(addFolderSlot()));
+
+    m_addLayerAction = new QAction("Add &Layer...", m_treeMenu);
+    m_treeMenu->addAction(m_addLayerAction);
+    connect(m_addLayerAction, SIGNAL(triggered()), this, SLOT(addLayerSlot()));
+
+    m_removeAction = new QAction("&Remove...", m_treeMenu);
+    m_treeMenu->addAction(m_removeAction);
+    connect(m_removeAction, SIGNAL(triggered()), this, SLOT(removeLayerSlot()));
+
+    m_editLegendAction = new QAction("&Edit Legend...", m_treeMenu);
+    m_treeMenu->addAction(m_editLegendAction);
+    connect(m_editLegendAction, SIGNAL(triggered()), this, SLOT(editLegendSlot()));
+
+    m_removeLegendAction = new QAction("&Remove Legend...", m_treeMenu);
+    m_treeMenu->addAction(m_removeLegendAction);
+    connect(m_removeLegendAction, SIGNAL(triggered()), this, SLOT(removeLegendSlot()));
+
+    m_removeSelectionMenu = m_treeMenu->addMenu("Remove Selection");
+    m_removeAllPointedAction = new QAction("Pointed...", m_removeSelectionMenu);
+    m_removeSelectionMenu->addAction(m_removeAllPointedAction);
+    connect(m_removeAllPointedAction, SIGNAL(triggered()), this, SLOT(m_removeAllPointedSlot()));
+
+    m_removeAllQueriedAction = new QAction("Queried...", m_removeSelectionMenu);
+    m_removeSelectionMenu->addAction(m_removeAllQueriedAction);
+    connect(m_removeAllQueriedAction, SIGNAL(triggered()), this, SLOT(m_removeAllQueriedSlot()));
+
+    m_keepOnMemoryAction = new QAction("&Keep Data On Memory", m_treeMenu);
+    m_keepOnMemoryAction->setCheckable(true);
+    m_treeMenu->addAction(m_keepOnMemoryAction);
+    connect(m_keepOnMemoryAction, SIGNAL(triggered()), this, SLOT(keepOnMemorySlot()));
+
+    m_getAvailableMemoryAction = new QAction("&Get Available Memory", m_treeMenu);
+    m_treeMenu->addAction(m_getAvailableMemoryAction);
+    connect(m_getAvailableMemoryAction, SIGNAL(triggered()), this, SLOT(getAvailableMemorySlot()));
+
+    m_plotTemporalDistanceAction = new QAction("&Plot Temporal Distance...", m_treeMenu);
+    m_treeMenu->addAction(m_plotTemporalDistanceAction);
+    connect(m_plotTemporalDistanceAction, SIGNAL(triggered()), this, SLOT(plotTemporalDistanceSlot()));
+
+    setFocusProxy(m_display);
+  }
 }
 
 MyWindow::~MyWindow()
@@ -594,7 +822,7 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
       MyDisplay* m = *sit;
       m->draw();
       m->setRepaint(true);
-      m->update();
+      //m->update();
     }
 
     // acabou de mudar para (0 = not visible, 1 = visible, 2 = meio visible)
@@ -613,7 +841,21 @@ void MyWindow::layerVisibilityChanged(const QModelIndex& mi)
         // este display deixou de usar este layer (apagou o desenho do layer)
         // se nenhum widget mais estiver usando este layer delete grid operation
         if(isUsed(mlayer) == false)
+        {
+          MyLayerRenderer* renderer = (MyLayerRenderer*)mlayer->getRenderer();
+          if(renderer)
+          {
+            renderer->abort();
+            QThread* thread = (QThread*) renderer;
+            while(thread->isRunning() == true)
+            {
+              thread->wait(100); // aguarde o desenho ser abortado
+              renderer->getDisplay()->displayRefreshSlot();
+            }
+          }
+
           deleteGridOperation(mlayer);
+        }
       }
     }
   }
@@ -895,7 +1137,7 @@ void MyWindow::setStyleSlot()
 
 void MyWindow::openNewMapDisplaySlot()
 {
-  MyDisplay *md = new MyDisplay(300, 250, m_rootFolderLayer, this, Qt::Window);
+  MyDisplay *md = new MyDisplay(300, 250, m_rootFolderLayer, m_canvasType, this, Qt::Window);
   QString wtitle = "Display: ";
   wtitle += m_selectedLayer->getTitle().c_str();
   md->setWindowTitle(wtitle);
@@ -912,9 +1154,9 @@ void MyWindow::openNewMapDisplaySlot()
   QObject::connect(md, SIGNAL(closed(MyDisplay*)), this, SLOT(removeDisplaySlot(MyDisplay*)));
 
   md->initTemporal();
+  md->show();
   md->draw();
   md->setRepaint(true);
-  md->show();
 }
 
 void MyWindow::removeDisplaySlot(MyDisplay* d)
@@ -2219,6 +2461,19 @@ void MyWindow::m_removeAllPointedSlot()
   te::map::DataGridOperation* op = layer->getDataGridOperation();
   if(op == 0)
     return;
+
+  MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+  if(renderer)
+  {
+    renderer->abort();
+    QThread* thread = (QThread*) renderer;
+    while(thread->isRunning() == true)
+    {
+      thread->wait(100); // aguarde o desenho ser abortado
+      renderer->getDisplay()->displayRefreshSlot();
+    }
+  }
+
   op->removePointedStatusOfAllRows();
 
   selectionChanged(op);
@@ -2233,6 +2488,19 @@ void MyWindow::m_removeAllQueriedSlot()
   te::map::DataGridOperation* op = layer->getDataGridOperation();
   if(op == 0)
     return;
+
+  MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+  if(renderer)
+  {
+    renderer->abort();
+    QThread* thread = (QThread*) renderer;
+    while(thread->isRunning() == true)
+    {
+      thread->wait(100); // aguarde o desenho ser abortado
+      renderer->getDisplay()->displayRefreshSlot();
+    }
+  }
+
   op->removeQueriedStatusOfAllRows();
 
   selectionChanged(op);

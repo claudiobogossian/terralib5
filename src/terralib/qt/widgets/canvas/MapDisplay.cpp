@@ -35,6 +35,7 @@
 // Qt
 #include <QtCore/QTimer>
 #include <QtGui/QResizeEvent>
+#include <QtGui/QPaintDevice>
 
 te::qt::widgets::MapDisplay::MapDisplay(const QSize& size, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
@@ -141,10 +142,14 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
   layer->draw(canvas, *m_extent, m_srid);
 
   // Composes the result
-  painter.drawPixmap(0, 0, *(canvas->getPixmap()));
+  QPaintDevice* device = canvas->getDevice();
+  if(device->devType() == QInternal::Pixmap)
+    painter.drawPixmap(0, 0, *static_cast<QPixmap*>(device));
+  else if(device->devType() == QInternal::Image)
+    painter.drawImage(0, 0, *static_cast<QImage*>(device));
 }
 
-te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::AbstractLayer* layer)
+te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::AbstractLayer* layer, int type)
 {
   // Is there a canvas associated with the given layer?
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it = m_layerCanvasMap.find(layer);
@@ -152,7 +157,7 @@ te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::Abstrac
     return it->second;
 
   // else, create one!
-  te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height());
+  te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height(), type);
   canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
   canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
   canvas->clear();

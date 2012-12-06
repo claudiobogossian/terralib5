@@ -12,16 +12,18 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 #include <QLineEdit>
+#include <QMutex>
 
 #include<map>
 
 class MyLayer;
+class MyLayerRenderer;
 class MyDisplay : public te::qt::widgets::MapDisplay
 {
   Q_OBJECT
 
 public:
-  MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent = 0, Qt::WindowFlags f = 0);
+  MyDisplay(int w, int h, te::map::AbstractLayer* root, int type = QInternal::Pixmap, QWidget* parent = 0, Qt::WindowFlags f = 0);
   ~MyDisplay();
 
   void paintEvent(QPaintEvent*);
@@ -73,6 +75,8 @@ public:
   te::map::AbstractLayer* getLayerTree();
   void fit(std::list<te::map::AbstractLayer*>& layerList);
   bool transform(te::gm::Envelope& e, int oldsrid, int newsrid);
+  void draw(int, int y, QPainter& painter, QPaintDevice* device);
+  void abortAllDrawing();
 
 public Q_SLOTS:
   void selectionChangedSlot(te::map::DataGridOperation*);
@@ -144,6 +148,8 @@ public Q_SLOTS:
   void setSRIDSlot();
   void onResizeTimeout();
   void layerFrozenSlot();
+  void displayRefreshSlot();
+  void drawFinishedSlot();
 
 Q_SIGNALS:
   void selectionChanged(te::map::DataGridOperation*);
@@ -156,6 +162,7 @@ protected:
   void print(QPrinter*);
 
 private:
+  int m_canvasType; // QInternal::Pixmap or QInternal::Image. Default is QInternal::Pixmap
   te::gm::Envelope m_envelope;      //!< Envelope.
   MouseHandler* m_mouseHandler;
   std::set<te::map::AbstractLayer*> m_drawOnlyChanged;
@@ -196,6 +203,8 @@ private:
   QLineEdit* m_timeLineEdit;
   QHBoxLayout* m_timeLayout;
   std::set<MyLayer*> m_frozenLayerSet;
+
+  QTimer* m_timerRefresh;
 };
 
 #endif

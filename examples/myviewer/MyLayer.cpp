@@ -239,3 +239,4 @@ void MyLayer::clearTooltipColumns()
 {
   m_tooltipColumns.clear();
 }
+
