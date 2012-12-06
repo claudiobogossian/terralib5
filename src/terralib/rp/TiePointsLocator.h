@@ -121,15 +121,15 @@ namespace te
             
             unsigned int m_maxR1ToR2Offset; //!< The maximum offset (pixels units) between a raster 1 point end the respective raster 2 point (default:0 - no offset restriction).
             
-            bool m_enableGeometryFilter; //! < Enable/disable the geometry filter/outliers remotion (default:true).
+            bool m_enableGeometryFilter; //!< Enable/disable the geometry filter/outliers remotion (default:true).
             
-            double m_geometryFilterAssurance; //! < Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.5 - Use 0-zero to let this number be automatically found.
+            double m_geometryFilterAssurance; //!< Geometry assurance (the error-free selection percent assurance) - valid range (0-1) - default:0.5 - Use 0-zero to let this number be automatically found.
             
             unsigned int m_gaussianFilterIterations; //!< The number of noise Gaussin iterations, when applicable (used to remove image noise, zero will disable the Gaussian Filter, default:1).
             
-            unsigned int m_scalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3).
+            unsigned int m_scalesNumber; //!< The number of sub-sampling scales to generate, when applicable (default:3, minimum:3).
             
-            unsigned int m_octavesNumber; //!< The number of octaves to generate, when applicable (default: 2).
+            unsigned int m_octavesNumber; //!< The number of octaves to generate, when applicable (default: 2, minimum:1).
             
             double m_rastersRescaleFactor; //!< Global rescale factor to apply to all input rasters (default:1, valid range: non-zero positive values).
             
