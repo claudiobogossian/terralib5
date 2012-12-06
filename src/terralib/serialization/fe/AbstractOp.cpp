@@ -53,18 +53,18 @@
 /* @name AbstractOp Reader Methods */
 //@{
 
-te::fe::AbstractOp* BinaryComparsionOpReader(te::xml::Reader& reader);
+te::fe::AbstractOp* BinaryComparsionOpReader(const char* opName, te::xml::Reader& reader);
 
-te::fe::AbstractOp* BetweenReader(te::xml::Reader& reader);
-te::fe::AbstractOp* LikeReader(te::xml::Reader& reader);
-te::fe::AbstractOp* NullReader(te::xml::Reader& reader);
+te::fe::AbstractOp* BetweenReader(const char* opName, te::xml::Reader& reader);
+te::fe::AbstractOp* LikeReader(const char* opName, te::xml::Reader& reader);
+te::fe::AbstractOp* NullReader(const char* opName, te::xml::Reader& reader);
 
-te::fe::AbstractOp* BinaryLogicOpReader(te::xml::Reader& reader);
-te::fe::AbstractOp* UnaryLogicOpReader(te::xml::Reader& reader);
+te::fe::AbstractOp* BinaryLogicOpReader(const char* opName, te::xml::Reader& reader);
+te::fe::AbstractOp* UnaryLogicOpReader(const char* opName, te::xml::Reader& reader);
 
-te::fe::AbstractOp* BinarySpatialOpReader(te::xml::Reader& reader);
-te::fe::AbstractOp* DistanceBufferReader(te::xml::Reader& reader);
-te::fe::AbstractOp* BBOXReader(te::xml::Reader& reader);
+te::fe::AbstractOp* BinarySpatialOpReader(const char* opName, te::xml::Reader& reader);
+te::fe::AbstractOp* DistanceBufferReader(const char* opName, te::xml::Reader& reader);
+te::fe::AbstractOp* BBOXReader(const char* opName, te::xml::Reader& reader);
 
 //@}
 
@@ -86,6 +86,13 @@ void BBOXWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer);
 
 //@}
 
+std::string GetQualifiedName(const te::fe::AbstractOp* op)
+{
+  std::string name = "ogc:";
+  name += op->getName();
+  return name;
+}
+
 void te::serialize::AbstractOp::reg(const std::string& opName, const AbstractOpFnctSerializeType& fncts)
 {
   m_fncts[opName] = fncts;
@@ -102,7 +109,7 @@ te::fe::AbstractOp* te::serialize::AbstractOp::read(te::xml::Reader& reader) con
 
   assert(it->second.second);
 
-  return it->second.first(reader);
+  return it->second.first(m_names.find(opName)->second, reader);
 }
 
 void te::serialize::AbstractOp::write(const te::fe::AbstractOp* op, te::xml::Writer& writer) const
@@ -165,51 +172,213 @@ te::serialize::AbstractOp::AbstractOp()
   // DistanceBuffer
   m_fncts[te::fe::Globals::sm_beyond] = std::make_pair(AbstractOpReadFnctType(&DistanceBufferReader), AbstractOpWriteFnctType(&DistanceBufferOpWriter));
   m_fncts[te::fe::Globals::sm_dWithin] = std::make_pair(AbstractOpReadFnctType(&DistanceBufferReader), AbstractOpWriteFnctType(&DistanceBufferOpWriter));
+
+  // string to char*
+  m_names[te::fe::Globals::sm_propertyIsEqualTo] = te::fe::Globals::sm_propertyIsEqualTo;
+  m_names[te::fe::Globals::sm_propertyIsGreaterThan] = te::fe::Globals::sm_propertyIsGreaterThan;
+  m_names[te::fe::Globals::sm_propertyIsGreaterThanOrEqualTo] = te::fe::Globals::sm_propertyIsGreaterThanOrEqualTo;
+  m_names[te::fe::Globals::sm_propertyIsLessThan] = te::fe::Globals::sm_propertyIsLessThan;
+  m_names[te::fe::Globals::sm_propertyIsLessThanOrEqualTo] = te::fe::Globals::sm_propertyIsLessThanOrEqualTo;
+  m_names[te::fe::Globals::sm_propertyIsNotEqualTo] = te::fe::Globals::sm_propertyIsNotEqualTo;
+  m_names[te::fe::Globals::sm_propertyIsBetween] = te::fe::Globals::sm_propertyIsBetween;
+  m_names[te::fe::Globals::sm_propertyIsLike] = te::fe::Globals::sm_propertyIsLike;
+  m_names[te::fe::Globals::sm_propertyIsNull] = te::fe::Globals::sm_propertyIsNull;
+  m_names[te::fe::Globals::sm_and] = te::fe::Globals::sm_and;
+  m_names[te::fe::Globals::sm_or] = te::fe::Globals::sm_or;
+  m_names[te::fe::Globals::sm_not] = te::fe::Globals::sm_not;
+  m_names[te::fe::Globals::sm_bbox] = te::fe::Globals::sm_bbox;
+  m_names[te::fe::Globals::sm_contains] = te::fe::Globals::sm_contains;
+  m_names[te::fe::Globals::sm_crosses] = te::fe::Globals::sm_crosses;
+  m_names[te::fe::Globals::sm_disjoint] = te::fe::Globals::sm_disjoint;
+  m_names[te::fe::Globals::sm_equals] = te::fe::Globals::sm_equals;
+  m_names[te::fe::Globals::sm_intersects] = te::fe::Globals::sm_intersects;
+  m_names[te::fe::Globals::sm_overlaps] = te::fe::Globals::sm_overlaps;
+  m_names[te::fe::Globals::sm_touches] = te::fe::Globals::sm_touches;
+  m_names[te::fe::Globals::sm_within] = te::fe::Globals::sm_within;
+  m_names[te::fe::Globals::sm_beyond] = te::fe::Globals::sm_beyond;
+  m_names[te::fe::Globals::sm_dWithin] = te::fe::Globals::sm_dWithin;
 }
 
-te::fe::AbstractOp* BinaryComparsionOpReader(te::xml::Reader& reader)
+te::fe::AbstractOp* BinaryComparsionOpReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == opName);
+
+  std::auto_ptr<te::fe::BinaryComparisonOp> op(new te::fe::BinaryComparisonOp(opName));
+
+  reader.next();
+
+  op->setFirst( te::serialize::Expression::getInstance().read(reader));
+
+  op->setSecond( te::serialize::Expression::getInstance().read(reader));
+
+  return op.release();
 }
 
-te::fe::AbstractOp* BetweenReader(te::xml::Reader& reader)
+te::fe::AbstractOp* BetweenReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == te::fe::Globals::sm_propertyIsBetween);
+
+  std::auto_ptr<te::fe::PropertyIsBetween> op(new te::fe::PropertyIsBetween);
+
+  reader.next();
+
+  op->setExpression(te::serialize::Expression::getInstance().read(reader));
+
+  op->setLowerBoundary(te::serialize::Expression::getInstance().read(reader));
+
+  op->setUpperBoundary(te::serialize::Expression::getInstance().read(reader));
+
+  return op.release();
 }
 
-te::fe::AbstractOp* LikeReader(te::xml::Reader& reader)
+te::fe::AbstractOp* LikeReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == te::fe::Globals::sm_propertyIsLike);
+  assert(reader.hasAttrs());
+
+  std::auto_ptr<te::fe::PropertyIsLike> op(new te::fe::PropertyIsLike);
+  
+  std::string wildCard = reader.getAttr("wildCard");
+  assert(!wildCard.empty());
+  op->setWildCard(wildCard);
+
+  std::string singleChar = reader.getAttr("singleChar");
+  assert(!singleChar.empty());
+  op->setSingleChar(singleChar);
+
+  std::string escapeChar = reader.getAttr("escapeChar");
+  assert(!escapeChar.empty());
+  op->setEscapeChar(escapeChar);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  op->setPropertyName(static_cast<te::fe::PropertyName*>(te::serialize::Expression::getInstance().read(reader)));
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Literal");
+
+  op->setLiteral(static_cast<te::fe::Literal*>(te::serialize::Expression::getInstance().read(reader)));
+
+  return op.release();
 }
 
-te::fe::AbstractOp* NullReader(te::xml::Reader& reader)
+te::fe::AbstractOp* NullReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == te::fe::Globals::sm_propertyIsNull);
+
+  std::auto_ptr<te::fe::PropertyIsNull> op(new te::fe::PropertyIsNull);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  op->setPropertyName(static_cast<te::fe::PropertyName*>(te::serialize::Expression::getInstance().read(reader)));
+
+  return op.release();
 }
 
-te::fe::AbstractOp* BinaryLogicOpReader(te::xml::Reader& reader)
+te::fe::AbstractOp* BinaryLogicOpReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == opName);
+
+  std::auto_ptr<te::fe::BinaryLogicOp> op(new te::fe::BinaryLogicOp(opName));
+
+  reader.next();
+
+  // TODO: The BinaryLogicOp has a set of AbstractOp's. I don't know how to do this. The Reader never tells about END_ELEMENT's?
+  /*while(reader.getNodeType() != te::xml::END_ELEMENT)
+    op->add(te::serialize::AbstractOp::getInstance().read(reader));*/
+
+  // So, for while, read only two AbstractOp's...
+  op->add(te::serialize::AbstractOp::getInstance().read(reader));
+  op->add(te::serialize::AbstractOp::getInstance().read(reader));
+
+  return op.release();
 }
 
-te::fe::AbstractOp* UnaryLogicOpReader(te::xml::Reader& reader)
+te::fe::AbstractOp* UnaryLogicOpReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == te::fe::Globals::sm_not);
+
+  std::auto_ptr<te::fe::UnaryLogicOp> op(new te::fe::UnaryLogicOp(opName));
+
+  reader.next();
+
+  op->setOp(te::serialize::AbstractOp::getInstance().read(reader));
+
+  return op.release();
 }
 
-te::fe::AbstractOp* BinarySpatialOpReader(te::xml::Reader& reader)
+te::fe::AbstractOp* BinarySpatialOpReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == opName);
+
+  std::auto_ptr<te::fe::BinarySpatialOp> op(new te::fe::BinarySpatialOp(opName));
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  op->setProperty(static_cast<te::fe::PropertyName*>(te::serialize::Expression::getInstance().read(reader)));
+
+  // TODO: read Envelope or Geometry!
+  // op->setGeometry(...);
+  // op->setEnvelope(...);
+
+  return op.release();
 }
 
-te::fe::AbstractOp* DistanceBufferReader(te::xml::Reader& reader)
+te::fe::AbstractOp* DistanceBufferReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == opName);
+
+  std::auto_ptr<te::fe::DistanceBuffer> op(new te::fe::DistanceBuffer(opName));
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  op->setProperty(static_cast<te::fe::PropertyName*>(te::serialize::Expression::getInstance().read(reader)));
+
+  // TODO: read geom and distance!
+  // op->setGeometry(...);
+  // op->setDistance(...);
+
+  return op.release();
 }
 
-te::fe::AbstractOp* BBOXReader(te::xml::Reader& reader)
+te::fe::AbstractOp* BBOXReader(const char* opName, te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == te::fe::Globals::sm_bbox);
+
+  std::auto_ptr<te::fe::BBOXOp> op(new te::fe::BBOXOp);
+
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  op->setProperty(static_cast<te::fe::PropertyName*>(te::serialize::Expression::getInstance().read(reader)));
+
+  // TODO: read envelope !
+  // op->setEnvelope(...);
+
+  return op.release();
 }
 
 void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -219,13 +388,13 @@ void BinaryComparsionOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& wri
   if(binaryOp == 0)
     return;
 
-  writer.writeStartElement(binaryOp->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::Expression::getInstance().write(binaryOp->getFirst(), writer);
 
   te::serialize::Expression::getInstance().write(binaryOp->getSecond(), writer);
 
-  writer.writeEndElement(binaryOp->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void BetweenWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -235,7 +404,7 @@ void BetweenWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   if(between == 0)
     return;
 
-  writer.writeStartElement(between->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::Expression::getInstance().write(between->getExpression(), writer);
 
@@ -243,7 +412,7 @@ void BetweenWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
 
   te::serialize::Expression::getInstance().write(between->getUpperBoundary(), writer);
 
-  writer.writeEndElement(between->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void LikeWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -253,7 +422,7 @@ void LikeWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   if(like == 0)
     return;
 
-  writer.writeStartElement(like->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   // Attributes
   std::string wildCard = like->getWildCard();
@@ -273,7 +442,7 @@ void LikeWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
 
   te::serialize::Expression::getInstance().write(like->getLiteral(), writer);
 
-  writer.writeEndElement(like->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void NullWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -283,11 +452,11 @@ void NullWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   if(isNull == 0)
     return;
 
-  writer.writeStartElement(isNull->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::Expression::getInstance().write(isNull->getPropertyName(), writer);
 
-  writer.writeEndElement(isNull->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -297,14 +466,14 @@ void BinaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   if(binaryLogicOp == 0)
     return;
 
-  writer.writeStartElement(binaryLogicOp->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   assert(binaryLogicOp->size() >= 2);
 
   for(std::size_t i = 0; i < binaryLogicOp->size(); ++i)
     te::serialize::AbstractOp::getInstance().write(binaryLogicOp->getOp(i), writer);
 
-  writer.writeEndElement(binaryLogicOp->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -314,11 +483,11 @@ void UnaryLogicOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   if(unaryLogicOp == 0)
     return;
 
-  writer.writeStartElement(unaryLogicOp->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::AbstractOp::getInstance().write(unaryLogicOp->getOp(), writer);
 
-  writer.writeEndElement(unaryLogicOp->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -328,7 +497,7 @@ void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer
   if(binarySpatialOp == 0)
     return;
 
-  writer.writeStartElement(binarySpatialOp->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::Expression::getInstance().write(binarySpatialOp->getProperty(), writer);
 
@@ -338,7 +507,7 @@ void BinarySpatialOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer
 
   // TODO: write Envelope or Geometry!
 
-  writer.writeEndElement(binarySpatialOp->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -348,7 +517,7 @@ void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& write
   if(db == 0)
     return;
 
-  writer.writeStartElement(db->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::Expression::getInstance().write(db->getProperty(), writer);
 
@@ -360,7 +529,7 @@ void DistanceBufferOpWriter(const te::fe::AbstractOp* op, te::xml::Writer& write
 
   // TODO: write geom and distance!
 
-  writer.writeEndElement(db->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }
 
 void BBOXWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
@@ -370,7 +539,7 @@ void BBOXWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
   if(bbox == 0)
     return;
 
-  writer.writeStartElement(bbox->getName());
+  writer.writeStartElement(GetQualifiedName(op));
 
   te::serialize::Expression::getInstance().write(bbox->getProperty(), writer);
 
@@ -379,5 +548,5 @@ void BBOXWriter(const te::fe::AbstractOp* op, te::xml::Writer& writer)
 
   // TODO: write envelope !
 
-  writer.writeEndElement(bbox->getName());
+  writer.writeEndElement(GetQualifiedName(op));
 }

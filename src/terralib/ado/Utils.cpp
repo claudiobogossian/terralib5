@@ -854,94 +854,6 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
   }
 }
 
-void te::ado::addItem(const te::da::DataSetType* dt, _RecordsetPtr recset, std::vector<te::dt::Property*> props, te::da::DataSetItem* item)
-{
-  try
-  {
-    for(size_t i = 0; i < props.size(); i++)
-    {
-      te::gm::GeometryProperty* geomProp = 0;
-      geomProp = dt->getDefaultGeomProperty();
-
-      if(geomProp && (geomProp->getName() == props[i]->getName()))
-      {
-        _variant_t var;
-        Convert2Ado(item->getGeometry(props[i]->getName()), var);
-
-        recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-      }
-      else
-      {
-
-        int pType = props[i]->getType();
-
-        switch(pType)
-        {
-        case te::dt::CHAR_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
-          break;
-
-          //case te::dt::UCHAR_TYPE:
-
-        case te::dt::INT16_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
-          break;
-
-        case te::dt::INT32_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
-          break;
-
-        case te::dt::INT64_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
-          break;
-
-          //case te::dt::NUMERIC_TYPE:
-          //case te::dt::DATETIME_TYPE:
-        case te::dt::FLOAT_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
-          break;
-
-        case te::dt::DOUBLE_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
-          break;
-
-        case te::dt::STRING_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
-          break;
-
-        case te::dt::BOOLEAN_TYPE:
-          recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
-          break;
-
-        case te::dt::BYTE_ARRAY_TYPE:
-          {
-            char * data = ((te::dt::ByteArray*)props[i])->getData();
-
-            _variant_t var;
-            te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
-
-            recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-
-            break;
-          }
-
-          //case te::dt::ARRAY_TYPE:
-
-        default:
-          throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-          break;
-        }
-      }
-    }
-
-    recset->Update();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
 void te::ado::insertInGeometryColumns(_ConnectionPtr adoConn, const te::da::DataSetType* dt)
 {
   te::gm::GeometryProperty* geomProp = 0;
@@ -1029,7 +941,7 @@ te::gm::GeomType te::ado::getType(_ConnectionPtr adoConn, te::gm::GeometryProper
   TESTHR(recset.CreateInstance(__uuidof(Recordset))); 
 
   std::string sel = "SELECT * FROM geometry_columns where f_table_name = '";
-  sel += geomp->getParent()->getName() + "' and f_geometry_column = 'spatial_data'";
+  sel += geomp->getParent()->getName() + "' and f_geometry_column = 'spatial_data' or f_geometry_column = 'geom'";
 
   _variant_t variantSel;
   variantSel.SetString(sel.c_str());
@@ -1044,5 +956,7 @@ te::gm::GeomType te::ado::getType(_ConnectionPtr adoConn, te::gm::GeometryProper
     throw Exception(TR_ADO(e.Description()));
   }
 
-  return GetGeometryType((LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue());
+  std::string type = (LPCSTR)(_bstr_t)recset->GetFields()->GetItem("type")->GetValue();
+
+  return GetGeometryType(type);
 }

@@ -151,23 +151,30 @@ void te::da::DataSourceManager::detachAll(const std::string& dsType)
   LockWrite l(this);
 
   std::map<std::string, DataSourcePtr>::iterator it = m_dss.begin();
-  std::map<std::string, DataSourcePtr>::iterator itend = m_dss.end();
-
-  while(it != itend)
-  {
-    const std::string& ttype = it->second->getType();
-
+  
+  while(it != m_dss.end())
     if(it->second->getType() == dsType)
-    {
-      std::map<std::string, DataSourcePtr>::iterator itaux = it;
-      ++it;
-      m_dss.erase(itaux);
-    }
+      m_dss.erase(it++);
     else
-    {
       ++it;
-    }
-  }
+  //std::map<std::string, DataSourcePtr>::iterator it = m_dss.begin();
+  //std::map<std::string, DataSourcePtr>::iterator itend = m_dss.end();
+
+  //while(it != itend)
+  //{
+  //  const std::string& ttype = it->second->getType();
+
+  //  if(it->second->getType() == dsType)
+  //  {
+  //    std::map<std::string, DataSourcePtr>::iterator itaux = it;
+  //    ++it;
+  //    m_dss.erase(itaux);
+  //  }
+  //  else
+  //  {
+  //    ++it;
+  //  }
+  //}
 }
 
 void te::da::DataSourceManager::detachAll()

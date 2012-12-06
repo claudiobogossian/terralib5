@@ -65,7 +65,7 @@ namespace te
           \param r The raster where to resample.
           \param m The method of interpolation to apply.
         */
-        Interpolator(Raster* r, int m);
+        Interpolator(Raster const* r, int m);
 
         /*! \brief Destructor. */
         virtual ~Interpolator();
@@ -133,7 +133,7 @@ namespace te
 
     protected:
 
-        Raster* m_raster;                                  //!< My input raster.
+        Raster const* m_raster;                                  //!< My input raster.
         int m_method;                                      //!< The interpolation method.
         InterpolationFunction m_function;                  //!< The current interpolation function pointer.
 

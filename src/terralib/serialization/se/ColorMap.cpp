@@ -38,7 +38,19 @@
 
 te::se::ColorMap* te::serialize::ReadColorMap(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ColorMap");
+
+  reader.next();
+
+  std::auto_ptr<te::se::ColorMap> cm(new te::se::ColorMap);
+
+  if(reader.getElementLocalName() == "Categorize")
+    cm->setCategorize(ReadCategorize(reader));
+  else // Interpolate
+    cm->setInterpolate(ReadInterpolate(reader));
+
+  return cm.release();
 }
 
 void te::serialize::Save(const te::se::ColorMap* cm, te::xml::Writer& writer)

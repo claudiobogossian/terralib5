@@ -124,18 +124,6 @@ namespace te
       unsigned int inputVectorSize, const int outputVectorDataType,
       void* outputVector );
 
-    /*!
-      \brief Inverts an ublas matrix.
-
-      \param input The input matrix.
-      \param output The empty output matrix, previously created.
-
-      \return Returns true in success or false otherwise.
-      \note The sizes of both matrices must be equal, and square.
-    */
-    bool InvertMatrix(const boost::numeric::ublas::matrix<double>& input,
-                      boost::numeric::ublas::matrix<double>& inverse);
-
   } // end namespace rp
 }   // end namespace te
 

@@ -5,77 +5,17 @@
 #include <terralib/se.h>
 #include <terralib/serialization/fe/Filter.h>
 #include <terralib/serialization/se/Style.h>
+#include <terralib/serialization/xlink/SimpleLink.h>
+#include <terralib/xml/Reader.h>
+#include <terralib/xml/ReaderFactory.h>
 #include <terralib/xml/Writer.h>
+#include <terralib/xlink/SimpleLink.h>
 
 // STL
 #include <cassert>
-#include <fstream>
-#include <iostream>
 #include <sstream>
 
-// Shows the serialization result on console
-void ShowResult(const std::string& s)
-{
-  std::cout << "Result:" << std::endl;
-  std::cout << s << std::endl;
-}
-
-// Saves the serialization result to a file path
-void SaveResult(const std::string& s, const std::string& path)
-{
-  if(path.empty())
-    return;
-
-  std::ofstream ofs(path);
-  ofs << s;
-}
-
-void EncodeFilter(const std::string& path)
-{
-  /* Creating an OGC Filter Expression */
-  
-  // (1): nome = 'MINAS GERAIS'
-  te::fe::PropertyName* state = new te::fe::PropertyName("state");
-  te::fe::Literal* stateName = new te::fe::Literal("MINAS GERAIS");
-  te::fe::BinaryComparisonOp* stateEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, state, stateName);
-
-  // (2): populacao < '2.000'
-  te::fe::PropertyName* pop = new te::fe::PropertyName("population");
-  te::fe::Literal* popValue = new te::fe::Literal("2.000");
-  te::fe::BinaryComparisonOp* popLessThan = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsLessThan, pop, popValue);
-
-  // (3): Joins the expression (1) and (2) using a binary logic operator AND
-  te::fe::BinaryLogicOp* andOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_and, stateEqual, popLessThan);
-
-  // (4): cidade = 'SERITINGA'
-  te::fe::PropertyName* city = new te::fe::PropertyName("city");
-  te::fe::Literal* cityName = new te::fe::Literal("SERITINGA");
-  te::fe::BinaryComparisonOp* cityEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, city, cityName);
-  
-  // (5): Joins the expression (3) and (4) using a binary logic operator OR
-  te::fe::BinaryLogicOp* orOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_or, andOp, cityEqual);
-
-  // We have a Filter!
-  te::fe::Filter* filter = new te::fe::Filter;
-  filter->setOp(orOp); // (state = 'MINAS GERAIS' AND populacao < '2.000') OR (city = 'SERITINGA')
-
-  /* Let's serialize! */
-   std::ostringstream oss;
-
-  // Serializing...
-  te::xml::Writer writer(oss);
-  te::serialize::Save(filter, writer);
-
-  // Shows the serialization result
-  ShowResult(oss.str());
-  
-  // Case path not empty, saves the serialization result to a file
-  SaveResult(oss.str(), path);
-
-  delete filter;
-}
-
-void EncodeStyle(const std::string& path)
+std::string EncodeStyle()
 {
   /* Creating an OGC Symbology Enconding Style */
 
@@ -118,11 +58,29 @@ void EncodeStyle(const std::string& path)
   cs->setGreenChannel(scG);
   cs->setBlueChannel(scB);
 
+  te::se::Categorize* categorize = new te::se::Categorize;
+  categorize->setThresholdsBelongTo(te::se::Categorize::PRECEDING);
+  categorize->setFallbackValue("0");
+  categorize->setLookupValue(new te::se::ParameterValue("Rasterdata"));
+  categorize->setValue(new te::se::ParameterValue("#00FF00"));
+  categorize->addThreshold(new te::se::ParameterValue("-417"));
+  categorize->addValue(new te::se::ParameterValue("#00FA00"));
+  categorize->addThreshold(new te::se::ParameterValue("-333"));
+  categorize->addValue(new te::se::ParameterValue("#14F500"));
+  categorize->addThreshold(new te::se::ParameterValue("-250"));
+  categorize->addValue(new te::se::ParameterValue("#28F502"));
+  categorize->addThreshold(new te::se::ParameterValue("-167"));
+  categorize->addValue(new te::se::ParameterValue("#3CF505"));
+
+  te::se::ColorMap* colorMap = new te::se::ColorMap;
+  colorMap->setCategorize(categorize);
+
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer;
   rs->setOpacity(new te::se::ParameterValue("1.0"));
   rs->setGain(new te::se::ParameterValue("1.0"));
   rs->setOffset(new te::se::ParameterValue("0.0"));
   rs->setChannelSelection(cs);
+  rs->setColorMap(colorMap);
   rs->setDescription(te::se::CreateDescription("A simple raster symbolizer example", "This symbolizer was created to show the power of TerraLib serialization module."));
 
   // Creates a Rule
@@ -137,12 +95,46 @@ void EncodeStyle(const std::string& path)
   rule->push_back(rs);
   rule->setDescription(te::se::CreateDescription("A simple rule example", "This rule was created to show the power of TerraLib serialization module."));
 
+  /* Creating an OGC Filter Expression to Rule */
+  
+  // (1): nome = 'MINAS GERAIS'
+  te::fe::PropertyName* state = new te::fe::PropertyName("state");
+  te::fe::Literal* stateName = new te::fe::Literal("MINAS GERAIS");
+  te::fe::BinaryComparisonOp* stateEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, state, stateName);
+
+  // (2): populacao < '2.000'
+  te::fe::PropertyName* pop = new te::fe::PropertyName("population");
+  te::fe::Literal* popValue = new te::fe::Literal("2.000");
+  te::fe::BinaryComparisonOp* popLessThan = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsLessThan, pop, popValue);
+
+  // (3): Joins the expression (1) and (2) using a binary logic operator AND
+  te::fe::BinaryLogicOp* andOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_and, stateEqual, popLessThan);
+
+  // (4): cidade = 'SERITINGA'
+  te::fe::PropertyName* city = new te::fe::PropertyName("city");
+  te::fe::Literal* cityName = new te::fe::Literal("SERITINGA");
+  te::fe::BinaryComparisonOp* cityEqual = new te::fe::BinaryComparisonOp(te::fe::Globals::sm_propertyIsEqualTo, city, cityName);
+  
+  // (5): Joins the expression (3) and (4) using a binary logic operator OR
+  te::fe::BinaryLogicOp* orOp = new te::fe::BinaryLogicOp(te::fe::Globals::sm_or, andOp, cityEqual);
+
+  // We have a Filter!
+  te::fe::Filter* filter = new te::fe::Filter;
+  filter->setOp(orOp); // (state = 'MINAS GERAIS' AND populacao < '2.000') OR (city = 'SERITINGA')
+
+  rule->setFilter(filter);
+
   // We have a Style!
   te::se::Style* style = new te::se::FeatureTypeStyle;
   style->push_back(rule);
   style->setName(new std::string("Style 1"));
   style->setDescription(te::se::CreateDescription("A simple style example", "This style was created to show the power of TerraLib serialization module."));
 
+  return EncodeStyle(style);
+}
+
+std::string EncodeStyle(te::se::Style* style)
+{
   /* Let's serialize! */
   std::ostringstream oss;
 
@@ -150,11 +142,18 @@ void EncodeStyle(const std::string& path)
   te::xml::Writer writer(oss);
   te::serialize::Style::getInstance().write(style, writer);
 
-  // Shows the serialization result
-  ShowResult(oss.str());
-  
-  // Case path not empty, saves the serialization result to a file
-  SaveResult(oss.str(), path);
-
   delete style;
+
+  return oss.str();
+}
+
+te::se::Style* DecodeStyle(const std::string& path)
+{
+  te::xml::Reader* reader = te::xml::ReaderFactory::make("XERCES");
+  reader->read(path);
+  reader->next();
+
+  te::se::Style* style = te::serialize::Style::getInstance().read(*reader);
+
+  return style;
 }

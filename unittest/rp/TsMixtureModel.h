@@ -45,11 +45,14 @@ class TsMixtureModel : public CPPUNIT_NS::TestFixture
 
   CPPUNIT_TEST( Linear );
 
+  CPPUNIT_TEST( PCA );
+
   CPPUNIT_TEST_SUITE_END();
 
   protected :
 
     void Linear();
+    void PCA();
 };
 
 #endif  // __TERRALIB_UNITTEST_RP_MIXTUREMODEL_INTERNAL_H

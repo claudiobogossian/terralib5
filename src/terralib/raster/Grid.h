@@ -27,6 +27,7 @@
 #define __TERRALIB_RASTER_INTERNAL_GRID_H
 
 // TerraLib
+#include "../geometry/Coord2D.h"
 #include "Config.h"
 
 // Boost
@@ -35,12 +36,7 @@
 namespace te
 {
 // Forward declaration
-  namespace gm
-  {
-    class Envelope;
-
-    struct Coord2D;
-  }
+  namespace gm { class Envelope; }
 
   namespace rst
   {
@@ -211,24 +207,44 @@ namespace te
         void computeExtent() const;
 
         /*!
-          \brief Returns the spatial location of a grid point.
+          \brief Get the spatial location of a grid point.
+
+          \param col The grid point column.
+          \param row The grid point row.
+          \param x   The spatial location (X axis).
+          \param y   The spatial location (Y axis).
+        */
+        void gridToGeo(const double& col, const double& row, double& x, double& y) const;
+
+        /*!
+          \brief Get the spatial location of a grid point.
 
           \param col The grid point column.
           \param row The grid point row.
 
-          \return A spatial location.
+          \return The spatial location.
         */
-        te::gm::Coord2D gridToGeo(int col, int row) const;
+        te::gm::Coord2D gridToGeo(const double& col, const double& row) const;
 
         /*!
-          \brief Returns the grid point associated to a grid location.
+          \brief Get the grid point associated to a spatial location.
 
-          \param x The spatial x-coordiante.
-          \param y The spatial y-coordiante.
-
-          \return A grid point.
+          \param x   The spatial x-coordiante.
+          \param y   The spatial y-coordiante.
+          \param col The grid point column.
+          \param row The grid point row.
         */
-        te::gm::Coord2D geoToGrid(double x, double y) const;
+        void geoToGrid(const double& x, const double& y, double& col, double& row) const;
+
+        /*!
+          \brief Get the grid point associated to a spatial location.
+
+          \param x   The spatial x-coordiante.
+          \param y   The spatial y-coordiante.
+
+          \return The grid location.
+        */
+        te::gm::Coord2D geoToGrid(const double& x, const double& y) const;
 
         /*!
           \brief Equal operator.
@@ -259,6 +275,20 @@ namespace te
     };
 
     typedef boost::shared_ptr<Grid> GridPtr;
+
+    inline te::gm::Coord2D Grid::gridToGeo(const double& col, const double& row) const
+    {
+      te::gm::Coord2D c;
+      gridToGeo(col, row, c.x, c.y);
+      return c;
+    }
+
+    inline te::gm::Coord2D Grid::geoToGrid(const double& x, const double& y) const
+    {
+      te::gm::Coord2D c;
+      geoToGrid(x, y, c.x, c.y);
+      return c;
+    }
 
     inline bool Grid::isPointInGrid(unsigned int col, unsigned int row) const
     {

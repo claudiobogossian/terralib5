@@ -23,6 +23,7 @@ set(DEP_LIBS
 	terralib_filter
 	terralib_serialization
 	terralib_symbology
+	terralib_xlink
 	terralib_xml
     )  
 

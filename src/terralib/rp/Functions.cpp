@@ -22,27 +22,32 @@
   \brief Raster Processing functions.
 */
 
-#include "Functions.h"
-#include "Exception.h"
-#include "RasterHandler.h"
-#include "Macros.h"
-
-#include "../raster/Grid.h"
-#include "../raster/RasterProperty.h"
-#include "../raster/BandProperty.h"
-#include "../raster/RasterFactory.h"
+// TerraLib
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
 #include "../datatype/Enums.h"
+#include "../raster/BandProperty.h"
+#include "../raster/Grid.h"
+#include "../raster/RasterFactory.h"
+#include "../raster/RasterProperty.h"
+#include "Exception.h"
+#include "Functions.h"
+#include "Macros.h"
+#include "RasterHandler.h"
 
+// Boost
 #include <boost/filesystem.hpp>
+#include <boost/numeric/ublas/io.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <boost/shared_ptr.hpp>
 
+
+// STL
+#include <cstring>
+#include <limits>
 #include <map>
 #include <memory>
-#include <limits>
-#include <cstring>
 
 namespace te
 {
@@ -549,20 +554,6 @@ namespace te
       };
     }
 
-    bool InvertMatrix(const boost::numeric::ublas::matrix<double>& input,
-                      boost::numeric::ublas::matrix<double>& inverse)
-    {
-      boost::numeric::ublas::matrix<double> A(input);
-      boost::numeric::ublas::permutation_matrix<std::size_t> pm(A.size1());
-
-      if (lu_factorize(A, pm) != 0)
-        return false;
-
-      inverse.assign(boost::numeric::ublas::identity_matrix<double> (A.size1()));
-      lu_substitute(A, pm, inverse);
-
-      return true;
-    }
   } // end namespace rp
 }   // end namespace te
 

@@ -58,7 +58,7 @@ namespace te
 
           \brief Data parameter.
         */
-        struct Parameter
+        struct TESEEXPORT Parameter
         {
           std::string* m_mixedData;          //!< Parameter from a mixed data content.
           te::fe::Expression* m_expression;  //!< Parameter from an expression.

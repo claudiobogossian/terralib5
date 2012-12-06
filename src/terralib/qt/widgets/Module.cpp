@@ -35,15 +35,15 @@
 #include "se/WellKnownGraphicWidgetFactory.h"
 #include "se/WellKnownMarkFactory.h"
 #include "datasource/core/DataSourceManager.h"
-#include "datasource/core/DataSourceTypeManager.h"
-#include "datasource/connector/gdal/GDALType.h"
-#include "datasource/connector/geofile/GeoFileType.h"
-#include "datasource/connector/ogr/OGRType.h"
-#include "datasource/connector/postgis/PostGISType.h"
-#include "datasource/connector/shp/ShapeFileType.h"
-#include "datasource/connector/wcs/WCSType.h"
-#include "datasource/connector/wfs/WFSType.h"
-#include "datasource/connector/wms/WMSType.h"
+//#include "datasource/core/DataSourceTypeManager.h"
+//#include "datasource/connector/gdal/GDALType.h"
+//#include "datasource/connector/geofile/GeoFileType.h"
+//#include "datasource/connector/ogr/OGRType.h"
+//#include "datasource/connector/postgis/PostGISType.h"
+//#include "datasource/connector/shp/ShapeFileType.h"
+//#include "datasource/connector/wcs/WCSType.h"
+//#include "datasource/connector/wfs/WFSType.h"
+//#include "datasource/connector/wms/WMSType.h"
 #include "Config.h"
 #include "Module.h"
 
@@ -107,14 +107,14 @@ te::qt::widgets::Module::~Module()
 void te::qt::widgets::Module::initialize()
 {
 // Initializes the data source types
-  DataSourceTypeManager::getInstance().add(new GDALType);
-  DataSourceTypeManager::getInstance().add(new GeoFileType);
-  DataSourceTypeManager::getInstance().add(new OGRType);
-  DataSourceTypeManager::getInstance().add(new PostGISType);
-  DataSourceTypeManager::getInstance().add(new ShapeFileType);
-  DataSourceTypeManager::getInstance().add(new WCSType);
-  DataSourceTypeManager::getInstance().add(new WFSType);
-  DataSourceTypeManager::getInstance().add(new WMSType);
+  //DataSourceTypeManager::getInstance().add(new GDALType);
+  //DataSourceTypeManager::getInstance().add(new GeoFileType);
+  //DataSourceTypeManager::getInstance().add(new OGRType);
+  //DataSourceTypeManager::getInstance().add(new PostGISType);
+  //DataSourceTypeManager::getInstance().add(new ShapeFileType);
+  //DataSourceTypeManager::getInstance().add(new WCSType);
+  //DataSourceTypeManager::getInstance().add(new WFSType);
+  //DataSourceTypeManager::getInstance().add(new WMSType);
 
 // It initializes the well-known mark factory
   te::qt::widgets::WellKnownMarkFactory::initialize();
@@ -137,14 +137,14 @@ void te::qt::widgets::Module::initialize()
 void te::qt::widgets::Module::finalize()
 {
 // Removes the data source types
-  DataSourceTypeManager::getInstance().remove("GDAL");
-  DataSourceTypeManager::getInstance().remove("GEOFILE");
-  DataSourceTypeManager::getInstance().remove("OGR");
-  DataSourceTypeManager::getInstance().remove("POSTGIS");
-  DataSourceTypeManager::getInstance().remove("SHAPEFILE");
-  DataSourceTypeManager::getInstance().remove("WCS");
-  DataSourceTypeManager::getInstance().remove("WFS");
-  DataSourceTypeManager::getInstance().remove("WMS");
+  //DataSourceTypeManager::getInstance().remove("GDAL");
+  //DataSourceTypeManager::getInstance().remove("GEOFILE");
+  //DataSourceTypeManager::getInstance().remove("OGR");
+  //DataSourceTypeManager::getInstance().remove("POSTGIS");
+  //DataSourceTypeManager::getInstance().remove("SHAPEFILE");
+  //DataSourceTypeManager::getInstance().remove("WCS");
+  //DataSourceTypeManager::getInstance().remove("WFS");
+  //DataSourceTypeManager::getInstance().remove("WMS");
 
 // It finalizes the well-known mark factory
   te::qt::widgets::WellKnownMarkFactory::finalize();

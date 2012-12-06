@@ -44,7 +44,7 @@
     : 0 ) )
 #define BICUBIC_KERNEL( x , a ) BICUBIC_RANGES( BICUBIC_MODULE(x) , a )
 
-te::rst::Interpolator::Interpolator(Raster* r, int m)
+te::rst::Interpolator::Interpolator(Raster const* r, int m)
   : m_raster(r),
     m_method(m)
 {

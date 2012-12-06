@@ -34,10 +34,10 @@
 #include <cassert>
 
 te::se::Style::Style()
-  : m_version(TE_SE_DEFAULT_VERSION),
-    m_name(0),
+  : m_name(0),
     m_description(0),
-    m_semanticTypeIdentifiers(0)
+    m_semanticTypeIdentifiers(0),
+  m_version(TE_SE_DEFAULT_VERSION)
 {
 }
 
@@ -112,6 +112,11 @@ void te::se::Style::push_back(te::xl::SimpleLink* onlineResource)
 {
   assert(onlineResource);
   m_onlineResources.push_back(onlineResource);
+}
+
+size_t te::se::Style::getNOnlineResources() const
+{
+  return m_onlineResources.size();
 }
 
 const te::xl::SimpleLink* te::se::Style::getOnlineResource(size_t i) const

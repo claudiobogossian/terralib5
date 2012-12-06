@@ -28,10 +28,25 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/plugin.h>
+#include <terralib/se/Style.h>
 
 // STL
+#include <cassert>
 #include <exception>
+#include <fstream>
 #include <iostream>
+
+void ShowResult(const std::string& data)
+{
+  std::cout << "Result:" << std::endl;
+  std::cout << data << std::endl;
+}
+
+void SaveResult(const std::string& data, const std::string& path)
+{
+  std::ofstream ofs(path);
+  ofs << data;
+}
 
 int main(int /*argc*/, char** /*argv*/)
 {
@@ -40,8 +55,20 @@ int main(int /*argc*/, char** /*argv*/)
 
   try
   {
-    EncodeFilter(/*"D:/filter.xml"*/); // Uncomment the path paramater to save the serialization result to file.
-    EncodeStyle(/*"D:/style.xml"*/);   // Uncomment the path paramater to save the serialization result to file.
+    /* OGC Symbology Encoding */
+
+    std::string encodedStyle = EncodeStyle(); // Creates a Style and encodes it to XML format.
+
+    ShowResult(encodedStyle); // Shows the serializaton result.
+    
+    SaveResult(encodedStyle, "D:/style.xml"); // Saves the enconded style to XML file.
+
+    te::se::Style* style = DecodeStyle("D:/style.xml"); // Decodes the created XML file.
+
+    std::string backData = EncodeStyle(style); // Encodes again.
+    
+    // Comparing the results...
+    encodedStyle == backData ? std::cout << "Great job!" << std::endl : std::cout << "You are doing it wrong!" << std::endl;
   }
   catch(const std::exception& e)
   {

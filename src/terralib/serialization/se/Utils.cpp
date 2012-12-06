@@ -84,6 +84,39 @@ void te::serialize::WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, 
   WriteBaseSymbolizerHelper(symbolizer->getBaseSymbolizer(), writer);
 }
 
+void te::serialize::ReadSymbolizerHelper(te::se::Symbolizer* symbolizer, te::xml::Reader& reader)
+{
+  if(reader.hasAttrs())
+  {
+    // TODO: Verify first if the symbolizer has the attributes version and uom!
+
+    // Version
+    std::string version = reader.getAttr("version");
+    symbolizer->setVersion(version);
+
+    // Uom
+    std::string uom = reader.getAttr("uom");
+    //symbolizer->setUom(version); // TODO: te:common:: UnitOfMeasure from URI!
+  }
+
+  reader.next();
+
+  // Name
+  if(reader.getElementLocalName() == "Name")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    symbolizer->setName(reader.getElementValue());
+    reader.next();
+  }
+
+  // Description
+  if(reader.getElementLocalName() == "Description")
+    symbolizer->setDescription(ReadDescription(reader));
+
+  // TODO: BaseSymbolizer
+}
+
 void te::serialize::WriteSelectedChannelHelper(const std::string& elementName, const te::se::SelectedChannel* sc, te::xml::Writer& writer)
 {
   if(sc == 0)
@@ -102,4 +135,20 @@ void te::serialize::WriteGeometryPropertyHelper(const te::fe::PropertyName* p, t
   writer.writeStartElement("Geometry");
   te::serialize::Expression::getInstance().write(p, writer);
   writer.writeEndElement("Geometry");
+}
+
+te::fe::PropertyName* te::serialize::ReadGeometryPropertyHelper(te::xml::Reader& reader)
+{
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Geometry");
+
+  reader.next();
+
+  te::fe::Expression* exp = te::serialize::Expression::getInstance().read(reader);
+  assert(exp);
+
+  std::auto_ptr<te::fe::PropertyName> pName(dynamic_cast<te::fe::PropertyName*>(exp));
+  assert(pName.get());
+
+  return pName.release();
 }

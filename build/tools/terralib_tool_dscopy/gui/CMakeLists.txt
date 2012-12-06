@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 2.8)
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..") 				# change this if terralib is somewhere else
 set(SRCDIR ${ROOT}/src/terralib/tools/dscopy/gui) 						# this is the directory where terralib sources will be located
 set(INCLDIR ${SRCDIR}) 												# this is the directory where terralib header files will be located
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../modules")
 
 # Set the project name
 set(PROJ_NAME "terralib_tool_dscopy_gui")

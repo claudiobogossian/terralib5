@@ -29,7 +29,7 @@
 // TerraLib
 #include "../../Config.h"
 
-#define TE_QTWIDGETS_MODULE_NAME "TEQTWIDGETS"
+#define TE_QTWIDGETS_MODULE_NAME "te.qtwidgets"
 
 #define TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION 10
 

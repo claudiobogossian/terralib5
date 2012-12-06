@@ -36,7 +36,7 @@
 
 // Qt
 #include <QtGui/QMouseEvent>
-#include <QtGui/QToolTip.h>
+#include <QtGui/QToolTip>
 
 // STL
 #include <cassert>

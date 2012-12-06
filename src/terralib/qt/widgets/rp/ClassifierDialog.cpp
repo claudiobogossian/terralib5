@@ -78,55 +78,67 @@ void te::qt::widgets::ClassifierDialog::on_okPushButton_clicked()
 {
   m_outputRasterPtr.reset();
 
-  if(m_inputRasterPtr)
+  if (!m_inputRasterPtr)
   {
+    QMessageBox::critical(this, "", tr("Invalid input raster"));
+
+    return;
+  }
+
 // define classification parameters
 
 // input parameters
-    te::rp::Classifier::InputParameters algoInputParameters;
-    algoInputParameters.m_strategyName = "isoseg";
-    algoInputParameters.m_inputPolygons = m_inputPolygons;
-    algoInputParameters.m_inputRasterPtr = m_inputRasterPtr;
+  te::rp::Classifier::InputParameters algoInputParameters;
+  algoInputParameters.m_strategyName = "isoseg";
+  algoInputParameters.m_inputPolygons = m_inputPolygons;
+  algoInputParameters.m_inputRasterPtr = m_inputRasterPtr;
 
-    QList<QListWidgetItem*> selectedBands = m_uiPtr->m_inputRasterBandsListWidget->selectedItems();
+  QList<QListWidgetItem*> selectedBands = m_uiPtr->m_inputRasterBandsListWidget->selectedItems();
 
-    if(selectedBands.size() > 0)
-    {
-      QList<QListWidgetItem*>::const_iterator it = selectedBands.begin();
-      QList<QListWidgetItem*>::const_iterator itend = selectedBands.end();
+  if(selectedBands.size() <= 0)
+  {
+    QMessageBox::critical(this, "", tr("Invalid number of bands"));
 
-      while(it != itend)
-      {
-        algoInputParameters.m_inputRasterBands.push_back((*it)->text().toUInt());
+    return;
+  }
 
-        ++it;
-      }
+  QList<QListWidgetItem*>::const_iterator it = selectedBands.begin();
+  QList<QListWidgetItem*>::const_iterator itend = selectedBands.end();
+
+  while(it != itend)
+  {
+    algoInputParameters.m_inputRasterBands.push_back((*it)->text().toUInt());
+
+    ++it;
+  }
 
 // link specific parameters with chosen implementation
-      te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
-      classifierparameters.m_acceptanceThreshold = m_uiPtr->m_acceptanceThresholdComboBox->currentText().toDouble();
+  te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
+  classifierparameters.m_acceptanceThreshold = m_uiPtr->m_acceptanceThresholdComboBox->currentText().toDouble();
 
-      algoInputParameters.setClassifierStrategyParams(classifierparameters);
+  algoInputParameters.setClassifierStrategyParams(classifierparameters);
 
 // output parameters
-      te::rp::Classifier::OutputParameters algoOutputParameters;
-      algoOutputParameters.m_rInfo = m_outpuRasterInfo;
-      algoOutputParameters.m_rType = m_outpuRasterDSType;
+  te::rp::Classifier::OutputParameters algoOutputParameters;
+  algoOutputParameters.m_rInfo = m_outpuRasterInfo;
+  algoOutputParameters.m_rType = m_outpuRasterDSType;
 
 // execute the algorithm
-      te::rp::Classifier classifierinstance;
+  te::rp::Classifier classifierinstance;
 
-      if(!classifierinstance.initialize(algoInputParameters))
-        QMessageBox::critical(this, "", tr("Classifier initialization error"));
-      if(!classifierinstance.execute(algoOutputParameters))
-        QMessageBox::critical(this, "", tr("Classifier execution error"));
+  if(!classifierinstance.initialize(algoInputParameters))
+  {
+    QMessageBox::critical(this, "", tr("Classifier initialization error"));
 
-      QMessageBox::information(this, "", tr("Classification ended sucessfully"));
-    }
-    else
-      QMessageBox::critical(this, "", tr("Invalid number of bands"));
+    return;
   }
-  else
-    QMessageBox::critical(this, "", tr("Invalid input raster"));
+  if(!classifierinstance.execute(algoOutputParameters))
+  {
+    QMessageBox::critical(this, "", tr("Classifier execution error"));
+
+    return;
+  }
+
+  QMessageBox::information(this, "", tr("Classification ended sucessfully"));
 
 }

@@ -27,6 +27,7 @@
 #define __TERRALIB_SE_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../geometry/Enums.h"
 #include "Config.h"
 #include "Font.h"
 
@@ -46,6 +47,8 @@ namespace te
     class PointSymbolizer;
     class PolygonSymbolizer;
     class Stroke;
+    class Style;
+    class Symbolizer;
     class TextSymbolizer;
 
     /*!
@@ -248,6 +251,38 @@ namespace te
       \note The caller of this method will take the ownership of the returned pointer.
     */
     TESEEXPORT Description* CreateDescription(const std::string& title, const std::string& abst);
+
+    /*!
+      \brief Try creates an appropriate symbolizer based on given geometry type.
+
+      \param geomType The geometry type.
+
+      \return A symbolizer based on given geometry type.
+
+      \note Random colors will be generated.
+      \note The caller of this method will take the ownership of the returned pointer.
+      \note The method will return a NULL pointer if a default symbolizer could not be created.
+    */
+    TESEEXPORT Symbolizer* CreateSymbolizer(const te::gm::GeomType& geomType);
+
+    /*!
+      \brief Try creates an appropriate style based on given geometry type.
+
+      \param geomType The geometry type.
+
+      \return A style based on given geometry type.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+      \note The method will return a NULL pointer if a default style could not be created.
+    */
+    TESEEXPORT Style* CreateFeatureTypeStyle(const te::gm::GeomType& geomType);
+
+    /*!
+      \brief Creates a random RGB color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
+
+      \return A random color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.
+    */
+    TESEEXPORT std::string GenerateRandomColor();
 
   } // end namespace se
 }   // end namespace te

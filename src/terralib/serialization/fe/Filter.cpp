@@ -36,7 +36,16 @@
 
 te::fe::Filter* te::serialize::ReadFilter(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Filter");
+
+  std::auto_ptr<te::fe::Filter> filter(new te::fe::Filter);
+
+  reader.next();
+
+  filter->setOp(te::serialize::AbstractOp::getInstance().read(reader));
+
+  return filter.release();
 }
 
 void te::serialize::Save(const te::fe::Filter* filter, te::xml::Writer& writer)
@@ -44,9 +53,9 @@ void te::serialize::Save(const te::fe::Filter* filter, te::xml::Writer& writer)
   if(filter == 0)
     return;
 
-  writer.writeStartElement("Filter");
+  writer.writeStartElement("ogc:Filter");
 
   AbstractOp::getInstance().write(filter->getOp(), writer);
 
-  writer.writeEndElement("Filter");
+  writer.writeEndElement("ogc:Filter");
 }

@@ -57,7 +57,8 @@ void te::serialize::Expression::reg(const std::string& expName, const Expression
 
 te::fe::Expression* te::serialize::Expression::read(te::xml::Reader& reader) const
 {
-  std::string name = reader.getElementLocalName();
+  std::string name;
+  reader.getNodeType() == te::xml::VALUE ? name = "Literal" : name = reader.getElementLocalName();
 
   ExpressionFnctIdxType::const_iterator it = m_fncts.find(name);
 
@@ -82,7 +83,10 @@ void te::serialize::Expression::write(const te::fe::Expression* exp, te::xml::Wr
 
 void te::serialize::Expression::visit(const te::fe::BinaryOperator& visited)
 {
-  m_writer->writeStartElement(visited.getName());
+  std::string name = "ogc:";
+  name += visited.getName();
+
+  m_writer->writeStartElement(name);
 
   te::fe::Expression* exp1 = visited.getFirst();
   assert(exp1);
@@ -92,7 +96,7 @@ void te::serialize::Expression::visit(const te::fe::BinaryOperator& visited)
   assert(exp2);
   exp2->accept(*this);
 
-  m_writer->writeEndElement(visited.getName());
+  m_writer->writeEndElement(name);
 }
 
 void te::serialize::Expression::visit(const te::fe::Function& visited)
@@ -102,13 +106,13 @@ void te::serialize::Expression::visit(const te::fe::Function& visited)
 
 void te::serialize::Expression::visit(const te::fe::Literal& visited)
 {
-  //m_writer->writeElement("Literal", visited.getValue());
-  m_writer->writeValue(visited.getValue());
+  m_writer->writeElement("ogc:Literal", visited.getValue());
+  //m_writer->writeValue(visited.getValue());
 }
 
 void te::serialize::Expression::visit(const te::fe::PropertyName& visited)
 {
-  m_writer->writeElement("PropertyName", visited.getName());
+  m_writer->writeElement("ogc:PropertyName", visited.getName());
 }
 
 te::serialize::Expression::~Expression()
@@ -135,15 +139,68 @@ te::serialize::Expression::Expression()
 
 te::fe::Expression* BinaryOperatorReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == te::fe::Globals::sm_add ||
+         reader.getElementLocalName() == te::fe::Globals::sm_sub ||
+         reader.getElementLocalName() == te::fe::Globals::sm_mul ||
+         reader.getElementLocalName() == te::fe::Globals::sm_div);
+
+  te::fe::BinaryOperator* op = 0;
+  if(reader.getElementLocalName() == te::fe::Globals::sm_add)
+    op = new te::fe::BinaryOperator(te::fe::Globals::sm_add);
+  else if(reader.getElementLocalName() == te::fe::Globals::sm_sub)
+    op = new te::fe::BinaryOperator(te::fe::Globals::sm_sub);
+  else if(reader.getElementLocalName() == te::fe::Globals::sm_mul)
+    op = new te::fe::BinaryOperator(te::fe::Globals::sm_mul);
+  else op = new te::fe::BinaryOperator(te::fe::Globals::sm_div);
+
+  std::auto_ptr<te::fe::BinaryOperator> exp(op);
+
+  reader.next();
+
+  exp->setFirst(te::serialize::Expression::getInstance().read(reader));
+
+  exp->setSecond(te::serialize::Expression::getInstance().read(reader));
+
+  return exp.release();
 }
 
 te::fe::Expression* LiteralReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+  std::auto_ptr<te::fe::Literal> exp(new te::fe::Literal(""));
+
+  if(reader.getElementLocalName() == "Literal")
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::VALUE);
+    std::string value = reader.getElementValue();
+    exp->setValue(value);
+    reader.next();
+    
+    return exp.release();
+  }
+
+  // Else, no <Literal> tags
+  std::string value = reader.getElementValue();
+  exp->setValue(value);
+
+  return exp.release();
 }
 
 te::fe::Expression* PropertyNameReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PropertyName");
+
+  reader.next();
+  
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string value = reader.getElementValue();
+  std::auto_ptr<te::fe::PropertyName> exp(new te::fe::PropertyName(value));
+
+  reader.next();
+
+  return exp.release();
 }

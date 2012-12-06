@@ -32,6 +32,7 @@
 // STL
 #include <memory>
 #include <set>
+#include <map>
 
 // Qt
 #include <QtGui/QDialog>
@@ -75,6 +76,16 @@ namespace te
           void tableWidgetClicked(QTableWidgetItem* item);
 
           void replyFinished(QNetworkReply*);
+
+          void addPlugins();
+
+          void removePlugins();
+
+        signals:
+
+          void pluginsAdded(const std::map<std::string, std::string>&);
+
+          void pluginsRemoved(const std::vector<std::string>&);
 
         protected:
 

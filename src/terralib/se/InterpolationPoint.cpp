@@ -60,7 +60,7 @@ void te::se::InterpolationPoint::setData(const double& d)
   m_data = d;
 }
 
-double te::se::InterpolationPoint::getData()
+double te::se::InterpolationPoint::getData() const
 {
   return m_data;
 }
@@ -71,7 +71,7 @@ void te::se::InterpolationPoint::setValue(ParameterValue* v)
   m_value = v;
 }
 
-te::se::ParameterValue* te::se::InterpolationPoint::getValue()
+te::se::ParameterValue* te::se::InterpolationPoint::getValue() const
 {
   return m_value;
 }

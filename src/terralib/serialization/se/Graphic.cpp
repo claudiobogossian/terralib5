@@ -32,6 +32,7 @@
 #include "ExternalGraphic.h"
 #include "Graphic.h"
 #include "Mark.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -40,7 +41,48 @@
 
 te::se::Graphic* te::serialize::ReadGraphic(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Graphic");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Graphic> graphic(new te::se::Graphic);
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        (reader.getElementLocalName() == "Mark" ||
+        reader.getElementLocalName() == "ExternalGraphic"))
+    reader.getElementLocalName() == "Mark" ? graphic->add(ReadMark(reader)) : graphic->add(ReadExternalGraphic(reader));
+
+  // Opacity
+  if(reader.getElementLocalName() == "Opacity")
+  {
+    reader.next();
+    graphic->setOpacity(ReadParameterValue(reader));
+  }
+
+  // Size
+  if(reader.getElementLocalName() == "Size")
+  {
+    reader.next();
+    graphic->setSize(ReadParameterValue(reader));
+  }
+
+  // Rotation
+  if(reader.getElementLocalName() == "Rotation")
+  {
+    reader.next();
+    graphic->setRotation(ReadParameterValue(reader));
+  }
+
+  // AnchorPoint
+  if(reader.getElementLocalName() == "AnchorPoint")
+    graphic->setAnchorPoint(ReadAnchorPoint(reader));
+
+  // Displacement
+  if(reader.getElementLocalName() == "Displacement")
+    graphic->setDisplacement(ReadDisplacement(reader));
+
+  return graphic.release();
 }
 
 void te::serialize::Save(const te::se::Graphic* graphic, te::xml::Writer& writer)

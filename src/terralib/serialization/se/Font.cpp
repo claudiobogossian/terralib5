@@ -36,7 +36,19 @@
 
 te::se::Font* te::serialize::ReadFont(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Font");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Font> font(new te::se::Font);
+
+  // SvgParameters
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+        reader.getElementLocalName() == "SvgParameter")
+    font->add(ReadSvgParameter(reader));
+
+  return font.release();
 }
 
 void te::serialize::Save(const te::se::Font* font, te::xml::Writer& writer)

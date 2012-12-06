@@ -13,6 +13,13 @@ if(Boost_FOUND)
   list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
+find_package(Xerces ${_Xerces_VERSION} REQUIRED)
+if(XERCES_FOUND)
+  list (APPEND DEP_LIBS ${XERCES_LIBRARIES})
+  list (APPEND DEP_INCLUDES ${XERCES_INCLUDE_DIRS})
+endif()
+
+
 #Definitions for windows compiling
 if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTAFDLL -DBOOST_ALL_NO_LIB)
@@ -30,6 +37,9 @@ list ( APPEND
   terralib_memory
   terralib_qtwidgets
   terralib_maptools
+  terralib_serialization
+  terralib_xerces
+  terralib_xml
 )
 
 set (
@@ -50,6 +60,7 @@ file (
 set (
   HDRS_TO_MOC
   ${SRCDIR}/CoreApplication.h
+  ${SRCDIR}/ApplicationPlugins.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af" MOC)
 

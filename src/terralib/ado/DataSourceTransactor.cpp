@@ -146,7 +146,8 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
                                                                 te::common::TraverseType travType, 
                                                                 te::common::AccessPolicy rwRole)
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  // Temporary
+  return getDataSet(name);
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name,

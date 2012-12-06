@@ -36,7 +36,15 @@
 
 te::se::ImageOutline* te::serialize::ReadImageOutline(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "ImageOutline");
+
+  reader.next();
+
+  std::auto_ptr<te::se::ImageOutline> imageOutline(new te::se::ImageOutline);
+  imageOutline->setSymbolizer(Symbolizer::getInstance().read(reader));
+
+  return imageOutline.release();
 }
 
 void te::serialize::Save(const te::se::ImageOutline* imageOutline, te::xml::Writer& writer)

@@ -28,6 +28,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "Displacement.h"
+#include "ParameterValue.h"
 #include "Utils.h"
 
 // STL
@@ -36,7 +37,22 @@
 
 te::se::Displacement* te::serialize::ReadDisplacement(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Displacement");
+
+  reader.next();
+
+  std::auto_ptr<te::se::Displacement> d(new te::se::Displacement);
+
+  assert(reader.getElementLocalName() == "DisplacementX");
+  reader.next();
+  d->setDisplacementX(ReadParameterValue(reader));
+
+  assert(reader.getElementLocalName() == "DisplacementY");
+  reader.next();
+  d->setDisplacementY(ReadParameterValue(reader));
+
+  return d.release();
 }
 
 void te::serialize::Save(const te::se::Displacement* d, te::xml::Writer& writer)

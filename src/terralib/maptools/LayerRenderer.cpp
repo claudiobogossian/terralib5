@@ -48,6 +48,7 @@
 #include "../se/FeatureTypeStyle.h"
 #include "../se/Style.h"
 #include "../se/Rule.h"
+#include "../se/Utils.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
 #include "Canvas.h"
@@ -100,17 +101,22 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
   // Adjusting box...
   te::gm::Envelope box(bbox);
   
-  bool remap = false;
-  
-  if(layer->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS && layer->getSRID() != srid)
+  bool needRemap = false;
+  if(layer->getSRID() != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS)
   {
     box.transform(srid, layer->getSRID());
-    remap = true;
+    needRemap = true;
   }
 
   // Gets the associated layer style
   te::se::Style* style = l->getStyle();
-  assert(style);
+  if(style == 0)
+  {
+    // Try creates an appropriate style
+    style = te::se::CreateFeatureTypeStyle(gcol->getGeometryType());
+    assert(style);
+    l->setStyle(style);
+  }
 
   // The canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -187,7 +193,7 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     message += boost::lexical_cast<std::string>(nRules) + ".";
 
     // Draw task
-    te::common::TaskProgress task(message);
+    te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
     // Setups task
     task.setTotalSteps(nSymbolizers * dataset->size());
 
@@ -201,6 +207,13 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
       // Let's draw!
       while(dataset->moveNext())
       {
+        if(!task.isActive())
+        {
+          delete dataset;
+          delete t;
+          return;
+        }
+
         // Updates the draw task
         task.pulse();
 
@@ -210,8 +223,8 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
         if(g == 0)
           continue;
 
-        // Verifies the SRID. Case differents, converts coordinates...
-        if(remap)
+        // Need remap?
+        if(needRemap)
         {
           g->setSRID(layer->getSRID());
           g->transform(srid);

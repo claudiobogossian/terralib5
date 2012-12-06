@@ -46,6 +46,7 @@
 #include "ImageOutline.h"
 #include "LabelPlacement.h"
 #include "OverlapBehavior.h"
+#include "ParameterValue.h"
 #include "ShadedRelief.h"
 #include "Stroke.h"
 #include "Symbolizer.h"
@@ -117,27 +118,187 @@ te::serialize::Symbolizer::Symbolizer()
 
 te::se::Symbolizer* LineSymbolizerReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "LineSymbolizer");
+
+  std::auto_ptr<te::se::LineSymbolizer> ls(new te::se::LineSymbolizer);
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::ReadSymbolizerHelper(ls.get(), reader);
+
+  // Geometry
+  if(reader.getElementLocalName() == "Geometry")
+    ls->setGeometry(te::serialize::ReadGeometryPropertyHelper(reader));
+
+  // Stroke
+  if(reader.getElementLocalName() == "Stroke")
+    ls->setStroke(te::serialize::ReadStroke(reader));
+
+  // PerpendicularOffset
+  if(reader.getElementLocalName() == "PerpendicularOffset")
+  {
+    reader.next();
+    ls->setPerpendicularOffset(te::serialize::ReadParameterValue(reader));
+  }
+
+  return ls.release();
 }
 
 te::se::Symbolizer* PointSymbolizerReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PointSymbolizer");
+
+  std::auto_ptr<te::se::PointSymbolizer> ps(new te::se::PointSymbolizer);
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::ReadSymbolizerHelper(ps.get(), reader);
+
+  // Geometry
+  if(reader.getElementLocalName() == "Geometry")
+    ps->setGeometry(te::serialize::ReadGeometryPropertyHelper(reader));
+
+  // Graphic
+  if(reader.getElementLocalName() == "Graphic")
+    ps->setGraphic(te::serialize::ReadGraphic(reader));
+
+  return ps.release();
 }
 
 te::se::Symbolizer* PolygonSymbolizerReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "PolygonSymbolizer");
+
+  std::auto_ptr<te::se::PolygonSymbolizer> ps(new te::se::PolygonSymbolizer);
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::ReadSymbolizerHelper(ps.get(), reader);
+
+  // Geometry
+  if(reader.getElementLocalName() == "Geometry")
+    ps->setGeometry(te::serialize::ReadGeometryPropertyHelper(reader));
+
+  // Fill
+  if(reader.getElementLocalName() == "Fill")
+    ps->setFill( te::serialize::ReadFill(reader));
+
+  // Stroke
+  if(reader.getElementLocalName() == "Stroke")
+    ps->setStroke(te::serialize::ReadStroke(reader));
+
+  // Displacement
+  if(reader.getElementLocalName() == "Displacement")
+    ps->setDisplacement(te::serialize::ReadDisplacement(reader));
+
+  // PerpendicularOffset
+  if(reader.getElementLocalName() == "PerpendicularOffset")
+  {
+    reader.next();
+    ps->setPerpendicularOffset(te::serialize::ReadParameterValue(reader));
+  }
+
+  return ps.release();
 }
 
 te::se::Symbolizer* RasterSymbolizerReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "RasterSymbolizer");
+
+  std::auto_ptr<te::se::RasterSymbolizer> rs(new te::se::RasterSymbolizer);
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::ReadSymbolizerHelper(rs.get(), reader);
+
+  // TODO: Missing <Geometry> - <ogc:PropertyName> attribute on te::se::RasterSymbolizer
+
+  // Opacity
+  if(reader.getElementLocalName() == "Opacity")
+  {
+    reader.next();
+    rs->setOpacity(te::serialize::ReadParameterValue(reader));
+  }
+
+  // Gain (TerraLib extension)  TODO: In this case, how deal with xsd?!
+  /*if(reader.getElementLocalName() == "Opacity")
+  {
+    reader.next();
+    rs->setGain(te::serialize::ReadParameterValue(reader));
+  }*/
+
+  // Offset (TerraLib extension) TODO: In this case, how deal with xsd?!
+  /*if(reader.getElementLocalName() == "Offset")
+  {
+    reader.next();
+    rs->setOffset(te::serialize::ReadParameterValue(reader));
+  }*/
+
+  // ChannelSelection
+  if(reader.getElementLocalName() == "ChannelSelection")
+    rs->setChannelSelection(te::serialize::ReadChannelSelection(reader));
+
+  // OverlapBehavior
+  if(reader.getElementLocalName() == "OverlapBehavior")
+    rs->setOverlapBehavior(te::serialize::ReadOverlapBehavior(reader));
+
+  // ColorMap
+  if(reader.getElementLocalName() == "ColorMap")
+    rs->setColorMap(te::serialize::ReadColorMap(reader));
+
+  // ContrastEnhancement
+  if(reader.getElementLocalName() == "ContrastEnhancement")
+    rs->setContrastEnhancement(te::serialize::ReadContrastEnhancement(reader));
+
+  // ShadedRelief
+  if(reader.getElementLocalName() == "ShadedRelief")
+    rs->setShadedRelief(te::serialize::ReadShadedRelief(reader));
+
+  // ImageOutline
+  if(reader.getElementLocalName() == "ImageOutline")
+    rs->setImageOutline(te::serialize::ReadImageOutline(reader));
+
+  return rs.release();
 }
 
 te::se::Symbolizer* TextSymbolizerReader(te::xml::Reader& reader)
 {
-  return 0;
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "TextSymbolizer");
+
+  std::auto_ptr<te::se::TextSymbolizer> ts(new te::se::TextSymbolizer);
+
+  // Common elements & attributes of Symbolizers
+  te::serialize::ReadSymbolizerHelper(ts.get(), reader);
+
+  // Geometry
+  if(reader.getElementLocalName() == "Geometry")
+    ts->setGeometry(te::serialize::ReadGeometryPropertyHelper(reader));
+
+  // Label
+  if(reader.getElementLocalName() == "Label")
+  {
+    reader.next();
+    ts->setLabel(te::serialize::ReadParameterValue(reader));
+  }
+
+  // Font
+  if(reader.getElementLocalName() == "Font")
+    ts->setFont(te::serialize::ReadFont(reader));
+
+  // LabelPlacement
+  if(reader.getElementLocalName() == "LabelPlacement")
+    ts->setLabelPlacement(te::serialize::ReadLabelPlacement(reader));
+
+  // Halo
+  if(reader.getElementLocalName() == "Halo")
+    ts->setHalo(te::serialize::ReadHalo(reader));
+
+  // Fill
+  if(reader.getElementLocalName() == "Fill")
+    ts->setFill(te::serialize::ReadFill(reader));
+
+  return ts.release();
 }
 
 void LineSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
@@ -214,9 +375,10 @@ void RasterSymbolizerWriter(const te::se::Symbolizer* symbolizer, te::xml::Write
   te::serialize::WriteSymbolizerHelper(rs, writer);
 
   // Specific elements of RasterSymbolizer
+  // TODO: Missing <Geometry> - <ogc:PropertyName> attribute on te::se::RasterSymbolizer
   te::serialize::WriteParameterValuePtrHelper("Opacity", rs->getOpacity(), writer);
-  te::serialize::WriteParameterValuePtrHelper("Gain", rs->getGain(), writer);
-  te::serialize::WriteParameterValuePtrHelper("Offset", rs->getOffset(), writer);
+  //te::serialize::WriteParameterValuePtrHelper("Gain", rs->getGain(), writer); // Offset (TerraLib extension) TODO: In this case, how deal with xsd?!
+  //te::serialize::WriteParameterValuePtrHelper("Offset", rs->getOffset(), writer); // Offset (TerraLib extension) TODO: In this case, how deal with xsd?!
   te::serialize::Save(rs->getChannelSelection(), writer);
   te::serialize::Save(rs->getOverlapBehavior(), writer);
   te::serialize::Save(rs->getColorMap(), writer);

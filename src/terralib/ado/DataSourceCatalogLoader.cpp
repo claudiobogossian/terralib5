@@ -146,7 +146,10 @@ te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std:
     if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
     {
       te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
-      getGeometryColumn(dt.get(), geop);      
+      geop->setSRID(getSRID(adoConn, geop));
+      te::gm::GeomType t = getType(adoConn, geop);
+      geop->setGeometryType(t);
+      dt->setDefaultGeomProperty(geop);
     }
   }
   
@@ -193,7 +196,9 @@ void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
     if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
     {
       te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
-      geop->getParent()->setName(dt->getName());
+      geop->setSRID(getSRID(adoConn, geop));
+      te::gm::GeomType t = getType(adoConn, geop);
+      geop->setGeometryType(t);
       dt->setDefaultGeomProperty(geop);
     }
   }
@@ -302,11 +307,13 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
 
 void te::ado::DataSourceCatalogLoader::getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* geomp)
 {
-  _ConnectionPtr adoConn = m_t->getADOConnection();
+  //geomp = getDefaultGeomProperty(dt, m_t->getADOConnection());
+  
+  //_ConnectionPtr adoConn = m_t->getADOConnection();
 
-  geomp->getParent()->setName(dt->getName());
-  geomp->setSRID(te::ado::getSRID(adoConn, geomp));
-  geomp->setGeometryType(te::ado::getType(adoConn, geomp));
+  //geomp->getParent()->setName(dt->getName());
+  //geomp->setSRID(te::ado::getSRID(adoConn, geomp));
+  //geomp->setGeometryType(te::ado::getType(adoConn, geomp));
   dt->setDefaultGeomProperty(geomp);
 }
 
