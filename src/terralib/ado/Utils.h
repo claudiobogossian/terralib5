@@ -66,17 +66,7 @@ namespace te
       \param prop Property to be added
     */
     void addAdoPropertyFromTerralib(ADOX::_TablePtr table, te::dt::Property* prop);
-
-    /*!
-      \brief Add a Terralib item in a Ado record set
-
-      \param dt DataSetType
-      \param recset The ADO record set where will be added
-      \param props The properties that will be added
-      \param item The TerraLib item referenced
-    */
-    void addItem(const te::da::DataSetType* dt, _RecordsetPtr recset, std::vector<te::dt::Property*> props, te::da::DataSetItem* item);
-    
+     
     /*!
       \brief It returns the geometry OGC names.
 

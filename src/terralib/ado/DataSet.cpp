@@ -87,7 +87,7 @@ te::da::DataSourceTransactor* te::ado::DataSet::getTransactor() const
 
 void te::ado::DataSet::loadTypeInfo()
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  getType();
 }
 
 te::da::DataSet* te::ado::DataSet::getParent() const
