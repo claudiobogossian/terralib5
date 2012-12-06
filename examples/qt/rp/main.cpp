@@ -100,7 +100,7 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 
   QApplication app(argc, argv);
 
-  te::qt::widgets::rp::TiePointsLocatorDialog dialogInstance( raster1Layer.get(),
+  te::qt::widgets::TiePointsLocatorDialog dialogInstance( raster1Layer.get(),
     raster2Layer.get(), 0, 0 );
 
   dialogInstance.exec();
@@ -109,7 +109,8 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 
   // Getting the result
 
-
+  std::vector< te::gm::GTParameters::TiePoint > tiePoints;
+  dialogInstance.getTiePoints( tiePoints );
 }
 
 void SegmenterDialogExample( int argc, char** argv )
