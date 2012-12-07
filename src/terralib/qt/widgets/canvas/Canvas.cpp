@@ -88,7 +88,7 @@ te::qt::widgets::Canvas::Canvas(int w, int h, int devType)
   {
     //QImage* i = new QImage(w, h, QImage::Format_ARGB32);
     QImage* i = new QImage(w, h, QImage::Format_ARGB32_Premultiplied);
-    i->fill(m_bgColor);
+    i->fill(m_bgColor.rgba());
     m_painter.begin(i);
   }
 
@@ -232,7 +232,7 @@ void te::qt::widgets::Canvas::clear()
   {
     m_painter.end();
     if(devType == QInternal::Image)
-      static_cast<QImage*>(device)->fill(m_bgColor);
+      static_cast<QImage*>(device)->fill(m_bgColor.rgba());
     else
       static_cast<QPixmap*>(device)->fill(m_bgColor);
     m_painter.begin(device);
@@ -278,7 +278,7 @@ void te::qt::widgets::Canvas::resize(int w, int h)
     delete image;
     //image = new QImage(w, h, QImage::Format_ARGB32);
     image = new QImage(w, h, QImage::Format_ARGB32_Premultiplied);
-    image->fill(m_bgColor);
+    image->fill(m_bgColor.rgba());
     m_painter.begin(image);
   }
 }
