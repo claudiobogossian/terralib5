@@ -253,8 +253,10 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
     TERP_LOGWARN("No information about sensors were provided, using defaults.");
   }
   else
+  {
     TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputSensorBands.size() == inputParamsPtr->m_inputRasterBands.size(),
                               "Invalid raster bands number");
+  }
 
   for(unsigned int i = 0; i < inputParamsPtr->m_inputRasterBands.size(); i++)
   {
