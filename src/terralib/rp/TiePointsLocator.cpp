@@ -1241,14 +1241,6 @@ namespace te
         }
       };
       
-      // Checking the number of tie-points
-      
-      if( m_inputParameters.m_maxTiePoints == 0 )
-      {
-        
-        
-      }
-      
       // Checking other parameters
       
       TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_maxTiePoints > 0,
