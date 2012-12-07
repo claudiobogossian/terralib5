@@ -3441,7 +3441,10 @@ namespace te
       matchedPoints.clear();
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
+      if( interestPointsSet1Size == 0 ) return true;
+      
       const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      if( interestPointsSet2Size == 0 ) return true;
       
       assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
       assert( featuresSet1.getLinesNumber() == interestPointsSet1Size );
@@ -3746,7 +3749,10 @@ namespace te
       matchedPoints.clear();
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
+      if( interestPointsSet1Size == 0 ) return true;
+      
       const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      if( interestPointsSet2Size == 0 ) return true;
       
       assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
       assert( featuresSet1.getLinesNumber() == interestPointsSet1Size );
