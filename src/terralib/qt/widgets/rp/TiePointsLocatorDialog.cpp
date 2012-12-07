@@ -356,8 +356,9 @@ namespace te
               itB->second.m_tiePoint.second.x;
             coordDiffY = itB->second.m_tiePoint.first.y -
               itB->second.m_tiePoint.second.y;              
-            inputParams.m_maxR1ToR2Offset += (unsigned int)std::ceil( 
-              std::sqrt( ( coordDiffX * coordDiffX ) + ( coordDiffY * coordDiffY ) ) );
+            inputParams.m_maxR1ToR2Offset += std::max( inputParams.m_maxR1ToR2Offset,
+              (unsigned int)std::ceil( std::sqrt( ( coordDiffX * coordDiffX ) + 
+              ( coordDiffY * coordDiffY ) ) ) );
             ++manualTPNumber;
           }
           
