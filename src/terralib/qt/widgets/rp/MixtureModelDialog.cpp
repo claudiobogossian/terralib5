@@ -292,13 +292,9 @@ void te::qt::widgets::MixtureModelDialog::on_removeButton_clicked()
 {
   QPushButton* sender = (QPushButton*) QObject::sender();
 
-//  int componentRow = sender->statusTip().toInt();
-
-//  QGridLayout *componentsListLayout = (QGridLayout*) m_uiPtr->m_componentsListGroupBox->layout();
-
 // retrieve component class name
   std::string className = sender->statusTip().toStdString();
-std::cout << "removing className " << className << std::endl << std::endl;
+
   m_components.erase(className);
 
   updateComponentsGrid();
@@ -316,31 +312,19 @@ void te::qt::widgets::MixtureModelDialog::updateComponentsGrid()
     delete child;
   }
 
-/*
-  unsigned int ccount = componentsListLayout->count();
-  QItem* child;
-  for (unsigned int i = 0; i < ccount; i++)
-  {
-    child = componentsListLayout->takeAt(0);
-    componentsListLayout->removeItem(child);
-    delete child;
-    std::cout << componentsListLayout->count() << std::endl;
-  }
-  std::cout << "end remove" << std::endl;
-*/
-
 // add lines
   std::map<std::string, std::vector<double> >::const_iterator cit = m_components.begin();
   unsigned int totalComponents = 0;
   while (cit != m_components.end())
   {
     QPushButton* removeButton = new QPushButton("x");
+
     removeButton->setStatusTip(cit->first.c_str());
     removeButton->setMaximumSize(20, 20);
     connect(removeButton, SIGNAL(clicked()), SLOT(on_removeButton_clicked()));
+
     componentsListLayout->addWidget(removeButton, totalComponents, 0);
-std::cout << "inserting item " << cit->first.c_str() << std::endl;
-std::cout << "  total components: " << totalComponents << std::endl;
+
     QLineEdit* className = new QLineEdit(cit->first.c_str());
     componentsListLayout->addWidget(className, totalComponents, 1);
 
