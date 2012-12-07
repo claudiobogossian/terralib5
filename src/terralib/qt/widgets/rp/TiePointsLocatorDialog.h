@@ -145,8 +145,30 @@ namespace te
           void on_mapDisplay2_extentChanged();
 
         protected:
+
+          /*! \class TiePointData Tie Point data. */
+          class TiePointData
+          {
+            public :
+              
+              /*! \enum TiePointAcquisitionType Tie point acquisition type. */
+              enum TiePointAcquisitionType { 
+                InvalidAcquisitionT,  //!< Invalid acquisition type.
+                ManualAcquisitionT, //!< Manual acquisition type.
+                AutomaticAcquisitionT //!< Automatic acquisition type.
+              };              
+              
+              TiePointAcquisitionType m_acqType; //!< Acquisition type.
+              te::gm::GTParameters::TiePoint m_tiePoint; //!< Tie point coordinates.
+              
+              TiePointData();
+              TiePointData( const TiePointData& other );
+              ~TiePointData();
+              const TiePointData& operator=( const TiePointData& other );
+          };
           
-          typedef std::map< unsigned int, te::gm::GTParameters::TiePoint >  TPContainerT; //!< Tie-pints container type definition.
+          typedef std::map< unsigned int, TiePointData >  TPContainerT; //!< Tie-pints container type definition.
+          
           te::color::RGBAColor** m_selectedPointPattern; //!< The display draw pattern used for selected points.
           te::color::RGBAColor** m_unselectedPointPattern; //!< The display draw pattern used for unselected points.
           te::color::RGBAColor** m_tempPointPattern; //!< The display draw pattern used for temporary points.

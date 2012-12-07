@@ -84,6 +84,29 @@ namespace te
         return false;
       }        
       
+      TiePointsLocatorDialog::TiePointData::TiePointData()
+      : m_acqType( InvalidAcquisitionT )
+      {
+      }
+      
+      TiePointsLocatorDialog::TiePointData::TiePointData( 
+        const TiePointsLocatorDialog::TiePointData& other )
+      {
+        operator=( other );
+      }      
+      
+      TiePointsLocatorDialog::TiePointData::~TiePointData()
+      {
+      }
+      
+      const TiePointsLocatorDialog::TiePointData& TiePointsLocatorDialog::TiePointData::operator=( 
+        const TiePointsLocatorDialog::TiePointData& other )
+      {
+        m_acqType = other.m_acqType;
+        m_tiePoint = other.m_tiePoint;
+        return other;
+      }
+      
       TiePointsLocatorDialog::TiePointsLocatorDialog(
         te::map::RasterLayer const* inRasterLayer1Ptr,
         te::map::RasterLayer const* inRasterLayer2Ptr,
@@ -249,7 +272,7 @@ namespace te
         
         while( itB != itE )
         {
-          tiePoints.push_back( itB->second );
+          tiePoints.push_back( itB->second.m_tiePoint );
           ++itB;
         }
       }
@@ -316,6 +339,38 @@ namespace te
           
         te::rp::TiePointsLocator::OutputParameters outputParams;
         
+        // Looking for manual inserted tie-points for an initial estimate
+        
+        unsigned int manualTPNumber = 0;
+        
+        TPContainerT::const_iterator itB = m_tiePoints.begin();
+        const TPContainerT::const_iterator itE = m_tiePoints.end();
+        double coordDiffX = 0;
+        double coordDiffY = 0;
+        
+        while( itB != itE )
+        {
+          if( itB->second.m_acqType == TiePointData::ManualAcquisitionT )
+          {
+            coordDiffX = itB->second.m_tiePoint.first.x -
+              itB->second.m_tiePoint.second.x;
+            coordDiffY = itB->second.m_tiePoint.first.y -
+              itB->second.m_tiePoint.second.y;              
+            inputParams.m_maxR1ToR2Offset += (unsigned int)std::ceil( 
+              std::sqrt( ( coordDiffX * coordDiffX ) + ( coordDiffY * coordDiffY ) ) );
+            ++manualTPNumber;
+          }
+          
+          ++itB;
+        }
+        
+        if( inputParams.m_maxR1ToR2Offset > 0 )
+        {
+          inputParams.m_maxR1ToR2Offset /= manualTPNumber;
+          inputParams.m_maxR1ToR2Offset += ( ( inputParams.m_maxR1ToR2Offset * 10 )
+            / 100 );
+        }
+        
         // Executing the algorithm
         
         te::rp::TiePointsLocator algorithmInstance;          
@@ -329,11 +384,14 @@ namespace te
               
             if( tpsNmb )
             {
+              TiePointData auxTpData;
+              auxTpData.m_acqType = TiePointData::AutomaticAcquisitionT;
+              
               for( unsigned int tpIdx = 0 ; tpIdx < tpsNmb ; ++tpIdx )
               {
                 ++m_lastInsertedTPID;
-                m_tiePoints[ m_lastInsertedTPID ] = 
-                  outputParams.m_tiePoints[ tpIdx ];
+                auxTpData.m_tiePoint = outputParams.m_tiePoints[ tpIdx ];
+                m_tiePoints[ m_lastInsertedTPID ] = auxTpData;
               }
               
               tiePointsTableUpdate();
@@ -393,14 +451,15 @@ namespace te
           ( ! m_uiPtr->m_x2LineEdit->text().isEmpty() ) &&
           ( ! m_uiPtr->m_y2LineEdit->text().isEmpty() ) )
         {
-          te::gm::GTParameters::TiePoint auxTP;
-          auxTP.first.x = m_uiPtr->m_x1LineEdit->text().toDouble();
-          auxTP.first.y = m_uiPtr->m_y1LineEdit->text().toDouble();
-          auxTP.second.x = m_uiPtr->m_x2LineEdit->text().toDouble();
-          auxTP.second.y = m_uiPtr->m_y2LineEdit->text().toDouble();
+          TiePointData auxTpData;
+          auxTpData.m_acqType = TiePointData::ManualAcquisitionT;          
+          auxTpData.m_tiePoint.first.x = m_uiPtr->m_x1LineEdit->text().toDouble();
+          auxTpData.m_tiePoint.first.y = m_uiPtr->m_y1LineEdit->text().toDouble();
+          auxTpData.m_tiePoint.second.x = m_uiPtr->m_x2LineEdit->text().toDouble();
+          auxTpData.m_tiePoint.second.y = m_uiPtr->m_y2LineEdit->text().toDouble();
           
           ++m_lastInsertedTPID;
-          m_tiePoints[ m_lastInsertedTPID ] = auxTP;
+          m_tiePoints[ m_lastInsertedTPID ] = auxTpData;
           
           tiePointsTableUpdate();
         }
@@ -419,10 +478,15 @@ namespace te
         if( m_lastSelectedTiePointHasFirstOk )
         {
           m_lastSelectedTiePointHasFirstOk = false;
+          
           m_lastSelectedTiePoint.second = m_lastTrackedTiePoint.second;
           
+          TiePointData auxTpData;
+          auxTpData.m_acqType = TiePointData::ManualAcquisitionT;
+          auxTpData.m_tiePoint = m_lastSelectedTiePoint;
+          
           ++m_lastInsertedTPID;
-          m_tiePoints[ m_lastInsertedTPID ] = m_lastSelectedTiePoint;
+          m_tiePoints[ m_lastInsertedTPID ] = auxTpData;
           
           tiePointsTableUpdate();
         }
@@ -461,7 +525,7 @@ namespace te
         
         while( tPIt != tPItEnd )   
         {
-          transParams.m_tiePoints.push_back( tPIt->second );
+          transParams.m_tiePoints.push_back( tPIt->second.m_tiePoint );
           ++tPIt;
         }
         
@@ -495,7 +559,7 @@ namespace te
           
           while( tPIt != tPItEnd )
           {
-            const te::gm::GTParameters::TiePoint& currTP = tPIt->second;
+            const te::gm::GTParameters::TiePoint& currTP = tPIt->second.m_tiePoint;
             currTPError = transfPtr.get() ? transfPtr->getDirectMappingError( 
               currTP ) : 0.0;
               
@@ -509,23 +573,34 @@ namespace te
             
             newItemPtr = new QTableWidgetItem( QString::number( currTPError ) );
             newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 1, newItemPtr );      
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 1, newItemPtr );
+            
+            if( tPIt->second.m_acqType == TiePointData::ManualAcquisitionT )
+            {
+              newItemPtr = new QTableWidgetItem( QString( tr( "Manual" ) ) );
+            }
+            else
+            {
+              newItemPtr = new QTableWidgetItem( QString( tr( "Automatic" ) ) );
+            }
+            newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 2, newItemPtr );
             
             newItemPtr = new QTableWidgetItem( QString::number( currTP.first.x ) );
             newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 2, newItemPtr );          
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 3, newItemPtr );          
             
             newItemPtr = new QTableWidgetItem( QString::number( currTP.first.y ) );
             newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 3, newItemPtr );      
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 4, newItemPtr );      
             
             newItemPtr = new QTableWidgetItem( QString::number( currTP.second.x ) );
             newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 4, newItemPtr );              
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 5, newItemPtr );              
             
             newItemPtr = new QTableWidgetItem( QString::number( currTP.second.y ) );
             newItemPtr->setFlags(  Qt::ItemIsSelectable | Qt::ItemIsEnabled );
-            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 5, newItemPtr );              
+            m_uiPtr->m_tiePointsTableWidget->setItem( currentRow, 6, newItemPtr );              
             
             ++tPIt;
           }
@@ -559,7 +634,7 @@ namespace te
           it = m_tiePoints.find( itemPtr->text().toUInt() );
           assert( it != m_tiePoints.end() );
           
-          const te::gm::GTParameters::TiePoint& tiePoint = it->second;
+          const te::gm::GTParameters::TiePoint& tiePoint = it->second.m_tiePoint;
           
           if( itemPtr->isSelected() )
           {
@@ -685,7 +760,7 @@ namespace te
           assert( tiePointsIt != m_tiePoints.end() );
           
           m_inRasterLayer1Ptr->getRaster()->getGrid()->gridToGeo( 
-            tiePointsIt->second.first.x, tiePointsIt->second.first.y,
+            tiePointsIt->second.m_tiePoint.first.x, tiePointsIt->second.m_tiePoint.first.y,
             auxCoord2D.x, auxCoord2D.y );
             
           auxPoint.setX( auxCoord2D.x );
@@ -755,7 +830,7 @@ namespace te
           assert( tiePointsIt != m_tiePoints.end() );
           
           m_inRasterLayer2Ptr->getRaster()->getGrid()->gridToGeo( 
-            tiePointsIt->second.second.x, tiePointsIt->second.second.y,
+            tiePointsIt->second.m_tiePoint.second.x, tiePointsIt->second.m_tiePoint.second.y,
             auxCoord2D.x, auxCoord2D.y );
             
           auxPoint.setX( auxCoord2D.x );
