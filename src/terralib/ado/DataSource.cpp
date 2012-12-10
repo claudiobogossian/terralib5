@@ -140,7 +140,8 @@ bool te::ado::DataSource::isOpened() const
 
 bool te::ado::DataSource::isValid() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  // Temporaly
+  return true;
 }
 
 te::da::DataSourceCatalog* te::ado::DataSource::getCatalog() const

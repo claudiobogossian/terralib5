@@ -46,43 +46,45 @@ namespace te
   {
     namespace widgets
     {
-      namespace rp
+      /*!
+        \class TiePointsLocatorAdvancedDialog
+
+        \brief A dialog used to execute tie points location advanced options.
+      */
+      class TEQTWIDGETSEXPORT TiePointsLocatorAdvancedDialog : public QDialog
       {
-        /*!
-          \class TiePointsLocatorAdvancedDialog
-
-          \brief A dialog used to execute tie points location advanced options.
-        */
-        class TEQTWIDGETSEXPORT TiePointsLocatorAdvancedDialog : public QDialog
-        {
-          Q_OBJECT
+        Q_OBJECT
+        
+        public:
           
-          public:
-            
-            te::rp::TiePointsLocator::InputParameters m_inputParameters;
+          /*! \brief The current parameters.
+          */          
+          te::rp::TiePointsLocator::InputParameters m_inputParameters;
 
-            /*! \brief Constructs a basic dialog which is a child of parent, with widget flags set to f. 
-                
-                \param parent Parent widget pointer.
-                
-                \param f Widget flags.
-            */
-            TiePointsLocatorAdvancedDialog( QWidget* parent = 0,
-              Qt::WindowFlags f = 0);
+          /*! \brief Constructs a basic dialog which is a child of parent, with widget flags set to f. 
+              
+              \param parent Parent widget pointer.
+              
+              \param f Widget flags.
+          */
+          TiePointsLocatorAdvancedDialog( QWidget* parent = 0,
+            Qt::WindowFlags f = 0);
 
-            /*! \brief Destructor. */
-            ~TiePointsLocatorAdvancedDialog();
+          /*! \brief Destructor. */
+          ~TiePointsLocatorAdvancedDialog();
 
-          protected slots:
+        protected slots:
 
-            void on_okPushButton_clicked();
+          void on_okPushButton_clicked();
+          
+          // overloaded
+          void showEvent( QShowEvent* );
 
-          private:
+        private:
 
-            Ui::TiePointsLocatorAdvancedForm* m_uiPtr; //!< User interface.
-            
-        }; 
-      }
+          Ui::TiePointsLocatorAdvancedForm* m_uiPtr; //!< User interface.
+          
+      }; 
     }
   }
 }

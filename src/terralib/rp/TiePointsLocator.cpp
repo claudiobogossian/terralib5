@@ -1197,6 +1197,17 @@ namespace te
             == 1, "Invalid number of raster 1 bands" );
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
             == 1, "Invalid number of raster 2 bands" );
+            
+          // Defining the number of tie points
+          
+          if( m_inputParameters.m_maxTiePoints == 0 )
+          {
+            m_inputParameters.m_maxTiePoints = 
+              ( m_inputParameters.m_raster1TargetAreaWidth *
+              m_inputParameters.m_raster1TargetAreaWidth ) /
+              ( 50 * m_inputParameters.m_correlationWindowWidth *
+              m_inputParameters.m_correlationWindowWidth );
+          }
           
           break;
         }          
@@ -1207,6 +1218,20 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE( m_inputParameters.m_inRaster2Bands.size()
             == 1, "Invalid number of raster 2 bands" );
             
+          // Defining the number of tie points
+          
+          if( m_inputParameters.m_maxTiePoints == 0 )
+          {
+            m_inputParameters.m_maxTiePoints = 
+              getSurfFilterSize( m_inputParameters.m_octavesNumber - 1, 
+                 m_inputParameters.m_scalesNumber - 1 );
+            m_inputParameters.m_maxTiePoints = 
+              ( m_inputParameters.m_raster1TargetAreaWidth *
+              m_inputParameters.m_raster1TargetAreaWidth ) /            
+              ( 50 * m_inputParameters.m_maxTiePoints *
+              m_inputParameters.m_maxTiePoints );
+          }            
+            
           break;
         }
         default :
@@ -1214,7 +1239,7 @@ namespace te
           TERP_LOG_AND_RETURN_FALSE( "Invalid strategy" );
           break;
         }
-      };      
+      };
       
       // Checking other parameters
       
@@ -3416,7 +3441,10 @@ namespace te
       matchedPoints.clear();
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
+      if( interestPointsSet1Size == 0 ) return true;
+      
       const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      if( interestPointsSet2Size == 0 ) return true;
       
       assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
       assert( featuresSet1.getLinesNumber() == interestPointsSet1Size );
@@ -3721,7 +3749,10 @@ namespace te
       matchedPoints.clear();
       
       const unsigned int interestPointsSet1Size = interestPointsSet1.size();
+      if( interestPointsSet1Size == 0 ) return true;
+      
       const unsigned int interestPointsSet2Size = interestPointsSet2.size();
+      if( interestPointsSet2Size == 0 ) return true;
       
       assert( featuresSet1.getColumnsNumber() == featuresSet2.getColumnsNumber() );
       assert( featuresSet1.getLinesNumber() == interestPointsSet1Size );

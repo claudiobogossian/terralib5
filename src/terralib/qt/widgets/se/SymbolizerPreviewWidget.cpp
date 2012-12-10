@@ -31,7 +31,7 @@
 #include "../../../maptools/CanvasConfigurer.h"
 #include "../../../se/Symbolizer.h"
 #include "../canvas/Canvas.h"
-#include "StylePreview.h"
+#include "SymbologyPreview.h"
 #include "SymbolizerPreviewWidget.h"
 
 // Qt
@@ -67,12 +67,12 @@ te::qt::widgets::SymbolizerPreviewWidget::~SymbolizerPreviewWidget()
 
 void te::qt::widgets::SymbolizerPreviewWidget::updatePreview(te::se::Symbolizer* symb)
 {
-  m_previewLabel->setPixmap(te::qt::widgets::StylePreview::build(symb, m_geom, m_size));
+  m_previewLabel->setPixmap(te::qt::widgets::SymbologyPreview::build(symb, m_geom, m_size));
 }
 
 void te::qt::widgets::SymbolizerPreviewWidget::updatePreview(const std::vector<te::se::Symbolizer*>& symbs)
 {
-  m_previewLabel->setPixmap(te::qt::widgets::StylePreview::build(symbs, m_geom, m_size));
+  m_previewLabel->setPixmap(te::qt::widgets::SymbologyPreview::build(symbs, m_geom, m_size));
 }
 
 void te::qt::widgets::SymbolizerPreviewWidget::setSymbolizerType(const te::se::SymbolizerType& type)
