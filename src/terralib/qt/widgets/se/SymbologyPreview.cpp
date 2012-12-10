@@ -24,6 +24,9 @@
 */
 
 // TerraLib
+#include "../../../geometry/Polygon.h"
+#include "../../../geometry/LinearRing.h"
+#include "../../../geometry/Point.h"
 #include "../../../maptools/CanvasConfigurer.h"
 #include "../../../se/Rule.h"
 #include "../../../se/Symbolizer.h"
@@ -33,6 +36,56 @@
 
 // STL
 #include <cassert>
+
+QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, const QSize& size)
+{
+  double offset = 2.0;
+
+  te::gm::Geometry* geom = 0;
+  if(symb->getType() == "PolygonSymbolizer")
+  {
+    te::gm::Polygon* polygon = new te::gm::Polygon(1, te::gm::PolygonType);
+    te::gm::LinearRing* ring = new te::gm::LinearRing(5, te::gm::LineStringType);
+    ring->setPoint(0, offset, offset);
+    ring->setPoint(1, size.width() - offset, offset);
+    ring->setPoint(2, size.width() - offset, size.height() - offset);
+    ring->setPoint(3, offset, size.height() - offset);
+    ring->setPoint(4, offset, offset);
+    polygon->setRingN(0, ring);
+    geom = polygon;
+  } 
+  else if(symb->getType() == "LineSymbolizer")
+  {
+    te::gm::LineString* line = new te::gm::LineString(2, te::gm::LineStringType);
+    line->setPoint(0, offset, size.height() * 0.5);
+    line->setPoint(1, size.width() - offset, size.height() * 0.5);
+    geom = line;
+  }
+  else if(symb->getType() == "PointSymbolizer")
+    geom = new te::gm::Point(size.width() * 0.5, size.height() * 0.5);
+
+  QPixmap result = build(symb, geom, size);
+
+  delete geom;
+
+  return result;
+}
+
+QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size)
+{
+  QPixmap result(size);
+  result.fill(Qt::transparent);
+
+  // Let's draw!
+  QPainter painter(&result);
+  for(std::size_t i = 0; i < symbs.size(); ++i)
+  {
+    QPixmap pix = build(symbs[i], size);
+    painter.drawPixmap(0, 0, pix);
+  }
+
+  return result;
+}
 
 QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size)
 {

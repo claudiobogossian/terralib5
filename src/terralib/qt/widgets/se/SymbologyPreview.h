@@ -58,6 +58,29 @@ namespace te
 
       namespace SymbologyPreview
       {
+         /*!
+          \brief Generates the preview of given symbolizer element.
+
+          \param symb A valid symbolizer element.
+          \param size The preview size.
+
+          \return A pixmap that represents the result of symbolizer preview.
+
+          \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
+        */
+        TEQTWIDGETSEXPORT QPixmap build(te::se::Symbolizer* symb, const QSize& size);
+
+        /*!
+          \brief Generates the preview of a set of symbolizers elements.
+
+          \param symbs A set of symbolizers elements.
+          \param size The preview size.
+
+          \return A pixmap that represents the composite result of symbolizers preview.
+
+          \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
+        */
+        TEQTWIDGETSEXPORT QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size);
 
         /*!
           \brief Generates the preview of given symbolizer element.
