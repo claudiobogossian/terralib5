@@ -77,14 +77,14 @@ void te::qt::widgets::StyleExplorer::initialize()
 
     QTreeWidgetItem* ruleItem = new QTreeWidgetItem(root, RULE);
     ruleItem->setText(0, tr("Rule"));
-    ruleItem->setData(0, Qt::UserRole, i);
+    ruleItem->setData(0, Qt::UserRole, (int)i);
     ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize)));
 
     for(std::size_t j = 0; j < symbs.size(); ++j) // for each symbolizer
     {
       QTreeWidgetItem* symbItem = new QTreeWidgetItem(ruleItem, SYMBOLIZER);
       symbItem->setText(0, tr(symbs[j]->getType().c_str()));
-      symbItem->setData(0, Qt::UserRole, j);
+      symbItem->setData(0, Qt::UserRole, (int)j);
       symbItem->setIcon(0, QIcon(SymbologyPreview::build(symbs[j], iconSize)));
     }
   }
