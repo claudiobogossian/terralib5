@@ -28,6 +28,7 @@
 #include "Algorithm.h"
 #include "FeederRaster.h"
 #include "../geometry/GTParameters.h"
+#include "../raster/Interpolator.h"
 
 #include <vector>
 #include <string>
@@ -54,9 +55,17 @@ namespace te
         {
           public:
             
-            FeederRaster const* m_feederRasterPtr;
+            FeederRaster* m_feederRasterPtr;
             
-            std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< Tie-points between each raster pairs given by m_feederRasterPtr (te::gm::GTParameters::TiePoint::first are raster 1 line/column indexes, te::gm::GTParameters::TiePoint::second are raster 2 line/column indexes).
+            std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
+            
+            std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< Tie-points between each raster pair or an empty vector if only the geographical coordinates must be used (te::gm::GTParameters::TiePoint::first are raster 1 line/column indexes, te::gm::GTParameters::TiePoint::second are raster 2 line/column indexes).
+            
+            std::string m_geomTransfName; //!< The name of the geometric transformation used if tie-points are supplied (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
+            
+            te::rst::Interpolator::Method m_interpMethod; //!< The raster interpolator method (default:NearestNeighbor).
+            
+            double m_noDataValue; //!< The pixel value used where no raster data is avaliable (defaul:0).
             
             InputParameters();
             
@@ -86,7 +95,7 @@ namespace te
             
             std::map< std::string, std::string > m_rInfo; //!< The necessary information to create the output rasters (as described in te::raster::RasterFactory). 
             
-            mutable std::vector< boost::shared_ptr< te::rst::Raster > > m_outputRasterPtr; //!< Pointers the generated output rasters (label image).
+            mutable boost::shared_ptr< te::rst::Raster > m_outputRasterPtr; //!< The generated output mosaic raster.
             
             OutputParameters();
             
