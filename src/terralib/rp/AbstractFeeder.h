@@ -49,16 +49,22 @@ namespace te
         virtual ~AbstractFeeder() {};
         
         /*! 
-          \brief Return the next sequence object.
-          \return A pointer to the next object or a null pointer if an error ocurred.
+          \brief Return the current sequence object.
+          \return A pointer to the current object or a null pointer if there are no object to return.
         */
-        virtual ObjType* getNext() = 0; 
+        virtual ObjType* getCurrentObj() = 0; 
 
         /*! 
-          \brief Return the next sequence object. 
-          \return A pointer to the next object or a null pointer if an error ocurred.
+          \brief Return the current sequence object. 
+          \return A pointer to the current object or a null pointer if there are no object to return.
         */
-        virtual ObjType const* getNext() const = 0;
+        virtual ObjType const* getCurrentObj() const = 0;
+        
+        /*! 
+          \brief Advances to the next sequence obeject. 
+          \return A pointer to the reached object or a null pointer if objects sequence end has been reached.
+        */
+        virtual ObjType const* operator++();
         
         /*! 
           \brief Return true if the feeder is initialized.
@@ -70,19 +76,19 @@ namespace te
           \brief Reset the feeder to the first position (subsequent accesses will start from the first sequence obejct).
           \return true if OK, false if errors ocurred.
         */        
-        virtual bool resetPosition() = 0;
+        virtual bool reset() = 0;
 
         /*! 
           \brief Return the total number of feeder objects.
           \return The total number of feeder objects.
         */
-        virtual unsigned int getTotalObjectsNumber() const = 0;
+        virtual unsigned int getObjsCount() const = 0;
 
         /*! 
           \brief Return the index of the current object.
           \return The index of the current object.
         */
-        virtual unsigned int getCurrentPosition() const = 0;
+        virtual unsigned int getCurrentOffset() const = 0;
     };
   } // end namespace rp
 }   // end namespace te
