@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_AFPLUGINWFS_INTERNAL_CONFIG_H
 #define __TERRALIB_AFPLUGINWFS_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 #define AF_WCS_PLUGIN_NAME "te.da.qt.wfs"
 
 /*!

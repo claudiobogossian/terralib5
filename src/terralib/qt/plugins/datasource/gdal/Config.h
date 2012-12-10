@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_AFPLUGINGDAL_INTERNAL_CONFIG_H
 #define __TERRALIB_AFPLUGINGDAL_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 #define AF_GDAL_PLUGIN_NAME "te.da.qt.gdal"
 
 /*!

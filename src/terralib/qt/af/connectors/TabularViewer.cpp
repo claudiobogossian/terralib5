@@ -92,7 +92,7 @@ namespace te
       void TabularViewer::pointedObjects(const std::map<std::string, te::gm::Geometry*>& geoms)
       {
         PointGeometries evt(m_layer, &geoms);
-        teApp::getInstance().broadCast(&evt);
+        Application::getInstance().broadcast(&evt);
       }
 
       void TabularViewer::colorChanged(const int& g, const QColor& c)
@@ -105,7 +105,7 @@ namespace te
         (*cs)[g] = c;
 
         StyleChanged evt(m_layer, g, &c);
-        teApp::getInstance().broadCast(&evt);
+        Application::getInstance().broadcast(&evt);
       }
 
       void TabularViewer::updateColors(te::map::Layer* layer)

@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_AFPLUGINWMS_INTERNAL_CONFIG_H
 #define __TERRALIB_AFPLUGINWMS_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 #define AF_WMS_PLUGIN_NAME "te.da.qt.wms"
 
 /*!

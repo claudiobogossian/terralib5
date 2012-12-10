@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_AFPLUGINOGR_INTERNAL_CONFIG_H
 #define __TERRALIB_AFPLUGINOGR_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 #define AF_OGR_PLUGIN_NAME "te.da.qt.ogr"
 
 /*!

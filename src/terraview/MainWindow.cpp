@@ -141,21 +141,21 @@ QMainWindow(parent, 0),
 
   std::vector< std::pair<std::string, std::string> > configs;
   getConfigurations(configs);
-  te::qt::af::teApp::getInstance().setApplicationInfo(configs);
+  te::qt::af::Application::getInstance().setApplicationInfo(configs);
 
   configs.clear();
   getPluginsConfigurations(configs);
-  te::qt::af::teApp::getInstance().setApplicationPlgInfo(configs);
+  te::qt::af::Application::getInstance().setApplicationPlgInfo(configs);
 
   configs.clear();
   getUserConfigurations(configs);
-  te::qt::af::teApp::getInstance().setUserInfo(configs);
+  te::qt::af::Application::getInstance().setUserInfo(configs);
 
   QString err_msg;
 
   try
   {
-    te::qt::af::teApp::getInstance().initialize();
+    te::qt::af::Application::getInstance().initialize();
   }
   catch(te::common::Exception& e)
   {
@@ -182,7 +182,7 @@ MainWindow::~MainWindow()
   delete m_display;
   delete m_viewer;
 
-  te::qt::af::teApp::getInstance().finalize();
+  te::qt::af::Application::getInstance().finalize();
 }
 
 void MainWindow::onApplicationTriggered(te::qt::af::Event* evt)
@@ -236,7 +236,7 @@ void MainWindow::addOGRLayer()
     if(layer != 0)
     {
       te::qt::af::LayerAdded evt(layer);
-      te::qt::af::teApp::getInstance().broadCast(&evt);
+      te::qt::af::Application::getInstance().broadcast(&evt);
     }
   }
 }
@@ -259,7 +259,7 @@ void MainWindow::addGDALLayer()
     if(layer != 0)
     {
       te::qt::af::LayerAdded evt(layer);
-      te::qt::af::teApp::getInstance().broadCast(&evt);
+      te::qt::af::Application::getInstance().broadcast(&evt);
     }
   }
 }
@@ -370,10 +370,10 @@ void MainWindow::makeDialog()
   m_viewer = new te::qt::af::TabularViewer(view);
 
   //! Connecting framework
-  te::qt::af::teApp::getInstance().addListener(this);
-  te::qt::af::teApp::getInstance().addListener(m_explorer);
-  te::qt::af::teApp::getInstance().addListener(m_display);
-  te::qt::af::teApp::getInstance().addListener(m_viewer);
+  te::qt::af::Application::getInstance().addListener(this);
+  te::qt::af::Application::getInstance().addListener(m_explorer);
+  te::qt::af::Application::getInstance().addListener(m_display);
+  te::qt::af::Application::getInstance().addListener(m_viewer);
 
   //! Docking components
   QDockWidget* doc = new QDockWidget(tr("Layer explorer"), this);

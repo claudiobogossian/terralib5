@@ -26,8 +26,6 @@
 #ifndef __TERRALIB_AFPLUGINPGIS_INTERNAL_CONFIG_H
 #define __TERRALIB_AFPLUGINPGIS_INTERNAL_CONFIG_H
 
-#include "../Config.h"
-
 #define AF_PGIS_PLUGIN_NAME "te.da.qt.pgis"
 
 /*!

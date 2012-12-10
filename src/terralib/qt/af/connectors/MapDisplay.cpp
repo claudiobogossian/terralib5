@@ -81,7 +81,7 @@ namespace te
               {
                 QResizeEvent* e = static_cast<QResizeEvent*>(evt);
                 te::qt::af::DisplayResized dr_ev(m_display, e->size(), e->oldSize());
-                te::qt::af::teApp::getInstance().broadCast(&dr_ev);
+                te::qt::af::Application::getInstance().broadcast(&dr_ev);
               }
             break;
 
@@ -122,7 +122,7 @@ namespace te
       void MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
       {
         te::qt::af::CurrentToolChanged ctc_ev(tool, m_current_tool);
-        teApp::getInstance().broadCast(&ctc_ev);
+        Application::getInstance().broadcast(&ctc_ev);
 
         delete m_current_tool;
         m_current_tool = tool;
@@ -181,7 +181,7 @@ namespace te
       void MapDisplay::onCoordTracked(QPointF& pos)
       {
         te::qt::af::TrackedCoordinate tc_ev(pos);
-        teApp::getInstance().broadCast(&tc_ev);
+        Application::getInstance().broadcast(&tc_ev);
       }
 
       void MapDisplay::redrawHighlight()
