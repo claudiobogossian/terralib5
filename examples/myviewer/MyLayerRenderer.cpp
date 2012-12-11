@@ -554,7 +554,7 @@ void MyLayerRenderer::run()
       std::map<int, te::color::RGBAColor> colorMap;
       size_t logRow;
       //size_t size = changeds.size();
-      for(cit = changeds.cbegin(); m_abort == false && cit != changeds.cend(); ++cit)
+      for(cit = changeds.begin(); m_abort == false && cit != changeds.end(); ++cit)
       {
         pkv = *cit;
         status = op->getDataSetSelectionStatus(pkv);
@@ -715,7 +715,7 @@ te::color::RGBAColor MyLayerRenderer::getLegendColor(const std::vector<te::map::
       dv = q.toDouble();
     }
     std::vector<te::map::LegendItem*>::const_iterator cit;
-    for(cit = legends.cbegin(); cit != legends.cend(); ++cit)
+    for(cit = legends.begin(); cit != legends.end(); ++cit)
     {
       std::string from = (*cit)->getLowerLimit();
       std::string to = (*cit)->getUpperLimit();

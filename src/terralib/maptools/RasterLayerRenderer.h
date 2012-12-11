@@ -44,7 +44,10 @@ namespace te
   }
 
   namespace map
-  {    
+  {
+    //! Forward declarations
+    class RasterLayer;
+
     /*!
       \class RasterLayerRenderer
 
