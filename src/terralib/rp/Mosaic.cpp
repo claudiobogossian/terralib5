@@ -169,7 +169,9 @@ namespace te
         te::gm::Coord2D llCoord1;
         te::gm::Coord2D urCoord1;
         te::gm::Coord2D llCoord2;
-        te::gm::Coord2D urCoord2;        
+        te::gm::Coord2D urCoord2;    
+        te::rst::Grid firstRasterGrid( 1u, 1u, new te::gm::Envelope( 0, 0, 0, 0), 
+          -1 );
         
         m_inputParameters.m_feederRasterPtr->reset();
         while( m_inputParameters.m_feederRasterPtr->moveNext() )
@@ -194,36 +196,69 @@ namespace te
               mosaicURY = inputRasterPtr->getGrid()->getExtent()->m_ury;
               mosaicSRID = inputRasterPtr->getGrid()->getSRID();
               mosaicBaseBandProperties = *inputRasterPtr->getBand( 0 )->getProperty();
+              firstRasterGrid = (*inputRasterPtr->getGrid());
             }
-            else if( inputRasterIdx == 1 )
+            else
             {
               te::gm::GTParameters transParams;
-              transParams.m_tiePoints = m_inputParameters.m_tiePoints[ 
-                inputRasterIdx - 1 ];
               
+              if( inputRasterIdx == 1 )
+              {
+                transParams.m_tiePoints = m_inputParameters.m_tiePoints[ 0 ];
+              }
+              else
+              {
+                // converting the current tie-points to map coords from the
+                // current raster to the first one
+                
+                te::gm::GTParameters::TiePoint auxTP;
+                const std::vector< te::gm::GTParameters::TiePoint >& inputTPs =
+                  m_inputParameters.m_tiePoints[ inputRasterIdx - 1 ];
+                const unsigned int inputTPsSize = inputTPs.size();
+                const te::gm::GeometricTransformation& lastTransf = 
+                  (*mosaicGeomTransfms[ inputRasterIdx - 2 ].get());
+                
+                for( unsigned int inputTPsIdx = 0 ; inputTPsIdx < inputTPsSize ;
+                  ++inputTPsIdx )
+                {
+                  auxTP.second = inputTPs[ inputTPsIdx - 1 ].second;
+                  lastTransf.inverseMap( inputTPs[ inputTPsIdx - 1 ].first, auxTP.first  );
+                  transParams.m_tiePoints.push_back( auxTP );
+                }
+              }
+                
               auxTransPtr.reset( te::gm::GTFactory::make( 
                 m_inputParameters.m_geomTransfName ) );  
               TERP_TRUE_OR_RETURN_FALSE( auxTransPtr.get() != 0,
                 "Geometric transformation instatiation error" );
-                
+              TERP_TRUE_OR_RETURN_FALSE( auxTransPtr->initialize( transParams ),
+                "Geometric transformation parameters calcule error" );
               mosaicGeomTransfms.push_back( auxTransPtr );
                 
               // current raster corner coords (line/column)
-              llCoord1.x = 0;
-              llCoord1.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows() 
+              llCoord2.x = 0;
+              llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows() 
                 - 1);
-              urCoord1.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns() 
+              urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns() 
                 - 1);
-              urCoord1.y = 0;
+              urCoord2.y = 0;
               
               // current raster corner coords (line/column) over the 
-              // previous raster coords system (lines/columns)
-              auxTransPtr->inverseMap( llCoord1, llCoord2 );
-              auxTransPtr->inverseMap( urCoord1, urCoord2 );
-            }
-            else
-            {
+              // first raster coords system (lines/columns)
+              auxTransPtr->inverseMap( llCoord2, llCoord1 );
+              auxTransPtr->inverseMap( urCoord2, urCoord1 );
               
+              // getting the respective coords in world space (first raster)
+              
+              firstRasterGrid.gridToGeo( llCoord1.x, llCoord1.y, llCoord2.x, 
+                llCoord2.y );
+              firstRasterGrid.gridToGeo( urCoord1.x, urCoord1.y, urCoord2.x, 
+                urCoord2.y );            
+                
+              mosaicLLX = std::min( mosaicLLX, llCoord2.x );
+              mosaicLLY = std::min( mosaicLLY, llCoord2.y );
+              mosaicURX = std::max( mosaicURX, urCoord2.x );
+              mosaicURY = std::max( mosaicURY, urCoord2.y );                
             }
           }
           else
