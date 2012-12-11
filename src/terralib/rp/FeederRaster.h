@@ -45,6 +45,15 @@ namespace te
         FeederRaster();
         
         virtual ~FeederRaster();
+        
+        //overloads
+        virtual te::rst::Raster* getCurrentObj() = 0; 
+        virtual te::rst::Raster const* getCurrentObj() const = 0;
+        virtual te::rst::Raster const* operator++();
+        virtual bool isInitialized() const = 0;
+        virtual bool reset() = 0;
+        virtual unsigned int getObjsCount() const = 0;
+        virtual unsigned int getCurrentOffset() const = 0;        
     };
   } // end namespace rp
 }   // end namespace te
