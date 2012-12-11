@@ -62,9 +62,9 @@ namespace te
         
         /*! 
           \brief Advances to the next sequence obeject. 
-          \return A pointer to the reached object or a null pointer if objects sequence end has been reached.
+          \return true if the advance was completed or false if the objects sequence was reached.
         */
-        virtual ObjType const* operator++();
+        virtual bool moveNext() = 0;
         
         /*! 
           \brief Return true if the feeder is initialized.

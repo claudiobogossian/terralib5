@@ -41,6 +41,7 @@ namespace te
     /*!
       \class Mosaic
       \brief Create a mosaic from a set of rasters.
+      \note The first raster will always be taken as reference.
       \ingroup RPAlgorithms
      */
     class TERPEXPORT Mosaic : public Algorithm
@@ -55,11 +56,11 @@ namespace te
         {
           public:
             
-            FeederRaster* m_feederRasterPtr;
+            FeederRaster* m_feederRasterPtr; //!< Input rasters feeder.
             
             std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
             
-            std::vector< te::gm::GTParameters::TiePoint > m_tiePoints; //!< Tie-points between each raster pair or an empty vector if only the geographical coordinates must be used (te::gm::GTParameters::TiePoint::first are raster 1 line/column indexes, te::gm::GTParameters::TiePoint::second are raster 2 line/column indexes).
+            std::vector< std::vector< te::gm::GTParameters::TiePoint > > m_tiePoints; //!< An empty vector if only the reaster geographical coordinates must be used; or Tie-points between each adjacent raster pair (te::gm::GTParameters::TiePoint::first are raster (with index i) lines/columns, te::gm::GTParameters::TiePoint::second are raster (with index I+1) lines/columns ,and so on).
             
             std::string m_geomTransfName; //!< The name of the geometric transformation used if tie-points are supplied (see each te::gm::GTFactory inherited classes to find each factory key/name, default:Affine).
             

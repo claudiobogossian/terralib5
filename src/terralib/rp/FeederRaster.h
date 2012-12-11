@@ -49,7 +49,7 @@ namespace te
         //overloads
         virtual te::rst::Raster* getCurrentObj() = 0; 
         virtual te::rst::Raster const* getCurrentObj() const = 0;
-        virtual te::rst::Raster const* operator++();
+        virtual bool moveNext() = 0;
         virtual bool isInitialized() const = 0;
         virtual bool reset() = 0;
         virtual unsigned int getObjsCount() const = 0;
