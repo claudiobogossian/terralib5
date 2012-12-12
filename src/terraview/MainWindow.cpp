@@ -379,32 +379,32 @@ void MainWindow::makeDialog()
   QDockWidget* doc = new QDockWidget(tr("Layer explorer"), this);
   doc->setWidget(exp);
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, doc);
-  doc->connect(m_ui->m_show_explorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_ui->m_show_explorer->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
-  m_ui->m_show_explorer->setChecked(true);
+  doc->connect(m_ui->m_viewLayerExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_viewLayerExplorer->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
+  m_ui->m_viewLayerExplorer->setChecked(true);
 
   doc = new QDockWidget(tr("Main display"), this);
   doc->setWidget(map);
   QMainWindow::setCentralWidget(doc);
-  doc->connect(m_ui->m_show_display, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_ui->m_show_display->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
-  m_ui->m_show_display->setChecked(true);
+  doc->connect(m_ui->m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_viewMapDisplay->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
+  m_ui->m_viewMapDisplay->setChecked(true);
 
   doc = new QDockWidget(tr("Tabular data viewer"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
-  doc->connect(m_ui->m_show_table, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_ui->m_show_table->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
-  m_ui->m_show_table->setChecked(false);
+  doc->connect(m_ui->m_viewTableData, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_viewTableData->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
+  m_ui->m_viewTableData->setChecked(false);
   doc->setVisible(false);
 
   //! Raster Visual Dock widget
   m_rasterVisualDock = new te::qt::widgets::RasterVisualDockWidget(tr("Raster Enhancement"), this);
   connect(m_rasterVisualDock, SIGNAL(symbolizerChanged()), this, SLOT(drawLayers()));
   QMainWindow::addDockWidget(Qt::RightDockWidgetArea, m_rasterVisualDock);
-  m_rasterVisualDock->connect(m_ui->m_actionRasterVisual, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_ui->m_actionRasterVisual->connect(m_rasterVisualDock, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
-  m_ui->m_actionRasterVisual->setChecked(false);
+  m_rasterVisualDock->connect(m_ui->m_viewRasterVisual, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
+  m_ui->m_viewRasterVisual->connect(m_rasterVisualDock, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
+  m_ui->m_viewRasterVisual->setChecked(false);
   m_rasterVisualDock->setVisible(false);
 
   //! Progress support
@@ -428,9 +428,9 @@ void MainWindow::makeDialog()
   m_progressDock->setVisible(false);
 
   //! Setting icons
-  m_ui->m_show_explorer->setIcon(QIcon::fromTheme("tree-visible"));
-  m_ui->m_show_display->setIcon(QIcon::fromTheme("display-visible"));
-  m_ui->m_show_table->setIcon(QIcon::fromTheme("grid-visible"));
+  m_ui->m_viewLayerExplorer->setIcon(QIcon::fromTheme("tree-visible"));
+  m_ui->m_viewMapDisplay->setIcon(QIcon::fromTheme("display-visible"));
+  m_ui->m_viewTableData->setIcon(QIcon::fromTheme("grid-visible"));
   m_ui->m_drawlayers_act->setIcon(QIcon::fromTheme("draw-layer"));
   m_ui->m_actionPan->setIcon(QIcon::fromTheme("pan"));
   m_ui->m_actionZoom_area->setIcon(QIcon::fromTheme("zoom-in"));
@@ -438,5 +438,26 @@ void MainWindow::makeDialog()
   m_ui->m_area_act->setIcon(QIcon::fromTheme("area-measure"));
   m_ui->m_angle_act->setIcon(QIcon::fromTheme("angle-measure"));
   m_ui->m_distance_act->setIcon(QIcon::fromTheme("distance-measure"));
-  m_ui->m_actionRasterVisual->setIcon(QIcon::fromTheme("raster-visual"));
+  m_ui->m_viewRasterVisual->setIcon(QIcon::fromTheme("raster-visual"));
+  m_ui->m_fileNewProject->setIcon(QIcon::fromTheme("document-new"));
+  m_ui->m_fileOpenProject->setIcon(QIcon::fromTheme("document-open"));
+  m_ui->m_fileSaveProject->setIcon(QIcon::fromTheme("document-save"));
+  m_ui->m_fileSaveProjectAs->setIcon(QIcon::fromTheme("document-save-as"));
+  m_ui->m_filePrint->setIcon(QIcon::fromTheme("document-print"));
+  m_ui->m_filePrintPreview->setIcon(QIcon::fromTheme("document-print-preview"));
+  m_ui->m_fileExit->setIcon(QIcon::fromTheme("system-log-out"));
+  m_ui->m_editUndo->setIcon(QIcon::fromTheme("edit-undo"));
+  m_ui->m_editRedo->setIcon(QIcon::fromTheme("edit-redo"));
+  m_ui->m_editCut->setIcon(QIcon::fromTheme("edit-cut"));
+  m_ui->m_editCopy->setIcon(QIcon::fromTheme("edit-copy"));
+  m_ui->m_editPaste->setIcon(QIcon::fromTheme("edit-paste"));
+  m_ui->m_editSelectAll->setIcon(QIcon::fromTheme("edit-select-all"));
+  m_ui->m_editClear->setIcon(QIcon::fromTheme("edit-clear"));
+  m_ui->m_editFind->setIcon(QIcon::fromTheme("edit-find"));
+  m_ui->m_editReplace->setIcon(QIcon::fromTheme("edit-find-replace"));
+  m_ui->m_viewFullScreen->setIcon(QIcon::fromTheme("view-fullscreen"));
+  m_ui->m_viewRefresh->setIcon(QIcon::fromTheme("view-refresh"));
+  m_ui->m_settingsPreferences->setIcon(QIcon::fromTheme("preferences-system"));
+  m_ui->m_helpContents->setIcon(QIcon::fromTheme("help-browser"));
+  m_ui->m_helpUpdate->setIcon(QIcon::fromTheme("system-software-update"));
 }
