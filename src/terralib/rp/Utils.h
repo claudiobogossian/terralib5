@@ -37,6 +37,9 @@ namespace te
 {
   namespace rp
   {
+    /*! \brief Returns a vector os with band's names. */
+    std::vector<std::string> GetBandNames();
+
     /*! \brief Returns the maximun and minimum reflectance values of a given sensor/band. */
     std::pair<double, double> GetSpectralBandInfo(std::string bandName);
 

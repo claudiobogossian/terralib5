@@ -24,17 +24,20 @@
 */
 
 // TerraLib
+#include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
 #include "../../../common/StringUtils.h"
 #include "../../../geometry/Coord2D.h"
+#include "../../../geometry/Envelope.h"
+#include "../../../geometry/Point.h"
 #include "../../../raster/Grid.h"
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/MixtureModelLinearStrategy.h"
 #include "../../../rp/MixtureModelPCAStrategy.h"
+#include "../../../rp/Utils.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../../widgets/tools/Pan.h"
 #include "../../widgets/tools/ZoomWheel.h"
-
 
 // GUI
 #include "MixtureModelDialog.h"
@@ -48,6 +51,9 @@
 #include <QtGui/QKeyEvent>
 #include <QtGui/QLineEdit>
 #include <QtGui/QMessageBox>
+
+// defines
+#define PATTERN_W 11
 
 te::qt::widgets::MixtureModelDialogMDEventFilter::MixtureModelDialogMDEventFilter(te::qt::widgets::MapDisplay* parent)
   : QObject(parent), m_mDisplay(parent)
@@ -112,12 +118,13 @@ te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::RasterLay
   connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));
   connect(m_coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked_changed(QPointF&)));
   connect(m_keyboardPressTracking, SIGNAL(keyPressedOverMapDisplay(int)), this, SLOT(on_keyPressedOverMapDisplay(int)));
+  connect(m_mapDisplay, SIGNAL(extentChanged()), this, SLOT(on_mapDisplay_extentChanged()));
 
 // define sensor information
   QStringList sensorsDescriptions;
-  sensorsDescriptions.append("sensor_description1");
-  sensorsDescriptions.append("sensor_description2");
-  sensorsDescriptions.append("sensor_description3");
+  std::vector<std::string> bandNames = te::rp::GetBandNames();
+  for(unsigned int i = 0; i < bandNames.size(); i++)
+    sensorsDescriptions.append(bandNames[i].c_str());
 
 // initializing the list of bands
   QGridLayout *bandsListLayout = new QGridLayout();
@@ -137,10 +144,33 @@ te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::RasterLay
 // initializing the list of components
   QGridLayout *componentsListLayout = new QGridLayout();
   m_uiPtr->m_componentsListGroupBox->setLayout(componentsListLayout);
+
+// creating "x" pattern to plot on map
+  m_selectedPointPattern = new te::color::RGBAColor*[ PATTERN_W ];
+
+  for(unsigned int line = 0; line < PATTERN_W; line++)
+  {
+    m_selectedPointPattern[line] = new te::color::RGBAColor[PATTERN_W];
+
+    for(unsigned int col = 0; col < PATTERN_W; col++)
+    {
+      if((line == col) || (line == (PATTERN_W - col - 1)))
+        m_selectedPointPattern[line][col].setColor(255, 0, 0, TE_OPAQUE);
+      else
+        m_selectedPointPattern[line][col].setColor(0, 0, 0, TE_TRANSPARENT);
+    }
+  }
 }
 
 te::qt::widgets::MixtureModelDialog::~MixtureModelDialog()
 {
+// delete "x" patterns
+  for(unsigned int line = 0; line < PATTERN_W; line++)
+    delete[] m_selectedPointPattern[line];
+
+  delete[] m_selectedPointPattern;
+
+// delete interface
   delete m_uiPtr;
 }
 
@@ -175,12 +205,14 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
   algoInputParameters.m_inputRasterPtr = m_inputRasterPtr;
 
   unsigned selectedBands = 0;
+  std::vector<bool> selectedBandsVector;
   for (int i = 0; i < (m_uiPtr->m_bandsListGroupBox->layout()->count() - 1); i += 2)
   {
     QCheckBox* bandCheckBox = (QCheckBox*) m_uiPtr->m_bandsListGroupBox->layout()->itemAt(i)->widget();
 
     if (bandCheckBox->isChecked())
     {
+      selectedBandsVector.push_back(true);
       selectedBands++;
 
 // insert band number
@@ -190,32 +222,26 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
       QComboBox *sensorComboBox = (QComboBox*) m_uiPtr->m_bandsListGroupBox->layout()->itemAt(i + 1)->widget();
       algoInputParameters.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toAscii()));
     }
+    else
+      selectedBandsVector.push_back(false);
   }
 
 // insert mixture components
   std::map<std::string, std::vector<double> >::const_iterator cit = m_components.begin();
+  std::vector<double> components;
   while (cit != m_components.end())
   {
-    algoInputParameters.m_components[cit->first] = cit->second;
+    components.clear();
+
+    for (unsigned int i = 0; i < selectedBandsVector.size(); i++)
+      if (selectedBandsVector[i])
+        components.push_back(cit->second[i]);
+
+    algoInputParameters.m_components[cit->first] = components;
 
     ++cit;
   }
 
-/*
-  QGridLayout *componentsListLayout = (QGridLayout*) m_uiPtr->m_componentsListGroupBox->layout();
-// insert mixture components
-  for (unsigned int i = 0; i < m_components.size(); i++)
-  {
-    QLineEdit* componentLineEdit = (QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget();
-
-    for (unsigned int b = 0; b < algoInputParameters.m_inputRasterBands.size(); b++)
-    {
-      QLineEdit* pixelValueLineEdit = (QLineEdit*) componentsListLayout->itemAtPosition(i, algoInputParameters.m_inputRasterBands[b] + 2)->widget();
-
-      algoInputParameters.m_components[std::string(componentLineEdit->text().toAscii())].push_back(pixelValueLineEdit->text().toDouble());
-    }
-  }
-*/
 // link specific parameters with chosen implementation
   if (m_uiPtr->m_mmTypeComboBox->currentText() == "Linear")
   {
@@ -285,6 +311,9 @@ void te::qt::widgets::MixtureModelDialog::on_keyPressedOverMapDisplay(int key)
 
   m_components[className->toStdString()] = componentsVector;
 
+  te::gm::Coord2D coordinate(currentColumn, currentRow);
+  m_coordinates[className->toStdString()] = coordinate;
+
   updateComponentsGrid();
 }
 
@@ -296,27 +325,83 @@ void te::qt::widgets::MixtureModelDialog::on_removeButton_clicked()
   std::string className = sender->statusTip().toStdString();
 
   m_components.erase(className);
+  m_coordinates.erase(className);
 
   updateComponentsGrid();
 }
 
+void te::qt::widgets::MixtureModelDialog::on_mapDisplay_extentChanged()
+{
+// get canvas to draw the "x" on selected points
+  const te::gm::Envelope* mapDisplayExtent = m_mapDisplay->getExtent();
+
+  m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
+
+  te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
+  canvasInstance.setWindow(mapDisplayExtent->m_llx, mapDisplayExtent->m_lly,
+                           mapDisplayExtent->m_urx, mapDisplayExtent->m_ury);
+
+  canvasInstance.setPointPattern(m_selectedPointPattern, PATTERN_W, PATTERN_W);
+
+  te::gm::Point auxPoint;
+  te::gm::Coord2D auxCoord2D;
+
+  std::map<std::string, te::gm::Coord2D>::const_iterator cpit = m_coordinates.begin();
+  while (cpit != m_coordinates.end())
+  {
+// draw "x"
+    m_inputRasterPtr->getGrid()->gridToGeo(cpit->second.x, cpit->second.y,
+                                           auxCoord2D.x, auxCoord2D.y);
+
+    auxPoint.setX(auxCoord2D.x);
+    auxPoint.setY(auxCoord2D.y);
+
+    canvasInstance.draw(&auxPoint);
+
+    ++cpit;
+  }
+}
+
 void te::qt::widgets::MixtureModelDialog::updateComponentsGrid()
 {
-  QGridLayout *componentsListLayout = (QGridLayout*) m_uiPtr->m_componentsListGroupBox->layout();
+  QGridLayout* componentsListLayout = (QGridLayout*) m_uiPtr->m_componentsListGroupBox->layout();
+
+// update class names
+  for (int i = 0; i < (componentsListLayout->count() / 5); i++)
+  {
+    std::string className = ((QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget())->text().toStdString();
+    std::string originalClassName = ((QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget())->toolTip().toStdString();
+
+// check if className is already in m_components
+    if (className != originalClassName)
+    {
+      m_components[className] = m_components[originalClassName];
+      m_coordinates[className] = m_coordinates[originalClassName];
+
+      m_components.erase(originalClassName);
+      m_coordinates.erase(originalClassName);
+    }
+
+  }
 
 // clear layout
-  QLayoutItem *child;
+  QLayoutItem* child;
   while ((child = componentsListLayout->takeAt(0)) != 0)
   {
     delete child->widget();
     delete child;
   }
 
+// clear map display to redraw "x" points
+  te::gm::Envelope auxEnvelope(*m_mapDisplay->getExtent());
+  m_mapDisplay->setExtent(auxEnvelope);
+
 // add lines
   std::map<std::string, std::vector<double> >::const_iterator cit = m_components.begin();
   unsigned int totalComponents = 0;
   while (cit != m_components.end())
   {
+// define remove button and line edits
     QPushButton* removeButton = new QPushButton("x");
 
     removeButton->setStatusTip(cit->first.c_str());
@@ -326,6 +411,7 @@ void te::qt::widgets::MixtureModelDialog::updateComponentsGrid()
     componentsListLayout->addWidget(removeButton, totalComponents, 0);
 
     QLineEdit* className = new QLineEdit(cit->first.c_str());
+    className->setToolTip(cit->first.c_str());
     componentsListLayout->addWidget(className, totalComponents, 1);
 
     std::vector<double> components = cit->second;

@@ -27,6 +27,29 @@
 #include "../raster/RasterIterator.h"
 #include "Utils.h"
 
+std::vector<std::string> te::rp::GetBandNames()
+{
+  static std::vector<std::string> bandNames;
+
+  bandNames.push_back("CBERS2_CCD_1_BLUE");
+  bandNames.push_back("CBERS2_CCD_2_GREEN");
+  bandNames.push_back("CBERS2_CCD_3_RED");
+  bandNames.push_back("CBERS2_CCD_4_NIR");
+  bandNames.push_back("CBERS2_CCD_5_PAN");
+
+  bandNames.push_back("WV2_MUL_1_COASTAL");
+  bandNames.push_back("WV2_MUL_2_BLUE");
+  bandNames.push_back("WV2_MUL_3_GREEN");
+  bandNames.push_back("WV2_MUL_4_YELLOW");
+  bandNames.push_back("WV2_MUL_5_RED");
+  bandNames.push_back("WV2_MUL_6_REDEDGE");
+  bandNames.push_back("WV2_MUL_7_NIR1");
+  bandNames.push_back("WV2_MUL_8_NIR2");
+  bandNames.push_back("WV2_PAN");
+
+  return bandNames;
+}
+
 std::pair<double, double> te::rp::GetSpectralBandInfo(std::string bandName)
 {
   static std::map<std::string, std::pair<double, double> > BandInfo;
