@@ -59,7 +59,7 @@ namespace te
         {
           te::map::AbstractLayer* abs_lay = item->getRefLayer();
           te::qt::af::LayerSelected ls_ev(abs_lay);
-          teApp::getInstance().broadCast(&ls_ev);
+          Application::getInstance().broadcast(&ls_ev);
         }
       }
     }

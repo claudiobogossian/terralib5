@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>750</width>
     <height>550</height>
    </rect>
   </property>
@@ -66,6 +66,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="m_createErrorRasterCheckBox">
+            <property name="toolTip">
+             <string/>
+            </property>
             <property name="text">
              <string>Create error images?</string>
             </property>
@@ -81,10 +84,13 @@
           <item>
            <widget class="QComboBox" name="m_mmTypeComboBox">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
+            </property>
+            <property name="accessibleDescription">
+             <string/>
             </property>
             <item>
              <property name="text">
@@ -135,6 +141,24 @@
          <width>5000</width>
          <height>5000</height>
         </size>
+       </property>
+       <property name="cursor">
+        <cursorShape>CrossCursor</cursorShape>
+       </property>
+       <property name="toolTip">
+        <string>Use mouse scrool zooming in/out and hit space bar to select a component.</string>
+       </property>
+       <property name="statusTip">
+        <string/>
+       </property>
+       <property name="whatsThis">
+        <string/>
+       </property>
+       <property name="accessibleName">
+        <string/>
+       </property>
+       <property name="accessibleDescription">
+        <string/>
        </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>

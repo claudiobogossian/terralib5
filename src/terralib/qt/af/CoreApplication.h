@@ -213,7 +213,7 @@ namespace te
           \brief Send events in broadcast for all registered components.
           \param evt Event to be sent.
         */
-        void broadCast(te::qt::af::Event* evt);
+        void broadcast(te::qt::af::Event* evt);
 
       signals:
 
@@ -234,10 +234,10 @@ namespace te
       };
 
       /*!
-        \class teApp
+        \class Application
         \brief A singleton over the te::qt::af::CoreApplication class.
       */
-      class TEQTAFEXPORT teApp : public te::common::Singleton<CoreApplication>
+      class TEQTAFEXPORT Application : public te::common::Singleton<CoreApplication>
       {
         friend class te::common::Singleton<CoreApplication>;
 
@@ -251,22 +251,22 @@ namespace te
           /*!
             \brief Default constructor.
           */
-          teApp();
+          Application();
 
           /*!
             \brief Copy constructor.
           */
-          teApp(const teApp&);
+          Application(const Application&);
           
           /*!
             \brief Destructor.
           */
-          ~teApp();
+          ~Application();
 
           /*!
             \brief Copy operator.
           */
-          teApp& operator=(const teApp&);
+          Application& operator=(const Application&);
           //! @}
       };
     }

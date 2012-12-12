@@ -218,7 +218,6 @@ namespace te
           bandsProperties[ 0 ]->m_colorInterp = te::rst::GrayIdxCInt;
           bandsProperties[ 0 ]->m_noDataValue = 0;
           bandsProperties[ 0 ]->m_type = te::dt::UINT32_TYPE;
-          bandsProperties[ 0 ]->m_noDataValue = 0;          
           
           outputParamsPtr->m_outputRasterPtr.reset( 
             te::rst::RasterFactory::make(

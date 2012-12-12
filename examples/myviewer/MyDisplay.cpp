@@ -28,19 +28,27 @@
 #include <QPrinter>
 #include <QUrl>
 #include <QToolTip>
+#include <QWaitCondition>
 
 #include "FrozenLayersSelection.h"
 
+#include <stdio.h>
+#include <time.h>
+
 extern unsigned long long getAvailableMemory();
 
-MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, QWidget* parent, Qt::WindowFlags f) :
+MyDisplay::MyDisplay(int w, int h, te::map::AbstractLayer* root, int type, QWidget* parent, Qt::WindowFlags f) :
   te::qt::widgets::MapDisplay(QSize(w, h), parent, f),
   m_rootFolderLayer(root),
+  m_canvasType(type),
   m_timeSlider(0)
 {
   setObjectName("MyDisplay");
 
   setAcceptDrops(true);
+
+  m_timerRefresh = new QTimer(this);
+  connect(m_timerRefresh, SIGNAL(timeout()), this, SLOT(displayRefreshSlot()));
 
   m_temporalVectorialDisplayPixmap = new QPixmap(w, h);
   m_temporalVectorialDisplayPixmap->fill(QColor(255, 255, 255, 0));
@@ -513,7 +521,19 @@ void MyDisplay::setMouseOperationToPanSlot()
 void MyDisplay::selectionChangedSlot(te::map::DataGridOperation* op)
 {
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
-  draw();
+
+  std::list<te::map::AbstractLayer*> layerList;
+  std::list<te::map::AbstractLayer*>::iterator it;;
+  getLayerList(m_layerTree, layerList);
+  for(it = layerList.begin(); it != layerList.end(); ++it)
+  {
+    MyLayer* layer = (MyLayer*)*it;
+    if(layer->getDataGridOperation() == op)
+    {
+      draw();
+      break;
+    }
+  }
 }
 
 void MyDisplay::removeDrawOnlyChanged(te::map::AbstractLayer* al)
@@ -542,9 +562,9 @@ te::qt::widgets::Canvas* MyDisplay::getCanvas(te::map::AbstractLayer* layer)
   if(l->isTemporal())
   {
     te::map::AbstractLayer* parent = (te::map::AbstractLayer*)l->getParent();
-    return te::qt::widgets::MapDisplay::getCanvas(parent);
+    return te::qt::widgets::MapDisplay::getCanvas(parent, m_canvasType);
   }
-  return te::qt::widgets::MapDisplay::getCanvas(l);
+  return te::qt::widgets::MapDisplay::getCanvas(l, m_canvasType);
 }
 
 // se o layer e' do tipo temporal
@@ -557,7 +577,7 @@ void MyDisplay::setCanvas(te::map::AbstractLayer* layer)
     te::map::AbstractLayer* parent = (te::map::AbstractLayer*)l->getParent();    
     if(m_layerCanvasMap.find(parent) == m_layerCanvasMap.end())
     {
-      te::qt::widgets::Canvas* c = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height());
+      te::qt::widgets::Canvas* c = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height(), m_canvasType);
       m_layerCanvasMap[parent] = c;
     }  
   }
@@ -565,10 +585,68 @@ void MyDisplay::setCanvas(te::map::AbstractLayer* layer)
   {
     if(m_layerCanvasMap.find(l) == m_layerCanvasMap.end())
     {
-      te::qt::widgets::Canvas* c = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height());
+      te::qt::widgets::Canvas* c = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height(), m_canvasType);
       m_layerCanvasMap[l] = c;
     }  
   }
+}
+
+void MyDisplay::abortAllDrawing()
+{
+  std::list<te::map::AbstractLayer*>::iterator it;
+
+  if(m_layerTree) // Use the tree if it exists, otherwise use the list of layers.
+  {
+    std::list<te::map::AbstractLayer*> layerList;
+    getLayerList(m_layerTree, layerList);
+    for(it = layerList.begin(); it != layerList.end(); ++it)
+    {
+      MyLayer* layer = (MyLayer*)*it;
+      te::qt::widgets::Canvas* c = getCanvas(layer);
+      MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+      if(renderer)
+      {
+        te::qt::widgets::Canvas* rc = (te::qt::widgets::Canvas*)renderer->getCanvas();
+        if(rc == c)
+        {
+          renderer->abort();
+          QThread* thread = (QThread*) renderer;
+          while(thread->isRunning() == true)
+          {
+            thread->wait(100); // aguarde o desenho ser abortado
+            renderer->getDisplay()->displayRefreshSlot();
+          }
+        }
+      }
+    }
+  }
+  else
+  {
+    for(it = m_layerList.begin(); it != m_layerList.end(); ++it)
+    {
+      MyLayer* layer = (MyLayer*)*it;
+      te::qt::widgets::Canvas* c = getCanvas(layer);
+      MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+      if(renderer)
+      {
+        te::qt::widgets::Canvas* rc = (te::qt::widgets::Canvas*)renderer->getCanvas();
+        if(rc == c)
+        {
+          renderer->abort();
+          QThread* thread = (QThread*) renderer;
+          while(thread->isRunning() == true)
+          {
+            thread->wait(100); // aguarde o desenho ser abortado
+            renderer->getDisplay()->displayRefreshSlot();
+          }
+        }
+      }
+    }
+  }
+
+  m_displayPixmap->fill(QColor(255, 255, 255, 0));
+  update();
+
 }
 
 void MyDisplay::draw()
@@ -582,16 +660,24 @@ void MyDisplay::draw()
 
     if(m_displayPixmap)
     {
-      m_displayPixmap->fill(m_backgroundColor);
+      //m_displayPixmap->fill(m_backgroundColor);
 
       if(m_layerTree) // Use the tree if it exists, otherwise use the list of layers.
       {
         std::list<te::map::AbstractLayer*> layerList;
         getLayerList(m_layerTree, layerList);
-        draw(layerList);
+        if(layerList.empty())
+          abortAllDrawing();
+        else
+          draw(layerList);
       }
-      else if(m_layerList.empty() == false)
-        draw(m_layerList);
+      else
+      {
+        if(m_layerList.empty())
+          abortAllDrawing();
+        else
+          draw(m_layerList);
+      }
     }
   }
   catch(te::common::Exception& e)
@@ -606,6 +692,8 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
   {
     QPainter painter(m_displayPixmap);
     std::list<te::map::AbstractLayer*>::iterator it;
+    for(it = layerList.begin(); it != layerList.end(); ++it)
+      te::gm::Envelope env = getLayerExtent(*it);
  
     if(m_srid <= 0 || m_extent == 0)
     {
@@ -645,11 +733,9 @@ void MyDisplay::draw(std::list<te::map::AbstractLayer*>& layerList)
         c->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
       }
       draw(*it);
-
-      if(m_displayPixmap->size() == c->getPixmap()->size())
-        painter.drawPixmap(0, 0, *(c->getPixmap()));
+      //draw(0, 0, painter, c->getDevice());
     }
-    update();
+    //update();
   }
   catch(te::common::Exception& e)
   {
@@ -673,57 +759,52 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
       std::string name = layer->getId();
       te::da::DataSource* ds = layer->getDataSource();
       te::da::DataSourceTransactor* t = ds->getTransactor();
-//te::common::Logger::initialize("MyDisplay");
-//QString msg, msgg, sname = name.c_str();
-//unsigned long maa, mbb;
-//maa = getAvailableMemory();
-//msg.setNum((qulonglong)maa/(1<<10));
-//msg.insert(0, "before getDataSet " + sname + ":");
-//msg += " KBytes";
-//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
       te::da::DataSet* dataSet = t->getDataSet(name);
-//mbb = getAvailableMemory();
-//msg.setNum((qulonglong)mbb/(1<<10));
-//msg.insert(0, "after getDataSet " + sname + ":");
-//msgg.setNum((qulonglong)((maa - mbb) / (1<<10)));
-//msg += "  KBytes, consumiu:" + msgg + " KBytes";
-//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
-//te::common::Logger::logInfo("MyDisplay", "\n");
-      //te::da::DataSetType* dsType = ds->getCatalog()->getDataSetType(name);
       te::da::DataSetTypePtr dsType = ds->getCatalog()->getDataSetType(name);
 
       assert(dataSet);
 
       if(dsType->getPrimaryKey())
       {
-//maa = getAvailableMemory();
-//msg.setNum((qulonglong)maa/(1<<10));
-//msg.insert(0, "before new DataGridOperation " + sname + ":");
-//msg += " KBytes";
-//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
         op = new te::map::DataGridOperation();
-        //op->init(dsType, dataSet);
-//mbb = getAvailableMemory();
-//msg.setNum((qulonglong)mbb/(1<<10));
-//msg.insert(0, "after new DataGridOperation " + sname + ":");
-//msgg.setNum((qulonglong)((maa - mbb) / (1<<10)));
-//msg += " KBytes, consumiu:" + msgg + " KBytes";
-//te::common::Logger::logInfo("MyDisplay", msg.toStdString().c_str());
-//te::common::Logger::logInfo("MyDisplay", "\n");
         op->init(dsType.get(), dataSet);
         layer->setDataGridOperation(op);
       }
-//te::common::Logger::finalize("MyDisplay");
     }
 
     bool b = false;
     if(m_drawOnlyChanged.find(layer) != m_drawOnlyChanged.end())
       b = true;
-    MyLayerRenderer* renderer = new MyLayerRenderer(b);
+
+    MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+    if(renderer)
+    {
+      te::qt::widgets::Canvas* rc = (te::qt::widgets::Canvas*)renderer->getCanvas();
+      if(rc == canvas)
+      {
+        if(b) // vai redesenhar tudo... pode abortar
+          renderer->abort();
+      }
+      QThread* thread = (QThread*) renderer;
+      while(thread->isRunning() == true)
+      {
+        // Aguarde o desenho do layer terminar em outro display, ou
+        // Se o desenho ocorre neste display, aguarde ele ser abortado.
+        thread->wait(100);
+        renderer->getDisplay()->displayRefreshSlot();
+      }
+    }
+
+    renderer = new MyLayerRenderer(b);
+    renderer->setDisplay(this);
     layer->setRenderer(renderer);
 
+    connect((QObject*)renderer, SIGNAL(finished()), this, SLOT(drawFinishedSlot()));
+    m_timerRefresh->setSingleShot(false);
+    m_timerRefresh->start(100);
+
     if(layer->isTemporal() == false)
-      al->draw(canvas, *m_extent, m_srid);
+      layer->draw(canvas, *m_extent, m_srid);
 
     addDrawOnlyChanged(layer);
   }
@@ -732,6 +813,52 @@ void MyDisplay::draw(te::map::AbstractLayer* al)
     QMessageBox::information(this, tr("Error Drawing..."), tr(e.what()));
     return;
   }
+}
+
+void MyDisplay::displayRefreshSlot()
+{
+  m_displayPixmap->fill();
+  QPainter painter(m_displayPixmap);
+
+  std::list<te::map::AbstractLayer*> layerList;
+  getLayerList(m_layerTree, layerList);
+  std::list<te::map::AbstractLayer*>::iterator it;
+  for(it = layerList.begin(); it != layerList.end(); ++it)
+  {
+    MyLayer* layer = (MyLayer*)*it;
+    te::qt::widgets::Canvas* c = getCanvas(layer);
+    draw(0, 0, painter, c->getDevice());
+  }
+  painter.end();
+  repaint();
+}
+
+void MyDisplay::drawFinishedSlot()
+{
+  bool finished = true;
+
+  std::list<te::map::AbstractLayer*> layerList;
+  getLayerList(m_layerTree, layerList);
+  std::list<te::map::AbstractLayer*>::iterator it;
+  for(it = layerList.begin(); it != layerList.end(); ++it)
+  {
+    MyLayer* layer = (MyLayer*)*it;
+    MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+    if(renderer)
+    {
+      QThread* thread = (QThread*) renderer;
+      if(thread->isRunning() == true)
+      {
+        finished = false;
+        break;
+      }
+    }
+  }
+
+  if(finished)
+    m_timerRefresh->stop();
+
+  displayRefreshSlot();
 }
 
 void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
@@ -756,7 +883,7 @@ void MyDisplay::reorderDrawing(std::vector<te::map::AbstractLayer*> layers)
           c = getCanvas(layer);
           draw(layer);
         }
-        painter.drawPixmap(0, 0, *(c->getPixmap()));
+        draw(0, 0, painter, c->getDevice());
       }
     }
   }
@@ -914,7 +1041,7 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
     }
 
     QPainter painter(m_temporalVectorialDisplayPixmap);
-    painter.drawPixmap(0, 0, *(canvas->getPixmap()));
+    draw(0, 0, painter, canvas->getDevice());
     update();
   }
   else // raster data
@@ -955,7 +1082,7 @@ void MyDisplay::drawTemporalData(te::map::AbstractLayer* layer, std::vector<te::
 
     delete dataSet;
     QPainter painter(m_temporalImageDisplayPixmap);
-    painter.drawPixmap(0, 0, *(canvas->getPixmap()));
+    draw(0, 0, painter, canvas->getDevice());
     update();
   }
 
@@ -1095,6 +1222,8 @@ void MyDisplay::resizeEvent(QResizeEvent* e)
 
 void MyDisplay::onResizeTimeout()
 {
+  abortAllDrawing();
+
   m_resize = false;
   if(m_displayPixmap)
     delete m_displayPixmap;
@@ -1128,7 +1257,7 @@ void MyDisplay::setExtent()
     te::qt::widgets::Canvas* canvas = it->second;
     canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
     canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
-    canvas->clear();
+//    canvas->clear();
   }
 
   if(m_timeSlider)
@@ -1159,6 +1288,139 @@ void MyDisplay::setSRID(const int& srid)
   }
   m_srid = srid;
 }
+//
+//void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
+//{
+//  std::list<te::map::AbstractLayer*> layerList;
+//  getLayerList(m_layerTree, layerList);
+//
+//  std::list<te::map::AbstractLayer*>::iterator it;
+//  if(layerList.size() == 0)
+//    return;
+//
+//  te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
+//  for(it = layerList.begin(); it != layerList.end(); ++it)
+//  {
+//    MyLayer* layer = (MyLayer*)*it;
+//    if(m_frozenLayerSet.find(layer) != m_frozenLayerSet.end())
+//      continue;
+//    te::map::DataGridOperation* op = layer->getDataGridOperation();
+//    if(op == 0)
+//      continue;
+//
+//    te::qt::widgets::Canvas* canvas = getCanvas(layer);
+//
+//    te::gm::Point worldPoint(0., 0., m_srid);
+//    QPointF p(rec.bottomLeft().x(), rec.bottomLeft().y());
+//    p = canvas->getMatrix().inverted().map(p);
+//    worldPoint.setX(p.x());
+//    worldPoint.setY(p.y());
+//
+//    te::gm::Polygon worldRec(0, te::gm::PolygonType, m_srid);
+//    QRectF r(rec);
+//    r = canvas->getMatrix().inverted().mapRect(r);
+//    // tem que ser ponteiro porque o destrutor de polygon deleta os rings
+//    te::gm::LinearRing* line = new te::gm::LinearRing(5, te::gm::LineStringType);
+//    line->setPoint(0, r.bottomLeft().x(), r.topRight().y()); // lower left
+//    line->setPoint(1, r.bottomRight().x(), r.topRight().y()); // lower rigth
+//    line->setPoint(2, r.topRight().x(), r.bottomRight().y()); // upper rigth
+//    line->setPoint(3, r.topLeft().x(), r.bottomLeft().y()); // upper left
+//    line->setPoint(4, r.bottomLeft().x(), r.topRight().y()); // closing
+//    worldRec.push_back(line);
+//
+//    te::gm::Polygon worldRecExpanded(0, te::gm::PolygonType, m_srid);
+//    QRectF re(0., 0., 9., 9.);
+//    re.moveCenter(rec.center());
+//    re = canvas->getMatrix().inverted().mapRect(re);
+//    // tem que ser ponteiro porque o destrutor de polygon deleta os rings
+//    te::gm::LinearRing* linee = new te::gm::LinearRing(5, te::gm::LineStringType);
+//    linee->setPoint(0, re.bottomLeft().x(), re.topRight().y()); // lower left
+//    linee->setPoint(1, re.bottomRight().x(), re.topRight().y()); // lower rigth
+//    linee->setPoint(2, re.topRight().x(), re.bottomRight().y()); // upper rigth
+//    linee->setPoint(3, re.topLeft().x(), re.bottomLeft().y()); // upper left
+//    linee->setPoint(4, re.bottomLeft().x(), re.topRight().y()); // closing
+//    worldRecExpanded.push_back(linee);
+// 
+//    te::da::DataSet* dataSet = op->getDataSet();
+//    te::da::DataSetType* dsType = op->getDataSetType();
+//    te::da::PrimaryKey *pk = dsType->getPrimaryKey();
+//    const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
+//    std::string pkv;
+//    std::size_t gPos = dsType->getDefaultGeomPropertyPos();
+//    int gtype = dsType->getDefaultGeomProperty()->getGeometryType();
+//
+//    std::vector<int> visRows;
+//    dataSet->moveBeforeFirst();
+//    while(dataSet->moveNext())
+//    {
+//      pkv.clear();
+//      for (size_t i = 0; i < pkProps.size(); ++i)
+//        pkv += dataSet->getAsString(pkProps[i]->getName());
+//
+//      if(pkv.empty())
+//        continue;
+//
+//      te::gm::Geometry* g = dataSet->getGeometry(gPos);
+//      if(g == 0)
+//        continue;
+//      g->setSRID(layer->getSRID());
+//      g->transform(m_srid);
+//
+//      if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
+//      {
+//        if(rec.width() == 1 && rec.height() == 1)
+//        {
+//          if(worldRecExpanded.contains(g))
+//            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+//        }
+//        else
+//        {
+//          if(worldRec.contains(g))
+//            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+//        }
+//      }
+//      else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
+//      { 
+//        if(rec.width() == 1 && rec.height() == 1)
+//        {
+//          if(g->intersects(&worldRecExpanded))
+//            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+//        }
+//        else
+//        {
+//          if(g->intersects(&worldRec))
+//            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+//        }
+//      }
+//      else if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
+//      {
+//        if(rec.width() == 1 && rec.height() == 1)
+//        {
+//          if(g->contains(&worldPoint))
+//            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+//        }
+//        else
+//        {
+//          if(g->intersects(&worldRec))
+//            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+//        }
+//      }
+//
+//      delete g;
+//    }
+//
+//    if(visRows.empty())
+//      continue;
+//
+//    if(mode == "POINTING")
+//      op->setRowsAsPointed(visRows);
+//    else if(mode == "ADDPOINTING")
+//      op->addRowsToPointed(visRows);
+//    else if(mode == "TOGGLEPOINTING")
+//      op->toggleRowsPointingStatus(visRows);
+//    Q_EMIT selectionChanged(op);
+//  }
+//}
 
 void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
 {
@@ -1179,13 +1441,22 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     if(op == 0)
       continue;
 
+    MyLayerRenderer* renderer = (MyLayerRenderer*)layer->getRenderer();
+    if(renderer)
+    {
+      QThread* thread = (QThread*) renderer;
+      while(thread->isRunning() == true)
+      {
+        thread->wait(100); // aguarde o termino do desenho
+        renderer->getDisplay()->displayRefreshSlot();
+      }
+    }
+
     te::qt::widgets::Canvas* canvas = getCanvas(layer);
 
-    te::gm::Point worldPoint(0., 0., m_srid);
     QPointF p(rec.bottomLeft().x(), rec.bottomLeft().y());
     p = canvas->getMatrix().inverted().map(p);
-    worldPoint.setX(p.x());
-    worldPoint.setY(p.y());
+    te::gm::Point worldPoint(p.x(), p.y(), m_srid);
 
     te::gm::Polygon worldRec(0, te::gm::PolygonType, m_srid);
     QRectF r(rec);
@@ -1211,8 +1482,17 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
     linee->setPoint(3, re.topLeft().x(), re.bottomLeft().y()); // upper left
     linee->setPoint(4, re.bottomLeft().x(), re.topRight().y()); // closing
     worldRecExpanded.push_back(linee);
- 
-    te::da::DataSet* dataSet = op->getDataSet();
+
+    QRectF re2(rec);
+    re2.setBottomLeft(QPointF(rec.bottomLeft().x() - 10, rec.bottomLeft().y() + 10));
+    re2.setTopRight(QPointF(rec.topRight().x() + 10, rec.topRight().y() - 10));
+    re2 = canvas->getMatrix().inverted().mapRect(re2);
+    te::gm::Envelope sqlEnvelope(re2.bottomLeft().x(), re2.topRight().y(), re2.bottomRight().x(), re2.bottomRight().y());
+    if(transform(sqlEnvelope, m_srid, layer->getSRID()) == false)
+      return;
+
+    te::da::DataSourceTransactor* transactor = layer->getDataSource()->getTransactor();
+    te::da::DataSet* dataSet = transactor->getDataSet(layer->getId(), &sqlEnvelope, te::gm::INTERSECTS);
     te::da::DataSetType* dsType = op->getDataSetType();
     te::da::PrimaryKey *pk = dsType->getPrimaryKey();
     const std::vector<te::dt::Property*>& pkProps = pk->getProperties();
@@ -1239,46 +1519,30 @@ void MyDisplay::changeObjectStatus(QRect rec, const std::string& mode)
 
       if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
       {
-        if(rec.width() == 1 && rec.height() == 1)
-        {
-          if(worldRecExpanded.contains(g))
-            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        }
-        else
-        {
-          if(worldRec.contains(g))
-            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        }
+        if(rec.isValid() && worldRec.contains(g))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        else if(worldRecExpanded.contains(g))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
       }
       else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
       { 
-        if(rec.width() == 1 && rec.height() == 1)
-        {
-          if(g->intersects(&worldRecExpanded))
-            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        }
-        else
-        {
-          if(g->intersects(&worldRec))
-            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        }
+        if(rec.isValid() && g->intersects(&worldRec))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        else if(g->intersects(&worldRecExpanded))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
       }
       else if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
       {
-        if(rec.width() == 1 && rec.height() == 1)
-        {
-          if(g->contains(&worldPoint))
-            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        }
-        else
-        {
-          if(g->intersects(&worldRec))
-            visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
-        }
+        if(rec.isValid() && g->intersects(&worldRec))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
+        else if(g->contains(&worldPoint))
+          visRows.push_back(op->getVisualRow(op->getLogicalRow(pkv)));
       }
 
       delete g;
     }
+    delete dataSet;
+    delete transactor;
 
     if(visRows.empty())
       continue;
@@ -1310,6 +1574,7 @@ void MyDisplay::execZoomAreaSlot(const QRect& rec)
 
     setExtent();
 
+    abortAllDrawing();
     draw();
   }
   catch(te::common::Exception& e)
@@ -1339,6 +1604,7 @@ void MyDisplay::execZoomInSlot(const QPoint& p)
 
     setExtent();
 
+    abortAllDrawing();
     draw();
   }
   catch(te::common::Exception& e)
@@ -1366,6 +1632,7 @@ void MyDisplay::execZoomOutSlot(const QPoint& p)
     m_envelope = te::gm::Envelope(pll.x(), pll.y(), pur.x(), pur.y());
     setExtent();
 
+    abortAllDrawing();
     draw();
   }
   catch(te::common::Exception& e)
@@ -1396,6 +1663,7 @@ void MyDisplay::execPanSlot(const QPoint& from, const QPoint& to)
     m_envelope = te::gm::Envelope(pll.x(), pll.y(), pur.x(), pur.y());
 
     setExtent();
+    abortAllDrawing();
     draw();
   }
   catch(te::common::Exception& e)
@@ -1463,14 +1731,88 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
 
     poly->push_back(line);
 
-    te::da::DataSet* dataSet = op->getDataSet();
+    //te::da::DataSet* dataSet = op->getDataSet();
+    //te::da::DataSetType* dsType = op->getDataSetType();
+    //std::size_t gPos = dsType->getDefaultGeomPropertyPos();
+    //te::gm::GeomType gtype = dsType->getDefaultGeomProperty()->getGeometryType();
+
+    //QString val;
+    //std::vector<QString> values;
+    //std::vector<int>::iterator it;
+
+    //dataSet->moveBeforeFirst();
+    //while(dataSet->moveNext())
+    //{
+    //  te::gm::Geometry* g = dataSet->getGeometry(gPos);
+    //  if(g == 0)
+    //    continue;
+    //  
+    //  g->setSRID(layer->getSRID());
+    //  g->transform(m_srid);
+
+    //  if(gtype == te::gm::PolygonType || gtype == te::gm::MultiPolygonType)
+    //  {
+    //    if(g->contains(&mouseWPos))
+    //    {
+    //      for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
+    //      {
+    //        val = dsType->getProperty(*it)->getName().c_str();
+    //        val += ": ";
+    //        if(dataSet->isNull(*it) == false)
+    //          val += dataSet->getAsString(*it).c_str();
+    //        values.push_back(val);
+    //      }
+    //      delete g;
+    //      break;
+    //    }
+    //  }
+    //  else if(gtype == te::gm::PointType || gtype == te::gm::MultiPointType)
+    //  {
+    //    if(poly->contains(g))
+    //    {
+    //      for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
+    //      {
+    //        val = dsType->getProperty(*it)->getName().c_str();
+    //        val += ": ";
+    //        if(dataSet->isNull(*it) == false)
+    //          val += dataSet->getAsString(*it).c_str();
+    //        values.push_back(val);
+    //      }
+    //      delete g;
+    //      break;
+    //    }
+    //  }
+    //  else if(gtype == te::gm::LineStringType || gtype == te::gm::MultiLineStringType)
+    //  {
+    //    if(g->crosses(poly))
+    //    {
+    //      for(it = tooltipColumns.begin(); it != tooltipColumns.end(); ++it)
+    //      {
+    //        val = dsType->getProperty(*it)->getName().c_str();
+    //        val += ": ";
+    //        if(dataSet->isNull(*it) == false)
+    //          val += dataSet->getAsString(*it).c_str();
+    //        values.push_back(val);
+    //      }
+    //      delete g;
+    //      break;
+    //    }
+    //  }
+    //  delete g;
+    //}
+    //delete poly;
+//*****************************************************************************
+    QString val;
+    std::vector<QString> values;
+    std::vector<int>::iterator it;
+
     te::da::DataSetType* dsType = op->getDataSetType();
     std::size_t gPos = dsType->getDefaultGeomPropertyPos();
     te::gm::GeomType gtype = dsType->getDefaultGeomProperty()->getGeometryType();
 
-    QString val;
-    std::vector<QString> values;
-    std::vector<int>::iterator it;
+    te::da::DataSourceTransactor* transactor = layer->getDataSource()->getTransactor();
+    te::da::DataSet* dataSet = transactor->getDataSet(layer->getId(), &env, te::gm::INTERSECTS);
+
     dataSet->moveBeforeFirst();
     while(dataSet->moveNext())
     {
@@ -1532,7 +1874,9 @@ void MyDisplay::mouseTooltipSlot(QPoint p)
       delete g;
     }
     delete poly;
-
+    delete dataSet;
+    delete transactor;
+//*****************************************************************************
     if(values.empty() == false)
     {
       QString s;
@@ -2341,6 +2685,13 @@ void MyDisplay::layerFrozenSlot()
   m_frozenLayerSet = w.m_layerSet;
 }
 
+void MyDisplay::draw(int x, int y, QPainter& painter, QPaintDevice* device)
+{
+  if(device->devType() == QInternal::Pixmap)
+    painter.drawPixmap(x, y, *static_cast<QPixmap*>(device));
+  else
+    painter.drawImage(x, y, *static_cast<QImage*>(device));
+}
 
 //#include "MyDisplay.h"
 //#include "MyLayer.h"

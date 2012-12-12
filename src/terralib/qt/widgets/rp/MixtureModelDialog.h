@@ -28,10 +28,12 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../maptools/RasterLayer.h"
 #include "../../../raster/Raster.h"
 
 // Qt
 #include <QtGui/QDialog>
+#include <QPointF>
 
 // STL
 #include <map>
@@ -52,6 +54,40 @@ namespace te
   {
     namespace widgets
     {
+      class CoordTracking;
+      class MapDisplay;
+      class Pan;
+      class ZoomWheel;
+
+      /*!
+        \class MixtureModelDialogMDEventFilter
+
+        \brief A event filter to handle map display events.
+      */
+      class TEQTWIDGETSEXPORT MixtureModelDialogMDEventFilter : public QObject
+      {
+        Q_OBJECT
+
+        public:
+
+          MixtureModelDialogMDEventFilter(te::qt::widgets::MapDisplay* parent);
+
+          ~MixtureModelDialogMDEventFilter();
+
+//overload
+          bool eventFilter(QObject* watched, QEvent* event);
+
+        signals:
+
+          /*! This signal is emitted when a keyboar key was pressed. */
+          void keyPressedOverMapDisplay( int key );
+
+        protected:
+
+          te::qt::widgets::MapDisplay* m_mDisplay;
+
+      };
+
       /*!
         \class MixtureModelDialog
 
@@ -72,7 +108,8 @@ namespace te
             \param parent              Parent widget pointer.
             \param f                   Widget flags.
           */
-          MixtureModelDialog(const te::rst::Raster* inputRasterPtr,
+          MixtureModelDialog(//const te::rst::Raster* inputRasterPtr,
+                             const te::map::RasterLayer* inputRasterLayerPtr,
                              const std::string& outpuRasterDSType,
                              const std::map<std::string, std::string>& outpuRasterInfo,
                              QWidget* parent = 0,
@@ -93,7 +130,10 @@ namespace te
         protected slots:
 
           void on_okPushButton_clicked();
-          void on_selectPixel_clicked();
+          void on_coordTracked_changed(QPointF& coordinate);
+          void on_keyPressedOverMapDisplay(int key);
+          void on_removeButton_clicked();
+          void updateComponentsGrid();
 
         private:
 
@@ -102,11 +142,19 @@ namespace te
           std::string m_outpuRasterDSType;                           //!< Output raster data source type (as described in te::rst::RasterFactory).
           std::map<std::string, std::string> m_outpuRasterInfo;      //!< The necessary information to create the raster (as described in te::rst::RasterFactory).
           boost::shared_ptr<te::rst::Raster> m_outputRasterPtr;      //!< Output raster pointer.
-          unsigned int totalComponents;                              //!< The actual number of inserted components.
+          int currentColumn;                                         //!< The column position of mouse in map display.
+          int currentRow;                                            //!< The row position of mouse in map display.
+          te::qt::widgets::MapDisplay* m_mapDisplay;                 //!< The map display to show the input raster.
+          te::qt::widgets::Pan* m_panClickEvent;                     //!< Pan click event for map display.
+          te::qt::widgets::ZoomWheel* m_zoomScroolEvent;             //!< Zoom event using mouse scrool for map display.
+          CoordTracking* m_coordTracking;                            //!< Coordinate tracking for map display.
+          MixtureModelDialogMDEventFilter* m_keyboardPressTracking;  //!< The event filter to detect when user press space bar.
+          std::map<std::string, std::vector<double> > m_components;  //!< The map of selected components.
+          unsigned int m_maxComponentsInserted;                      //!< The maximum number of components inserted.
       };
 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+    }  // end namespace widgets
+  }  // end namespace qt
+}  // end namespace te
 
 #endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_MIXTUREMODELDIALOG_H

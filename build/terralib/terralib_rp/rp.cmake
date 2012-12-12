@@ -17,6 +17,7 @@ list (APPEND DEP_LIBS
     terralib_memory
     terralib_geometry
     terralib_raster
+    terralib_srs
     )
 	
 # Select the source and header files

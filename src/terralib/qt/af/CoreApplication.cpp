@@ -27,7 +27,7 @@
 #include <boost/foreach.hpp>
 
 
-const te::qt::af::CoreApplication& sm_core = te::qt::af::teApp::getInstance();
+const te::qt::af::CoreApplication& sm_core = te::qt::af::Application::getInstance();
 
 namespace fs = boost::filesystem;
 namespace b_prop = boost::property_tree;
@@ -179,7 +179,7 @@ namespace te
 
         //! Send event of tool bar added.
         te::qt::af::NewToolBar evt(bar);
-        broadCast(&evt);
+        broadcast(&evt);
       }
 
       void CoreApplication::registerToolBar(const QString& barId, QToolBar* bar)
@@ -278,7 +278,7 @@ namespace te
             if(!fs::exists(p.branch_path()))
               fs::create_directories(p.branch_path());
 
-            const std::vector< std::pair<std::string, std::string> >* af_configs = te::qt::af::teApp::getInstance().getApplicationInfo();
+            const std::vector< std::pair<std::string, std::string> >* af_configs = te::qt::af::Application::getInstance().getApplicationInfo();
 
             if(af_configs->empty())
             {
@@ -309,7 +309,7 @@ namespace te
             if(!fs::exists(p.branch_path()))
               fs::create_directories(p.branch_path());
 
-            const std::vector< std::pair<std::string, std::string> >* af_configs = te::qt::af::teApp::getInstance().getApplicationPlgInfo();
+            const std::vector< std::pair<std::string, std::string> >* af_configs = te::qt::af::Application::getInstance().getApplicationPlgInfo();
 
             if(!af_configs->empty())
               configureFile(*af_configs, p.generic_string());
@@ -326,7 +326,7 @@ namespace te
             if(!fs::exists(p.branch_path()))
               fs::create_directories(p.branch_path());
 
-            const std::vector< std::pair<std::string, std::string> >* af_configs = te::qt::af::teApp::getInstance().getUserInfo();
+            const std::vector< std::pair<std::string, std::string> >* af_configs = te::qt::af::Application::getInstance().getUserInfo();
 
             if(!af_configs->empty())
               configureFile(*af_configs, p.generic_string());
@@ -407,7 +407,7 @@ namespace te
         m_initialized = false;
       }
 
-      void CoreApplication::broadCast(te::qt::af::Event* evt)
+      void CoreApplication::broadcast(te::qt::af::Event* evt)
       {
         //! Need to check event send to prevent loops
         //! -----------------------------------------

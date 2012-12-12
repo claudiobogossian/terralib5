@@ -306,6 +306,7 @@ set (
   ${SRCDIR}/widgets/se/RasterVisualDockWidget.h
   ${SRCDIR}/widgets/se/SelectedChannelWidget.h
   ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+  ${SRCDIR}/widgets/se/StyleExplorer.h
   ${SRCDIR}/widgets/se/SymbolEditorWidget.h
   ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
   ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h

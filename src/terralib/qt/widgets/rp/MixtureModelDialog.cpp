@@ -24,10 +24,17 @@
 */
 
 // TerraLib
+#include "../canvas/MapDisplay.h"
 #include "../../../common/StringUtils.h"
+#include "../../../geometry/Coord2D.h"
+#include "../../../raster/Grid.h"
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/MixtureModelLinearStrategy.h"
 #include "../../../rp/MixtureModelPCAStrategy.h"
+#include "../../widgets/tools/CoordTracking.h"
+#include "../../widgets/tools/Pan.h"
+#include "../../widgets/tools/ZoomWheel.h"
+
 
 // GUI
 #include "MixtureModelDialog.h"
@@ -38,33 +45,83 @@
 #include <QtGui/QComboBox>
 #include <QtGui/QGridLayout>
 #include <QtGui/QImage>
-#include <QtGui/QMessageBox>
+#include <QtGui/QKeyEvent>
 #include <QtGui/QLineEdit>
+#include <QtGui/QMessageBox>
 
-te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::rst::Raster* inputRasterPtr, const std::string& outpuRasterDSType,
+te::qt::widgets::MixtureModelDialogMDEventFilter::MixtureModelDialogMDEventFilter(te::qt::widgets::MapDisplay* parent)
+  : QObject(parent), m_mDisplay(parent)
+{
+}
+
+te::qt::widgets::MixtureModelDialogMDEventFilter::~MixtureModelDialogMDEventFilter()
+{
+}
+
+bool te::qt::widgets::MixtureModelDialogMDEventFilter::eventFilter(QObject* watched, QEvent* event)
+{
+  if(event->type() == QEvent::Enter)
+    m_mDisplay->grabKeyboard();
+  else if(event->type() == QEvent::Leave)
+    m_mDisplay->releaseKeyboard();
+  else if(event->type() == QEvent::KeyPress)
+  {
+    if(m_mDisplay->underMouse())
+      emit(keyPressedOverMapDisplay(((QKeyEvent*)event)->key()));
+  }
+
+  return false;
+}
+
+te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::RasterLayer* inputRasterLayerPtr, const std::string& outpuRasterDSType,
                                                         const std::map<std::string, std::string>& outpuRasterInfo, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_inputRasterPtr(inputRasterPtr),
+    m_inputRasterPtr(inputRasterLayerPtr->getRaster()),
     m_outpuRasterDSType(outpuRasterDSType),
     m_outpuRasterInfo(outpuRasterInfo),
-    totalComponents(0)
+    m_maxComponentsInserted(0)
 {
   m_uiPtr = new Ui::MixtureModelForm;
 
   m_uiPtr->setupUi(this);
 
-// Signals & slots
+// insert image in frame
+  QGridLayout* rasterGridLayout = new QGridLayout(m_uiPtr->m_rasterFrame);
+  m_mapDisplay = new te::qt::widgets::MapDisplay(m_uiPtr->m_rasterFrame->size(), m_uiPtr->m_rasterFrame);
+  m_mapDisplay->setMouseTracking(true);
+  rasterGridLayout->addWidget(m_mapDisplay);
+  m_mapDisplay->setResizePolicy(te::qt::widgets::MapDisplay::Center); // ???
+  std::list<te::map::AbstractLayer*> layerList;
+  layerList.push_back((te::map::RasterLayer*) inputRasterLayerPtr);
+  m_mapDisplay->setLayerList(layerList);
+  m_mapDisplay->setSRID(m_inputRasterPtr->getSRID());
+  m_mapDisplay->setExtent(*(m_inputRasterPtr->getExtent()));
+
+// image frame events
+  m_panClickEvent = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+  m_zoomScroolEvent = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5, m_mapDisplay);
+  m_coordTracking = new te::qt::widgets::CoordTracking(m_mapDisplay, m_mapDisplay);
+  m_keyboardPressTracking = new MixtureModelDialogMDEventFilter(m_mapDisplay);
+
+  m_mapDisplay->installEventFilter(m_coordTracking);
+  m_mapDisplay->installEventFilter(m_keyboardPressTracking);
+  m_mapDisplay->installEventFilter(m_panClickEvent);
+  m_mapDisplay->installEventFilter(m_zoomScroolEvent);
+
+// signals & slots
   connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));
-  connect(m_uiPtr->m_helpPushButton, SIGNAL(clicked()), SLOT(on_selectPixel_clicked())); // ???
+  connect(m_coordTracking, SIGNAL(coordTracked(QPointF&)), this, SLOT(on_coordTracked_changed(QPointF&)));
+  connect(m_keyboardPressTracking, SIGNAL(keyPressedOverMapDisplay(int)), this, SLOT(on_keyPressedOverMapDisplay(int)));
 
 // define sensor information
   QStringList sensorsDescriptions;
   sensorsDescriptions.append("sensor_description1");
   sensorsDescriptions.append("sensor_description2");
   sensorsDescriptions.append("sensor_description3");
+
 // initializing the list of bands
   QGridLayout *bandsListLayout = new QGridLayout();
-  for(unsigned b = 0 ; b < inputRasterPtr->getNumberOfBands(); b++)
+  for(unsigned b = 0 ; b < m_inputRasterPtr->getNumberOfBands(); b++)
   {
     std::string bname = "Band " + te::common::Convert2String(b);
     QCheckBox* bandCheckBox = new QCheckBox(tr(bname.c_str()));
@@ -135,9 +192,19 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
     }
   }
 
+// insert mixture components
+  std::map<std::string, std::vector<double> >::const_iterator cit = m_components.begin();
+  while (cit != m_components.end())
+  {
+    algoInputParameters.m_components[cit->first] = cit->second;
+
+    ++cit;
+  }
+
+/*
   QGridLayout *componentsListLayout = (QGridLayout*) m_uiPtr->m_componentsListGroupBox->layout();
 // insert mixture components
-  for (unsigned int i = 0; i < totalComponents; i++)
+  for (unsigned int i = 0; i < m_components.size(); i++)
   {
     QLineEdit* componentLineEdit = (QLineEdit*) componentsListLayout->itemAtPosition(i, 1)->widget();
 
@@ -148,10 +215,18 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
       algoInputParameters.m_components[std::string(componentLineEdit->text().toAscii())].push_back(pixelValueLineEdit->text().toDouble());
     }
   }
-
+*/
 // link specific parameters with chosen implementation
-  te::rp::MixtureModelLinearStrategy::Parameters specificParameters; // ???
-  algoInputParameters.setMixtureModelStrategyParams(specificParameters);
+  if (m_uiPtr->m_mmTypeComboBox->currentText() == "Linear")
+  {
+    te::rp::MixtureModelLinearStrategy::Parameters specificParameters;
+    algoInputParameters.setMixtureModelStrategyParams(specificParameters);
+  }
+  else // "pca"
+  {
+    te::rp::MixtureModelPCAStrategy::Parameters specificParameters;
+    algoInputParameters.setMixtureModelStrategyParams(specificParameters);
+  }
 
 // output parameters
   te::rp::MixtureModel::OutputParameters algoOutputParameters;
@@ -180,32 +255,90 @@ void te::qt::widgets::MixtureModelDialog::on_okPushButton_clicked()
   QMessageBox::information(this, "", tr("Mixture model decomposition ended sucessfully"));
 }
 
-void te::qt::widgets::MixtureModelDialog::on_selectPixel_clicked()
+void te::qt::widgets::MixtureModelDialog::on_coordTracked_changed(QPointF& coordinate)
+{
+// find the selected pixel location for component
+  te::gm::Coord2D pixelLocation = m_inputRasterPtr->getGrid()->geoToGrid((double) coordinate.rx(), (double)coordinate.ry());
+  currentColumn = pixelLocation.x;
+  currentRow = pixelLocation.y;
+}
+
+void te::qt::widgets::MixtureModelDialog::on_keyPressedOverMapDisplay(int key)
+{
+// check range
+  if (currentColumn < 0 || currentColumn >= (int) m_inputRasterPtr->getNumberOfColumns())
+    return;
+  if (currentRow < 0 || currentRow >= (int) m_inputRasterPtr->getNumberOfRows())
+    return;
+
+  std::vector<double> componentsVector;
+
+  QString* className = new QString("Change name " + QString::number(m_maxComponentsInserted++));
+
+  double value;
+  for(unsigned b = 0 ; b < m_inputRasterPtr->getNumberOfBands(); b++)
+  {
+    m_inputRasterPtr->getValue(currentColumn, currentRow, value, b);
+
+    componentsVector.push_back(value);
+  }
+
+  m_components[className->toStdString()] = componentsVector;
+
+  updateComponentsGrid();
+}
+
+void te::qt::widgets::MixtureModelDialog::on_removeButton_clicked()
+{
+  QPushButton* sender = (QPushButton*) QObject::sender();
+
+// retrieve component class name
+  std::string className = sender->statusTip().toStdString();
+
+  m_components.erase(className);
+
+  updateComponentsGrid();
+}
+
+void te::qt::widgets::MixtureModelDialog::updateComponentsGrid()
 {
   QGridLayout *componentsListLayout = (QGridLayout*) m_uiPtr->m_componentsListGroupBox->layout();
 
-// find the selected pixel location for component
-  unsigned int selectedColumn = totalComponents * 2; // ???
-  unsigned int selectedRow = totalComponents * 5; // ???
-  double value;
-
-// add symbol for the selected component
-  QLabel* classSymbol = new QLabel("Label");
-  componentsListLayout->addWidget(classSymbol, totalComponents, 0);
-
-// add new component information (class name, b0, b1, ...)
-  QLineEdit* className = new QLineEdit("Change component name " + QString::number(totalComponents));
-  componentsListLayout->addWidget(className, totalComponents, 1);
-
-  for(unsigned b = 0 ; b < m_inputRasterPtr->getNumberOfBands(); b++)
+// clear layout
+  QLayoutItem *child;
+  while ((child = componentsListLayout->takeAt(0)) != 0)
   {
-    m_inputRasterPtr->getValue(selectedColumn, selectedRow, value, b);
-
-    QLineEdit* currentPixel = new QLineEdit(QString::number(value));
-
-//    currentPixel->setSize!!!
-
-    componentsListLayout->addWidget(currentPixel, totalComponents, b + 2);
+    delete child->widget();
+    delete child;
   }
-  totalComponents++;
+
+// add lines
+  std::map<std::string, std::vector<double> >::const_iterator cit = m_components.begin();
+  unsigned int totalComponents = 0;
+  while (cit != m_components.end())
+  {
+    QPushButton* removeButton = new QPushButton("x");
+
+    removeButton->setStatusTip(cit->first.c_str());
+    removeButton->setMaximumSize(20, 20);
+    connect(removeButton, SIGNAL(clicked()), SLOT(on_removeButton_clicked()));
+
+    componentsListLayout->addWidget(removeButton, totalComponents, 0);
+
+    QLineEdit* className = new QLineEdit(cit->first.c_str());
+    componentsListLayout->addWidget(className, totalComponents, 1);
+
+    std::vector<double> components = cit->second;
+    for (unsigned int i = 0; i < components.size(); i++)
+    {
+      QLineEdit* currentPixel = new QLineEdit(QString::number(components[i]));
+
+      currentPixel->setMaximumSize(50, currentPixel->maximumHeight());
+
+      componentsListLayout->addWidget(currentPixel, totalComponents, i + 2);
+    }
+
+    totalComponents++;
+    ++cit;
+  }
 }

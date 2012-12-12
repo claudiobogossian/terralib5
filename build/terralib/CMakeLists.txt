@@ -4,7 +4,7 @@ set (PROJ_NAME "terralib")
 project(${PROJ_NAME})
 
 set (TE_VERSION "5.0.0")
-set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Modules")
+set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../modules")
 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}" )
 
@@ -208,7 +208,7 @@ export( PACKAGE terralib )
 
 install (
   EXPORT teDepends 
-  DESTINATION Modules
+  DESTINATION modules
   COMPONENT CMAKE
 )
   
@@ -216,7 +216,7 @@ install (
 FILE ( GLOB cmake_files "${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake")
 install ( 
   FILES ${cmake_files}
-  DESTINATION Modules
+  DESTINATION modules
   COMPONENT CMAKE
 )
 
