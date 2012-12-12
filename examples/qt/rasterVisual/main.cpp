@@ -69,11 +69,10 @@ int main(int argc, char** argv)
 
 // initialize Terralib support
   TerraLib::getInstance().initialize();
+  LoadGDALModule();
 
   try
-  {
-    LoadGDALModule();
-    
+  {   
     QApplication app(argc, argv);
 
     // Adjusting icons theme
@@ -98,6 +97,7 @@ int main(int argc, char** argv)
   }
 
 // finalize Terralib support
+  te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
 
   std::cout << "Press Enter to exit..." << std::endl;

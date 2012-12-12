@@ -195,7 +195,7 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     // Draw task
     te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
     // Setups task
-    task.setTotalSteps(nSymbolizers * dataset->size());
+    //task.setTotalSteps(nSymbolizers * dataset->size()); // Removed! The size() method would be too costly to compute.
 
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {

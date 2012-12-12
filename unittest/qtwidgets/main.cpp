@@ -42,51 +42,19 @@
 void LoadModules()
 {
   try
-  {   
-    {      
-      te::plugin::PluginInfo info;      
-      info.m_name = "te.da.pgis";
-      info.m_displayName = "POSTGIS DataSource Driver";
-      info.m_description = "This data source driver supports data stored in a PostGIS database";
-      info.m_engine = "C++";
-      info.m_folder = PLUGINS_PATH;
+  {      
+    te::plugin::PluginInfo* info;
       
-      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_postgis");
-      
-      info.m_resources.push_back(rsc);
-      
-      te::plugin::PluginManager::getInstance().load(info);
-    }  
-    
-    {
-      te::plugin::PluginInfo info; 
-      info.m_name = "te.da.ogr";
-      info.m_displayName = "OGR DataSource Driver";
-      info.m_description = "This data source driver supports spatial data managed by OGR";
-      info.m_engine = "C++";
-      info.m_folder = PLUGINS_PATH;
-      
-      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
-      
-      info.m_resources.push_back(rsc);
-      
-      te::plugin::PluginManager::getInstance().load(info);
-    }
-    
-    {
-      te::plugin::PluginInfo info; 
-      info.m_name = "te.da.gdal";
-      info.m_displayName = "GDAL DataSource Driver";
-      info.m_description = "This data source driver supports spatial data managed by GDAL";
-      info.m_engine = "C++";
-      info.m_folder = PLUGINS_PATH;
-      
-      std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
-      
-      info.m_resources.push_back(rsc);
-      
-      te::plugin::PluginManager::getInstance().load(info);
-    }
+    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
+    te::plugin::PluginManager::getInstance().add(info); 
+
+    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_gdal_info.xml"));
+    te::plugin::PluginManager::getInstance().add(info);
+       
+    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_pgis_info.xml"));
+    te::plugin::PluginManager::getInstance().add(info);       
+  
+    te::plugin::PluginManager::getInstance().loadAll(); 
   }
   catch(const te::common::Exception& e)
   {
@@ -139,7 +107,8 @@ int main(int /*argc*/, char** /*argv*/)
     xml.setStyleSheet( "report.xsl" );
     xml.write();
     file2.close();
-    
+
+    te::plugin::PluginManager::getInstance().unloadAll();
     TerraLib::getInstance().finalize();
     
     bool resultStatus = result.wasSuccessful();
