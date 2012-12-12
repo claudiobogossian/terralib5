@@ -58,7 +58,7 @@ namespace te
         public:
 
           /*! \brief Default constructor. */
-          ProgressWidgetItem(QWidget* parent, int taskId);
+          ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps);
 
           /*! \brief Virtual destructor. */
           ~ProgressWidgetItem();

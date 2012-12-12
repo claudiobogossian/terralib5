@@ -65,7 +65,7 @@ void te::qt::widgets::ProgressViewerWidget::addTask(te::common::TaskProgress* t,
 {
   m_tasks.insert(std::map<int, te::common::TaskProgress*>::value_type(id, t));
 
-  QCoreApplication::postEvent(this, new CreateProgressWidgetItemEvent(t->getMessage().c_str(), id));
+  QCoreApplication::postEvent(this, new CreateProgressWidgetItemEvent(t->getMessage().c_str(), id, t->getTotalSteps()));
   QCoreApplication::processEvents();
 }
 
@@ -129,7 +129,7 @@ void te::qt::widgets::ProgressViewerWidget::customEvent(QEvent* e)
   {
     CreateProgressWidgetItemEvent* createEvent = static_cast<CreateProgressWidgetItemEvent*>(e);
     
-    ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, createEvent->m_taskId);
+    ProgressWidgetItem* item = new ProgressWidgetItem(m_widget, createEvent->m_taskId, createEvent->m_totalSteps);
 
     item->setLabel(createEvent->m_label.toStdString());
 

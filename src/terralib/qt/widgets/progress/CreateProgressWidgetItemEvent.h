@@ -55,8 +55,11 @@ namespace te
 
             \param label Progress widget item label.
             \param taskId The task id associated with the progress widget that will be created.
+            \param totalSteps The total steps of progress widget that will be created. 
+                              
+            \note If the totalSteps equals 0 the progress widget shows a busy indicator instead of a percentage of steps.
           */
-          CreateProgressWidgetItemEvent(const QString& label, const int& taskId);
+          CreateProgressWidgetItemEvent(const QString& label, const int& taskId, const int& totalSteps);
 
           /*! \brief Destructor */
           ~CreateProgressWidgetItemEvent();
@@ -66,8 +69,9 @@ namespace te
 
         public:
 
-          QString m_label; //!< Progress widget item label.
-          int m_taskId;    //!< The task id associated with the progress widget that will be created.
+          QString m_label;  //!< Progress widget item label.
+          int m_taskId;     //!< The task id associated with the progress widget that will be created.
+          int m_totalSteps; //!< The total steps of progress widget that will be created.
 
         private:
 

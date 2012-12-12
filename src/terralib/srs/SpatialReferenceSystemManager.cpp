@@ -56,8 +56,8 @@ void te::srs::SpatialReferenceSystemManager::add(const std::string& name, const 
   
   m_authIdV.push_back(mkey);
   m_nameV.push_back(name); 
-  m_p4txtV.push_back(wkt);
-  m_wktV.push_back(p4Txt);
+  m_p4txtV.push_back(p4Txt);
+  m_wktV.push_back(wkt);
 }
 
 bool te::srs::SpatialReferenceSystemManager::recognizes(unsigned int id, const std::string& authName) const

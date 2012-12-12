@@ -15,41 +15,31 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
- */
+*/
 
 /*!
-  \file LoadModules.h
- 
-  \brief Load terralib modules.
- */
+  \file Utils.h
 
-#ifndef __TERRALIB_UNITTEST_RP_LOADMODULES_H
-#define __TERRALIB_UNITTEST_RP_LOADMODULES_H
+  \brief To hold utilitary functions for the SRS module.
+*/
 
-#include <terralib/common.h>
-#include <terralib/plugin.h>
-#include <terralib/Config.h>
+#ifndef __TERRALIB_SRS_INTERNAL_UTILS_H
+#define __TERRALIB_SRS_INTERNAL_UTILS_H
 
-/*!
-  \brief Load terralib modules.
- */
-
-void LoadModules()
+namespace te
 {
-  te::plugin::PluginInfo* info;
+  namespace srs
+  {
+    /*! 
+      \brief This funcions initialize the Coordinate System Manager from a JSON resource file.
+      This funcions initialize the Coordinate System Manager from a JSON resource file named "srsjson.txt",
+      located within the TERRALIB_INITIALIZATION_FILES path.
+     
+      \exception It throws exception if the file is not found ou has an invalid sintax.
+      \note This function should be called one time only. 
+    */
+    void InitManagerFromJSON();
+  }
+}
 
-  #if TE_USE_OGR == 1
-    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
-    te::plugin::PluginManager::getInstance().add(info); 
-  #endif
-
-  #if TE_USE_GDAL
-    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_gdal_info.xml"));
-    te::plugin::PluginManager::getInstance().add(info); 
-  #endif
-
-  te::plugin::PluginManager::getInstance().loadAll();
-
-};
-
-#endif  // __TERRALIB_UNITTEST_RP_LOADMODULES_H
+#endif // __TERRALIB_SRS_INTERNAL_UTILS_H

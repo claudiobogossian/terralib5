@@ -272,6 +272,9 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
                               "Endmember's number of channels is bigger from input raster bands number");
   }
 
+  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_components.size() == inputParamsPtr->m_inputRasterBands.size(),
+                            "Number of components must be equal to the number of selected bands");
+
 // everything is ok
   m_instanceInitialized = true;
 

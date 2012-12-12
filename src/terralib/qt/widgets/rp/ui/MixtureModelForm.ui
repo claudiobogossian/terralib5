@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Raster Classifier</string>
+   <string>Raster Mixture Model Decomposition</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -146,7 +146,7 @@
         <cursorShape>CrossCursor</cursorShape>
        </property>
        <property name="toolTip">
-        <string>Use mouse scrool zooming in/out and hit space bar to select a component.</string>
+        <string>Use mouse scrool for zooming in/out and hit space bar to select a component.</string>
        </property>
        <property name="statusTip">
         <string/>

@@ -31,6 +31,7 @@ file(RELATIVE_PATH _tePath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${ROOT}" )
 # Configuring plugin
 set (TERRALIB_SCHEMA_LOCATION "${_tePath}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
 set (TERRALIB_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the TerraLib logo image.")
+set (TERRALIB_INIT_FILES_LOCATION "${_tePath}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
 
 #-----------------------------------------------------------------------
 option (BUILD_AF "Build application framework module?" ON)

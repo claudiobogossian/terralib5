@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../color/RGBAColor.h"
 #include "../../../maptools/RasterLayer.h"
 #include "../../../raster/Raster.h"
 
@@ -133,6 +134,7 @@ namespace te
           void on_coordTracked_changed(QPointF& coordinate);
           void on_keyPressedOverMapDisplay(int key);
           void on_removeButton_clicked();
+          void on_mapDisplay_extentChanged();
           void updateComponentsGrid();
 
         private:
@@ -149,8 +151,12 @@ namespace te
           te::qt::widgets::ZoomWheel* m_zoomScroolEvent;             //!< Zoom event using mouse scrool for map display.
           CoordTracking* m_coordTracking;                            //!< Coordinate tracking for map display.
           MixtureModelDialogMDEventFilter* m_keyboardPressTracking;  //!< The event filter to detect when user press space bar.
-          std::map<std::string, std::vector<double> > m_components;  //!< The map of selected components.
+          std::map<std::string, std::vector<double> > m_components;  //!< The map of selected components (name -> values).
+          std::map<std::string, te::gm::Coord2D> m_coordinates;      //!< The map of selected coordinates (name -> coordinates).
           unsigned int m_maxComponentsInserted;                      //!< The maximum number of components inserted.
+          te::color::RGBAColor** m_selectedPointPattern;             //!< The display draw pattern used for selected points.
+          // te::color::RGBAColor** m_unselectedPointPattern; //!< The display draw pattern used for unselected points.
+          // te::color::RGBAColor** m_tempPointPattern; //!< The display draw pattern used for temporary points.
       };
 
     }  // end namespace widgets

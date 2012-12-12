@@ -52,7 +52,7 @@ int main(int /*argc*/, char** /*argv*/)
   LoadModules();
 
   bool resultStatus;
-  
+ 
   boost::property_tree::ptree drivers;
 
   boost::property_tree::read_json("../data/json_files/drivers.json", drivers);
@@ -133,6 +133,8 @@ int main(int /*argc*/, char** /*argv*/)
   }
 
 // finalize TerraLib Plataform
+//  te::plugin::PluginManager::getInstance().shutdownAll();
+  te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
