@@ -56,6 +56,15 @@ namespace te
         {
           public:
             
+            /*! \enum TiePointsLinkingType The tie pionts linking type (what rasters are linked by the supplied tie-points. */
+            enum TypePointsType
+            {
+              InvalidTiePointsT = 0,
+              AdjacentRastersLinkingTiePointsT = 1,
+              FirstRasterLinkingTiePointsT = 2
+            };
+            
+            
             FeederRaster* m_feederRasterPtr; //!< Input rasters feeder.
             
             std::vector< std::vector< unsigned int > > m_inputRastersBands; //!< Bands to process for each input raster.
@@ -131,7 +140,7 @@ namespace te
 
       protected:
         
-        Mosaic::InputParameters m_inputParameters; //!< TiePointsLocator input execution parameters.
+        Mosaic::InputParameters m_inputParameters; //!< Input execution parameters.
         
         bool m_isInitialized; //!< Tells if this instance is initialized.        
 
