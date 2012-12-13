@@ -39,6 +39,9 @@ te::qt::widgets::StyleExplorer::StyleExplorer(QWidget* parent)
 {
   // Setup
   setAlternatingRowColors(true);
+  setSelectionMode(QAbstractItemView::SingleSelection);
+  setHeaderLabel(tr("Style Explorer"));
+  setIconSize(QSize(32, 16));
 
   // Signals & slots
   connect(this, SIGNAL(itemClicked(QTreeWidgetItem*, int)), SLOT(onItemClicked(QTreeWidgetItem*, int)));
@@ -57,14 +60,33 @@ void te::qt::widgets::StyleExplorer::setStyle(te::se::Style* style)
   initialize();
 }
 
+const te::se::Rule* te::qt::widgets::StyleExplorer::getCurrentRule() const
+{
+  QTreeWidgetItem* selectedItem = getSelectedItem();
+  if(selectedItem == 0)
+    return 0;
+
+  if(selectedItem->type() == RULE)
+    return getRule(selectedItem);
+
+  if(selectedItem->type() == SYMBOLIZER)
+    return getRule(selectedItem->parent());
+
+  return 0;
+}
+
+te::se::Symbolizer* te::qt::widgets::StyleExplorer::getCurrentSymbolizer() const
+{
+  QTreeWidgetItem* selectedItem = getSelectedItem();
+  if(selectedItem != 0 && selectedItem->type() == SYMBOLIZER)
+    return getSymbolizer(selectedItem);
+
+  return 0;
+}
+
 void te::qt::widgets::StyleExplorer::initialize()
 {
   clear();
-  setColumnCount(1);
-  setHeaderLabel(tr("Style Explorer"));
-
-  QSize iconSize(32, 16);
-  setIconSize(iconSize);
 
   QTreeWidgetItem* root = new QTreeWidgetItem(this, STYLE);
   root->setText(0, m_style->getType().c_str());
@@ -78,14 +100,14 @@ void te::qt::widgets::StyleExplorer::initialize()
     QTreeWidgetItem* ruleItem = new QTreeWidgetItem(root, RULE);
     ruleItem->setText(0, tr("Rule"));
     ruleItem->setData(0, Qt::UserRole, (int)i);
-    ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize)));
+    ruleItem->setIcon(0, QIcon(SymbologyPreview::build(symbs, iconSize())));
 
     for(std::size_t j = 0; j < symbs.size(); ++j) // for each symbolizer
     {
       QTreeWidgetItem* symbItem = new QTreeWidgetItem(ruleItem, SYMBOLIZER);
       symbItem->setText(0, tr(symbs[j]->getType().c_str()));
       symbItem->setData(0, Qt::UserRole, (int)j);
-      symbItem->setIcon(0, QIcon(SymbologyPreview::build(symbs[j], iconSize)));
+      symbItem->setIcon(0, QIcon(SymbologyPreview::build(symbs[j], iconSize())));
     }
   }
 
@@ -123,6 +145,15 @@ te::se::Symbolizer* te::qt::widgets::StyleExplorer::getSymbolizer(QTreeWidgetIte
   return symbs[index];
 }
 
+QTreeWidgetItem* te::qt::widgets::StyleExplorer::getSelectedItem() const
+{
+  QList<QTreeWidgetItem*> selected = selectedItems();
+  if(selected.empty())
+    return 0;
+
+  return selected.at(0);
+}
+
 void te::qt::widgets::StyleExplorer::onItemClicked(QTreeWidgetItem* item, int /*column*/)
 {
   switch(item->type())
@@ -138,4 +169,19 @@ void te::qt::widgets::StyleExplorer::onItemClicked(QTreeWidgetItem* item, int /*
       emit symbolizerClicked(getSymbolizer(item));
     break;
   }
+}
+
+void te::qt::widgets::StyleExplorer::onSymbolizerChanged(te::se::Symbolizer* symb)
+{
+  QTreeWidgetItem* symbolizerItem = getSelectedItem();
+  std::size_t index = symbolizerItem->data(0, Qt::UserRole).toUInt();
+
+  const te::se::Rule* rule = getCurrentRule();
+  assert(rule);
+
+  // rule->setSymbolizer(index, symb);
+
+  // Updating item
+  symbolizerItem->setText(0, tr(symb->getType().c_str()));
+  symbolizerItem->setIcon(0, QIcon(SymbologyPreview::build(symb, iconSize())));
 }
