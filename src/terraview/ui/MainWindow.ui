@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1252</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -152,6 +152,9 @@
    <property name="toolTip">
     <string>Creates a new TerraView project...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_fileOpenProject">
    <property name="enabled">
@@ -162,6 +165,9 @@
    </property>
    <property name="toolTip">
     <string>Opens an existing TerraView project...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_fileSaveProject">
@@ -174,6 +180,9 @@
    <property name="toolTip">
     <string>Saves the current TerraView project.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_actionPan">
    <property name="checkable">
@@ -185,6 +194,9 @@
    <property name="toolTip">
     <string>Set current tool to pan...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_actionZoom_area">
    <property name="checkable">
@@ -195,6 +207,9 @@
    </property>
    <property name="toolTip">
     <string>Sets the current tool to zoom area.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_actionPointing">
@@ -210,6 +225,9 @@
    <property name="toolTip">
     <string>Sets the current tool to pointing.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_viewLayerExplorer">
    <property name="checkable">
@@ -220,6 +238,9 @@
    </property>
    <property name="toolTip">
     <string>Shows or hides the layer explorer.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_viewMapDisplay">
@@ -232,6 +253,9 @@
    <property name="toolTip">
     <string>Shows or hides the map display.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_viewTableData">
    <property name="checkable">
@@ -243,6 +267,9 @@
    <property name="toolTip">
     <string>Shows or hide the table with tabular data.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_addOGRLayer_act">
    <property name="text">
@@ -251,6 +278,9 @@
    <property name="toolTip">
     <string>Creates a new OGR layer.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_drawlayers_act">
    <property name="text">
@@ -258,6 +288,9 @@
    </property>
    <property name="toolTip">
     <string>Draws the visible layers at main display.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_distance_act">
@@ -270,6 +303,9 @@
    <property name="toolTip">
     <string>Sets the distance measure tool.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_angle_act">
    <property name="checkable">
@@ -280,6 +316,9 @@
    </property>
    <property name="toolTip">
     <string>Sets the angle measure tool.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_area_act">
@@ -292,6 +331,9 @@
    <property name="toolTip">
     <string>Sets the area measure tool</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_addGDALLayer_act">
    <property name="text">
@@ -299,6 +341,9 @@
    </property>
    <property name="toolTip">
     <string>Creates a new GDAL layer.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_viewRasterVisual">
@@ -311,6 +356,9 @@
    <property name="toolTip">
     <string>Shows or hides the raster visual window.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_fileSaveProjectAs">
    <property name="enabled">
@@ -321,6 +369,9 @@
    </property>
    <property name="toolTip">
     <string>Save project as...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_fileImportProject">
@@ -333,6 +384,9 @@
    <property name="toolTip">
     <string>Imports a project.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_fileExportProject">
    <property name="enabled">
@@ -343,6 +397,9 @@
    </property>
    <property name="toolTip">
     <string>Exports project.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_filePrint">
@@ -355,6 +412,9 @@
    <property name="toolTip">
     <string>Print map.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_filePrintPreview">
    <property name="enabled">
@@ -365,6 +425,9 @@
    </property>
    <property name="toolTip">
     <string>Print preview.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_editUndo">
@@ -377,6 +440,9 @@
    <property name="toolTip">
     <string>Undo last operation.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_editRedo">
    <property name="enabled">
@@ -388,6 +454,9 @@
    <property name="toolTip">
     <string>Redo last operation</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_editCut">
    <property name="enabled">
@@ -395,6 +464,9 @@
    </property>
    <property name="text">
     <string>Cu&amp;t...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_editCopy">
@@ -404,6 +476,9 @@
    <property name="text">
     <string>&amp;Copy...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_editPaste">
    <property name="enabled">
@@ -411,6 +486,9 @@
    </property>
    <property name="text">
     <string>&amp;Paste...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_editSelectAll">
@@ -420,6 +498,9 @@
    <property name="text">
     <string>Select &amp;All...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_editClear">
    <property name="enabled">
@@ -427,6 +508,9 @@
    </property>
    <property name="text">
     <string>C&amp;lear...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_editFind">
@@ -436,6 +520,9 @@
    <property name="text">
     <string>&amp;Find...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_editReplace">
    <property name="enabled">
@@ -443,6 +530,9 @@
    </property>
    <property name="text">
     <string>R&amp;eplace...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_viewFullScreen">
@@ -452,6 +542,9 @@
    <property name="text">
     <string>F&amp;ull Screen...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_viewRefresh">
    <property name="enabled">
@@ -459,6 +552,9 @@
    </property>
    <property name="text">
     <string>&amp;Refresh...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_settingsPreferences">
@@ -468,6 +564,9 @@
    <property name="text">
     <string>&amp;Preferences...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_pluginManager">
    <property name="text">
@@ -475,6 +574,9 @@
    </property>
    <property name="toolTip">
     <string>Shows plugins manager dialiog.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_pluginBuilder">
@@ -487,6 +589,9 @@
    <property name="toolTip">
     <string>Shows the dialog to create a new plugin.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_helpContents">
    <property name="enabled">
@@ -498,6 +603,9 @@
    <property name="toolTip">
     <string>Shows help dialog.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_helpUpdate">
    <property name="enabled">
@@ -505,6 +613,9 @@
    </property>
    <property name="text">
     <string>&amp;Update...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="actionRecent_Projects">
@@ -514,6 +625,9 @@
    <property name="text">
     <string>&amp;Recent Projects</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_fileExit">
    <property name="text">
@@ -521,6 +635,9 @@
    </property>
    <property name="toolTip">
     <string>Shutdown system.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="action_Toolbars">
@@ -530,6 +647,9 @@
    <property name="text">
     <string>&amp;Toolbars...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_editDataSourceManager">
    <property name="text">
@@ -537,6 +657,9 @@
    </property>
    <property name="toolTip">
     <string>Shows data source manager.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>
