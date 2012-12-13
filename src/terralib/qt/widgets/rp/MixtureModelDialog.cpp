@@ -122,7 +122,7 @@ te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::RasterLay
 
 // define sensor information
   QStringList sensorsDescriptions;
-  std::vector<std::string> bandNames; // = te::rp::GetBandNames();
+  std::vector<std::string> bandNames = te::rp::GetBandNames();
   for(unsigned int i = 0; i < bandNames.size(); i++)
     sensorsDescriptions.append(bandNames[i].c_str());
 
