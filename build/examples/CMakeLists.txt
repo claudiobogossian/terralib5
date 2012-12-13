@@ -21,10 +21,9 @@ if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   
   file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${DATA_DIR}/data.zip)
                   
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.zip
-                  WORKING_DIRECTORY ${DATA_DIR})
+  execute_process(COMMAND unzip ${DATA_DIR}/data.zip
+                  WORKING_DIRECTORY ${DATA_DIR} )
 
-  file (REMOVE ${DATA_DIR}/data.zip)
   message (STATUS "-- Data files installed.")
 endif()
 

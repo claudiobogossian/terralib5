@@ -19,14 +19,13 @@ set (DEFAULT_LOGFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to the f
 set (TE_OUTPUT_REPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/reports" CACHE PATH "Path where the report files will be generated.")
 
 if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
-  message (STATUS "-- Installing data for examples.")
+  message (STATUS "-- Installing data for unit tests.")
   
   file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${DATA_DIR}/data.zip)
                   
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.zip
-                  WORKING_DIRECTORY ${DATA_DIR})
+  execute_process(COMMAND unzip ${DATA_DIR}/data.zip
+                  WORKING_DIRECTORY ${DATA_DIR} )
 
-  file (REMOVE ${DATA_DIR}/data.zip)
   message (STATUS "-- Data files installed.")
 endif()
 
