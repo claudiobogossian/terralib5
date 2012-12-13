@@ -18,23 +18,26 @@
  */
 
 /*!
-  \file terralib/rp/FeederRaster.cpp
-  \brief Raster objects feeder.
+  \file terralib/rp/Blender.cpp
+  \brief Blended pixel value calculation for two overlaped rasters.
 */
 
-#include "FeederRaster.h"
+#include "Blender.h"
 
 namespace te
 {
   namespace rp
   {
-    FeederRaster::FeederRaster()
+    Blender::Blender()
+    : m_blendFuncPtr( 0 )
     {
-    };
+    }
     
-    FeederRaster::~FeederRaster()
+    Blender::~Blender()
     {
-    };    
+    }
+    
+
   } // end namespace rp
 }   // end namespace te    
 
