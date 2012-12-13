@@ -96,6 +96,24 @@ namespace te
           */
           void setStyle(te::se::Style* style);
 
+          /*!
+            \brief Gets the current rule.
+
+            \return The current rule on Style Explorer.
+
+            \note If there is not a current rule a NULL point will be returned.
+          */
+          const te::se::Rule* getCurrentRule() const;
+
+          /*!
+            \brief Gets the current symbolizer.
+
+            \return The current symbolizer on Style Explorer.
+
+            \note If there is not a current symbolizer a NULL point will be returned.
+          */
+          te::se::Symbolizer* getCurrentSymbolizer() const;
+
         private:
 
           /*! \brief Internal method to initialize the widget. */
@@ -107,9 +125,20 @@ namespace te
           /*! \brief Auxiliary internal method to retrieve a symbolizer from a QTreeWidgetItem. */
           te::se::Symbolizer* getSymbolizer(QTreeWidgetItem* item) const;
 
+          /*!
+            \brief Auxiliary internal method to retrieve the selected item on Style Explorer.
+
+            \return The selected QTreeWidgetItem on Style Explorer.
+
+            \note If there is not a selected QTreeWidgetItem a NULL point will be returned.
+          */
+          QTreeWidgetItem* getSelectedItem() const;
+
         private slots:
 
           void onItemClicked(QTreeWidgetItem* item, int column);
+
+          void onSymbolizerChanged(te::se::Symbolizer* symb);
 
         signals:
 
