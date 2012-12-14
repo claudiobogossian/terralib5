@@ -1004,9 +1004,6 @@ te::dt::Array* te::pgis::DataSet::getArray(int i) const
       for(int j = 0; j != 32; ++j)
       {
         mask[pos] = ((umask >> j) & 1) == 0;
-
-        bool bittttt = mask[pos];
-
         ++pos;
       }
     }
