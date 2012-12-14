@@ -31,7 +31,6 @@
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 #include "../geometry/Envelope.h"
-#include "../geometry/GeometricTransformation.h"
 #include "../geometry/GTFactory.h"
 #include "../geometry/Polygon.h"
 #include "../geometry/LinearRing.h"
@@ -71,6 +70,7 @@ namespace te
       m_geomTransfName = "Affine";
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_noDataValue = 0.0;
+      m_blendMethod = te::rp::Blender::NoBlendMethod;
     }
 
     const Mosaic::InputParameters& Mosaic::InputParameters::operator=(
@@ -84,6 +84,7 @@ namespace te
       m_geomTransfName = params.m_geomTransfName;
       m_interpMethod = params.m_interpMethod;
       m_noDataValue = params.m_noDataValue;
+      m_blendMethod = params.m_blendMethod;
 
       return *this;
     }
@@ -162,7 +163,7 @@ namespace te
       int mosaicSRID = 0;
       te::rst::BandProperty mosaicBaseBandProperties( 0, 0, "" );
       std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >
-        mosaicGeomTransfms; // Mapping points from each raster to the first raster.
+        mosaicGeomTransfms; // Mapping indexed points (line/coluns) from each raster to the first raster indexed points (lines/columns)..
       std::vector< te::gm::Polygon > rastersBBoxes; // all rasters bounding boxes (under the first raster world coords.
       te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
       te::gm::LinearRing* auxLinearRingPtr = 0;
@@ -183,9 +184,8 @@ namespace te
           -1 );
         
         m_inputParameters.m_feederRasterPtr->reset();
-        while( m_inputParameters.m_feederRasterPtr->moveNext() )
+        while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
         {
-          inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj();
           inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
           TERP_TRUE_OR_RETURN_FALSE( 
             inputRasterPtr->getAccessPolicy() & te::common::RAccess, 
@@ -214,7 +214,6 @@ namespace te
               // finding the current raster bounding box polygon (first raster world coordinates)
               
               auxPolygon.clear();
-              auxPolygon.setNumRings( 1 );
               auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
               auxLinearRingPtr->setPoint( 0, mosaicLLX, mosaicURY );
               auxLinearRingPtr->setPoint( 1, mosaicURX, mosaicURY );
@@ -264,15 +263,15 @@ namespace te
                 
               // current raster corner coords (line/column)
               
-              ulCoord2.x = 0;
-              ulCoord2.y = 0;
+              ulCoord2.x = -0.5;
+              ulCoord2.y = -0.5;
               urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns() 
-                - 1);
-              urCoord2.y = 0;
+                - 0.5);
+              urCoord2.y = -0.5;
               lrCoord2.x = urCoord2.x;
               lrCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows() 
-                - 1);
-              llCoord2.x = 0;
+                - 0.5);
+              llCoord2.x = ulCoord2.x;
               llCoord2.y = lrCoord2.y;
               
               // current raster corner coords (line/column) over the 
@@ -319,7 +318,6 @@ namespace te
               // finding the current raster bounding box polygon (first raster world coordinates)
               
               auxPolygon.clear();
-              auxPolygon.setNumRings( 1 );
               auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
               auxLinearRingPtr->setPoint( 0, ulCoord2.x, ulCoord2.y );
               auxLinearRingPtr->setPoint( 1, urCoord2.x, urCoord2.y );
@@ -349,7 +347,6 @@ namespace te
               
               // finding the current raster bounding box polygon (first raster world coordinates)
               auxPolygon.clear();
-              auxPolygon.setNumRings( 1 );
               auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
               auxLinearRingPtr->setPoint( 0, mosaicLLX, mosaicURY );
               auxLinearRingPtr->setPoint( 1, mosaicURX, mosaicURY );
@@ -424,7 +421,6 @@ namespace te
               // finding the current raster bounding box polygon (first raster world coordinates)
               
               auxPolygon.clear();
-              auxPolygon.setNumRings( 1 );
               auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
               auxLinearRingPtr->setPoint( 0, ulCoord1.x, ulCoord1.y );
               auxLinearRingPtr->setPoint( 1, urCoord1.x, urCoord1.y );
@@ -451,7 +447,7 @@ namespace te
           }
           
 
-          
+          m_inputParameters.m_feederRasterPtr->moveNext();
         }
       }      
       
@@ -551,6 +547,14 @@ namespace te
     bool Mosaic::isInitialized() const
     {
       return m_isInitialized;
+    }
+    
+    bool Mosaic::executeGeoMosaic( 
+      const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
+      mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
+      te::rst::Raster& outputRaster )
+    {
+      return true;
     }
 
   } // end namespace rp

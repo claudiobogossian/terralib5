@@ -52,31 +52,20 @@ namespace te
           \brief Return the current sequence object.
           \return A pointer to the current object or a null pointer if there are no object to return.
         */
-        virtual ObjType* getCurrentObj() = 0; 
+        virtual ObjType* getCurrentObj() const = 0; 
 
         /*! 
-          \brief Return the current sequence object. 
-          \return A pointer to the current object or a null pointer if there are no object to return.
-        */
-        virtual ObjType const* getCurrentObj() const = 0;
-        
-        /*! 
           \brief Advances to the next sequence obeject. 
-          \return true if the advance was completed or false if the objects sequence was reached.
+          \return true if the advance was completed or false if the objects sequence end was reached.
+          \note This method can invalidate any pointer returned by getCurrentObj.
         */
         virtual bool moveNext() = 0;
         
         /*! 
-          \brief Return true if the feeder is initialized.
-          \return true if the feeder is initialized.
-        */        
-        virtual bool isInitialized() const = 0;
-        
-        /*! 
           \brief Reset the feeder to the first position (subsequent accesses will start from the first sequence obejct).
-          \return true if OK, false if errors ocurred.
+          \note This method can invalidate any pointer returned by getCurrentObj.
         */        
-        virtual bool reset() = 0;
+        virtual void reset() = 0;
 
         /*! 
           \brief Return the total number of feeder objects.
