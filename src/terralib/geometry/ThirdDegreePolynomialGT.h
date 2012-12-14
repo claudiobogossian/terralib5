@@ -64,6 +64,8 @@ namespace te
           Coord2D& pt1 ) const;
 
         unsigned int getMinRequiredTiePoints() const;
+        
+        GeometricTransformation* clone() const;
 
       protected:
 

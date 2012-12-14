@@ -85,6 +85,13 @@ unsigned int te::gm::AffineGT::getMinRequiredTiePoints() const
 {
   return 3;
 }
+
+te::gm::GeometricTransformation* te::gm::AffineGT::clone() const
+{
+  te::gm::AffineGT* newTransPtr = new AffineGT;
+  newTransPtr->m_internalParameters = m_internalParameters;
+  return newTransPtr;
+};
         
 bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 {

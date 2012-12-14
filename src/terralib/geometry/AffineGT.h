@@ -73,6 +73,8 @@ namespace te
 
         unsigned int getMinRequiredTiePoints() const;
         
+        GeometricTransformation* clone() const;
+        
         /*!
           \brief Returns the basic set of transform parameters given by the decomposition of a given affine transformation parameters as described above.
 
