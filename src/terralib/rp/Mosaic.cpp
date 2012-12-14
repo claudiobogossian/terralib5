@@ -30,6 +30,7 @@
 #include "../raster/Grid.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
+#include "../memory/CachedRaster.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GTFactory.h"
 #include "../geometry/Polygon.h"
@@ -154,6 +155,7 @@ namespace te
       
       // First pass: getting global mosaic info
       
+      const bool useTiePoints = ( m_inputParameters.m_tiePoints.size() > 0 );
       double mosaicXResolution = 0.0;
       double mosaicYResolution = 0.0;
       double mosaicLLX = DBL_MAX; // world coords
@@ -193,7 +195,7 @@ namespace te
             
           // Defining the base mosaic info
           
-          if( m_inputParameters.m_tiePoints.size() > 0 )
+          if( useTiePoints )
           {
             if( inputRasterIdx == 0 )
             {
@@ -481,9 +483,14 @@ namespace te
       
       // Processing each raster
       
- 
+      te::mem::CachedRaster cachedRasterInstance( 
+        *(outParamsPtr->m_outputRasterPtr.get()), 25, 0 );
       
-      return true;
+      if( useTiePoints )
+        return executeTiePointsMosaic( mosaicGeomTransfms, rastersBBoxes,
+          cachedRasterInstance );
+      else
+        return executeGeoMosaic( rastersBBoxes, cachedRasterInstance);
     }
 
     void Mosaic::reset() throw( te::rp::Exception )
@@ -550,12 +557,54 @@ namespace te
     }
     
     bool Mosaic::executeGeoMosaic( 
+      const std::vector< te::gm::Polygon >& rastersBBoxes,
+      te::rst::Raster& outputRaster )
+    {
+      // Copyting the first image data to the output mosaic
+      
+      m_inputParameters.m_feederRasterPtr->reset();
+      
+      {
+        te::rst::Raster const* inputRasterPtr = 
+          m_inputParameters.m_feederRasterPtr->getCurrentObj();
+        TERP_DEBUG_TRUE_OR_RETURN_FALSE( inputRasterPtr, "Invalid raster pointer" );
+        
+        const unsigned int nBands = (unsigned int)
+          m_inputParameters.m_inputRastersBands[ 0 ].size();
+        const unsigned int nRows = inputRasterPtr->getNumberOfRows();
+        const unsigned int nCols = inputRasterPtr->getNumberOfColumns();
+        unsigned int col = 0;
+        unsigned int row = 0;
+        
+        for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
+          nBands ; ++inputRastersBandsIdx )
+        {
+          const unsigned int& bandIdx = m_inputParameters.m_inputRastersBands[ 0 ][ 
+            inputRastersBandsIdx ];
+          
+          for( row = 0 ; row < nRows ; ++row )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+            
+            }
+          }
+        }
+        
+      }
+      
+      return true;
+    }
+    
+    bool Mosaic::executeTiePointsMosaic( 
       const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
       mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
       te::rst::Raster& outputRaster )
     {
-      return true;
-    }
+      return false;
+    } 
+    
+    
 
   } // end namespace rp
 }   // end namespace te

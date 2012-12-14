@@ -27,8 +27,14 @@
 
 #include "Config.h"
 #include "Macros.h"
+#include "../raster/Raster.h"
+#include "../raster/Interpolator.h"
+#include "../geometry/GeometricTransformation.h"
+#include "../geometry/Polygon.h"
 
 #include <boost/noncopyable.hpp>
+
+#include <vector>
 
 namespace te
 {
@@ -47,12 +53,41 @@ namespace te
         /*! \enum BlendMethod Pixel Blend methods. */      
         enum BlendMethod 
         {
-          NoBlendMethod = 1, //!< No blending performed.
-          MeanBlendMethod = 2, //!< Mean of overlapped pixels method.
-          EuclideanBlendMethod = 3 //!< Euclidean distance based blending method.
+          NoBlendMethod = 1 //!< No blending performed.
         };        
-        
-        Blender();
+
+        /*!
+          \brief Default constructor.
+          \param raster1 Input raster 1.
+          \param raster1Bands Input raster 1 band indexes to use.
+          \param raster2 Input raster 2.
+          \param raster2Bands Input raster 2 band indexes to use (this vector has the same size as raster1Bands).
+          \param blendMethod The blend method to apply.
+          \param interpMethod The interpolation method to use.
+          \param geomTransformation A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::first ) (Note: all coords are indexed by lines/columns).
+          \param noDataValue The value returned where there is no pixel data bo blend.
+          \param pixelOffsets1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelScales1 The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelOffsets2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param pixelScales2 The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+          \param r1ValidDataPolygon A polygon (raster 1 indexed coords - line, col) delimiting the raster region with valid data.
+          \param r2ValidDataPolygon A polygon (raster 2 indexed coords - line, col) delimiting the raster region with valid data.
+        */
+        Blender( 
+          const te::rst::Raster& raster1, 
+          const std::vector< unsigned int >& raster1Bands, 
+          const te::rst::Raster& raster2, 
+          const std::vector< unsigned int >& raster2Bands,
+          const BlendMethod& blendMethod, 
+          const te::rst::Interpolator::Method& interpMethod,
+          const te::gm::GeometricTransformation& geomTransformation,
+          const double& noDataValue,
+          const std::vector< double >& pixelOffsets1,
+          const std::vector< double >& pixelScales1,
+          const std::vector< double >& pixelOffsets2,
+          const std::vector< double >& pixelScales2,
+          const te::gm::Polygon& r1ValidDataPolygon,
+          const te::gm::Polygon& r2ValidDataPolygon );
         
         ~Blender();
         
@@ -63,7 +98,6 @@ namespace te
           \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
           \param value Blended value.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
-        *
         */
         inline void getBlendedValue( const double& line, const double& col, 
           const unsigned int& rasterChannelsVecsIdx , double& value )
@@ -83,9 +117,33 @@ namespace te
           \param value Interpolated value.
         */      
         typedef void (Blender::*BlendFunctPtr)( const double& line, 
-          const double& col, const unsigned int& band, double& value );         
+          const double& col, const unsigned int& rasterChannelsVecsIdx, double& value );         
 
         BlendFunctPtr m_blendFuncPtr;
+        const te::rst::Raster& m_raster1;
+        const te::rst::Raster& m_raster2;
+        const std::vector< unsigned int > m_raster1Bands;
+        const std::vector< unsigned int > m_raster2Bands;
+        const BlendMethod m_blendMethod;
+        const te::rst::Interpolator::Method m_interpMethod;
+        const te::gm::GeometricTransformation* m_geomTransformationPtr;
+        const double m_noDataValue;
+        const std::vector< double > m_pixelOffsets1;
+        const std::vector< double > m_pixelScales1;
+        const std::vector< double > m_pixelOffsets2;
+        const std::vector< double > m_pixelScales2;
+        const te::gm::Polygon m_r1ValidDataPolygon;
+        const te::gm::Polygon m_r2ValidDataPolygon;        
+        
+        /*!
+          \brief Implementation for NoBlendMethod.
+          \param line Line (raster 1 reference).
+          \param col Column (raster 1 reference).
+          \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
+          \param value Blended value.
+        */
+        void noBlendMethodImp( const double& line, const double& col,
+          const unsigned int& rasterChannelsVecsIdx, double& value );        
 
     };
 

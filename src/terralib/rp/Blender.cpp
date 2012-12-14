@@ -28,15 +28,55 @@ namespace te
 {
   namespace rp
   {
-    Blender::Blender()
-    : m_blendFuncPtr( 0 )
+    Blender::Blender( const te::rst::Raster& raster1, 
+      const std::vector< unsigned int >& raster1Bands, 
+      const te::rst::Raster& raster2, 
+      const std::vector< unsigned int >& raster2Bands,
+      const BlendMethod& blendMethod, 
+      const te::rst::Interpolator::Method& interpMethod,
+      const te::gm::GeometricTransformation& geomTransformation,
+      const double& noDataValue,
+      const std::vector< double >& pixelOffsets1,
+      const std::vector< double >& pixelScales1,
+      const std::vector< double >& pixelOffsets2,
+      const std::vector< double >& pixelScales2,
+      const te::gm::Polygon& r1ValidDataPolygon,
+      const te::gm::Polygon& r2ValidDataPolygon)
+    : m_raster1( raster1 ),
+      m_raster2( raster2 ),
+      m_raster1Bands( raster1Bands ),
+      m_raster2Bands( raster2Bands ),
+      m_blendMethod( blendMethod ),
+      m_interpMethod( interpMethod ),
+      m_geomTransformationPtr( geomTransformation.clone() ),
+      m_noDataValue( noDataValue ),
+      m_pixelOffsets1( pixelOffsets1 ),
+      m_pixelScales1( pixelScales1 ),
+      m_pixelOffsets2( pixelOffsets2 ),
+      m_pixelScales2( pixelScales2 ),
+      m_r1ValidDataPolygon( r1ValidDataPolygon ),
+      m_r2ValidDataPolygon( r2ValidDataPolygon )
     {
+      switch( blendMethod )
+      {
+        default :
+        {
+          m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
+          break;
+        }
+      }
     }
     
     Blender::~Blender()
     {
+      delete m_geomTransformationPtr;
     }
     
+    void Blender::noBlendMethodImp( const double& line, const double& col,
+      const unsigned int& rasterChannelsVecsIdx, double& value )
+    {
+      
+    }
 
   } // end namespace rp
 }   // end namespace te    
