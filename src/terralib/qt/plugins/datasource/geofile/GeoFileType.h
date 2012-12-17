@@ -18,43 +18,47 @@
  */
 
 /*!
-  \file GeoFileType.h
+  \file terralib/qt/plugins/datasource/geofile/GeoFileType.h
 
-  \brief File based data source type.
+  \brief GeoFile data source type.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILETYPE_H
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILETYPE_H
 
-//! TerraLib
-#include <terralib/qt/widgets/datasource/core/DataSourceType.h>
+// TerraLib
+#include "../../../widgets/datasource/core/DataSourceType.h"
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace geofile
+    namespace plugins
     {
-      class GeoFileType : public te::qt::widgets::DataSourceType
+      namespace geofile
       {
-        public:
+        class GeoFileType : public te::qt::widgets::DataSourceType
+        {
+          public:
 
-          GeoFileType();
+            GeoFileType();
 
-          ~GeoFileType();
+            ~GeoFileType();
 
-          std::string getName() const;
+            std::string getName() const;
 
-          std::string getTitle() const;
+            std::string getTitle() const;
 
-          std::string getDescription() const;
+            std::string getDescription() const;
 
-          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-          QIcon getIcon(int iconType) const;
-      }; 
-    } // end namespace geofile
-  }   // end namespace plugin
-}     // end namespace qt_af
+            QIcon getIcon(int iconType) const;
+        };
+
+      } // end namespace geofile
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
 
 #endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILETYPE_H

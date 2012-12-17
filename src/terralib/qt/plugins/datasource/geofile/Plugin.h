@@ -18,19 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/geofile/GeoFileConnector.h
+  \file terralib/qt/plugins/datasource/geofile/Plugin.h
 
-  \brief GeoFile connector implementation for the Qt data source widget.
+  \brief Plugin implementation for the GeoFile data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTOR_H
+#ifndef __TE_QT_PLUGINS_DATASOURCE_GEOFILE_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_DATASOURCE_GEOFILE_INTERNAL_PLUGIN_H
 
 // TerraLib
-#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
-
-// Qt
-#include <QtGui/QWidget>
+#include "../../../../plugin/Plugin.h"
+#include "Config.h"
 
 namespace te
 {
@@ -40,24 +38,17 @@ namespace te
     {
       namespace geofile
       {
-        /*!
-          \class GeoFileConnector
-
-          \brief GeoFile connector implementation for the Qt data source widget.
-        */
-        class GeoFileConnector : public te::qt::widgets::AbstractDataSourceConnector
+        class Plugin : public te::plugin::Plugin
         {
           public:
 
-            GeoFileConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            ~GeoFileConnector();
+            ~Plugin();
 
-            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void startup();
 
-            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-
-            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void shutdown();
         };
 
       } // end namespace geofile
@@ -65,5 +56,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTOR_H
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINGEOFILEEXPORT);
 
+#endif //__TE_QT_PLUGINS_DATASOURCE_GEOFILE_INTERNAL_PLUGIN_H

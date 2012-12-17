@@ -18,47 +18,43 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/geofile/GeoFileType.cpp
+  \file terralib/qt/plugins/datasource/geofile/GeoFileType.cpp
 
-  \brief File based data source type.
+  \brief GeoFile data source type.
 */
 
 // TerraLib
-#include "terralib/common/Translator.h"
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "GeoFileConnector.h"
 #include "GeoFileType.h"
 
 // STL
 #include <cassert>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_geofile = qt_af::plugin::geofile;
-
-plg_geofile::GeoFileType::GeoFileType()
+te::qt::plugins::geofile::GeoFileType::GeoFileType()
 {
 }
 
-plg_geofile::GeoFileType::~GeoFileType()
+te::qt::plugins::geofile::GeoFileType::~GeoFileType()
 {
 }
 
-std::string plg_geofile::GeoFileType::getName() const
+std::string te::qt::plugins::geofile::GeoFileType::getName() const
 {
   return "GEOFILE";
 }
 
-std::string plg_geofile::GeoFileType::getTitle() const
+std::string te::qt::plugins::geofile::GeoFileType::getTitle() const
 {
   return TR_QT_WIDGETS("Geospatial Data");
 }
 
-std::string plg_geofile::GeoFileType::getDescription() const
+std::string te::qt::plugins::geofile::GeoFileType::getDescription() const
 {
   return TR_QT_WIDGETS("Access local or network files with geo-spatial data");
 }
 
-QWidget* plg_geofile::GeoFileType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::geofile::GeoFileType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
@@ -73,7 +69,7 @@ QWidget* plg_geofile::GeoFileType::getWidget(int widgetType, QWidget* parent, Qt
   }
 }
 
-QIcon plg_geofile::GeoFileType::getIcon(int iconType) const
+QIcon te::qt::plugins::geofile::GeoFileType::getIcon(int iconType) const
 {
   switch(iconType)
   {
