@@ -31,6 +31,7 @@
 
 // STL
 #include <complex>
+#include <vector>
 
 namespace te
 {
@@ -75,17 +76,21 @@ namespace te
 
           \param c The column position (double).
           \param r The row position (double).
-          \param v The output value.
+          \param v The output value or the current input raster no-data value if the requested coordinates are outside the valid image bounds.
           \param b The band to obtain the value.
         */
-        void getValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b);
+        inline void getValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
+        {
+          assert(b < m_raster->getNumberOfBands());
+          (this->*(m_function))(c, r, v, b);
+        };
 
         /*!
           \brief Get the interpolated value for all bands.
 
           \param c The column position (double).
           \param r The row position (double).
-          \param v A vector of values, for all bands.
+          \param v A vector of values, for all bands, or the current input raster no-data values if the requested coordinates are outside the valid image bounds..
         */
         void getValues(const double& c, const double& r, std::vector<std::complex<double> >& values);
 
@@ -136,6 +141,15 @@ namespace te
         Raster const* m_raster;                                  //!< My input raster.
         int m_method;                                      //!< The interpolation method.
         InterpolationFunction m_function;                  //!< The current interpolation function pointer.
+        std::vector< double > m_noDataValues;              //!< Raster no-data values (for each band);
+        
+        // nearest Neighbor interpolation variables
+        
+        unsigned int m_nnCR;
+        unsigned int m_nnRR;
+        double m_nnLastRow;                               //!< Last row available for nearest Neighbor interpolation.
+        double m_nnLastCol;                               //!< Last column available for nearest Neighbor interpolation.
+        
 
         /* Bilinear interapolation variables. */
         double m_bilRowMin;                                //!< Minimum row for bilinear interpolation.
