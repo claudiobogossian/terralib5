@@ -30,9 +30,6 @@
 #include "../Config.h"
 #include "SymbolInfo.h"
 
-// Boost
-#include <boost/noncopyable.hpp>
-
 // STL
 #include <string>
 #include <vector>
@@ -54,7 +51,7 @@ namespace te
 
         \brief This class represents a symbol. TODO: More description!
       */
-      class TEQTWIDGETSEXPORT Symbol : public boost::noncopyable
+      class TEQTWIDGETSEXPORT Symbol
       {
         public:
 
@@ -65,6 +62,9 @@ namespace te
 
         /*! \brief Default constructor. */
         Symbol();
+
+        /*! \brief Copy constructor. */
+        Symbol(const Symbol& rhs);
 
         /*! \brief Destructor. */
         ~Symbol();

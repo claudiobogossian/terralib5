@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_qt_se="http://www.terralib.org/qt/se"
+            xmlns:se="http://www.opengis.net/se"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/qt/se"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Symbol Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for a symbol library</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.opengis.net/se" schemaLocation="../../../ogc/se/1.1.0/Symbolizer.xsd"/>
+
+  <xsd:element name="SymbolLibrary" type="te_qt_se:SymbolLibraryType"/>
+
+  <xsd:complexType name="SymbolLibraryType">
+    <xsd:sequence>
+      <xsd:element ref="te_qt_se:Symbol" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:element name="Symbol" type="te_qt_se:SymbolType"/>
+
+  <xsd:complexType name="SymbolType">
+    <xsd:annotation>
+      <xsd:documentation>A type used to describe a symbol</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="Author" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="Category" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="Tags" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="Description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+      <xsd:element ref="se:Symbolizer" minOccurs="1" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

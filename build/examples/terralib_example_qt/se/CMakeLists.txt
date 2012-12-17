@@ -47,9 +47,10 @@ set (DEP_LIBS
 		terralib_qtwidgets
 		terralib_raster
 		terralib_symbology
+		terralib_serialization
 		terralib_srs
 		terralib_xlink
-    ${QT_LIBRARIES}
+		${QT_LIBRARIES}
     )  
 
 # Select the source and header files

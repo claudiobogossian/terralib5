@@ -35,6 +35,13 @@ te::qt::widgets::Symbol::Symbol()
 {
 }
 
+te::qt::widgets::Symbol::Symbol(const te::qt::widgets::Symbol& rhs)
+{
+  m_info = rhs.getInfo();
+  for(std::size_t i = 0; i < rhs.m_symbs.size(); ++i)
+    addSymbolizer(rhs.m_symbs[i]->clone());
+}
+
 te::qt::widgets::Symbol::~Symbol()
 {
   te::common::FreeContents(m_symbs);
@@ -103,10 +110,5 @@ void te::qt::widgets::Symbol::swapSymbolizers(const std::size_t& first, const st
 
 te::qt::widgets::Symbol* te::qt::widgets::Symbol::clone() const
 {
-  Symbol* s = new Symbol;
-  s->setInfo(this->getInfo());
-  for(std::size_t i = 0; i < m_symbs.size(); ++i)
-    s->addSymbolizer(m_symbs[i]->clone());
-
-  return s;
+  return new Symbol(*this);
 }
