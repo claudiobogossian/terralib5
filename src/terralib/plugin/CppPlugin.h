@@ -48,32 +48,14 @@ namespace te
       public:
 
         /*!
-          \typedef CppPlugin* (*GetPluginFPtr)(void);
-          
-          \brief It exports Plugin's access function type.            
-          
-          When you are building a C++ Plugin, you will have to define a special function
-          (that has a special name convention)
-          to be called by TerraLib in order to load your plugin.
-          Please, see the documentation HowTo Create C++ TerraLib Plugins for more information.
-         */
-        typedef CppPlugin* (*GetPluginFPtr)(const PluginInfo& info);
-
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
-        /*!
           \brief It creates a new C++ plugin.
 
           \param info Information about a C++ plugin.
-         */
+        */
         CppPlugin(const PluginInfo& info);
 
         /*! \brief Virtual destructor. */
         virtual ~CppPlugin();
-        //@}
 
       private:
 
@@ -86,7 +68,7 @@ namespace te
           \brief No copy constructor allowed.
 
           \param rhs The other instance.
-         */
+        */
         CppPlugin(const CppPlugin& rhs);
 
         /*!
@@ -95,10 +77,12 @@ namespace te
           \param rhs The other instance.
 
           \return A reference for this instance.
-         */
+        */
         CppPlugin& operator=(const CppPlugin& rhs);
+
         //@}
     };
+
   } // end namespace plugin
 }   // end namespace te
 
