@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,55 +18,42 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/qt/plugins/datasource/gdal/Config.h
 
-  \brief Configuration flags for the plug-in GDAL for application framework.
- */
+  \brief Configuration flags for the GDAL Qt Widget plugin.
+*/
 
-#ifndef __TERRALIB_AFPLUGINGDAL_INTERNAL_CONFIG_H
-#define __TERRALIB_AFPLUGINGDAL_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_CONFIG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_CONFIG_H
 
-#define AF_GDAL_PLUGIN_NAME "te.da.qt.gdal"
+#define TE_QT_PLUGIN_DATASOURCE_GDAL_PLUGIN_NAME "te.da.qt.gdal"
 
 /*!
-  \def AF_GDAL_TEXT_DOMAIN
+  \def TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN
 
   \brief It contains the name of the text domain used in the translation of messages in TerraLib GDAL driver implementation.
- */
-#define AF_GDAL_TEXT_DOMAIN "teaf_gdal"
+*/
+#define TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN "teqtplugindatasourcegdal"
 
 /*!
-  \def AF_GDAL_TEXT_DOMAIN_DIR
+  \def TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN_DIR
 
   \brief It contains the translation catalog directory.
- */
-#define AF_GDAL_TEXT_DOMAIN_DIR "locale"
+*/
+#define TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN_DIR "locale"
 
 /*!
-  \def AF_TR_GDAL
+  \def TE_QT_PLUGIN_DATASOURCE_GDAL
 
   \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
- */
-#define AF_TR_GDAL(message) TR(message, AF_GDAL_TEXT_DOMAIN)
-
-/*!
-  \def AF_TR_PLURAL_GDAL
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the DataAccess module of TerraLib. 
- */
-#define AF_TR_PLURAL_GDAL(message1, message2, n) TR_PLURAL(AF_GDAL_TEXT_DOMAIN, message1, message2, n)
-
-/*!
-  \def AF_GDAL_LOGGER_NAME
-  
-  \brief This is the fully qualified TerraLib DataAccess API logger name.
- */
-#define AF_GDAL_LOGGER_NAME "te.af.gdal"
+*/
+#define TE_QT_PLUGIN_DATASOURCE_GDAL(message) TR(message, TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN)
 
 /*!
   \def TEQTPLUGINGDALEXPORT
 
   \brief You can use this macro in order to export/import classes and functions from all plug-ins files.
+
   \note To compile plug-ins in Windows, remember to insert TEQTPLUGINGDALDLL into the project's list of defines.
  */
 #ifdef WIN32
@@ -79,5 +66,5 @@
   #define TEQTPLUGINGDALEXPORT
 #endif
 
-#endif  // __TERRALIB_AFPLUGINGDAL_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_CONFIG_H
 

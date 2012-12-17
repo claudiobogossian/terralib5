@@ -18,78 +18,82 @@
  */
 
 /*!
-  \file GDALConnectorDialog.h
+  \file terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.h
 
-  \brief ....
+  \brief A dialog window for showing the GDAL connector widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
 
-//! TerraLib
-#include <terralib/dataaccess/Definitions.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
+// TerraLib
+#include "../../../../dataaccess/Definitions.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 
-//! STL
+// STL
 #include <memory>
 
-//! Qt
+// Qt
 #include <QtGui/QDialog>
 
 namespace Ui { class GDALConnectorDialogForm; }
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace gdal
+    namespace plugins
     {
-      /*!
-        \class GDALConnectorDialog
-
-        \brief ....
-      */
-      class GDALConnectorDialog : public QDialog
+      namespace gdal
       {
-        Q_OBJECT
+        /*!
+          \class GDALConnectorDialog
 
-        public:
+          \brief A dialog window for showing the GDAL connector widget.
+        */
+        class GDALConnectorDialog : public QDialog
+        {
+          Q_OBJECT
 
-          GDALConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          public:
 
-          ~GDALConnectorDialog();
+            GDALConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          const te::qt::widgets::DataSourcePtr& getDataSource() const;
+            ~GDALConnectorDialog();
 
-          const te::da::DataSourcePtr& getDriver() const;
+            const te::qt::widgets::DataSourcePtr& getDataSource() const;
 
-          void set(const te::qt::widgets::DataSourcePtr& ds);
+            const te::da::DataSourcePtr& getDriver() const;
 
-        public slots:
+            void set(const te::qt::widgets::DataSourcePtr& ds);
 
-          void openPushButtonPressed();
+          public slots:
 
-          void testPushButtonPressed();
+            void openPushButtonPressed();
 
-          void helpPushButtonPressed();
+            void testPushButtonPressed();
 
-          void searchDatasetToolButtonPressed();
+            void helpPushButtonPressed();
 
-        protected:
+            void searchDatasetToolButtonPressed();
 
-          void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
+          protected:
 
-          void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+            void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-        private:
+            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-          std::auto_ptr<Ui::GDALConnectorDialogForm> m_ui;
-          te::qt::widgets::DataSourcePtr m_datasource;
-          te::da::DataSourcePtr m_driver;
-      }; 
-    } // end namespace gdal
-  }   // end namespace plugin
-}     // end namespace qt_af
+          private:
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
+            std::auto_ptr<Ui::GDALConnectorDialogForm> m_ui;
+            te::qt::widgets::DataSourcePtr m_datasource;
+            te::da::DataSourcePtr m_driver;
+        };
+
+      } // end namespace gdal
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
 

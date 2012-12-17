@@ -18,48 +18,52 @@
  */
 
 /*!
-  \file GDALConnector.h
+  \file terralib/qt/plugins/datasource/gdal/GDALConnector.h
 
-  \brief ...
+  \brief GDAL connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GDAL_INTERNAL_GDALCONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GDAL_INTERNAL_GDALCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTOR_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 // Qt
 #include <QtGui/QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace gdal
+    namespace plugins
     {
-      /*!
-        \class GDALConnector
-
-        \brief ....
-      */
-      class GDALConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace gdal
       {
-        public:
+        /*!
+          \class GDALConnector
 
-          GDALConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief GDAL connector implementation for the Qt data source widget.
+        */
+        class GDALConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~GDALConnector();
+            GDALConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~GDALConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace gdal
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GDAL_INTERNAL_GDALCONNECTOR_H
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        };
+
+      } // end namespace gdal
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTOR_H
 
