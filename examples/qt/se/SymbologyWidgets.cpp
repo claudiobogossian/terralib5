@@ -3,6 +3,7 @@
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/se.h>
+#include <terralib/serialization/qt/widgets/Symbol.h>
 #include <terralib/qt/widgets/se/BasicFillDialog.h>
 #include <terralib/qt/widgets/se/BasicStrokeDialog.h>
 #include <terralib/qt/widgets/se/GlyphMarkDialog.h>
@@ -10,6 +11,8 @@
 #include <terralib/qt/widgets/se/LineSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/PointSymbolizerWidget.h>
 #include <terralib/qt/widgets/se/PolygonSymbolizerWidget.h>
+#include <terralib/qt/widgets/se/Symbol.h>
+#include <terralib/qt/widgets/se/SymbolSelectorDialog.h>
 #include <terralib/qt/widgets/se/SymbolEditorWidget.h>
 #include <terralib/qt/widgets/se/SymbolInfoDialog.h>
 #include <terralib/qt/widgets/se/SymbolizerPreviewWidget.h>
@@ -25,6 +28,34 @@
 #include <QtGui/QMdiSubWindow>
 #include <QtGui/QToolBox>
 
+// STL
+#include <cassert>
+#include <iostream>
+
+void SymbolSelector()
+{
+  // Loads the Symbol Library from XML file
+  te::serialize::ReadSymbolLibrary("D:/SymbolLibrary.xml");
+
+  // Selects a symbol
+  te::qt::widgets::Symbol* symbol =  te::qt::widgets::SymbolSelectorDialog::getSymbol(0);
+  if(symbol == 0)
+    return;
+
+  // Shows the selected symbol information
+  te::qt::widgets::SymbolInfo info = symbol->getInfo();
+  std::cout << ":: Selected Symbol ::" << std::endl;
+  std::cout << "- ID: " << info.m_id << std::endl;
+  std::cout << "- Name: " << info.m_name << std::endl;
+  std::cout << "- Author: " << info.m_author << std::endl;
+  std::cout << "- Category: " << info.m_category << std::endl;
+  std::cout << "- Tags: " << info.m_tags << std::endl;
+  std::cout << "- Description: " << info.m_description << std::endl;
+  std::cout << "- Number of Symbolizers: " << symbol->getSymbolizersCount() << std::endl;
+
+  delete symbol;
+}
+
 void SymbolEditor()
 {
   // Widgets for symbol edition...
@@ -34,7 +65,7 @@ void SymbolEditor()
 
   // Symbol Information
   te::qt::widgets::SymbolInfo info;
-  info.m_id = 0;
+  info.m_id = "179C25E4-AABC-4F63-8C10-AAD00CCE74F9";
   info.m_name = "Brazilian Highway";
   info.m_author = "TerraLib Team";
   info.m_category = "Brazilian Road Symbols";
@@ -168,6 +199,8 @@ void BasicWidgets()
   QStringList paths = spaths.split(";");
   QIcon::setThemeName(ICON_THEME);
   QIcon::setThemeSearchPaths(paths);
+
+  SymbolSelector();
 
   SymbolEditor();
 

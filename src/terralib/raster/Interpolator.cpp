@@ -27,6 +27,7 @@
 #include "Interpolator.h"
 #include "Band.h"
 #include "BandProperty.h"
+#include "Utils.h"
 
 // STL
 #include <cassert>
@@ -60,6 +61,16 @@ te::rst::Interpolator::Interpolator(Raster const* r, int m)
       m_function = &te::rst::Interpolator::nearestNeighborGetValue;
       break;
   }
+  
+  // raster no-data values (for each band)
+  
+  for( unsigned int bandIdx = 0 ; bandIdx < r->getNumberOfBands() ; ++bandIdx )
+    m_noDataValues.push_back( r->getBand( bandIdx )->getProperty()->m_noDataValue );
+  
+  // ancillary values for nearest Neighbor interpolation
+  
+  m_nnLastRow = ( (double) m_raster->getNumberOfRows() ) - 0.5;
+  m_nnLastCol = ( (double) m_raster->getNumberOfColumns() ) - 0.5;
 
   // ancillary values for bilinear interpolation
   m_bilValues.resize(4, 0);
@@ -81,13 +92,6 @@ te::rst::Interpolator::~Interpolator()
   m_function = 0;
 }
 
-void te::rst::Interpolator::getValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
-{
-  assert(b < m_raster->getNumberOfBands());
-
-  (this->*(m_function))(c, r, v, b);
-}
-
 void te::rst::Interpolator::getValues(const double& c, const double& r, std::vector<std::complex<double> >& values)
 {
   values.clear();
@@ -104,21 +108,17 @@ void te::rst::Interpolator::getValues(const double& c, const double& r, std::vec
 
 void te::rst::Interpolator::nearestNeighborGetValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)
 {
-  unsigned cr;
+  if( ( c > (-0.5) ) && ( r > (-0.5) ) && ( c < m_nnLastCol ) && ( r < m_nnLastRow ) )
+  {
+    m_nnCR = (unsigned int) te::rst::Round(c);
+    m_nnRR = (unsigned int) te::rst::Round(r);
 
-  unsigned rr;
-
-  if (c < 0)
-    cr = 0;
+    m_raster->getValue(m_nnCR, m_nnRR, v, b);
+  }
   else
-    cr = (unsigned) std::floor(c);
-
-  if (r < 0)
-    rr = 0;
-  else
-    rr = (unsigned) std::floor(r);
-
-  m_raster->getValue(cr, rr, v, b);
+  {
+    v.real( m_noDataValues[ b ] );
+  }
 }
 
 void te::rst::Interpolator::bilinearGetValue(const double& c, const double& r, std::complex<double>& v, const std::size_t& b)

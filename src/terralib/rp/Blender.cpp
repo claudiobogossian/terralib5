@@ -24,6 +24,10 @@
 
 #include "Blender.h"
 
+#include "Macros.h"
+#include "../geometry/LinearRing.h"
+#include "../raster/Grid.h"
+
 namespace te
 {
   namespace rp
@@ -54,9 +58,22 @@ namespace te
       m_pixelScales1( pixelScales1 ),
       m_pixelOffsets2( pixelOffsets2 ),
       m_pixelScales2( pixelScales2 ),
-      m_r1ValidDataPolygon( r1ValidDataPolygon ),
-      m_r2ValidDataPolygon( r2ValidDataPolygon )
+      m_r1ValidDataPolygon( 0, te::gm::PolygonType, 0, 0 ),
+      m_r2ValidDataPolygon( 0, te::gm::PolygonType, 0, 0 )
     {
+      TERP_DEBUG_TRUE_OR_THROW( 
+        raster1.getAccessPolicy() & te::common::RAccess, 
+        "Invalid raster 1" );        
+      TERP_DEBUG_TRUE_OR_THROW( 
+        raster2.getAccessPolicy() & te::common::RAccess, 
+        "Invalid raster 2" ); 
+      TERP_DEBUG_TRUE_OR_THROW( geomTransformation.isValid(),
+        "Invalid transformation" );
+      TERP_DEBUG_TRUE_OR_THROW( r1ValidDataPolygon.getNumRings() > 0,
+        "Invalid polygon 1" )
+      TERP_DEBUG_TRUE_OR_THROW( r2ValidDataPolygon.getNumRings() > 0,
+        "Invalid polygon 2" )
+        
       switch( blendMethod )
       {
         default :
@@ -65,6 +82,72 @@ namespace te
           break;
         }
       }
+      
+      // converting polygons from world cooods to indexed ones
+      
+      {
+        const std::size_t nRings = r1ValidDataPolygon.getNumRings();
+        te::gm::LinearRing const* oldRingPtr = 0;
+        te::gm::LinearRing* newRingPtr = 0;
+        std::size_t pointIdx = 0;
+        std::size_t ringSize = 0;
+        te::gm::Coord2D* newRingCoodsPtr = 0;
+        te::gm::Coord2D const* oldRingCoodsPtr = 0;
+        const te::rst::Grid& grid = (*raster1.getGrid());
+        
+        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
+        {
+          oldRingPtr = dynamic_cast< te::gm::LinearRing* >( r1ValidDataPolygon[ ringIdx ] );
+          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr != 0, "Invalid ring" )
+          
+          ringSize = oldRingPtr->getNPoints();
+          
+          newRingPtr = new te::gm::LinearRing( ringSize, te::gm::LineStringType, 0, 0 );
+          newRingCoodsPtr = newRingPtr->getCoordinates();
+          
+          oldRingCoodsPtr = oldRingPtr->getCoordinates();
+          
+          for( pointIdx = 0 ; pointIdx < ringSize ; ++pointIdx )
+          {
+            grid.geoToGrid( oldRingCoodsPtr->x, oldRingCoodsPtr->y, 
+              newRingCoodsPtr->x, newRingCoodsPtr->y );
+          }
+          
+          m_r1ValidDataPolygon.add( newRingPtr );
+        }
+      }
+      
+      {
+        const std::size_t nRings = r2ValidDataPolygon.getNumRings();
+        te::gm::LinearRing const* oldRingPtr = 0;
+        te::gm::LinearRing* newRingPtr = 0;
+        std::size_t pointIdx = 0;
+        std::size_t ringSize = 0;
+        te::gm::Coord2D* newRingCoodsPtr = 0;
+        te::gm::Coord2D const* oldRingCoodsPtr = 0;
+        const te::rst::Grid& grid = (*raster2.getGrid());
+        
+        for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
+        {
+          oldRingPtr = dynamic_cast< te::gm::LinearRing* >( r2ValidDataPolygon[ ringIdx ] );
+          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr != 0, "Invalid ring" )
+          
+          ringSize = oldRingPtr->getNPoints();
+          
+          newRingPtr = new te::gm::LinearRing( ringSize, te::gm::LineStringType, 0, 0 );
+          newRingCoodsPtr = newRingPtr->getCoordinates();
+          
+          oldRingCoodsPtr = oldRingPtr->getCoordinates();
+          
+          for( pointIdx = 0 ; pointIdx < ringSize ; ++pointIdx )
+          {
+            grid.geoToGrid( oldRingCoodsPtr->x, oldRingCoodsPtr->y, 
+              newRingCoodsPtr->x, newRingCoodsPtr->y );
+          }
+          
+          m_r2ValidDataPolygon.add( newRingPtr );
+        }
+      }      
     }
     
     Blender::~Blender()
