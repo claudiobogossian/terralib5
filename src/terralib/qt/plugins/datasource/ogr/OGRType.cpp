@@ -18,51 +18,47 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/ogr/OGRType.cpp
+  \file terralib/qt/plugins/datasource/ogr/OGRType.h
 
   \brief OGR data source type.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../common/Translator.h"
 #include "OGRConnector.h"
 #include "OGRType.h"
 
 // STL
 #include <cassert>
 
-namespace plg_ogr = qt_af::plugin::ogr;
-namespace te_qt = te::qt::widgets;
-
-plg_ogr::OGRType::OGRType()
+te::qt::plugins::ogr::OGRType::OGRType()
 {
 }
 
-plg_ogr::OGRType::~OGRType()
+te::qt::plugins::ogr::OGRType::~OGRType()
 {
 }
 
-std::string plg_ogr::OGRType::getName() const
+std::string te::qt::plugins::ogr::OGRType::getName() const
 {
   return "OGR";
 }
 
-std::string plg_ogr::OGRType::getTitle() const
+std::string te::qt::plugins::ogr::OGRType::getTitle() const
 {
-  return AF_TR_OGR("OGR");
+  return TE_QT_PLUGIN_DATASOURCE_OGR("OGR");
 }
 
-std::string plg_ogr::OGRType::getDescription() const
+std::string te::qt::plugins::ogr::OGRType::getDescription() const
 {
-  return AF_TR_OGR("Access to simple feature data through OGR (GDAL/OGR)");
+  return TE_QT_PLUGIN_DATASOURCE_OGR("Access to simple feature data through OGR (GDAL/OGR)");
 }
 
-QWidget* plg_ogr::OGRType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::ogr::OGRType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case te_qt::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new OGRConnector(parent, f);
 
 //    case DataSourceType::WIDGET_LAYER_SELECTOR:
@@ -73,15 +69,15 @@ QWidget* plg_ogr::OGRType::getWidget(int widgetType, QWidget* parent, Qt::Window
   }
 }
 
-QIcon plg_ogr::OGRType::getIcon(int iconType) const
+QIcon te::qt::plugins::ogr::OGRType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case te_qt::DataSourceType::ICON_DATASOURCE_SMALL:
-      return QIcon::fromTheme("datasource-gdal");
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
+      return QIcon::fromTheme("datasource-ogr");
 
-    case te_qt::DataSourceType::ICON_DATASOURCE_CONNECTOR:
-      return QIcon::fromTheme("datasource-gdal");
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
+      return QIcon::fromTheme("datasource-ogr");
 
     default:
       return QIcon::fromTheme("unknown-icon");
