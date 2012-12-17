@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wms/WMSConnector.cpp
+  \file terralib/qt/plugins/datasource/wms/WMSConnector.cpp
 
-  \brief ....
+  \brief OGC Web Map Service (WMS) connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "WMSConnector.h"
 #include "WMSConnectorDialog.h"
 
@@ -39,19 +39,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_wms = qt_af::plugin::wms;
-
-plg_wms::WMSConnector::WMSConnector(QWidget* parent, Qt::WindowFlags f)
-  : te_qt::AbstractDataSourceConnector(parent, f)
+te::qt::plugins::wms::WMSConnector::WMSConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_wms::WMSConnector::~WMSConnector()
+te::qt::plugins::wms::WMSConnector::~WMSConnector()
 {
 }
 
-void plg_wms::WMSConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::wms::WMSConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   std::auto_ptr<WMSConnectorDialog> cdialog(new WMSConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -61,19 +58,19 @@ void plg_wms::WMSConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
 
   if(ds.get() != 0)
   {
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
     datasources.push_back(ds);
   }
 }
 
-void plg_wms::WMSConnector::update(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wms::WMSConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wms::WMSConnector::remove(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wms::WMSConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

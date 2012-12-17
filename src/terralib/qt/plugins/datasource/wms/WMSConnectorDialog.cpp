@@ -18,28 +18,25 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/wms/WMSConnectorDialog.cpp
+  \file terralib/qt/plugins/datasource/wms/WMSConnectorDialog.cpp
 
-  \brief ....
+  \brief A dialog window for showing the WMS connector widget.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/Exception.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
-#include "ui_WMSConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSource.h"
+#include "../../../widgets/Exception.h"
 #include "WMSConnectorDialog.h"
+#include "ui_WMSConnectorDialogForm.h"
 
 // Qt
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_wms = qt_af::plugin::wms;
-
-plg_wms::WMSConnectorDialog::WMSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::wms::WMSConnectorDialog::WMSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::WMSConnectorDialogForm)
 {
@@ -52,35 +49,35 @@ plg_wms::WMSConnectorDialog::WMSConnectorDialog(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
 }
 
-plg_wms::WMSConnectorDialog::~WMSConnectorDialog()
+te::qt::plugins::wms::WMSConnectorDialog::~WMSConnectorDialog()
 {
 }
 
-const te::qt::widgets::DataSourcePtr& plg_wms::WMSConnectorDialog::getDataSource() const
+const te::qt::widgets::DataSourcePtr& te::qt::plugins::wms::WMSConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-void plg_wms::WMSConnectorDialog::set(const te_qt::DataSourcePtr& ds)
+void te::qt::plugins::wms::WMSConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
 {
   m_datasource = ds;
 }
 
-void plg_wms::WMSConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::wms::WMSConnectorDialog::openPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wms::WMSConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::wms::WMSConnectorDialog::testPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wms::WMSConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::wms::WMSConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
