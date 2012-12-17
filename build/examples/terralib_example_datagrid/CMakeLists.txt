@@ -42,7 +42,7 @@ set(DEP_LIBS
 		terralib_maptools
 		terralib_plugin
 		terralib_postgis
-		terralib_qtwidgets
+		terralib_qt_widgets
 		terralib_raster
 		terralib_srs
 		terralib_xlink

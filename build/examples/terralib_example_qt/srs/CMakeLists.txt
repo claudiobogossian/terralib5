@@ -16,7 +16,7 @@ SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_srs
 set(DEP_LIBS 
     terralib_common
     terralib_plugin
-    terralib_qtwidgets
+    terralib_qt_widgets
     terralib_srs
     ${QWT_LIBRARY}
     ${QT_LIBRARIES}

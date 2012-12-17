@@ -38,7 +38,7 @@ set(DEP_LIBS
 		terralib_geometry
 		terralib_gml
 		terralib_maptools
-		terralib_qtwidgets
+		terralib_qt_widgets
 		terralib_raster
 		terralib_srs
 		terralib_xlink
