@@ -70,8 +70,8 @@ namespace te
           \param pixelScales1 The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelOffsets2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelScales2 The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
-          \param r1ValidDataPolygon A polygon (raster 1 indexed coords - line, col) delimiting the raster region with valid data.
-          \param r2ValidDataPolygon A polygon (raster 2 indexed coords - line, col) delimiting the raster region with valid data.
+          \param r1ValidDataPolygon A polygon (raster 1 world/projected coords) delimiting the raster region with valid data.
+          \param r2ValidDataPolygon A polygon (raster 2 world/projected coords) delimiting the raster region with valid data.
         */
         Blender( 
           const te::rst::Raster& raster1, 
@@ -119,21 +119,21 @@ namespace te
         typedef void (Blender::*BlendFunctPtr)( const double& line, 
           const double& col, const unsigned int& rasterChannelsVecsIdx, double& value );         
 
-        BlendFunctPtr m_blendFuncPtr;
-        const te::rst::Raster& m_raster1;
-        const te::rst::Raster& m_raster2;
-        const std::vector< unsigned int > m_raster1Bands;
-        const std::vector< unsigned int > m_raster2Bands;
-        const BlendMethod m_blendMethod;
-        const te::rst::Interpolator::Method m_interpMethod;
-        const te::gm::GeometricTransformation* m_geomTransformationPtr;
-        const double m_noDataValue;
-        const std::vector< double > m_pixelOffsets1;
-        const std::vector< double > m_pixelScales1;
-        const std::vector< double > m_pixelOffsets2;
-        const std::vector< double > m_pixelScales2;
-        const te::gm::Polygon m_r1ValidDataPolygon;
-        const te::gm::Polygon m_r2ValidDataPolygon;        
+        BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
+        const te::rst::Raster& m_raster1; //!< Input raster 1.
+        const te::rst::Raster& m_raster2; //!< Input raster 2.
+        const std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
+        const std::vector< unsigned int > m_raster2Bands; //!< Input raster 2 band indexes to use.
+        const BlendMethod m_blendMethod; //!< The blend method to apply.
+        const te::rst::Interpolator::Method m_interpMethod; //!< The interpolation method to use.
+        const te::gm::GeometricTransformation* m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::first ) (Note: all coords are indexed by lines/columns).
+        const double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
+        std::vector< double > m_pixelOffsets1; //!< The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelScales1; //!< The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelOffsets2; //!< The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+        std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
+        te::gm::Polygon m_r1ValidDataPolygon; //!< A polygon (raster 1 indexed coords - line, col) delimiting the raster region with valid data.
+        te::gm::Polygon m_r2ValidDataPolygon; //!< A polygon (raster 2 indexed coords - line, col) delimiting the raster region with valid data.
         
         /*!
           \brief Implementation for NoBlendMethod.

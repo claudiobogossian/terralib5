@@ -25,6 +25,7 @@
 #include "Mosaic.h"
 
 #include "Macros.h"
+#include "../raster/Interpolator.h"
 #include "../raster/Enums.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/Grid.h"
@@ -41,6 +42,8 @@
 
 #include <climits>
 #include <cfloat>
+#include <cmath>
+#include <memory>
 
 namespace te
 {
@@ -560,35 +563,121 @@ namespace te
       const std::vector< te::gm::Polygon >& rastersBBoxes,
       te::rst::Raster& outputRaster )
     {
-      // Copyting the first image data to the output mosaic
+      TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes.size() == 
+        m_inputParameters.m_feederRasterPtr->getObjsCount(),
+        "Rasters bounding boxes number mismatch" );
       
       m_inputParameters.m_feederRasterPtr->reset();
       
+      std::auto_ptr< te::gm::Geometry > mosaicBBoxesUnionPtr;
+      
+      // Copyting the first image data to the output mosaic
       {
+        mosaicBBoxesUnionPtr.reset( (te::gm::Polygon*)rastersBBoxes[ 0 ].clone() );
+        
         te::rst::Raster const* inputRasterPtr = 
           m_inputParameters.m_feederRasterPtr->getCurrentObj();
         TERP_DEBUG_TRUE_OR_RETURN_FALSE( inputRasterPtr, "Invalid raster pointer" );
         
+        const te::rst::Grid& inGrid = (*inputRasterPtr->getGrid());
+        const te::rst::Grid& outGrid = (*outputRaster.getGrid());
+        
+        double inXStartGeo = 0;
+        double inYStartGeo = 0;
+        inGrid.gridToGeo( 0.0, 0.0, inXStartGeo, inYStartGeo );
+        double outRowStartDouble = 0;
+        double outColStartDouble = 0;
+        outGrid.geoToGrid( inXStartGeo, inYStartGeo, 
+          outColStartDouble, outRowStartDouble );
+        const unsigned int outRowStart = (unsigned int)( outRowStartDouble );
+        const unsigned int outColStart = (unsigned int)( outColStartDouble );          
+        const unsigned int outRowsBound = std::min( outRowStart + 
+          inputRasterPtr->getNumberOfRows(),
+          outputRaster.getNumberOfRows() );
+        const unsigned int outColsBound = std::min( outColStart + 
+          inputRasterPtr->getNumberOfColumns(),
+          outputRaster.getNumberOfColumns() );
+        
         const unsigned int nBands = (unsigned int)
           m_inputParameters.m_inputRastersBands[ 0 ].size();
-        const unsigned int nRows = inputRasterPtr->getNumberOfRows();
-        const unsigned int nCols = inputRasterPtr->getNumberOfColumns();
-        unsigned int col = 0;
-        unsigned int row = 0;
+        unsigned int outCol = 0;
+        unsigned int outRow = 0;
+        double outX = 0;
+        double outY = 0;
+        double inCol = 0;
+        double inRow = 0;        
+        double bandNoDataValue = -1.0 * DBL_MAX;
+        std::complex< double > pixelValue = 0;
+        te::rst::Interpolator interpInstance( inputRasterPtr, 
+          m_inputParameters.m_interpMethod );
+        unsigned int inputBandIdx = 0;
         
         for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
           nBands ; ++inputRastersBandsIdx )
         {
-          const unsigned int& bandIdx = m_inputParameters.m_inputRastersBands[ 0 ][ 
-            inputRastersBandsIdx ];
+          inputBandIdx =  m_inputParameters.m_inputRastersBands[ 0 ][ 
+            inputRastersBandsIdx ] ;
+          bandNoDataValue = inputRasterPtr->getBand( inputBandIdx
+            )->getProperty()->m_noDataValue;
+          te::rst::Band& outBand = 
+            (*outputRaster.getBand( inputRastersBandsIdx ) );
           
-          for( row = 0 ; row < nRows ; ++row )
+          for( outRow = outRowStart ; outRow < outRowsBound ; ++outRow )
           {
-            for( col = 0 ; col < nCols ; ++col )
+            for( outCol = outColStart ; outCol < outColsBound ; ++outCol )
             {
-            
+              outGrid.gridToGeo( (double)outCol, (double)outRow, outX, outY );
+              
+              inGrid.geoToGrid( outX, outY, inCol, inRow );
+              
+              interpInstance.getValue( inCol, inRow, pixelValue, inputBandIdx );
+              
+              if( pixelValue.real() == bandNoDataValue )
+                outBand.setValue( outCol, outRow, m_inputParameters.m_noDataValue );
+              else
+                outBand.setValue( outCol, outRow, pixelValue.real() );
             }
           }
+        }
+      }
+      
+      // merging the other rasters into the output mosaic
+      
+      {
+        te::rst::Raster const* inputRasterPtr = 0;
+        unsigned int inputRasterIdx = 0;
+        
+        while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
+        {
+          inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
+          
+          // calculating the overlapped image area
+          
+          std::auto_ptr< te::gm::Geometry > overlappedResult( mosaicBBoxesUnionPtr->intersection(
+            &( rastersBBoxes[ inputRasterIdx ] ) ) );
+            
+          // calculating the non-overlapped image area
+          
+          std::auto_ptr< te::gm::Geometry > nonOverlappednResult( rastersBBoxes[ inputRasterIdx ].difference(
+            overlappedResult.get() ) );            
+          
+          // updating the  gloabal mosaic boxes
+          
+          std::auto_ptr< te::gm::Geometry > boxesUnionResultPtr( mosaicBBoxesUnionPtr->Union(
+            &( rastersBBoxes[ inputRasterIdx ] ) ) );
+          mosaicBBoxesUnionPtr.reset( boxesUnionResultPtr.release() );          
+          
+          // copying the non overlaped image area
+          
+          if( ( nonOverlappednResult.get() != 0 ) && ( nonOverlappednResult->getGeomTypeId()
+            == te::gm::PolygonType ) )
+          {
+            
+          }
+          
+          // moving to the next raster
+          
+          m_inputParameters.m_feederRasterPtr->moveNext();
         }
         
       }

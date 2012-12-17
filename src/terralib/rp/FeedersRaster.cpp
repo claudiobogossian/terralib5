@@ -51,14 +51,14 @@ namespace te
     
     bool FeederConstRasterVector::moveNext()
     {
-      if( ( m_currentOffset + 1 ) == m_rasters.size() )
+      if( m_currentOffset == m_rasters.size() )
       {
         return false;
       }
       else
       {
         ++m_currentOffset;
-        return true;
+        return ( m_currentOffset != m_rasters.size() );
       }
     }
     
