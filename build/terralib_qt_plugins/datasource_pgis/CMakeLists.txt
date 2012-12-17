@@ -4,11 +4,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
-set(SRCDIR ${ROOT}/datasource/gdal)                # directory where the source files of the colorbar example are located
+set(SRCDIR ${ROOT}/datasource/pgis)                # directory where the source files of the colorbar example are located
 set(INCLDIR ${SRCDIR})                               # directory where the header files of the colorbar example are located
 
 # Set the project name
-set(PROJ_NAME "plugin_gdal")
+set(PROJ_NAME "terralib_qt_plugin_datasource_pgis")
 project(${PROJ_NAME})         # the project name is terralib_example_colorbar
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_colorbar
 
@@ -30,9 +30,9 @@ endif()
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/GDALConnectorDialog.h
+  ${SRCDIR}/PostGISConnectorDialog.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/gdal" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/pgis" MOC)
 
 file ( GLOB
   FORMS ${SRCDIR}/ui/*.ui 
@@ -50,12 +50,12 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(WIN32)
 
-add_definitions(-DTEQTPLUGINGDALDLL)
+add_definitions(-DTEQTPLUGINPGISDLL)
 
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_qt_gdal_info.xml")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_pgis.xml")
 
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})

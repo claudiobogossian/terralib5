@@ -1,16 +1,16 @@
-# This script builds the colorbar example
+# This script builds the WCS Plugin
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
-set(SRCDIR ${ROOT}/datasource/ogr)                # directory where the source files of the colorbar example are located
-set(INCLDIR ${SRCDIR})                               # directory where the header files of the colorbar example are located
+set(SRCDIR ${ROOT}/datasource/wcs)                # directory where the source files of the wcs plugin are located
+set(INCLDIR ${SRCDIR})                 # directory where the header files of the wcs plugin are located
 
 # Set the project name
-set(PROJ_NAME "plugin_ogr")
-project(${PROJ_NAME})         # the project name is terralib_example_colorbar
-set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_colorbar
+set(PROJ_NAME "terralib_qt_plugin_datasource_wcs")
+project(${PROJ_NAME})         # the project name is plugin_wcs
+set(LIB_NAME ${PROJ_NAME})    # the library name is plugin_wcs
 
 find_package(Qt4 ${_Qt4_VERSION} REQUIRED COMPONENTS QtCore QtGui)
 if(QT4_FOUND)
@@ -30,9 +30,9 @@ endif()
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/OGRConnectorDialog.h
+  ${SRCDIR}/WCSConnectorDialog.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/ogr" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/wcs" MOC)
 
 file ( GLOB
   FORMS ${SRCDIR}/ui/*.ui 
@@ -50,13 +50,13 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(WIN32)
 
-add_definitions(-DTEQTPLUGINOGRDLL)
+add_definitions(-DTEQTPLUGINWCSDLL)
 
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
-set (AF_PLUGIN_FILE "qt_ogr.xml")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_qt_ogr_info.xml")
+set (AF_PLUGIN_FILE "qt_wcs.xml")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_wcs.xml")
 
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})

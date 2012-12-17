@@ -6,7 +6,7 @@
             version="5.0.0-20110110"
             release="2011-01-01"
             engine="C++">
-  <Name>te.qt.da.pgis</Name>
+  <Name>te.qt.datasource.pgis</Name>
   <DisplayName>PostGIS Data Source Qt-Widgets</DisplayName>
   <Description>This plugin enables widgets to create or open data managed by PostGIS driver.</Description>
   <TerraLibVersion>5.0.0-20100101</TerraLibVersion>
@@ -22,7 +22,7 @@
     <PluginId>te.da.pgis</PluginId>
   </RequiredPlugins>
   <Resources>
-    <Resource name="SharedLibraryName" xlink:href="plugin_pgis"/>
+    <Resource name="SharedLibraryName" xlink:href="terralib_qt_plugin_datasource_pgis"/>
     <Resource name="LangFile" xlink:href="pt.br"/>
   </Resources>
 </PluginInfo>

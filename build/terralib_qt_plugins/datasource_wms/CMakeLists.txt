@@ -1,16 +1,16 @@
-# This script builds the WFS Plugin
+# This script builds the WMS Plugin
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
-set(SRCDIR ${ROOT}/datasource/wfs)                # directory where the source files of the wfs plugin are located
-set(INCLDIR ${SRCDIR})                 # directory where the header files of the wfs plugin are located
+set(SRCDIR ${ROOT}/datasource/wms)                # directory where the source files of the wms plugin are located
+set(INCLDIR ${SRCDIR})                 # directory where the header files of the wms plugin are located
 
 # Set the project name
-set(PROJ_NAME "plugin_wfs")
-project(${PROJ_NAME})         # the project name is plugin_wfs
-set(LIB_NAME ${PROJ_NAME})    # the library name is plugin_wfs
+set(PROJ_NAME "terralib_qt_plugin_datasource_wms")
+project(${PROJ_NAME})         # the project name is plugin_wms
+set(LIB_NAME ${PROJ_NAME})    # the library name is plugin_wms
 
 find_package(Qt4 ${_Qt4_VERSION} REQUIRED COMPONENTS QtCore QtGui)
 if(QT4_FOUND)
@@ -30,9 +30,9 @@ endif()
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/WFSConnectorDialog.h
+  ${SRCDIR}/WMSConnectorDialog.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/wfs" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/wms" MOC)
 
 file ( GLOB
   FORMS ${SRCDIR}/ui/*.ui 
@@ -50,13 +50,13 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(WIN32)
 
-add_definitions(-DTEQTPLUGINWFSDLL)
+add_definitions(-DTEQTPLUGINWMSDLL)
 
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
-set (AF_PLUGIN_FILE "qt_wfs.xml")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_qt_wfs_info.xml")
+set (AF_PLUGIN_FILE "qt_wms.xml")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_wms.xml")
 
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})

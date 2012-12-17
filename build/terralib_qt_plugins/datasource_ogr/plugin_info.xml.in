@@ -6,7 +6,7 @@
             version="5.0.0-20110110"
             release="2011-01-01"
             engine="C++">
-  <Name>te.qt.da.ogr</Name>
+  <Name>te.qt.datasource.ogr</Name>
   <DisplayName>OGR Data Source Qt-Widgets</DisplayName>
   <Description>This plugin enables widgets to create or open data managed by OGR driver.</Description>
   <TerraLibVersion>5.0.0-20100101</TerraLibVersion>
@@ -22,7 +22,7 @@
     <PluginId>te.da.ogr</PluginId>
   </RequiredPlugins>
   <Resources>
-    <Resource name="SharedLibraryName" xlink:href="plugin_ogr"/>
+    <Resource name="SharedLibraryName" xlink:href="terralib_qt_plugin_datasource_ogr"/>
     <Resource name="LangFile" xlink:href="pt.br"/>
   </Resources>
 </PluginInfo>

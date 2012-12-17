@@ -6,23 +6,23 @@
             version="5.0.0-20110110"
             release="2011-01-01"
             engine="C++">
-  <Name>te.qt.da.gdal</Name>
-  <DisplayName>GDAL Data Source Qt-Widgets</DisplayName>
-  <Description>This plugin enables widgets to create or open data managed by GDAL driver.</Description>
+  <Name>te.qt.datasource.wfs</Name>
+  <DisplayName>WFS Data Source Qt-Widgets</DisplayName>
+  <Description>This plugin enables widgets to create or open data managed by WFS driver.</Description>
   <TerraLibVersion>5.0.0-20100101</TerraLibVersion>
   <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
   <Category>Data Management</Category>
-  <Site xlink:href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:gdal"/>
+  <Site xlink:href="http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:wfs"/>
   <Provider>
     <Name>Terralib Team</Name>
     <Site xlink:href="http://www.terralib.org/"/>
     <Email>terralib-team@terralib.org</Email>
   </Provider>
   <RequiredPlugins>
-    <PluginId>te.da.gdal</PluginId>
+    <PluginId>te.da.wfs</PluginId>
   </RequiredPlugins>
   <Resources>
-    <Resource name="SharedLibraryName" xlink:href="plugin_gdal"/>
+    <Resource name="SharedLibraryName" xlink:href="terralib_qt_plugin_datasource_wfs"/>
     <Resource name="LangFile" xlink:href="pt.br"/>
   </Resources>
 </PluginInfo>

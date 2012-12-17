@@ -8,7 +8,7 @@ set(SRCDIR ${ROOT}/datasource/geofile)                # directory where the sour
 set(INCLDIR ${SRCDIR})                               # directory where the header files of the colorbar example are located
 
 # Set the project name
-set(PROJ_NAME "plugin_geofile")
+set(PROJ_NAME "terralib_qt_plugin_datasource_geofile")
 project(${PROJ_NAME})         # the project name is terralib_example_colorbar
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_colorbar
 
@@ -55,7 +55,7 @@ add_definitions(-DTEQTPLUGINGEOFILEDLL)
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_qt_geofile_info.xml")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_geofile.xml")
 
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})
