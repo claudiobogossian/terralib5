@@ -18,47 +18,43 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/shp/ShapeFileType.cpp
+  \file terralib/qt/plugins/datasource/shp/ShapeFileType.cpp
 
   \brief ShapeFile data source type.
 */
 
 // TerraLib
-#include "terralib/common/Translator.h"
-//#include "../../../layer/selector/core/HiddenDataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "ShapeFileConnector.h"
 #include "ShapeFileType.h"
 
 // STL
 #include <cassert>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_shp = qt_af::plugin::shp;
-
-plg_shp::ShapeFileType::ShapeFileType()
+te::qt::plugins::shp::ShapeFileType::ShapeFileType()
 {
 }
 
-plg_shp::ShapeFileType::~ShapeFileType()
+te::qt::plugins::shp::ShapeFileType::~ShapeFileType()
 {
 }
 
-std::string plg_shp::ShapeFileType::getName() const
+std::string te::qt::plugins::shp::ShapeFileType::getName() const
 {
   return "SHAPEFILE";
 }
 
-std::string plg_shp::ShapeFileType::getTitle() const
+std::string te::qt::plugins::shp::ShapeFileType::getTitle() const
 {
   return TR_QT_WIDGETS("Shapefile");
 }
 
-std::string plg_shp::ShapeFileType::getDescription() const
+std::string te::qt::plugins::shp::ShapeFileType::getDescription() const
 {
-  return TR_QT_WIDGETS("Quick access to Esri shapefiles");
+  return TR_QT_WIDGETS("Quick access to ESRI shapefiles");
 }
 
-QWidget* plg_shp::ShapeFileType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::shp::ShapeFileType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
@@ -73,7 +69,7 @@ QWidget* plg_shp::ShapeFileType::getWidget(int widgetType, QWidget* parent, Qt::
   }
 }
 
-QIcon plg_shp::ShapeFileType::getIcon(int iconType) const
+QIcon te::qt::plugins::shp::ShapeFileType::getIcon(int iconType) const
 {
   switch(iconType)
   {

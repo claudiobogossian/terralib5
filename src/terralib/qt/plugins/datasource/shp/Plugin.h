@@ -18,16 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/shp/ShapeFileType.h
+  \file terralib/qt/plugins/datasource/shp/Plugin.h
 
-  \brief ShapeFile data source type.
+  \brief Plugin implementation for the Shapefile data source widget.
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_SHAPEFILETYPE_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_SHAPEFILETYPE_H
+#ifndef __TE_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_PLUGIN_H
 
 // TerraLib
-#include "../../../widgets/datasource/core/DataSourceType.h"
+#include "../../../../plugin/Plugin.h"
+#include "Config.h"
 
 namespace te
 {
@@ -37,23 +38,17 @@ namespace te
     {
       namespace shp
       {
-        class ShapeFileType : public te::qt::widgets::DataSourceType
+        class Plugin : public te::plugin::Plugin
         {
           public:
 
-            ShapeFileType();
+            Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            ~ShapeFileType();
+            ~Plugin();
 
-            std::string getName() const;
+            void startup();
 
-            std::string getTitle() const;
-
-            std::string getDescription() const;
-
-            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
-
-            QIcon getIcon(int iconType) const;
+            void shutdown();
         };
 
       } // end namespace shp
@@ -61,4 +56,6 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_SHAPEFILETYPE_H
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSHPEXPORT);
+
+#endif //__TE_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_PLUGIN_H
