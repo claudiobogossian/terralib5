@@ -18,40 +18,37 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/postgis/PostGISConnector.cpp
+  \file terralib/qt/plugins/datasource/pgis/PostGISConnector.cpp
 
-  \brief ....
+  \brief PostGIS connector implementation for the Qt data source widget.
 */
 
-//! TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+// TerraLib
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "PostGISConnector.h"
 #include "PostGISConnectorDialog.h"
 
-//! Boost
+// Boost
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/filesystem.hpp>
 
-//! Qt
+// Qt
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_pgis = qt_af::plugin::pgis;
-
-plg_pgis::PostGISConnector::PostGISConnector(QWidget* parent, Qt::WindowFlags f)
-  : AbstractDataSourceConnector(parent, f)
+te::qt::plugins::pgis::PostGISConnector::PostGISConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_pgis::PostGISConnector::~PostGISConnector()
+te::qt::plugins::pgis::PostGISConnector::~PostGISConnector()
 {
 }
 
-void plg_pgis::PostGISConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   std::auto_ptr<PostGISConnectorDialog> cdialog(new PostGISConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -60,11 +57,11 @@ void plg_pgis::PostGISConnector::create(std::list<te_qt::DataSourcePtr>& datasou
   if(retval == QDialog::Rejected)
     return;
 
-  te_qt::DataSourcePtr ds = cdialog->getDataSource();
+  te::qt::widgets::DataSourcePtr ds = cdialog->getDataSource();
 
   if(ds.get() != 0)
   {
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
     datasources.push_back(ds);
 
     te::da::DataSourcePtr driver = cdialog->getDriver();
@@ -73,9 +70,9 @@ void plg_pgis::PostGISConnector::create(std::list<te_qt::DataSourcePtr>& datasou
   }
 }
 
-void plg_pgis::PostGISConnector::update(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::pgis::PostGISConnector::update(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -102,9 +99,9 @@ void plg_pgis::PostGISConnector::update(std::list<te_qt::DataSourcePtr>& datasou
   }
 }
 
-void plg_pgis::PostGISConnector::remove(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::pgis::PostGISConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -119,7 +116,7 @@ void plg_pgis::PostGISConnector::remove(std::list<te_qt::DataSourcePtr>& datasou
     }
 
 // then remove data source
-    te_qt::DataSourceManager::getInstance().remove((*it)->getId());
+    te::qt::widgets::DataSourceManager::getInstance().remove((*it)->getId());
   }
 }
 

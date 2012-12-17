@@ -17,29 +17,32 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-//! TerraLib
-#include <terralib/common/Translator.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/Exception.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
-#include "ui_PostGISConnectorDialogForm.h"
-#include "PostGISConnectorDialog.h"
+/*!
+  \file terralib/qt/plugins/datasource/pgis/PostGISConnectorDialog.cpp
 
-//! Boost
+  \brief A dialog window for showing the PostGIS connector widget.
+*/
+
+// TerraLib
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
+#include "../../../widgets/datasource/core/DataSource.h"
+#include "PostGISConnectorDialog.h"
+#include "ui_PostGISConnectorDialogForm.h"
+
+// Boost
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/lexical_cast.hpp>
 
-//! Qt
+// Qt
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_pgis = qt_af::plugin::pgis;
-
-plg_pgis::PostGISConnectorDialog::PostGISConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::pgis::PostGISConnectorDialog::PostGISConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::PostGISConnectorDialogForm)
 {
@@ -55,21 +58,21 @@ plg_pgis::PostGISConnectorDialog::PostGISConnectorDialog(QWidget* parent, Qt::Wi
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
 }
 
-plg_pgis::PostGISConnectorDialog::~PostGISConnectorDialog()
+te::qt::plugins::pgis::PostGISConnectorDialog::~PostGISConnectorDialog()
 {
 }
 
-const te_qt::DataSourcePtr& plg_pgis::PostGISConnectorDialog::getDataSource() const
+const te::qt::widgets::DataSourcePtr& te::qt::plugins::pgis::PostGISConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-const te::da::DataSourcePtr& plg_pgis::PostGISConnectorDialog::getDriver() const
+const te::da::DataSourcePtr& te::qt::plugins::pgis::PostGISConnectorDialog::getDriver() const
 {
   return m_driver;
 }
 
-void plg_pgis::PostGISConnectorDialog::set(const te_qt::DataSourcePtr& ds)
+void te::qt::plugins::pgis::PostGISConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
 {
   m_datasource = ds;
 
@@ -83,13 +86,13 @@ void plg_pgis::PostGISConnectorDialog::set(const te_qt::DataSourcePtr& ds)
   }
 }
 
-void plg_pgis::PostGISConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::pgis::PostGISConnectorDialog::openPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -100,7 +103,7 @@ void plg_pgis::PostGISConnectorDialog::openPushButtonPressed()
     m_driver.reset(te::da::DataSourceFactory::open("POSTGIS", dsInfo));
 
     if(m_driver.get() == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -110,7 +113,7 @@ void plg_pgis::PostGISConnectorDialog::openPushButtonPressed()
     if(m_datasource.get() == 0)
     {
 // create a new data source based on form data
-      m_datasource.reset(new te_qt::DataSource);
+      m_datasource.reset(new te::qt::widgets::DataSource);
 
       m_datasource->setConnInfo(dsInfo);
 
@@ -151,13 +154,13 @@ void plg_pgis::PostGISConnectorDialog::openPushButtonPressed()
   accept();
 }
 
-void plg_pgis::PostGISConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + PostGIS data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -168,7 +171,7 @@ void plg_pgis::PostGISConnectorDialog::testPushButtonPressed()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("POSTGIS", dsInfo));
 
     if(ds.get() == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS database!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + PostGIS database!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
@@ -188,14 +191,14 @@ void plg_pgis::PostGISConnectorDialog::testPushButtonPressed()
   }
 }
 
-void plg_pgis::PostGISConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::pgis::PostGISConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_pgis::PostGISConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+void te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
 {
 // clear input
   connInfo.clear();
@@ -271,7 +274,7 @@ void plg_pgis::PostGISConnectorDialog::getConnectionInfo(std::map<std::string, s
     connInfo["PG_OPTIONS"] = qstr.toUtf8().data();
 }
 
-void plg_pgis::PostGISConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::pgis::PostGISConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
   std::map<std::string, std::string>::const_iterator it = connInfo.find("PG_HOST");
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/ogr/OGRType.h
+  \file terralib/qt/plugins/datasource/ogr/OGRType.cpp
 
   \brief OGR data source type.
 */

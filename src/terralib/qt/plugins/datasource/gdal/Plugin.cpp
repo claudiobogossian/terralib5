@@ -51,7 +51,7 @@ void te::qt::plugins::gdal::Plugin::startup()
 // it initializes the Translator support for the TerraLib PostGIS driver support
   TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_GDAL_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_GDAL("TerraLib Qt-GDAL widget startup!"));
+  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_GDAL("TerraLib Qt GDAL widget startup!"));
 
   m_initialized = true;
 }
