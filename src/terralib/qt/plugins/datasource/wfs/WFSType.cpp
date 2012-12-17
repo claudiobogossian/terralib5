@@ -18,51 +18,47 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wfs/WFSType.cpp
+  \file terralib/qt/plugins/datasource/wfs/WFSType.cpp
 
   \brief WFS data source type.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "WFSConnector.h"
 #include "WFSType.h"
 
 // STL
 #include <cassert>
 
-namespace plg_wfs = qt_af::plugin::wfs;
-namespace te_qt = te::qt::widgets;
-
-plg_wfs::WFSType::WFSType()
+te::qt::plugins::wfs::WFSType::WFSType()
 {
 }
 
-plg_wfs::WFSType::~WFSType()
+te::qt::plugins::wfs::WFSType::~WFSType()
 {
 }
 
-std::string plg_wfs::WFSType::getName() const
+std::string te::qt::plugins::wfs::WFSType::getName() const
 {
   return "WFS";
 }
 
-std::string plg_wfs::WFSType::getTitle() const
+std::string te::qt::plugins::wfs::WFSType::getTitle() const
 {
-  return AF_TR_WFS("Web Feature Service");
+  return TE_QT_PLUGIN_DATASOURCE_WFS("Web Feature Service");
 }
 
-std::string plg_wfs::WFSType::getDescription() const
+std::string te::qt::plugins::wfs::WFSType::getDescription() const
 {
-  return AF_TR_WFS("Access to geospatial through a Web Feature Service (WFS)");
+  return TE_QT_PLUGIN_DATASOURCE_WFS("Access to geospatial through a Web Feature Service (WFS)");
 }
 
-QWidget* plg_wfs::WFSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::wfs::WFSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case te_qt::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WFSConnector(parent, f);
 
     //case DataSourceType::WIDGET_LAYER_SELECTOR:
@@ -73,14 +69,14 @@ QWidget* plg_wfs::WFSType::getWidget(int widgetType, QWidget* parent, Qt::Window
   }
 }
 
-QIcon plg_wfs::WFSType::getIcon(int iconType) const
+QIcon te::qt::plugins::wfs::WFSType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case te_qt::DataSourceType::ICON_DATASOURCE_SMALL:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
       return QIcon::fromTheme("datasource-wfs");
 
-    case te_qt::DataSourceType::ICON_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
       return QIcon::fromTheme("datasource-wfs");
 
     default:

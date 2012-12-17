@@ -18,48 +18,51 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wfs/WFSConnector.h
+  \file terralib/qt/plugins/datasource/wfs/WFSConnector.h
 
-  \brief ...
+  \brief OGC Web Feature Service (WFS) connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WFS_INTERNAL_WFSCONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WFS_INTERNAL_WFSCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTOR_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 // Qt
 #include <QtGui/QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wfs
+    namespace plugins
     {
-      /*!
-        \class WFSConnector
-
-        \brief ....
-      */
-      class WFSConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace wfs
       {
-        public:
+        /*!
+          \class WFSConnector
 
-          WFSConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief OGC Web Feature Service (WFS) connector implementation for the Qt data source widget.
+        */
+        class WFSConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~WFSConnector();
+            WFSConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~WFSConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace wfs
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WFS_INTERNAL_WFSCONNECTOR_H
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        }; 
+      } // end namespace wfs
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTOR_H
 

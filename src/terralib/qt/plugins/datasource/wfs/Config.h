@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,55 +18,42 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/qt/plugins/datasource/wfs/Config.h
 
-  \brief Configuration flags for the plug-in WFS for application framework.
- */
+  \brief Configuration flags for the OGC Web Feature Service (WFS) Qt Widget plugin.
+*/
 
-#ifndef __TERRALIB_AFPLUGINWFS_INTERNAL_CONFIG_H
-#define __TERRALIB_AFPLUGINWFS_INTERNAL_CONFIG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_CONFIG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_CONFIG_H
 
-#define AF_WCS_PLUGIN_NAME "te.da.qt.wfs"
+#define TE_QT_PLUGIN_DATASOURCE_WFS_PLUGIN_NAME "te.qt.datasource.wfs"
 
 /*!
-  \def AF_WFS_TEXT_DOMAIN
+  \def TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN
 
   \brief It contains the name of the text domain used in the translation of messages in TerraLib WFS driver implementation.
- */
-#define AF_WFS_TEXT_DOMAIN "teaf_wfs"
+*/
+#define TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN "teqtplugindatasourcewfs"
 
 /*!
-  \def AF_WFS_TEXT_DOMAIN_DIR
+  \def TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN_DIR
 
   \brief It contains the translation catalog directory.
- */
-#define AF_WFS_TEXT_DOMAIN_DIR "locale"
+*/
+#define TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN_DIR "locale"
 
 /*!
-  \def AF_TR_WFS
+  \def TE_QT_PLUGIN_DATASOURCE_WFS
 
   \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
- */
-#define AF_TR_WFS(message) TR(message, AF_WFS_TEXT_DOMAIN)
-
-/*!
-  \def AF_TR_PLURAL_WFS
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the DataAccess module of TerraLib. 
- */
-#define AF_TR_PLURAL_WFS(message1, message2, n) TR_PLURAL(AF_WFS_TEXT_DOMAIN, message1, message2, n)
-
-/*!
-  \def AF_WFS_LOGGER_NAME
-  
-  \brief This is the fully qualified TerraLib DataAccess API logger name.
- */
-#define AF_WFS_LOGGER_NAME "te.af.wfs"
+*/
+#define TE_QT_PLUGIN_DATASOURCE_WFS(message) TR(message, TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN)
 
 /*!
   \def TEQTPLUGINWFSEXPORT
 
   \brief You can use this macro in order to export/import classes and functions from all plug-ins files.
+
   \note To compile plug-ins in Windows, remember to insert TEQTPLUGINWFSDLL into the project's list of defines.
  */
 #ifdef WIN32
@@ -79,5 +66,5 @@
   #define TEQTPLUGINWFSEXPORT
 #endif
 
-#endif  // __TERRALIB_AFPLUGINWFS_INTERNAL_CONFIG_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_CONFIG_H
 

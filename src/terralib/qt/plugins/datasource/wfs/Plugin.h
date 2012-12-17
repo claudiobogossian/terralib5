@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -17,35 +17,45 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#ifndef __TE_QTAF_PLUGIN_WFS_INTERNAL_PLUGIN_H
-#define __TE_QTAF_PLUGIN_WFS_INTERNAL_PLUGIN_H
+/*!
+  \file terralib/qt/plugins/datasource/wfs/Plugin.h
 
+  \brief Plugin implementation for the OGC Web Feature Service (WFS) data source widget.
+*/
+
+#ifndef __TE_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_PLUGIN_H
+
+// TerraLib
+#include "../../../../plugin/Plugin.h"
 #include "Config.h"
 
-//! Terralib include files
-#include <terralib/plugin/Plugin.h>
-
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wfs
+    namespace plugins
     {
-      class Plugin : public te::plugin::Plugin
+      namespace wfs
       {
-        public:
-          Plugin(const te::plugin::PluginInfo& pluginInfo);
+        class Plugin : public te::plugin::Plugin
+        {
+          public:
 
-          ~Plugin();
+            Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-          void startup();
+            ~Plugin();
 
-          void shutdown();
-      };
-    }
-  }
-}
+            void startup();
+
+            void shutdown();
+        };
+
+      } // end namespace wfs
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
 
 PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINWFSEXPORT);
 
-#endif //__TE_QTAF_PLUGIN_WFS_INTERNAL_PLUGIN_H
+#endif //__TE_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_PLUGIN_H
