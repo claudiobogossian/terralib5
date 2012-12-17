@@ -1,4 +1,5 @@
 find_package(Qt4 ${_Qt4_VERSION} COMPONENTS QtCore QtGui REQUIRED)
+
 if(QT4_FOUND)
   include (${QT_USE_FILE})
   add_definitions (${QT_DEFINITIONS})
@@ -35,7 +36,7 @@ list ( APPEND
   terralib_plugin 
   terralib_geometry 
   terralib_memory
-  terralib_qtwidgets
+  terralib_qt_widgets
   terralib_maptools
   terralib_serialization
   terralib_xerces
@@ -75,10 +76,10 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
 source_group("Generated Files" FILES ${MOC})
 
 # Files in build tree
-appPrefix ("${SRCDIR}" "${_DIRS}" AF_INC_DIRS)
+appPrefix ("${SRCDIR}" "${_DIRS}" QT_AF_INC_DIRS)
 
 # Files in build tree
-appPrefix ("qt/af" "${_DIRS}" AF_INC_INST_DIRS)
+appPrefix ("qt/af" "${_DIRS}" QT_AF_INC_INST_DIRS)
 
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
@@ -86,8 +87,8 @@ getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 list (APPEND SRCS "${MOC}")
 
 # Include directory of the image files
-list (APPEND AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
-list (APPEND DEP_INCLUDES "${AF_INC_DIRS}")
+list (APPEND QT_AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
+list (APPEND DEP_INCLUDES "${QT_AF_INC_DIRS}")
 
 #exporting module information
-exportModuleInformation ("af" "${AF_INC_DIRS}" "${AF_INC_INST_DIRS}")
+exportModuleInformation ("qt_af" "${QT_AF_INC_DIRS}" "${QT_AF_INC_INST_DIRS}")

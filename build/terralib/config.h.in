@@ -19,12 +19,9 @@
 
 /*! 
   \file TeConfig.h
-  \brief Build configurations of the TerraLib
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
- */
+  
+  \brief TerraLib build configuration options.
+*/
  
 #ifndef __TECONFIG_H
 #define __TECONFIG_H

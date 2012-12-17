@@ -16,7 +16,7 @@ list (APPEND DEP_LIBS
 		terralib_filter
 		terralib_geometry
 		terralib_maptools
-		terralib_qtwidgets
+		terralib_qt_widgets
 		terralib_raster
 		terralib_symbology
 		terralib_xlink

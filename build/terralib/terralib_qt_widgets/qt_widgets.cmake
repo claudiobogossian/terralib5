@@ -129,54 +129,11 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/gdal/GDALConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/gdal" MOC)
-
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/geofile/GeoFileConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/geofile" MOC)
-
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/ogr/OGRConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/ogr" MOC)
-
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/postgis/PostGISConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/postgis" MOC)
-
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/wcs/WCSConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wcs" MOC)
-
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/wfs/WFSConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wfs" MOC)
-
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/datasource/connector/wms/WMSConnectorDialog.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/connector/wms" MOC)
 
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/datasource/explorer/AbstractDataSourceTreeItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeView.h
-#  ${SRCDIR}/widgets/datasource/explorer/CheckConstraintGroupItem.h
-#  ${SRCDIR}/widgets/datasource/explorer/ForeignKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/CheckConstraintItem.h
   ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
   ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
@@ -190,7 +147,6 @@ set (
   ${SRCDIR}/widgets/datasource/explorer/DataSourceItem.h
   ${SRCDIR}/widgets/datasource/explorer/PropertyItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceToolBox.h
-#  ${SRCDIR}/widgets/datasource/explorer/UniqueKeyGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSourceTreeModel.h
   ${SRCDIR}/widgets/datasource/explorer/UniqueKeyItem.h
 )
@@ -212,7 +168,6 @@ set (
   ${SRCDIR}/widgets/layer/LayerItem.h
   ${SRCDIR}/widgets/layer/LegendItem.h
   ${SRCDIR}/widgets/layer/Legend.h
-#  ${SRCDIR}/widgets/layer/FolderLayerItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer" MOC)
 
@@ -348,13 +303,6 @@ file(
   ${SRCDIR}/widgets/charts/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
- # ${SRCDIR}/widgets/datasource/connector/gdal/ui/*.ui
- # ${SRCDIR}/widgets/datasource/connector/geofile/ui/*.ui
- # ${SRCDIR}/widgets/datasource/connector/ogr/ui/*.ui
- # ${SRCDIR}/widgets/datasource/connector/postgis/ui/*.ui
- # ${SRCDIR}/widgets/datasource/connector/wcs/ui/*.ui
- # ${SRCDIR}/widgets/datasource/connector/wfs/ui/*.ui
- # ${SRCDIR}/widgets/datasource/connector/wms/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
@@ -395,5 +343,5 @@ list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")
 list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 
 #exporting module information
-exportModuleInformation("qtwidgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
+exportModuleInformation("qt_widgets" "${QT_INC_DIRS}" "${QT_INC_INST_DIRS}")
 
