@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/SymbologyManager.h
+  \file terralib/qt/widgets/se/SymbolLibrary.h
 
-  \brief The SymbologyManager is a singleton that can be used to manage all loaded symbols in TerraLib.
+  \brief The SymbolLibrary is a singleton that can be used to manage all loaded symbols in TerraLib.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYMANAGER_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYMANAGER_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLLIBRARY_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLLIBRARY_H
 
 // TerraLib
 #include "../../../common/Singleton.h"
@@ -33,16 +33,9 @@
 // STL 
 #include <map>
 #include <string>
-#include <vector>
 
 namespace te
 {
-// Forward declarations
-  namespace se
-  {
-    class Symbolizer;
-  }
-
   namespace qt
   {
     namespace widgets
@@ -51,25 +44,25 @@ namespace te
       class Symbol;
 
       /*!
-        \class SymbologyManager
+        \class SymbolLibrary
 
-        \brief The SymbologyManager is a singleton that can be used to manage all loaded symbols in TerraLib.
+        \brief The SymbolLibrary is a singleton that can be used to manage all loaded symbols in TerraLib.
       
         \sa Singleton
       */
-      class TEQTWIDGETSEXPORT SymbologyManager : public te::common::Singleton<SymbologyManager>
+      class TEQTWIDGETSEXPORT SymbolLibrary : public te::common::Singleton<SymbolLibrary>
       {
-        friend class te::common::Singleton<SymbologyManager>;
+        friend class te::common::Singleton<SymbolLibrary>;
 
         public:
 
-          /** @name SymbologyManager Accessor Method
+          /** @name SymbolLibrary Accessor Method
            *  Method used to access the data stored on this manager.
            */
           //@{
 
           /*!
-            \brief It inserts a new symbol that will be managed by SymbologyManager.
+            \brief It inserts a new symbol that will be managed by SymbolLibrary.
 
             \param symbol The new symbol to be managed by this manager.
 
@@ -93,18 +86,18 @@ namespace te
 
             \return A pointer to a symbol or NULL if none is found.
           */
-          Symbol* findById(const std::size_t& id) const;
+          Symbol* findById(const std::string& id) const;
 
           /*!
             \brief It returns a pair of iterators over the symbols of this manager.
 
             \return A pair of iterators over the symbols of this manager where pair.first will be
-                      the beginning and pair.second will be the end iterator.
+                    the beginning and pair.second will be the end iterator.
           */
-          std::pair<std::map<std::size_t, Symbol*>::const_iterator,
-                    std::map<std::size_t, Symbol*>::const_iterator> getIterator() const;
+          std::pair<std::map<std::string, Symbol*>::const_iterator,
+                    std::map<std::string, Symbol*>::const_iterator> getIterator() const;
 
-          /*! \brief It unloads all symbols managed by SymbologyManager. */
+          /*! \brief It unloads all symbols managed by SymbolLibrary. */
           void clear();
 
           //@}
@@ -115,7 +108,7 @@ namespace te
           //@{
 
           /*! \brief Destructor. */
-          ~SymbologyManager();
+          ~SymbolLibrary();
 
           //@}
 
@@ -127,17 +120,17 @@ namespace te
           //@{
 
           /*! \brief It initializes the Singleton. */
-          SymbologyManager();
+          SymbolLibrary();
 
           //@}
 
         private:
 
-          std::map<std::size_t, Symbol*> m_symbolMap; //!< A list of symbols, a map from symbol id to symbol instance.
+          std::map<std::string, Symbol*> m_symbolMap; //!< A list of symbols, a map from symbol id to symbol instance.
     };
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYMANAGER_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLLIBRARY_H
