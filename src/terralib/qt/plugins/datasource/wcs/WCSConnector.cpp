@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wcs/WCSConnector.cpp
+  \file terralib/qt/plugins/datasource/wcs/WCSConnector.cpp
 
-  \brief ....
+  \brief OGC Web Coverage Service (WCS) connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "WCSConnector.h"
 #include "WCSConnectorDialog.h"
 
@@ -39,19 +39,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_wcs = qt_af::plugin::wcs;
-
-plg_wcs::WCSConnector::WCSConnector(QWidget* parent, Qt::WindowFlags f)
-  : te_qt::AbstractDataSourceConnector(parent, f)
+te::qt::plugins::wcs::WCSConnector::WCSConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_wcs::WCSConnector::~WCSConnector()
+te::qt::plugins::wcs::WCSConnector::~WCSConnector()
 {
 }
 
-void plg_wcs::WCSConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::wcs::WCSConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   std::auto_ptr<WCSConnectorDialog> cdialog(new WCSConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -61,19 +58,19 @@ void plg_wcs::WCSConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
 
   if(ds.get() != 0)
   {
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
     datasources.push_back(ds);
   }
 }
 
-void plg_wcs::WCSConnector::update(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wcs::WCSConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wcs::WCSConnector::remove(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wcs::WCSConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

@@ -18,28 +18,25 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/wcs/WCSConnectorDialog.cpp
+  \file terralib/qt/plugins/datasource/wcs/WCSConnectorDialog.cpp
 
-  \brief ....
+  \brief A dialog window for showing the WCS connector widget.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/Exception.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
-#include "ui_WCSConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 #include "WCSConnectorDialog.h"
+#include "ui_WCSConnectorDialogForm.h"
 
 // Qt
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_wcs = qt_af::plugin::wcs;
-
-plg_wcs::WCSConnectorDialog::WCSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::wcs::WCSConnectorDialog::WCSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::WCSConnectorDialogForm)
 {
@@ -52,35 +49,35 @@ plg_wcs::WCSConnectorDialog::WCSConnectorDialog(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
 }
 
-plg_wcs::WCSConnectorDialog::~WCSConnectorDialog()
+te::qt::plugins::wcs::WCSConnectorDialog::~WCSConnectorDialog()
 {
 }
 
-const te::qt::widgets::DataSourcePtr& plg_wcs::WCSConnectorDialog::getDataSource() const
+const te::qt::widgets::DataSourcePtr& te::qt::plugins::wcs::WCSConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-void plg_wcs::WCSConnectorDialog::set(const te_qt::DataSourcePtr& ds)
+void te::qt::plugins::wcs::WCSConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
 {
   m_datasource = ds;
 }
 
-void plg_wcs::WCSConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::wcs::WCSConnectorDialog::openPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wcs::WCSConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::wcs::WCSConnectorDialog::testPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wcs::WCSConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::wcs::WCSConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

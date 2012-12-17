@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/wcs/WCSConnectorDialog.h
+  \file terralib/qt/plugins/datasource/wcs/WCSConnectorDialog.h
 
-  \brief ....
+  \brief A dialog window for showing the WCS connector widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_WCS_INTERNAL_WCSCONNECTORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_WCS_INTERNAL_WCSCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTORDIALOG_H
 
 // TerraLib
-#include <terralib/dataaccess/Definitions.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
+#include "../../../../dataaccess/Definitions.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 
 // STL
 #include <memory>
@@ -38,47 +38,51 @@
 
 namespace Ui { class WCSConnectorDialogForm; }
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wcs
+    namespace plugins
     {
-      /*!
-        \class WCSConnectorDialog
-
-        \brief ....
-      */
-      class WCSConnectorDialog : public QDialog
+      namespace wcs
       {
-        Q_OBJECT
+        /*!
+          \class WCSConnectorDialog
 
-        public:
+          \brief A dialog window for showing the WCS connector widget.
+        */
+        class WCSConnectorDialog : public QDialog
+        {
+          Q_OBJECT
 
-          WCSConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          public:
 
-          ~WCSConnectorDialog();
+            WCSConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          const te::qt::widgets::DataSourcePtr& getDataSource() const;
+            ~WCSConnectorDialog();
 
-          void set(const te::qt::widgets::DataSourcePtr& ds);
+            const te::qt::widgets::DataSourcePtr& getDataSource() const;
 
-        public slots:
+            void set(const te::qt::widgets::DataSourcePtr& ds);
 
-          void openPushButtonPressed();
+          public slots:
 
-          void testPushButtonPressed();
+            void openPushButtonPressed();
 
-          void helpPushButtonPressed();
+            void testPushButtonPressed();
 
-        private:
+            void helpPushButtonPressed();
 
-          std::auto_ptr<Ui::WCSConnectorDialogForm> m_ui;
-          te::qt::widgets::DataSourcePtr m_datasource;
-      }; 
-    } // end namespace wcs
-  }   // end namespace plugin
-}     // end namespace qt_af
+          private:
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_WCS_INTERNAL_WCSCONNECTORDIALOG_H
+            std::auto_ptr<Ui::WCSConnectorDialogForm> m_ui;
+            te::qt::widgets::DataSourcePtr m_datasource;
+        };
+
+      } // end namespace wcs
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTORDIALOG_H
 

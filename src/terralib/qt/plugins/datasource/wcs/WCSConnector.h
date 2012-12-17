@@ -18,48 +18,52 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wcs/WCSConnector.h
+  \file terralib/qt/plugins/datasource/wcs/WCSConnector.h
 
-  \brief ...
+  \brief OGC Web Coverage Service (WCS) connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WCS_INTERNAL_WCSCONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WCS_INTERNAL_WCSCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTOR_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 // Qt
 #include <QtGui/QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wcs
+    namespace plugins
     {
-      /*!
-        \class WCSConnector
-
-        \brief ....
-      */
-      class WCSConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace wcs
       {
-        public:
+        /*!
+          \class WCSConnector
 
-          WCSConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief OGC Web Coverage Service (WCS) connector implementation for the Qt data source widget.
+        */
+        class WCSConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~WCSConnector();
+            WCSConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~WCSConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace wcs
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WCS_INTERNAL_WCSCONNECTOR_H
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        };
+
+      } // end namespace wcs
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WCS_INTERNAL_WCSCONNECTOR_H
 
