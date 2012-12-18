@@ -1,18 +1,18 @@
-# This script builds the Qt rasterVisual example
+# This script builds the Qt rastervisual example
 # The variable ROOT contains the root directory where terralib is installed (ex: terralib5/trunk)
 
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")  # the terralib root directory (change it if it is in another directory)
-set(SRCDIR ${ROOT}/examples/qt/rasterVisual)                # directory where the source files of the Qt rasterVisual example are located
-set(INCLDIR ${SRCDIR})                               # directory where the header files of the Qt rasterVisual example are located
+set(SRCDIR ${ROOT}/examples/qt/rastervisual)                # directory where the source files of the Qt rastervisual example are located
+set(INCLDIR ${SRCDIR})                               # directory where the header files of the Qt rastervisual example are located
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../modules")
 
 # Set the project name
-set(PROJ_NAME "terralib_example_qt_rasterVisual")
-project(${PROJ_NAME})         # the project name is terralib_example_qt_rasterVisual
-SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_rasterVisual
+set(PROJ_NAME "terralib_example_qt_rastervisual")
+project(${PROJ_NAME})         # the project name is terralib_example_qt_rastervisual
+SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_qt_rastervisual
 
 #Definitions for Windows compiling
 if(WIN32)
