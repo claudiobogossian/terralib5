@@ -5,13 +5,13 @@ cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../..")    # the terralib root directory (change it if it is in another directory)
-set(SRCDIR ${ROOT}/unittest/qtwidgets)              # directory where the source files of the qtwidgets unit test are located
+set(SRCDIR ${ROOT}/unittest/qt_widgets)              # directory where the source files of the qtwidgets unit test are located
 set(INCLDIR ${SRCDIR})                              # directory where the header files of the qtwidgets unit test are located
 
 # Set the project name
-set(PROJ_NAME "terralib_unittest_qtwidgets")
-project(${PROJ_NAME})           # the project name is terralib_unittest_qtwidgets
-set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_qtwidgets
+set(PROJ_NAME "terralib_unittest_qt_widgets")
+project(${PROJ_NAME})           # the project name is terralib_unittest_qt_widgets
+set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_qt_widgets
 
 #Definitions for windows compiling
 if(WIN32)
