@@ -86,7 +86,6 @@ void addPlugin(const QString& fileName, std::map<std::string, std::string>& adde
   if(pluginExists(pInfo->m_name))
     return;
 
-  size_t pos = te::plugin::PluginManager::getInstance().getNumPlugins();
   te::plugin::PluginManager::getInstance().add(pInfo);
 
   added[pInfo->m_name] = fileName.toStdString();
@@ -101,8 +100,6 @@ void removePluginsImpl(const QModelIndexList& lst, QTableWidget* table, std::vec
 
   QList<int> rows;
   QModelIndexList::ConstIterator it;
-
-  int aux = lst.count();
 
   for(it=lst.constBegin(); it!=lst.constEnd(); ++it)
     rows.append((*it).row());

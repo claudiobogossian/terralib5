@@ -1,25 +1,50 @@
 {"SRSs":
    [ 
-   {"name": "Corrego_Alegre",
+   {"name": "Corrego Alegre",
      "wkt": "GEOGCS[\"Corrego Alegre\",DATUM[\"Corrego_Alegre\",SPHEROID[\"International 1924\",6378388,297],TOWGS84[-206,172,-6,0,0,0,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
      "pj4txt": "+proj=latlong +ellps=intl +towgs84=-206,172,-6,0,0,0,0 +no_defs",
      "srid": 4225 }
      ,     
-   { "name": "WGS_1984",
+   { "name": "WGS 1984",
      "wkt": "GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
      "pj4txt": "+proj=latlong +ellps=WGS84 +datum=WGS84 +no_defs",
      "srid": 4326 }
 	,
-	{"name": "South_American_Datum_1969",
+	{"name": "SAD69",
      "wkt": "GEOGCS[\"SAD69\",DATUM[\"South_American_Datum_1969\",SPHEROID[\"GRS 1967 (SAD69)\",6378160,298.25]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
      "pj4txt": "+proj=latlong +ellps=aust_SA +towgs84=-67.35,3.88,-38.22,0,0,0,0 +no_defs",
      "srid": 4618},
      
-	{"name": "Sistema_de_Referencia_Geocentrico_para_America_del_Sur_2000",
+	{"name": "SIRGAS 2000",
      "wkt": "GEOGCS[\"SIRGAS 2000\",DATUM[\"Sistema_de_Referencia_Geocentrico_para_America_del_Sur_2000\",SPHEROID[\"GRS 1980\",6378137,298.257222101],TOWGS84[0,0,0,0,0,0,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
      "pj4txt":"+proj=latlong +ellps=GRS80 +towgs84=0",
      "srid":4674}
-     ,	
+     ,
+	{"name": "NAD27",
+     "wkt": "GEOGCS[\"NAD27\",DATUM[\"North_American_Datum_1927\",SPHEROID[\"Clarke 1866\",6378206.4,294.9786982138982]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
+     "pj4txt":"+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs",
+     "srid":4267}  
+    ,    
+	{"name": "NAD83",
+     "wkt": "GEOGCS[\"NAD83\",DATUM[\"North_American_Datum_1983\",SPHEROID[\"GRS 1980\",6378137,298.257222101]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
+     "pj4txt":"+proj=longlat +ellps=GRS80 +datum=NAD83 +no_defs",
+     "srid":4269}
+     ,
+     {"name":"Aratu",
+     "wkt": "GEOGCS[\"Aratu\",DATUM[\"Aratu\",SPHEROID[\"International 1924\",6378388,297]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
+     "pj4txt":"+proj=longlat +ellps=intl +no_defs",
+     "srid":4208}
+     ,
+     {"name":"Indian 1975",
+     "wkt":"GEOGCS[\"Indian 1975\",DATUM[\"Indian_1975\",SPHEROID[\"Everest 1830 (1937 Adjustment)\",6377276.345,300.8017]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
+     "pj4txt":"+proj=longlat +a=6377276.345 +b=6356075.41314024 +no_defs",
+     "srid":4240}
+     ,
+     {"name":"Chua",
+     "wkt":"GEOGCS[\"Chua\",DATUM[\"Chua\",SPHEROID[\"International 1924\",6378388,297],TOWGS84[-134,229,-29,0,0,0,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]]",
+     "pj4txt":"+proj=longlat +ellps=intl +towgs84=-134,229,-29,0,0,0,0 +no_defs",
+     "srid":4224}
+     ,
      {"name": "Corrego Alegre / UTM zone 21S",
      "wkt": "PROJCS[\"Corrego Alegre / UTM zone 21S\",GEOGCS[\"Corrego Alegre\",DATUM[\"Corrego_Alegre\",SPHEROID[\"International 1924\",6378388,297],TOWGS84[-206,172,-6,0,0,0,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-57],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt": "+proj=utm +zone=21 +south +ellps=intl +towgs84=-206,172,-6,0,0,0,0 +units=m +no_defs",
@@ -114,6 +139,36 @@
      "wkt":  "PROJCS[\"SAD69 / UTM zone 25S\",GEOGCS[\"SAD69\",DATUM[\"South_American_Datum_1969\",SPHEROID[\"GRS 1967 (SAD69)\",6378160,298.25]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-33],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt": "+proj=utm +zone=25 +south +ellps=aust_SA +towgs84=-67.35,3.88,-38.22,0,0,0,0 +units=m +no_defs",
      "srid": 29195},
+     
+	{"name": "WGS 84 / UTM zone 12N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 12N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-111],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt": "+proj=utm +zone=12 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32612},
+          
+	{"name": "WGS 84 / UTM zone 13N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 13N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-105],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt": "+proj=utm +zone=13 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32613},
+     
+	{"name": "WGS 84 / UTM zone 14N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 14N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-99],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt": "+proj=utm +zone=14 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32614},     
+
+	{"name": "WGS 84 / UTM zone 15N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 15N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-93],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt": "+proj=utm +zone=15 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32615},
+          
+	{"name": "WGS 84 / UTM zone 16N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 16N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-87],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt": "+proj=utm +zone=16 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32616},
+
+	{"name": "WGS 84 / UTM zone 17N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 17N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-81],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt": "+proj=utm +zone=17 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32617},
 
 	{"name": "WGS 84 / UTM zone 18N",
      "wkt":  "PROJCS[\"WGS 84 / UTM zone 18N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-75],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
@@ -139,7 +194,77 @@
      "wkt":  "PROJCS[\"WGS 84 / UTM zone 22N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-51],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt":"+proj=utm +zone=22 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
      "srid": 32622},
+     
+	{"name": "WGS 84 / UTM zone 23N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 23N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-45],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=23 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32623},     
+     
+	{"name": "WGS 84 / UTM zone 24N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 24N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-39],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=24 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32624},
+     
+	{"name": "WGS 84 / UTM zone 25N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 25N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-33],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=25 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32625},     
+     
+	{"name": "WGS 84 / UTM zone 26N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 26N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-27],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=26 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32626},      
+      
+ 	{"name": "WGS 84 / UTM zone 27N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 27N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-21],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=27 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32627},     
+     
+	{"name": "WGS 84 / UTM zone 28N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 26N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-15],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=28 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32628},  
+     
+ 	{"name": "WGS 84 / UTM zone 29N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 29N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-9],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=29 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32629},     
+     
+	{"name": "WGS 84 / UTM zone 30N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 30N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-3],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=30 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32630},  
 
+	{"name": "WGS 84 / UTM zone 31N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 31N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",3],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=31 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32631},  
+     
+ 	{"name": "WGS 84 / UTM zone 32N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 32N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",9],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32632},     
+     
+	{"name": "WGS 84 / UTM zone 33N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 33N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",15],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=33 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32633}, 
+         
+ 	{"name": "WGS 84 / UTM zone 34N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 34N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",21],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=34 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32634},  
+     
+ 	{"name": "WGS 84 / UTM zone 35N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 35N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",27],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=35 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32635},     
+     
+	{"name": "WGS 84 / UTM zone 36N",
+     "wkt":  "PROJCS[\"WGS 84 / UTM zone 36N\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",33],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
+     "pj4txt":"+proj=utm +zone=36 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid": 32636},           
+     
 	{"name": "WGS 84 / UTM zone 17S",
      "wkt": "PROJCS[\"WGS 84 / UTM zone 17S\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-81],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt":"+proj=utm +zone=17 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
