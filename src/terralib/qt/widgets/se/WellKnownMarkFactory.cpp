@@ -224,7 +224,7 @@ void te::qt::widgets::WellKnownMarkFactory::buildPaths()
 
   // Diamond
   transform.reset();
-  m_diamondPath = transform.rotate(-45).scale(0.8, 0.8).map(m_squarePath);
+  m_diamondPath = transform.rotate(-45).scale(0.7, 0.7).map(m_squarePath);
 
   // Ellipse
   m_ellipsePath.addEllipse(-0.5, -0.3, 1.0, 0.7);
