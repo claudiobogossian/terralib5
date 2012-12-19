@@ -117,7 +117,7 @@ void te::rst::Interpolator::nearestNeighborGetValue(const double& c, const doubl
   }
   else
   {
-    v.real( m_noDataValues[ b ] );
+    v = std::complex<double>( m_noDataValues[ b ], m_noDataValues[ b ] );
   }
 }
 
