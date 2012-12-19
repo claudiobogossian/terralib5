@@ -18,35 +18,32 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/geofile/GeoFileConnectorDialog.cpp
+  \file terralib/qt/plugins/datasource/geofile/GeoFileConnectorDialog.cpp
 
-  \brief ....
+  \brief A dialog window for showing the GeoFile connector widget.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/qt/widgets/Exception.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
-#include "ui_GeoFileConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../widgets/Exception.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 #include "GeoFileConnectorDialog.h"
+#include "ui_GeoFileConnectorDialogForm.h"
 
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/filesystem.hpp>
 
 // Qt
 #include <QtGui/QFileDialog>
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_geofile = qt_af::plugin::geofile;
-
-plg_geofile::GeoFileConnectorDialog::GeoFileConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::geofile::GeoFileConnectorDialog::GeoFileConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::GeoFileConnectorDialogForm)
 {
@@ -70,22 +67,22 @@ plg_geofile::GeoFileConnectorDialog::GeoFileConnectorDialog(QWidget* parent, Qt:
   m_ui->m_openPushButton->setEnabled(false);
 }
 
-plg_geofile::GeoFileConnectorDialog::~GeoFileConnectorDialog()
+te::qt::plugins::geofile::GeoFileConnectorDialog::~GeoFileConnectorDialog()
 {
 }
 
-const std::list<te::qt::widgets::DataSourcePtr>& plg_geofile::GeoFileConnectorDialog::getDataSources() const
+const std::list<te::qt::widgets::DataSourcePtr>& te::qt::plugins::geofile::GeoFileConnectorDialog::getDataSources() const
 {
   return m_datasources;
 }
 
-void plg_geofile::GeoFileConnectorDialog::set(const std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::geofile::GeoFileConnectorDialog::set(const std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   m_datasources = datasources;
 
   m_ui->m_datasourceListWidget->clear();
 
-  for(std::list<te_qt::DataSourcePtr>::iterator it = m_datasources.begin(); it != m_datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = m_datasources.begin(); it != m_datasources.end(); ++it)
   {
     QString id = QString::fromStdString((*it)->getId());
     QString title = QString::fromStdString((*it)->getTitle());
@@ -106,12 +103,12 @@ void plg_geofile::GeoFileConnectorDialog::set(const std::list<te_qt::DataSourceP
   }
 }
 
-void plg_geofile::GeoFileConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::openPushButtonPressed()
 {
   accept();
 }
 
-void plg_geofile::GeoFileConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::testPushButtonPressed()
 {
   try
   {
@@ -135,14 +132,14 @@ void plg_geofile::GeoFileConnectorDialog::testPushButtonPressed()
   }
 }
 
-void plg_geofile::GeoFileConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_geofile::GeoFileConnectorDialog::fileSearchToolButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::fileSearchToolButtonPressed()
 {
   QString fileName = QFileDialog::getOpenFileName(this, tr("Open Geo Spatial File"), QString(""), tr("Image File (*.png, *.jpg, *.jpeg, *.tif, *.tiff, *.geotif, *.geotiff);; Vector File (*.shp, *.geojson, *.kml);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
@@ -152,7 +149,7 @@ void plg_geofile::GeoFileConnectorDialog::fileSearchToolButtonPressed()
   m_ui->m_datasourceLineEdit->setText(fileName);
 }
 
-void plg_geofile::GeoFileConnectorDialog::addDatasourceToolButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::addDatasourceToolButtonPressed()
 {
   try
   {
@@ -162,7 +159,7 @@ void plg_geofile::GeoFileConnectorDialog::addDatasourceToolButtonPressed()
 
     if(driver.get() != 0)
     {
-      te_qt::DataSourcePtr nds(new te_qt::DataSource);
+      te::qt::widgets::DataSourcePtr nds(new te::qt::widgets::DataSource);
 
       nds->setConnInfo(driver->getConnectionInfo());
 
@@ -207,7 +204,7 @@ void plg_geofile::GeoFileConnectorDialog::addDatasourceToolButtonPressed()
   }
 }
 
-void plg_geofile::GeoFileConnectorDialog::removeDatasourceToolButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::removeDatasourceToolButtonPressed()
 {
   QListWidgetItem* item = m_ui->m_datasourceListWidget->currentItem();
 
@@ -223,7 +220,7 @@ void plg_geofile::GeoFileConnectorDialog::removeDatasourceToolButtonPressed()
 
   std::string dsId = id.toStdString();
 
-  std::list<te_qt::DataSourcePtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
+  std::list<te::qt::widgets::DataSourcePtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
 
   if(it == m_datasources.end())
     return;
@@ -240,14 +237,14 @@ void plg_geofile::GeoFileConnectorDialog::removeDatasourceToolButtonPressed()
     m_ui->m_openPushButton->setEnabled(false);
 }
 
-void plg_geofile::GeoFileConnectorDialog::updateDatasourceToolButtonPressed()
+void te::qt::plugins::geofile::GeoFileConnectorDialog::updateDatasourceToolButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_geofile::GeoFileConnectorDialog::dataSourcePressed(QListWidgetItem* item)
+void te::qt::plugins::geofile::GeoFileConnectorDialog::dataSourcePressed(QListWidgetItem* item)
 {
   m_ui->m_datasourceLineEdit->setText("");
   m_ui->m_datasourceTitleLineEdit->setText("");
@@ -265,7 +262,7 @@ void plg_geofile::GeoFileConnectorDialog::dataSourcePressed(QListWidgetItem* ite
 
   std::string dsId = id.toStdString();
 
-  std::list<te_qt::DataSourcePtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
+  std::list<te::qt::widgets::DataSourcePtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
 
   if(it == m_datasources.end())
     return;
@@ -279,7 +276,7 @@ void plg_geofile::GeoFileConnectorDialog::dataSourcePressed(QListWidgetItem* ite
   //if((*it)->getAccessDriver() == "OGR")
   //{
   //}
-  //else if((*it)->getAccessDriver() == "GDAL")
+  //else if((*it)->getAccessDriver() == "GEOFILE")
   //{
   //}
 
@@ -288,7 +285,7 @@ void plg_geofile::GeoFileConnectorDialog::dataSourcePressed(QListWidgetItem* ite
   m_ui->m_datasourceDescriptionTextEdit->setText(QString::fromStdString((*it)->getDescription()));
 }
 
-te::da::DataSourcePtr plg_geofile::GeoFileConnectorDialog::test()
+te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
 {
   std::map<std::string, std::string> dsInfo;
 
@@ -302,17 +299,17 @@ te::da::DataSourcePtr plg_geofile::GeoFileConnectorDialog::test()
   if((fileExtension == ".TIF") || (fileExtension == ".TIFF") || (fileExtension == ".GEOTIF") || (fileExtension == ".GEOTIFF") ||
      (fileExtension == ".PNG") || (fileExtension == ".JPG") || (fileExtension == ".JPEG"))
   {
-    if(te::da::DataSourceFactory::find("GDAL") == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for GDAL data sources!"));
+    if(te::da::DataSourceFactory::find("GEOFILE") == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for GEOFILE data sources!"));
 
     dsInfo["SOURCE"] = m_ui->m_datasourceLineEdit->text().trimmed().toStdString();
 
-    driverType = "GDAL";
+    driverType = "GEOFILE";
   }
   else if((fileExtension == ".SHP") || (fileExtension == ".GEOJSON") || (fileExtension == ".KML"))
   {
     if(te::da::DataSourceFactory::find("OGR") == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
 
     dsInfo["SOURCE"] = m_ui->m_datasourceLineEdit->text().trimmed().toStdString();
 
@@ -320,18 +317,18 @@ te::da::DataSourcePtr plg_geofile::GeoFileConnectorDialog::test()
   }
   else
   {
-    throw te_qt::Exception(TR_QT_WIDGETS("Sorry! Unknown data access driver for the selected file!"));
+    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! Unknown data access driver for the selected file!"));
   }
 
   te::da::DataSourcePtr ds(te::da::DataSourceFactory::open(driverType, dsInfo));
 
   if(ds.get() == 0)
-    throw te_qt::Exception(TR_QT_WIDGETS("Could not open data source due to an unexpected error!"));
+    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open data source due to an unexpected error!"));
 
   return ds;
 }
 
-bool plg_geofile::GeoFileConnectorDialog::FindById::operator()(const te_qt::DataSourcePtr& ds) const
+bool te::qt::plugins::geofile::GeoFileConnectorDialog::FindById::operator()(const te::qt::widgets::DataSourcePtr& ds) const
 {
   return (ds->getId() == m_id);
 }

@@ -18,43 +18,47 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/shp/ShapeFileType.h
+  \file terralib/qt/plugins/datasource/shp/ShapeFileType.h
 
-  \brief Shapefile data source type.
+  \brief ShapeFile data source type.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SHP_INTERNAL_SHAPEFILETYPE_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SHP_INTERNAL_SHAPEFILETYPE_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_SHAPEFILETYPE_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_SHAPEFILETYPE_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/core/DataSourceType.h>
+#include "../../../widgets/datasource/core/DataSourceType.h"
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace shp
+    namespace plugins
     {
-      class ShapeFileType : public te::qt::widgets::DataSourceType
+      namespace shp
       {
-        public:
+        class ShapeFileType : public te::qt::widgets::DataSourceType
+        {
+          public:
 
-          ShapeFileType();
+            ShapeFileType();
 
-          ~ShapeFileType();
+            ~ShapeFileType();
 
-          std::string getName() const;
+            std::string getName() const;
 
-          std::string getTitle() const;
+            std::string getTitle() const;
 
-          std::string getDescription() const;
+            std::string getDescription() const;
 
-          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-          QIcon getIcon(int iconType) const;
-      }; 
-    } // end namespace shp
-  }   // end namespace plugin
-}     // end namespace at_af
+            QIcon getIcon(int iconType) const;
+        };
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SHP_INTERNAL_SHAPEFILETYPE_H
+      } // end namespace shp
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SHP_INTERNAL_SHAPEFILETYPE_H

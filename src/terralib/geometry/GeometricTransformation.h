@@ -289,8 +289,17 @@ namespace te
           \return The minimum number of required tie-points for the current transformation.
         */
         virtual unsigned int getMinRequiredTiePoints() const = 0;
+        
+        /*!
+          \brief Creat a clone copy of this instance.
+          
+          \return A clone copy of this instance (the caller of this method must take the ownership of the returned object and delete it when appropriate.
+        */
+        virtual GeometricTransformation* clone() const = 0;
 
       protected:
+        
+        GTParameters m_internalParameters;  //!< The current internal parameters.
 
         /*! \brief Default constructor. */
         GeometricTransformation();
@@ -302,11 +311,7 @@ namespace te
 
           \return true if OK, false on errors.
         */
-        virtual bool computeParameters( GTParameters& params ) const = 0;        
-
-      private:
-
-        GTParameters m_internalParameters;  //!< The current internal parameters.
+        virtual bool computeParameters( GTParameters& params ) const = 0;
     };
 
   } // end namespace gm

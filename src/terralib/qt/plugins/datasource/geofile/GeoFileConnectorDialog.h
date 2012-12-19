@@ -18,95 +18,99 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/geofile/GeoFileConnectorDialog.h
+  \file terralib/qt/plugins/datasource/geofile/GeoFileConnectorDialog.h
 
-  \brief ....
+  \brief A dialog window for showing the GeoFile connector widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
 
-//! TerraLib
-#include <terralib/dataaccess/Definitions.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
+// TerraLib
+#include "../../../../dataaccess/Definitions.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 
-//! STL
+// STL
 #include <memory>
 
-//! Qt
+// Qt
 #include <QtGui/QDialog>
 
 namespace Ui { class GeoFileConnectorDialogForm; }
 
 class QListWidgetItem;
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace geofile
+    namespace plugins
     {
-      /*!
-        \class GeoFileConnectorDialog
-
-        \brief ....
-      */
-      class GeoFileConnectorDialog : public QDialog
+      namespace geofile
       {
-        Q_OBJECT
+        /*!
+          \class GeoFileConnectorDialog
 
-        public:
+          \brief A dialog window for showing the GeoFile connector widget.
+        */
+        class GeoFileConnectorDialog : public QDialog
+        {
+          Q_OBJECT
 
-          GeoFileConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          public:
 
-          ~GeoFileConnectorDialog();
+            GeoFileConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          const std::list<te::qt::widgets::DataSourcePtr>& getDataSources() const;
+            ~GeoFileConnectorDialog();
 
-          void set(const std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            const std::list<te::qt::widgets::DataSourcePtr>& getDataSources() const;
 
-        protected slots:
+            void set(const std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void openPushButtonPressed();
+          protected slots:
 
-          void testPushButtonPressed();
+            void openPushButtonPressed();
 
-          void helpPushButtonPressed();
+            void testPushButtonPressed();
 
-          void fileSearchToolButtonPressed();
+            void helpPushButtonPressed();
 
-          void addDatasourceToolButtonPressed();
+            void fileSearchToolButtonPressed();
 
-          void removeDatasourceToolButtonPressed();
+            void addDatasourceToolButtonPressed();
 
-          void updateDatasourceToolButtonPressed();
+            void removeDatasourceToolButtonPressed();
 
-          void dataSourcePressed(QListWidgetItem* item);
+            void updateDatasourceToolButtonPressed();
 
-        private:
+            void dataSourcePressed(QListWidgetItem* item);
 
-          te::da::DataSourcePtr test();
+          private:
 
-        private:
+            te::da::DataSourcePtr test();
 
-          struct FindById
-          {
-            std::string m_id;
+          private:
 
-            FindById(const std::string& id)
-              : m_id(id)
+            struct FindById
             {
-            }
+              std::string m_id;
 
-            bool operator()(const te::qt::widgets::DataSourcePtr& ds) const; 
-          };
+              FindById(const std::string& id)
+                : m_id(id)
+              {
+              }
 
-          std::auto_ptr<Ui::GeoFileConnectorDialogForm> m_ui;
-          std::list<te::qt::widgets::DataSourcePtr> m_datasources;
-      }; 
-    } // end namespace geofile
-  }   // end namespace plugin
-}     // end namespace qt_af
+              bool operator()(const te::qt::widgets::DataSourcePtr& ds) const; 
+            };
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
+            std::auto_ptr<Ui::GeoFileConnectorDialogForm> m_ui;
+            std::list<te::qt::widgets::DataSourcePtr> m_datasources;
+        };
+
+      } // end namespace geofile
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_GEOFILE_INTERNAL_GEOFILECONNECTORDIALOG_H
 

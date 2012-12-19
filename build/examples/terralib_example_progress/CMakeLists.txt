@@ -31,7 +31,7 @@ endif()
 
 set(DEP_LIBS 
     terralib_common
-		terralib_qtwidgets
+		terralib_qt_widgets
     ${QT_LIBRARIES}
     ${Boost_LIBRARIES}
     )

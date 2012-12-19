@@ -18,35 +18,32 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/ogr/OGRConnectorDialog.cpp
+  \file terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.cpp
 
-  \brief ....
+  \brief A dialog window for showing the OGR connector widget.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/Exception.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
-#include "ui_OGRConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 #include "OGRConnectorDialog.h"
+#include "ui_OGRConnectorDialogForm.h"
 
 // Boost
-#include <boost/filesystem.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/lexical_cast.hpp>
 
 // Qt
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_ogr = qt_af::plugin::ogr;
-
-plg_ogr::OGRConnectorDialog::OGRConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::ogr::OGRConnectorDialog::OGRConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::OGRConnectorDialogForm)
 {
@@ -60,21 +57,21 @@ plg_ogr::OGRConnectorDialog::OGRConnectorDialog(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_searchFeatureToolButton, SIGNAL(pressed()), this, SLOT(searchFeatureToolButtonPressed()));
 }
 
-plg_ogr::OGRConnectorDialog::~OGRConnectorDialog()
+te::qt::plugins::ogr::OGRConnectorDialog::~OGRConnectorDialog()
 {
 }
 
-const te::qt::widgets::DataSourcePtr& plg_ogr::OGRConnectorDialog::getDataSource() const
+const te::qt::widgets::DataSourcePtr& te::qt::plugins::ogr::OGRConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-const te::da::DataSourcePtr& plg_ogr::OGRConnectorDialog::getDriver() const
+const te::da::DataSourcePtr& te::qt::plugins::ogr::OGRConnectorDialog::getDriver() const
 {
   return m_driver;
 }
 
-void plg_ogr::OGRConnectorDialog::set(const te_qt::DataSourcePtr& ds)
+void te::qt::plugins::ogr::OGRConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
 {
   m_datasource = ds;
 
@@ -88,13 +85,13 @@ void plg_ogr::OGRConnectorDialog::set(const te_qt::DataSourcePtr& ds)
   }
 }
 
-void plg_ogr::OGRConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::ogr::OGRConnectorDialog::openPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("OGR") == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -105,7 +102,7 @@ void plg_ogr::OGRConnectorDialog::openPushButtonPressed()
     m_driver.reset(te::da::DataSourceFactory::open("OGR", dsInfo));
 
     if(m_driver.get() == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Could not open dataset via OGR due to an unknown error!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open dataset via OGR due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -115,7 +112,7 @@ void plg_ogr::OGRConnectorDialog::openPushButtonPressed()
     if(m_datasource.get() == 0)
     {
 // create a new data source based on form data
-      m_datasource.reset(new te_qt::DataSource);
+      m_datasource.reset(new te::qt::widgets::DataSource);
 
       m_datasource->setConnInfo(dsInfo);
 
@@ -156,13 +153,13 @@ void plg_ogr::OGRConnectorDialog::openPushButtonPressed()
   accept();
 }
 
-void plg_ogr::OGRConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("OGR") == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for OGR data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -173,7 +170,7 @@ void plg_ogr::OGRConnectorDialog::testPushButtonPressed()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("OGR", dsInfo));
 
     if(ds.get() == 0)
-      throw te_qt::Exception(TR_QT_WIDGETS("Could not open feature repository via OGR!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open feature repository via OGR!"));
 
     QMessageBox::information(this,
                        tr("TerraLib Qt Components"),
@@ -193,14 +190,14 @@ void plg_ogr::OGRConnectorDialog::testPushButtonPressed()
   }
 }
 
-void plg_ogr::OGRConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::ogr::OGRConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
+void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
 {
   if(m_ui->m_fileRadioButton->isChecked())
   {
@@ -228,14 +225,14 @@ void plg_ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()
   }
 }
 
-void plg_ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+void te::qt::plugins::ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
 {
   connInfo.clear();
 
   QString qstr = m_ui->m_featureRepoLineEdit->text().trimmed();
   
   if(qstr.isEmpty())
-    throw te_qt::Exception(TR_QT_WIDGETS("Please select a feature file first!"));
+    throw te::qt::widgets::Exception(TR_QT_WIDGETS("Please select a feature file first!"));
 
   if(boost::filesystem::is_directory(qstr.toUtf8().data()))
     connInfo["URI"] = qstr.toUtf8().data();
@@ -243,7 +240,7 @@ void plg_ogr::OGRConnectorDialog::getConnectionInfo(std::map<std::string, std::s
     connInfo["SOURCE"] = qstr.toUtf8().data();
 }
 
-void plg_ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::ogr::OGRConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
   std::map<std::string, std::string>::const_iterator it = connInfo.find("URI");
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();

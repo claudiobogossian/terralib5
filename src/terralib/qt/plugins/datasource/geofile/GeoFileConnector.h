@@ -18,48 +18,52 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/geofile/GeoFileConnector.h
+  \file terralib/qt/plugins/datasource/geofile/GeoFileConnector.h
 
-  \brief ...
+  \brief GeoFile connector implementation for the Qt data source widget.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTOR_H
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTOR_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 // Qt
 #include <QtGui/QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace geofile
+    namespace plugins
     {
-      /*!
-        \class GeoFileConnector
-
-        \brief ....
-      */
-      class GeoFileConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace geofile
       {
-        public:
+        /*!
+          \class GeoFileConnector
 
-          GeoFileConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief GeoFile connector implementation for the Qt data source widget.
+        */
+        class GeoFileConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~GeoFileConnector();
+            GeoFileConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~GeoFileConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace geofile
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        };
+
+      } // end namespace geofile
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
 
 #endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GEOFILE_INTERNAL_GEOFILECONNECTOR_H
 

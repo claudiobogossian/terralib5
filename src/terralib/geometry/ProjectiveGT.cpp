@@ -119,6 +119,13 @@ unsigned int te::gm::ProjectiveGT::getMinRequiredTiePoints() const
 {
   return 4;
 }
+
+te::gm::GeometricTransformation* te::gm::ProjectiveGT::clone() const
+{
+  te::gm::ProjectiveGT* newTransPtr = new ProjectiveGT;
+  newTransPtr->m_internalParameters = m_internalParameters;
+  return newTransPtr;
+};
         
 bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
 {

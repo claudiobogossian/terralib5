@@ -151,14 +151,23 @@ namespace te
         
         /*!
           \brief Execute a mosaic of georeferenced images.
+          \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
+          \param outputRaster Pre-initialized output mosaic raster.
+          \return true if ok, false on errors.
+        */
+        bool executeGeoMosaic( const std::vector< te::gm::Polygon >& rastersBBoxes,
+          te::rst::Raster& outputRaster );
+          
+        /*!
+          \brief Execute a mosaic of images linket by tie-points.
           \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the first raster indexed points (lines/columns).
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
           \param outputRaster Pre-initialized output mosaic raster.
           \return true if ok, false on errors.
         */
-        bool executeGeoMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
+        bool executeTiePointsMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
           mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
-          te::rst::Raster& outputRaster );
+          te::rst::Raster& outputRaster );          
 
     };
 

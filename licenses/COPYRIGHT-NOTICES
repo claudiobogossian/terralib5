@@ -1,0 +1,14 @@
+TerraLib makes use of several free and open source libraries.
+
+So we would like to thanks people for their effort
+in sharing the source and make the right credits:
+
+This directory contains a summary of all third-party libraries used
+in TerraLib:
+
+- qt/propertybrowser/PropertyBrowser.license:
+
+
+    ===========================
+            TerraLib Team
+    (terralib-team@dpi.inpe.br)

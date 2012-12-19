@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file PostGISConnector.h
+  \file terralib/qt/plugins/datasource/pgis/PostGISConnector.h
 
-  \brief ...
+  \brief PostGIS connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_POSTGIS_INTERNAL_POSTGISCONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_POSTGIS_INTERNAL_POSTGISCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTOR_H
 
 //! TerraLib
 #include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
@@ -32,34 +32,37 @@
 //! Qt
 #include <QtGui/QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace pgis
+    namespace plugins
     {
-      /*!
-        \class PostGISConnector
-
-        \brief ....
-      */
-      class PostGISConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace pgis
       {
-        public:
+        /*!
+          \class PostGISConnector
 
-          PostGISConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief PostGIS connector implementation for the Qt data source widget.
+        */
+        class PostGISConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~PostGISConnector();
+            PostGISConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~PostGISConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace pgis
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_POSTGIS_INTERNAL_POSTGISCONNECTOR_H
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        }; 
+      } // end namespace pgis
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTOR_H
 

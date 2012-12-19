@@ -18,51 +18,47 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wms/WMSType.cpp
+  \file terralib/qt/plugins/datasource/wms/WMSType.cpp
 
   \brief WMS data source type.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "WMSConnector.h"
 #include "WMSType.h"
 
 // STL
 #include <cassert>
 
-namespace plg_wms = qt_af::plugin::wms;
-namespace te_qt = te::qt::widgets;
-
-plg_wms::WMSType::WMSType()
+te::qt::plugins::wms::WMSType::WMSType()
 {
 }
 
-plg_wms::WMSType::~WMSType()
+te::qt::plugins::wms::WMSType::~WMSType()
 {
 }
 
-std::string plg_wms::WMSType::getName() const
+std::string te::qt::plugins::wms::WMSType::getName() const
 {
   return "WMS";
 }
 
-std::string plg_wms::WMSType::getTitle() const
+std::string te::qt::plugins::wms::WMSType::getTitle() const
 {
-  return AF_TR_WMS("Web Map Service");
+  return TE_QT_PLUGIN_DATASOURCE_WMS("Web Map Service");
 }
 
-std::string plg_wms::WMSType::getDescription() const
+std::string te::qt::plugins::wms::WMSType::getDescription() const
 {
-  return AF_TR_WMS("Access to geospatial through a Web Map Service (WMS)");
+  return TE_QT_PLUGIN_DATASOURCE_WMS("Access to geospatial through a Web Map Service (WMS)");
 }
 
-QWidget* plg_wms::WMSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::wms::WMSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case te_qt::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WMSConnector(parent, f);
 
     //case DataSourceType::WIDGET_LAYER_SELECTOR:
@@ -73,14 +69,14 @@ QWidget* plg_wms::WMSType::getWidget(int widgetType, QWidget* parent, Qt::Window
   }
 }
 
-QIcon plg_wms::WMSType::getIcon(int iconType) const
+QIcon te::qt::plugins::wms::WMSType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case te_qt::DataSourceType::ICON_DATASOURCE_SMALL:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
       return QIcon::fromTheme("datasource-wms");
 
-    case te_qt::DataSourceType::ICON_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
       return QIcon::fromTheme("datasource-wms");
 
     default:

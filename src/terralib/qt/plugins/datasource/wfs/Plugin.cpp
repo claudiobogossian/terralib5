@@ -1,51 +1,72 @@
-#include "Plugin.h"
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/plugins/datasource/wfs/Plugin.cpp
+
+  \brief Plugin implementation for the OGC Web Feature Service (WFS) data source widget.
+*/
+
+// TerraLib
+#include "../../../../common/Config.h"
+#include "../../../../common/Translator.h"
+#include "../../../../common/Logger.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "WFSType.h"
+#include "Plugin.h"
 
-//! TerraLib include files
-#include <terralib/common/Config.h>
-#include <terralib/common/Translator.h>
-#include <terralib/common/Logger.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
-
-namespace plg_wfs = qt_af::plugin::wfs;
-namespace te_qt = te::qt::widgets;
-
-plg_wfs::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
-te::plugin::Plugin(pluginInfo)
+te::qt::plugins::wfs::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+  : te::plugin::Plugin(pluginInfo)
 {
 }
 
-plg_wfs::Plugin::~Plugin() 
+te::qt::plugins::wfs::Plugin::~Plugin() 
 {
 }
 
-void plg_wfs::Plugin::startup()
+void te::qt::plugins::wfs::Plugin::startup()
 {
   if(m_initialized)
     return;
 
-  te_qt::DataSourceTypeManager::getInstance().add(new WFSType);
+  te::qt::widgets::DataSourceTypeManager::getInstance().add(new WFSType);
 
-// it initializes the Translator support for the TerraLib WCS driver support
-  TE_ADD_TEXT_DOMAIN(AF_WFS_TEXT_DOMAIN, AF_WFS_TEXT_DOMAIN_DIR, "UTF-8");
+// it initializes the Translator support for the TerraLib PostGIS driver support
+  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_WFS_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(AF_TR_WFS("TerraLib Qt-WFS driver startup!"));
+  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WFS("TerraLib Qt OGC Web Feature Service (WFS) widget startup!"));
 
   m_initialized = true;
 }
 
-void plg_wfs::Plugin::shutdown()
+void te::qt::plugins::wfs::Plugin::shutdown()
 {
   if(!m_initialized)
     return;
 
-  te_qt::DataSourceManager::getInstance().removeByType("WFS");
-  te_qt::DataSourceTypeManager::getInstance().remove("WFS");
+  te::qt::widgets::DataSourceManager::getInstance().removeByType("WFS");
+  te::qt::widgets::DataSourceTypeManager::getInstance().remove("WFS");
 
-  TE_LOG_TRACE(AF_TR_WFS("TerraLib WFS driver shutdown!"));
+  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WFS("TerraLib Qt OGC Web Feature Service (WFS) widget shutdown!"));
 
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(plg_wfs::Plugin)
+PLUGIN_CALL_BACK_IMPL(te::qt::plugins::wfs::Plugin)

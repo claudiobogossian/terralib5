@@ -18,48 +18,51 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/ogr/OGRConnector.h
+  \file terralib/qt/plugins/datasource/ogr/OGRConnector.h
 
-  \brief ...
+  \brief OGR connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_OGR_INTERNAL_OGRCONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_OGR_INTERNAL_OGRCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_OGR_INTERNAL_OGRCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_OGR_INTERNAL_OGRCONNECTOR_H
 
-//! TerraLib include files
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+// TerraLib include files
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
-//! Qt include files
+// Qt include files
 #include <QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace ogr
+    namespace plugins
     {
-      /*!
-        \class OGRConnector
-
-        \brief ....
-      */
-      class OGRConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace ogr
       {
-        public:
+        /*!
+          \class OGRConnector
 
-          OGRConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief OGR connector implementation for the Qt data source widget.
+        */
+        class OGRConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~OGRConnector();
+            OGRConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~OGRConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace ogr
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_OGR_INTERNAL_OGRCONNECTOR_H
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        }; 
+      } // end namespace ogr
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_OGR_INTERNAL_OGRCONNECTOR_H
 

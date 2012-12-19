@@ -44,12 +44,13 @@ set (DEP_LIBS
 		terralib_gml
 		terralib_maptools
 		terralib_plugin
-		terralib_qtwidgets
+		terralib_qt_widgets
 		terralib_raster
 		terralib_symbology
+		terralib_serialization
 		terralib_srs
 		terralib_xlink
-    ${QT_LIBRARIES}
+		${QT_LIBRARIES}
     )  
 
 # Select the source and header files

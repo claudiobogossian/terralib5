@@ -18,28 +18,25 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/wfs/WFSConnectorDialog.cpp
+  \file terralib/qt/plugins/datasource/wfs/WFSConnectorDialog.cpp
 
-  \brief ....
+  \brief A dialog window for showing the WFS connector widget.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/Exception.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
-#include "ui_WFSConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 #include "WFSConnectorDialog.h"
+#include "ui_WFSConnectorDialogForm.h"
 
 // Qt
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_wfs = qt_af::plugin::wfs;
-
-plg_wfs::WFSConnectorDialog::WFSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::wfs::WFSConnectorDialog::WFSConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::WFSConnectorDialogForm)
 {
@@ -52,35 +49,35 @@ plg_wfs::WFSConnectorDialog::WFSConnectorDialog(QWidget* parent, Qt::WindowFlags
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
 }
 
-plg_wfs::WFSConnectorDialog::~WFSConnectorDialog()
+te::qt::plugins::wfs::WFSConnectorDialog::~WFSConnectorDialog()
 {
 }
 
-const te::qt::widgets::DataSourcePtr& plg_wfs::WFSConnectorDialog::getDataSource() const
+const te::qt::widgets::DataSourcePtr& te::qt::plugins::wfs::WFSConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-void plg_wfs::WFSConnectorDialog::set(const te_qt::DataSourcePtr& ds)
+void te::qt::plugins::wfs::WFSConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
 {
   m_datasource = ds;
 }
 
-void plg_wfs::WFSConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::wfs::WFSConnectorDialog::openPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wfs::WFSConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::wfs::WFSConnectorDialog::testPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wfs::WFSConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::wfs::WFSConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

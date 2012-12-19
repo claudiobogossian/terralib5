@@ -44,7 +44,7 @@ namespace te
       for all plugin methods and some attributes.
 
       \sa AbstractPlugin, PluginManager, PluginInfo, PluginEngine
-     */
+    */
     class TEPLUGINEXPORT Plugin : public AbstractPlugin
     {
       public:
@@ -78,8 +78,8 @@ namespace te
     };
 
     /*!
-      \typedef CppPlugin* (*GetPluginFPtr)(void);
-          
+      \typedef Plugin* (*GetPluginFPtr)(const PluginInfo& info);
+
       \brief It exports Plugin's access function type.
 
       When you are building a C++ Plugin, you will have to define a special function

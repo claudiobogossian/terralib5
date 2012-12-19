@@ -83,6 +83,8 @@ GTParameters::m_directParameters = [ a b c d e f g h ]
 
         unsigned int getMinRequiredTiePoints() const;
         
+        GeometricTransformation* clone() const;
+        
       protected:
 
         bool computeParameters( GTParameters& params ) const;

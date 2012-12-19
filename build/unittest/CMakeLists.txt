@@ -8,7 +8,7 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
 endif()
 
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
-  gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
+  gdal geometry gml maptools memory ogr plugin postgis qt_widgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
   
 find_package (CppUnit REQUIRED)
@@ -36,6 +36,8 @@ if(NOT EXISTS ${TE_DATA_UNITTEST_LOCALE})
   file (MAKE_DIRECTORY ${TE_DATA_UNITTEST_LOCALE})
 endif()
 
+configure_file(${DATA_DIR}/data/report.xsl ${TE_DATA_UNITTEST_LOCALE}/report.xsl COPYONLY)
+
 add_definitions( 
   -DTE_DATA_LOCALE="${TE_DATA_LOCALE}" 
   -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}" 
@@ -52,7 +54,7 @@ add_subdirectory(terralib_unittest_dataaccess)
 add_subdirectory(terralib_unittest_datatype)
 add_subdirectory(terralib_unittest_geometry)
 add_subdirectory(terralib_unittest_memory)
-add_subdirectory(terralib_unittest_qtwidgets)
+add_subdirectory(terralib_unittest_qt_widgets)
 add_subdirectory(terralib_unittest_rp)
 add_subdirectory(terralib_unittest_sam)
 add_subdirectory(terralib_unittest_srs)

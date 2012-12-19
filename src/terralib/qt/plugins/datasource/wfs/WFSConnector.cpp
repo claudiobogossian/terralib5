@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wfs/WFSConnector.cpp
+  \file terralib/qt/plugins/datasource/wfs/WFSConnector.cpp
 
-  \brief ....
+  \brief OGC Web Feature Service (WFS) connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "WFSConnector.h"
 #include "WFSConnectorDialog.h"
 
@@ -39,19 +39,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_wfs = qt_af::plugin::wfs;
-
-plg_wfs::WFSConnector::WFSConnector(QWidget* parent, Qt::WindowFlags f)
-  : te_qt::AbstractDataSourceConnector(parent, f)
+te::qt::plugins::wfs::WFSConnector::WFSConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_wfs::WFSConnector::~WFSConnector()
+te::qt::plugins::wfs::WFSConnector::~WFSConnector()
 {
 }
 
-void plg_wfs::WFSConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::wfs::WFSConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   std::auto_ptr<WFSConnectorDialog> cdialog(new WFSConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -61,19 +58,19 @@ void plg_wfs::WFSConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
 
   if(ds.get() != 0)
   {
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
     datasources.push_back(ds);
   }
 }
 
-void plg_wfs::WFSConnector::update(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wfs::WFSConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_wfs::WFSConnector::remove(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wfs::WFSConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

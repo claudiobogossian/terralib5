@@ -13,7 +13,7 @@ set(PROJ_NAME "terraview")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 
 find_package (terralib 5 COMPONENTS color common dataaccess datatype filter geometry
-    maptools memory plugin qtwidgets raster rp srs st stloader symbology af serialization REQUIRED)
+    maptools memory plugin qt_widgets raster rp srs st stloader symbology qt_af serialization REQUIRED)
 
 set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
 set (ICON_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Lists of directories that contains icon themes.")

@@ -18,48 +18,52 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wms/WMSConnector.h
+  \file terralib/qt/plugins/datasource/wms/WMSConnector.h
 
-  \brief ...
+  \brief OGC Web Map Service (WMS) connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WMS_INTERNAL_WMSCONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WMS_INTERNAL_WMSCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTOR_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 // Qt
 #include <QtGui/QWidget>
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wms
+    namespace plugins
     {
-      /*!
-        \class WMSConnector
-
-        \brief ....
-      */
-      class WMSConnector : public te::qt::widgets::AbstractDataSourceConnector
+      namespace wms
       {
-        public:
+        /*!
+          \class WMSConnector
 
-          WMSConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief OGC Web Map Service (WMS) connector implementation for the Qt data source widget.
+        */
+        class WMSConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~WMSConnector();
+            WMSConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            ~WMSConnector();
 
-          void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-          void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
-      }; 
-    } // end namespace wms
-  }   // end namespace plugin
-}     // end namespace qt_af
+            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WMS_INTERNAL_WMSCONNECTOR_H
+            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+        };
+
+      } // end namespace wms
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTOR_H
 

@@ -18,43 +18,47 @@
  */
 
 /*!
-  \file PostGISType.h
+  \file terralib/qt/plugins/datasource/pgis/PostGISType.h
 
   \brief PostGIS data source type.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_POSTGIS_INTERNAL_POSTGISTYPE_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_POSTGIS_INTERNAL_POSTGISTYPE_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISTYPE_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISTYPE_H
 
-//! TerraLib
-#include <terralib/qt/widgets/datasource/core/DataSourceType.h>
+// TerraLib
+#include "../../../widgets/datasource/core/DataSourceType.h"
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace pgis
+    namespace plugins
     {
-      class PostGISType : public te::qt::widgets::DataSourceType
+      namespace pgis
       {
-        public:
+        class PostGISType : public te::qt::widgets::DataSourceType
+        {
+          public:
 
-          PostGISType();
+            PostGISType();
 
-          ~PostGISType();
+            ~PostGISType();
 
-          std::string getName() const;
+            std::string getName() const;
 
-          std::string getTitle() const;
+            std::string getTitle() const;
 
-          std::string getDescription() const;
+            std::string getDescription() const;
 
-          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-          QIcon getIcon(int iconType) const;
-      }; 
-    } // end namespace pgis
-  }   // end namespace plugin
-}     // end namespace qt_af
+            QIcon getIcon(int iconType) const;
+        };
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_POSTGIS_INTERNAL_POSTGISTYPE_H
+      } // end namespace pgis
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISTYPE_H

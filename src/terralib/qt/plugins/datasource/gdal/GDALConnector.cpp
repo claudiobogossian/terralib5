@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/gdal/GDALConnector.cpp
+  \file terralib/qt/plugins/datasource/gdal/GDALConnector.cpp
 
-  \brief ....
+  \brief GDAL connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "GDALConnector.h"
 #include "GDALConnectorDialog.h"
 
@@ -39,19 +39,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_gdal = qt_af::plugin::gdal;
-
-plg_gdal::GDALConnector::GDALConnector(QWidget* parent, Qt::WindowFlags f)
-  : te_qt::AbstractDataSourceConnector(parent, f)
+te::qt::plugins::gdal::GDALConnector::GDALConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_gdal::GDALConnector::~GDALConnector()
+te::qt::plugins::gdal::GDALConnector::~GDALConnector()
 {
 }
 
-void plg_gdal::GDALConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::gdal::GDALConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   std::auto_ptr<GDALConnectorDialog> cdialog(new GDALConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -60,11 +57,11 @@ void plg_gdal::GDALConnector::create(std::list<te_qt::DataSourcePtr>& datasource
   if(retval == QDialog::Rejected)
     return;
 
-  te_qt::DataSourcePtr ds = cdialog->getDataSource();
+  te::qt::widgets::DataSourcePtr ds = cdialog->getDataSource();
 
   if(ds.get() != 0)
   {
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
     datasources.push_back(ds);
 
     te::da::DataSourcePtr driver = cdialog->getDriver();
@@ -73,9 +70,9 @@ void plg_gdal::GDALConnector::create(std::list<te_qt::DataSourcePtr>& datasource
   }
 }
 
-void plg_gdal::GDALConnector::update(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::gdal::GDALConnector::update(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -102,9 +99,9 @@ void plg_gdal::GDALConnector::update(std::list<te_qt::DataSourcePtr>& datasource
   }
 }
 
-void plg_gdal::GDALConnector::remove(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::gdal::GDALConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -119,7 +116,7 @@ void plg_gdal::GDALConnector::remove(std::list<te_qt::DataSourcePtr>& datasource
     }
 
 // then remove data source
-    te_qt::DataSourceManager::getInstance().remove((*it)->getId());
+    te::qt::widgets::DataSourceManager::getInstance().remove((*it)->getId());
   }
 }
 

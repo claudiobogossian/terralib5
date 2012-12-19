@@ -18,45 +18,48 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wms/WMSType.h
+  \file terralib/qt/plugins/datasource/wms/WMSType.h
 
   \brief WMS data source type.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WMS_INTERNAL_WMSTYPE_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WMS_INTERNAL_WMSTYPE_H
-
-#include "Config.h"
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSTYPE_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSTYPE_H
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/core/DataSourceType.h>
+#include "../../../widgets/datasource/core/DataSourceType.h"
+#include "Config.h"
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wms
+    namespace plugins
     {
-      class WMSType : public te::qt::widgets::DataSourceType
+      namespace wms
       {
-        public:
+        class WMSType : public te::qt::widgets::DataSourceType
+        {
+          public:
 
-          WMSType();
+            WMSType();
 
-          ~WMSType();
+            ~WMSType();
 
-          std::string getName() const;
+            std::string getName() const;
 
-          std::string getTitle() const;
+            std::string getTitle() const;
 
-          std::string getDescription() const;
+            std::string getDescription() const;
 
-          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-          QIcon getIcon(int iconType) const;
-      }; 
-    } // end namespace wms
-  }   // end namespace plugin
-}     // end namespace qt_af
+            QIcon getIcon(int iconType) const;
+        };
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_WMS_INTERNAL_WMSTYPE_H
+      } // end namespace wms
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSTYPE_H

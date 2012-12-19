@@ -61,12 +61,18 @@ namespace te
           */
           enum MarkType
           {
-            Square,    /*!< A square mark.   */
-            Circle,    /*!< A circle mark.   */
-            Triangle,  /*!< A triangle mark. */
-            Star,      /*!< A start mark.    */
-            Cross,     /*!< A cross mark.    */
-            X          /*!< A x mark.        */
+            Square,     /*!< A square mark.      */
+            Circle,     /*!< A circle mark.      */
+            Triangle,   /*!< A triangle mark.    */
+            Star,       /*!< A start mark.       */
+            Cross,      /*!< A cross mark.       */
+            X,          /*!< A x mark.           */
+            Diamond,    /*!< A diamond mark.     */
+            Ellipse,    /*!< A ellipse mark.     */
+            Semicircle, /*!< A semicircle mark.  */
+            Pentagon,   /*!< A pentagon mark.    */
+            Hexagon,    /*!< A hegaxon mark.     */
+            Octagon     /*!< A octagon mark.     */
           };
 
           /** @name Public Initializer
@@ -171,6 +177,12 @@ namespace te
           QPainterPath m_starPath;                            //!< Pre-defined path to star mark.
           QPainterPath m_crossPath;                           //!< Pre-defined path to cross mark.
           QPainterPath m_xPath;                               //!< Pre-defined path to x mark.
+          QPainterPath m_diamondPath;                         //!< Pre-defined path to diamond mark.
+          QPainterPath m_ellipsePath;                         //!< Pre-defined path to ellipse mark.
+          QPainterPath m_semiCirclePath;                      //!< Pre-defined path to semicircle mark.
+          QPainterPath m_pentagonPath;                        //!< Pre-defined path to pentagon mark.
+          QPainterPath m_hexagonPath;                         //!< Pre-defined path to hexagon mark.
+          QPainterPath m_octagonPath;                         //!< Pre-defined path to octagon mark.
       };
 
     } // end namespace widgets

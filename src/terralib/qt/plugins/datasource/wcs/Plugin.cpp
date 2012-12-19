@@ -1,51 +1,72 @@
-#include "Plugin.h"
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/plugins/datasource/wcs/Plugin.cpp
+
+  \brief Plugin implementation for the OGC Web Coverage Service (WCS) data source widget.
+*/
+
+// TerraLib
+#include "../../../../common/Config.h"
+#include "../../../../common/Translator.h"
+#include "../../../../common/Logger.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "WCSType.h"
+#include "Plugin.h"
 
-//! TerraLib include files
-#include <terralib/common/Config.h>
-#include <terralib/common/Translator.h>
-#include <terralib/common/Logger.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceTypeManager.h>
-
-namespace plg_wcs = qt_af::plugin::wcs;
-namespace te_qt = te::qt::widgets;
-
-plg_wcs::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo) :
-te::plugin::Plugin(pluginInfo)
+te::qt::plugins::wcs::Plugin::Plugin(const te::plugin::PluginInfo& pluginInfo)
+  : te::plugin::Plugin(pluginInfo)
 {
 }
 
-plg_wcs::Plugin::~Plugin() 
+te::qt::plugins::wcs::Plugin::~Plugin() 
 {
 }
 
-void plg_wcs::Plugin::startup()
+void te::qt::plugins::wcs::Plugin::startup()
 {
   if(m_initialized)
     return;
 
-  te_qt::DataSourceTypeManager::getInstance().add(new WCSType);
+  te::qt::widgets::DataSourceTypeManager::getInstance().add(new WCSType);
 
-// it initializes the Translator support for the TerraLib WCS driver support
-  TE_ADD_TEXT_DOMAIN(AF_WCS_TEXT_DOMAIN, AF_WCS_TEXT_DOMAIN_DIR, "UTF-8");
+// it initializes the Translator support for the TerraLib PostGIS driver support
+  TE_ADD_TEXT_DOMAIN(TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN, TE_QT_PLUGIN_DATASOURCE_WCS_TEXT_DOMAIN_DIR, "UTF-8");
 
-  TE_LOG_TRACE(AF_TR_WCS("TerraLib Qt-WCS driver startup!"));
+  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WCS("TerraLib Qt OGC Web Coverage Service (WCS) widget startup!"));
 
   m_initialized = true;
 }
 
-void plg_wcs::Plugin::shutdown()
+void te::qt::plugins::wcs::Plugin::shutdown()
 {
   if(!m_initialized)
     return;
 
-  te_qt::DataSourceManager::getInstance().removeByType("WCS");
-  te_qt::DataSourceTypeManager::getInstance().remove("WCS");
+  te::qt::widgets::DataSourceManager::getInstance().removeByType("WCS");
+  te::qt::widgets::DataSourceTypeManager::getInstance().remove("WCS");
 
-  TE_LOG_TRACE(AF_TR_WCS("TerraLib WCS driver shutdown!"));
+  TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WCS("TerraLib Qt OGC Web Coverage Service (WCS) widget shutdown!"));
 
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(plg_wcs::Plugin)
+PLUGIN_CALL_BACK_IMPL(te::qt::plugins::wcs::Plugin)

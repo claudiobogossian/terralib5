@@ -71,7 +71,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		optimized terralib_gml
 		optimized terralib_maptools
 		optimized terralib_plugin
-		optimized terralib_qtwidgets
+		optimized terralib_qt_widgets
 		optimized terralib_srs
 		optimized terralib_se
 		optimized terralib_xlink
@@ -86,7 +86,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		debug     terralib_gml_d
 		debug     terralib_maptools_d
 		debug     terralib_plugin_d
-		debug     terralib_qtwidgets_d
+		debug     terralib_qt_widgets_d
 		debug     terralib_srs_d
 		debug     terralib_se_d
 		debug     terralib_xlink_d)

@@ -18,51 +18,47 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/wcs/WCSType.cpp
+  \file terralib/qt/plugins/datasource/wcs/WCSType.cpp
 
   \brief WCS data source type.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "WCSConnector.h"
 #include "WCSType.h"
 
 // STL
 #include <cassert>
 
-namespace plg_wcs = qt_af::plugin::wcs;
-namespace te_qt = te::qt::widgets;
-
-plg_wcs::WCSType::WCSType()
+te::qt::plugins::wcs::WCSType::WCSType()
 {
 }
 
-plg_wcs::WCSType::~WCSType()
+te::qt::plugins::wcs::WCSType::~WCSType()
 {
 }
 
-std::string plg_wcs::WCSType::getName() const
+std::string te::qt::plugins::wcs::WCSType::getName() const
 {
   return "WCS";
 }
 
-std::string plg_wcs::WCSType::getTitle() const
+std::string te::qt::plugins::wcs::WCSType::getTitle() const
 {
-  return AF_TR_WCS("Web Coverage Service");
+  return TE_QT_PLUGIN_DATASOURCE_WCS("Web Coverage Service");
 }
 
-std::string plg_wcs::WCSType::getDescription() const
+std::string te::qt::plugins::wcs::WCSType::getDescription() const
 {
-  return AF_TR_WCS("Access to geospatial through a Web Coverage Service (WCS)");
+  return TE_QT_PLUGIN_DATASOURCE_WCS("Access to geospatial through a Web Coverage Service (WCS)");
 }
 
-QWidget* plg_wcs::WCSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::wcs::WCSType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case te_qt::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new WCSConnector(parent, f);
 
     //case DataSourceType::WIDGET_LAYER_SELECTOR:
@@ -73,14 +69,14 @@ QWidget* plg_wcs::WCSType::getWidget(int widgetType, QWidget* parent, Qt::Window
   }
 }
 
-QIcon plg_wcs::WCSType::getIcon(int iconType) const
+QIcon te::qt::plugins::wcs::WCSType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case te_qt::DataSourceType::ICON_DATASOURCE_SMALL:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
       return QIcon::fromTheme("datasource-wcs");
 
-    case te_qt::DataSourceType::ICON_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
       return QIcon::fromTheme("datasource-wcs");
 
     default:

@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/ogr/OGRConnector.cpp
+  \file terralib/qt/plugins/datasource/ogr/OGRConnector.cpp
 
-  \brief ....
+  \brief OGR connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "OGRConnector.h"
 #include "OGRConnectorDialog.h"
 
@@ -39,19 +39,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_ogr = qt_af::plugin::ogr;
-
-plg_ogr::OGRConnector::OGRConnector(QWidget* parent, Qt::WindowFlags f)
-  : te_qt::AbstractDataSourceConnector(parent, f)
+te::qt::plugins::ogr::OGRConnector::OGRConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_ogr::OGRConnector::~OGRConnector()
+te::qt::plugins::ogr::OGRConnector::~OGRConnector()
 {
 }
 
-void plg_ogr::OGRConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::ogr::OGRConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   std::auto_ptr<OGRConnectorDialog> cdialog(new OGRConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -60,11 +57,11 @@ void plg_ogr::OGRConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
   if(retval == QDialog::Rejected)
     return;
 
-  te_qt::DataSourcePtr ds = cdialog->getDataSource();
+  te::qt::widgets::DataSourcePtr ds = cdialog->getDataSource();
 
   if(ds.get() != 0)
   {
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
     datasources.push_back(ds);
 
     te::da::DataSourcePtr driver = cdialog->getDriver();
@@ -73,9 +70,9 @@ void plg_ogr::OGRConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
   }
 }
 
-void plg_ogr::OGRConnector::update(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::ogr::OGRConnector::update(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -102,9 +99,9 @@ void plg_ogr::OGRConnector::update(std::list<te_qt::DataSourcePtr>& datasources)
   }
 }
 
-void plg_ogr::OGRConnector::remove(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::ogr::OGRConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -119,7 +116,7 @@ void plg_ogr::OGRConnector::remove(std::list<te_qt::DataSourcePtr>& datasources)
     }
 
 // then remove data source
-    te_qt::DataSourceManager::getInstance().remove((*it)->getId());
+    te::qt::widgets::DataSourceManager::getInstance().remove((*it)->getId());
   }
 }
 

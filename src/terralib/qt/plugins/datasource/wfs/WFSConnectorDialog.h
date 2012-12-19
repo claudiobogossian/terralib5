@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/wfs/WFSConnectorDialog.h
+  \file terralib/qt/plugins/datasource/wfs/WFSConnectorDialog.h
 
-  \brief ....
+  \brief A dialog window for showing the WFS connector widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_WFS_INTERNAL_WFSCONNECTORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_WFS_INTERNAL_WFSCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTORDIALOG_H
 
 // TerraLib
-#include <terralib/dataaccess/Definitions.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
+#include "../../../../dataaccess/Definitions.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 
 // STL
 #include <memory>
@@ -38,47 +38,51 @@
 
 namespace Ui { class WFSConnectorDialogForm; }
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wfs
+    namespace plugins
     {
-      /*!
-        \class WFSConnectorDialog
-
-        \brief ....
-      */
-      class WFSConnectorDialog : public QDialog
+      namespace wfs
       {
-        Q_OBJECT
+        /*!
+          \class WFSConnectorDialog
 
-        public:
+          \brief A dialog window for showing the WFS connector widget.
+        */
+        class WFSConnectorDialog : public QDialog
+        {
+          Q_OBJECT
 
-          WFSConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          public:
 
-          ~WFSConnectorDialog();
+            WFSConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          const te::qt::widgets::DataSourcePtr& getDataSource() const;
+            ~WFSConnectorDialog();
 
-          void set(const te::qt::widgets::DataSourcePtr& ds);
+            const te::qt::widgets::DataSourcePtr& getDataSource() const;
 
-        public slots:
+            void set(const te::qt::widgets::DataSourcePtr& ds);
 
-          void openPushButtonPressed();
+          public slots:
 
-          void testPushButtonPressed();
+            void openPushButtonPressed();
 
-          void helpPushButtonPressed();
+            void testPushButtonPressed();
 
-        private:
+            void helpPushButtonPressed();
 
-          std::auto_ptr<Ui::WFSConnectorDialogForm> m_ui;
-          te::qt::widgets::DataSourcePtr m_datasource;
-      }; 
-    } // end namespace wfs
-  }   // end namespace plugin
-}     // end namespace qt_af
+          private:
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_WFS_INTERNAL_WFSCONNECTORDIALOG_H
+            std::auto_ptr<Ui::WFSConnectorDialogForm> m_ui;
+            te::qt::widgets::DataSourcePtr m_datasource;
+        };
+
+      } // end namespace wfs
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTORDIALOG_H
 

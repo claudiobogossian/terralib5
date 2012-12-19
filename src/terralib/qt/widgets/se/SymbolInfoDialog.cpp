@@ -51,7 +51,7 @@ void te::qt::widgets::SymbolInfoDialog::setSymbolInfo(const te::qt::widgets::Sym
 
 void te::qt::widgets::SymbolInfoDialog::updateUi()
 {
-  m_ui->m_idLineEdit->setText(QString::number(m_symbolInfo.m_id));
+  m_ui->m_idLineEdit->setText(m_symbolInfo.m_id.c_str());
   m_ui->m_nameLineEdit->setText(m_symbolInfo.m_name.c_str());
   m_ui->m_authorLineEdit->setText(m_symbolInfo.m_author.c_str());
   m_ui->m_categoryLineEdit->setText(m_symbolInfo.m_category.c_str());

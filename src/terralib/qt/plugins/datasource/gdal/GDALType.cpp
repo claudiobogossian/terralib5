@@ -18,53 +18,49 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/gdal/GDALType.cpp
+  \file terralib/qt/plugins/datasource/gdal/GDALType.cpp
 
   \brief GDAL data source type.
 */
 
 // TerraLib
-#include <terralib/common/Translator.h>
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "GDALConnector.h"
 #include "GDALType.h"
 
 // STL
 #include <cassert>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_gdal = qt_af::plugin::gdal;
-
-plg_gdal::GDALType::GDALType()
+te::qt::plugins::gdal::GDALType::GDALType()
 {
 }
 
-plg_gdal::GDALType::~GDALType()
+te::qt::plugins::gdal::GDALType::~GDALType()
 {
 }
 
-std::string plg_gdal::GDALType::getName() const
+std::string te::qt::plugins::gdal::GDALType::getName() const
 {
   return "GDAL";
 }
 
-std::string plg_gdal::GDALType::getTitle() const
+std::string te::qt::plugins::gdal::GDALType::getTitle() const
 {
   return TR_QT_WIDGETS("GDAL");
 }
 
-std::string plg_gdal::GDALType::getDescription() const
+std::string te::qt::plugins::gdal::GDALType::getDescription() const
 {
   return TR_QT_WIDGETS("Access to geospatial data through the Geospatial Data Abstraction Library (GDAL)");
 }
 
-QWidget* plg_gdal::GDALType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::gdal::GDALType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case te_qt::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new GDALConnector(parent, f);
-//
+
 //    case DataSourceType::WIDGET_LAYER_SELECTOR:
 //      return new DataSetLayerSelector(parent, f);
 
@@ -73,14 +69,14 @@ QWidget* plg_gdal::GDALType::getWidget(int widgetType, QWidget* parent, Qt::Wind
   }
 }
 
-QIcon plg_gdal::GDALType::getIcon(int iconType) const
+QIcon te::qt::plugins::gdal::GDALType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case te_qt::DataSourceType::ICON_DATASOURCE_SMALL:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
       return QIcon::fromTheme("datasource-gdal");
 
-    case te_qt::DataSourceType::ICON_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
       return QIcon::fromTheme("datasource-gdal");
 
     default:

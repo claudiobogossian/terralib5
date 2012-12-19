@@ -119,6 +119,13 @@ unsigned int te::gm::ThirdDegreePolynomialGT::getMinRequiredTiePoints() const
 {
   return 10;
 }
+
+te::gm::GeometricTransformation* te::gm::ThirdDegreePolynomialGT::clone() const
+{
+  te::gm::ThirdDegreePolynomialGT* newTransPtr = new ThirdDegreePolynomialGT;
+  newTransPtr->m_internalParameters = m_internalParameters;
+  return newTransPtr;
+};
         
 bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) const
 {

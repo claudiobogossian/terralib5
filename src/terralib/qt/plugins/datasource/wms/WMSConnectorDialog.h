@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/wms/WMSConnectorDialog.h
+  \file terralib/qt/plugins/datasource/wms/WMSConnectorDialog.h
 
-  \brief ....
+  \brief A dialog window for showing the WMS connector widget.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_WMS_INTERNAL_WMSCONNECTORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_WMS_INTERNAL_WMSCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTORDIALOG_H
 
 // TerraLib
-#include <terralib/dataaccess/Definitions.h>
-#include <terralib/qt/widgets/datasource/core/DataSource.h>
+#include "../../../../dataaccess/Definitions.h"
+#include "../../../widgets/datasource/core/DataSource.h"
 
 // STL
 #include <memory>
@@ -38,47 +38,51 @@
 
 namespace Ui { class WMSConnectorDialogForm; }
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace wms
+    namespace plugins
     {
-      /*!
-        \class WMSConnectorDialog
-
-        \brief ....
-      */
-      class WMSConnectorDialog : public QDialog
+      namespace wms
       {
-        Q_OBJECT
+        /*!
+          \class WMSConnectorDialog
 
-        public:
+          \brief A dialog window for showing the WMS connector widget.
+        */
+        class WMSConnectorDialog : public QDialog
+        {
+          Q_OBJECT
 
-          WMSConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          public:
 
-          ~WMSConnectorDialog();
+            WMSConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          const te::qt::widgets::DataSourcePtr& getDataSource() const;
+            ~WMSConnectorDialog();
 
-          void set(const te::qt::widgets::DataSourcePtr& ds);
+            const te::qt::widgets::DataSourcePtr& getDataSource() const;
 
-        public slots:
+            void set(const te::qt::widgets::DataSourcePtr& ds);
 
-          void openPushButtonPressed();
+          public slots:
 
-          void testPushButtonPressed();
+            void openPushButtonPressed();
 
-          void helpPushButtonPressed();
+            void testPushButtonPressed();
 
-        private:
+            void helpPushButtonPressed();
 
-          std::auto_ptr<Ui::WMSConnectorDialogForm> m_ui;
-          te::qt::widgets::DataSourcePtr m_datasource;
-      }; 
-    } // end namespace wms
-  }   // end namespace plugin
-}     // end namespace qt_af
+          private:
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_WMS_INTERNAL_WMSCONNECTORDIALOG_H
+            std::auto_ptr<Ui::WMSConnectorDialogForm> m_ui;
+            te::qt::widgets::DataSourcePtr m_datasource;
+        };
+
+      } // end namespace wms
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTORDIALOG_H
 

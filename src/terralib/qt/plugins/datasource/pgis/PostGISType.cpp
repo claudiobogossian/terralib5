@@ -18,51 +18,47 @@
  */
 
 /*!
-  \file PostGISType.cpp
+  \file terralib/qt/plugins/datasource/pgis/PostGISType.cpp
 
   \brief PostGIS data source type.
 */
 
-//! TerraLib
-#include <terralib/common/Translator.h>
-//#include "../../../layer/selector/core/DataSetLayerSelector.h"
+// TerraLib
+#include "../../../../common/Translator.h"
 #include "PostGISConnector.h"
 #include "PostGISType.h"
 
 // STL
 #include <cassert>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_pgis = qt_af::plugin::pgis;
-
-plg_pgis::PostGISType::PostGISType()
+te::qt::plugins::pgis::PostGISType::PostGISType()
 {
 }
 
-plg_pgis::PostGISType::~PostGISType()
+te::qt::plugins::pgis::PostGISType::~PostGISType()
 {
 }
 
-std::string plg_pgis::PostGISType::getName() const
+std::string te::qt::plugins::pgis::PostGISType::getName() const
 {
   return "POSTGIS";
 }
 
-std::string plg_pgis::PostGISType::getTitle() const
+std::string te::qt::plugins::pgis::PostGISType::getTitle() const
 {
   return TR_QT_WIDGETS("PostGIS");
 }
 
-std::string plg_pgis::PostGISType::getDescription() const
+std::string te::qt::plugins::pgis::PostGISType::getDescription() const
 {
   return TR_QT_WIDGETS("Access geospatial data in a PostgreSQL database with the geospatial extension PostGIS");
 }
 
-QWidget* plg_pgis::PostGISType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::pgis::PostGISType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case te_qt::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new PostGISConnector(parent, f);
 
 //    case DataSourceType::WIDGET_LAYER_SELECTOR:
@@ -73,14 +69,14 @@ QWidget* plg_pgis::PostGISType::getWidget(int widgetType, QWidget* parent, Qt::W
   }
 }
 
-QIcon plg_pgis::PostGISType::getIcon(int iconType) const
+QIcon te::qt::plugins::pgis::PostGISType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case te_qt::DataSourceType::ICON_DATASOURCE_SMALL:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
       return QIcon::fromTheme("datasource-postgis");
 
-    case te_qt::DataSourceType::ICON_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
       return QIcon::fromTheme("datasource-postgis");
 
     default:

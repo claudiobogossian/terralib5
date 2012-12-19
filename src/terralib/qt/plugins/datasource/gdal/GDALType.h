@@ -18,43 +18,48 @@
  */
 
 /*!
-  \file GDALType.h
+  \file terralib/qt/plugins/datasource/gdal/GDALType.h
 
   \brief GDAL data source type.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GDAL_INTERNAL_GDALTYPE_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GDAL_INTERNAL_GDALTYPE_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALTYPE_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALTYPE_H
 
-//! TerraLib
-#include <terralib/qt/widgets/datasource/core/DataSourceType.h>
+// TerraLib
+#include "../../../widgets/datasource/core/DataSourceType.h"
 
-namespace qt_af
+namespace te
 {
-  namespace plugin
+  namespace qt
   {
-    namespace gdal
+    namespace plugins
     {
-      class GDALType : public te::qt::widgets::DataSourceType
+      namespace gdal
       {
-        public:
+        class GDALType : public te::qt::widgets::DataSourceType
+        {
+          public:
 
-          GDALType();
+            GDALType();
 
-          ~GDALType();
+            ~GDALType();
 
-          std::string getName() const;
+            std::string getName() const;
 
-          std::string getTitle() const;
+            std::string getTitle() const;
 
-          std::string getDescription() const;
+            std::string getDescription() const;
 
-          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-          QIcon getIcon(int iconType) const;
-      }; 
-    } // end namespace gdal
-  }   // end namespace plugin
-}     // end namespace qt_af
+            QIcon getIcon(int iconType) const;
+        };
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_GDAL_INTERNAL_GDALTYPE_H
+      } // end namespace gdal
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALTYPE_H
+

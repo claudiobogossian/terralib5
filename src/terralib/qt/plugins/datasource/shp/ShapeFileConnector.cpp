@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/shp/ShapeFileConnector.cpp
+  \file terralib/qt/plugins/datasource/shp/ShapeFileConnector.cpp
 
-  \brief ....
+  \brief Shapefile connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include <terralib/dataaccess/datasource/DataSource.h>
-#include <terralib/dataaccess/datasource/DataSourceManager.h>
-#include <terralib/qt/widgets/datasource/core/DataSourceManager.h>
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "ShapeFileConnector.h"
 
 // Boost
@@ -38,25 +38,22 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-namespace te_qt = te::qt::widgets;
-namespace plg_shp = qt_af::plugin::shp;
-
-plg_shp::ShapeFileConnector::ShapeFileConnector(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::shp::ShapeFileConnector::ShapeFileConnector(QWidget* parent, Qt::WindowFlags f)
   : AbstractDataSourceConnector(parent, f)
 {
 }
 
-plg_shp::ShapeFileConnector::~ShapeFileConnector()
+te::qt::plugins::shp::ShapeFileConnector::~ShapeFileConnector()
 {
 }
 
-void plg_shp::ShapeFileConnector::create(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
   QStringList fileNames = QFileDialog::getOpenFileNames((QWidget*)parent(), tr("Open Shapefile"), QString(""), tr("Esri Shapefile (*.shp);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   for(QStringList::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
   {
-    te_qt::DataSourcePtr ds(new te_qt::DataSource);
+    te::qt::widgets::DataSourcePtr ds(new te::qt::widgets::DataSource);
 
     ds->setAccessDriver("OGR");
 
@@ -81,28 +78,28 @@ void plg_shp::ShapeFileConnector::create(std::list<te_qt::DataSourcePtr>& dataso
 
     ds->setType("SHAPEFILE");
 
-    te_qt::DataSourceManager::getInstance().add(ds);
+    te::qt::widgets::DataSourceManager::getInstance().add(ds);
 
     datasources.push_back(ds);
   }
 }
 
-void plg_shp::ShapeFileConnector::update(std::list<te_qt::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::shp::ShapeFileConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void plg_shp::ShapeFileConnector::remove(std::list<te_qt::DataSourcePtr>& datasources)
+void te::qt::plugins::shp::ShapeFileConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& datasources)
 {
-  for(std::list<te_qt::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
 
 // remove from qt widget manager
-    te_qt::DataSourceManager::getInstance().remove((*it)->getId());
+    te::qt::widgets::DataSourceManager::getInstance().remove((*it)->getId());
 
 //remove from data access manager if one exists
     te::da::DataSourcePtr rds = te::da::DataSourceManager::getInstance().find((*it)->getId());
