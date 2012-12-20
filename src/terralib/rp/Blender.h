@@ -31,6 +31,7 @@
 #include "../raster/Interpolator.h"
 #include "../geometry/GeometricTransformation.h"
 #include "../geometry/Polygon.h"
+#include "../srs/Converter.h"
 
 #include <boost/noncopyable.hpp>
 
@@ -72,6 +73,7 @@ namespace te
           \param pixelScales2 The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param r1ValidDataPolygon A polygon (raster 1 world/projected coords) delimiting the raster region with valid data.
           \param r2ValidDataPolygon A polygon (raster 2 world/projected coords) delimiting the raster region with valid data.
+          \param ignoreRasterSRIDS Raster SRIDS will be ignored and no spatial reference system information will be used when blending.
         */
         Blender( 
           const te::rst::Raster& raster1, 
@@ -87,7 +89,8 @@ namespace te
           const std::vector< double >& pixelOffsets2,
           const std::vector< double >& pixelScales2,
           const te::gm::Polygon& r1ValidDataPolygon,
-          const te::gm::Polygon& r2ValidDataPolygon );
+          const te::gm::Polygon& r2ValidDataPolygon,
+          const bool& ignoreRasterSRIDS );
         
         ~Blender();
         
@@ -119,6 +122,7 @@ namespace te
         typedef void (Blender::*BlendFunctPtr)( const double& line, 
           const double& col, const unsigned int& rasterChannelsVecsIdx, double& value );         
 
+        bool m_ignoreRasterSRIDS; //!< Raster SRIDS will be ignored and no spatial reference system information will be used when blending.
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
         const te::rst::Raster& m_raster1; //!< Input raster 1.
         const te::rst::Raster& m_raster2; //!< Input raster 2.
@@ -134,6 +138,7 @@ namespace te
         std::vector< double > m_pixelScales2; //!< The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
         te::gm::Polygon m_r1ValidDataPolygon; //!< A polygon (raster 1 indexed coords - line, col) delimiting the raster region with valid data.
         te::gm::Polygon m_r2ValidDataPolygon; //!< A polygon (raster 2 indexed coords - line, col) delimiting the raster region with valid data.
+        te::srs::Converter m_convInstance; //!< A SRS converter instance to be used when the rasters SRIDs are not the same.
         
         /*!
           \brief Implementation for NoBlendMethod.

@@ -82,6 +82,8 @@ namespace te
             
             te::rp::Blender::BlendMethod m_blendMethod; //!< The pixel blending method (default: NoBlendMethod).
             
+            bool m_autoEqualize; //!< Auto equalization will be performed using the overlaped image areas (default:true).
+            
             InputParameters();
             
             InputParameters( const InputParameters& );
@@ -151,12 +153,16 @@ namespace te
         
         /*!
           \brief Execute a mosaic of georeferenced images.
+          \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the first raster indexed points (lines/columns).
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
           \param outputRaster Pre-initialized output mosaic raster.
           \note The first sequenced raster will not be processed.
+          \note te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
+          \note te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).          
           \return true if ok, false on errors.
         */
-        bool executeGeoMosaic( const std::vector< te::gm::Polygon >& rastersBBoxes,
+        bool executeGeoMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
+          mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
           te::rst::Raster& outputRaster );
           
         /*!
@@ -165,11 +171,23 @@ namespace te
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
           \param outputRaster Pre-initialized output mosaic raster.
           \note The first sequenced raster will not be processed.
+          \note te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
+          \note te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).
           \return true if ok, false on errors.
         */
         bool executeTiePointsMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
           mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
           te::rst::Raster& outputRaster );          
+          
+        /*!
+          \brief Raster band statistics calcule.
+          \param band Input raster band.
+          \param polygon Restriction polygon over the raster area (world coordinates).
+          \param mean Pixels mean.
+          \param variance Pixels variance.
+        */
+        static void calcBandStatistics( const te::rst::Band& band,
+          const te::gm::Polygon& polygon, double& mean, double& variance );
 
     };
 

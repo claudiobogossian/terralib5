@@ -45,7 +45,8 @@ namespace te
       const std::vector< double >& pixelOffsets2,
       const std::vector< double >& pixelScales2,
       const te::gm::Polygon& r1ValidDataPolygon,
-      const te::gm::Polygon& r2ValidDataPolygon)
+      const te::gm::Polygon& r2ValidDataPolygon,
+      const bool& ignoreRasterSRIDS )
     : m_raster1( raster1 ),
       m_raster2( raster2 ),
       m_raster1Bands( raster1Bands ),
@@ -81,6 +82,12 @@ namespace te
           m_blendFuncPtr = &te::rp::Blender::noBlendMethodImp;
           break;
         }
+      }
+      
+      if( ! ignoreRasterSRIDS )
+      {
+        m_convInstance.setSourceSRID( raster1.getSRID() );
+        m_convInstance.setTargetSRID( raster2.getSRID() );        
       }
       
       // converting polygons from world cooods to indexed ones
