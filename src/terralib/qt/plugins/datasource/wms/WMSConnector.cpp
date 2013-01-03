@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "WMSConnector.h"
 #include "WMSConnectorDialog.h"
 
@@ -48,29 +48,29 @@ te::qt::plugins::wms::WMSConnector::~WMSConnector()
 {
 }
 
-void te::qt::plugins::wms::WMSConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
+void te::qt::plugins::wms::WMSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<WMSConnectorDialog> cdialog(new WMSConnectorDialog(static_cast<QWidget*>(parent())));
 
   cdialog->exec();
 
-  te::qt::widgets::DataSourcePtr ds = cdialog->getDataSource();
+  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
 
   if(ds.get() != 0)
   {
-    te::qt::widgets::DataSourceManager::getInstance().add(ds);
+    te::da::DataSourceInfoManager::getInstance().add(ds);
     datasources.push_back(ds);
   }
 }
 
-void te::qt::plugins::wms::WMSConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wms::WMSConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::plugins::wms::WMSConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::wms::WMSConnector::remove(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

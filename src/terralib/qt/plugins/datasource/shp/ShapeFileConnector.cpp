@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "ShapeFileConnector.h"
 
 // Boost
@@ -47,13 +47,13 @@ te::qt::plugins::shp::ShapeFileConnector::~ShapeFileConnector()
 {
 }
 
-void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
+void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   QStringList fileNames = QFileDialog::getOpenFileNames((QWidget*)parent(), tr("Open Shapefile"), QString(""), tr("Esri Shapefile (*.shp);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   for(QStringList::iterator it = fileNames.begin(); it != fileNames.end(); ++it)
   {
-    te::qt::widgets::DataSourcePtr ds(new te::qt::widgets::DataSource);
+    te::da::DataSourceInfoPtr ds(new te::da::DataSourceInfo);
 
     ds->setAccessDriver("OGR");
 
@@ -78,28 +78,28 @@ void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::qt::widgets:
 
     ds->setType("SHAPEFILE");
 
-    te::qt::widgets::DataSourceManager::getInstance().add(ds);
+    te::da::DataSourceInfoManager::getInstance().add(ds);
 
     datasources.push_back(ds);
   }
 }
 
-void te::qt::plugins::shp::ShapeFileConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::shp::ShapeFileConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::plugins::shp::ShapeFileConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& datasources)
+void te::qt::plugins::shp::ShapeFileConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
 
 // remove from qt widget manager
-    te::qt::widgets::DataSourceManager::getInstance().remove((*it)->getId());
+    te::da::DataSourceInfoManager::getInstance().remove((*it)->getId());
 
 //remove from data access manager if one exists
     te::da::DataSourcePtr rds = te::da::DataSourceManager::getInstance().find((*it)->getId());

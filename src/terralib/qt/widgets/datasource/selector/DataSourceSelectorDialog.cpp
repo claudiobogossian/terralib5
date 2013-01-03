@@ -58,7 +58,7 @@ te::qt::widgets::DataSourceSelectorDialog::~DataSourceSelectorDialog()
 {
 }
 
-const std::list<te::qt::widgets::DataSourcePtr>& te::qt::widgets::DataSourceSelectorDialog::getSelecteds() const
+const std::list<te::da::DataSourceInfoPtr>& te::qt::widgets::DataSourceSelectorDialog::getSelecteds() const
 {
   return m_selecteds;
 }

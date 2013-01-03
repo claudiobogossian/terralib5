@@ -18,88 +18,88 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/core/DataSource.cpp
+  \file terralib/dataaccess/datasource/DataSourceInfo.cpp
 
   \brief A conteiner class for keeping information about a data source.
 */
 
 // TerraLib
-#include "DataSource.h"
+#include "DataSourceInfo.h"
 
-te::qt::widgets::DataSource::DataSource()
+te::da::DataSourceInfo::DataSourceInfo()
 {
 }
 
-te::qt::widgets::DataSource::~DataSource()
+te::da::DataSourceInfo::~DataSourceInfo()
 {
 }
 
-const std::string& te::qt::widgets::DataSource::getId() const
+const std::string& te::da::DataSourceInfo::getId() const
 {
   return m_id;
 }
 
-void te::qt::widgets::DataSource::setId(const std::string& id)
+void te::da::DataSourceInfo::setId(const std::string& id)
 {
   m_id = id;
 }
 
-const std::string& te::qt::widgets::DataSource::getType() const
+const std::string& te::da::DataSourceInfo::getType() const
 {
   return m_dsType;
 }
 
-void te::qt::widgets::DataSource::setType(const std::string& dsType)
+void te::da::DataSourceInfo::setType(const std::string& dsType)
 {
   m_dsType = dsType;
 }
 
-const std::string& te::qt::widgets::DataSource::getAccessDriver() const
+const std::string& te::da::DataSourceInfo::getAccessDriver() const
 {
   return m_accessDriver;
 }
 
-void te::qt::widgets::DataSource::setAccessDriver(const std::string& d)
+void te::da::DataSourceInfo::setAccessDriver(const std::string& d)
 {
   m_accessDriver = d;
 }
 
-const std::string& te::qt::widgets::DataSource::getTitle() const
+const std::string& te::da::DataSourceInfo::getTitle() const
 {
   return m_title;
 }
 
-void te::qt::widgets::DataSource::setTitle(const std::string& title)
+void te::da::DataSourceInfo::setTitle(const std::string& title)
 {
   m_title = title;
 }
 
-const std::string& te::qt::widgets::DataSource::getDescription() const
+const std::string& te::da::DataSourceInfo::getDescription() const
 {
   return m_description;
 }
 
-void te::qt::widgets::DataSource::setDescription(const std::string& d)
+void te::da::DataSourceInfo::setDescription(const std::string& d)
 {
   m_description = d;
 }
 
-const std::map<std::string, std::string>& te::qt::widgets::DataSource::getConnInfo() const
+const std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo() const
 {
   return m_conninfo;
 }
 
-std::map<std::string, std::string>& te::qt::widgets::DataSource::getConnInfo()
+std::map<std::string, std::string>& te::da::DataSourceInfo::getConnInfo()
 {
   return m_conninfo;
 }
 
-void te::qt::widgets::DataSource::setConnInfo(const std::map<std::string, std::string>& conninfo)
+void te::da::DataSourceInfo::setConnInfo(const std::map<std::string, std::string>& conninfo)
 {
   m_conninfo = conninfo;
 }
 
-bool te::qt::widgets::DataSource::operator<(const DataSource& rhs) const
+bool te::da::DataSourceInfo::operator<(const DataSourceInfo& rhs) const
 {
   return m_id < rhs.m_id;
 }

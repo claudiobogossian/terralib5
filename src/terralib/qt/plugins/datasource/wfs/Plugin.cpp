@@ -27,7 +27,7 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "WFSType.h"
 #include "Plugin.h"
@@ -61,7 +61,7 @@ void te::qt::plugins::wfs::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::qt::widgets::DataSourceManager::getInstance().removeByType("WFS");
+  te::da::DataSourceInfoManager::getInstance().removeByType("WFS");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("WFS");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WFS("TerraLib Qt OGC Web Feature Service (WFS) widget shutdown!"));
