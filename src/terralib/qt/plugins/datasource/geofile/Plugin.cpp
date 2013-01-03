@@ -27,7 +27,7 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "GeoFileType.h"
 #include "Plugin.h"
@@ -61,7 +61,7 @@ void te::qt::plugins::geofile::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::qt::widgets::DataSourceManager::getInstance().removeByType("GEOFILE");
+  te::da::DataSourceInfoManager::getInstance().removeByType("GEOFILE");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("GEOFILE");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_GEOFILE("TerraLib Qt GeoFile widget shutdown!"));

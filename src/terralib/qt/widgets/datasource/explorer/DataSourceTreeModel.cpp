@@ -33,7 +33,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
 
-te::qt::widgets::DataSourceTreeModel::DataSourceTreeModel(const std::vector<DataSourcePtr>& datasources, QWidget* parent)
+te::qt::widgets::DataSourceTreeModel::DataSourceTreeModel(const std::vector<te::da::DataSourceInfoPtr>& datasources, QWidget* parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {
@@ -44,7 +44,7 @@ te::qt::widgets::DataSourceTreeModel::DataSourceTreeModel(const std::vector<Data
   }
 }
 
-te::qt::widgets::DataSourceTreeModel::DataSourceTreeModel(const DataSourcePtr& ds, QObject* parent)
+te::qt::widgets::DataSourceTreeModel::DataSourceTreeModel(const te::da::DataSourceInfoPtr& ds, QObject* parent)
   : QAbstractItemModel(parent),
     m_checkable(false)
 {

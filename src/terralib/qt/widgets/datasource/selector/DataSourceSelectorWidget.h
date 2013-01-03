@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_SELECTOR_INTERNAL_DATASOURCESELECTORWIDGET_H
 
 // TerraLib
-#include "../core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../Config.h"
 
 // STL
@@ -81,7 +81,7 @@ namespace te
 
           //void selectDataSourceType(int row);
 
-          std::list<DataSourcePtr> getSelecteds() const;
+          std::list<te::da::DataSourceInfoPtr> getSelecteds() const;
 
         //signals:
 

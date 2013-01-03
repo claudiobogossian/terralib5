@@ -27,8 +27,8 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_ABSTRACTDATASOURCECONNECTOR_H
 
 // TerraLib
-#include "../../../Config.h"
-#include "../core/DataSource.h"
+#include "../../Config.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -55,11 +55,11 @@ namespace te
 
           virtual ~AbstractDataSourceConnector();
 
-          virtual void create(std::list<DataSourcePtr>& datasources) = 0;
+          virtual void create(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
 
-          virtual void update(std::list<DataSourcePtr>& datasources) = 0;
+          virtual void update(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
 
-          virtual void remove(std::list<DataSourcePtr>& datasources) = 0;
+          virtual void remove(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
       }; 
     } // end namespace widgets
   }   // end namespace qt

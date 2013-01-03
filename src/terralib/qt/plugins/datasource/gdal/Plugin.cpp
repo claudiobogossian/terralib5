@@ -27,7 +27,7 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "GDALType.h"
 #include "Plugin.h"
@@ -61,7 +61,7 @@ void te::qt::plugins::gdal::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::qt::widgets::DataSourceManager::getInstance().removeByType("GDAL");
+  te::da::DataSourceInfoManager::getInstance().removeByType("GDAL");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("GDAL");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_GDAL("TerraLib Qt GDAL widget shutdown!"));

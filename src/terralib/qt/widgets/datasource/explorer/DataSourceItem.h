@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASOURCEITEM_H
 
 // TerraLib
-#include "../core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "AbstractDataSourceTreeItem.h"
 
 namespace te
@@ -42,7 +42,7 @@ namespace te
 
         public:
 
-          DataSourceItem(const DataSourcePtr& ds, AbstractDataSourceTreeItem* parent = 0);
+          DataSourceItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent = 0);
 
           ~DataSourceItem();
 
@@ -62,11 +62,11 @@ namespace te
 
           bool setData(const QVariant& value, int role = Qt::EditRole);
 
-          DataSourcePtr getDataSource() const;
+          te::da::DataSourceInfoPtr getDataSource() const;
 
         private:
 
-          DataSourcePtr m_ds;
+          te::da::DataSourceInfoPtr m_ds;
       }; 
     } // end namespace widgets
   }   // end namespace qt

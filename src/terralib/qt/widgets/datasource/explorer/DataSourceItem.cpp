@@ -35,7 +35,7 @@
 #include <QtGui/QMenu>
 #include <QtGui/QWidget>
 
-te::qt::widgets::DataSourceItem::DataSourceItem(const DataSourcePtr& ds, AbstractDataSourceTreeItem* parent)
+te::qt::widgets::DataSourceItem::DataSourceItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),
     m_ds(ds)
 {
@@ -114,7 +114,7 @@ bool te::qt::widgets::DataSourceItem::setData(const QVariant& /*value*/, int /*r
   return false;
 }
 
-te::qt::widgets::DataSourcePtr te::qt::widgets::DataSourceItem::getDataSource() const
+te::da::DataSourceInfoPtr te::qt::widgets::DataSourceItem::getDataSource() const
 {
   return m_ds;
 }

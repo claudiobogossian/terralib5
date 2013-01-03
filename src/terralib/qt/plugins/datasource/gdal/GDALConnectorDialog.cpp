@@ -28,8 +28,8 @@
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../widgets/Exception.h"
-#include "../../../widgets/datasource/core/DataSource.h"
 #include "GDALConnectorDialog.h"
 #include "ui_GDALConnectorDialogForm.h"
 
@@ -61,7 +61,7 @@ te::qt::plugins::gdal::GDALConnectorDialog::~GDALConnectorDialog()
 {
 }
 
-const te::qt::widgets::DataSourcePtr& te::qt::plugins::gdal::GDALConnectorDialog::getDataSource() const
+const te::da::DataSourceInfoPtr& te::qt::plugins::gdal::GDALConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
@@ -71,7 +71,7 @@ const te::da::DataSourcePtr& te::qt::plugins::gdal::GDALConnectorDialog::getDriv
   return m_driver;
 }
 
-void te::qt::plugins::gdal::GDALConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
+void te::qt::plugins::gdal::GDALConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
 {
   m_datasource = ds;
 
@@ -112,7 +112,7 @@ void te::qt::plugins::gdal::GDALConnectorDialog::openPushButtonPressed()
     if(m_datasource.get() == 0)
     {
 // create a new data source based on form data
-      m_datasource.reset(new te::qt::widgets::DataSource);
+      m_datasource.reset(new te::da::DataSourceInfo);
 
       m_datasource->setConnInfo(dsInfo);
 

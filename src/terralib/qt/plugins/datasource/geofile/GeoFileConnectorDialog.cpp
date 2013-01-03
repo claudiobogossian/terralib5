@@ -27,8 +27,8 @@
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../widgets/Exception.h"
-#include "../../../widgets/datasource/core/DataSource.h"
 #include "GeoFileConnectorDialog.h"
 #include "ui_GeoFileConnectorDialogForm.h"
 
@@ -71,18 +71,18 @@ te::qt::plugins::geofile::GeoFileConnectorDialog::~GeoFileConnectorDialog()
 {
 }
 
-const std::list<te::qt::widgets::DataSourcePtr>& te::qt::plugins::geofile::GeoFileConnectorDialog::getDataSources() const
+const std::list<te::da::DataSourceInfoPtr>& te::qt::plugins::geofile::GeoFileConnectorDialog::getDataSources() const
 {
   return m_datasources;
 }
 
-void te::qt::plugins::geofile::GeoFileConnectorDialog::set(const std::list<te::qt::widgets::DataSourcePtr>& datasources)
+void te::qt::plugins::geofile::GeoFileConnectorDialog::set(const std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   m_datasources = datasources;
 
   m_ui->m_datasourceListWidget->clear();
 
-  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = m_datasources.begin(); it != m_datasources.end(); ++it)
+  for(std::list<te::da::DataSourceInfoPtr>::iterator it = m_datasources.begin(); it != m_datasources.end(); ++it)
   {
     QString id = QString::fromStdString((*it)->getId());
     QString title = QString::fromStdString((*it)->getTitle());
@@ -159,7 +159,7 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::addDatasourceToolButtonPr
 
     if(driver.get() != 0)
     {
-      te::qt::widgets::DataSourcePtr nds(new te::qt::widgets::DataSource);
+      te::da::DataSourceInfoPtr nds(new te::da::DataSourceInfo);
 
       nds->setConnInfo(driver->getConnectionInfo());
 
@@ -220,7 +220,7 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::removeDatasourceToolButto
 
   std::string dsId = id.toStdString();
 
-  std::list<te::qt::widgets::DataSourcePtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
+  std::list<te::da::DataSourceInfoPtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
 
   if(it == m_datasources.end())
     return;
@@ -262,7 +262,7 @@ void te::qt::plugins::geofile::GeoFileConnectorDialog::dataSourcePressed(QListWi
 
   std::string dsId = id.toStdString();
 
-  std::list<te::qt::widgets::DataSourcePtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
+  std::list<te::da::DataSourceInfoPtr>::iterator it = std::find_if(m_datasources.begin(), m_datasources.end(), FindById(dsId));
 
   if(it == m_datasources.end())
     return;
@@ -328,7 +328,7 @@ te::da::DataSourcePtr te::qt::plugins::geofile::GeoFileConnectorDialog::test()
   return ds;
 }
 
-bool te::qt::plugins::geofile::GeoFileConnectorDialog::FindById::operator()(const te::qt::widgets::DataSourcePtr& ds) const
+bool te::qt::plugins::geofile::GeoFileConnectorDialog::FindById::operator()(const te::da::DataSourceInfoPtr& ds) const
 {
   return (ds->getId() == m_id);
 }

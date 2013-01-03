@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
 #include "GeoFileConnector.h"
 #include "GeoFileConnectorDialog.h"
 
@@ -48,7 +48,7 @@ te::qt::plugins::geofile::GeoFileConnector::~GeoFileConnector()
 {
 }
 
-void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::qt::widgets::DataSourcePtr>& datasources)
+void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<GeoFileConnectorDialog> cdialog(new GeoFileConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -59,20 +59,20 @@ void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::qt::widget
 
   datasources = cdialog->getDataSources();
 
-  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
-    te::qt::widgets::DataSourceManager::getInstance().add(*it);
+  for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+    te::da::DataSourceInfoManager::getInstance().add(*it);
 }
 
-void te::qt::plugins::geofile::GeoFileConnector::update(std::list<te::qt::widgets::DataSourcePtr>& /*datasources*/)
+void te::qt::plugins::geofile::GeoFileConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::plugins::geofile::GeoFileConnector::remove(std::list<te::qt::widgets::DataSourcePtr>& datasources)
+void te::qt::plugins::geofile::GeoFileConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  for(std::list<te::qt::widgets::DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+  for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
@@ -86,7 +86,7 @@ void te::qt::plugins::geofile::GeoFileConnector::remove(std::list<te::qt::widget
     }
 
 // then remove data source
-    te::qt::widgets::DataSourceManager::getInstance().remove((*it)->getId());
+    te::da::DataSourceInfoManager::getInstance().remove((*it)->getId());
   }
 }
 

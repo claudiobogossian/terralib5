@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/Definitions.h"
-#include "../../../widgets/datasource/core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL
 #include <memory>
@@ -61,11 +61,11 @@ namespace te
 
             ~GDALConnectorDialog();
 
-            const te::qt::widgets::DataSourcePtr& getDataSource() const;
+            const te::da::DataSourceInfoPtr& getDataSource() const;
 
             const te::da::DataSourcePtr& getDriver() const;
 
-            void set(const te::qt::widgets::DataSourcePtr& ds);
+            void set(const te::da::DataSourceInfoPtr& ds);
 
           public slots:
 
@@ -86,7 +86,7 @@ namespace te
           private:
 
             std::auto_ptr<Ui::GDALConnectorDialogForm> m_ui;
-            te::qt::widgets::DataSourcePtr m_datasource;
+            te::da::DataSourceInfoPtr m_datasource;
             te::da::DataSourcePtr m_driver;
         };
 
