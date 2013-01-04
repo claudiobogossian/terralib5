@@ -116,6 +116,21 @@ namespace te
         */
         virtual void directMap( const GTParameters& params, const double& pt1X, 
           const double& pt1Y, double& pt2X, double& pt2Y ) const = 0;        
+          
+        /*!
+          \brief Direct mapping ( from pt1 space into pt2 space ).
+
+          \param pt1X pt1 X coordinate.
+          \param pt1Y pt1 Y coordinate.
+          \param pt2X pt2 X coordinate.
+          \param pt2Y pt2 Y coordinate.
+        */
+        inline void directMap( const double& pt1X, 
+          const double& pt1Y, double& pt2X, double& pt2Y ) const
+        {
+          assert( isValid( m_internalParameters ) );
+          directMap( m_internalParameters, pt1X, pt1Y, pt2X, pt2Y );
+        };
 
         /*!
           \brief Direct mapping ( from pt1 space into pt2 space ).
@@ -152,6 +167,21 @@ namespace te
         */
         virtual void inverseMap( const GTParameters& params, const double& pt2X, 
           const double& pt2Y, double& pt1X, double& pt1Y ) const = 0;        
+          
+        /*!
+          \brief Inverse mapping ( from pt2 space into pt1 space ).
+
+          \param pt1X pt1 X coordinate.
+          \param pt1Y pt1 Y coordinate.
+          \param pt2X pt2 X coordinate.
+          \param pt2Y pt2 Y coordinate.
+        */
+        inline void inverseMap( const double& pt2X, 
+          const double& pt2Y, double& pt1X, double& pt1Y ) const
+        {
+          assert( isValid( m_internalParameters ) );
+          inverseMap( m_internalParameters, pt2X, pt2Y, pt1X, pt1Y );
+        };
 
         /*!
           \brief Inverse mapping ( from pt2 space into pt1 space ).
@@ -162,7 +192,7 @@ namespace te
         */
         inline void inverseMap( const GTParameters& params, const Coord2D& pt2, Coord2D& pt1 ) const
         {
-          return inverseMap( params, pt2.x, pt2.y, pt1.x, pt1.y );
+          inverseMap( params, pt2.x, pt2.y, pt1.x, pt1.y );
         };
 
         /*!
