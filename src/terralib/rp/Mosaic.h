@@ -153,7 +153,6 @@ namespace te
         
         /*!
           \brief Execute a mosaic of georeferenced images.
-          \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the first raster indexed points (lines/columns).
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
           \param outputRaster Pre-initialized output mosaic raster.
           \note The first sequenced raster will not be processed.
@@ -161,8 +160,7 @@ namespace te
           \note te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).          
           \return true if ok, false on errors.
         */
-        bool executeGeoMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
-          mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
+        bool executeGeoMosaic( const std::vector< te::gm::Polygon >& rastersBBoxes,
           te::rst::Raster& outputRaster );
           
         /*!

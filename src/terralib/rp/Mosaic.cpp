@@ -594,7 +594,7 @@ namespace te
         return executeTiePointsMosaic( mosaicGeomTransfms, rastersBBoxes,
           cachedRasterInstance );
       else
-        return executeGeoMosaic( mosaicGeomTransfms, rastersBBoxes, cachedRasterInstance);
+        return executeGeoMosaic( rastersBBoxes, cachedRasterInstance);
     }
 
     void Mosaic::reset() throw( te::rp::Exception )
@@ -661,17 +661,12 @@ namespace te
     }
     
     bool Mosaic::executeGeoMosaic( 
-      const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
-        mosaicGeomTransfms,
       const std::vector< te::gm::Polygon >& rastersBBoxes,
       te::rst::Raster& outputRaster )
     {
       TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes.size() == 
         m_inputParameters.m_feederRasterPtr->getObjsCount(),
         "Rasters bounding boxes number mismatch" );
-      TERP_DEBUG_TRUE_OR_THROW( mosaicGeomTransfms.size() ==
-        m_inputParameters.m_feederRasterPtr->getObjsCount() - 1,
-        "Invalid number of mosaic geometric transformations" );
       
       // Initiating the mosaic boxes
       
@@ -934,22 +929,25 @@ namespace te
             
             // blending
             
-            te::rp::Blender blenderInstance( 
+            te::rp::Blender blenderInstance;
+            
+            TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize( 
               outputRaster,
               outputRasterBands,
               *inputRasterPtr,
               m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
               m_inputParameters.m_blendMethod,
+              te::rst::Interpolator::NearestNeighbor,
               m_inputParameters.m_interpMethod,
-              *mosaicGeomTransfms[ inputRasterIdx - 1 ],
               m_inputParameters.m_noDataValue,
+              true,
               outputRasterOffsets,
               outputRasterScales,
               inputRasterOffsets,
               inputRasterScales,
-              *(te::gm::Polygon*)overlappedResult->getGeometryN( overlappedResultIdx ),
-              *overlappedResultUnderCurrentSRID,
-              false );
+              (te::gm::Polygon*)overlappedResult->getGeometryN( overlappedResultIdx ),
+              overlappedResultUnderCurrentSRID.get(),
+              0 ), "Blender initiazing error" );
               
             for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
               m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ; 
