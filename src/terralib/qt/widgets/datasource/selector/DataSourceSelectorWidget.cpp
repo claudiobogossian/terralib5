@@ -27,7 +27,7 @@
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
 #include "../connector/AbstractDataSourceConnector.h"
-#include "../core/DataSourceManager.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../core/DataSourceType.h"
 #include "../core/DataSourceTypeManager.h"
 #include "ui_DataSourceSelectorWidgetForm.h"
@@ -136,9 +136,9 @@ void te::qt::widgets::DataSourceSelectorWidget::setButtonEnabled(int button, boo
 //  //m_ui->m_datasourceTypeListWidget->setSele
 //}
 
-std::list<te::qt::widgets::DataSourcePtr> te::qt::widgets::DataSourceSelectorWidget::getSelecteds() const
+std::list<te::da::DataSourceInfoPtr> te::qt::widgets::DataSourceSelectorWidget::getSelecteds() const
 {
-  std::list<DataSourcePtr> selecteds;
+  std::list<te::da::DataSourceInfoPtr> selecteds;
 
   QList<QListWidgetItem*> items = m_ui->m_datasourceListWidget->selectedItems();
 
@@ -153,7 +153,7 @@ std::list<te::qt::widgets::DataSourcePtr> te::qt::widgets::DataSourceSelectorWid
     if(id.isEmpty())
       throw Exception(TR_QT_WIDGETS("Selected data source has no identification!"));
 
-    DataSourcePtr selected(DataSourceManager::getInstance().get(id.toStdString()));
+    te::da::DataSourceInfoPtr selected(te::da::DataSourceInfoManager::getInstance().get(id.toStdString()));
 
     if(selected.get() == 0)
       throw Exception(TR_QT_WIDGETS("Could not find selected data source!"));
@@ -195,11 +195,11 @@ void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
     if(connector == 0)
       throw Exception(TR_QT_WIDGETS("Wrong type of object for adding a new data source!"));
 
-    std::list<DataSourcePtr> datasources;
+    std::list<te::da::DataSourceInfoPtr> datasources;
 
     connector->create(datasources);
 
-    for(std::list<DataSourcePtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+    for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
     {
       if(it->get() == 0)
         return;
@@ -227,7 +227,7 @@ void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
 
 void te::qt::widgets::DataSourceSelectorWidget::removeDataSourcePushButtonPressed()
 {
-  std::list<DataSourcePtr> selecteds = getSelecteds();
+  std::list<te::da::DataSourceInfoPtr> selecteds = getSelecteds();
 
   if(selecteds.empty())
     return;
@@ -310,7 +310,7 @@ void te::qt::widgets::DataSourceSelectorWidget::removeDataSourcePushButtonPresse
 
 void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed()
 {
-  std::list<DataSourcePtr> selecteds = getSelecteds();
+  std::list<te::da::DataSourceInfoPtr> selecteds = getSelecteds();
 
   if(selecteds.empty())
     return;
@@ -356,7 +356,7 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
       if(dsId.isEmpty())
         throw Exception(TR_QT_WIDGETS("Invalid data source id!"));
 
-      DataSourcePtr ds = DataSourceManager::getInstance().get(dsId.toStdString());
+      te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(dsId.toStdString());
 
       item->setText(QString::fromStdString(ds->getTitle()));
     }
@@ -413,13 +413,13 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourceTypePressed(QListWidge
 
   m_ui->m_datasourceTypeTitleLabel->setText(item->text());
 
-  std::vector<DataSourcePtr> datasources;
+  std::vector<te::da::DataSourceInfoPtr> datasources;
 
-  DataSourceManager::getInstance().getByType(dsTypeName.toStdString(), datasources);
+  te::da::DataSourceInfoManager::getInstance().getByType(dsTypeName.toStdString(), datasources);
 
   for(std::size_t i = 0; i < datasources.size(); ++i)
   {
-    const DataSourcePtr& datasource = datasources[i];
+    const te::da::DataSourceInfoPtr& datasource = datasources[i];
 
     if(datasource.get() == 0)
       continue;
@@ -466,7 +466,7 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourcePressed(QListWidgetIte
   if(id.isEmpty())
     return;
 
-  DataSourcePtr ds = DataSourceManager::getInstance().get(id.toStdString());
+  te::da::DataSourceInfoPtr ds = te::da::DataSourceInfoManager::getInstance().get(id.toStdString());
 
   if(ds.get() == 0)
   {

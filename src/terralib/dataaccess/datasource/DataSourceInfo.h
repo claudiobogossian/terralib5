@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/core/DataSource.h
+  \file terralib/dataaccess/datasource/DataSourceInfo.h
 
   \brief A conteiner class for keeping information about a data source.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_DATASOURCE_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_DATASOURCE_H
+#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H
+#define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 // STL
 #include <map>
@@ -39,12 +39,10 @@
 
 namespace te
 {
-  namespace qt
+  namespace da
   {
-    namespace widgets
-    {
       /*!
-        \class DataSource
+        \class DataSourceInfo
 
         \brief A class that represents a data source component.
 
@@ -54,13 +52,13 @@ namespace te
         diferent drivers to access data. It will depend on user preferences and dialogs used to create
         the data source.
       */
-      class TEQTWIDGETSEXPORT DataSource
+      class TEDATAACCESSEXPORT DataSourceInfo
       {
         public:
 
-          DataSource();
+          DataSourceInfo();
 
-          ~DataSource();
+          ~DataSourceInfo();
 
           const std::string& getId() const;
 
@@ -88,7 +86,7 @@ namespace te
 
           void setConnInfo(const std::map<std::string, std::string>& conninfo);
 
-          bool operator<(const DataSource& rhs) const;
+          bool operator<(const DataSourceInfo& rhs) const;
 
         private:
 
@@ -100,9 +98,9 @@ namespace te
           std::map<std::string, std::string> m_conninfo;
       }; 
 
-      typedef boost::shared_ptr<DataSource> DataSourcePtr;
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+      typedef boost::shared_ptr<DataSourceInfo> DataSourceInfoPtr;
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_DATASOURCE_H
+  }// end namespace da
+}  // end namespace te
+
+#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFO_H

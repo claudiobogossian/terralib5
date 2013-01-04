@@ -31,10 +31,10 @@
 //#include "../../../../dataaccess/datasource/DataSourceCatalog.h"
 //#include "../../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 //#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
 #include "../../Exception.h"
-#include "../core/DataSource.h"
 #include "DataSetGroupItem.h"
 #include "DataSetItem.h"
 #include "DataSourceItem.h"
@@ -47,7 +47,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
 
-te::qt::widgets::DataSetGroupItem::DataSetGroupItem(const DataSourcePtr& ds, AbstractDataSourceTreeItem* parent)
+te::qt::widgets::DataSetGroupItem::DataSetGroupItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent)
   : AbstractDataSourceTreeItem(parent),
     m_ds(ds),
     m_checked(false),

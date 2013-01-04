@@ -39,7 +39,7 @@ namespace te
   {
     TESERIALIZATIONEXPORT void ReadDataSource(const std::string& datasourcesFileName);
 
-    TESERIALIZATIONEXPORT te::qt::widgets::DataSource* ReadDataSource(te::xml::Reader& reader);
+    TESERIALIZATIONEXPORT te::da::DataSourceInfo* ReadDataSource(te::xml::Reader& reader);
 
   } // end namespace serialize
 }   // end namespace te

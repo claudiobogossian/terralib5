@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../../../qt/widgets/datasource/core/DataSource.h"
-#include "../../../qt/widgets/datasource/core/DataSourceManager.h"
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
 #include "../../Exception.h"
@@ -59,17 +59,17 @@ void te::serialize::ReadDataSource(const std::string& datasourcesFileName)
   while((xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "DataSource"))
   {
-    te::qt::widgets::DataSourcePtr ds(ReadDataSource(*xmlReader));
+    te::da::DataSourceInfoPtr ds(ReadDataSource(*xmlReader));
 
-    te::qt::widgets::DataSourceManager::getInstance().add(ds);
+    te::da::DataSourceInfoManager::getInstance().add(ds);
   }
 
   return;
 }
 
-te::qt::widgets::DataSource* te::serialize::ReadDataSource(te::xml::Reader& reader)
+te::da::DataSourceInfo* te::serialize::ReadDataSource(te::xml::Reader& reader)
 {
-  std::auto_ptr<te::qt::widgets::DataSource> ds(new te::qt::widgets::DataSource);
+  std::auto_ptr<te::da::DataSourceInfo> ds(new te::da::DataSourceInfo);
 
   ds->setId(reader.getAttr(0));
   ds->setType(reader.getAttr(1));  

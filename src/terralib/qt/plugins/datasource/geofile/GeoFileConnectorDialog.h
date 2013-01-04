@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/Definitions.h"
-#include "../../../widgets/datasource/core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL
 #include <memory>
@@ -63,9 +63,9 @@ namespace te
 
             ~GeoFileConnectorDialog();
 
-            const std::list<te::qt::widgets::DataSourcePtr>& getDataSources() const;
+            const std::list<te::da::DataSourceInfoPtr>& getDataSources() const;
 
-            void set(const std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void set(const std::list<te::da::DataSourceInfoPtr>& datasources);
 
           protected slots:
 
@@ -100,11 +100,11 @@ namespace te
               {
               }
 
-              bool operator()(const te::qt::widgets::DataSourcePtr& ds) const; 
+              bool operator()(const te::da::DataSourceInfoPtr& ds) const; 
             };
 
             std::auto_ptr<Ui::GeoFileConnectorDialogForm> m_ui;
-            std::list<te::qt::widgets::DataSourcePtr> m_datasources;
+            std::list<te::da::DataSourceInfoPtr> m_datasources;
         };
 
       } // end namespace geofile

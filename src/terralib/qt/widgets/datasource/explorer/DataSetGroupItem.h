@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASETGROUPITEM_H
 
 // TerraLib
-#include "../core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "AbstractDataSourceTreeItem.h"
 
 namespace te
@@ -42,7 +42,7 @@ namespace te
 
         public:
 
-          DataSetGroupItem(const DataSourcePtr& ds, AbstractDataSourceTreeItem* parent = 0);
+          DataSetGroupItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent = 0);
 
           ~DataSetGroupItem();
 
@@ -66,7 +66,7 @@ namespace te
 
         private:
 
-          DataSourcePtr m_ds;
+          te::da::DataSourceInfoPtr m_ds;
           bool m_checked;
           mutable bool m_isInvalid;
       }; 

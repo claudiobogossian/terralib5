@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/core/DataSourceManager.h
+  \file terralib/dataaccess/datasource/DataSourceInfoManager.h
 
   \brief A singleton to keep all the registered data sources.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_DATASOURCEMANAGER_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_DATASOURCEMANAGER_H
+#ifndef __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFOMANAGER_H
+#define __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFOMANAGER_H
 
 // TerraLib
-#include "../../../../common/Singleton.h"
-#include "DataSource.h"
+#include "../../common/Singleton.h"
+#include "DataSourceInfo.h"
 
 // STL
 #include <map>
@@ -37,35 +37,31 @@
 
 namespace te
 {
-  namespace qt
+  namespace da
   {
-    namespace widgets
-    {
       /*!
-        \class DataSourceManager
+        \class DataSourceInfoManager
 
         \brief A singleton to keep all the registered data sources.
-
-        \todo Derivar DataSourceManager e DataSource a partir de QObject e emitir sinais como no caso do antigo DataSourceInfo!
       */
-      class TEQTWIDGETSEXPORT DataSourceManager : public te::common::Singleton<DataSourceManager>
+      class TEDATAACCESSEXPORT DataSourceInfoManager : public te::common::Singleton<DataSourceInfoManager>
       {
-        friend class te::common::Singleton<DataSourceManager>;
+        friend class te::common::Singleton<DataSourceInfoManager>;
 
         public:
 
-          typedef std::map<std::string, DataSourcePtr>::const_iterator const_iterator;
-          typedef std::map<std::string, DataSourcePtr>::iterator iterator;
+          typedef std::map<std::string, DataSourceInfoPtr>::const_iterator const_iterator;
+          typedef std::map<std::string, DataSourceInfoPtr>::iterator iterator;
 
-          DataSourcePtr get(const std::string& id) const;
+          DataSourceInfoPtr get(const std::string& id) const;
 
-          void add(const DataSourcePtr& ds);
+          void add(const DataSourceInfoPtr& ds);
 
           void remove(const std::string& id);
 
           void removeByType(const std::string& dsTypeName);
 
-          void getByType(const std::string& dsTypeName, std::vector<DataSourcePtr>& datasources) const;
+          void getByType(const std::string& dsTypeName, std::vector<DataSourceInfoPtr>& datasources) const;
 
           std::size_t size() const;
 
@@ -79,17 +75,16 @@ namespace te
 
         protected:
 
-          DataSourceManager();
+          DataSourceInfoManager();
 
-          ~DataSourceManager();
+          ~DataSourceInfoManager();
 
         private:
 
-          std::map<std::string, DataSourcePtr> m_datasources;
+          std::map<std::string, DataSourceInfoPtr> m_datasources;
       }; 
 
-    } // end namespace widgets
-  }   // end namespace qt
+  }   // end namespace da
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_CORE_INTERNAL_DATASOURCEMANAGER_H
+#endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASOURCEINFOMANAGER_H

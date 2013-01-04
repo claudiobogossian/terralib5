@@ -27,7 +27,7 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "WMSType.h"
 #include "Plugin.h"
@@ -61,7 +61,7 @@ void te::qt::plugins::wms::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::qt::widgets::DataSourceManager::getInstance().removeByType("WMS");
+  te::da::DataSourceInfoManager::getInstance().removeByType("WMS");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("WMS");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WMS("TerraLib Qt OGC Web Map Service (WMS) widget shutdown!"));
