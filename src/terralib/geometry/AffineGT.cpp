@@ -55,29 +55,29 @@ bool te::gm::AffineGT::isValid( const GTParameters& params ) const
     ( params.m_inverseParameters.size() == 6 ) );
 }
 
-void te::gm::AffineGT::directMap( const GTParameters& params, const Coord2D& pt1, 
-  Coord2D& pt2 ) const
+void te::gm::AffineGT::directMap( const GTParameters& params, const double& pt1X, 
+  const double& pt1Y, double& pt2X, double& pt2Y ) const
 {
   assert( isValid( params ) );
   
-  pt2.x = ( params.m_directParameters[0] * pt1.x  ) + 
-          ( params.m_directParameters[1] * pt1.y ) + 
+  pt2X = ( params.m_directParameters[0] * pt1X  ) + 
+          ( params.m_directParameters[1] * pt1Y ) + 
             params.m_directParameters[2];
-  pt2.y = ( params.m_directParameters[3] * pt1.x ) + 
-          ( params.m_directParameters[4] * pt1.y ) + 
+  pt2Y = ( params.m_directParameters[3] * pt1X ) + 
+          ( params.m_directParameters[4] * pt1Y ) + 
             params.m_directParameters[5];  
 }
 
-void te::gm::AffineGT::inverseMap( const GTParameters& params, const Coord2D& pt2, 
-  Coord2D& pt1 ) const
+void te::gm::AffineGT::inverseMap( const GTParameters& params, const double& pt2X, 
+          const double& pt2Y, double& pt1X, double& pt1Y ) const
 {
   assert( isValid( params ) );
 
-  pt1.x = ( params.m_inverseParameters[0] * pt2.x  ) +
-          ( params.m_inverseParameters[1] * pt2.y  ) + 
+  pt1X = ( params.m_inverseParameters[0] * pt2X  ) +
+          ( params.m_inverseParameters[1] * pt2Y  ) + 
             params.m_inverseParameters[2];
-  pt1.y = ( params.m_inverseParameters[3] * pt2.x ) + 
-          ( params.m_inverseParameters[4] * pt2.y ) + 
+  pt1Y = ( params.m_inverseParameters[3] * pt2X ) + 
+          ( params.m_inverseParameters[4] * pt2Y ) + 
             params.m_inverseParameters[5]; 
 }
           
