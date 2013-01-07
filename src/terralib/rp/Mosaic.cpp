@@ -76,6 +76,7 @@ namespace te
       m_geomTransfName = "Affine";
       m_interpMethod = te::rst::Interpolator::NearestNeighbor;
       m_noDataValue = 0.0;
+      m_forceInputNoDataValue = false;
       m_blendMethod = te::rp::Blender::NoBlendMethod;
       m_autoEqualize = true;
     }
@@ -91,6 +92,7 @@ namespace te
       m_geomTransfName = params.m_geomTransfName;
       m_interpMethod = params.m_interpMethod;
       m_noDataValue = params.m_noDataValue;
+      m_forceInputNoDataValue = params.m_forceInputNoDataValue;
       m_blendMethod = params.m_blendMethod;
       m_autoEqualize = params.m_autoEqualize;
 
@@ -566,7 +568,8 @@ namespace te
         {
           inputBandIdx =  m_inputParameters.m_inputRastersBands[ 0 ][ 
             inputRastersBandsIdx ] ;
-          bandNoDataValue = inputRasterPtr->getBand( inputBandIdx
+          bandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
+            m_inputParameters.m_noDataValue : inputRasterPtr->getBand( inputBandIdx
             )->getProperty()->m_noDataValue;
           te::rst::Band& outBand = 
             (*cachedRasterInstance.getBand( inputRastersBandsIdx ));
@@ -675,7 +678,7 @@ namespace te
       
       // globals
       
-      te::rst::Raster const* inputRasterPtr = 0;
+      te::rst::Raster const* nonCachedInputRasterPtr = 0;
       unsigned int inputRasterIdx = 0;
       std::auto_ptr< te::gm::MultiPolygon > overlappedResult; // under the mosaic SRID
       std::auto_ptr< te::gm::MultiPolygon > nonOverlappedResult; // under the mosaic SRID
@@ -699,22 +702,24 @@ namespace te
       
       // iterating over the other rasters
       
-      while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
+      while( ( nonCachedInputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
       {
         inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
         
-        const te::rst::Grid& inputGrid = (*inputRasterPtr->getGrid());
+        te::mem::CachedRaster cachedInputRaster( *nonCachedInputRasterPtr, 25, 0 );
+        
+        const te::rst::Grid& inputGrid = (*cachedInputRaster.getGrid());
         
         // reprojection issues
         
         bool mustReproject = false;
         te::srs::Converter convInstance;
         
-        if( outputRaster.getSRID() != inputRasterPtr->getSRID() )
+        if( outputRaster.getSRID() != cachedInputRaster.getSRID() )
         {
           mustReproject = true;
           convInstance.setSourceSRID( outputRaster.getSRID() );
-          convInstance.setTargetSRID( inputRasterPtr->getSRID() );
+          convInstance.setTargetSRID( cachedInputRaster.getSRID() );
         }
         
         // calculating the overlapped image area
@@ -795,7 +800,7 @@ namespace te
         
         if( nonOverlappedResult.get() )
         {
-          te::rst::Interpolator interpInstance( inputRasterPtr, 
+          te::rst::Interpolator interpInstance( &cachedInputRaster, 
             m_inputParameters.m_interpMethod );           
           
           for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
@@ -807,6 +812,10 @@ namespace te
             te::rst::Band& outputBand = (*outputRaster.getBand( inputRastersBandsIdx ));
             const std::size_t nonOverlappednResultSize = 
               nonOverlappedResult->getNumGeometries();
+            const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
+              m_inputParameters.m_noDataValue : cachedInputRaster.getBand( 
+              inputBandIdx )->getProperty()->m_noDataValue;
+            const double& outputBandNoDataValue = m_inputParameters.m_noDataValue;
             
             for( unsigned int nonOverlappednResultIdx = 0 ; nonOverlappednResultIdx < nonOverlappednResultSize ;
               ++nonOverlappednResultIdx )
@@ -824,7 +833,7 @@ namespace te
               
               te::rp::PolygonIterator< double > itB = te::rp::PolygonIterator< double >::begin( &outputBand,
                 (te::gm::Polygon const*)nonOverlappedResult->getGeometryN( nonOverlappednResultIdx ) );
-              te::rp::PolygonIterator< double > itE = te::rp::PolygonIterator< double >::end( &outputBand,
+              const te::rp::PolygonIterator< double > itE = te::rp::PolygonIterator< double >::end( &outputBand,
                 (te::gm::Polygon const*)nonOverlappedResult->getGeometryN( nonOverlappednResultIdx ) );              
               
               if( mustReproject )
@@ -842,7 +851,10 @@ namespace te
                   
                   interpInstance.getValue( inputCol, inputRow, pixelValue, inputBandIdx );
                   
-                  outputBand.setValue( outputCol, outputRow, pixelValue );
+                  if( pixelValue.real() == inputBandNoDataValue )
+                    outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
+                  else
+                    outputBand.setValue( outputCol, outputRow, pixelValue );
                   
                   ++itB;
                 }
@@ -859,7 +871,10 @@ namespace te
                   
                   interpInstance.getValue( inputCol, inputRow, pixelValue, inputBandIdx );
                   
-                  outputBand.setValue( outputCol, outputRow, pixelValue );
+                  if( pixelValue.real() == inputBandNoDataValue )
+                    outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
+                  else
+                    outputBand.setValue( outputCol, outputRow, pixelValue );                  
                   
                   ++itB;
                 }
@@ -882,7 +897,7 @@ namespace te
             std::auto_ptr< te::gm::Polygon > overlappedResultUnderCurrentSRID(
               (te::gm::Polygon*)overlappedResult->getGeometryN( overlappedResultIdx )->clone() );
             if( mustReproject )
-              overlappedResultUnderCurrentSRID->transform( inputRasterPtr->getSRID() );            
+              overlappedResultUnderCurrentSRID->transform( cachedInputRaster.getSRID() );            
             
             // calculating the pixels scales and pixel offsets
 
@@ -904,9 +919,13 @@ namespace te
                   inputRastersBandsIdx ];
                 
                 calcBandStatistics( (*outputRaster.getBand( inputRastersBandsIdx ) ), 
+                  false,
+                  0,
                   *((te::gm::Polygon*)overlappedResult->getGeometryN( overlappedResultIdx ) ), 
                   outputRasterMean, outputRasterVariance );                  
-                calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ), 
+                calcBandStatistics( (*cachedInputRaster.getBand( inputBandIdx ) ), 
+                  m_inputParameters.m_forceInputNoDataValue,
+                  m_inputParameters.m_noDataValue,
                   *overlappedResultUnderCurrentSRID, currentRasterMean, 
                   currentRasterVariance );
                   
@@ -934,13 +953,13 @@ namespace te
             TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize( 
               outputRaster,
               outputRasterBands,
-              *inputRasterPtr,
+              cachedInputRaster,
               m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
               m_inputParameters.m_blendMethod,
               te::rst::Interpolator::NearestNeighbor,
               m_inputParameters.m_interpMethod,
               m_inputParameters.m_noDataValue,
-              true,
+              m_inputParameters.m_forceInputNoDataValue,
               outputRasterOffsets,
               outputRasterScales,
               inputRasterOffsets,
@@ -960,7 +979,7 @@ namespace te
                 
               te::rp::PolygonIterator< double > itB = te::rp::PolygonIterator< double >::begin( &outputBand,
                 (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) );
-              te::rp::PolygonIterator< double > itE = te::rp::PolygonIterator< double >::end( &outputBand,
+              const te::rp::PolygonIterator< double > itE = te::rp::PolygonIterator< double >::end( &outputBand,
                 (te::gm::Polygon const*)overlappedResult->getGeometryN( overlappedResultIdx ) ); 
                 
               while( itB != itE )
@@ -996,9 +1015,65 @@ namespace te
     } 
     
     void Mosaic::calcBandStatistics( const te::rst::Band& band,
+      const bool& forceNoDataValue,
+      const double& noDataValue,
       const te::gm::Polygon& polygon, double& mean, double& variance )
     {
+      mean = 0;
+      variance = 0;
       
+      double internalNoDataValue = 0;
+      if( forceNoDataValue )
+        internalNoDataValue = noDataValue;
+      else
+        internalNoDataValue = band.getProperty()->m_noDataValue;
+      
+      double pixelsNumber = 0;
+      double value = 0;      
+      
+      {
+        te::rp::PolygonIterator< double > itB = te::rp::PolygonIterator< double >::begin( &band,
+          &polygon );
+        const te::rp::PolygonIterator< double > itE = te::rp::PolygonIterator< double >::end( &band,
+          &polygon );
+
+          
+        while( itB != itE )
+        {
+          value = itB.operator*();
+          
+          if( value != internalNoDataValue )
+          {
+            mean += value;
+            ++pixelsNumber;
+          }
+          
+          ++itB;
+        }
+      }
+      
+      if( pixelsNumber != 0.0 )
+      {
+        mean /= pixelsNumber;
+      
+        te::rp::PolygonIterator< double > itB = te::rp::PolygonIterator< double >::begin( &band,
+          &polygon );
+        const te::rp::PolygonIterator< double > itE = te::rp::PolygonIterator< double >::end( &band,
+          &polygon );
+          
+        while( itB != itE )
+        {
+          value = itB.operator*();
+          
+          if( value != internalNoDataValue )
+          {
+            variance += ( ( value - mean ) * ( value - mean ) ) / pixelsNumber;
+          }
+          
+          ++itB;
+        }
+      }
+        
     }
 
   } // end namespace rp

@@ -80,6 +80,8 @@ namespace te
             
             double m_noDataValue; //!< The pixel value used where no raster data is avaliable (defaul:0).
             
+            bool m_forceInputNoDataValue; //!< If true, m_noDataValue will be used as the no-data value for input rasters (defalt:false).
+            
             te::rp::Blender::BlendMethod m_blendMethod; //!< The pixel blending method (default: NoBlendMethod).
             
             bool m_autoEqualize; //!< Auto equalization will be performed using the overlaped image areas (default:true).
@@ -180,11 +182,15 @@ namespace te
         /*!
           \brief Raster band statistics calcule.
           \param band Input raster band.
+          \param forceNoDataValue Force the noDataValue to be used as the band no-data value.
+          \param noDataValue The no-data value to use.
           \param polygon Restriction polygon over the raster area (world coordinates).
           \param mean Pixels mean.
           \param variance Pixels variance.
         */
         static void calcBandStatistics( const te::rst::Band& band,
+          const bool& forceNoDataValue,
+          const double& noDataValue,
           const te::gm::Polygon& polygon, double& mean, double& variance );
 
     };

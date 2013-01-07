@@ -53,7 +53,7 @@ namespace te
       const te::rst::Interpolator::Method& interpMethod1,
       const te::rst::Interpolator::Method& interpMethod2,
       const double& noDataValue,
-      const bool forceNoDataValue,
+      const bool forceInputNoDataValue,
       const std::vector< double >& pixelOffsets1,
       const std::vector< double >& pixelScales1,
       const std::vector< double >& pixelOffsets2,
@@ -214,8 +214,8 @@ namespace te
           rasterBandsIdx ] )->getProperty()->m_noDataValue );            
       }
       
-      m_noDataValue = noDataValue;
-      m_forceNoDataValue = forceNoDataValue;
+      m_outputNoDataValue = noDataValue;
+      m_forceInputNoDataValue = forceInputNoDataValue;
       
       // defining raster bands
       
@@ -257,8 +257,8 @@ namespace te
       m_geomTransformationPtr = 0;
       m_interpMethod1 = te::rst::Interpolator::NearestNeighbor;
       m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
-      m_noDataValue = 0;
-      m_forceNoDataValue = false;
+      m_outputNoDataValue = 0;
+      m_forceInputNoDataValue = false;
       m_interp1 = 0;
       m_interp2 = 0;      
     };    
@@ -295,7 +295,7 @@ namespace te
         m_getBlendedValue_Point1Indexed.setY( col );
         if( ! m_getBlendedValue_Point1Indexed.within( m_r1ValidDataPolygonPtr ) )
         {
-          value = m_noDataValue;
+          value = m_outputNoDataValue;
           return;
         }
       }
@@ -329,7 +329,7 @@ namespace te
         m_getBlendedValue_Point2Indexed.setY( m_getBlendedValue_Point2Line );
         if( ! m_getBlendedValue_Point2Indexed.within( m_r2ValidDataPolygonPtr ) )
         {
-          value = m_noDataValue;
+          value = m_outputNoDataValue;
           return;
         }
       }       
@@ -346,9 +346,9 @@ namespace te
         m_raster1Bands[ rasterChannelsVecsIdx ] );
       value =  m_noBlendMethodImp_cValue.real();
         
-      if( m_forceNoDataValue )
+      if( m_forceInputNoDataValue )
       {
-        if( value == m_noDataValue )
+        if( value == m_outputNoDataValue )
         {
           m_interp2->getValue( col2, line2, m_noBlendMethodImp_cValue, 
             m_raster2Bands[ rasterChannelsVecsIdx ] );
@@ -365,7 +365,7 @@ namespace te
           
           if( value == m_raster2NoDataValues[ rasterChannelsVecsIdx ] )
           {
-            value = m_noDataValue;            
+            value = m_outputNoDataValue;            
           }
         }
       }

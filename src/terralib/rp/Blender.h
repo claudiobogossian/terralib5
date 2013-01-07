@@ -76,7 +76,7 @@ namespace te
           \param interpMethod1 The interpolation method to use when reading raster 1 data.
           \param interpMethod2 The interpolation method to use when reading raster 2 data.
           \param noDataValue The value returned where there is no pixel data bo blend.
-          \param forceNoDataValue Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+          \param forceInputNoDataValue Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
           \param pixelOffsets1 The values offset to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelScales1 The values scale to be applied to raster 1 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param pixelOffsets2 The values offset to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
@@ -95,7 +95,7 @@ namespace te
           const te::rst::Interpolator::Method& interpMethod1,
           const te::rst::Interpolator::Method& interpMethod2,
           const double& noDataValue,
-          const bool forceNoDataValue,
+          const bool forceInputNoDataValue,
           const std::vector< double >& pixelOffsets1,
           const std::vector< double >& pixelScales1,
           const std::vector< double >& pixelOffsets2,
@@ -140,8 +140,8 @@ namespace te
         te::gm::GeometricTransformation* m_geomTransformationPtr; //!< A transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns).
         te::rst::Interpolator::Method m_interpMethod1; //!< The interpolation method to use when reading raster 1 data.
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
-        double m_noDataValue; //!< The value returned where there is no pixel data bo blend.
-        bool m_forceNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+        double m_outputNoDataValue; //!< The output raster no-data value.
+        bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
