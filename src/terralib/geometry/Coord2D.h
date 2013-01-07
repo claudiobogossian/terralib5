@@ -78,7 +78,7 @@ namespace te
           if(y != rhs.y)
             return false;
 
-          return true;            
+          return true;
         }
 
         double x;  //!< x-coordinate.

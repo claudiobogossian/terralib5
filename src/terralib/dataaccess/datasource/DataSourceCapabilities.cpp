@@ -40,7 +40,7 @@ te::da::DataSourceCapabilities::~DataSourceCapabilities()
 {
 }
 
-te::common::AccessPolicy te::da::DataSourceCapabilities::getAcessPolicy() const
+te::common::AccessPolicy te::da::DataSourceCapabilities::getAccessPolicy() const
 {
   return m_accessPolicy;
 }
@@ -145,7 +145,7 @@ const std::map<std::string, std::string>& te::da::DataSourceCapabilities::getSpe
   return m_specificCapabilities;
 }
 
-void te::da::DataSourceCapabilities::addSpecificCapabilitie(const std::string& key, const std::string& value)
+void te::da::DataSourceCapabilities::addSpecificCapability(const std::string& key, const std::string& value)
 {
   m_specificCapabilities[key] = value;
 }

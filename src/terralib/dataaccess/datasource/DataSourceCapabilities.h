@@ -46,7 +46,7 @@ namespace te
       \class DataSourceCapabilities
 
       \brief A class that represents the known capabilities of a specific data source,
-             i.e. this class informs all informatin about what the data source can perform.
+             i.e. this class informs all information about what the data source can perform.
              Here you will find if the data source implementation supports primary keys,
              foreign keys, if it can be used in a thread environment and much more information.
     */
@@ -62,14 +62,14 @@ namespace te
 
       public:
 
-        te::common::AccessPolicy getAcessPolicy() const;
+        te::common::AccessPolicy getAccessPolicy() const;
 
         void setAccessPolicy(const te::common::AccessPolicy& accessPolicy);
-        
+
         bool supportsTransactions() const;
 
         void setSupportTransactions(const bool& support);
-        
+
         bool supportsDataSetPesistenceAPI() const;
 
         void setSupportDataSetPesistenceAPI(const bool& support);
@@ -104,7 +104,7 @@ namespace te
 
         const std::map<std::string, std::string>& getSpecificCapabilities() const;
 
-        void addSpecificCapabilitie(const std::string& key, const std::string& value);
+        void addSpecificCapability(const std::string& key, const std::string& value);
 
         void setSupportAll();
 

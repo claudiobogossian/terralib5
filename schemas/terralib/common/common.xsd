@@ -2,7 +2,7 @@
 <xsd:schema xmlns:te_common="http://www.terralib.org/common"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/schemas/common"
+            targetNamespace="http://www.terralib.org/common"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">

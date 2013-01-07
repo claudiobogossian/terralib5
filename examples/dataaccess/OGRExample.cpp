@@ -18,8 +18,11 @@ void OGRExampleRead()
     ds->setConnectionStr(ogrInfo);
     ds->open();
 
+// retrieve the data source capabilities and print it
+    PrintDataSourceCapabilities(ds);
+
 // retrieve the information about the data stored in the data source
-    PrintCatalog(ds);    
+    PrintCatalog(ds);
 
 // for each dataset in teh data source print all its data
     PrintDataSets(ds);
