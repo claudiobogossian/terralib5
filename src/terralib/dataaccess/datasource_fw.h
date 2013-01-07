@@ -34,6 +34,7 @@ namespace te
     class AbstractConnectionPool;
     class BatchExecutor;
     class DataSource;
+    class DataSourceCapabilities;
     class DataSourceCatalog;
     class DataSourceCatalogLoader;
     class DataSourceFactory;
