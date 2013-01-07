@@ -68,7 +68,7 @@ te::da::DataTypeCapabilities::~DataTypeCapabilities()
 
 bool te::da::DataTypeCapabilities::supportsBit() const
 {
-  return hasSupport(te::dt::BIT_TYPE);
+  return supports(te::dt::BIT_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportBit(const bool& support)
@@ -78,7 +78,7 @@ void te::da::DataTypeCapabilities::setSupportBit(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsChar() const
 {
-  return hasSupport(te::dt::CHAR_TYPE);
+  return supports(te::dt::CHAR_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportChar(const bool& support)
@@ -88,7 +88,7 @@ void te::da::DataTypeCapabilities::setSupportChar(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsUChar() const
 {
-  return hasSupport(te::dt::UCHAR_TYPE);
+  return supports(te::dt::UCHAR_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportUChar(const bool& support)
@@ -98,7 +98,7 @@ void te::da::DataTypeCapabilities::setSupportUChar(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsInt16() const
 {
-  return hasSupport(te::dt::INT16_TYPE);
+  return supports(te::dt::INT16_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportInt16(const bool& support)
@@ -108,7 +108,7 @@ void te::da::DataTypeCapabilities::setSupportInt16(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsUInt16() const
 {
-  return hasSupport(te::dt::UINT16_TYPE);
+  return supports(te::dt::UINT16_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportUInt16(const bool& support)
@@ -118,7 +118,7 @@ void te::da::DataTypeCapabilities::setSupportUInt16(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsInt32() const
 {
-  return hasSupport(te::dt::INT32_TYPE);
+  return supports(te::dt::INT32_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportInt32(const bool& support)
@@ -128,7 +128,7 @@ void te::da::DataTypeCapabilities::setSupportInt32(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsUInt32() const
 {
-  return hasSupport(te::dt::UINT32_TYPE);
+  return supports(te::dt::UINT32_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportUInt32(const bool& support)
@@ -138,7 +138,7 @@ void te::da::DataTypeCapabilities::setSupportUInt32(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsInt64() const
 {
-  return hasSupport(te::dt::INT64_TYPE);
+  return supports(te::dt::INT64_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportInt64(const bool& support)
@@ -148,7 +148,7 @@ void te::da::DataTypeCapabilities::setSupportInt64(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsUInt64() const
 {
-  return hasSupport(te::dt::UINT64_TYPE);
+  return supports(te::dt::UINT64_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportUInt64(const bool& support)
@@ -158,7 +158,7 @@ void te::da::DataTypeCapabilities::setSupportUInt64(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsBoolean() const
 {
-  return hasSupport(te::dt::BOOLEAN_TYPE);
+  return supports(te::dt::BOOLEAN_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportBoolean(const bool& support)
@@ -168,7 +168,7 @@ void te::da::DataTypeCapabilities::setSupportBoolean(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsFloat() const
 {
-  return hasSupport(te::dt::FLOAT_TYPE);
+  return supports(te::dt::FLOAT_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportFloat(const bool& support)
@@ -178,7 +178,7 @@ void te::da::DataTypeCapabilities::setSupportFloat(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsDouble() const
 {
-  return hasSupport(te::dt::DOUBLE_TYPE);
+  return supports(te::dt::DOUBLE_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportDouble(const bool& support)
@@ -188,7 +188,7 @@ void te::da::DataTypeCapabilities::setSupportDouble(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsNumeric() const
 {
-  return hasSupport(te::dt::NUMERIC_TYPE);
+  return supports(te::dt::NUMERIC_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportNumeric(const bool& support)
@@ -198,7 +198,7 @@ void te::da::DataTypeCapabilities::setSupportNumeric(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsString() const
 {
-  return hasSupport(te::dt::STRING_TYPE);
+  return supports(te::dt::STRING_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportString(const bool& support)
@@ -208,7 +208,7 @@ void te::da::DataTypeCapabilities::setSupportString(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsByteArray() const
 {
-  return hasSupport(te::dt::BYTE_ARRAY_TYPE);
+  return supports(te::dt::BYTE_ARRAY_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportByteArray(const bool& support)
@@ -218,7 +218,7 @@ void te::da::DataTypeCapabilities::setSupportByteArray(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsGeometry() const
 {
-  return hasSupport(te::dt::GEOMETRY_TYPE);
+  return supports(te::dt::GEOMETRY_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportGeometry(const bool& support)
@@ -228,7 +228,7 @@ void te::da::DataTypeCapabilities::setSupportGeometry(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsDateTime() const
 {
-  return hasSupport(te::dt::DATETIME_TYPE);
+  return supports(te::dt::DATETIME_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportDateTime(const bool& support)
@@ -238,7 +238,7 @@ void te::da::DataTypeCapabilities::setSupportDateTime(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsArray() const
 {
-  return hasSupport(te::dt::ARRAY_TYPE);
+  return supports(te::dt::ARRAY_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportArray(const bool& support)
@@ -248,7 +248,7 @@ void te::da::DataTypeCapabilities::setSupportArray(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsComposite() const
 {
-  return hasSupport(te::dt::COMPOSITE_TYPE);
+  return supports(te::dt::COMPOSITE_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportComposite(const bool& support)
@@ -258,7 +258,7 @@ void te::da::DataTypeCapabilities::setSupportComposite(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsRaster() const
 {
-  return hasSupport(te::dt::RASTER_TYPE);
+  return supports(te::dt::RASTER_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportRaster(const bool& support)
@@ -268,7 +268,7 @@ void te::da::DataTypeCapabilities::setSupportRaster(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsDataset() const
 {
-  return hasSupport(te::dt::DATASET_TYPE);
+  return supports(te::dt::DATASET_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportDataset(const bool& support)
@@ -278,7 +278,7 @@ void te::da::DataTypeCapabilities::setSupportDataset(const bool& support)
 
 bool te::da::DataTypeCapabilities::supportsXML() const
 {
-  return hasSupport(te::dt::XML_TYPE);
+  return supports(te::dt::XML_TYPE);
 }
 
 void te::da::DataTypeCapabilities::setSupportXML(const bool& support)
@@ -286,7 +286,7 @@ void te::da::DataTypeCapabilities::setSupportXML(const bool& support)
   setSupport(te::dt::XML_TYPE, support);
 }
 
-bool te::da::DataTypeCapabilities::hasSupport(const int& type) const
+bool te::da::DataTypeCapabilities::supports(const int& type) const
 {
   std::map<int, bool>::const_iterator it = m_types.find(type);
   if(it != m_types.end())
@@ -305,4 +305,18 @@ void te::da::DataTypeCapabilities::setSupportAll()
   std::map<int, bool>::iterator it;
   for(it = m_types.begin(); it != m_types.end(); ++it)
     it->second = true;
+}
+
+void te::da::DataTypeCapabilities::addHint(const int& type, const int& hint)
+{
+  m_hints[type] = hint;
+}
+
+int te::da::DataTypeCapabilities::getHint(const int& type)
+{
+  std::map<int, int>::const_iterator it = m_hints.find(type);
+  if(it != m_hints.end())
+    return it->second;
+
+  return te::dt::UNKNOWN_TYPE;
 }

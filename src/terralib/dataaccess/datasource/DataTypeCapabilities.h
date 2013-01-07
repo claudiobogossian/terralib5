@@ -142,15 +142,20 @@ namespace te
 
         void setSupportXML(const bool& support);
 
-        bool hasSupport(const int& type) const;
+        bool supports(const int& type) const;
 
         void setSupport(const int& type, const bool& support);
 
         void setSupportAll();
 
+        void addHint(const int& type, const int& hint);
+
+        int getHint(const int& type);
+
       private:
 
         std::map<int, bool> m_types; //!< A map that indicates the supported data types.
+        std::map<int, int> m_hints;  //!< A map that indicates a hint to a given type.
     };
 
   } // end namespace da
