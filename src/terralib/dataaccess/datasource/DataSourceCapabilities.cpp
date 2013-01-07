@@ -40,7 +40,7 @@ te::da::DataSourceCapabilities::~DataSourceCapabilities()
 {
 }
 
-te::common::AccessPolicy te::da::DataSourceCapabilities::getAcessPolicy() const
+te::common::AccessPolicy te::da::DataSourceCapabilities::getAccessPolicy() const
 {
   return m_accessPolicy;
 }

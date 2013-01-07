@@ -62,7 +62,7 @@ namespace te
 
       public:
 
-        te::common::AccessPolicy getAcessPolicy() const;
+        te::common::AccessPolicy getAccessPolicy() const;
 
         void setAccessPolicy(const te::common::AccessPolicy& accessPolicy);
         
