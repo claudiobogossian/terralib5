@@ -43,6 +43,7 @@ namespace te
   namespace da
   {
 // Forward declarations
+    class DataSourceCapabilities;
     class DataSourceCatalog;
     class DataSourceTransactor;
     class SQLDialect;
@@ -174,18 +175,15 @@ namespace te
         /*!
           \brief It returns the known capabilities of the data source.
           
-          The returned associative container has all informatin about what the data source can perform.
+          The returned object has all informatin about what the data source can perform.
           Here you will find if the data source implementation supports primary keys,
           foreign keys, if it can be used in a thread environment and much more information.
-
-          Note that there is a list of common key-value-pairs that every data source driver must supply although
-          each implementation can provide addictional information.
 
           \param capabilities The known capabilities of the data source.
 
           \note Thread-safe!
         */
-        virtual void getCapabilities(std::map<std::string, std::string>& capabilities) const = 0;
+        virtual const DataSourceCapabilities& getCapabilities() const = 0;
 
         /*!
           \brief It returns the data source SQL dialect if one exists.
