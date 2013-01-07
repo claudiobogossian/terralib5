@@ -69,166 +69,142 @@ te::qt::widgets::UpdateProperty::UpdateProperty(te::da::DataSource* ds, QWidget*
 
   // Fill the dataTypeComboBox with the data types available
   // according the data source capabilities
-  std::map<std::string, std::string> capabilities; 
-  m_ds->getCapabilities(capabilities);
-  
-  std::map<std::string, std::string>::iterator it;
+  const te::da::DataSourceCapabilities& capabilities = m_ds->getCapabilities();
+  const te::da::DataTypeCapabilities& dataTypeCapabilities = capabilities.getDataTypeCapabilities();
 
-  it = capabilities.find("ARRAY_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsArray())
   {
     dataTypeComboBox->addItem("ARRAY");
     m_propertyTypeMap[te::dt::ARRAY_TYPE] = "ARRAY";
   }
 
-  it = capabilities.find("BIT_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsBit())
   {
     dataTypeComboBox->addItem("BIT");
     m_propertyTypeMap[te::dt::BIT_TYPE] = "BIT";
   }
 
-  it = capabilities.find("BOOLEAN_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsBoolean())
   {
     dataTypeComboBox->addItem("BOOLEAN");
     m_propertyTypeMap[te::dt::BOOLEAN_TYPE] = "BOOLEAN";
   }
 
-  it = capabilities.find("BYTEARRAY_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsByteArray())
   {
     dataTypeComboBox->addItem("BYTE_ARRAY");
     m_propertyTypeMap[te::dt::BYTE_ARRAY_TYPE] = "BYTE_ARRAY";
   }
 
-  it = capabilities.find("CHAR_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsChar())
   {
     dataTypeComboBox->addItem("CHAR");
     m_propertyTypeMap[te::dt::CHAR_TYPE] = "CHAR";
   }
 
-  it = capabilities.find("COMPOSITE_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsComposite())
   {
     dataTypeComboBox->addItem("COMPOSITE");
     m_propertyTypeMap[te::dt::COMPOSITE_TYPE] = "COMPOSITE";
   }
 
-  it = capabilities.find("DATASET_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsDataset())
   {
     dataTypeComboBox->addItem("DATASET");
     m_propertyTypeMap[te::dt::DATASET_TYPE] = "DATASET";
   }
 
-  it = capabilities.find("DATETIME_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsDateTime())
   {
     dataTypeComboBox->addItem("DATETIME");
     m_propertyTypeMap[te::dt::DATETIME_TYPE] = "DATETIME";
   }
 
-  it = capabilities.find("DOUBLE_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsDouble())
   {
     dataTypeComboBox->addItem("DOUBLE");
     m_propertyTypeMap[te::dt::DOUBLE_TYPE] = "DOUBLE";
   }
 
-  it = capabilities.find("FLOAT_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsFloat())
   {
     dataTypeComboBox->addItem("FLOAT");
     m_propertyTypeMap[te::dt::FLOAT_TYPE] = "FLOAT";
   }
 
-  it = capabilities.find("GEOMETRY_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsGeometry())
   {
     dataTypeComboBox->addItem("GEOMETRY");
     m_propertyTypeMap[te::dt::GEOMETRY_TYPE] = "GEOMETRY";
   }
-  it = capabilities.find("INT16_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+
+  if(dataTypeCapabilities.supportsInt16())
   {
     dataTypeComboBox->addItem("INT16");
     m_propertyTypeMap[te::dt::INT16_TYPE] = "INT16";
   }
 
-  it = capabilities.find("INT32_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsInt32())
   {
     dataTypeComboBox->addItem("INT32");
     m_propertyTypeMap[te::dt::INT32_TYPE] = "INT32";
   }
 
-  it = capabilities.find("INT64_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsInt64())
   {
     dataTypeComboBox->addItem("INT64");
     m_propertyTypeMap[te::dt::INT64_TYPE] = "INT64";
   }
 
-  it = capabilities.find("NUMERIC_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsNumeric())
   {
     dataTypeComboBox->addItem("NUMERIC");
     m_propertyTypeMap[te::dt::NUMERIC_TYPE] = "NUMERIC";
   }
 
-  it = capabilities.find("RASTER_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsRaster())
   {
     dataTypeComboBox->addItem("RASTER");
     m_propertyTypeMap[te::dt::RASTER_TYPE] = "RASTER";
   }
 
-  it = capabilities.find("STRING_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsString())
   {
     dataTypeComboBox->addItem("STRING");
     m_propertyTypeMap[te::dt::STRING_TYPE] = "STRING";
   }
 
-  it = capabilities.find("UCHAR_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUChar())
   {
     dataTypeComboBox->addItem("UCHAR");
     m_propertyTypeMap[te::dt::UCHAR_TYPE] = "UCHAR";
   }
 
-  it = capabilities.find("UINT16_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUInt16())
   {
     dataTypeComboBox->addItem("UINT16");
     m_propertyTypeMap[te::dt::UINT32_TYPE] = "UINT16";
   }
 
-  it = capabilities.find("UINT32_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUInt32())
   {
     dataTypeComboBox->addItem("UINT32");
     m_propertyTypeMap[te::dt::UINT32_TYPE] = "UINT32";
   }
 
-  it = capabilities.find("UINT64_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUInt64())
   {
     dataTypeComboBox->addItem("UINT64");
     m_propertyTypeMap[te::dt::UINT64_TYPE] = "UINT64";
   }
 
-  it = capabilities.find("UNKNOWN_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supports(te::dt::UNKNOWN))
   {
     dataTypeComboBox->addItem("UNKNOWN");
     m_propertyTypeMap[te::dt::UNKNOWN_TYPE] = "UNKNOWN";
   }
 
-  it = capabilities.find("VOID_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supports(te::dt::VOID_TYPE))
   {
     dataTypeComboBox->addItem("VOID");
     m_propertyTypeMap[te::dt::VOID_TYPE] = "VOID";

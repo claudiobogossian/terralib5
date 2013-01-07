@@ -68,97 +68,76 @@ te::qt::widgets::AddProperty::AddProperty(te::da::DataSource* ds, QWidget* paren
 
   // Fill the dataTypeComboBox with the data types available
   // according the data source capabilities
-  std::map<std::string, std::string> capabilities; 
-  m_ds->getCapabilities(capabilities);
-  
-  std::map<std::string, std::string>::iterator it;
+  const te::da::DataSourceCapabilities& capabilities = m_ds->getCapabilities();
+  const te::da::DataTypeCapabilities& dataTypeCapabilities = capabilities.getDataTypeCapabilities();
 
-  it = capabilities.find("ARRAY_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsArray())
     dataTypeComboBox->addItem("ARRAY");
 
-  it = capabilities.find("BIT_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsBit())
     dataTypeComboBox->addItem("BIT");
 
-  it = capabilities.find("BOOLEAN_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsBoolean())
     dataTypeComboBox->addItem("BOOLEAN");
 
-  it = capabilities.find("BYTE_ARRAY_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsByteArray())
     dataTypeComboBox->addItem("BYTE_ARRAY");
 
-  it = capabilities.find("CHAR_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsChar())
     dataTypeComboBox->addItem("CHAR");
 
-  it = capabilities.find("COMPOSITE_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsComposite())
     dataTypeComboBox->addItem("COMPOSITE");
 
-  it = capabilities.find("DATETIME_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsDataset())
+    dataTypeComboBox->addItem("DATASET");
+
+  if(dataTypeCapabilities.supportsDateTime())
     dataTypeComboBox->addItem("DATETIME");
 
-  it = capabilities.find("DOUBLE_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsDouble())
     dataTypeComboBox->addItem("DOUBLE");
 
-  it = capabilities.find("FLOAT_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsFloat())
     dataTypeComboBox->addItem("FLOAT");
 
-  it = capabilities.find("GEOMETRY_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsGeometry())
     dataTypeComboBox->addItem("GEOMETRY");
 
-  it = capabilities.find("INT16_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsInt16())
     dataTypeComboBox->addItem("INT16");
 
-  it = capabilities.find("INT32_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsInt32())
     dataTypeComboBox->addItem("INT32");
 
-  it = capabilities.find("INT64_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsInt64())
     dataTypeComboBox->addItem("INT64");
 
-  it = capabilities.find("NUMERIC_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsNumeric())
     dataTypeComboBox->addItem("NUMERIC");
 
-  it = capabilities.find("RASTER_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsRaster())
     dataTypeComboBox->addItem("RASTER");
 
-  it = capabilities.find("STRING_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsString())
     dataTypeComboBox->addItem("STRING");
 
-  it = capabilities.find("UCHAR_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUChar())
     dataTypeComboBox->addItem("UCHAR");
 
-  it = capabilities.find("UINT16_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUInt16())
     dataTypeComboBox->addItem("UINT16");
 
-  it = capabilities.find("UINT32_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUInt32())
     dataTypeComboBox->addItem("UINT32");
 
-  it = capabilities.find("UINT64_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supportsUInt64())
     dataTypeComboBox->addItem("UINT64");
 
-  it = capabilities.find("UNKNOWN_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supports(te::dt::UNKNOWN))
     dataTypeComboBox->addItem("UNKNOWN");
 
-  it = capabilities.find("VOID_DT");
-  if(it != capabilities.end() && it->second == "TRUE")
+  if(dataTypeCapabilities.supports(te::dt::VOID_TYPE))
     dataTypeComboBox->addItem("VOID");
 
   // Connect the signals/slots

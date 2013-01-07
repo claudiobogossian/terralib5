@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
 namespace te
@@ -66,7 +67,7 @@ namespace te
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
         /*! \todo No futuro, ler diretamente de um arquivo XML + alguma coisa do proprio BD. */
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
         /*! \todo No futuro, ler diretamente de um arquivo XML + alguma coisa do proprio BD. */
         const te::da::SQLDialect* getDialect() const;
@@ -176,7 +177,7 @@ namespace te
 
           \note PostGIS driver extended method.
         */
-        static void setCapabilities(const std::map<std::string, std::string>& capabilities);
+        static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
 
       protected:
 
@@ -196,8 +197,8 @@ namespace te
         std::string* m_currentSchema;                           //!< The default schema used when no one is provided.
         bool m_timeIsInteger;                                   //!< A flag to indicate if the postgis stores, internally, time and timestamp as integer 
 
-        static std::map<std::string, std::string> sm_capabilities;  //!< PostGIS capabilities.
-        static te::da::SQLDialect* sm_myDialect;                    //!< PostGIS SQL dialect.
+        static te::da::DataSourceCapabilities sm_capabilities;  //!< PostGIS capabilities.
+        static te::da::SQLDialect* sm_myDialect;                //!< PostGIS SQL dialect.
 
         friend class ConnectionPool;
         friend class DataSet;

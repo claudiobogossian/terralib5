@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
 // Forward declarations
@@ -69,10 +70,9 @@ namespace te
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
-
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
 
@@ -104,7 +104,7 @@ namespace te
         te::da::DataSourceCatalog* m_catalog;                       //!< The main system catalog.
         OGRDataSource* m_ogrDS;                                     //!< A pointer to OGR Data Source.
         bool m_isValid;                                             //!< True if this is a valid datasource.
-        std::map<std::string, std::string> m_capabilities;          //!< The data source capabilities.
+        te::da::DataSourceCapabilities m_capabilities;              //!< OGR capabilities.
     };
 
   } // end namespace ogr

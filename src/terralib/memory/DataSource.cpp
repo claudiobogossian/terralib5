@@ -40,6 +40,7 @@
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 
+te::da::DataSourceCapabilities te::mem::DataSource::sm_capabilities;
 const te::da::SQLDialect te::mem::DataSource::sm_dialect;
 
 te::mem::DataSource::DataSource()
@@ -73,73 +74,9 @@ void te::mem::DataSource::setConnectionInfo(const std::map<std::string, std::str
   m_connInfo = connInfo;
 }
 
-void te::mem::DataSource::getCapabilities(std::map<std::string, std::string>& capabilities) const
+const te::da::DataSourceCapabilities& te::mem::DataSource::getCapabilities() const
 {
-  capabilities["ACCESS_POLICY"] = "RW_ACCESS";
-  capabilities["TRANSACTION"] = "FALSE";
-  capabilities["DATASET_PERSISTENCE"] = "TRUE";
-  capabilities["DATASETTYPE_PERSISTENCE"] = "TRUE";
-  capabilities["PREPARED_QUERY"] = "FALSE";
-  capabilities["BATCH_EXECUTOR"] = "FALSE";
-
-  capabilities["BIT_DT"] = "TRUE";
-  capabilities["CHAR_DT"] = "TRUE";
-  capabilities["UCHAR_DT"] = "TRUE";
-  capabilities["INT16_DT"] = "TRUE";
-  capabilities["UINT16_DT"] = "TRUE";
-  capabilities["INT32_DT"] = "TRUE";
-  capabilities["UINT32_DT"] = "TRUE";
-  capabilities["INT64_DT"] = "TRUE";
-  capabilities["UINT64_DT"] = "TRUE";
-  capabilities["BOOLEAN_DT"] = "TRUE";
-  capabilities["FLOAT_DT"] = "TRUE";
-  capabilities["DOUBLE_DT"] = "TRUE";
-  capabilities["NUMERIC_DT"] = "TRUE";
-  capabilities["STRING_DT"] = "TRUE";
-  capabilities["BYTE_ARRAY_DT"] = "TRUE";
-  capabilities["GEOMETRY_DT"] = "TRUE";
-  capabilities["DATETIME_DT"] = "TRUE";
-  capabilities["ARRAY_DT"] = "TRUE";
-  capabilities["COMPOSITE_DT"] = "TRUE";
-  capabilities["RASTER_DT"] = "TRUE";
-  capabilities["DATASET_DT"] = "TRUE";
-  capabilities["XML_DT"] = "TRUE";
-
-  capabilities["PRIMARY_KEY"] = "TRUE";
-  capabilities["UNIQUE_KEY"] = "TRUE";
-  capabilities["FOREIGN_KEY"] = "FALSE";
-  capabilities["SEQUENCE"] = "FALSE";
-  capabilities["CHECK_CONSTRAINTS"] = "FALSE";
-  capabilities["INDEX"] = "TRUE";
-  capabilities["RTREE_INDEX"] = "TRUE";
-  capabilities["BTREE_INDEX"] = "TRUE";
-  capabilities["HASH_INDEX"] = "TRUE";
-  capabilities["QUADTREE_INDEX"] = "FALSE";
-
-  capabilities["BIDIRECTIONAL_DATASET"] = "TRUE";
-  capabilities["RANDOM_DATASET"] = "TRUE";
-  capabilities["INDEXED_DATASET"] = "TRUE";
-
-  capabilities["EFFICIENT_MOVE_PREVIOUS"] = "TRUE";
-  capabilities["EFFICIENT_MOVE_FIRST"] = "TRUE";
-  capabilities["EFFICIENT_MOVE_BEFORE_FIRST"] = "TRUE";
-  capabilities["EFFICIENT_MOVE_LAST"] = "TRUE";
-  capabilities["EFFICIENT_MOVE_AFTER_LAST"] = "TRUE";
-  capabilities["EFFICIENT_MOVE"] = "TRUE";
-  capabilities["EFFICIENT_DATASET_SIZE"] = "TRUE";
-  capabilities["DATASET_INSERTION"] = "TRUE";
-  capabilities["DATASET_UPDATE"] = "TRUE";
-  capabilities["DATASET_DELETION"] = "TRUE";
-
-  capabilities["SQL_DIALECT"] = "FALSE";
-  capabilities["INSERT_QUERY"] = "FALSE";
-  capabilities["UPDATE_QUERY"] = "FALSE";
-  capabilities["DELETE_QUERY"] = "FALSE";
-  capabilities["CREATE_QUERY"] = "FALSE";
-  capabilities["DROP_QUERY"] = "FALSE";
-  capabilities["ALTER_QUERY"] = "FALSE";
-  capabilities["SELECT_QUERY"] = "FALSE";
-  capabilities["SELECT_INTO_QUERY"] = "FALSE";
+  return sm_capabilities;
 }
 
 const te::da::SQLDialect* te::mem::DataSource::getDialect() const
@@ -322,6 +259,11 @@ bool te::mem::DataSource::hasDataSets()
   return m_ndatasets > 0;
 }
 
+void te::mem::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
+{
+  sm_capabilities = capabilities;
+}
+
 void te::mem::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
   m_connInfo = dsInfo;
@@ -341,4 +283,3 @@ bool te::mem::DataSource::exists(const std::map<std::string, std::string>& /*dsI
 // Not supported by In-Memory driver!
   return false;
 }
-
