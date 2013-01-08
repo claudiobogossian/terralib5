@@ -77,8 +77,6 @@ void PrintDataSourceCapabilities(te::da::DataSource* ds)
   PrintHelper("Support DATASET", dataTypeCapabilities.supportsDataset());
   PrintHelper("Support RASTER", dataTypeCapabilities.supportsRaster());
   PrintHelper("Support XML", dataTypeCapabilities.supportsXML());
-  PrintHelper("Support UNKNOWN", dataTypeCapabilities.supportsUnknown());
-  PrintHelper("Support VOID", dataTypeCapabilities.supportsVoid());
   PrintHelper("Support CINT16", dataTypeCapabilities.supportsCInt16());
   PrintHelper("Support CINT32", dataTypeCapabilities.supportsCInt32());
   PrintHelper("Support CFLOAT", dataTypeCapabilities.supportsCFloat());
