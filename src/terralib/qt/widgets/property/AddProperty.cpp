@@ -134,12 +134,6 @@ te::qt::widgets::AddProperty::AddProperty(te::da::DataSource* ds, QWidget* paren
   if(dataTypeCapabilities.supportsUInt64())
     dataTypeComboBox->addItem("UINT64");
 
-  if(dataTypeCapabilities.supports(te::dt::UNKNOWN))
-    dataTypeComboBox->addItem("UNKNOWN");
-
-  if(dataTypeCapabilities.supports(te::dt::VOID_TYPE))
-    dataTypeComboBox->addItem("VOID");
-
   // Connect the signals/slots
   connect(dataSetComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(dataSetComboBoxChanged(const QString&)));
   connect(autoNumberCheckBox, SIGNAL(clicked(bool)), this, SLOT(autoNumberCheckBoxClicked(bool)));
