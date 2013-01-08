@@ -286,6 +286,86 @@ void te::da::DataTypeCapabilities::setSupportXML(const bool& support)
   setSupport(te::dt::XML_TYPE, support);
 }
 
+bool te::da::DataTypeCapabilities::supportsUnknown() const
+{
+  return supports(te::dt::UNKNOWN_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportUnknown(const bool& support)
+{
+  setSupport(te::dt::UNKNOWN_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsVoid() const
+{
+  return supports(te::dt::VOID_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportVoid(const bool& support)
+{
+  setSupport(te::dt::VOID_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsCInt16() const
+{
+  return supports(te::dt::CINT16_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportCInt16(const bool& support)
+{
+  setSupport(te::dt::CINT16_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsCInt32() const
+{
+  return supports(te::dt::CINT32_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportCInt32(const bool& support)
+{
+  setSupport(te::dt::CINT32_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsCFloat() const
+{
+  return supports(te::dt::CFLOAT_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportCFloat(const bool& support)
+{
+  setSupport(te::dt::CFLOAT_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsCDouble() const
+{
+  return supports(te::dt::CDOUBLE_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportCDouble(const bool& support)
+{
+  setSupport(te::dt::CDOUBLE_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsDatasetItem() const
+{
+  return supports(te::dt::DATASETITEM_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportDatasetItem(const bool& support)
+{
+  setSupport(te::dt::DATASETITEM_TYPE, support);
+}
+
+bool te::da::DataTypeCapabilities::supportsPolymorphic() const
+{
+  return supports(te::dt::POLYMORPHIC_TYPE);
+}
+
+void te::da::DataTypeCapabilities::setSupportPolymorphic(const bool& support)
+{
+  setSupport(te::dt::POLYMORPHIC_TYPE, support);
+}
+
 bool te::da::DataTypeCapabilities::supports(const int& type) const
 {
   std::map<int, bool>::const_iterator it = m_types.find(type);

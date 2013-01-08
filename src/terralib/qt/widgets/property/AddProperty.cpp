@@ -134,10 +134,10 @@ te::qt::widgets::AddProperty::AddProperty(te::da::DataSource* ds, QWidget* paren
   if(dataTypeCapabilities.supportsUInt64())
     dataTypeComboBox->addItem("UINT64");
 
-  if(dataTypeCapabilities.supports(te::dt::UNKNOWN))
+  if(dataTypeCapabilities.supportsUnknown())
     dataTypeComboBox->addItem("UNKNOWN");
 
-  if(dataTypeCapabilities.supports(te::dt::VOID_TYPE))
+  if(dataTypeCapabilities.supportsVoid())
     dataTypeComboBox->addItem("VOID");
 
   // Connect the signals/slots

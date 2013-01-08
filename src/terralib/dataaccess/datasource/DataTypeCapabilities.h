@@ -142,6 +142,38 @@ namespace te
 
         void setSupportXML(const bool& support);
 
+        bool supportsUnknown() const;
+
+        void setSupportUnknown(const bool& support);
+
+        bool supportsVoid() const;
+
+        void setSupportVoid(const bool& support);
+
+        bool supportsCInt16() const;
+
+        void setSupportCInt16(const bool& support);
+
+        bool supportsCInt32() const;
+
+        void setSupportCInt32(const bool& support);
+
+        bool supportsCFloat() const;
+
+        void setSupportCFloat(const bool& support);
+
+        bool supportsCDouble() const;
+
+        void setSupportCDouble(const bool& support);
+
+        bool supportsDatasetItem() const;
+
+        void setSupportDatasetItem(const bool& support);
+
+        bool supportsPolymorphic() const;
+
+        void setSupportPolymorphic(const bool& support);
+
         bool supports(const int& type) const;
 
         void setSupport(const int& type, const bool& support);
