@@ -52,8 +52,6 @@ te::da::DataTypeCapabilities::DataTypeCapabilities()
   m_types[te::dt::XML_TYPE]        = false;
 
   // No listed on TerraLib Wiki
-  m_types[te::dt::UNKNOWN]          = false;
-  m_types[te::dt::VOID_TYPE]        = false;
   m_types[te::dt::CINT16_TYPE]      = false;
   m_types[te::dt::CINT32_TYPE]      = false;
   m_types[te::dt::CFLOAT_TYPE]      = false;
@@ -284,26 +282,6 @@ bool te::da::DataTypeCapabilities::supportsXML() const
 void te::da::DataTypeCapabilities::setSupportXML(const bool& support)
 {
   setSupport(te::dt::XML_TYPE, support);
-}
-
-bool te::da::DataTypeCapabilities::supportsUnknown() const
-{
-  return supports(te::dt::UNKNOWN_TYPE);
-}
-
-void te::da::DataTypeCapabilities::setSupportUnknown(const bool& support)
-{
-  setSupport(te::dt::UNKNOWN_TYPE, support);
-}
-
-bool te::da::DataTypeCapabilities::supportsVoid() const
-{
-  return supports(te::dt::VOID_TYPE);
-}
-
-void te::da::DataTypeCapabilities::setSupportVoid(const bool& support)
-{
-  setSupport(te::dt::VOID_TYPE, support);
 }
 
 bool te::da::DataTypeCapabilities::supportsCInt16() const

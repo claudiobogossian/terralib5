@@ -11,8 +11,6 @@ dataTypeCapabilities.setSupportUInt32(false);
 dataTypeCapabilities.setSupportUInt64(false);
 dataTypeCapabilities.setSupportComposite(false);
 dataTypeCapabilities.setSupportDataset(false);
-dataTypeCapabilities.setSupportUnknown(false);
-dataTypeCapabilities.setSupportVoid(false);
 dataTypeCapabilities.setSupportCInt16(false);
 dataTypeCapabilities.setSupportCInt32(false);
 dataTypeCapabilities.setSupportCFloat(false);

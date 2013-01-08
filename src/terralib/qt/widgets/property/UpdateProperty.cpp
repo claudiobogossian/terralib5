@@ -198,18 +198,6 @@ te::qt::widgets::UpdateProperty::UpdateProperty(te::da::DataSource* ds, QWidget*
     m_propertyTypeMap[te::dt::UINT64_TYPE] = "UINT64";
   }
 
-  if(dataTypeCapabilities.supportsUnknown())
-  {
-    dataTypeComboBox->addItem("UNKNOWN");
-    m_propertyTypeMap[te::dt::UNKNOWN_TYPE] = "UNKNOWN";
-  }
-
-  if(dataTypeCapabilities.supportsVoid())
-  {
-    dataTypeComboBox->addItem("VOID");
-    m_propertyTypeMap[te::dt::VOID_TYPE] = "VOID";
-  }
-
   // Connect the signals/slots
   connect(dataSetComboBox, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(dataSetComboBoxChanged(const QString&)));
   connect(propertiesComboBox, SIGNAL(activated(const QString&)), this, SLOT(propertiesComboBoxActivated(const QString&)));

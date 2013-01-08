@@ -142,14 +142,6 @@ namespace te
 
         void setSupportXML(const bool& support);
 
-        bool supportsUnknown() const;
-
-        void setSupportUnknown(const bool& support);
-
-        bool supportsVoid() const;
-
-        void setSupportVoid(const bool& support);
-
         bool supportsCInt16() const;
 
         void setSupportCInt16(const bool& support);
