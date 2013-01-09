@@ -142,6 +142,7 @@ namespace te
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
         double m_outputNoDataValue; //!< The output raster no-data value.
         bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+        bool m_rastersHaveDifSRS; //!< True if the input rasters are under distinct SRSs.
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
