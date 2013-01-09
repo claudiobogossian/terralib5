@@ -62,6 +62,7 @@ option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
 option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
 option (BUILD_XML "Build XML module?" ON)
+option (BUILD_XSD "Build XSD module?" ON)
 
 if(UNIX)
   option (BUILD_GRIB "Build GRIB module?" ON)
@@ -181,6 +182,10 @@ endif()
 
 IF(BUILD_XML)
 	add_subdirectory(terralib_xml)
+endif()
+
+IF(BUILD_XSD)
+	add_subdirectory(terralib_xsd)
 endif()
 
 IF(BUILD_GRIB)
