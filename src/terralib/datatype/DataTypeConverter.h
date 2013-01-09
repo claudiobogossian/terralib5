@@ -18,30 +18,27 @@
  */
 
 /*!
-  \file terralib/datatype/IntConversors.h
+  \file terralib/datatype/DataTypeConverter.h
 
-  \brief A set of function that convert an Integer type to other types.
+  \brief Definition of data type converter.
 */
 
-#ifndef __TERRALIB_DATATYPE_INTERNAL_INTCONVERSORS_H
-#define __TERRALIB_DATATYPE_INTERNAL_INTCONVERSORS_H
+#ifndef __TERRALIB_DATATYPE_INTERNAL_DATATYPECONVERTER_H
+#define __TERRALIB_DATATYPE_INTERNAL_DATATYPECONVERTER_H
 
 // Boost
-//#include <boost/function.hpp>
+#include <boost/function.hpp>
 
 namespace te
 {
   namespace dt
   {
-// Forward declaration
-    //class AbstractData;
+// Forward declarations
+    class AbstractData;
 
-    //typedef boost::function1<AbstractData*, AbstractData*> DataTypeConverter_t;
-
-    //AbstractData* Int32ToStringConverter(AbstractData* d);
+    typedef boost::function1<AbstractData*, AbstractData*> DataTypeConverter;
 
   } // end namespace dt
 }   // end namespace te
 
-#endif  // __TERRALIB_DATATYPE_INTERNAL_INTCONVERSORS_H
-
+#endif  // __TERRALIB_DATATYPE_INTERNAL_DATATYPECONVERTER_H
