@@ -77,6 +77,12 @@ void PrintDataSourceCapabilities(te::da::DataSource* ds)
   PrintHelper("Support DATASET", dataTypeCapabilities.supportsDataset());
   PrintHelper("Support RASTER", dataTypeCapabilities.supportsRaster());
   PrintHelper("Support XML", dataTypeCapabilities.supportsXML());
+  PrintHelper("Support CINT16", dataTypeCapabilities.supportsCInt16());
+  PrintHelper("Support CINT32", dataTypeCapabilities.supportsCInt32());
+  PrintHelper("Support CFLOAT", dataTypeCapabilities.supportsCFloat());
+  PrintHelper("Support CDOUBLE", dataTypeCapabilities.supportsCDouble());
+  PrintHelper("Support DATASET_ITEM", dataTypeCapabilities.supportsDatasetItem());
+  PrintHelper("Support POLYMORPHIC", dataTypeCapabilities.supportsPolymorphic());
 
   std::cout << ":: DataSetType Capabilities" << std::endl;
   const te::da::DataSetTypeCapabilities dataSetTypeCapabilities = capabilities.getDataSetTypeCapabilities();

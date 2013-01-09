@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/Singleton.h"
 #include "Config.h"
+#include "DataTypeConverter.h"
 #include "Exception.h"
 
 // STL
@@ -38,17 +39,12 @@ namespace te
 {
   namespace dt
   {
-// Forward declaration
-    class AbstractDataConverter;
-
     /*!
       \class DataConverterManager
 
-      \brief A singleton for managing the data type converter available in the system.      
+      \brief A singleton for managing the data type converter available in the system.
 
-      \sa AbstractDataConverter
-
-      \todo Make the internal representation a set instead of a map.
+      \sa DataTypeConverter
     */
     class TEDATATYPEEXPORT DataConverterManager : public te::common::Singleton<DataConverterManager>
     {
@@ -57,46 +53,38 @@ namespace te
       public:
 
         /*!
-          \brief It adds the converter to the list of known data type mappings.
-
-          \param conv A data type converter. The manager will take its ownership.
-
-          \exception Exception It throws an exception if a converter for the same destination and target data types already exists.
-        */
-        void add(AbstractDataConverter* conv) throw(Exception);
-
-        /*!
-          \brief It returns a data type converter for the given map or NULL if none is found.
-
-          \param typeMap The type of converter: from-data-type -> destination-data-type.
-
-          \return A data type converter for the given map or NULL if none is found.
-        */
-        AbstractDataConverter* get(const std::pair<int, int>& typeMap);
-
-        /*!
-          \brief It returns a data type converter for the given map or NULL if none is found.
+          \brief It adds a converter to the list of known data type mappings.
 
           \param src The source data type of the converter.
-          \param dst The target data type of the conversion.
+          \param dst The destination data type of the converter.
+          \param conv The data type converter.
 
-          \return A data type converter for the given map or NULL if none is found.
+          \exception Exception It throws an exception if a converter for the same source and destination data types already exists.
         */
-        AbstractDataConverter* get(int src, int dst);
+        void add(int src, int dst, DataTypeConverter conv) throw(Exception);
+
+         /*!
+          \brief It returns a data type converter for the given source and destination data types.
+
+          \param src The source data type of the converter.
+          \param dst The destination data type of the converter.
+
+          \return A data type converter for the given source and destination data types. or NULL if none is found.
+
+          \exception Exception It throws an exception if none is found.
+        */
+        const DataTypeConverter& get(int src, int dst) throw(Exception);
 
         /*!
-          \brief It returns the list of available converters.
+          \brief It returns a data type converter for the given source and destination data types
 
-          \return The list of available converters.
+          \param typeMap The type of converter: source-data-type -> destination-data-type.
+
+          \return A data type converter for the given map.
+
+          \exception Exception It throws an exception if none is found.
         */
-        const std::map<std::pair<int, int>, AbstractDataConverter*>& getConverters() const;
-
-        /*!
-          \brief It returns the list of available converters.
-
-          \return The list of available converters.
-        */
-        std::map<std::pair<int, int>, AbstractDataConverter*>& getConverters();        
+        const DataTypeConverter& get(const std::pair<int, int>& typeMap) throw(Exception);
 
       protected:
 
@@ -108,27 +96,16 @@ namespace te
 
       private:
 
-        std::map<std::pair<int, int>, AbstractDataConverter*> m_convMap;  //!< A map: (src-data-type, destination-data-type) -> data converter
+        std::map<std::pair<int, int>, DataTypeConverter> m_convMap;  //!< A map: (source-data-type, target-data-type) -> data type converter
     };
 
-    inline AbstractDataConverter* DataConverterManager::get(int src, int dst)
+    inline const DataTypeConverter& DataConverterManager::get(int src, int dst) throw(Exception)
     {
       std::pair<int, int> mapping(src, dst);
       return get(mapping);
     }
 
-    inline const std::map<std::pair<int, int>, AbstractDataConverter*>& DataConverterManager::getConverters() const
-    {
-      return m_convMap;
-    }
-
-    inline std::map<std::pair<int, int>, AbstractDataConverter*>& DataConverterManager::getConverters()
-    {
-      return m_convMap;
-    }    
-
   } // end namespace dt
 }   // end namespace te
 
 #endif  // __TERRALIB_DATATYPE_INTERNAL_DATACONVERTERMANAGER_H
-

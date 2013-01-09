@@ -18,36 +18,27 @@
  */
 
 /*!
-  \file terralib/datatype/Int32ToStringConverter.cpp
+  \file terralib/datatype/DataTypeConverter.h
 
-  \brief A converter from Int32 data values to String.
+  \brief Definition of data type converter.
 */
 
-// TerraLib
-#include "../common/StringUtils.h"
-#include "../common/Translator.h"
-#include "AbstractData.h"
-#include "Enums.h"
-#include "Exception.h"
-#include "Int32ToStringConverter.h"
-#include "SimpleData.h"
+#ifndef __TERRALIB_DATATYPE_INTERNAL_DATATYPECONVERTER_H
+#define __TERRALIB_DATATYPE_INTERNAL_DATATYPECONVERTER_H
 
-te::dt::AbstractData* te::dt::Int32ToStringConverter::convert(const AbstractData* d) const throw(te::dt::Exception)
+// Boost
+#include <boost/function.hpp>
+
+namespace te
 {
-  if(d->getTypeCode() != INT32_TYPE)
-    throw Exception(TR_DATATYPE("The input data type is not a 32-bit integer!"));
+  namespace dt
+  {
+// Forward declarations
+    class AbstractData;
 
-  std::string nval(te::common::Convert2String(static_cast<const Int32*>(d)->getValue()));
+    typedef boost::function1<AbstractData*, AbstractData*> DataTypeConverter;
 
-  return new String(nval);
-}
+  } // end namespace dt
+}   // end namespace te
 
-int te::dt::Int32ToStringConverter::getInputDataTypeCode() const
-{
-  return INT32_TYPE;
-}
-
-int te::dt::Int32ToStringConverter::getOutputDataTypeCode() const
-{
-  return STRING_TYPE;
-}
+#endif  // __TERRALIB_DATATYPE_INTERNAL_DATATYPECONVERTER_H

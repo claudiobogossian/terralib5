@@ -41,8 +41,8 @@
 #include <cstring>
 
 te::srs::Converter::Converter():
-  m_targetSRID(-1),
-  m_sourceSRID(-1),
+  m_targetSRID(TE_UNKNOWN_SRS),
+  m_sourceSRID(TE_UNKNOWN_SRS),
   m_sourcePj4Handler(0),
   m_targetPj4Handler(0)
 {
@@ -85,8 +85,8 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
 
 te::srs::Converter::~Converter()
 {
-  m_sourceSRID = -1;
-  m_targetSRID= -1;
+  m_sourceSRID = TE_UNKNOWN_SRS;
+  m_targetSRID= TE_UNKNOWN_SRS;
 
 #ifdef TE_USE_PROJ4 
   pj_free(m_sourcePj4Handler);
@@ -142,7 +142,7 @@ void te::srs::Converter::setSourcePJ4txt(const std::string& pj4txt)
     throw te::srs::Exception(exceptionTxt);
   }
 #endif
-  m_sourceSRID = -1;
+  m_sourceSRID = TE_UNKNOWN_SRS;
 }
 
 int 
@@ -197,7 +197,7 @@ void te::srs::Converter::setTargetPJ4txt(const std::string& pj4txt)
     throw te::srs::Exception(exceptionTxt);
   }
 #endif
-  m_targetSRID = -1;
+  m_targetSRID = TE_UNKNOWN_SRS;
 }
 
 int 

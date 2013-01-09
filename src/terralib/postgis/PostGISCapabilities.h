@@ -11,6 +11,12 @@ dataTypeCapabilities.setSupportUInt32(false);
 dataTypeCapabilities.setSupportUInt64(false);
 dataTypeCapabilities.setSupportComposite(false);
 dataTypeCapabilities.setSupportDataset(false);
+dataTypeCapabilities.setSupportCInt16(false);
+dataTypeCapabilities.setSupportCInt32(false);
+dataTypeCapabilities.setSupportCFloat(false);
+dataTypeCapabilities.setSupportCDouble(false);
+dataTypeCapabilities.setSupportDatasetItem(false);
+dataTypeCapabilities.setSupportPolymorphic(false);
 
 // DataSetType Capabilites
 te::da::DataSetTypeCapabilities dataSetTypeCapabilities;
