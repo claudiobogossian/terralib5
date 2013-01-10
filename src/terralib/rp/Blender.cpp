@@ -301,13 +301,14 @@ namespace te
       
       if( m_r1ValidDataPolygonPtr )
       {
-        m_getBlendedValue_Point1Indexed.setX( line );
-        m_getBlendedValue_Point1Indexed.setY( col );
-        if( ! m_getBlendedValue_Point1Indexed.within( m_r1ValidDataPolygonPtr ) )
-        {
-          value = m_outputNoDataValue;
-          return;
-        }
+        m_getBlendedValue_Point1Indexed.setX( col );
+        m_getBlendedValue_Point1Indexed.setY( line );
+        m_m_getBlendedValue_PointIsInsideRaster1ValidArea = 
+          m_getBlendedValue_Point1Indexed.within( m_r1ValidDataPolygonPtr );
+      }
+      else
+      {
+        m_m_getBlendedValue_PointIsInsideRaster1ValidArea = true;
       }
       
       // Finding the point over the second raster
@@ -346,15 +347,37 @@ namespace te
       {
         m_getBlendedValue_Point2Indexed.setX( m_getBlendedValue_Point2Col );
         m_getBlendedValue_Point2Indexed.setY( m_getBlendedValue_Point2Line );
-        if( ! m_getBlendedValue_Point2Indexed.within( m_r2ValidDataPolygonPtr ) )
-        {
-          value = m_outputNoDataValue;
-          return;
-        }
-      }       
+        m_m_getBlendedValue_PointIsInsideRaster2ValidArea = 
+          m_getBlendedValue_Point2Indexed.within( m_r2ValidDataPolygonPtr );
+      }
+      else
+      {
+        m_m_getBlendedValue_PointIsInsideRaster2ValidArea = true;
+      }
       
-      return (this->*m_blendFuncPtr)( line, col, m_getBlendedValue_Point2Line,
-        m_getBlendedValue_Point2Col, rasterChannelsVecsIdx, value );
+      if( m_m_getBlendedValue_PointIsInsideRaster1ValidArea
+        && m_m_getBlendedValue_PointIsInsideRaster2ValidArea )
+      {
+        (this->*m_blendFuncPtr)( line, col, m_getBlendedValue_Point2Line,
+            m_getBlendedValue_Point2Col, rasterChannelsVecsIdx, value );
+      }
+      else if( m_m_getBlendedValue_PointIsInsideRaster1ValidArea )
+      {
+        m_interp1->getValue( col, line, m_getBlendedValue_cValue, 
+          m_raster1Bands[ rasterChannelsVecsIdx ] );
+        value =  m_getBlendedValue_cValue.real();        
+      }
+      else if( m_m_getBlendedValue_PointIsInsideRaster2ValidArea )
+      {
+        m_interp2->getValue( m_getBlendedValue_Point2Col, 
+          m_getBlendedValue_Point2Line, m_getBlendedValue_cValue, 
+          m_raster2Bands[ rasterChannelsVecsIdx ] );
+        value =  m_getBlendedValue_cValue.real();        
+      }
+      else
+      {
+        value = m_outputNoDataValue;
+      }
     }    
     
     void Blender::noBlendMethodImp( const double& line1, const double& col1,

@@ -156,6 +156,8 @@ namespace te
         te::srs::Converter m_convInstance; //!< A SRS converter instance to be used when the rasters SRIDs are not the same.
         
         // variables used by the getBlendedValue method
+        bool m_m_getBlendedValue_PointIsInsideRaster1ValidArea;
+        bool m_m_getBlendedValue_PointIsInsideRaster2ValidArea;
         double m_getBlendedValue_Point1XProj1;
         double m_getBlendedValue_Point1YProj1;
         double m_getBlendedValue_Point1XProj2;
@@ -164,6 +166,7 @@ namespace te
         double m_getBlendedValue_Point2Col;
         te::gm::Point m_getBlendedValue_Point1Indexed;
         te::gm::Point m_getBlendedValue_Point2Indexed;
+        std::complex< double > m_getBlendedValue_cValue;
         
         // variables used by the noBlendMethodImp method
         std::complex< double > m_noBlendMethodImp_cValue;

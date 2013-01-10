@@ -526,7 +526,7 @@ namespace te
       }
       
       // Copyting the first image data to the output mosaic
-      
+
       {
         m_inputParameters.m_feederRasterPtr->reset();
         
@@ -755,7 +755,7 @@ namespace te
         }
         
         // copying each non overlaped image area
-if(false)        
+
         if( nonOverlappedResult.get() )
         {
           te::rst::Interpolator interpInstance( &cachedInputRaster, 
@@ -850,10 +850,8 @@ if(false)
         // Processing each one of the mosaic boxes union components
         // blending each overlapped area
         
-        const std::size_t mosaicBBoxesUnionSize = mosaicBBoxesUnionPtr->getNumGeometries();
-        
         for( std::size_t mosaicBBoxesUnionIdx = 0 ; mosaicBBoxesUnionIdx <
-          mosaicBBoxesUnionSize ; ++mosaicBBoxesUnionIdx )
+          mosaicBBoxesUnionPtr->getNumGeometries() ; ++mosaicBBoxesUnionIdx )
         {
           te::gm::Polygon const* mosaicBBoxesUnionElementPtr = 
             dynamic_cast< te::gm::Polygon const*>( 
@@ -1038,7 +1036,7 @@ if(false)
             te::gm::MultiPolygonType, boxesUnionResultPtr->getSRID(), 0 );
           auxMultiPol->add( boxesUnionResultPtr.release() );
           
-          mosaicBBoxesUnionPtr.reset( (te::gm::MultiPolygon*)boxesUnionResultPtr.release() );
+          mosaicBBoxesUnionPtr.reset( auxMultiPol );
         }
         else
         {
