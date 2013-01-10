@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>ProjectFrameForm</class>
+ <widget class="QWidget" name="ProjectFrameForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -200,7 +200,7 @@
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="label_2">
+      <widget class="QLabel" name="titleLabel">
        <property name="font">
         <font>
          <pointsize>10</pointsize>
