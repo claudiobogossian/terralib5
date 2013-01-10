@@ -41,7 +41,7 @@ void te::dt::DataConverterManager::add(int src, int dst, te::dt::DataTypeConvert
   m_convMap[mapping] = conv;
 }
 
-const te::dt::DataTypeConverter& te::dt::DataConverterManager::get(const std::pair<int, int>& typeMap)
+const te::dt::DataTypeConverter& te::dt::DataConverterManager::get(const std::pair<int, int>& typeMap) throw(Exception)
 {
   std::map<std::pair<int, int>, DataTypeConverter>::iterator it = m_convMap.find(typeMap);
   if(it != m_convMap.end())
