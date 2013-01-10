@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/BlockUtils.cpp
- 
+
   \brief Utility functions for dealing with raster data blocks.
 */
 
@@ -33,7 +33,7 @@ namespace te
   namespace rst
   {
     /*!
-      \struct Int16
+      \struct CInt16
 
       \brief A simple type for use by driver to cast raster data blocks.
     */
@@ -44,7 +44,7 @@ namespace te
     };
 
     /*!
-      \struct Int32
+      \struct CInt32
 
       \brief A simple type for use by driver to cast raster data blocks.
     */
@@ -55,7 +55,7 @@ namespace te
     };
 
     /*!
-      \struct Float
+      \struct CFloat
 
       \brief A simple type for use by driver to cast raster data blocks.
     */
@@ -66,7 +66,7 @@ namespace te
     };
 
     /*!
-      \struct Double
+      \struct CDouble
 
       \brief A simple type for use by driver to cast raster data blocks.
     */
@@ -85,6 +85,27 @@ void te::rst::DummyGetValue(int /*index*/, void* /*buffer*/, double* /*value*/)
 
 void te::rst::DummySetValue(int /*index*/, void* /*buffer*/, const double* /*value*/)
 {
+}
+
+void te::rst::Get4bits(int index, void* buffer, double* value)
+{
+  unsigned int bitshift = (index % 2) * 4;
+  unsigned char ucvalue = ((unsigned char*) buffer) [index >> 1]; // index >> 1 is used to divide the index by 2
+  *value = (double) ( (ucvalue >> bitshift) & 15 ); // '& 15' is used to get only first 4 bits (mask 00001111)
+}
+
+void te::rst::Get2bits(int index, void* buffer, double* value)
+{
+  unsigned int bitshift = (index % 4) * 2;
+  unsigned char ucvalue = ((unsigned char*) buffer) [index >> 2]; // index >> 2 is used to divide the index by 4
+  *value = (double) ( ( ucvalue >> bitshift ) & 3 ); // '& 3' is used to get only first 2 bits (mask 00000011)
+}
+
+void te::rst::Get1bit(int index, void* buffer, double* value)
+{
+  unsigned int bitshift = (index % 8);
+  unsigned char ucvalue = ((unsigned char*) buffer) [index >> 3]; // index >> 3 is used to divide the index by 8
+  *value = (double) ( ( ucvalue >> bitshift ) & 1 ); // '& 1' is used to get only first bit (mask 00000001)
 }
 
 void te::rst::GetUChar(int index, void* buffer, double* value)
@@ -165,6 +186,30 @@ void te::rst::GetCRDouble(int index, void* buffer, double* value)
 void te::rst::GetCIDouble(int index, void* buffer, double* value)
 {
   *value = (((CDouble*)buffer)[index]).i;
+}
+
+void te::rst::Set1bit(int index, void* buffer, const double* value)
+{
+  unsigned int bitshift = (index % 8);
+  unsigned char firstbit = ((unsigned char) *value) & 1; // '& 1' is used to get only first bit (mask 00000001)
+  ((unsigned char*)buffer)[index >> 3] &= ~(1u << bitshift); // clear bit value, index >> 3 is used to divide the index by 8
+  ((unsigned char*)buffer)[index >> 3] |= (firstbit << bitshift); // set new value, index >> 3 is used to divide the index by 8
+}
+
+void te::rst::Set2bits(int index, void* buffer, const double* value)
+{
+  unsigned int bitshift = (index % 4) * 2;
+  unsigned char first2bits = ((unsigned char) *value) & 3; // '& 3' is used to get only first 2 bits (mask 00000011)
+  ((unsigned char*)buffer)[index >> 2] &= ~(3u << bitshift); // clear bit values, index >> 2 is used to divide the index by 4
+  ((unsigned char*)buffer)[index >> 2] |= (first2bits << bitshift); // set new value, index >> 2 is used to divide the index by 4
+}
+
+void te::rst::Set4bits(int index, void* buffer, const double* value)
+{
+  unsigned int bitshift = (index % 2) * 4;
+  unsigned char first4bits = ((unsigned char) *value) & 15; // '& 15' is used to get only first 4 bits (mask 00001111)
+  ((unsigned char*)buffer)[index >> 1] &= ~(15u << bitshift); // clear bit values, index >> 1 is used to divide the index by 2
+  ((unsigned char*)buffer)[index >> 1] |= (first4bits << bitshift); // set new value, index >> 1 is used to divide the index by 2
 }
 
 void te::rst::SetUChar(int index, void* buffer, const double* value)
@@ -252,6 +297,27 @@ void te::rst::SetBlockFunctions(GetBufferValueFPtr *gb, GetBufferValueFPtr *gbi,
 {
   switch(type)
   {
+    case te::dt::R4BITS_TYPE:
+      *gb = te::rst::Get4bits;
+      *gbi = te::rst::DummyGetValue;
+      *sb = te::rst::Set4bits;
+      *sbi = te::rst::DummySetValue;
+    break;
+
+    case te::dt::R2BITS_TYPE:
+      *gb = te::rst::Get2bits;
+      *gbi = te::rst::DummyGetValue;
+      *sb = te::rst::Set2bits;
+      *sbi = te::rst::DummySetValue;
+    break;
+
+    case te::dt::R1BIT_TYPE:
+      *gb = te::rst::Get1bit;
+      *gbi = te::rst::DummyGetValue;
+      *sb = te::rst::Set1bit;
+      *sbi = te::rst::DummySetValue;
+    break;
+
     case te::dt::UCHAR_TYPE:
       *gb = te::rst::GetUChar;
       *gbi = te::rst::DummyGetValue;
