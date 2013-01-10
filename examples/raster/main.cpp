@@ -29,7 +29,8 @@ int main()
     RasterInMemory();
     ExemplifyIterators();
     GribPolygonExample();
-    
+    Raster1Bit();
+
     te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();
