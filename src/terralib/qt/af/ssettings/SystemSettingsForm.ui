@@ -96,7 +96,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QFrame" name="frame">
+        <widget class="QFrame" name="currentFrame">
          <property name="minimumSize">
           <size>
            <width>301</width>
@@ -116,7 +116,7 @@
      <item row="1" column="0">
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="helpButton">
          <property name="text">
           <string>Ajuda</string>
          </property>
@@ -136,7 +136,7 @@
         </spacer>
        </item>
        <item row="0" column="2">
-        <widget class="QPushButton" name="pushButton_2">
+        <widget class="QPushButton" name="exitButton">
          <property name="text">
           <string>&amp;Sair</string>
          </property>
