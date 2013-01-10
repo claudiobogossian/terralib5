@@ -39,7 +39,7 @@
 static int sg_pixelSize[] = {  0,
                                0,
                                0,
-                               sizeof(char),
+                               sizeof(char) * 8,
                                sizeof(unsigned char),
                                sizeof(boost::int16_t),
                                sizeof(boost::uint16_t),
@@ -63,7 +63,12 @@ static int sg_pixelSize[] = {  0,
                                sizeof(boost::int32_t) * 2,
                                sizeof(float) * 2,
                                sizeof(double) * 2,
-                               0
+                               0,
+                               0,
+                               0,
+                               sizeof(unsigned char), // 4bits = 4/8 sizeof(unsigned char)
+                               sizeof(unsigned char), // 2bits = 2/8 sizeof(unsigned char)
+                               sizeof(unsigned char)  // 1bit = 1/8 sizeof(unsigned char)
                             };
 
 int te::rst::GetPixelSize(int datatype)
@@ -164,7 +169,7 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
 
   const std::size_t nbands = rin.getNumberOfBands();
   const unsigned int nRows = rin.getNumberOfRows();
-  const unsigned int nCols = rin.getNumberOfColumns();  
+  const unsigned int nCols = rin.getNumberOfColumns();
   unsigned int row = 0;
   unsigned int col = 0;
   std::complex< double > value;
@@ -173,13 +178,13 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
   {
     if( rin.getBand(b)->getProperty()->getType() == rout.getBand(b)->getProperty()->getType() )
     {
-      Copy(*rin.getBand(b), *rout.getBand(b));      
+      Copy(*rin.getBand(b), *rout.getBand(b));
     }
     else
     {
       const te::rst::Band& bin = *rin.getBand(b);
       te::rst::Band& bout = *rout.getBand(b);
-      
+
       for( row = 0 ; row < nRows ; ++row )
         for( col = 0 ; col < nCols ; ++col )
         {
@@ -220,7 +225,7 @@ void te::rst::Copy(const te::rst::Band& bin, te::rst::Band& bout)
 // get all values from input block, and copy pixel by pixel to the output band
   else
   {
-    std::complex<double> value;    
+    std::complex<double> value;
 
     const unsigned int ncols = bin.getRaster()->getNumberOfColumns();
     const unsigned int nrows = bin.getRaster()->getNumberOfRows();
@@ -307,7 +312,7 @@ te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
 
   te::rst::RasterPtr outRasterPtr;
 
-  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid(*(rin.getGrid())), bandsProperties, rasterInfo, 0, 0)); 
+  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid(*(rin.getGrid())), bandsProperties, rasterInfo, 0, 0));
 
   if(outRasterPtr.get() == 0)
     return outRasterPtr;
