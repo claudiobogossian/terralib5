@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>SystemSettingsForm</class>
+ <widget class="QWidget" name="SystemSettingsForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>System Settings</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
@@ -147,9 +147,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>horizontalSpacer</zorder>
-  <zorder>pushButton_2</zorder>
-  <zorder>pushButton</zorder>
  </widget>
  <resources/>
  <connections/>
