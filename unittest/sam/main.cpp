@@ -35,7 +35,8 @@
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  
+// initialize Terralib platform
+  TerraLib::getInstance().initialize();      
 // it creates the event manager and test controller
   CPPUNIT_NS::TestResult controller;
 
@@ -78,6 +79,8 @@ int main(int /*argc*/, char** /*argv*/)
 
   bool resultStatus = result.wasSuccessful();
 
+  TerraLib::getInstance().finalize();
+    
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

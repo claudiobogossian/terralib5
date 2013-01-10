@@ -27,7 +27,10 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
+#include "../datatype/DataConverterManager.h"
+#include "../datatype/Enums.h"
 #include "Geometry.h"
+#include "GeometryConverters.h"
 #include "GEOSGeometryFactory.h"
 #include "Module.h"
 
@@ -101,6 +104,12 @@ void te::gm::Module::initialize()
 // it initializes the GEOS Geometry Factory
   te::gm::GEOSGeometryFactory::initialize();
 #endif
+
+// registering data type converters
+  te::dt::DataConverterManager::getInstance().add(te::dt::GEOMETRY_TYPE, te::dt::BYTE_ARRAY_TYPE, GeometryToByteArrayConverter);
+  te::dt::DataConverterManager::getInstance().add(te::dt::GEOMETRY_TYPE, te::dt::STRING_TYPE, GeometryToStringConverter);
+  te::dt::DataConverterManager::getInstance().add(te::dt::BYTE_ARRAY_TYPE, te::dt::GEOMETRY_TYPE, ByteArrayToGeometryConverter);
+  te::dt::DataConverterManager::getInstance().add(te::dt::STRING_TYPE, te::dt::GEOMETRY_TYPE, StringToGeometryConverter);
 
   TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Initialized!"));
 }

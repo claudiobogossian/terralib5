@@ -30,10 +30,11 @@
 
 QEvent::Type te::qt::widgets::CreateProgressWidgetItemEvent::m_customEventType = QEvent::None;
 
-te::qt::widgets::CreateProgressWidgetItemEvent::CreateProgressWidgetItemEvent(const QString& label, const int& taskId)
+te::qt::widgets::CreateProgressWidgetItemEvent::CreateProgressWidgetItemEvent(const QString& label, const int& taskId, const int& totalSteps)
   : QEvent(CreateProgressWidgetItemEvent::type()),
     m_label(label),
-    m_taskId(taskId)
+    m_taskId(taskId),
+    m_totalSteps(totalSteps)
 {
 }
 

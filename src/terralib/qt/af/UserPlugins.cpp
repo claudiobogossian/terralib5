@@ -23,6 +23,10 @@
   \brief A singleton for managing the plugins enabled by a specific user.
 */
 
+// Boost
+#include <boost/filesystem.hpp>
+#include <boost/foreach.hpp>
+
 // TerraLib
 #include "../../common/OSSettingsDir.h"
 #include "../../common/SystemApplicationSettings.h"
@@ -39,9 +43,6 @@
 #include <memory>
 #include <set>
 
-// Boost
-#include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 
 void te::qt::af::UserPlugins::load()
 {
@@ -57,7 +58,7 @@ void te::qt::af::UserPlugins::load()
   {
     boost::property_tree::ptree& p = ApplicationPlugins::getInstance().getAllSettings();
 
-    if(!p.empty())
+    if(!p.empty())      
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Plugins"))
       {
         if(v.second.data().empty())

@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../raster.h"
+#include "Config.h"
 
 // STL
 #include <map>
@@ -37,20 +38,23 @@ namespace te
 {
   namespace rp
   {
+    /*! \brief Returns a vector os with band's names. */
+    TERPEXPORT std::vector<std::string> GetBandNames();
+
     /*! \brief Returns the maximun and minimum reflectance values of a given sensor/band. */
-    std::pair<double, double> GetSpectralBandInfo(std::string bandName);
+    TERPEXPORT std::pair<double, double> GetSpectralBandInfo(std::string bandName);
 
     /*! \brief Returns the minimum reflectance value of a given sensor/band. */
-    double GetSpectralBandMin(std::string bandName);
+    TERPEXPORT double GetSpectralBandMin(std::string bandName);
 
     /*! \brief Returns the maximum reflectance value of a given sensor/band. */
-    double GetSpectralBandMax(std::string bandName);
+    TERPEXPORT double GetSpectralBandMax(std::string bandName);
 
     /*! \brief Returns the maximun and minimum digital numbers of a given sensor/band. */
-    std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName);
+    TERPEXPORT std::pair<double, double> GetDigitalNumberBandInfo(std::string bandName);
 
     /*! \brief Returns the maximum digital number of a given sensor/band. */
-    double GetDigitalNumberBandMax(std::string bandName);
+    TERPEXPORT double GetDigitalNumberBandMax(std::string bandName);
 
     /*!
       \brief Normalizes one raster in a given interval.
@@ -61,7 +65,7 @@ namespace te
 
       \return true if normalization occurs and false otherwise.
     */
-    bool NormalizeRaster(te::rst::Raster& inraster, double nmin = 0.0, double nmax = 255.0);
+    TERPEXPORT bool NormalizeRaster(te::rst::Raster& inraster, double nmin = 0.0, double nmax = 255.0);
   } // end namespace rp
 }   // end namespace te
 

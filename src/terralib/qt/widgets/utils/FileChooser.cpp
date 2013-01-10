@@ -80,11 +80,11 @@ namespace te
         switch(type)
         {
           case FILE:
-            filters = QDir::AllDirs | QDir::AllEntries | QDir::Drives;
+            filters = QDir::AllDirs | QDir::AllEntries | QDir::NoDotAndDotDot;
           break;
 
           case FOLDER:
-            filters = QDir::AllDirs | QDir::Dirs | QDir::Drives | QDir::NoDotAndDotDot;
+            filters = QDir::AllDirs | QDir::Drives | QDir::NoDotAndDotDot;
           break;
         };
 
@@ -93,7 +93,7 @@ namespace te
 
       void FileChooser::onChooseFileToolButtonClicked()
       {
-        bool openFile = (m_fp_model->filter() & QDir::AllEntries);
+        bool openFile = (m_fp_model->filter() & QDir::Files);
         QString fName = (openFile) ? 
           QFileDialog::getOpenFileName(parentWidget(), tr("Choose file"), getSelectedResource(), m_filter) :
           QFileDialog::getExistingDirectory(parentWidget(), tr("Choose directory"), getSelectedResource());

@@ -54,6 +54,12 @@ void te::qt::af::SplashScreenManager::setLogo(const QPixmap& pix)
     m_sc->setPixmap(pix);
 }
 
+void te::qt::af::SplashScreenManager::close()
+{
+  if(m_sc != 0 && m_sc->isVisible())
+    m_sc->hide();
+}
+
 te::qt::af::SplashScreenManager::SplashScreenManager()
   : m_sc(0),
     m_msgAlignment(Qt::AlignLeft),

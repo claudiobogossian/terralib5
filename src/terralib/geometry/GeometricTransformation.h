@@ -104,6 +104,33 @@ namespace te
         {
           return m_internalParameters;
         };
+        
+        /*!
+          \brief Direct mapping ( from pt1 space into pt2 space ).
+
+          \param params Transformation parameters.
+          \param pt1X pt1 X coordinate.
+          \param pt1Y pt1 Y coordinate.
+          \param pt2X pt2 X coordinate.
+          \param pt2Y pt2 Y coordinate.
+        */
+        virtual void directMap( const GTParameters& params, const double& pt1X, 
+          const double& pt1Y, double& pt2X, double& pt2Y ) const = 0;        
+          
+        /*!
+          \brief Direct mapping ( from pt1 space into pt2 space ).
+
+          \param pt1X pt1 X coordinate.
+          \param pt1Y pt1 Y coordinate.
+          \param pt2X pt2 X coordinate.
+          \param pt2Y pt2 Y coordinate.
+        */
+        inline void directMap( const double& pt1X, 
+          const double& pt1Y, double& pt2X, double& pt2Y ) const
+        {
+          assert( isValid( m_internalParameters ) );
+          directMap( m_internalParameters, pt1X, pt1Y, pt2X, pt2Y );
+        };
 
         /*!
           \brief Direct mapping ( from pt1 space into pt2 space ).
@@ -112,7 +139,10 @@ namespace te
           \param pt1 pt1 coordinate.
           \param pt2 pt2 coordinate.
         */
-        virtual void directMap( const GTParameters& params, const Coord2D& pt1, Coord2D& pt2 ) const = 0;
+        inline void directMap( const GTParameters& params, const Coord2D& pt1, Coord2D& pt2 ) const
+        {
+          directMap( params, pt1.x, pt1.y, pt2.x, pt2.y );          
+        };
 
         /*!
           \brief Direct mapping ( from pt1 space into pt2 space ).
@@ -120,11 +150,37 @@ namespace te
           \param pt1 pt1 coordinate.
           \param pt2 pt2 coordinate.
         */
-        void directMap( const Coord2D& pt1, Coord2D& pt2 ) const
+        inline void directMap( const Coord2D& pt1, Coord2D& pt2 ) const
         {
           assert( isValid( m_internalParameters ) );
+          directMap( m_internalParameters, pt1.x, pt1.y, pt2.x, pt2.y );
+        };
+        
+        /*!
+          \brief Inverse mapping ( from pt2 space into pt1 space ).
 
-          directMap( m_internalParameters, pt1, pt2 );
+          \param params Transformation parameters.
+          \param pt1X pt1 X coordinate.
+          \param pt1Y pt1 Y coordinate.
+          \param pt2X pt2 X coordinate.
+          \param pt2Y pt2 Y coordinate.
+        */
+        virtual void inverseMap( const GTParameters& params, const double& pt2X, 
+          const double& pt2Y, double& pt1X, double& pt1Y ) const = 0;        
+          
+        /*!
+          \brief Inverse mapping ( from pt2 space into pt1 space ).
+
+          \param pt1X pt1 X coordinate.
+          \param pt1Y pt1 Y coordinate.
+          \param pt2X pt2 X coordinate.
+          \param pt2Y pt2 Y coordinate.
+        */
+        inline void inverseMap( const double& pt2X, 
+          const double& pt2Y, double& pt1X, double& pt1Y ) const
+        {
+          assert( isValid( m_internalParameters ) );
+          inverseMap( m_internalParameters, pt2X, pt2Y, pt1X, pt1Y );
         };
 
         /*!
@@ -134,7 +190,10 @@ namespace te
           \param pt2 pt2 coordinate.
           \param pt1 pt1 coordinate.
         */
-        virtual void inverseMap( const GTParameters& params, const Coord2D& pt2, Coord2D& pt1 ) const = 0;
+        inline void inverseMap( const GTParameters& params, const Coord2D& pt2, Coord2D& pt1 ) const
+        {
+          inverseMap( params, pt2.x, pt2.y, pt1.x, pt1.y );
+        };
 
         /*!
           \brief Inverse mapping ( from pt2 space into pt1 space ).
@@ -142,11 +201,10 @@ namespace te
           \param pt2 pt2 coordinate.
           \param pt1 pt1 coordinate.
         */
-        void inverseMap( const Coord2D& pt2, Coord2D& pt1 ) const
+        inline void inverseMap( const Coord2D& pt2, Coord2D& pt1 ) const
         {
           assert( isValid( m_internalParameters ) );
-
-          inverseMap( m_internalParameters, pt2, pt1 );
+          inverseMap( m_internalParameters, pt2.x, pt2.y, pt1.x, pt1.y );
         };
 
         /*!
@@ -289,8 +347,17 @@ namespace te
           \return The minimum number of required tie-points for the current transformation.
         */
         virtual unsigned int getMinRequiredTiePoints() const = 0;
+        
+        /*!
+          \brief Creat a clone copy of this instance.
+          
+          \return A clone copy of this instance (the caller of this method must take the ownership of the returned object and delete it when appropriate.
+        */
+        virtual GeometricTransformation* clone() const = 0;
 
       protected:
+        
+        GTParameters m_internalParameters;  //!< The current internal parameters.
 
         /*! \brief Default constructor. */
         GeometricTransformation();
@@ -302,11 +369,7 @@ namespace te
 
           \return true if OK, false on errors.
         */
-        virtual bool computeParameters( GTParameters& params ) const = 0;        
-
-      private:
-
-        GTParameters m_internalParameters;  //!< The current internal parameters.
+        virtual bool computeParameters( GTParameters& params ) const = 0;
     };
 
   } // end namespace gm

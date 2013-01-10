@@ -4,7 +4,7 @@ set (PROJ_NAME "terralib")
 project(${PROJ_NAME})
 
 set (TE_VERSION "5.0.0")
-set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../Modules")
+set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../modules")
 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}" )
 
@@ -31,36 +31,38 @@ file(RELATIVE_PATH _tePath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${ROOT}" )
 # Configuring plugin
 set (TERRALIB_SCHEMA_LOCATION "${_tePath}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
 set (TERRALIB_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the TerraLib logo image.")
+set (TERRALIB_INIT_FILES_LOCATION "${_tePath}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
 
 #-----------------------------------------------------------------------
-option (BUILD_AF "Build application framework module?" ON)
-option (BUILD_ANNOTATIONTEXT "Build annotation text module?" ON)
-option (BUILD_COLOR "Build color module?" ON)
-option (BUILD_COMMON "Build common module?" ON)
-option (BUILD_DATAACCESS "Build data access module?" ON)
-option (BUILD_DATATYPE "Build annotation text module?" ON)
-option (BUILD_FILTER "Build filter module?" ON)
+option (BUILD_ANNOTATIONTEXT "Build Annotation Text module?" ON)
+option (BUILD_COLOR "Build Color module?" ON)
+option (BUILD_COMMON "Build Common Runtime module?" ON)
+option (BUILD_DATAACCESS "Build Data Access module?" ON)
+option (BUILD_DATATYPE "Build Data Type module?" ON)
+option (BUILD_FILTER "Build OGC Filter module?" ON)
 option (BUILD_GDAL "Build GDAL module?" ON)
-option (BUILD_GEOMETRY "Build geometry module?" ON)
+option (BUILD_GEOMETRY "Build Geometry module?" ON)
 option (BUILD_GML "Build GML module?" ON)
 option (BUILD_IDL "Build IDL module?" OFF)
-option (BUILD_MAPTOOLS "Build map tools module?" ON)
-option (BUILD_MEMORY "Build memory module?" ON)
+option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
+option (BUILD_MEMORY "Build Memory module?" ON)
 option (BUILD_OGR "Build OGR module?" ON)
-option (BUILD_PLUGIN "Build plug-in module?" ON)
+option (BUILD_PLUGIN "Build Plugin module?" ON)
 option (BUILD_POSTGIS "Build PostGIS module?" ON)
-option (BUILD_QTWIDGETS "Build Qt widgets module?" ON)
-option (BUILD_RASTER "Build raster module?" ON)
-option (BUILD_RP "Build raster processing module?" ON)
-option (BUILD_SAM "Build SAM module?" ON)
-option (BUILD_SERIALIZATION "Build SERIALIZATION module?" OFF)
-option (BUILD_SRS "Build spatial reference system module?" ON)
-option (BUILD_ST "Build spatial-temporal module?" ON)
-option (BUILD_STLOADER "Build ST loader module?" ON)
-option (BUILD_SYMBOLOGY "Build symbology module?" ON)
+option (BUILD_QT_AF "Build Qt Application Framework module?" ON)
+option (BUILD_QT_WIDGETS "Build Qt Widgets module?" ON)
+option (BUILD_RASTER "Build Raster module?" ON)
+option (BUILD_RP "Build Raster Processing module?" ON)
+option (BUILD_SAM "Build Spatial Access Methods module?" ON)
+option (BUILD_SERIALIZATION "Build Serialization module?" ON)
+option (BUILD_SRS "Build Spatial Reference System module?" ON)
+option (BUILD_ST "Build Spatial-Temporal module?" ON)
+option (BUILD_STLOADER "Build Spatial-Temporal Loader module?" ON)
+option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
 option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
 option (BUILD_XML "Build XML module?" ON)
+option (BUILD_XSD "Build XSD module?" ON)
 
 if(UNIX)
   option (BUILD_GRIB "Build GRIB module?" ON)
@@ -68,10 +70,6 @@ endif()
 
 if(WIN32)
   option (BUILD_ADO "Build ADO module?" ON)
-endif()
-
-IF(BUILD_AF)
-	add_subdirectory(terralib_af)
 endif()
 
 IF(BUILD_ANNOTATIONTEXT)
@@ -134,8 +132,12 @@ IF(BUILD_POSTGIS)
 	add_subdirectory(terralib_postgis)
 endif()
 
-IF(BUILD_QTWIDGETS)
-	add_subdirectory(terralib_qtwidgets)
+IF(BUILD_QT_AF)
+	add_subdirectory(terralib_qt_af)
+endif()
+
+IF(BUILD_QT_WIDGETS)
+	add_subdirectory(terralib_qt_widgets)
 endif()
 
 IF(BUILD_RASTER)
@@ -182,6 +184,10 @@ IF(BUILD_XML)
 	add_subdirectory(terralib_xml)
 endif()
 
+IF(BUILD_XSD)
+	add_subdirectory(terralib_xsd)
+endif()
+
 IF(BUILD_GRIB)
   add_subdirectory(terralib_grib)
 endif()
@@ -207,7 +213,7 @@ export( PACKAGE terralib )
 
 install (
   EXPORT teDepends 
-  DESTINATION Modules
+  DESTINATION modules
   COMPONENT CMAKE
 )
   
@@ -215,7 +221,7 @@ install (
 FILE ( GLOB cmake_files "${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake")
 install ( 
   FILES ${cmake_files}
-  DESTINATION Modules
+  DESTINATION modules
   COMPONENT CMAKE
 )
 

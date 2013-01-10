@@ -221,5 +221,11 @@ void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTrans
 */
 void DroppingDataSetType(te::da::DataSetType* dt, te::da::DataSourceTransactor* trans);
 
-#endif  // __TERRALIB_EXAMPLES_DATAACCESS_INTERNAL_DATAACCESSEXAMPLES_H
+/*!
+  \brief It retrieves and prints the capabilities of a given data source.
 
+  \param ds A valid data source.
+*/
+void PrintDataSourceCapabilities(te::da::DataSource* ds);
+
+#endif  // __TERRALIB_EXAMPLES_DATAACCESS_INTERNAL_DATAACCESSEXAMPLES_H

@@ -34,9 +34,9 @@
 #include <QtGui/QSizePolicy>
 #include <QtGui/QStyle>
 
-te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId) : 
-  QWidget(parent),
-  m_taskId(taskId)
+te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int taskId, int totalSteps)
+  : QWidget(parent),
+    m_taskId(taskId)
 {
   //build custom widget
   m_mainGridLayout = new QGridLayout(this);
@@ -68,7 +68,7 @@ te::qt::widgets::ProgressWidgetItem::ProgressWidgetItem(QWidget* parent, int tas
   m_frameGridLayout->addWidget(m_button, 1, 1, 1, 1, Qt::AlignCenter);
 
   //set default range
-  m_progressBar->setRange(0,100);
+  totalSteps == 0 ? m_progressBar->setRange(0, 0) : m_progressBar->setRange(0, 100);
 
   //connect signal cancel
   connect(m_button, SIGNAL(released()), this, SLOT(cancel()));
@@ -106,7 +106,11 @@ void te::qt::widgets::ProgressWidgetItem::customEvent(QEvent* e)
 {
   if(e->type() == te::qt::widgets::ProgressSetValueEvent::type())
   {
+    if(m_progressBar->minimum() == 0 && m_progressBar->maximum() == 0)
+      return;
+
     m_progressBar->setValue(static_cast<te::qt::widgets::ProgressSetValueEvent*>(e)->m_value);
+
     return;
   }
 

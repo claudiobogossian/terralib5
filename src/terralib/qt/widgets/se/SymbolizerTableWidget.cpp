@@ -31,7 +31,7 @@
 #include "../../../maptools/CanvasConfigurer.h"
 #include "../../../se/Symbolizer.h"
 #include "../canvas/Canvas.h"
-#include "StylePreview.h"
+#include "SymbologyPreview.h"
 #include "SymbolizerTableWidget.h"
 
 // Qt
@@ -83,7 +83,7 @@ void te::qt::widgets::SymbolizerTableWidget::updatePreview(const std::vector<te:
   m_previewTable->setRowCount(symbs.size());
   for(std::size_t i = 0; i < symbs.size(); ++i)
   {
-    QTableWidgetItem* item = new QTableWidgetItem(te::qt::widgets::StylePreview::build(symbs[i], m_geom, m_size), "");
+    QTableWidgetItem* item = new QTableWidgetItem(te::qt::widgets::SymbologyPreview::build(symbs[i], m_geom, m_size), "");
     m_previewTable->setItem(i, 0, item);
   }
 }

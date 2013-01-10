@@ -55,70 +55,77 @@ bool te::gm::ThirdDegreePolynomialGT::isValid( const GTParameters& params ) cons
     ( params.m_inverseParameters.size() == 20 ) );
 }
 
-void te::gm::ThirdDegreePolynomialGT::directMap( const GTParameters& params, const Coord2D& pt1, 
-  Coord2D& pt2 ) const
+void te::gm::ThirdDegreePolynomialGT::directMap( const GTParameters& params, const double& pt1X, 
+  const double& pt1Y, double& pt2X, double& pt2Y ) const
 {
   assert( isValid( params ) );
   
-  pt2.x =
+  pt2X =
       params.m_directParameters[ 0 ] +
-    ( params.m_directParameters[ 1 ] * pt1.y ) +
-    ( params.m_directParameters[ 2 ] * pt1.y * pt1.y ) +
-    ( params.m_directParameters[ 3 ] * pt1.y * pt1.y * pt1.y ) +
-    ( params.m_directParameters[ 4 ] * pt1.x ) +
-    ( params.m_directParameters[ 5 ] * pt1.x * pt1.y ) +
-    ( params.m_directParameters[ 6 ] * pt1.x * pt1.y * pt1.y ) +
-    ( params.m_directParameters[ 7 ] * pt1.x * pt1.x ) +
-    ( params.m_directParameters[ 8 ] * pt1.x * pt1.x * pt1.y ) +
-    ( params.m_directParameters[ 9 ] * pt1.x * pt1.x * pt1.x );
+    ( params.m_directParameters[ 1 ] * pt1Y ) +
+    ( params.m_directParameters[ 2 ] * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 3 ] * pt1Y * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 4 ] * pt1X ) +
+    ( params.m_directParameters[ 5 ] * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 6 ] * pt1X * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 7 ] * pt1X * pt1X ) +
+    ( params.m_directParameters[ 8 ] * pt1X * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 9 ] * pt1X * pt1X * pt1X );
 
-  pt2.y =
+  pt2Y =
       params.m_directParameters[ 10 ] +
-    ( params.m_directParameters[ 11 ] * pt1.y ) +
-    ( params.m_directParameters[ 12 ] * pt1.y * pt1.y ) +
-    ( params.m_directParameters[ 13 ] * pt1.y * pt1.y * pt1.y ) +
-    ( params.m_directParameters[ 14 ] * pt1.x ) +
-    ( params.m_directParameters[ 15 ] * pt1.x * pt1.y ) +
-    ( params.m_directParameters[ 16 ] * pt1.x * pt1.y * pt1.y ) +
-    ( params.m_directParameters[ 17 ] * pt1.x * pt1.x ) +
-    ( params.m_directParameters[ 18 ] * pt1.x * pt1.x * pt1.y ) +
-    ( params.m_directParameters[ 19 ] * pt1.x * pt1.x * pt1.x );
+    ( params.m_directParameters[ 11 ] * pt1Y ) +
+    ( params.m_directParameters[ 12 ] * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 13 ] * pt1Y * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 14 ] * pt1X ) +
+    ( params.m_directParameters[ 15 ] * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 16 ] * pt1X * pt1Y * pt1Y ) +
+    ( params.m_directParameters[ 17 ] * pt1X * pt1X ) +
+    ( params.m_directParameters[ 18 ] * pt1X * pt1X * pt1Y ) +
+    ( params.m_directParameters[ 19 ] * pt1X * pt1X * pt1X );
 }
 
-void te::gm::ThirdDegreePolynomialGT::inverseMap( const GTParameters& params, const Coord2D& pt2, 
-  Coord2D& pt1 ) const
+void te::gm::ThirdDegreePolynomialGT::inverseMap( const GTParameters& params, const double& pt2X, 
+  const double& pt2Y, double& pt1X, double& pt1Y ) const
 {
   assert( isValid( params ) );
   
-  pt1.x =
+  pt1X =
       params.m_inverseParameters[ 0 ] +
-    ( params.m_inverseParameters[ 1 ] * pt2.y ) +
-    ( params.m_inverseParameters[ 2 ] * pt2.y * pt2.y ) +
-    ( params.m_inverseParameters[ 3 ] * pt2.y * pt2.y * pt2.y ) +
-    ( params.m_inverseParameters[ 4 ] * pt2.x ) +
-    ( params.m_inverseParameters[ 5 ] * pt2.x * pt2.y ) +
-    ( params.m_inverseParameters[ 6 ] * pt2.x * pt2.y * pt2.y ) +
-    ( params.m_inverseParameters[ 7 ] * pt2.x * pt2.x ) +
-    ( params.m_inverseParameters[ 8 ] * pt2.x * pt2.x * pt2.y ) +
-    ( params.m_inverseParameters[ 9 ] * pt2.x * pt2.x * pt2.x );
+    ( params.m_inverseParameters[ 1 ] * pt2Y ) +
+    ( params.m_inverseParameters[ 2 ] * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 3 ] * pt2Y * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 4 ] * pt2X ) +
+    ( params.m_inverseParameters[ 5 ] * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 6 ] * pt2X * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 7 ] * pt2X * pt2X ) +
+    ( params.m_inverseParameters[ 8 ] * pt2X * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 9 ] * pt2X * pt2X * pt2X );
 
-  pt1.y =
+  pt1Y =
       params.m_inverseParameters[ 10 ] +
-    ( params.m_inverseParameters[ 11 ] * pt2.y ) +
-    ( params.m_inverseParameters[ 12 ] * pt2.y * pt2.y ) +
-    ( params.m_inverseParameters[ 13 ] * pt2.y * pt2.y * pt2.y ) +
-    ( params.m_inverseParameters[ 14 ] * pt2.x ) +
-    ( params.m_inverseParameters[ 15 ] * pt2.x * pt2.y ) +
-    ( params.m_inverseParameters[ 16 ] * pt2.x * pt2.y * pt2.y ) +
-    ( params.m_inverseParameters[ 17 ] * pt2.x * pt2.x ) +
-    ( params.m_inverseParameters[ 18 ] * pt2.x * pt2.x * pt2.y ) +
-    ( params.m_inverseParameters[ 19 ] * pt2.x * pt2.x * pt2.x );  
+    ( params.m_inverseParameters[ 11 ] * pt2Y ) +
+    ( params.m_inverseParameters[ 12 ] * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 13 ] * pt2Y * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 14 ] * pt2X ) +
+    ( params.m_inverseParameters[ 15 ] * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 16 ] * pt2X * pt2Y * pt2Y ) +
+    ( params.m_inverseParameters[ 17 ] * pt2X * pt2X ) +
+    ( params.m_inverseParameters[ 18 ] * pt2X * pt2X * pt2Y ) +
+    ( params.m_inverseParameters[ 19 ] * pt2X * pt2X * pt2X );  
 }
           
 unsigned int te::gm::ThirdDegreePolynomialGT::getMinRequiredTiePoints() const
 {
   return 10;
 }
+
+te::gm::GeometricTransformation* te::gm::ThirdDegreePolynomialGT::clone() const
+{
+  te::gm::ThirdDegreePolynomialGT* newTransPtr = new ThirdDegreePolynomialGT;
+  newTransPtr->m_internalParameters = m_internalParameters;
+  return newTransPtr;
+};
         
 bool te::gm::ThirdDegreePolynomialGT::computeParameters( GTParameters& params ) const
 {

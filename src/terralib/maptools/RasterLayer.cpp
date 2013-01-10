@@ -165,6 +165,11 @@ te::rst::Raster* te::map::RasterLayer::getRaster()
   return m_raster;
 }
 
+te::rst::Raster const* te::map::RasterLayer::getRaster() const
+{
+  return m_raster;
+}
+
 const te::rst::RasterProperty* te::map::RasterLayer::getRasterProperty()
 {
   return m_rasterProperty;

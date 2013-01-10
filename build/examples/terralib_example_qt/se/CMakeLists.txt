@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 2.8)
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../..")  # the terralib root directory (change it if it is in another directory)
 set(SRCDIR ${ROOT}/examples/qt/se)                   # directory where the source files of the symbology Qt widgets example are located
 set(INCLDIR ${SRCDIR})                               # directory where the header files of the symbology Qt widgets example are located
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../Modules")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../modules")
 
 # Set the project name
 set(PROJ_NAME "terralib_example_qt_symbology")
@@ -44,12 +44,13 @@ set (DEP_LIBS
 		terralib_gml
 		terralib_maptools
 		terralib_plugin
-		terralib_qtwidgets
+		terralib_qt_widgets
 		terralib_raster
 		terralib_symbology
+		terralib_serialization
 		terralib_srs
 		terralib_xlink
-    ${QT_LIBRARIES}
+		${QT_LIBRARIES}
     )  
 
 # Select the source and header files

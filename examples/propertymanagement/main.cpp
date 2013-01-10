@@ -53,6 +53,9 @@
 
 #include "PropertyManagement.h"
 
+//! STL
+#include <iostream>
+
 void LoadModules()
 {    
   te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_pgis_info.xml"));

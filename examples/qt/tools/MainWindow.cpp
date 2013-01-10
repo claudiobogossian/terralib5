@@ -62,42 +62,6 @@
 
 #include <boost/lexical_cast.hpp>
 
-te::se::Symbolizer* BuildSymbolizer(const te::gm::GeomType& geomType)
-{
-  switch(geomType)
-  {
-    case te::gm::PolygonType:
-    {
-      QColor color(rand() % 255, rand() % 255, rand() % 255);
-      te::se::PolygonSymbolizer* symbolizer = new te::se::PolygonSymbolizer;
-      symbolizer->setFill(te::se::CreateFill(color.name().toStdString(), "1.0"));
-      symbolizer->setStroke(te::se::CreateStroke("#000000", "1", "1.0"));
-      return symbolizer;
-    }
-
-    case te::gm::LineStringType:
-    {
-      QColor color(rand() % 255, rand() % 255, rand() % 255);
-      te::se::LineSymbolizer* symbolizer = new te::se::LineSymbolizer;
-      symbolizer->setStroke(te::se::CreateStroke(color.name().toStdString(), "1", "1.0"));
-      return symbolizer;
-    }
-
-    case te::gm::PointType:
-    {
-      QColor color(rand() % 255, rand() % 255, rand() % 255);
-      te::se::Fill* markFill = te::se::CreateFill(color.name().toStdString(), "1.0");
-      te::se::Stroke* markStroke = te::se::CreateStroke("#000000", "1");
-      te::se::Mark* mark = te::se::CreateMark("circle", markStroke, markFill);
-      te::se::Graphic* graphic = te::se::CreateGraphic(mark, "12", "", "");
-      te::se::PointSymbolizer* symbolizer = te::se::CreatePointSymbolizer(graphic);
-      return symbolizer;
-    }
-  }
-
-  return 0;
-}
-
 std::size_t MainWindow::ms_id = 0;
 
 MainWindow::MainWindow(QWidget* parent, Qt::WindowFlags f)
@@ -280,17 +244,6 @@ void MainWindow::addVectorLayer(const QString& path)
     layer->setDataSetName(datasets[i]);
     layer->setVisibility(te::map::VISIBLE);
 
-    // Creates a hard-coded style
-    te::se::Symbolizer* symbolizer = BuildSymbolizer(dt->getDefaultGeomProperty()->getGeometryType());
-
-    te::se::Rule* rule = new te::se::Rule;
-    rule->push_back(symbolizer);
-
-    te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
-    style->push_back(rule);
-
-    layer->setStyle(style);
-
     // Creates a Layer Renderer
     te::map::LayerRenderer* r = new te::map::LayerRenderer();
     layer->setRenderer(r);
@@ -370,7 +323,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 
 void MainWindow::onAddVectorLayerTriggered()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/shp/");
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/shp/", tr("ShapeFile (*.shp)"));
   if(!path.isNull())
     addVectorLayer(path);
 }

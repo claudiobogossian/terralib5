@@ -48,6 +48,7 @@
 #include "../se/FeatureTypeStyle.h"
 #include "../se/Style.h"
 #include "../se/Rule.h"
+#include "../se/Utils.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
 #include "Canvas.h"
@@ -109,7 +110,13 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
 
   // Gets the associated layer style
   te::se::Style* style = l->getStyle();
-  assert(style);
+  if(style == 0)
+  {
+    // Try creates an appropriate style
+    style = te::se::CreateFeatureTypeStyle(gcol->getGeometryType());
+    assert(style);
+    l->setStyle(style);
+  }
 
   // The canvas configurer
   te::map::CanvasConfigurer cc(canvas);
@@ -188,7 +195,7 @@ void te::map::LayerRenderer::draw(AbstractLayer* layer, Canvas* canvas,
     // Draw task
     te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
     // Setups task
-    task.setTotalSteps(nSymbolizers * dataset->size());
+    //task.setTotalSteps(nSymbolizers * dataset->size()); // Removed! The size() method would be too costly to compute.
 
     for(std::size_t j = 0; j < nSymbolizers; ++j) // for each <Symbolizer>
     {

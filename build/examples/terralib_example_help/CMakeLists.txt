@@ -31,7 +31,7 @@ endif(WIN32)
 
 set ( DEP_LIBS 
     terralib_common 
-    terralib_qtwidgets
+    terralib_qt_widgets
     ${QT_LIBRARIES}
 )
 

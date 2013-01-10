@@ -26,10 +26,13 @@
 
 #include "TiePointsLocatorAdvancedDialog.h"
 #include "../Exception.h"
+#include "../../../geometry/GTFactory.h"
 
 #include <ui_TiePointsLocatorAdvancedForm.h>
 
 #include <QtCore/QString>
+#include <QtGui/QCheckBox>
+#include <QtGui/QComboBox>
 
 namespace te
 {
@@ -37,33 +40,181 @@ namespace te
   {
     namespace widgets
     {
-      namespace rp
+      TiePointsLocatorAdvancedDialog::TiePointsLocatorAdvancedDialog(
+        QWidget* parent, Qt::WindowFlags f )
+        : QDialog( parent, f )
       {
-        TiePointsLocatorAdvancedDialog::TiePointsLocatorAdvancedDialog(
-          QWidget* parent, Qt::WindowFlags f )
-          : QDialog( parent, f )
-        {
-          m_uiPtr = new Ui::TiePointsLocatorAdvancedForm;
-          m_uiPtr->setupUi(this);
+        m_uiPtr = new Ui::TiePointsLocatorAdvancedForm;
+        m_uiPtr->setupUi(this);
+        
+        // Signals & slots
+        connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), this, SLOT(on_okPushButton_clicked()));   
+        
+        // fill form
+        
+
+      }
+
+      TiePointsLocatorAdvancedDialog::~TiePointsLocatorAdvancedDialog()
+      {
+        delete m_uiPtr;
+      }
+
+      void TiePointsLocatorAdvancedDialog::showEvent( QShowEvent* )
+      {
+        m_uiPtr->m_enableGeometryFilterCheckBox->setChecked( 
+          m_inputParameters.m_enableGeometryFilter );
           
-          // Signals & slots
-          connect(m_uiPtr->m_okPushButton, SIGNAL(clicked()), SLOT(on_okPushButton_clicked()));   
+        m_uiPtr->m_enableMultiThreadCheckBox->setChecked(
+          m_inputParameters.m_enableMultiThread);
           
-          // fill form
+        switch( m_inputParameters.m_interesPointsLocationStrategy )
+        {
+          case te::rp::TiePointsLocator::InputParameters::SurfStrategyT :
+          {
+            m_uiPtr->m_interesPointsLocationStrategyComboBox->setCurrentIndex(
+              m_uiPtr->m_interesPointsLocationStrategyComboBox->findText( "Surf" ) );
+            break;
+          }
+          default:
+          {
+            m_uiPtr->m_interesPointsLocationStrategyComboBox->setCurrentIndex(
+              m_uiPtr->m_interesPointsLocationStrategyComboBox->findText( "Moravec" ) );
+          }
+        }
+        
+        te::gm::GTFactory::dictionary_type::const_iterator gtItB = 
+          te::gm::GTFactory::getDictionary().begin();
+        const te::gm::GTFactory::dictionary_type::const_iterator gtItE = 
+          te::gm::GTFactory::getDictionary().end();
+        while( gtItB != gtItE )
+        {
+          m_uiPtr->m_geomTransfNameComboBox->addItem( QString( gtItB->first.c_str() ) );
+          ++gtItB;
+        }
+        m_uiPtr->m_geomTransfNameComboBox->setCurrentIndex(
+          m_uiPtr->m_geomTransfNameComboBox->findText( 
+          m_inputParameters.m_geomTransfName.c_str() ) );        
+        
+        m_uiPtr->m_geometryFilterAssuranceLineEdit->setText( QString::number( 
+          m_inputParameters.m_geometryFilterAssurance ) );
+        
+        m_uiPtr->m_geomTransfMaxErrorLineEdit->setText( QString::number(
+          m_inputParameters.m_geomTransfMaxError ) );
           
-
-        }
-
-        TiePointsLocatorAdvancedDialog::~TiePointsLocatorAdvancedDialog()
+        switch( m_inputParameters.m_interpMethod )
         {
-          delete m_uiPtr;
-        }
+          case te::rst::Interpolator::Bilinear :
+          {
+            m_uiPtr->m_interpMethodComboBox->setCurrentIndex(
+              m_uiPtr->m_interpMethodComboBox->findText( "Bilinear" ) );
+            break;
+          }
+          case te::rst::Interpolator::Bicubic :
+          {
+            m_uiPtr->m_interpMethodComboBox->setCurrentIndex(
+              m_uiPtr->m_interpMethodComboBox->findText( "Bicubic" ) );
+            break;
+          }
+          default:
+          {
+            m_uiPtr->m_interpMethodComboBox->setCurrentIndex(
+              m_uiPtr->m_interpMethodComboBox->findText( "NearestNeighbor" ) );
+          }
+        } 
+          
+        m_uiPtr->m_maxTiePointsLineEdit->setText( QString::number(
+          m_inputParameters.m_maxTiePoints ) );
+          
+        m_uiPtr->m_correlationWindowWidthLineEdit->setText( QString::number(
+          m_inputParameters.m_correlationWindowWidth ) );
+          
+        m_uiPtr->m_gaussianFilterIterationsLineEdit->setText( QString::number(
+          m_inputParameters.m_gaussianFilterIterations ) );
+          
+        m_uiPtr->m_minAbsCorrelationLineEdit->setText( QString::number(
+          m_inputParameters.m_minAbsCorrelation ) );
+          
+        m_uiPtr->m_moravecWindowWidthLineEdit->setText( QString::number(
+          m_inputParameters.m_moravecWindowWidth ) );
+          
+        m_uiPtr->m_maxNormEuclideanDistLineEdit->setText( QString::number(
+          m_inputParameters.m_maxNormEuclideanDist ) );
+          
+        m_uiPtr->m_octavesNumberLineEdit->setText( QString::number(
+          m_inputParameters.m_octavesNumber ) );
+          
+        m_uiPtr->m_scalesNumberLineEdit->setText( QString::number(
+          m_inputParameters.m_scalesNumber ) );
+      }
 
-
-        void TiePointsLocatorAdvancedDialog::on_okPushButton_clicked()
+      void TiePointsLocatorAdvancedDialog::on_okPushButton_clicked()
+      {
+        m_inputParameters.m_enableGeometryFilter = 
+          m_uiPtr->m_enableGeometryFilterCheckBox->isChecked();
+          
+        m_inputParameters.m_enableMultiThread = 
+          m_uiPtr->m_enableMultiThreadCheckBox->isChecked();
+          
+        if( m_uiPtr->m_interesPointsLocationStrategyComboBox->currentText() == 
+          "Surf" )
         {
-
+          m_inputParameters.m_interesPointsLocationStrategy =
+            te::rp::TiePointsLocator::InputParameters::SurfStrategyT;
         }
+        else
+        {
+          m_inputParameters.m_interesPointsLocationStrategy =
+            te::rp::TiePointsLocator::InputParameters::MoravecStrategyT;
+        }
+        
+        m_inputParameters.m_geomTransfName = 
+          m_uiPtr->m_geomTransfNameComboBox->currentText().toStdString();
+          
+        m_inputParameters.m_geometryFilterAssurance = 
+          m_uiPtr->m_geometryFilterAssuranceLineEdit->text().toDouble();
+          
+        m_inputParameters.m_geomTransfMaxError = 
+          m_uiPtr->m_geomTransfMaxErrorLineEdit->text().toDouble();
+          
+        if( m_uiPtr->m_interpMethodComboBox->currentText() == "Bilinear" )
+        {
+          m_inputParameters.m_interpMethod = te::rst::Interpolator::Bilinear;
+        }
+        else if( m_uiPtr->m_interpMethodComboBox->currentText() == "Bicubic" )
+        {
+          m_inputParameters.m_interpMethod = te::rst::Interpolator::Bicubic;
+        }
+        else
+        {
+          m_inputParameters.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+        }
+        
+        m_inputParameters.m_maxTiePoints =  
+          m_uiPtr->m_maxTiePointsLineEdit->text().toUInt();
+          
+        m_inputParameters.m_correlationWindowWidth = 
+          m_uiPtr->m_correlationWindowWidthLineEdit->text().toUInt();
+          
+        m_inputParameters.m_gaussianFilterIterations = 
+          m_uiPtr->m_gaussianFilterIterationsLineEdit->text().toUInt();
+          
+        m_inputParameters.m_minAbsCorrelation = 
+          m_uiPtr->m_minAbsCorrelationLineEdit->text().toDouble();
+          
+        m_inputParameters.m_moravecWindowWidth =
+           m_uiPtr->m_moravecWindowWidthLineEdit->text().toUInt();
+           
+        m_inputParameters.m_maxNormEuclideanDist =
+          m_uiPtr->m_maxNormEuclideanDistLineEdit->text().toDouble();
+          
+        m_inputParameters.m_octavesNumber = 
+          m_uiPtr->m_octavesNumberLineEdit->text().toUInt();
+          
+        m_inputParameters.m_scalesNumber =
+          m_uiPtr->m_scalesNumberLineEdit->text().toUInt();
+          
+        hide();
       }
     }
   }

@@ -170,6 +170,7 @@ int main(int /*argc*/, char** /*argv*/)
   }
 
 // finalize Terralib support
+  te::plugin::PluginManager::getInstance().unloadAll();
   TerraLib::getInstance().finalize();
 
   std::cout << "Press Enter to exit..." << std::endl;

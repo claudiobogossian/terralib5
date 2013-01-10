@@ -263,14 +263,17 @@ void te::plugin::PluginManager::load(const PluginInfo& pInfo, const bool start)
     if(start)
       plugin->startup();
 
+    std::string plg_name = plugin->getInfo().m_name;
 // register plugin in the map and add it to its category
     m_pluginCategoryMap[pInfo.m_category].push_back(plugin.get());
     m_plugins.push_back(plugin.get());
-    m_pluginsMap[pInfo.m_name] = plugin.release();
+    m_pluginsMap[plg_name] = plugin.release();
 
 // remove plugin from broken or unloaded list
     removeFromBrokenList(pInfo);
     removeFromUnloadedList(pInfo);
+
+    updateDependents(plg_name);
   }
   catch(const std::exception& e)
   {
@@ -312,7 +315,8 @@ void te::plugin::PluginManager::unload(AbstractPlugin* plugin)
 
 // check dependency
   if(hasDependents(pluginName))
-    throw Exception((boost::format("Could not unload plugin %1% because other plugins depends on it!") % pluginName).str());
+    moveDependentsToBrokenList(pluginName);
+//    throw Exception((boost::format("Could not unload plugin %1% because other plugins depends on it!") % pluginName).str());
 
 // shutdown plugin!
   if(plugin->isStarted())
@@ -380,12 +384,44 @@ bool te::plugin::PluginManager::isLoaded(const std::vector<std::string>& plugins
 
 void te::plugin::PluginManager::add(const PluginInfo& plugin)
 {
-  m_unloadedPlugins.push_back(new PluginInfo(plugin));
+  add(new PluginInfo(plugin));
 }
 
 void te::plugin::PluginManager::add(PluginInfo* plugin)
 {
-  m_unloadedPlugins.push_back(plugin);
+  try
+  {
+    if(!isLoaded(plugin->m_requiredPlugins))
+      throw Exception("Missing requirement");
+
+    m_unloadedPlugins.push_back(plugin);
+  }
+  catch(Exception&)
+  {
+    m_brokenPlugins.push_back(plugin);
+  }
+}
+
+void te::plugin::PluginManager::remove(const std::string& plugin)
+{
+  PluginInfo info = getPlugin(plugin);
+
+  if(isLoaded(plugin))
+  {
+    AbstractPlugin* plg = detach(plugin);
+    plg->shutdown();
+    delete plg;
+
+    return;
+  }
+
+  if(isUnloadedPlugin(plugin))
+  {
+    removeFromUnloadedList(info);
+    return;
+  }
+
+  removeFromBrokenList(info);
 }
 
 std::vector<std::string> te::plugin::PluginManager::getDependents(const std::string& pluginName) const
@@ -437,7 +473,8 @@ te::plugin::AbstractPlugin* te::plugin::PluginManager::detach(const std::string&
 
 // check if it doesn't have dependents plugins
   if(hasDependents(name))
-    throw Exception((boost::format(TR_PLUGIN("There are some plugins that depends on %1%!")) % name).str());
+    moveDependentsToBrokenList(name);
+//    throw Exception((boost::format(TR_PLUGIN("There are some plugins that depends on %1%!")) % name).str());
 
 // see if we must destroy the plugin category index: in the case the detached plugin being the only plugin in its category
   removeFromCategory(p, p->getInfo().m_category);
@@ -564,6 +601,54 @@ void te::plugin::PluginManager::removeFromUnloadedList(const PluginInfo& pInfo)
     {
       m_unloadedPlugins.erase(it);
       break;
+    }
+  }
+}
+
+void te::plugin::PluginManager::moveDependentsToBrokenList(const std::string& plugin, const bool& unloadPlugin)
+{
+  if(isBrokenPlugin(plugin))
+    return;
+
+  std::vector<std::string> deps = getDependents(plugin);
+
+  if(!deps.empty())
+  {
+    std::vector<std::string>::iterator it;
+
+    for(it=deps.begin(); it!=deps.end(); ++it)
+      moveDependentsToBrokenList(*it, true);
+  }
+
+  te::plugin::PluginInfo info(getPlugin(plugin));
+
+  if(unloadPlugin)
+  {
+    if(isLoaded(info.m_name))
+      unload(info.m_name);
+
+    moveToBrokenList(info);
+  }
+}
+
+void te::plugin::PluginManager::updateDependents(const std::string& plugin)
+{
+  boost::ptr_vector<PluginInfo> deps = getBrokenPlugins();
+
+  if(!deps.empty())
+  {
+    boost::ptr_vector<PluginInfo>::iterator it;
+    std::vector<PluginInfo*> toUpdate;
+
+    for(it=deps.begin(); it!=deps.end(); ++it)
+      if(isLoaded((*it).m_requiredPlugins))
+        toUpdate.push_back(new PluginInfo(*it));
+
+    std::vector<PluginInfo*>::iterator it2;
+    for(it2=toUpdate.begin(); it2 != toUpdate.end(); ++it2)
+    {
+      removeFromBrokenList(*(*it2));
+      m_unloadedPlugins.push_back(*it2);
     }
   }
 }

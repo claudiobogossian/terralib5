@@ -42,6 +42,7 @@ namespace te
     /*!
       \class RasterHandler
       \brief RasterHandler
+      \ingroup RPModule
      */
     class TERPEXPORT RasterHandler
     {

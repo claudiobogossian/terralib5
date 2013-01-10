@@ -27,7 +27,7 @@
 #     - mysql
 #     - ogr
 #     - plugin
-#     - qtwidgets
+#     - qt_widgets
 #     - raster
 #     - rp
 #     - srs

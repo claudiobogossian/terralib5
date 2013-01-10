@@ -176,7 +176,7 @@ namespace te
 
             \return A canvas associated to the layer.
           */
-          virtual te::qt::widgets::Canvas* getCanvas(te::map::AbstractLayer* layer);
+          virtual te::qt::widgets::Canvas* getCanvas(te::map::AbstractLayer* layer, int type = QInternal::Pixmap);
 
           /*!
             \brief It resizes all canvas of map display.

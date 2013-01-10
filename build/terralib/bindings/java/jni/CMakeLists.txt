@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 2.8)
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")   # the terralib root directory (change it if it is in another directory)
 set(SRCDIR ${ROOT}/src/terralib/binding/java/jni)           # directory where the source files of the terralib java binding are located
 set(INCLDIR ${SRCDIR})                                      # directory where the header files of the terralib java binding are located
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../Modules")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../modules")
 
 # Set the project name
 set(PROJ_NAME "terralib_binding_java")
@@ -71,7 +71,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		optimized terralib_gml
 		optimized terralib_maptools
 		optimized terralib_plugin
-		optimized terralib_qtwidgets
+		optimized terralib_qt_widgets
 		optimized terralib_srs
 		optimized terralib_se
 		optimized terralib_xlink
@@ -86,7 +86,7 @@ set(DEP_LIBS  ${DEP_LIBS}
 		debug     terralib_gml_d
 		debug     terralib_maptools_d
 		debug     terralib_plugin_d
-		debug     terralib_qtwidgets_d
+		debug     terralib_qt_widgets_d
 		debug     terralib_srs_d
 		debug     terralib_se_d
 		debug     terralib_xlink_d)

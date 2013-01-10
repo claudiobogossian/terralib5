@@ -24,29 +24,30 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "../common/Translator.h"
-#include "AbstractDataConverter.h"
 #include "DataConverterManager.h"
 
 // Boost
 #include <boost/format.hpp>
 
-void te::dt::DataConverterManager::add(AbstractDataConverter* conv) throw(Exception)
+void te::dt::DataConverterManager::add(int src, int dst, te::dt::DataTypeConverter conv) throw(Exception)
 {
-  std::pair<int, int> mapping(conv->getInputDataTypeCode(), conv->getOutputDataTypeCode());
+  std::pair<int, int> mapping(src, dst);
 
-  AbstractDataConverter* regConv = te::common::GetPValue(m_convMap, mapping);
-
-  if(regConv)
-    throw Exception((boost::format(TR_DATATYPE("There is already a converter registered for the data type conversion: %1% -> %2%.")) % conv->getInputDataTypeCode() % conv->getOutputDataTypeCode()).str()); 
+  std::map<std::pair<int, int>, DataTypeConverter>::iterator it = m_convMap.find(mapping);
+  if(it != m_convMap.end())
+    throw Exception((boost::format(TR_DATATYPE("There is already a converter registered for the data type conversion: %1% -> %2%.")) % src % dst).str()); 
 
   m_convMap[mapping] = conv;
 }
 
-te::dt::AbstractDataConverter* te::dt::DataConverterManager::get(const std::pair<int, int>& typeMap)
+const te::dt::DataTypeConverter& te::dt::DataConverterManager::get(const std::pair<int, int>& typeMap) throw(Exception)
 {
-  return te::common::GetPValue(m_convMap, typeMap);
+  std::map<std::pair<int, int>, DataTypeConverter>::iterator it = m_convMap.find(typeMap);
+  if(it != m_convMap.end())
+    throw Exception((boost::format(TR_DATATYPE("There is not a converter registered for the data type conversion: %1% -> %2%.")) % typeMap.first % typeMap.second).str()); 
+
+  return it->second;
 }
 
 te::dt::DataConverterManager::DataConverterManager()
@@ -55,6 +56,4 @@ te::dt::DataConverterManager::DataConverterManager()
 
 te::dt::DataConverterManager::~DataConverterManager()
 {
-  te::common::FreeContents(m_convMap);
 }
-

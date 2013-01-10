@@ -46,14 +46,11 @@ int main(int argc, char** argv)
 
     te::qt::af::SplashScreenManager::getInstance().set(splash, 1, Qt::white);
     splash->show();
-    qApp->processEvents();
-
-    te::qt::af::SplashScreenManager::getInstance().showMessage(QObject::tr("Initializing TerraLib."));
 
     MainWindow dlg;
+    splash->finish(&dlg);
 
     dlg.showMaximized();
-    splash->finish(&dlg);
 
     app.exec();
   }

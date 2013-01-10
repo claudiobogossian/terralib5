@@ -55,62 +55,62 @@ bool te::gm::ProjectiveGT::isValid( const GTParameters& params ) const
     ( params.m_inverseParameters.size() == 8 ) );
 }
 
-void te::gm::ProjectiveGT::directMap( const GTParameters& params, const Coord2D& pt1, 
-  Coord2D& pt2 ) const
+void te::gm::ProjectiveGT::directMap( const GTParameters& params, const double& pt1X, 
+  const double& pt1Y, double& pt2X, double& pt2Y ) const
 {
   assert( isValid( params ) );
   
-  pt2.x = (
-            ( params.m_directParameters[0] * pt1.x  ) + 
-            ( params.m_directParameters[1] * pt1.y ) + 
+  pt2X = (
+            ( params.m_directParameters[0] * pt1X  ) + 
+            ( params.m_directParameters[1] * pt1Y ) + 
               params.m_directParameters[2] 
           )
           /
           (
-            ( params.m_directParameters[6] * pt1.x  ) + 
-            ( params.m_directParameters[7] * pt1.y ) + 
+            ( params.m_directParameters[6] * pt1X  ) + 
+            ( params.m_directParameters[7] * pt1Y ) + 
             1
           );
           
-  pt2.y =  (
-            ( params.m_directParameters[3] * pt1.x  ) + 
-            ( params.m_directParameters[4] * pt1.y ) + 
+  pt2Y =  (
+            ( params.m_directParameters[3] * pt1X  ) + 
+            ( params.m_directParameters[4] * pt1Y ) + 
               params.m_directParameters[5] 
           )
           /
           (
-            ( params.m_directParameters[6] * pt1.x  ) + 
-            ( params.m_directParameters[7] * pt1.y ) +
+            ( params.m_directParameters[6] * pt1X  ) + 
+            ( params.m_directParameters[7] * pt1Y ) +
             1
           );
 }
 
-void te::gm::ProjectiveGT::inverseMap( const GTParameters& params, const Coord2D& pt2, 
-  Coord2D& pt1 ) const
+void te::gm::ProjectiveGT::inverseMap( const GTParameters& params, const double& pt2X, 
+  const double& pt2Y, double& pt1X, double& pt1Y ) const
 {
   assert( isValid( params ) );
   
-  pt1.x = (
-            ( params.m_inverseParameters[0] * pt2.x  ) + 
-            ( params.m_inverseParameters[1] * pt2.y ) + 
+  pt1X = (
+            ( params.m_inverseParameters[0] * pt2X  ) + 
+            ( params.m_inverseParameters[1] * pt2Y ) + 
               params.m_inverseParameters[2] 
           )
           /
           (
-            ( params.m_inverseParameters[6] * pt2.x  ) + 
-            ( params.m_inverseParameters[7] * pt2.y ) +
+            ( params.m_inverseParameters[6] * pt2X  ) + 
+            ( params.m_inverseParameters[7] * pt2Y ) +
             1
           );
           
-  pt1.y =  (
-            ( params.m_inverseParameters[3] * pt2.x  ) + 
-            ( params.m_inverseParameters[4] * pt2.y ) + 
+  pt1Y =  (
+            ( params.m_inverseParameters[3] * pt2X  ) + 
+            ( params.m_inverseParameters[4] * pt2Y ) + 
               params.m_inverseParameters[5] 
           )
           /
           (
-            ( params.m_inverseParameters[6] * pt2.x  ) + 
-            ( params.m_inverseParameters[7] * pt2.y ) +
+            ( params.m_inverseParameters[6] * pt2X  ) + 
+            ( params.m_inverseParameters[7] * pt2Y ) +
             1
           );  
 }
@@ -119,6 +119,13 @@ unsigned int te::gm::ProjectiveGT::getMinRequiredTiePoints() const
 {
   return 4;
 }
+
+te::gm::GeometricTransformation* te::gm::ProjectiveGT::clone() const
+{
+  te::gm::ProjectiveGT* newTransPtr = new ProjectiveGT;
+  newTransPtr->m_internalParameters = m_internalParameters;
+  return newTransPtr;
+};
         
 bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
 {

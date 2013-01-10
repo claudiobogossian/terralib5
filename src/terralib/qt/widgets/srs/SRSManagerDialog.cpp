@@ -48,6 +48,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked())); 
+  connect(m_ui->m_findSRSPushButton, SIGNAL(clicked()), SLOT(onFindSRSPushButtonClicked()));
   
   QList<QTreeWidgetItem *> items;
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic Spatial Coordinate Systems"))));
@@ -96,6 +97,7 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   m_srsDiag = new te::qt::widgets::SRSDialog(this); 
 }
 
+
 te::qt::widgets::SRSManagerDialog::~SRSManagerDialog()
 {
   delete m_ui;
@@ -106,6 +108,34 @@ const std::pair<int, std::string>& te::qt::widgets::SRSManagerDialog::getSelecte
   return m_selSrsId;
 }
 
+
+void te::qt::widgets::SRSManagerDialog::onFindSRSPushButtonClicked() 
+{
+  QString itemText = m_ui->m_searchedSRSLineEdit->text();
+  
+  if (itemText.isEmpty())
+  {
+    QMessageBox::warning(this, "", tr("Enter a SRS name to search for."));
+    return;   
+  }
+  
+  QList<QTreeWidgetItem *> found = m_ui->m_SRSTreeWidget->findItems(itemText, Qt::MatchWildcard | Qt::MatchRecursive);
+  
+  if (!found.isEmpty())
+  {
+    QTreeWidgetItem *item = found[0];
+    if (item->parent() != 0)
+    {
+      item->parent()->setExpanded(true);
+      m_ui->m_SRSTreeWidget->setItemSelected(item, true);
+      m_ui->m_SRSTreeWidget->setCurrentItem(item);
+      return;
+    }
+  }
+  
+  QMessageBox::warning(this, "", tr("No SRS matching the searching string."));
+  return;
+}
 
 void te::qt::widgets::SRSManagerDialog::onMoreInfoToolButtonClicked()
 {
@@ -183,6 +213,6 @@ void te::qt::widgets::SRSManagerDialog::onCancelPushButtonClicked()
 
 void te::qt::widgets::SRSManagerDialog::onHelpPushButtonClicked()
 {
- QMessageBox::critical(this, "", tr("Not implemented yet! 3"));
+ QMessageBox::critical(this, "", tr("Not implemented yet!"));
 }
 

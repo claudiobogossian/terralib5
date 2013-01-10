@@ -1,5 +1,6 @@
 #include "MyGrid.h"
 #include "MyLayer.h"
+#include "MyLayerRenderer.h"
 #include <terralib/qt/widgets.h>
 #include <terralib/dataaccess.h>
 #include <QApplication>
@@ -150,6 +151,17 @@ void MyGrid::clearTooltip()
 
 void MyGrid::selectionChangedSlot(te::map::DataGridOperation*)
 {
+  MyLayerRenderer* renderer = (MyLayerRenderer*)m_layer->getRenderer();
+  if(renderer)
+  {
+    QThread* thread = (QThread*) renderer;
+    while(thread->isRunning() == true)
+    {
+      thread->wait(100); // aguarde o termono do desenho
+      renderer->getDisplay()->displayRefreshSlot();
+    }
+  }
+
   updateTableViewSelectionStatus();
 
   if(m_localSelection)

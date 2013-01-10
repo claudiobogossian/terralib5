@@ -253,8 +253,10 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
     TERP_LOGWARN("No information about sensors were provided, using defaults.");
   }
   else
+  {
     TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_inputSensorBands.size() == inputParamsPtr->m_inputRasterBands.size(),
                               "Invalid raster bands number");
+  }
 
   for(unsigned int i = 0; i < inputParamsPtr->m_inputRasterBands.size(); i++)
   {
@@ -266,9 +268,12 @@ bool te::rp::MixtureModel::initialize(const AlgorithmInputParameters& inputParam
   std::map<std::string, std::vector<double> >::const_iterator it;
   for (it = inputParamsPtr->m_components.begin(); it != inputParamsPtr->m_components.end(); ++it)
   {
-    TERP_TRUE_OR_RETURN_FALSE(it->second.size() == inputParamsPtr->m_inputRasterBands.size(),
-                              "Endmember's number of channels is different from input raster bands number");
+    TERP_TRUE_OR_RETURN_FALSE(it->second.size() <= inputParamsPtr->m_inputRasterBands.size(),
+                              "Endmember's number of channels is bigger from input raster bands number");
   }
+
+  TERP_TRUE_OR_RETURN_FALSE(inputParamsPtr->m_components.size() == inputParamsPtr->m_inputRasterBands.size(),
+                            "Number of components must be equal to the number of selected bands");
 
 // everything is ok
   m_instanceInitialized = true;

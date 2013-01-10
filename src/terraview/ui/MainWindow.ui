@@ -20,53 +20,91 @@
      <x>0</x>
      <y>0</y>
      <width>1252</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menuFile">
+   <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
     <addaction name="m_addOGRLayer_act"/>
     <addaction name="m_addGDALLayer_act"/>
     <addaction name="separator"/>
-    <addaction name="m_actionOpen_project"/>
-    <addaction name="actionNew_project"/>
-    <addaction name="m_actionSave_project"/>
+    <addaction name="m_fileNewProject"/>
+    <addaction name="m_fileOpenProject"/>
+    <addaction name="m_fileSaveProject"/>
+    <addaction name="m_fileSaveProjectAs"/>
     <addaction name="separator"/>
-    <addaction name="m_actionQuit"/>
+    <addaction name="m_filePrint"/>
+    <addaction name="m_filePrintPreview"/>
+    <addaction name="separator"/>
+    <addaction name="m_fileImportProject"/>
+    <addaction name="m_fileExportProject"/>
+    <addaction name="separator"/>
+    <addaction name="actionRecent_Projects"/>
+    <addaction name="separator"/>
+    <addaction name="m_fileExit"/>
+   </widget>
+   <widget class="QMenu" name="menu_Edit">
+    <property name="title">
+     <string>&amp;Edit</string>
+    </property>
+    <addaction name="m_editUndo"/>
+    <addaction name="m_editRedo"/>
+    <addaction name="separator"/>
+    <addaction name="m_editCut"/>
+    <addaction name="m_editCopy"/>
+    <addaction name="m_editPaste"/>
+    <addaction name="separator"/>
+    <addaction name="m_editSelectAll"/>
+    <addaction name="m_editClear"/>
+    <addaction name="separator"/>
+    <addaction name="m_editFind"/>
+    <addaction name="m_editReplace"/>
+    <addaction name="separator"/>
+    <addaction name="m_editDataSourceManager"/>
    </widget>
    <widget class="QMenu" name="menu_View">
     <property name="title">
-     <string>&amp;Tools</string>
-    </property>
-    <addaction name="m_actionPan"/>
-    <addaction name="m_actionZoom_area"/>
-    <addaction name="m_actionPointing"/>
-    <addaction name="m_distance_act"/>
-    <addaction name="m_angle_act"/>
-    <addaction name="m_area_act"/>
-   </widget>
-   <widget class="QMenu" name="menu_View_2">
-    <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="m_show_explorer"/>
-    <addaction name="m_show_display"/>
-    <addaction name="m_show_table"/>
-    <addaction name="m_actionRasterVisual"/>
+    <addaction name="action_Toolbars"/>
+    <addaction name="separator"/>
+    <addaction name="m_viewLayerExplorer"/>
+    <addaction name="m_viewMapDisplay"/>
+    <addaction name="m_viewTableData"/>
+    <addaction name="m_viewRasterVisual"/>
+    <addaction name="separator"/>
+    <addaction name="m_viewFullScreen"/>
+    <addaction name="separator"/>
+    <addaction name="m_viewRefresh"/>
    </widget>
-   <widget class="QMenu" name="menu_Setttings">
+   <widget class="QMenu" name="menu_Settings">
     <property name="title">
-     <string>&amp;Setttings</string>
+     <string>&amp;Settings</string>
     </property>
-    <addaction name="m_open_dsrc_mger_act"/>
-    <addaction name="m_openPlgMger_act"/>
+    <addaction name="m_settingsPreferences"/>
    </widget>
-   <addaction name="menuFile"/>
-   <addaction name="menu_View_2"/>
+   <widget class="QMenu" name="menu_Plugins">
+    <property name="title">
+     <string>&amp;Plugins</string>
+    </property>
+    <addaction name="m_pluginManager"/>
+    <addaction name="m_pluginBuilder"/>
+   </widget>
+   <widget class="QMenu" name="menu_Help">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="m_helpContents"/>
+    <addaction name="m_helpUpdate"/>
+   </widget>
+   <addaction name="menu_File"/>
+   <addaction name="menu_Edit"/>
    <addaction name="menu_View"/>
-   <addaction name="menu_Setttings"/>
+   <addaction name="menu_Settings"/>
+   <addaction name="menu_Plugins"/>
+   <addaction name="menu_Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="m_tools_TB">
@@ -99,33 +137,51 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="m_show_explorer"/>
-   <addaction name="m_show_display"/>
-   <addaction name="m_show_table"/>
-   <addaction name="m_actionRasterVisual"/>
+   <addaction name="m_viewLayerExplorer"/>
+   <addaction name="m_viewMapDisplay"/>
+   <addaction name="m_viewTableData"/>
+   <addaction name="m_viewRasterVisual"/>
   </widget>
-  <action name="actionNew_project">
+  <action name="m_fileNewProject">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>New project...</string>
    </property>
    <property name="toolTip">
     <string>Creates a new TerraView project...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
-  <action name="m_actionOpen_project">
+  <action name="m_fileOpenProject">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Open project...</string>
    </property>
    <property name="toolTip">
     <string>Opens an existing TerraView project...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
-  <action name="m_actionSave_project">
+  <action name="m_fileSaveProject">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save project...</string>
    </property>
    <property name="toolTip">
     <string>Saves the current TerraView project.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_actionPan">
@@ -138,6 +194,9 @@
    <property name="toolTip">
     <string>Set current tool to pan...</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_actionZoom_area">
    <property name="checkable">
@@ -149,10 +208,16 @@
    <property name="toolTip">
     <string>Sets the current tool to zoom area.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_actionPointing">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Pointing...</string>
@@ -160,46 +225,61 @@
    <property name="toolTip">
     <string>Sets the current tool to pointing.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
-  <action name="m_show_explorer">
+  <action name="m_viewLayerExplorer">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show/hide layer explorer...</string>
+    <string>&amp;Layer Explorer</string>
    </property>
    <property name="toolTip">
     <string>Shows or hides the layer explorer.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
-  <action name="m_show_display">
+  <action name="m_viewMapDisplay">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show/hide map display...</string>
+    <string>&amp;Map Display</string>
    </property>
    <property name="toolTip">
     <string>Shows or hides the map display.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
-  <action name="m_show_table">
+  <action name="m_viewTableData">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show/hide table...</string>
+    <string>&amp;Table Data</string>
    </property>
    <property name="toolTip">
     <string>Shows or hide the table with tabular data.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_addOGRLayer_act">
    <property name="text">
-    <string>Add OGR layer...</string>
+    <string>Add OGR Layer...</string>
    </property>
    <property name="toolTip">
     <string>Creates a new OGR layer.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_drawlayers_act">
@@ -208,6 +288,9 @@
    </property>
    <property name="toolTip">
     <string>Draws the visible layers at main display.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_distance_act">
@@ -220,6 +303,9 @@
    <property name="toolTip">
     <string>Sets the distance measure tool.</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_angle_act">
    <property name="checkable">
@@ -230,6 +316,9 @@
    </property>
    <property name="toolTip">
     <string>Sets the angle measure tool.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
   <action name="m_area_act">
@@ -242,6 +331,9 @@
    <property name="toolTip">
     <string>Sets the area measure tool</string>
    </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="m_addGDALLayer_act">
    <property name="text">
@@ -250,37 +342,324 @@
    <property name="toolTip">
     <string>Creates a new GDAL layer.</string>
    </property>
-  </action>
-  <action name="m_actionQuit">
-   <property name="text">
-    <string>Quit</string>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
-  <action name="m_actionRasterVisual">
+  <action name="m_viewRasterVisual">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Show/hide raster visual...</string>
+    <string>&amp;Raster Visual</string>
    </property>
    <property name="toolTip">
     <string>Shows or hides the raster visual window.</string>
    </property>
-  </action>
-  <action name="m_openPlgMger_act">
-   <property name="text">
-    <string>Open plug-ins manager...</string>
-   </property>
-   <property name="toolTip">
-    <string>Opens the plug-ins manager dialog.</string>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
-  <action name="m_open_dsrc_mger_act">
+  <action name="m_fileSaveProjectAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
-    <string>Open data source manager ...</string>
+    <string>Save Project &amp;As...</string>
    </property>
    <property name="toolTip">
-    <string>Opens the data source manager.</string>
+    <string>Save project as...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_fileImportProject">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Import Project...</string>
+   </property>
+   <property name="toolTip">
+    <string>Imports a project.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_fileExportProject">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Export Project...</string>
+   </property>
+   <property name="toolTip">
+    <string>Exports project.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_filePrint">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Print...</string>
+   </property>
+   <property name="toolTip">
+    <string>Print map.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_filePrintPreview">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Print Pre&amp;view...</string>
+   </property>
+   <property name="toolTip">
+    <string>Print preview.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Undo...</string>
+   </property>
+   <property name="toolTip">
+    <string>Undo last operation.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Redo...</string>
+   </property>
+   <property name="toolTip">
+    <string>Redo last operation</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editCut">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Cu&amp;t...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editCopy">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Copy...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editPaste">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Paste...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editSelectAll">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Select &amp;All...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editClear">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>C&amp;lear...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editFind">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Find...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editReplace">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>R&amp;eplace...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_viewFullScreen">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>F&amp;ull Screen...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_viewRefresh">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Refresh...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_settingsPreferences">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Preferences...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_pluginManager">
+   <property name="text">
+    <string>&amp;Manage Plugins...</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows plugins manager dialiog.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_pluginBuilder">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Build a New Plugin...</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows the dialog to create a new plugin.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_helpContents">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;View Help...</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows help dialog.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_helpUpdate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Update...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="actionRecent_Projects">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Recent Projects</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_fileExit">
+   <property name="text">
+    <string>E&amp;xit...</string>
+   </property>
+   <property name="toolTip">
+    <string>Shutdown system.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="action_Toolbars">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>&amp;Toolbars...</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
+  <action name="m_editDataSourceManager">
+   <property name="text">
+    <string>&amp;Manage Data Sources...</string>
+   </property>
+   <property name="toolTip">
+    <string>Shows data source manager.</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
    </property>
   </action>
  </widget>
@@ -415,26 +794,10 @@
    </hints>
   </connection>
   <connection>
-   <sender>m_actionQuit</sender>
+   <sender>m_fileExit</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>459</x>
-     <y>299</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>m_openPlgMger_act</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>openPluginsManager()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -447,10 +810,26 @@
    </hints>
   </connection>
   <connection>
-   <sender>m_open_dsrc_mger_act</sender>
+   <sender>m_editDataSourceManager</sender>
    <signal>triggered()</signal>
    <receiver>MainWindow</receiver>
    <slot>openDSrcManager()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>625</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_pluginManager</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openPluginsManager()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>

@@ -8,6 +8,7 @@
 #include <QWidget>
 
 class MyGrid;
+class MyDisplay;
 
 class MyLayer : public te::map::Layer
 {

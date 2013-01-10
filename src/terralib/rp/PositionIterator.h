@@ -116,8 +116,6 @@ namespace te
 
       protected:
 
-        int m_blkx;                              //!< The position in X of the current block.
-        int m_blky;                              //!< The position in Y of the current block.
         const te::rst::Band* m_band;             //!< The band from where to get the values.
 
     };
@@ -173,6 +171,8 @@ namespace te
         /*! \brief Returns an iterator referring to after the end of the iterator. */
         static PolygonIterator end(const te::rst::Band* b, const te::gm::Polygon* p);
 
+        bool operator!=(const PolygonIterator<T>& rhs) const;
+
       protected:
 
         const te::gm::Polygon* m_polygon;        //!< The spatial restriction to be applied in the iterator.
@@ -192,23 +192,17 @@ namespace te
     };
 
     template<class T> te::rp::AbstractPositionIterator<T>::AbstractPositionIterator()
-      : m_blkx(-1),
-        m_blky(-1),
-        m_band(0)
+      : m_band(0)
     {
     }
 
     template<class T> te::rp::AbstractPositionIterator<T>::AbstractPositionIterator(const te::rst::Band* b)
-      : m_blkx(0),
-        m_blky(0),
-        m_band(b)
+      : m_band(b)
     {
     }
 
     template<class T> te::rp::AbstractPositionIterator<T>::AbstractPositionIterator(const AbstractPositionIterator& rhs)
-      : m_blkx(rhs.m_blkx),
-        m_blky(rhs.m_blky),
-        m_band(rhs.m_band)
+      : m_band(rhs.m_band)
     {
     }
 
@@ -219,18 +213,14 @@ namespace te
     template<class T> te::rp::AbstractPositionIterator<T>& te::rp::AbstractPositionIterator<T>::operator=(const AbstractPositionIterator& rhs)
     {
       if (this != &rhs)
-      {
-        m_blkx = rhs.m_blkx;
-        m_blky = rhs.m_blky;
         m_band = rhs.m_band;
-      }
 
       return *this;
     }
 
-    template<class T> bool te::rp::AbstractPositionIterator<T>::operator!=(const AbstractPositionIterator& rhs) const
+    template<class T> bool te::rp::AbstractPositionIterator<T>::operator!=(const te::rp::AbstractPositionIterator<T>& rhs) const
     {
-      return (this->m_blky != rhs.m_blky);
+      return (m_band != rhs.m_band);
     }
 
 // implementation of Bounded Iteration Strategy
@@ -457,7 +447,8 @@ namespace te
 
     template<class T> void te::rp::PolygonIterator<T>::setEnd()
     {
-      this->m_blky = 1;
+      this->m_column = -1;
+      this->m_row = -1;
     }
 
     template<class T> te::rp::PolygonIterator<T> te::rp::PolygonIterator<T>::begin(const te::rst::Band* b, const te::gm::Polygon* p)
@@ -474,6 +465,10 @@ namespace te
       return it;
     }
 
+    template<class T> bool te::rp::PolygonIterator<T>::operator!=(const te::rp::PolygonIterator<T>& rhs) const
+    {
+      return ( (this->m_row != rhs.m_row) && (this->m_column != rhs.m_column));
+    }
 
   } // end namespace rst
 }   // end namespace te

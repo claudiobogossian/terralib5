@@ -90,7 +90,7 @@ void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::str
   m_connectionInfo = connInfo;
 }
 
-void te::ado::DataSource::getCapabilities(std::map<std::string, std::string>& /*capabilities*/) const
+const te::da::DataSourceCapabilities& te::ado::DataSource::getCapabilities() const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -140,7 +140,8 @@ bool te::ado::DataSource::isOpened() const
 
 bool te::ado::DataSource::isValid() const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  // Temporaly
+  return true;
 }
 
 te::da::DataSourceCatalog* te::ado::DataSource::getCatalog() const

@@ -27,9 +27,9 @@
 #include "MainWindow.h"
 
 // TerraLib
-#include <terralib/qt/widgets/datasource/connector/gdal/GDALConnectorDialog.h>
-#include <terralib/qt/widgets/datasource/connector/ogr/OGRConnectorDialog.h>
-#include <terralib/qt/widgets/datasource/connector/postgis/PostGISConnectorDialog.h>
+#include <terralib/qt/plugins/datasource/gdal/GDALConnectorDialog.h>
+#include <terralib/qt/plugins/datasource/ogr/OGRConnectorDialog.h>
+#include <terralib/qt/plugins/datasource/pgis/PostGISConnectorDialog.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 
 // Qt
@@ -91,7 +91,7 @@ void MainWindow::setupActions()
 
 void MainWindow::onOpenPostGISTriggered()
 {
-  te::qt::widgets::PostGISConnectorDialog* pgisDialog = new te::qt::widgets::PostGISConnectorDialog(this);
+  te::qt::plugins::pgis::PostGISConnectorDialog* pgisDialog = new te::qt::plugins::pgis::PostGISConnectorDialog(this);
   
   if (pgisDialog->exec() == QDialog::Accepted)
   {
@@ -105,7 +105,7 @@ void MainWindow::onOpenPostGISTriggered()
 
 void MainWindow::onOpenOGRTriggered()
 {
-  te::qt::widgets::OGRConnectorDialog* ogrDialog = new te::qt::widgets::OGRConnectorDialog();
+  te::qt::plugins::ogr::OGRConnectorDialog* ogrDialog = new te::qt::plugins::ogr::OGRConnectorDialog();
   
   if (ogrDialog->exec() == QDialog::Accepted)
   {
@@ -119,7 +119,7 @@ void MainWindow::onOpenOGRTriggered()
 
 void MainWindow::onOpenGDALTriggered()
 {
-  te::qt::widgets::GDALConnectorDialog* gdalDialog = new te::qt::widgets::GDALConnectorDialog();
+  te::qt::plugins::gdal::GDALConnectorDialog* gdalDialog = new te::qt::plugins::gdal::GDALConnectorDialog();
   
   if (gdalDialog->exec() == QDialog::Accepted)
   {

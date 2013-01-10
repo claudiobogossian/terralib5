@@ -27,7 +27,9 @@
 #include "../common/Logger.h"
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
+#include "DataSource.h"
 #include "Module.h"
 
 const te::mem::Module& sm_module = te::mem::Module::getInstance();
@@ -53,6 +55,37 @@ te::mem::Module::~Module()
 
 void te::mem::Module::initialize()
 {
+  // DataSource Capabilities
+  te::da::DataSourceCapabilities capabilities;
+  capabilities.setAccessPolicy(te::common::RWAccess);
+  capabilities.setSupportDataSetPesistenceAPI(true);
+  capabilities.setSupportDataSetTypePesistenceAPI(true);
+
+  // DataType Capabilities
+  te::da::DataTypeCapabilities dataTypeCapabilities;
+  dataTypeCapabilities.setSupportAll();
+  capabilities.setDataTypeCapabilities(dataTypeCapabilities);
+
+  // DataSetType Capabilites
+  te::da::DataSetTypeCapabilities dataSetTypeCapabilities;
+  dataSetTypeCapabilities.setSupportAll();
+  dataSetTypeCapabilities.setSupportForeingKey(false);
+  dataSetTypeCapabilities.setSupportSequence(false);
+  dataSetTypeCapabilities.setSupportCheckConstraints(false);
+  dataSetTypeCapabilities.setSupportQuadTreeIndex(false);
+  capabilities.setDataSetTypeCapabilities(dataSetTypeCapabilities);
+
+  // DataSet Capabilities
+  te::da::DataSetCapabilities dataSetCapabilities;
+  dataSetCapabilities.setSupportAll();
+  capabilities.setDataSetCapabilities(dataSetCapabilities);
+
+  // Query Capabilities
+  te::da::QueryCapabilities queryCapabilities;
+  capabilities.setQueryCapabilities(queryCapabilities);
+
+  DataSource::setCapabilities(capabilities);
+
   TE_LOG_TRACE(TR_MEMORY("TerraLib In-Memory driver initialized!"));
 }
 

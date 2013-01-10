@@ -43,7 +43,7 @@ set(DEP_LIBS
 		terralib_datatype
 		terralib_maptools
 		terralib_plugin
-		terralib_qtwidgets
+		terralib_qt_widgets
     ${QT_LIBRARIES}
     )
 

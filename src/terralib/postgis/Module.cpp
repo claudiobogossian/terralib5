@@ -21,6 +21,7 @@
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/BinaryOpEncoder.h"
 #include "../dataaccess/query/FunctionEncoder.h"

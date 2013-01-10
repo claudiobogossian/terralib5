@@ -33,6 +33,9 @@
 #include <QtGui/QApplication>
 #include <QtGui/qmessagebox.h>
 
+//! STL
+#include <iostream>
+
 void LoadDrivers()
 {
   try

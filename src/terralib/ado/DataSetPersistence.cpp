@@ -182,11 +182,103 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
-  do
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  std::vector<te::dt::Property*> props = dt->getProperties();
+
+  _RecordsetPtr recset;
+  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
+
+  try
   {
-    add(dt, d->getItem());
+    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+    
+    do
+    {
+      TESTHR(recset->AddNew());
+
+      for(size_t i = 0; i < props.size(); i++)
+      {
+      
+        int pType = props[i]->getType();
+
+        switch(pType)
+        {
+          case te::dt::CHAR_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)d->getChar(props[i]->getName().c_str());
+            break;
+
+          //case te::dt::UCHAR_TYPE:
+
+          case te::dt::INT16_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getInt16(props[i]->getName().c_str());
+            break;
+
+          case te::dt::INT32_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getInt32(props[i]->getName().c_str());
+            break;
+
+          case te::dt::INT64_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getInt64(props[i]->getName().c_str());
+            break;
+
+          //case te::dt::NUMERIC_TYPE:
+          //case te::dt::DATETIME_TYPE:
+          case te::dt::FLOAT_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getFloat(props[i]->getName().c_str());
+            break;
+
+          case te::dt::DOUBLE_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getDouble(props[i]->getName().c_str());
+            break;
+
+          case te::dt::STRING_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)d->getString(props[i]->getName().c_str()).c_str();
+            break;
+          
+          case te::dt::BOOLEAN_TYPE:
+            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getBool(props[i]->getName().c_str());
+            break;
+
+          case te::dt::BYTE_ARRAY_TYPE:
+            {
+              char * data = ((te::dt::ByteArray*)props[i])->getData();
+
+              _variant_t var;
+              te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
+
+              recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+
+              break;
+            }
+
+          //case te::dt::ARRAY_TYPE:
+          case te::dt::GEOMETRY_TYPE:
+          {
+            _variant_t var;
+            Convert2Ado(d->getGeometry(props[i]->getName()), var);
+            
+            recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+            
+            break;
+          }
+
+          default:
+            throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+            break;
+          }
+      }
+
+      TESTHR(recset->Update());
+
+    }
+    while(d->moveNext());
   }
-  while(d->moveNext());
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
 }
 
 void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
@@ -205,16 +297,82 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
 
     TESTHR(recset->AddNew());
 
-    te::gm::GeometryProperty* geomProp = 0;
-    geomProp = dt->getDefaultGeomProperty();
-
-    te::ado::addItem(dt, recset, props, item);
-
-    /*for(size_t i = 0; i < props.size(); i++)
+    for(size_t i = 0; i < props.size(); i++)
     {
-      te::ado::addItem()
-      te::ado::updateAdoColumn(dt, recset, props[i], item);
-    }*/
+      int pType = props[i]->getType();
+
+      switch(pType)
+      {
+      case te::dt::CHAR_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
+        break;
+
+        //case te::dt::UCHAR_TYPE:
+
+      case te::dt::INT16_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
+        break;
+
+      case te::dt::INT32_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
+        break;
+
+      case te::dt::INT64_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
+        break;
+
+        //case te::dt::NUMERIC_TYPE:
+        //case te::dt::DATETIME_TYPE:
+      case te::dt::FLOAT_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
+        break;
+
+      case te::dt::DOUBLE_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
+        break;
+
+      case te::dt::STRING_TYPE:
+        {
+        std::string aaaaa=item->getString(props[i]->getName().c_str());
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
+        break;
+        }
+
+      case te::dt::BOOLEAN_TYPE:
+        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
+        break;
+
+      case te::dt::BYTE_ARRAY_TYPE:
+        {
+          char * data = ((te::dt::ByteArray*)props[i])->getData();
+
+          _variant_t var;
+          te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
+
+          recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+
+          break;
+        }
+      case te::dt::GEOMETRY_TYPE:
+      {
+        _variant_t var;
+        Convert2Ado(item->getGeometry(props[i]->getName()), var);
+        
+        recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+        
+        break;
+      }
+
+        //case te::dt::ARRAY_TYPE:
+
+      default:
+        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
+        break;
+      }      
+    }
+
+    TESTHR(recset->Update());
+
   }
   catch(_com_error& e)
   {

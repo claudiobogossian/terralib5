@@ -110,6 +110,30 @@ te::color::RGBAColor** te::qt::widgets::WellKnownMarkFactory::create(const te::s
     case te::qt::widgets::WellKnownMarkFactory::X:
       draw(img, m_xPath);
     break;
+
+    case te::qt::widgets::WellKnownMarkFactory::Diamond:
+      draw(img, m_diamondPath);
+    break;
+
+    case te::qt::widgets::WellKnownMarkFactory::Ellipse:
+      draw(img, m_ellipsePath);
+    break;
+
+    case te::qt::widgets::WellKnownMarkFactory::Semicircle:
+      draw(img, m_semiCirclePath);
+    break;
+
+    case te::qt::widgets::WellKnownMarkFactory::Pentagon:
+      draw(img, m_pentagonPath);
+    break;
+
+    case te::qt::widgets::WellKnownMarkFactory::Hexagon:
+      draw(img, m_hexagonPath);
+    break;
+
+    case te::qt::widgets::WellKnownMarkFactory::Octagon:
+      draw(img, m_octagonPath);
+    break;
   }
 
   // Converts QImage to te::color::RGBA**
@@ -130,12 +154,18 @@ void te::qt::widgets::WellKnownMarkFactory::getSupportedMarks(std::vector<std::s
 void te::qt::widgets::WellKnownMarkFactory::buildMaps()
 {
   // MarkMap
-  sm_markMap["square"  ] = te::qt::widgets::WellKnownMarkFactory::Square;
-  sm_markMap["circle"  ] = te::qt::widgets::WellKnownMarkFactory::Circle;
-  sm_markMap["triangle"] = te::qt::widgets::WellKnownMarkFactory::Triangle;
-  sm_markMap["star"    ] = te::qt::widgets::WellKnownMarkFactory::Star;
-  sm_markMap["cross"   ] = te::qt::widgets::WellKnownMarkFactory::Cross;
-  sm_markMap["x"       ] = te::qt::widgets::WellKnownMarkFactory::X;
+  sm_markMap["square"    ] = te::qt::widgets::WellKnownMarkFactory::Square;
+  sm_markMap["circle"    ] = te::qt::widgets::WellKnownMarkFactory::Circle;
+  sm_markMap["triangle"  ] = te::qt::widgets::WellKnownMarkFactory::Triangle;
+  sm_markMap["star"      ] = te::qt::widgets::WellKnownMarkFactory::Star;
+  sm_markMap["cross"     ] = te::qt::widgets::WellKnownMarkFactory::Cross;
+  sm_markMap["x"         ] = te::qt::widgets::WellKnownMarkFactory::X;
+  sm_markMap["diamond"   ] = te::qt::widgets::WellKnownMarkFactory::Diamond;
+  sm_markMap["ellipse"   ] = te::qt::widgets::WellKnownMarkFactory::Ellipse;
+  sm_markMap["semicircle"] = te::qt::widgets::WellKnownMarkFactory::Semicircle;
+  sm_markMap["pentagon"  ] = te::qt::widgets::WellKnownMarkFactory::Pentagon;
+  sm_markMap["hexagon"   ] = te::qt::widgets::WellKnownMarkFactory::Hexagon;
+  sm_markMap["octagon"   ] = te::qt::widgets::WellKnownMarkFactory::Octagon;
 }
 
 void te::qt::widgets::WellKnownMarkFactory::buildPaths()
@@ -191,6 +221,54 @@ void te::qt::widgets::WellKnownMarkFactory::buildPaths()
   // X
   transform.reset();
   m_xPath = transform.rotate(-45).map(m_crossPath);
+
+  // Diamond
+  transform.reset();
+  m_diamondPath = transform.rotate(-45).scale(0.7, 0.7).map(m_squarePath);
+
+  // Ellipse
+  m_ellipsePath.addEllipse(-0.5, -0.3, 1.0, 0.7);
+
+  // Semicircle
+  m_semiCirclePath.arcTo(QRectF(-0.5, -0.5, 1.0, 1.0), 0.0, 180.0);
+  m_semiCirclePath.closeSubpath();
+
+  // Pentagon
+  transform.reset();
+  m_pentagonPath.moveTo(-0.6, -0.75);
+  m_pentagonPath.lineTo(-1.0, 0.50);
+  m_pentagonPath.lineTo(0.0, 1.25);
+  m_pentagonPath.lineTo(1.0, 0.50);
+  m_pentagonPath.lineTo(0.6, -0.75);
+  m_pentagonPath.closeSubpath();
+  m_pentagonPath.translate(0, -0.25);
+  m_pentagonPath = transform.scale(0.5, 0.5).rotate(180).map(m_pentagonPath);
+
+  // Hexagon
+  transform.reset();
+  m_hexagonPath.moveTo(-0.5, -0.5);
+  m_hexagonPath.lineTo(-1.0, 0.4);
+  m_hexagonPath.lineTo(-0.5, 1.1);
+  m_hexagonPath.lineTo(0.5, 1.1);
+  m_hexagonPath.lineTo(1.0, 0.4); 
+  m_hexagonPath.lineTo(0.5, -0.5);
+  m_hexagonPath.closeSubpath();
+  m_hexagonPath.translate(0, -0.25);
+  m_hexagonPath = transform.scale(0.5, 0.5).rotate(180).map(m_hexagonPath);
+
+  // Octagon
+  transform.reset();
+  m_octagonPath.moveTo(-0.5, -0.75);
+  m_octagonPath.lineTo(-1.0, -0.15);
+  m_octagonPath.lineTo(-1.0, 0.75);
+  m_octagonPath.lineTo(-0.5, 1.25);
+  m_octagonPath.lineTo(0.5, 1.25);
+  m_octagonPath.lineTo(1.0, 0.75);
+  m_octagonPath.lineTo(1.0, -0.15); 
+  m_octagonPath.lineTo(0.5, -0.75);
+  m_octagonPath.closeSubpath();
+  m_octagonPath.translate(0, -0.25);
+  m_octagonPath = transform.scale(0.5, 0.5).rotate(180).map(m_octagonPath);
 }
 
 void te::qt::widgets::WellKnownMarkFactory::setup(QImage* img)

@@ -4,7 +4,7 @@ set (PROJ_NAME "examples")
 project(${PROJ_NAME})
 
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
-  gdal geometry gml maptools memory ogr plugin postgis qtwidgets raster rp srs st stloader 
+  gdal geometry gml maptools memory ogr plugin postgis qt_widgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
  
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
@@ -21,10 +21,9 @@ if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
   
   file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${DATA_DIR}/data.zip)
                   
-  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf data.zip
-                  WORKING_DIRECTORY ${DATA_DIR})
+  execute_process(COMMAND unzip ${DATA_DIR}/data.zip
+                  WORKING_DIRECTORY ${DATA_DIR} )
 
-  file (REMOVE ${DATA_DIR}/data.zip)
   message (STATUS "-- Data files installed.")
 endif()
 
@@ -70,7 +69,7 @@ option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)
 option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
 option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
 option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
-option (EXAMPLE_QT_RASTERVISUAL "Build qt/rasterVisual example." ON)
+option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
 option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
   
 # Go into sub-directories
@@ -200,7 +199,7 @@ if(EXAMPLE_QT_TOOLS)
 endif()
 
 if(EXAMPLE_QT_RASTERVISUAL)
-  add_subdirectory(terralib_example_qt/rasterVisual)
+  add_subdirectory(terralib_example_qt/rastervisual)
 endif()
 
 if(EXAMPLE_QT_DATASOURCE)

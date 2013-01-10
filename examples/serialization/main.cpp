@@ -44,7 +44,7 @@ void ShowResult(const std::string& data)
 
 void SaveResult(const std::string& data, const std::string& path)
 {
-  std::ofstream ofs(path);
+  std::ofstream ofs(path.c_str());
   ofs << data;
 }
 

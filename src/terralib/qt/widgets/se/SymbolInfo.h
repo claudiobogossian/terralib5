@@ -44,7 +44,7 @@ namespace te
      */
     struct SymbolInfo
     {
-      std::size_t m_id;          /*!< Symbol identifier            */
+      std::string m_id;          /*!< Symbol identifier            */
       std::string m_name;        /*!< Symbol name                  */
       std::string m_author;      /*!< Author of the symbol         */
       std::string m_category;    /*!< Symbol category *            */
