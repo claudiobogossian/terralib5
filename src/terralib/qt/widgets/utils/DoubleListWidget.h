@@ -68,6 +68,8 @@ namespace te
 
           void setInputValues(std::vector<std::string> values);
 
+          void setOutputValues(std::vector<std::string> values);
+
           std::vector<std::string> getOutputValues();
 
         protected slots:

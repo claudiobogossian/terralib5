@@ -92,6 +92,7 @@ set (
   widgets/srs
   widgets/tools
   widgets/help
+  widgets/plugin/builder
   widgets/plugin/manager
   widgets/utils
 )
@@ -291,6 +292,12 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/plugin/builder/PluginBuilderWizard.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/plugin/builder" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/plugin/manager/PluginManagerDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/plugin/manager" MOC)
@@ -310,6 +317,7 @@ file(
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui
   ${SRCDIR}/widgets/srs/ui/*.ui
+  ${SRCDIR}/widgets/plugin/builder/ui/*.ui
   ${SRCDIR}/widgets/plugin/manager/ui/*.ui
 )
 

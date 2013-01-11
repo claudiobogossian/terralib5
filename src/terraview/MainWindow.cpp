@@ -32,6 +32,7 @@
 #include <terralib/qt/widgets/tools/ZoomArea.h>
 #include <terralib/qt/widgets/tools/Measure.h>
 #include <terralib/qt/widgets/plugin/manager/PluginManagerDialog.h>
+#include <terralib/qt/widgets/plugin/builder/PluginBuilderWizard.h>
 
 #include <terralib/qt/widgets/datasource/selector/DataSourceSelectorDialog.h>
 
@@ -318,6 +319,13 @@ void MainWindow::openPluginsManager()
   te::qt::af::ApplicationPlugins::getInstance().connect(&dlg, SIGNAL(pluginsAdded(const std::map<std::string, std::string>&)), 
     SLOT(addPlugins(const std::map<std::string, std::string>&)));
   te::qt::af::ApplicationPlugins::getInstance().connect(&dlg, SIGNAL(pluginsRemoved(const std::vector<std::string>&)), SLOT(removePlugins(const std::vector<std::string>&)));
+
+  dlg.exec();
+}
+
+void MainWindow::openPluginBuilder()
+{
+  te::qt::widgets::PluginBuilderWizard dlg(this);
 
   dlg.exec();
 }

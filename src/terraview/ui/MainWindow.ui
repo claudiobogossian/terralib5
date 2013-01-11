@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>1252</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -581,7 +581,7 @@
   </action>
   <action name="m_pluginBuilder">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>&amp;Build a New Plugin...</string>
@@ -841,6 +841,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>m_pluginBuilder</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>openPluginBuilder()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>625</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>addOGRLayer()</slot>
@@ -853,5 +869,6 @@
   <slot>addGDALLayer()</slot>
   <slot>openPluginsManager()</slot>
   <slot>openDSrcManager()</slot>
+  <slot>openPluginBuilder()</slot>
  </slots>
 </ui>

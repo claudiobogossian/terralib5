@@ -45,8 +45,9 @@ namespace te
     namespace widgets
     {
       class DoubleListWidget;
+      class ParameterTableWidget;
 
-      class PluginBuilderWizard : public QWizard
+      class TEQTWIDGETSEXPORT PluginBuilderWizard : public QWizard
       {
         Q_OBJECT
 
@@ -56,12 +57,32 @@ namespace te
 
           ~PluginBuilderWizard();
 
+          virtual bool validateCurrentPage();
+
+        public slots:
+
+          void onTeIncludeDirButtonClicked();
+          void onTeCmakeDirButtonClicked();
+          void onPluginSrcDirButtonClicked();
+          void onPluginBuildDirButtonClicked();
+
+        protected:
+
+          bool pluginInfoPageCheck();
+          bool providerPageCheck();
+          bool dirPageCheck();
+          void buildPlugin();
+
         private:
 
           std::auto_ptr<Ui::PluginBuilderWizardForm> m_ui;
           std::auto_ptr<DoubleListWidget> m_pluginDependencies;
           std::auto_ptr<DoubleListWidget> m_categoryDependencies;
           std::auto_ptr<DoubleListWidget> m_moduleDependencies;
+          std::auto_ptr<ParameterTableWidget> m_pluginResources;
+          std::auto_ptr<ParameterTableWidget> m_pluginParameters;
+
+          QString m_curDir;   //!< Attribute used to keep the last dir selected
       };
 
 
