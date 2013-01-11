@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
 namespace te
@@ -68,7 +69,7 @@ namespace te
 
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
         
         const te::da::SQLDialect* getDialect() const;
 
@@ -92,8 +93,10 @@ namespace te
           \brief It sets the capabilities document.
           
           \param capabilities The GDAL data source capabilities.
+
+          \note GDAL driver extended method.
         */
-        static void setCapabilities(const std::map<std::string, std::string>& capabilities);
+        static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
  
       protected:
 
@@ -110,7 +113,7 @@ namespace te
         bool m_isOpened;                                      //!< Tells if the data source is opened.
         bool m_isDirectory;                                   //!< Tells if the data source refers to a directory.
 
-        static std::map<std::string, std::string> sm_capabilities;  //!< GDAL capabilities.
+        static te::da::DataSourceCapabilities sm_capabilities;  //!< GDAL capabilities.
     };
 
   } // end namespace gdal

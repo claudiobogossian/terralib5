@@ -44,7 +44,7 @@
 #include <cassert>
 #include <cstring>
 
-// BOOST
+// Boost
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 
@@ -77,9 +77,9 @@ void te::ogr::DataSource::setConnectionInfo(const std::map<std::string, std::str
   m_connectionInfo = connInfo;
 }
 
-void te::ogr::DataSource::getCapabilities(std::map<std::string, std::string>& capabilities) const
+const te::da::DataSourceCapabilities& te::ogr::DataSource::getCapabilities() const
 {
-  capabilities = m_capabilities;
+  return m_capabilities;
 }
 
 const te::da::SQLDialect* te::ogr::DataSource::getDialect() const

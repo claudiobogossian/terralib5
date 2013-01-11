@@ -41,8 +41,8 @@
 #include <cstring>
 
 te::srs::Converter::Converter():
-  m_targetSRID(-1),
-  m_sourceSRID(-1),
+  m_targetSRID(TE_UNKNOWN_SRS),
+  m_sourceSRID(TE_UNKNOWN_SRS),
   m_sourcePj4Handler(0),
   m_targetPj4Handler(0)
 {
@@ -62,7 +62,7 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
   m_sourcePj4Handler = pj_init_plus(description.c_str());
   if (!m_sourcePj4Handler)
   {
-    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    std::string exceptionTxt = TR_SRS("Source SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
     throw te::srs::Exception(exceptionTxt);
@@ -75,7 +75,7 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
   m_targetPj4Handler = pj_init_plus(description.c_str());
   if (!m_targetPj4Handler)
   {
-    std::string exceptionTxt = TR_SRS("srs Target SRS description is not valid: ");
+    std::string exceptionTxt = TR_SRS("Target SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
     throw te::srs::Exception(exceptionTxt);
@@ -85,8 +85,8 @@ te::srs::Converter::Converter(int sourceSRID, int targetSRID):
 
 te::srs::Converter::~Converter()
 {
-  m_sourceSRID = -1;
-  m_targetSRID= -1;
+  m_sourceSRID = TE_UNKNOWN_SRS;
+  m_targetSRID= TE_UNKNOWN_SRS;
 
 #ifdef TE_USE_PROJ4 
   pj_free(m_sourcePj4Handler);
@@ -113,13 +113,36 @@ te::srs::Converter::setSourceSRID(int sourceSRID)
   m_sourcePj4Handler = pj_init_plus(description.c_str());
   if (!m_sourcePj4Handler)
   {
-    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    std::string exceptionTxt = TR_SRS("Source SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
     throw te::srs::Exception(exceptionTxt);
   }
 #endif
   m_sourceSRID = sourceSRID;  
+}
+
+void te::srs::Converter::setSourcePJ4txt(const std::string& pj4txt)
+{
+  assert(!pj4txt.empty());
+  
+#ifdef TE_USE_PROJ4 
+  if (m_sourcePj4Handler)
+  {
+    pj_free(m_sourcePj4Handler);
+    m_sourcePj4Handler = 0;
+  }
+  
+  m_sourcePj4Handler = pj_init_plus(pj4txt.c_str());
+  if (!m_sourcePj4Handler)
+  {
+    std::string exceptionTxt = TR_SRS("Source SRS PROJ4 description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::srs::Exception(exceptionTxt);
+  }
+#endif
+  m_sourceSRID = TE_UNKNOWN_SRS;
 }
 
 int 
@@ -145,13 +168,36 @@ te::srs::Converter::setTargetSRID(int targetSRID)
   m_targetPj4Handler = pj_init_plus(description.c_str());
   if (!m_targetPj4Handler)
   {
-    std::string exceptionTxt = TR_SRS("srs Target SRS description is not valid: ");
+    std::string exceptionTxt = TR_SRS("Target SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
     throw te::srs::Exception(exceptionTxt);
   }
 #endif
   m_targetSRID = targetSRID;  
+}
+
+void te::srs::Converter::setTargetPJ4txt(const std::string& pj4txt)
+{
+  assert(!pj4txt.empty());
+  
+#ifdef TE_USE_PROJ4 
+  if (m_sourcePj4Handler)
+  {
+    pj_free(m_sourcePj4Handler);
+    m_sourcePj4Handler = 0;
+  }
+  
+  m_targetPj4Handler = pj_init_plus(pj4txt.c_str());
+  if (!m_targetPj4Handler)
+  {
+    std::string exceptionTxt = TR_SRS("Target SRS PROJ4 description is not valid: ");
+    char* pjError = pj_strerrno(*(pj_get_errno_ref()));
+    exceptionTxt += std::string(pjError);
+    throw te::srs::Exception(exceptionTxt);
+  }
+#endif
+  m_targetSRID = TE_UNKNOWN_SRS;
 }
 
 int 
@@ -414,7 +460,7 @@ bool te::srs::Converter::convertToProjected(double &lon, double &lat, int SRID) 
   projPJ pjhProj = pj_init_plus(description.c_str());
   if (!pjhProj)
   {
-    std::string exceptionTxt = TR_SRS("srs Source SRS description is not valid: ");
+    std::string exceptionTxt = TR_SRS("Source SRS description is not valid: ");
     char* pjError = pj_strerrno(*(pj_get_errno_ref()));
     exceptionTxt += std::string(pjError);
     throw te::common::Exception(exceptionTxt);

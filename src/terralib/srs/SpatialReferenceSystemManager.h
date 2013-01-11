@@ -50,7 +50,9 @@ namespace te
        - A pair <id,authority>: a unique numeric id given by a particular authority; 
        - A simple, human-readable, interface-friendly, name;
        - An OGC's WKT description;
-       - A PROJ4 text: to support coordinate conversion
+       - A PROJ4 text: to support coordinate conversion.
+     
+     Refer to the <a href="http://www.spatialreference.org">Spatial Reference website</a> for more information about EPSG codes for SRS.
      */
     class TESRSEXPORT SpatialReferenceSystemManager : public te::common::Singleton<SpatialReferenceSystemManager>
     {

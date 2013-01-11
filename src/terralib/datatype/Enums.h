@@ -61,11 +61,11 @@ namespace te
       DAY,                  /*!< Day of the month.      */
       HOUR,                 /*!< Hour of the day.       */
       MINUTE,               /*!< Minute of the hour.    */
-      SECOND,               /*!< Second of the minute.  */         
-      WEEK,                 /*!< Week of the year.      */   
-      DAYOFWEEK,            /*!< Day of week: from 1 (Monday) to 7 (Sunday). */      
-      DAYOFYEAR,            /*!< Day of year.             */   
-      UNKNOWN               /*!< Unknown time resolution. */   
+      SECOND,               /*!< Second of the minute.  */
+      WEEK,                 /*!< Week of the year.      */
+      DAYOFWEEK,            /*!< Day of week: from 1 (Monday) to 7 (Sunday). */
+      DAYOFYEAR,            /*!< Day of year.             */
+      UNKNOWN               /*!< Unknown time resolution. */
     };
 
     /*!
@@ -87,36 +87,39 @@ namespace te
     */
     enum
     {
-      UNKNOWN_TYPE = 0,     /*!< Used when the data type is unknown.                         */
-      VOID_TYPE = 1,        /*!< For void data types.                                        */
-      BIT_TYPE = 2,         /*!< Used for 1 bit data types.                                  */
-      CHAR_TYPE = 3,        /*!< Character data type (1 byte long).                          */
-      UCHAR_TYPE = 4,       /*!< Unsigned character data type (1 byte long).                 */
-      INT16_TYPE = 5,       /*!< Integer number data type (2 bytes long).                    */
-      UINT16_TYPE = 6,      /*!< Unsigned Integer number data type (2 bytes long).           */
-      INT32_TYPE = 7,       /*!< Signed Integer number data type (4 bytes long).             */
-      UINT32_TYPE = 8,      /*!< Unsigned Integer number data type (4 bytes long).           */
-      INT64_TYPE = 9,       /*!< Signed Integer number data type (8 bytes long).             */
-      UINT64_TYPE = 10,     /*!< Unsigned Integer number data type (8 bytes long).           */
-      BOOLEAN_TYPE = 11,    /*!< Boolean type (true or false).                               */
-      FLOAT_TYPE = 12,      /*!< Float number (32 bits) data type.                           */
-      DOUBLE_TYPE = 13,     /*!< Double number (64 bits) data type.                          */
-      NUMERIC_TYPE = 14,    /*!< Arbitrary precision data type: Numeric(p, q).               */
-      STRING_TYPE = 15,     /*!< String data type.                                           */
-      BYTE_ARRAY_TYPE = 16, /*!< Binary data (BLOB).                                         */
-      GEOMETRY_TYPE = 17,   /*!< Geometry data type.                                         */
-      DATETIME_TYPE = 18,   /*!< Date and time data type.                                    */
-      ARRAY_TYPE = 19,      /*!< Array of homogeneous elements.                              */
-      COMPOSITE_TYPE = 20,  /*!< Composed type.                                              */
-      DATASET_TYPE = 21,    /*!< When the type is a DataSet.                                 */
-      RASTER_TYPE = 22,     /*!< When the type is a Raster.                                  */
-      CINT16_TYPE = 23,     /*!< Complex signed integer number data type (2 + 2 bytes long). */
-      CINT32_TYPE = 24,     /*!< Complex signed integer number data type (4 + 4 bytes long). */
-      CFLOAT_TYPE = 25,     /*!< Complex float number (32 + 32 bits) data type.              */
-      CDOUBLE_TYPE = 26,    /*!< Complex double number (64 + 64 bits) data type.             */
-      XML_TYPE = 27,        /*!< XML data type                                               */
-      DATASETITEM_TYPE = 28,/*!< When the type is a DataSetItem                              */
-      POLYMORPHIC_TYPE = 29 /*!< When the type is polymorphic                                */
+      UNKNOWN_TYPE = 0,      /*!< Used when the data type is unknown.                         */
+      VOID_TYPE = 1,         /*!< For void data types.                                        */
+      BIT_TYPE = 2,          /*!< Used for 1 bit data types.                                  */
+      CHAR_TYPE = 3,         /*!< Character data type (1 byte long).                          */
+      UCHAR_TYPE = 4,        /*!< Unsigned character data type (1 byte long).                 */
+      INT16_TYPE = 5,        /*!< Integer number data type (2 bytes long).                    */
+      UINT16_TYPE = 6,       /*!< Unsigned Integer number data type (2 bytes long).           */
+      INT32_TYPE = 7,        /*!< Signed Integer number data type (4 bytes long).             */
+      UINT32_TYPE = 8,       /*!< Unsigned Integer number data type (4 bytes long).           */
+      INT64_TYPE = 9,        /*!< Signed Integer number data type (8 bytes long).             */
+      UINT64_TYPE = 10,      /*!< Unsigned Integer number data type (8 bytes long).           */
+      BOOLEAN_TYPE = 11,     /*!< Boolean type (true or false).                               */
+      FLOAT_TYPE = 12,       /*!< Float number (32 bits) data type.                           */
+      DOUBLE_TYPE = 13,      /*!< Double number (64 bits) data type.                          */
+      NUMERIC_TYPE = 14,     /*!< Arbitrary precision data type: Numeric(p, q).               */
+      STRING_TYPE = 15,      /*!< String data type.                                           */
+      BYTE_ARRAY_TYPE = 16,  /*!< Binary data (BLOB).                                         */
+      GEOMETRY_TYPE = 17,    /*!< Geometry data type.                                         */
+      DATETIME_TYPE = 18,    /*!< Date and time data type.                                    */
+      ARRAY_TYPE = 19,       /*!< Array of homogeneous elements.                              */
+      COMPOSITE_TYPE = 20,   /*!< Composed type.                                              */
+      DATASET_TYPE = 21,     /*!< When the type is a DataSet.                                 */
+      RASTER_TYPE = 22,      /*!< When the type is a Raster.                                  */
+      CINT16_TYPE = 23,      /*!< Complex signed integer number data type (2 + 2 bytes long). */
+      CINT32_TYPE = 24,      /*!< Complex signed integer number data type (4 + 4 bytes long). */
+      CFLOAT_TYPE = 25,      /*!< Complex float number (32 + 32 bits) data type.              */
+      CDOUBLE_TYPE = 26,     /*!< Complex double number (64 + 64 bits) data type.             */
+      XML_TYPE = 27,         /*!< XML data type.                                              */
+      DATASETITEM_TYPE = 28, /*!< When the type is a DataSetItem.                             */
+      POLYMORPHIC_TYPE = 29, /*!< When the type is polymorphic.                               */
+      R4BITS_TYPE = 30,      /*!< When the type is a raster with 4 bits.                      */
+      R2BITS_TYPE = 31,      /*!< When the type is a raster with 2 bits.                      */
+      R1BIT_TYPE = 32        /*!< When the type is a raster with 1 bit.                       */
     };
 
     /*! \brief An anonymous union that marks the last common data type supported by TerraLib. */

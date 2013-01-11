@@ -47,7 +47,7 @@
 // libpq
 #include <libpq-fe.h>
 
-std::map<std::string, std::string> te::pgis::DataSource::sm_capabilities;
+te::da::DataSourceCapabilities te::pgis::DataSource::sm_capabilities;
 te::da::SQLDialect* te::pgis::DataSource::sm_myDialect(0);
 
 te::pgis::DataSource::DataSource()
@@ -85,9 +85,9 @@ void te::pgis::DataSource::setConnectionInfo(const std::map<std::string, std::st
   m_connectionInfo = connInfo;
 }
 
-void te::pgis::DataSource::getCapabilities(std::map<std::string, std::string>& capabilities) const
+const te::da::DataSourceCapabilities& te::pgis::DataSource::getCapabilities() const
 {
-  capabilities = sm_capabilities;
+  return sm_capabilities;
 }
 
 const te::da::SQLDialect* te::pgis::DataSource::getDialect() const
@@ -163,7 +163,7 @@ void te::pgis::DataSource::setDialect(te::da::SQLDialect* myDialect)
   sm_myDialect = myDialect;
 }
 
-void te::pgis::DataSource::setCapabilities(const std::map<std::string, std::string>& capabilities)
+void te::pgis::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
 {
   sm_capabilities = capabilities;
 }

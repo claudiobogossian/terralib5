@@ -190,10 +190,9 @@ void ConvertCoordinates()
   std::cout << std::endl;
   std::cout << "Converting a coordinate after include a CS to the Manager: " << std::endl;
 
-  // 
-  //  int usercode = te::srs::CoordinateSystemFactory::add("PROJ4","+proj=utm +zone=23 +south +ellps=WGS84 +datum=WGS84 +units=km +no_defs");
-  //converter->setSourceSRID(usercode);
-  //converter->setTargetSRID(TE_SRS_WGS84);
+  std::string p4txt = "+proj=utm +zone=23 +south +ellps=WGS84 +datum=WGS84 +units=km +no_defs";
+  converter->setSourcePJ4txt(p4txt);
+  converter->setTargetSRID(TE_SRS_WGS84);
 
   xyX = 500000 * 0.001;   // meter to kilometer
 	xyY = 10000000 * 0.001; // meter to kilometer

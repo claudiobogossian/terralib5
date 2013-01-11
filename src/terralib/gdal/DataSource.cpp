@@ -38,7 +38,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
-std::map<std::string, std::string> te::gdal::DataSource::sm_capabilities;
+te::da::DataSourceCapabilities te::gdal::DataSource::sm_capabilities;
 
 te::gdal::DataSource::DataSource()
   : m_catalog(0),
@@ -69,9 +69,9 @@ const std::map<std::string, std::string>& te::gdal::DataSource::getConnectionInf
   return m_connectionInfo;
 }
 
-void te::gdal::DataSource::getCapabilities(std::map<std::string, std::string>& capabilities) const
+const te::da::DataSourceCapabilities& te::gdal::DataSource::getCapabilities() const
 {
-  capabilities = sm_capabilities;
+  return sm_capabilities;
 }
 
 const te::da::SQLDialect* te::gdal::DataSource::getDialect() const
@@ -172,7 +172,7 @@ void te::gdal::DataSource::optimize(const std::map<std::string, std::string>& /*
   throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
-void te::gdal::DataSource::setCapabilities(const std::map<std::string, std::string>& capabilities)
+void te::gdal::DataSource::setCapabilities(const te::da::DataSourceCapabilities& capabilities)
 {
   sm_capabilities = capabilities;
 }

@@ -55,6 +55,7 @@ void te::srs::InitManagerFromJSON()
   {
     std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
     te::srs::Exception ex(TR_SRS(errmsg));
+    throw(ex);
   }
   catch (std::exception const& e)
   {

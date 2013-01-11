@@ -67,9 +67,11 @@ namespace te
 
         bool isValid( const GTParameters& params ) const;
 
-        void directMap( const GTParameters& params, const Coord2D& pt1, Coord2D& pt2 ) const;
+        void directMap( const GTParameters& params, const double& pt1X, 
+          const double& pt1Y, double& pt2X, double& pt2Y ) const;
           
-        void inverseMap( const GTParameters& params, const Coord2D& pt2, Coord2D& pt1 ) const;
+        void inverseMap( const GTParameters& params, const double& pt2X, 
+          const double& pt2Y, double& pt1X, double& pt1Y ) const;
 
         unsigned int getMinRequiredTiePoints() const;
         

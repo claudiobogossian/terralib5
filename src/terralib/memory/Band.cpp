@@ -19,13 +19,14 @@
 
 /*!
   \file terralib/memory/Band.cpp
- 
+
   \brief Band implementation for the In-Memory Raster.
 */
 
 // TerraLib
-#include "../common/Translator.h" 
+#include "../common/Translator.h"
 #include "../raster/BandProperty.h"
+#include "../raster/Utils.h"
 #include "Band.h"
 #include "Exception.h"
 #include "Raster.h"
@@ -47,12 +48,20 @@ te::mem::Band::Band(Raster* r, te::rst::BandProperty* p, std::size_t idx, void* 
     m_blksize(0),
     m_releaseBuffer(true)
 {
-  m_blksize = getBlockSize();
+  int pxlsize = te::rst::GetPixelSize(m_property->getType());
+
+  m_blksize = m_property->m_blkw * m_property->m_blkh * pxlsize;
+
+// fixing block sizes for special cases (1, 2, and 4 bits raster data type)
+  if (m_property->getType() == te::dt::R4BITS_TYPE)
+    m_blksize = te::rst::Round(m_blksize / 2);
+  if (m_property->getType() == te::dt::R2BITS_TYPE)
+    m_blksize = te::rst::Round(m_blksize / 4);
+  if (m_property->getType() == te::dt::R1BIT_TYPE)
+    m_blksize = te::rst::Round(m_blksize / 8);
 
   if(externalBuffer == 0)
-  {
     m_buff = new unsigned char[m_blksize];
-  }
   else
   {
     m_buff = static_cast<unsigned char*>(externalBuffer);
@@ -120,16 +129,12 @@ void te::mem::Band::getValue(unsigned int c, unsigned int r, double& value) cons
 {
   int pos = c + r * m_ncols;
 
-  assert(pos < m_blksize);
-
   m_getBuff(pos, m_buff, &value);
 }
 
 void te::mem::Band::setValue(unsigned int c, unsigned int r, const double value)
 {
   int pos = c + r * m_ncols;
-
-  assert(pos < m_blksize);
 
   m_setBuff(pos, m_buff, &value);
 }
@@ -138,16 +143,12 @@ void te::mem::Band::getIValue(unsigned int c, unsigned int r, double& value) con
 {
   int pos = c + r * m_ncols;
 
-  assert(pos < m_blksize);
-
   m_getBuffI(pos, m_buff, &value);
 }
 
 void te::mem::Band::setIValue(unsigned int c, unsigned int r, const double value)
 {
   int pos = c + r * m_ncols;
-
-  assert(pos < m_blksize);
 
   m_setBuffI(pos, m_buff, &value);
 }
@@ -178,3 +179,7 @@ void te::mem::Band::setRaster(Raster* r)
   m_raster = r;
 }
 
+int te::mem::Band::getBlockSize() const
+{
+  return m_blksize;
+}

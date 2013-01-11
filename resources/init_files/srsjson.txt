@@ -394,8 +394,7 @@
      "wkt": "PROJCS[\"WGS 84 / Antarctic Polar Stereographic\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",-71],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],AXIS[\"Easting\",UNKNOWN],AXIS[\"Northing\",UNKNOWN],UNIT[\"metre\",1]]",
      "pj4txt": "+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k_0=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
      "srid": 3031},
-
-
+ 
 	{"name": "SAD69 (deprecated)",
      "wkt": "GEOGCS[\"SAD69 (deprecated)\",DATUM[\"South_American_Datum_1969\",SPHEROID[\"GRS 1967\",6378160,298.247167427]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]]",
      "pj4txt":"+proj=latlong +ellps=GRS67 +no_defs",
@@ -434,17 +433,29 @@
 	{"name": "SAD69 / UTM zone 23S (deprecated)",
      "wkt":  "PROJCS[\"SAD69 / UTM zone 23S (deprecated)\",GEOGCS[\"SAD69\",DATUM[\"South_American_Datum_1969\",SPHEROID[\"GRS 1967\",6378160,298.247167427]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-45],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt":"+proj=utm +zone=23 +south +ellps=GRS67 +units=m +no_defs",
-     "srid": 29183},
+     "srid": 29183}
+     ,
 
 	{"name": "SAD69 / UTM zone 24S (deprecated)",
      "wkt": "PROJCS[\"SAD69 / UTM zone 24S (deprecated)\",GEOGCS[\"SAD69\",DATUM[\"South_American_Datum_1969\",SPHEROID[\"GRS 1967\",6378160,298.247167427]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-39],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt":"+proj=utm +zone=24 +south +ellps=GRS67 +units=m +no_defs",
      "srid": 29184},
-
+     
 	{"name": "SAD69 / UTM zone 25S (deprecated)",
      "wkt": "PROJCS[\"SAD69 / UTM zone 25S (deprecated)\",GEOGCS[\"SAD69\",DATUM[\"South_American_Datum_1969\",SPHEROID[\"GRS 1967\",6378160,298.247167427]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-33],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",10000000],AXIS[\"Easting\",EAST],AXIS[\"Northing\",NORTH],UNIT[\"metre\",1]]",
      "pj4txt":"+proj=utm +zone=25 +south +ellps=GRS67 +units=m +no_defs",
-     "srid":  29185}
+     "srid":  29185},
+     
+    {"name": "WGS 84 / Pseudo-Mercator",
+     "wkt": "PROJCS[\"WGS 84 / Pseudo-Mercator\",GEOGCS[\"Popular Visualisation CRS\",DATUM[\"Popular_Visualisation_Datum\",SPHEROID[\"Popular Visualisation Sphere\",6378137,0],TOWGS84[0,0,0,0,0,0,0]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],UNIT[\"metre\",1],PROJECTION[\"Mercator_1SP\"],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",1],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],AXIS[\"X\",EAST],AXIS[\"Y\",NORTH]]",
+     "pj4txt":"+proj=merc +lon_0=0 +k=1 +x_0=0 +y_0=0 +a=6378137 +b=6378137 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs",
+     "srid":  3857},
+    
+    {"name": "WGS 84 / UPS North",
+     "wkt": "PROJCS[\"WGS 84 / UPS North\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563]],PRIMEM[\"Greenwich\",0],UNIT[\"degree\",0.01745329251994328]],PROJECTION[\"Polar_Stereographic\"],PARAMETER[\"latitude_of_origin\",90],PARAMETER[\"central_meridian\",0],PARAMETER[\"scale_factor\",0.994],PARAMETER[\"false_easting\",2000000],PARAMETER[\"false_northing\",2000000],AXIS[\"Easting\",UNKNOWN],AXIS[\"Northing\",UNKNOWN],UNIT[\"metre\",1],]",
+     "pj4txt":"+proj=stere +lat_0=90 +lat_ts=90 +lon_0=0 +k=0.994 +x_0=2000000 +y_0=2000000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs",
+     "srid":  32661}
+     
     ]
 }     
 
