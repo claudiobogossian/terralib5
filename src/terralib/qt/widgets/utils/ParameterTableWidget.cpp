@@ -53,10 +53,30 @@ te::qt::widgets::ParameterTableWidget::~ParameterTableWidget()
 {
 }
 
+Ui::ParameterTableWidgetForm* te::qt::widgets::ParameterTableWidget::getForm() const
+{
+  return m_ui.get();
+}
+
 void te::qt::widgets::ParameterTableWidget::add(const std::string& name, const std::string& value)
 {
   int newrow = m_ui->m_paramTableWidget->rowCount();
 
+  //check if already exist a key with this name
+  for(int i = 0; i < newrow; ++i)
+  {
+    QTableWidgetItem* itemName = m_ui->m_paramTableWidget->item(i, 0);
+
+    if(itemName->text().toStdString() == name)
+    {
+      QTableWidgetItem* itemValue = new QTableWidgetItem(QString::fromStdString(value));
+      m_ui->m_paramTableWidget->setItem(i, 1, itemValue);
+
+      return;
+    }
+  }
+
+  //new entry
   m_ui->m_paramTableWidget->insertRow(newrow);
 
   QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(name));
@@ -66,6 +86,7 @@ void te::qt::widgets::ParameterTableWidget::add(const std::string& name, const s
   m_ui->m_paramTableWidget->setItem(newrow, 1, itemValue);
 
   m_ui->m_paramTableWidget->resizeRowsToContents();
+  m_ui->m_paramTableWidget->resizeColumnToContents(0);
 }
 
 std::map<std::string, std::string> te::qt::widgets::ParameterTableWidget::getMap() const
@@ -111,6 +132,7 @@ void te::qt::widgets::ParameterTableWidget::addToolButtonPressed()
   m_ui->m_paramTableWidget->setItem(newrow, 1, itemValue);
 
   m_ui->m_paramTableWidget->resizeRowsToContents();
+  m_ui->m_paramTableWidget->resizeColumnToContents(0);
 }
 
 void te::qt::widgets::ParameterTableWidget::removeToolButtonPressed()
@@ -121,6 +143,7 @@ void te::qt::widgets::ParameterTableWidget::removeToolButtonPressed()
     m_ui->m_paramTableWidget->removeRow(row);
 
   m_ui->m_paramTableWidget->resizeRowsToContents();
+  m_ui->m_paramTableWidget->resizeColumnToContents(0);
 }
 
 void te::qt::widgets::ParameterTableWidget::editToolButtonPressed()
@@ -155,5 +178,6 @@ void te::qt::widgets::ParameterTableWidget::editToolButtonPressed()
   m_ui->m_paramTableWidget->update();
 
   m_ui->m_paramTableWidget->resizeRowsToContents();
+  m_ui->m_paramTableWidget->resizeColumnToContents(0);
 }
 

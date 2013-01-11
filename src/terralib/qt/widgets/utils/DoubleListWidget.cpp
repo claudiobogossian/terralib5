@@ -38,10 +38,10 @@ te::qt::widgets::DoubleListWidget::DoubleListWidget(QWidget* parent, Qt::WindowF
   m_ui->setupUi(this);
 
 // set icons
-  m_ui->m_addToolButton->setIcon(QIcon::fromTheme("go-next"));
-  m_ui->m_addAllToolButton->setIcon(QIcon::fromTheme("go-last"));
-  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("go-previous"));
-  m_ui->m_removeAllToolButton->setIcon(QIcon::fromTheme("go-first"));
+  m_ui->m_addToolButton->setIcon(QIcon::fromTheme("arrow-right"));
+  m_ui->m_addAllToolButton->setIcon(QIcon::fromTheme("arrow-right-double"));
+  m_ui->m_removeToolButton->setIcon(QIcon::fromTheme("arrow-left"));
+  m_ui->m_removeAllToolButton->setIcon(QIcon::fromTheme("arrow-left-double"));
 
 // set selection mode
   m_ui->m_leftListWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -72,6 +72,16 @@ void te::qt::widgets::DoubleListWidget::setInputValues(std::vector<std::string> 
   for(size_t i = 0; i < values.size(); ++i)
   {
     m_ui->m_leftListWidget->addItem(values[i].c_str());
+  }
+}
+
+void te::qt::widgets::DoubleListWidget::setOutputValues(std::vector<std::string> values)
+{
+  m_ui->m_rightListWidget->clear();
+
+  for(size_t i = 0; i < values.size(); ++i)
+  {
+    m_ui->m_rightListWidget->addItem(values[i].c_str());
   }
 }
 

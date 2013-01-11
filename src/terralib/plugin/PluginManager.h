@@ -294,6 +294,20 @@ namespace te
         */
         AbstractPlugin* detach(const std::string& pluginName);
 
+        /*!
+          \brief Get plugins category types.
+
+          \param A vector to output the name of plugins categories managed by this singleton.
+        */
+        void getCategories(std::vector<std::string>& categories) const;
+
+        /*!
+          \brief Add a new category type.
+
+          \param name  The category name.
+        */
+        void addCategory(const std::string& name);
+
       protected:
 
         /*!

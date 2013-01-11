@@ -60,6 +60,8 @@ namespace te
 
           ~ParameterTableWidget();
 
+          Ui::ParameterTableWidgetForm* getForm() const;
+
           void add(const std::string& name, const std::string& value);
 
           std::map<std::string, std::string> getMap() const;
