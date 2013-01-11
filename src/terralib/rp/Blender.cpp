@@ -292,124 +292,116 @@ namespace te
       initState();
     }
     
-    void Blender::getBlendedValue( const double& line, const double& col, 
-      const unsigned int& rasterChannelsVecsIdx , double& value )
+    void Blender::noBlendMethodImp( const double& line, const double& col,
+      const unsigned int& rasterChannelsVecsIdx, double& value )
     {
-      TERP_DEBUG_TRUE_OR_THROW( m_blendFuncPtr, "Invalid blend function pointer" )
+      TERP_DEBUG_TRUE_OR_THROW( m_r1ValidDataPolygonPtr, "Invalid m_r1ValidDataPolygonPtr pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2ValidDataPolygonPtr, "Invalid m_r2ValidDataPolygonPtr pointer" );
       
       // Verifying if the point is inside the valid raster 1 area
       
-      if( m_r1ValidDataPolygonPtr )
+      m_noBlendMethodImp_Point1Indexed.setX( col );
+      m_noBlendMethodImp_Point1Indexed.setY( line );
+      
+      if( m_noBlendMethodImp_Point1Indexed.within( m_r1ValidDataPolygonPtr ) )
       {
-        m_getBlendedValue_Point1Indexed.setX( col );
-        m_getBlendedValue_Point1Indexed.setY( line );
-        m_m_getBlendedValue_PointIsInsideRaster1ValidArea = 
-          m_getBlendedValue_Point1Indexed.within( m_r1ValidDataPolygonPtr );
+        m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+          m_raster1Bands[ rasterChannelsVecsIdx ] ); 
+        value = m_noBlendMethodImp_cValue.real();
+        
+        if( m_forceInputNoDataValue )
+        {
+          if( value != m_outputNoDataValue )
+          {
+            value *= m_pixelScales1[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets1[ rasterChannelsVecsIdx ]; 
+            return;
+          }
+        }
+        else
+        {
+          if( value == m_raster1NoDataValues[ rasterChannelsVecsIdx ] )
+          {
+            value = m_outputNoDataValue;
+          }
+          else
+          {
+            value *= m_pixelScales1[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets1[ rasterChannelsVecsIdx ]; 
+            return;
+          }
+        }
       }
       else
       {
-        m_m_getBlendedValue_PointIsInsideRaster1ValidArea = true;
+        value = m_outputNoDataValue;
       }
       
       // Finding the point over the second raster
       
       if( m_geomTransformationPtr )
       {
-        m_geomTransformationPtr->directMap( col, line, m_getBlendedValue_Point2Col,
-          m_getBlendedValue_Point2Line );
+        m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
+          m_noBlendMethodImp_Point2Line );
       }
       else
       {
-        m_raster1Ptr->getGrid()->gridToGeo( col, line, m_getBlendedValue_Point1XProj1,
-          m_getBlendedValue_Point1YProj1 );
+        m_raster1Ptr->getGrid()->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
+          m_noBlendMethodImp_Point1YProj1 );
           
         if( m_rastersHaveDifSRS )
         {
-          m_convInstance.convert( m_getBlendedValue_Point1XProj1,
-            m_getBlendedValue_Point1YProj1, m_getBlendedValue_Point1XProj2,
-            m_getBlendedValue_Point1YProj2 );
+          m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2 );
             
-          m_raster2Ptr->getGrid()->geoToGrid( m_getBlendedValue_Point1XProj2,
-            m_getBlendedValue_Point1YProj2, m_getBlendedValue_Point2Col,
-            m_getBlendedValue_Point2Line );
+          m_raster2Ptr->getGrid()->geoToGrid( m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
         }
         else
         {
-          m_raster2Ptr->getGrid()->geoToGrid( m_getBlendedValue_Point1XProj1,
-            m_getBlendedValue_Point1YProj1, m_getBlendedValue_Point2Col,
-            m_getBlendedValue_Point2Line );
+          m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
         }
       }
         
       // Verifying if the point is inside the valid raster 2 area
       
-      if( m_r2ValidDataPolygonPtr )
+      m_noBlendMethodImp_Point2Indexed.setX( m_noBlendMethodImp_Point2Col );
+      m_noBlendMethodImp_Point2Indexed.setY( m_noBlendMethodImp_Point2Line );
+      if( m_noBlendMethodImp_Point2Indexed.within( m_r2ValidDataPolygonPtr ) )
       {
-        m_getBlendedValue_Point2Indexed.setX( m_getBlendedValue_Point2Col );
-        m_getBlendedValue_Point2Indexed.setY( m_getBlendedValue_Point2Line );
-        m_m_getBlendedValue_PointIsInsideRaster2ValidArea = 
-          m_getBlendedValue_Point2Indexed.within( m_r2ValidDataPolygonPtr );
-      }
-      else
-      {
-        m_m_getBlendedValue_PointIsInsideRaster2ValidArea = true;
-      }
-      
-      if( m_m_getBlendedValue_PointIsInsideRaster1ValidArea
-        && m_m_getBlendedValue_PointIsInsideRaster2ValidArea )
-      {
-        (this->*m_blendFuncPtr)( line, col, m_getBlendedValue_Point2Line,
-            m_getBlendedValue_Point2Col, rasterChannelsVecsIdx, value );
-      }
-      else if( m_m_getBlendedValue_PointIsInsideRaster1ValidArea )
-      {
-        m_interp1->getValue( col, line, m_getBlendedValue_cValue, 
-          m_raster1Bands[ rasterChannelsVecsIdx ] );
-        value =  m_getBlendedValue_cValue.real();        
-      }
-      else if( m_m_getBlendedValue_PointIsInsideRaster2ValidArea )
-      {
-        m_interp2->getValue( m_getBlendedValue_Point2Col, 
-          m_getBlendedValue_Point2Line, m_getBlendedValue_cValue, 
+        m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
+          m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
           m_raster2Bands[ rasterChannelsVecsIdx ] );
-        value =  m_getBlendedValue_cValue.real();        
+        value =  m_noBlendMethodImp_cValue.real();  
+        
+        if( m_forceInputNoDataValue )
+        {
+          if( value != m_outputNoDataValue )
+          {
+            value *= m_pixelScales2[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets2[ rasterChannelsVecsIdx ]; 
+          }
+        }
+        else
+        {
+          if( value == m_raster2NoDataValues[ rasterChannelsVecsIdx ] )
+          {
+            value = m_outputNoDataValue;
+          }
+          else
+          {
+            value *= m_pixelScales2[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets2[ rasterChannelsVecsIdx ]; 
+          }
+        }        
       }
       else
       {
         value = m_outputNoDataValue;
-      }
-    }    
-    
-    void Blender::noBlendMethodImp( const double& line1, const double& col1,
-      const double& line2, const double& col2,
-      const unsigned int& rasterChannelsVecsIdx, double& value )
-    {
-      m_interp1->getValue( col1, line1, m_noBlendMethodImp_cValue, 
-        m_raster1Bands[ rasterChannelsVecsIdx ] );
-      value =  m_noBlendMethodImp_cValue.real();
-        
-      if( m_forceInputNoDataValue )
-      {
-        if( value == m_outputNoDataValue )
-        {
-          m_interp2->getValue( col2, line2, m_noBlendMethodImp_cValue, 
-            m_raster2Bands[ rasterChannelsVecsIdx ] );
-          value =  m_noBlendMethodImp_cValue.real();          
-        }
-      }
-      else
-      {
-        if( value == m_raster1NoDataValues[ rasterChannelsVecsIdx ] )
-        {
-          m_interp2->getValue( col2, line2, m_noBlendMethodImp_cValue, 
-            m_raster2Bands[ rasterChannelsVecsIdx ] );
-          value =  m_noBlendMethodImp_cValue.real();
-          
-          if( value == m_raster2NoDataValues[ rasterChannelsVecsIdx ] )
-          {
-            value = m_outputNoDataValue;            
-          }
-        }
       }
     }
 
