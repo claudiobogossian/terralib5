@@ -156,6 +156,8 @@ namespace te
         /*!
           \brief Execute a mosaic of georeferenced images.
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
+          \param mosaicTargetMeans Mosaic target means.
+          \param mosaicTargetVariances Mosaic target variances.            
           \param outputRaster Pre-initialized output mosaic raster.
           \note The first sequenced raster will not be processed.
           \note te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
@@ -163,12 +165,16 @@ namespace te
           \return true if ok, false on errors.
         */
         bool executeGeoMosaic( const std::vector< te::gm::Polygon >& rastersBBoxes,
+          const std::vector< double >& mosaicTargetMeans,
+          const std::vector< double >& mosaicTargetVariances,                               
           te::rst::Raster& outputRaster );
           
         /*!
           \brief Execute a mosaic of images linket by tie-points.
           \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the first raster indexed points (lines/columns).
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
+          \param mosaicTargetMeans Mosaic target means.
+          \param mosaicTargetVariances Mosaic target variances.          
           \param outputRaster Pre-initialized output mosaic raster.
           \note The first sequenced raster will not be processed.
           \note te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
@@ -177,6 +183,8 @@ namespace te
         */
         bool executeTiePointsMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
           mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
+          const std::vector< double >& mosaicTargetMeans,
+          const std::vector< double >& mosaicTargetVariances,
           te::rst::Raster& outputRaster );          
           
         /*!
@@ -184,14 +192,14 @@ namespace te
           \param band Input raster band.
           \param forceNoDataValue Force the noDataValue to be used as the band no-data value.
           \param noDataValue The no-data value to use.
-          \param polygon Restriction polygon over the raster area (world coordinates).
           \param mean Pixels mean.
           \param variance Pixels variance.
         */
         static void calcBandStatistics( const te::rst::Band& band,
           const bool& forceNoDataValue,
           const double& noDataValue,
-          const te::gm::Polygon& polygon, double& mean, double& variance );
+          double& mean, 
+          double& variance );
 
     };
 

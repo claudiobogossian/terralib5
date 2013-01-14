@@ -72,9 +72,23 @@ void TsMosaic::GeoReferencedImagesMosaic()
   bands.push_back( 1 );
   bands.push_back( 2 );
   algoInputParams.m_inputRastersBands.push_back( bands );
-  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  bands[ 0 ] = 1;
+  bands[ 1 ] = 2;
+  bands[ 2 ] = 0;
   algoInputParams.m_inputRastersBands.push_back( bands );
   
+  bands[ 2 ] = 2;
+  bands[ 0 ] = 1;
+  bands[ 1 ] = 0;
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_noDataValue = 0;
+  algoInputParams.m_forceInputNoDataValue = true;
+  algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
+  algoInputParams.m_autoEqualize = true;  
+
   te::rp::Mosaic::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  
