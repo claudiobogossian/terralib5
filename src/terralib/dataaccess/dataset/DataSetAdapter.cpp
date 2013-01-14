@@ -39,7 +39,7 @@
 #include <memory>
 
 te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
-  : Holder(dataset, isOwner),
+  : te::common::Holder<DataSet>(dataset, isOwner),
     m_ds(dataset),
     m_outDataSetType(0)
 {
@@ -54,7 +54,7 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
 }
 
 te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, const DataSourceCapabilities& capabilities, bool isOwner)
-  : Holder(dataset, isOwner),
+  : te::common::Holder<DataSet>(dataset, isOwner),
     m_ds(dataset),
     m_outDataSetType(0)
 {
