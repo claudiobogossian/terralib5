@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,14 +29,25 @@
 // TerraLib
 #include "../../Config.h"
 
+/*!
+  \def TERRALIB_APPLICATION_CONFIG_FILE
 
-// Lista dos plugins registrados na aplicaco
+  \brief The file that contains the application plugins.
+*/
+#define TERRALIB_APPLICATION_CONFIG_FILE   "config.xml"
+
+/*!
+  \def TERRALIB_APPLICATION_PLUGINS_FILE
+
+  \brief The file that contains the application plugins.
+*/
 #define TERRALIB_APPLICATION_PLUGINS_FILE   "application_plugins.xml"
 
-// Pasta com os icones da aplicacao
-#define TERRALIB_ICON_THEME_DIR             "../../icons"
+/*!
+  \def TE_QT_AF_MODULE_NAME
 
-// Nome deste modulo
+  \brief The application framework module name.
+*/
 #define TE_QT_AF_MODULE_NAME                  "te.qt.af"
 
 /** @name Internationalization Defines
@@ -62,7 +73,7 @@
   \def TR_QT_AF
 
   \brief It marks a string in order to get translated. This is a special mark used in the DataAccess module of TerraLib.
- */
+*/
 #define TR_QT_AF(message) TR(message, TE_QT_AF_TEXT_DOMAIN)
 
 //@}
@@ -80,7 +91,7 @@
   \note If you want to compile TerraLib Application Framework as DLL in Windows, remember to insert TEQTAFDLL into the project's list of defines.
 
   \note If you want to compile TerraLib Application Framework as an Static Library under Windows, remember to insert the TEQTAFSTATIC flag into the project list of defines.
- */
+*/
 #ifdef WIN32
   #pragma warning( disable : 4251 )
   #pragma warning( disable : 4275 )
@@ -97,7 +108,7 @@
   #define TEQTAFEXPORT
 #endif
 
-//@}        
+//@}
 
 #endif  // __TERRALIB_QT_AF_INTERNAL_CONFIG_H
 
