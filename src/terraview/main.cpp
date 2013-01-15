@@ -23,17 +23,17 @@
   \brief It contains the main routine of TerraView.
 */
 
-#include "MainWindow.h"
-
-//! TerraLib include files
+// TerraLib
+#include <terralib/qt/af/BaseApplication.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
-//! Qt include files
+// Qt
 #include <QApplication>
 #include <QSplashScreen>
 
-//! STL include files
+// STL
 #include <exception>
+#include <memory>
 
 int main(int argc, char** argv)
 {
@@ -41,14 +41,21 @@ int main(int argc, char** argv)
 
   try
   {
-    QSplashScreen* splash = new QSplashScreen(QPixmap(), Qt::WindowStaysOnTopHint);
+    QPixmap pixmap("C:\\terralib5-git\\resources\\themes\\terralib\\scalable\\terralib_logo.svg");
+
+    std::auto_ptr<QSplashScreen> splash(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint));
+
     splash->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    te::qt::af::SplashScreenManager::getInstance().set(splash, 1, Qt::white);
+    te::qt::af::SplashScreenManager::getInstance().set(splash.get(), 1, Qt::white);
+
     splash->show();
 
-    MainWindow dlg;
+    te::qt::af::BaseApplication dlg("config.xml");
+
     splash->finish(&dlg);
+
+    splash.release();
 
     dlg.showMaximized();
 
