@@ -29,13 +29,12 @@
 // TerraLib
 #include "../../common/Holder.h"
 #include "../datasource/DataSourceCapabilities.h"
+#include "../Config.h"
+#include "AttributeConverters.h"
 #include "DataSet.h"
-#include "Config.h"
-
-// Boost
-#include <boost/bimap.hpp>
 
 // STL
+#include <set>
 #include <vector>
 
 namespace te
@@ -224,13 +223,6 @@ namespace te
         //@{
 
         /*!
-          \brief This method returns if the adapter is valid. i.e. all properties are adapted.
-
-          \return Return true if the adapter is valid. Otherwise, return false.
-        */
-        bool isValid() const;
-
-        /*!
           \brief This method returns the name of the properties that have not yet been adapted.
 
           \param properties A vector that will be filled with the name of the properties that have not yet been adapted.
@@ -259,6 +251,40 @@ namespace te
           \param p The adapter property.
         */
         void adapt(int i, te::dt::Property* p);
+
+        /*!
+          \brief This method adapts a given property of the handled data set to another property.
+
+          \param propertyName The name of the property that will be adapted.
+          \param p The adapter property.
+        */
+        void adapt(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv);
+
+        /*!
+          \brief This method adapts a given property of the handled data set to another property.
+
+          \param i The index of the property that will be adapted.
+          \param p The adapter property.
+        */
+        void adapt(int i, te::dt::Property* p, AttributeConverter conv);
+
+        /*!
+          \brief This method adapts the given properties of the handled data set to another property.
+
+          \param propertyName The name of the property that will be adapted.
+          \param p The adapter property.
+          \param conv The function that will be used to do the attribute values conversion.
+        */
+        void adapt(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv);
+
+        /*!
+          \brief This method adapts the given properties of the handled data set to another property.
+
+          \param propertyName The name of the property that will be adapted.
+          \param p The adapter property.
+          \param conv The function that will be used to do the attribute values conversion.
+        */
+        void adapt(const std::vector<int>& propertyIndexes, te::dt::Property* p, AttributeConverter conv);
 
         /*!
           \brief Static method that creates an adapter to the given data set.
@@ -310,13 +336,15 @@ namespace te
 
       private:
 
-        DataSet* m_ds;                             //!< A pointer to the DataSet that will be handled by adapter
-        const DataSetType* m_inDataSetType;        //!< A pointer to DataSetType of DataSet that will be handled by adapter.
-        DataSetType* m_outDataSetType;             //!< Adapter DataSetType.
-        boost::bimap<int, int> m_adaptPropertyMap; //!< A bimap that stores the property indexes (source <-> destination)
+        DataSet* m_ds;                                       //!< A pointer to the DataSet that will be handled by adapter
+        const DataSetType* m_inDataSetType;                  //!< A pointer to DataSetType of DataSet that will be handled by adapter.
+        DataSetType* m_outDataSetType;                       //!< Adapter DataSetType.
+        std::vector<std::vector<int> > m_propertyIndexes;    //!< A vector that stores the adapted property indexes.
+        std::vector<AttributeConverter> m_converters;        //!< A vector that stores the attribute converters functions.
+        std::set<int> m_adaptedProperties;                   //!< Internal set to store the adapted properties.
     };
 
-  } // end namespace ogr
+  } // end namespace da
 }   // end namespace te
 
 #endif  // __TERRALIB_DATAACCESS_INTERNAL_DATASETADAPTER_H
