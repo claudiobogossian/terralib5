@@ -398,7 +398,7 @@ namespace te
                   ulCoord1.y );                
                 convInstance.convert( 
                   inputRasterPtr->getGrid()->getExtent()->m_urx,
-                  inputRasterPtr->getGrid()->getExtent()->m_urx,
+                  inputRasterPtr->getGrid()->getExtent()->m_ury,
                   urCoord1.x,
                   urCoord1.y );
                 convInstance.convert( 
@@ -408,7 +408,7 @@ namespace te
                   lrCoord1.y );
                 convInstance.convert( 
                   inputRasterPtr->getGrid()->getExtent()->m_llx,
-                  inputRasterPtr->getGrid()->getExtent()->m_llx,
+                  inputRasterPtr->getGrid()->getExtent()->m_lly,
                   llCoord1.x,
                   llCoord1.y );
               }
@@ -747,6 +747,9 @@ namespace te
       {
         const unsigned int inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
         
+        TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes[ inputRasterIdx ].getSRID() == outputRaster.getSRID(),
+          "Invalid boxes SRID" );        
+        
         te::mem::CachedRaster cachedInputRaster( *nonCachedInputRasterPtr, 25, 5 );
         
         const te::rst::Grid& inputGrid = (*cachedInputRaster.getGrid());
@@ -820,6 +823,8 @@ namespace te
             
             if( auxResultPtr.get() )
             {
+              auxResultPtr->setSRID( mosaicBBoxesUnionElementPtr->getSRID() );
+              
               if( auxResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
               {
                 overlappedResult.reset( (te::gm::MultiPolygon*)auxResultPtr.release() );
@@ -928,6 +933,8 @@ namespace te
             
           if( auxResultPtr.get() )
           {
+            auxResultPtr->setSRID( mosaicBBoxesUnionPtr->getSRID() );
+            
             if( auxResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
             {
               nonOverlappedResult.reset( (te::gm::MultiPolygon*)auxResultPtr.release() );
@@ -1063,6 +1070,7 @@ namespace te
         boxesUnionResultPtr.reset( mosaicBBoxesUnionPtr->Union(
           &( rastersBBoxes[ inputRasterIdx ] ) ) );
         TERP_TRUE_OR_THROW( boxesUnionResultPtr.get(), "Invalid pointer" );
+        boxesUnionResultPtr->setSRID( outputRaster.getSRID() );
           
         if( boxesUnionResultPtr->getGeomTypeId() == te::gm::MultiPolygonType )
         {

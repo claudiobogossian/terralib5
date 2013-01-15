@@ -52,7 +52,7 @@ void te::qt::widgets::PluginCMakeWriter::createCmakeFile(const std::string& buil
               fileName += "/";
               fileName += CMAKE_FILE_NAME;
 
-  file.open(fileName);
+  file.open(fileName.c_str());
 
   //insert default header
   insertDefaultHeader(file);
@@ -137,7 +137,7 @@ void te::qt::widgets::PluginCMakeWriter::createPluginInfoFile(const std::string&
               fileName += "/";
               fileName += PLUGIN_INFO_XML_FILE_NAME;
 
-  file.open(fileName);
+  file.open(fileName.c_str());
 
   //insert default header
   //insertDefaultXMLHeader(file);

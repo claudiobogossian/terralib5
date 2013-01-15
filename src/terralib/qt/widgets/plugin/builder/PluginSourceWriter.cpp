@@ -53,7 +53,7 @@ void te::qt::widgets::PluginSourceWriter::createHeaderFile(const std::string& so
               fileName += "/";
               fileName += PLUGIN_H_FILE_NAME;
 
-  file.open(fileName);
+  file.open(fileName.c_str());
 
   //insert default header
   insertDefaultHeader(file, PLUGIN_H_FILE_NAME);
@@ -115,7 +115,7 @@ void te::qt::widgets::PluginSourceWriter::createCppFile(const std::string& sourc
               fileName += "/";
               fileName += PLUGIN_CPP_FILE_NAME;
 
-  file.open(fileName);
+  file.open(fileName.c_str());
 
   //insert default header
   insertDefaultHeader(file, PLUGIN_CPP_FILE_NAME);
@@ -185,7 +185,7 @@ void te::qt::widgets::PluginSourceWriter::createConfigFile(const std::string& so
               fileName += "/";
               fileName += PLUGIN_CONFIG_FILE_NAME;
 
-  file.open(fileName);
+  file.open(fileName.c_str());
 
   //insert default header
   insertDefaultHeader(file, PLUGIN_CONFIG_FILE_NAME);
