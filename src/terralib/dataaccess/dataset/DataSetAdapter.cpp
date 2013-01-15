@@ -32,6 +32,7 @@
 #include "../../datatype/SimpleData.h"
 #include "../../geometry/Geometry.h"
 #include "../../raster/Raster.h"
+#include "../datasource/DataSourceCapabilities.h"
 #include "../Exception.h"
 #include "DataSetAdapter.h"
 #include "DataSetType.h"
@@ -376,9 +377,15 @@ void te::da::DataSetAdapter::getArray(int i, std::vector<boost::int16_t>& a) con
   // TO DO!
 }
 
-const unsigned char* te::da::DataSetAdapter::getWKB(int /*i*/) const
+const unsigned char* te::da::DataSetAdapter::getWKB(int i) const
 {
-  return 0; // TO DO!
+  if(m_outDataSetType->getProperty(i)->getType() != te::dt::GEOMETRY_TYPE)
+    throw Exception(TR_DATAACCESS("Not a geometry property to get the WKB."));
+
+  std::size_t size = 0;
+  unsigned char* wkb = (unsigned char*)(getGeometry(i)->asBinary(size));
+
+  return wkb;
 }
 
 te::da::DataSet* te::da::DataSetAdapter::getDataSet(int i)
@@ -525,6 +532,8 @@ void te::da::DataSetAdapter::setAdaptedValue(int i, te::dt::AbstractData* data)
   const std::vector<int>& indexes = m_propertyIndexes[i];
   if(indexes.size() > 1)
     throw Exception(TR_DATAACCESS("The set operation can not be done considering the current adaptation (n -> 1)."));
+
+  assert(!indexes.empty());
 
   // Property index on input dataset
   int index = indexes[0];
