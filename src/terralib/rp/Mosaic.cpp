@@ -32,6 +32,7 @@
 #include "../raster/Grid.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
+#include "../raster/Utils.h"
 #include "../memory/CachedRaster.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/GTFactory.h"
@@ -547,8 +548,8 @@ namespace te
         cachedRasterInstance.getGrid()->geoToGrid( inXStartGeo, inYStartGeo, 
           outColStartDouble, outRowStartDouble );
           
-        const unsigned int outRowStart = (unsigned int)( outRowStartDouble );
-        const unsigned int outColStart = (unsigned int)( outColStartDouble );          
+        const unsigned int outRowStart = (unsigned int)std::max( 0.0, outRowStartDouble );
+        const unsigned int outColStart = (unsigned int)std::max( 0.0, outColStartDouble );          
         const unsigned int outRowsBound = std::min( outRowStart + 
           inputRasterPtr->getNumberOfRows(),
           cachedRasterInstance.getNumberOfRows() );
@@ -897,6 +898,12 @@ namespace te
                 ++inputRastersBandsIdx )
               {
                 te::rst::Band& outputBand = (*outputRaster.getBand( inputRastersBandsIdx ));
+                
+                double outputBandRangeMin = 0;
+                double outputBandRangeMax = 0;
+                te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type, 
+                  outputBandRangeMin, outputBandRangeMax );
+                
                 unsigned int outputRow = 0;
                 unsigned int outputCol = 0;  
                 double blendedValue = 0;
@@ -913,6 +920,9 @@ namespace te
                   
                   blenderInstance.getBlendedValue( outputRow, outputCol, inputRastersBandsIdx,
                     blendedValue );
+                    
+                  blendedValue = std::max( blendedValue, outputBandRangeMin );
+                  blendedValue = std::min( blendedValue, outputBandRangeMax );
                     
                   outputBand.setValue( outputCol, outputRow, blendedValue );
                   
@@ -973,6 +983,12 @@ namespace te
             const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][ 
               inputRastersBandsIdx ];
             te::rst::Band& outputBand = (*outputRaster.getBand( inputRastersBandsIdx ));
+            
+            double outputBandRangeMin = 0;
+            double outputBandRangeMax = 0;
+            te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type, 
+              outputBandRangeMin, outputBandRangeMax );            
+            
             const std::size_t nonOverlappednResultSize = 
               nonOverlappedResult->getNumGeometries();
             const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
@@ -998,7 +1014,8 @@ namespace te
               double inputX = 0;
               double inputY = 0; 
               const te::rst::Grid& outputGrid = (*outputRaster.getGrid());
-              std::complex< double > pixelValue = 0;
+              std::complex< double > pixelCValue = 0;
+              double pixelValue = 0;
               
               te::rp::PolygonIterator< double > itB = te::rp::PolygonIterator< double >::begin( &outputBand,
                 nonOverlappednResultElementPtr );
@@ -1018,17 +1035,21 @@ namespace te
                   
                   inputGrid.geoToGrid( inputX, inputY, inputCol, inputRow );
                   
-                  interpInstance.getValue( inputCol, inputRow, pixelValue, inputBandIdx );
+                  interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
                   
-                  if( pixelValue.real() == inputBandNoDataValue )
+                  if( pixelCValue.real() == inputBandNoDataValue )
                   {
                     outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
                   }
                   else
                   {
-                    outputBand.setValue( outputCol, outputRow, ( pixelValue.real() * 
-                      currentRasterBandsScales[ inputRastersBandsIdx ] ) + 
-                      currentRasterBandsOffsets[ inputRastersBandsIdx ] );                    
+                    pixelValue = pixelCValue.real() * currentRasterBandsScales[ 
+                      inputRastersBandsIdx ] + currentRasterBandsOffsets[ 
+                      inputRastersBandsIdx ];
+                    pixelValue = std::max( pixelValue, outputBandRangeMin );
+                    pixelValue = std::min( pixelValue, outputBandRangeMax );
+                  
+                    outputBand.setValue( outputCol, outputRow, pixelValue );                    
                   }
                   
                   ++itB;
@@ -1040,21 +1061,25 @@ namespace te
                 {
                   outputRow = itB.getRow();
                   outputCol = itB.getCol();
-
+                  
                   outputGrid.gridToGeo( (double)outputCol, (double)outputRow, outputX, outputY );
                   inputGrid.geoToGrid( outputX, outputY, inputCol, inputRow );
                   
-                  interpInstance.getValue( inputCol, inputRow, pixelValue, inputBandIdx );
+                  interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
                   
-                  if( pixelValue.real() == inputBandNoDataValue )
+                  if( pixelCValue.real() == inputBandNoDataValue )
                   {
                     outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
                   }
                   else
                   {
-                    outputBand.setValue( outputCol, outputRow, ( pixelValue.real() * 
-                      currentRasterBandsScales[ inputRastersBandsIdx ] ) + 
-                      currentRasterBandsOffsets[ inputRastersBandsIdx ] );                  
+                    pixelValue = pixelCValue.real() * currentRasterBandsScales[ 
+                      inputRastersBandsIdx ] + currentRasterBandsOffsets[ 
+                      inputRastersBandsIdx ];
+                    pixelValue = std::max( pixelValue, outputBandRangeMin );
+                    pixelValue = std::min( pixelValue, outputBandRangeMax );
+                  
+                    outputBand.setValue( outputCol, outputRow, pixelValue );                       
                   }
                   
                   ++itB;
