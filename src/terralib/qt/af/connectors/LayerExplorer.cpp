@@ -4,7 +4,8 @@
 #include <terralib/qt/widgets/layer/AbstractTreeItem.h>
 #include <terralib/qt/af/events/LayerAdded.h>
 #include <terralib/qt/af/events/LayerSelected.h>
-#include <terralib/qt/af/CoreApplication.h>
+#include <terralib/qt/af/ApplicationController.h>
+#include <terralib/qt/af/BaseApplicationController.h>
 #include <terralib/maptools/Layer.h>
 
 namespace te
@@ -59,7 +60,7 @@ namespace te
         {
           te::map::AbstractLayer* abs_lay = item->getRefLayer();
           te::qt::af::LayerSelected ls_ev(abs_lay);
-          Application::getInstance().broadcast(&ls_ev);
+          ApplicationController::getInstance().broadcast(&ls_ev);
         }
       }
     }
