@@ -21,8 +21,8 @@
   \file terralib/raster/BandIteratorWindow.h
 
   \brief It implements and iterator to "navigate" over a single band,
-         optimized by a window structure. Examples include filters,
-         moving windows, morphology, etc.
+         optimized by a window structure (e.g. 3x3, 5x5, etc). Examples
+         include filters, moving windows, morphology, etc.
 */
 
 #ifndef __TERRALIB_RASTER_INTERNAL_BANDITERATORWINDOW_H
@@ -44,8 +44,8 @@ namespace te
       \class BandIteratorWindow
 
       \brief It implements and iterator to "navigate" over a single band,
-             optimized by a window structure. Examples include filters,
-             moving windows, morphology, etc.
+             optimized by a window structure (e.g. 3x3, 5x5, etc). Examples
+             include filters, moving windows, morphology, etc.
 
       \sa te::rst::Band
     */
@@ -122,7 +122,7 @@ namespace te
         static BandIteratorWindow begin(Band* b, std::size_t w, const std::size_t h);
 
         /*!
-          \brief Returns an iterator referring to after the end of the iterator. 
+          \brief Returns an iterator referring to after the end of the iterator.
 
           \param b The band to iterate.
           \param w The width of the window to iterate.
@@ -381,7 +381,7 @@ namespace te
         m_blky = rhs.m_blky;
         m_lastblksize = rhs.m_lastblksize;
         m_band = rhs.m_band;
-        
+
         te::common::FreeContents(m_blocks);
         for (unsigned i = 0; i < (m_nvblocksx * m_nvblocksy); i++)
           m_blocks.push_back(new T[m_band->getBlockSize()]);
