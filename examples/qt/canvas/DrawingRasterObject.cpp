@@ -10,8 +10,6 @@
 // Qt
 #include <QtGui/QApplication>
 
-
-
 void DrawingRasterObject()
 {
   int argc = 1;
@@ -30,6 +28,7 @@ void DrawingRasterObject()
   te::da::DataSourceTransactor* tr = ds->getTransactor();
 
   te::da::DataSet* dataSet = tr->getDataSet("cbers2b_rgb342_crop.tif");
+  dataSet->loadTypeInfo();
   te::rst::Raster* raster = dataSet->getRaster();
 
   const te::gm::Envelope* extent = raster->getExtent();
@@ -41,8 +40,6 @@ void DrawingRasterObject()
 
   // create the canvas and adjust the world-device transformation parameters
   te::qt::widgets::Canvas canvas(800, 600);
-
-  
   canvas.setWindow(llx,lly,urx,ury);
   canvas.calcAspectRatio(llx,lly,urx,ury);
 
