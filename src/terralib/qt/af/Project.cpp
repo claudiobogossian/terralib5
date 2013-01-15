@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,24 +18,23 @@
  */
 
 /*!
-  \file Project.cpp
+  \file terralib/qt/af/Project.cpp
 
-  \brief Application project.
+  \brief This class models the concept of a project for the TerraLib Application Framework.
 */
 
 // TerraLib
-#include <terralib/maptools/AbstractLayer.h>
+#include "../../maptools/AbstractLayer.h"
 #include "Project.h"
 
 // STL
-#include <string>
+#include <algorithm>
 
 te::qt::af::Project::Project()
   : m_title(""),
-  m_author(""),
-  m_layerList(boost::ptr_vector<te::map::AbstractLayer*>())
+    m_author(""),
+    m_layers()
 {
-
 }
 
 te::qt::af::Project::~Project()
@@ -43,42 +42,43 @@ te::qt::af::Project::~Project()
 
 }
 
-void te::qt::af::Project::setTitle(std::string title)
+void te::qt::af::Project::setTitle(const std::string& title)
 {
   m_title = title;
 }
 
-std::string te::qt::af::Project::getTitle()
+const std::string& te::qt::af::Project::getTitle() const
 {
   return m_title;
 }
 
-void te::qt::af::Project::setAuthor(std::string author)
+void te::qt::af::Project::setAuthor(const std::string& author)
 {
   m_author = author;
 }
 
-std::string te::qt::af::Project::getAuthor()
+const std::string& te::qt::af::Project::getAuthor() const
 {
   return m_author;
 }
 
-void te::qt::af::Project::setLayers(boost::ptr_vector<te::map::AbstractLayer*> layerList)
+const std::list<te::map::AbstractLayer*>& te::qt::af::Project::getLayers() const
 {
-  m_layerList = layerList;
+  return m_layers;
 }
 
-boost::ptr_vector<te::map::AbstractLayer*> te::qt::af::Project::getLayers()
+std::list<te::map::AbstractLayer*>& te::qt::af::Project::getLayers()
 {
-  return m_layerList;
+  return m_layers;
 }
 
-void te::qt::af::Project::addLayer(te::map::AbstractLayer* layer)
+void te::qt::af::Project::add(te::map::AbstractLayer* layer)
 {
-  m_layerList.push_back(&layer);
+  m_layers.push_back(layer);
 }
 
-void te::qt::af::Project::removeLayer(te::map::AbstractLayer* layer)
+void te::qt::af::Project::remove(te::map::AbstractLayer* layer)
 {
-  m_layerList.erase(std::find(m_layerList.begin(), m_layerList.end(), layer));
+  std::remove(m_layers.begin(), m_layers.end(), layer);
 }
+
