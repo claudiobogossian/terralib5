@@ -121,32 +121,34 @@ namespace te
         
         const std::size_t nRings = r1ValidDataPolygonPtr->getNumRings();
         te::gm::LinearRing const* oldRingPtr = 0;
-        te::gm::LinearRing* newRingPtr = 0;
+        std::auto_ptr< te::gm::LinearRing > newRingPtr;
         std::size_t pointIdx = 0;
-        std::size_t ringSize = 0;
-        te::gm::Coord2D* newRingCoodsPtr = 0;
-        te::gm::Coord2D const* oldRingCoodsPtr = 0;
+        std::size_t ringElementsBound = 0;
         const te::rst::Grid& grid = (*raster1.getGrid());
+        double newXCoord = 0;
+        double newYCoord = 0;
         
         for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
         {
-          oldRingPtr = dynamic_cast< te::gm::LinearRing* >( r1ValidDataPolygonPtr->operator[]( ringIdx ) );
+          oldRingPtr = dynamic_cast< te::gm::LinearRing const* >( r1ValidDataPolygonPtr->operator[]( ringIdx ) );
           TERP_DEBUG_TRUE_OR_THROW( oldRingPtr != 0, "Invalid ring" )
           
-          ringSize = oldRingPtr->getNPoints();
+          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr->getNPoints(), "Invalid ring size" );
+          ringElementsBound = oldRingPtr->getNPoints() - 1;
           
-          newRingPtr = new te::gm::LinearRing( ringSize, te::gm::LineStringType, 0, 0 );
-          newRingCoodsPtr = newRingPtr->getCoordinates();
+          newRingPtr.reset( new te::gm::LinearRing( oldRingPtr->getNPoints(), te::gm::LineStringType, 0, 0 ) );
           
-          oldRingCoodsPtr = oldRingPtr->getCoordinates();
-          
-          for( pointIdx = 0 ; pointIdx < ringSize ; ++pointIdx )
+          for( pointIdx = 0 ; pointIdx < ringElementsBound ; ++pointIdx )
           {
-            grid.geoToGrid( oldRingCoodsPtr->x, oldRingCoodsPtr->y, 
-              newRingCoodsPtr->x, newRingCoodsPtr->y );
+            grid.geoToGrid( oldRingPtr->getX( pointIdx ), oldRingPtr->getY( pointIdx ), 
+              newXCoord, newYCoord );
+            newRingPtr->setX( pointIdx, newXCoord );
+            newRingPtr->setY( pointIdx, newYCoord );
           }
+          newRingPtr->setX( ringElementsBound, newRingPtr->getX( 0 ) );
+          newRingPtr->setY( ringElementsBound, newRingPtr->getY( 0 ) );          
           
-          m_r1ValidDataPolygonPtr->add( newRingPtr );
+          m_r1ValidDataPolygonPtr->add( newRingPtr.release() );
         }
       }
       
@@ -156,32 +158,34 @@ namespace te
         
         const std::size_t nRings = r2ValidDataPolygonPtr->getNumRings();
         te::gm::LinearRing const* oldRingPtr = 0;
-        te::gm::LinearRing* newRingPtr = 0;
+        std::auto_ptr< te::gm::LinearRing > newRingPtr;
         std::size_t pointIdx = 0;
-        std::size_t ringSize = 0;
-        te::gm::Coord2D* newRingCoodsPtr = 0;
-        te::gm::Coord2D const* oldRingCoodsPtr = 0;
+        std::size_t ringElementsBound = 0;
         const te::rst::Grid& grid = (*raster2.getGrid());
+        double newXCoord = 0;
+        double newYCoord = 0;        
         
         for( std::size_t ringIdx = 0 ; ringIdx < nRings ; ++ringIdx )
         {
           oldRingPtr = dynamic_cast< te::gm::LinearRing* >( r2ValidDataPolygonPtr->operator[]( ringIdx ) );
           TERP_DEBUG_TRUE_OR_THROW( oldRingPtr != 0, "Invalid ring" )
           
-          ringSize = oldRingPtr->getNPoints();
+          TERP_DEBUG_TRUE_OR_THROW( oldRingPtr->getNPoints(), "Invalid ring size" );
+          ringElementsBound = oldRingPtr->getNPoints() - 1;
           
-          newRingPtr = new te::gm::LinearRing( ringSize, te::gm::LineStringType, 0, 0 );
-          newRingCoodsPtr = newRingPtr->getCoordinates();
+          newRingPtr.reset( new te::gm::LinearRing( oldRingPtr->getNPoints(), te::gm::LineStringType, 0, 0 ) );
           
-          oldRingCoodsPtr = oldRingPtr->getCoordinates();
-          
-          for( pointIdx = 0 ; pointIdx < ringSize ; ++pointIdx )
+          for( pointIdx = 0 ; pointIdx < ringElementsBound ; ++pointIdx )
           {
-            grid.geoToGrid( oldRingCoodsPtr->x, oldRingCoodsPtr->y, 
-              newRingCoodsPtr->x, newRingCoodsPtr->y );
+            grid.geoToGrid(  oldRingPtr->getX( pointIdx ), oldRingPtr->getY( pointIdx ), 
+              newXCoord, newYCoord );
+            newRingPtr->setX( pointIdx, newXCoord );
+            newRingPtr->setY( pointIdx, newYCoord );              
           }
+          newRingPtr->setX( ringElementsBound, newRingPtr->getX( 0 ) );
+          newRingPtr->setY( ringElementsBound, newRingPtr->getY( 0 ) ); 
           
-          m_r2ValidDataPolygonPtr->add( newRingPtr );
+          m_r2ValidDataPolygonPtr->add( newRingPtr.release() );
         }
       }
         
@@ -230,17 +234,22 @@ namespace te
       m_pixelOffsets2 = pixelOffsets2;
       m_pixelScales2 = pixelScales2;
       
-      // initializing the converter
+      // reprojection issues
       
       if( geomTransformationPtr == 0 )
       {
         TERP_TRUE_OR_RETURN_FALSE( raster1.getSRID() >= 0,
           "Invalid raster 1 SRID" )
-        m_convInstance.setSourceSRID( raster1.getSRID() );
         
         TERP_TRUE_OR_RETURN_FALSE( raster2.getSRID() >= 0,
           "Invalid raster 2 SRID" )
-        m_convInstance.setTargetSRID( raster2.getSRID() );        
+          
+        if( raster1.getSRID() != raster2.getSRID() )
+        {
+          m_rastersHaveDifSRS = true;
+          m_convInstance.setSourceSRID( raster1.getSRID() );
+          m_convInstance.setTargetSRID( raster2.getSRID() );
+        }
       }
       
       return true;
@@ -259,6 +268,7 @@ namespace te
       m_interpMethod2 = te::rst::Interpolator::NearestNeighbor;
       m_outputNoDataValue = 0;
       m_forceInputNoDataValue = false;
+      m_rastersHaveDifSRS = false;
       m_interp1 = 0;
       m_interp2 = 0;      
     };    
@@ -282,92 +292,116 @@ namespace te
       initState();
     }
     
-    void Blender::getBlendedValue( const double& line, const double& col, 
-      const unsigned int& rasterChannelsVecsIdx , double& value )
+    void Blender::noBlendMethodImp( const double& line, const double& col,
+      const unsigned int& rasterChannelsVecsIdx, double& value )
     {
-      TERP_DEBUG_TRUE_OR_THROW( m_blendFuncPtr, "Invalid blend function pointer" )
+      TERP_DEBUG_TRUE_OR_THROW( m_r1ValidDataPolygonPtr, "Invalid m_r1ValidDataPolygonPtr pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( m_r2ValidDataPolygonPtr, "Invalid m_r2ValidDataPolygonPtr pointer" );
       
       // Verifying if the point is inside the valid raster 1 area
       
-      if( m_r1ValidDataPolygonPtr )
+      m_noBlendMethodImp_Point1Indexed.setX( col );
+      m_noBlendMethodImp_Point1Indexed.setY( line );
+      
+      if( m_noBlendMethodImp_Point1Indexed.within( m_r1ValidDataPolygonPtr ) )
       {
-        m_getBlendedValue_Point1Indexed.setX( line );
-        m_getBlendedValue_Point1Indexed.setY( col );
-        if( ! m_getBlendedValue_Point1Indexed.within( m_r1ValidDataPolygonPtr ) )
+        m_interp1->getValue( col, line, m_noBlendMethodImp_cValue, 
+          m_raster1Bands[ rasterChannelsVecsIdx ] ); 
+        value = m_noBlendMethodImp_cValue.real();
+        
+        if( m_forceInputNoDataValue )
         {
-          value = m_outputNoDataValue;
-          return;
+          if( value != m_outputNoDataValue )
+          {
+            value *= m_pixelScales1[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets1[ rasterChannelsVecsIdx ]; 
+            return;
+          }
         }
+        else
+        {
+          if( value == m_raster1NoDataValues[ rasterChannelsVecsIdx ] )
+          {
+            value = m_outputNoDataValue;
+          }
+          else
+          {
+            value *= m_pixelScales1[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets1[ rasterChannelsVecsIdx ]; 
+            return;
+          }
+        }
+      }
+      else
+      {
+        value = m_outputNoDataValue;
       }
       
       // Finding the point over the second raster
       
       if( m_geomTransformationPtr )
       {
-        m_geomTransformationPtr->directMap( col, line, m_getBlendedValue_Point2Col,
-          m_getBlendedValue_Point2Line );
+        m_geomTransformationPtr->directMap( col, line, m_noBlendMethodImp_Point2Col,
+          m_noBlendMethodImp_Point2Line );
       }
       else
       {
-        m_raster1Ptr->getGrid()->gridToGeo( col, line, m_getBlendedValue_Point1XProj1,
-          m_getBlendedValue_Point1YProj1 );
+        m_raster1Ptr->getGrid()->gridToGeo( col, line, m_noBlendMethodImp_Point1XProj1,
+          m_noBlendMethodImp_Point1YProj1 );
           
-        m_convInstance.convert( m_getBlendedValue_Point1XProj1,
-          m_getBlendedValue_Point1YProj1, m_getBlendedValue_Point1XProj2,
-          m_getBlendedValue_Point1YProj2 );
-          
-        m_raster2Ptr->getGrid()->geoToGrid( m_getBlendedValue_Point1XProj2,
-          m_getBlendedValue_Point1YProj2, m_getBlendedValue_Point2Col,
-          m_getBlendedValue_Point2Line );
+        if( m_rastersHaveDifSRS )
+        {
+          m_convInstance.convert( m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2 );
+            
+          m_raster2Ptr->getGrid()->geoToGrid( m_noBlendMethodImp_Point1XProj2,
+            m_noBlendMethodImp_Point1YProj2, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
+        }
+        else
+        {
+          m_raster2Ptr->getGrid()->geoToGrid(m_noBlendMethodImp_Point1XProj1,
+            m_noBlendMethodImp_Point1YProj1, m_noBlendMethodImp_Point2Col,
+            m_noBlendMethodImp_Point2Line );
+        }
       }
         
       // Verifying if the point is inside the valid raster 2 area
       
-      if( m_r2ValidDataPolygonPtr )
+      m_noBlendMethodImp_Point2Indexed.setX( m_noBlendMethodImp_Point2Col );
+      m_noBlendMethodImp_Point2Indexed.setY( m_noBlendMethodImp_Point2Line );
+      if( m_noBlendMethodImp_Point2Indexed.within( m_r2ValidDataPolygonPtr ) )
       {
-        m_getBlendedValue_Point2Indexed.setX( m_getBlendedValue_Point2Col );
-        m_getBlendedValue_Point2Indexed.setY( m_getBlendedValue_Point2Line );
-        if( ! m_getBlendedValue_Point2Indexed.within( m_r2ValidDataPolygonPtr ) )
-        {
-          value = m_outputNoDataValue;
-          return;
-        }
-      }       
-      
-      return (this->*m_blendFuncPtr)( line, col, m_getBlendedValue_Point2Line,
-        m_getBlendedValue_Point2Col, rasterChannelsVecsIdx, value );
-    }    
-    
-    void Blender::noBlendMethodImp( const double& line1, const double& col1,
-      const double& line2, const double& col2,
-      const unsigned int& rasterChannelsVecsIdx, double& value )
-    {
-      m_interp1->getValue( col1, line1, m_noBlendMethodImp_cValue, 
-        m_raster1Bands[ rasterChannelsVecsIdx ] );
-      value =  m_noBlendMethodImp_cValue.real();
+        m_interp2->getValue( m_noBlendMethodImp_Point2Col, 
+          m_noBlendMethodImp_Point2Line, m_noBlendMethodImp_cValue, 
+          m_raster2Bands[ rasterChannelsVecsIdx ] );
+        value =  m_noBlendMethodImp_cValue.real();  
         
-      if( m_forceInputNoDataValue )
-      {
-        if( value == m_outputNoDataValue )
+        if( m_forceInputNoDataValue )
         {
-          m_interp2->getValue( col2, line2, m_noBlendMethodImp_cValue, 
-            m_raster2Bands[ rasterChannelsVecsIdx ] );
-          value =  m_noBlendMethodImp_cValue.real();          
+          if( value != m_outputNoDataValue )
+          {
+            value *= m_pixelScales2[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets2[ rasterChannelsVecsIdx ]; 
+          }
         }
+        else
+        {
+          if( value == m_raster2NoDataValues[ rasterChannelsVecsIdx ] )
+          {
+            value = m_outputNoDataValue;
+          }
+          else
+          {
+            value *= m_pixelScales2[ rasterChannelsVecsIdx ];
+            value += m_pixelOffsets2[ rasterChannelsVecsIdx ]; 
+          }
+        }        
       }
       else
       {
-        if( value == m_raster1NoDataValues[ rasterChannelsVecsIdx ] )
-        {
-          m_interp2->getValue( col2, line2, m_noBlendMethodImp_cValue, 
-            m_raster2Bands[ rasterChannelsVecsIdx ] );
-          value =  m_noBlendMethodImp_cValue.real();
-          
-          if( value == m_raster2NoDataValues[ rasterChannelsVecsIdx ] )
-          {
-            value = m_outputNoDataValue;            
-          }
-        }
+        value = m_outputNoDataValue;
       }
     }
 

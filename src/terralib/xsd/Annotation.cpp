@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "Annotation.h"
 #include "AnnotationItem.h"
 #include "Identifiable.h"
@@ -32,28 +31,21 @@
 // STL
 #include <cassert>
 
-te::xsd::Annotation::Annotation(std::vector<AnnotationItem*>* items, std::string* id)
-  : Identifiable(id),
-    m_items(items)/*,
+te::xsd::Annotation::Annotation(std::string* id)
+  : Identifiable(id)/*,
     m_otherAttributes(0)*/
 {
 }
 
 te::xsd::Annotation::Annotation(const Annotation& rhs)
-  : Identifiable(rhs),
-    m_items(0)
+  : Identifiable(rhs)
 {
-  if(rhs.m_items)
-  {
-    m_items = new std::vector<AnnotationItem*>;
-
-    te::common::Clone<AnnotationItem>(*rhs.m_items, *m_items);
-  }
+  for(std::size_t i = 0; i < rhs.m_itemVec.size(); ++i)
+    m_itemVec.push_back(rhs.m_itemVec[i].clone());
 }
 
 te::xsd::Annotation::~Annotation()
 {
-  te::common::Free(m_items);
 }
 
 te::xsd::Annotation& te::xsd::Annotation::operator=(const Annotation& rhs)
@@ -62,16 +54,8 @@ te::xsd::Annotation& te::xsd::Annotation::operator=(const Annotation& rhs)
   {
     Identifiable::operator=(rhs);
 
-    delete m_items;
-
-    m_items = 0;
-
-    if(rhs.m_items)
-    {
-      m_items = new std::vector<AnnotationItem*>;
-
-      te::common::Clone<AnnotationItem>(*rhs.m_items, *m_items);
-    }
+    for(std::size_t i = 0; i < rhs.m_itemVec.size(); ++i)
+      m_itemVec.push_back(rhs.m_itemVec[i].clone());
   }
 
   return *this;
@@ -81,15 +65,12 @@ void te::xsd::Annotation::add(AnnotationItem* item)
 {
   assert(item);
 
-  if(m_items == 0)
-    m_items = new std::vector<te::xsd::AnnotationItem*>;
-  
-  m_items->push_back(item);
+  m_itemVec.push_back(item);
 }
 
-std::vector<te::xsd::AnnotationItem*>* te::xsd::Annotation::getItems() const
+const boost::ptr_vector<te::xsd::AnnotationItem>& te::xsd::Annotation::getItems() const
 {
-  return m_items;
+  return m_itemVec;
 }
 
 //std::map<std::string, std::string>* te::xsd::Annotation::getOtherAttributes() const

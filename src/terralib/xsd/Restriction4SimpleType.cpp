@@ -18,7 +18,6 @@
  */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "Facet.h"
 #include "Restriction4SimpleType.h"
 #include "QName.h"
@@ -28,26 +27,21 @@
 
 te::xsd::Restriction4SimpleType::Restriction4SimpleType(QName* base, Annotation* ann, std::string* id)
   : SimpleTypeConstructor(ann, id),
-    m_base(base),
-    m_facets(0)
+    m_base(base)
 {
 }
 
 te::xsd::Restriction4SimpleType::Restriction4SimpleType(const Restriction4SimpleType& rhs)
   : SimpleTypeConstructor(rhs),
-    m_base(0),
-    m_facets(0)
+    m_base(0)
 {
   m_base = rhs.m_base ? new QName(*rhs.m_base) : 0;
-
   //m_facets??
 }
 
 te::xsd::Restriction4SimpleType::~Restriction4SimpleType()
 {
   delete m_base;
-
-  te::common::Free(m_facets);
 }
 
 te::xsd::Restriction4SimpleType& te::xsd::Restriction4SimpleType::operator=(const Restriction4SimpleType& rhs)
@@ -71,9 +65,9 @@ te::xsd::QName* te::xsd::Restriction4SimpleType::getBase() const
   return m_base;
 }
 
-std::vector<te::xsd::Facet*>* te::xsd::Restriction4SimpleType::getFacets() const
+const boost::ptr_vector<te::xsd::Facet>& te::xsd::Restriction4SimpleType::getFacets() const
 {
-  return m_facets;
+  return m_facetVec;
 }
 
 void te::xsd::Restriction4SimpleType::setBase(te::xsd::QName* base)
@@ -90,14 +84,10 @@ void te::xsd::Restriction4SimpleType::addFacet(te::xsd::FacetType fType, const s
 
 void te::xsd::Restriction4SimpleType::addFacet(te::xsd::Facet* f)
 {
-  if(m_facets == 0)
-    m_facets = new std::vector<te::xsd::Facet*>;
-
-  m_facets->push_back(f);
+  m_facetVec.push_back(f);
 }
 
 te::xsd::SimpleTypeConstructor* te::xsd::Restriction4SimpleType::clone() const
 {
   return new Restriction4SimpleType(*this);
 }
-

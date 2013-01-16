@@ -114,24 +114,24 @@ namespace te
 
       private:
 
-        te::rst::Raster* m_raster;                         //!< The Raster associated to this band.
-        GDALRasterBand* m_rasterBand;                      //!< GDAL Raster band.
-        te::rst::GetBufferValueFPtr m_getBuff;      //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
-        te::rst::GetBufferValueFPtr m_getBuffI;     //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
-        te::rst::SetBufferValueFPtr m_setBuff;      //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
-        te::rst::SetBufferValueFPtr m_setBuffI;     //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
-        GDALDataType m_gdaltype;                           //!< The GDAL Data type.
-        void* m_buffer;                                    //!< An internal buffer.
-        mutable int m_x;                                   //!< Actual x buffer position.
-        mutable int m_y;                                   //!< Actual y buffer position.
-        mutable bool m_update_buffer;                      //!< Flag to update buffer.
+        te::rst::Raster* m_raster;               //!< The Raster associated to this band.
+        GDALRasterBand* m_rasterBand;            //!< GDAL Raster band.
+        te::rst::GetBufferValueFPtr m_getBuff;   //!< A pointer to a function that helps to extract a double or complex value from a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::GetBufferValueFPtr m_getBuffI;  //!< A pointer to a function that helps to extract the imaginary part value from a specific buffer data type (cint16, cint32, cfloat, cdouble).
+        te::rst::SetBufferValueFPtr m_setBuff;   //!< A pointer to a function that helps to insert a double or complex value into a specific buffer data type (char, int16, int32, float, ...).
+        te::rst::SetBufferValueFPtr m_setBuffI;  //!< A pointer to a function that helps to insert the imaginary part value into a specific buffer data type (cint16, cint32, cfloat, cdouble).
+        GDALDataType m_gdaltype;                 //!< The GDAL Data type.
+        void* m_buffer;                          //!< An internal buffer.
+        mutable int m_x;                         //!< Actual x buffer position.
+        mutable int m_y;                         //!< Actual y buffer position.
+        mutable bool m_update_buffer;            //!< Flag to update buffer.
 
         // te::gdal::Band::getValue/setValue internal variables
-        mutable int m_currX;                   //!< Block x position.
-        mutable int m_currY;                   //|< Block y position.
-        mutable int m_currC;                   //|< Block column position.
-        mutable int m_currR;                   //|< Block row position.
-        mutable int m_i;                       //|< Block index.
+        mutable int m_currX;                     //!< Block x position.
+        mutable int m_currY;                     //!< Block y position.
+        mutable int m_currC;                     //!< Block column position.
+        mutable int m_currR;                     //!< Block row position.
+        mutable int m_i;                         //!< Block index.
     };
 
   } // end namespace gdal

@@ -395,7 +395,7 @@ namespace te
         virtual Band& operator/=(Band& rhs);
 
         /*! \brief It returns the number of bytes ocuppied by a data block. */
-        int getBlockSize() const;
+        virtual int getBlockSize() const;
 
       protected:
 

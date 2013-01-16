@@ -98,5 +98,3 @@ te::xsd::Type* te::xsd::SimpleType::clone() const
 {
   return new SimpleType(*this);
 }
-
-

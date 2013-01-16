@@ -60,7 +60,7 @@ namespace te
     */
     class TEXSDEXPORT Attribute : public AbstractAttribute, public Identifiable, public Annotated
     {
-      public:        
+      public:
 
         /*!
           \brief Constructor.
@@ -110,7 +110,7 @@ namespace te
 
           \return Form property value of attribute: Qualified or Unqualified.
         */
-        Form getForm();
+        Form getForm() const;
 
         /*!
           \brief It returns the name of the attribute.
@@ -138,7 +138,7 @@ namespace te
 
           \return An AttributeUse object that specifies how the attribute is used.
         */
-        AttributeUse getUse();
+        AttributeUse getUse() const;
 
         /*!
           \brief It returns the simpleType element of the attribute.

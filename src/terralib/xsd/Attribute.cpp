@@ -125,7 +125,7 @@ std::string* te::xsd::Attribute::getFixed() const
   return m_fixed;
 }
 
-te::xsd::Form te::xsd::Attribute::getForm()
+te::xsd::Form te::xsd::Attribute::getForm() const
 {
   return m_form;
 }
@@ -145,7 +145,7 @@ te::xsd::QName* te::xsd::Attribute::getType() const
   return m_type;
 }
 
-te::xsd::AttributeUse te::xsd::Attribute::getUse()
+te::xsd::AttributeUse te::xsd::Attribute::getUse() const
 {
   return m_use;
 }

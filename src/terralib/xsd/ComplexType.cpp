@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "AbstractAttribute.h"
 #include "AnyAttribute.h"
 #include "ComplexContent.h"
@@ -43,7 +42,6 @@ te::xsd::ComplexType::ComplexType(Annotation* ann, std::string* id)
     m_sContent(0),
     m_cContent(0),
     m_content(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
 }
@@ -59,7 +57,6 @@ te::xsd::ComplexType::ComplexType(const ComplexType& rhs)
     m_sContent(0),
     m_cContent(0),
     m_content(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
 }
@@ -70,9 +67,6 @@ te::xsd::ComplexType::~ComplexType()
   delete m_sContent;
   delete m_cContent;
   delete m_content;
-
-  te::common::Free(m_attributes);
-
   delete m_anyAttr;
 }
 
@@ -121,9 +115,9 @@ te::xsd::Content* te::xsd::ComplexType::getContent()
   return m_content;
 }
 
-std::vector<te::xsd::AbstractAttribute*>* te::xsd::ComplexType::getAttributes() const
+const boost::ptr_vector<te::xsd::AbstractAttribute>& te::xsd::ComplexType::getAttributes() const
 {
-  return m_attributes;
+  return m_attributeVec;
 }
 
 te::xsd::AnyAttribute* te::xsd::ComplexType::getAnyAttribute() const
@@ -169,10 +163,7 @@ void te::xsd::ComplexType::setSimpleContent(te::xsd::SimpleContent* sc)
   delete m_content;
   m_content = 0;
 
-  if(m_attributes)
-    te::common::FreeContents(*m_attributes);
-  delete m_attributes;
-  m_attributes = 0;
+  m_attributeVec.clear();
 
   delete m_anyAttr;
   m_anyAttr = 0;
@@ -190,10 +181,7 @@ void te::xsd::ComplexType::setComplexContent(te::xsd::ComplexContent* cc)
   delete m_content;
   m_content = 0;
 
-  if(m_attributes)
-    te::common::FreeContents(*m_attributes);
-  delete m_attributes;
-  m_attributes = 0;
+  m_attributeVec.clear();
 
   delete m_anyAttr;
   m_anyAttr = 0;
@@ -214,19 +202,14 @@ void te::xsd::ComplexType::setContent(te::xsd::Content* c)
 
 void te::xsd::ComplexType::addAtrribute(te::xsd::AbstractAttribute* a)
 {
-  if(m_attributes == 0)
-  {
-    m_attributes = new std::vector<te::xsd::AbstractAttribute*>;
-    
-    // Clears mutually exclusive members
-    delete m_sContent;
-    m_sContent = 0;
+  // Clears mutually exclusive members
+  delete m_sContent;
+  m_sContent = 0;
 
-    delete m_cContent;
-    m_cContent = 0;
-  }
+  delete m_cContent;
+  m_cContent = 0;
 
-  m_attributes->push_back(a);
+  m_attributeVec.push_back(a);
 }
 
 void te::xsd::ComplexType::setAnyAttribute(te::xsd::AnyAttribute* a)
@@ -246,6 +229,3 @@ te::xsd::Type* te::xsd::ComplexType::clone() const
 {
   return new ComplexType(*this);
 }
-
-
-

@@ -113,23 +113,24 @@ namespace te
           \param value Blended value.
           \note The caller of this method must be aware that the returned blended value may be outside the original input rasters valid values range.
         */
-        void getBlendedValue( const double& line, const double& col, 
-          const unsigned int& rasterChannelsVecsIdx , double& value );
+        inline void getBlendedValue( const double& line, const double& col, 
+          const unsigned int& rasterChannelsVecsIdx , double& value )
+        {
+          TERP_DEBUG_TRUE_OR_THROW( m_blendFuncPtr, "Invalid blend function pointer" );
+          (this->*m_blendFuncPtr)( line, col, rasterChannelsVecsIdx, value );
+        };
 
       protected:
         
         /*!
           \brief Type definition for the a bleding function pointer.
-          \param line1 Raster 1 Line.
-          \param col1 Raster 1 Column.
-          \param line1 Raster 2 Line.
-          \param col1 Raster 2 Column.
-          \param band Band.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
+          \param rasterChannelsVecsIdx An index from the internal raster bands vector.
           \param value Interpolated value.
         */      
-        typedef void (Blender::*BlendFunctPtr)( const double& line1, 
-          const double& col1, const double& line2, const double& col2,
-          const unsigned int& rasterChannelsVecsIdx, double& value );         
+        typedef void (Blender::*BlendFunctPtr)( const double& line, 
+          const double& col, const unsigned int& rasterChannelsVecsIdx, double& value );         
 
         BlendMethod m_blendMethod; //!< The blend method to apply.
         BlendFunctPtr m_blendFuncPtr; //!< The current blend function.
@@ -142,6 +143,7 @@ namespace te
         te::rst::Interpolator::Method m_interpMethod2; //!< The interpolation method to use when reading raster 2 data.
         double m_outputNoDataValue; //!< The output raster no-data value.
         bool m_forceInputNoDataValue; //!< Use noDataValue as the input rasters no-data value (The original rasters no-data values will be ignored) 
+        bool m_rastersHaveDifSRS; //!< True if the input rasters are under distinct SRSs.
         te::rst::Interpolator* m_interp1; //!< Raster 1 interpolator instance pointer.
         te::rst::Interpolator* m_interp2; //!< Raster 2 interpolator instance pointer.        
         std::vector< unsigned int > m_raster1Bands; //!< Input raster 1 band indexes to use.
@@ -154,17 +156,15 @@ namespace te
         std::vector< double > m_raster2NoDataValues; //! Raster 2 no-data values (on value per band).
         te::srs::Converter m_convInstance; //!< A SRS converter instance to be used when the rasters SRIDs are not the same.
         
-        // variables used by the getBlendedValue method
-        double m_getBlendedValue_Point1XProj1;
-        double m_getBlendedValue_Point1YProj1;
-        double m_getBlendedValue_Point1XProj2;
-        double m_getBlendedValue_Point1YProj2;
-        double m_getBlendedValue_Point2Line;
-        double m_getBlendedValue_Point2Col;
-        te::gm::Point m_getBlendedValue_Point1Indexed;
-        te::gm::Point m_getBlendedValue_Point2Indexed;
-        
         // variables used by the noBlendMethodImp method
+        double m_noBlendMethodImp_Point1XProj1;
+        double m_noBlendMethodImp_Point1YProj1;
+        double m_noBlendMethodImp_Point1XProj2;
+        double m_noBlendMethodImp_Point1YProj2;
+        double m_noBlendMethodImp_Point2Line;
+        double m_noBlendMethodImp_Point2Col;        
+        te::gm::Point m_noBlendMethodImp_Point1Indexed;
+        te::gm::Point m_noBlendMethodImp_Point2Indexed;
         std::complex< double > m_noBlendMethodImp_cValue;
         
         /*! \brief Reset the instance to its initial default state. */
@@ -175,15 +175,12 @@ namespace te
         
         /*!
           \brief Implementation for NoBlendMethod.
-          \param line1 Raster 1 Line.
-          \param col1 Raster 1 Column.
-          \param line1 Raster 2 Line.
-          \param col1 Raster 2 Column.
+          \param line Raster 1 Line.
+          \param col Raster 1 Column.
           \param rasterChannelsVecsIdx Vector index (the index to search the correct band/channel for each input raster from raster1ChannelsVec and raster2ChannelsVec).
           \param value Blended value.
         */
         void noBlendMethodImp( const double& line1, const double& col1,
-          const double& line2, const double& col2,
           const unsigned int& rasterChannelsVecsIdx, double& value );        
 
     };

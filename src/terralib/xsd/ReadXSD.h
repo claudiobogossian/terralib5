@@ -47,5 +47,3 @@ namespace te
 #endif // TE_XSD_BUILD_WITH_XML_PARSER
 
 #endif  // __TERRALIB_XSD_INTERNAL_READXSD_H
-
-

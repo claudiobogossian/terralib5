@@ -126,6 +126,14 @@ namespace te
     */
     TERASTEREXPORT te::rst::RasterPtr CreateCopy(const te::rst::Raster& rin, const std::string& uri,
                                                  const std::string& rType = std::string("GDAL"));
+    /*!
+      \brief Return the values range of a given data type.
+
+      \param dataType The given data type.
+      \param min The mininmum value allowed for the given data type.
+      \param min The maximum value allowed for the given data type.
+    */
+    TERASTEREXPORT void GetDataTypeRanges( const int& dataType, double& min, double& max );
 
   } // end namespace rst
 }   // end namespace te

@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/memory/Band.h
- 
+
   \brief Band implementation for the In-Memory Raster.
 */
 
@@ -32,7 +32,7 @@
 #include "Config.h"
 
 namespace te
-{  
+{
   namespace mem
   {
 // Forward declaration
@@ -78,6 +78,8 @@ namespace te
           \note In-Memory driver extended method.
         */
         void setRaster(Raster* r);
+
+        int getBlockSize() const;
 
       private:
 

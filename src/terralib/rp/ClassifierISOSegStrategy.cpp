@@ -30,11 +30,11 @@
 #include "../geometry/Point.h"
 #include "../geometry/Polygon.h"
 #include "../raster/Grid.h"
+#include "../raster/PositionIterator.h"
 #include "../raster/Utils.h"
 #include "ClassifierISOSegStrategy.h"
 #include "Functions.h"
 #include "Macros.h"
-#include "PositionIterator.h"
 #include "RasterAttributes.h"
 
 // STL
@@ -383,8 +383,8 @@ bool te::rp::ClassifierISOSegStrategy::execute(const te::rst::Raster& inputRaste
     pattern = rit->second->m_myCluster->m_id;
 
 // iterate over polygon to classify output image
-    te::rp::PolygonIterator<unsigned> it = te::rp::PolygonIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]), polygon);
-    te::rp::PolygonIterator<unsigned> itend = te::rp::PolygonIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]), polygon);
+    te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(inputRaster.getBand(inputRasterBands[0]), polygon);
+    te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(inputRaster.getBand(inputRasterBands[0]), polygon);
 
     while (it != itend)
     {

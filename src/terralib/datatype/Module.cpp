@@ -105,15 +105,15 @@ void te::dt::Module::initialize()
   manager.add(te::dt::BOOLEAN_TYPE, te::dt::STRING_TYPE, BooleanToStringConverter);
 
   // String
-  manager.add(te::dt::STRING, te::dt::INT16_TYPE, StringToInt16Converter);
-  manager.add(te::dt::STRING, te::dt::UINT16_TYPE, StringToUInt16Converter);
-  manager.add(te::dt::STRING, te::dt::INT32_TYPE, StringToInt32Converter);
-  manager.add(te::dt::STRING, te::dt::UINT32_TYPE, StringToUInt32Converter);
-  manager.add(te::dt::STRING, te::dt::INT64_TYPE, StringToInt64Converter);
-  manager.add(te::dt::STRING, te::dt::UINT64_TYPE, StringToUInt64Converter);
-  manager.add(te::dt::STRING, te::dt::FLOAT_TYPE, StringToFloatConverter);
-  manager.add(te::dt::STRING, te::dt::NUMERIC_TYPE, StringToDoubleConverter);
-  manager.add(te::dt::STRING, te::dt::NUMERIC_TYPE, StringToNumericConverter);
+  manager.add(te::dt::STRING_TYPE, te::dt::INT16_TYPE, StringToInt16Converter);
+  manager.add(te::dt::STRING_TYPE, te::dt::UINT16_TYPE, StringToUInt16Converter);
+  manager.add(te::dt::STRING_TYPE, te::dt::INT32_TYPE, StringToInt32Converter);
+  manager.add(te::dt::STRING_TYPE, te::dt::UINT32_TYPE, StringToUInt32Converter);
+  manager.add(te::dt::STRING_TYPE, te::dt::INT64_TYPE, StringToInt64Converter);
+  manager.add(te::dt::STRING_TYPE, te::dt::UINT64_TYPE, StringToUInt64Converter);
+  manager.add(te::dt::STRING_TYPE, te::dt::FLOAT_TYPE, StringToFloatConverter);
+  manager.add(te::dt::STRING_TYPE, te::dt::DOUBLE_TYPE, StringToDoubleConverter);
+  manager.add(te::dt::STRING_TYPE, te::dt::NUMERIC_TYPE, StringToNumericConverter);
 
   // TO DO: more converters...
 

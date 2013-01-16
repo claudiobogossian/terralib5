@@ -29,8 +29,8 @@
 // TerraLib
 #include "SimpleTypeConstructor.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -54,13 +54,12 @@ namespace te
        /*!
           \brief Constructor.
           
-          \param memberTypes  It specifies a list of built-in data types or simple type elements defined in a schema.
           \param ann          An annotation.
           \param              id It specifies a unique ID for the element.          
 
           \note The Union object will take the ownership of the given pointers.
         */
-        Union(std::vector<QName*>* memberTypes = 0, Annotation* ann = 0, std::string* id = 0);
+        Union(Annotation* ann = 0, std::string* id = 0);
 
         /*!
           \brief Copy constructor.
@@ -86,14 +85,14 @@ namespace te
 
           \return The list list of member types.
         */
-        std::vector<QName*>* getMemberTypes() const;
+        const boost::ptr_vector<QName>& getMemberTypes() const;
 
          /*!
           \brief It returns the list of simple types defined on this union element.
 
           \return The the list of simple types defined on this union element.
         */
-        std::vector<SimpleType*>* getSimpleTypes() const;
+        const boost::ptr_vector<SimpleType>& getSimpleTypes() const;
 
         /*!
           \brief It adds a member type to this Union element.
@@ -117,12 +116,11 @@ namespace te
 
       private:
 
-        std::vector<QName*>* m_memberTypes;               //!< It specifies a list of built-in data types or simpleType elements defined in a schema. (Optional)
-        std::vector<SimpleType*>* m_internalSimpleTypes;  //!< Used when the union has internal simple types.
+        boost::ptr_vector<QName> m_memberTypeVec;              //!< It specifies a list of built-in data types or simpleType elements defined in a schema. (Optional)
+        boost::ptr_vector<SimpleType> m_internalSimpleTypeVec; //!< Used when the union has internal simple types.
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_UNION_H
-

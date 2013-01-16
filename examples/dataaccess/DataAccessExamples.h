@@ -228,4 +228,7 @@ void DroppingDataSetType(te::da::DataSetType* dt, te::da::DataSourceTransactor* 
 */
 void PrintDataSourceCapabilities(te::da::DataSource* ds);
 
+/*! \brief DataSet Adapter example. */
+void DataSetAdapter();
+
 #endif  // __TERRALIB_EXAMPLES_DATAACCESS_INTERNAL_DATAACCESSEXAMPLES_H

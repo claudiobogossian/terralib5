@@ -36,10 +36,12 @@
 // STL
 #include <cassert>
 
+#include <limits>
+
 static int sg_pixelSize[] = {  0,
                                0,
                                0,
-                               sizeof(char),
+                               sizeof(char) * 8,
                                sizeof(unsigned char),
                                sizeof(boost::int16_t),
                                sizeof(boost::uint16_t),
@@ -63,7 +65,12 @@ static int sg_pixelSize[] = {  0,
                                sizeof(boost::int32_t) * 2,
                                sizeof(float) * 2,
                                sizeof(double) * 2,
-                               0
+                               0,
+                               0,
+                               0,
+                               sizeof(unsigned char), // 4bits = 4/8 sizeof(unsigned char)
+                               sizeof(unsigned char), // 2bits = 2/8 sizeof(unsigned char)
+                               sizeof(unsigned char)  // 1bit = 1/8 sizeof(unsigned char)
                             };
 
 int te::rst::GetPixelSize(int datatype)
@@ -164,7 +171,7 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
 
   const std::size_t nbands = rin.getNumberOfBands();
   const unsigned int nRows = rin.getNumberOfRows();
-  const unsigned int nCols = rin.getNumberOfColumns();  
+  const unsigned int nCols = rin.getNumberOfColumns();
   unsigned int row = 0;
   unsigned int col = 0;
   std::complex< double > value;
@@ -173,13 +180,13 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
   {
     if( rin.getBand(b)->getProperty()->getType() == rout.getBand(b)->getProperty()->getType() )
     {
-      Copy(*rin.getBand(b), *rout.getBand(b));      
+      Copy(*rin.getBand(b), *rout.getBand(b));
     }
     else
     {
       const te::rst::Band& bin = *rin.getBand(b);
       te::rst::Band& bout = *rout.getBand(b);
-      
+
       for( row = 0 ; row < nRows ; ++row )
         for( col = 0 ; col < nCols ; ++col )
         {
@@ -220,7 +227,7 @@ void te::rst::Copy(const te::rst::Band& bin, te::rst::Band& bout)
 // get all values from input block, and copy pixel by pixel to the output band
   else
   {
-    std::complex<double> value;    
+    std::complex<double> value;
 
     const unsigned int ncols = bin.getRaster()->getNumberOfColumns();
     const unsigned int nrows = bin.getRaster()->getNumberOfRows();
@@ -307,7 +314,7 @@ te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
 
   te::rst::RasterPtr outRasterPtr;
 
-  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid(*(rin.getGrid())), bandsProperties, rasterInfo, 0, 0)); 
+  outRasterPtr.reset( te::rst::RasterFactory::make( rType,  new te::rst::Grid(*(rin.getGrid())), bandsProperties, rasterInfo, 0, 0));
 
   if(outRasterPtr.get() == 0)
     return outRasterPtr;
@@ -317,3 +324,86 @@ te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
   return outRasterPtr;
 }
 
+void te::rst::GetDataTypeRanges( const int& dataType, double& min, double& max )
+{
+  switch( dataType )
+  {
+    case te::dt::R4BITS_TYPE:
+      min = 0;
+      max = 15;
+    break;
+
+    case te::dt::R2BITS_TYPE:
+      min = 0;
+      max = 3;
+    break;
+
+    case te::dt::R1BIT_TYPE:
+      min = 0;
+      max = 1;
+    break;
+
+    case te::dt::UCHAR_TYPE:
+      min = 0;
+      max = 255;
+    break;
+
+    case te::dt::CHAR_TYPE:
+      min = -127;
+      max = 127;
+    break;
+
+    case te::dt::UINT16_TYPE:
+      min = 0;
+      max = 65535;
+    break;
+
+    case te::dt::INT16_TYPE:
+      min = -32767;
+      max = 32767;
+    break;
+
+    case te::dt::UINT32_TYPE:
+      min = 0;
+      max = 4294967295;
+    break;
+
+    case te::dt::INT32_TYPE:
+      min = -2147483647;
+      max = 2147483647;
+    break;
+
+    case te::dt::FLOAT_TYPE:
+      min = (double)std::numeric_limits< float >::min();
+      max = (double)std::numeric_limits< float >::max();
+    break;
+
+    case te::dt::DOUBLE_TYPE:
+      min = std::numeric_limits< double >::min();
+      max = std::numeric_limits< double >::max();
+    break;
+
+    case te::dt::CINT16_TYPE:
+      min = -32767;
+      max = 32767;
+    break;
+
+    case te::dt::CINT32_TYPE:
+      min = -2147483647;
+      max = 2147483647;
+    break;
+
+    case te::dt::CFLOAT_TYPE:
+      min = (double)std::numeric_limits< float >::min();
+      max = (double)std::numeric_limits< float >::max();
+    break;
+
+    case te::dt::CDOUBLE_TYPE:
+      min = std::numeric_limits< double >::min();
+      max = std::numeric_limits< double >::max();
+    break;
+
+    default:
+      throw te::rst::Exception("Invalid data type");
+  }
+}

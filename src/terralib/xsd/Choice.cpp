@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "Any.h"
 #include "Choice.h"
 #include "Element.h"
@@ -32,82 +31,85 @@
 te::xsd::Choice::Choice(unsigned int minOccurs, unsigned int maxOccurs, Annotation* ann, std::string* id)
   : Occurs(minOccurs, maxOccurs), 
     Identifiable(id),
-    Annotated(ann),
-    m_elements(0),
-    m_contents(0),    
-    m_anys(0)
+    Annotated(ann)
 {
 }
 
 te::xsd::Choice::Choice(const Choice& rhs)
   : Occurs(rhs), 
     Identifiable(rhs),
-    Annotated(rhs),
-    m_elements(0),
-    m_contents(0),    
-    m_anys(0)
+    Annotated(rhs)
 {
-// we need to finish this code
+  for(std::size_t i = 0; i < rhs.m_elementVec.size(); ++i)
+    m_elementVec.push_back(new Element(rhs.m_elementVec[i]));
+
+  for(std::size_t i = 0; i < rhs.m_contentVec.size(); ++i)
+    m_contentVec.push_back(rhs.m_contentVec[i].clone());
+
+  for(std::size_t i = 0; i < rhs.m_anyVec.size(); ++i)
+    m_anyVec.push_back(new Any(rhs.m_anyVec[i]));
 }
 
 te::xsd::Choice::~Choice()
 {
-  te::common::Free(m_elements);
-
-  te::common::Free(m_contents);
-
-  te::common::Free(m_anys);
 }
 
 te::xsd::Choice& te::xsd::Choice::operator=(const Choice& rhs)
 {
-// we need to finish this code
+  if(this != &rhs)
+  {
+    Content::operator=(rhs);
+
+    Occurs::operator=(rhs);
+
+    Identifiable::operator=(rhs);
+
+    Annotated::operator=(rhs);
+
+    for(std::size_t i = 0; i < rhs.m_elementVec.size(); ++i)
+      m_elementVec.push_back(new Element(rhs.m_elementVec[i]));
+
+    for(std::size_t i = 0; i < rhs.m_contentVec.size(); ++i)
+      m_contentVec.push_back(rhs.m_contentVec[i].clone());
+
+    for(std::size_t i = 0; i < rhs.m_anyVec.size(); ++i)
+      m_anyVec.push_back(new Any(rhs.m_anyVec[i]));
+  }
+
   return *this;
 }
 
-std::vector<te::xsd::Element*>* te::xsd::Choice::getElements() const
+const boost::ptr_vector<te::xsd::Element>& te::xsd::Choice::getElements() const
 {
-  return m_elements;
+  return m_elementVec;
 }
 
-std::vector<te::xsd::Content*>* te::xsd::Choice::getContents() const
+const boost::ptr_vector<te::xsd::Content>& te::xsd::Choice::getContents() const
 {
-  return m_contents;
+  return m_contentVec;
 }
 
-std::vector<te::xsd::Any*>* te::xsd::Choice::getAnys() const
+const boost::ptr_vector<te::xsd::Any>& te::xsd::Choice::getAnys() const
 {
-  return m_anys;
+  return m_anyVec;
 }
 
 void te::xsd::Choice::addElement(te::xsd::Element* e)
 {
-  if(m_elements == 0)
-    m_elements = new std::vector<te::xsd::Element*>;
-
-  m_elements->push_back(e);
+  m_elementVec.push_back(e);
 }
 
 void te::xsd::Choice::addContent(te::xsd::Content* c)
 {
-  if(m_contents == 0)
-    m_contents = new std::vector<te::xsd::Content*>;
-
-  m_contents->push_back(c);
+  m_contentVec.push_back(c);
 }
 
 void te::xsd::Choice::addAny(te::xsd::Any* a)
 {
-  if(m_anys == 0)
-    m_anys = new std::vector<te::xsd::Any*>;
-
-  m_anys->push_back(a);
+  m_anyVec.push_back(a);
 }
 
 te::xsd::Content* te::xsd::Choice::clone() const
 {
   return new Choice(*this);
 }
-
-
-

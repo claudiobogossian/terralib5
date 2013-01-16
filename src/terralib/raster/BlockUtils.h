@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/BlockUtils.h
- 
+
   \brief Utility functions for dealing with raster data blocks.
 */
 
@@ -42,6 +42,12 @@ namespace te
     TERASTEREXPORT void DummyGetValue(int index, void* buffer, double* value);
 
     TERASTEREXPORT void DummySetValue(int index, void* buffer, const double* value);
+
+    TERASTEREXPORT void Get4bits(int index, void* buffer, double* value);
+
+    TERASTEREXPORT void Get2bits(int index, void* buffer, double* value);
+
+    TERASTEREXPORT void Get1bit(int index, void* buffer, double* value);
 
     TERASTEREXPORT void GetUChar(int index, void* buffer, double* value);
 
@@ -74,6 +80,12 @@ namespace te
     TERASTEREXPORT void GetCRDouble(int index, void* buffer, double* value);
 
     TERASTEREXPORT void GetCIDouble(int index, void* buffer, double* value);
+
+    TERASTEREXPORT void Set4bits(int index, void* buffer, const double* value);
+
+    TERASTEREXPORT void Set2bits(int index, void* buffer, const double* value);
+
+    TERASTEREXPORT void Set1bit(int index, void* buffer, const double* value);
 
     TERASTEREXPORT void SetUChar(int index, void* buffer, const double* value);
 
