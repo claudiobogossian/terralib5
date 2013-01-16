@@ -14,7 +14,8 @@
 #include <terralib/qt/widgets/tools/ZoomWheel.h>
 #include <terralib/qt/widgets/tools/CoordTracking.h>
 
-#include <terralib/qt/af/CoreApplication.h>
+#include <terralib/qt/af/ApplicationController.h>
+#include <terralib/qt/af/BaseApplicationController.h>
 #include <terralib/qt/af/events/DisplayResized.h>
 #include <terralib/qt/af/events/CurrentToolChanged.h>
 #include <terralib/qt/af/events/TrackedCoordinate.h>
@@ -81,7 +82,7 @@ namespace te
               {
                 QResizeEvent* e = static_cast<QResizeEvent*>(evt);
                 te::qt::af::DisplayResized dr_ev(m_display, e->size(), e->oldSize());
-                te::qt::af::Application::getInstance().broadcast(&dr_ev);
+                te::qt::af::ApplicationController::getInstance().broadcast(&dr_ev);
               }
             break;
 
@@ -122,7 +123,7 @@ namespace te
       void MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
       {
         te::qt::af::CurrentToolChanged ctc_ev(tool, m_current_tool);
-        Application::getInstance().broadcast(&ctc_ev);
+        ApplicationController::getInstance().broadcast(&ctc_ev);
 
         delete m_current_tool;
         m_current_tool = tool;
@@ -181,7 +182,7 @@ namespace te
       void MapDisplay::onCoordTracked(QPointF& pos)
       {
         te::qt::af::TrackedCoordinate tc_ev(pos);
-        Application::getInstance().broadcast(&tc_ev);
+        ApplicationController::getInstance().broadcast(&tc_ev);
       }
 
       void MapDisplay::redrawHighlight()

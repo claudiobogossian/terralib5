@@ -36,7 +36,7 @@ te::xsd::Include::Include(const std::string& schemaLocation, Annotation* ann, st
 te::xsd::Include::Include(const Include& rhs)
   : Identifiable(rhs),
     Annotated(rhs),
-    m_schemaLocation("")
+    m_schemaLocation(rhs.m_schemaLocation)
 {
 }
 
@@ -52,4 +52,9 @@ te::xsd::Include& te::xsd::Include::operator=(const Include& rhs)
 const std::string& te::xsd::Include::getSchemaLocation() const
 {
   return m_schemaLocation;
+}
+
+void te::xsd::Include::setSchemaLocation(const std::string& schemaLocation)
+{
+  m_schemaLocation = schemaLocation;
 }

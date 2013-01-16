@@ -10,6 +10,7 @@
   <IconName>terraview</IconName>	
   <UserSettingsFile xlink:href="user_settings.xml"/>
   <PluginsFile xlink:href="application_plugins.xml"/>
+  <HelpFile xlink:href="terraview.qhc"/>
   <IconThemeInfo>
     <BaseDirectory xlink:href="../../icons"/>
     <DefaultTheme>tango</DefaultTheme>

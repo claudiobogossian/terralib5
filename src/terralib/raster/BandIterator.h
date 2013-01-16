@@ -31,6 +31,9 @@
 #include "BandProperty.h"
 #include "BlockUtils.h"
 
+// Boost
+#include <boost/dynamic_bitset.hpp>
+
 namespace te
 {
   namespace rst
@@ -82,7 +85,7 @@ namespace te
         unsigned int getCol() const;
 
         /*! \brief Advances to the next position. */
-        void operator++();
+        virtual void operator++();
 
         /*! \brief Returns to the previous position. */
         void operator--();
@@ -246,6 +249,67 @@ namespace te
         const Band* m_band;                      //!< The band from where to get the values.
     };
 
+    /*!
+      \class BandIteratorWithMask
+
+      \brief This class implements an iterator to "navigate" over a single band, with a spatial restriction given by a mask.
+
+      We provide an efficient method to obtain all values in a raster, without regard
+      to their locations. The implementation navigates through the blocks of the image.
+      The mask is a 1bit raster where the pixels with value 0 are not returned by the
+      iterator, and pixels with value 1 are returned.
+
+      \sa te::rst::Band
+    */
+    template<class T> class BandIteratorWithMask : public te::rst::BandIterator<T>
+    {
+      public:
+
+        /*! \brief Constructor. */
+        BandIteratorWithMask();
+
+        /*!
+          \brief Constructor.
+
+          \param b The band to iterate.
+          \param m The raster with the mask.
+        */
+        BandIteratorWithMask(Band* b, Raster* m);
+
+        /*!
+          \brief Copy constructor.
+
+          \param rhs The right-hand-side copy used to copy from.
+        */
+        BandIteratorWithMask(const BandIteratorWithMask& rhs);
+
+        void operator++();
+
+        void operator--();
+
+        /*!
+          \brief Assignment operator.
+
+          \param rhs The right-hand-side copy used to copy from.
+
+          \return A reference to this object.
+        */
+        BandIteratorWithMask& operator=(const BandIteratorWithMask& rhs);
+
+        /*! \brief Returns an iterator with the mask referring to the first value of the band.*/
+        static BandIteratorWithMask begin(Band* b, Raster* m);
+
+        /*! \brief Returns an iterator with the mask referring to after the end of the iterator. */
+        static BandIteratorWithMask end(Band* b, Raster* m);
+
+      protected:
+        boost::dynamic_bitset<> m_mask;          //!< The internal mask of bits, one bit per pixel.
+        unsigned int m_masksize;                 //!< The size of the mask (rows * columns of the mask raster).
+        unsigned int m_currentpixelindex;        //!< The index of the current pixel location.
+
+    };
+
+// Abstract Band Iterator implementation
     template<class T> te::rst::AbstractBandIterator<T>::AbstractBandIterator()
       : m_blkw(-1),
         m_blkh(-1),
@@ -407,6 +471,7 @@ namespace te
       return (m_blky != rhs.m_blky);
     }
 
+// Band Iterator implementation
     template<class T> te::rst::BandIterator<T>::BandIterator()
       : te::rst::AbstractBandIterator<T>(),
         m_band(0)
@@ -475,6 +540,7 @@ namespace te
       m_band->read(this->m_blkx, this->m_blky, this->m_blk);
     }
 
+// Const Band Iterator implementation
     template<class T> te::rst::ConstBandIterator<T>::ConstBandIterator()
       : te::rst::AbstractBandIterator<T>(),
         m_band(0)
@@ -532,6 +598,99 @@ namespace te
     template<class T> void te::rst::ConstBandIterator<T>::replaceBlock()
     {
       m_band->read(this->m_blkx, this->m_blky, this->m_blk);
+    }
+
+// Band Iterator With Mask implementation
+    template<class T> te::rst::BandIteratorWithMask<T>::BandIteratorWithMask()
+      : te::rst::BandIterator<T>(),
+        m_currentpixelindex(0),
+        m_masksize(0),
+        m_mask(0)
+    {
+    }
+
+    template<class T> te::rst::BandIteratorWithMask<T>::BandIteratorWithMask(te::rst::Band* b, te::rst::Raster* m)
+      : te::rst::BandIterator<T>(b),
+        m_currentpixelindex(0),
+        m_mask(0)
+    {
+// fill bitset maks with raster values
+      te::rst::BandIterator<unsigned char> it = te::rst::BandIterator<unsigned char>::begin(m->getBand(0));
+      te::rst::BandIterator<unsigned char> itend = te::rst::BandIterator<unsigned char>::end(m->getBand(0));
+
+      m_masksize = m->getNumberOfColumns() * m->getNumberOfRows();
+      m_mask.resize(m_masksize);
+
+      unsigned int i = 0;
+      while(it != itend)
+      {
+        m_mask[i++] = *it;
+
+        ++it;
+      }
+
+// to avoid the first position be outside the mask
+      if (!m_mask[0])
+        operator++();
+    }
+
+    template<class T> te::rst::BandIteratorWithMask<T>::BandIteratorWithMask(const BandIteratorWithMask<T>& rhs)
+      : te::rst::BandIterator<T>(rhs),
+        m_mask(rhs.m_mask)
+    {
+    }
+
+    template<class T> void te::rst::BandIteratorWithMask<T>::operator++()
+    {
+      do
+      {
+        te::rst::AbstractBandIterator<T>::operator++();
+
+        m_currentpixelindex++;
+
+        if (m_currentpixelindex >= m_masksize)
+          break;
+      }
+      while (m_mask[m_currentpixelindex] == 0);
+    }
+
+    template<class T> void te::rst::BandIteratorWithMask<T>::operator--()
+    {
+      do
+      {
+        te::rst::AbstractBandIterator<T>::operator--();
+
+        m_currentpixelindex--;
+
+        if (m_currentpixelindex < 0)
+          break;
+      }
+      while (m_mask[m_currentpixelindex] == 0);
+    }
+
+    template<class T> te::rst::BandIteratorWithMask<T>& te::rst::BandIteratorWithMask<T>::operator=(const te::rst::BandIteratorWithMask<T>& rhs)
+    {
+      te::rst::BandIterator<T>::operator=(rhs);
+
+      m_currentpixelindex = rhs.m_currentpixelindex;
+      m_masksize = rhs.m_masksize;
+      m_mask = rhs.m_mask;
+
+      return *this;
+    }
+
+    template<class T> te::rst::BandIteratorWithMask<T> te::rst::BandIteratorWithMask<T>::begin(te::rst::Band* b, te::rst::Raster* m)
+    {
+      return te::rst::BandIteratorWithMask<T>(b, m);
+    }
+
+    template<class T> te::rst::BandIteratorWithMask<T> te::rst::BandIteratorWithMask<T>::end(te::rst::Band* b, te::rst::Raster* m)
+    {
+      te::rst::BandIteratorWithMask<T> it;
+
+      it.m_blky = b->getProperty()->m_nblocksy;
+
+      return it;
     }
 
   } // end namespace rst

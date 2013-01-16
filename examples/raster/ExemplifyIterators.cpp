@@ -7,6 +7,7 @@
 #include <terralib/raster/PositionIterator.h>
 #include <terralib/raster/RasterFactory.h>
 #include <terralib/raster/RasterIterator.h>
+#include <terralib/raster/Utils.h>
 
 // STL
 #include <ctime>
@@ -70,6 +71,51 @@ void ExemplifyBandIterator()
 
 // clean up
   delete inraster;
+}
+
+void ExemplifyBandIteratorMask()
+{
+  std::cout << "Example of Band Iterator Mask" << std::endl;
+
+// define raster info and load
+  std::map<std::string, std::string> rinfo;
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
+
+  te::rst::Band* band = inraster->getBand(0);
+
+// define raster mask and load
+  std::map<std::string, std::string> minfo;
+  minfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_mask_1bit.tif";
+  te::rst::Raster* mraster = te::rst::RasterFactory::open(minfo);
+
+// define output raster and create (only one band will be created)
+  std::map<std::string, std::string> orinfo;
+  orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_mask_8bits.tif";
+  te::rst::Grid* ogrid = new te::rst::Grid(*inraster->getGrid());
+  std::vector<te::rst::BandProperty*> obprops;
+  for (unsigned int i = 0; i < inraster->getNumberOfBands(); i++)
+    obprops.push_back(new te::rst::BandProperty(i, te::dt::UCHAR_TYPE, "masked band"));
+  te::rst::Raster* outraster = te::rst::RasterFactory::make(ogrid, obprops, orinfo);
+  te::rst::FillRaster(outraster, 0.0);
+
+// create iterators for band
+  te::rst::BandIteratorWithMask<unsigned char> it = te::rst::BandIteratorWithMask<unsigned char>::begin(band, mraster);
+  te::rst::BandIteratorWithMask<unsigned char> itend = te::rst::BandIteratorWithMask<unsigned char>::end(band, mraster);
+
+  std::vector<std::complex<double> > pixels;
+  while (it != itend)
+  {
+    inraster->getValues(it.getCol(), it.getRow(), pixels);
+    outraster->setValues(it.getCol(), it.getRow(), pixels);
+
+    ++it;
+  }
+
+// clean up
+  delete inraster;
+  delete mraster;
+  delete outraster;
 }
 
 void ExemplifyRasterIterator()
@@ -327,15 +373,11 @@ void ExemplifyIterators()
     std::cout << "This test creates iterators over Bands, Windows, and Rasters." << std::endl << std::endl;
 
     ExemplifyBandIterator();
-
+    ExemplifyBandIteratorMask();
     ExemplifyRasterIterator();
-
     ExemplifyBandIteratorWindow();
-
     ExemplifyPolygonIterator();
-
     ExemplifyLineIterator();
-
     ExemplifyPointSetIterator();
 
     std::cout << "Done!" << std::endl << std::endl;

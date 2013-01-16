@@ -112,6 +112,13 @@ namespace te
         */
         const boost::ptr_vector<AttributeGroup>& getAttributeGroups() const;
 
+        /*!
+          \brief It sets the location of the redefined schema.
+
+          \param schemaLocation The schema location.
+        */
+        void setSchemaLocation(const std::string& schemaLocation);
+
       private:
 
         std::string m_schemaLocation;                          //!< It specifies a URI to the location of a schema document. (Required)

@@ -4,6 +4,7 @@ Name[pt]=Terralib
 Comment=Default icons for TerraLib applications
 Comment[pt]=Ícones padrão para aplicativos Terralib
 Directories=16x16,21x21,32x32,48x48,64x64,128x128,scalable
+Inherits=tango
 
 [16x16]
 Size=16

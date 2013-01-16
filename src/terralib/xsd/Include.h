@@ -85,6 +85,13 @@ namespace te
          */
         const std::string& getSchemaLocation() const;
 
+        /*!
+          \brief It sets the location of the referenced schema.
+
+          \param schemaLocation The schema location.
+         */
+        void setSchemaLocation(const std::string& schemaLocation);
+
       private:
 
         std::string m_schemaLocation; //!< It specifies the URI to the schema to include in the target namespace of the containing schema. (Required)

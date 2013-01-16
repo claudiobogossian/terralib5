@@ -71,3 +71,8 @@ const boost::ptr_vector<te::xsd::AttributeGroup>& te::xsd::Redefine::getAttribut
 {
   return m_attributeGroupVec;
 }
+
+void te::xsd::Redefine::setSchemaLocation(const std::string& schemaLocation)
+{
+  m_schemaLocation = schemaLocation;
+}
