@@ -1,26 +1,26 @@
 /*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of TerraView - A GIS Application.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraView is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License,
     or (at your option) any later version.
 
-    TerraView is distributed in the hope that it will be useful,
+    TerraLib is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with TerraLib Code Editor. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@dpi.inpe.br>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*! 
   \file terralib/qt/af/BaseApplication.h
 
-  \brief A main window to be used as the basis for TerraLib applications.
+  \brief A QMainWindow to be used as the basis for TerraLib applications.
 */
 
 #ifndef __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATION_H
@@ -33,30 +33,14 @@
 #include <map>
 
 // Qt
-#include <QMainWindow>
+#include <QtGui/QMainWindow>
 
 // Forward declarations
 namespace te
 {
-  namespace map { class AbstractLayer; }
-
-  namespace qt
+  namespace map
   {
-    namespace af
-    {
-      class Event;
-      class LayerExplorer;
-      class MapDisplay;
-      class TabularViewer;
-    }
-
-    namespace widgets
-    {
-      class ProgressViewerDialog;
-      class ProgressViewerWidget;
-      class ProgressViewerBar;
-      class RasterVisualDockWidget;
-    }
+    class AbstractLayer;
   }
 }
 
@@ -70,19 +54,30 @@ namespace te
   {
     namespace af
     {
+// Forwar declarations
+      class Event;
+      class LayerExplorer;
+      class MapDisplay;
+      class Project;
+      class TabularViewer;
+
       class TEQTAFEXPORT BaseApplication : public QMainWindow
       {
         Q_OBJECT
 
         public:
 
-          BaseApplication(const std::string& mainConfigFile, QWidget* parent = 0);
+          BaseApplication(QWidget* parent = 0);
 
           virtual ~BaseApplication();
 
+          virtual void init();
+
+          virtual void init(const std::string& configFile);
+
         protected slots:
 
-          //void onApplicationTriggered(te::qt::af::Event* evt);
+          void onApplicationTriggered(te::qt::af::Event* evt);
 
           //void layerVisibilityChanged(const QModelIndex& idx);
 
@@ -112,10 +107,10 @@ namespace te
 
         protected:
 
-          te::qt::af::LayerExplorer* m_explorer;
-          te::qt::af::MapDisplay* m_display;
-          te::qt::af::TabularViewer* m_viewer;
-          std::map<int, te::map::AbstractLayer*> m_layers;
+          LayerExplorer* m_explorer;
+          MapDisplay* m_display;
+          TabularViewer* m_viewer;
+          Project* m_project;
 
           //QDockWidget* m_progressDock;                                    //!< Dock widget used to show progress information
 

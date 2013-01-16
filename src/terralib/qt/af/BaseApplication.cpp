@@ -1,20 +1,20 @@
 /*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of TerraView - A GIS Application.
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
-    TerraView is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License,
     or (at your option) any later version.
 
-    TerraView is distributed in the hope that it will be useful,
+    TerraLib is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+    GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with TerraLib Code Editor. See COPYING. If not, write to
-    TerraLib Team at <terralib-team@dpi.inpe.br>.
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
  */
 
 /*! 
@@ -67,39 +67,54 @@
 #include <QtGui/QDockWidget>
 #include <QtGui/QMessageBox>
 
-te::qt::af::BaseApplication::BaseApplication(const std::string& mainConfigFile, QWidget* parent)
+te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
     m_ui(new Ui::BaseApplicationForm),
     m_explorer(0),
     m_display(0),
-    m_viewer(0)
+    m_viewer(0),
+    m_project(0)
 {
-  setMinimumSize(60, 60);
-  resize(QSize(512, 512));
+  m_ui->setupUi(this);
+}
 
-  te::qt::af::ApplicationController::getInstance().setMainConfig(mainConfigFile);
+te::qt::af::BaseApplication::~BaseApplication()
+{
+  delete m_explorer;
+  delete m_display;
+  delete m_viewer;
+  delete m_project;
+
+  te::qt::af::ApplicationController::getInstance().finalize();
+}
+
+void te::qt::af::BaseApplication::init()
+{
+
+}
+
+void te::qt::af::BaseApplication::init(const std::string& configFile)
+{
+  te::qt::af::ApplicationController::getInstance().setConfigFile(configFile);
 
   try
   {
-    te::qt::af::ApplicationController::getInstance().initializeMainModules();
+    te::qt::af::ApplicationController::getInstance().initialize();
   }
   catch(const std::exception& e)
   {
-    //QMessageBox::critical(this, //errMsg = QString(e.what());
-    QMessageBox::warning(this, tr("TerraView warning"), "teste1");
+    QString msgErr(tr("Could not initialize the application: %1"));
+
+    msgErr = msgErr.arg(e.what());
+
+    QMessageBox::critical(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msgErr);
+
+    throw;
   }
 
-  m_ui->setupUi(this);
+  setWindowIcon(QIcon::fromTheme(te::qt::af::ApplicationController::getInstance().getAppIconName()));
 
-  std::string icon = te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName");
-
-  if(!icon.empty())
-    setWindowIcon(QIcon::fromTheme(icon.c_str()));
-
-  std::string title = te::common::SystemApplicationSettings::getInstance().getValue("Application.Title");
-
-  if(!title.empty())
-    setWindowTitle(title.c_str());
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle());
 
   makeDialog();
 
@@ -109,24 +124,50 @@ te::qt::af::BaseApplication::BaseApplication(const std::string& mainConfigFile, 
   }
   catch(const std::exception& e)
   {
-    //QMessageBox::critical(this, //errMsg = QString(e.what());
-      //if(!err_msg.isEmpty())
-    QMessageBox::warning(this, tr("TerraView warning"), "teste 2");
+    QString msgErr(tr("Error loading plugins: %1"));
+
+    msgErr = msgErr.arg(e.what());
+
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msgErr);
   }
 }
 
-te::qt::af::BaseApplication::~BaseApplication()
+void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::Event* evt)
 {
-  delete m_explorer;
-  delete m_display;
-  delete m_viewer;
+  //switch(evt->getId())
+  //{
+  //  case te::qt::af::evt::NEW_TOOLBAR :
+  //  break;
 
-  te::qt::af::ApplicationController::getInstance().finalize();
+  //  case te::qt::af::evt::TRACK_COORDINATE:
+  //  {
+  //    te::qt::af::TrackedCoordinate* e = static_cast<te::qt::af::TrackedCoordinate*>(evt);
+  //    QString text = tr("Coordinates: ") + "(" + QString::number(e->m_pos.x()) + " , " + QString::number(e->m_pos.y()) + ")";
+  //    QStatusBar* sb = statusBar();
+  //    sb->showMessage(text);
+  //  }
+  //  break;
+
+  //  //PROVISORIO
+  //  case te::qt::af::evt::LAYER_SELECTED:
+  //  {
+  //    te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
+  //    
+  //    if(e->m_layer->getType() == "RASTERLAYER")
+  //    {
+  //      m_rasterVisualDock->setRasterLayer(dynamic_cast<te::map::RasterLayer*>(e->m_layer));
+  //    }
+  //  }
+  //  break;
+
+  //  default :
+  //  break;
+  //}
 }
 
 void te::qt::af::BaseApplication::makeDialog()
 {
-  ////! Putting tools on excluse group
+// placing tools on an exclusive group
   //QActionGroup* vis_tools_group = new QActionGroup(this);
   //vis_tools_group->setExclusive(true);
   //m_ui->m_actionPan->setActionGroup(vis_tools_group);
@@ -140,7 +181,7 @@ void te::qt::af::BaseApplication::makeDialog()
 // layer explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
   lexplorer->setModel(new te::qt::widgets::LayerExplorerModel(new te::map::FolderLayer("MainLayer", tr("My Layers").toStdString()), lexplorer));
-  connect(lexplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), SLOT(layerVisibilityChanged(const QModelIndex&)));
+  //connect(lexplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), SLOT(layerVisibilityChanged(const QModelIndex&)));
 
   m_explorer = new te::qt::af::LayerExplorer(lexplorer);
 
@@ -156,15 +197,15 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_viewer = new te::qt::af::TabularViewer(view);
 
-// initializing connectors
-
 // Connecting framework
   te::qt::af::ApplicationController::getInstance().addListener(this);
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
   te::qt::af::ApplicationController::getInstance().addListener(m_viewer);
 
-// Docking components
+
+// initializing connector widgets
+
   QDockWidget* doc = new QDockWidget(tr("Layer explorer"), this);
   doc->setWidget(lexplorer);
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, doc);

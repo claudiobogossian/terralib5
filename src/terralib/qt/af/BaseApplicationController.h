@@ -35,11 +35,13 @@
 #include <vector>
 
 // Qt
-#include <QObject>
+#include <QtCore/QObject>
+#include <QtCore/QString>
 
 // Forward declarations
-class QToolBar;
 class QMenu;
+class QToolBar;
+class QWidget;
 
 namespace te
 {
@@ -71,7 +73,19 @@ namespace te
           /*! \brief Destructor. */
           virtual ~BaseApplicationController();
 
-          virtual void setMainConfig(const std::string& configFileName);
+          /*!
+            \brief Tells wich configuration file to be used by the controller during its initialization.
+
+            \param configFileName The configuration file name with full path.
+          */
+          virtual void setConfigFile(const std::string& configFileName);
+
+          /*!
+            \brief Tells the widget to be used as the parent of messages showned in a QMessageBox.
+
+            \param w The widget to be used as the parent of messages showned in a QMessageBox.
+          */
+          virtual void setMsgBoxParentWidget(QWidget* w);
 
           /*!
             \brief Register the toolbar in the list of the known toolbars and dispatch an event.
@@ -130,9 +144,10 @@ namespace te
             \brief Initializes the application framework.
 
             The initialization will read the following configurations files (in order):
-            - ???
-            - ???
-            - ???
+            <ul>
+            <li>A main config file, generally called config.xml</li>
+            <li>A user settings file, generally called user_settings.xml<li>
+            </ul>
 
             It will start by initializing the available TerraLib modules.
             This means that applications that uses the application framework, 
@@ -141,14 +156,19 @@ namespace te
 
             \exception Exception It throws an exception if the initialization fails.
 
-            \pre The application must assure that any resource needed by their plugins are ready for use.
-
             \note Make sure that the application calls this method BEFORE it uses any TerraLib modules or functions.
           */
           virtual void initialize();
 
-          virtual void initializeMainModules();
+          /*!
+            \brief Load the plugin list and initialize the plugins enabled by the user.
 
+            The plugin initialization will read a file containing a list of plugins with their addresses.
+            This file is generally called application_plugins.xml.
+
+            \pre The application must assure that any resource needed by their plugins are ready for use. This
+                 means that initialize should be called before initializing the plugins.
+          */
           virtual void initializePlugins();
 
           /*!
@@ -176,11 +196,28 @@ namespace te
           */
           void triggered(te::qt::af::Event*);
 
+        public:
+
+          const QString& getAppTitle() const;
+
+          const QString& getAppIconName() const;
+
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.
           std::set<QObject*> m_applicationItems;      //!< The list of registered application items.
-          std::string m_configFile;                   //!< The application framework configuration file.
+          QWidget* m_msgBoxParentWidget;              //!<
+          std::string m_appConfigFile;                //!< The application framework configuration file.
+          QString m_appOrganization;
+          QString m_appName;
+          QString m_appTitle;
+          QString m_appIconName;
+          std::string m_appUserSettingsFile;
+          QString m_appPluginsFile;
+          QString m_appHelpFile;
+          QString m_appIconThemeDir;
+          QString m_appDefaultIconTheme;
+          QString m_appToolBarDefaultIconSize;
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
       };
 

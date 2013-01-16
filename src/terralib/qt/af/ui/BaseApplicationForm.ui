@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>582</width>
-    <height>439</height>
+    <width>640</width>
+    <height>480</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>640</width>
+    <height>480</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>TerraView 5.0</string>
@@ -19,11 +25,11 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>582</width>
+     <width>640</width>
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="m_EditMenu">
+   <widget class="QMenu" name="m_editMenu">
     <property name="title">
      <string>&amp;Edit</string>
     </property>
@@ -40,7 +46,7 @@
     <addaction name="m_editFind"/>
     <addaction name="m_editReplace"/>
    </widget>
-   <widget class="QMenu" name="m_ViewMenu">
+   <widget class="QMenu" name="m_viewMenu">
     <property name="title">
      <string>&amp;View</string>
     </property>
@@ -57,7 +63,7 @@
     <addaction name="separator"/>
     <addaction name="m_viewRefresh"/>
    </widget>
-   <widget class="QMenu" name="m_ToolsMenu">
+   <widget class="QMenu" name="m_toolsMenu">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
@@ -65,7 +71,7 @@
     <addaction name="separator"/>
     <addaction name="m_toolsCustomize"/>
    </widget>
-   <widget class="QMenu" name="m_PluginsMenu">
+   <widget class="QMenu" name="m_pluginsMenu">
     <property name="title">
      <string>Pl&amp;ugins</string>
     </property>
@@ -73,14 +79,14 @@
     <addaction name="separator"/>
     <addaction name="m_pluginBuilder"/>
    </widget>
-   <widget class="QMenu" name="m_HelpMenu">
+   <widget class="QMenu" name="m_helpMenu">
     <property name="title">
      <string>&amp;Help</string>
     </property>
     <addaction name="m_helpContents"/>
     <addaction name="m_helpUpdate"/>
    </widget>
-   <widget class="QMenu" name="m_ProjectMenu">
+   <widget class="QMenu" name="m_projectMenu">
     <property name="title">
      <string>&amp;Project</string>
     </property>
@@ -100,7 +106,7 @@
     <addaction name="separator"/>
     <addaction name="m_projectProperties"/>
    </widget>
-   <widget class="QMenu" name="m_LayerMenu">
+   <widget class="QMenu" name="m_layerMenu">
     <property name="title">
      <string>&amp;Layer</string>
     </property>
@@ -114,7 +120,7 @@
     <addaction name="m_layerToTop"/>
     <addaction name="m_layerToBottom"/>
    </widget>
-   <widget class="QMenu" name="m_FileMenu">
+   <widget class="QMenu" name="m_fileMenu">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -128,14 +134,14 @@
     <addaction name="separator"/>
     <addaction name="m_fileExit"/>
    </widget>
-   <addaction name="m_FileMenu"/>
-   <addaction name="m_EditMenu"/>
-   <addaction name="m_ViewMenu"/>
-   <addaction name="m_ProjectMenu"/>
-   <addaction name="m_LayerMenu"/>
-   <addaction name="m_ToolsMenu"/>
-   <addaction name="m_PluginsMenu"/>
-   <addaction name="m_HelpMenu"/>
+   <addaction name="m_fileMenu"/>
+   <addaction name="m_editMenu"/>
+   <addaction name="m_viewMenu"/>
+   <addaction name="m_projectMenu"/>
+   <addaction name="m_layerMenu"/>
+   <addaction name="m_toolsMenu"/>
+   <addaction name="m_pluginsMenu"/>
+   <addaction name="m_helpMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="m_fileToolBar">
