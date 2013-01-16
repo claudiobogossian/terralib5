@@ -1,6 +1,6 @@
 /*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
-    This file is part of TerraView - A GIS Application.
+    This file is part of TerraView - A Free and Open Source GIS Application.
 
     TerraView is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,39 +27,50 @@
 #include <terralib/qt/af/BaseApplication.h>
 #include <terralib/qt/af/SplashScreenManager.h>
 
-// Qt
-#include <QApplication>
-#include <QSplashScreen>
-
 // STL
+#include <cstdlib>
 #include <exception>
-#include <memory>
+
+// Qt
+#include <QtCore/QResource>
+#include <QtGui/QApplication>
+#include <QtGui/QSplashScreen>
+
+#define TERRAVIEW_SPLASH_SCREEN_PIXMAP "terraview.png"
+
+#define TERRAVIEW_CONFIG_FILE "config.xml"
+
+#define TERRAVIEW_RESOURCE_FILE "terraview.rcc"
 
 int main(int argc, char** argv)
 {
   QApplication app(argc, argv);
 
+  //QResource::registerResource(TERRAVIEW_RESOURCE_FILE);
+
+  int waitVal = EXIT_FAILURE;
+
   try
   {
-    QPixmap pixmap("C:\\terralib5-git\\resources\\themes\\terralib\\scalable\\terralib_logo.svg");
+    QPixmap pixmap(TERRAVIEW_SPLASH_SCREEN_PIXMAP);
 
-    std::auto_ptr<QSplashScreen> splash(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint));
+    QSplashScreen* splash(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint));
 
     splash->setAttribute(Qt::WA_DeleteOnClose, true);
 
-    te::qt::af::SplashScreenManager::getInstance().set(splash.get(), 1, Qt::white);
+    splash->setStyleSheet("QWidget { font-size: 12px; font-weight: bold }");
+
+    te::qt::af::SplashScreenManager::getInstance().set(splash, Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
 
     splash->show();
 
-    te::qt::af::BaseApplication dlg("config.xml");
+    te::qt::af::BaseApplication tview(TERRAVIEW_CONFIG_FILE);
 
-    splash->finish(&dlg);
+    splash->finish(&tview);
 
-    splash.release();
+    tview.showMaximized();
 
-    dlg.showMaximized();
-
-    app.exec();
+    waitVal = app.exec();
   }
   catch(const std::exception& /*e*/)
   {
@@ -70,6 +81,6 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
   }
 
-  return EXIT_SUCCESS;
+  return waitVal;
 }
 
