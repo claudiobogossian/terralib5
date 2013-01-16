@@ -64,7 +64,9 @@ int main(int argc, char** argv)
 
     splash->show();
 
-    te::qt::af::BaseApplication tview(TERRAVIEW_CONFIG_FILE);
+    te::qt::af::BaseApplication tview;
+
+    tview.init(TERRAVIEW_CONFIG_FILE);
 
     splash->finish(&tview);
 
