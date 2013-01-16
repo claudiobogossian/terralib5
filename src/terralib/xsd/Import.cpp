@@ -74,4 +74,3 @@ void te::xsd::Import::setSchemaLocation(std::string* schemaLocation)
   delete m_schemaLocation;
   m_schemaLocation = schemaLocation;
 }
-

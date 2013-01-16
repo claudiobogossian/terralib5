@@ -49,5 +49,3 @@ te::xsd::IdentityConstraint* te::xsd::Unique::clone() const
 {
   return new Unique(*this);
 }
-
-

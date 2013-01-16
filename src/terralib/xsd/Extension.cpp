@@ -39,7 +39,6 @@ te::xsd::Extension::Extension(QName* base, Annotation* ann, std::string* id)
     Annotated(ann),
     m_base(base),
     m_content(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
 }
@@ -49,7 +48,6 @@ te::xsd::Extension::Extension(const Extension& rhs)
     Annotated(rhs),
     m_base(0),
     m_content(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
 }
@@ -58,9 +56,6 @@ te::xsd::Extension::~Extension()
 {
   delete m_base;
   delete m_content;
-
-  te::common::Free(m_attributes);
-  
   delete m_anyAttr;
 }
 
@@ -79,9 +74,9 @@ te::xsd::Content* te::xsd::Extension::getContent() const
   return m_content;
 }
 
-std::vector<te::xsd::AbstractAttribute*>* te::xsd::Extension::getAttributes() const
+const boost::ptr_vector<te::xsd::AbstractAttribute>& te::xsd::Extension::getAttributes() const
 {
-  return m_attributes;
+  return m_attributeVec;
 }
 
 te::xsd::AnyAttribute* te::xsd::Extension::getAnyAttribute() const
@@ -103,10 +98,7 @@ void te::xsd::Extension::setContent(te::xsd::Content* c)
 
 void te::xsd::Extension::addAttribute(te::xsd::AbstractAttribute* a)
 {
-  if(m_attributes == 0)
-    m_attributes = new std::vector<te::xsd::AbstractAttribute*>;
-
-  m_attributes->push_back(a);
+  m_attributeVec.push_back(a);
 }
 
 void te::xsd::Extension::setAnyAttribute(te::xsd::AnyAttribute* a)
@@ -114,6 +106,3 @@ void te::xsd::Extension::setAnyAttribute(te::xsd::AnyAttribute* a)
   delete m_anyAttr;
   m_anyAttr = a;
 }
-
-
-

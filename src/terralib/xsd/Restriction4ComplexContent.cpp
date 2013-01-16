@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "AbstractAttribute.h"
 #include "AnyAttribute.h"
 #include "Content.h"
@@ -39,7 +38,6 @@ te::xsd::Restriction4ComplexContent::Restriction4ComplexContent(std::string* id,
     Annotated(0),
     m_base(base),
     m_content(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
   assert(base);
@@ -49,11 +47,6 @@ te::xsd::Restriction4ComplexContent::~Restriction4ComplexContent()
 {
   delete m_base;
   delete m_content;
-
- if(m_attributes)
-    te::common::FreeContents(*m_attributes);
-  delete m_attributes;
-
   delete m_anyAttr;
 }
 
@@ -86,10 +79,7 @@ void te::xsd::Restriction4ComplexContent::setContent(te::xsd::Content* c)
 
 void te::xsd::Restriction4ComplexContent::addAttribute(te::xsd::AbstractAttribute* a)
 {
-  if(m_attributes == 0)
-    m_attributes = new std::vector<te::xsd::AbstractAttribute*>;
-
-  m_attributes->push_back(a);
+  m_attributeVec.push_back(a);
 }
 
 void te::xsd::Restriction4ComplexContent::setAnyAttribute(te::xsd::AnyAttribute* a)
@@ -97,5 +87,3 @@ void te::xsd::Restriction4ComplexContent::setAnyAttribute(te::xsd::AnyAttribute*
   delete m_anyAttr;
   m_anyAttr = a;
 }
-
-

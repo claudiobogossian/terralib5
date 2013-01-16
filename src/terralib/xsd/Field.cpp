@@ -63,5 +63,3 @@ void te::xsd::Field::setXPath(std::string* xpath)
   delete m_xpath;
   m_xpath = xpath;
 }
-
-

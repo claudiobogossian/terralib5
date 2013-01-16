@@ -48,7 +48,7 @@ namespace te
     */
     class TEXSDEXPORT QName
     {
-      public:        
+      public:
 
         /*! \brief Constructor. */
         QName();
@@ -125,4 +125,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_QNAME_H
-

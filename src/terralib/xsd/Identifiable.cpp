@@ -64,6 +64,3 @@ te::xsd::Identifiable& te::xsd::Identifiable::operator=(const Identifiable& rhs)
 
   return *this;
 }
-
-
-

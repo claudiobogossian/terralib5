@@ -104,12 +104,10 @@ namespace te
       private:
 
         bool m_mixed;                   //!< It specifies whether character data is allowed to appear between the child elements of this complexType element. Default is false. (Optional)
-        TypeDerivation* m_derivation;   //!< It can be: restriction (Restriction4ComplexContent) | extension. (Required)    
+        TypeDerivation* m_derivation;   //!< It can be: restriction (Restriction4ComplexContent) | extension. (Required)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_COMPLEXCONTENT_H
-
-

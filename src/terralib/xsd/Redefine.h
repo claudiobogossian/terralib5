@@ -30,8 +30,8 @@
 #include "Annotated.h"
 #include "Identifiable.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -96,28 +96,28 @@ namespace te
 
           \return The list of simple and complex types at redefine element.
         */
-        std::vector<Type*>* getTypes() const;
+        const boost::ptr_vector<Type>& getTypes() const;
 
         /*!
           \brief It returns the list of group declarations at redefine element.
 
           \return The list of group declarations at redefine element.
         */
-        std::vector<Group*>* getGroups() const;
+        const boost::ptr_vector<Group>& getGroups() const;
         
         /*!
           \brief It returns the list of attribute group declarations at redefine element.
 
           \return The list of attribute group declarations at redefine element.
         */
-        std::vector<AttributeGroup*>* getAttributeGroups() const;
+        const boost::ptr_vector<AttributeGroup>& getAttributeGroups() const;
 
       private:
 
-        std::string m_schemaLocation;                    //!< It specifies a URI to the location of a schema document. (Required)
-        std::vector<Type*>* m_types;                     //!< The list of simple and complex types at redefine element. (Optional)
-        std::vector<Group*>* m_groups;                   //!< The list of group declarations at redefine element. (Optional)
-        std::vector<AttributeGroup*>* m_attributeGroups; //!< The list of attribute group declarations at redefine element. (Optional)
+        std::string m_schemaLocation;                          //!< It specifies a URI to the location of a schema document. (Required)
+        boost::ptr_vector<Type> m_typeVec;                     //!< The list of simple and complex types at redefine element. (Optional)
+        boost::ptr_vector<Group> m_groupVec;                   //!< The list of group declarations at redefine element. (Optional)
+        boost::ptr_vector<AttributeGroup> m_attributeGroupVec; //!< The list of attribute group declarations at redefine element. (Optional)
     };
 
   } // end namespace xsd

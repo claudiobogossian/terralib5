@@ -103,4 +103,3 @@ te::xsd::Content* te::xsd::Group::clone() const
 {
   return new Group(*this);
 }
-

@@ -31,8 +31,8 @@
 #include "Identifiable.h"
 #include "TypeDerivation.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -99,14 +99,14 @@ namespace te
 
           \return The list of facets defined on this restriction.
          */
-        std::vector<Facet*>* getFacets() const;
+        const boost::ptr_vector<Facet>& getFacets() const;
 
         /*!
           \brief It returns the list of attributes of this restriction.
 
           \return The list of attributes of this restriction.
          */
-        std::vector<AbstractAttribute*>* getAttributes() const;
+        const boost::ptr_vector<AbstractAttribute>& getAttributes() const;
 
         /*!
           \brief It returns the anyAttribute defined on this restriction.
@@ -161,11 +161,11 @@ namespace te
 
       private:
 
-        QName* m_base;                                   //!< It specifies the name of a built-in data type, simpleType element or complexType element defined in this schema or another schema. (Required)
-        SimpleType* m_simpleType;                        //!< Optional.
-        std::vector<Facet*>* m_facets;                   //!< The list of facets. (Optional)
-        std::vector<AbstractAttribute*>* m_attributes;   //!< The list of attributes (attributes and attributeGroups). (Optional)
-        AnyAttribute* m_anyAttr;                         //!< The anyAttribute element. (Optional)
+        QName* m_base;                                       //!< It specifies the name of a built-in data type, simpleType element or complexType element defined in this schema or another schema. (Required)
+        SimpleType* m_simpleType;                            //!< Optional.
+        boost::ptr_vector<Facet> m_facetVec;                 //!< The list of facets. (Optional)
+        boost::ptr_vector<AbstractAttribute> m_attributeVec; //!< The list of attributes (attributes and attributeGroups). (Optional)
+        AnyAttribute* m_anyAttr;                             //!< The anyAttribute element. (Optional)
     };
 
   } // end namespace xsd

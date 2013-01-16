@@ -89,11 +89,10 @@ namespace te
 
       private:
         
-        std::string* m_id;   //!< It specifies a unique identifier for the element. (Optional)
+        std::string* m_id; //!< It specifies a unique identifier for the element. (Optional)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_IDENTIFIABLE_H
-

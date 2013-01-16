@@ -102,7 +102,6 @@ namespace te
 
         FacetType m_type;                   //!< The facet type.
         std::string m_value;                //!< The facet associated value.
-
         static std::string m_typeNames[12]; //!< The list of names for available facet types.
     };
 
@@ -110,4 +109,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_FACET_H
-
