@@ -215,6 +215,46 @@ void te::qt::af::BaseApplication::makeDialog()
   //addDockWidget(Qt::RightDockWidgetArea, m_progressDock);
 
   //m_progressDock->setVisible(false);
+
+// setting icons
+  m_ui->m_fileNewProject->setIcon(QIcon::fromTheme("document-new"));
+  m_ui->m_fileOpenProject->setIcon(QIcon::fromTheme("document-open"));
+  m_ui->m_fileSaveProject->setIcon(QIcon::fromTheme("document-save"));
+  m_ui->m_fileSaveProjectAs->setIcon(QIcon::fromTheme("document-save-as"));
+  m_ui->m_filePrint->setIcon(QIcon::fromTheme("document-print"));
+  m_ui->m_filePrintPreview->setIcon(QIcon::fromTheme("document-print-preview"));
+  m_ui->m_fileExit->setIcon(QIcon::fromTheme("system-log-out"));
+
+  m_ui->m_editUndo->setIcon(QIcon::fromTheme("edit-undo"));
+  m_ui->m_editRedo->setIcon(QIcon::fromTheme("edit-redo"));
+  m_ui->m_editCut->setIcon(QIcon::fromTheme("edit-cut"));
+  m_ui->m_editCopy->setIcon(QIcon::fromTheme("edit-copy"));
+  m_ui->m_editPaste->setIcon(QIcon::fromTheme("edit-paste"));
+  m_ui->m_editSelectAll->setIcon(QIcon::fromTheme("edit-select-all"));
+  m_ui->m_editClear->setIcon(QIcon::fromTheme("edit-clear"));
+  m_ui->m_editFind->setIcon(QIcon::fromTheme("edit-find"));
+  m_ui->m_editReplace->setIcon(QIcon::fromTheme("edit-find-replace"));
+
+  m_ui->m_viewLayerExplorer->setIcon(QIcon::fromTheme("tree-visible"));
+  m_ui->m_viewMapDisplay->setIcon(QIcon::fromTheme("display-visible"));
+  m_ui->m_viewDataTable->setIcon(QIcon::fromTheme("grid-visible"));
+  m_ui->m_viewStyleExplorer->setIcon(QIcon::fromTheme("grid-visible"));
+  m_ui->m_viewGrid->setIcon(QIcon::fromTheme("grid-visible"));
+  m_ui->m_viewDataSourceExplorer->setIcon(QIcon::fromTheme("grid-visible"));
+  m_ui->m_viewFullScreen->setIcon(QIcon::fromTheme("view-fullscreen"));
+  m_ui->m_viewRefresh->setIcon(QIcon::fromTheme("view-refresh"));
+
+  m_ui->m_layerEdit->setIcon(QIcon::fromTheme("layer-edit"));
+  m_ui->m_layerRename->setIcon(QIcon::fromTheme("layer-rename"));
+  m_ui->m_layerRaise->setIcon(QIcon::fromTheme("layer-raise"));
+  m_ui->m_layerLower->setIcon(QIcon::fromTheme("layer-lower"));
+  m_ui->m_layerToTop->setIcon(QIcon::fromTheme("layer-to-top"));
+  m_ui->m_layerToBottom->setIcon(QIcon::fromTheme("layer-to-bottom"));
+
+  m_ui->m_toolsCustomize->setIcon(QIcon::fromTheme("preferences-system"));
+
+  m_ui->m_helpContents->setIcon(QIcon::fromTheme("help-browser"));
+  m_ui->m_helpUpdate->setIcon(QIcon::fromTheme("system-software-update"));
 }
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)

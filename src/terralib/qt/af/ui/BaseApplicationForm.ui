@@ -23,7 +23,7 @@
      <height>21</height>
     </rect>
    </property>
-   <widget class="QMenu" name="menu_Edit">
+   <widget class="QMenu" name="m_EditMenu">
     <property name="title">
      <string>&amp;Edit</string>
     </property>
@@ -40,7 +40,7 @@
     <addaction name="m_editFind"/>
     <addaction name="m_editReplace"/>
    </widget>
-   <widget class="QMenu" name="menu_View">
+   <widget class="QMenu" name="m_ViewMenu">
     <property name="title">
      <string>&amp;View</string>
     </property>
@@ -57,7 +57,7 @@
     <addaction name="separator"/>
     <addaction name="m_viewRefresh"/>
    </widget>
-   <widget class="QMenu" name="menu_Settings">
+   <widget class="QMenu" name="m_ToolsMenu">
     <property name="title">
      <string>&amp;Tools</string>
     </property>
@@ -65,7 +65,7 @@
     <addaction name="separator"/>
     <addaction name="m_toolsCustomize"/>
    </widget>
-   <widget class="QMenu" name="menu_Plugins">
+   <widget class="QMenu" name="m_PluginsMenu">
     <property name="title">
      <string>Pl&amp;ugins</string>
     </property>
@@ -73,15 +73,14 @@
     <addaction name="separator"/>
     <addaction name="m_pluginBuilder"/>
    </widget>
-   <widget class="QMenu" name="menu_Help">
+   <widget class="QMenu" name="m_HelpMenu">
     <property name="title">
      <string>&amp;Help</string>
     </property>
     <addaction name="m_helpContents"/>
     <addaction name="m_helpUpdate"/>
-    <addaction name="m_helpAbout"/>
    </widget>
-   <widget class="QMenu" name="menu_Project">
+   <widget class="QMenu" name="m_ProjectMenu">
     <property name="title">
      <string>&amp;Project</string>
     </property>
@@ -101,7 +100,7 @@
     <addaction name="separator"/>
     <addaction name="m_projectProperties"/>
    </widget>
-   <widget class="QMenu" name="menu_Layer">
+   <widget class="QMenu" name="m_LayerMenu">
     <property name="title">
      <string>&amp;Layer</string>
     </property>
@@ -115,7 +114,7 @@
     <addaction name="m_layerToTop"/>
     <addaction name="m_layerToBottom"/>
    </widget>
-   <widget class="QMenu" name="menu_File">
+   <widget class="QMenu" name="m_FileMenu">
     <property name="title">
      <string>&amp;File</string>
     </property>
@@ -124,16 +123,19 @@
     <addaction name="m_fileSaveProject"/>
     <addaction name="m_fileSaveProjectAs"/>
     <addaction name="separator"/>
+    <addaction name="m_filePrint"/>
+    <addaction name="m_filePrintPreview"/>
+    <addaction name="separator"/>
     <addaction name="m_fileExit"/>
    </widget>
-   <addaction name="menu_File"/>
-   <addaction name="menu_Edit"/>
-   <addaction name="menu_View"/>
-   <addaction name="menu_Project"/>
-   <addaction name="menu_Layer"/>
-   <addaction name="menu_Settings"/>
-   <addaction name="menu_Plugins"/>
-   <addaction name="menu_Help"/>
+   <addaction name="m_FileMenu"/>
+   <addaction name="m_EditMenu"/>
+   <addaction name="m_ViewMenu"/>
+   <addaction name="m_ProjectMenu"/>
+   <addaction name="m_LayerMenu"/>
+   <addaction name="m_ToolsMenu"/>
+   <addaction name="m_PluginsMenu"/>
+   <addaction name="m_HelpMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="m_fileToolBar">
@@ -171,16 +173,11 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset theme="layer-explorer">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Layer Explorer</string>
    </property>
    <property name="toolTip">
-    <string>Shows or hides the layer explorer.</string>
+    <string>Show or hide the layer explorer</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -190,16 +187,11 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
-   <property name="icon">
-    <iconset theme="map-display">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Map Display</string>
    </property>
    <property name="toolTip">
-    <string>Shows or hides the map display.</string>
+    <string>Show or hide the map display</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -212,16 +204,11 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="data-table">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>Data &amp;Table</string>
    </property>
    <property name="toolTip">
-    <string>Shows or hide the table with tabular data.</string>
+    <string>Show or hide the table with tabular data</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -234,16 +221,11 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="style-explorer">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Style Explorer</string>
    </property>
    <property name="toolTip">
-    <string>Shows or hides the raster visual window.</string>
+    <string>Show or hide the style explorer window</string>
    </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
@@ -252,11 +234,6 @@
   <action name="m_editUndo">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="edit-undo">
-     <normaloff/>
-    </iconset>
    </property>
    <property name="text">
     <string>&amp;Undo</string>
@@ -272,11 +249,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="edit-redo">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Redo</string>
    </property>
@@ -291,11 +263,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="edit-cut">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>Cu&amp;t</string>
    </property>
@@ -306,11 +273,6 @@
   <action name="m_editCopy">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="edit-copy">
-     <normaloff/>
-    </iconset>
    </property>
    <property name="text">
     <string>&amp;Copy</string>
@@ -323,11 +285,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="edit-paste">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Paste</string>
    </property>
@@ -338,11 +295,6 @@
   <action name="m_editSelectAll">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="edit-select-all">
-     <normaloff/>
-    </iconset>
    </property>
    <property name="text">
     <string>Select &amp;All</string>
@@ -355,11 +307,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="edit-clear">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>C&amp;lear</string>
    </property>
@@ -370,11 +317,6 @@
   <action name="m_editFind">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="edit-find">
-     <normaloff/>
-    </iconset>
    </property>
    <property name="text">
     <string>&amp;Find...</string>
@@ -387,11 +329,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="edit-find-replace">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>R&amp;eplace...</string>
    </property>
@@ -402,11 +339,6 @@
   <action name="m_viewFullScreen">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="view-fullscreen">
-     <normaloff/>
-    </iconset>
    </property>
    <property name="text">
     <string>F&amp;ull Screen...</string>
@@ -419,11 +351,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="view-refresh">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Refresh...</string>
    </property>
@@ -434,11 +361,6 @@
   <action name="m_toolsCustomize">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="tools-customize">
-     <normaloff/>
-    </iconset>
    </property>
    <property name="text">
     <string>&amp;Customize...</string>
@@ -484,8 +406,7 @@
    </property>
    <property name="icon">
     <iconset theme="help-view">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;View Help...</string>
@@ -503,8 +424,7 @@
    </property>
    <property name="icon">
     <iconset theme="help-update">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Update...</string>
@@ -531,13 +451,11 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="grid">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Grid</string>
+   </property>
+   <property name="toolTip">
+    <string>Show or hide the geographic grid</string>
    </property>
   </action>
   <action name="m_viewDataSourceExplorer">
@@ -547,13 +465,11 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="datasource-explorer">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Data Source Explorer</string>
+   </property>
+   <property name="toolTip">
+    <string>Show or hide the data source explorer</string>
    </property>
   </action>
   <action name="m_projectRemoveLayer">
@@ -611,8 +527,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-edit">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Edit</string>
@@ -624,8 +539,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-rename">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>Re&amp;name</string>
@@ -637,8 +551,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-export">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>E&amp;xport...</string>
@@ -650,8 +563,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-properties">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Properties...</string>
@@ -663,8 +575,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-raise">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Raise</string>
@@ -676,8 +587,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-lower">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Lower</string>
@@ -689,8 +599,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-top">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>To &amp;Top</string>
@@ -702,8 +611,7 @@
    </property>
    <property name="icon">
     <iconset theme="layer-bottom">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>To &amp;Bottom</string>
@@ -726,41 +634,21 @@
    </property>
   </action>
   <action name="m_fileNewProject">
-   <property name="icon">
-    <iconset theme="document-new">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;New Project</string>
    </property>
   </action>
   <action name="m_fileSaveProject">
-   <property name="icon">
-    <iconset theme="document-save">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Save Project</string>
    </property>
   </action>
   <action name="m_fileSaveProjectAs">
-   <property name="icon">
-    <iconset theme="document-save-as">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>Save Project &amp;As...</string>
    </property>
   </action>
   <action name="m_fileOpenProject">
-   <property name="icon">
-    <iconset theme="document-open">
-     <normaloff/>
-    </iconset>
-   </property>
    <property name="text">
     <string>&amp;Open Project...</string>
    </property>
@@ -768,11 +656,20 @@
   <action name="m_fileExit">
    <property name="icon">
     <iconset theme="system-log-out">
-     <normaloff/>
-    </iconset>
+     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>E&amp;xit</string>
+   </property>
+  </action>
+  <action name="m_filePrint">
+   <property name="text">
+    <string>&amp;Print...</string>
+   </property>
+  </action>
+  <action name="m_filePrintPreview">
+   <property name="text">
+    <string>Print Pre&amp;view...</string>
    </property>
   </action>
  </widget>
