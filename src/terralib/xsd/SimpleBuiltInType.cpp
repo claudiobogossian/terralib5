@@ -60,6 +60,3 @@ te::xsd::Type* te::xsd::SimpleBuiltInType::clone() const
 {
   return new SimpleBuiltInType(*this);
 }
-
-
-

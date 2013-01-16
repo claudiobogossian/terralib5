@@ -9,6 +9,7 @@ find_package(GDAL ${_GDAL_VERSION})
 if(GDAL_FOUND)
 	list (APPEND DEP_LIBS ${GDAL_LIBRARY})
 	list (APPEND DEP_INCLUDES ${GDAL_INCLUDE_DIR})
+  set (TE_USE_OGR TRUE PARENT_SCOPE)
 endif()
 
 # Definitions for windows compiling

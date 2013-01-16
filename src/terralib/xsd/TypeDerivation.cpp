@@ -25,5 +25,3 @@
 
 // TerraLib
 #include "TypeDerivation.h"
-
-

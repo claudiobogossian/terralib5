@@ -31,8 +31,8 @@
 #include "Annotated.h"
 #include "Identifiable.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -148,15 +148,13 @@ namespace te
 
       private:
 
-        std::string* m_name;                            //!< It specifies a name for the attribute group. (Optional)
-        QName* m_ref;                                   //!< It specifies a reference to a named attribute group. Name and ref attributes cannot both be present. (Optional)
-        std::vector<AbstractAttribute*>* m_attributes;  //!< The list of attributes, references or nested attribute groups. (Optional)        
-        AnyAttribute* m_anyAttr;                        //!< It enables the author to extend the XML document with attributes not specified by the schema. (Optional)
+        std::string* m_name;                                 //!< It specifies a name for the attribute group. (Optional)
+        QName* m_ref;                                        //!< It specifies a reference to a named attribute group. Name and ref attributes cannot both be present. (Optional)
+        boost::ptr_vector<AbstractAttribute> m_attributeVec; //!< The list of attributes, references or nested attribute groups. (Optional)        
+        AnyAttribute* m_anyAttr;                             //!< It enables the author to extend the XML document with attributes not specified by the schema. (Optional)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_ATTRIBUTEGROUP_H
-
-

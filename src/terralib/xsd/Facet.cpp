@@ -72,7 +72,3 @@ const std::string& te::xsd::Facet::getValue()
 {
   return m_value;
 }
-
-
-
-

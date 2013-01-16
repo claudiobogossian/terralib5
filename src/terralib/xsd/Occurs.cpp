@@ -78,4 +78,3 @@ te::xsd::Occurs& te::xsd::Occurs::operator=(const Occurs& rhs)
 
   return *this;
 }
-

@@ -30,8 +30,8 @@
 #include "Enums.h"
 #include "SimpleTypeConstructor.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -99,7 +99,7 @@ namespace te
 
           \return The list of facets defined on this restriction.
         */
-        std::vector<Facet*>* getFacets() const;
+        const boost::ptr_vector<Facet>& getFacets() const;
 
         /*!
           \brief It sets the name of the built-in data type simpleType element that will be restricted.
@@ -129,13 +129,12 @@ namespace te
 
       private:
 
-        QName* m_base;                  //!< It specifies the name of the built-in data type simpleType element that will be restricted. (Required)
-        SimpleType* simpleType_;        //!< Optional.
-        std::vector<Facet*>* m_facets;  //!< The list of facets. (Optional)
+        QName* m_base;                       //!< It specifies the name of the built-in data type simpleType element that will be restricted. (Required)
+        SimpleType* simpleType_;             //!< Optional.
+        boost::ptr_vector<Facet> m_facetVec; //!< The list of facets. (Optional)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_RESTRICTION4SIMPLETYPE_H
-

@@ -94,6 +94,3 @@ void te::xsd::Notation::setSystem(std::string* sys)
   delete m_system;
   m_system = sys;
 }
-
-
-

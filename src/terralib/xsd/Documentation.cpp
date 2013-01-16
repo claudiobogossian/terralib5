@@ -27,7 +27,7 @@
 #include "Documentation.h"
 
 te::xsd::Documentation::Documentation(std::string* value, std::string* source, std::string* lang)
-  : m_value(value),    
+  : m_value(value),
     m_source(source),
     m_lang(lang)
 {
@@ -107,4 +107,3 @@ te::xsd::AnnotationItem* te::xsd::Documentation::clone() const
 {
   return new Documentation(*this);
 }
-
