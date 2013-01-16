@@ -282,6 +282,7 @@ namespace te
     {
       m_lastblksize = m_npxlsblk - ((m_npxlsblk * m_nblocksx * m_nblocksy) -
                                     (b->getRaster()->getNumberOfColumns() * b->getRaster()->getNumberOfRows()));
+
       m_blk = new T[m_blksize];
 
       te::rst::SetBlockFunctions(&m_getBuff, &m_getBuffI, &m_setBuff, &m_setBuffI, b->getProperty()->getType());

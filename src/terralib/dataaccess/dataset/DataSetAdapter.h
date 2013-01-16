@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "../../common/Holder.h"
-#include "../datasource/DataSourceCapabilities.h"
 #include "../Config.h"
 #include "AttributeConverters.h"
 #include "DataSet.h"
@@ -47,6 +46,9 @@ namespace te
 
   namespace da
   {
+// Forward declarations
+    class DataSourceCapabilities;
+
     /*!
       \class DataSetAdapter
 
@@ -257,6 +259,7 @@ namespace te
 
           \param propertyName The name of the property that will be adapted.
           \param p The adapter property.
+          \param conv The function that will be used to do the attribute values conversion.
         */
         void adapt(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv);
 
@@ -265,6 +268,7 @@ namespace te
 
           \param i The index of the property that will be adapted.
           \param p The adapter property.
+          \param conv The function that will be used to do the attribute values conversion.
         */
         void adapt(int i, te::dt::Property* p, AttributeConverter conv);
 
