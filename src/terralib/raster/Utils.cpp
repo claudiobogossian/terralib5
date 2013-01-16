@@ -407,3 +407,11 @@ void te::rst::GetDataTypeRanges( const int& dataType, double& min, double& max )
       throw te::rst::Exception("Invalid data type");
   }
 }
+
+void te::rst::FillRaster(te::rst::Raster* rin, const std::complex<double>& value)
+{
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+      for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
+        rin->setValue(c, r, value, b);
+}
