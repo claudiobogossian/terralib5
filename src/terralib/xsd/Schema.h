@@ -102,11 +102,15 @@ namespace te
 
         const boost::ptr_vector<Redefine>& getRedefines() const;
 
+        const boost::ptr_vector<Annotation>& getAnnotations() const;
+
         const boost::ptr_vector<SimpleType>& getSimpleTypes() const;
 
         const boost::ptr_vector<ComplexType>& getComplexTypes() const;
 
         const boost::ptr_vector<Group>& getGroups() const;
+
+        const boost::ptr_vector<AttributeGroup>& getAttributeGroups() const;
 
         const boost::ptr_vector<AbstractAttribute>& getAttributes() const;
 
@@ -122,11 +126,15 @@ namespace te
 
         void addRedefine(Redefine* r);
 
+        void addAnnotation(Annotation* a);
+
         void addSimpleType(SimpleType* s);
 
         void addComplexType(ComplexType* c);
 
         void addGroup(Group* g);
+
+        void addAttributeGroup(AttributeGroup* ag);
 
         void addAttribute(AbstractAttribute* a);
 

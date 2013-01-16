@@ -57,6 +57,11 @@ const boost::ptr_vector<te::xsd::Redefine>& te::xsd::Schema::getRedefines() cons
   return m_redefineVec;
 }
 
+const boost::ptr_vector<te::xsd::Annotation>& te::xsd::Schema::getAnnotations() const
+{
+  return m_annotationVec;
+}
+
 const boost::ptr_vector<te::xsd::SimpleType>& te::xsd::Schema::getSimpleTypes() const
 {
   return m_simpleTypeVec;
@@ -70,6 +75,11 @@ const boost::ptr_vector<te::xsd::ComplexType>& te::xsd::Schema::getComplexTypes(
 const boost::ptr_vector<te::xsd::Group>& te::xsd::Schema::getGroups() const
 {
   return m_groupVec;
+}
+
+const boost::ptr_vector<te::xsd::AttributeGroup>& te::xsd::Schema::getAttributeGroups() const
+{
+  return m_attributeGroupVec;
 }
 
 const boost::ptr_vector<te::xsd::AbstractAttribute>& te::xsd::Schema::getAttributes() const
@@ -107,6 +117,11 @@ void te::xsd::Schema::addRedefine(te::xsd::Redefine* r)
   m_redefineVec.push_back(r);
 }
 
+void te::xsd::Schema::addAnnotation(te::xsd::Annotation* a)
+{
+  m_annotationVec.push_back(a);
+}
+
 void te::xsd::Schema::addSimpleType(te::xsd::SimpleType* s)
 {
   m_simpleTypeVec.push_back(s);
@@ -120,6 +135,11 @@ void te::xsd::Schema::addComplexType(te::xsd::ComplexType* c)
 void te::xsd::Schema::addGroup(Group* g)
 {
   m_groupVec.push_back(g);
+}
+
+void te::xsd::Schema::addAttributeGroup(AttributeGroup* ag)
+{
+  m_attributeGroupVec.push_back(ag);
 }
 
 void te::xsd::Schema::addAttribute(AbstractAttribute* a)
