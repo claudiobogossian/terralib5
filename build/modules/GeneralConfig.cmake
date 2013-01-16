@@ -29,3 +29,9 @@ if(UNIX)
     Release RelWithDebInfo MinSizeRel." FORCE)
   endif()
 endif()
+
+# Verifying <boost/version.hpp> header file.
+find_file(TE_BOOST_VERSION "boost/version.hpp" PATHS "${TE_DEPENDENCIES_DIR}/include")
+if(TE_BOOST_VERSION)
+  set (TE_HAVE_BOOST_VERSION_HPP TRUE)
+endif()
