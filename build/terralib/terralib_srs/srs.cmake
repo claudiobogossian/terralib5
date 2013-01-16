@@ -8,6 +8,7 @@ find_package(Proj4 ${_Proj4_VERSION})
 if(PROJ4_FOUND)
 	set(DEP_LIBS ${PROJ4_LIBRARY})
 	list (APPEND DEP_INCLUDES ${PROJ4_INCLUDE_DIR})
+  set (TE_USE_PROJ4 TRUE PARENT_SCOPE)
 endif()
 
 #Definitions for windows compiling

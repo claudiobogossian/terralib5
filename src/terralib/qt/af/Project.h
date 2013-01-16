@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file Project.h
+  \file terralib/qt/af/Project.h
 
-  \brief Application Project
+  \brief This class models the concept of a project for the TerraLib Application Framework.
 */
 
 #ifndef __TERRALIB_QT_AF_INTERNAL_PROJECT_H
@@ -29,75 +29,59 @@
 // Terralib
 #include "Config.h"
 
-// Boost
-#include <boost/ptr_container/ptr_vector.hpp>
+// STL
+#include <list>
+#include <string>
 
 namespace te
 {
-  namespace map
-  {
-    // Forward declarations
-    class AbstractLayer;
-  }
+// Forward declarations
+  namespace map { class AbstractLayer; }
 
   namespace qt
   {
     namespace af
     {
-
       /*!
         \class Project
 
-        \brief Application Project
-
+        \brief This class models the concept of a project for the TerraLib Application Framework.
       */
       class TEQTAFEXPORT Project
       {
         public:
 
-          /** @name Initializer Methods
-           *  Methods related to instantiation and destruction.
-           */
-          //@{
-
           /*! \brief Constructor. */
           Project();
 
-          /*! \brief Virtual destructor. */
+          /*! \brief Destructor. */
           ~Project();
 
-          //@}
+          void setTitle(const std::string& title);
 
-          /** @name Accessor Methods
-           *  Methods used to access internal attributes.
-           */
-          //@{
+          const std::string& getTitle() const;
 
-          void setTitle(std::string title);
+          void setAuthor(const std::string& author);
 
-          std::string getTitle();
+          const std::string& getAuthor() const;
 
-          void setAuthor(std::string author);
+          const std::list<te::map::AbstractLayer*>& getLayers() const;
 
-          std::string getAuthor();
+          std::list<te::map::AbstractLayer*>& getLayers();
 
-          void setLayers(boost::ptr_vector<te::map::AbstractLayer*> layerList);
+          void add(te::map::AbstractLayer* layer);
 
-          boost::ptr_vector<te::map::AbstractLayer*> getLayers();
+          void remove(te::map::AbstractLayer* layer);
 
-          void addLayer(te::map::AbstractLayer* layer);
-
-          void removeLayer(te::map::AbstractLayer* layer);
-
-          //@}
         private:
 
-          std::string m_title;                                    //!< Project title.
-          std::string m_author;                                   //!< Project author.
-          boost::ptr_vector<te::map::AbstractLayer*> m_layerList; //!< Project layers.
+          std::string m_title;                           //!< Project title.
+          std::string m_author;                          //!< Project author.
+          std::list<te::map::AbstractLayer*> m_layers;   //!< Project layers.
       };
-    }
-  }
-}
+
+    } // end namespace af
+  }   // end namespace qt
+}     // end namespace te
 
 #endif  // __TERRALIB_QT_AF_INTERNAL_PROJECT_H

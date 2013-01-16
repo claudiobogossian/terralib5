@@ -26,10 +26,8 @@
 // TerraLib
 #include "SplashScreenManager.h"
 
-
 // Qt
 #include <QtCore/QCoreApplication>
-
 
 void te::qt::af::SplashScreenManager::showMessage(const QString& message)
 {

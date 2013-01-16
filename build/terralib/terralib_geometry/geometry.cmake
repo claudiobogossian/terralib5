@@ -9,6 +9,7 @@ find_package(Geos ${_Geos_VERSION})
 if(GEOS_FOUND)
 	list (APPEND DEP_INCLUDES ${GEOS_INCLUDE_DIR})
   list (APPEND DEP_LIBS ${GEOS_LIBRARY})
+  set (TE_USE_GEOS TRUE PARENT_SCOPE)
 ENDIF(GEOS_FOUND)
 
 #Definitions for windows compiling

@@ -9,6 +9,7 @@ find_package(PostgreSQL ${_PostgrerSQL_VERSION} REQUIRED)
 if(PostgreSQL_FOUND)
   list (APPEND DEP_LIBS ${PostgreSQL_LIBRARY})
   list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
+  set (TE_USE_PGIS TRUE PARENT_SCOPE)
 endif()
 
 #Definitions for windows compiling

@@ -58,7 +58,7 @@ void te::qt::af::UserPlugins::load()
   {
     boost::property_tree::ptree& p = ApplicationPlugins::getInstance().getAllSettings();
 
-    if(!p.empty())      
+    if(!p.empty())
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Plugins"))
       {
         if(v.second.data().empty())

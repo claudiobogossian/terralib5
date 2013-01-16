@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,23 +18,11 @@
  */
 
 /*!
-  \file terralib/common/Version.cpp
+  \file terralib/qt/af/ApplicationController.cpp
 
-  \brief Utility functions for system versioning.
+  \brief The singleton controller of a TerraLib application.
 */
 
 // TerraLib
-#include "Version.h"
-
-const char* te::common::GetStrVersion()
-{
-  return TERRALIB_STRING_VERSION;
-}
-
-int te::common::GetIntVersion()
-{
-  return TERRALIB_INT_VERSION;
-}
-
-
+#include "ApplicationController.h"
 

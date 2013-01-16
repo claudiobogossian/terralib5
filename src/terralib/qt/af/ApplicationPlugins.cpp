@@ -151,8 +151,8 @@ void te::qt::af::ApplicationPlugins::removePlugins(const std::vector<std::string
     removePlugin(*it);
 }
 
-te::qt::af::ApplicationPlugins::ApplicationPlugins() :
-QObject()
+te::qt::af::ApplicationPlugins::ApplicationPlugins()
+  : QObject()
 {
 }
 
