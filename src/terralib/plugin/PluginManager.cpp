@@ -389,17 +389,17 @@ void te::plugin::PluginManager::add(const PluginInfo& plugin)
 
 void te::plugin::PluginManager::add(PluginInfo* plugin)
 {
-  try
-  {
-    if(!isLoaded(plugin->m_requiredPlugins))
-      throw Exception("Missing requirement");
+  //try
+  //{
+  //  if(!isLoaded(plugin->m_requiredPlugins))
+  //    throw Exception("Missing requirement");
 
     m_unloadedPlugins.push_back(plugin);
-  }
-  catch(Exception&)
-  {
-    m_brokenPlugins.push_back(plugin);
-  }
+  //}
+  //catch(Exception&)
+  //{
+  //  m_brokenPlugins.push_back(plugin);
+  //}
 }
 
 void te::plugin::PluginManager::remove(const std::string& plugin)
