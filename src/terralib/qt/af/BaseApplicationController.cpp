@@ -23,6 +23,9 @@
   \brief The base API for controllers of TerraLib applications.
 */
 
+// Boost
+#include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
+
 // TerraLib
 #include "../../common/Exception.h"
 #include "../../common/Translator.h"
@@ -53,7 +56,6 @@
 
 // Boost
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 const te::qt::af::BaseApplicationController& sm_core = te::qt::af::ApplicationController::getInstance();
