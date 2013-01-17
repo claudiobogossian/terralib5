@@ -23,15 +23,16 @@
  \brief A class to manage Coordinate Systems representations.
  */
 
-#ifndef __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
-#define __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
+#ifndef __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEMMANAGER_H
+#define __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEMMANAGER_H
 
+// TerraLib
+#include "../common/Singleton.h"
 #include "Config.h"
 
-#include "../common/Singleton.h"
-
-#include <string>
+// STL
 #include <map>
+#include <string>
 #include <vector>
 
 namespace te
@@ -200,4 +201,4 @@ namespace te
     };
   }
 }
-#endif // __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
+#endif // __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEMMANAGER_H

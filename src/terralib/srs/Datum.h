@@ -1,16 +1,18 @@
 /*! 
   \file Datum.h
 
-  \brief This file contains the structs necessary to represent a geodetic datum.
+  \brief This file contains the support to represent a geodetic datum.
 */
 
 #ifndef __TERRALIB_SRS_INTERNAL_DATUM_H 
 #define __TERRALIB_SRS_INTERNAL_DATUM_H
 
+// TerraLib
+#include "Config.h"
+
+// STL
 #include <string>
 #include <vector>
-
-#include "Config.h"
 
 namespace te
 {
@@ -35,7 +37,7 @@ namespace te
         \brief Constructor with parameters.
 
         \param name Datum name (default empty string)..
-        \param ellps Pointer to the Ellipsoid associated to the Datum (default null pointer). Class takes the pointer ownership.
+        \param ellps Pointer to the Ellipsoid associated to the Datum. Default null. Class takes the pointer ownership.
        */
       Datum(const std::string& name="", Ellipsoid* ellps=0);
       
@@ -58,7 +60,7 @@ namespace te
         \brief Returns the Ellipsoid associated to the Datum.
         \return Pointer to the ellipsoid. Class maintains the pointer ownership.
        */
-      const Ellipsoid* getEllipsoid() const ;
+      const Ellipsoid* getEllipsoid() const;
 
       /*!
         \brief Sets the Ellipsoid associated to the Datum.
