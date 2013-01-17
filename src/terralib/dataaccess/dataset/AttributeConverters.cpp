@@ -35,28 +35,27 @@
 
 // STL
 #include <cassert>
+#include <memory>
 
 te::dt::AbstractData* te::da::GenericAttributeConverter(DataSet* dataset, const std::vector<int>& indexes, int dstType)
 {
   assert(indexes.size() == 1);
 
   // Gets the data from input data set
-  te::dt::AbstractData* data = dataset->getValue(*indexes.begin());
-  assert(data);
+  std::auto_ptr<te::dt::AbstractData> data(dataset->getValue(indexes[0]));
+  assert(data.get());
 
   // Source and Destination Types
   int srcType = data->getTypeCode();
   if(srcType == dstType) // Need conversion?
-    return data;
+    return data.release();
 
   // Try get a data type converter
   const te::dt::DataTypeConverter& converter = te::dt::DataConverterManager::getInstance().get(srcType, dstType);
 
   // Converts the original data
-  te::dt::AbstractData* convertedData = converter(data);
+  te::dt::AbstractData* convertedData = converter(data.get());
   assert(convertedData);
-
-  delete data;
 
   return convertedData;
 }
