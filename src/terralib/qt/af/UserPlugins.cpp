@@ -23,7 +23,7 @@
   \brief A singleton for managing the plugins enabled by a specific user.
 */
 
-// Boost
+// Boost => don't change this include order, otherwise you may have compile problems!
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 
