@@ -177,8 +177,15 @@ void te::qt::af::BaseApplication::onAddDataSetLayer()
     if(retval == QDialog::Rejected)
       return;
   }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
   catch(...)
   {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a dataset!"));
   }
 }
 
