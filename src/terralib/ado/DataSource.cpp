@@ -20,7 +20,7 @@
 /*!
   \file DataSource.cpp
 
-  \brief Implements the DataSource class for ADO.
+  \brief It implements the DataSource class for ADO.
 */
 
 // TerraLib
@@ -49,7 +49,7 @@ te::da::SQLDialect* te::ado::DataSource::sm_myDialect(0);
 
 te::ado::DataSource::DataSource()
   : m_conn(0),
-  m_catalog(0)
+    m_catalog(0)
 {
   try
   {
@@ -106,9 +106,10 @@ void te::ado::DataSource::open()
 
   m_conn = 0;
   
-  std::string info = "provider="+m_connectionInfo["provider"]+
-    ";Data Source="+m_connectionInfo["dbname"]+
-    ";User Id=;Password=";
+  std::string info = "Provider=" + m_connectionInfo["Provider"] + ";";
+  info += "Data Source=" + m_connectionInfo["dbname"] + ";";
+  info += "User Id=" + m_connectionInfo["user"] + ";";
+  info += "Password=" + m_connectionInfo["password"] + ";";
 
   m_strCnn = info.c_str();
 
@@ -121,13 +122,13 @@ void te::ado::DataSource::open()
   {
     throw Exception(TR_ADO(e.Description()));
   }
-
 }
 
 void te::ado::DataSource::close()
 {
   if(m_conn != 0 && m_conn->State == adStateOpen)
     m_conn->Close();
+
   m_conn = 0;
 }
 
@@ -135,12 +136,13 @@ bool te::ado::DataSource::isOpened() const
 {
   if(m_conn != 0 && m_conn->State == adStateOpen)
     return true;
+
   return false;
 }
 
 bool te::ado::DataSource::isValid() const
 {
-  // Temporaly
+  // Temporally
   return true;
 }
 
@@ -176,16 +178,15 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  
   m_connectionInfo = dsInfo;
 
-  std::string info = "provider="+m_connectionInfo["provider"]+
-  ";Data Source="+m_connectionInfo["dbname"]+
+  std::string info = "provider=" + m_connectionInfo["provider"] +
+  ";Data Source=" + m_connectionInfo["dbname"]+
   ";User Id=;Password=";
 
   m_strCnn = info.c_str();
 
-  // let's have a connection to the auxiliary database
+  // Let's have a connection for an auxiliary database
   std::auto_ptr<DataSource> ds(new DataSource());
 
   ds->setConnectionInfo(dsInfo);
@@ -224,19 +225,19 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
   if(!exists(dsInfo))
-    throw Exception(TR_ADO("Data Source not exists!"));
+    throw Exception(TR_ADO("The data source doesn't exist!"));
 
-  std::map<std::string, std::string> dataSource = dsInfo;
+  std::map<std::string, std::string> info = dsInfo;
   
-  boost::filesystem3::path path(dataSource["dbname"]);
+  boost::filesystem3::path path(info["dbname"]);
   if(boost::filesystem3::remove(path))
-    throw Exception(TR_ADO("Data Source could not be dropped!"));
+    throw Exception(TR_ADO("The data source could not be dropped!"));
 }
 
 bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInfo)
 {
-  std::map<std::string, std::string> dataSource = dsInfo;
+  std::map<std::string, std::string> info = dsInfo;
 
-  boost::filesystem3::path path(dataSource["dbname"]);
+  boost::filesystem3::path path(info["dbname"]);
   return boost::filesystem3::exists(path);
 }
