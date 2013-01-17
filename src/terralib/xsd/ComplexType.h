@@ -32,8 +32,8 @@
 #include "Identifiable.h"
 #include "Type.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -148,7 +148,7 @@ namespace te
 
           \return The list of attributes of this ComplexType.
         */
-        std::vector<AbstractAttribute*>* getAttributes() const;
+        const boost::ptr_vector<AbstractAttribute>& getAttributes() const;
 
         /*!
           \brief It returns the anyAttribute defined on this ComplexType.
@@ -256,7 +256,7 @@ namespace te
         SimpleContent* m_sContent;   //!< SimpleContent. If m_cContent is present this must be NULL. Likewise if m_content or m_attributes or m_anyAttr is present this must be also NULL.
         ComplexContent* m_cContent;  //!< ComplexContent. If m_sContent is present this must be NULL. Likewise if m_content or m_attributes or m_anyAttr is present this must be also NULL.
         Content* m_content;          //!< It can be: group|all|choice|sequence. If m_sContent or m_cContent is present, this must be NULL.
-        std::vector<AbstractAttribute*>* m_attributes; //!< It can be: (attribute|attributeGroup)*. If m_sContent or m_cContent is present, this must be NULL.
+        boost::ptr_vector<AbstractAttribute> m_attributeVec; //!< It can be: (attribute|attributeGroup)*. If m_sContent or m_cContent is present, this must be NULL.
         AnyAttribute* m_anyAttr;     //!< A pointer to a anyAttribute. If m_sContent or m_cContent is present, this must be NULL.
     };
 

@@ -19,30 +19,8 @@
 
 /*! 
   \file TabularViewer.h
+  
   \brief Defines a high-level viewer of te::da::DataSet objects as Table.
-  \details This component also has mechanisms for presentation of data such as highlight different kind of objects.
-  Four types of data highlighted can be used there:
-  <ol>
-    <li>Data without highlight.</li>
-    <li>Pointed data.</li>
-    <li>Queried data.</li>
-    <li>Pointed and queried data.</li>
-  </ol>
-
-  Its possible to add any data to any group. To remove highlight, just remove the id from the group. Its, also, possible to
-  change presentation parameters of any group.
-
-  There is also an option for customize delegates. The te::qt::widgets::HLDelegateDecorator can be used. This way it is possible to change 
-  the delegate behavior in run-time. To do that, the code looks like:
-  \snippet examples/dataview/TabularViewerEx.cpp Adding custom delegate decorator
-  The code above, presents a customization of the delegate of the TabularViewer \a tv. In the example, a StarDelegate is created over the
-  clone of the delegate being used. It's not necessary cloning it, because the pointer to the older delegate is not owned by the TabularViewer.
-  Note that if a clone of the delegate was used, then is necessary to delete the older pointer as we do in the last line of the example.
-
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_TABULARVIEWER_H
@@ -86,7 +64,27 @@ namespace te
 
       /*!
         \class TabularViewer
-        \copydoc TabularViewer.h
+        
+        \brief Defines a high-level viewer of te::da::DataSet objects as Table.
+        
+        This component also has mechanisms for presentation of data such as highlight different kind of objects.
+        Four types of data highlighted can be used there:
+        <ol>
+          <li>Data without highlight.</li>
+          <li>Pointed data.</li>
+          <li>Queried data.</li>
+          <li>Pointed and queried data.</li>
+        </ol>
+
+        Its possible to add any data to any group. To remove highlight, just remove the id from the group. Its, also, possible to
+        change presentation parameters of any group.
+
+        There is also an option for customize delegates. The te::qt::widgets::HLDelegateDecorator can be used. This way it is possible to change 
+        the delegate behavior in run-time. To do that, the code looks like:
+        \snippet examples/dataview/TabularViewerEx.cpp Adding custom delegate decorator
+        The code above, presents a customization of the delegate of the TabularViewer \a tv. In the example, a StarDelegate is created over the
+        clone of the delegate being used. It's not necessary cloning it, because the pointer to the older delegate is not owned by the TabularViewer.
+        Note that if a clone of the delegate was used, then is necessary to delete the older pointer as we do in the last line of the example.
       */
       class TEQTWIDGETSEXPORT TabularViewer : public QTableView
       {

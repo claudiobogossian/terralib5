@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_SELECTOR_INTERNAL_DATASOURCESELECTORDIALOG_H
 
 // TerraLib
-#include "../core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../Config.h"
 
 // STL
@@ -64,7 +64,7 @@ namespace te
 
           ~DataSourceSelectorDialog();
 
-          const std::list<DataSourcePtr>& getSelecteds() const;
+          const std::list<te::da::DataSourceInfoPtr>& getSelecteds() const;
 
           DataSourceSelectorWidget* getSelectorWidget() const;
 
@@ -80,7 +80,7 @@ namespace te
 
           std::auto_ptr<Ui::DataSourceSelectorDialogForm> m_ui;
           std::auto_ptr<DataSourceSelectorWidget> m_selectorWidget;
-          std::list<DataSourcePtr> m_selecteds;
+          std::list<te::da::DataSourceInfoPtr> m_selecteds;
       }; 
     } // end namespace widgets
   }   // end namespace qt

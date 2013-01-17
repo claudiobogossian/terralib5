@@ -19,11 +19,8 @@
 
 /*! 
   \file CurrentToolChanged.h
+
   \brief This event signals that the tool being used, on current map display, changed.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_CURRENTTOOLCHANGED_H
@@ -47,7 +44,9 @@ namespace te
     {
       /*!
         \class CurrentToolChanged
-        \copydoc CurrentToolChanged.h
+
+        \brief This event signals that the tool being used, on current map display, changed.
+        
         \ingroup afevents
       */
       class CurrentToolChanged : public Event

@@ -79,6 +79,3 @@ void te::xsd::ComplexContent::setAsMixed(bool v)
 {
   m_mixed = v;
 }
-
-
-

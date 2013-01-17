@@ -26,10 +26,12 @@
 #ifndef __TERRALIB_SRS_INTERNAL_CONVERTER_H 
 #define __TERRALIB_SRS_INTERNAL_CONVERTER_H
 
-#include <string>
-#include <map>
-
+// TerraLib
 #include "Config.h"
+
+// STL
+#include <map>
+#include <string>
 
 namespace te
 {
@@ -71,6 +73,13 @@ namespace te
 			\exception te::srs::Exception source SRS identifier not recognized.
 		*/
 		void setSourceSRID(int sourceSRID);
+    
+    /*!
+     \brief Sets the source SRS PROJ4 description.
+     \param pj4txt PROJ4 description (input). Do not pass an empty string.
+     \exception te::srs::Exception source SRS PROJ4 description not valid.
+     */
+		void setSourcePJ4txt(const std::string& pj4txt);
 
 		/*!
       \brief Gets source SRS identifier.
@@ -84,6 +93,13 @@ namespace te
      \exception te::srs::Exception target SRS identifier not recognized.
      */
 		void setTargetSRID(int targetSRID);
+
+    /*!
+     \brief Sets the target SRS PROJ4 description.
+     \param pj4txt PROJ4 description (input). Do not pass an empty string.
+     \exception te::srs::Exception target SRS PROJ4 description not valid.
+     */
+		void setTargetPJ4txt(const std::string& pj4txt);    
 
 		/*!
      \brief Gets target SRS identifier.

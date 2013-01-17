@@ -53,11 +53,11 @@ namespace te
 
             ~GeoFileConnector();
 
-            void create(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void create(std::list<te::da::DataSourceInfoPtr>& datasources);
 
-            void update(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void update(std::list<te::da::DataSourceInfoPtr>& datasources);
 
-            void remove(std::list<te::qt::widgets::DataSourcePtr>& datasources);
+            void remove(std::list<te::da::DataSourceInfoPtr>& datasources);
         };
 
       } // end namespace geofile

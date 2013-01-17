@@ -27,8 +27,8 @@
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../widgets/datasource/core/DataSource.h"
 #include "../../../widgets/Exception.h"
 #include "WMSConnectorDialog.h"
 #include "ui_WMSConnectorDialogForm.h"
@@ -53,12 +53,12 @@ te::qt::plugins::wms::WMSConnectorDialog::~WMSConnectorDialog()
 {
 }
 
-const te::qt::widgets::DataSourcePtr& te::qt::plugins::wms::WMSConnectorDialog::getDataSource() const
+const te::da::DataSourceInfoPtr& te::qt::plugins::wms::WMSConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-void te::qt::plugins::wms::WMSConnectorDialog::set(const te::qt::widgets::DataSourcePtr& ds)
+void te::qt::plugins::wms::WMSConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
 {
   m_datasource = ds;
 }

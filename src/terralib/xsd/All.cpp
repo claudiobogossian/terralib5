@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "All.h"
 #include "Annotation.h"
 #include "Element.h"
@@ -35,29 +34,21 @@
 te::xsd::All::All(unsigned int minOccurs, unsigned int maxOccurs, Annotation* ann, std::string* id)
   : Occurs(minOccurs, maxOccurs),
     Identifiable(id),
-    Annotated(ann),
-    m_elements(0)
+    Annotated(ann)
 {
 }
 
 te::xsd::All::All(const All& rhs)
   : Occurs(rhs),
     Identifiable(rhs),
-    Annotated(rhs),
-    m_elements(0)
+    Annotated(rhs)
 {
-  if(rhs.m_elements)
-  {
-    m_elements = new std::vector<Element*>;
-
-    for(std::size_t i = 0; i < rhs.m_elements->size(); ++i)
-      m_elements->push_back(new Element(*(*rhs.m_elements)[i]));
-  }
+  for(std::size_t i = 0; i < rhs.m_elementVec.size(); ++i)
+    m_elementVec.push_back(new Element(m_elementVec[i]));
 }
 
 te::xsd::All::~All()
-{  
-  te::common::Free(m_elements);
+{
 }
 
 te::xsd::All& te::xsd::All::operator=(const All& rhs)
@@ -70,37 +61,24 @@ te::xsd::All& te::xsd::All::operator=(const All& rhs)
 
     Annotated::operator=(rhs);
 
-    te::common::Free(m_elements);
-
-    m_elements = 0;
-
-    if(rhs.m_elements)
-    {
-      m_elements = new std::vector<Element*>;
-
-      for(std::size_t i = 0; i < rhs.m_elements->size(); ++i)
-        m_elements->push_back(new Element(*(*rhs.m_elements)[i]));
-    }
+    for(std::size_t i = 0; i < rhs.m_elementVec.size(); ++i)
+      m_elementVec.push_back(new Element(rhs.m_elementVec[i]));
   }
 
   return *this;
 }
 
-std::vector<te::xsd::Element*>* te::xsd::All::getElements() const
+const boost::ptr_vector<te::xsd::Element>& te::xsd::All::getElements() const
 {
-  return m_elements;
+  return m_elementVec;
 }
 
 void te::xsd::All::addElement(te::xsd::Element* e)
 {
-  if(m_elements == 0)
-    m_elements = new std::vector<te::xsd::Element*>;
-
-  m_elements->push_back(e);
+  m_elementVec.push_back(e);
 }
 
 te::xsd::Content* te::xsd::All::clone() const
 {
   return new All(*this);
 }
-

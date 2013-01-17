@@ -19,12 +19,8 @@
 
 /*! 
   \file DataSetModel.h
-  \brief Defines a subclass of QAbstractTableModel, for manipulate and present te::da::DataSet objects in Qt 4 framework.
-  \details Its used to create models for te::da::DataSet objects. This way we can present te::da::DataSet objects as tables in Qt 4.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
+
+  \brief Contains a subclass of QAbstractTableModel, for manipulate and present te::da::DataSet objects in Qt 4 framework.
 */
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASETMODEL_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_DATASETMODEL_H
@@ -55,7 +51,10 @@ namespace te
 
       /*!
         \class DataSetModel
-        \copydoc DataSetModel.h
+        
+        \brief Defines a subclass of QAbstractTableModel, for manipulate and present te::da::DataSet objects in Qt 4 framework.
+        
+        Its used to create models for te::da::DataSet objects. This way we can present te::da::DataSet objects as tables in Qt 4.
       */
       class TEQTWIDGETSEXPORT DataSetModel : public QAbstractTableModel
       {

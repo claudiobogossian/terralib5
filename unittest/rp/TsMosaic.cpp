@@ -50,7 +50,7 @@ void TsMosaic::GeoReferencedImagesMosaic()
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3.tif";
+  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster3Pointer.get() );    
@@ -72,9 +72,23 @@ void TsMosaic::GeoReferencedImagesMosaic()
   bands.push_back( 1 );
   bands.push_back( 2 );
   algoInputParams.m_inputRastersBands.push_back( bands );
-  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  bands[ 0 ] = 1;
+  bands[ 1 ] = 2;
+  bands[ 2 ] = 0;
   algoInputParams.m_inputRastersBands.push_back( bands );
   
+  bands[ 2 ] = 2;
+  bands[ 0 ] = 1;
+  bands[ 1 ] = 0;
+  algoInputParams.m_inputRastersBands.push_back( bands );
+  
+  algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
+  algoInputParams.m_noDataValue = 0;
+  algoInputParams.m_forceInputNoDataValue = true;
+  algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
+  algoInputParams.m_autoEqualize = true;  
+
   te::rp::Mosaic::OutputParameters algoOutputParams;
   
   algoOutputParams.m_rInfo["URI"] =  

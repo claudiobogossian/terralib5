@@ -45,8 +45,9 @@ int main(int argc, char** argv)
     TerraLib::getInstance().initialize();
 
       SpatialReferenceSystemManager();
-      RecognizeSRIDs();
-      ConvertCoordinates();
+//      RecognizeSRIDs();
+//      ConvertCoordinates();
+
   
     TerraLib::getInstance().finalize();
   }

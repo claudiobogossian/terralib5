@@ -19,11 +19,8 @@
 
 /*! 
   \file DataSetTable.h
-  \brief A specialization of te::map::AbstractTable that uses te::da::DataSet objects.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
+
+  \brief Contains a specialization of te::map::AbstractTable that uses te::da::DataSet objects.
  */
 
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_DATASETTABLE_H
@@ -43,7 +40,8 @@ namespace te
   {
     /*!
       \class DataSetTable
-      \copydoc DataSetTable.h
+
+      \brief Contains a specialization of te::map::AbstractTable that uses te::da::DataSet objects.
     */
     class TEMAPEXPORT DataSetTable : public AbstractTable
     {

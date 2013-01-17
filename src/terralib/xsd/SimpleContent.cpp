@@ -68,5 +68,3 @@ te::xsd::TypeDerivation* te::xsd::SimpleContent::getTypeDerivation() const
 {
   return m_derivation;
 }
-
-

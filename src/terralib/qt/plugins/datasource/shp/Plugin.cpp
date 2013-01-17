@@ -27,7 +27,7 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "ShapeFileType.h"
 #include "Plugin.h"
@@ -61,7 +61,7 @@ void te::qt::plugins::shp::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::qt::widgets::DataSourceManager::getInstance().removeByType("SHAPEFILE");
+  te::da::DataSourceInfoManager::getInstance().removeByType("SHAPEFILE");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("SHAPEFILE");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_SHP("TerraLib Qt Shapefile widget shutdown!"));

@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "AttributeGroup.h"
 #include "Group.h"
 #include "Redefine.h"
@@ -33,30 +32,19 @@
 te::xsd::Redefine::Redefine(const std::string& schemaLocation, Annotation* ann, std::string* id)
   : Identifiable(id),
     Annotated(ann),
-    m_schemaLocation(schemaLocation),
-    m_types(0),
-    m_groups(0),
-    m_attributeGroups(0)
+    m_schemaLocation(schemaLocation)
 {
 }
 
 te::xsd::Redefine::Redefine(const Redefine& rhs)
   : Identifiable(rhs),
     Annotated(rhs),
-    m_schemaLocation(""),
-    m_types(0),
-    m_groups(0),
-    m_attributeGroups(0)
+    m_schemaLocation("")
 {
 }
 
 te::xsd::Redefine::~Redefine()
 {
-  te::common::Free(m_types);
-
-  te::common::Free(m_groups);
-
-  te::common::Free(m_attributeGroups);
 }
 
 te::xsd::Redefine& te::xsd::Redefine::operator=(const Redefine& rhs)
@@ -69,19 +57,22 @@ const std::string& te::xsd::Redefine::getSchemaLocation() const
   return m_schemaLocation;
 }
 
-std::vector<te::xsd::Type*>* te::xsd::Redefine::getTypes() const
+const boost::ptr_vector<te::xsd::Type>& te::xsd::Redefine::getTypes() const
 {
-  return m_types;
+  return m_typeVec;
 }
 
-std::vector<te::xsd::Group*>* te::xsd::Redefine::getGroups() const
+const boost::ptr_vector<te::xsd::Group>& te::xsd::Redefine::getGroups() const
 {
-  return m_groups;
-}
-        
-std::vector<te::xsd::AttributeGroup*>* te::xsd::Redefine::getAttributeGroups() const
-{
-  return m_attributeGroups;
+  return m_groupVec;
 }
 
+const boost::ptr_vector<te::xsd::AttributeGroup>& te::xsd::Redefine::getAttributeGroups() const
+{
+  return m_attributeGroupVec;
+}
 
+void te::xsd::Redefine::setSchemaLocation(const std::string& schemaLocation)
+{
+  m_schemaLocation = schemaLocation;
+}

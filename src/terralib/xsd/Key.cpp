@@ -49,4 +49,3 @@ te::xsd::IdentityConstraint* te::xsd::Key::clone() const
 {
   return new Key(*this);
 }
-

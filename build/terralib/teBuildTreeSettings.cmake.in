@@ -1,5 +1,5 @@
 # Compiled modules include path.
-set( TE_INCLUDE_DIRS @_TE_INCLUDE_DIRS@)
+set( TE_INCLUDE_DIRS @CMAKE_BINARY_DIR@;@_TE_INCLUDE_DIRS@)
 
 # Modules directory
 set (T5_MODULEPATH @T5_MODULES_PATH@ )

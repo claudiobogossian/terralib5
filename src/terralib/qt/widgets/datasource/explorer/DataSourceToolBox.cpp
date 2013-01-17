@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../core/DataSource.h"
-#include "../core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../core/DataSourceType.h"
 #include "../core/DataSourceTypeManager.h"
 #include "DataSourceToolBox.h"
@@ -46,9 +46,9 @@ te::qt::widgets::DataSourceToolBox::DataSourceToolBox(QWidget * parent, Qt::Wind
     treeView->setHeaderHidden(true);
     treeView->setIndentation(TE_QTWIDGETS_DEFAULT_TREEVIEW_IDENTATION);
 
-    std::vector<DataSourcePtr> datasources;
+    std::vector<te::da::DataSourceInfoPtr> datasources;
 
-    DataSourceManager::getInstance().getByType(it->first, datasources);
+    te::da::DataSourceInfoManager::getInstance().getByType(it->first, datasources);
 
     DataSourceTreeModel* treeModel = new DataSourceTreeModel(datasources, this);
 

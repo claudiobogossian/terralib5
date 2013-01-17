@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../../../../dataaccess/Definitions.h"
-#include "../../../widgets/datasource/core/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL
 #include <memory>
@@ -61,9 +61,9 @@ namespace te
 
             ~WMSConnectorDialog();
 
-            const te::qt::widgets::DataSourcePtr& getDataSource() const;
+            const te::da::DataSourceInfoPtr& getDataSource() const;
 
-            void set(const te::qt::widgets::DataSourcePtr& ds);
+            void set(const te::da::DataSourceInfoPtr& ds);
 
           public slots:
 
@@ -76,7 +76,7 @@ namespace te
           private:
 
             std::auto_ptr<Ui::WMSConnectorDialogForm> m_ui;
-            te::qt::widgets::DataSourcePtr m_datasource;
+            te::da::DataSourceInfoPtr m_datasource;
         };
 
       } // end namespace wms

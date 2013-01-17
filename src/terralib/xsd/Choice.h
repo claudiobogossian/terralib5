@@ -32,8 +32,8 @@
 #include "Identifiable.h"
 #include "Occurs.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -95,21 +95,21 @@ namespace te
 
           \return The list of elements.
         */
-        std::vector<Element*>* getElements() const;
+        const boost::ptr_vector<Element>& getElements() const;
 
         /*!
           \brief It returns the list of Content elements of Choice.
 
           \return The list of Content elements: group | choice | sequence.
         */
-        std::vector<Content*>* getContents() const;
+        const boost::ptr_vector<Content>& getContents() const;
         
         /*!
           \brief It returns the list of any elements of Choice.
 
           \return The list of any elements. 
         */
-        std::vector<Any*>* getAnys() const;
+        const boost::ptr_vector<Any>& getAnys() const;
 
         /*!
           \brief It adds an element to this Choice element.
@@ -142,13 +142,12 @@ namespace te
 
       private:
 
-        std::vector<Element*>* m_elements;   //!< The list of elements.       
-        std::vector<Content*>* m_contents;   //!< The list of Contents elements (group | choice | sequence).
-        std::vector<Any*>* m_anys;           //!< The list of any elements.
+        boost::ptr_vector<Element> m_elementVec; //!< The list of elements.
+        boost::ptr_vector<Content> m_contentVec; //!< The list of Contents elements (group | choice | sequence).
+        boost::ptr_vector<Any> m_anyVec;         //!< The list of any elements.
     };
 
   } // end namespace xsd
 }   // end namespace te
 
-#endif  // __TERRALIB_XSD_INTERNAL_CHOICE_)
-
+#endif  // __TERRALIB_XSD_INTERNAL_CHOICE_H

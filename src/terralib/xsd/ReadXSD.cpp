@@ -118,4 +118,3 @@ te::xsd::Schema* te::xsd::Read(const std::string& file_name)
 }
 
 #endif // TE_XSD_BUILD_WITH_XML_PARSER
-

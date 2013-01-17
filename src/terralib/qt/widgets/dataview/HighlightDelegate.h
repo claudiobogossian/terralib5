@@ -19,14 +19,8 @@
 
 /*! 
   \file HighlightDelegate.h
-  \brief An specialization of QItemDelegate to be used with te::map::AbstractTable objects.
-  \details This class is used on QAbstractItemView that has a te::qt::widgets::DatSetModel as model to highlight some objects. 
-  Each identifier in the set of ids are rendering with a predefined color.
-  \sa QItemDelegate, te::map::DataSetTable, te::qt::widgets::DataSetModel
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
+  
+  \brief Contains a specialization of QItemDelegate to be used with te::map::AbstractTable objects.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HIGHLIGHTDELEGATE_H
@@ -51,8 +45,14 @@ namespace te
 
       /*!
         \class HighlightDelegate
-        \copydoc HighlightDelegate.h 
-      */
+
+        \brief An specialization of QItemDelegate to be used with te::map::AbstractTable objects.
+        
+        This class is used on QAbstractItemView that has a te::qt::widgets::DatSetModel as model to highlight some objects. 
+        Each identifier in the set of ids are rendering with a predefined color.
+        
+        \sa QItemDelegate, te::map::DataSetTable, te::qt::widgets::DataSetModel
+       */
       class TEQTWIDGETSEXPORT HighlightDelegate : public QItemDelegate 
       {
         /** @name Initializer methods.

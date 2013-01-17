@@ -19,14 +19,8 @@
 
 /*!
   \file ResourceChooser.h
+  
   \brief Defines a component for choosing a file or directory.
-  \details This class is used for choosing a file or a directory. Its also possible to inform the file extensions to be searched. This way the
-  client can change the filter for the files to be listed when searching. The component is composed of a line edit containing the
-  complete path of the file or directory selected and a tool button used to open de choose file / directory dialog.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
 */
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_RESOURCECHOOSER_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_RESOURCECHOOSER_H
@@ -47,7 +41,12 @@ namespace te
 
       /*!
         \class ResourceChooser
-        \copydoc ResourceChooser.h
+        
+        \brief Defines a component for choosing a file or directory.
+        
+        This class is used for choosing a file or a directory. Its also possible to inform the file extensions to be searched. This way the
+        client can change the filter for the files to be listed when searching. The component is composed of a line edit containing the
+        complete path of the file or directory selected and a tool button used to open de choose file / directory dialog.
       */
       class TEQTWIDGETSEXPORT ResourceChooser : public QWidget
       {

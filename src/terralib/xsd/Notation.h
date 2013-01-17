@@ -138,4 +138,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_NOTATION_H
-

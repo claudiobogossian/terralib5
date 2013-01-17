@@ -21,6 +21,7 @@ list (APPEND DEP_LIBS
 		terralib_symbology
 		terralib_xlink
 		terralib_xml
+		terralib_xsd
     )
 
 # Files to process.
@@ -37,6 +38,7 @@ set (
   raster
   se
   xlink
+  xsd
 )
 
 # Files in build tree

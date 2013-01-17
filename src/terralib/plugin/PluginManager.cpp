@@ -389,17 +389,17 @@ void te::plugin::PluginManager::add(const PluginInfo& plugin)
 
 void te::plugin::PluginManager::add(PluginInfo* plugin)
 {
-  try
-  {
-    if(!isLoaded(plugin->m_requiredPlugins))
-      throw Exception("Missing requirement");
+  //try
+  //{
+  //  if(!isLoaded(plugin->m_requiredPlugins))
+  //    throw Exception("Missing requirement");
 
     m_unloadedPlugins.push_back(plugin);
-  }
-  catch(Exception&)
-  {
-    m_brokenPlugins.push_back(plugin);
-  }
+  //}
+  //catch(Exception&)
+  //{
+  //  m_brokenPlugins.push_back(plugin);
+  //}
 }
 
 void te::plugin::PluginManager::remove(const std::string& plugin)
@@ -491,6 +491,29 @@ te::plugin::AbstractPlugin* te::plugin::PluginManager::detach(const std::string&
 
 // finally... just return the plugin pointer and loose its ownership
   return p;
+}
+
+void te::plugin::PluginManager::getCategories(std::vector<std::string>& categories) const
+{
+  std::map<std::string, std::vector<AbstractPlugin*> >::const_iterator it = m_pluginCategoryMap.begin();
+
+  while(it != m_pluginCategoryMap.end())
+  {
+    categories.push_back(it->first);
+
+    ++it;
+  }
+}
+
+void te::plugin::PluginManager::addCategory(const std::string& name)
+{
+  std::map<std::string, std::vector<AbstractPlugin*> >::iterator it = m_pluginCategoryMap.find(name);
+
+  if(it == m_pluginCategoryMap.end())
+  {
+    std::vector<AbstractPlugin*> vec;
+    m_pluginCategoryMap.insert(std::map<std::string, std::vector<AbstractPlugin*> >::value_type(name, vec));
+  }
 }
 
 void te::plugin::PluginManager::sort(boost::ptr_vector<PluginInfo>& plugins) const

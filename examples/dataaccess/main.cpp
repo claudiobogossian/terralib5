@@ -61,7 +61,9 @@ int main(int /*argc*/, char** /*argv*/)
     MemoryExample();
     
     //   PersistenceExample(); //??? Está caindo - em ======Adds a new property and its values  
-    
+
+    DataSetAdapter();
+
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)

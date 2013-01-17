@@ -52,5 +52,3 @@ te::xsd::SimpleTypeConstructor& te::xsd::SimpleTypeConstructor::operator=(const 
 
   return *this;
 }
-
-

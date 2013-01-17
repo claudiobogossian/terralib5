@@ -19,11 +19,8 @@
 
 /*! 
   \file LayerSelected.h
+
   \brief This event signals that the selected layer on layer explorer has changed.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_LAYERSELECTED_H
@@ -47,7 +44,9 @@ namespace te
     {
       /*!
         \class LayerSelected
-        \copydoc LayerSelected.h
+
+        \brief This event signals that the selected layer on layer explorer has changed.
+        
         \ingroup afevents
       */
       class LayerSelected : public Event

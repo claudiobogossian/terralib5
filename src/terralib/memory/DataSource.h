@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/ThreadingPolicies.h"
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "Config.h"
 
@@ -43,6 +44,7 @@ namespace te
 {
   namespace da
   {
+    class DataSourceCapabilities;
     class DataSetType;
   }
 
@@ -75,7 +77,7 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
 
@@ -193,6 +195,17 @@ namespace te
         */
         bool hasDataSets();
 
+        /*!
+          \brief It sets the capabilities document.
+          
+          \param capabilities The Memory data source capabilities.
+
+          \note The Memory data source will take the ownership of the given capabilities object.
+
+          \note Memory driver extended method.
+        */
+        static void setCapabilities(const te::da::DataSourceCapabilities& capabilities);
+
       protected:
 
         void create(const std::map<std::string, std::string>& dsInfo);
@@ -211,7 +224,8 @@ namespace te
         bool m_isOpened;                                    //!< A flag to control the state of the data source.
         bool m_deepCopy;                                    //!< If true each dataset is cloned in the getDataSet method.
 
-        static const te::da::SQLDialect sm_dialect;         //!< A dummy dialect.
+        static te::da::DataSourceCapabilities sm_capabilities; //!< The Memory data source capabilities.
+        static const te::da::SQLDialect sm_dialect;            //!< A dummy dialect.
     };
 
   } // end namespace mem

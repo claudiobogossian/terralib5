@@ -27,7 +27,8 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASOURCETREEMODEL_H
 
 // TerraLib
-#include "../core/DataSource.h"
+#include "../../Config.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL
 #include <vector>
@@ -58,12 +59,12 @@ namespace te
           /*!
             \brief This lists all data sources.
           */
-          DataSourceTreeModel(const std::vector<DataSourcePtr>& datasources, QWidget* parent);
+          DataSourceTreeModel(const std::vector<te::da::DataSourceInfoPtr>& datasources, QWidget* parent);
 
           /*!
             \brief This lists all datasets from the data source.
           */
-          DataSourceTreeModel(const DataSourcePtr& ds, QObject* parent = 0);
+          DataSourceTreeModel(const te::da::DataSourceInfoPtr& ds, QObject* parent = 0);
 
           ~DataSourceTreeModel();
 

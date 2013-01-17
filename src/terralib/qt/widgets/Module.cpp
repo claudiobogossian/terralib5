@@ -34,7 +34,6 @@
 #include "se/LocalGraphicWidgetFactory.h"
 #include "se/WellKnownGraphicWidgetFactory.h"
 #include "se/WellKnownMarkFactory.h"
-#include "datasource/core/DataSourceManager.h"
 //#include "datasource/core/DataSourceTypeManager.h"
 //#include "datasource/connector/gdal/GDALType.h"
 //#include "datasource/connector/geofile/GeoFileType.h"

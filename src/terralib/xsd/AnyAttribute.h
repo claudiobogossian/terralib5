@@ -65,7 +65,7 @@ namespace te
 
           \param rhs Right-hand-side object.
         */
-        AnyAttribute(const AnyAttribute& rhs);        
+        AnyAttribute(const AnyAttribute& rhs);
 
         /*! \brief Destructor. */
         ~AnyAttribute();
@@ -119,5 +119,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_ANYATTRIBUTE_H
-
-

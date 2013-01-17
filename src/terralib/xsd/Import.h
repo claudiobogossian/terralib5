@@ -46,7 +46,7 @@ namespace te
     */
     class TEXSDEXPORT Import : public Identifiable, public Annotated
     {
-      public:        
+      public:
 
         /*!
           \brief Constructor.
@@ -122,4 +122,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_IMPORT_H
-

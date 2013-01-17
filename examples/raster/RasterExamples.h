@@ -70,4 +70,7 @@ void ExemplifyIterators();
 /*! \brief An example to use Grib and Geometry. */
 void GribPolygonExample();
 
+/*! \brief This example shows how to create an 1bit Raster in memory, and how to save an 1bit Raster in Tiff format. */
+void Raster1Bit();
+
 #endif

@@ -23,15 +23,16 @@
  \brief A class to manage Coordinate Systems representations.
  */
 
-#ifndef __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
-#define __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
+#ifndef __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEMMANAGER_H
+#define __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEMMANAGER_H
 
+// TerraLib
+#include "../common/Singleton.h"
 #include "Config.h"
 
-#include "../common/Singleton.h"
-
-#include <string>
+// STL
 #include <map>
+#include <string>
 #include <vector>
 
 namespace te
@@ -50,7 +51,9 @@ namespace te
        - A pair <id,authority>: a unique numeric id given by a particular authority; 
        - A simple, human-readable, interface-friendly, name;
        - An OGC's WKT description;
-       - A PROJ4 text: to support coordinate conversion
+       - A PROJ4 text: to support coordinate conversion.
+     
+     Refer to the <a href="http://www.spatialreference.org">Spatial Reference website</a> for more information about EPSG codes for SRS.
      */
     class TESRSEXPORT SpatialReferenceSystemManager : public te::common::Singleton<SpatialReferenceSystemManager>
     {
@@ -198,4 +201,4 @@ namespace te
     };
   }
 }
-#endif // __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_MANAGER_H
+#endif // __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEMMANAGER_H

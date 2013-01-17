@@ -8,7 +8,8 @@
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
 #include <terralib/maptools/Layer.h>
-#include <terralib/qt/af/CoreApplication.h>
+#include <terralib/qt/af/ApplicationController.h>
+#include <terralib/qt/af/BaseApplicationController.h>
 #include <terralib/qt/af/events/PointGeometries.h>
 #include <terralib/qt/af/events/StyleChanged.h>
 
@@ -92,7 +93,7 @@ namespace te
       void TabularViewer::pointedObjects(const std::map<std::string, te::gm::Geometry*>& geoms)
       {
         PointGeometries evt(m_layer, &geoms);
-        Application::getInstance().broadcast(&evt);
+        ApplicationController::getInstance().broadcast(&evt);
       }
 
       void TabularViewer::colorChanged(const int& g, const QColor& c)
@@ -105,7 +106,7 @@ namespace te
         (*cs)[g] = c;
 
         StyleChanged evt(m_layer, g, &c);
-        Application::getInstance().broadcast(&evt);
+        ApplicationController::getInstance().broadcast(&evt);
       }
 
       void TabularViewer::updateColors(te::map::Layer* layer)

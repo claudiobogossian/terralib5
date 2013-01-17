@@ -28,8 +28,8 @@
 #include "../raster/Band.h"
 #include "../raster/BandIterator.h"
 #include "../raster/Grid.h"
+#include "../raster/PositionIterator.h"
 #include "../raster/Raster.h"
-#include "../rp/PositionIterator.h"
 
 #include "RasterAttributes.h"
 
@@ -65,8 +65,8 @@ std::vector<std::complex<double> > te::rp::RasterAttributes::getValuesFromBand(c
   std::vector<std::complex<double> > values;
 
 // create iterators for band and polygon
-  te::rp::PolygonIterator<double> it = te::rp::PolygonIterator<double>::begin(&band, &polygon);
-  te::rp::PolygonIterator<double> itend = te::rp::PolygonIterator<double>::end(&band, &polygon);
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(&band, &polygon);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(&band, &polygon);
 
   while (it != itend)
   {
@@ -89,8 +89,8 @@ std::vector<std::vector<std::complex<double> > > te::rp::RasterAttributes::getVa
   std::complex<double> value;
 
 // create iterators for band and polygon
-  te::rp::PolygonIterator<double> it = te::rp::PolygonIterator<double>::begin(raster.getBand(bands[0]), &polygon);
-  te::rp::PolygonIterator<double> itend = te::rp::PolygonIterator<double>::end(raster.getBand(bands[0]), &polygon);
+  te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(raster.getBand(bands[0]), &polygon);
+  te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(raster.getBand(bands[0]), &polygon);
 
   while (it != itend)
   {
@@ -134,8 +134,8 @@ std::vector<std::complex<double> > te::rp::RasterAttributes::getMeans(const te::
 
   std::complex<double> value;
 
-  te::rp::PolygonIterator<unsigned> it = te::rp::PolygonIterator<unsigned>::begin(raster.getBand(bands[0]), &polygon);
-  te::rp::PolygonIterator<unsigned> itend = te::rp::PolygonIterator<unsigned>::end(raster.getBand(bands[0]), &polygon);
+  te::rst::PolygonIterator<unsigned> it = te::rst::PolygonIterator<unsigned>::begin(raster.getBand(bands[0]), &polygon);
+  te::rst::PolygonIterator<unsigned> itend = te::rst::PolygonIterator<unsigned>::end(raster.getBand(bands[0]), &polygon);
 
   while (it != itend)
   {

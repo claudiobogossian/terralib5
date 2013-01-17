@@ -26,6 +26,9 @@
 #ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_CONFIG_H
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_CONFIG_H
 
+// TerraLib
+#include "../../../../Config.h"
+
 #define TE_QT_PLUGIN_DATASOURCE_PGIS_PLUGIN_NAME "te.qt.datasource.pgis"
 
 /*!

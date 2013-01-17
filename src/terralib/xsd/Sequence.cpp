@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "Any.h"
 #include "Choice.h"
 #include "Element.h"
@@ -34,30 +33,19 @@
 te::xsd::Sequence::Sequence(unsigned int minOccurs, unsigned int maxOccurs, Annotation* ann, std::string* id)
   : Occurs(minOccurs, maxOccurs),
     Identifiable(id),
-    Annotated(ann),
-    m_elements(0),
-    m_contents(0),
-    m_anys(0)
+    Annotated(ann)
 {
 }
 
 te::xsd::Sequence::Sequence(const Sequence& rhs)
   : Occurs(rhs),
     Identifiable(rhs),
-    Annotated(rhs),
-    m_elements(0),
-    m_contents(0),
-    m_anys(0)
+    Annotated(rhs)
 {
 }
 
 te::xsd::Sequence::~Sequence()
 {
-  te::common::Free(m_elements);
-
-  te::common::Free(m_contents);
-
-  te::common::Free(m_anys);
 }
 
 te::xsd::Sequence& te::xsd::Sequence::operator=(const Sequence& /*rhs*/)
@@ -65,48 +53,37 @@ te::xsd::Sequence& te::xsd::Sequence::operator=(const Sequence& /*rhs*/)
   return *this;
 }
 
-std::vector<te::xsd::Element*>* te::xsd::Sequence::getElements() const
+const boost::ptr_vector<te::xsd::Element>& te::xsd::Sequence::getElements() const
 {
-  return m_elements;
+  return m_elementVec;
 }
 
-std::vector<te::xsd::Content*>* te::xsd::Sequence::getContents() const
+const boost::ptr_vector<te::xsd::Content>& te::xsd::Sequence::getContents() const
 {
-  return m_contents;
+  return m_contentVec;
 }
 
-std::vector<te::xsd::Any*>* te::xsd::Sequence::getAnys() const
+const boost::ptr_vector<te::xsd::Any>& te::xsd::Sequence::getAnys() const
 {
-  return m_anys;
+  return m_anyVec;
 }
 
 void te::xsd::Sequence::addElement(te::xsd::Element* e)
 {
-  if(m_elements == 0)
-    m_elements = new std::vector<te::xsd::Element*>;
-
-  m_elements->push_back(e);
+  m_elementVec.push_back(e);
 }
 
 void te::xsd::Sequence::addContent(te::xsd::Content* c)
 {
-  if(m_contents == 0)
-    m_contents = new std::vector<te::xsd::Content*>;
-
-  m_contents->push_back(c);
+  m_contentVec.push_back(c);
 }
 
 void te::xsd::Sequence::addAny(te::xsd::Any* a)
 {
-  if(m_anys == 0)
-    m_anys = new std::vector<te::xsd::Any*>;
-
-  m_anys->push_back(a);
+  m_anyVec.push_back(a);
 }
 
 te::xsd::Content* te::xsd::Sequence::clone() const
 {
   return new Sequence(*this);
 }
-
-

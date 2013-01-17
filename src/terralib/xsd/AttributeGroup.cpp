@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "AnyAttribute.h"
 #include "AttributeGroup.h"
 #include "QName.h"
@@ -34,7 +33,6 @@ te::xsd::AttributeGroup::AttributeGroup(Annotation* ann, std::string* id)
     Annotated(ann),
     m_name(0),
     m_ref(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
 }
@@ -44,18 +42,13 @@ te::xsd::AttributeGroup::AttributeGroup(const AttributeGroup& rhs)
     Annotated(rhs),
     m_name(0),
     m_ref(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
   m_name = rhs.m_name ? new std::string(*rhs.m_name) : 0;
   m_ref = rhs.m_ref ? new QName(*rhs.m_ref) : 0;
 
-  if(rhs.m_attributes)
-  {
-    m_attributes = new std::vector<AbstractAttribute*>;
-
-    te::common::Clone<AbstractAttribute>(*rhs.m_attributes, *m_attributes);
-  }
+  for(std::size_t i = 0; i < rhs.m_attributeVec.size(); ++i)
+    m_attributeVec.push_back(rhs.m_attributeVec[i].clone());
 
   m_anyAttr = rhs.m_anyAttr ? new AnyAttribute(*rhs.m_anyAttr) : 0;
 }
@@ -63,12 +56,7 @@ te::xsd::AttributeGroup::AttributeGroup(const AttributeGroup& rhs)
 te::xsd::AttributeGroup::~AttributeGroup()
 {
   delete m_name;
-
   delete m_ref;
-
-  if(m_attributes)
-    te::common::Free(m_attributes);
-
   delete m_anyAttr;
 }
 
@@ -77,7 +65,7 @@ te::xsd::AttributeGroup& te::xsd::AttributeGroup::operator=(const AttributeGroup
   if(this != &rhs)
   {
     Identifiable::operator=(rhs);
-    
+
     Annotated::operator=(rhs);
 
     delete m_name;
@@ -88,17 +76,8 @@ te::xsd::AttributeGroup& te::xsd::AttributeGroup::operator=(const AttributeGroup
 
     m_ref = rhs.m_ref ? new QName(*rhs.m_ref) : 0;
 
-    if(m_attributes)
-      te::common::Free(m_attributes);
-
-    m_attributes = 0;
-
-    if(rhs.m_attributes)
-    {
-      m_attributes = new std::vector<AbstractAttribute*>;
-
-      te::common::Clone<AbstractAttribute>(*rhs.m_attributes, *m_attributes);
-    }
+    for(std::size_t i = 0; i < rhs.m_attributeVec.size(); ++i)
+      m_attributeVec.push_back(rhs.m_attributeVec[i].clone());
 
     delete m_anyAttr;
 
@@ -143,10 +122,7 @@ void te::xsd::AttributeGroup::setRef(te::xsd::QName* ref)
 
 void te::xsd::AttributeGroup::addAttribute(te::xsd::AbstractAttribute* a)
 {
-  if(m_attributes == 0)
-    m_attributes = new std::vector<te::xsd::AbstractAttribute*>;
-
-  m_attributes->push_back(a);
+  m_attributeVec.push_back(a);
 }
 
 void te::xsd::AttributeGroup::setAnyAttribute(te::xsd::AnyAttribute* a)
@@ -159,5 +135,3 @@ te::xsd::AbstractAttribute* te::xsd::AttributeGroup::clone() const
 {
   return new AttributeGroup(*this);
 }
-
-

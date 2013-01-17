@@ -68,5 +68,3 @@ te::xsd::IdentityConstraint* te::xsd::KeyRef::clone() const
 {
   return new KeyRef(*this);
 }
-
-

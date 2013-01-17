@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/ThreadingPolicies.h"
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "Config.h"
 
@@ -73,7 +74,7 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
 

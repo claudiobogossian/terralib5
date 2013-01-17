@@ -19,11 +19,8 @@
 
 /*! 
   \file UpdateLayerVisibilty.h
+
   \brief This event signals that a the layer visibility changed.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_UPDATELAYERVISIBILITY_H
@@ -47,7 +44,9 @@ namespace te
     {
       /*!
         \class UpdateLayerVisibilty
-        \copydoc UpdateLayerVisibilty.h
+        
+        \brief This event signals that a the layer visibility changed.
+        
         \ingroup afevents
       */
       class UpdateLayerVisibilty : public Event

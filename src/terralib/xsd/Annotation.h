@@ -29,9 +29,11 @@
 // TerraLib
 #include "Identifiable.h"
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 // STL
 #include <string>
-#include <vector>
 #include <map>
 
 namespace te
@@ -57,14 +59,11 @@ namespace te
         /*!
           \brief Constructor.
           
-          \param items A list of documentation to be inserted in the annotation.
-          \param id    It specifies a unique ID for the annotation.
-
-          \param The Annotation will take the ownership of the list.
+          \param id It specifies a unique ID for the annotation.
 
           \note The annotation will take the ownership of the id.
         */
-        Annotation(std::vector<AnnotationItem*>* items = 0, std::string* id = 0);
+        Annotation(std::string* id = 0);
 
         /*!
           \brief Copy constructor.
@@ -105,7 +104,7 @@ namespace te
         //void addOtherAttribute(std::string key, std::string value);
         
         /*! \brief Returns a pointer to the vector of Annotation's items (AppInfos and/or Documentations) */
-        std::vector<AnnotationItem*>* getItems() const;
+        const boost::ptr_vector<AnnotationItem>& getItems() const;
 
         /*!
           \brief It returns a map with other properties of the attribute element.
@@ -116,7 +115,7 @@ namespace te
 
       private:
         
-        std::vector<AnnotationItem*>* m_items;                  //!< The list of comments for humans or for machines. (Optional)
+        boost::ptr_vector<AnnotationItem> m_itemVec; //!< The list of comments for humans or for machines. (Optional)
         //std::map<std::string, std::string>* m_otherAttributes;  //!< A list of other attributes with non-schema namespace (Optional).
     };
 

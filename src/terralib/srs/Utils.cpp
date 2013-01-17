@@ -24,9 +24,9 @@
 #include "Utils.h"
 
 // Boost
+#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
-#include <boost/foreach.hpp>
 
 void te::srs::InitManagerFromJSON()
 { 
@@ -55,6 +55,7 @@ void te::srs::InitManagerFromJSON()
   {
     std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
     te::srs::Exception ex(TR_SRS(errmsg));
+    throw(ex);
   }
   catch (std::exception const& e)
   {

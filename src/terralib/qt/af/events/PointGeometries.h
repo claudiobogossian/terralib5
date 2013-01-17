@@ -19,12 +19,8 @@
 
 /*!
   \file PointGeometries.h
+
   \brief Event emitted when geometries were pointed.
-  \details 
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
 */
 
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_POINTGEOMETRIES_H
@@ -53,7 +49,9 @@ namespace te
     {
       /*!
         \class PointGeometries
-        \copydoc PointGeometries.h
+
+        \brief Event emitted when geometries were pointed.
+        
         \ingroup afevents
       */
       class PointGeometries : public Event

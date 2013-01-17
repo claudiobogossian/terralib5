@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "AbstractAttribute.h"
 #include "AnyAttribute.h"
 #include "Facet.h"
@@ -38,8 +37,6 @@ te::xsd::Restriction4SimpleContent::Restriction4SimpleContent(std::string* id, t
   : Identifiable(id),
     Annotated(0),
     m_base(base),
-    m_facets(0),
-    m_attributes(0),
     m_anyAttr(0)
 {
   assert(base);
@@ -48,15 +45,6 @@ te::xsd::Restriction4SimpleContent::Restriction4SimpleContent(std::string* id, t
 te::xsd::Restriction4SimpleContent::~Restriction4SimpleContent()
 {
   delete m_base;
-
-  if(m_facets)
-    te::common::FreeContents(*m_facets);
-  delete m_facets;
-
-  if(m_attributes)
-    te::common::FreeContents(*m_attributes);
-  delete m_attributes;
-
   delete m_anyAttr;
 }
 
@@ -65,14 +53,14 @@ te::xsd::QName* te::xsd::Restriction4SimpleContent::getBase() const
   return m_base;
 }
 
-std::vector<te::xsd::Facet*>* te::xsd::Restriction4SimpleContent::getFacets() const
+const boost::ptr_vector<te::xsd::Facet>& te::xsd::Restriction4SimpleContent::getFacets() const
 {
-  return m_facets;
+  return m_facetVec;
 }
 
-std::vector<te::xsd::AbstractAttribute*>* te::xsd::Restriction4SimpleContent::getAttributes() const
+const boost::ptr_vector<te::xsd::AbstractAttribute>& te::xsd::Restriction4SimpleContent::getAttributes() const
 {
-  return m_attributes;
+  return m_attributeVec;
 }
 
 te::xsd::AnyAttribute* te::xsd::Restriction4SimpleContent::getAnyAttribute() const
@@ -94,18 +82,12 @@ void te::xsd::Restriction4SimpleContent::addFacet(te::xsd::FacetType fType, cons
 
 void te::xsd::Restriction4SimpleContent::addFacet(te::xsd::Facet* f)
 {
-  if(m_facets == 0)
-    m_facets = new std::vector<te::xsd::Facet*>;
-
-  m_facets->push_back(f);
+  m_facetVec.push_back(f);
 }
 
 void te::xsd::Restriction4SimpleContent::addAttribute(te::xsd::AbstractAttribute* a)
 {
-  if(m_attributes == 0)
-    m_attributes = new std::vector<te::xsd::AbstractAttribute*>;
-
-  m_attributes->push_back(a);
+  m_attributeVec.push_back(a);
 }
 
 void te::xsd::Restriction4SimpleContent::setAnyAttribute(te::xsd::AnyAttribute* a)
@@ -113,6 +95,3 @@ void te::xsd::Restriction4SimpleContent::setAnyAttribute(te::xsd::AnyAttribute* 
   delete m_anyAttr;
   m_anyAttr = a;
 }
-
-
-

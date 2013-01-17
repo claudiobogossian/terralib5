@@ -19,12 +19,8 @@
 
 /*! 
   \file connectors/LayerExplorer.h
+
   \brief A connector of the te::qt::widgets::LayerExplorer for the application framework.
-  \details This is used to listen events sent by application framework and acts on a te::qt::widgets::LayerExplorer object.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_AF_INTERNAL_LAYEREXPLORER_H
@@ -56,7 +52,11 @@ namespace te
 
       /*!
         \class LayerExplorer
-        \copydoc connectors/LayerExplorer.h
+        
+        \brief A connector of the te::qt::widgets::LayerExplorer for the application framework.
+        
+        This is used to listen events sent by application framework and acts on a te::qt::widgets::LayerExplorer object.
+        
         \ingroup afconnector
       */
       class TEQTAFEXPORT LayerExplorer : public QObject

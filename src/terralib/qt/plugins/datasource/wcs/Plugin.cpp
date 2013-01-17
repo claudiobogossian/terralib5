@@ -27,7 +27,7 @@
 #include "../../../../common/Config.h"
 #include "../../../../common/Translator.h"
 #include "../../../../common/Logger.h"
-#include "../../../widgets/datasource/core/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../../widgets/datasource/core/DataSourceTypeManager.h"
 #include "WCSType.h"
 #include "Plugin.h"
@@ -61,7 +61,7 @@ void te::qt::plugins::wcs::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::qt::widgets::DataSourceManager::getInstance().removeByType("WCS");
+  te::da::DataSourceInfoManager::getInstance().removeByType("WCS");
   te::qt::widgets::DataSourceTypeManager::getInstance().remove("WCS");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_WCS("TerraLib Qt OGC Web Coverage Service (WCS) widget shutdown!"));
