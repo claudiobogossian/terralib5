@@ -48,7 +48,18 @@ namespace te
 // Forward declarations
     class DataSet;
 
-    typedef boost::function3</*return*/te::dt::AbstractData*, /*input data set*/DataSet*, const std::vector<int>&, /*destination type*/int> AttributeConverter;
+    /*!
+      \brief The type of attribute converter functions.
+      
+      The functions following the typedef signature have:
+      <ul>
+      <ol>return type: e::dt::AbstractData*</ol>
+      <ol>first input parameter: input data set (DataSet*)</ol>
+      <ol>second input parameter: the position list of adapted properties in the input dataset (const std::vector<int>&)</ol>
+      <ol>third input parameter: destination data type (int)</ol>
+      </ul>
+    */
+    typedef boost::function3<te::dt::AbstractData*, DataSet*, const std::vector<int>&, int> AttributeConverter;
 
     TEDATAACCESSEXPORT te::dt::AbstractData* GenericAttributeConverter(DataSet* dataset, const std::vector<int>& indexes, int dstType);
 
