@@ -19,12 +19,8 @@
 
 /*! 
   \file connectors/TabularViewer.h
+
   \brief A connector of the te::qt::widgets::TabularViewer for the application framework.
-  \details This is used to listen events sent by application framework and acts on a te::qt::widgets::TabularViewer object.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_AF_INTERNAL_TABULARVIEWER_H
@@ -75,7 +71,11 @@ namespace te
 
       /*!
         \class TabularViewer
-        \copydoc connectors/TabularViewer.h
+        
+        \brief A connector of the te::qt::widgets::TabularViewer for the application framework.
+        
+        This is used to listen events sent by application framework and acts on a te::qt::widgets::TabularViewer object.
+        
         \ingroup afconnector
       */
       class TEQTAFEXPORT TabularViewer : public QObject

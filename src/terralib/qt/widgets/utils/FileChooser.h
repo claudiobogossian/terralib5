@@ -19,14 +19,8 @@
 
 /*!
   \file FileChooser.h
+
   \brief Defines a component for choose a file.
-  \details This class is used for choosing a file. Its also possible to inform the file extensions to be searched. This way the
-  client can change the filter for the files to be listed when searching. The component is composed of a line edit containing the
-  complete path of the file selected and a tool button used to open de choose file dialog.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
 */
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_FILECHOOSER_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_FILECHOOSER_H
@@ -54,7 +48,12 @@ namespace te
     {
       /*!
         \class FileChooser
-        \copydoc FileChooser.h
+
+        \brief Defines a component for choose a file.
+
+        This class is used for choosing a file. Its also possible to inform the file extensions to be searched. This way the
+        client can change the filter for the files to be listed when searching. The component is composed of a line edit containing the
+        complete path of the file selected and a tool button used to open de choose file dialog.
       */
       class TEQTWIDGETSEXPORT FileChooser : public QWidget
       {
