@@ -28,10 +28,8 @@
 #include "../common/TerraLib.h"
 #include "../common/Translator.h"
 #include "Config.h"
-#include "SpatialReferenceSystemManager.h"
 #include "Module.h"
 #include "Utils.h"
-
 
 const te::srs::Module& sm_module = te::srs::Module::getInstance();
 

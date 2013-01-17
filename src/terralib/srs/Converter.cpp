@@ -19,17 +19,15 @@
 
 /*! 
   \file terralib/srs/Converter.cpp
-
-  \brief This file contains the support to convert coordinates from a SRS to another.
 */
 
 // TerraLib
 #include "../common/Translator.h"
 #include "Config.h"
 #include "Converter.h"
-#include "SpatialReferenceSystemManager.h"
 #include "Exception.h"
 #include "Module.h"
+#include "SpatialReferenceSystemManager.h"
 
 #ifdef TE_USE_PROJ4
 // proj4
