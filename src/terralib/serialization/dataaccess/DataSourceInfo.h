@@ -18,31 +18,31 @@
  */
 
 /*!
-  \file DataSource.h
+  \file terralib/serialization/dataaccess/DataSource.h
    
   \brief Auxiliary classes and functions to read data source information from a XML document.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_QT_WIDGETS_INTERNAL_DATASOURCEINFO_H
-#define __TERRALIB_SERIALIZATION_QT_WIDGETS_INTERNAL_DATASOURCEINFO_H
+#ifndef __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_DATASOURCEINFO_H
+#define __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_DATASOURCEINFO_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 namespace te
 {
-  namespace qt { namespace widgets { class DataSource; } }
+  namespace da { class DataSourceInfo; }
 
   namespace xml { class Reader; }
 
   namespace serialize
   {
-    TESERIALIZATIONEXPORT void ReadDataSource(const std::string& datasourcesFileName);
+    TESERIALIZATIONEXPORT void ReadDataSourceInfo(const std::string& datasourcesFileName);
 
-    TESERIALIZATIONEXPORT te::da::DataSourceInfo* ReadDataSource(te::xml::Reader& reader);
+    TESERIALIZATIONEXPORT te::da::DataSourceInfo* ReadDataSourceInfo(te::xml::Reader& reader);
 
   } // end namespace serialize
 }   // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_QT_WIDGETS_INTERNAL_DATASOURCEINFO_H
+#endif  // __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_DATASOURCEINFO_H
 
