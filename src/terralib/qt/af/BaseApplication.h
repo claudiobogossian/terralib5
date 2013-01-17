@@ -79,6 +79,8 @@ namespace te
 
           void onApplicationTriggered(te::qt::af::Event* evt);
 
+          void onAddDataSetLayer();
+
           //void layerVisibilityChanged(const QModelIndex& idx);
 
           //void drawLayers();
