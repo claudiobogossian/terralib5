@@ -69,6 +69,11 @@ void te::qt::widgets::DoubleListWidget::setInputValues(std::vector<std::string> 
 {
   m_ui->m_leftListWidget->clear();
 
+  if(values.empty() == false)
+    m_ui->m_addAllToolButton->setEnabled(true);
+  else
+    m_ui->m_addAllToolButton->setEnabled(false);
+
   for(size_t i = 0; i < values.size(); ++i)
   {
     m_ui->m_leftListWidget->addItem(values[i].c_str());
@@ -78,6 +83,11 @@ void te::qt::widgets::DoubleListWidget::setInputValues(std::vector<std::string> 
 void te::qt::widgets::DoubleListWidget::setOutputValues(std::vector<std::string> values)
 {
   m_ui->m_rightListWidget->clear();
+
+  if(values.empty() == false)
+    m_ui->m_removeAllToolButton->setEnabled(true);
+  else
+    m_ui->m_removeAllToolButton->setEnabled(false);
 
   for(size_t i = 0; i < values.size(); ++i)
   {
@@ -113,6 +123,9 @@ void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
 {
   QList<QListWidgetItem*> list = m_ui->m_leftListWidget->selectedItems();
 
+  if(list.empty() == false)
+    m_ui->m_removeAllToolButton->setEnabled(true);
+
   for(int i = 0; i < list.size(); ++i)
   {
     int row = m_ui->m_leftListWidget->row(list[i]);
@@ -135,6 +148,9 @@ void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
 
   QList<QListWidgetItem*> list = m_ui->m_leftListWidget->selectedItems();
 
+  if(list.empty() == false)
+    m_ui->m_removeAllToolButton->setEnabled(true);
+
   for(int i = 0; i < list.size(); ++i)
   {
     int row = m_ui->m_leftListWidget->row(list[i]);
@@ -151,6 +167,9 @@ void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
 void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
 {
   QList<QListWidgetItem*> list = m_ui->m_rightListWidget->selectedItems();
+
+  if(list.empty() == false)
+    m_ui->m_addAllToolButton->setEnabled(true);
 
   for(int i = 0; i < list.size(); ++i)
   {
@@ -173,6 +192,9 @@ void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
   m_ui->m_rightListWidget->selectAll();
 
   QList<QListWidgetItem*> list = m_ui->m_rightListWidget->selectedItems();
+
+  if(list.empty() == false)
+    m_ui->m_addAllToolButton->setEnabled(true);
 
   for(int i = 0; i < list.size(); ++i)
   {

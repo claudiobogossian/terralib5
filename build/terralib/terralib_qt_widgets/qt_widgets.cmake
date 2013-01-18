@@ -94,6 +94,7 @@ set (
   widgets/help
   widgets/plugin/builder
   widgets/plugin/manager
+  widgets/query
   widgets/utils
 )
 
@@ -302,6 +303,12 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/plugin/manager" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/query/QueryBuilderWizard.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/query" MOC)
+
 # Select the FORMS widgets
 file(
   GLOB FORMS
@@ -319,6 +326,7 @@ file(
   ${SRCDIR}/widgets/srs/ui/*.ui
   ${SRCDIR}/widgets/plugin/builder/ui/*.ui
   ${SRCDIR}/widgets/plugin/manager/ui/*.ui
+  ${SRCDIR}/widgets/query/ui/*.ui
 )
 
 list(REMOVE_ITEM SRCS ${SRCDIR}/postgis.h ${SRCDIR}/widgets.h)
