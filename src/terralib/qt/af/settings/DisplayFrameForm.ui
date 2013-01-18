@@ -149,7 +149,7 @@
             <enum>QFrame::Plain</enum>
            </property>
           </widget>
-          <widget class="QToolButton" name="toolButton">
+          <widget class="QToolButton" name="m_changeColorButton">
            <property name="geometry">
             <rect>
              <x>60</x>

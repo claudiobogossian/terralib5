@@ -60,6 +60,7 @@ option (BUILD_GML "Build GML module?" ON)
 option (BUILD_IDL "Build IDL module?" OFF)
 option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
 option (BUILD_MEMORY "Build Memory module?" ON)
+option (BUILD_METADATA "Build Metadata module?" OFF)
 option (BUILD_OGR "Build OGR module?" ON)
 option (BUILD_PLUGIN "Build Plugin module?" ON)
 option (BUILD_POSTGIS "Build PostGIS module?" ON)
@@ -138,6 +139,10 @@ endif()
 
 IF(BUILD_MEMORY)
 	add_subdirectory(terralib_memory)
+endif()
+
+IF(BUILD_METADATA)
+	add_subdirectory(terralib_metadata)
 endif()
 
 IF(BUILD_OGR)
