@@ -232,7 +232,7 @@ namespace te
           \note Adding a attribute will turn to NULL the SimpleContent and the ComplexContent.
           \note The ComplexType object will take the ownership of the given pointer.
         */
-        void addAtrribute(AbstractAttribute* a);
+        void addAttribute(AbstractAttribute* a);
 
         /*!
           \brief It sets the anyAttribute to this ComplexType.

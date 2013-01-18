@@ -68,3 +68,9 @@ te::xsd::TypeDerivation* te::xsd::SimpleContent::getTypeDerivation() const
 {
   return m_derivation;
 }
+
+void te::xsd::SimpleContent::setTypeDerivation(TypeDerivation* dev)
+{
+  delete m_derivation;
+  m_derivation = dev;
+}

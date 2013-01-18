@@ -200,7 +200,7 @@ void te::xsd::ComplexType::setContent(te::xsd::Content* c)
   m_cContent = 0;
 }
 
-void te::xsd::ComplexType::addAtrribute(te::xsd::AbstractAttribute* a)
+void te::xsd::ComplexType::addAttribute(te::xsd::AbstractAttribute* a)
 {
   // Clears mutually exclusive members
   delete m_sContent;

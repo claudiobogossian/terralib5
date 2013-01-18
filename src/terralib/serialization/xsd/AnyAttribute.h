@@ -18,48 +18,34 @@
  */
 
 /*!
-  \file terralib/serialization/xsd/Utils.h
+  \file terralib/serialization/xsd/AnyAttribute.h
  
-  \brief Utility methods for Schema serialization.
+  \brief Support for AnyAttribute serialization.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_XSD_INTERNAL_UTILS_H
-#define __TERRALIB_SERIALIZATION_XSD_INTERNAL_UTILS_H
+#ifndef __TERRALIB_SERIALIZATION_XSD_INTERNAL_ANYATTRIBUTE_H
+#define __TERRALIB_SERIALIZATION_XSD_INTERNAL_ANYATTRIBUTE_H
 
 // TerraLib
-#include "../../xsd/Facet.h"
-
-// STL
-#include <string>
+#include "../Config.h"
 
 namespace te
 {
+  namespace xsd { class AnyAttribute; }
+
   namespace xml
   {
     class Reader;
-  }
-
-  namespace xsd
-  {
-    class Annotated;
-    class Identifiable;
-    class Occurs;
-    class QName;
+    class Writer;
   }
 
   namespace serialize
   {
-    void ReadIdentifiable(te::xsd::Identifiable* identifiable, te::xml::Reader& reader);
+    TESERIALIZATIONEXPORT te::xsd::AnyAttribute* ReadAnyAttribute(te::xml::Reader& reader);
 
-    void ReadAnnotated(te::xsd::Annotated* annotated, te::xml::Reader& reader);
-
-    void ReadOccurs(te::xsd::Occurs* occurs, te::xml::Reader& reader);
-
-    te::xsd::QName* CreateQName(const std::string& name);
-
-    te::xsd::FacetType GetFacetType(const std::string& name);
+    TESERIALIZATIONEXPORT void Save(te::xsd::AnyAttribute* anyAttribute, te::xml::Writer& writer);
 
   } // end namespace serialize
 }   // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_XSD_INTERNAL_UTILS_H
+#endif  // __TERRALIB_SERIALIZATION_XSD_INTERNAL_ANYATTRIBUTE_H

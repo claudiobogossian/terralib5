@@ -82,3 +82,31 @@ te::xsd::QName* te::serialize::CreateQName(const std::string& name)
   
   return new te::xsd::QName(tokens[0], tokens[1]);
 }
+
+te::xsd::FacetType te::serialize::GetFacetType(const std::string& name)
+{
+  if(name == "minExclusive")
+    return te::xsd::MinExclusive;
+  if(name == "minInclusive")
+    return te::xsd::MinInclusive;
+  if(name == "maxExclusive")
+    return te::xsd::MaxExclusive;
+  if(name == "maxInclusive")
+    return te::xsd::MaxInclusive;
+  if(name == "totalDigits")
+    return te::xsd::TotalDigits;
+  if(name == "fractionDigits")
+    return te::xsd::FractionDigits;
+  if(name == "length")
+    return te::xsd::Length;
+  if(name == "minLength")
+    return te::xsd::MinLength;
+  if(name == "maxLength")
+    return te::xsd::MaxLength;
+  if(name == "enumeration")
+    return te::xsd::Enumeration;
+  if(name == "whiteSpace")
+    return te::xsd::WhiteSpace;
+
+  return te::xsd::Pattern;
+}

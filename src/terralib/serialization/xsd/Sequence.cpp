@@ -18,23 +18,21 @@
  */
 
 /*!
-  \file terralib/serialization/se/Redefine.cpp
+  \file terralib/serialization/se/Sequence.cpp
  
-  \brief Support for Redefine serialization.
+  \brief Support for Sequence serialization.
 */
 
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../../xsd/ComplexType.h"
-#include "../../xsd/Redefine.h"
-#include "../../xsd/SimpleType.h"
-#include "Annotation.h"
-#include "AttributeGroup.h"
-#include "ComplexType.h"
+#include "../../xsd/Choice.h"
+#include "../../xsd/Group.h"
+#include "../../xsd/Sequence.h"
+#include "Choice.h"
+#include "Element.h"
 #include "Group.h"
-#include "Redefine.h"
-#include "SimpleType.h"
+#include "Sequence.h"
 #include "Utils.h"
 
 // STL
@@ -43,68 +41,69 @@
 #include <set>
 #include <string>
 
-te::xsd::Redefine* te::serialize::ReadRedefine(te::xml::Reader& reader)
+te::xsd::Sequence* te::serialize::ReadSequence(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "redefine");
+  assert(reader.getElementLocalName() == "sequence");
 
-  std::auto_ptr<te::xsd::Redefine> redefine(new te::xsd::Redefine(""));
+  std::auto_ptr<te::xsd::Sequence> sequence(new te::xsd::Sequence);
 
   // Id
-  ReadIdentifiable(redefine.get(), reader);
+  ReadIdentifiable(sequence.get(), reader);
 
-  // SchemaLocation
-  std::size_t pos = reader.getAttrPosition("schemaLocation");
-  if(pos != std::string::npos)
-    redefine->setSchemaLocation(reader.getAttr(pos));
+  // MinOccurs and MaxOccurs
+  ReadOccurs(sequence.get(), reader);
 
   reader.next();
 
-  // Grammar: (annotation|(simpleType|complexType|group|attributeGroup))*
+  // Grammar: (annotation?,(element|group|choice|sequence|any)*)
+
+  // Annotation
+  ReadAnnotated(sequence.get(), reader);
 
   std::set<std::string> children;
-  children.insert("annotation");
-  children.insert("simpleType");
-  children.insert("complexType");
+  children.insert("element");
   children.insert("group");
-  children.insert("attributeGroup");
+  children.insert("choice");
+  children.insert("sequence");
+  children.insert("any");
 
   std::set<std::string>::iterator it;
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
        (it = children.find(reader.getElementLocalName())) != children.end())
   {
     std::string tag = *it;
-    if(tag == "annotation")
+    if(tag == "element")
     {
-      redefine->addAnnotation(ReadAnnotation(reader));
-      continue;
-    }
-
-    if(tag == "simpleType")
-    {
-      redefine->addType(ReadSimpleType(reader));
-      continue;
-    }
-
-    if(tag == "complexType")
-    {
-      redefine->addType(ReadComplexType(reader));
+      sequence->addElement(ReadElement(reader));
       continue;
     }
 
     if(tag == "group")
     {
-      redefine->addGroup(ReadGroup(reader));
+      sequence->addContent(ReadGroup(reader));
       continue;
     }
 
-    if(tag == "attributeGroup")
-      redefine->addAttributeGroup(ReadAttributeGroup(reader));
+    if(tag == "choice")
+    {
+      sequence->addContent(ReadChoice(reader));
+      continue;
+    }
+
+    if(tag == "sequence")
+    {
+      sequence->addContent(ReadSequence(reader));
+      continue;
+    }
+
+    if(tag == "any")
+      sequence->addAny(0); // TODO Read Any
   }
 
-  return redefine.release();
+  return sequence.release();
 }
 
-void te::serialize::Save(te::xsd::Redefine* redefine, te::xml::Writer& writer)
+void te::serialize::Save(te::xsd::Sequence* sequence, te::xml::Writer& writer)
 {
 }

@@ -82,11 +82,18 @@ namespace te
         SimpleContent& operator=(const SimpleContent& rhs);
 
         /*!
-          \brief It returns the derivation type of this ComplexContent.
+          \brief It returns the derivation type of this SimpleContent.
 
           \return The derivation type: restriction | extension.
         */
         TypeDerivation* getTypeDerivation() const;
+
+        /*!
+          \brief It sets the derivation type of this SimpleContent.
+
+          \param dev The derivation type: restriction | extension.
+        */
+        void setTypeDerivation(TypeDerivation* dev);
 
       private:
 
