@@ -63,15 +63,20 @@ option (EXAMPLE_MYVIEWER "Build my viewer example." ON)
 option (EXAMPLE_URL "Build URL example." ON)  
 option (EXAMPLE_XERCES "Build xerces example." ON)  
 option (EXAMPLE_HELP "Build help example." ON)  
+option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
+option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
+option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
+option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
+option (EXAMPLE_QT_QUERY "Build qt/query example." ON)  
 option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
 option (EXAMPLE_QT_SE "Build qt/se example." ON)  
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
-option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
-option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
-option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
 option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
-option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
-option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
+option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
+
+
+
+
   
 # Go into sub-directories
 
@@ -178,6 +183,10 @@ endif()
 
 if(EXAMPLE_QT_RP)
   add_subdirectory(terralib_example_qt/rp)
+endif()
+
+if(EXAMPLE_QT_QUERY)
+  add_subdirectory(terralib_example_qt/query)
 endif()
 
 if(EXAMPLE_QT_SE)

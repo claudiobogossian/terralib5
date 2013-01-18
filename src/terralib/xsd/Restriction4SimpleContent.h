@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "Annotated.h"
+#include "Enums.h"
 #include "Identifiable.h"
 #include "TypeDerivation.h"
 
@@ -125,6 +126,15 @@ namespace te
         void setBase(QName* base);
 
         /*!
+          \brief It sets the restriction internal simple type.
+
+          \param simpleType The restriction internal simple type.
+
+          \note The Restriction4SimpleContent object will take the ownership of the given pointer.
+        */
+        void setSimpleType(SimpleType* simpleType);
+
+        /*!
           \brief Adds a new facet to this restriction.
 
           \param fType The facet type.
@@ -158,6 +168,9 @@ namespace te
           \note The Restriction4SimpleContent object will take the ownership of the given pointer.
          */
         void setAnyAttribute(AnyAttribute* a);
+
+        // TODO
+        TypeDerivation* clone() const { return 0; }
 
       private:
 

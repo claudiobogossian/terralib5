@@ -27,7 +27,6 @@
 #define __TERRALIB_XSD_INTERNAL_REDEFINE_H
 
 // TerraLib
-#include "Annotated.h"
 #include "Identifiable.h"
 
 // Boost
@@ -38,6 +37,7 @@ namespace te
   namespace xsd
   {
 // Forward declarations
+    class Annotation;
     class AttributeGroup;
     class Group;
     class Type;
@@ -49,17 +49,17 @@ namespace te
 
       \note Parent elements: schema.
     */
-    class TEXSDEXPORT Redefine : public Identifiable, public Annotated
+    class TEXSDEXPORT Redefine : public Identifiable
     {
       public:        
 
         /*!
           \brief Constructor.
 
-          \param id It specifies a unique ID for the element. It can be a NULL value.
           \param schemaLocation It specifies the URI to the location of a schema document.
+          \param id It specifies a unique ID for the element. It can be a NULL value.
         */
-        Redefine(const std::string& schemaLocation, Annotation* ann = 0, std::string* id = 0);
+        Redefine(const std::string& schemaLocation, std::string* id = 0);
 
         /*!
           \brief Copy constructor.
@@ -92,6 +92,13 @@ namespace te
         const std::string& getSchemaLocation() const;
 
         /*!
+          \brief It returns the list of annotations at redefine element.
+
+          \return The list of annotations at redefine element.
+        */
+        const boost::ptr_vector<Annotation>& getAnnotations() const;
+
+        /*!
           \brief It returns the list of simple and complex types at redefine element.
 
           \return The list of simple and complex types at redefine element.
@@ -119,9 +126,46 @@ namespace te
         */
         void setSchemaLocation(const std::string& schemaLocation);
 
+        /*!
+          \brief It inserts an annotation into the redefine.
+
+          \param ann Some annotation.
+
+          \note The redefine will take the ownership of the given pointer.
+        */
+        void addAnnotation(Annotation* ann);
+
+        /*!
+          \brief It inserts a type into the redefine.
+
+          \param t Some type.
+
+          \note The redefine will take the ownership of the given pointer.
+        */
+        void addType(Type* t);
+
+        /*!
+          \brief It inserts a group into the redefine.
+
+          \param g Some group.
+
+          \note The redefine will take the ownership of the given pointer.
+        */
+        void addGroup(Group* g);
+
+        /*!
+          \brief It inserts an attribute group into the redefine.
+
+          \param ag Some attribute group.
+
+          \note The redefine will take the ownership of the given pointer.
+        */
+        void addAttributeGroup(AttributeGroup* ag);
+
       private:
 
         std::string m_schemaLocation;                          //!< It specifies a URI to the location of a schema document. (Required)
+        boost::ptr_vector<Annotation> m_annotationVec;         //!< The list of annotations at redefine element. (Optional)
         boost::ptr_vector<Type> m_typeVec;                     //!< The list of simple and complex types at redefine element. (Optional)
         boost::ptr_vector<Group> m_groupVec;                   //!< The list of group declarations at redefine element. (Optional)
         boost::ptr_vector<AttributeGroup> m_attributeGroupVec; //!< The list of attribute group declarations at redefine element. (Optional)

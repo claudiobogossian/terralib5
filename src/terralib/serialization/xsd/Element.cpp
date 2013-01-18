@@ -34,6 +34,7 @@
 // STL
 #include <cassert>
 #include <memory>
+#include <set>
 #include <string>
 
 te::xsd::Element* te::serialize::ReadElement(te::xml::Reader& reader)
@@ -97,7 +98,19 @@ te::xsd::Element* te::serialize::ReadElement(te::xml::Reader& reader)
 
   ReadAnnotated(element.get(), reader);
 
-  // TODO
+  std::set<std::string> children;
+  children.insert("simpleType");
+  children.insert("complexType");
+  children.insert("unique");
+  children.insert("key");
+  children.insert("keyref");
+
+  std::set<std::string>::iterator it;
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+       (it = children.find(reader.getElementLocalName())) != children.end())
+  {
+    std::string tag = *it;
+  }
 
   return element.release();
 }

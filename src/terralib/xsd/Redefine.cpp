@@ -24,21 +24,20 @@
 */
 
 // TerraLib
+#include "Annotation.h"
 #include "AttributeGroup.h"
 #include "Group.h"
 #include "Redefine.h"
 #include "Type.h"
 
-te::xsd::Redefine::Redefine(const std::string& schemaLocation, Annotation* ann, std::string* id)
+te::xsd::Redefine::Redefine(const std::string& schemaLocation, std::string* id)
   : Identifiable(id),
-    Annotated(ann),
     m_schemaLocation(schemaLocation)
 {
 }
 
 te::xsd::Redefine::Redefine(const Redefine& rhs)
   : Identifiable(rhs),
-    Annotated(rhs),
     m_schemaLocation("")
 {
 }
@@ -55,6 +54,11 @@ te::xsd::Redefine& te::xsd::Redefine::operator=(const Redefine& rhs)
 const std::string& te::xsd::Redefine::getSchemaLocation() const
 {
   return m_schemaLocation;
+}
+
+const boost::ptr_vector<te::xsd::Annotation>& te::xsd::Redefine::getAnnotations() const
+{
+  return m_annotationVec;
 }
 
 const boost::ptr_vector<te::xsd::Type>& te::xsd::Redefine::getTypes() const
@@ -75,4 +79,24 @@ const boost::ptr_vector<te::xsd::AttributeGroup>& te::xsd::Redefine::getAttribut
 void te::xsd::Redefine::setSchemaLocation(const std::string& schemaLocation)
 {
   m_schemaLocation = schemaLocation;
+}
+
+void te::xsd::Redefine::addAnnotation(Annotation* ann)
+{
+  m_annotationVec.push_back(ann);
+}
+
+void te::xsd::Redefine::addType(Type* t)
+{
+  m_typeVec.push_back(t);
+}
+
+void te::xsd::Redefine::addGroup(Group* g)
+{
+  m_groupVec.push_back(g);
+}
+
+void te::xsd::Redefine::addAttributeGroup(AttributeGroup* ag)
+{
+  m_attributeGroupVec.push_back(ag);
 }

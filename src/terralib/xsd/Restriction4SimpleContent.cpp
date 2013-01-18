@@ -28,6 +28,7 @@
 #include "AnyAttribute.h"
 #include "Facet.h"
 #include "Restriction4SimpleContent.h"
+#include "SimpleType.h"
 #include "QName.h"
 
 // STL
@@ -37,6 +38,7 @@ te::xsd::Restriction4SimpleContent::Restriction4SimpleContent(std::string* id, t
   : Identifiable(id),
     Annotated(0),
     m_base(base),
+    m_simpleType(0),
     m_anyAttr(0)
 {
   assert(base);
@@ -45,6 +47,7 @@ te::xsd::Restriction4SimpleContent::Restriction4SimpleContent(std::string* id, t
 te::xsd::Restriction4SimpleContent::~Restriction4SimpleContent()
 {
   delete m_base;
+  delete m_simpleType;
   delete m_anyAttr;
 }
 
@@ -72,6 +75,12 @@ void te::xsd::Restriction4SimpleContent::setBase(te::xsd::QName* base)
 {
   delete m_base;
   m_base = base;
+}
+
+void te::xsd::Restriction4SimpleContent::setSimpleType(te::xsd::SimpleType* simpleType)
+{
+  delete m_simpleType;
+  m_simpleType = simpleType;
 }
 
 void te::xsd::Restriction4SimpleContent::addFacet(te::xsd::FacetType fType, const std::string& value)
