@@ -31,6 +31,9 @@
 #include "Identifiable.h"
 #include "TypeDerivation.h"
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 namespace te
 {
   namespace xsd
@@ -100,7 +103,7 @@ namespace te
 
           \return The list of attributes.
         */
-        std::vector<AbstractAttribute*>* getAttributes() const;
+        const boost::ptr_vector<AbstractAttribute>& getAttributes() const;
 
         /*!
           \brief It returns the anyAttribute defined on this Extension element.
@@ -147,15 +150,13 @@ namespace te
 
       private:
 
-        QName* m_base;                                 //!< It specifies the name of a built-in data type, a SimpleType element or a ComplexType element. (Required)
-        Content* m_content;                            //!< It can be: group | all | choice | sequence. (Optional)
-        std::vector<AbstractAttribute*>* m_attributes; //!< The list of attributes (attributes and attributeGroups). (Optional)
-        AnyAttribute* m_anyAttr;                       //!< The anyAttribute element. (Optional)        
+        QName* m_base;                                       //!< It specifies the name of a built-in data type, a SimpleType element or a ComplexType element. (Required)
+        Content* m_content;                                  //!< It can be: group | all | choice | sequence. (Optional)
+        boost::ptr_vector<AbstractAttribute> m_attributeVec; //!< The list of attributes (attributes and attributeGroups). (Optional)
+        AnyAttribute* m_anyAttr;                             //!< The anyAttribute element. (Optional)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_EXTENSION_H
-
-

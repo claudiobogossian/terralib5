@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../common/STLUtils.h"
 #include "Field.h"
 #include "IdentityConstraint.h"
 #include "Selector.h"
@@ -48,8 +47,6 @@ te::xsd::IdentityConstraint::~IdentityConstraint()
 {
   delete m_name;
   delete m_selector;
-
-  te::common::Free(m_fields);
 }
 
 te::xsd::IdentityConstraint& te::xsd::IdentityConstraint::operator=(const IdentityConstraint& rhs)
@@ -67,9 +64,9 @@ te::xsd::Selector* te::xsd::IdentityConstraint::getSelector() const
   return m_selector;
 }
 
-std::vector<te::xsd::Field*>* te::xsd::IdentityConstraint::getFields() const
+const boost::ptr_vector<te::xsd::Field>& te::xsd::IdentityConstraint::getFields() const
 {
-  return m_fields;
+  return m_fieldVec;
 }
 
 void te::xsd::IdentityConstraint::setName(std::string* name)
@@ -87,8 +84,5 @@ void te::xsd::IdentityConstraint::setSelector(te::xsd::Selector* s)
 
 void te::xsd::IdentityConstraint::addField(te::xsd::Field* f)
 {
-  if(m_fields == 0)
-  m_fields = new std::vector<te::xsd::Field*>;
-   
-  m_fields->push_back(f); 
+  m_fieldVec.push_back(f);
 }

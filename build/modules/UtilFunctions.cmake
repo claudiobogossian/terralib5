@@ -164,8 +164,8 @@ MACRO (configureProject proj_name h_dir src_dir )
   project(${proj_name})             # the project name is terralib_color
   set(LIB_NAME ${proj_name})        # the library name is terralib_color
   
-  set (DEP_INCLUDES "${ROOT}/src")
-  list (APPEND DEP_INCLUDES "${h_dir}")
+#  set (DEP_INCLUDES "${ROOT}/src" "${CMAKE_BINARY_DIR}")
+#  list (APPEND DEP_INCLUDES "${h_dir}")
 ENDMACRO (configureProject)
 
 # Macro configureLibraryOutput
@@ -179,7 +179,7 @@ ENDMACRO (configureProject)
 # param[input] links Libraries to link against.
 
 MACRO (configureLibraryOutput proj_name hdrs srcs inc_path links)
-  include_directories (${inc_path} "${ROOT}/src")
+  include_directories (${inc_path} "${ROOT}/src" "${CMAKE_BINARY_DIR}")
   add_library(${proj_name} SHARED ${hdrs} ${srcs})
   target_link_libraries(${proj_name} ${links})
   set_target_properties(${proj_name} PROPERTIES LINK_INTERFACE_LIBRARIES "" DEBUG_POSTFIX _d)

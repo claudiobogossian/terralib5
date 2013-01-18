@@ -29,6 +29,7 @@
 // TerraLib
 #include "../common/Singleton.h"
 
+// STL
 #include <string>
 
 namespace te

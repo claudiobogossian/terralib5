@@ -74,13 +74,15 @@ namespace te
 
           /*!
             \brief Updates the image to be presented on splash screen.
+
             \param pix New image to be presented.
           */
           void setLogo(const QPixmap& pix);
 
           /*!
             \brief Closes the splash screen.
-            \details This function can be used when something fails and the splash screen is visible.
+
+            This function can be used when something fails and the splash screen is visible.
           */
           void close();
 

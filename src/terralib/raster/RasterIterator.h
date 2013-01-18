@@ -83,11 +83,11 @@ namespace te
 
           \param i The band index.
 
-          \return The real value in current position.
+          \return The pixel value in current position.
         */
         T operator[](const std::size_t i) const;
 
-        /*! \brief Returns a vector with real values from all bands in current position (column, row) from iterator. */
+        /*! \brief Returns a vector with pixel values from all bands in current position (column, row) from iterator. */
         std::vector<T> operator*() const;
 
         /*!

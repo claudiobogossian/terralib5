@@ -3,7 +3,21 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "terralib")
 project(${PROJ_NAME})
 
-set (TE_VERSION "5.0.0")
+list (APPEND DEP_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}")
+
+# Versioning configurations
+# =========================
+set (TERRALIB_MAJOR_VERSION 5)
+set (TERRALIB_MINOR_VERSION 0)
+set (TERRALIB_PATCH_VERSION 0)
+set (TERRALIB_RELEASE_STATUS "alpha.1")
+set (TERRALIB_BUILD_DATE "20130301")
+set (TERRALIB_STRING_VERSION "5.0.0-alpha.1")
+set (TERRALIB_INT_VERSION "050000")
+set (TE_VERSION "${TERRALIB_MAJOR_VERSION}.${TERRALIB_MINOR_VERSION}.${TERRALIB_PATCH_VERSION}")
+set (TERRALIB_DIR_ENVIRONMENT_VARIABLE "TERRALIB_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.") 
+# =========================
+
 set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../modules")
 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}" )
@@ -46,6 +60,7 @@ option (BUILD_GML "Build GML module?" ON)
 option (BUILD_IDL "Build IDL module?" OFF)
 option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
 option (BUILD_MEMORY "Build Memory module?" ON)
+option (BUILD_METADATA "Build Metadata module?" OFF)
 option (BUILD_OGR "Build OGR module?" ON)
 option (BUILD_PLUGIN "Build Plugin module?" ON)
 option (BUILD_POSTGIS "Build PostGIS module?" ON)
@@ -63,6 +78,12 @@ option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
 option (BUILD_XML "Build XML module?" ON)
 option (BUILD_XSD "Build XSD module?" ON)
+option (TE_TERRALIB_STATIC_BUILD "Build all modules as static libraries?" OFF)
+option (TE_LOGGER_ENABLED "Logger enabled?" ON)
+option (TE_LOGGER_DO_AUTOMATIC_INITIALIZATION "Initialize automatically logger?" ON)
+option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initialization?" OFF)
+option (TE_TRANSLATOR_ENABLED "Enable translate support on TerraLib?" ON)
+option (TE_CHARENCODING_ENABLED "Enable character encoding support on TerraLib?" ON)
 
 if(UNIX)
   option (BUILD_GRIB "Build GRIB module?" ON)
@@ -118,6 +139,10 @@ endif()
 
 IF(BUILD_MEMORY)
 	add_subdirectory(terralib_memory)
+endif()
+
+IF(BUILD_METADATA)
+	add_subdirectory(terralib_metadata)
 endif()
 
 IF(BUILD_OGR)
@@ -205,6 +230,13 @@ set (_TE_INCLUDE_DIRS ${ROOT}/src "${_TE_INCLUDE_DIRS}")
 configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake @ONLY)
 configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake @ONLY)
 configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
+configure_file (${ROOT}/src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h)
+
+install ( 
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h
+  DESTINATION terralib
+  COMPONENT HEADERS
+)
 
 # Installing CMake files
 # Exporting targets.

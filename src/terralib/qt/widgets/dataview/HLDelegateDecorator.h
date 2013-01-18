@@ -19,14 +19,8 @@
 
 /*! 
   \file HLDelegateDecorator.h
+
   \brief Defines a decorator for te::qt::widgets::HighlightDelegate objects.
-  \details This way, the behavior of te::qt::widgets::HighlightDelegate is maintained, but we can add new groups of highlighted objects.
-  Note that the default delegate does not have an index. It means that it is not possible to change the behavior of the default presentation
-  delegate.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
 */
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HLDELEGATEDECORATOR_H
 #define __TERRALIB_QT_WIDGETS_INTERNAL_HLDELEGATEDECORATOR_H
@@ -56,7 +50,12 @@ namespace te
 
       /*!
         \class HLDelegateDecorator
-        \copydoc HLDelegateDecorator.h
+        
+        \brief Defines a decorator for te::qt::widgets::HighlightDelegate objects.
+        
+        This way, the behavior of te::qt::widgets::HighlightDelegate is maintained, but we can add new groups of highlighted objects.
+        Note that the default delegate does not have an index. It means that it is not possible to change the behavior of the default presentation
+        delegate.
       */
       class TEQTWIDGETSEXPORT HLDelegateDecorator : public te::common::Decorator<HighlightDelegate>
       {

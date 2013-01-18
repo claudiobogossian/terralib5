@@ -19,12 +19,8 @@
 
 /*! 
   \file PromoTable.h
+
   \brief Controls the order of rows to be presented.
-  \details It is a te::qt::map::Table decoration that implements a particular kind of sorting, we can put some random rows on top / bottom.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_PROMOTEDTABLE_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_PROMOTEDTABLE_H
@@ -38,7 +34,8 @@ namespace te
   {
     /*!
       \class PromoTable
-      \copydoc PromoTable.h
+      
+      It is a te::qt::map::Table decoration that implements a particular kind of sorting, we can put some random rows on top / bottom.
     */
     class TEMAPEXPORT PromoTable : public te::common::Decorator<AbstractTable>
     {

@@ -32,38 +32,23 @@
 // STL
 #include <cassert>
 
-te::xsd::Union::Union(std::vector<QName*>* memberTypes, Annotation* ann, std::string* id)
-  : SimpleTypeConstructor(ann, id),
-    m_memberTypes(memberTypes),
-    m_internalSimpleTypes(0)
+te::xsd::Union::Union(Annotation* ann, std::string* id)
+  : SimpleTypeConstructor(ann, id)
 {
 }
 
 te::xsd::Union::Union(const Union& rhs)
-  : SimpleTypeConstructor(rhs),
-    m_memberTypes(0),
-    m_internalSimpleTypes(0)
+  : SimpleTypeConstructor(rhs)
 {
-  if(rhs.m_memberTypes)
-  {
-    m_memberTypes = new std::vector<QName*>;
+  for(std::size_t i = 0; i < rhs.m_memberTypeVec.size(); ++i)
+    m_memberTypeVec.push_back(new QName(rhs.m_memberTypeVec[i]));
 
-    te::common::Copy<QName>(*rhs.m_memberTypes, *m_memberTypes);
-  }
-
-  if(rhs.m_internalSimpleTypes)
-  {
-    m_internalSimpleTypes = new std::vector<SimpleType*>;
-
-    te::common::Clone<SimpleType>(*rhs.m_internalSimpleTypes, *m_internalSimpleTypes);
-  }
+  for(std::size_t i = 0; i < rhs.m_internalSimpleTypeVec.size(); ++i)
+    m_internalSimpleTypeVec.push_back(static_cast<SimpleType*>(rhs.m_internalSimpleTypeVec[i].clone()));
 }
 
 te::xsd::Union::~Union()
 {
-  te::common::Free(m_memberTypes);
-
-  te::common::Free(m_internalSimpleTypes);
 }
 
 te::xsd::Union& te::xsd::Union::operator=(const Union& rhs)
@@ -72,59 +57,37 @@ te::xsd::Union& te::xsd::Union::operator=(const Union& rhs)
   {
     SimpleTypeConstructor::operator=(rhs);
 
-    te::common::Free(m_memberTypes);
-    m_memberTypes = 0;
+    for(std::size_t i = 0; i < rhs.m_memberTypeVec.size(); ++i)
+      m_memberTypeVec.push_back(new QName(rhs.m_memberTypeVec[i]));
 
-    if(rhs.m_memberTypes)
-    {
-      m_memberTypes = new std::vector<QName*>;
-
-      te::common::Copy<QName>(*rhs.m_memberTypes, *m_memberTypes);
-    }
-
-    te::common::Free(m_internalSimpleTypes);
-    m_internalSimpleTypes = 0;
-
-    if(rhs.m_internalSimpleTypes)
-    {
-      m_internalSimpleTypes = new std::vector<SimpleType*>;
-
-      te::common::Clone<SimpleType>(*rhs.m_internalSimpleTypes, *m_internalSimpleTypes);
-    }
+    for(std::size_t i = 0; i < rhs.m_internalSimpleTypeVec.size(); ++i)
+      m_internalSimpleTypeVec.push_back(static_cast<SimpleType*>(rhs.m_internalSimpleTypeVec[i].clone()));
   }
 
   return *this;
 }
 
-std::vector<te::xsd::QName*>* te::xsd::Union::getMemberTypes() const
+const boost::ptr_vector<te::xsd::QName>& te::xsd::Union::getMemberTypes() const
 {
-  return m_memberTypes;
+  return m_memberTypeVec;
 }
 
-std::vector<te::xsd::SimpleType*>* te::xsd::Union::getSimpleTypes() const
+const boost::ptr_vector<te::xsd::SimpleType>& te::xsd::Union::getSimpleTypes() const
 {
-  return m_internalSimpleTypes;
+  return m_internalSimpleTypeVec;
 }
 
 void te::xsd::Union::addMemberType(te::xsd::QName* name)
 {
-  if(m_memberTypes == 0)
-    m_memberTypes = new std::vector<te::xsd::QName*>;
-
-  m_memberTypes->push_back(name);
+  m_memberTypeVec.push_back(name);
 }
 
 void te::xsd::Union::addSimpleType(te::xsd::SimpleType* a)
 {
-  if(m_internalSimpleTypes == 0)
-    m_internalSimpleTypes = new std::vector<te::xsd::SimpleType*>;
-
-  m_internalSimpleTypes->push_back(a);
+  m_internalSimpleTypeVec.push_back(a);
 }
 
 te::xsd::SimpleTypeConstructor* te::xsd::Union::clone() const
 {
   return new Union(*this);
 }
-
-

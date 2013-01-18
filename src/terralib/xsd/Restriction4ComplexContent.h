@@ -31,14 +31,14 @@
 #include "Identifiable.h"
 #include "TypeDerivation.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
   namespace xsd
   {
-// Forward declarations    
+// Forward declarations
     class AnyAttribute;
     class AbstractAttribute;
     class Content;
@@ -145,15 +145,13 @@ namespace te
 
       private:
 
-        QName* m_base;                                   //!< It specifies the name of a built-in data type, simpleType element, or complexType element defined in this schema or another schema. (Required)
-        Content* m_content;                              //!< It can be: group |all | choice | sequence. (Optional)
-        std::vector<AbstractAttribute*>* m_attributes;   //!< The list of attributes (attributes and attributeGroups). (Optional)
-        AnyAttribute* m_anyAttr;                         //!< The anyAttribute element. (Optional)
+        QName* m_base;                                       //!< It specifies the name of a built-in data type, simpleType element, or complexType element defined in this schema or another schema. (Required)
+        Content* m_content;                                  //!< It can be: group |all | choice | sequence. (Optional)
+        boost::ptr_vector<AbstractAttribute> m_attributeVec; //!< The list of attributes (attributes and attributeGroups). (Optional)
+        AnyAttribute* m_anyAttr;                             //!< The anyAttribute element. (Optional)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_RESTRICTION4COMPLEXCONTENT_H
-
-

@@ -53,5 +53,3 @@ namespace te
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_TYPEDERIVATION_H
-
-

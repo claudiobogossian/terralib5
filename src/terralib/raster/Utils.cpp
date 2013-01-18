@@ -36,6 +36,8 @@
 // STL
 #include <cassert>
 
+#include <limits>
+
 static int sg_pixelSize[] = {  0,
                                0,
                                0,
@@ -322,3 +324,94 @@ te::rst::RasterPtr te::rst::CreateCopy(const te::rst::Raster& rin,
   return outRasterPtr;
 }
 
+void te::rst::GetDataTypeRanges( const int& dataType, double& min, double& max )
+{
+  switch( dataType )
+  {
+    case te::dt::R4BITS_TYPE:
+      min = 0;
+      max = 15;
+    break;
+
+    case te::dt::R2BITS_TYPE:
+      min = 0;
+      max = 3;
+    break;
+
+    case te::dt::R1BIT_TYPE:
+      min = 0;
+      max = 1;
+    break;
+
+    case te::dt::UCHAR_TYPE:
+      min = 0;
+      max = 255;
+    break;
+
+    case te::dt::CHAR_TYPE:
+      min = -127;
+      max = 127;
+    break;
+
+    case te::dt::UINT16_TYPE:
+      min = 0;
+      max = 65535;
+    break;
+
+    case te::dt::INT16_TYPE:
+      min = -32767;
+      max = 32767;
+    break;
+
+    case te::dt::UINT32_TYPE:
+      min = 0;
+      max = 4294967295;
+    break;
+
+    case te::dt::INT32_TYPE:
+      min = -2147483647;
+      max = 2147483647;
+    break;
+
+    case te::dt::FLOAT_TYPE:
+      min = (double)std::numeric_limits< float >::min();
+      max = (double)std::numeric_limits< float >::max();
+    break;
+
+    case te::dt::DOUBLE_TYPE:
+      min = std::numeric_limits< double >::min();
+      max = std::numeric_limits< double >::max();
+    break;
+
+    case te::dt::CINT16_TYPE:
+      min = -32767;
+      max = 32767;
+    break;
+
+    case te::dt::CINT32_TYPE:
+      min = -2147483647;
+      max = 2147483647;
+    break;
+
+    case te::dt::CFLOAT_TYPE:
+      min = (double)std::numeric_limits< float >::min();
+      max = (double)std::numeric_limits< float >::max();
+    break;
+
+    case te::dt::CDOUBLE_TYPE:
+      min = std::numeric_limits< double >::min();
+      max = std::numeric_limits< double >::max();
+    break;
+
+    default:
+      throw te::rst::Exception("Invalid data type");
+  }
+}
+
+void te::rst::FillRaster(te::rst::Raster* rin, const std::complex<double>& value)
+{
+  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
+      for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
+        rin->setValue(c, r, value, b);
+}

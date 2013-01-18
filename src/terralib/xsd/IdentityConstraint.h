@@ -30,8 +30,8 @@
 #include "Annotated.h"
 #include "Identifiable.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -104,7 +104,7 @@ namespace te
 
           \return The list of Fields.
         */
-        std::vector<Field*>* getFields() const;
+        const boost::ptr_vector<Field>& getFields() const;
 
         /*!
           \brief It sets a name for this element.
@@ -142,14 +142,12 @@ namespace te
 
       protected:
 
-        std::string* m_name;             //!< It specifies the name of this element. (Required)
-        Selector* m_selector;            //!< It specified the selector element of this. (Required)
-        std::vector<Field*>* m_fields;   //!< The list of fields. (Required at least one)
+        std::string* m_name;                 //!< It specifies the name of this element. (Required)
+        Selector* m_selector;                //!< It specified the selector element of this. (Required)
+        boost::ptr_vector<Field> m_fieldVec; //!< The list of fields. (Required at least one)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_IDENTITYCONSTRAINT_H
-
-

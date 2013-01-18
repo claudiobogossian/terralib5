@@ -18,18 +18,8 @@
 
 /*! 
   \file AbstractTable.h
+  
   \brief Abstraction for a table object.
-  \details The table also has code to execute the functionalities listed above:
-
-  <ol>
-    <li> Change the positions of columns.</li>
-    <li> Hide / show columns.</li>
-    <li> Define primary key.</li>
-  </ol>
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
 */
 #ifndef __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTTABLE_H
 #define __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTTABLE_H
@@ -54,7 +44,15 @@ namespace te
   {
     /*!
       \class AbstractTable
-      \copydoc AbstractTable.h
+      
+      The table also has code to execute the functionalities listed above:
+
+      <ol>
+        <li> Change the positions of columns.</li>
+        <li> Hide / show columns.</li>
+        <li> Define primary key.</li>
+      </ol>
+      
       \note The operations of hide, show and reordering consider the previously changes made to table.
     */
     class TEMAPEXPORT AbstractTable

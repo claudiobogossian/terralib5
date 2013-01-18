@@ -92,9 +92,3 @@ te::xsd::SimpleTypeConstructor* te::xsd::List::clone() const
 {
   return new List(*this);
 }
-
-
-
-
-
-

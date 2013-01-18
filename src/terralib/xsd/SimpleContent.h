@@ -90,11 +90,10 @@ namespace te
 
       private:
 
-        TypeDerivation* m_derivation; //!< It can be: restriction (Restriction4SimpleContent) | extension. (Required)       
+        TypeDerivation* m_derivation; //!< It can be: restriction (Restriction4SimpleContent) | extension. (Required)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_SIMPLECONTENT_H
-

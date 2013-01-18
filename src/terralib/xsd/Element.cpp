@@ -44,8 +44,7 @@ te::xsd::Element::Element(unsigned int minOccurs, unsigned int maxOccurs, Annota
     m_abstract(false),
     m_block(UNKNOWN),
     m_final(UNKNOWN),
-    m_contentType(0),
-    m_identityConstraint(0)
+    m_contentType(0)
 {
 }
 
@@ -64,8 +63,7 @@ te::xsd::Element::Element(const Element& rhs)
     m_abstract(false),
     m_block(UNKNOWN),
     m_final(UNKNOWN),
-    m_contentType(0),
-    m_identityConstraint(0)
+    m_contentType(0)
 {
 }
 
@@ -183,6 +181,3 @@ void te::xsd::Element::setFinal(int v)
 {
   m_final = v;
 }
-
-
-

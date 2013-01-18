@@ -34,46 +34,6 @@
 #include "GEOSGeometryFactory.h"
 #include "Module.h"
 
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib Geometry module is loaded.
-//
-//  The initialization includes:
-//  <ul>
-//  <li>GEOS geometry factory</li>
-//  <li>The geometry name list</li>
-//  </ul>
-//*/
-//static void TeGeomInitialize()
-//{
-//// it loads the geometry type id map
-//  te::gm::Geometry::loadGeomTypeId();
-//
-//#if TE_USE_GEOS
-//// it initializes the GEOS Geometry Factory
-//  te::gm::GEOSGeometryFactory::initialize();
-//#endif
-//
-//  TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Initialized!"));
-//}
-
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib Geometry module is unloaded.
-//
-//  The Finalization includes:
-//  <ul>
-//  <li>GEOS geometry factory</li>
-//  </ul>
-//*/
-//static void TeGeomFinalize()
-//{
-//#if TE_USE_GEOS
-//// it finalizes the GEOS Geometry Factory
-//  te::gm::GEOSGeometryFactory::finalize();
-//#endif
-//
-//  TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Finalized!"));
-//}
-
 const te::gm::Module& sm_module = te::gm::Module::getInstance();
 
 te::gm::Module::Module()
@@ -124,8 +84,4 @@ void te::gm::Module::finalize()
   TE_LOG_TRACE(TR_GEOM("TerraLib Vector Geometry module Finalized!"));
 }
 
-//// TerraLib
-//#include "../common/ModuleUtils.h"
-//
-//TE_REGISTER_MODULE(TE_GEOMETRY_MODULE_NAME, TeGeomInitialize, TeGeomFinalize)
-//
+

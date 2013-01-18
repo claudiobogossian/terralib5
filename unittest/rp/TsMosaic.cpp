@@ -50,7 +50,7 @@ void TsMosaic::GeoReferencedImagesMosaic()
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3.tif";
+  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster3Pointer.get() );    

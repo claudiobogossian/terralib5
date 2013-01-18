@@ -33,6 +33,9 @@
 #include "Identifiable.h"
 #include "Occurs.h"
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 namespace te
 {
   namespace xsd
@@ -219,7 +222,7 @@ namespace te
 
           \note The element will take the ownership of the given substitution group.
          */
-        void setSubstitutionGroup(QName* g); 
+        void setSubstitutionGroup(QName* g);
 
         /*!
           \brief It sets the default value of the final attribute on the element element.
@@ -242,7 +245,7 @@ namespace te
         int m_block;              //!< It prevents an element with a specified type of derivation from being used in place of this element. (Optional)
         int m_final;                  //!< It sets the default value of the final attribute on the element element.
         Type* m_contentType;      //!< A content of this element. A simpleType or complexType element can be present as a child only if both the ref and type attributes are not present.
-        std::vector<IdentityConstraint*>* m_identityConstraint; //!< The list of elements related to identity constraint - (key | keyref | unique)*. (Optional)
+        boost::ptr_vector<IdentityConstraint*>* m_identityConstraintVec; //!< The list of elements related to identity constraint - (key | keyref | unique)*. (Optional)
     };
 
   } // end namespace xsd

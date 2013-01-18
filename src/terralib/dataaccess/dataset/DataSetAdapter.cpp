@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Translator.h"
 #include "../../datatype/ByteArray.h"
 #include "../../datatype/DataConverterManager.h"
 #include "../../datatype/DateTime.h"
@@ -31,6 +32,8 @@
 #include "../../datatype/SimpleData.h"
 #include "../../geometry/Geometry.h"
 #include "../../raster/Raster.h"
+#include "../datasource/DataSourceCapabilities.h"
+#include "../Exception.h"
 #include "DataSetAdapter.h"
 #include "DataSetType.h"
 
@@ -374,9 +377,15 @@ void te::da::DataSetAdapter::getArray(int i, std::vector<boost::int16_t>& a) con
   // TO DO!
 }
 
-const unsigned char* te::da::DataSetAdapter::getWKB(int /*i*/) const
+const unsigned char* te::da::DataSetAdapter::getWKB(int i) const
 {
-  return 0; // TO DO!
+  if(m_outDataSetType->getProperty(i)->getType() != te::dt::GEOMETRY_TYPE)
+    throw Exception(TR_DATAACCESS("Not a geometry property to get the WKB."));
+
+  std::size_t size = 0;
+  unsigned char* wkb = (unsigned char*)(getGeometry(i)->asBinary(size));
+
+  return wkb;
 }
 
 te::da::DataSet* te::da::DataSetAdapter::getDataSet(int i)
@@ -396,12 +405,7 @@ void te::da::DataSetAdapter::setValue(int i, te::dt::AbstractData* ad)
 
 bool te::da::DataSetAdapter::isNull(int i) const
 {
-  return m_ds->isNull(i);
-}
-
-bool te::da::DataSetAdapter::isValid() const
-{
-  return m_adaptPropertyMap.size() == m_inDataSetType->size();
+  return false;
 }
 
 void te::da::DataSetAdapter::getNonAdaptedProperties(std::vector<std::string>& properties)
@@ -432,22 +436,48 @@ void te::da::DataSetAdapter::adapt(const std::string& propertyName, te::dt::Prop
 
 void te::da::DataSetAdapter::adapt(int i, te::dt::Property* p)
 {
-  // Verifies if the given property (i) has been adapted already
-  boost::bimap<int, int>::left_map::iterator it = m_adaptPropertyMap.left.find(i);
-  if(it != m_adaptPropertyMap.left.end())
-  {
-    // Yes, already adapted! So adjust it from adapter data set type
-    std::vector<te::dt::Property*>& properties = m_outDataSetType->getProperties();
-    delete properties[it->second];
-    properties[it->second] = p;
-    return;
-  }
+  adapt(i, p, GenericAttributeConverter);
+}
+
+void te::da::DataSetAdapter::adapt(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv)
+{
+  std::size_t pos = m_inDataSetType->getPropertyPosition(propertyName);
+  adapt(pos, p, conv);
+}
+
+void te::da::DataSetAdapter::adapt(int i, te::dt::Property* p, AttributeConverter conv)
+{
+  std::vector<int> indexes;
+  indexes.push_back(i);
+  adapt(indexes, p, conv);
+}
+
+void te::da::DataSetAdapter::adapt(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv)
+{
+  std::vector<int> indexes;
+  for(std::size_t i = 0; i < propertyNames.size(); ++i)
+    indexes.push_back(m_inDataSetType->getPropertyPosition(propertyNames[i]));
+
+  adapt(indexes, p, conv);
+}
+
+void te::da::DataSetAdapter::adapt(const std::vector<int>& propertyIndexes, te::dt::Property* p, AttributeConverter conv)
+{
+  assert(!propertyIndexes.empty());
+  assert(p);
 
   // Adding given property on adapted data set type
   m_outDataSetType->add(p);
 
-  // Indexing (destination property index -> source property index)
-  m_adaptPropertyMap.insert(boost::bimap<int, int>::value_type(i, m_outDataSetType->size() - 1));
+  // Storing the adapted properties indexes
+  m_propertyIndexes.push_back(propertyIndexes);
+
+  // Indexing the AttributeConverter functions
+  m_converters.push_back(conv);
+
+  // Adding on adapted properties list
+  for(std::size_t i = 0; i < propertyIndexes.size(); ++i)
+    m_adaptedProperties.insert(propertyIndexes[i]);
 }
 
 te::da::DataSetAdapter* te::da::DataSetAdapter::adapt(DataSet* dataset, bool isOwner)
@@ -483,44 +513,30 @@ bool te::da::DataSetAdapter::needAdapter(DataSet* dataset, const DataSourceCapab
 
 bool te::da::DataSetAdapter::isAdapted(int i) const
 {
-  // Verifies if the given property has been adapted already
-  boost::bimap<int, int>::left_map::const_iterator it = m_adaptPropertyMap.left.find(i);
-  if(it != m_adaptPropertyMap.left.end())
-    return true; // Yes, already adapted!
+  std::set<int>::const_iterator it = m_adaptedProperties.find(i);
+  if(it != m_adaptedProperties.end())
+    return true;
 
   return false;
 }
 
-te::dt::AbstractData*  te::da::DataSetAdapter::getAdaptedValue(int i) const
+te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(int i) const
 {
-  // Gets the data from input data set
-  te::dt::AbstractData* data = m_ds->getValue(m_adaptPropertyMap.right.find(i)->second);
-  assert(data);
-
-  // Source and Destination Types
-  int srcType = data->getTypeCode();
-  int dstType = m_outDataSetType->getProperty(i)->getType();
-  if(srcType == dstType) // Need conversion?
-    return data;
-
-  // Try get a data type converter
-  const te::dt::DataTypeConverter& converter = te::dt::DataConverterManager::getInstance().get(srcType, dstType);
-
-  // Converts the original data
-  te::dt::AbstractData* convertedData = converter(data);
-  assert(convertedData);
-
-  delete data;
-
-  return convertedData;
+  return m_converters[i](m_ds, m_propertyIndexes[i], m_outDataSetType->getProperty(i)->getType());
 }
 
 void te::da::DataSetAdapter::setAdaptedValue(int i, te::dt::AbstractData* data)
 {
-   assert(data);
+  assert(data);
+
+  const std::vector<int>& indexes = m_propertyIndexes[i];
+  if(indexes.size() > 1)
+    throw Exception(TR_DATAACCESS("The set operation can not be done considering the current adaptation (n -> 1)."));
+
+  assert(!indexes.empty());
 
   // Property index on input dataset
-  int index = m_adaptPropertyMap.right.find(i)->second;
+  int index = indexes[0];
 
   // Source and Destination Types
   int srcType = data->getTypeCode();
@@ -539,4 +555,6 @@ void te::da::DataSetAdapter::setAdaptedValue(int i, te::dt::AbstractData* data)
   assert(convertedData);
 
   m_ds->setValue(index, convertedData);
+
+  delete data;
 }

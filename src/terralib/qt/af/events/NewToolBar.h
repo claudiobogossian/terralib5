@@ -19,11 +19,8 @@
 
 /*! 
   \file NewToolBar.h
+
   \brief This event signals that an external toolbar was added to the Framework.
-  \version 5.0
-  \author Frederico Augusto Bed&ecirc; &lt;frederico.bede@funcate.org.br&gt;
-  \date 2001-2012
-  \copyright GNU Lesser General Public License.
  */
 
 #ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWTOOLBAR_H
@@ -44,7 +41,9 @@ namespace te
     {
       /*!
         \class NewToolBar
-        \copydoc NewToolBar.h
+ 
+        \brief This event signals that an external toolbar was added to the Framework.
+        
         \ingroup afevents
       */
       class NewToolBar : public Event

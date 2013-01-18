@@ -96,57 +96,51 @@ namespace te
 
         boost::bimap<std::string, std::string>& getNamespaces() { return m_xmlns; }
 
-        //std::vector<Include*>* getIncludes() const;
+        const boost::ptr_vector<Include>& getIncludes() const;
 
-        //std::vector<Import*>* getImports() const;
+        const boost::ptr_vector<Import>& getImports() const;
 
-        //std::vector<Redefine*>* getRedefines() const;
+        const boost::ptr_vector<Redefine>& getRedefines() const;
 
-        //std::vector<SimpleType*>* getSimpleTypes() const;
+        const boost::ptr_vector<Annotation>& getAnnotations() const;
 
-        //std::vector<ComplexType*>* getComplexTypes() const;
+        const boost::ptr_vector<SimpleType>& getSimpleTypes() const;
 
-        //std::vector<Group*>* getGroups() const;
+        const boost::ptr_vector<ComplexType>& getComplexTypes() const;
 
-        //std::vector<AbstractAttribute*>* getAttributes() const;
+        const boost::ptr_vector<Group>& getGroups() const;
 
-        //std::vector<Element*>* getElements() const;
+        const boost::ptr_vector<AttributeGroup>& getAttributeGroups() const;
 
-        //std::vector<Notation*>* getNotations() const;
+        const boost::ptr_vector<AbstractAttribute>& getAttributes() const;
 
-        //void setAttributeFormDefault(Form f);
+        const boost::ptr_vector<Element>& getElements() const;
 
-        //void setElementFormDefault(Form f);
+        const boost::ptr_vector<Notation>& getNotations() const;
 
-        //void setBlockDefault(int v);
+        void addNamespace(const std::string& ns, const std::string& nsprefix);
 
-        //void setFinalDefault(int v);
+        void addInclude(Include* i);
 
-        //void setTargetNamespace(std::string* ns);
+        void addImport(Import* i);
 
-        //void setTargetNamespacePrefix(std::string* nsprefix);
+        void addRedefine(Redefine* r);
 
-        //void setVersion(std::string* v);
+        void addAnnotation(Annotation* a);
 
-        //void addNamespace(const std::string& ns, const std::string& nsprefix);
+        void addSimpleType(SimpleType* s);
 
-        //void addInclude(Include* i);
+        void addComplexType(ComplexType* c);
 
-        //void addImport(Import* i);
+        void addGroup(Group* g);
 
-        //void addRedefine(Redefine* r);
+        void addAttributeGroup(AttributeGroup* ag);
 
-        //void addSimpleType(SimpleType* s);
+        void addAttribute(AbstractAttribute* a);
 
-        //void addComplexType(ComplexType* c);
+        void addElement(Element* e);
 
-        //void addGroup(Group* g);
-
-        //void addAttribute(AbstractAttribute* a);
-
-        //void addElement(Element* e);
-
-        //void addNotation(Notation* n);
+        void addNotation(Notation* n);
 
       private:
 
@@ -170,7 +164,7 @@ namespace te
         boost::ptr_vector<Group> m_groupVec;                     //!< The list of group declarations at schema root.
         boost::ptr_vector<AttributeGroup> m_attributeGroupVec;   //!< The list of attributes at schema root.
         boost::ptr_vector<Element> m_elementVec;                 //!< The list of elements declarations at schema root.
-        boost::ptr_vector<Attribute> m_attributeVec;             //!< The list of attributes at schema root.
+        boost::ptr_vector<AbstractAttribute> m_attributeVec;     //!< The list of attributes at schema root.
         boost::ptr_vector<Notation> m_notationVec;               //!< The list of notation declarations at schema root.
     };
 

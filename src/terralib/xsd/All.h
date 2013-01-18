@@ -32,8 +32,8 @@
 #include "Identifiable.h"
 #include "Occurs.h"
 
-// STL
-#include <vector>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -88,7 +88,7 @@ namespace te
 
           \return The list of elements.
         */
-        std::vector<Element*>* getElements() const;
+        const boost::ptr_vector<Element>& getElements() const;
 
         /*!
           \brief It adds an element to this All element.
@@ -103,12 +103,10 @@ namespace te
 
       private:
 
-        std::vector<Element*>* m_elements;  //!< Lis of elements. (Optional)
+        boost::ptr_vector<Element> m_elementVec; //!< Lis of elements. (Optional)
     };
 
   } // end namespace xsd
 }   // end namespace te
 
 #endif  // __TERRALIB_XSD_INTERNAL_ALL_H
-
-

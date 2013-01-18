@@ -9,7 +9,8 @@ set (DEP_INCLUDES "")   #include paths needed by common module.
 find_package(Log4Cxx REQUIRED)
 if(Log4Cxx_FOUND)
   set(DEP_INCLUDES ${LOG4CXX_INCLUDE_DIR})
-  set(DEP_LIBS ${LOG4CXX_LIBRARY})	
+  set(DEP_LIBS ${LOG4CXX_LIBRARY})
+  set (TE_USE_APACHE_LOG4CXX TRUE PARENT_SCOPE)
 endif()
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system REQUIRED)
@@ -21,8 +22,10 @@ endif()
 if(WIN32)
   find_package(GNU)
   if(GNU_FOUND)
-	  list (APPEND DEP_LIBS ${GNU_LIBRARY})
-	  list (APPEND DEP_INCLUDES ${GNU_INCLUDE_DIR})
+    list (APPEND DEP_LIBS ${GNU_LIBRARY})
+    list (APPEND DEP_INCLUDES ${GNU_INCLUDE_DIR})
+    set (TE_USE_GNU_TEXT_UTILITIES TRUE PARENT_SCOPE)
+    set (TE_USE_GNU_ICONV TRUE PARENT_SCOPE)
   endif()
   
   #Add Ws2_32.lib for Windows
@@ -34,11 +37,10 @@ endif()
 if(UNIX)
   find_package(DL)
   if(DL_FOUND)
-	  list (APPEND DEP_LIBS ${DL_LIBRARY})
-	  list (APPEND DEP_INCLUDES ${DL_INCLUDE_DIR})
+    list (APPEND DEP_LIBS ${DL_LIBRARY})
+    list (APPEND DEP_INCLUDES ${DL_INCLUDE_DIR})
   endif(DL_FOUND)
 endif(UNIX)
-
 # Files to process.
 # -------------------------------------------------- 
 set (

@@ -19,7 +19,7 @@
 
 /*!
   \file terralib/raster/Utils.h
- 
+
   \brief Utility functions for the raster module.
 */
 
@@ -120,12 +120,29 @@ namespace te
       \param rin The input raster.
       \param uri The output raster URI.
 
-      \param rType The name of the specific driver to create the raster. 
+      \param rType The name of the specific driver to create the raster.
 
       \return a valid pointer to the created raster or a null (invalid) pointer if an error ocurred.
     */
     TERASTEREXPORT te::rst::RasterPtr CreateCopy(const te::rst::Raster& rin, const std::string& uri,
                                                  const std::string& rType = std::string("GDAL"));
+
+    /*!
+      \brief Return the values range of a given data type.
+
+      \param dataType The given data type.
+      \param min The mininmum value allowed for the given data type.
+      \param min The maximum value allowed for the given data type.
+    */
+    TERASTEREXPORT void GetDataTypeRanges(const int& dataType, double& min, double& max);
+
+    /*!
+      \brief Fill a Raster with provided value (all bands).
+
+      \param rin   The input raster.
+      \param value The value to fill all the bands of the Raster.
+    */
+    TERASTEREXPORT void FillRaster(te::rst::Raster* rin, const std::complex<double>& value);
 
   } // end namespace rst
 }   // end namespace te
