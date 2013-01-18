@@ -38,6 +38,7 @@ add_definitions(-DPLUGINS_PATH=\"${TERRALIB_BIN_DIR}\")
 set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
 set (ICON_THEME_PATH "" CACHE STRING "Lists of directories that contains icon themes.")
 
+option (EXAMPLE_ADO "Build ADO example." ON)  
 option (EXAMPLE_COLORBAR "Build colorbar example." ON)  
 option (EXAMPLE_COMMON "Build common example." ON)  
 option (EXAMPLE_PLUGIN_HELLOWORLD "Build plugin hello world example." ON)  
@@ -73,6 +74,11 @@ option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
 option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
   
 # Go into sub-directories
+
+if(EXAMPLE_ADO)
+  add_subdirectory(terralib_example_ado)
+endif()
+
 if(EXAMPLE_COLORBAR)
   add_subdirectory(terralib_example_colorbar)
 endif()
