@@ -20,6 +20,7 @@
 // TerraLib
 #include "Facet.h"
 #include "Restriction4SimpleType.h"
+#include "SimpleType.h"
 #include "QName.h"
 
 // STL
@@ -74,6 +75,12 @@ void te::xsd::Restriction4SimpleType::setBase(te::xsd::QName* base)
 {
   delete m_base;
   m_base = base;
+}
+
+void te::xsd::Restriction4SimpleType::setSimpleType(te::xsd::SimpleType* simpleType)
+{
+  delete m_simpleType;
+  m_simpleType = simpleType;
 }
 
 void te::xsd::Restriction4SimpleType::addFacet(te::xsd::FacetType fType, const std::string& value)

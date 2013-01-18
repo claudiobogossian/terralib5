@@ -26,8 +26,15 @@
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../../xsd/ComplexType.h"
 #include "../../xsd/Redefine.h"
+#include "../../xsd/SimpleType.h"
+#include "Annotation.h"
+#include "AttributeGroup.h"
+#include "ComplexType.h"
+#include "Group.h"
 #include "Redefine.h"
+#include "SimpleType.h"
 #include "Utils.h"
 
 // STL
@@ -56,7 +63,11 @@ te::xsd::Redefine* te::serialize::ReadRedefine(te::xml::Reader& reader)
   // Grammar: (annotation|(simpleType|complexType|group|attributeGroup))*
 
   std::set<std::string> children;
-  children.insert("annotation"); children.insert("simpleType"); children.insert("complexType"); children.insert("group"); children.insert("attributeGroup");
+  children.insert("annotation");
+  children.insert("simpleType");
+  children.insert("complexType");
+  children.insert("group");
+  children.insert("attributeGroup");
 
   std::set<std::string>::iterator it;
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
@@ -65,33 +76,30 @@ te::xsd::Redefine* te::serialize::ReadRedefine(te::xml::Reader& reader)
     std::string tag = *it;
     if(tag == "annotation")
     {
-      // TODO: Modify the te::xsd::Redefine class. Remove the inheritance of te::xsd::Annotated and create a vector of te::xsd::Annotation's. // Uba
-      //redefine->addAnnotation(ReadAnnotation(reader));
+      redefine->addAnnotation(ReadAnnotation(reader));
       continue;
     }
 
     if(tag == "simpleType")
     {
-      //redefine->addSimpleType(0); // TODO: Read SimpleType and add "addSimpleType" method on te::xsd::Redefine class.
+      redefine->addType(ReadSimpleType(reader));
       continue;
     }
 
     if(tag == "complexType")
     {
-      //redefine->addComplexType(0); // TODO: Read ComplexType and add "addComplexType" method on te::xsd::Redefine class.
+      redefine->addType(ReadComplexType(reader));
       continue;
     }
 
     if(tag == "group")
     {
-      //redefine->addGroup(0); // TODO: Read Group and add "addGroup" method on te::xsd::Redefine class.
+      redefine->addGroup(ReadGroup(reader));
       continue;
     }
 
     if(tag == "attributeGroup")
-    {
-      //redefine->addAttributeGroup(0); // TODO: Read AttributeGroup and add "addAttributeGroup" method on te::xsd::Redefine class.
-    }
+      redefine->addAttributeGroup(ReadAttributeGroup(reader));
   }
 
   return redefine.release();

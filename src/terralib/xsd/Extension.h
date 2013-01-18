@@ -148,6 +148,9 @@ namespace te
         */
         void setAnyAttribute(AnyAttribute* a);
 
+        // TODO
+        TypeDerivation* clone() const { return 0; }
+
       private:
 
         QName* m_base;                                       //!< It specifies the name of a built-in data type, a SimpleType element or a ComplexType element. (Required)

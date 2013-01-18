@@ -109,6 +109,13 @@ namespace te
         void setBase(QName* base);
 
         /*!
+          \brief It sets the simpleType element that will be restricted.
+
+          \param base The name of the built-in data type simpleType element that will be restricted.
+        */
+        void setSimpleType(SimpleType* simpleType);
+
+        /*!
           \brief Adds a new facet to this restriction.
 
           \param fType The facet type.
@@ -130,7 +137,7 @@ namespace te
       private:
 
         QName* m_base;                       //!< It specifies the name of the built-in data type simpleType element that will be restricted. (Required)
-        SimpleType* simpleType_;             //!< Optional.
+        SimpleType* m_simpleType;             //!< Optional.
         boost::ptr_vector<Facet> m_facetVec; //!< The list of facets. (Optional)
     };
 
