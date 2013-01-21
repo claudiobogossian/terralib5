@@ -18,16 +18,18 @@
  */
 
 /*!
-  \file terralib/serialization/se/AnyAttribute.cpp
+  \file terralib/serialization/se/Key.cpp
  
-  \brief Support for AnyAttribute serialization.
+  \brief Support for Key serialization.
 */
 
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../../xsd/AnyAttribute.h"
-#include "AnyAttribute.h"
+#include "../../xsd/Key.h"
+#include "Field.h"
+#include "Key.h"
+#include "Selector.h"
 #include "Utils.h"
 
 // STL
@@ -35,41 +37,42 @@
 #include <memory>
 #include <string>
 
-te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
+te::xsd::Key* te::serialize::ReadKey(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "anyAttribute");
+  assert(reader.getElementLocalName() == "key");
 
-  std::auto_ptr<te::xsd::AnyAttribute> anyAttribute(new te::xsd::AnyAttribute);
+  std::auto_ptr<te::xsd::Key> key(new te::xsd::Key(0));
 
   // Id
-  ReadIdentifiable(anyAttribute.get(), reader);
+  ReadIdentifiable(key.get(), reader);
 
-  // Namespace
-  std::size_t pos = reader.getAttrPosition("namespace");
-  if(pos != std::string::npos)
-    anyAttribute->setNamespace(new std::string(reader.getAttr(pos)));
-
-  // ProcessContents
-  pos = reader.getAttrPosition("processContents");
-  if(pos != std::string::npos)
-  {
-    std::string value = reader.getAttr(pos);
-    te::xsd::ProcessContents pc = te::xsd::LAX;
-    value == "skip" ? pc = te::xsd::SKIP : pc = te::xsd::STRICT;
-    anyAttribute->setProcessContents(pc);
-  }
+  // Name
+  std::size_t pos = reader.getAttrPosition("name");
+  assert(pos != std::string::npos);
+  key->setName(new std::string(reader.getAttr(pos)));
 
   reader.next();
 
-  // Grammar: (annotation?)
+  // Grammar: (annotation?,(selector,field+))
 
   // Annotation
-  ReadAnnotated(anyAttribute.get(), reader);
+  ReadAnnotated(key.get(), reader);
 
-  return anyAttribute.release();
+  // Selector
+  if(reader.getElementLocalName() == "selector")
+  {
+    key->setSelector(ReadSelector(reader));
+    return key.release();
+  }
+
+  // Fields
+  while(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "field")
+    key->addField(ReadField(reader));
+
+  return key.release();
 }
 
-void te::serialize::Save(te::xsd::AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::serialize::Save(te::xsd::Key* key, te::xml::Writer& writer)
 {
 }

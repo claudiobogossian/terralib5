@@ -79,3 +79,9 @@ void te::xsd::ComplexContent::setAsMixed(bool v)
 {
   m_mixed = v;
 }
+
+void te::xsd::ComplexContent::setTypeDerivation(TypeDerivation* t)
+{
+  delete m_derivation;
+  m_derivation = t;
+}

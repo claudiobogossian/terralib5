@@ -38,32 +38,25 @@
 //@{
 
 /*!
-  \def TE_MD_TEXT_DOMAIN
-
-  \brief It contains the name of the text domain used in the translation of messages in TerraLib Metadata module.
-*/
-#define TE_MD_TEXT_DOMAIN "tlmd"
-
-/*!
-  \def TE_MD_TEXT_DOMAIN_DIR
-
-  \brief It contains the translation catalog directory.
-*/
-#define TE_MD_TEXT_DOMAIN_DIR "locale"
+ \def TE_METADATA_TEXT_DOMAIN
+ 
+ \brief It contains the name of the text domain used in the translation of messages in TerraLib metadata module.
+ */
+#define TE_METADATA_TEXT_DOMAIN "temetadata"
 
 /*!
-  \def TR_MD
-
-  \brief It marks a string in order to get translated. This is a special mark used in the Symbology module of TerraLib. 
-*/
-#define TR_MD(message) TR(message, TE_MD_TEXT_DOMAIN)
+ \def TE_METADATA_TEXT_DOMAIN_DIR
+ 
+ \brief It contains the translation catalog directory.
+ */
+#define TE_METADATA_TEXT_DOMAIN_DIR "locale"
 
 /*!
-  \def TR_PLURAL_MD
-
-  \brief This mark can be used when you have a plural phrase to be translated. This is a special mark used in the Symbology module of TerraLib. 
-*/
-#define TR_PLURAL_MD(message1, message2, n) TR_PLURAL(TE_MD_TEXT_DOMAIN, message1, message2, n)
+ \def TR_METADATA
+ 
+ \brief It marks a string in order to get translated. This is a special mark used in the Plugin module of TerraLib. 
+ */
+#define TR_METADATA(message) TR(message, TE_METADATA_TEXT_DOMAIN)
 
 //@}
 

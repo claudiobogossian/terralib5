@@ -101,6 +101,15 @@ namespace te
         */
         void setAsMixed(bool v);
 
+        /*!
+          \brief It sets the derivation type of this ComplexContent: (restriction | extension).
+
+          \param t The derivation type of this ComplexContent.
+
+          \note The ComplexContent object will take the ownership of the given TypeDerivation.
+        */
+        void setTypeDerivation(TypeDerivation* t);
+
       private:
 
         bool m_mixed;                   //!< It specifies whether character data is allowed to appear between the child elements of this complexType element. Default is false. (Optional)
