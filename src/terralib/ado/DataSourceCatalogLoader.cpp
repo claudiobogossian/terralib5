@@ -37,6 +37,7 @@
 #include "../dataaccess/dataset/ForeignKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/dataset/Index.h"
+#include "../datatype.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Envelope.h"
@@ -56,8 +57,8 @@ inline void TESTHR(HRESULT x)
     _com_issue_error(x);
 };
 
-te::ado::DataSourceCatalogLoader::DataSourceCatalogLoader(DataSourceTransactor* parent)
-  : m_t(parent)
+te::ado::DataSourceCatalogLoader::DataSourceCatalogLoader(DataSourceTransactor* t)
+  : m_t(t)
 {
 }
 
@@ -90,6 +91,7 @@ void te::ado::DataSourceCatalogLoader::getDataSets(boost::ptr_vector<std::string
          table->GetType() == _bstr_t("LINK") || 
          table->GetType() == _bstr_t("PASS-THROUGH") ||
          table->GetType() == _bstr_t("SYSTEM TABLE") ||
+         table->GetType() == _bstr_t("VIEW") ||
          tableName == "geometry_columns")
          continue;
 
@@ -103,110 +105,281 @@ void te::ado::DataSourceCatalogLoader::getDataSets(boost::ptr_vector<std::string
 }
 
 te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std::string& datasetName,
-                                                                           const bool full)
+                                                                      const bool full)
 {
   if(!datasetExists(datasetName))
     return 0;
-
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-
-  ADOX::_CatalogPtr pCatalog = 0;
   
-  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
-
-  try
-  {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  ADOX::TablesPtr tables = pCatalog->GetTables();
-
-  ADOX::_TablePtr t = tables->GetItem(datasetName.c_str());
-
-  ADOX::ColumnsPtr cols = t->GetColumns();
-  
-
   std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(datasetName));
   dt->setTitle(datasetName);
 
-  std::vector<te::dt::Property*> properties;
-  
-  for(long i = 0; i < cols->Count; i++)
+  getProperties(dt.get());
+
+  if(full)
   {
-    ADOX::_ColumnPtr c = cols->GetItem(i);
-
-    te::dt::Property* prop = te::ado::Convert2Terralib(c);
-
-    dt->add(prop);
-    
-    if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
-    {
-      te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
-      geop->setSRID(getSRID(adoConn, geop));
-      te::gm::GeomType t = getType(adoConn, geop);
-      geop->setGeometryType(t);
-      dt->setDefaultGeomProperty(geop);
-    }
+    getPrimaryKey(dt.get());
+    getUniqueKeys(dt.get());
+    getIndexes(dt.get());
   }
-  
-  getPrimaryKey(dt.get());
-  getIndexes(dt.get());
-  getUniqueKeys(dt.get());
 
+  dt->setFullLoaded(full);
   return dt.release();
 }
 
+//te::da::DataSetType* te::ado::DataSourceCatalogLoader::getDataSetType(const std::string& datasetName,
+//                                                                      const bool full)
+//{
+//  if(!datasetExists(datasetName))
+//    return 0;
+//
+//  _ConnectionPtr adoConn = m_t->getADOConnection();
+//
+//  ADOX::_CatalogPtr pCatalog = 0;
+//  
+//  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+//
+//  try
+//  {
+//    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+//  }
+//  catch(_com_error& e)
+//  {
+//    throw Exception(TR_ADO(e.Description()));
+//  }
+//
+//  ADOX::TablesPtr tables = pCatalog->GetTables();
+//
+//  ADOX::_TablePtr t = tables->GetItem(datasetName.c_str());
+//
+//  ADOX::ColumnsPtr cols = t->GetColumns();
+//  
+//  std::auto_ptr<te::da::DataSetType> dt(new te::da::DataSetType(datasetName));
+//  dt->setTitle(datasetName);
+//
+//  std::vector<te::dt::Property*> properties;
+//  
+//  _variant_t vIndex;
+//  for(long i = 0; i < cols->Count; i++)
+//  {
+//    vIndex = i;
+//    ADOX::_ColumnPtr c = cols->GetItem(vIndex);
+//
+//    te::dt::Property* prop = te::ado::Convert2Terralib(c);
+//
+//    dt->add(prop);
+//    
+//    if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
+//    {
+//      te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
+//      geop->setSRID(getSRID(adoConn, geop));
+//      te::gm::GeomType t = getType(adoConn, geop);
+//      geop->setGeometryType(t);
+//      dt->setDefaultGeomProperty(geop);
+//    }
+//  }
+//  
+//  getPrimaryKey(dt.get());
+//  getIndexes(dt.get());
+//  getUniqueKeys(dt.get());
+//
+//  return dt.release();
+//}
+
 void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
 {
-  _ConnectionPtr adoConn = m_t->getADOConnection();
+  std::string dsName = dt->getName();
+  int numCols = 0;
+  te::dt::Property* p = 0;
 
-  ADOX::_CatalogPtr pCatalog = 0;
-
-  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+  ADOX::DataTypeEnum colType;
+  std::map<int, std::string> colNamesMap;
+  std::map<int, ADOX::DataTypeEnum> colTypesMap;
+  std::map<int, int> charLengthMap;
+  std::map<int, bool> isRequiredMap;
+  std::map<int, bool> hasDefaultMap;
+  std::map<int, std::string> defaultValueMap;
 
   try
   {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
+    HRESULT hr = S_OK;
 
-  ADOX::TablesPtr tables = pCatalog->GetTables();
+    _ConnectionPtr conn = m_t->getADOConnection();
 
-  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+    _RecordsetPtr rs = NULL;
 
-  ADOX::ColumnsPtr cols = t->GetColumns();
+    TESTHR(rs.CreateInstance(__uuidof(Recordset)));
 
-  std::vector<te::dt::Property*> properties;
+    // Create a safearray which takes three elements,and pass it as 
+    // the second parameter in the OpenSchema method.
+    SAFEARRAY FAR* psa = NULL;
+    SAFEARRAYBOUND rgsabound;
+    _variant_t var[3];
 
-  for(long i = 0; i < cols->Count; i++)
-  {
-    ADOX::_ColumnPtr c = cols->GetItem(i);
+    _variant_t  Array;
+    rgsabound.lLbound = 0;
+    rgsabound.cElements = 3;
+    psa = SafeArrayCreate(VT_VARIANT, 1, &rgsabound);
 
-    te::dt::Property* prop = te::ado::Convert2Terralib(c);
+    var[0].vt = VT_EMPTY;
+    var[1].vt = VT_EMPTY;
+    var[2] = dsName.c_str();
 
-    dt->add(prop);
+    // Fill the safe array.
+    for(LONG i = 0; i < 3; ++i)
+      hr = SafeArrayPutElement(psa, &i, &var[i]);
 
-    if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
+    Array.vt = VT_ARRAY | VT_VARIANT;
+    Array.parray = psa;  
+
+    rs = conn->OpenSchema(adSchemaColumns, &Array, vtMissing);
+
+    int pos;
+    while (!(rs->EndOfFile))
     {
-      te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
-      geop->setSRID(getSRID(adoConn, geop));
-      te::gm::GeomType t = getType(adoConn, geop);
-      geop->setGeometryType(t);
-      dt->setDefaultGeomProperty(geop);
+      // Get the column name
+      _bstr_t columnName = rs->Fields->GetItem("COLUMN_NAME")->Value;
+      pos = rs->Fields->GetItem("ORDINAL_POSITION")->Value;
+      pos = pos - 1;
+      colNamesMap[pos] = (LPCSTR)columnName;
+
+      // Get the data type of the column
+      colType = ADOX::DataTypeEnum(int(rs->Fields->GetItem("DATA_TYPE")->Value));
+      colTypesMap[pos] = colType;
+
+      // Get the length of the column
+      _variant_t length = rs->Fields->GetItem("CHARACTER_MAXIMUM_LENGTH")->Value;
+      int charLength = 0;
+      if(length.vt != VT_NULL)
+        charLength = (int)length.dblVal;
+      charLengthMap[pos] = charLength;
+
+      // Get the columns that accept null values
+      bool nullVal = rs->Fields->GetItem("IS_NULLABLE")->Value;
+      isRequiredMap[pos] = !nullVal;
+
+      // Get the columns that has default values
+      bool hasDefault = rs->Fields->GetItem("COLUMN_HASDEFAULT")->Value;
+      isRequiredMap[pos] = !hasDefault;
+
+      // Get the default value
+      std::string defaultStr;
+      if(hasDefault)
+      {
+        _bstr_t defaultValue = rs->Fields->GetItem("COLUMN_DEFAULT")->Value;
+         defaultStr = (LPSTR)defaultValue;
+      }
+        
+      defaultValueMap[pos] = defaultStr;
+
+      rs->MoveNext();
+      ++numCols;
     }
   }
+  catch (_com_error& e)
+  {
+    std::cout << "Error = " << (char*) e.ErrorMessage() << std::endl;
+  }
 
-  getPrimaryKey(dt);
-  getIndexes(dt);
-  getUniqueKeys(dt);
+  // Create the dataset properties
+  for(int i = 0; i < numCols; ++i)
+  {
+    ADOX::DataTypeEnum colType = colTypesMap[i];
+    std::string colName = colNamesMap[i];
+
+    switch(colType)
+    {
+      case ::adBoolean:
+        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        break;
+
+      case ::adVarWChar:
+      case ::adWChar:
+      case ::adVarChar:
+      case ::adLongVarChar:
+      case ::adLongVarWChar:
+      case ::adBSTR:
+      case ::adChar:
+        p = new te::dt::StringProperty(colName, (te::dt::StringType)Convert2Terralib(colType), charLengthMap[i]);
+        break;
+
+      case ADOX::adTinyInt:
+      case ADOX::adSmallInt:
+      case ADOX::adInteger:
+      case ADOX::adBigInt:
+      case ADOX::adSingle:
+      case ADOX::adDouble:
+      case ::adUnsignedBigInt:
+      case ::adUnsignedInt:
+      case ::adUnsignedSmallInt:
+      case ::adUnsignedTinyInt:
+      case ADOX::adLongVarBinary:
+      case ADOX::adBinary:
+        p = new te::dt::SimpleProperty(colName, Convert2Terralib(colType));
+        break;
+
+      case ADOX::adDate:
+      case ADOX::adDBDate:
+      case ADOX::adDBTime:
+      case ADOX::adDBTimeStamp:
+        p = new te::dt::DateTimeProperty(colName, te::dt::TIME_INSTANT);
+        break;
+          
+      default:
+        p = new te::dt::SimpleProperty(colName, te::dt::UNKNOWN_TYPE);
+        break;
+    }
+
+    dt->add(p);
+  }
 }
+
+//void te::ado::DataSourceCatalogLoader::getProperties(te::da::DataSetType* dt)
+//{
+//  _ConnectionPtr adoConn = m_t->getADOConnection();
+//
+//  ADOX::_CatalogPtr pCatalog = 0;
+//
+//  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+//
+//  try
+//  {
+//    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+//  }
+//  catch(_com_error& e)
+//  {
+//    throw Exception(TR_ADO(e.Description()));
+//  }
+//
+//  ADOX::TablesPtr tables = pCatalog->GetTables();
+//
+//  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+//
+//  ADOX::ColumnsPtr cols = t->GetColumns();
+//
+//  std::vector<te::dt::Property*> properties;
+//
+//  for(long i = 0; i < cols->Count; i++)
+//  {
+//    ADOX::_ColumnPtr c = cols->GetItem(i);
+//
+//    te::dt::Property* prop = te::ado::Convert2Terralib(c);
+//
+//    dt->add(prop);
+//
+//    if(te::ado::isGeomProperty(adoConn, dt->getName(), prop->getName()))
+//    {
+//      te::gm::GeometryProperty* geop = (te::gm::GeometryProperty*)prop;
+//      geop->setSRID(getSRID(adoConn, geop));
+//      te::gm::GeomType t = getType(adoConn, geop);
+//      geop->setGeometryType(t);
+//      dt->setDefaultGeomProperty(geop);
+//    }
+//  }
+//
+//  //getPrimaryKey(dt);
+//  //getIndexes(dt);
+//  //getUniqueKeys(dt);
+//}
 
 te::dt::Property* te::ado::DataSourceCatalogLoader::getProperty(const std::string& /*datasetName*/, const std::string& /*propertyName*/)
 {
@@ -254,12 +427,9 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
   std::auto_ptr<te::da::PrimaryKey> tlPk( new te::da::PrimaryKey(std::string(pk->GetName()), dt));
 
   for(long i = 0; i < cols->GetCount(); i++)
-  {
     tlPk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
-  }
 
   dt->add(tlPk.release());
-
 }
 
 void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
@@ -298,23 +468,9 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
       for(long j = 0; j < cols->Count; j++)
         tlUk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
 
-      dt->add(tlUk.release());
-
+      //dt->add(tlUk.release());  já está adicionado
     }
-  }
-  
-}
-
-void te::ado::DataSourceCatalogLoader::getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* geomp)
-{
-  //geomp = getDefaultGeomProperty(dt, m_t->getADOConnection());
-  
-  //_ConnectionPtr adoConn = m_t->getADOConnection();
-
-  //geomp->getParent()->setName(dt->getName());
-  //geomp->setSRID(te::ado::getSRID(adoConn, geomp));
-  //geomp->setGeometryType(te::ado::getType(adoConn, geomp));
-  dt->setDefaultGeomProperty(geomp);
+  } 
 }
 
 void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, std::vector<std::string>& fkNames, std::vector<std::string>& rdts)
@@ -350,7 +506,6 @@ void te::ado::DataSourceCatalogLoader::getForeignKeys(te::da::DataSetType* dt, s
       rdts.push_back(std::string(fk->GetRelatedTable()));
     }
   }
-  
 }
 
 te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::string& fkName, te::da::DataSetType* dt, te::da::DataSetType* rdt)
@@ -370,15 +525,14 @@ te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::s
     throw Exception(TR_ADO(e.Description()));
   }
 
-    ADOX::TablesPtr tables = pCatalog->GetTables();
+  ADOX::TablesPtr tables = pCatalog->GetTables();
 
-    ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
+  ADOX::_TablePtr t = tables->GetItem(dt->getName().c_str());
 
-    ADOX::KeysPtr keys = t->GetKeys();
+  ADOX::KeysPtr keys = t->GetKeys();
 
-    ADOX::_KeyPtr adofk = keys->GetItem(fkName.c_str());
+  ADOX::_KeyPtr adofk = keys->GetItem(fkName.c_str());
   
-
   if(std::string(adofk->GetRelatedTable()) == rdt->getName())
     throw Exception(TR_ADO("Foreign Key not found!"));
 
@@ -402,7 +556,6 @@ te::da::ForeignKey* te::ado::DataSourceCatalogLoader::getForeignKey(const std::s
   fk->setReferencedProperties(rProps);
 
   return fk;
-
 }
 
 void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
@@ -439,16 +592,12 @@ void te::ado::DataSourceCatalogLoader::getIndexes(te::da::DataSetType* dt)
 
     ADOX::ColumnsPtr cols = idx->GetColumns();
     for(long i = 0; i < cols->GetCount(); i++)
-    {
       props.push_back(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
-    }
     
     tlIdx->setProperties(props);
 
     dt->add(tlIdx);
-
-  }
-  
+  } 
 }
 
 void te::ado::DataSourceCatalogLoader::getCheckConstraints(te::da::DataSetType* dt)
@@ -469,7 +618,7 @@ te::da::Sequence* te::ado::DataSourceCatalogLoader::getSequence(const std::strin
 te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::gm::GeometryProperty* gp)
 {
   if(!datasetExists(gp->getParent()->getName()))
-    throw Exception(TR_ADO("Data Set Type not exists!"));
+    throw Exception(TR_ADO("The Data Set Type doesn't exist!"));
 
   std::string tableName = gp->getParent()->getName();
 
@@ -505,13 +654,24 @@ te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::gm::Geom
   return env;
 }
 
+void te::ado::DataSourceCatalogLoader::getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* geomp)
+{
+  //geomp = getDefaultGeomProperty(dt, m_t->getADOConnection());
+  
+  //_ConnectionPtr adoConn = m_t->getADOConnection();
+
+  //geomp->getParent()->setName(dt->getName());
+  //geomp->setSRID(te::ado::getSRID(adoConn, geomp));
+  //geomp->setGeometryType(te::ado::getType(adoConn, geomp));
+  dt->setDefaultGeomProperty(geomp);
+}
+
 void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
 {
   te::da::DataSourceCatalog* catalog = m_t->getDataSource()->getCatalog();
   catalog->clear();
 
-  // get the list of tables in the database and create a DataSetType for each table or view
-  
+  // get the list of tables in the database and create a DataSetType for each table or view  
   boost::ptr_vector<std::string> datasets;
   getDataSets(datasets);
 
@@ -529,7 +689,8 @@ void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
   if(!full)
     return;
 
-  // for each table in the catalog, finish loading its information: pk, fk, uk, indexes (note: !!this will avoid the need to load tables in the right order to insert into the catalog!!)
+  // for each table in the catalog, finish loading its information: pk, fk, uk, indexes
+  // note: this will avoid the need to load tables in the right order to insert into the catalog.
   std::size_t ndsets = catalog->getNumberOfDataSets();
 
   for(std::size_t i = 0; i < ndsets; ++i)
@@ -539,7 +700,31 @@ void te::ado::DataSourceCatalogLoader::loadCatalog(const bool full)
     getCheckConstraints(dt.get());
     getIndexes(dt.get());
   }
+}
 
+bool te::ado::DataSourceCatalogLoader::hasDataSets()
+{
+  _ConnectionPtr adoConn = m_t->getADOConnection();
+
+  ADOX::_CatalogPtr pCatalog = 0;
+
+  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
+
+  try
+  {
+    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
+
+    ADOX::TablesPtr tables = pCatalog->GetTables();
+
+    if(tables->GetCount() > 0)
+      return true;
+  }
+  catch(_com_error &e)
+  {
+    throw Exception(TR_ADO(e.ErrorMessage()));
+  }
+
+  return false;
 }
 
 bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
@@ -564,31 +749,6 @@ bool te::ado::DataSourceCatalogLoader::datasetExists(const std::string& name)
   for(long i = 0; i < pCatalog->GetTables()->Count; i++)
     if(std::string(pCatalog->GetTables()->GetItem(i)->GetName()) == name)
       return true;
-
-  return false;
-}
-
-bool te::ado::DataSourceCatalogLoader::hasDataSets()
-{
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-
-  ADOX::_CatalogPtr pCatalog = 0;
-
-  TESTHR(pCatalog.CreateInstance(__uuidof(ADOX::Catalog)));
-
-  try
-  {
-    pCatalog->PutActiveConnection(variant_t((IDispatch *)adoConn));
-
-    ADOX::TablesPtr tables = pCatalog->GetTables();
-
-    if(tables->GetCount() > 0)
-      return true;
-  }
-  catch(_com_error &e)
-  {
-    throw Exception(TR_ADO(e.ErrorMessage()));
-  }
 
   return false;
 }
