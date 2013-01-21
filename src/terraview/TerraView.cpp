@@ -39,7 +39,7 @@ TerraView::TerraView(QWidget* parent)
 {
   QAction* helpAbout = new QAction(QIcon::fromTheme("terraview"), tr("&About..."), this);
 
-  getMenu()->addAction(helpAbout);
+  //getMenu()->addAction(helpAbout);
 
   connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 }
