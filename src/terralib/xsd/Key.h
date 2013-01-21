@@ -77,6 +77,22 @@ namespace te
         */
         Key& operator=(const Key& rhs);
 
+        /*!
+          \brief It returns the key name.
+
+          \return The key name.
+        */
+        std::string* getName() const;
+
+        /*!
+          \brief It sets the key name.
+
+          \param name The key name.
+
+          \note The key will take the ownership of the given name.
+        */
+        void setName(std::string* name);
+
         IdentityConstraint* clone() const;
     };
 

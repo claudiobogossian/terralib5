@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/serialization/se/AnyAttribute.cpp
+  \file terralib/serialization/se/Field.cpp
  
-  \brief Support for AnyAttribute serialization.
+  \brief Support for Field serialization.
 */
 
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../../xsd/AnyAttribute.h"
-#include "AnyAttribute.h"
+#include "../../xsd/Field.h"
+#include "Field.h"
 #include "Utils.h"
 
 // STL
@@ -35,41 +35,31 @@
 #include <memory>
 #include <string>
 
-te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
+te::xsd::Field* te::serialize::ReadField(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "anyAttribute");
+  assert(reader.getElementLocalName() == "field");
 
-  std::auto_ptr<te::xsd::AnyAttribute> anyAttribute(new te::xsd::AnyAttribute);
+  std::auto_ptr<te::xsd::Field> field(new te::xsd::Field(0));
 
   // Id
-  ReadIdentifiable(anyAttribute.get(), reader);
+  ReadIdentifiable(field.get(), reader);
 
-  // Namespace
-  std::size_t pos = reader.getAttrPosition("namespace");
-  if(pos != std::string::npos)
-    anyAttribute->setNamespace(new std::string(reader.getAttr(pos)));
-
-  // ProcessContents
-  pos = reader.getAttrPosition("processContents");
-  if(pos != std::string::npos)
-  {
-    std::string value = reader.getAttr(pos);
-    te::xsd::ProcessContents pc = te::xsd::LAX;
-    value == "skip" ? pc = te::xsd::SKIP : pc = te::xsd::STRICT;
-    anyAttribute->setProcessContents(pc);
-  }
+  // XPath
+  std::size_t pos = reader.getAttrPosition("xpath");
+  assert(pos != std::string::npos);
+  field->setXPath(new std::string(reader.getAttr(pos)));
 
   reader.next();
 
   // Grammar: (annotation?)
 
   // Annotation
-  ReadAnnotated(anyAttribute.get(), reader);
+  ReadAnnotated(field.get(), reader);
 
-  return anyAttribute.release();
+  return field.release();
 }
 
-void te::serialize::Save(te::xsd::AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::serialize::Save(te::xsd::Field* field, te::xml::Writer& writer)
 {
 }

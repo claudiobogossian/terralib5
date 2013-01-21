@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/serialization/se/ComplexType.cpp
+  \file terralib/serialization/se/Restriction4ComplexContent.cpp
  
-  \brief Support for ComplexType serialization.
+  \brief Support for Restriction on a complexContent serialization.
 */
 
 // TerraLib
@@ -30,19 +30,17 @@
 #include "../../xsd/Attribute.h"
 #include "../../xsd/AttributeGroup.h"
 #include "../../xsd/Choice.h"
-#include "../../xsd/ComplexType.h"
 #include "../../xsd/Group.h"
+#include "../../xsd/Restriction4ComplexContent.h"
 #include "../../xsd/Sequence.h"
 #include "All.h"
 #include "AnyAttribute.h"
 #include "Attribute.h"
 #include "AttributeGroup.h"
 #include "Choice.h"
-#include "ComplexContent.h"
-#include "ComplexType.h"
 #include "Group.h"
+#include "Restriction4ComplexContent.h"
 #include "Sequence.h"
-#include "SimpleContent.h"
 #include "Utils.h"
 
 // STL
@@ -51,44 +49,27 @@
 #include <set>
 #include <string>
 
-te::xsd::ComplexType* te::serialize::ReadComplexType(te::xml::Reader& reader)
+te::xsd::Restriction4ComplexContent* te::serialize::ReadRestriction4ComplexContent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "complexType");
+  assert(reader.getElementLocalName() == "restriction");
 
-  std::auto_ptr<te::xsd::ComplexType> ct(new te::xsd::ComplexType);
+  std::auto_ptr<te::xsd::Restriction4ComplexContent> restriction(new te::xsd::Restriction4ComplexContent(0, 0));
 
   // Id
-  ReadIdentifiable(ct.get(), reader);
+  ReadIdentifiable(restriction.get(), reader);
 
-  // Name
-  std::size_t pos = reader.getAttrPosition("name");
+  // Base
+  std::size_t pos = reader.getAttrPosition("base");
   if(pos != std::string::npos)
-    ct->setName(new std::string(reader.getAttr(pos)));
-
-  // Abstract
-  pos = reader.getAttrPosition("abstract");
-  if(pos != std::string::npos)
-    ct->setAsAbstract(reader.getAttr(pos) == "true" ? true : false);
-
-  // Mixed
-  pos = reader.getAttrPosition("mixed");
-  if(pos != std::string::npos)
-    ct->setAsMixed(reader.getAttr(pos) == "true" ? true : false);
-
-  // TODO: Block and Final ?
+    restriction->setBase(CreateQName(reader.getAttr(pos)));
 
   reader.next();
 
-  /* Grammar: (annotation?,(simpleContent|complexContent|((group|all|
-              choice|sequence)?,((attribute|attributeGroup)*,anyAttribute?)))) */
-
-  // Annotation
-  ReadAnnotated(ct.get(), reader);
+  /* Grammar: (annotation?,(group|all|choice|sequence)?,
+              ((attribute|attributeGroup)*,anyAttribute?)) */
 
   std::set<std::string> children;
-  children.insert("simpleContent");
-  children.insert("complexContent");
   children.insert("group");
   children.insert("all");
   children.insert("choice");
@@ -97,66 +78,58 @@ te::xsd::ComplexType* te::serialize::ReadComplexType(te::xml::Reader& reader)
   children.insert("attributeGroup");
   children.insert("anyAttribute");
 
+  // Annotation
+  ReadAnnotated(restriction.get(), reader);
+
   std::set<std::string>::iterator it;
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
        (it = children.find(reader.getElementLocalName())) != children.end())
   {
     std::string tag = *it;
-    if(tag == "simpleContent")
-    {
-      ct->setSimpleContent(ReadSimpleContent(reader));
-      continue;
-    }
-
-    if(tag == "complexContent")
-    {
-      ct->setComplexContent(ReadComplexContent(reader));
-      continue;
-    }
 
     if(tag == "group")
     {
-      ct->setContent(ReadGroup(reader));
+      restriction->setContent(ReadGroup(reader));
       continue;
     }
 
     if(tag == "all")
     {
-      ct->setContent(ReadAll(reader));
+      restriction->setContent(ReadAll(reader));
       continue;
     }
 
     if(tag == "choice")
     {
-      ct->setContent(ReadChoice(reader));
+      restriction->setContent(ReadChoice(reader));
       continue;
     }
 
     if(tag == "sequence")
     {
-      ct->setContent(ReadSequence(reader));
+      restriction->setContent(ReadSequence(reader));
       continue;
     }
 
     if(tag == "attribute")
     {
-      ct->addAttribute(ReadAttribute(reader));
+      restriction->addAttribute(ReadAttribute(reader));
       continue;
     }
 
     if(tag == "attributeGroup")
     {
-      ct->addAttribute(ReadAttributeGroup(reader));
+      restriction->addAttribute(ReadAttributeGroup(reader));
       continue;
     }
 
     if(tag == "anyAttribute")
-      ct->setAnyAttribute(ReadAnyAttribute(reader));
+      restriction->setAnyAttribute(ReadAnyAttribute(reader));
   }
 
-  return ct.release();
+  return restriction.release();
 }
 
-void te::serialize::Save(te::xsd::ComplexType* ct, te::xml::Writer& writer)
+void te::serialize::Save(te::xsd::Restriction4ComplexContent* restriction, te::xml::Writer& writer)
 {
 }

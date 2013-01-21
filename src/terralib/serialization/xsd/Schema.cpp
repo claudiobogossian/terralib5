@@ -25,9 +25,11 @@
 
 // TerraLib
 #include "../../xml/Reader.h"
+#include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
 #include "../../xsd/Attribute.h"
 #include "../../xsd/Schema.h"
+#include "../Exception.h"
 #include "Annotation.h"
 #include "Attribute.h"
 #include "AttributeGroup.h"
@@ -45,7 +47,24 @@
 #include <cassert>
 #include <memory>
 #include <set>
-#include <string>
+
+// Boost
+#include <boost/format.hpp>
+
+te::xsd::Schema* te::serialize::ReadSchema(const std::string& path)
+{
+  std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
+  reader->setValidationScheme(false);
+  reader->read(path);
+
+  if(!reader->next())
+    throw Exception((boost::format(TR_SERIALIZATION("Could not read the XSD Schema in file: %1%.")) % path).str());
+
+  if(reader->getNodeType() != te::xml::START_ELEMENT)
+    throw Exception((boost::format(TR_SERIALIZATION("Error reading the document %1%, the start element wasn't found.")) % path).str());
+
+  return ReadSchema(*reader);
+}
 
 te::xsd::Schema* te::serialize::ReadSchema(te::xml::Reader& reader)
 {

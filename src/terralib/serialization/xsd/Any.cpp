@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/serialization/se/AnyAttribute.cpp
+  \file terralib/serialization/se/Any.cpp
  
-  \brief Support for AnyAttribute serialization.
+  \brief Support for Any serialization.
 */
 
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../../xsd/AnyAttribute.h"
-#include "AnyAttribute.h"
+#include "../../xsd/Any.h"
+#include "Any.h"
 #include "Utils.h"
 
 // STL
@@ -35,20 +35,23 @@
 #include <memory>
 #include <string>
 
-te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
+te::xsd::Any* te::serialize::ReadAny(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "anyAttribute");
+  assert(reader.getElementLocalName() == "any");
 
-  std::auto_ptr<te::xsd::AnyAttribute> anyAttribute(new te::xsd::AnyAttribute);
+  std::auto_ptr<te::xsd::Any> any(new te::xsd::Any);
 
   // Id
-  ReadIdentifiable(anyAttribute.get(), reader);
+  ReadIdentifiable(any.get(), reader);
+
+  // MinOccurs and MaxOccurs
+  ReadOccurs(any.get(), reader);
 
   // Namespace
   std::size_t pos = reader.getAttrPosition("namespace");
   if(pos != std::string::npos)
-    anyAttribute->setNamespace(new std::string(reader.getAttr(pos)));
+    any->setNamespace(new std::string(reader.getAttr(pos)));
 
   // ProcessContents
   pos = reader.getAttrPosition("processContents");
@@ -57,7 +60,7 @@ te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
     std::string value = reader.getAttr(pos);
     te::xsd::ProcessContents pc = te::xsd::LAX;
     value == "skip" ? pc = te::xsd::SKIP : pc = te::xsd::STRICT;
-    anyAttribute->setProcessContents(pc);
+    any->setProcessContents(pc);
   }
 
   reader.next();
@@ -65,11 +68,11 @@ te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
   // Grammar: (annotation?)
 
   // Annotation
-  ReadAnnotated(anyAttribute.get(), reader);
+  ReadAnnotated(any.get(), reader);
 
-  return anyAttribute.release();
+  return any.release();
 }
 
-void te::serialize::Save(te::xsd::AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::serialize::Save(te::xsd::Any* any, te::xml::Writer& writer)
 {
 }

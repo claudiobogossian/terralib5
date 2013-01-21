@@ -18,58 +18,61 @@
  */
 
 /*!
-  \file terralib/serialization/se/AnyAttribute.cpp
+  \file terralib/serialization/se/ComplexContent.cpp
  
-  \brief Support for AnyAttribute serialization.
+  \brief Support for ComplexType serialization.
 */
 
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../../xsd/AnyAttribute.h"
-#include "AnyAttribute.h"
+#include "../../xsd/ComplexContent.h"
+#include "../../xsd/Extension.h"
+#include "../../xsd/Restriction4ComplexContent.h"
+#include "ComplexContent.h"
+#include "Extension.h"
+#include "Restriction4ComplexContent.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
-#include <string>
 
-te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
+te::xsd::ComplexContent* te::serialize::ReadComplexContent(te::xml::Reader& reader)
 {
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "anyAttribute");
+  assert(reader.getElementLocalName() == "complexContent");
 
-  std::auto_ptr<te::xsd::AnyAttribute> anyAttribute(new te::xsd::AnyAttribute);
+  std::auto_ptr<te::xsd::ComplexContent> cc(new te::xsd::ComplexContent);
 
   // Id
-  ReadIdentifiable(anyAttribute.get(), reader);
+  ReadIdentifiable(cc.get(), reader);
 
-  // Namespace
-  std::size_t pos = reader.getAttrPosition("namespace");
+  // Mixed
+  std::size_t pos = reader.getAttrPosition("mixed");
   if(pos != std::string::npos)
-    anyAttribute->setNamespace(new std::string(reader.getAttr(pos)));
-
-  // ProcessContents
-  pos = reader.getAttrPosition("processContents");
-  if(pos != std::string::npos)
-  {
-    std::string value = reader.getAttr(pos);
-    te::xsd::ProcessContents pc = te::xsd::LAX;
-    value == "skip" ? pc = te::xsd::SKIP : pc = te::xsd::STRICT;
-    anyAttribute->setProcessContents(pc);
-  }
+    cc->setAsMixed(reader.getAttr(pos) == "true" ? true : false);
 
   reader.next();
 
-  // Grammar: (annotation?)
+  /* Grammar: (annotation?,(restriction|extension)) */
 
   // Annotation
-  ReadAnnotated(anyAttribute.get(), reader);
+  ReadAnnotated(cc.get(), reader);
 
-  return anyAttribute.release();
+  // Restriction
+  if(reader.getElementLocalName() == "restriction")
+  {
+    cc->setTypeDerivation(ReadRestriction4ComplexContent(reader));
+    return cc.release();
+  }
+
+  assert(reader.getElementLocalName() == "extension");
+  cc->setTypeDerivation(ReadExtension(reader));
+
+  return cc.release();
 }
 
-void te::serialize::Save(te::xsd::AnyAttribute* anyAttribute, te::xml::Writer& writer)
+void te::serialize::Save(te::xsd::ComplexContent* cc, te::xml::Writer& writer)
 {
 }

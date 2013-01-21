@@ -78,7 +78,7 @@ te::xsd::QName* te::serialize::CreateQName(const std::string& name)
 {
   std::vector<std::string> tokens;
   te::common::Tokenize(name, tokens, ":");
-  assert(tokens.size() > 2);
+  assert(tokens.size() >= 2);
   
   return new te::xsd::QName(tokens[0], tokens[1]);
 }
