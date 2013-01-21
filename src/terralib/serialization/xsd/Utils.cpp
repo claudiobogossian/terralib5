@@ -71,7 +71,7 @@ void te::serialize::ReadOccurs(te::xsd::Occurs* occurs, te::xml::Reader& reader)
   // MaxOccurs
   pos = reader.getAttrPosition("maxOccurs");
   if(pos != std::string::npos)
-    occurs->setMaxOccurs(static_cast<unsigned int>(reader.getAttrAsInt32(pos)));
+    reader.getAttr(pos) == "unbounded" ? occurs->setMaxOccurs(te::xsd::Occurs::unbounded) : occurs->setMaxOccurs(reader.getAttrAsInt32(pos));
 }
 
 te::xsd::QName* te::serialize::CreateQName(const std::string& name)
