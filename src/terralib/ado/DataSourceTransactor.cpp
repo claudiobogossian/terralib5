@@ -57,10 +57,10 @@ inline void TESTHR(HRESULT x)
     _com_issue_error(x);
 };
 
-te::ado::DataSourceTransactor::DataSourceTransactor(DataSource* parent, _ConnectionPtr conn)
-  : m_ds(parent),
-  m_conn(conn),
-  m_isInTransaction(false)
+te::ado::DataSourceTransactor::DataSourceTransactor(DataSource* ds, _ConnectionPtr conn)
+  : m_ds(ds),
+    m_conn(conn),
+    m_isInTransaction(false)
 {
 }
 
@@ -113,8 +113,8 @@ bool te::ado::DataSourceTransactor::isInTransaction() const
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name, 
-                                                                te::common::TraverseType travType, 
-                                                                te::common::AccessPolicy rwRole)
+                                                           te::common::TraverseType travType, 
+                                                           te::common::AccessPolicy rwRole)
 {
   te::da::DataSourceCatalogLoader* loader = getCatalogLoader();
   te::da::DataSetType* dt = 0;
@@ -122,6 +122,8 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
 
   if(dt == 0)
     throw Exception(TR_ADO("Data Set not found!"));
+
+  //delete loader;
 
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
@@ -140,22 +142,22 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name,
-                                                                const te::dt::Property* p,
-                                                                const te::gm::Envelope* e,
-                                                                te::gm::SpatialRelation r,
-                                                                te::common::TraverseType travType, 
-                                                                te::common::AccessPolicy rwRole)
+                                                           const te::dt::Property* p,
+                                                           const te::gm::Envelope* e,
+                                                           te::gm::SpatialRelation r,
+                                                           te::common::TraverseType travType, 
+                                                           te::common::AccessPolicy rwRole)
 {
   // Temporary
   return getDataSet(name);
 }
 
 te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& name,
-                                                                const te::dt::Property* p,
-                                                                const te::gm::Geometry* g,
-                                                                te::gm::SpatialRelation r,
-                                                                te::common::TraverseType travType, 
-                                                                te::common::AccessPolicy rwRole)
+                                                           const te::dt::Property* p,
+                                                           const te::gm::Geometry* g,
+                                                           te::gm::SpatialRelation r,
+                                                           te::common::TraverseType travType, 
+                                                           te::common::AccessPolicy rwRole)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
