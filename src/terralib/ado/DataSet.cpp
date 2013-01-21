@@ -529,18 +529,22 @@ void te::ado::DataSet::setBool(const std::string& name, bool value)
 
 float te::ado::DataSet::getFloat(int i) const
 {
-  float ival;
-  
+  float value;
+
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
   try
   {
-    ival = (float)m_result->GetFields()->GetItem(i)->GetValue();
+    value = (float)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
 
-  return ival;
+  return value;
 }
 
 float te::ado::DataSet::getFloat(const std::string& name) const
@@ -589,19 +593,39 @@ void te::ado::DataSet::setFloat(const std::string& name, float value)
 
 double te::ado::DataSet::getDouble(int i) const
 {
-  double ival;
-  
+  double value;
+
+  _variant_t vtIndex;
+  vtIndex.vt = VT_I4;
+  vtIndex.lVal = i;
+
   try
   {
-    ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+    value = (double)m_result->GetFields()->GetItem(vtIndex)->GetValue();
   }
   catch(_com_error& e)
   {
     throw Exception(TR_ADO(e.Description()));
   }
 
-  return ival;
+  return value;
 }
+
+//double te::ado::DataSet::getDouble(int i) const
+//{
+//  double ival;
+//  
+//  try
+//  {
+//    ival = (double)m_result->GetFields()->GetItem(i)->GetValue();
+//  }
+//  catch(_com_error& e)
+//  {
+//    throw Exception(TR_ADO(e.Description()));
+//  }
+//
+//  return ival;
+//}
 
 double te::ado::DataSet::getDouble(const std::string& name) const
 {
@@ -907,6 +931,47 @@ void te::ado::DataSet::setValue(int i, te::dt::AbstractData* ad)
 
 bool te::ado::DataSet::isNull(int i) const
 {
-  throw Exception(TR_ADO("Not implemented yet!"));
+  _variant_t value;
+
+  std::string propertyName = m_dt->getProperty(i)->getName();
+
+  try
+  {
+    value = m_result->GetFields()->GetItem(propertyName.c_str())->GetValue();
+  }
+
+  catch(_com_error& e)
+  {
+    throw Exception(TR_ADO(e.Description()));
+  }
+
+  if(value.vt == VT_NULL)
+    return true;
+
+  return false;
 }
+
+//bool te::ado::DataSet::isNull(int i) const
+//{
+//  _variant_t vtIndex;
+//  vtIndex.lVal = i;
+//
+//  _variant_t value;
+//
+//  try
+//  {
+//    //value = m_result->GetFields()->GetItem(vtIndex)->GetValue();
+//    value = m_result->GetFields()->GetItem(vtIndex)->Value;
+//  }
+//
+//  catch(_com_error& e)
+//  {
+//    throw Exception(TR_ADO(e.Description()));
+//  }
+//
+//  if(value.vt == VT_NULL)
+//    return true;
+//
+//  return false;
+//}
 
