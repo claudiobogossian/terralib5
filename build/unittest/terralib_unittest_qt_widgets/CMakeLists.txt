@@ -52,6 +52,7 @@ include_directories(
   ${QT_INCLUDE_DIR}
   ${CPPUNIT_INCLUDE_DIR}
   ${PostgreSQL_INCLUDE_DIR}
+  ${TE_INCLUDE_DIRS}
 )
 
 link_libraries(${DEP_LIBS})

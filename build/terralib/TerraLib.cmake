@@ -1,8 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-
-set (PROJ_NAME "terralib")
-project(${PROJ_NAME})
-
 list (APPEND DEP_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}")
 
 # Versioning configurations
@@ -18,7 +13,7 @@ set (TE_VERSION "${TERRALIB_MAJOR_VERSION}.${TERRALIB_MINOR_VERSION}.${TERRALIB_
 set (TERRALIB_DIR_ENVIRONMENT_VARIABLE "TERRALIB_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.") 
 # =========================
 
-set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../modules")
+set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}" )
 
@@ -93,127 +88,127 @@ if(WIN32)
 endif()
 
 IF(BUILD_ANNOTATIONTEXT)
-	add_subdirectory(terralib_annotationtext)
+	add_subdirectory(terralib/terralib_annotationtext)
 endif()
 
 IF(BUILD_COLOR)
-	add_subdirectory(terralib_color)
+	add_subdirectory(terralib/terralib_color)
 endif()
 
 IF(BUILD_COMMON)
-	add_subdirectory(terralib_common)
+	add_subdirectory(terralib/terralib_common)
 endif()
 
 IF(BUILD_DATAACCESS)
-	add_subdirectory(terralib_dataaccess)
+	add_subdirectory(terralib/terralib_dataaccess)
 endif()
 
 IF(BUILD_DATATYPE)
-	add_subdirectory(terralib_datatype)
+	add_subdirectory(terralib/terralib_datatype)
 endif()
 
 IF(BUILD_FILTER)
-	add_subdirectory(terralib_filter)
+	add_subdirectory(terralib/terralib_filter)
 endif()
 
 IF(BUILD_GDAL)
-	add_subdirectory(terralib_gdal)
+	add_subdirectory(terralib/terralib_gdal)
 endif()
 
 IF(BUILD_GEOMETRY)
-	add_subdirectory(terralib_geometry)
+	add_subdirectory(terralib/terralib_geometry)
 endif()
 
 IF(BUILD_GML)
-	add_subdirectory(terralib_gml)
+	add_subdirectory(terralib/terralib_gml)
 endif()
 
 IF(BUILD_IDL)
-  add_subdirectory(terralib_idl)
+  add_subdirectory(terralib/terralib_idl)
 endif()
 
 IF(BUILD_MAPTOOLS)
-	add_subdirectory(terralib_maptools)
+	add_subdirectory(terralib/terralib_maptools)
 endif()
 
 IF(BUILD_MEMORY)
-	add_subdirectory(terralib_memory)
+	add_subdirectory(terralib/terralib_memory)
 endif()
 
 IF(BUILD_OGR)
-	add_subdirectory(terralib_ogr)
+	add_subdirectory(terralib/terralib_ogr)
 endif()
 
 IF(BUILD_PLUGIN)
-	add_subdirectory(terralib_plugin)
+	add_subdirectory(terralib/terralib_plugin)
 endif()
 
 IF(BUILD_POSTGIS)
-	add_subdirectory(terralib_postgis)
+	add_subdirectory(terralib/terralib_postgis)
 endif()
 
 IF(BUILD_QT_AF)
-	add_subdirectory(terralib_qt_af)
+	add_subdirectory(terralib/terralib_qt_af)
 endif()
 
 IF(BUILD_QT_WIDGETS)
-	add_subdirectory(terralib_qt_widgets)
+	add_subdirectory(terralib/terralib_qt_widgets)
 endif()
 
 IF(BUILD_RASTER)
-	add_subdirectory(terralib_raster)
+	add_subdirectory(terralib/terralib_raster)
 endif()
 
 IF(BUILD_RP)
-	add_subdirectory(terralib_rp)
+	add_subdirectory(terralib/terralib_rp)
 endif()
 
 IF(BUILD_SAM)
-	add_subdirectory(terralib_sam)
+	add_subdirectory(terralib/terralib_sam)
 endif()
 
 IF(BUILD_SERIALIZATION)
-	add_subdirectory(terralib_serialization)
+	add_subdirectory(terralib/terralib_serialization)
 endif()
 
 IF(BUILD_SRS)
-	add_subdirectory(terralib_srs)
+	add_subdirectory(terralib/terralib_srs)
 endif()
 
 IF(BUILD_ST)
-	add_subdirectory(terralib_st)
+	add_subdirectory(terralib/terralib_st)
 endif()
 
 IF(BUILD_STLOADER)
-	add_subdirectory(terralib_stloader)
+	add_subdirectory(terralib/terralib_stloader)
 endif()
 
 IF(BUILD_SYMBOLOGY)
-	add_subdirectory(terralib_symbology)
+	add_subdirectory(terralib/terralib_symbology)
 endif()
 
 IF(BUILD_XERCES)
-	add_subdirectory(terralib_xerces)
+	add_subdirectory(terralib/terralib_xerces)
 endif()
 
 IF(BUILD_XLINK)
-	add_subdirectory(terralib_xlink)
+	add_subdirectory(terralib/terralib_xlink)
 endif()
 
 IF(BUILD_XML)
-	add_subdirectory(terralib_xml)
+	add_subdirectory(terralib/terralib_xml)
 endif()
 
 IF(BUILD_XSD)
-	add_subdirectory(terralib_xsd)
+	add_subdirectory(terralib/terralib_xsd)
 endif()
 
 IF(BUILD_GRIB)
-  add_subdirectory(terralib_grib)
+  add_subdirectory(terralib/terralib_grib)
 endif()
 
 IF(BUILD_ADO)
-  add_subdirectory(terralib_ado)
+  add_subdirectory(terralib/terralib_ado)
 endif()
 
 # Generating cmake configuration files
@@ -285,3 +280,5 @@ install (
 
 include (${T5_MODULES_PATH}/Package.cmake)
 include (${T5_MODULES_PATH}/GenerateDox.cmake)
+
+set (TE_LIBRARIES "${_TE_LIBRARIES}")

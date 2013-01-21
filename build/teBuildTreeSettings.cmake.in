@@ -16,7 +16,7 @@ endif()
 set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 
 # Include the dependencies. 
-include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
+#include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
 
 set (TERRALIB_BIN_DIR @CMAKE_RUNTIME_OUTPUT_DIRECTORY@)
 set (TERRALIB_SCHEMA_LOCATION @TERRALIB_SCHEMA_LOCATION@)

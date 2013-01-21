@@ -113,7 +113,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
 void te::qt::af::Save(const te::qt::af::Project& project, const std::string& uri)
 {
-  std::ofstream fout(uri, std::ios_base::trunc);
+  std::ofstream fout(uri.c_str(), std::ios_base::trunc);
 
   te::xml::Writer w(fout);
 

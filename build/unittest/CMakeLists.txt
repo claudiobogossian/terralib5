@@ -10,6 +10,8 @@ endif()
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
   gdal geometry gml maptools memory ogr plugin postgis qt_widgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
+
+include (${terralib_DIR}/teDepends.cmake)
   
 find_package (CppUnit REQUIRED)
 

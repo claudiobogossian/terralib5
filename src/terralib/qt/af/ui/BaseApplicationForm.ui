@@ -410,10 +410,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="help-view">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
-   </property>
    <property name="text">
     <string>&amp;View Help...</string>
    </property>
@@ -427,10 +423,6 @@
   <action name="m_helpUpdate">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="help-update">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Update...</string>
@@ -531,10 +523,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="layer-edit">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
-   </property>
    <property name="text">
     <string>&amp;Edit</string>
    </property>
@@ -542,10 +530,6 @@
   <action name="m_layerRename">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="layer-rename">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>Re&amp;name</string>
@@ -555,10 +539,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="layer-export">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
-   </property>
    <property name="text">
     <string>E&amp;xport...</string>
    </property>
@@ -566,10 +546,6 @@
   <action name="m_layerProperties">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="layer-properties">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Properties...</string>
@@ -579,10 +555,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="layer-raise">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
-   </property>
    <property name="text">
     <string>&amp;Raise</string>
    </property>
@@ -590,10 +562,6 @@
   <action name="m_layerLower">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="layer-lower">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>&amp;Lower</string>
@@ -603,10 +571,6 @@
    <property name="enabled">
     <bool>false</bool>
    </property>
-   <property name="icon">
-    <iconset theme="layer-top">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
-   </property>
    <property name="text">
     <string>To &amp;Top</string>
    </property>
@@ -614,10 +578,6 @@
   <action name="m_layerToBottom">
    <property name="enabled">
     <bool>false</bool>
-   </property>
-   <property name="icon">
-    <iconset theme="layer-bottom">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
    </property>
    <property name="text">
     <string>To &amp;Bottom</string>
@@ -660,10 +620,6 @@
    </property>
   </action>
   <action name="m_fileExit">
-   <property name="icon">
-    <iconset theme="system-log-out">
-     <normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</normaloff>../../../../../../terralib5-git/src/terralib/qt/af/ui</iconset>
-   </property>
    <property name="text">
     <string>E&amp;xit</string>
    </property>

@@ -14,7 +14,10 @@ project(${PROJ_NAME})           # the project name is terralib_unittest_dataacce
 set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_dataaccess
 
 set (DEP_LIBS ${Boost_LIBRARIES})
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+set (DEP_INCLUDES 
+  ${Boost_INCLUDE_DIRS}
+  ${TE_INCLUDE_DIRS}
+  )
 
 if(CPPUNIT_FOUND)
   list (APPEND DEP_INCLUDES ${CPPUNIT_INCLUDE_DIR})
@@ -76,7 +79,7 @@ source_group("dataaccess\\Header Files" FILES ${DATAACCESS_HDRS})
 #source_group("postgis\\Header Files"    FILES ${PGIS_HDRS})
 
 # Select the include directories
-include_directories(${ROOT}/src ${DEP_INCLUDES})
+include_directories(${ROOT}/src ${DEP_INCLUDES} )
 
 add_executable(${PROJ_NAME} ${DATAACCESS_SRCS} ${DATAACCESS_HDRS} )
  #              ${GDAL_SRCS} ${GDAL_HDRS}

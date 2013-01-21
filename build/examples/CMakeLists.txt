@@ -13,6 +13,8 @@ endif()
 
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
+include (${terralib_DIR}/teDepends.cmake)
+
 ############### Get the data used for testing the example ###############
 set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
