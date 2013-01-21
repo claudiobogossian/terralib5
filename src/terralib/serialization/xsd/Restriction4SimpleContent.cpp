@@ -79,7 +79,7 @@ te::xsd::Restriction4SimpleContent* te::serialize::ReadRestriction4SimpleContent
   children.insert("pattern");
   children.insert("attribute");
   children.insert("attributeGroup");
-  children.insert("attributeGroup");
+  children.insert("anyAttribute");
 
   // Annotation
   ReadAnnotated(restriction.get(), reader);

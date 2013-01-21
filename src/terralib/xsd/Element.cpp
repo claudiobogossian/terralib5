@@ -27,6 +27,8 @@
 #include "../common/STLUtils.h"
 #include "Element.h"
 #include "Enums.h"
+#include "IdentityConstraint.h"
+#include "Type.h"
 #include "QName.h"
 
 te::xsd::Element::Element(unsigned int minOccurs, unsigned int maxOccurs, Annotation* ann, std::string* id)
@@ -72,6 +74,7 @@ te::xsd::Element::~Element()
   delete m_type;
   delete m_default;
   delete m_fixed;
+  delete m_contentType;
 }
 
 te::xsd::Element& te::xsd::Element::operator=(const Element& rhs)
@@ -180,4 +183,15 @@ void te::xsd::Element::setSubstitutionGroup(te::xsd::QName* g)
 void te::xsd::Element::setFinal(int v)
 {
   m_final = v;
+}
+
+void te::xsd::Element::setContentType(te::xsd::Type* t)
+{
+  delete m_contentType;
+  m_contentType = t;
+}
+
+void te::xsd::Element::addIdentityConstraint(IdentityConstraint* ic)
+{
+  m_identityConstraintVec.push_back(ic);
 }

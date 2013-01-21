@@ -129,6 +129,21 @@ namespace te
         */
         void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
+        /*!
+          \note MySQL driver extended method.
+        */
+        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d);
+
+        /*!
+          \note MySQL driver extended method.
+        */
+        void bind(const te::da::DataSetType* dt, te::da::DataSet* d);
+
+        /*!
+          \note MySQL driver extended method.
+        */
+        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d);
+
       private:
 
         DataSourceTransactor* m_t;            //!< The associated transactor.

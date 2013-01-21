@@ -51,6 +51,7 @@ option (EXAMPLE_GEOMETRY "Build geometry example." ON)
 option (EXAMPLE_LAYEREXPLORER "Build layer explorer example." ON)  
 option (EXAMPLE_LEGEND "Build legend example." ON)  
 option (EXAMPLE_MAPTOOLS "Build map tools example." ON)  
+option (EXAMPLE_METADATA "Build map tools example." OFF)  
 option (EXAMPLE_PROGRESS "Build task progress example." ON)  
 option (EXAMPLE_PROPERTYMANAGEMENT "Build property management example." ON)  
 option (EXAMPLE_RASTER "Build raster example." ON)  
@@ -131,6 +132,10 @@ endif()
 
 if(EXAMPLE_MAPTOOLS)
   add_subdirectory(terralib_example_maptools)
+endif()
+
+if(EXAMPLE_METADATA)
+  add_subdirectory(terralib_example_metadata)
 endif()
 
 if(EXAMPLE_PROGRESS)

@@ -18,23 +18,20 @@
  */
 
 /*!
-  \file terralib/serialization/xsd/Schema.h
+  \file terralib/serialization/xsd/Unique.h
  
-  \brief Support for Schema serialization.
+  \brief Support for Unique serialization.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_XSD_INTERNAL_SCHEMA_H
-#define __TERRALIB_SERIALIZATION_XSD_INTERNAL_SCHEMA_H
+#ifndef __TERRALIB_SERIALIZATION_XSD_INTERNAL_UNIQUE_H
+#define __TERRALIB_SERIALIZATION_XSD_INTERNAL_UNIQUE_H
 
 // TerraLib
 #include "../Config.h"
 
-// STL
-#include <string>
-
 namespace te
 {
-  namespace xsd { class Schema; }
+  namespace xsd { class Unique; }
 
   namespace xml
   {
@@ -44,13 +41,11 @@ namespace te
 
   namespace serialize
   {
-    TESERIALIZATIONEXPORT te::xsd::Schema* ReadSchema(const std::string& path);
+    TESERIALIZATIONEXPORT te::xsd::Unique* ReadUnique(te::xml::Reader& reader);
 
-    TESERIALIZATIONEXPORT te::xsd::Schema* ReadSchema(te::xml::Reader& reader);
-
-    TESERIALIZATIONEXPORT void Save(te::xsd::Schema* schema, te::xml::Writer& writer);
+    TESERIALIZATIONEXPORT void Save(te::xsd::Unique* unique, te::xml::Writer& writer);
 
   } // end namespace serialize
 }   // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_XSD_INTERNAL_SCHEMA_H
+#endif  // __TERRALIB_SERIALIZATION_XSD_INTERNAL_UNIQUE_H

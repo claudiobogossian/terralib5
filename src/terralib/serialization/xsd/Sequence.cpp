@@ -29,6 +29,7 @@
 #include "../../xsd/Choice.h"
 #include "../../xsd/Group.h"
 #include "../../xsd/Sequence.h"
+#include "Any.h"
 #include "Choice.h"
 #include "Element.h"
 #include "Group.h"
@@ -98,7 +99,7 @@ te::xsd::Sequence* te::serialize::ReadSequence(te::xml::Reader& reader)
     }
 
     if(tag == "any")
-      sequence->addAny(0); // TODO Read Any
+      sequence->addAny(ReadAny(reader));
   }
 
   return sequence.release();
