@@ -75,6 +75,10 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
       return te::dt::INT16_TYPE;
       break;
 
+    case ADOX::adSingle:
+      return te::dt::FLOAT_TYPE;
+      break;
+
     case ADOX::adDouble:
       return te::dt::DOUBLE_TYPE;
       break;
@@ -119,7 +123,7 @@ int te::ado::Convert2Terralib(ADOX::DataTypeEnum adoType)
     //case ADOX::adUserDefined:
 
     default:
-      throw te::ado::Exception(TR_ADO("The informed type could not be mapped to TerraLib type system!"));
+      return te::dt::UNKNOWN_TYPE;
     break;
   }
 }
