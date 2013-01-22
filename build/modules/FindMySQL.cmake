@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 # Find path - tries to find *.h in paths hard-coded by the script
 FIND_PATH (MYSQL_INCLUDE_DIR driver/mysql_public_iface.h
-           PATHS /usr/local/include/mysql /usr/include/mysql /usr/local/mysql/include)
+           PATHS /usr/local/include/mysql /usr/include/mysql /usr/local/mysql/include
+		   PATH_SUFFIXES "mysql-connector-c++")
 
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 
