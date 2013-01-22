@@ -28,9 +28,9 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
-#include "../serialization/dataaccess/SQLDialect.h"
-#include "rlite/RasterFactory.h"
-#include "terralib/RasterFactory.h"
+//#include "../serialization/dataaccess/SQLDialect.h"
+//#include "rlite/RasterFactory.h"
+//#include "terralib/RasterFactory.h"
 #include "DataSource.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
@@ -72,8 +72,8 @@ void te::sqlite::Module::startup()
 
 // we need to initialize al the factories
   DataSourceFactory::initialize();
-  te::sqlite::rlite::RasterFactory::initialize();
-  te::sqlite::terralib::RasterFactory::initialize();
+  //te::sqlite::rlite::RasterFactory::initialize();
+  //te::sqlite::terralib::RasterFactory::initialize();
 
 // it initializes the SQLite library
   sqlite3_initialize();
@@ -90,9 +90,9 @@ void te::sqlite::Module::startup()
   
   boost::filesystem::path nonspatialDialectFile = driverpath / "nonspatial_dialect.xml";
 
-  Globals::sm_spatiaLiteDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
+  //Globals::sm_spatiaLiteDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
 
-  Globals::sm_nonspatialDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
+  //Globals::sm_nonspatialDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
 
   TE_LOG_TRACE(TR_SQLITE("TerraLib SQLite driver startup!"));
 

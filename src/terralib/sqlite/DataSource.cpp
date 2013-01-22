@@ -50,6 +50,9 @@
 // SQLite
 #include <sqlite3.h>
 
+// static's initialization
+te::da::DataSourceCapabilities te::sqlite::DataSource::sm_capabilities;
+
 te::sqlite::DataSource::DataSource()
   : m_db(0),
     m_catalog(0),
@@ -87,74 +90,76 @@ void te::sqlite::DataSource::setConnectionInfo(const std::map<std::string, std::
   m_connInfo = connInfo;
 }
 
-void te::sqlite::DataSource::getCapabilities(std::map<std::string, std::string>& capabilities) const
+const te::da::DataSourceCapabilities& te::sqlite::DataSource::getCapabilities() const
 {
-  if(m_isrw)
-    capabilities["ACCESS_POLICY"] = "RW_ACCESS";
-  else
-    capabilities["ACCESS_POLICY"] = "R_ACCESS";
+  //if(m_isrw)
+  //  capabilities["ACCESS_POLICY"] = "RW_ACCESS";
+  //else
+  //  capabilities["ACCESS_POLICY"] = "R_ACCESS";
 
-  capabilities["TRANSACTION"] = "TRUE";
-  capabilities["DATASET_PERSISTENCE"] = "TRUE";
-  capabilities["DATASETTYPE_PERSISTENCE"] = "TRUE";
-  capabilities["PREPARED_QUERY"] = "TRUE";
-  capabilities["BATCH_EXECUTOR"] = "TRUE";
+  //capabilities["TRANSACTION"] = "TRUE";
+  //capabilities["DATASET_PERSISTENCE"] = "TRUE";
+  //capabilities["DATASETTYPE_PERSISTENCE"] = "TRUE";
+  //capabilities["PREPARED_QUERY"] = "TRUE";
+  //capabilities["BATCH_EXECUTOR"] = "TRUE";
 
-  capabilities["BIT_DT"] = "FALSE";
-  capabilities["CHAR_DT"] = "FALSE";
-  capabilities["UCHAR_DT"] = "FALSE";
-  capabilities["INT16_DT"] = "FALSE";
-  capabilities["UINT16_DT"] = "FALSE";
-  capabilities["INT32_DT"] = "TRUE";
-  capabilities["UINT32_DT"] = "FALSE";
-  capabilities["INT64_DT"] = "TRUE";
-  capabilities["UINT64_DT"] = "FALSE";
-  capabilities["BOOLEAN_DT"] = "FALSE";
-  capabilities["FLOAT_DT"] = "FALSE";
-  capabilities["DOUBLE_DT"] = "TRUE";
-  capabilities["NUMERIC_DT"] = "FALSE";
-  capabilities["STRING_DT"] = "TRUE";
-  capabilities["BYTE_ARRAY_DT"] = "TRUE";
-  capabilities["GEOMETRY_DT"] = "TRUE";
-  capabilities["DATETIME_DT"] = "TRUE";
-  capabilities["ARRAY_DT"] = "FALSE";
-  capabilities["COMPOSITE_DT"] = "FALSE";
-  capabilities["RASTER_DT"] = "TRUE";
-  capabilities["DATASET_DT"] = "FALSE";
-  capabilities["XML_DT"] = "FALSE";
+  //capabilities["BIT_DT"] = "FALSE";
+  //capabilities["CHAR_DT"] = "FALSE";
+  //capabilities["UCHAR_DT"] = "FALSE";
+  //capabilities["INT16_DT"] = "FALSE";
+  //capabilities["UINT16_DT"] = "FALSE";
+  //capabilities["INT32_DT"] = "TRUE";
+  //capabilities["UINT32_DT"] = "FALSE";
+  //capabilities["INT64_DT"] = "TRUE";
+  //capabilities["UINT64_DT"] = "FALSE";
+  //capabilities["BOOLEAN_DT"] = "FALSE";
+  //capabilities["FLOAT_DT"] = "FALSE";
+  //capabilities["DOUBLE_DT"] = "TRUE";
+  //capabilities["NUMERIC_DT"] = "FALSE";
+  //capabilities["STRING_DT"] = "TRUE";
+  //capabilities["BYTE_ARRAY_DT"] = "TRUE";
+  //capabilities["GEOMETRY_DT"] = "TRUE";
+  //capabilities["DATETIME_DT"] = "TRUE";
+  //capabilities["ARRAY_DT"] = "FALSE";
+  //capabilities["COMPOSITE_DT"] = "FALSE";
+  //capabilities["RASTER_DT"] = "TRUE";
+  //capabilities["DATASET_DT"] = "FALSE";
+  //capabilities["XML_DT"] = "FALSE";
 
-  capabilities["PRIMARY_KEY"] = "TRUE";
-  capabilities["UNIQUE_KEY"] = "TRUE";
-  capabilities["FOREIGN_KEY"] = "TRUE";
-  capabilities["SEQUENCE"] = "FALSE";
-  capabilities["CHECK_CONSTRAINTS"] = "TRUE";
-  capabilities["INDEX"] = "TRUE";
-  capabilities["RTREE_INDEX"] = "TRUE";
-  capabilities["BTREE_INDEX"] = "TRUE";
-  capabilities["HASH_INDEX"] = "FALSE";
-  capabilities["QUADTREE_INDEX"] = "FALSE";
+  //capabilities["PRIMARY_KEY"] = "TRUE";
+  //capabilities["UNIQUE_KEY"] = "TRUE";
+  //capabilities["FOREIGN_KEY"] = "TRUE";
+  //capabilities["SEQUENCE"] = "FALSE";
+  //capabilities["CHECK_CONSTRAINTS"] = "TRUE";
+  //capabilities["INDEX"] = "TRUE";
+  //capabilities["RTREE_INDEX"] = "TRUE";
+  //capabilities["BTREE_INDEX"] = "TRUE";
+  //capabilities["HASH_INDEX"] = "FALSE";
+  //capabilities["QUADTREE_INDEX"] = "FALSE";
 
-  capabilities["SUPPORTS_RANDOM_DATASET"] = "FALSE";
-  capabilities["EFFICIENT_MOVE_PREVIOUS"] = "FALSE";
-  capabilities["EFFICIENT_MOVE_FIRST"] = "TRUE";
-  capabilities["EFFICIENT_MOVE_BEFORE_FIRST"] = "TRUE";
-  capabilities["EFFICIENT_MOVE_LAST"] = "FALSE";
-  capabilities["EFFICIENT_MOVE_AFTER_LAST"] = "FALSE";
-  capabilities["EFFICIENT_MOVE"] = "FALSE";
-  capabilities["EFFICIENT_DATASET_SIZE"] = "FALSE";
-  capabilities["DATASET_INSERTION"] = "FALSE";
-  capabilities["DATASET_UPDATE"] = "FALSE";
-  capabilities["DATASET_DELETION"] = "FALSE";
+  //capabilities["SUPPORTS_RANDOM_DATASET"] = "FALSE";
+  //capabilities["EFFICIENT_MOVE_PREVIOUS"] = "FALSE";
+  //capabilities["EFFICIENT_MOVE_FIRST"] = "TRUE";
+  //capabilities["EFFICIENT_MOVE_BEFORE_FIRST"] = "TRUE";
+  //capabilities["EFFICIENT_MOVE_LAST"] = "FALSE";
+  //capabilities["EFFICIENT_MOVE_AFTER_LAST"] = "FALSE";
+  //capabilities["EFFICIENT_MOVE"] = "FALSE";
+  //capabilities["EFFICIENT_DATASET_SIZE"] = "FALSE";
+  //capabilities["DATASET_INSERTION"] = "FALSE";
+  //capabilities["DATASET_UPDATE"] = "FALSE";
+  //capabilities["DATASET_DELETION"] = "FALSE";
 
-  capabilities["SQL_DIALECT"] = "TRUE";
-  capabilities["INSERT_QUERY"] = "TRUE";
-  capabilities["UPDATE_QUERY"] = "TRUE";
-  capabilities["DELETE_QUERY"] = "TRUE";
-  capabilities["CREATE_QUERY"] = "TRUE";
-  capabilities["DROP_QUERY"] = "TRUE";
-  capabilities["ALTER_QUERY"] = "TRUE";
-  capabilities["SELECT_QUERY"] = "TRUE";
-  capabilities["SELECT_INTO_QUERY"] = "TRUE";
+  //capabilities["SQL_DIALECT"] = "TRUE";
+  //capabilities["INSERT_QUERY"] = "TRUE";
+  //capabilities["UPDATE_QUERY"] = "TRUE";
+  //capabilities["DELETE_QUERY"] = "TRUE";
+  //capabilities["CREATE_QUERY"] = "TRUE";
+  //capabilities["DROP_QUERY"] = "TRUE";
+  //capabilities["ALTER_QUERY"] = "TRUE";
+  //capabilities["SELECT_QUERY"] = "TRUE";
+  //capabilities["SELECT_INTO_QUERY"] = "TRUE";
+
+  return sm_capabilities;
 }
 
 const te::da::SQLDialect* te::sqlite::DataSource::getDialect() const
