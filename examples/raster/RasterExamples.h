@@ -41,7 +41,7 @@ void RasterizePolygonSet();
 void SplitComplexImage();
 
 /*! \brief Creates an image crop with a providen envelope. */
-void MakeRasterBlock();
+void MakeRasterCrop();
 
 /*! \brief Creates a new raster file with a new projection. */
 void ReprojectRaster();
