@@ -185,6 +185,9 @@ void te::mem::Raster::open(const std::map<std::string, std::string>& rinfo, te::
     }
   }
 
+// set the access policy
+  m_policy = p;
+
 // copy band data from input raster
   te::rst::Copy(*iraster, *this);
 }
