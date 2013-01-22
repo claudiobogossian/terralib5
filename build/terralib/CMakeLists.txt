@@ -71,6 +71,7 @@ option (BUILD_RASTER "Build Raster module?" ON)
 option (BUILD_RP "Build Raster Processing module?" ON)
 option (BUILD_SAM "Build Spatial Access Methods module?" ON)
 option (BUILD_SERIALIZATION "Build Serialization module?" ON)
+option (BUILD_SQLITE "Build SQLite module?" OFF)
 option (BUILD_SRS "Build Spatial Reference System module?" ON)
 option (BUILD_ST "Build Spatial-Temporal module?" ON)
 option (BUILD_STLOADER "Build Spatial-Temporal Loader module?" ON)
@@ -184,6 +185,10 @@ endif()
 
 IF(BUILD_SERIALIZATION)
 	add_subdirectory(terralib_serialization)
+endif()
+
+IF(BUILD_SQLITE)
+	add_subdirectory(terralib_sqlite)
 endif()
 
 IF(BUILD_SRS)
