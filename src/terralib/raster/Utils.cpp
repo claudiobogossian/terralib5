@@ -429,8 +429,13 @@ void te::rst::GetDataTypeRanges( const int& dataType, double& min, double& max )
 
 void te::rst::FillRaster(te::rst::Raster* rin, const std::complex<double>& value)
 {
-  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
-    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
-      for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
-        rin->setValue(c, r, value, b);
+  for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
+    te::rst::FillBand(rin->getBand(b), value);
+}
+
+void te::rst::FillBand(te::rst::Band* bin, const std::complex<double>& value)
+{
+  for (unsigned int r = 0; r < bin->getRaster()->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < bin->getRaster()->getNumberOfColumns(); c++)
+      bin->setValue(c, r, value);
 }
