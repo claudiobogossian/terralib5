@@ -105,8 +105,8 @@ void te::sqlite::Module::shutdown()
     return;
 
 // we need to finalize all the factories registered by the driver
-  te::sqlite::terralib::RasterFactory::finalize();
-  te::sqlite::rlite::RasterFactory::finalize();  
+  //te::sqlite::terralib::RasterFactory::finalize();
+  //te::sqlite::rlite::RasterFactory::finalize();  
   DataSourceFactory::finalize();
 
 // we release all registered SQLite data sources
