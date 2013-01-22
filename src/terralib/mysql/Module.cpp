@@ -28,7 +28,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
-#include "../serialization/dataaccess/SQLDialect.h"
+//#include "../serialization/dataaccess/SQLDialect.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
@@ -65,7 +65,7 @@ void te::mysql::Module::startup()
 
   boost::filesystem::path dialectFile = driverpath / "mysql_dialect.xml";
 
-  Globals::sm_queryDialect = te::serialize::ReadDialect(dialectFile.string());
+  //Globals::sm_queryDialect = te::serialize::ReadDialect(dialectFile.string());
 
   TE_LOG_TRACE(TR_MYSQL("TerraLib MySQL driver startup!"));
 
