@@ -32,8 +32,8 @@
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
-#include "RasterFactory.h"
-#include "RasterTableFactory.h"
+//#include "RasterFactory.h"
+//#include "RasterTableFactory.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -57,8 +57,8 @@ void te::mysql::Module::startup()
 
 // initializes the factories
   DataSourceFactory::initialize();
-  RasterFactory::initialize();
-  RasterTableFactory::initialize();
+  //RasterFactory::initialize();
+  //RasterTableFactory::initialize();
 
 // retrieve the SQL dialect
   boost::filesystem::path driverpath(m_pluginInfo.m_folder);
@@ -78,8 +78,8 @@ void te::mysql::Module::shutdown()
     return;
 
 // finalizes the postgis factory
-  RasterTableFactory::finalize();
-  RasterFactory::finalize();
+  //RasterTableFactory::finalize();
+  //RasterFactory::finalize();
   DataSourceFactory::finalize();
 
 // free registered MySQL data sources
