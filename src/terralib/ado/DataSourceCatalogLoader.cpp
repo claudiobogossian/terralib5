@@ -424,12 +424,10 @@ void te::ado::DataSourceCatalogLoader::getPrimaryKey(te::da::DataSetType* dt)
 
   ADOX::ColumnsPtr cols = pk->GetColumns();
 
-  std::auto_ptr<te::da::PrimaryKey> tlPk( new te::da::PrimaryKey(std::string(pk->GetName()), dt));
+  te::da::PrimaryKey* tlPk = new te::da::PrimaryKey(std::string(pk->GetName()), dt);
 
   for(long i = 0; i < cols->GetCount(); i++)
     tlPk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
-
-  dt->add(tlPk.release());
 }
 
 void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
@@ -461,14 +459,12 @@ void te::ado::DataSourceCatalogLoader::getUniqueKeys(te::da::DataSetType* dt)
     {
       ADOX::_KeyPtr uk = keys->GetItem(i);
       
-      std::auto_ptr<te::da::UniqueKey> tlUk( new te::da::UniqueKey(std::string(uk->GetName()), dt));
+      te::da::UniqueKey* tlUk = new te::da::UniqueKey(std::string(uk->GetName()), dt);
 
       ADOX::ColumnsPtr cols = uk->GetColumns();
 
       for(long j = 0; j < cols->Count; j++)
         tlUk->add(dt->getProperty(std::string(cols->GetItem(i)->GetName())));
-
-      //dt->add(tlUk.release());  já está adicionado
     }
   } 
 }
