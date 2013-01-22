@@ -43,7 +43,7 @@
 #include "DataSourceTransactor.h"
 #include "Exception.h"
 #include "PreparedQuery.h"
-#include "Raster.h"
+//#include "Raster.h"
 #include "SQLVisitor.h"
 #include "Utils.h"
 
@@ -282,13 +282,14 @@ sql::ResultSet* te::mysql::DataSourceTransactor::myQuery(const std::string& quer
 
 te::da::DataSet* te::mysql::DataSourceTransactor::getRasterDataSet(const std::string& name)
 {
-  std::auto_ptr<DataSourceCatalogLoader> cloader(getMyCatalogLoader());
-  std::auto_ptr<te::da::DataSetType> dt(cloader->getRasterDataSet(name));
-  std::auto_ptr<te::mem::DataSet> dataset(new te::mem::DataSet(dt.release()));
-  std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(dataset.get()));
-  std::auto_ptr<Raster> raster(new Raster(this, dt.get()));
-  item->setValue(0, raster.release());
-  return dataset.release();
+  //std::auto_ptr<DataSourceCatalogLoader> cloader(getMyCatalogLoader());
+  //std::auto_ptr<te::da::DataSetType> dt(cloader->getRasterDataSet(name));
+  //std::auto_ptr<te::mem::DataSet> dataset(new te::mem::DataSet(dt.release()));
+  //std::auto_ptr<te::mem::DataSetItem> item(new te::mem::DataSetItem(dataset.get()));
+  //std::auto_ptr<Raster> raster(new Raster(this, dt.get()));
+  //item->setValue(0, raster.release());
+  //return dataset.release();
+  return 0;
 }
 
 te::mysql::DataSource* te::mysql::DataSourceTransactor::getMyDataSource() const

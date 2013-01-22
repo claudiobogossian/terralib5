@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
 // STL
@@ -68,7 +69,7 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
 
@@ -138,8 +139,8 @@ namespace te
 
         std::map<std::string, te::da::DataSetType*> m_rasters;
 
-        //static const te::da::SQLDialect* sm_dialect;                //!< The Query dialect of the MySQL driver (note: the data source doesn't have the ownership of this pointer).
-        //static std::map<std::string, std::string> sm_capabilities;  //!< MySQL capabilities.
+        //static const te::da::SQLDialect* sm_dialect;              //!< The Query dialect of the MySQL driver (note: the data source doesn't have the ownership of this pointer).
+        static te::da::DataSourceCapabilities sm_capabilities;    //!< MySQL capabilities.
     };
 
   } // end namespace mysql

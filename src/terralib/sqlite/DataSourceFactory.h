@@ -51,7 +51,7 @@ namespace te
 
         ~DataSourceFactory();
 
-      protected:        
+      protected:
 
         te::da::DataSource* build();
 

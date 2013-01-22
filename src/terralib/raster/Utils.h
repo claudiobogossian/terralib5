@@ -144,6 +144,13 @@ namespace te
     */
     TERASTEREXPORT void FillRaster(te::rst::Raster* rin, const std::complex<double>& value);
 
+    /*!
+      \brief Fill a Raster Band with provided value.
+
+      \param bin   The input band.
+      \param value The value to fill all the bands of the Raster.
+    */
+    TERASTEREXPORT void FillBand(te::rst::Band* bin, const std::complex<double>& value);
   } // end namespace rst
 }   // end namespace te
 

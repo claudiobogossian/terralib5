@@ -1,0 +1,81 @@
+cmake_minimum_required(VERSION 2.8)
+
+# Find path - tries to find *.h in paths hard-coded by the script
+FIND_PATH (SQLITE_INCLUDE_SQLITE sqlite3.h
+			PATHS /usr/local/include/sqlite /usr/include/sqlite /usr/local/sqlite/include
+			PATH_SUFFIXES "sqlite")
+
+FIND_PATH (SQLITE_INCLUDE_SPATIALITE spatialite.h
+			PATHS /usr/local/include/sqlite /usr/include/sqlite /usr/local/sqlite/include
+			PATH_SUFFIXES "spatialite")
+
+FIND_PATH (SQLITE_INCLUDE_RASTERLITE rasterlite.h
+			PATHS /usr/local/include/sqlite /usr/include/sqlite /usr/local/sqlite/include
+			PATH_SUFFIXES "rasterlite")
+			
+SET(SQLITE_INCLUDE_DIR 
+	${SQLITE_INCLUDE_SQLITE}
+	${SQLITE_INCLUDE_SPATIALITE}
+	${SQLITE_INCLUDE_RASTERLITE}
+)
+			
+# Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
+
+FIND_LIBRARY(SQLITE_LIBRARY_SQLITE_RELEASE
+             NAMES libsqlite sqlite
+             PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+			 
+FIND_LIBRARY(SQLITE_LIBRARY_SPATIALITE_RELEASE
+			NAMES libspatialite spatialite
+			PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+			 
+FIND_LIBRARY(SQLITE_LIBRARY_RASTERLITE_RELEASE
+			NAMES librasterlite rasterlite
+            PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+			
+FIND_LIBRARY(SQLITE_LIBRARY_SQLITE_DEBUG
+             NAMES libsqlite_d sqlite_d
+             PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+			 
+FIND_LIBRARY(SQLITE_LIBRARY_SPATIALITE_DEBUG
+			NAMES libspatialite_d spatialite_d
+			PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+			 
+FIND_LIBRARY(SQLITE_LIBRARY_RASTERLITE_DEBUG
+			NAMES librasterlite_d rasterlite_d
+            PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+
+SET(SQLITE_LIBRARY 
+	optimized ${SQLITE_LIBRARY_SQLITE_RELEASE}
+	optimized ${SQLITE_LIBRARY_SPATIALITE_RELEASE}
+	optimized ${SQLITE_LIBRARY_RASTERLITE_RELEASE}
+	debug ${SQLITE_LIBRARY_SQLITE_DEBUG}
+	debug ${SQLITE_LIBRARY_SPATIALITE_DEBUG}
+	debug ${SQLITE_LIBRARY_RASTERLITE_DEBUG}
+)
+			
+# Export include and library path for linking with other libraries
+
+SET(SQLITE_FOUND FALSE)
+
+IF (SQLITE_INCLUDE_SQLITE AND SQLITE_INCLUDE_SPATIALITE AND SQLITE_INCLUDE_RASTERLITE AND 
+SQLITE_LIBRARY_SQLITE_RELEASE AND SQLITE_LIBRARY_SPATIALITE_RELEASE AND 
+SQLITE_LIBRARY_RASTERLITE_RELEASE AND SQLITE_LIBRARY_SQLITE_DEBUG AND SQLITE_LIBRARY_SPATIALITE_DEBUG AND
+SQLITE_LIBRARY_RASTERLITE_DEBUG)
+	SET(SQLITE_FOUND TRUE)
+	MESSAGE("-- Found SQLite library")
+ELSE (SQLITE_INCLUDE_SQLITE AND SQLITE_INCLUDE_SPATIALITE AND SQLITE_INCLUDE_RASTERLITE AND 
+SQLITE_LIBRARY_SQLITE_RELEASE AND SQLITE_LIBRARY_SPATIALITE_RELEASE AND 
+SQLITE_LIBRARY_RASTERLITE_RELEASE AND SQLITE_LIBRARY_SQLITE_DEBUG AND SQLITE_LIBRARY_SPATIALITE_DEBUG AND
+SQLITE_LIBRARY_RASTERLITE_DEBUG)
+  if(SQLITE_FIND_REQUIRED)
+    MESSAGE(FATAL_ERROR "-- Error: SQLite required but NOT found.")
+  else()
+    MESSAGE(STATUS "-- Could NOT find SQLite library")
+  endif()
+ENDIF (SQLITE_INCLUDE_SQLITE AND SQLITE_INCLUDE_SPATIALITE AND SQLITE_INCLUDE_RASTERLITE AND 
+SQLITE_LIBRARY_SQLITE_RELEASE AND SQLITE_LIBRARY_SPATIALITE_RELEASE AND 
+SQLITE_LIBRARY_RASTERLITE_RELEASE AND SQLITE_LIBRARY_SQLITE_DEBUG AND SQLITE_LIBRARY_SPATIALITE_DEBUG AND
+SQLITE_LIBRARY_RASTERLITE_DEBUG)
+
+MARK_AS_ADVANCED( SQLITE_LIBRARY SQLITE_INCLUDE_DIR )

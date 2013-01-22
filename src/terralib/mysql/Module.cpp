@@ -28,12 +28,12 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
-#include "../serialization/dataaccess/SQLDialect.h"
+//#include "../serialization/dataaccess/SQLDialect.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
-#include "RasterFactory.h"
-#include "RasterTableFactory.h"
+//#include "RasterFactory.h"
+//#include "RasterTableFactory.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -57,15 +57,15 @@ void te::mysql::Module::startup()
 
 // initializes the factories
   DataSourceFactory::initialize();
-  RasterFactory::initialize();
-  RasterTableFactory::initialize();
+  //RasterFactory::initialize();
+  //RasterTableFactory::initialize();
 
 // retrieve the SQL dialect
   boost::filesystem::path driverpath(m_pluginInfo.m_folder);
 
   boost::filesystem::path dialectFile = driverpath / "mysql_dialect.xml";
 
-  Globals::sm_queryDialect = te::serialize::ReadDialect(dialectFile.string());
+  //Globals::sm_queryDialect = te::serialize::ReadDialect(dialectFile.string());
 
   TE_LOG_TRACE(TR_MYSQL("TerraLib MySQL driver startup!"));
 
@@ -78,8 +78,8 @@ void te::mysql::Module::shutdown()
     return;
 
 // finalizes the postgis factory
-  RasterTableFactory::finalize();
-  RasterFactory::finalize();
+  //RasterTableFactory::finalize();
+  //RasterFactory::finalize();
   DataSourceFactory::finalize();
 
 // free registered MySQL data sources

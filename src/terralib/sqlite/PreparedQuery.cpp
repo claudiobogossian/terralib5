@@ -58,7 +58,7 @@ namespace te
   namespace sqlite
   {
 
-    inline void BindValue(sqlite3_stmt* stmt, std::size_t i, std::size_t propertyPos, const te::dt::Property* p, te::da::DataSetItem* d)
+    template<class T> inline void BindValue(sqlite3_stmt* stmt, std::size_t i, std::size_t propertyPos, const te::dt::Property* p, T* d)
     {
       int retval = SQLITE_OK;
 
@@ -454,6 +454,30 @@ void te::sqlite::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::Data
 
   for(std::size_t i = 0; i < nparams; ++i)
     BindValue(m_stmt, i, i, dt->getProperty(i), item);
+}
+
+void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSet* d)
+{
+  const std::size_t nparams = propertiesPos.size();
+
+  for(std::size_t i = 0; i < nparams; ++i)
+    BindValue(m_stmt, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
+}
+
+void te::sqlite::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d)
+{
+  const std::size_t nparams = propertiesPos.size();
+
+  for(std::size_t i = 0; i < nparams; ++i)
+    BindValue(m_stmt, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
+}
+
+void te::sqlite::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSet* d)
+{
+  const std::size_t nparams = dt->size();
+
+  for(std::size_t i = 0; i < nparams; ++i)
+    BindValue(m_stmt, i, i, dt->getProperty(i), d);
 }
 
 
