@@ -52,8 +52,6 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["host"] = "localhost";
     connInfo["user"] = "";
     connInfo["password"] = "";
-    //connInfo["dbname"] = "C:\\Curso_TerraView\\BD_TView\\Modelo_Dados.mdb";
-    //connInfo["dbname"] = "C:\\Users\\juan\\Documents\\ADO_Examples\\Northwind.mdb";
     connInfo["dbname"] = ""TE_DATA_EXAMPLE_LOCALE"/data/mdb/Northwind.mdb";
    
     // Create a data source using the data source factory

@@ -61,8 +61,7 @@ void PrintCatalog(te::da::DataSource* ds)
     // Get dataset information: the parameter true indicates that we want all the information about the dataset;
     //                          you can set it to false and see the difference (no primary key and other stuffs are retrieved)
 
-    //te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], true);
-    te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], false);
+    te::da::DataSetType* dt = cloader->getDataSetType(datasets[i], true);
 
     std::cout << "DataSet: " << dt->getName() << std::endl;
     std::cout << "\t" << "Number of attributes:" << dt->size() << std::endl;
