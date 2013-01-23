@@ -220,10 +220,17 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   
   configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
 
+if(WIN32)  
   install(
     TARGETS ${PROJ_NAME}
     RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
   )
+else()
+  install(
+    TARGETS ${PROJ_NAME}
+    LIBRARY DESTINATION "bin/plugins" COMPONENT PLUGINS
+  )
+endif()
   
   install (
     FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_${proj_name}_info.xml
