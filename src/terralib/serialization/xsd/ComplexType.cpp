@@ -154,6 +154,9 @@ te::xsd::ComplexType* te::serialize::ReadComplexType(te::xml::Reader& reader)
       ct->setAnyAttribute(ReadAnyAttribute(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return ct.release();
 }
 

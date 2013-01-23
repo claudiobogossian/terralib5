@@ -26,8 +26,14 @@
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../../xsd/All.h"
+#include "../../xsd/Choice.h"
 #include "../../xsd/Group.h"
+#include "../../xsd/Sequence.h"
+#include "All.h"
+#include "Choice.h"
 #include "Group.h"
+#include "Sequence.h"
 #include "Utils.h"
 
 // STL
@@ -64,13 +70,16 @@ te::xsd::Group* te::serialize::ReadGroup(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(group.get(), reader);
 
-  //if(reader.getElementLocalName() == "all")
-  //  group->setContent(ReadAll(reader));
-  //else if(reader.getElementLocalName() == "choice")
-  //  group->setContent(ReadChoice(reader));
-  //else if(reader.getElementLocalName() == "sequence")
-  //  group->setContent(ReadSequence(reader));
-  //else throw; // TODO: Add an exception here...
+  if(reader.getElementLocalName() == "all")
+    group->setContent(ReadAll(reader));
+  else if(reader.getElementLocalName() == "choice")
+    group->setContent(ReadChoice(reader));
+  else if(reader.getElementLocalName() == "sequence")
+    group->setContent(ReadSequence(reader));
+  else throw; // TODO: Add an exception here...
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return group.release();
 }

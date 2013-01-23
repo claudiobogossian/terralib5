@@ -55,6 +55,7 @@ te::xsd::Schema* te::serialize::ReadSchema(const std::string& path)
 {
   std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
   reader->setValidationScheme(false);
+  reader->setIgnoreWhiteSpaces(true);
   reader->read(path);
 
   if(!reader->next())
@@ -189,6 +190,8 @@ te::xsd::Schema* te::serialize::ReadSchema(te::xml::Reader& reader)
     if(tag == "attribute")
       schema->addAttribute(ReadAttribute(reader));
   }
+
+  assert(reader.getNodeType() == te::xml::END_DOCUMENT);
 
   return schema.release();
 }

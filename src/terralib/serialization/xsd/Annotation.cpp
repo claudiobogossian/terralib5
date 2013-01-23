@@ -73,6 +73,9 @@ te::xsd::Annotation* te::serialize::ReadAnnotation(te::xml::Reader& reader)
       annotation->add(appinfo);
 
       reader.next();
+      assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of AppInfo element
+
+      reader.next();
 
       continue;
     }
@@ -101,8 +104,14 @@ te::xsd::Annotation* te::serialize::ReadAnnotation(te::xml::Reader& reader)
       annotation->add(doc);
 
       reader.next();
+      assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Documentation element
+
+      reader.next();
     }
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return annotation.release();
 }

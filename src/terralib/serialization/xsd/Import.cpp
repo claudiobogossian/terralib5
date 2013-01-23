@@ -60,6 +60,9 @@ te::xsd::Import* te::serialize::ReadImport(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(import.get(), reader);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return import.release();
 }
 

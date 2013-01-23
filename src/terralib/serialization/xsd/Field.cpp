@@ -57,6 +57,9 @@ te::xsd::Field* te::serialize::ReadField(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(field.get(), reader);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return field.release();
 }
 

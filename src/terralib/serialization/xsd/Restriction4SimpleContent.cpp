@@ -118,7 +118,13 @@ te::xsd::Restriction4SimpleContent* te::serialize::ReadRestriction4SimpleContent
     restriction->addFacet(GetFacetType(tag), reader.getAttr(pos));
 
     reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Facet
+
+    reader.next();
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return restriction.release();
 }

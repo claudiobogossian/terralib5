@@ -50,6 +50,9 @@ te::se::ColorMap* te::serialize::ReadColorMap(te::xml::Reader& reader)
   else // Interpolate
     cm->setInterpolate(ReadInterpolate(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return cm.release();
 }
 

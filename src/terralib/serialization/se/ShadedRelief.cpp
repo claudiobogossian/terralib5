@@ -58,6 +58,9 @@ te::se::ShadedRelief* te::serialize::ReadShadedRelief(te::xml::Reader& reader)
     reader.next();
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return sr.release();
 }
 

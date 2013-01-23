@@ -20,12 +20,9 @@
 #ifndef __TERRALIB_EXAMPLES_XERCES_H
 #define __TERRALIB_EXAMPLES_XERCES_H
 
-#include "Config.h"
+// STL
+#include <string>
 
-/*! \brief It loads the needed modules necessary to run the examples, if they are available. */
-void LoadModules();
+void ReadXML(const std::string& path, bool validSchema, bool ignoreWhiteSpaces);
 
-void Read();
-
-#endif  // 
-
+#endif // __TERRALIB_EXAMPLES_XERCES_H

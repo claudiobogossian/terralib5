@@ -54,9 +54,15 @@ te::se::SelectedChannel* te::serialize::ReadSelectedChannel(te::xml::Reader& rea
   sc->setSourceChannelName(reader.getElementValue());
   reader.next();
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   // ContrastEnhancement
   if(reader.getElementLocalName() == "ContrastEnhancement")
     sc->setContrastEnhancement(ReadContrastEnhancement(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return sc.release();
 }

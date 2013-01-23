@@ -127,6 +127,9 @@ te::xsd::Restriction4ComplexContent* te::serialize::ReadRestriction4ComplexConte
       restriction->setAnyAttribute(ReadAnyAttribute(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return restriction.release();
 }
 

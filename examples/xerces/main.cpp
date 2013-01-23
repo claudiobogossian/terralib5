@@ -20,26 +20,50 @@
 /*!
   \file main.cpp
 
-  \brief A list of examples for the TerraLib Spatial Reference Systems Module.
+  \brief A list of examples for the TerraLib Xerces Module.
  */
 
-// TerraLib
-#include <terralib/common.h>
-#include <terralib/plugin.h>
-
-// Examples
+// Example
 #include "ReaderExample.h"
+
+// TerraLib
+#include <terralib/common/TerraLib.h>
+#include <terralib/plugin.h>
 
 // STL
 #include <iostream>
 
+void LoadXerces()
+{
+  try
+  {
+    te::plugin::PluginInfo pinfo;
+    pinfo.m_name = "TERRALIB_XERCES";
+    pinfo.m_category = "XML";
+    pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
+    pinfo.m_folder = PLUGINS_PATH;
+    pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_xerces"));
+
+    te::plugin::PluginManager::getInstance().load(pinfo, true);
+  }
+  catch(...)
+  {
+    std::cout << std::endl << "Failed to load XERCES plugin: unknow exception!" << std::endl;
+  }
+}
+
 int main(int /*argc*/, char** /*argv*/)
-{ 
-// It initializes all the data source drivers (see LoadModule.cpp)
+{
   try
   {
     TerraLib::getInstance().initialize();
-    Read(); 
+
+    ReadXML("D:/terralib5/terralib5/examples/xerces/note.xml", true, false);
+    ReadXML("D:/terralib5/terralib5/examples/xerces/note.xml", false, false);
+    ReadXML("D:/terralib5/terralib5/examples/xerces/note.xml", false, true);
+    ReadXML("D:/test.xml", false, true);
+    ReadXML("D:/test_contracted.xml", false, true);
+
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
@@ -52,6 +76,9 @@ int main(int /*argc*/, char** /*argv*/)
     std::cout << std::endl << "An unexpected exception has occurried!" << std::endl;
     return EXIT_FAILURE;
   }
+
+  std::cout << "Press Enter to exit..." << std::endl;
+  std::cin.get();
+
   return EXIT_SUCCESS;
 }
-

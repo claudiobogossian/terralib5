@@ -29,6 +29,7 @@
 // Xerces-C++
 #include <xercesc/sax/Locator.hpp>
 #include <xercesc/sax2/Attributes.hpp>
+#include <xercesc/util/XMLChar.hpp>
 #include <xercesc/util/XMLString.hpp>
 
 te::xerces::ReaderHandler::ReaderHandler()
@@ -39,7 +40,8 @@ te::xerces::ReaderHandler::ReaderHandler()
     m_value(0),
     m_len(0),
     /*m_locator(0),*/
-    m_nodeType(te::xml::UNKNOWN)
+    m_nodeType(te::xml::UNKNOWN),
+    m_isInContractedForm(false)
 {
 }
 
@@ -51,7 +53,7 @@ void te::xerces::ReaderHandler::reset()
 
 void te::xerces::ReaderHandler::characters(const XMLCh* const chars, const XMLSize_t length)
 {
-  m_nodeType = te::xml::VALUE;
+  xercesc_3_1::XMLChar1_0::isAllSpaces(chars, length) ? m_nodeType = te::xml::WHITESPACE : m_nodeType = te::xml::VALUE;
   m_value = chars;
   m_len = length;
 }
@@ -61,16 +63,18 @@ void te::xerces::ReaderHandler::endDocument()
   m_nodeType = te::xml::END_DOCUMENT;
 }
 
-void te::xerces::ReaderHandler::endElement(const XMLCh* const /*uri*/, const XMLCh* const /*localname*/, const XMLCh* const /*qname*/)
+void te::xerces::ReaderHandler::endElement(const XMLCh* const uri, const XMLCh* const localname, const XMLCh* const qname)
 {
   if(m_nodeType == te::xml::START_ELEMENT)
+  {
+    m_isInContractedForm = true;
     return;
+  }
 
-  m_nodeType = te::xml::UNKNOWN;
-  m_nspaces.clear();
-  //m_uri = uri;
-  //m_localname = localname;
-  //m_qname = qname;
+  m_nodeType = te::xml::END_ELEMENT;
+  m_uri = uri;
+  m_localname = localname;
+  m_qname = qname;
 }
 
 void te::xerces::ReaderHandler::ignorableWhitespace(const XMLCh* const /*chars*/, const XMLSize_t /*length*/)
@@ -101,7 +105,7 @@ void te::xerces::ReaderHandler::startElement(const XMLCh* const uri, const XMLCh
   m_uri = uri;
   m_localname = localname;
   m_qname = qname;
-  m_attrs = &attrs;  
+  m_attrs = &attrs;
 }
 
 void te::xerces::ReaderHandler::startPrefixMapping(const XMLCh* const prefix, const XMLCh* const uri)
@@ -126,3 +130,17 @@ te::xml::NodeType te::xerces::ReaderHandler::getNodeType() const
   return m_nodeType;
 }
 
+void te::xerces::ReaderHandler::setNodeType(te::xml::NodeType type)
+{
+  m_nodeType = type;
+}
+
+bool te::xerces::ReaderHandler::isInContractedForm() const
+{
+  return m_isInContractedForm;
+}
+
+void te::xerces::ReaderHandler::setInContractedForm(bool d)
+{
+  m_isInContractedForm = d;
+}

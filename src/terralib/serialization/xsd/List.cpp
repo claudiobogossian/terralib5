@@ -62,6 +62,9 @@ te::xsd::List* te::serialize::ReadList(te::xml::Reader& reader)
   if(reader.getElementLocalName() == "simpleType")
      list->setSimpleType(ReadSimpleType(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return list.release();
 }
 

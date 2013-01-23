@@ -71,6 +71,9 @@ te::xsd::SimpleType* te::serialize::ReadSimpleType(te::xml::Reader& reader)
     st->setConstructor(ReadUnion(reader));
   else throw; // TODO: Add an exception here...
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return st.release();
 }
 

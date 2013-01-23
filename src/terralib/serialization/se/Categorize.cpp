@@ -79,6 +79,9 @@ te::se::Categorize* te::serialize::ReadCategorize(te::xml::Reader& reader)
     c->addValue(ReadParameterValue(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return c.release();
 }
 

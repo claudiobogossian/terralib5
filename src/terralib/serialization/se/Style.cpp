@@ -110,6 +110,9 @@ te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     fts->setName(new std::string(reader.getElementValue()));
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Description
@@ -123,6 +126,9 @@ te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     fts->setFeatureTypeName(new std::string(reader.getElementValue()));
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
   
   // SemanticTypeIdentifier
@@ -133,6 +139,9 @@ te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     fts->push_back(reader.getElementValue());
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Rules
@@ -141,6 +150,8 @@ te::se::Style* FeatureTypeStyleReader(te::xml::Reader& reader)
     fts->push_back(te::serialize::ReadRule(reader));
 
   // TODO: OnlineResource
+
+  assert(reader.getNodeType() == te::xml::END_DOCUMENT);
 
   return fts.release();
 }
@@ -165,6 +176,9 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     cs->setName(new std::string(reader.getElementValue()));
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Description
@@ -178,6 +192,9 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     cs->setCoverageName(new std::string(reader.getElementValue()));
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
   
   // SemanticTypeIdentifier
@@ -188,6 +205,9 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     cs->push_back(reader.getElementValue());
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Rules
@@ -196,6 +216,8 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
     cs->push_back(te::serialize::ReadRule(reader));
 
   // TODO: OnlineResource
+
+  assert(reader.getNodeType() == te::xml::END_DOCUMENT);
 
   return cs.release();
 }

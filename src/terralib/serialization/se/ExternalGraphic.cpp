@@ -59,6 +59,9 @@ te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& rea
 
   // Recodes (...)
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return eg.release();
 }
 

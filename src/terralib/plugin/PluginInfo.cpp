@@ -52,6 +52,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_name = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Name element
 
 // DisplayName
   xmlReader.next();
@@ -61,6 +63,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_displayName = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of DisplayName element
 
 // Description
   xmlReader.next();
@@ -70,6 +74,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_description = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Description element
 
 // TerraLibVersion
   xmlReader.next();
@@ -79,6 +85,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_terralibVersion = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of TerraLibVersion element
 
 // License
   xmlReader.next();
@@ -93,6 +101,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_licenseDescription = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of License element
 
 // Category
   xmlReader.next();
@@ -102,6 +112,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_category = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Category element
 
 // Site
   xmlReader.next();
@@ -112,6 +124,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   {
     pInfo.m_site = xmlReader.getAttr(0);
   }
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Site element
 
 // Provider
   xmlReader.next();
@@ -125,6 +139,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_provider.m_name = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Provider/Name element
 
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
@@ -134,6 +150,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   {
     pInfo.m_provider.m_site = xmlReader.getAttr(0);
   }
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Provider/Site element
 
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
@@ -142,6 +160,11 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
   xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::VALUE);
   pInfo.m_provider.m_email = xmlReader.getElementValue();
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Provider/Email element
+
+  xmlReader.next();
+  assert(xmlReader.getNodeType() == te::xml::END_ELEMENT); // End of Provider
 
 // RequiredPlugins
   xmlReader.next();
@@ -159,6 +182,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
       assert(xmlReader.getNodeType() == te::xml::VALUE);
       std::string pluginId = xmlReader.getElementValue();
       pInfo.m_requiredPlugins.push_back(pluginId);
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::END_ELEMENT);
     }
   }
 
@@ -176,6 +201,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
       assert(xmlReader.getNodeType() == te::xml::VALUE);
       std::string categoryId = xmlReader.getElementValue();
       pInfo.m_requiredPluginCategories.push_back(categoryId);
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::END_ELEMENT);
     }
   }
 
@@ -193,6 +220,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
       assert(xmlReader.getNodeType() == te::xml::VALUE);
       std::string moduleId = xmlReader.getElementValue();
       pInfo.m_requiredModules.push_back(moduleId);
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::END_ELEMENT);
     }
   }
 
@@ -210,6 +239,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
       std::string href = xmlReader.getAttr("xlink:href");
 
       pInfo.m_resources.push_back(te::plugin::PluginInfo::Resource(name, href));
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::END_ELEMENT);
     }
   }
 
@@ -230,6 +261,8 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::VALUE);
       std::string paramName = xmlReader.getElementValue();
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::END_ELEMENT);
 
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
@@ -238,13 +271,15 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::VALUE);
       std::string paramValue = xmlReader.getElementValue();
+      xmlReader.next();
+      assert(xmlReader.getNodeType() == te::xml::END_ELEMENT);
 
       pInfo.m_parameters.push_back(te::plugin::PluginInfo::Parameter(paramName, paramValue));
     }
   }
 
+  xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::END_DOCUMENT);
 
   return pInfo;
 }
-

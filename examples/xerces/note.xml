@@ -1,7 +1,9 @@
-<?xml version="1.0" ?>
-<note>
-<to>Tove</to>
-<from>Jani</from>
-<heading>Reminder</heading>
-<body>Don't forget me this weekend!</body>
-</note>
+<?xml version="1.0" encoding="UTF-8"?>
+<Note xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.terralib.org/schemas/note"
+      xsd:schemaLocation="http://www.terralib.org/schemas/note note.xsd">
+  <To>Tove</To>
+  <From>Jani</From>
+  <Heading>Reminder</Heading>
+  <Body>Don't forget me this weekend!</Body>
+</Note>

@@ -75,6 +75,9 @@ te::xsd::KeyRef* te::serialize::ReadKeyRef(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "field")
     keyRef->addField(ReadField(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return keyRef.release();
 }
 

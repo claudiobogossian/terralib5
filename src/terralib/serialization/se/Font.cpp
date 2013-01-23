@@ -48,6 +48,9 @@ te::se::Font* te::serialize::ReadFont(te::xml::Reader& reader)
         reader.getElementLocalName() == "SvgParameter")
     font->add(ReadSvgParameter(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return font.release();
 }
 

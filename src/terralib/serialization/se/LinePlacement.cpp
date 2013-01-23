@@ -95,6 +95,9 @@ te::se::LinePlacement* te::serialize::ReadLinePlacement(te::xml::Reader& reader)
     reader.next();
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return lp.release();
 }
 

@@ -71,6 +71,9 @@ te::xsd::Union* te::serialize::ReadUnion(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT && (reader.getElementLocalName() == "simpleType"))
     u->addSimpleType(ReadSimpleType(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return u.release();
 }
 

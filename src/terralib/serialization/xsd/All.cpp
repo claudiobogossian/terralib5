@@ -59,6 +59,9 @@ te::xsd::All* te::serialize::ReadAll(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT && (reader.getElementLocalName() == "element"))
     all->addElement(ReadElement(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return all.release();
 }
 

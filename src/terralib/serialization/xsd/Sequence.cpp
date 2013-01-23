@@ -102,6 +102,9 @@ te::xsd::Sequence* te::serialize::ReadSequence(te::xml::Reader& reader)
       sequence->addAny(ReadAny(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return sequence.release();
 }
 

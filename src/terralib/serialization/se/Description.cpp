@@ -50,6 +50,9 @@ te::se::Description* te::serialize::ReadDescription(te::xml::Reader& reader)
     std::string title = reader.getElementValue();
     description->setTitle(title);
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Abstract
@@ -60,7 +63,13 @@ te::se::Description* te::serialize::ReadDescription(te::xml::Reader& reader)
     std::string abs = reader.getElementValue();
     description->setAbstract(abs);
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return description.release();
 }
