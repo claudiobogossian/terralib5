@@ -70,7 +70,7 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   // Set the attribute values
   te::da::DataSourceCatalogLoader* catalogLoader;
 
-  te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer());
+  te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
 
   m_t = refLayer->getDataSource()->getTransactor();
   catalogLoader = m_t->getCatalogLoader();
@@ -250,7 +250,7 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
   // Get the values of the attribute selected
   std::vector<std::string> attrValues;
 
-  te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer());
+  te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
 
   std::string sql = "SELECT " + attributeComboBox->currentText().toStdString();
   sql += " FROM " + refLayer->getId();
@@ -352,7 +352,7 @@ void te::qt::widgets::Legend::okPushButtonClicked()
   
   grouping->setStdDeviation(stdDeviationComboBox->currentText().toFloat());
 
-  te::map::Layer* refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer());
+  te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
 
   refLayer->setGrouping(grouping);
 

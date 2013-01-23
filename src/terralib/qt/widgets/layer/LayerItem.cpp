@@ -35,7 +35,7 @@
 #include <QtGui/QWidget>
 
 
-te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject* parent)
+te::qt::widgets::LayerItem::LayerItem(const te::map::AbstractLayerPtr& refLayer, QObject* parent)
   : AbstractTreeItem(parent)
 {
   m_refLayer = refLayer;
@@ -45,7 +45,7 @@ te::qt::widgets::LayerItem::LayerItem(te::map::AbstractLayer* refLayer, QObject*
 
   while(it != it_end)
   {
-    te::map::AbstractLayer* childReflayer = static_cast<te::map::AbstractLayer*>(*it);
+    te::map::AbstractLayerPtr childReflayer(static_cast<te::map::AbstractLayer*>(it->get()));
 
     new LayerItem(childReflayer, this);
     ++it;

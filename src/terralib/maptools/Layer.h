@@ -217,6 +217,8 @@ namespace te
         std::auto_ptr<te::color::ColorBar> m_colorBar;  //!< The color bar associated to this layer.
     };
 
+    typedef boost::intrusive_ptr<Layer> LayerPtr;
+
   } // end namespace map
 }   // end namespace te
 

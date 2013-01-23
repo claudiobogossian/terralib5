@@ -72,7 +72,7 @@ namespace te
             \note The LayerItem will NOT take the ownership of the referenced layer.
                   Be sure not to clear it before dropping off the LayerItem.
            */
-          LayerItem(te::map::AbstractLayer* refLayer, QObject* parent = 0);
+          LayerItem(const te::map::AbstractLayerPtr& refLayer, QObject* parent = 0);
 
           /*! Destructor. */
           ~LayerItem();

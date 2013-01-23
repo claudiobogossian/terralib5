@@ -1,6 +1,8 @@
 #include "MapDisplay.h"
 
 //! TerraLib include files
+#include <terralib/common/STLUtils.h>
+
 #include <terralib/geometry/Geometry.h>
 #include <terralib/geometry/Envelope.h>
 #include <terralib/geometry/Utils.h>

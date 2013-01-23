@@ -37,9 +37,10 @@ te::qt::widgets::AbstractTreeItem::AbstractTreeItem(QObject* parent)
 }
 
 te::qt::widgets::AbstractTreeItem::~AbstractTreeItem()
-{}
+{
+}
 
-te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::getRefLayer() const
+te::map::AbstractLayerPtr te::qt::widgets::AbstractTreeItem::getRefLayer() const
 {
   return m_refLayer;
 }
@@ -66,7 +67,7 @@ int te::qt::widgets::AbstractTreeItem::getIndex() const
   return index;
 }
 
-te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::removeChild(int row)
+te::map::AbstractLayerPtr te::qt::widgets::AbstractTreeItem::removeChild(int row)
 {
   const QList<QObject*>& childrenList = children();
   int numChildren = childrenList.count();
@@ -77,7 +78,7 @@ te::map::AbstractLayer* te::qt::widgets::AbstractTreeItem::removeChild(int row)
   te::qt::widgets::AbstractTreeItem* item = static_cast<te::qt::widgets::AbstractTreeItem*>(childrenList.at(row));
   numChildren = m_refLayer->getChildrenCount();
 
-  te::map::AbstractLayer* itemRefLayer = static_cast<te::map::AbstractLayer*>(m_refLayer->takeChild(row));
+  te::map::AbstractLayerPtr itemRefLayer(static_cast<te::map::AbstractLayer*>(m_refLayer->remove(row).get()));
   item->setParent(0);
 
   numChildren = m_refLayer->getChildrenCount();
@@ -108,7 +109,7 @@ bool te::qt::widgets::AbstractTreeItem::removeChildren(int i, int count)
     item->setParent(0);
   }
 
-  m_refLayer->takeChildren(i, count);
+  m_refLayer->remove(i, count);
 
   return true;
 }
@@ -132,7 +133,7 @@ void te::qt::widgets::AbstractTreeItem::insertChild(int pos, AbstractTreeItem* i
   for(int i = 0; i < savedItemsList.count(); ++i)
     savedItemsList.at(i)->setParent(this);
 
-  m_refLayer->insertChild(pos, item->getRefLayer());
+  m_refLayer->insert(pos, item->getRefLayer());
 }
 
 void te::qt::widgets::AbstractTreeItem::append(AbstractTreeItem* treeItem)

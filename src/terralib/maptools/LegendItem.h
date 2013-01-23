@@ -130,7 +130,7 @@ namespace te
 
           \param color The color of the legend item..
         */
-        void setColor(const te::color::RGBAColor& color);       
+        void setColor(const te::color::RGBAColor& color);
 
       private:
 

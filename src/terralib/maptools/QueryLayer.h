@@ -260,6 +260,8 @@ namespace te
         QueryLayerRenderer* m_renderer; //!< A pointer to the internal renderer used to paint this layer.
     };
 
+    typedef boost::intrusive_ptr<QueryLayer> QueryLayerPtr;
+
   } // end namespace map
 }   // end namespace te
 
