@@ -1,15 +1,17 @@
-<?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-<xs:element name="note">
-  <xs:complexType>
-    <xs:sequence>
-      <xs:element name="to" type="xs:string"/>
-      <xs:element name="from" type="xs:string"/>
-      <xs:element name="heading" type="xs:string"/>
-      <xs:element name="body" type="xs:string"/>
-    </xs:sequence>
-  </xs:complexType>
-</xs:element>
-
-</xs:schema>
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:note="http://www.terralib.org/schemas/note"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/schemas/note"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+  <xsd:element name="Note">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="To" type="xsd:string"/>
+        <xsd:element name="From" type="xsd:string"/>
+        <xsd:element name="Heading" type="xsd:string"/>
+        <xsd:element name="Body" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>
