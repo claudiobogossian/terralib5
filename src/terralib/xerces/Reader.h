@@ -83,6 +83,8 @@ namespace te
 
         void setCacheGrammarFromParse(bool d);
 
+        void setIgnoreWhiteSpaces(bool d);
+
         void read(const std::string& fileURI);
 
         bool next();
@@ -136,6 +138,7 @@ namespace te
         ReaderHandler* m_readerH;           //!< A pointer to a content handler.
         ErrorHandler* m_errH;               //!< A pointer to an error handler.
         xercesc::XMLPScanToken* m_token;    //!< This keeps the parser state.
+        bool m_ignoreWhiteSpaces;           //!< A flag that indicates if the parser should ignore white spaces.
     };
 
   } // end namespace xerces

@@ -208,6 +208,12 @@ namespace te
 
         const std::pair<const XMLCh*, const XMLCh*>& getNamespace(std::size_t i) const { return m_nspaces[i]; }
 
+        void setNodeType(te::xml::NodeType type);
+
+        bool isInContractedForm() const;
+
+        void setInContractedForm(bool d);
+
       protected:
 
         const XMLCh* m_uri;                   //!< URI of the associated namespace for the current element.
@@ -217,8 +223,8 @@ namespace te
         const XMLCh* m_value;                 //!< May be characters from the XML document, ignorable white spaces, CDATA or any other string.
         XMLSize_t m_len;                      //!< The number of characters in the m_value array.
         std::vector<std::pair<const XMLCh*, const XMLCh*> > m_nspaces;  //!< A vector of namespaces (prefix, uri).
-        te::xml::NodeType m_nodeType;       //!< The type of node read by the parser.
-
+        te::xml::NodeType m_nodeType;         //!< The type of node read by the parser.
+        bool m_isInContractedForm;            //!< A flag that indicates if the reader handler is on an contracted form element.
     };
 
   } // end namespace xerces
