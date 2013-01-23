@@ -50,7 +50,11 @@ te::se::Stroke* te::serialize::ReadStroke(te::xml::Reader& reader)
   {
     reader.next();
     stroke->setGraphicFill(ReadGraphic(reader));
-  } // GraphicStroke
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+  }
+  // GraphicStroke
   else if(reader.getElementLocalName() == "GraphicStroke")
     stroke->setGraphicStroke(ReadGraphicStroke(reader));
 
@@ -58,6 +62,9 @@ te::se::Stroke* te::serialize::ReadStroke(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
         reader.getElementLocalName() == "SvgParameter")
     stroke->add(ReadSvgParameter(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return stroke.release();
 }

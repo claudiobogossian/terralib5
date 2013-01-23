@@ -70,6 +70,9 @@ te::xsd::Any* te::serialize::ReadAny(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(any.get(), reader);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return any.release();
 }
 

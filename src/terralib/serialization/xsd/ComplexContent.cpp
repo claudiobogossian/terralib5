@@ -70,6 +70,9 @@ te::xsd::ComplexContent* te::serialize::ReadComplexContent(te::xml::Reader& read
   assert(reader.getElementLocalName() == "extension");
   cc->setTypeDerivation(ReadExtension(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return cc.release();
 }
 

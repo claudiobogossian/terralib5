@@ -49,12 +49,17 @@ te::se::Fill* te::serialize::ReadFill(te::xml::Reader& reader)
   {
     reader.next();
     fill->setGraphicFill(ReadGraphic(reader));
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // SvgParameters
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
         reader.getElementLocalName() == "SvgParameter")
     fill->add(ReadSvgParameter(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return fill.release();
 }

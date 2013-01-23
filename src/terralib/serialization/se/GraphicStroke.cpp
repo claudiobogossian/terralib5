@@ -62,6 +62,9 @@ te::se::GraphicStroke* te::serialize::ReadGraphicStroke(te::xml::Reader& reader)
     graphicStroke->setGap(ReadParameterValue(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return graphicStroke.release();
 }
 

@@ -70,6 +70,9 @@ te::xsd::Key* te::serialize::ReadKey(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "field")
     key->addField(ReadField(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return key.release();
 }
 

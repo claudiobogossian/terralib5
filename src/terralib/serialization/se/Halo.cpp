@@ -56,6 +56,9 @@ te::se::Halo* te::serialize::ReadHalo(te::xml::Reader& reader)
   if(reader.getElementLocalName() == "Fill")
     halo->setFill(ReadFill(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return halo.release();
 }
 

@@ -139,7 +139,12 @@ te::se::Symbolizer* LineSymbolizerReader(te::xml::Reader& reader)
   {
     reader.next();
     ls->setPerpendicularOffset(te::serialize::ReadParameterValue(reader));
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return ls.release();
 }
@@ -161,6 +166,9 @@ te::se::Symbolizer* PointSymbolizerReader(te::xml::Reader& reader)
   // Graphic
   if(reader.getElementLocalName() == "Graphic")
     ps->setGraphic(te::serialize::ReadGraphic(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return ps.release();
 }
@@ -196,7 +204,12 @@ te::se::Symbolizer* PolygonSymbolizerReader(te::xml::Reader& reader)
   {
     reader.next();
     ps->setPerpendicularOffset(te::serialize::ReadParameterValue(reader));
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return ps.release();
 }
@@ -258,6 +271,9 @@ te::se::Symbolizer* RasterSymbolizerReader(te::xml::Reader& reader)
   if(reader.getElementLocalName() == "ImageOutline")
     rs->setImageOutline(te::serialize::ReadImageOutline(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return rs.release();
 }
 
@@ -297,6 +313,9 @@ te::se::Symbolizer* TextSymbolizerReader(te::xml::Reader& reader)
   // Fill
   if(reader.getElementLocalName() == "Fill")
     ts->setFill(te::serialize::ReadFill(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return ts.release();
 }

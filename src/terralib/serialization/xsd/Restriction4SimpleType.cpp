@@ -89,7 +89,13 @@ te::xsd::Restriction4SimpleType* te::serialize::ReadRestriction4SimpleType(te::x
     restriction->addFacet(GetFacetType(*it), reader.getAttr(pos));
 
     reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Facet
+
+    reader.next();
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return restriction.release();
 }

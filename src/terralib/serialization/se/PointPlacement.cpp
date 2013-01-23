@@ -61,6 +61,9 @@ te::se::PointPlacement* te::serialize::ReadPointPlacement(te::xml::Reader& reade
     pp->setRotation(ReadParameterValue(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return pp.release();
 }
 

@@ -126,6 +126,9 @@ te::xsd::Extension* te::serialize::ReadExtension(te::xml::Reader& reader)
       extension->setAnyAttribute(ReadAnyAttribute(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return extension.release();
 }
 

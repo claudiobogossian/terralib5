@@ -81,6 +81,9 @@ te::se::Interpolate* te::serialize::ReadInterpolate(te::xml::Reader& reader)
     interpolate->add(ReadInterpolationPoint(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return interpolate.release();
 }
 

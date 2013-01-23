@@ -63,6 +63,9 @@ te::se::ContrastEnhancement* te::serialize::ReadContrastEnhancement(te::xml::Rea
     reader.next();
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return ce.release();
 }
 

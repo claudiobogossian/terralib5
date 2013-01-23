@@ -57,6 +57,9 @@ te::xsd::Selector* te::serialize::ReadSelector(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(selector.get(), reader);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return selector.release();
 }
 

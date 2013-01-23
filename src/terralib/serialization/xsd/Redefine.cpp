@@ -102,6 +102,9 @@ te::xsd::Redefine* te::serialize::ReadRedefine(te::xml::Reader& reader)
       redefine->addAttributeGroup(ReadAttributeGroup(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return redefine.release();
 }
 

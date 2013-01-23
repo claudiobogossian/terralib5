@@ -55,6 +55,9 @@ te::se::InterpolationPoint* te::serialize::ReadInterpolationPoint(te::xml::Reade
   reader.next();
   ip->setValue(ReadParameterValue(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return ip.release();
 }
 
