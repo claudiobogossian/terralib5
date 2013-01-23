@@ -206,6 +206,38 @@ MACRO(makeProject proj_name root_h_dir root_src_dir)
   installFiles(${root_h_dir} "terralib" "HEADERS" "*.h*")
 ENDMACRO(makeProject)
 
+# Macro makePluginProject
+#
+# brief High-level macro that creates a project for plug-in and the instalation target.
+#
+# param[input] proj_name Project name without preffix or suffix.
+# param[input] root_h_dir Root folder of the header files.
+# param[input] root_src_dir Root folder of the sources files.
+
+MACRO(makePluginProject proj_name root_h_dir root_src_dir)
+  configureProject("terralib_${proj_name}" "${root_h_dir}" "${root_src_dir}")
+  include ("${proj_name}.cmake")
+  
+  configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
+
+  install(
+    TARGETS ${PROJ_NAME}
+    RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
+  )
+  
+  install (
+    FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_${proj_name}_info.xml
+    DESTINATION "bin/plugins"
+    COMPONENT PLUGINS
+  )
+  
+  # installing libraries
+#  installTarget(${PROJ_NAME} "lib" "LIBRARIES" "bin" "BINARIES")
+  
+  # installing header files
+#  installFiles(${root_h_dir} "terralib" "HEADERS" "*.h*")
+ENDMACRO(makePluginProject)
+
 # Macro installTarget
 #
 # brief This macro is used to generate installation rules for the terralib libraries.
@@ -276,11 +308,9 @@ ENDMACRO(exportModuleInformation)
 MACRO(generateRunningBatch templateFileName fileName)
   if(WIN32)
     get_filename_component (TE_QT_DIR ${QT_QMAKE_EXECUTABLE} PATH)
-    get_target_property (TE_BIN_DIR terralib_common LOCATION)
-    get_filename_component (TE_BIN_DIR ${TE_BIN_DIR} PATH)
 
     set (TE_QT_DIR ${TE_QT_DIR} CACHE PATH "Location of installed Qt binaries.")
-    set (TE_BIN_DIR ${TE_BIN_DIR} CACHE PATH "Location of installed terralib binaries.")
+    set (TERRALIB_BIN_DIR "${TERRALIB_BIN_DIR}" CACHE PATH "Location of the terralib binaries.")
     
     configure_file (${templateFileName} ${CMAKE_CURRENT_BINARY_DIR}/${fileName})
   endif()

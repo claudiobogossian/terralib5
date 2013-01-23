@@ -1,18 +1,5 @@
 list (APPEND DEP_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}")
 
-# Versioning configurations
-# =========================
-set (TERRALIB_MAJOR_VERSION 5)
-set (TERRALIB_MINOR_VERSION 0)
-set (TERRALIB_PATCH_VERSION 0)
-set (TERRALIB_RELEASE_STATUS "alpha.1")
-set (TERRALIB_BUILD_DATE "20130301")
-set (TERRALIB_STRING_VERSION "5.0.0-alpha.1")
-set (TERRALIB_INT_VERSION "050000")
-set (TE_VERSION "${TERRALIB_MAJOR_VERSION}.${TERRALIB_MINOR_VERSION}.${TERRALIB_PATCH_VERSION}")
-set (TERRALIB_DIR_ENVIRONMENT_VARIABLE "TERRALIB_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.") 
-# =========================
-
 set (T5_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
 list (APPEND CMAKE_MODULE_PATH "${T5_MODULES_PATH}" )
@@ -27,22 +14,35 @@ if(WIN32)
   include (${T5_MODULES_PATH}/WinConfig.cmake)
 endif()
 
-add_definitions (-DBOOST_FILESYSTEM_VERSION=3)
-ADD_DEFINITIONS (-DBOOST_UBLAS_TYPE_CHECK=0)
+add_definitions (-DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
 
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
   list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
 endif()
 
-file(RELATIVE_PATH _tePath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${ROOT}" )
+#file(RELATIVE_PATH _tePath "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}" "${ROOT}" )
 
-# Configuring plugin
-set (TERRALIB_SCHEMA_LOCATION "${_tePath}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
+# TerraLib configurations
+# =========================
+set (TERRALIB_MAJOR_VERSION 5)
+set (TERRALIB_MINOR_VERSION 0)
+set (TERRALIB_PATCH_VERSION 0)
+set (TERRALIB_RELEASE_STATUS "alpha.1")
+set (TERRALIB_BUILD_DATE "20130301")
+set (TERRALIB_STRING_VERSION "5.0.0-alpha.1")
+set (TERRALIB_INT_VERSION "050000")
+set (TERRALIB_VERSION "${TERRALIB_MAJOR_VERSION}.${TERRALIB_MINOR_VERSION}.${TERRALIB_PATCH_VERSION}")
+set (TERRALIB_DIR_ENVIRONMENT_VARIABLE "TERRALIB_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.") 
+set (TERRALIB_SCHEMA_LOCATION "${ROOT}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
 set (TERRALIB_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the TerraLib logo image.")
-set (TERRALIB_INIT_FILES_LOCATION "${_tePath}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
+set (TERRALIB_INIT_FILES_LOCATION "${ROOT}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
+set (TERRALIB_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the about logo image.")
+set (TERRALIB_INIT_FILES_LOCATION "${ROOT}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
+set (TERRALIB_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib.")
+set (TERRALIB_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme).")
+# =========================
 
-#-----------------------------------------------------------------------
 option (BUILD_ANNOTATIONTEXT "Build Annotation Text module?" ON)
 option (BUILD_COLOR "Build Color module?" ON)
 option (BUILD_COMMON "Build Common Runtime module?" ON)
@@ -222,12 +222,6 @@ configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terra
 configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
 configure_file (${ROOT}/src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h)
 
-install ( 
-  FILES ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h
-  DESTINATION terralib
-  COMPONENT HEADERS
-)
-
 # Installing CMake files
 # Exporting targets.
 export( TARGETS ${_TE_LIBRARIES} FILE "${PROJECT_BINARY_DIR}/teDepends.cmake")
@@ -274,6 +268,25 @@ FILE ( GLOB h_files ${ROOT}/src/terralib/*.h )
 
 install ( 
   FILES ${h_files}
+  DESTINATION terralib
+  COMPONENT HEADERS
+)
+
+install (
+  DIRECTORY ${ROOT}/schemas
+  DESTINATION .
+  COMPONENT HEADERS
+  FILES_MATCHING PATTERN "*.xsd"
+)
+
+install (
+  DIRECTORY ${ROOT}/resources
+  DESTINATION .
+  COMPONENT HEADERS
+)
+
+install ( 
+  FILES ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h
   DESTINATION terralib
   COMPONENT HEADERS
 )

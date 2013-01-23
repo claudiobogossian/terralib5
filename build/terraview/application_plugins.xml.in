@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Plugins xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://www.terralib.org/schemas/af"
-         xsd:schemaLocation="http://www.terralib.org/schemas/af ${TE_SCHEMA_LOCATION}/af/af.xsd"
-         version="${terralib_CONSIDERED_VERSIONS}"
-         release="${TE_RELEASE_DATE}">
+         xsd:schemaLocation="http://www.terralib.org/schemas/af ${TERRALIB_SCHEMA_LOCATION}/af/af.xsd"
+         version="${TERRALIB_VERSION}"
+         release="${TERRALIB_BUILD_DATE}">
   <Plugin>
 <!--  
   Fill the informations as the above example.
