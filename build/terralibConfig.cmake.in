@@ -74,6 +74,9 @@ else()
     find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
   endforeach()
   
+  set (TERRALIB_JSON_FILES_LOCATION ${TE_ROOT_INC}/resources/json)
+  set (TERRALIB_SQL_FILES_LOCATION ${TE_ROOT_INC}/resources/sql)
+  set (TERRALIB_XML_FILES_LOCATION ${TE_ROOT_INC}/resources/xml)
 endif()
  
 if(WIN32)

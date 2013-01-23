@@ -12,7 +12,11 @@ set(TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
-add_subdirectory (./terraview)
+option (BUILD_TERRAVIEW "Build TerraView application?" ON)
+
+if(BUILD_TERRAVIEW)
+  add_subdirectory (./terraview)
+endif()
 
 if(WIN32)
   message (STATUS "-- Generating run batch file.")

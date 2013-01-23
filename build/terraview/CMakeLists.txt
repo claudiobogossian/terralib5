@@ -35,29 +35,27 @@ file (GLOB SRCS ${SRCDIR}/*.cpp)
 file (GLOB HDRS ${INCLDIR}/*.h)
   
   # Select the FORMS widgets     
-#  file (GLOB FORMS ${SRCDIR}/ui/*.ui)
+file (GLOB FORMS ${SRCDIR}/ui/*.ui)
   
   # Select the header files for moc'ing
-#  file (
-#    GLOB
-#    HDRS_TO_MOC 
-#    ${INCLDIR}/MainWindow.h
-#    ${INCLDIR}/NewGDALLayer.h
-#    ${INCLDIR}/NewOGRLayer.h
-#  )
-#  te_moc2("${HDRS_TO_MOC}" "terraview" MOC)
+file (
+  GLOB
+  HDRS_TO_MOC 
+  ${INCLDIR}/TerraView.h
+)
+te_moc2("${HDRS_TO_MOC}" "terraview" MOC)
   
-#  qt4_wrap_ui (UI ${FORMS})
+qt4_wrap_ui (UI ${FORMS})
 
-#  source_group("Form Files" FILES ${FORMS})
-#  source_group("Generated Files" FILES ${UI} ${MOC})
+source_group("Form Files" FILES ${FORMS})
+source_group("Generated Files" FILES ${UI} ${MOC})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TE_CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TE_CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}")  
 
 add_definitions (-DBOOST_ALL_NO_LIB -DTERRALIB_BIN_DIR=\"${TERRALIB_BIN_DIR}\" -DTERRALIB_LOGO=\"${TERRALIB_LOGO}\")
-add_executable(${PROJ_NAME} ${SRCS} ${HDRS})
+add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${_dep_libs})
 

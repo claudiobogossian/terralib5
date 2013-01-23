@@ -36,9 +36,10 @@ set (TERRALIB_VERSION "${TERRALIB_MAJOR_VERSION}.${TERRALIB_MINOR_VERSION}.${TER
 set (TERRALIB_DIR_ENVIRONMENT_VARIABLE "TERRALIB_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.") 
 set (TERRALIB_SCHEMA_LOCATION "${ROOT}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
 set (TERRALIB_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the TerraLib logo image.")
-set (TERRALIB_INIT_FILES_LOCATION "${ROOT}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
+set (TERRALIB_JSON_FILES_LOCATION "${ROOT}/resources/json" CACHE STRING "Location of the TerraLib initialization files.")
+set (TERRALIB_SQL_FILES_LOCATION "${ROOT}/resources/sql" CACHE STRING "Location of the TerraLib initialization files.")
+set (TERRALIB_XML_FILES_LOCATION "${ROOT}/resources/xml" CACHE STRING "Location of the TerraLib initialization files.")
 set (TERRALIB_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the about logo image.")
-set (TERRALIB_INIT_FILES_LOCATION "${ROOT}/resources/init_files" CACHE STRING "Location of the TerraLib initialization files.")
 set (TERRALIB_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib.")
 set (TERRALIB_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme).")
 # =========================
