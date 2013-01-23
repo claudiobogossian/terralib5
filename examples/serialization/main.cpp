@@ -69,6 +69,11 @@ int main(int /*argc*/, char** /*argv*/)
     
     // Comparing the results...
     encodedStyle == backData ? std::cout << "Great job!" << std::endl : std::cout << "You are doing it wrong!" << std::endl;
+
+    /* XSD Schema */
+
+    std::cout << "Decoding schema..." << std::endl;
+    DecodeSchema("D:/plugin_info.xsd");
   }
   catch(const std::exception& e)
   {

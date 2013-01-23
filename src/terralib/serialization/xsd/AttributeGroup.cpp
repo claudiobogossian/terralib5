@@ -88,6 +88,9 @@ te::xsd::AttributeGroup* te::serialize::ReadAttributeGroup(te::xml::Reader& read
   if(reader.getElementLocalName() == "anyAttribute")
     attributeGroup->setAnyAttribute(ReadAnyAttribute(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return attributeGroup.release();
 }
 

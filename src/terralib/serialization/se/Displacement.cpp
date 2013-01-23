@@ -52,6 +52,9 @@ te::se::Displacement* te::serialize::ReadDisplacement(te::xml::Reader& reader)
   reader.next();
   d->setDisplacementY(ReadParameterValue(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return d.release();
 }
 

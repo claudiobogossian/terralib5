@@ -97,6 +97,9 @@ te::xsd::Attribute* te::serialize::ReadAttribute(te::xml::Reader& reader)
   if(reader.getElementLocalName() == "simpleType")
     attribute->setInnerType(ReadSimpleType(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return attribute.release();
 }
 

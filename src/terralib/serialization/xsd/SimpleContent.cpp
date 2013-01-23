@@ -61,6 +61,9 @@ te::xsd::SimpleContent* te::serialize::ReadSimpleContent(te::xml::Reader& reader
     sc->setTypeDerivation(ReadExtension(reader));
   else throw; // TODO: Add an exception here...
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return sc.release();
 }
 

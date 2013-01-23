@@ -70,6 +70,9 @@ te::xsd::Unique* te::serialize::ReadUnique(te::xml::Reader& reader)
   while(reader.getNodeType() == te::xml::START_ELEMENT && reader.getElementLocalName() == "field")
     unique->addField(ReadField(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return unique.release();
 }
 

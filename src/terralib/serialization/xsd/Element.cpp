@@ -139,6 +139,9 @@ te::xsd::Element* te::serialize::ReadElement(te::xml::Reader& reader)
       element->addIdentityConstraint(ReadKeyRef(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return element.release();
 }
 

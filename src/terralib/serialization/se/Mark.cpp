@@ -54,6 +54,9 @@ te::se::Mark* te::serialize::ReadMark(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     mark->setWellKnownName(new std::string(reader.getElementValue()));
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
   else if(reader.getElementLocalName() == "OnlineResource")
     mark->setOnlineResource(ReadSimpleLink(reader));
@@ -67,6 +70,9 @@ te::se::Mark* te::serialize::ReadMark(te::xml::Reader& reader)
   // Stroke
   if(reader.getElementLocalName() == "Stroke")
     mark->setStroke(ReadStroke(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return mark.release();
 }

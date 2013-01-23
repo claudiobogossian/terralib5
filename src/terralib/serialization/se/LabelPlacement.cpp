@@ -49,6 +49,9 @@ te::se::LabelPlacement* te::serialize::ReadLabelPlacement(te::xml::Reader& reade
   else // LinePlacement
     lp->setLinePlacement(ReadLinePlacement(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return lp.release();
 }
 

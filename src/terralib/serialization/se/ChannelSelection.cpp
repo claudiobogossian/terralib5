@@ -86,6 +86,9 @@ te::se::ChannelSelection* te::serialize::ReadChannelSelection(te::xml::Reader& r
   if(nChannels > 1)
     nChannels == 3 ? cs->setColorCompositionType(te::se::RGB_COMPOSITION) : cs->setColorCompositionType(te::se::UNKNOWN_COMPOSITION);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return cs.release();
 }
 

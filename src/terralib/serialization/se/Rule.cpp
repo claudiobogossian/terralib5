@@ -55,6 +55,9 @@ te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::VALUE);
     rule->setName(new std::string(reader.getElementValue()));
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Description
@@ -66,6 +69,8 @@ te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
   {
     reader.next();
     rule->setLegendGraphic(ReadGraphic(reader));
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
     reader.next();
   }
 
@@ -75,6 +80,8 @@ te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
   else if(reader.getElementLocalName() == "ElseFilter")
   {
     rule->enableElseFilter();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
     reader.next();
   }
 
@@ -86,6 +93,9 @@ te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
     double minScale = reader.getElementValueAsDouble();
     rule->setMinScaleDenominator(minScale);
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // MaxScaleDenominator
@@ -96,12 +106,18 @@ te::se::Rule* te::serialize::ReadRule(te::xml::Reader& reader)
     double maxScale = reader.getElementValueAsDouble();
     rule->setMaxScaleDenominator(maxScale);
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Symbolizers
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
     reader.getElementLocalName().find("Symbolizer") != std::string::npos) // TODO: For while using find("Symbolizer")... Actually, I would like to search by the registered names of symbolizer.
     rule->push_back(te::serialize::Symbolizer::getInstance().read(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return rule.release();
 }

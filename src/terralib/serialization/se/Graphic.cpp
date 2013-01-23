@@ -82,6 +82,9 @@ te::se::Graphic* te::serialize::ReadGraphic(te::xml::Reader& reader)
   if(reader.getElementLocalName() == "Displacement")
     graphic->setDisplacement(ReadDisplacement(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return graphic.release();
 }
 

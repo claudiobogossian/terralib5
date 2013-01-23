@@ -46,6 +46,9 @@ te::se::ParameterValue* te::serialize::ReadParameterValue(te::xml::Reader& reade
   
   param->add(p);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return param.release();
 }
 

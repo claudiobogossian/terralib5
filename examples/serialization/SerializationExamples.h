@@ -47,4 +47,7 @@ std::string EncodeStyle(te::se::Style* style);
 /*! \brief It decodes a given OGC Symbology Encoding Style file. */
 te::se::Style* DecodeStyle(const std::string& path);
 
+/*! \brief It decodes a given XSD Schema file. */
+void DecodeSchema(const std::string& path);
+
 #endif  // __TERRALIB_EXAMPLES_SERIALIZATION_INTERNAL_SERIALIZATIONEXAMPLES_H

@@ -41,7 +41,8 @@ te::xerces::Reader::Reader()
   : m_parser(0),
     m_readerH(0),
     m_errH(0),
-    m_token(0)
+    m_token(0),
+    m_ignoreWhiteSpaces(false)
 {
   m_parser = xercesc::XMLReaderFactory::createXMLReader();
   m_readerH = new ReaderHandler;
@@ -95,6 +96,11 @@ void te::xerces::Reader::setCacheGrammarFromParse(bool d)
   m_parser->setFeature(xercesc::XMLUni::fgXercesCacheGrammarFromParse, d);
 }
 
+void te::xerces::Reader::setIgnoreWhiteSpaces(bool d)
+{
+  m_ignoreWhiteSpaces = d;
+}
+
 void te::xerces::Reader::read(const std::string& fileURI)
 {
 // reset parser if it is in use! 
@@ -142,20 +148,32 @@ bool te::xerces::Reader::next()
 
   m_readerH->reset();
 
+  bool parserStatus = true;
+
   try
   {
-    while(m_parser->parseNext(*m_token))
+    while(true && parserStatus)
     {
+      if(m_readerH->isInContractedForm())
+      {
+        m_readerH->setNodeType(te::xml::END_ELEMENT);
+        m_readerH->setInContractedForm(false);
+        return true;
+      }
+      else
+        parserStatus = m_parser->parseNext(*m_token);
+
       if(m_parser->getErrorCount() != 0)
       {
         std::string errmsg = m_errH->getErrors();
         throw Exception(errmsg);
       }
 
+      if(m_ignoreWhiteSpaces && getNodeType() == te::xml::WHITESPACE)
+        continue;
+
       if(m_readerH->getNodeType() !=  te::xml::UNKNOWN)
-      {
         return true;
-      }
     }
   }
   catch(const xercesc::XMLException& e)
@@ -209,7 +227,7 @@ std::size_t te::xerces::Reader::getElementDataLen() const
 
 bool te::xerces::Reader::hasAttrs() const
 {
-  return m_readerH->getElementAttrs() != 0;
+  return (m_readerH->getElementAttrs() != 0) && (m_readerH->getElementAttrs()->getLength() > 0);
 }
 
 std::size_t te::xerces::Reader::getNumberOfAttrs() const

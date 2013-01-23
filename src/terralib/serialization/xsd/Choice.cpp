@@ -102,6 +102,9 @@ te::xsd::Choice* te::serialize::ReadChoice(te::xml::Reader& reader)
       choice->addAny(ReadAny(reader));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return choice.release();
 }
 

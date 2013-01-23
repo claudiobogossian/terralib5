@@ -162,6 +162,9 @@ te::fe::Expression* BinaryOperatorReader(te::xml::Reader& reader)
 
   exp->setSecond(te::serialize::Expression::getInstance().read(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return exp.release();
 }
 
@@ -178,13 +181,19 @@ te::fe::Expression* LiteralReader(te::xml::Reader& reader)
     std::string value = reader.getElementValue();
     exp->setValue(value);
     reader.next();
-    
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
+
     return exp.release();
   }
 
   // Else, no <Literal> tags
   std::string value = reader.getElementValue();
   exp->setValue(value);
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return exp.release();
 }
@@ -200,6 +209,9 @@ te::fe::Expression* PropertyNameReader(te::xml::Reader& reader)
   std::string value = reader.getElementValue();
   std::auto_ptr<te::fe::PropertyName> exp(new te::fe::PropertyName(value));
 
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
 
   return exp.release();

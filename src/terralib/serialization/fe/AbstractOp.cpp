@@ -212,6 +212,9 @@ te::fe::AbstractOp* BinaryComparsionOpReader(const char* opName, te::xml::Reader
 
   op->setSecond( te::serialize::Expression::getInstance().read(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return op.release();
 }
 
@@ -229,6 +232,9 @@ te::fe::AbstractOp* BetweenReader(const char* opName, te::xml::Reader& reader)
   op->setLowerBoundary(te::serialize::Expression::getInstance().read(reader));
 
   op->setUpperBoundary(te::serialize::Expression::getInstance().read(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return op.release();
 }
@@ -265,6 +271,9 @@ te::fe::AbstractOp* LikeReader(const char* opName, te::xml::Reader& reader)
 
   op->setLiteral(static_cast<te::fe::Literal*>(te::serialize::Expression::getInstance().read(reader)));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return op.release();
 }
 
@@ -281,6 +290,9 @@ te::fe::AbstractOp* NullReader(const char* opName, te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "PropertyName");
 
   op->setPropertyName(static_cast<te::fe::PropertyName*>(te::serialize::Expression::getInstance().read(reader)));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return op.release();
 }
@@ -302,6 +314,9 @@ te::fe::AbstractOp* BinaryLogicOpReader(const char* opName, te::xml::Reader& rea
   op->add(te::serialize::AbstractOp::getInstance().read(reader));
   op->add(te::serialize::AbstractOp::getInstance().read(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return op.release();
 }
 
@@ -315,6 +330,9 @@ te::fe::AbstractOp* UnaryLogicOpReader(const char* opName, te::xml::Reader& read
   reader.next();
 
   op->setOp(te::serialize::AbstractOp::getInstance().read(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return op.release();
 }
@@ -337,6 +355,9 @@ te::fe::AbstractOp* BinarySpatialOpReader(const char* opName, te::xml::Reader& r
   // op->setGeometry(...);
   // op->setEnvelope(...);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return op.release();
 }
 
@@ -358,6 +379,9 @@ te::fe::AbstractOp* DistanceBufferReader(const char* opName, te::xml::Reader& re
   // op->setGeometry(...);
   // op->setDistance(...);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return op.release();
 }
 
@@ -377,6 +401,9 @@ te::fe::AbstractOp* BBOXReader(const char* opName, te::xml::Reader& reader)
 
   // TODO: read envelope !
   // op->setEnvelope(...);
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return op.release();
 }

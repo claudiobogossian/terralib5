@@ -51,6 +51,9 @@ te::se::InlineContent* te::serialize::ReadInlineContent(te::xml::Reader& reader)
 
   reader.next();
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return ic.release();
 }
 

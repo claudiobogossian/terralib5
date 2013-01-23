@@ -45,6 +45,9 @@ te::fe::Filter* te::serialize::ReadFilter(te::xml::Reader& reader)
 
   filter->setOp(te::serialize::AbstractOp::getInstance().read(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return filter.release();
 }
 

@@ -56,6 +56,9 @@ te::se::SvgParameter* te::serialize::ReadSvgParameter(te::xml::Reader& reader)
 
   svgParam->add(p);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return svgParam.release();
 }
 

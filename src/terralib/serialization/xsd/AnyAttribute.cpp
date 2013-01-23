@@ -67,6 +67,9 @@ te::xsd::AnyAttribute* te::serialize::ReadAnyAttribute(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(anyAttribute.get(), reader);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return anyAttribute.release();
 }
 

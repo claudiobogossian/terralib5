@@ -6,10 +6,12 @@
 #include <terralib/serialization/fe/Filter.h>
 #include <terralib/serialization/se/Style.h>
 #include <terralib/serialization/xlink/SimpleLink.h>
+#include <terralib/serialization/xsd/Schema.h>
 #include <terralib/xml/Reader.h>
 #include <terralib/xml/ReaderFactory.h>
 #include <terralib/xml/Writer.h>
 #include <terralib/xlink/SimpleLink.h>
+#include <terralib/xsd/Schema.h>
 
 // STL
 #include <cassert>
@@ -25,6 +27,12 @@ std::string EncodeStyle()
   te::se::PolygonSymbolizer* ps = te::se::CreatePolygonSymbolizer(strokePolygon, fillPolygon);
   ps->setGeometry(new te::fe::PropertyName("area"));
   ps->setDescription(te::se::CreateDescription("A simple polygon symbolizer example", "This symbolizer was created to show the power of TerraLib serialization module."));
+
+  // Creates a PolygonSymbolizer with GraphicFill
+  te::se::Mark* markGraphicFill = te::se::CreateMark("circle", te::se::CreateStroke("#000000", "1"), te::se::CreateFill("#FFFF00", "1.0"));
+  te::se::Graphic* graphicFill = te::se::CreateGraphic(markGraphicFill, "8", "45", "1.0");
+  te::se::Fill* fillWithGraphicFill = te::se::CreateFill(graphicFill);
+  te::se::PolygonSymbolizer* psGraphicFill = te::se::CreatePolygonSymbolizer(0, fillWithGraphicFill);
 
   // Creates a LineSymbolizer
   te::se::Stroke* strokeLine = te::se::CreateStroke("#FF0000", "1");
@@ -89,6 +97,7 @@ std::string EncodeStyle()
   rule->setMinScaleDenominator(250e3);
   rule->setMaxScaleDenominator(5e6);
   rule->push_back(ps);
+  rule->push_back(psGraphicFill);
   rule->push_back(ls);
   rule->push_back(pts);
   rule->push_back(ts);
@@ -156,4 +165,11 @@ te::se::Style* DecodeStyle(const std::string& path)
   te::se::Style* style = te::serialize::Style::getInstance().read(*reader);
 
   return style;
+}
+
+void DecodeSchema(const std::string& path)
+{
+  te::xsd::Schema* schema = te::serialize::ReadSchema(path);
+  assert(schema);
+  delete schema;
 }

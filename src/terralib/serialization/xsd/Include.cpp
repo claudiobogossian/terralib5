@@ -55,6 +55,9 @@ te::xsd::Include* te::serialize::ReadInclude(te::xml::Reader& reader)
   // Annotation
   ReadAnnotated(include.get(), reader);
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return include.release();
 }
 

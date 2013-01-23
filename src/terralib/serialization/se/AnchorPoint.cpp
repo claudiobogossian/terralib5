@@ -52,6 +52,9 @@ te::se::AnchorPoint* te::serialize::ReadAnchorPoint(te::xml::Reader& reader)
   reader.next();
   ap->setAnchorPointY(ReadParameterValue(reader));
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return ap.release();
 }
 

@@ -53,6 +53,9 @@ te::se::RasterSymbolizer::OverlapBehavior te::serialize::ReadOverlapBehavior(te:
   if(type == "RANDOM")
     return te::se::RasterSymbolizer::RANDOM;
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return te::se::RasterSymbolizer::NO_BEHAVIOR;
 }
 
