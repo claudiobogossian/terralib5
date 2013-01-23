@@ -108,6 +108,15 @@ namespace te
         virtual void setCacheGrammarFromParse(bool d) = 0;
 
         /*!
+          \brief If true the parser will ignore the white space characters.
+
+          \param d If true the parser will ignore the white space characters.
+
+          \note By default the reader is set to consider white spaces.
+        */
+        virtual void setIgnoreWhiteSpaces(bool d) = 0;
+
+        /*!
           \brief It prepare the given file to be read.
 
           You must call read to start parsing the XML document.
