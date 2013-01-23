@@ -13,7 +13,11 @@ set(PROJ_NAME "terralib_unittest_datatype")
 project(${PROJ_NAME})           # the project name is terralib_unittest_datatype
 set(LIB_NAME ${PROJ_NAME})      # the library name is terralib_unittest_datatype
 
-set (DEP_INCLUDES ${Boost_INCLUDE_DIRS} ${CPPUNIT_INCLUDE_DIR})
+set (DEP_INCLUDES 
+  ${Boost_INCLUDE_DIRS} 
+  ${CPPUNIT_INCLUDE_DIR}
+  ${TE_INCLUDE_DIRS}
+  )
 set (DEP_LIBS ${CPPUNIT_LIBRARY})	
 
 #Definitions for windows compiling

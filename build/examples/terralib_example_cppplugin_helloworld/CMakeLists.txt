@@ -31,6 +31,7 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 include_directories(
     ${TE_INCLUDE_DIRS}
     ${DEP_INCLUDES}
+    ${Boost_INCLUDE_DIRS}
 )
 
 link_libraries(${DEP_LIBS})

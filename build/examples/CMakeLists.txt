@@ -13,6 +13,8 @@ endif()
 
 include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
+include (${terralib_DIR}/teDepends.cmake)
+
 ############### Get the data used for testing the example ###############
 set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
@@ -35,8 +37,8 @@ add_definitions(
 
 add_definitions(-DPLUGINS_PATH=\"${TERRALIB_BIN_DIR}\")
 
-set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
-set (ICON_THEME_PATH "" CACHE STRING "Lists of directories that contains icon themes.")
+#set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
+#set (ICON_THEME_PATH "" CACHE STRING "Lists of directories that contains icon themes.")
 
 option (EXAMPLE_ADO "Build ADO example." ON)  
 option (EXAMPLE_COLORBAR "Build colorbar example." ON)  
@@ -66,18 +68,13 @@ option (EXAMPLE_XERCES "Build xerces example." ON)
 option (EXAMPLE_HELP "Build help example." ON)  
 option (EXAMPLE_QT_CANVAS "Build qt/canvas example." ON)
 option (EXAMPLE_QT_CHARTS "Build qt/charts example." ON)  
-option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." ON)
+option (EXAMPLE_QT_DATASOURCE "Build qt/datasource example." OFF)
 option (EXAMPLE_QT_RASTERVISUAL "Build qt/rastervisual example." ON)
 option (EXAMPLE_QT_QUERY "Build qt/query example." ON)  
 option (EXAMPLE_QT_RP "Build qt/rp example." ON)  
 option (EXAMPLE_QT_SE "Build qt/se example." ON)  
 option (EXAMPLE_QT_SRS "Build qt/srs example." ON)  
-option (EXAMPLE_QT_TOOLS "Build qt/tools example." ON)
 option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)  
-
-
-
-
   
 # Go into sub-directories
 

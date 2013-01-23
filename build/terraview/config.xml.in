@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.terralib.org/schemas/af"
+             xsd:schemaLocation="http://www.terralib.org/schemas/af ${TERRALIB_SCHEMA_LOCATION}/af/af.xsd"
+             version="${TERRALIB_VERSION}"
+             release="${TERRALIB_BUILD_DATE}">
+  <Organization>INPE</Organization>
+  <Name>TerraView</Name>	
+  <Title>TerraView</Title>
+  <IconName>terraview</IconName>	
+  <UserSettingsFile xlink:href="user_settings.xml"/>
+  <PluginsFile xlink:href="application_plugins.xml"/>
+  <IconThemeInfo>
+    <BaseDirectory xlink:href="${TERRALIB_ICONS_THEME_PATH}"/>
+    <DefaultTheme>${TERRALIB_ICONS_THEME}</DefaultTheme>
+  </IconThemeInfo>
+  <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
+  <DefaultPluginsCategory>
+<!--
+    <Category>Cellular Space</Category>
+    <Category>Data Access</Category>
+    <Category>Data Management</Category>
+    <Category>Examples</Category>
+    <Category>Language Bindings</Category>
+    <Category>Location Base Services</Category>
+    <Category>Plugin Managememt</Category>
+    <Category>Spatial Analysis</Category>
+    <Category>Spatial Operations</Category>
+    <Category>Web Services</Category>
+-->    
+  </DefaultPluginsCategory>
+  <AboutDialogLogo xlink:href="${TERRALIB_ABOUT_LOGO}"/>
+  <TerraLibLogo xlink:href="${TERRALIB_LOGO}"/>
+</Application>

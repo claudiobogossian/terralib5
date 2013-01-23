@@ -43,6 +43,7 @@ include_directories(
   ${CPPUNIT_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
   ${GDAL_INCLUDE_DIR}
+  ${TE_INCLUDE_DIRS}
   )
 
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})

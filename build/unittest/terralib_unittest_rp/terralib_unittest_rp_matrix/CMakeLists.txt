@@ -37,6 +37,7 @@ include_directories (
   ${DEP_INCLUDES}
   ${Boost_INCLUDE_DIRS}
   ${CPPUNIT_INCLUDE_DIR}
+  ${TE_INCLUDE_DIRS}
   )
 
 link_libraries(${DEP_LIBS})

@@ -38,7 +38,7 @@
 
 #define TERRAVIEW_SPLASH_SCREEN_PIXMAP "terraview.png"
 
-#define TERRAVIEW_CONFIG_FILE "config.xml"
+#define TERRAVIEW_CONFIG_FILE "../bin32/config.xml"
 
 #define TERRAVIEW_RESOURCE_FILE "terraview.rcc"
 

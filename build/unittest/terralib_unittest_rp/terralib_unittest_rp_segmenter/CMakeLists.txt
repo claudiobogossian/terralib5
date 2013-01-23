@@ -38,6 +38,7 @@ include_directories(
   ${DEP_INCLUDES}
   ${CPPUNIT_INCLUDE_DIR}
   ${Boost_INCLUDE_DIRS}
+  ${TE_INCLUDE_DIRS}
   )
 
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})

@@ -43,6 +43,7 @@ get_filename_component(TERRALIB_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 if(EXISTS "${TERRALIB_CMAKE_DIR}/CMakeCache.txt")
    # In build tree
    include("${TERRALIB_CMAKE_DIR}/teBuildTreeSettings.cmake")
+   set (TERRALIB_BIN_DIR @CMAKE_RUNTIME_OUTPUT_DIRECTORY@)
 else()
   set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
   
@@ -61,7 +62,6 @@ else()
 
   set (T5_MODULEPATH "${TERRALIB_CMAKE_DIR}")
   list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
-  include ( ${T5_MODULEPATH}/teDepends.cmake )
   
   # Configuration files folder.
   set (DEFAULT_LOGCONF_FILE ${TE_ROOT_INC}/log/te-log.conf)
@@ -74,6 +74,9 @@ else()
     find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
   endforeach()
   
+  set (TERRALIB_JSON_FILES_LOCATION ${TE_ROOT_INC}/resources/json)
+  set (TERRALIB_SQL_FILES_LOCATION ${TE_ROOT_INC}/resources/sql)
+  set (TERRALIB_XML_FILES_LOCATION ${TE_ROOT_INC}/resources/xml)
 endif()
  
 if(WIN32)
