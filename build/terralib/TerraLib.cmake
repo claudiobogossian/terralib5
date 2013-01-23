@@ -140,11 +140,11 @@ IF(BUILD_MEMORY)
 endif()
 
 IF(BUILD_METADATA)
-	add_subdirectory(terralib_metadata)
+	add_subdirectory(terralib/terralib_metadata)
 endif()
 
 IF(BUILD_MYSQL)
-	add_subdirectory(terralib_mysql)
+	add_subdirectory(terralib/terralib_mysql)
 endif()
 
 IF(BUILD_OGR)
@@ -184,7 +184,7 @@ IF(BUILD_SERIALIZATION)
 endif()
 
 IF(BUILD_SQLITE)
-	add_subdirectory(terralib_sqlite)
+	add_subdirectory(terralib/terralib_sqlite)
 endif()
 
 IF(BUILD_SRS)
