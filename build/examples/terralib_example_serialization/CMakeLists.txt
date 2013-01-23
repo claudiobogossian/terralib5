@@ -25,6 +25,7 @@ set(DEP_LIBS
 	terralib_symbology
 	terralib_xlink
 	terralib_xml
+	terralib_xsd
     )  
 
 # Select the source and header files
