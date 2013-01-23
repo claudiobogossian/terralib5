@@ -26,14 +26,25 @@
 // TerraLib
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
+#include "../../xsd/ComplexType.h"
 #include "../../xsd/Element.h"
+#include "../../xsd/Key.h"
+#include "../../xsd/KeyRef.h"
 #include "../../xsd/QName.h"
+#include "../../xsd/SimpleType.h"
+#include "../../xsd/Unique.h"
+#include "ComplexType.h"
 #include "Element.h"
+#include "Key.h"
+#include "KeyRef.h"
+#include "SimpleType.h"
+#include "Unique.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
+#include <set>
 #include <string>
 
 te::xsd::Element* te::serialize::ReadElement(te::xml::Reader& reader)
@@ -97,7 +108,36 @@ te::xsd::Element* te::serialize::ReadElement(te::xml::Reader& reader)
 
   ReadAnnotated(element.get(), reader);
 
-  // TODO
+  if(reader.getElementLocalName() == "simpleType")
+    element->setContentType(ReadSimpleType(reader));
+  else if(reader.getElementLocalName() == "complexType")
+    element->setContentType(ReadComplexType(reader));
+
+  std::set<std::string> children;
+  children.insert("unique");
+  children.insert("key");
+  children.insert("keyref");
+
+  std::set<std::string>::iterator it;
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
+       (it = children.find(reader.getElementLocalName())) != children.end())
+  {
+    std::string tag = *it;
+    if(tag == "unique")
+    {
+      element->addIdentityConstraint(ReadUnique(reader));
+      continue;
+    }
+
+    if(tag == "key")
+    {
+      element->addIdentityConstraint(ReadKey(reader));
+      continue;
+    }
+
+    if(tag == "keyref")
+      element->addIdentityConstraint(ReadKeyRef(reader));
+  }
 
   return element.release();
 }

@@ -26,10 +26,12 @@
 #ifndef __TERRALIB_SRS_INTERNAL_CONVERTER_H 
 #define __TERRALIB_SRS_INTERNAL_CONVERTER_H
 
-#include <string>
-#include <map>
-
+// TerraLib
 #include "Config.h"
+
+// STL
+#include <map>
+#include <string>
 
 namespace te
 {

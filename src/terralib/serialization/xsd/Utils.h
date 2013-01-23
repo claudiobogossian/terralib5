@@ -26,6 +26,9 @@
 #ifndef __TERRALIB_SERIALIZATION_XSD_INTERNAL_UTILS_H
 #define __TERRALIB_SERIALIZATION_XSD_INTERNAL_UTILS_H
 
+// TerraLib
+#include "../../xsd/Facet.h"
+
 // STL
 #include <string>
 
@@ -53,6 +56,8 @@ namespace te
     void ReadOccurs(te::xsd::Occurs* occurs, te::xml::Reader& reader);
 
     te::xsd::QName* CreateQName(const std::string& name);
+
+    te::xsd::FacetType GetFacetType(const std::string& name);
 
   } // end namespace serialize
 }   // end namespace te

@@ -19,7 +19,7 @@ int main()
 
     ExemplifyDataAccess();
     ArithmeticWithRaster();
-    MakeRasterBlock();
+    MakeRasterCrop();
     RasterizePolygonSet();
     ResampleRaster();
     SplitComplexImage();

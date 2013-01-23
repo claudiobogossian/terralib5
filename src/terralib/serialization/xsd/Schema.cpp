@@ -25,21 +25,46 @@
 
 // TerraLib
 #include "../../xml/Reader.h"
+#include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
+#include "../../xsd/Attribute.h"
 #include "../../xsd/Schema.h"
+#include "../Exception.h"
 #include "Annotation.h"
+#include "Attribute.h"
+#include "AttributeGroup.h"
+#include "ComplexType.h"
 #include "Element.h"
+#include "Group.h"
 #include "Import.h"
 #include "Include.h"
 #include "Redefine.h"
 #include "Schema.h"
+#include "SimpleType.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
 #include <set>
-#include <string>
+
+// Boost
+#include <boost/format.hpp>
+
+te::xsd::Schema* te::serialize::ReadSchema(const std::string& path)
+{
+  std::auto_ptr<te::xml::Reader> reader(te::xml::ReaderFactory::make("XERCES"));
+  reader->setValidationScheme(false);
+  reader->read(path);
+
+  if(!reader->next())
+    throw Exception((boost::format(TR_SERIALIZATION("Could not read the XSD Schema in file: %1%.")) % path).str());
+
+  if(reader->getNodeType() != te::xml::START_ELEMENT)
+    throw Exception((boost::format(TR_SERIALIZATION("Error reading the document %1%, the start element wasn't found.")) % path).str());
+
+  return ReadSchema(*reader);
+}
 
 te::xsd::Schema* te::serialize::ReadSchema(te::xml::Reader& reader)
 {
@@ -87,10 +112,20 @@ te::xsd::Schema* te::serialize::ReadSchema(te::xml::Reader& reader)
   /* Grammar: ((include|import|redefine|annotation)*,(((simpleType|complexType|
                group|attributeGroup)|element|attribute|notation),annotation*)*) */
 
+  /* TODO: Using a set to find the element's children. Temporary solution!
+     Suggestion: we can put this information on a static member of te::xsd classes. - Uba, 2013 */
   std::set<std::string> children;
-  children.insert("include"); children.insert("import"); children.insert("redefine"); children.insert("annotation");
-  children.insert("simpleType"); children.insert("complexType"); children.insert("group"); children.insert("attributeGroup");
-  children.insert("element"); children.insert("attribute"); children.insert("notation");
+  children.insert("include");
+  children.insert("import");
+  children.insert("redefine");
+  children.insert("annotation");
+  children.insert("simpleType");
+  children.insert("complexType"); 
+  children.insert("group");
+  children.insert("attributeGroup");
+  children.insert("element");
+  children.insert("attribute");
+  children.insert("notation");
 
   std::set<std::string>::iterator it;
   while(reader.getNodeType() == te::xml::START_ELEMENT &&
@@ -123,25 +158,25 @@ te::xsd::Schema* te::serialize::ReadSchema(te::xml::Reader& reader)
 
     if(tag == "simpleType")
     {
-      schema->addSimpleType(0); // TODO: Read SimpleType
+      schema->addSimpleType(ReadSimpleType(reader));
       continue;
     }
 
     if(tag == "complexType")
     {
-      schema->addComplexType(0); // TODO: Read ComplexType
+      schema->addComplexType(ReadComplexType(reader));
       continue;
     }
 
     if(tag == "group")
     {
-      schema->addGroup(0); // TODO: Read Group
+      schema->addGroup(ReadGroup(reader));
       continue;
     }
 
     if(tag == "attributeGroup")
     {
-      schema->addAttributeGroup(0); // TODO: Read AttributeGroup
+      schema->addAttributeGroup(ReadAttributeGroup(reader));
       continue;
     }
 
@@ -152,7 +187,7 @@ te::xsd::Schema* te::serialize::ReadSchema(te::xml::Reader& reader)
     }
 
     if(tag == "attribute")
-      schema->addAttribute(0); // TODO: Read Attribute
+      schema->addAttribute(ReadAttribute(reader));
   }
 
   return schema.release();

@@ -26,6 +26,7 @@
 // TerraLib
 #include "../datatype/Enums.h"
 #include "../geometry/Coord2D.h"
+#include "BandIterator.h"
 #include "Exception.h"
 #include "RasterFactory.h"
 #include "Utils.h"
@@ -168,6 +169,7 @@ te::rst::Grid* te::rst::GetGrid(const std::map<std::string, std::string>& rinfo)
 void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
 {
   assert(rin.getNumberOfBands() == rout.getNumberOfBands());
+  assert(rout.getAccessPolicy() == te::common::RWAccess || rout.getAccessPolicy() == te::common::WAccess);
 
   const std::size_t nbands = rin.getNumberOfBands();
   const unsigned int nRows = rin.getNumberOfRows();
@@ -178,7 +180,7 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
 
   for(std::size_t b = 0; b < nbands; b++)
   {
-    if( rin.getBand(b)->getProperty()->getType() == rout.getBand(b)->getProperty()->getType() )
+    if(rin.getBand(b)->getProperty()->getType() == rout.getBand(b)->getProperty()->getType())
     {
       Copy(*rin.getBand(b), *rout.getBand(b));
     }
@@ -187,8 +189,8 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
       const te::rst::Band& bin = *rin.getBand(b);
       te::rst::Band& bout = *rout.getBand(b);
 
-      for( row = 0 ; row < nRows ; ++row )
-        for( col = 0 ; col < nCols ; ++col )
+      for(row = 0 ; row < nRows ; ++row)
+        for(col = 0 ; col < nCols ; ++col)
         {
           bin.getValue(col, row, value);
 
@@ -201,63 +203,80 @@ void te::rst::Copy(const te::rst::Raster& rin, te::rst::Raster& rout)
 void te::rst::Copy(const te::rst::Band& bin, te::rst::Band& bout)
 {
   assert(*bin.getRaster()->getGrid() == *bout.getRaster()->getGrid());
-  assert(bin.getProperty()->getType() == bout.getProperty()->getType());
 
-  unsigned char* buffer = new unsigned char[bin.getBlockSize()];
-
-  int nblocksx = bin.getProperty()->m_nblocksx;
-  int nblocksy = bin.getProperty()->m_nblocksy;
-
-  const int blkw = bin.getProperty()->m_blkw;
-  const int blkh = bin.getProperty()->m_blkh;
-
-// when both rasters have the same block size, copy the entire blocks from in to out
-  if((blkw == bout.getProperty()->m_blkw) &&
-     (blkh == bout.getProperty()->m_blkh))
+// when both bands have the same data type
+  if (bin.getProperty()->getType() == bout.getProperty()->getType())
   {
-    for(int y = 0; y < nblocksy; ++y)
+    unsigned char* buffer = new unsigned char[bin.getBlockSize()];
+
+    int nblocksx = bin.getProperty()->m_nblocksx;
+    int nblocksy = bin.getProperty()->m_nblocksy;
+
+    const int blkw = bin.getProperty()->m_blkw;
+    const int blkh = bin.getProperty()->m_blkh;
+
+  // when both rasters have the same block size, copy the entire blocks from in to out
+    if((blkw == bout.getProperty()->m_blkw) &&
+       (blkh == bout.getProperty()->m_blkh))
     {
-      for(int x = 0; x < nblocksx; ++x)
+      for(int y = 0; y < nblocksy; ++y)
       {
-        bin.read(x, y, buffer);
-        bout.write(x, y, buffer);
+        for(int x = 0; x < nblocksx; ++x)
+        {
+          bin.read(x, y, buffer);
+          bout.write(x, y, buffer);
+        }
       }
     }
-  }
-// get all values from input block, and copy pixel by pixel to the output band
-  else
-  {
-    std::complex<double> value;
-
-    const unsigned int ncols = bin.getRaster()->getNumberOfColumns();
-    const unsigned int nrows = bin.getRaster()->getNumberOfRows();
-
-    for(int y = 0; y < nblocksy; ++y)
+  // get all values from input block, and copy pixel by pixel to the output band
+    else
     {
-      for(int x = 0; x < nblocksx; ++x)
+      std::complex<double> value;
+
+      const unsigned int ncols = bin.getRaster()->getNumberOfColumns();
+      const unsigned int nrows = bin.getRaster()->getNumberOfRows();
+
+      for(int y = 0; y < nblocksy; ++y)
       {
-        unsigned int w = blkw * (x + 1);
-
-        w = w > ncols ? ncols : w;
-
-        unsigned int h = blkh * (y + 1);
-
-        h = h > nrows ? nrows : h;
-
-        for(int r = blkh * y; r < (int)h; ++r)
+        for(int x = 0; x < nblocksx; ++x)
         {
-          for(int c = blkw * x; c < (int)w; ++c)
-          {
-            bin.getValue(c, r, value);
+          unsigned int w = blkw * (x + 1);
 
-            bout.setValue(c, r, value);
+          w = w > ncols ? ncols : w;
+
+          unsigned int h = blkh * (y + 1);
+
+          h = h > nrows ? nrows : h;
+
+          for(int r = blkh * y; r < (int)h; ++r)
+          {
+            for(int c = blkw * x; c < (int)w; ++c)
+            {
+              bin.getValue(c, r, value);
+
+              bout.setValue(c, r, value);
+            }
           }
         }
       }
     }
-  }
 
-  delete [] buffer;
+    delete [] buffer;
+  }
+// if bands have different data types, use iterator
+  else
+  {
+    te::rst::ConstBandIterator<double> rit = te::rst::ConstBandIterator<double>::begin(&bin);
+
+    te::rst::ConstBandIterator<double> ritend = te::rst::ConstBandIterator<double>::end(&bin);
+
+    while(rit != ritend)
+    {
+      bout.setValue(rit.getCol(), rit.getRow(), *rit);
+
+      ++rit;
+    }
+  }
 }
 
 void te::rst::Copy(unsigned int drow, unsigned int dcolumn, unsigned int height, unsigned int width, const Raster& rin, Raster& rout)
@@ -410,8 +429,13 @@ void te::rst::GetDataTypeRanges( const int& dataType, double& min, double& max )
 
 void te::rst::FillRaster(te::rst::Raster* rin, const std::complex<double>& value)
 {
-  for (unsigned int r = 0; r < rin->getNumberOfRows(); r++)
-    for (unsigned int c = 0; c < rin->getNumberOfColumns(); c++)
-      for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
-        rin->setValue(c, r, value, b);
+  for (unsigned int b = 0; b < rin->getNumberOfBands(); b++)
+    te::rst::FillBand(rin->getBand(b), value);
+}
+
+void te::rst::FillBand(te::rst::Band* bin, const std::complex<double>& value)
+{
+  for (unsigned int r = 0; r < bin->getRaster()->getNumberOfRows(); r++)
+    for (unsigned int c = 0; c < bin->getRaster()->getNumberOfColumns(); c++)
+      bin->setValue(c, r, value);
 }

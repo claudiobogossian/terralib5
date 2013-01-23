@@ -26,8 +26,10 @@
 #ifndef __TERRALIB_SRS_INTERNAL_ELLIPSOID_H 
 #define __TERRALIB_SRS_INTERNAL_ELLIPSOID_H
 
+// TerraLib
 #include "Config.h"
 
+// STL
 #include <string>
 
 namespace te

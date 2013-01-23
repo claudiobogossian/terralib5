@@ -20,7 +20,7 @@
 /*!
   \file terralib/ado/DataSourceTransactor.h
 
-  \brief An implementation of DataSourceTransactor class for the TerraLib ADO Data Access driver.
+  \brief Implementation of the DataSourceTransactor class for the TerraLib ADO Data Access driver.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASOURCETRANSACTOR_H
@@ -57,7 +57,7 @@ namespace te
     {
       public:
 
-        DataSourceTransactor(DataSource* parent, _ConnectionPtr conn);
+        DataSourceTransactor(DataSource* ds, _ConnectionPtr conn);
 
         ~DataSourceTransactor();
 

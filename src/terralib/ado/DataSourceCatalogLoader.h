@@ -54,7 +54,7 @@ namespace te
     {
       public:
 
-        DataSourceCatalogLoader(DataSourceTransactor* parent);
+        DataSourceCatalogLoader(DataSourceTransactor* t);
 
         ~DataSourceCatalogLoader();
 
@@ -84,19 +84,21 @@ namespace te
 
         te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp);
 
-        /*!
-          \brief It load informations about the geometry property
+         /*!
+          \brief It loads the information about a given geometry column.
 
-          \param dt The TerraLib DataSetType
-          \param geomp The TerraLib Geometry Property to load
+          \param datasetName The name of the dataset containing the geometric property.
+          \param gp          The geometric columns to load its information.
+
+          \exception It throws an exception if it can not load the information.
         */
-        void getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* geomp);
+        void getGeometryColumn(te::da::DataSetType* dt, te::gm::GeometryProperty* gp);
 
         void loadCatalog(const bool full = false);
 
-        bool datasetExists(const std::string& name);
-
         bool hasDataSets();
+
+        bool datasetExists(const std::string& name);
 
         bool primarykeyExists(const std::string& name);
 

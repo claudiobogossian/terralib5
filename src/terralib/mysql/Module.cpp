@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,66 +18,81 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/mysql/Module.cpp
    
-  \brief The TerraLib OGR driver is a plugin.
+  \brief An utility class to initialize and terminate TerraLib MySQL driver support.  
 */
 
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
-#include "DataSource.h"
+#include "../dataaccess/query/SQLDialect.h"
+//#include "../serialization/dataaccess/SQLDialect.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
+//#include "RasterFactory.h"
+//#include "RasterTableFactory.h"
 
-// OGR
-#include <ogrsf_frmts.h>
+// Boost
+#include <boost/filesystem.hpp>
 
-te::ogr::Module::Module(const te::plugin::PluginInfo& pluginInfo)
+te::mysql::Module::Module(const te::plugin::PluginInfo& pluginInfo)
   : te::plugin::Plugin(pluginInfo)
 {
 }
 
-te::ogr::Module::~Module()
+te::mysql::Module::~Module()
 {
 }
 
-void te::ogr::Module::startup()
+void te::mysql::Module::startup()
 {
   if(m_initialized)
     return;
 
-// it initializes the Translator support for the TerraLib PostGIS driver support
-  TE_ADD_TEXT_DOMAIN(TE_OGR_TEXT_DOMAIN, TE_OGR_TEXT_DOMAIN_DIR, "UTF-8");
+// it initializes the Translator support for the TerraLib MySQL driver
+  TE_ADD_TEXT_DOMAIN(TE_MYSQL_TEXT_DOMAIN, TE_MYSQL_TEXT_DOMAIN_DIR, "UTF-8");
 
-// registers all format drivers built into OGR.
-  OGRRegisterAll();
+// initializes the factories
+  DataSourceFactory::initialize();
+  //RasterFactory::initialize();
+  //RasterTableFactory::initialize();
 
-// it initializes the OGR Factory support
-  te::ogr::DataSourceFactory::initialize();
+// retrieve the SQL dialect
+  boost::filesystem::path driverpath(m_pluginInfo.m_folder);
 
-  TE_LOG_TRACE(TR_OGR("TerraLib OGR driver startup!"));
+  boost::filesystem::path dialectFile = driverpath / "mysql_dialect.xml";
+
+  //Globals::sm_queryDialect = te::serialize::ReadDialect(dialectFile.string());
+
+  TE_LOG_TRACE(TR_MYSQL("TerraLib MySQL driver startup!"));
 
   m_initialized = true;
 }
 
-void te::ogr::Module::shutdown()
+void te::mysql::Module::shutdown()
 {
   if(!m_initialized)
     return;
 
-// it finalizes the OGR factory support.
-  te::ogr::DataSourceFactory::finalize();
+// finalizes the postgis factory
+  //RasterTableFactory::finalize();
+  //RasterFactory::finalize();
+  DataSourceFactory::finalize();
 
-// free OGR registered drivers
-  te::da::DataSourceManager::getInstance().detachAll(OGR_DRIVER_IDENTIFIER);
- 
-  TE_LOG_TRACE(TR_OGR("TerraLib OGR driver shutdown!"));
+// free registered MySQL data sources
+  te::da::DataSourceManager::getInstance().detachAll(Globals::sm_driverIdentifier);
+
+// release Query dialect
+  delete Globals::sm_queryDialect;
+  Globals::sm_queryDialect = 0;
+
+  TE_LOG_TRACE(TR_MYSQL("TerraLib MySQL driver shutdown!"));
 
   m_initialized = false;
 }
 
-PLUGIN_CALL_BACK_IMPL(te::ogr::Module)
+PLUGIN_CALL_BACK_IMPL(te::mysql::Module)
 

@@ -218,6 +218,7 @@ namespace te
           QString m_appIconThemeDir;
           QString m_appDefaultIconTheme;
           QString m_appToolBarDefaultIconSize;
+          std::string m_appDatasourcesFile;
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
       };
 

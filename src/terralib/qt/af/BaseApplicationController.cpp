@@ -23,6 +23,9 @@
   \brief The base API for controllers of TerraLib applications.
 */
 
+// Boost
+#include <boost/foreach.hpp> // Boost => don't change this include order, otherwise you may have compiling problems! 
+
 // TerraLib
 #include "../../common/Exception.h"
 #include "../../common/Translator.h"
@@ -32,6 +35,7 @@
 #include "../../common/Logger.h"
 #include "../../plugin/PluginManager.h"
 #include "../../plugin/PluginInfo.h"
+#include "../../serialization/dataaccess/DataSourceInfo.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/utils/ScopedCursor.h"
@@ -53,7 +57,6 @@
 
 // Boost
 #include <boost/filesystem.hpp>
-#include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 const te::qt::af::BaseApplicationController& sm_core = te::qt::af::ApplicationController::getInstance();
@@ -251,6 +254,45 @@ void  te::qt::af::BaseApplicationController::initialize()
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
+
+// load registered data sources
+  try
+  {
+    m_appDatasourcesFile = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DataSourcesFile");
+
+    if(!m_appDatasourcesFile.empty())
+    {
+      SplashScreenManager::getInstance().showMessage(tr("Loading user registered data sources..."));
+
+      te::serialize::ReadDataSourceInfo(m_appDatasourcesFile);
+
+      SplashScreenManager::getInstance().showMessage(tr("Known data sources loaded!"));
+    }
+  }
+  catch(const std::exception& e)
+  {
+    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
+
+    QString msgErr(tr("Error loading the registered data sources: %1"));
+
+    msgErr = msgErr.arg(e.what());
+
+    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
+  }
+
+//// load recent projects
+//  UserRecentProjects::getInstance().load();
+//
+//  splashScreen.showMessage("Recent projects loaded!", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+//  QCoreApplication::processEvents();
+//
+//// open most recent opened project
+//  std::string mostRecentProjectFile = UserApplicationSettings::getInstance().getValue("UserSettings.MostRecentProject.<xmlattr>.xlink:href");
+//  sm_instance->fileOpenProject(mostRecentProjectFile.c_str());
+//
+//  splashScreen.showMessage("Most recent project loaded!", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+//  QCoreApplication::processEvents();
+
 }
 
 void te::qt::af::BaseApplicationController::initializePlugins()
@@ -303,6 +345,15 @@ void te::qt::af::BaseApplicationController::initializePlugins()
     msgErr = msgErr.arg(e.what());
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
+
+    //const std::vector<te::plugin::PluginInfo*>& bps = te::plugin::PluginManager::getInstance().getBrokenPlugins();
+
+    //for(int kk = 0; kk < bps.size(); ++kk)
+    //{
+    //  QMessageBox::warning(sm_instance,
+    //                     tr(SystemApplicationSettings::getInstance().getValue("Application.Title").c_str()),
+    //                     tr(bps[kk]->m_name.c_str()));
+    //}
   }
 }
 

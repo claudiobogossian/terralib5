@@ -57,6 +57,7 @@
 #include "ApplicationPlugins.h"
 #include "BaseApplication.h"
 #include "BaseApplicationController.h"
+#include "Project.h"
 #include "SplashScreenManager.h"
 #include "ui_BaseApplicationForm.h"
 
@@ -163,6 +164,29 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::Event* evt)
   //  default :
   //  break;
   //}
+}
+
+void te::qt::af::BaseApplication::onAddDataSetLayer()
+{
+  try
+  {
+    std::auto_ptr<te::qt::widgets::DataSourceSelectorDialog> dselector(new te::qt::widgets::DataSourceSelectorDialog(this));
+
+    int retval = dselector->exec();
+
+    if(retval == QDialog::Rejected)
+      return;
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a dataset!"));
+  }
 }
 
 void te::qt::af::BaseApplication::makeDialog()
@@ -296,6 +320,9 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_ui->m_helpContents->setIcon(QIcon::fromTheme("help-browser"));
   m_ui->m_helpUpdate->setIcon(QIcon::fromTheme("system-software-update"));
+
+// connect signals/slots
+  connect(m_ui->m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayer()));
 }
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)

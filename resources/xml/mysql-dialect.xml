@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<QueryDialect xmlns:xlink="http://www.w3.org/1999/xlink"
+              xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+              xmlns="http://www.terralib.org/dataaccess"
+              xsd:schemaLocation="http://www.terralib.org/dataaccess ../../../../schemas/terralib/dataaccess/query_dialect.xsd"
+              version="5.0.0-20110110">
+  <DriverName>te.da.mysql</DriverName>
+  
+  <Functions>
+    <!-- arithmetic operators -->
+    
+    <Function name="+">
+      <BinaryOpEncoder alias="+"/>
+    </Function>
+	
+    <Function name="-">
+      <BinaryOpEncoder alias="-"/>
+    </Function>
+	
+    <Function name="*">
+      <BinaryOpEncoder alias="*"/>
+    </Function>
+	
+    <Function name="/">
+      <BinaryOpEncoder alias="/"/>
+    </Function>
+    
+    <!-- relational operators -->
+	
+    <Function name="=">
+      <BinaryOpEncoder alias="="/>
+    </Function>
+	
+    <Function name="&#60;&#62;">
+      <BinaryOpEncoder alias="&#60;&#62;"/>
+    </Function>
+	
+    <Function name="&#62;">
+      <BinaryOpEncoder alias="&#62;"/>
+    </Function>
+	
+    <Function name="&#60;">
+      <BinaryOpEncoder alias="&#60;"/>
+    </Function>
+	
+    <Function name="&#62;=">
+      <BinaryOpEncoder alias="&#62;="/>
+    </Function>
+    
+    <Function name="&#60;=">
+      <BinaryOpEncoder alias="&#60;="/>
+    </Function>
+	
+    <!-- logical operators -->
+    
+    <Function name="and">
+      <BinaryOpEncoder alias="AND"/>
+    </Function>
+    
+    <Function name="or">
+      <BinaryOpEncoder alias="OR"/>
+    </Function>
+    
+    <Function name="not">
+      <UnaryOpEncoder alias="NOT"/>
+    </Function>
+	
+    <!-- string operators -->
+    
+    <Function name="upper">
+      <FunctionEncoder alias="upper"/>
+    </Function>
+	
+    <Function name="lower">
+      <FunctionEncoder alias="lower"/>
+    </Function>
+    
+    <Function name="substr">
+      <FunctionEncoder alias="substr"/>
+    </Function>
+    
+    <Function name="trim">
+      <FunctionEncoder alias="trim"/>
+    </Function>
+    
+    <!-- aggregate operators -->
+	
+    <Function name="sum">
+      <FunctionEncoder alias="SUM"/>
+    </Function>
+	
+    <Function name="avg">
+      <FunctionEncoder alias="AVG"/>
+    </Function>
+    
+    <Function name="count">
+      <FunctionEncoder alias="COUNT"/>
+    </Function>
+    
+    <Function name="max">
+      <FunctionEncoder alias="MAX"/>
+    </Function>
+    
+    <Function name="min">
+      <FunctionEncoder alias="MIN"/>
+    </Function>
+	
+    <!-- spatial operators -->
+    
+    <Function name="st_astext">
+      <FunctionEncoder alias="AsText"/>
+    </Function>
+    
+    <Function name="st_asbinary">
+      <FunctionEncoder alias="AsBinary"/>
+    </Function>
+   
+    <Function name="st_dimension">
+      <FunctionEncoder alias="Dimension"/>
+    </Function>
+    
+    <Function name="st_envelope">
+      <FunctionEncoder alias="Envelope"/>
+    </Function>
+    
+    <Function name="st_geometrytype">
+      <FunctionEncoder alias="GeometryType"/>
+    </Function>
+    
+    <Function name="st_srid">
+      <FunctionEncoder alias="SRID"/>
+    </Function>
+    
+    <Function name="st_boundary">
+      <FunctionEncoder alias="Boundary"/>
+    </Function>
+    
+    <Function name="st_isempty">
+      <FunctionEncoder alias="IsEmpty"/>
+    </Function>
+    
+    <Function name="st_issimple">
+      <FunctionEncoder alias="IsSimple"/>
+    </Function>
+    
+    <Function name="st_x">
+      <FunctionEncoder alias="X"/>
+    </Function>
+    
+    <Function name="st_y">
+      <FunctionEncoder alias="Y"/>
+    </Function>
+    
+    <Function name="st_endpoint">
+      <FunctionEncoder alias="EndPoint"/>
+    </Function>
+    
+    <Function name="st_length">
+      <FunctionEncoder alias="GLength"/>
+    </Function>
+    
+    <Function name="st_numpoints">
+      <FunctionEncoder alias="NumPoints"/>
+    </Function>
+    
+    <Function name="st_pointn">
+      <FunctionEncoder alias="PointN"/>
+    </Function>
+    
+    <Function name="st_startpoint">
+      <FunctionEncoder alias="StartPoint"/>
+    </Function>
+    
+    <Function name="st_isclosed">
+      <FunctionEncoder alias="IsClosed"/>
+    </Function>
+    
+    <Function name="st_area">
+      <FunctionEncoder alias="Area"/>
+    </Function>
+    
+    <Function name="st_exteriorring">
+      <FunctionEncoder alias="ExteriorRing"/>
+    </Function>
+    
+    <Function name="st_interiorringn">
+      <FunctionEncoder alias="InteriorRingN"/>
+    </Function>
+    
+    <Function name="st_numinteriorrings">
+      <FunctionEncoder alias="NumInteriorRings"/>
+    </Function>
+    
+    <Function name="st_geometryn">
+      <FunctionEncoder alias="GeometryN"/>
+    </Function>
+    
+    <Function name="st_numgeometries">
+      <FunctionEncoder alias="NumGeometries"/>
+    </Function>
+    
+    <Function name="st_buffer">
+      <FunctionEncoder alias="Buffer"/>
+    </Function>
+    
+    <Function name="st_convexhull">
+      <FunctionEncoder alias="ConvexHull"/>
+    </Function>
+    
+    <Function name="st_difference">
+      <FunctionEncoder alias="ST_Difference"/>
+    </Function>
+    
+    <Function name="st_intersection">
+      <FunctionEncoder alias="ST_Intersection"/>
+    </Function>
+    
+    <Function name="st_symdifference">
+      <FunctionEncoder alias="ST_SymDifference"/>
+    </Function>
+    
+    <Function name="st_union">
+      <FunctionEncoder alias="ST_Union"/>
+    </Function>
+    
+    <Function name="st_contains">
+      <FunctionEncoder alias="ST_Contains"/>
+    </Function>
+    
+    <Function name="st_crosses">
+      <FunctionEncoder alias="ST_Crosses"/>
+    </Function>
+    
+    <Function name="st_disjoint">
+      <FunctionEncoder alias="ST_Disjoint"/>
+    </Function>
+    
+    <Function name="st_equals">
+      <FunctionEncoder alias="ST_Equals"/>
+    </Function>
+    
+    <Function name="st_intersects">
+      <FunctionEncoder alias="ST_Intersects"/>
+    </Function>
+    
+    <Function name="st_overlaps">
+      <FunctionEncoder alias="ST_Overlaps"/>
+    </Function>
+    
+    <Function name="st_touches">
+      <FunctionEncoder alias="ST_Touches"/>
+    </Function>
+    
+    <Function name="st_within">
+      <FunctionEncoder alias="ST_Within"/>
+    </Function>
+
+  </Functions>
+</QueryDialect>

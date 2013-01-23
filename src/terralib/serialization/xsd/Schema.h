@@ -29,6 +29,9 @@
 // TerraLib
 #include "../Config.h"
 
+// STL
+#include <string>
+
 namespace te
 {
   namespace xsd { class Schema; }
@@ -41,6 +44,8 @@ namespace te
 
   namespace serialize
   {
+    TESERIALIZATIONEXPORT te::xsd::Schema* ReadSchema(const std::string& path);
+
     TESERIALIZATIONEXPORT te::xsd::Schema* ReadSchema(te::xml::Reader& reader);
 
     TESERIALIZATIONEXPORT void Save(te::xsd::Schema* schema, te::xml::Writer& writer);

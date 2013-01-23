@@ -71,14 +71,42 @@ void te::serialize::ReadOccurs(te::xsd::Occurs* occurs, te::xml::Reader& reader)
   // MaxOccurs
   pos = reader.getAttrPosition("maxOccurs");
   if(pos != std::string::npos)
-    occurs->setMaxOccurs(static_cast<unsigned int>(reader.getAttrAsInt32(pos)));
+    reader.getAttr(pos) == "unbounded" ? occurs->setMaxOccurs(te::xsd::Occurs::unbounded) : occurs->setMaxOccurs(reader.getAttrAsInt32(pos));
 }
 
 te::xsd::QName* te::serialize::CreateQName(const std::string& name)
 {
   std::vector<std::string> tokens;
   te::common::Tokenize(name, tokens, ":");
-  assert(tokens.size() > 2);
+  assert(tokens.size() >= 2);
   
   return new te::xsd::QName(tokens[0], tokens[1]);
+}
+
+te::xsd::FacetType te::serialize::GetFacetType(const std::string& name)
+{
+  if(name == "minExclusive")
+    return te::xsd::MinExclusive;
+  if(name == "minInclusive")
+    return te::xsd::MinInclusive;
+  if(name == "maxExclusive")
+    return te::xsd::MaxExclusive;
+  if(name == "maxInclusive")
+    return te::xsd::MaxInclusive;
+  if(name == "totalDigits")
+    return te::xsd::TotalDigits;
+  if(name == "fractionDigits")
+    return te::xsd::FractionDigits;
+  if(name == "length")
+    return te::xsd::Length;
+  if(name == "minLength")
+    return te::xsd::MinLength;
+  if(name == "maxLength")
+    return te::xsd::MaxLength;
+  if(name == "enumeration")
+    return te::xsd::Enumeration;
+  if(name == "whiteSpace")
+    return te::xsd::WhiteSpace;
+
+  return te::xsd::Pattern;
 }

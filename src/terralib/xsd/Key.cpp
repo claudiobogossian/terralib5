@@ -38,6 +38,7 @@ te::xsd::Key::Key(const Key& rhs)
 
 te::xsd::Key::~Key()
 {
+  delete m_name;
 }
 
 te::xsd::Key& te::xsd::Key::operator=(const Key& rhs)
@@ -48,4 +49,15 @@ te::xsd::Key& te::xsd::Key::operator=(const Key& rhs)
 te::xsd::IdentityConstraint* te::xsd::Key::clone() const
 {
   return new Key(*this);
+}
+
+std::string* te::xsd::Key::getName() const
+{
+  return m_name;
+}
+
+void te::xsd::Key::setName(std::string* name)
+{
+  delete m_name;
+  m_name = name;
 }

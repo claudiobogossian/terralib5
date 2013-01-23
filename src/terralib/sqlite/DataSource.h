@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "Config.h"
 
 // Forward declarations
@@ -65,7 +66,7 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-        void getCapabilities(std::map<std::string, std::string>& capabilities) const;
+        const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
 
@@ -128,6 +129,8 @@ namespace te
         const te::da::SQLDialect* m_dialect;                      //!< The SQL dialect of the data source (note: the data source doesn't have the ownership of this pointer).
         bool m_useSpatiaLite;                                     //!< If true this driver works over SpatiaLite, otherwise, it uses OGR format.
         bool m_isrw;                                              //!< If true indicates that the database is opened for read and write, otherwise, just read access.
+
+        static te::da::DataSourceCapabilities sm_capabilities;    //!< SQLite capabilities.
     };
 
     inline sqlite3* DataSource::getDB() const

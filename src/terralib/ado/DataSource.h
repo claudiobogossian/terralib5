@@ -20,7 +20,7 @@
 /*!
   \file DataSource.h
 
-  \brief Implements the DataSource class for ADO.
+  \brief It implements the DataSource class for ADO.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASOURCE_H
@@ -56,7 +56,7 @@ namespace te
     /*!
       \class DataSource
 
-      \brief Implements the DataSource class for ADO.
+      \brief It implements the DataSource class for ADO.
 
       \sa te::da::DataSource
     */

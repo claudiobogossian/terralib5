@@ -23,11 +23,13 @@
   \brief This file contains the structs necessary to represent a Spatial Reference System. 
 */
 
-#ifndef __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_H 
-#define __TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_H
+#ifndef __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEM_H 
+#define __TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEM_H
 
+// TerraLib
 #include "Config.h"
 
+//STL
 #include <string>
 
 namespace te
@@ -121,4 +123,4 @@ namespace te
   }
 }
 
-#endif //__TERRALIB_SRS_INTERNAL_SPATIAL_REFERENCE_SYSTEM_H
+#endif //__TERRALIB_SRS_INTERNAL_SPATIALREFERENCESYSTEM_H

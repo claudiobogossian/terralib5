@@ -231,21 +231,39 @@ namespace te
          */
         void setFinal(int v);
 
+        /*!
+          \brief It sets the content type of the element.
+
+          \param t The content type of the element.
+
+          \note The element will take the ownership of the given type.
+        */
+        void setContentType(Type* t);
+
+        /*!
+          \brief It adds an IdentityConstraint to the element.
+
+          \param ic The IdentityConstraint that will be added.
+
+          \note The element will take the ownership of the given constraint.
+        */
+        void addIdentityConstraint(IdentityConstraint* ic);
+
       private:
 
-        std::string* m_name;      //!< It specifies a name for the element. (Optional)
-        QName* m_ref;             //!< It refers to the name of another element. The ref attribute can include a namespace prefix.
-        QName* m_type;            //!< It specifies either the name of a built-in data type, or the name of a simpleType or complexType element. (Optional)
-        QName* m_substitutionGroup;   //!< It specifies the element that can be substituted with this element.
-        std::string* m_default;   //!< It specifies a default value for the element (can only be used if the element's content is a simple type or text only).
-        std::string* m_fixed;     //!< It ensures that the elements are set to particular value.
-        Form m_form;              //!< Here, "unqualified" indicates that this attribute is not required to be qualified with the namespace prefix. "qualified" indicates that this attribute must be qualified with the namespace prefix. The default value is the value of the elementFormDefault attribute of the schema element. (Optional)
-        bool m_nillable;          //!< It specifies whether an explicit null value can be assigned to the element. True enables an instance of the element to have the null attribute set to true. The null attribute is defined as part of the XML Schema namespace for instances. Default is false.
-        bool m_abstract;          //!< It specifies whether the element can be used in an instance document. True indicates that the element cannot appear in the instance document. Instead, another element whose substitutionGroup attribute contains the qualified name (QName) of this element must appear in this element's place. Default is false.
-        int m_block;              //!< It prevents an element with a specified type of derivation from being used in place of this element. (Optional)
-        int m_final;                  //!< It sets the default value of the final attribute on the element element.
-        Type* m_contentType;      //!< A content of this element. A simpleType or complexType element can be present as a child only if both the ref and type attributes are not present.
-        boost::ptr_vector<IdentityConstraint*>* m_identityConstraintVec; //!< The list of elements related to identity constraint - (key | keyref | unique)*. (Optional)
+        std::string* m_name;        //!< It specifies a name for the element. (Optional)
+        QName* m_ref;               //!< It refers to the name of another element. The ref attribute can include a namespace prefix.
+        QName* m_type;              //!< It specifies either the name of a built-in data type, or the name of a simpleType or complexType element. (Optional)
+        QName* m_substitutionGroup; //!< It specifies the element that can be substituted with this element.
+        std::string* m_default;     //!< It specifies a default value for the element (can only be used if the element's content is a simple type or text only).
+        std::string* m_fixed;       //!< It ensures that the elements are set to particular value.
+        Form m_form;                //!< Here, "unqualified" indicates that this attribute is not required to be qualified with the namespace prefix. "qualified" indicates that this attribute must be qualified with the namespace prefix. The default value is the value of the elementFormDefault attribute of the schema element. (Optional)
+        bool m_nillable;            //!< It specifies whether an explicit null value can be assigned to the element. True enables an instance of the element to have the null attribute set to true. The null attribute is defined as part of the XML Schema namespace for instances. Default is false.
+        bool m_abstract;            //!< It specifies whether the element can be used in an instance document. True indicates that the element cannot appear in the instance document. Instead, another element whose substitutionGroup attribute contains the qualified name (QName) of this element must appear in this element's place. Default is false.
+        int m_block;                //!< It prevents an element with a specified type of derivation from being used in place of this element. (Optional)
+        int m_final;                //!< It sets the default value of the final attribute on the element element.
+        Type* m_contentType;        //!< A content of this element. A simpleType or complexType element can be present as a child only if both the ref and type attributes are not present.
+        boost::ptr_vector<IdentityConstraint> m_identityConstraintVec; //!< The list of elements related to identity constraint - (key | keyref | unique)*. (Optional)
     };
 
   } // end namespace xsd

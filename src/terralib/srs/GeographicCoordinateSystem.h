@@ -23,12 +23,14 @@
   \brief This file contains the structs necessary to represent a GeographicCoordinateSystem.
 */
 
-#ifndef __TERRALIB_SRS_INTERNAL_GEOGRAPHIC_COORDINATE_SYSTEM_H 
-#define __TERRALIB_SRS_INTERNAL_GEOGRAPHIC_COORDINATE_SYSTEM_H
+#ifndef __TERRALIB_SRS_INTERNAL_GEOGRAPHICCOORDINATESYSTEM_H 
+#define __TERRALIB_SRS_INTERNAL_GEOGRAPHICCOORDINATESYSTEM_H
 
+// TerraLib
 #include "Config.h"
 #include "SpatialReferenceSystem.h"
 
+// STL
 #include <string>
 
 namespace te
@@ -91,4 +93,4 @@ namespace te
   };
 }
 }
-#endif //__TERRALIB_SRS_INTERNAL_GEOGRAPHIC_COORDINATE_SYSTEM_H
+#endif //__TERRALIB_SRS_INTERNAL_GEOGRAPHICCOORDINATESYSTEM_H

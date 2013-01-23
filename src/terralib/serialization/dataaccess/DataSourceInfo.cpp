@@ -18,18 +18,18 @@
  */
 
 /*!
-  \file DataSource.cpp
-   
+  \file terralib/serialization/dataaccess/DataSource.cpp
+
   \brief Auxiliary classes and functions to read SQL dialect information from a XML document.
 */
 
 // TerraLib
-#include "../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../xml/Reader.h"
-#include "../../../xml/ReaderFactory.h"
-#include "../../Exception.h"
-#include "DataSource.h"
+#include "../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../xml/Reader.h"
+#include "../../xml/ReaderFactory.h"
+#include "../Exception.h"
+#include "DataSourceInfo.h"
 
 // STL
 #include <cassert>
@@ -38,7 +38,7 @@
 // Boost
 #include <boost/format.hpp>
 
-void te::serialize::ReadDataSource(const std::string& datasourcesFileName)
+void te::serialize::ReadDataSourceInfo(const std::string& datasourcesFileName)
 {
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
 
@@ -59,7 +59,7 @@ void te::serialize::ReadDataSource(const std::string& datasourcesFileName)
   while((xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "DataSource"))
   {
-    te::da::DataSourceInfoPtr ds(ReadDataSource(*xmlReader));
+    te::da::DataSourceInfoPtr ds(ReadDataSourceInfo(*xmlReader));
 
     te::da::DataSourceInfoManager::getInstance().add(ds);
   }
@@ -67,7 +67,7 @@ void te::serialize::ReadDataSource(const std::string& datasourcesFileName)
   return;
 }
 
-te::da::DataSourceInfo* te::serialize::ReadDataSource(te::xml::Reader& reader)
+te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reader)
 {
   std::auto_ptr<te::da::DataSourceInfo> ds(new te::da::DataSourceInfo);
 

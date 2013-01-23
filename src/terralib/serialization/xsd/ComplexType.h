@@ -18,31 +18,34 @@
  */
 
 /*!
-  \file DataSource.h
-   
-  \brief Auxiliary classes and functions to read data source information from a XML document.
+  \file terralib/serialization/xsd/ComplexType.h
+ 
+  \brief Support for ComplexType serialization.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_QT_WIDGETS_INTERNAL_DATASOURCEINFO_H
-#define __TERRALIB_SERIALIZATION_QT_WIDGETS_INTERNAL_DATASOURCEINFO_H
+#ifndef __TERRALIB_SERIALIZATION_XSD_INTERNAL_COMPLEXTYPE_H
+#define __TERRALIB_SERIALIZATION_XSD_INTERNAL_COMPLEXTYPE_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
 
 namespace te
 {
-  namespace qt { namespace widgets { class DataSource; } }
+  namespace xsd { class ComplexType; }
 
-  namespace xml { class Reader; }
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
 
   namespace serialize
   {
-    TESERIALIZATIONEXPORT void ReadDataSource(const std::string& datasourcesFileName);
+    TESERIALIZATIONEXPORT te::xsd::ComplexType* ReadComplexType(te::xml::Reader& reader);
 
-    TESERIALIZATIONEXPORT te::da::DataSourceInfo* ReadDataSource(te::xml::Reader& reader);
+    TESERIALIZATIONEXPORT void Save(te::xsd::ComplexType* ct, te::xml::Writer& writer);
 
   } // end namespace serialize
 }   // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_QT_WIDGETS_INTERNAL_DATASOURCEINFO_H
-
+#endif  // __TERRALIB_SERIALIZATION_XSD_INTERNAL_COMPLEXTYPE_H

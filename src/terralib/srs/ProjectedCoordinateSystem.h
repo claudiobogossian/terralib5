@@ -23,14 +23,17 @@
   \brief This file contains the structs necessary to represent a ProjectedCoordinateSystem.
 */
 
-#ifndef __TERRALIB_SRS_INTERNAL_PROJECTED_COORDINATE_SYSTEM_H 
-#define __TERRALIB_SRS_INTERNAL_PROJECTED_COORDINATE_SYSTEM_H
+#ifndef __TERRALIB_SRS_INTERNAL_PROJECTEDCOORDINATESYSTEM_H 
+#define __TERRALIB_SRS_INTERNAL_PROJECTEDCOORDINATESYSTEM_H
 
+// TerraLib
 #include "Config.h"
 #include "SpatialReferenceSystem.h"
 
-#include <string>
+// STL
 #include <map>
+#include <string>
+
 
 namespace te
 {
@@ -111,4 +114,4 @@ namespace te
     };
   }
 }
-#endif // __TERRALIB_SRS_INTERNAL_PROJECTED_COORDINATE_SYSTEM_H
+#endif // __TERRALIB_SRS_INTERNAL_PROJECTEDCOORDINATESYSTEM_H
