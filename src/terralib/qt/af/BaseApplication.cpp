@@ -70,11 +70,11 @@
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
-    m_ui(new Ui::BaseApplicationForm),
     m_explorer(0),
     m_display(0),
     m_viewer(0),
-    m_project(0)
+    m_project(0),
+    m_ui(new Ui::BaseApplicationForm)
 {
   m_ui->setupUi(this);
 }
