@@ -27,11 +27,18 @@
 #define __TERRALIB_INTERNAL_METADATA_H
 
 
-// memory
+// metadata
 #include "metadata/Config.h"
 #include "metadata/MetadataAnnotation.h"
 #include "metadata/MetadataManager.h"
 #include "metadata/Module.h"
+#include "metadata/iso19115/CI_Citation.h"
+#include "metadata/iso19115/CI_ResponsibleParty.h"
+#include "metadata/iso19115/CodeList.h"
+#include "metadata/iso19115/MD_DataIdentification.h"
+#include "metadata/iso19115/MD_Format.h"
+#include "metadata/iso19115/MD_Identification.h"
+#include "metadata/iso19115/MD_Metadata.h"
 
 namespace te
 {

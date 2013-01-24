@@ -18,14 +18,47 @@
  */
 
 /*!
- \file terralib/examples/metadata/example/Metadata.h
+ \file terralib/metadata/iso19115/MD_Identification.cpp
  */
 
-#ifndef __TERRALIB_METADATA_EXAMPLES_METADATA_H
-#define __TERRALIB_METADATA_EXAMPLES_METADATA_H
+// TerraLib
+#include "CI_Citation.h"
+#include "MD_Identification.h"
 
-void ExMetadataManager();
+// STL
+#include <cassert>
 
-void ExMetadataAnnotate();
+te::md::MD_Identification::MD_Identification(te::md::CI_Citation* citation, const std::string abstract, MD_ProgressCode status) :
+  m_citation(0),
+  m_abstract(abstract),
+  m_status(status)
+{
+  assert(citation);
+  
+  m_citation = citation;
+}
 
-#endif
+te::md::MD_Identification::~MD_Identification()
+{
+  if (m_citation)
+    delete m_citation;
+}
+
+const te::md::CI_Citation* 
+te::md::MD_Identification::getCitation() const
+{
+  return m_citation;
+}
+
+
+const std::string&
+te::md::MD_Identification::getAbstract() const
+{
+  return m_abstract;
+}
+
+te::md::MD_ProgressCode 
+te::md::MD_Identification::getStatus() const
+{
+  return m_status;
+}

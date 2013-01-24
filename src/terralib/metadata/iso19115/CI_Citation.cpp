@@ -18,14 +18,38 @@
  */
 
 /*!
- \file terralib/examples/metadata/example/Metadata.h
- */
+ \file CI_Citation.cpp
+*/
 
-#ifndef __TERRALIB_METADATA_EXAMPLES_METADATA_H
-#define __TERRALIB_METADATA_EXAMPLES_METADATA_H
+// TerraLib
+#include "CI_Citation.h"
 
-void ExMetadataManager();
+// STL
+#include <cassert>
 
-void ExMetadataAnnotate();
+te::md::CI_Citation::CI_Citation(const std::string& title, boost::gregorian::date date, CI_DateTypeCode dType):
+  m_title(title),
+  m_date(date), 
+  m_dateType(dType)
+{}
 
-#endif
+te::md::CI_Citation::~CI_Citation()
+{}
+
+const 
+std::string& te::md::CI_Citation::getTitle() const
+{
+  return m_title;
+}
+
+const 
+boost::gregorian::date& te::md::CI_Citation::getDate() const
+{
+  return m_date;
+}
+
+te::md::CI_DateTypeCode 
+te::md::CI_Citation::getDateType() const
+{
+  return m_dateType;
+}

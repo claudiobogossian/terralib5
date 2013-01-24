@@ -18,14 +18,48 @@
  */
 
 /*!
- \file terralib/examples/metadata/example/Metadata.h
+ \file terralib/metadata/MD_Format.h
+ 
+ \brief
  */
 
-#ifndef __TERRALIB_METADATA_EXAMPLES_METADATA_H
-#define __TERRALIB_METADATA_EXAMPLES_METADATA_H
+#ifndef __TERRALIB_MD_INTERNAL_MDFORMAT_H
+#define __TERRALIB_MD_INTERNAL_MDFORMAT_H
 
-void ExMetadataManager();
+// TerraLib
+#include "../Config.h"
 
-void ExMetadataAnnotate();
 
-#endif
+// STL
+#include <string>
+
+namespace te
+{
+  namespace md
+  {
+    /*!
+     \class MD_Format
+     
+     \brief Format of the data
+     */
+    struct TEMDEXPORT MD_Format
+    {
+    public:
+      
+      MD_Format(const std::string& name, const std::string& version):
+      m_name(name),
+      m_version(version) {}
+
+      std::string m_name; 
+      std::string m_version;
+      std::string m_amendmentNumber;
+      std::string m_specification;
+      std::string m_fileDecompressionTechnique;
+      
+    };
+    
+  } // end namespace md
+}   // end namespace te
+
+#endif  // __TERRALIB_MD_INTERNAL_MDFORMAT_H
+

@@ -1,5 +1,8 @@
-# Rules for processing annotation text module files.
+# Rules for processing metadata module files.
 # -------------------------------------------------- 
+
+set (DEP_INCLUDES "")   #include paths needed by metadata module.
+
 # 3rd-party definitions.
 
 find_package(Boost ${_Boost_VERSION} REQUIRED)
@@ -12,13 +15,24 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-add_definitions (-DTERRALIB_INIT_FILES_LOCATION=\"${TERRALIB_INIT_FILES_LOCATION}\")
-
 list (APPEND DEP_LIBS terralib_common)
 
-# Select the source and header files
-file(GLOB SRCS ${SRCDIR}/*.cpp)
-file(GLOB HDRS ${SRCDIR}/*.h)
+set (
+  _DIRS 
+  .
+  iso19115
+)
+
+# Files in build tree
+appPrefix (${SRCDIR} "${_DIRS}" METADATA_INC_DIRS)
+
+# Files in build tree
+appPrefix ("metadata" "${_DIRS}" METADATA_INC_INST_DIRS)
+
+# Get files by structured by folders. 
+getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
+
+list (APPEND DEP_INCLUDES "${METADATA_INC_DIRS}")
 
 #exporting module information
-exportModuleInformation("metadata" "${SRCDIR}" "metadata")
+exportModuleInformation("metadata" METADATA_INC_DIRS METADATA_INC_INST_DIRS)

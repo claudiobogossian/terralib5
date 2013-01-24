@@ -84,3 +84,47 @@ ExMetadataManager()
   
   te::md::MetadataManager::getInstance().clear();
 }
+
+void 
+ExMetadataAnnotate()
+{
+  // Create the metadata root element: this basically describes the metadata record
+  
+  te::md::CI_ResponsibleParty* creator = new te::md::CI_ResponsibleParty(te::md::CI_originator);
+  creator->setOrganizationName("Fundação Instituto Brasileiro de Geografia e Estatística - IBGE/ Diretoria de Geociências - DGC/ Coordenação de Cartografia - CCAR");
+  
+  te::md::CI_ResponsibleParty* distributor = new te::md::CI_ResponsibleParty(te::md::CI_distributor);
+  distributor->setOrganizationName("Instituto Brasileiro de Geografia e Estatística - IBGE, Centro de Documentação e Disseminação - CDDI");
+  
+  te::md::MD_Metadata* md = new te::md::MD_Metadata(creator);
+  md->addContact(distributor);
+  
+  md->setFileId("ibge.xml");
+  md->setLanguage("pt; BR");
+  md->setCharset(te::md::MD_utf8);
+  md->setDateStamp(boost::gregorian::date(boost::gregorian::from_undelimited_string("20041210")));
+  md->setStandardInfo("ISO 19115/IBGE", "2003");
+  
+  //  Citation
+  te::md::CI_Citation* dt_ct = new te::md::CI_Citation("Carta Topográfica 1:25.000 SD24-X-A-VI-1-NO",
+                                                       boost::gregorian::date(boost::gregorian::from_undelimited_string("19931201")),
+                                                       te::md::CI_creation);
+  
+  //  Data identification 
+  std::string abstract("A série de carta topográfica na escala 1: 25 000 representa parte do território nacional, de forma articulada, por folhas (segundo a convenção internacional da Carta CIM), e que abrange um quadrilátero geográfico de 7,5' de latitude por 7,5' de longitude. O IBGE desenvolve a produção dessa série, em conjunto com a DSG - Diretoria de Serviço Geográfico do Exército. Esta base vetorial está estruturada em categorias de informação: Hidrografia, Hipsografia, Localidades, Limites, Sistemas de Transporte, Pontos de Referência, Vegetação e Obras e Edificações, segundo modelagem da Mapoteca Topográfica Digital do IBGE.");
+  
+  te::md::MD_DataIdentification* dt_id = new te::md::MD_DataIdentification(dt_ct, abstract, te::md::MD_completed, "pt; BR");
+  dt_id->addCharacterSet(te::md::MD_utf8);  
+
+  dt_id->setSpatialRepType(te::md::MD_vector);
+
+  dt_id->addGeographicBBoxExt(-38, -37.83, -12.63, -12.5);
+  
+  dt_id->addTopicCategory(te::md::MD_imageryBaseMapsEarthCover);
+  
+  // Insert the data idenfiticaion in the metadata record
+  md->addIdentification(dt_id);
+  
+  delete md;
+
+}

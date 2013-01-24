@@ -30,8 +30,14 @@ namespace te
 {
   namespace md
   {
+    class MD_DataIdentification;
+    class MD_Format;
+    class MD_Identification;
+    class MD_Metadata;
     class MetadataAnnotation;
     class MetadataManager;
+    class CI_Citation;
+    class CI_ReponsibleParty;
   }
 }
 #endif // __TERRALIB_FW_INTERNAL_METADATA_FW_H

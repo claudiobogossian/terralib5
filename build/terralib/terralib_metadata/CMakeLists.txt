@@ -1,2 +1,2 @@
-set (SRS_DIR "${ROOT}/src/terralib/metadata")
-makeProject("metadata" "${SRS_DIR}" "${SRS_DIR}")
+set (METADATA_DIR "${ROOT}/src/terralib/metadata")
+makeProject("metadata" "${METADATA_DIR}" "${METADATA_DIR}")
