@@ -1,5 +1,5 @@
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS system filesystem date_time REQUIRED)
 if(Boost_FOUND)
   set (DEP_LIBS ${Boost_LIBRARIES})
   set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})

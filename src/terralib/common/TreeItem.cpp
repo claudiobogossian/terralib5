@@ -51,7 +51,10 @@ te::common::TreeItem::~TreeItem()
   iterator itend = end();
 
   while(it != itend)
+  {
     (*it)->m_parent = 0;
+    ++it;
+  }
 }
 
 te::common::TreeItem* te::common::TreeItem::getParent() const
