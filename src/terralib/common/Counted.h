@@ -57,7 +57,7 @@ namespace te
       protected:
 
         /*! \brief Destructor. */
-        ~Counted();
+        virtual ~Counted();
 
       private:
 
