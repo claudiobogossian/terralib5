@@ -51,6 +51,9 @@ double* te::serialize::ReadGeoTransform(te::xml::Reader& reader)
 
   reader.next();
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return geo;
 }
 
@@ -61,34 +64,42 @@ te::rst::Grid* te::serialize::ReadGrid(te::xml::Reader& reader)
 
   reader.next();
 
+  /* Extent Element */
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Extent");
   std::auto_ptr<te::gm::Envelope> e(ReadExtent(reader));
 
-  reader.next();
+  /* NumCols Element */
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "NumCols");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   unsigned int ncols = reader.getElementValueAsInt32();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* NumRows Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "NumRows");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   unsigned int nrows = reader.getElementValueAsInt32();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* SRID Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "SRID");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   int srid = reader.getElementValueAsInt32();
-
   reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* GeoTransform Element */
+  reader.next();
   double* geo = ReadGeoTransform(reader);
 
   te::rst::Grid* grid = new te::rst::Grid(ncols, nrows);
@@ -96,6 +107,9 @@ te::rst::Grid* te::serialize::ReadGrid(te::xml::Reader& reader)
   grid->setGeoreference(geo, srid);
 
   delete []  geo;
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return grid;
 }

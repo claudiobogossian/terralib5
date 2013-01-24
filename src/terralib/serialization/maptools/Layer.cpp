@@ -94,63 +94,80 @@ te::map::AbstractLayer* LayerReader(te::xml::Reader& reader)
 {
   std::string id = reader.getAttr(0);
 
+  /* Title Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Title");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string title = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Visible Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "SRID");
-
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  int srid = reader.getElementValueAsInt32();
-
-  reader.next();
-  assert(reader.getElementLocalName() == "Extent");
-  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
-
-  reader.next();
   assert(reader.getElementLocalName() == "Visible");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   bool visible = reader.getElementValueAsBoolean();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* DataSetName Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "DataSet");
-
+  assert(reader.getElementLocalName() == "DataSetName");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string dataset = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* DataSourceId Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "DataSourceId");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string datasourceId = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* SRID Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Renderer");
+  assert(reader.getElementLocalName() == "SRID");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  int srid = reader.getElementValueAsInt32();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Extent Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Extent");
+  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
+
+  /* RendererId Element */
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "RendererId");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string rendererId = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* StyleId Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Style");
-
+  assert(reader.getElementLocalName() == "StyleId");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string style = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   reader.next();
 
@@ -162,6 +179,9 @@ te::map::AbstractLayer* LayerReader(te::xml::Reader& reader)
   //layer->setDataSource(datasourceId); Uba
   //layer->setRenderer(rendererId); Uba
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Layer Element
+  reader.next();
+
   return layer.release();
 }
 
@@ -169,63 +189,80 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
 {
   std::string id = reader.getAttr(0);
 
+ /* Title Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Title");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string title = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Visible Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "SRID");
-
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  int srid = reader.getElementValueAsInt32();
-
-  reader.next();
-  assert(reader.getElementLocalName() == "Extent");
-  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
-
-  reader.next();
   assert(reader.getElementLocalName() == "Visible");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   bool visible = reader.getElementValueAsBoolean();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Query Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Query");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string query = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* DataSourceId Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "DataSourceId");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string datasourceId = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* SRID Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Renderer");
+  assert(reader.getElementLocalName() == "SRID");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  int srid = reader.getElementValueAsInt32();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Extent Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Extent");
+  std::auto_ptr<te::gm::Envelope> mbr(te::serialize::ReadExtent(reader));
+
+  /* RendererId Element */
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "RendererId");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string rendererId = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* StyleId Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "Style");
-
+  assert(reader.getElementLocalName() == "StyleId");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   std::string style = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   reader.next();
 
@@ -236,6 +273,9 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   //layer->setQuery(query); Uba
   //layer->setDataSource(datasourceId); Uba
   //layer->setRenderer(rendererId); Uba
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of QueryLayer Element
+  reader.next();
 
   return layer.release();
 }
@@ -251,13 +291,13 @@ void LayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
 
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("Title", layer->getTitle());
+  writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("DataSetName", layer->getDataSetName());
+  //writer.writeElement("DataSourceId", layer->getDataSource()); Uba
   writer.writeElement("SRID", layer->getSRID());
   te::serialize::SaveExtent(layer->getExtent(), writer);
-  writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  writer.writeElement("DataSet", layer->getDataSetName());
-  //writer.writeElement("DataSourceId", layer->getDataSource()); Uba
-  writer.writeElement("Renderer", "k");
-  writer.writeElement("Style", "x");
+  writer.writeElement("RendererId", "k");
+  writer.writeElement("StyleId", "x");
 
   writer.writeEndElement("Layer");
 }
@@ -273,14 +313,13 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
 
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("Title", layer->getTitle());
-  writer.writeElement("SRID", layer->getSRID());
-  te::serialize::SaveExtent(layer->getExtent(), writer);
   writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
   //writer.writeElement("Query", layer->getQuery()); Uba
   //writer.writeElement("DataSourceId", layer->getDataSource()); Uba
-  writer.writeElement("Renderer", "x");
-  writer.writeElement("Style", "z");
+  writer.writeElement("SRID", layer->getSRID());
+  te::serialize::SaveExtent(layer->getExtent(), writer);
+  writer.writeElement("RendererId", "x");
+  writer.writeElement("StyleId", "z");
 
   writer.writeEndElement("QueryLayer");
 }
-

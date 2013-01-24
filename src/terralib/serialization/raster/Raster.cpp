@@ -41,14 +41,20 @@ void te::serialize::ReadRasterInfo(std::map<std::string, std::string>& rinfo, te
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Info");
 
-  while(reader.next() &&
-        reader.getNodeType() == te::xml::START_ELEMENT &&
+  reader.next();
+
+  while(reader.getNodeType() == te::xml::START_ELEMENT &&
         reader.getElementLocalName() == "kvp")
   {
     std::string k = reader.getAttr(0);
     std::string v = reader.getAttr(1);
 
     rinfo[k] = v;
+
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 }
 
