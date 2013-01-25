@@ -42,7 +42,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsDataSetTypePersistence );
 void TsDataSetTypePersistence::setUp()
 {  
   m_ds = TsManagerDataSource::sm_datasource;
-  m_capabilit = TsManagerDataSource::sm_capabilit;
+  m_capabilit =  m_ds->getCapabilities();
   m_newdt = TsManagerDataSource::sm_newdt;
   m_newdt3 = TsManagerDataSource::sm_newdt3;
   m_fk = TsManagerDataSource::sm_fk;
@@ -123,11 +123,10 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
   CPPUNIT_ASSERT_NO_THROW(cl->loadCatalog(false));
-
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("DATASETTYPE_PERSISTENCE");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-  if ((it != it_end) && (it->second == "FALSE"))
-    CPPUNIT_ASSERT_MESSAGE("DATASETTYPE_PERSISTENCE is not supported by this datasource", it->second == "FALSE");
+  
+  //DATASETTYPE_PERSISTENCE
+  if (!(m_capabilit.supportsDataSetTypePesistenceAPI()))
+    CPPUNIT_ASSERT_MESSAGE("DATASETTYPE_PERSISTENCE is not supported by this datasource", m_capabilit.supportsDataSetTypePesistenceAPI());  
   else
   {
     te::da::DataSetTypePersistence* dtP = t->getDataSetTypePersistence();
@@ -143,74 +142,58 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
 
     dt = new te::da::DataSetType(m_newCapabilitiesDt);
   
-    it = m_capabilit.find("BIT_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsBit())
       dt->add(new te::dt::SimpleProperty("attr_bit", te::dt::BIT_TYPE));
 
-  // te::dt::CHAR_TYPE - loop in  util.cpp - te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool justDataType) default:
-    it = m_capabilit.find("CHAR_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    // te::dt::CHAR_TYPE - loop in  util.cpp - te::pgis::SetColumnDef(std::string& s, const te::dt::Property* p, bool justDataType) default:
+    if ((m_capabilit.getDataTypeCapabilities()).supportsChar())
       dt->add(new te::dt::SimpleProperty("attr_char", te::dt::CHAR_TYPE));
 
-    it = m_capabilit.find("UCHAR_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsUChar())
       dt->add(new te::dt::SimpleProperty("attr_uchar", te::dt::UCHAR_TYPE));
 
-    it = m_capabilit.find("INT16_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsInt16())
       dt->add(new te::dt::SimpleProperty("attr_int16", te::dt::INT16_TYPE));
 
-    it = m_capabilit.find("UINT16_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsUInt16())
       dt->add(new te::dt::SimpleProperty("attr_uint16", te::dt::UINT16_TYPE));
 
-    it = m_capabilit.find("INT32_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsInt16())
       dt->add(new te::dt::SimpleProperty("attr_int32", te::dt::INT32_TYPE));
 
-    it = m_capabilit.find("UINT32_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
-      dt->add(new te::dt::SimpleProperty("attr_uint32", te::dt::UINT16_TYPE));
+    if ((m_capabilit.getDataTypeCapabilities()).supportsUInt32())
+      dt->add(new te::dt::SimpleProperty("attr_uint32", te::dt::UINT32_TYPE));
 
-    it = m_capabilit.find("INT64_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsInt64())
       dt->add(new te::dt::SimpleProperty("ttr_int64", te::dt::INT64_TYPE));
 
-    it = m_capabilit.find("UINT64_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsUInt64())
       dt->add(new te::dt::SimpleProperty("attr_uint64", te::dt::UINT64_TYPE));
 
-    it = m_capabilit.find("BOOLEAN_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsBoolean())
       dt->add(new te::dt::SimpleProperty("attr_bool", te::dt::BOOLEAN_TYPE));
 
-    it = m_capabilit.find("FLOAT_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsFloat())
       dt->add(new te::dt::SimpleProperty("attr_float", te::dt::FLOAT_TYPE));
 
-    it = m_capabilit.find("DOUBLE_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsDouble())
       dt->add(new te::dt::SimpleProperty("attr_double", te::dt::DOUBLE_TYPE));
 
-    it = m_capabilit.find("NUMERIC_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsNumeric())
       //dt->add(new te::dt::NumericProperty("attr_numeric", 10, 3, true, new std::string(m_Attr1)));
       dt->add(new te::dt::NumericProperty("attr_numeric", 10, 3, true));
-    it = m_capabilit.find("STRING_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+
+    if ((m_capabilit.getDataTypeCapabilities()).supportsString())  //STRING_DT
     {
-  // te::dt::STRING_TYPE will be used to set the datatype inside the constructor and the second parameter is the subtype
+      // te::dt::STRING_TYPE will be used to set the datatype inside the constructor and the second parameter is the subtype
       dt->add(new te::dt::StringProperty("attr_string_fixed", te::dt::FIXED_STRING));
       dt->add(new te::dt::StringProperty("attr_string_var", te::dt::VAR_STRING, 50, false));
       dt->add(new te::dt::StringProperty("attr_string", te::dt::STRING, 0, true));
     }
 
-
-
-    it = m_capabilit.find("GEOMETRY_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsGeometry())
     { 
-  // datatype will be te::dt::GEOMETRY_TYPE and subtype will be the third parameter
+      // datatype will be te::dt::GEOMETRY_TYPE and subtype will be the third parameter
       dt->add(new te::gm::GeometryProperty("attr_geom_p", 4326, te::gm::PointType, true));
       dt->add(new te::gm::GeometryProperty("attr_geom_pz", 4326, te::gm::PointZType, true));
       dt->add(new te::gm::GeometryProperty("attr_geom_pzm", 4326, te::gm::PointZMType, true));
@@ -247,6 +230,8 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
       dt->add(new te::gm::GeometryProperty("attr_geom_multipolm", 4326, te::gm::MultiPolygonMType, true));
     }
 
+    if ((m_capabilit.getDataTypeCapabilities()).supportsByteArray())
+    {
     ////it = m_capabilit.find("BYTEARRAY_DT");
     ////if ((it != it_end) && (it->second == "TRUE"))
     ////  dt->add(new te::dt::SimpleProperty("attr_byte_array", te::dt::ARRAY_TYPE));
@@ -260,11 +245,10 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
     ////  te::dt::SimpleProperty* elementType1 = new te::dt::SimpleProperty("attr_array_32", te::dt::INT32_TYPE, true, 0);
     ////  dt->add(new te::dt::ArrayProperty("attr_array_32", elementType1, true, 0));
     ////}
-
-    it = m_capabilit.find("DATETIME_DT");
-    if ((it != it_end) && (it->second == "TRUE")) 
+    }
+    if ((m_capabilit.getDataTypeCapabilities()).supportsDateTime()) 
     {
-  // TE_DATETIME_DT is not used inside constructor - only subType
+      // TE_DATETIME_DT is not used inside constructor - only subType
       dt->add(new te::dt::DateTimeProperty("attr_datetime", te::dt::DATE));   
       dt->add(new te::dt::DateTimeProperty("attr_datetime_date", te::dt::TIME_INSTANT));
       dt->add(new te::dt::DateTimeProperty("attr_datetime_time", te::dt::TIME_PERIOD));
@@ -277,8 +261,7 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeBasedOnCapabilities()
     ////if ((it != it_end) && (it->second == "TRUE"))
     ////  dt->add(new te::dt::CompositeProperty("attr_composite_name", "attr_composite", te::dt::COMPOSITE_TYPE));
 
-    it = m_capabilit.find("RASTER_DT");
-    if ((it != it_end) && (it->second == "TRUE"))
+    if ((m_capabilit.getDataTypeCapabilities()).supportsRaster())
     {
       te::rst::Grid* grid = new te::rst::Grid(100,100);
       grid->setGeoreference(te::gm::Coord2D(100,100), 29183, 1,1);
@@ -352,10 +335,7 @@ void TsDataSetTypePersistence::tcAddPrimaryKey()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("PRIMARY_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
   {
     te::da::PrimaryKey* pk = 0;
 
@@ -405,10 +385,7 @@ void TsDataSetTypePersistence::tcAddUniqueKey()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("UNIQUE_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsUniqueKey())
   {
     te::da::UniqueKey* uk = 0;
 
@@ -455,10 +432,7 @@ void TsDataSetTypePersistence::tcAddIndex()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("INDEX");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())  
   {
     te::da::Index* idx = 0;
     te::da::Index* idx1 = 0;
@@ -521,10 +495,7 @@ void TsDataSetTypePersistence::tcAddCheckConstraint()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("CHECK_CONSTRAINTS");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints())
   {
     try
     {  
@@ -555,12 +526,8 @@ void TsDataSetTypePersistence::tcAddAutoIncrementProperty()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("SEQUENCE");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsSequence())
   {
-
     te::da::DataSetType* dt = cl->getDataSetType(m_newDataSetType);
     CPPUNIT_ASSERT(dt);
 
@@ -598,10 +565,7 @@ void TsDataSetTypePersistence::tcAddArrayProperty()
   CPPUNIT_ASSERT_NO_THROW(cl.reset(t->getCatalogLoader()));
   CPPUNIT_ASSERT(cl.get());
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("ARRAY_DT");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataTypeCapabilities()).supportsArray())
   {
     try
     {
@@ -641,10 +605,8 @@ void TsDataSetTypePersistence::tcAddArrayProperty()
 void TsDataSetTypePersistence::tcRenameProperty()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("UPDATE_QUERY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  //UPDATE_QUERY
+  if ((m_capabilit.getDataSetCapabilities()).supportsUpdate())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -685,10 +647,9 @@ void TsDataSetTypePersistence::tcRenameProperty()
 void TsDataSetTypePersistence::tcUpdateProperty()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("UPDATE_QUERY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  
+  //UPDATE_QUERY
+  if ((m_capabilit.getDataSetCapabilities()).supportsUpdate())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -734,10 +695,8 @@ void TsDataSetTypePersistence::tcUpdateProperty()
 void TsDataSetTypePersistence::tcRemoveProperty()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("UPDATE_QUERY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
 
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetCapabilities()).supportsDeletion())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -783,10 +742,7 @@ void TsDataSetTypePersistence::tcRemoveProperty()
 void TsDataSetTypePersistence::tcRemovePrimaryKey()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("PRIMARY_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -817,10 +773,7 @@ void TsDataSetTypePersistence::tcRemovePrimaryKey()
 void TsDataSetTypePersistence::tcRemoveUniqueKey()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("UNIQUE_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsUniqueKey())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -854,10 +807,7 @@ void TsDataSetTypePersistence::tcRemoveUniqueKey()
 void TsDataSetTypePersistence::tcRemoveCheckConstraint()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("CHECK_CONSTRAINTS");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -889,10 +839,7 @@ void TsDataSetTypePersistence::tcRemoveCheckConstraint()
 void TsDataSetTypePersistence::tcRemoveIndex()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("INDEX");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())
   {
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
     CPPUNIT_ASSERT_NO_THROW(t.reset(m_ds->getTransactor()));
@@ -942,10 +889,7 @@ void TsDataSetTypePersistence::tcAddForeignKey()
 
   te::da::DataSetTypePersistence* dtP = t->getDataSetTypePersistence();
 
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("FOREIGN_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsForeignKey())
   {
     try
     {  
@@ -1083,10 +1027,7 @@ void TsDataSetTypePersistence::tcCreateDataSetTypeWithPkUkIdxCc()
   CPPUNIT_ASSERT_NO_THROW(dtP->create(m_newdt3));
 
 // checking constraints if it makes sense...
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("PRIMARY_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-
-  if ((it != it_end) && (it->second == "TRUE"))
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
   {
   // verifying pk, uk and associated idx - note: pk and uk do not have schema (public.) as part of the name  
     te::da::DataSetType* dt = cl->getDataSetType(m_newDataSetType3,true);
@@ -1124,9 +1065,7 @@ void TsDataSetTypePersistence::tcRemoveDataSetType()
 
   //It can not drop m_newDataSetType if someone depends on it (fk)
   size_t n_fk = 0;
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("FOREIGN_KEY");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-  if (it1->second == "TRUE")
+  if (m_capabilit.getDataSetTypeCapabilities().supportsForeignKey())
   {
     CPPUNIT_ASSERT_THROW(dtP->drop(dt), te::common::Exception);
   }
@@ -1153,9 +1092,8 @@ void TsDataSetTypePersistence::tcRemoveDataSetTypeWithFk()
   te::da::DataSetTypePersistence* dtP = t->getDataSetTypePersistence();
 
 // checking FK if it makes sense...
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("FOREIGN_KEY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-  if ((it != it_end) && (it->second == "FALSE"))
+ 
+  if (!(m_capabilit.getDataSetTypeCapabilities().supportsForeignKey()))
     CPPUNIT_ASSERT_NO_THROW(dtP->drop(dt));
   else
   {

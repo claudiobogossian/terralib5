@@ -41,7 +41,7 @@ void TsDataSourceCatalogLoader::setUp()
   m_ds = TsManagerDataSource::sm_datasource;
   m_connInfo = TsManagerDataSource::sm_connInfo;
   m_dsType = TsManagerDataSource::sm_dsType;
-  m_capabilit = TsManagerDataSource::sm_capabilit;
+  m_capabilit =  m_ds->getCapabilities(); //TsManagerDataSource::sm_capabilit; 
 
   m_vecDtNames = TsManagerDataSource::sm_vecDtNames;
   m_vecPkNames = TsManagerDataSource::sm_vecPkNames;  
@@ -107,10 +107,8 @@ void TsDataSourceCatalogLoader::tcGetDataSetType()
 
       // As the second parameter of getDataSetType is false - nothing below were loaded
       // loading fk,pk,uk,idx,cc, seq  if they exist
-      std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("PRIMARY_KEY");
-      std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-      if (it1->second == "TRUE") 
+ 
+      if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
       {
         
         CPPUNIT_ASSERT_NO_THROW(cl->getPrimaryKey(dt)); //it does not load the index associated with pk
@@ -257,32 +255,26 @@ void TsDataSourceCatalogLoader::tcAllGets()
     te::da::DataSetType *dt =  cl->getDataSetType(*it);
     te::da::DataSetType *dtfull =  cl->getDataSetType(*it,true); 
 
-    std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("UNIQUE_KEY");
-    std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-    if (it1->second == "TRUE") 
+    if ((m_capabilit.getDataSetTypeCapabilities()).supportsUniqueKey())
     {
       CPPUNIT_ASSERT(dt->getNumberOfUniqueKeys() == 0);
       CPPUNIT_ASSERT_NO_THROW(cl->getUniqueKeys(dt));
       CPPUNIT_ASSERT(dt->getNumberOfUniqueKeys() == dtfull->getNumberOfUniqueKeys());
 
     }
-    it1 = m_capabilit.find("CHECK_CONSTRAINTS");
-    if (it1->second == "TRUE") 
+    if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints())
     {
         CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() == 0);
         CPPUNIT_ASSERT_NO_THROW(cl->getCheckConstraints(dt));
         CPPUNIT_ASSERT(dt->getNumberOfCheckConstraints() == dtfull->getNumberOfCheckConstraints());
     }
-    it1 = m_capabilit.find("INDEX");
-    if (it1->second == "TRUE") 
+    if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())
     {
       CPPUNIT_ASSERT(dt->getNumberOfIndexes() == 0);
       CPPUNIT_ASSERT_NO_THROW(cl->getIndexes(dt));
       CPPUNIT_ASSERT(dt->getNumberOfIndexes() == dtfull->getNumberOfIndexes());
     }
-    it1 = m_capabilit.find("FOREIGN_KEY");
-    if (it1->second == "TRUE")
+    if ((m_capabilit.getDataSetTypeCapabilities()).supportsForeignKey())
     {
       CPPUNIT_ASSERT(dt->getNumberOfForeignKeys() == 0);
       CPPUNIT_ASSERT(dt->getNumberOfForeignKeys() == dtfull->getNumberOfForeignKeys());
@@ -290,15 +282,13 @@ void TsDataSourceCatalogLoader::tcAllGets()
       std::vector<std::string> rdts;
       CPPUNIT_ASSERT_NO_THROW(cl->getForeignKeys(dt, fknames, rdts));
     }
-    it1 = m_capabilit.find("PRIMARY_KEY");
-    if (it1->second == "TRUE")
+    if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
     {
       CPPUNIT_ASSERT_NO_THROW(cl->getPrimaryKey(dt));
     }
 
    // testing getExtent of each dt with geom
-    it1 = m_capabilit.find("GEOMETRY_DT");
-    if (it1->second == "TRUE")
+    if ((m_capabilit.getDataTypeCapabilities()).supportsGeometry())
     {
       if (dt->hasGeom())
       {
@@ -311,8 +301,7 @@ void TsDataSourceCatalogLoader::tcAllGets()
       }
     }
     // testing raster property ???TODO
-    it1 = m_capabilit.find("RASTER_DT");
-    if (it1->second == "TRUE")
+    if ((m_capabilit.getDataTypeCapabilities()).supportsRaster())
     {
       //te::dt::Property rr = dt->getProperty(0);
     }
@@ -353,10 +342,7 @@ void TsDataSourceCatalogLoader::tcGetSequences()
 
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("SEQUENCE");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsSequence())
   {
   // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -387,10 +373,8 @@ void TsDataSourceCatalogLoader::tcGetExtent()
 //#ifdef TE_COMPILE_ALL
 
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("GEOMETRY_DT");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
 
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataTypeCapabilities()).supportsGeometry())
   {
  // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -441,10 +425,7 @@ void TsDataSourceCatalogLoader::tcGetExtentAll()
 
   std::vector<std::pair<std::string, te::gm::Envelope> >::iterator itpair;
 
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("GEOMETRY_DT");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataTypeCapabilities()).supportsGeometry())
   {
     for(itpair = m_vecDtNamesAndEnvelops.begin(); itpair < m_vecDtNamesAndEnvelops.end(); itpair++)
     {
@@ -500,10 +481,8 @@ void TsDataSourceCatalogLoader::tcPkExists()
 //#ifdef TE_COMPILE_ALL
 
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("PRIMARY_KEY");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
 
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsPrimaryKey())
   {
   // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -530,10 +509,8 @@ void TsDataSourceCatalogLoader::tcUkExists()
 //#ifdef TE_COMPILE_ALL
 
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("UNIQUE_KEY");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
 
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex()) 
   {
 // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -560,10 +537,7 @@ void TsDataSourceCatalogLoader::tcCcExists()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("CHECK_CONSTRAINTS");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsCheckConstraints()) 
   {
 // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -589,10 +563,8 @@ void TsDataSourceCatalogLoader::tcIdxExists()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("INDEX");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
 
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsIndex())
   {
   // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -621,10 +593,7 @@ void TsDataSourceCatalogLoader::tcFkExists()
 
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("FOREIGN_KEY");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsForeignKey())
   {
   // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);
@@ -652,10 +621,7 @@ void TsDataSourceCatalogLoader::tcGetFks()
 
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
 
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("FOREIGN_KEY");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-  if (it1->second == "TRUE") 
+  if ((m_capabilit.getDataSetTypeCapabilities()).supportsForeignKey()) 
   {
   // get a transactor to retrieve information about the data source 
     std::auto_ptr<te::da::DataSourceTransactor> t(0);

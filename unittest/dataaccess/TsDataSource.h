@@ -127,7 +127,7 @@ class TsDataSource : public CPPUNIT_NS::TestFixture
   public:
 // It will come from the setUp of the derived database class (see:TsPostGIS, TsSQLite, etc)
     te::da::DataSource* m_ds;
-    std::map<std::string, std::string> m_capabilit;
+    te::da::DataSourceCapabilities  m_capabilit;
     std::map<std::string, std::string> m_connInfo;
     std::string m_connStr;
     std::string m_dsType;

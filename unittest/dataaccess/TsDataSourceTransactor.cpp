@@ -39,7 +39,7 @@ void TsDataSourceTransactor::setUp()
   m_ds = TsManagerDataSource::sm_datasource;
   m_connInfo = TsManagerDataSource::sm_connInfo;
   m_dsType = TsManagerDataSource::sm_dsType;
-  m_capabilit = TsManagerDataSource::sm_capabilit;
+  m_capabilit =  m_ds->getCapabilities(); //TsManagerDataSource::sm_capabilit; 
 
   m_vecDtNames = TsManagerDataSource::sm_vecDtNames;
   m_vecEnvelops = TsManagerDataSource::sm_vecEnvelops;  
@@ -146,10 +146,9 @@ void TsDataSourceTransactor::tcGetDataSetByGeometry()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("GEOMETRY_DT");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-  if ((it != it_end) && (it->second == "FALSE"))
-    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource", it->second == "FALSE",te::common::Exception);
+  if (!((m_capabilit.getDataTypeCapabilities()).supportsGeometry()))
+    CPPUNIT_ASSERT_THROW_MESSAGE("GEOMETRY_DT is not supported by this datasource",(m_capabilit.getDataTypeCapabilities()).supportsGeometry() == false, te::common::Exception);
+
   else
   {
   // get a transactor to retrieve information about the data source 
@@ -209,14 +208,8 @@ void TsDataSourceTransactor::tcGetDataSetByProperty()
   te::gm::GeometryProperty* p = datasetType->getDefaultGeomProperty();
 
   //Testing getDataSet(name,property,geometry, ...)
-  //std::map<std::string, std::string> capabilities; 
-  //m_ds->getCapabilities(capabilities);
 
-
-  std::map<std::string, std::string>::const_iterator it1 = m_capabilit.find("GEOMETRY_DT");
-  std::map<std::string, std::string>::const_iterator it_end1= m_capabilit.end();
-
-  if ((it1 != it_end1) && (it1->second == "TRUE"))
+  if ((m_capabilit.getDataTypeCapabilities()).supportsGeometry())
   { 
     try
     {
@@ -359,10 +352,10 @@ void TsDataSourceTransactor::tcQueryByString()
 {
 //#ifdef TE_COMPILE_ALL
   CPPUNIT_ASSERT(m_ds->isOpened()== true);  
-  std::map<std::string, std::string>::const_iterator it = m_capabilit.find("SELECT_INTO_QUERY");
-  std::map<std::string, std::string>::const_iterator it_end = m_capabilit.end();
-  if ((it != it_end) && (it->second == "FALSE"))
-    CPPUNIT_ASSERT_THROW_MESSAGE("SELECT_INTO_QUERY is not supported by this datasource", it->second == "FALSE",te::common::Exception);
+  //SELECT_INTO_QUERY
+
+  if (!((m_capabilit.getQueryCapabilities()).supportsSelectInto()))
+    CPPUNIT_ASSERT_THROW_MESSAGE("SELECT_INTO_QUERY is not supported by this datasource", m_capabilit.getQueryCapabilities().supportsSelectInto() == false,te::common::Exception);
   else
   {
     std::vector<std::pair<std::string, size_t> >::iterator it = m_vecNamesSizes.begin();

@@ -43,7 +43,9 @@ void TsDataSource::setUp()
   m_connInfoNewDs  = TsManagerDataSource::sm_connInfoNewDs;
   m_connInfoDropDs = TsManagerDataSource::sm_connInfoDropDs;
   m_connStr = TsManagerDataSource::sm_connStr;
-
+  //m_capabilit =  m_ds->getCapabilities(); //TsManagerDataSource::sm_capabilit;
+  m_capabilit = TsManagerDataSource::sm_capabilit;
+  int i=0;
 }
 
 void TsDataSource::tearDown()
@@ -150,12 +152,9 @@ void TsDataSource::tcGetCatalogFull()
 void TsDataSource::tcGetCapabilities()
 {
 //#ifdef TE_COMPILE_ALL
-  std::map<std::string, std::string> capabilities;
-  m_ds->getCapabilities(capabilities); //  
-  size_t size_capabilities = capabilities.size();
+  const te::da::DataSourceCapabilities& capabilities = m_ds->getCapabilities();
 
-  CPPUNIT_ASSERT(size_capabilities != 0);
-  CPPUNIT_ASSERT_NO_THROW(m_ds->getCapabilities(capabilities));
+  CPPUNIT_ASSERT_NO_THROW(m_ds->getCapabilities());
 //#endif
 }
 
