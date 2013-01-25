@@ -461,11 +461,13 @@ namespace te
 
       if (actualgeom->getGeomTypeId() == te::gm::PointType)
       {
-        lineinter = new te::gm::LineString(1, te::gm::LineStringType, actualgeom->getSRID());
+        lineinter = new te::gm::LineString(2, te::gm::LineStringType, actualgeom->getSRID());
         te::gm::Point* pointinter = static_cast<te::gm::Point*> (actualgeom);
 
         lineinter->setX(0, pointinter->getX());
         lineinter->setY(0, pointinter->getY());
+        lineinter->setX(1, pointinter->getX());
+        lineinter->setY(1, pointinter->getY());
       }
       else if (actualgeom->getGeomTypeId() == te::gm::LineStringType)
       {
