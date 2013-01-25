@@ -122,7 +122,7 @@ void te::qt::widgets::OrderByWidget::getOrderItens(std::vector<std::pair<std::st
     QTableWidgetItem* itemName = m_ui->m_orderTableWidget->item(i, 0);
     std::string name = itemName->text().toStdString();
 
-    list.push_back(std::pair<std::string, std::string>::pair(name, type));
+    list.push_back(std::pair<std::string, std::string> (name, type));
   }
 }
 

@@ -107,7 +107,7 @@ void te::qt::widgets::DataSetWidget::getDataSetNames(std::vector<std::pair<std::
     QTableWidgetItem* itemDataSet = m_ui->m_dataSetTableWidget->item(i, 0);
     std::string dataSetName = itemDataSet->text().toStdString();
 
-    list.push_back(std::pair<std::string, std::string>::pair(dataSetName, alias));
+    list.push_back(std::pair<std::string, std::string> (dataSetName, alias));
   }
 }
 
