@@ -180,6 +180,9 @@ void MemoryExample();
 /*! \brief An example using MySQL data source driver. */
 void MySQLExample();
 
+/*! \brief An example using SQLite data source driver. */
+void SQLiteExample();
+
 /*! 
   \brief It creates a data set in memory.
   
