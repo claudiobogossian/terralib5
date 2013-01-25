@@ -140,6 +140,8 @@ void te::qt::widgets::DoubleListWidget::onAddToolButtonPressed()
     m_ui->m_addToolButton->setEnabled(false);
     m_ui->m_addAllToolButton->setEnabled(false);
   }
+
+  emit itemChanged();
 }
 
 void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
@@ -162,6 +164,8 @@ void te::qt::widgets::DoubleListWidget::onAddAllToolButtonPressed()
 
   m_ui->m_addToolButton->setEnabled(false);
   m_ui->m_addAllToolButton->setEnabled(false);
+
+  emit itemChanged();
 }
 
 void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
@@ -185,6 +189,8 @@ void te::qt::widgets::DoubleListWidget::onRemoveToolButtonPressed()
     m_ui->m_removeToolButton->setEnabled(false);
     m_ui->m_removeAllToolButton->setEnabled(false);
   }
+
+  emit itemChanged();
 }
 
 void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
@@ -207,6 +213,8 @@ void te::qt::widgets::DoubleListWidget::onRemoveAllToolButtonPressed()
 
   m_ui->m_removeToolButton->setEnabled(false);
   m_ui->m_removeAllToolButton->setEnabled(false);
+
+  emit itemChanged();
 }
 
 void te::qt::widgets::DoubleListWidget::onLeftListPressed(QListWidgetItem* item)

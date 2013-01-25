@@ -50,7 +50,7 @@ te::da::OrderByItem::OrderByItem(const OrderByItem& rhs)
   : m_field(0),
     m_order(rhs.m_order)
 {
-  m_field.reset(rhs.m_field.get() ? m_field->clone() : 0);
+  m_field.reset(rhs.m_field.get() ? rhs.m_field->clone() : 0);
 }
 
 te::da::OrderByItem::~OrderByItem()

@@ -18,26 +18,31 @@
  */
 
 /*!
-  \file terralib/qt/widgets/utils/DoubleListWidget.h
+  \file terralib/qt/widgets/query/DataSetWidget.h
 
-  \brief ...
+  \brief This file has the DataSetWidget class.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_UTILS_INTERNAL_DOUBLELISTWIDGET_H
-#define __TERRALIB_QT_WIDGETS_UTILS_INTERNAL_DOUBLELISTWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_DATASETWIDGET_H
+#define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_DATASETWIDGET_H
 
 // TerraLib
+#include "../../../dataaccess/query/From.h"
 #include "../Config.h"
 
 // STL
 #include <memory>
+#include <vector>
+#include <string>
 
 // Qt
 #include <QtGui/QWidget>
 
-class QListWidgetItem;
+// BOOST
+#include <boost/ptr_container/ptr_vector.hpp>
 
-namespace Ui { class DoubleListWidgetForm; }
+
+namespace Ui { class DataSetWidgetForm; }
 
 namespace te
 {
@@ -46,59 +51,53 @@ namespace te
     namespace widgets
     {
       /*!
-        \class DoubleListWidget
+        \class DataSetWidget
 
-        \brief ...
+        \brief This class is used to define the FROM object of select operation.
       */
-      class TEQTWIDGETSEXPORT DoubleListWidget : public QWidget
+      class TEQTWIDGETSEXPORT DataSetWidget : public QWidget
       {
         Q_OBJECT
 
         public:
 
-          DoubleListWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          DataSetWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~DoubleListWidget();
+          ~DataSetWidget();
 
-          Ui::DoubleListWidgetForm* getForm() const;
+          Ui::DataSetWidgetForm* getForm() const;
 
-          void setLeftLabel(std::string value);
+          te::da::From* getFrom();
 
-          void setRightLabel(std::string value);
+        public:
 
-          void setInputValues(std::vector<std::string> values);
+          void setDataSetNames(const boost::ptr_vector<std::string>& names);
 
-          void setOutputValues(std::vector<std::string> values);
+          void getDataSetNames(std::vector<std::pair<std::string, std::string> >& list); // pair dsName, dsAlias
 
-          std::vector<std::string> getOutputValues();
 
-        protected slots:
+        public slots:
 
-          void onAddToolButtonPressed();
+          void onDataSetComboBoxActivated(const QString& value);
 
-          void onAddAllToolButtonPressed();
+          void onAddDataSetPushButtonClicked();
 
-          void onRemoveToolButtonPressed();
-
-          void onRemoveAllToolButtonPressed();
-
-          void onLeftListPressed(QListWidgetItem* item);
-
-          void onRightListPressed(QListWidgetItem* item);
+          void onRemoveDataSetPushButtonClicked();
 
 
         signals:
 
           void itemChanged();
 
+
         private:
 
-          std::auto_ptr<Ui::DoubleListWidgetForm> m_ui;
+         std::auto_ptr<Ui::DataSetWidgetForm> m_ui;
       }; 
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_UTILS_INTERNAL_DOUBLELISTWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_DATASETWIDGET_H
 

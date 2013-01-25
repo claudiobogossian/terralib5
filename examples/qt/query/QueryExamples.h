@@ -26,13 +26,21 @@
 #ifndef __TERRALIB_EXAMPLES_QT_QUERY_QUERYEXAMPLES_H
 #define __TERRALIB_EXAMPLES_QT_QUERY_QUERYEXAMPLES_H
 
+// TerraLib
+#include <terralib/dataaccess/dataset/DataSet.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
+#include <terralib/dataaccess/query/Select.h>
+
 // STL
 #include <string>
 
 /* Load a shape data source and keep it in a data source manager */
-void LoadShapeDataSource(const std::string& fileName, const std::string& dsId);
+te::da::DataSourcePtr LoadShapeDataSource(const std::string& fileName, const std::string& dsId);
 
 /* Load a databse data source and keep it in a data source manager */
-void LoadPGISDataSource(const std::string& dsId);
+te::da::DataSourcePtr LoadPGISDataSource(const std::string& dsId);
+
+/* Create a dataset given a select query and a data source */
+te::da::DataSet* GetDataSet(te::da::Select& s, te::da::DataSourcePtr& ds);
 
 #endif  // __TERRALIB_EXAMPLES_QT_QUERY_QUERYEXAMPLES_H

@@ -28,13 +28,19 @@
 #include "LoadModules.h"
 #include "QueryExamples.h"
 #include <terralib/common.h>
-#include <terralib/dataaccess/datasource/DataSourceFactory.h>
+#include <terralib/dataaccess/dataset/DataSet.h>
+#include <terralib/dataaccess/datasource/DataSource.h>
+#include <terralib/dataaccess/query/Select.h>
 #include <terralib/plugin.h>
+#include <terralib/qt/widgets/dataview/TabularViewer.h>
 #include <terralib/qt/widgets/query/QueryBuilderWizard.h>
+#include <terralib/qt/widgets/query/QueryLayerBuilderWizard.h>
 
 // QT
 #include <QtGui/QApplication>
+#include <QtGui/QGridLayout>
 #include <QtGui/QIcon>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <string>
@@ -43,14 +49,13 @@
 
 int main(int argc, char** argv)
 {
+  QApplication app(argc, argv);
+
   try
   {
     // initialize Terralib support
     TerraLib::getInstance().initialize();
     LoadModules();
-
-    // execute the dialog
-    QApplication app(argc, argv);
 
     // Adjusting icons theme
     QString spaths = std::string(ICON_THEME_PATH).c_str();
@@ -62,24 +67,55 @@ int main(int argc, char** argv)
     std::string fileName = TE_DATA_EXAMPLE_LOCALE;
                 fileName+= "/data/shp/munic_2001.shp";
 
-    LoadShapeDataSource(fileName, "MunicShp2001");
+    //LoadShapeDataSource(fileName, "MunicShp2001");
 
-    LoadPGISDataSource("graphDb");
+    te::da::DataSourcePtr ds = LoadPGISDataSource("graphDb");
 
-    te::qt::widgets::QueryBuilderWizard w(0);
+    //te::qt::widgets::QueryBuilderWizard w(0);
+    te::qt::widgets::QueryLayerBuilderWizard w(0);
 
-    w.exec();
+    w.setDataSource(ds);
+
+    if(w.exec() == QDialog::Accepted)
+    {
+      te::da::Select s = w.getSelectQuery();
+
+      te::da::DataSet* dataSet = GetDataSet(s, ds);
+
+      //create dialog to show the result
+      QDialog dlg;
+      dlg.setFixedSize(600, 300);
+
+      QGridLayout* layout = new QGridLayout(&dlg);
+
+      te::qt::widgets::TabularViewer tv(&dlg);
+
+      layout->addWidget(&tv);
+      tv.show();
+
+      //show result
+      tv.showData(dataSet);
+
+      dlg.exec();
+
+      delete dataSet;
+    }
 
   }
   catch(const std::exception& e)
   {
-    std::cout << std::endl << "An exception has occuried: " << e.what() << std::endl;
+    std::string msg =  "An exception has occuried: ";
+                msg += e.what();
+
+    QMessageBox::warning(0, "Query Example", msg.c_str());
 
     return EXIT_FAILURE;
   }
   catch(...)
   {
-    std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
+    std::string msg =  "An unexpected exception has occuried!";
+
+    QMessageBox::warning(0, "Query Example", msg.c_str());
 
     return EXIT_FAILURE;
   }
