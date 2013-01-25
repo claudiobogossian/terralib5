@@ -214,7 +214,10 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
     {
       if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
          (xmlReader.getElementLocalName() != "ModuleId"))
+      {
+        xmlReader.next();
         break;
+      }
 
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::VALUE);
@@ -233,7 +236,10 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
     {
       if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
          (xmlReader.getElementLocalName() != "Resource"))
+      {
+        xmlReader.next();
         break;
+      }
 
       std::string name = xmlReader.getAttr("name");
       std::string href = xmlReader.getAttr("xlink:href");
@@ -252,7 +258,10 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
     {
       if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
          (xmlReader.getElementLocalName() != "Parameter"))
+      {
+        xmlReader.next();
         break;
+      }
 
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::START_ELEMENT);
@@ -278,7 +287,6 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
     }
   }
 
-  xmlReader.next();
   assert(xmlReader.getNodeType() == te::xml::END_DOCUMENT);
 
   return pInfo;
