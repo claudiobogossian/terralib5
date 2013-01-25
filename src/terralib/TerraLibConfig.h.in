@@ -109,6 +109,13 @@
 #cmakedefine01 TE_USE_PGIS
 
 /*!
+  \def TE_USE_MYSQL
+
+  \brief If this flag is set to 1 the MYSQL driver support will be enabled.
+ */
+#cmakedefine01 TE_USE_MYSQL
+
+/*!
   \def TE_USE_GEOS
 
   \brief If this flag is set to 1 the GEOS library can be used in the Vector Geometry Model of TerraLib.

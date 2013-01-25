@@ -177,6 +177,9 @@ void CopyingData();
 /*! \brief This example shows how to create DataSet and DataSetType in memory. */
 void MemoryExample();
 
+/*! \brief An example using MySQL data source driver. */
+void MySQLExample();
+
 /*! 
   \brief It creates a data set in memory.
   

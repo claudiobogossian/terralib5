@@ -9,6 +9,7 @@ find_package(MySQL REQUIRED)
 if(MYSQL_FOUND)
 	list (APPEND DEP_LIBS ${MYSQL_LIBRARY})
 	list (APPEND DEP_INCLUDES ${MYSQL_INCLUDE_DIR})
+	set (TE_USE_MYSQL TRUE PARENT_SCOPE)
 endif()
 
 #Definitions for windows compiling
@@ -33,3 +34,11 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 
 #exporting module information
 exportModuleInformation("mysql" "${SRCDIR}" "mysql")
+
+set (TEPLUGIN_NAME "te.da.mysql")
+set (TEPLUGIN_DISPLAYNAME "MySQL Data Source Driver")
+set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via MySQL")
+set (TEPLUGIN_LIBRARY "terralib_mysql")
+set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:mysql")
+
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_mysql_info.xml)

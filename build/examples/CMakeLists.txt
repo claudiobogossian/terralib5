@@ -4,7 +4,7 @@ set (PROJ_NAME "examples")
 project(${PROJ_NAME})
 
 find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess datatype filter 
-  gdal geometry gml maptools memory metadata ogr plugin postgis qt_widgets raster rp srs st stloader 
+  gdal geometry gml maptools memory ogr plugin postgis qt_widgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
  
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")

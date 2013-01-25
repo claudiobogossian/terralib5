@@ -64,6 +64,8 @@ int main(int /*argc*/, char** /*argv*/)
 
     DataSetAdapter();
 
+    MySQLExample();
+
     TerraLib::getInstance().finalize();
   }
   catch(const std::exception& e)
