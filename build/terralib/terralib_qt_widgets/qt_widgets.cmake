@@ -305,7 +305,16 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/plugin/manager" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/query/DataSetWidget.h
+  ${SRCDIR}/widgets/query/DataSetWizardPage.h
+  ${SRCDIR}/widgets/query/FieldsWizardPage.h
+  ${SRCDIR}/widgets/query/GroupByWizardPage.h
+  ${SRCDIR}/widgets/query/OrderByWidget.h
+  ${SRCDIR}/widgets/query/OrderByWizardPage.h
   ${SRCDIR}/widgets/query/QueryBuilderWizard.h
+  ${SRCDIR}/widgets/query/QueryLayerBuilderWizard.h
+  ${SRCDIR}/widgets/query/WhereClauseWidget.h
+  ${SRCDIR}/widgets/query/WhereClauseWizardPage.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/query" MOC)
 

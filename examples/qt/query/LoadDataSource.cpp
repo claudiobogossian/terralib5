@@ -8,7 +8,7 @@
 // STL
 #include <cassert>
 
-void LoadShapeDataSource(const std::string& fileName, const std::string& dsId)
+te::da::DataSourcePtr LoadShapeDataSource(const std::string& fileName, const std::string& dsId)
 {
   //shape
   std::map<std::string, std::string> connInfo;
@@ -21,9 +21,11 @@ void LoadShapeDataSource(const std::string& fileName, const std::string& dsId)
   te::da::DataSourcePtr dsPtrShape(dsShape);
 
   te::da::DataSourceManager::getInstance().insert(dsPtrShape);
+
+  return dsPtrShape;
 }
 
-void LoadPGISDataSource(const std::string& dsId)
+te::da::DataSourcePtr LoadPGISDataSource(const std::string& dsId)
 {
   //postgis
   std::map<std::string, std::string> connInfo;
@@ -40,5 +42,18 @@ void LoadPGISDataSource(const std::string& dsId)
   te::da::DataSourcePtr dsPtrPGIS(dsPGIS);
 
   te::da::DataSourceManager::getInstance().insert(dsPtrPGIS);
+
+  return dsPtrPGIS;
+}
+
+te::da::DataSet* GetDataSet(te::da::Select& s, te::da::DataSourcePtr& ds)
+{
+  te::da::DataSourceTransactor* transactor = ds->getTransactor();
+
+  te::da::DataSet* dataset = transactor->query(s);
+
+  delete transactor;
+
+  return dataset;
 }
 

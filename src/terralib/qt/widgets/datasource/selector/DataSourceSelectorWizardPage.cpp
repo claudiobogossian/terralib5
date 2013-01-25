@@ -41,6 +41,10 @@ te::qt::widgets::DataSourceSelectorWizardPage::DataSourceSelectorWizardPage(QWid
   layout->addWidget(m_selector.get());
 
   connect(m_selector->getForm()->m_datasourceListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(dataSourceSelectionChanged()));
+
+  //configure page
+  this->setTitle(tr("Data Source Selector"));
+  this->setSubTitle(tr("Select the datasource to be explored."));
 }
 
 te::qt::widgets::DataSourceSelectorWizardPage::~DataSourceSelectorWizardPage()
