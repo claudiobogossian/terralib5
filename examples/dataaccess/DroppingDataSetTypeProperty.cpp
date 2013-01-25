@@ -13,11 +13,11 @@ void DroppingDataSetTypeProperty(te::dt::Property* prop, te::da::DataSourceTrans
   try
   {  
     te::da::DataSetTypePersistence* dtPersistence = trans->getDataSetTypePersistence();
-    
+
     dtPersistence->drop(prop);
-    
-    delete dtPersistence;     
-    return;      
+
+    delete dtPersistence;
+    return;
   }
   catch(const std::exception& e)
   {

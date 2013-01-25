@@ -7,7 +7,7 @@
 // STL
 #include <iostream>
 
-void MySQLExample()
+void SQLiteExample()
 {
 #if TE_EXAMPLE_USE_SQLITE
   try
@@ -15,8 +15,12 @@ void MySQLExample()
     std::map<std::string, std::string> dsInfo;
  
     dsInfo["SQLITE_FILE"] = "meudb.sqlite";
+    dsInfo["SQLITE_OPEN_READWRITE"] = "TRUE";
+    dsInfo["SQLITE_OPEN_CREATE"] = "TRUE";
  
     te::da::DataSource* ds = te::da::DataSource::create("SQLite", dsInfo);
+
+    delete ds;
   }
   catch(const std::exception& e)
   {
