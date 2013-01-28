@@ -24,6 +24,15 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/query/DataSetName.h"
+#include "../../../dataaccess/query/Distinct.h"
+#include "../../../dataaccess/query/Field.h"
+#include "../../../dataaccess/query/Fields.h"
+#include "../../../dataaccess/query/From.h"
+#include "../../../dataaccess/query/PropertyName.h"
+#include "../../../dataaccess/query/Select.h"
 #include "ui_WhereClauseWidgetForm.h"
 #include "WhereClauseWidget.h"
 
@@ -38,6 +47,8 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
 {
   m_ui->setupUi(this);
 
+  m_ds.reset();
+
   // set icons
   m_ui->m_addWhereClausePushButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removeWhereClausePushButton->setIcon(QIcon::fromTheme("list-remove"));
@@ -45,15 +56,27 @@ te::qt::widgets::WhereClauseWidget::WhereClauseWidget(QWidget* parent, Qt::Windo
   //connects
   connect(m_ui->m_addWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onAddWhereClausePushButtonClicked()));
   connect(m_ui->m_removeWhereClausePushButton, SIGNAL(clicked()), this, SLOT(onRemoveWhereClausePushButtonClicked()));
+  connect(m_ui->m_valueValueRadioButton, SIGNAL(clicked()), this, SLOT(onValuePropertyRadioButtonClicked()));
 }
 
 te::qt::widgets::WhereClauseWidget::~WhereClauseWidget()
 {
+
 }
 
 Ui::WhereClauseWidgetForm* te::qt::widgets::WhereClauseWidget::getForm() const
 {
   return m_ui.get();
+}
+
+void te::qt::widgets::WhereClauseWidget::setDataSource(const te::da::DataSourcePtr& ds)
+{
+  m_ds = ds;
+}
+
+void te::qt::widgets::WhereClauseWidget::setFromItens(std::vector<std::pair<std::string, std::string> > vec)
+{
+  m_fromItens = vec;
 }
 
 void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std::string>& vec)
@@ -65,6 +88,26 @@ void te::qt::widgets::WhereClauseWidget::setAttributeList(const std::vector<std:
   {
     m_ui->m_restrictValueComboBox->addItem(vec[t].c_str());
     m_ui->m_valuePropertyComboBox->addItem(vec[t].c_str());
+  }
+}
+
+void te::qt::widgets::WhereClauseWidget::setOperatorsList(const std::vector<std::string>& vec)
+{
+  m_ui->m_OperatorComboBox->clear();
+
+  for(size_t t = 0; t <vec.size(); ++t)
+  {
+    m_ui->m_OperatorComboBox->addItem(vec[t].c_str());
+  }
+}
+
+void te::qt::widgets::WhereClauseWidget::setConnectorsList(const std::vector<std::string>& vec)
+{
+  m_ui->m_connectorComboBox->clear();
+
+  for(size_t t = 0; t <vec.size(); ++t)
+  {
+    m_ui->m_connectorComboBox->addItem(vec[t].c_str());
   }
 }
 
@@ -99,7 +142,10 @@ void te::qt::widgets::WhereClauseWidget::onAddWhereClausePushButtonClicked()
 
   std::string restrictValue = m_ui->m_restrictValueComboBox->currentText().toStdString();
   std::string operatorStr = m_ui->m_OperatorComboBox->currentText().toStdString();
-  std::string connector = m_ui->m_connectorComboBox->currentText().toStdString();
+  
+  std::string connector = "";
+  if(m_ui->m_connectorCheckBox->isChecked())
+    connector = m_ui->m_connectorComboBox->currentText().toStdString();
   
   std::string valueStr = "";
   if(m_ui->m_valuePropertyRadioButton->isChecked())
@@ -133,4 +179,85 @@ void te::qt::widgets::WhereClauseWidget::onRemoveWhereClausePushButtonClicked()
     m_ui->m_whereClauseTableWidget->removeRow(row);
 
   m_ui->m_whereClauseTableWidget->resizeColumnsToContents();
+}
+
+void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
+{
+  if(m_ds.get() == 0)
+    return;
+
+  m_ui->m_valueValueComboBox->clear();
+
+  std::string propertyName = m_ui->m_restrictValueComboBox->currentText().toStdString();
+
+  te::da::Fields* fields = new te::da::Fields;
+  te::da::Field* f = new te::da::Field(new te::da::PropertyName(propertyName));
+  fields->push_back(f);
+
+  te::da::PropertyName* name = new te::da::PropertyName(propertyName);
+  te::da::Distinct* dist = new te::da::Distinct();
+  dist->push_back(name);
+
+  te::da::From* from = new te::da::From;
+
+  for(size_t t = 0; t < m_fromItens.size(); ++t)
+  {
+    te::da::FromItem* fi = new te::da::DataSetName(m_fromItens[t].first, m_fromItens[t].second);
+
+    from->push_back(fi);
+  }
+
+  te::da::Select* select = new te::da::Select();
+
+  select->setFields(fields);
+  select->setDistinct(dist);
+  select->setFrom(from);
+
+  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+
+  te::da::DataSet* dataset = 0;
+
+  try
+  {
+    dataset = transactor->query(*select);
+  }
+  catch(const std::exception& e)
+  {
+    std::string msg =  "An exception has occuried: ";
+                msg += e.what();
+
+    QMessageBox::warning(0, "Query Example", msg.c_str());
+
+    delete transactor;
+    delete dataset;
+    delete select;
+
+    return;
+  }
+  catch(...)
+  {
+    std::string msg =  "An unexpected exception has occuried!";
+
+    QMessageBox::warning(0, "Query Example", msg.c_str());
+
+    delete transactor;
+    delete dataset;
+    delete select;
+
+    return;
+  }
+
+  if(dataset)
+  {
+    while(dataset->moveNext())
+    {
+      std::string value = dataset->getAsString(0);
+
+      m_ui->m_valueValueComboBox->addItem(value.c_str());
+    }
+  }
+
+  delete transactor;
+  delete dataset;
+  delete select;
 }
