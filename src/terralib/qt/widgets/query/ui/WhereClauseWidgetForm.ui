@@ -186,30 +186,34 @@
             </item>
             <item row="3" column="0">
              <layout class="QGridLayout" name="gridLayout_22">
+              <item row="0" column="1">
+               <widget class="QComboBox" name="m_connectorComboBox">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
               <item row="0" column="0">
-               <widget class="QLabel" name="label_4">
+               <widget class="QCheckBox" name="m_connectorCheckBox">
                 <property name="minimumSize">
                  <size>
                   <width>100</width>
                   <height>0</height>
                  </size>
                 </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>100</width>
-                  <height>16777215</height>
-                 </size>
+                <property name="layoutDirection">
+                 <enum>Qt::LeftToRight</enum>
                 </property>
                 <property name="text">
                  <string>Connector</string>
                 </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
                </widget>
-              </item>
-              <item row="0" column="1">
-               <widget class="QComboBox" name="m_connectorComboBox"/>
               </item>
              </layout>
             </item>
@@ -324,14 +328,96 @@
   <tabstop>m_restrictValueComboBox</tabstop>
   <tabstop>m_OperatorComboBox</tabstop>
   <tabstop>m_valuePropertyRadioButton</tabstop>
-  <tabstop>m_valueValueRadioButton</tabstop>
   <tabstop>m_valuePropertyComboBox</tabstop>
+  <tabstop>m_valueValueRadioButton</tabstop>
   <tabstop>m_valueValueComboBox</tabstop>
+  <tabstop>m_connectorCheckBox</tabstop>
   <tabstop>m_connectorComboBox</tabstop>
   <tabstop>m_addWhereClausePushButton</tabstop>
   <tabstop>m_removeWhereClausePushButton</tabstop>
   <tabstop>m_whereClauseTableWidget</tabstop>
  </tabstops>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_connectorCheckBox</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_connectorComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>201</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>204</x>
+     <y>200</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_valuePropertyRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_valuePropertyComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>191</x>
+     <y>133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>231</x>
+     <y>133</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_valuePropertyRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_valueValueComboBox</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>157</x>
+     <y>135</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>255</x>
+     <y>158</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_valueValueRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_valueValueComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>151</x>
+     <y>165</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>159</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>m_valueValueRadioButton</sender>
+   <signal>clicked(bool)</signal>
+   <receiver>m_valuePropertyComboBox</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>171</x>
+     <y>159</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

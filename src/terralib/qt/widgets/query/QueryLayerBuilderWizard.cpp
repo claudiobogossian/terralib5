@@ -30,8 +30,10 @@
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../datasource/selector/DataSourceSelectorWizardPage.h"
@@ -76,6 +78,11 @@ bool te::qt::widgets::QueryLayerBuilderWizard::validateCurrentPage()
   {
     getProperties();
 
+    //used to get distinct values from a selected property
+    std::vector<std::pair<std::string, std::string> > vec;
+    m_dataSetPage->getWidget()->getDataSetNames(vec);
+    m_whereClausePage->getWidget()->setFromItens(vec);
+
     return m_dataSetPage->isComplete();
   }
   else if(currentPage() ==  m_fieldPage.get())
@@ -104,7 +111,11 @@ void te::qt::widgets::QueryLayerBuilderWizard::setDataSource(const te::da::DataS
 
   m_ds = ds;
 
+  m_whereClausePage->getWidget()->setDataSource(m_ds);
+
   getDataSets();
+
+  getQueryCapabilities();
 }
 
 te::da::Select te::qt::widgets::QueryLayerBuilderWizard::getSelectQuery()
@@ -211,4 +222,62 @@ void te::qt::widgets::QueryLayerBuilderWizard::getProperties()
   m_groupByPage->getWidget()->setInputValues(inputProperties);
   m_whereClausePage->getWidget()->setAttributeList(inputProperties);
   m_orderByPage->getWidget()->setAttributeList(inputProperties);
+}
+
+void te::qt::widgets::QueryLayerBuilderWizard::getQueryCapabilities()
+{
+
+  te::da::DataSourceCapabilities dsCap = m_ds->getCapabilities();
+
+  te::da::QueryCapabilities queryCap = dsCap.getQueryCapabilities();
+
+  std::vector<std::string> vecOperators;
+
+  std::set<std::string>::iterator it;
+
+  //Arithmetic Operators
+  it = queryCap.getArithmeticOperators().begin();
+
+  while(it != queryCap.getArithmeticOperators().end())
+  {
+    vecOperators.push_back(*it);
+
+    ++it;
+  }
+
+  //Comparsion Operators
+  it = queryCap.getComparsionOperators().begin();
+
+  while(it != queryCap.getComparsionOperators().end())
+  {
+    vecOperators.push_back(*it);
+
+    ++it;
+  }
+
+  //Comparsion Operators
+  it = queryCap.getSpatialOperators().begin();
+
+  while(it != queryCap.getSpatialOperators().end())
+  {
+    vecOperators.push_back(*it);
+
+    ++it;
+  }
+
+  m_whereClausePage->getWidget()->setOperatorsList(vecOperators);
+
+  //Logical Operators
+  std::vector<std::string> vecConnectors;
+  
+  it = queryCap.getLogicalOperators().begin();
+
+  while(it != queryCap.getLogicalOperators().end())
+  {
+    vecConnectors.push_back(*it);
+
+    ++it;
+  }
+
+  m_whereClausePage->getWidget()->setConnectorsList(vecConnectors);
 }

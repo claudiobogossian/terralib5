@@ -70,6 +70,8 @@ namespace te
 
           void getProperties();
 
+          void getQueryCapabilities();
+
 
         private:
 
