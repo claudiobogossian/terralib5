@@ -228,9 +228,9 @@ void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
     throw Exception(TR_ADO("The data source doesn't exist!"));
 
   std::map<std::string, std::string> info = dsInfo;
-  
-  boost::filesystem3::path path(info["dbname"]);
-  if(boost::filesystem3::remove(path))
+
+  boost::filesystem::path path(info["dbname"]);
+  if(boost::filesystem::remove(path))
     throw Exception(TR_ADO("The data source could not be dropped!"));
 }
 
@@ -238,6 +238,6 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
 {
   std::map<std::string, std::string> info = dsInfo;
 
-  boost::filesystem3::path path(info["dbname"]);
-  return boost::filesystem3::exists(path);
+  boost::filesystem::path path(info["dbname"]);
+  return boost::filesystem::exists(path);
 }
