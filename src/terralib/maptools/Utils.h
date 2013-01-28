@@ -27,11 +27,11 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../color/RGBAColor.h"
 #include "Config.h"
-#include <terralib/geometry/Enums.h>
-#include <terralib/color/RGBAColor.h>
 
 // STL
+#include <string>
 #include <vector>
 
 namespace te
@@ -42,7 +42,6 @@ namespace te
     class Fill;
     class ParameterValue;
     class Stroke;
-    class FeatureTypeStyle;
   }
 
   namespace map
@@ -136,10 +135,6 @@ namespace te
     */
     TEMAPEXPORT void GetDashStyle(const std::string& dasharray, std::vector<double>& style);
 
-    /*!
-      \brief Returns a default symbolizer for the given \a geomType
-    */
-    TEMAPEXPORT te::se::FeatureTypeStyle* getDefaultStyle(const te::gm::GeomType& geomType);
   } // end namespace map
 }   // end namespace te
 
