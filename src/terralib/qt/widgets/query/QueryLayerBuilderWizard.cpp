@@ -126,6 +126,9 @@ te::da::Select te::qt::widgets::QueryLayerBuilderWizard::getSelectQuery()
   //from
   te::da::From* from = m_dataSetPage->getWidget()->getFrom();
 
+  //where
+  te::da::Where* w = m_whereClausePage->getWidget()->getWhere();
+
   //groupby
   te::da::GroupBy* groupBy = m_groupByPage->getGroupBy();
 
@@ -133,7 +136,7 @@ te::da::Select te::qt::widgets::QueryLayerBuilderWizard::getSelectQuery()
   te::da::OrderBy* orderBy = m_orderByPage->getWidget()->gerOrderBy();
 
   //build the select object
-  te::da::Select s(fields, from, groupBy, orderBy);
+  te::da::Select s(fields, from, w, groupBy, orderBy);
 
   return s;
 }
