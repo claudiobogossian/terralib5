@@ -113,6 +113,11 @@ namespace te
 
       private:
 
+        /*! \brief Static method to initialize the QueryEncoder. */
+        static void initialize();
+
+      private:
+
         /** @name Not Allowed Methods
          *  No copy allowed. 
          */
@@ -140,6 +145,8 @@ namespace te
 
         te::da::Expression* m_expression;                      //!< Expression used during conversion.
         static std::map<std::string, std::string> sm_fnameMap; //!< A map that associates Filter Operator names to Query Functions names.
+
+        friend class Module;
     };
 
   } // end namespace map
