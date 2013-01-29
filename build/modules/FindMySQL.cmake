@@ -7,8 +7,12 @@ FIND_PATH (MYSQL_INCLUDE_DIR driver/mysql_public_iface.h
 
 # Find library - - tries to find *.a,*.so,*.dylib in paths hard-coded by the script
 
-FIND_LIBRARY(MYSQL_LIBRARY
+FIND_LIBRARY(MYSQL_LIBRARY_RELEASE
              NAMES libmysqlcppconn mysqlcppconn
+             PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
+			 
+FIND_LIBRARY(MYSQL_LIBRARY_DEBUG
+             NAMES libmysqlcppconn_d mysqlcppconn_d
              PATHS /usr/local/lib /usr/lib /usr/local/mysql/lib)
 
 # Export include and library path for linking with other libraries

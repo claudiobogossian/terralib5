@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
+#include "../../../dataaccess/datasource/DataSource.h"
 
 // STL
 #include <memory>
@@ -64,7 +65,15 @@ namespace te
 
         public:
 
+          void setDataSource(const te::da::DataSourcePtr& ds);
+
+          void setFromItens(std::vector<std::pair<std::string, std::string> > vec);
+
           void setAttributeList(const std::vector<std::string>& vec);
+
+          void setOperatorsList(const std::vector<std::string>& vec);
+
+          void setConnectorsList(const std::vector<std::string>& vec);
 
 
         public slots:
@@ -73,10 +82,16 @@ namespace te
 
           void onRemoveWhereClausePushButtonClicked();
 
+          void onValuePropertyRadioButtonClicked();
+
 
         private:
 
           std::auto_ptr<Ui::WhereClauseWidgetForm> m_ui;
+
+          te::da::DataSourcePtr m_ds;
+
+          std::vector<std::pair<std::string, std::string> > m_fromItens;
       }; 
 
     } // end namespace widgets

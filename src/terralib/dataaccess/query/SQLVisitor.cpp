@@ -311,7 +311,7 @@ void te::da::SQLVisitor::visitDistinct(const te::da::Distinct& visited)
   }
   else
   {
-    m_sql += "DISTINC ON("; 
+    m_sql += "DISTINCT ON("; 
 
     std::size_t ncols = visited.size();
 

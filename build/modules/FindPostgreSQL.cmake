@@ -127,7 +127,11 @@ set (PostgreSQL_LIBRARY_TO_FIND pq)
 set (PostgreSQL_LIB_PREFIX "")
 if ( WIN32 )
   set (PostgreSQL_LIB_PREFIX ${PostgreSQL_LIB_PREFIX} "lib")
-  set ( PostgreSQL_LIBRARY_TO_FIND ${PostgreSQL_LIB_PREFIX}${PostgreSQL_LIBRARY_TO_FIND})
+  set (PostgreSQL_LIB_SUFFIX ${PostgreSQL_LIB_SUFFIX} "dll")
+  set (PostgreSQL_LIBRARY_TO_FIND  
+	${PostgreSQL_LIB_PREFIX}${PostgreSQL_LIBRARY_TO_FIND}
+	${PostgreSQL_LIB_PREFIX}${PostgreSQL_LIBRARY_TO_FIND}${PostgreSQL_LIB_SUFFIX}
+	)
 endif()
 
 find_library( PostgreSQL_LIBRARY
