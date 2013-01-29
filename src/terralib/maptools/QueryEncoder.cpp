@@ -34,38 +34,6 @@ std::map<std::string, std::string> te::map::QueryEncoder::sm_fnameMap;
 te::map::QueryEncoder::QueryEncoder()
   : m_expression(0)
 {
-  // BinaryComparisonOp
-  sm_fnameMap[te::fe::Globals::sm_propertyIsEqualTo] = te::da::FunctionNames::sm_EqualTo;
-  sm_fnameMap[te::fe::Globals::sm_propertyIsGreaterThan] = te::da::FunctionNames::sm_GreaterThan;
-  sm_fnameMap[te::fe::Globals::sm_propertyIsGreaterThanOrEqualTo] = te::da::FunctionNames::sm_GreaterThanOrEqualTo;
-  sm_fnameMap[te::fe::Globals::sm_propertyIsLessThan] = te::da::FunctionNames::sm_LessThan;
-  sm_fnameMap[te::fe::Globals::sm_propertyIsLessThanOrEqualTo] = te::da::FunctionNames::sm_LessThanOrEqualTo;
-
-  // BinaryLogicOp
-  sm_fnameMap[te::fe::Globals::sm_and] = te::da::FunctionNames::sm_And;
-  sm_fnameMap[te::fe::Globals::sm_or] = te::da::FunctionNames::sm_Or;
-
-  // BinarySpatialOp
-  sm_fnameMap[te::fe::Globals::sm_crosses] = te::da::FunctionNames::sm_Crosses;
-  sm_fnameMap[te::fe::Globals::sm_disjoint] = te::da::FunctionNames::sm_Disjoint;
-  sm_fnameMap[te::fe::Globals::sm_equals] = te::da::FunctionNames::sm_Equals;
-  sm_fnameMap[te::fe::Globals::sm_intersects] = te::da::FunctionNames::sm_Intersects;
-  sm_fnameMap[te::fe::Globals::sm_overlaps] = te::da::FunctionNames::sm_Overlaps;
-  sm_fnameMap[te::fe::Globals::sm_touches] = te::da::FunctionNames::sm_Touches;
-  sm_fnameMap[te::fe::Globals::sm_within] = te::da::FunctionNames::sm_Within;
-
-  // DistanceBuffer
-  sm_fnameMap[te::fe::Globals::sm_dWithin] = te::da::FunctionNames::sm_DWithin;
-  sm_fnameMap[te::fe::Globals::sm_beyond] = te::da::FunctionNames::sm_Beyond;
-
-  // UnaryLogicOp
-  sm_fnameMap[te::fe::Globals::sm_not] = te::da::FunctionNames::sm_Not;
-
-  // BinaryOperator
-  sm_fnameMap[te::fe::Globals::sm_add] = te::da::FunctionNames::sm_Add;
-  sm_fnameMap[te::fe::Globals::sm_sub] = te::da::FunctionNames::sm_Sub;
-  sm_fnameMap[te::fe::Globals::sm_mul] = te::da::FunctionNames::sm_Mul;
-  sm_fnameMap[te::fe::Globals::sm_div] = te::da::FunctionNames::sm_Div;
 }
 
 te::map::QueryEncoder::~QueryEncoder()
@@ -288,4 +256,40 @@ void te::map::QueryEncoder::visit(const te::fe::PropertyName& visited)
 {
   te::da::PropertyName* p = new te::da::PropertyName(visited.getName());
   m_expression = p;
+}
+
+void te::map::QueryEncoder::initialize()
+{
+  // BinaryComparisonOp
+  sm_fnameMap[te::fe::Globals::sm_propertyIsEqualTo] = te::da::FunctionNames::sm_EqualTo;
+  sm_fnameMap[te::fe::Globals::sm_propertyIsGreaterThan] = te::da::FunctionNames::sm_GreaterThan;
+  sm_fnameMap[te::fe::Globals::sm_propertyIsGreaterThanOrEqualTo] = te::da::FunctionNames::sm_GreaterThanOrEqualTo;
+  sm_fnameMap[te::fe::Globals::sm_propertyIsLessThan] = te::da::FunctionNames::sm_LessThan;
+  sm_fnameMap[te::fe::Globals::sm_propertyIsLessThanOrEqualTo] = te::da::FunctionNames::sm_LessThanOrEqualTo;
+
+  // BinaryLogicOp
+  sm_fnameMap[te::fe::Globals::sm_and] = te::da::FunctionNames::sm_And;
+  sm_fnameMap[te::fe::Globals::sm_or] = te::da::FunctionNames::sm_Or;
+
+  // BinarySpatialOp
+  sm_fnameMap[te::fe::Globals::sm_crosses] = te::da::FunctionNames::sm_Crosses;
+  sm_fnameMap[te::fe::Globals::sm_disjoint] = te::da::FunctionNames::sm_Disjoint;
+  sm_fnameMap[te::fe::Globals::sm_equals] = te::da::FunctionNames::sm_Equals;
+  sm_fnameMap[te::fe::Globals::sm_intersects] = te::da::FunctionNames::sm_Intersects;
+  sm_fnameMap[te::fe::Globals::sm_overlaps] = te::da::FunctionNames::sm_Overlaps;
+  sm_fnameMap[te::fe::Globals::sm_touches] = te::da::FunctionNames::sm_Touches;
+  sm_fnameMap[te::fe::Globals::sm_within] = te::da::FunctionNames::sm_Within;
+
+  // DistanceBuffer
+  sm_fnameMap[te::fe::Globals::sm_dWithin] = te::da::FunctionNames::sm_DWithin;
+  sm_fnameMap[te::fe::Globals::sm_beyond] = te::da::FunctionNames::sm_Beyond;
+
+  // UnaryLogicOp
+  sm_fnameMap[te::fe::Globals::sm_not] = te::da::FunctionNames::sm_Not;
+
+  // BinaryOperator
+  sm_fnameMap[te::fe::Globals::sm_add] = te::da::FunctionNames::sm_Add;
+  sm_fnameMap[te::fe::Globals::sm_sub] = te::da::FunctionNames::sm_Sub;
+  sm_fnameMap[te::fe::Globals::sm_mul] = te::da::FunctionNames::sm_Mul;
+  sm_fnameMap[te::fe::Globals::sm_div] = te::da::FunctionNames::sm_Div;
 }

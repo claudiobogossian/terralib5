@@ -21,7 +21,7 @@ void MySQLExample()
     dsInfo["MY_PORT"] = "3306";
     dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
  
-    te::da::DataSource* ds = te::da::DataSource::create("MYSQL", dsInfo);
+    te::da::DataSource* ds = te::da::DataSourceFactory::open("MYSQL", dsInfo);
   }
   catch(const std::exception& e)
   {
