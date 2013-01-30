@@ -242,6 +242,15 @@ namespace te
     */
     TEMYSQLEXPORT void Convert2MySQLGeom(const te::gm::GeomType t, std::string& geomType, std::string& dimension);
 
+    /*!
+      \brief Given a TerraLib geometric type returns the MySQL equivalent to be used to register a geometry column.
+
+      \param t         The TerraLib geometric type to be converted to MySQL.
+      \param geomType  A textual representation of the geometry type as registered in MySQL geometry_columns table.
+      \param dimension A textual representation of the geometry dimension as registered in MySQL geometry_columns table.
+    */
+    TEMYSQLEXPORT void JSON2MySQL(const std::string path, std::auto_ptr<te::da::DataSourceTransactor> t);
+
   } // end namespace mysql
 }   // end namespace te
 
