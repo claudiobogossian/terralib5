@@ -25,21 +25,6 @@
       <xsd:documentation>This is the root element for driver capabilities files.</xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-
-  <xsd:complexType name="DataSetTypeCapabilitiesType">
-    <xsd:sequence>
-	  <xsd:element name="SqlDialect" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Insert" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Update" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Delete" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Create" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Drop" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Alter" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="Select" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="SelectInto" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-	  <xsd:element name="SupportTransactions" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-    </xsd:sequence>  
-  </xsd:complexType>
   
   <xsd:complexType name="DataTypeCapabilitiesType">
     <xsd:sequence>
@@ -51,7 +36,7 @@
     <xsd:annotation>
       <xsd:documentation>The base type for operators</xsd:documentation>
     </xsd:annotation>
-    <xsd:attribute name="operator" type="xsd:string" use="optional" />
+    <xsd:attribute name="value" type="xsd:string" use="optional" />
   </xsd:complexType>
   
   <xsd:complexType name="SpatialOperatorsType" abstract="true">
