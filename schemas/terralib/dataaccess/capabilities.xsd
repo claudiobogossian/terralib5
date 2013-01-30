@@ -1,6 +1,8 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
+			xmlns:te_dt="http://www.terralib.org/datatype"  
             xmlns:te_common="http://www.terralib.org/common"
+			xmlns:te_gm="http://www.terralib.org/geometry"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.terralib.org/dataaccess"
@@ -9,34 +11,155 @@
             xml:lang="en">
 
   <xsd:annotation>
-    <xsd:appinfo>DriverCapabilities</xsd:appinfo>
+    <xsd:appinfo>DataSourceCapabilities</xsd:appinfo>
     <xsd:documentation>This XML Schema describes the information about data access driver capabilities</xsd:documentation>
   </xsd:annotation>
 
   <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
-  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>  
 
-  <xsd:element name="DriverCapabilities" type="te_da:DriverCapabilitiesType">
+  <xsd:element name="DataSourceCapabilities" type="te_da:DataSourceCapabilitiesType">
     <xsd:annotation>
       <xsd:documentation>This is the root element for driver capabilities files.</xsd:documentation>
     </xsd:annotation>
   </xsd:element>
 
-  <xsd:complexType name="DriverCapabilitiesType">
+  <xsd:complexType name="DataSetTypeCapabilitiesType">
+    <xsd:sequence>
+	  <xsd:element name="SqlDialect" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Insert" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Update" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Delete" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Create" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Drop" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Alter" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Select" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SelectInto" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportTransactions" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="DataTypeCapabilitiesType">
+    <xsd:sequence>
+      <xsd:element name="DataType" type="te_dt:DataTypeNameType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="OperatorType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for operators</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="operator" type="xsd:string" use="optional" />
+  </xsd:complexType>
+  
+  <xsd:complexType name="SpatialOperatorsType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for spatial operators</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="Operator" type="te_da:OperatorType" use="optional" />
+  </xsd:complexType>
+  
+   <xsd:complexType name="LogicalOperatorsType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for logical operators</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="Operator" type="te_da:OperatorType" use="optional" />
+  </xsd:complexType>
+  
+   <xsd:complexType name="ComparsionOperatorsType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for comparsion operators</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="Operator" type="te_da:OperatorType" use="optional" />
+  </xsd:complexType>
+  
+   <xsd:complexType name="ArithmeticOperatorsType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for arithmetic operators</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="Operator" type="te_da:OperatorType" use="optional" />
+  </xsd:complexType>
+  
+  <xsd:complexType name="FunctionType" abstract="true">
+    <xsd:annotation>
+      <xsd:documentation>The base type for functions</xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="function" type="xsd:string" use="optional" />
+  </xsd:complexType>
+  
+  <xsd:complexType name="QueryCapabilitiesType">
+    <xsd:sequence>
+	  <xsd:element name="SqlDialect" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Insert" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Update" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Delete" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Create" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Drop" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Alter" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Select" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SelectInto" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportTransactions" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>	  
+	  <xsd:element name="SpatialOperators" type="te_da:SpatialOperatorsType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="LogicalOperators" type="te_da:LogicalOperatorsType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="ComparsionOperators" type="te_da:ComparsionOperatorsType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="ArithmeticOperators" type="te_da:ArithmeticOperatorsType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="Functions" type="te_da:FunctionType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="GeomOperands" type="te_gm:GeomTypeType" minOccurs="0" maxOccurs="unbounded"/>	  
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="DataSetTypeCapabilitiesType">
+    <xsd:sequence>
+	  <xsd:element name="SupportPrimaryKey" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportUniqueKey" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportForeignKey" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportSequence" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportCheckConstraints" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportIndex" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportRTreeIndex" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportBTreeIndex" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportHashIndex" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportQuadTreeIndex" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="DataSetCapabilitiesType">
+    <xsd:sequence>
+	  <xsd:element name="Bidirectional" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Random" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Indexed" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="EfficientMovePrevious" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="EfficientMoveBeforeFirst" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="EfficientMoveLast" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="EfficientMoveAfterLast" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="EfficientMove" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="EfficientSize" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Insertion" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Update" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="Deletion" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>  
+  </xsd:complexType>
+  
+  <xsd:complexType name="DataSourceCapabilitiesType">
     <xsd:annotation>
       <xsd:documentation>This type describes a data access driver capabilities.</xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="Capability" type="te_da:CapabilityType" minOccurs="0" maxOccurs="unbounded"/>
+	  <xsd:element name="DataTypeCapabilities" type="te_da:DataTypeCapabilitiesType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="QueryCapabilities" type="te_da:QueryCapabilitiesType" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="DataSetTypeCapabilities" type="te_da:DataSetTypeCapabilitiesType" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="DataSetCapabilities" type="te_da:DataSetCapabilitiesType" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SpecificCapabilities" type="te_common:ParameterListType" minOccurs="1" maxOccurs="1"/>	  
+	  <xsd:element name="AccessPolicyName" type="te_common:AccessPolicyNameType" minOccurs="1" maxOccurs="1"/>	  
+	  <xsd:element name="SupportTransactions" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+	  <xsd:element name="SupportDataSetPesistenceAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="SupportDataSetTypePesistenceAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="SupportPreparedQueryAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="SupportBatchExecutorAPI" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="version" type="xsd:string" use="required"/>
-  </xsd:complexType>
-
-  <xsd:complexType name="CapabilityType">
-    <xsd:sequence>
-      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-    </xsd:sequence>  
-  </xsd:complexType>
+  </xsd:complexType>  
 
 </xsd:schema>

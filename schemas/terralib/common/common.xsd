@@ -30,5 +30,17 @@
       <xsd:element name="Value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
   </xsd:complexType>
+  
+  <xsd:simpleType name="AccessPolicyNameType">
+    <xsd:annotation>
+      <xsd:documentation>The base set of AccessPolicy types </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="NO_ACCESS" />
+      <xsd:enumeration value="R_ACCESS" />
+      <xsd:enumeration value="W_ACCESS" />
+      <xsd:enumeration value="RW_ACCESS" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>
