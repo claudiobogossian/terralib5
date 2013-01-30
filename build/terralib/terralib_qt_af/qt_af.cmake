@@ -50,16 +50,6 @@ set (
   connectors
 )
 
-file (GLOB FORMS ${SRCDIR}/ui/*.ui)
-
-file (
-  GLOB HDRS_TO_MOC
-  ${SRCDIR}/CoreApplication.h
-  ${SRCDIR}/connectors/MapDisplay.h
-  ${SRCDIR}/connectors/TabularViewer.h
-  ${SRCDIR}/connectors/LayerExplorer.h
-)
-
 set (
   HDRS_TO_MOC
   ${SRCDIR}/BaseApplication.h
@@ -78,10 +68,7 @@ set (
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
 
-qt4_wrap_ui (UI ${FORMS})
-
-source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${UI} ${MOC})
+source_group("Generated Files" FILES ${MOC})
 
 # Files in build tree
 appPrefix ("${SRCDIR}" "${_DIRS}" QT_AF_INC_DIRS)
@@ -92,7 +79,7 @@ appPrefix ("qt/af" "${_DIRS}" QT_AF_INC_INST_DIRS)
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
-list (APPEND SRCS "${UI}" "${MOC}")
+list (APPEND SRCS "${MOC}")
 
 # Include directory of the image files
 list (APPEND QT_AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")

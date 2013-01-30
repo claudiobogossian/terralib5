@@ -38,18 +38,6 @@
 // Forward declarations
 namespace te
 {
-  namespace map
-  {
-    class AbstractLayer;
-  }
-}
-
-namespace Ui { class BaseApplicationForm; }
-
-class QModelIndex;
-
-namespace te
-{
   namespace qt
   {
     namespace af
@@ -107,8 +95,79 @@ namespace te
 
           virtual void closeEvent(QCloseEvent* e);
 
-        protected:
+          virtual void initAction(QAction*& act, const QString& icon, const QString& name, const QString& text, const QString& tooltip, 
+            const bool& iconVisibleInMenu, const bool& isCheckable, const bool& enabled);
 
+          virtual void initActions();
+
+          virtual void initMenus();
+
+          virtual void initToolbars();
+
+          virtual void initSlotsConnections();
+
+          //! Qt components
+          QAction *m_viewLayerExplorer;
+          QAction *m_viewMapDisplay;
+          QAction *m_viewDataTable;
+          QAction *m_viewStyleExplorer;
+          QAction *m_editUndo;
+          QAction *m_editRedo;
+          QAction *m_editCut;
+          QAction *m_editCopy;
+          QAction *m_editPaste;
+          QAction *m_editSelectAll;
+          QAction *m_editClear;
+          QAction *m_editFind;
+          QAction *m_editReplace;
+          QAction *m_viewFullScreen;
+          QAction *m_viewRefresh;
+          QAction *m_toolsCustomize;
+          QAction *m_pluginsManager;
+          QAction *m_pluginsBuilder;
+          QAction *m_helpContents;
+          QAction *m_helpUpdate;
+          QAction *m_viewToolBars;
+          QAction *m_viewGrid;
+          QAction *m_viewDataSourceExplorer;
+          QAction *m_projectRemoveLayer;
+          QAction *m_projectProperties;
+          QAction *m_projectAddLayerDataset;
+          QAction *m_projectAddLayerImage;
+          QAction *m_projectAddLayerGraph;
+          QAction *m_layerEdit;
+          QAction *m_layerRename;
+          QAction *m_layerExport;
+          QAction *m_layerProperties;
+          QAction *m_layerRaise;
+          QAction *m_layerLower;
+          QAction *m_layerToTop;
+          QAction *m_layerToBottom;
+          QAction *m_toolsDataSourceManagement;
+          QAction *m_helpAbout;
+          QAction *m_fileNewProject;
+          QAction *m_fileSaveProject;
+          QAction *m_fileSaveProjectAs;
+          QAction *m_fileOpenProject;
+          QAction *m_fileExit;
+          QAction *m_filePrint;
+          QAction *m_filePrintPreview;
+          QWidget *m_centralwidget;
+          QMenuBar *m_menubar;
+          QMenu *m_editMenu;
+          QMenu *m_viewMenu;
+          QMenu *m_toolsMenu;
+          QMenu *m_pluginsMenu;
+          QMenu *m_helpMenu;
+          QMenu *m_projectMenu;
+          QMenu *m_projectAddLayerMenu;
+          QMenu *m_layerMenu;
+          QMenu *m_fileMenu;
+          QStatusBar *m_statusbar;
+          QToolBar *m_fileToolBar;
+          QToolBar *m_editToolBar;
+
+          //! TerraLib components
           LayerExplorer* m_explorer;
           MapDisplay* m_display;
           TabularViewer* m_viewer;
@@ -117,12 +176,7 @@ namespace te
           //QDockWidget* m_progressDock;                                    //!< Dock widget used to show progress information
 
           //te::qt::widgets::RasterVisualDockWidget* m_rasterVisualDock;    //!< Used to raster enhancement operations
-
-        private:
-
-          Ui::BaseApplicationForm* m_ui;
       };
-
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
