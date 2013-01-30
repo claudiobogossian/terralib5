@@ -79,8 +79,10 @@ option (EXAMPLE_QT_UTILS "Build qt/utils example." ON)
   
 # Go into sub-directories
 
-if(EXAMPLE_ADO)
-  add_subdirectory(terralib_example_ado)
+if(WIN32)
+  if(EXAMPLE_ADO)
+    add_subdirectory(terralib_example_ado)
+  endif()
 endif()
 
 if(EXAMPLE_COLORBAR)

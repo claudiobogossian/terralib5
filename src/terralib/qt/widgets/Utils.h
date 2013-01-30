@@ -36,8 +36,10 @@
 #include <QMessageBox>
 
 // Forward declarations
-class QTreeWidgetItem;
 class QImage;
+class QMenu;
+class QMenuBar;
+class QTreeWidgetItem;
 
 namespace te
 {
@@ -105,6 +107,52 @@ namespace te
         \note The caller of this method will take the ownership of the returned pointer.
       */
       TEQTWIDGETSEXPORT te::color::RGBAColor** GetImage(QImage* img);
+
+      /*!
+        \brief Finds a menu item in the \a mnu object.
+
+        Use this function to find menus and submenus. There is a sintaxe that is for required sub-menus. Use the names separated by \".\" character,
+        e.g to return a menu named \"Layers\" inside another menu named \"Add\" calls this function using "Add.Layers" as the value of the 
+        \a mnuText argument.
+
+        \note Pay attention on the translations.
+
+        \param mnuText Name of the QMenu searched.
+
+        \param mnu The menu where the submenu must be searched.
+
+        \return The pointer to the QMenu object or NULL if it do not exists.
+      */
+      TEQTWIDGETSEXPORT QMenu* FindMenu(const QString& mnuText, QMenu* mnu);
+
+      /*!
+        \overload QMenu* findMenu(const QString& mnuText, QMenuBar* bar)
+
+        The difference for the above function is that this will search in all QMenu objects contained in the \a bar.
+      */
+      TEQTWIDGETSEXPORT QMenu* FindMenu(const QString& mnuText, QMenuBar* bar);
+
+      /*!
+        \brief Gets a menu or submenu contained in the \a mnu object.
+
+        This function searches by the menu exactly as the findMenu function. The difference is that if the menu do not exists,
+        this function will create it, in all levels that may be required. Use the sintaxe described above to the search / create the submenus desired.
+
+        \param mnuText Name of the menu. (This will be used as texts of the menus.)
+
+        \param mnu The menu that will used in search.
+
+        \return A pointer to a QMenu object.
+      */
+      TEQTWIDGETSEXPORT QMenu* GetMenu(const QString& mnuText, QMenu* mnu);
+
+      /*!
+        \overload QMenu* getMenu(const QString& mnuText, QMenuBar* bar)
+
+        The difference for the above function is that it will search in all QMenu objects contained in the \a bar.
+      */
+      TEQTWIDGETSEXPORT QMenu* GetMenu(const QString& mnuText, QMenuBar* bar);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

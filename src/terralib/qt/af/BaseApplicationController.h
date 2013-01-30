@@ -40,6 +40,7 @@
 
 // Forward declarations
 class QMenu;
+class QMenuBar;
 class QToolBar;
 class QWidget;
 
@@ -119,6 +120,76 @@ namespace te
             \return A toolbar identified by \a id or \a NULL if none is found.
           */
           QToolBar* getToolBar(const QString& id) const;
+
+          /*! 
+            \name Menus and Menubars Management.
+
+            \brief Register and recover menus and menu bars.
+
+            The methods \a find will returns a valid object only if it exists in some menu, otherwise the return will be a NULL pointer.
+            The methods \a get ALWAYS returns a valid pointer. If the requested menu or menubar does not exists these funtions will create,
+            register and return the object.
+
+            \note The identifiers of the menus are the texts presented by menus.
+            \note The search for menus will occurs in ALL OF THE REGISTERED menus and menu bars, including submenus. The correct sintaxe
+            for searchies submenus may be found in the documentation of the findMenu(QString mnuText, QMenu* mnu) method.
+          */
+
+          //@{
+          /*!
+            \brief Register the \a mnu.
+
+            \param mnu Pointer to the menu to be registered.
+          */
+          void registerMenu(QMenu* mnu);
+
+          /*!
+            \brief Returns the menu registered with key \a id
+
+            \param id Indentifier of the menu.
+
+            \return Menu registered or NULL with there is not one registered with the key \a id.
+          */
+          QMenu* findMenu(const QString& id) const;
+
+          /*!
+            \brief Returns a menu registered with key \a id.
+
+            \param id Identifier of menu to be searched.
+
+            \return The menu registered with the \a id identifier.
+
+            \note If the menu does not exists, then this function will create it.
+          */
+          QMenu* getMenu(const QString& id) const;
+
+          /*!
+            \brief Register the \a bar.
+
+            \param bar Pointer to the menu bar to be registered.
+          */
+          void registerMenuBar(QMenuBar* bar);
+
+          /*!
+            \brief Returns the menu bar registered with key \a id
+
+            \param id Indentifier of the menu bar.
+
+            \return Menu bar registered or NULL with there is not one registered with the key \a id.
+          */
+          QMenuBar* findMenuBar(const QString& id) const;
+
+          /*!
+            \brief Returns a menu bar registered with key \a id.
+
+            \param id Identifier of menu bar to be searched.
+
+            \return The menu bar registered with the \a id identifier.
+
+            \note If the menu bar does not exists, then this function will create it.
+          */
+          QMenuBar* getMenuBar(const QString& id) const;
+          //@}
 
           /*!
             \brief Insert an application item that will listen to framework events.
@@ -205,6 +276,8 @@ namespace te
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.
+          std::vector<QMenu*> m_menus;                //!< Menus registered.
+          std::vector<QMenuBar*> m_menuBars;          //!< Menu bars registered.
           std::set<QObject*> m_applicationItems;      //!< The list of registered application items.
           QWidget* m_msgBoxParentWidget;              //!<
           std::string m_appConfigFile;                //!< The application framework configuration file.
