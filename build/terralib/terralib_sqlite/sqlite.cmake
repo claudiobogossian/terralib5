@@ -34,3 +34,11 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 
 #exporting module information
 exportModuleInformation("sqlite" "${SRCDIR}" "sqlite")
+
+set (TEPLUGIN_NAME "te.da.sqlite")
+set (TEPLUGIN_DISPLAYNAME "SQLite Data Source Driver")
+set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via SQLite")
+set (TEPLUGIN_LIBRARY "terralib_sqlite")
+set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:sqlite")
+
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_sqlite_info.xml)
