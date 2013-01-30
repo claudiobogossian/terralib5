@@ -29,6 +29,7 @@
 #include "../common/Translator.h"
 #include "Config.h"
 #include "Module.h"
+#include "QueryEncoder.h"
 
 const te::map::Module& sm_module = te::map::Module::getInstance();
 
@@ -53,6 +54,8 @@ te::map::Module::~Module()
 
 void te::map::Module::initialize()
 {
+  QueryEncoder::initialize();
+
   TE_LOG_TRACE(TR_MAP("TerraLib Map Tools module initialized!"));
 }
 

@@ -61,6 +61,8 @@ void te::serialize::ReadSymbolLibrary(const std::string& symbolLibraryFileName)
     te::qt::widgets::Symbol* symbol = ReadSymbol(*reader);
     te::qt::widgets::SymbolLibrary::getInstance().insert(symbol);
   }
+
+  assert(reader->getNodeType() == te::xml::END_DOCUMENT);
 }
 
 te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
@@ -75,6 +77,8 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Id");
   reader.next();
   info.m_id = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   // Symbol Name
   reader.next();
@@ -82,7 +86,9 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Name");
   reader.next();
   info.m_name = reader.getElementValue();
+  reader.next();
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
 
   // Symbol Author
@@ -91,6 +97,9 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
     reader.next();
     info.m_author = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
     reader.next();
   }
 
@@ -101,6 +110,9 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
     reader.next();
     info.m_category = reader.getElementValue();
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Symbol Tags
@@ -110,6 +122,9 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
     reader.next();
     info.m_tags = reader.getElementValue();
     reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    reader.next();
   }
 
   // Symbol Tags
@@ -118,6 +133,9 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
     reader.next();
     info.m_description = reader.getElementValue();
+    reader.next();
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
     reader.next();
   }
 
@@ -129,6 +147,9 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
   while((reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName().find("Symbolizer") != std::string::npos)) // TODO: For while using find("Symbolizer")... Actually, I would like to search by the registered names of symbolizer.
     symbol->addSymbolizer(te::serialize::Symbolizer::getInstance().read(reader));
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   return symbol.release();
 }

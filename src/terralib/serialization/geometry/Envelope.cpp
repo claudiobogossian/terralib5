@@ -41,6 +41,11 @@ te::gm::Envelope* te::serialize::ReadExtent(te::xml::Reader& reader)
   double urx = reader.getAttrAsDouble(2);
   double ury = reader.getAttrAsDouble(3);
 
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return new te::gm::Envelope(llx, lly, urx, ury);
 }
 

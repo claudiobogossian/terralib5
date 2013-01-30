@@ -53,9 +53,11 @@ te::da::DataSetType* te::serialize::ReadDataSetType(te::xml::Reader& reader)
         reader.getElementLocalName() == "Property")
   {
     te::dt::Property* p = ReadProperty(reader);
-
     dt->add(p);
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSetType Element
+  reader.next();
 
   return dt.release();
 }

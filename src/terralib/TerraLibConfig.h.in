@@ -35,21 +35,21 @@
   \def TERRALIB_MAJOR_VERSION
 
   \brief Major version of TerraLib (or version).
- */
+*/
 #define TERRALIB_MAJOR_VERSION ${TERRALIB_MAJOR_VERSION}
 
 /*!
   \def TERRALIB_MINOR_VERSION
 
   \brief Minor version of TerraLib (or revision). 
- */
+*/
 #define TERRALIB_MINOR_VERSION ${TERRALIB_MINOR_VERSION}
 
 /*!
   \def TERRALIB_PATCH_VERSION
 
   \brief Patched version of TerraLib (or patch).
- */
+*/
 #define TERRALIB_PATCH_VERSION ${TERRALIB_PATCH_VERSION}
 
 #define TERRALIB_RELEASE_STATUS "${TERRALIB_RELEASE_STATUS}"
@@ -61,7 +61,7 @@
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this string.
- */
+*/
 #define TERRALIB_STRING_VERSION "${TERRALIB_STRING_VERSION}"
 
 /*!
@@ -69,44 +69,59 @@
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this number.
- */
+*/
 #define TERRALIB_INT_VERSION ${TERRALIB_INT_VERSION} 
+
 //@}
 
 /*!
   \def TERRALIB_DIR_ENVIRONMENT_VARIABLE
 
   \brief This macro defines an environment variable that indicates where TerraLib is installed.
- */
+*/
 #define TERRALIB_DIR_ENVIRONMENT_VARIABLE "${TERRALIB_DIR_ENVIRONMENT_VARIABLE}"
 
 /*!
   \def TE_USE_GDAL
 
   \brief If this flag is set to 1 the GDAL driver support will be enabled.
- */
+*/
 #cmakedefine01 TE_USE_GDAL
 
 /*!
   \def TE_USE_OGR
 
   \brief If this flag is set to 1 the OGR driver support will be enabled.
- */
+*/
 #cmakedefine01 TE_USE_OGR
 
 /*!
   \def TE_USE_PROJ4
 
   \brief If this flag is set to 1 the PROJ4 driver support will be enabled.
- */
+*/
 #cmakedefine01 TE_USE_PROJ4
 
 /*!
   \def TE_USE_PGIS
 
   \brief If this flag is set to 1 the POSTGIS driver support will be enabled.
- */
+*/
 #cmakedefine01 TE_USE_PGIS
+
+/*!
+  \def TE_USE_MYSQL
+
+  \brief If this flag is set to 1 the MYSQL driver support will be enabled.
+*/
+#cmakedefine01 TE_USE_MYSQL
+
+/*!
+  \def TE_USE_SQLITE
+
+  \brief If this flag is set to 1 the SQLite driver support will be enabled.
+*/
+#cmakedefine01 TE_USE_SQLITE
 
 /*!
   \def TE_USE_GEOS
@@ -115,28 +130,28 @@
 
   This will give you the possibility to convert between geometry models and use all the functionalities
   in GEOS. This library is available at: http://trac.osgeo.org/geos.
- */
+*/
 #cmakedefine01 TE_USE_GEOS
 
 /*! 
   \def TE_USE_APACHE_LOG4CXX
   
   \brief Value 1 will enable Apache Log4cxx log support, value 0 will disable it 
- */
+*/
 #cmakedefine01 TE_USE_APACHE_LOG4CXX
 
 /*!
   \def TERRALIB_STATIC_BUILD
 
   \brief If set to 1 this will tells TerraLib that it is statically build.
- */
+*/
 #cmakedefine01 TE_TERRALIB_STATIC_BUILD
 
 /*!
   \def TE_LOGGER_ENABLED
 
   \brief If you want to disable all kind of logging in the TerraLib code just turn off this macro (set it to 0).
- */
+*/
 #cmakedefine01 TE_LOGGER_ENABLED
 
 /*!
@@ -145,7 +160,7 @@
   \brief If this flag is set to 1, the logger will be automatically initialized by the TerraLib Common Runtime module.
 
   If you want to make the initialization in your application, feel free to change this macro to 0.
- */
+*/
 #cmakedefine01 TE_LOGGER_DO_AUTOMATIC_INITIALIZATION
 
 /*!
@@ -154,45 +169,45 @@
   \brief If you want to start log during static initialization turn on this macro (set it to 1) otherwise turn it off (set it to 0).
 
   If you want to make the initialization in your application, feel free to change this macro to 0.
- */
+*/
 #define TE_LOGGER_DO_STATIC_INITIALIZATION 0
 
 /*!
   \def TE_TRANSLATOR_ENABLED
 
   \brief If you want to disable all kind of translation support in the TerraLib code just turn off this macro (set it to 0).
- */
+*/
 #cmakedefine01 TE_TRANSLATOR_ENABLED
 
 /*!  
   \def TE_USE_GNU_TEXT_UTILITIES
 
   \brief If you want to have international support you must set this flag to 1, otherwise set it to 0 (zero).
- */
+*/
 #cmakedefine01 TE_USE_GNU_TEXT_UTILITIES
 
 /*!
   \def TE_CHARENCODING_ENABLED
 
   \brief If you want to disable all kind of character encoding conversion in the TerraLib code just turn off this macro (set it to 0).
- */
+*/
 #cmakedefine01 TE_CHARENCODING_ENABLED
 
 /*!  
   \def TE_USE_GNU_ICONV
 
   \brief If you want to have character encoding support you must set this flag to 1, otherwise set it to 0 (zero).
- */
+*/
 #cmakedefine01 TE_USE_GNU_ICONV
 
 /*! 
   \brief Define to 1 if you have the <boost/version.hpp> header file. 
- */
+*/
 #cmakedefine01 TE_HAVE_BOOST_VERSION_HPP
 
 /*! 
   \brief Define to 1 if you have the <cppunit/Outputter.h> header file. 
- */
+*/
 #cmakedefine01 TE_HAVE_CPPUNIT_OUTPUTTER_H
 
 #endif  // __TERRALIB_INTERNAL_TERRALIBCONFIG_H

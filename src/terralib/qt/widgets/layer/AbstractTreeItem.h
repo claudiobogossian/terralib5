@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_ABSTRACTTREEITEM_H
 
 // TerraLib
+#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
 // Qt
@@ -40,12 +41,6 @@ class QWidget;
 
 namespace te
 {
-// Forward declarations
-  namespace map
-  {
-    class AbstractLayer; 
-  }
-
   namespace qt
   {
     namespace widgets
@@ -91,7 +86,7 @@ namespace te
 
             \return The layer associated to this AbstractTreeItem.
            */
-          te::map::AbstractLayer* getRefLayer() const;
+          te::map::AbstractLayerPtr getRefLayer() const;
 
           /*!
             \brief It returns the children list of this tree item.
@@ -137,7 +132,7 @@ namespace te
 
             \note The caller takes the ownership of the returned reference layer.
            */
-          te::map::AbstractLayer* removeChild(int row);
+          te::map::AbstractLayerPtr removeChild(int row);
 
           /*!
             \brief It removes the given number of items as children of this item from the given position.
@@ -218,7 +213,7 @@ namespace te
 
         protected:
       
-          te::map::AbstractLayer* m_refLayer;
+          te::map::AbstractLayerPtr m_refLayer;
       };
 
     } // end namespace widgets

@@ -145,3 +145,63 @@ void te::da::QueryCapabilities::setSupportAll()
   m_select = true;
   m_selectInto = true;
 }
+
+const std::set<std::string>& te::da::QueryCapabilities::getSpatialOperators() const
+{
+  return m_spatialOperators;
+}
+
+void te::da::QueryCapabilities::addSpatialOperator(const std::string& op)
+{
+  m_spatialOperators.insert(op);
+}
+
+const std::set<std::string>& te::da::QueryCapabilities::getLogicalOperators() const
+{
+  return m_logicalOperators;
+}
+
+void te::da::QueryCapabilities::addLogicalOperator(const std::string& op)
+{
+  m_logicalOperators.insert(op);
+}
+
+const std::set<std::string>& te::da::QueryCapabilities::getComparsionOperators() const
+{
+  return m_comparsionOperators;
+}
+
+void te::da::QueryCapabilities::addComparsionOperator(const std::string& op)
+{
+  m_comparsionOperators.insert(op);
+}
+
+const std::set<std::string>& te::da::QueryCapabilities::getArithmeticOperators() const
+{
+  return m_arithmeticOperators;
+}
+
+void te::da::QueryCapabilities::addArithmeticOperator(const std::string& op)
+{
+  m_arithmeticOperators.insert(op);
+}
+
+const std::set<std::string>& te::da::QueryCapabilities::getFunctions() const
+{
+  return m_functions;
+}
+
+void te::da::QueryCapabilities::addFunction(const std::string& op)
+{
+  m_functions.insert(op);
+}
+
+const std::set<te::gm::GeomType>& te::da::QueryCapabilities::getGeometryOperands() const
+{
+  return m_geomOperands;
+}
+
+void te::da::QueryCapabilities::addGeometryOperand(const te::gm::GeomType& type)
+{
+  m_geomOperands.insert(type);
+}

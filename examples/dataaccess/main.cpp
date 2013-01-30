@@ -43,26 +43,30 @@ int main(int /*argc*/, char** /*argv*/)
   {
     // initialize Terralib support
     TerraLib::getInstance().initialize();
-    
+
     LoadModules();
-    
+
     OGRExampleRead();
-    
+
     ORGExampleWrite();
-    
-    PostGISExample();     
+
+    PostGISExample();
     
     QueryExample(); //??? tem codigo comentado - cai...
-    
+
     CopyingData();
-    
+
     GDALExample();
-    
+
     MemoryExample();
-    
-    //   PersistenceExample(); //??? Está caindo - em ======Adds a new property and its values  
+
+    //   PersistenceExample(); //??? Esta caindo - em ======Adds a new property and its values  
 
     DataSetAdapter();
+
+    MySQLExample();
+
+    SQLiteExample();
 
     TerraLib::getInstance().finalize();
   }

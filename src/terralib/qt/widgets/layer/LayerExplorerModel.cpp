@@ -263,10 +263,10 @@ QMimeData* te::qt::widgets::LayerExplorerModel::mimeData(const QModelIndexList& 
     return 0;
 
   // Encode the reference layer of the dragged item
-  te::map::AbstractLayer* dragRefLayer = item->getRefLayer();
+  te::map::AbstractLayerPtr dragRefLayer = item->getRefLayer();
 
   QString s;
-  s.setNum((qulonglong)dragRefLayer);
+  s.setNum((qulonglong)dragRefLayer.get());
 
   QByteArray encodedData(s.toStdString().c_str());
 
@@ -298,14 +298,14 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
 
   // Get the reference layer of the item where the dragged item was dropped
   te::qt::widgets::AbstractTreeItem* dropItem = getItem(dropIndex);
-  te::map::AbstractLayer* dropRefLayer = dropItem->getRefLayer();
+  te::map::AbstractLayerPtr dropRefLayer = dropItem->getRefLayer();
 
   // Set the flag indicating that a drag and drop operation will be accomplished
   m_dndOperation = true;
 
   // Check if the items involved in the drag and drop operation are siblings
   bool areSiblings = false;
-  if(dragRefLayer->isSibling(dropRefLayer))
+  if(dragRefLayer->isSibling(dropRefLayer.get()))
     areSiblings = true;
 
   // A new item will be generated(m_dndNewItem). Check where it will be placed, by setting
@@ -357,11 +357,11 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   // Disconnect the reference layer from its parent
   te::map::AbstractLayer* dragRefLayerParent = static_cast<te::map::AbstractLayer*>(dragRefLayer->getParent());
   int dragRow = dragRefLayer->getIndex();
-  dragRefLayerParent->takeChild(dragRow);
+  dragRefLayerParent->remove(dragRow);
   
   // Construct a dummy layer and insert it as a child of the dragged item parent in the drag position
   te::map::AbstractLayer* dummyLayer = new te::map::Layer("0", "DummyLayer", 0);
-  dragRefLayerParent->insertChild(dragRow, dummyLayer);
+  dragRefLayerParent->insert(dragRow, dummyLayer);
 
   // Create the new tree item
   m_dndNewItem = new te::qt::widgets::LayerItem(dragRefLayer, 0);
@@ -396,13 +396,12 @@ bool te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const Q
   te::qt::widgets::AbstractTreeItem* parentLayerItem = getItem(parent);
  
   beginRemoveRows(parent, row, row+count-1);
-  te::map::AbstractLayer* dummyLayer = parentLayerItem->removeChild(row);
-  delete dummyLayer;
+  te::map::AbstractLayerPtr dummyLayer = parentLayerItem->removeChild(row);
   endRemoveRows();
 
   // Update the visibility of the items of the tree taking into account
   // the item that is being removed
-  te::map::AbstractLayer* parentLayer = parentLayerItem->getRefLayer();
+  te::map::AbstractLayerPtr parentLayer = parentLayerItem->getRefLayer();
   int numChildren = parentLayer->getChildrenCount();
 
   bool allIsNotVisible = true;
@@ -417,7 +416,7 @@ bool te::qt::widgets::LayerExplorerModel::removeRows(int row, int count, const Q
   {
     for(int i = 0; i < numChildren; ++i)
     {
-      te::map::AbstractLayer* childLayer = static_cast<te::map::AbstractLayer*>(parentLayer->getChild(i));
+      te::map::AbstractLayerPtr childLayer(static_cast<te::map::AbstractLayer*>(parentLayer->getChild(i).get()));
       te::map::Visibility childVisibility = childLayer->getVisibility();
 
       if(childVisibility == te::map::PARTIALLY_VISIBLE)
@@ -519,7 +518,7 @@ QModelIndex te::qt::widgets::LayerExplorerModel::insertItem(const QModelIndex& p
   return newIndex;
 }
 
-te::map::AbstractLayer* te::qt::widgets::LayerExplorerModel::removeItem(const QModelIndex& index)
+te::map::AbstractLayerPtr te::qt::widgets::LayerExplorerModel::removeItem(const QModelIndex& index)
 {
   if(!index.isValid())
     return 0;
@@ -538,7 +537,7 @@ te::map::AbstractLayer* te::qt::widgets::LayerExplorerModel::removeItem(const QM
   int row = index.row();
   QModelIndex parentIndex = index.parent();
   beginRemoveRows(parentIndex, row, row);
-  te::map::AbstractLayer* itemRefLayer = layerParentItem->removeChild(row);
+  te::map::AbstractLayerPtr itemRefLayer = layerParentItem->removeChild(row);
   endRemoveRows();
 
   return itemRefLayer;

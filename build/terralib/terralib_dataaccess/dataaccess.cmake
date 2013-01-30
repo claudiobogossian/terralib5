@@ -4,7 +4,7 @@
 
 # 3rd-party definitions.
 # -------------------------------------------------- 
-find_package(Boost ${_Boost_VERSION} COMPONENTS thread REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS thread system REQUIRED)
 if(Boost_FOUND)
   set(DEP_LIBS ${DEP_LIBS} ${Boost_LIBRARIES})
   set(DEP_INCLUDES ${DEP_INCLUDES} ${Boost_INCLUDE_DIRS})

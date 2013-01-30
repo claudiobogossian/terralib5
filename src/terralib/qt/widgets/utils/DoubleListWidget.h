@@ -86,6 +86,11 @@ namespace te
 
           void onRightListPressed(QListWidgetItem* item);
 
+
+        signals:
+
+          void itemChanged();
+
         private:
 
           std::auto_ptr<Ui::DoubleListWidgetForm> m_ui;

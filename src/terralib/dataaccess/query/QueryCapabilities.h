@@ -27,7 +27,12 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_QUERYCAPABILITIES_H
 
 // TerraLib
+#include "../../geometry/Enums.h"
 #include "../Config.h"
+
+// STL
+#include <set>
+#include <string>
 
 namespace te
 {
@@ -88,6 +93,30 @@ namespace te
 
         void setSupportAll();
 
+        const std::set<std::string>& getSpatialOperators() const;
+
+        void addSpatialOperator(const std::string& op);
+
+        const std::set<std::string>& getLogicalOperators() const;
+
+        void addLogicalOperator(const std::string& op);
+
+        const std::set<std::string>& getComparsionOperators() const;
+
+        void addComparsionOperator(const std::string& op);
+
+        const std::set<std::string>& getArithmeticOperators() const;
+
+        void addArithmeticOperator(const std::string& op);
+
+        const std::set<std::string>& getFunctions() const;
+
+        void addFunction(const std::string& op);
+
+        const std::set<te::gm::GeomType>& getGeometryOperands() const;
+
+        void addGeometryOperand(const te::gm::GeomType& type);
+
       private:
 
         bool m_sqlDialect; //!< A flag that indicates if the data source supports Query API.
@@ -99,6 +128,13 @@ namespace te
         bool m_alter;      //!< A flag that indicates if the data source supports the ALTER command.
         bool m_select;     //!< A flag that indicates if the data source supports the SELECT command.
         bool m_selectInto; //!< A flag that indicates if the data source supports the SELECT INTO command.
+
+        std::set<std::string> m_spatialOperators;    //!< The names of spatial supported operators.
+        std::set<std::string> m_logicalOperators;    //!< The names of logical supported operators.
+        std::set<std::string> m_comparsionOperators; //!< The names of comparsion supported operators.
+        std::set<std::string> m_arithmeticOperators; //!< The names of arithmetic supported operators.
+        std::set<std::string> m_functions;           //!< The names of supported functions.
+        std::set<te::gm::GeomType> m_geomOperands;   //!< The types of geometry supported operands.
     };
 
   } // end namespace da

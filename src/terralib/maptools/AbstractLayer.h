@@ -34,6 +34,7 @@
 // STL
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace te
 {
@@ -72,12 +73,12 @@ namespace te
 
       \sa TreeItem, QueryLayer, FolderLayer, Layer
     */
-    class TEMAPEXPORT AbstractLayer : public te::common::TreeItem<AbstractLayer>
+    class TEMAPEXPORT AbstractLayer : public te::common::TreeItem
     {
       public:
 
         /*!
-          \brief It initializes a new Layer.          
+          \brief It initializes a new Layer.
 
           \param id     The layer id.
           \param title  The title is a brief description about the layer that can be used by an application to show a meaningful label to the user.
@@ -306,6 +307,8 @@ namespace te
         Visibility m_visibility;                  //!< A flag that indicates the visibility status of the layer.
         std::auto_ptr<te::xl::SimpleLink> m_icon; //!< The icon used to show the layer when needed.
     };
+
+    typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;
 
   } // end namespace map
 }   // end namespace te

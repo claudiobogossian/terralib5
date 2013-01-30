@@ -49,7 +49,8 @@ int main(int argc, char** argv)
     
     LoadModules();
     
-    ExMetadataManager();
+    //ExMetadataManager();
+    ExMetadataAnnotate();
     
     te::plugin::PluginManager::getInstance().unloadAll();
     

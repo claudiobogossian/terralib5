@@ -34,7 +34,7 @@
 te::map::AbstractLayer::AbstractLayer(const std::string& id,
                                       const std::string& title,
                                       AbstractLayer* parent)
-  : te::common::TreeItem<AbstractLayer>(parent),
+  : te::common::TreeItem(parent),
     m_id(id),
     m_title(title),
     m_visibility(NOT_VISIBLE),
@@ -126,12 +126,12 @@ void te::map::AbstractLayer::insertLegend(const std::vector<LegendItem*>& /*lege
 
 void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
 {
-  te::common::TreeItem<AbstractLayer>::iterator it = begin();
-  te::common::TreeItem<AbstractLayer>::iterator it_end = end();
+  te::common::TreeItem::iterator it = begin();
+  te::common::TreeItem::iterator it_end = end();
 
   while(it != it_end)
   {
-    AbstractLayer* layer = static_cast<AbstractLayer*>(*it);
+    AbstractLayer* layer = static_cast<AbstractLayer*>(it->get());
 
     layer->m_visibility = v;
 
@@ -147,10 +147,10 @@ void te::map::AbstractLayer::setAscendantsVisibility()
   if(m_parent == 0)
     return;
 
-  te::common::TreeItem<AbstractLayer>::iterator it = begin();
-  te::common::TreeItem<AbstractLayer>::iterator it_end = end();
+  te::common::TreeItem::iterator it = begin();
+  te::common::TreeItem::iterator it_end = end();
 
-  te::common::TreeItem<AbstractLayer>* parent = m_parent;
+  te::common::TreeItem* parent = m_parent;
 
   it = parent->begin();
   it_end = parent->end();
@@ -161,7 +161,7 @@ void te::map::AbstractLayer::setAscendantsVisibility()
 
   while(it != it_end)
   {
-    AbstractLayer* layer = static_cast<AbstractLayer*>(*it);
+    AbstractLayer* layer = static_cast<AbstractLayer*>(it->get());
 
     if(layer->getVisibility() == NOT_VISIBLE)
       hasNotVisible = true;

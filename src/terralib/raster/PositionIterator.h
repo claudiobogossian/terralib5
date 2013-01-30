@@ -149,7 +149,7 @@ namespace te
 
         ~PolygonIterator();
 
-        void setNextLine();
+        void setNextLine(bool updatecurrline = true);
 
         const T operator*() const;
 
@@ -176,7 +176,7 @@ namespace te
       protected:
 
         const te::gm::Polygon* m_polygon;        //!< The spatial restriction to be applied in the iterator.
-        te::gm::MultiLineString* m_intersection; //!< The line (or lines) of the intersection between the geometry and the current line.
+        te::gm::MultiLineString* m_intersection; //!< The points or lines of the intersection between the geometry and the current line.
         te::gm::Line* m_currline;                //!< The current line in the iterator.
         int m_column;                            //!< The current column of the iterator.
         int m_row;                               //!< The current row of the iterator.
@@ -372,12 +372,9 @@ namespace te
       te::gm::Coord2D ll = m_polygon->getMBR()->getLowerLeft();
       te::gm::Coord2D ur = m_polygon->getMBR()->getUpperRight();
 
+// defining starting/ending rows
       m_startingrow = (int) b->getRaster()->getGrid()->geoToGrid(ll.x, ur.y).y;
       m_endingrow = (int) b->getRaster()->getGrid()->geoToGrid(ll.x, ll.y).y;
-
-      m_currline = new te::gm::Line(te::gm::Point(ll.x, ll.y, m_polygon->getSRID()),
-                                    te::gm::Point(ur.x, ll.y, m_polygon->getSRID()),
-                                    te::gm::LineStringType, m_polygon->getSRID());
 
       int tmp;
       if (m_startingrow > m_endingrow)
@@ -391,7 +388,12 @@ namespace te
 
       m_row = m_startingrow;
 
-      setNextLine();
+      m_currline = new te::gm::Line(te::gm::Point(ll.x, ur.y, m_polygon->getSRID()),
+                                    te::gm::Point(ur.x, ur.y, m_polygon->getSRID()),
+                                    te::gm::LineStringType, m_polygon->getSRID());
+
+// defining starting/ending columns
+      setNextLine(false);
 
       m_column = m_startingcolumn;
     }
@@ -419,18 +421,21 @@ namespace te
       m_intersection->clear();
     }
 
-    template<class T> void te::rst::PolygonIterator<T>::setNextLine()
+    template<class T> void te::rst::PolygonIterator<T>::setNextLine(bool updatecurrline)
     {
-      double nexty = this->m_band->getRaster()->getGrid()->gridToGeo(0, m_row).y;
-
-      if (m_nline == -1 || m_nline >= m_nintersections)
+      if (updatecurrline)
       {
-        m_nline = 0;
+        double nexty = this->m_band->getRaster()->getGrid()->gridToGeo(0, m_row).y;
 
         m_currline->setX(0, m_polygon->getMBR()->getLowerLeft().x);
         m_currline->setX(1, m_polygon->getMBR()->getUpperRight().x);
         m_currline->setY(0, nexty);
         m_currline->setY(1, nexty);
+      }
+
+      if (m_nline == -1 || m_nline >= m_nintersections)
+      {
+        m_nline = 0;
 
         m_intersection->clear();
         te::gm::Geometry* inter = m_polygon->intersection(m_currline);
@@ -450,15 +455,27 @@ namespace te
 
       te::gm::LineString* lineinter;
 
-      if (m_intersection->getGeometryN(0)->getGeomTypeId() == te::gm::LineStringType)
-      {
-        lineinter = static_cast<te::gm::LineString*> (m_intersection->getGeometryN(0));
+      te::gm::Geometry* actualgeom = m_intersection->getGeometryN(0);
 
-        m_nintersections = 1;
+      m_nintersections = 1;
+
+      if (actualgeom->getGeomTypeId() == te::gm::PointType)
+      {
+        lineinter = new te::gm::LineString(2, te::gm::LineStringType, actualgeom->getSRID());
+        te::gm::Point* pointinter = static_cast<te::gm::Point*> (actualgeom);
+
+        lineinter->setX(0, pointinter->getX());
+        lineinter->setY(0, pointinter->getY());
+        lineinter->setX(1, pointinter->getX());
+        lineinter->setY(1, pointinter->getY());
+      }
+      else if (actualgeom->getGeomTypeId() == te::gm::LineStringType)
+      {
+        lineinter = static_cast<te::gm::LineString*> (actualgeom);
       }
       else
       {
-        te::gm::MultiLineString* mls = static_cast<te::gm::MultiLineString*> (m_intersection->getGeometryN(0));
+        te::gm::MultiLineString* mls = static_cast<te::gm::MultiLineString*> (actualgeom);
 
         lineinter = static_cast<te::gm::LineString*> (mls->getGeometryN(m_nline));
 
@@ -470,13 +487,10 @@ namespace te
       m_endingcolumn = (int) this->m_band->getRaster()->getGrid()->geoToGrid(lineinter->getEndPoint()->getX(), lineinter->getEndPoint()->getY()).x;
 
       int tmp;
-
       if (m_startingcolumn > m_endingcolumn)
       {
         tmp = m_startingcolumn;
-
         m_startingcolumn = m_endingcolumn;
-
         m_endingcolumn = tmp;
       }
 

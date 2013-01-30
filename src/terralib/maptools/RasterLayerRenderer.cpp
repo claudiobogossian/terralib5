@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/progress/TaskProgress.h"
+#include "../common/STLUtils.h"
 #include "../dataaccess.h"
 #include "../fe/Filter.h"
 #include "../geometry.h"

@@ -81,6 +81,9 @@ te::dt::Property* te::serialize::ReadProperty(te::xml::Reader& reader)
       throw Exception(TR_SERIALIZATION("Data type not supported!"));
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Property Element
+  reader.next();
+
   return p;
 }
 
@@ -94,4 +97,3 @@ void te::serialize::Save(const te::dt::Property* p, te::xml::Writer& writer)
 
   writer.writeEndElement("Property");
 }
-

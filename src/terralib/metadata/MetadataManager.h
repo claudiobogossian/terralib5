@@ -42,6 +42,9 @@ namespace te
      \class MetadataManager
      
      \brief This singleton defines the TerraLib metadata record manager entry.
+     
+     \todo Persistence of the catalogue of annotations. Possibly in DBMS and/or JSON files.
+     \todo Publish capabilility: the manager should be able to publish its contents to a metadata catalogue such as GeoNetwork.
      */
     class TEMDEXPORT MetadataManager: public te::common::Singleton<MetadataManager>
     {

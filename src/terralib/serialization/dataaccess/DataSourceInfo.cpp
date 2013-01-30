@@ -60,7 +60,6 @@ void te::serialize::ReadDataSourceInfo(const std::string& datasourcesFileName)
         (xmlReader->getElementLocalName() == "DataSource"))
   {
     te::da::DataSourceInfoPtr ds(ReadDataSourceInfo(*xmlReader));
-
     te::da::DataSourceInfoManager::getInstance().add(ds);
   }
 
@@ -72,56 +71,73 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
   std::auto_ptr<te::da::DataSourceInfo> ds(new te::da::DataSourceInfo);
 
   ds->setId(reader.getAttr(0));
-  ds->setType(reader.getAttr(1));  
+  ds->setType(reader.getAttr(1));
   ds->setAccessDriver(reader.getAttr(2));
 
+  /* Title Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Title");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   ds->setTitle(reader.getElementValue());
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* Description Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Description");
-
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   ds->setDescription(reader.getElementValue());
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+  /* ConnectionInfo Element */
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ConnectionInfo");
 
+  reader.next();
+
   std::map<std::string, std::string> conninfo;
 
-  while(reader.next() &&
-        (reader.getNodeType() == te::xml::START_ELEMENT) &&
+  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName() == "Parameter"))
   {
+    // Parameter Name
     reader.next();
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
     assert(reader.getElementLocalName() == "Name");
-
     reader.next();
     assert(reader.getNodeType() == te::xml::VALUE);
     std::string paramName = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
+    // Parameter Value
     reader.next();
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
     assert(reader.getElementLocalName() == "Value");
-
     reader.next();
     assert(reader.getNodeType() == te::xml::VALUE);
     std::string paramValue = reader.getElementValue();
+    reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
     conninfo[paramName] = paramValue;
+
+    reader.next();
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of ConnectionInfo Element
+  reader.next();
+
   ds->setConnInfo(conninfo);
-  
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSource Element
+  reader.next();
+
   return ds.release();
 }
-

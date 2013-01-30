@@ -63,6 +63,8 @@ te::da::SQLDialect* te::serialize::ReadDialect(const std::string& dialectFileNam
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::VALUE);
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
@@ -103,10 +105,16 @@ te::da::SQLDialect* te::serialize::ReadDialect(const std::string& dialectFileNam
       throw Exception(TR_DATAACCESS("Unsupported encoder type!"));
     }
 
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // End of Encoder
+
     mydialect->insert(fname, sfe);
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // End of Function
   }
+
+  assert(xmlReader->getNodeType() == te::xml::END_DOCUMENT); // End of QueryDialect
 
   return mydialect.release();
 }
-
-

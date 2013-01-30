@@ -26,4 +26,6 @@
 
 void ExMetadataManager();
 
+void ExMetadataAnnotate();
+
 #endif

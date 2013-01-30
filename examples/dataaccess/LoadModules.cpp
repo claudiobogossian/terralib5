@@ -12,7 +12,7 @@ void LoadModules()
 {
   te::plugin::PluginInfo* info;
   
-#if TE_EXAMPLE_USE_OGR     
+#if TE_EXAMPLE_USE_OGR
   info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
   te::plugin::PluginManager::getInstance().add(info); 
 #endif
@@ -22,10 +22,20 @@ void LoadModules()
   te::plugin::PluginManager::getInstance().add(info);
 #endif
   
-#if TE_EXAMPLE_USE_PGIS     
+#if TE_EXAMPLE_USE_PGIS
   info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_pgis_info.xml"));
   te::plugin::PluginManager::getInstance().add(info);    
-#endif    
+#endif
+
+#if TE_EXAMPLE_USE_MYSQL
+  info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_mysql_info.xml"));
+  te::plugin::PluginManager::getInstance().add(info);    
+#endif
+
+#if TE_EXAMPLE_USE_SQLITE
+  info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_sqlite_info.xml"));
+  te::plugin::PluginManager::getInstance().add(info);
+#endif   
   
   te::plugin::PluginManager::getInstance().loadAll(); 
 }

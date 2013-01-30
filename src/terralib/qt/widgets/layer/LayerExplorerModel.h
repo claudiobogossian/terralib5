@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_INTERNAL_LAYEREXPLORERMODEL_H
 
 // TerraLib
+#include "../../../maptools/AbstractLayer.h"
 #include "../Config.h"
 
 // Qt
@@ -40,7 +41,6 @@ namespace te
 // Forward declarations
   namespace map
   {
-    class AbstractLayer;
     class LegendItem;
   }
 
@@ -233,7 +233,7 @@ namespace te
           /*!
             \brief Get the root item.
 
-            \return It returns the root item of the tree.              
+            \return It returns the root item of the tree.
            */
           te::qt::widgets::AbstractTreeItem* getRootItem() const;
 
@@ -242,7 +242,7 @@ namespace te
 
             \param index The item index.
 
-            \return It returns the item associated to the given index.              
+            \return It returns the item associated to the given index.
            */
           te::qt::widgets::AbstractTreeItem* getItem(const QModelIndex& index);
 
@@ -251,7 +251,7 @@ namespace te
 
             \param index The item index.
 
-            \return It removes the legend of the item associated to the given index.              
+            \return It removes the legend of the item associated to the given index.
            */
           void removeLegend(const QModelIndex& index);
 
@@ -279,9 +279,9 @@ namespace te
 
             \param index The item index.
 
-            \return It returns the reference layer associated to the item removed.              
+            \return It returns the reference layer associated to the item removed.
            */
-          te::map::AbstractLayer* removeItem(const QModelIndex& index);
+          te::map::AbstractLayerPtr removeItem(const QModelIndex& index);
 
          /*! \brief It resets the model to its original state in any attached views. */
           void resetModel();

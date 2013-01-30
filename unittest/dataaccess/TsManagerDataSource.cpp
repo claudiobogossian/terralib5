@@ -48,7 +48,7 @@
 te::da::DataSource* TsManagerDataSource::sm_datasource;
 std::string TsManagerDataSource::sm_dsType;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfo;
-std::map<std::string, std::string> TsManagerDataSource::sm_capabilit;
+te::da::DataSourceCapabilities  TsManagerDataSource::sm_capabilit;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfoNewDs;
 std::map<std::string, std::string> TsManagerDataSource::sm_connInfoDropDs;
 std::string TsManagerDataSource::sm_connStr;
@@ -503,7 +503,7 @@ void TsManagerDataSource::initialize(const std::string driver_name)
   // End of Specification of variables to be used in DataSetTypePersistence tests
 
   sm_datasource = te::da::DataSourceFactory::make(sm_dsType);
-  sm_datasource->getCapabilities(sm_capabilit);
+  sm_capabilit = sm_datasource->getCapabilities();
 }
 
 void TsManagerDataSource::finalize()

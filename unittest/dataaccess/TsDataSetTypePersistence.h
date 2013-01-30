@@ -162,7 +162,8 @@ class TsDataSetTypePersistence : public CPPUNIT_NS::TestFixture
 // It will come from the setUp (values from json file for each driver)
 
     te::da::DataSource* m_ds;
-    std::map<std::string, std::string> m_capabilit;
+    te::da::DataSourceCapabilities m_capabilit;
+
     te::da::DataSetType* m_newdt;
     te::da::DataSetType* m_newdt3;
     te::da::ForeignKey* m_fk;

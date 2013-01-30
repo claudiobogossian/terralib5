@@ -53,6 +53,9 @@ std::vector<te::rst::BandProperty*> te::serialize::ReadBandPropertyVector(te::xm
     bands.push_back(bp);
   }
 
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
+
   return bands;
 }
 
@@ -73,6 +76,12 @@ te::rst::BandProperty* te::serialize::ReadBandProperty(te::xml::Reader& reader)
   int blkh = reader.getAttrAsInt32(1);
   int nblocksx = reader.getAttrAsInt32(2);
   int nblocksy = reader.getAttrAsInt32(3);
+
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of BlockInfo Element
+
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Band Element
 
   reader.next();
 

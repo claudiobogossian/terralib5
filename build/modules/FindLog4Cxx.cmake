@@ -33,7 +33,7 @@ find_path(
                 
 find_library(
   LOG4CXX_LIBRARY_DEBUG
-  NAMES log4cxx_d
+  NAMES log4cxx_d log4cxxd
   PATHS /usr/local/lib /lib /usr/lib
   PATH_SUFFIXES log4cxx/lib
 )

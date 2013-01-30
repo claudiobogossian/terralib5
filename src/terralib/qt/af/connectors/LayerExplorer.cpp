@@ -58,8 +58,8 @@ namespace te
 
         if(item != 0 && item->isLayerItem())
         {
-          te::map::AbstractLayer* abs_lay = item->getRefLayer();
-          te::qt::af::LayerSelected ls_ev(abs_lay);
+          te::map::AbstractLayerPtr abs_lay = item->getRefLayer();
+          te::qt::af::LayerSelected ls_ev(abs_lay.get());
           ApplicationController::getInstance().broadcast(&ls_ev);
         }
       }

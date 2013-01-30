@@ -36,9 +36,9 @@ namespace te
   namespace md
   {
     /*!
-     \struct MetadataAnnotation
+     \class MetadataAnnotation
      
-     \brief An struct to relate a metadata annotation to a w
+     \brief A class o relate a metadata annotation to a TerraLib element (or entity).
      */
     class TEMDEXPORT MetadataAnnotation 
     {

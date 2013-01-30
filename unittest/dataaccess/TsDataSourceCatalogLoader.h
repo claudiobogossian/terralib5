@@ -29,6 +29,7 @@
 // TerraLib
 #include <terralib/dataaccess_fw.h>
 #include <terralib/geometry.h>
+#include <terralib/dataaccess/datasource_h.h>
 
 // STL
 #include <string>
@@ -127,7 +128,7 @@ class TsDataSourceCatalogLoader : public CPPUNIT_NS::TestFixture
 // It will come from the setUp of the derived database class (see:TsPostGISCatalogLoader, TsSQLiteCatalogLoader, etc)
     te::da::DataSource* m_ds;
     std::map<std::string, std::string> m_connInfo;
-    std::map<std::string, std::string> m_capabilit;
+    te::da::DataSourceCapabilities  m_capabilit;
     std::string m_dsType;
     std::vector<std::string> m_vecDtNames;
     std::vector<std::string> m_vecPkNames;    

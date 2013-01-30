@@ -61,9 +61,14 @@ te::da::DataSourceCatalog* te::serialize::ReadDataSourceCatalog(te::xml::Reader&
         reader.getElementLocalName() == "DataSetType")
   {
     te::da::DataSetTypePtr dt(ReadDataSetType(reader));
-
     catalog->add(dt);
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSetTypes Element
+  reader.next();
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSourceCatalog Element
+  reader.next();
 
   return catalog.release();
 }

@@ -1,5 +1,5 @@
 
-find_package(Boost ${_Boost_VERSION} COMPONENTS thread REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS thread system REQUIRED)
 if(Boost_FOUND)
   list (APPEND DEP_LIBS ${Boost_LIBRARIES})
   list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
