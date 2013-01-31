@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Utils.cpp
+  \file terralib/gdal/Utils.cpp
 
   \brief Utility functions for GDAL.
 */

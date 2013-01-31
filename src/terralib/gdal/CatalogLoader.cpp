@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file CatalogLoader.cpp
+  \file terralib/gdal/CatalogLoader.cpp
 
   \brief It allows to retrieve information about datasets in a GDAL data source.
 */

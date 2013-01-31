@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file te/geometry/WKBSize.h
+  \file terralib/geometry/WKBSize.h
 
   \brief A class that computes the number of bytes necessary to encode a geometry in WKB.
 */

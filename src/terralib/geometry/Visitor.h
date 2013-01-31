@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Visitor.h
+  \file terralib/geometry/Visitor.h
 
   \brief A visitor interface for the Geometry hierarchy.
 */

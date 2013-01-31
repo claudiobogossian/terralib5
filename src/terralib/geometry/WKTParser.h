@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file te/geometry/WKTParser.h
+  \file terralib/geometry/WKTParser.h
 
   \brief A class that implements the grammar rules for well known text (WKT) for Geometry.
          It is based on boost::spirit V2 and WKT BNF definition available in the OGC Simple Features Specification.

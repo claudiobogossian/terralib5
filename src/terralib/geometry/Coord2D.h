@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Coord2D.h
+  \file terralib/geometry/Coord2D.h
 
   \brief An utility struct for representing 2D coordinates.
 */

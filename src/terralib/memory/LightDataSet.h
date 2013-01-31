@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LightDataSet.h
+  \file terralib/memory/LightDataSet.h
 
   \brief A thin and lean implementation of Dataset class.
 */

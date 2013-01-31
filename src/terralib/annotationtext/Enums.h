@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Enums.h
+  \file terralib/annotationtext/Enums.h
 
   \brief Several enumerations related to Annotation Text.
  */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSource.h
+  \file terralib/gdal/DataSource.h
 
   \brief The implementation of a DataSource that consists of datasets that can be decoded by the GDAL Library.
 */

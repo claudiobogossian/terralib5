@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file te/geometry/WKTReader.cpp
+  \file terralib/geometry/WKTReader.cpp
 
   \brief A class that deserializes a geometry from a valid WKT.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/gdal/Config.h
 
   \brief Configuration flags for the GDAL Driver of TerraLib.
  */

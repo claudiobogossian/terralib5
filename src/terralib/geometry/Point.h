@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Point.h
+  \file terralib/geometry/Point.h
 
   \brief A point with x and y coordinate values.
 */

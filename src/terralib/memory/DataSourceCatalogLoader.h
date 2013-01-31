@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceCatalogLoader.h
+  \file terralib/memory/DataSourceCatalogLoader.h
 
   \brief DataSourceCatalogLoader class implementation for the TerraLib In-Memory Driver.
 */

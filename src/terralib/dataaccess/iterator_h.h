@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file iterator_h.h
+  \file terralib/dataaccess/iterator_h.h
 
   \brief This file contains include headers for the Iterator module.
  */

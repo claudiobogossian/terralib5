@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Globals.cpp
+  \file terralib/ado/Globals.cpp
    
   \brief An static class with global definitions.
 */

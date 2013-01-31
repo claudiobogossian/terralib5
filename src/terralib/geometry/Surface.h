@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Surface.h
+  \file terralib/geometry/Surface.h
 
   \brief Surface is an abstract class that represents a 2-dimensional geometric objects.
 */

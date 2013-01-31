@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSource.cpp
+  \file terralib/ogr/DataSource.cpp
 
   \brief The OGR data provider.  
  */

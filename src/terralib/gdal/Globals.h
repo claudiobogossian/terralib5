@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Globals.h
+  \file terralib/gdal/Globals.h
    
   \brief A singleton class with global definitions.
  */

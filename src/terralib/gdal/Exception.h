@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.h
+  \file terralib/gdal/Exception.h
 
   \brief An exception class for the GDAL module.
 */

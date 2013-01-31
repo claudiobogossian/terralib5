@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/datasource/dataset/AttributeConverters.h
+  \file terralib/dataaccess/dataset/AttributeConverters.h
 
   \brief Definition of attribute converter and a set of them.
 */

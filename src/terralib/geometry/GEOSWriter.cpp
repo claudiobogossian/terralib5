@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GEOSWriter.cpp
+  \file terralib/geometry/GEOSWriter.cpp
 
   \brief A class that converts a TerraLib geometry to a GEOS geometry.
 */

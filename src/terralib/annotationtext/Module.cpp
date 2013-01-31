@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.cpp
+  \file terralib/annotationtext/Module.cpp
 
   \brief This singleton defines the TerraLib Annotation Text module entry.
 */

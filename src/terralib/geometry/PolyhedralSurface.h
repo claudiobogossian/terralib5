@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/PolyhedralSurface.h
+  \file terralib/geometry/PolyhedralSurface.h
 
   \brief PolyhedralSurface is a contiguous collection of polygons, which share common boundary segments.
 */

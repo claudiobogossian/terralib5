@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/datetype/Enums.h
+  \file terralib/datatype/Enums.h
 
   \brief General enumerations for the data type module.
 */

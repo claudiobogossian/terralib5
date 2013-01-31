@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSet.h
+  \file terralib/ogr/DataSet.h
 
   \brief Implementation of a DataSet for OGR data provider.  
  */

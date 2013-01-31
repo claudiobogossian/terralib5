@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSet.cpp
+  \file terralib/gdal/DataSet.cpp
 
   \brief Implementation of a DataSet for GDAL data provider.  
 */
