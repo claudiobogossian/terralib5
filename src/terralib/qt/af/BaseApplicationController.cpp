@@ -38,6 +38,7 @@
 #include "../../serialization/dataaccess/DataSourceInfo.h"
 #include "../widgets/help/AssistantHelpManagerImpl.h"
 #include "../widgets/help/HelpManager.h"
+#include "../widgets/Utils.h"
 #include "../widgets/utils/ScopedCursor.h"
 #include "events/NewToolBar.h"
 #include "ApplicationController.h"
@@ -48,9 +49,9 @@
 #include "UserPlugins.h"
 
 // Qt
-#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QResource>
+#include <QtGui/QApplication>
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
@@ -108,6 +109,58 @@ QToolBar* te::qt::af::BaseApplicationController::getToolBar(const QString& id) c
   std::map<QString, QToolBar*>::const_iterator it = m_toolbars.find(id);
 
   return (it != m_toolbars.end()) ? it->second : 0;
+}
+
+void te::qt::af::BaseApplicationController::registerMenu(QMenu* mnu)
+{
+  m_menus.push_back(mnu);
+}
+
+QMenu* te::qt::af::BaseApplicationController::findMenu(const QString& id) const
+{
+  std::vector<QMenu*>::const_iterator it;
+
+  // Searching in menus vector
+  for(it = m_menus.begin(); it != m_menus.end(); ++it)
+  {
+    QMenu* mnu = te::qt::widgets::FindMenu(id, *it);
+    
+    if(mnu != 0)
+      return mnu;
+  }
+
+  // Searching in menu bars vector
+  std::vector<QMenuBar*>::const_iterator it_bar;
+  
+  for(it_bar = m_menuBars.begin(); it_bar != m_menuBars.end(); ++it_bar)
+  {
+    QMenu* mnu = te::qt::widgets::FindMenu(id, *it);
+
+    if(mnu != 0)
+      return mnu;
+  }
+
+  return 0;
+}
+
+QMenu* te::qt::af::BaseApplicationController::getMenu(const QString& id) const
+{
+  return 0;
+}
+
+void te::qt::af::BaseApplicationController::registerMenuBar(QMenuBar* bar)
+{
+  m_menuBars.push_back(bar);
+}
+
+QMenuBar* te::qt::af::BaseApplicationController::findMenuBar(const QString& id) const
+{
+  return 0;
+}
+
+QMenuBar* te::qt::af::BaseApplicationController::getMenuBar(const QString& id) const
+{
+  return 0;
 }
 
 void te::qt::af::BaseApplicationController::addListener(QObject* obj)
@@ -241,6 +294,16 @@ void  te::qt::af::BaseApplicationController::initialize()
       QIcon::setThemeName(m_appDefaultIconTheme);
     else
       QIcon::setThemeName(iconTheme);
+
+    std::string iconSize = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.ToolBarIconSize");
+
+    if(iconSize.empty())
+      iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
+    if(!iconSize.empty())
+    {
+      QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.c_str() + "px " + iconSize.c_str() + "px; }";
+      qApp->setStyleSheet(sh);
+    }
 
     SplashScreenManager::getInstance().showMessage(tr("Application icon theme loaded!"));
   }
@@ -392,4 +455,3 @@ const QString& te::qt::af::BaseApplicationController::getAppIconName() const
 {
   return m_appIconName;
 }
-

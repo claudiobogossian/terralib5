@@ -42,6 +42,7 @@
 #include "DataSourceTransactor.h"
 #include "Exception.h"
 #include "Globals.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -423,14 +424,16 @@ void te::mysql::DataSource::createMetadata()
 
     boost::filesystem::path spath = plugin.m_folder;
 
-    spath /= "init_ogc.sql";
+    spath /= "mysql-ogc-sfs.sql";
 
     std::map<std::string, std::string> options;
     options["EXEC_SCRIPT"] = "TRUE";
 
     //te::da::ScopedTransaction t(*transactor);
-
+    
     bexecutor->execute(spath.string(), options);
+
+    te::mysql::JSON2MySQL(plugin.m_folder+"/srs.json", transactor);
 
     //t.commit();
   }
@@ -451,6 +454,8 @@ void te::mysql::DataSource::createMetadata()
     //te::da::ScopedTransaction t(*transactor);
 
     bexecutor->execute(spath.string(), options);
+
+    
 
     //t.commit();
   }

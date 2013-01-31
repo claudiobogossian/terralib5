@@ -27,10 +27,12 @@
 #include "Utils.h"
 
 // Qt
+#include <QApplication>
+#include <QtGui/QImage>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
 #include <QtGui/QTreeWidgetItem>
 #include <QtGui/QTreeWidgetItemIterator>
-#include <QtGui/QImage>
-#include <QApplication>
 
 void te::qt::widgets::SetChildrenCheckState(QTreeWidgetItem* item, int column, Qt::CheckState state)
 {
@@ -103,4 +105,98 @@ QStyle::StandardPixmap toQStyle(const QMessageBox::Icon& icon)
       return QStyle::SP_MediaVolumeMuted;
     break;
   }
+}
+
+QMenu* SearchMenu(const QString& mnuText, QMenu* mnu)
+{
+  if(mnu->title() == mnuText)
+    return mnu;
+
+  QList<QMenu*> objs = mnu->findChildren<QMenu*>();
+  
+  if(!objs.isEmpty())
+  {
+    QList<QMenu*>::iterator it;
+    
+    for(it = objs.begin(); it != objs.end(); ++it)
+    {
+      QMenu* res = SearchMenu(mnuText, *it);
+
+      if(res != 0)
+        return res;
+    }
+  }
+
+  return 0;
+}
+
+QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenu* mnu)
+{
+  if(mnu->title() == mnuText)
+    return mnu;
+
+  if(mnuText.isEmpty())
+    return 0;
+
+  QStringList m_txts = mnuText.split(".");
+  QString mnuName = m_txts.at(0);
+
+  QMenu* sub_m = SearchMenu(mnuName, mnu);
+
+  if(m_txts.size() > 1)
+    return FindMenu(mnuText.mid(mnuName.size()+1), sub_m);
+
+  return sub_m;
+}
+
+QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenuBar* bar)
+{
+  QList<QMenu*> mnus = bar->findChildren<QMenu*>();
+  QList<QMenu*>::iterator it;
+  QMenu* sub = 0;
+
+  for(it = mnus.begin(); it != mnus.end(); ++it)
+  {
+    sub = FindMenu(mnuText, *it);
+
+    if(sub != 0)
+      break;
+  }
+
+  return sub;
+}
+
+QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenu* mnu)
+{
+  QStringList m_txts = mnuText.split(".");
+  QMenu* sub;
+
+  QString mnuName = m_txts.at(0);
+  sub = SearchMenu(mnuName, mnu);
+
+  if(sub == 0)
+    sub = mnu->addMenu(mnuName);
+
+  return ((m_txts.size() > 1) ? GetMenu(mnuText.mid(mnuName.size()+1), sub) : sub);
+}
+
+QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
+{
+  QStringList m_txts = mnuText.split(".");
+  QList<QMenu*> mnus = bar->findChildren<QMenu*>();
+  QList<QMenu*>::iterator it;
+  QMenu* sub = 0;
+  QString mnuName = m_txts.at(0);
+
+  for(it = mnus.begin(); it != mnus.end(); ++it)
+    if((*it)->title() == mnuName)
+    {
+      sub = *it;
+      break;
+    }
+
+  if(sub == 0)
+    sub = bar->addMenu(mnuName);
+
+  return ((m_txts.size() > 1) ? GetMenu(mnuText.mid(mnuName.size()+1), sub) : sub);
 }

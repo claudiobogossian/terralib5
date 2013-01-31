@@ -23,6 +23,8 @@
   \brief It contains the main routine of TerraView.
 */
 
+#include "TerraViewConfig.h"
+
 // TerraLib
 #include <terralib/qt/af/BaseApplication.h>
 #include <terralib/qt/af/SplashScreenManager.h>
@@ -35,12 +37,6 @@
 #include <QtCore/QResource>
 #include <QtGui/QApplication>
 #include <QtGui/QSplashScreen>
-
-#define TERRAVIEW_SPLASH_SCREEN_PIXMAP "terraview.png"
-
-#define TERRAVIEW_CONFIG_FILE "../bin32/config.xml"
-
-#define TERRAVIEW_RESOURCE_FILE "terraview.rcc"
 
 int main(int argc, char** argv)
 {
