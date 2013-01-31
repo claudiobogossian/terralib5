@@ -2,8 +2,8 @@
 <Application xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
              xmlns="http://www.terralib.org/schemas/af"
              xsd:schemaLocation="http://www.terralib.org/schemas/af ${TERRALIB_SCHEMA_LOCATION}/af/af.xsd"
-             version="${TERRALIB_VERSION}"
-             release="${TERRALIB_BUILD_DATE}">
+             version="${TERRALIB_STRING_VERSION}"
+             release="${TERRALIB_STRING_BUILD_DATE}">
   <Organization>INPE</Organization>
   <Name>TerraView</Name>	
   <Title>TerraView</Title>

@@ -3,10 +3,11 @@ CREATE TABLE spatial_ref_sys
   srid      INT          NOT NULL PRIMARY KEY,
   auth_name VARCHAR(256),
   auth_srid INT,
-  srtext    VARCHAR(2048)
+  srtext    VARCHAR(2048),
+  proj4text VARCHAR(2048)
 ) ENGINE = InnoDB;
 
-INSERT INTO spatial_ref_sys VALUES(0, "", 0, "");
+INSERT INTO spatial_ref_sys VALUES(0, "", 0, "", "");
 --INSERT INTO spatial_ref_sys VALUES(4326, "", 4326, "");
 
 CREATE TABLE geometry_columns

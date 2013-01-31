@@ -142,6 +142,10 @@
     <Function name="st_issimple">
       <FunctionEncoder alias="IsSimple"/>
     </Function>
+	
+    <Function name="st_isring">
+      <FunctionEncoder alias="IsRing"/>
+    </Function>
     
     <Function name="st_x">
       <FunctionEncoder alias="X"/>
@@ -182,6 +186,10 @@
     <Function name="st_exteriorring">
       <FunctionEncoder alias="ExteriorRing"/>
     </Function>
+	
+	<Function name="st_centroid">
+      <FunctionEncoder alias="Centroid"/>
+    </Function>
     
     <Function name="st_interiorringn">
       <FunctionEncoder alias="InteriorRingN"/>
@@ -208,51 +216,51 @@
     </Function>
     
     <Function name="st_difference">
-      <FunctionEncoder alias="ST_Difference"/>
+      <FunctionEncoder alias="Difference"/>
     </Function>
     
     <Function name="st_intersection">
-      <FunctionEncoder alias="ST_Intersection"/>
+      <FunctionEncoder alias="Intersection"/>
     </Function>
     
     <Function name="st_symdifference">
-      <FunctionEncoder alias="ST_SymDifference"/>
+      <FunctionEncoder alias="SymDifference"/>
     </Function>
     
     <Function name="st_union">
-      <FunctionEncoder alias="ST_Union"/>
+      <FunctionEncoder alias="Union"/>
     </Function>
     
     <Function name="st_contains">
-      <FunctionEncoder alias="ST_Contains"/>
+      <FunctionEncoder alias="Contains"/>
     </Function>
     
     <Function name="st_crosses">
-      <FunctionEncoder alias="ST_Crosses"/>
+      <FunctionEncoder alias="Crosses"/>
     </Function>
     
     <Function name="st_disjoint">
-      <FunctionEncoder alias="ST_Disjoint"/>
+      <FunctionEncoder alias="Disjoint"/>
     </Function>
     
     <Function name="st_equals">
-      <FunctionEncoder alias="ST_Equals"/>
+      <FunctionEncoder alias="Equals"/>
     </Function>
     
     <Function name="st_intersects">
-      <FunctionEncoder alias="ST_Intersects"/>
+      <FunctionEncoder alias="Intersects"/>
     </Function>
     
     <Function name="st_overlaps">
-      <FunctionEncoder alias="ST_Overlaps"/>
+      <FunctionEncoder alias="Overlaps"/>
     </Function>
     
     <Function name="st_touches">
-      <FunctionEncoder alias="ST_Touches"/>
+      <FunctionEncoder alias="Touches"/>
     </Function>
     
     <Function name="st_within">
-      <FunctionEncoder alias="ST_Within"/>
+      <FunctionEncoder alias="Within"/>
     </Function>
 
   </Functions>

@@ -44,6 +44,7 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/Utils.h"
+#include "../srs/SpatialReferenceSystemManager.h"
 #include "Exception.h"
 #include "Utils.h"
 
@@ -55,6 +56,9 @@
 
 // Boost
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 // MySQL
 #include <driver/mysql_public_iface.h>
@@ -1058,3 +1062,39 @@ void te::mysql::Convert2MySQLGeom(const te::gm::GeomType t, std::string& geomTyp
     dimension = "2";
 }
 
+void te::mysql::JSON2MySQL(const std::string path, std::auto_ptr<te::da::DataSourceTransactor> t)
+{
+  try
+  {
+    std::ifstream f;
+    f.open(path.c_str());
+    if (!f.is_open())
+      return;
+    
+    std::string fullsql = "";
+
+    boost::property_tree::ptree pt;
+    boost::property_tree::json_parser::read_json(f,pt);
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("SRSs"))
+    {  
+      fullsql += "INSERT INTO spatial_ref_sys VALUES (";
+      fullsql += v.second.get<unsigned int>("srid") + ", ";
+      fullsql += "'', ";   // auth_name???
+      fullsql += 0 + ", "; // auth_srid???
+      fullsql += "'" + v.second.get<std::string>("wkt") + "', "; // srtext
+      fullsql += "'" + v.second.get<std::string>("pj4txt") + "');\n"; // proj4text
+    }
+    f.close();
+  }
+  catch(boost::property_tree::json_parser::json_parser_error &je)
+  {
+    std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
+    te::mysql::Exception ex(TR_MYSQL(errmsg));
+    throw(ex);
+  }
+  catch (std::exception const& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+  return;
+}

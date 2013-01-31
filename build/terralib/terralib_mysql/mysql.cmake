@@ -42,3 +42,5 @@ set (TEPLUGIN_LIBRARY "terralib_mysql")
 set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:mysql")
 
 configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_mysql_info.xml)
+configure_file(${CMAKE_SOURCE_DIR}/../resources/sql/mysql-ogc-sfs.sql ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mysql-ogc-sfs.sql COPYONLY)
+configure_file(${TERRALIB_JSON_FILES_LOCATION}/srs.json ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/srs.json COPYONLY)
