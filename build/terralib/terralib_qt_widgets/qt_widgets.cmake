@@ -52,6 +52,7 @@ list (APPEND DEP_LIBS
 #    terralib_gdal
 		terralib_geometry
 		terralib_maptools
+		terralib_memory
 		terralib_raster
 		terralib_symbology
 		terralib_srs
@@ -72,6 +73,8 @@ set (
   widgets/datagrid
   widgets/dataview
   widgets/dataset
+  widgets/dataset/explorer
+  widgets/dataset/selector
 #  widgets/datasource/connector/gdal
 #  widgets/datasource/connector/geofile
 #  widgets/datasource/connector/ogr
@@ -84,6 +87,7 @@ set (
   widgets/datasource/explorer
   widgets/datasource/selector
   widgets/datasource/connector
+  widgets/exchanger
   widgets/layer
   widgets/progress
   widgets/property
@@ -164,6 +168,14 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/selector" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
+  ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
+  ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/layer/AbstractTreeItem.h
   ${SRCDIR}/widgets/layer/LayerExplorer.h
   ${SRCDIR}/widgets/layer/LayerExplorerModel.h
@@ -179,6 +191,22 @@ set (
   ${SRCDIR}/widgets/dataset/AddIndex.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataset" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/dataset/selector/DataSetSelectorDialog.h
+  ${SRCDIR}/widgets/dataset/selector/DataSetSelectorWidget.h
+  ${SRCDIR}/widgets/dataset/selector/DataSetSelectorWizardPage.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataset/selector" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/dataset/explorer/DataSetExplorer.h
+  ${SRCDIR}/widgets/dataset/explorer/DataSetTreeModel.h
+  ${SRCDIR}/widgets/dataset/explorer/DataSetTreeView.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataset/explorer" MOC)
 
 set (
   HDRS_TO_MOC
@@ -326,7 +354,9 @@ file(
   ${SRCDIR}/widgets/charts/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
+  ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
+  ${SRCDIR}/widgets/exchanger/ui/*.ui
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui

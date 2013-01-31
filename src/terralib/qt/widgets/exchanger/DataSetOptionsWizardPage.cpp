@@ -31,7 +31,7 @@
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
-#include "ui/DataSetOptionsWizardPageForm.h"
+#include "ui_DataSetOptionsWizardPageForm.h"
 #include "DataSetOptionsWizardPage.h"
 
 // STL
@@ -90,8 +90,8 @@ te::qt::widgets::DataSetOptionsWizardPage::~DataSetOptionsWizardPage()
 }
 
 void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::DataSetTypePtr>& datasets,
-                                                    const DataSourcePtr& datasource,
-                                                    const DataSourcePtr& targetDatasource)
+                                                    const te::da::DataSourceInfoPtr& datasource,
+                                                    const te::da::DataSourceInfoPtr& targetDatasource)
 {
   ScopedCursor wcursor(Qt::WaitCursor);
 
