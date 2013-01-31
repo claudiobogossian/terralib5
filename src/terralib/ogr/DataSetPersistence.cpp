@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file DataSetPersistence.cpp
+  \file terralib/ogr/DataSetPersistence.cpp
 
-  \brief An abstract class responsible for persisting a dataset in a DataSource.
+  \brief This is the OGR implementation for the DataSetPersistence API..
  */
 
 #include "DataSet.h"

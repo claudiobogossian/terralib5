@@ -58,7 +58,7 @@ namespace te
         */
         XMLChToStr(const XMLCh* const xstr);
 
-        /*! \bried Destructor */
+        /*! \brief Destructor */
         ~XMLChToStr();
 
         /*!

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Curve.cpp
+  \file terralib/geometry/Curve.cpp
 
   \brief Curve is an abstract class that represents 1-dimensional geometric objects stored as a sequence of coordinates.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSet.h
+  \file terralib/ado/DataSet.h
 
   \brief Implementation of the DataSet class to ADO.
 */

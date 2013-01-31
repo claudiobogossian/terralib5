@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GEOSReader.cpp
+  \file terralib/geometry/GEOSReader.cpp
 
   \brief A class that converts a GEOS geometry to a TerraLib geometry.
 */

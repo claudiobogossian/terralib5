@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetTypePersistence.h
+  \file terralib/gdal/DataSetTypePersistence.h
 
   \brief DataSetTypePersistence implementation for GDAL data provider.
 */

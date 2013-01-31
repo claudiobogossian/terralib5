@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/postgis/SQLVisitor.cpp
+  \file terralib/ado/SQLVisitor.cpp
 
   \brief A visitor for building an SQL statement from a given Query hierarchy.
 */

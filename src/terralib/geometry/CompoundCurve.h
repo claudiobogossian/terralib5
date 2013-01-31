@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/CompoundCurve.h
+  \file terralib/geometry/CompoundCurve.h
 
   \brief CompoundCurve is a curve that may have circular and linear segments.
 */

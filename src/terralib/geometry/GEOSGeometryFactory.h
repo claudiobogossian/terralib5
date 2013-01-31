@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GEOSGeometryFactory.h
+  \file terralib/geometry/GEOSGeometryFactory.h
 
   \brief The global factory used by TerraLib in order to create GEOS geometries.
 */

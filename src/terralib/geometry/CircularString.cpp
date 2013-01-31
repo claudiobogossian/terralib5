@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/CircularString.cpp
+  \file terralib/geometry/CircularString.cpp
 
   \brief CircularString is a curve with circular interpolation between points.
 */

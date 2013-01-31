@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Config.h
+  \file terralib/geometry/Config.h
 
   \brief Configuration flags for the Vector Geometry Model of TerraLib.  
 */

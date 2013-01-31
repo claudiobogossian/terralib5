@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/ogr/Config.h
 
   \brief Configuration flags for the OGR Driver Implementation of TerraLib.  
  */

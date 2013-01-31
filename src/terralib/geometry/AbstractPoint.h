@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/AbstractPoint.h
+  \file terralib/geometry/AbstractPoint.h
 
   \brief A base abstract class for 0-dimensional geometric objects that represents a single location in coordinate space.
 */

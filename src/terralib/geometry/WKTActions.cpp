@@ -18,7 +18,7 @@
  */
 
 /*! 
-   \file te/geometry/WKTActions.cpp
+   \file terralib/geometry/WKTActions.cpp
 
   \brief A class that implements the semanthic actions to grammar rules for well known text (Wkt) format for Geometry.
          Basically, the class is responsible to generate a geometry element.

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Geometry.h
+  \file terralib/geometry/Geometry.h
 
   \brief Geometry is the root class of the geometries hierarchy, it follows OGC and ISO standards.
 */

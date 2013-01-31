@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSource.cpp
+  \file terralib/gdal/DataSource.cpp
 
   \brief The implementation of a DataSource that consists of datasets that can be decoded by the GDAL Library.
 */

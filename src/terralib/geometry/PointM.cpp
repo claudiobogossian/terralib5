@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/PointM.cpp
+  \file terralib/geometry/PointM.cpp
 
   \brief A point with an associated measure.
 */

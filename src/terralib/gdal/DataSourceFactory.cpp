@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceFactory.cpp
+  \file terralib/gdal/DataSourceFactory.cpp
 
   \brief This is the concrete factory for a GDAL managed DataSource.  
 */

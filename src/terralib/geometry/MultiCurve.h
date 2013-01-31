@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/MultiCurve.h
+  \file terralib/geometry/MultiCurve.h
 
   \brief MultiCurve is a class that represents a 1-dimensional GeometryCollection whose elements are curves.
 */

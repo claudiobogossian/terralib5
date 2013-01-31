@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Text.h
+  \file terralib/annotationtext/Element.h
 
   \brief An Text Element consists of a string, location, leader line and may have attribute.
  */

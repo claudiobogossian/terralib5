@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/gdal/Module.h
    
   \brief The TerraLib OGR driver is a plugin.
 */
