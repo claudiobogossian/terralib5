@@ -8,9 +8,9 @@
   <Name>TerraView</Name>	
   <Title>TerraView</Title>
   <IconName>terraview</IconName>	
-  <UserSettingsFile xlink:href="user_settings.xml"/>
-  <PluginsFile xlink:href="application_plugins.xml"/>
-  <HelpFile xlink:href="terraview.qhc"/>
+  <UserSettingsFile xlink:href="${TERRAVIEW_OUT_DIR}/user_settings.xml"/>
+  <PluginsFile xlink:href="${TERRAVIEW_OUT_DIR}/application_plugins.xml"/>
+  <HelpFile xlink:href="${TERRAVIEW_RESOURCE_FILE}"/>
   <IconThemeInfo>
     <BaseDirectory xlink:href="${TERRALIB_ICONS_THEME_PATH}"/>
     <DefaultTheme>${TERRALIB_ICONS_THEME}</DefaultTheme>
