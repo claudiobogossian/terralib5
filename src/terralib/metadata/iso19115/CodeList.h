@@ -208,30 +208,26 @@ namespace te
       MD_utf7,    /*!< Universal variable length 7 bits */
       MD_utf8,    /*!< Universal variable length 8 bits */
       MD_utf16,    /*!< Universal variable length 16 bits */
-      MD_c8859part1, /*!< Eastern Europe, latin-1 */
-      MD_c8859part2, /*!< Central Europe, latin-2 */
-      MD_c8859part3, /*!< Southern Europe, latin-3 */
-      MD_c8859part4, /*!< Northern Europe, latin-4 */
-      MD_c8859part5, /*!< Cirilic */
-      MD_c8859part6, /*!< Arabic */
-      MD_c8859part7, /*!< Greek */
-      MD_c8859part8, /*!< Hebraic */
-      MD_c8859part9, /*!< Turkish */
-      MD_c8859part11, /*!< Thai */
-      MD_c8859part14, /*!< Latin-8 */
-      MD_c8859part15, /*!< Latin-9 */
+      MD_8859part1, /*!< Eastern Europe, latin-1 */
+      MD_8859part2, /*!< Central Europe, latin-2 */
+      MD_8859part3, /*!< Southern Europe, latin-3 */
+      MD_8859part4, /*!< Northern Europe, latin-4 */
+      MD_8859part5, /*!< Cirilic */
+      MD_8859part6, /*!< Arabic */
+      MD_8859part7, /*!< Greek */
+      MD_8859part8, /*!< Hebraic */
+      MD_8859part9, /*!< Turkish */
+      MD_8859part11, /*!< Thai */
+      MD_8859part14, /*!< Latin-8 */
+      MD_8859part15, /*!< Latin-9 */
       MD_jis,      /*!< Japanese for eletronic transmission */
       MD_shiftJIS, /*!< Japanese MS-DOS */
       MD_eucJP,    /*!< Japaneses UNIX */
-      MD_usASCII,  /*!< ASCII EUA (ISO 646 US) */
+      MD_usAscii,  /*!< ASCII EUA (ISO 646 US) */
       MD_ebcdic,   /*!< IBM mainframes */
       MD_eucKR,    /*!< Korean */
       MD_big5,     /*!< Taiwan */
-      MD_unclassified, /*!< General purpose */
-      MD_Restrict,     /*!< Restrict */
-      MD_Confidential, /*!< Confidential */
-      MD_Secret,     /*!< Secret */
-      MD_UstraSecret /*!< UtraSecret */
+      MD_GB2312   /*!< Simplified Chinese code set */
     }; 
     
     

@@ -18,6 +18,8 @@ set(DEP_LIBS
     terralib_dataaccess
     terralib_metadata
     terralib_plugin
+    terralib_serialization
+    terralib_xml
 )
 	
 # Select the source and header files
