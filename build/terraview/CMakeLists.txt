@@ -17,7 +17,14 @@ include (${CMAKE_BINARY_DIR}/terralibConfig.cmake)
 find_package(Boost REQUIRED COMPONENTS system)
 
 include_directories (${TE_INCLUDE_DIRS} ${INCLDIR} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
+list (APPEND _dep_libs ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
+
+list (APPEND 
+  _dep_libs 
+  terralib_common
+  terralib_qt_af
+  terralib_qt_widgets
+)
 
 file (GLOB SRCS ${SRCDIR}/*.cpp)
 file (GLOB HDRS ${INCLDIR}/*.h)

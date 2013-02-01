@@ -35,12 +35,20 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 #exporting module information
 exportModuleInformation("gdal" "${SRCDIR}" "${gdal}")
 
+#generatin configuration file
 set (TEPLUGIN_NAME "te.da.gdal")
 set (TEPLUGIN_DISPLAYNAME "GDAL Data Source Driver")
 set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via GDAL")
 set (TEPLUGIN_LIBRARY "terralib_gdal")
 set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:gdal")
 set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_gdal_info.xml")
+set (TEPLUGIN_REQUIREMENTS "")
+
+set (RSC_LINK "")
+getPluginResources("SharedLibraryName" "${TEPLUGIN_LIBRARY}" RSC_LINK)
+set (TEPLUGIN_RESOURCES 
+  "\n  <Resources>${RSC_LINK}  </Resources>\n"
+)
 
 #Exporting plug-in information for the configuration file
 set (PLG_INFO "")

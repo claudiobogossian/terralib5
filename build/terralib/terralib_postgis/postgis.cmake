@@ -40,8 +40,14 @@ set (TEPLUGIN_DISPLAYNAME "PostGIS Data Source Driver")
 set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via PostGIS")
 set (TEPLUGIN_LIBRARY "terralib_postgis")
 set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis")
-
 set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_pgis_info.xml")
+set (TEPLUGIN_REQUIREMENTS "")
+
+set (RSC_LINK "")
+getPluginResources("SharedLibraryName" "${TEPLUGIN_LIBRARY}" RSC_LINK)
+set (TEPLUGIN_RESOURCES 
+  "\n  <Resources>${RSC_LINK}  </Resources>\n"
+)
 
 #Exporting plug-in information for the configuration file
 set (PLG_INFO "")
