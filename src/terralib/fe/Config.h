@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/fe/Config.h
 
   \brief Configuration flags for the TerraLib Filter Encoding module.
  */

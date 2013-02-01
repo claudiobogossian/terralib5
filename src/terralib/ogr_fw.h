@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file org_fw.h
+  \file ogr_fw.h
 
   \brief This file contains forward declarations for the OGR Driver Implementation of TerraLib.
 */

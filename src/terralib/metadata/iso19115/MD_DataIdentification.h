@@ -97,11 +97,18 @@ namespace te
        \param lly Southernmost coordinate of the limit of the dataset extent, expressed in latitude in decimal degrees.
        \param urx Easternmost coordinate of the limit of the dataset extent, expressed in longitude in decimal degrees.
        \param lly Northernmost coordinate of the limit of the dataset extent, expressed in latitude in decimal degrees.
-       \param isInside Indication of whether the bounding polygon encompasses an area covered by the data or an area where data is not present.
+       \param isInside True if the bounding polygon encompasses an area covered by the data or false if an area where data is not present.  Default true.
        */
       void addGeographicBBoxExt(const double& llx, const double& lly,
                                 const double& urx, const double& ury, 
-                                bool dataIsCovered=true);
+                                bool isInside=true);
+      
+      /*! 
+       \brief Adds the spatial description of the dataset.
+       \param bbx Pointer to the enclosing boounding box. Do not pass null.
+       \param isInside True if the bounding polygon encompasses an area covered by the data or false if an area where data is not present. Default true.
+       */
+       void addGeographicBBoxExt(const te::gm::Envelope* bb, bool isInside=true);
       
       //! Returns the set of extents for the dataset.
       const te::gm::Envelope& getExtent() const;
@@ -113,9 +120,21 @@ namespace te
       void setSpatialRepType(te::md::MD_SpatialRepresentationTypeCode code);
       
       //! Returns the spatial representation type.
-      te::md::MD_SpatialRepresentationTypeCode getSpatialRepType() const;
+      te::md::MD_SpatialRepresentationTypeCode getSpatialRepTypeCode() const;
+      
+      /*! 
+       \brief Sets resource scale.
+       The scale of a map or other cartographic object expressed as a fraction or ratio which relates unit distance on the map or other cartographic object to distance, measured in the same units, on the ground.
+       \param d The scale denominator. Do not pass <= 0;
+       */
+      void setScale(long d);
+      
+      //! Returns the scale information. If equal to 0 the denominator is not valid.
+      long getScale() const;
       
       //@}
+      
+      MD_Identification* clone() const;
       
     private:
       
@@ -125,7 +144,7 @@ namespace te
       te::gm::Envelope m_extent;
       bool m_dataIsCovered;
       te::md::MD_SpatialRepresentationTypeCode m_spatialRepresentationType;
-      
+      long m_scale; 
     };
   } // end namespace md
 }   // end namespace te

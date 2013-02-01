@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file datatype.h
+  \file terralib/datatype.h
 
   \brief This file contains include headers for the Data Type module of TerraLib.
 */

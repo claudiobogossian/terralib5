@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file plugin.h
+  \file terralib/plugin.h
 
   \brief This file contains include headers for the Plugin module of TerraLib.
  */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BBOXOp.h
+  \file terralib/fe/BBOXOp.h
   
   \brief A convenient and more compact way of encoding the very common bounding box constraint based on an envelope.  
  */

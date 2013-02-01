@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Canvas.cpp
+  \file terralib/antigrain/Canvas.cpp
 
   \brief A canvas built on top of Anti Grain Geometry.
  */

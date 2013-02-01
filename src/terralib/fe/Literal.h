@@ -18,7 +18,7 @@
  */
  
 /*!
-  \file Literal.h
+  \file terralib/fe/Literal.h
   
   \brief This class can be used to represent literal values.
  */

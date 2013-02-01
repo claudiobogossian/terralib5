@@ -31,8 +31,6 @@
 #include "CodeList.h"
 #include "CI_ResponsibleParty.h"
 #include "MD_DataIdentification.h"
-#include "MD_Format.h"
-
 
 // STL
 #include <string>
@@ -41,10 +39,13 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/noncopyable.hpp>
+
 namespace te
 {
   namespace md
   {
+    class MD_Distribution;
+    
     /*!
      \class MD_Metadata
      
@@ -148,13 +149,24 @@ namespace te
       const boost::gregorian::date& getDateStamp() const;
       
       /*!
-       \brief Adds a distribution information to the metadata.
-       \param fmt Pointer to a format. Class takes pointer ownership. Do not pass null.
+       \brief Sets a distribution information to the metadata.
+       \param d Pointer to a distribution info. Class takes pointer ownership. Do not pass null.
        */      
-      void addDistributionFormat(MD_Format* fmt);
+      void setDistribution(MD_Distribution* d);
       
-      //! Returns the distribution formats.
-      const boost::ptr_vector<MD_Format>& getDistributionFormats() const;
+      //! Gets the distribution information.
+      const MD_Distribution* getDistribution() const;
+      
+      /*! 
+       \brief Sets the lineage statement.
+       General explanation of the data producer’s knowledge of the dataset lineage. This is related to 
+       data quality.
+       \param stm The lineage statement. Do not pass null.
+       */
+      void setLineage(const std::string& stm);
+      
+      //! Gets the lineage statemente.
+      const std::string& getLineage() const;
       
     private:
       
@@ -177,7 +189,9 @@ namespace te
       
       int m_referenceSystemInfo;
       
-      boost::ptr_vector<MD_Format> m_distribution;
+      MD_Distribution* m_distribution;
+      
+      std::string m_lineage;
       
     };
   } // end namespace md

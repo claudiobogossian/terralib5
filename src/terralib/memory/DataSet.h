@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/mem/DataSet.h
+  \file terralib/memory/DataSet.h
 
   \brief Implementation of a random-access dataset class for the TerraLib In-Memory Data Access driver.
 */

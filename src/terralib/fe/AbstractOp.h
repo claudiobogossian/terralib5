@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AbstractOp.h
+  \file terralib/fe/AbstractOp.h
   
   \brief An abstract interface for operators.  
  */

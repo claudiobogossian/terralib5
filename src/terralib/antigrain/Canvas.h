@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Canvas.h
+  \file terralib/antigrain/Canvas.h
 
   \brief A canvas built on top of Anti Grain Geometry.
  */
