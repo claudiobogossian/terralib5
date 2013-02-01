@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Raster.cpp
+  \file terralib/gdal/Raster.cpp
 
   \brief This is a class that represents a GDAL Raster.
  */

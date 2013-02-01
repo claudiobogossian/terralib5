@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetTypePersistence.cpp
+  \file terralib/ogr/DataSetTypePersistence.cpp
 
   \brief DataSetTypePersistence implementation for OGR data provider.
  */

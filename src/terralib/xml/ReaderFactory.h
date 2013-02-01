@@ -70,7 +70,7 @@ namespace te
         /*!
           \brief It creates a new XML reader.
 
-          \param The type of XML reader to be created.
+          \param readerType The type of XML reader to be created.
 
           \return A new XML reader.
          */

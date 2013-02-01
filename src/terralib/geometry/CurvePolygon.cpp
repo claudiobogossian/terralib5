@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/CurvePolygon.cpp
+  \file terralib/geometry/CurvePolygon.cpp
 
   \brief CurvePolygon is a planar surface defined by 1 exterior boundary and 0 or more interior boundaries.
 */

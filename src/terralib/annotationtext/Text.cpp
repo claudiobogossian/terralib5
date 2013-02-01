@@ -20,8 +20,7 @@
 /*!
   \file Text.cpp
 
-  \brief Curve is an abstract class that represents a 1-dimensional geometric object usually
-         stored as a sequence of coordinates, it follows OGC Simple Feature Specification - SFS (Simple Feature Access - Part 1: Common Architecture).
+  \brief An Text consists of a Envelope and a Text Element array.
  */
 
 // TerraLib

@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file te/geometry/WKBSize.cpp
+  \file terralib/geometry/WKBSize.cpp
 
   \brief A class that serializes a geometry to the WKB format.
 */

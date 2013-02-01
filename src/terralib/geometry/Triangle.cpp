@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Triangle.cpp
+  \file terralib/geometry/Triangle.cpp
 
   \brief Triangle is a polygon with 3 distinct, non-collinear vertices and no interior boundary, it follows OGC Simple Feature Specification - SFS (Simple Feature Access - Part 1: Common Architecture).
 */

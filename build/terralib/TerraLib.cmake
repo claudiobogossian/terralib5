@@ -30,6 +30,7 @@ set (TERRALIB_MINOR_VERSION 0)
 set (TERRALIB_PATCH_VERSION 0)
 set (TERRALIB_RELEASE_STATUS "alpha.1")
 set (TERRALIB_BUILD_DATE "20130301")
+set (TERRALIB_STRING_BUILD_DATE "2013-03-01")
 set (TERRALIB_STRING_VERSION "5.0.0-alpha.1")
 set (TERRALIB_INT_VERSION "050000")
 set (TERRALIB_VERSION "${TERRALIB_MAJOR_VERSION}.${TERRALIB_MINOR_VERSION}.${TERRALIB_PATCH_VERSION}")
@@ -42,6 +43,7 @@ set (TERRALIB_XML_FILES_LOCATION "${ROOT}/resources/xml" CACHE STRING "Location 
 set (TERRALIB_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the about logo image.")
 set (TERRALIB_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib.")
 set (TERRALIB_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme).")
+set (TERRALIB_PLUGINS_DESCRIPTION "")
 # =========================
 
 option (BUILD_ANNOTATIONTEXT "Build Annotation Text module?" ON)
@@ -311,3 +313,5 @@ include (${T5_MODULES_PATH}/Package.cmake)
 include (${T5_MODULES_PATH}/GenerateDox.cmake)
 
 set (TE_LIBRARIES "${_TE_LIBRARIES}")
+
+#set (TERRALIB_PLUGINS_DESCRIPTION ${TERRALIB_PLUGINS_DESCRIPTION} PARENT_SCOPE)

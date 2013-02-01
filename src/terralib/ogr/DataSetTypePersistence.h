@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetTypePersistence.h
+  \file terralib/ogr/DataSetTypePersistence.h
 
   \brief DataSetTypePersistence implementation for OGR data provider.
  */

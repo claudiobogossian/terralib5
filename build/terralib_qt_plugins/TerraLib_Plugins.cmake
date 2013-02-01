@@ -1,11 +1,11 @@
 option (QT_PLUGIN_DATASOURCE_GDAL "Build GDAL datasource datasource plugin for Qt." ON)
-option (QT_PLUGIN_DATASOURCE_GEOFILE "Build GeoFile datasource plugin for Qt." ON)
+option (QT_PLUGIN_DATASOURCE_GEOFILE "Build GeoFile datasource plugin for Qt." OFF)
 option (QT_PLUGIN_DATASOURCE_OGR "Build OGR datasource plugin for Qt." ON)
 option (QT_PLUGIN_DATASOURCE_PGIS "Build PostGIS datasource plugin for Qt." ON)
 option (QT_PLUGIN_DATASOURCE_SHP "Build Shapefile datasource plugin for Qt." ON)
-option (QT_PLUGIN_DATASOURCE_WCS "Build WCS datasource plugin for Qt." ON)  
-option (QT_PLUGIN_DATASOURCE_WFS "Build WFS datasource plugin for Qt." ON)
-option (QT_PLUGIN_DATASOURCE_WMS "Build WMS datasource plugin for Qt." ON)  
+option (QT_PLUGIN_DATASOURCE_WCS "Build WCS datasource plugin for Qt." OFF)  
+option (QT_PLUGIN_DATASOURCE_WFS "Build WFS datasource plugin for Qt." OFF)
+option (QT_PLUGIN_DATASOURCE_WMS "Build WMS datasource plugin for Qt." OFF)  
 
 include (${CMAKE_BINARY_DIR}/terralibConfig.cmake)
 

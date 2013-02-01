@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Transactor.cpp
+  \file terralib/ogr/Transactor.cpp
 
   \brief Transactor class for OGR data provider.  
  */

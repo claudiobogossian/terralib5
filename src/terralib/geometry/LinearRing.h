@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/LinearRing.h
+  \file terralib/geometry/LinearRing.h
 
   \brief A LinearRing is a LineString that is both closed and simple.
 */

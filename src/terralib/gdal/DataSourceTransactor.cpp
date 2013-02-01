@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceTransactor.cpp
+  \file terralib/gdal/DataSourceTransactor.cpp
 
   \brief Transactor class for GDAL data provider.
 */

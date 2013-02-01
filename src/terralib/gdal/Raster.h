@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Raster.h
+  \file terralib/gdal/Raster.h
 
   \brief This is a class that represents a GDAL Raster.
 */

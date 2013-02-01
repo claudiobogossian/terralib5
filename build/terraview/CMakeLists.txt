@@ -12,24 +12,19 @@ set(INCLDIR ${SRCDIR})                            # directory where the header f
 set(PROJ_NAME "terraview")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 
-#find_package (terralib 5 COMPONENTS color common dataaccess datatype filter geometry
-#    maptools memory plugin qt_widgets raster rp srs st stloader symbology qt_af serialization REQUIRED)
-
-#set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
-#set (ICON_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Lists of directories that contains icon themes.")
-
 include (${CMAKE_BINARY_DIR}/terralibConfig.cmake)
-
-#add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\" -DTERRALIB_SCHEMA_LOCATION=\"${TERRALIB_SCHEMA_LOCATION}\")
-    
-#if(terralib_FOUND)
-
-#  include (${T5_MODULEPATH}/GeneralConfig.cmake)
 
 find_package(Boost REQUIRED COMPONENTS system)
 
 include_directories (${TE_INCLUDE_DIRS} ${INCLDIR} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-list (APPEND _dep_libs ${TE_LIBRARIES} ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
+list (APPEND _dep_libs ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
+
+list (APPEND 
+  _dep_libs 
+  terralib_common
+  terralib_qt_af
+  terralib_qt_widgets
+)
 
 file (GLOB SRCS ${SRCDIR}/*.cpp)
 file (GLOB HDRS ${INCLDIR}/*.h)
@@ -52,9 +47,12 @@ source_group("Generated Files" FILES ${UI} ${MOC})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TE_CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TE_CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}")  
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}") 
 
-add_definitions (-DBOOST_ALL_NO_LIB -DTERRALIB_BIN_DIR=\"${TERRALIB_BIN_DIR}\" -DTERRALIB_LOGO=\"${TERRALIB_LOGO}\")
+get_filename_component(TERRAVIEW_OUT_DIR "${TERRAVIEW_CONFIG_FILE}" PATH)
+
+add_definitions (-DBOOST_ALL_NO_LIB)
+
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${_dep_libs})
@@ -64,3 +62,4 @@ message ("Generating configurations files in directory \"${CMAKE_RUNTIME_OUTPUT_
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/user_settings.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/application_plugins.xml)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraViewConfig.h)

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Point.cpp
+  \file terralib/geometry/Point.cpp
 
   \brief A point with x and y coordinate values.
 */

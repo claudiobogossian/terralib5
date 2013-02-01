@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSource.cpp
+  \file terralib/ado/DataSource.cpp
 
   \brief It implements the DataSource class for ADO.
 */

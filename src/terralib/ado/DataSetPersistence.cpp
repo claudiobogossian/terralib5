@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetPersistence.cpp
+  \file terralib/ado/DataSetPersistence.cpp
 
   \brief DataSetPersistence implementation for ADO.
 */

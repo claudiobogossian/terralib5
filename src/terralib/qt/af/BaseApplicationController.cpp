@@ -49,9 +49,9 @@
 #include "UserPlugins.h"
 
 // Qt
-#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QResource>
+#include <QtGui/QApplication>
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
@@ -295,6 +295,16 @@ void  te::qt::af::BaseApplicationController::initialize()
     else
       QIcon::setThemeName(iconTheme);
 
+    std::string iconSize = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.ToolBarIconSize");
+
+    if(iconSize.empty())
+      iconSize = te::common::SystemApplicationSettings::getInstance().getValue("Application.ToolBarDefaultIconSize");
+    if(!iconSize.empty())
+    {
+      QString sh = QString("QToolBar { qproperty-iconSize: ") + iconSize.c_str() + "px " + iconSize.c_str() + "px; }";
+      qApp->setStyleSheet(sh);
+    }
+
     SplashScreenManager::getInstance().showMessage(tr("Application icon theme loaded!"));
   }
   catch(const std::exception& e)
@@ -392,6 +402,8 @@ void te::qt::af::BaseApplicationController::initializePlugins()
   {
     te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
 
+    SplashScreenManager::getInstance().close();
+
     QString msgErr(tr("Some plugins couldn't be loaded: %1.\n "
                       "Please, refer to plugin manager to fix the problem."));
 
@@ -445,4 +457,3 @@ const QString& te::qt::af::BaseApplicationController::getAppIconName() const
 {
   return m_appIconName;
 }
-

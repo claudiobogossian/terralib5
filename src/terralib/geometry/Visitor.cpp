@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Visitor.cpp
+  \file terralib/geometry/Visitor.cpp
 
   \brief A visitor interface for the Geometry hierarchy.
 */

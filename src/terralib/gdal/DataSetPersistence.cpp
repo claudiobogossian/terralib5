@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file DataSetPersistence.cpp
+  \file terralib/gdal/DataSetPersistence.cpp
 
-  \brief This class is responsiblefor pesisting a dataset using the GDAL driver.
+  \brief This class is responsible for persisting a dataset using the GDAL driver.
 */
 
 // TerraLib

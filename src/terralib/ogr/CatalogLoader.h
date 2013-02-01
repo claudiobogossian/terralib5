@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file CatalogLoader.h
+  \file terralib/ogr/CatalogLoader.h
 
   \brief It allows to retrieve information about datasets in a OGR data source.
  */

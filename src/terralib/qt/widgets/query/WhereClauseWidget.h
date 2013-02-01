@@ -29,6 +29,8 @@
 // TerraLib
 #include "../Config.h"
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/query/Where.h"
+
 
 // STL
 #include <memory>
@@ -62,6 +64,8 @@ namespace te
 
           Ui::WhereClauseWidgetForm* getForm() const;
 
+          te::da::Where* getWhere();
+
 
         public:
 
@@ -83,6 +87,10 @@ namespace te
           void onRemoveWhereClausePushButtonClicked();
 
           void onValuePropertyRadioButtonClicked();
+
+        protected:
+
+          te::da::Expression* getExpression(const QString& value, const std::string& propName);
 
 
         private:

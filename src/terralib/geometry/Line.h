@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Line.h
+  \file terralib/geometry/Line.h
 
   \brief A Line is LineString with 2 points.
 */

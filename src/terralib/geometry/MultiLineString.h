@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/MultiLineString.h
+  \file terralib/geometry/MultiLineString.h
 
   \brief MultiLineString is a MultiCurve whose elements are LineStrings.
 */

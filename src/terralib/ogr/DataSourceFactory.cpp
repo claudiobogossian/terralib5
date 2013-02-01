@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceFactory.cpp
+  \file terralib/ogr/DataSourceFactory.cpp
 
   \brief This is the concrete factory for a OGR DataSource.  
 */

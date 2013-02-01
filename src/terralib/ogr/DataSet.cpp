@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSet.cpp
+  \file terralib/ogr/DataSet.cpp
 
   \brief Implementation of a DataSet for OGR data provider.  
  */

@@ -55,7 +55,7 @@ namespace te
         */
         StrToXMLCh(const std::string& str);
 
-        /*! \bried Destructor */
+        /*! \brief Destructor */
         ~StrToXMLCh();
 
         /*!

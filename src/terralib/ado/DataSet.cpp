@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSet.cpp
+  \file terralib/ado/DataSet.cpp
 
   \brief Implementation of the DataSet class to ADO.
 */

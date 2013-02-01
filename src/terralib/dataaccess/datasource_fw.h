@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file datasource_fw.h
+  \file terralib/dataaccess/datasource_fw.h
    
   \brief Forward declarations for the DataSource module.
  */

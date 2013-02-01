@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/annotationtext/Module.h
    
   \brief This singleton defines the TerraLib Annotation Text module entry.
 */
