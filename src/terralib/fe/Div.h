@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Div.h
+  \file terralib/fe/Div.h
 
   \brief The division operator.
  */

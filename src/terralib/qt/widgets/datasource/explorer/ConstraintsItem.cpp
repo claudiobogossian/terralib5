@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/dataset/explorer/ConstraintsItem.h
+  \file terralib/qt/widgets/datasource/explorer/ConstraintsItem.h
 
   \brief A class used to group the set of constraints of a dataset in a TreeModel.
 */

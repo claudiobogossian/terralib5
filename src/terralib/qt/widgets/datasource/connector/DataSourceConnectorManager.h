@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/core/DataSourceConnectorManager.h
+  \file terralib/qt/widgets/datasource/connector/DataSourceConnectorManager.h
 
   \brief A widget that groups datasource identificatin and connection information.
 */

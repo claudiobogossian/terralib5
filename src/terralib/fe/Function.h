@@ -18,7 +18,7 @@
  */
  
 /*!
-  \file Function.h
+  \file terralib/fe/Function.h
   
   \brief A function is a named procedure that performs a distinct computation.
  */

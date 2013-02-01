@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Add.h
+  \file terralib/fe/Add.h
 
   \brief The addition operator.
  */

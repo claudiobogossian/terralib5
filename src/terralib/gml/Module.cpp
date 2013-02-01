@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.cpp
+  \file terralib/gml/Module.cpp
 
   \brief This singleton defines the TerraLib GML module entry.
 */

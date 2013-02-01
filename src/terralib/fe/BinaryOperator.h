@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BinaryOperator.h
+  \file terralib/fe/BinaryOperator.h
   
   \brief This class can be used to represent binary operation expressions.  
  */

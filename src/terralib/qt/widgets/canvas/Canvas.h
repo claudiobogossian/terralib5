@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Canvas.h
+  \file terralib/qt/widgets/canvas/Canvas.h
 
   \brief A canvas built on top of Qt.
  */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BinarySpatialOp.h
+  \file terralib/fe/BinarySpatialOp.h
   
   \brief A class for binary spatial operators.  
  */

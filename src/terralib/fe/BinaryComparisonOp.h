@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BinaryComparisonOp.h
+  \file terralib/fe/BinaryComparisonOp.h
   
   \brief A class for binary comparison operators.  
  */

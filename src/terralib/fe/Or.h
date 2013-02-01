@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Or.h
+  \file terralib/fe/Or.h
 
   \brief Boolean logic operator: OR.
  */
