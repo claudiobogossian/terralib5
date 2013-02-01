@@ -50,7 +50,9 @@ int main(int argc, char** argv)
     LoadModules();
     
     //ExMetadataManager();
-    ExMetadataAnnotate();
+    //ExMetadataISO19115();
+    //ExMetadataExtractor();
+    ExMetadataCycle();
     
     te::plugin::PluginManager::getInstance().unloadAll();
     
