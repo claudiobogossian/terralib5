@@ -44,11 +44,8 @@ list (
   terralib_common
 	terralib_dataaccess
 	terralib_datatype
-	terralib_gdal
 	terralib_geometry
-	terralib_ogr
 	terralib_plugin
-	terralib_postgis
 	terralib_raster
 	terralib_srs
   )
