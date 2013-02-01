@@ -55,8 +55,14 @@ add_definitions(-DTEQTPLUGINOGRDLL)
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
-set (AF_PLUGIN_FILE "qt_ogr.xml")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_ogr.xml")
+#Exporting plug-in information for the configuration file
+set (TEPLUGIN_NAME "te.qt.datasource.ogr")
+set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_ogr.xml")
+set (PLG_INFO "")
+getPluginInfo("${TEPLUGIN_NAME}" "${TEPLUGIN_FILE}" PLG_INFO)
+set (TERRALIB_PLUGINS_DESCRIPTION "${TERRALIB_PLUGINS_DESCRIPTION}${PLG_INFO}" PARENT_SCOPE)
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${TEPLUGIN_FILE}")
 
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})

@@ -4,13 +4,4 @@
          xsd:schemaLocation="http://www.terralib.org/schemas/af ${TERRALIB_SCHEMA_LOCATION}/af/af.xsd"
          version="${TERRALIB_STRING_VERSION}"
          release="${TERRALIB_STRING_BUILD_DATE}">
-  <Plugin>
-<!--  
-  Fill the informations as the above example.
-  ===========================================
-  
-    <Name>te.da.ogr</Name>
-    <Path xlink:href="plugins\ogr\plugin_info.xml"></Path>
--->
-  </Plugin>  
-</Plugins>
+${TERRALIB_PLUGINS_DESCRIPTION}</Plugins>

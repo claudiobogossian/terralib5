@@ -220,29 +220,23 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   
   configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
 
-if(WIN32)  
-  install(
-    TARGETS ${PROJ_NAME}
-    RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
-  )
-else()
-  install(
-    TARGETS ${PROJ_NAME}
-    LIBRARY DESTINATION "bin/plugins" COMPONENT PLUGINS
-  )
-endif()
+  if(WIN32)  
+    install(
+      TARGETS ${PROJ_NAME}
+      RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
+    )
+  else()
+    install(
+      TARGETS ${PROJ_NAME}
+      LIBRARY DESTINATION "bin/plugins" COMPONENT PLUGINS
+    )
+  endif()
   
   install (
     FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_${proj_name}_info.xml
     DESTINATION "bin/plugins"
     COMPONENT PLUGINS
   )
-  
-  # installing libraries
-#  installTarget(${PROJ_NAME} "lib" "LIBRARIES" "bin" "BINARIES")
-  
-  # installing header files
-#  installFiles(${root_h_dir} "terralib" "HEADERS" "*.h*")
 ENDMACRO(makePluginProject)
 
 # Macro installTarget
@@ -473,4 +467,18 @@ MACRO(te_moc2 input prefix output)
   set (moc_ "")
   qt4_wrap_cpp(moc_ ${input} OPTIONS -p ${prefix})
   list(APPEND ${output} ${moc_})
-ENDMACRO()
+ENDMACRO(te_moc2)
+
+# Macro getPluginInfo
+#
+# Get xml formatted information of a plug-in 
+#
+# param plugin_name[input] Name of the plug-in.
+# param plugin_location[input] Location of the binary file of the plug-in.
+# param plugins_info[output] Variable containing information plug-ins updated.
+#
+MACRO(getPluginInfo plugin_name plugin_location plugins_info)
+set (${plugins_info}
+  "  <Plugin>\n    <Name>${plugin_name}</Name>\n    <Path xlink:href=\"${plugin_location}\"></Path>\n  </Plugin>\n"
+  )
+ENDMACRO(getPluginInfo)

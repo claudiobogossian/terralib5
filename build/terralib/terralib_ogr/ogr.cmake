@@ -38,5 +38,11 @@ set (TEPLUGIN_DISPLAYNAME "OGR Data Source Driver")
 set (TEPLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via OGR")
 set (TEPLUGIN_LIBRARY "terralib_ogr")
 set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:ogr")
+set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_ogr_info.xml")
 
-configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_ogr_info.xml)
+#Exporting plug-in information for the configuration file
+set (PLG_INFO "")
+getPluginInfo("${TEPLUGIN_NAME}" "${TEPLUGIN_FILE}" PLG_INFO)
+set (TERRALIB_PLUGINS_DESCRIPTION "${TERRALIB_PLUGINS_DESCRIPTION}${PLG_INFO}" PARENT_SCOPE)
+
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TEPLUGIN_FILE})
