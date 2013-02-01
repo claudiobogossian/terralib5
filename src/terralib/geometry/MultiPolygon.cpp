@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/MultiPolygon.cpp
+  \file terralib/geometry/MultiPolygon.cpp
 
   \brief MultiPolygon is a MultiSurface whose elements are Polygons.
 */

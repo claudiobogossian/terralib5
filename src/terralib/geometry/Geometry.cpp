@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Geometry.cpp
+  \file terralib/geometry/Geometry.cpp
 
   \brief Geometry is the root class of the geometries hierarchy, it follows OGC Simple Feature Specification - SFS (Simple Feature Access - Part 1: Common Architecture) and ISO SQL/MM Spatial.
 */

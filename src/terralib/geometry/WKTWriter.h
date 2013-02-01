@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file te/geometry/WKTWriter.h
+  \file terralib/geometry/WKTWriter.h
 
   \brief A class that serializes a geometry to the WKT format.
 */

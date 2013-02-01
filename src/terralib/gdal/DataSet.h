@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSet.h
+  \file terralib/gdal/DataSet.h
 
   \brief Implementation of a DataSet for GDAL data provider.
 */

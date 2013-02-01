@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Envelope.h
+  \file terralib/geometry/Envelope.h
 
   \brief An Envelope defines a 2D rectangular region.
 */

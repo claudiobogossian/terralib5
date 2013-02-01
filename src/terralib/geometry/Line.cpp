@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Line.cpp
+  \file terralib/geometry/Line.cpp
 
   \brief A Line is LineString with 2 points.
 */

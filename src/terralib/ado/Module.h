@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/ado/Module.h
    
   \brief A utility class to initialize and terminate TerraLib ADO driver support.  
 */

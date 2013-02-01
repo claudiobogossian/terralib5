@@ -29,27 +29,28 @@
 #include "../../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../qt/widgets/dataset/selector/DataSetSelectorWizardPage.h"
-#include "../../../qt/widgets/datasource/core/DataSource.h"
-#include "../../../qt/widgets/datasource/selector/ui/DataSourceSelectorWidgetForm.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWidget.h"
 #include "../../../qt/widgets/datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
-#include "ui/DataExchangerWizardForm.h"
-#include "ui/DataExchangeSummaryWizardPageForm.h"
-#include "ui/DataSetOptionsWizardPageForm.h"
 #include "DataExchangerWizard.h"
 #include "DataExchangeStatus.h"
 #include "DataExchangeSummaryWizardPage.h"
 #include "DataSetOptionsWizardPage.h"
+#include "ui_DataExchangerWizardForm.h"
+#include "ui_DataExchangeSummaryWizardPageForm.h"
+#include "ui_DataSetOptionsWizardPageForm.h"
+#include "ui_DataSourceSelectorWidgetForm.h"
+
 
 // STL
 #include <cassert>
 
 // Boost
-#include <boost/chrono.hpp>
+//#include <boost/chrono.hpp>
 
 // Qt
 #include <QtGui/QAbstractButton>
@@ -113,22 +114,22 @@ int te::qt::widgets::DataExchangerWizard::nextId() const
   return QWizard::nextId();
 }
 
-te::qt::widgets::DataSourcePtr te::qt::widgets::DataExchangerWizard::getDataSource() const
+te::da::DataSourceInfoPtr te::qt::widgets::DataExchangerWizard::getDataSource() const
 {
-  std::list<DataSourcePtr> datasources = m_datasourceSelectorPage->getSelectorWidget()->getSelecteds();
+  std::list<te::da::DataSourceInfoPtr> datasources = m_datasourceSelectorPage->getSelectorWidget()->getSelecteds();
 
   if(datasources.empty())
-    return DataSourcePtr();
+    return te::da::DataSourceInfoPtr();
   else
     return datasources.front();
 }
 
-te::qt::widgets::DataSourcePtr te::qt::widgets::DataExchangerWizard::getTargetDataSource() const
+te::da::DataSourceInfoPtr te::qt::widgets::DataExchangerWizard::getTargetDataSource() const
 {
-  std::list<DataSourcePtr> datasources = m_targetSelectorPage->getSelectorWidget()->getSelecteds();
+  std::list<te::da::DataSourceInfoPtr> datasources = m_targetSelectorPage->getSelectorWidget()->getSelecteds();
 
   if(datasources.empty())
-    return DataSourcePtr();
+    return te::da::DataSourceInfoPtr();
   else
     return datasources.front();
 }
@@ -155,7 +156,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
     ScopedCursor wcursor(Qt::WaitCursor);
 
 // get input data source
-    DataSourcePtr ids = getDataSource();
+    te::da::DataSourceInfoPtr ids = getDataSource();
 
     if(ids.get() == 0)
       return;
@@ -166,7 +167,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
       return;
 
 // get output data source
-    DataSourcePtr ods = getTargetDataSource();
+    te::da::DataSourceInfoPtr ods = getTargetDataSource();
 
     te::da::DataSourcePtr odatasource = te::da::DataSourceManager::getInstance().get(ods->getId(), ods->getAccessDriver(), ods->getConnInfo());
 
@@ -197,7 +198,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
 
       try
       {
-        boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+        //boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 
         std::auto_ptr<te::da::DataSet> dataset(itransactor->getDataSet(idset->getName()));
 
@@ -207,12 +208,12 @@ void te::qt::widgets::DataExchangerWizard::commit()
         if(dataset->moveNext())
           dp->add(odset.get(), dataset.get());
 
-        boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 
         DataExchangeStatus status;
         status.m_dataset = odset;
         status.m_successful = true;
-        status.m_time = sec;
+        //status.m_time = sec;
 
         result.push_back(status);
       }

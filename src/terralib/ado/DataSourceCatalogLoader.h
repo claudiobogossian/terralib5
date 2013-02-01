@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceCatalogLoader.h
+  \file terralib/ado/DataSourceCatalogLoader.h
 
   \brief DataSourceCatalogLoader class implementation for ADO.
 */

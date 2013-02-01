@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/TIN.cpp
+  \file terralib/geometry/TIN.cpp
 
   \brief TIN (triangulated irregular network) is a PolyhedralSurface consisting only of Triangle patches.
 */

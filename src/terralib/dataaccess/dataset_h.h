@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file dataset_h.h
+  \file terralib/dataaccess/dataset_h.h
 
   \brief This file contains include headers for the DataSet module.
  */

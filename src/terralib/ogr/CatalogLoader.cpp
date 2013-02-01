@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file CatalogLoader.cpp
+  \file terralib/ogr/CatalogLoader.cpp
 
   \brief It allows to retrieve information about datasets in a OGR data source.
  */

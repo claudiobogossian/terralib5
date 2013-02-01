@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Globals.cpp
+  \file terralib/gdal/Globals.cpp
    
   \brief A singleton class with global definitions.
  */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceFactory.h
+  \file terralib/ogr/DataSourceFactory.h
 
   \brief This is the concrete factory for a OGR DataSource.  
  */

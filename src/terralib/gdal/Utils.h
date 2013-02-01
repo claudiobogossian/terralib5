@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Utils.h
+  \file terralib/gdal/Utils.h
 
   \brief Utilitary functions to access GDAL and match some of its concepts to TerraLib concepts.
 */

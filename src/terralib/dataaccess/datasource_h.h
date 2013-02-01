@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file datasource_h.h
+  \file terralib/dataaccess/datasource_h.h
 
   \brief This file contains include headers for the DataSource module.
  */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GEOSReader.h
+  \file terralib/geometry/GEOSReader.h
 
   \brief A class that converts a GEOS geometry to a TerraLib geometry.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/PointKd.cpp
+  \file terralib/geometry/PointKd.cpp
 
   \brief A k-dimensional point.
 */

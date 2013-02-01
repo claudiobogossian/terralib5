@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Globals.h
+  \file terralib/ado/Globals.h
    
   \brief An static class with global definitions.
 */

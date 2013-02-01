@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GeometryProperty.cpp
+  \file terralib/geometry/GeometryProperty.cpp
 
   \brief Geometric property.
 */

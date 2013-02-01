@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetPersistence.h
+  \file terralib/gdal/DataSetPersistence.h
 
   \brief An concrete class responsible for pesisting a dataset using the GDAL driver.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Polygon.cpp
+  \file terralib/geometry/Polygon.cpp
 
   \brief Polygon is a subclass of CurvePolygon whose rings are defined by linear rings.
 */

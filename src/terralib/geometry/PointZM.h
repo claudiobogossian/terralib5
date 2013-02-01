@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/PointZM.h
+  \file terralib/geometry/PointZM.h
 
   \brief A point with a z-coordinate value and an associated measurement.
 */

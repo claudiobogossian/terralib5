@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file te/geometry/WKBWriter.cpp
+  \file terralib/geometry/WKBWriter.cpp
 
   \brief A class that serializes a geometry to the WKB format.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GeometryFactory.cpp
+  \file terralib/geometry/GeometryFactory.cpp
 
   \brief This is the Geometry factory for TerraLib geometries.
 */

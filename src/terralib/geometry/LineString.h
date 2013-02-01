@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/LineString.h
+  \file terralib/geometry/LineString.h
 
   \brief LineString is a curve with linear interpolation between points.
 */

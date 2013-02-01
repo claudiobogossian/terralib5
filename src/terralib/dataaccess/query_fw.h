@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file query_fw.h
+  \file terralib/dataaccess/query_fw.h
    
   \brief Forward declarations for the Query module.
 */

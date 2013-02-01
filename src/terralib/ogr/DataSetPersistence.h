@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetPersistence.h
+  \file terralib/ogr/DataSetPersistence.h
 
   \brief A class responsible for persisting a dataset in a OGR managed data source.
  */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceFactory.h
+  \file terralib/gdal/DataSourceFactory.h
 
   \brief This is the concrete implementation of a factory that builds data sources managed by the GDAL Library.
 */
