@@ -23,12 +23,24 @@
 // STL
 #include <cassert>
 
-te::md::CI_ResponsibleParty::CI_ResponsibleParty(te::md::CI_RoleCode code):
+te::md::CI_ResponsibleParty::CI_ResponsibleParty(const std::string& indname,
+                                                 const std::string& orgname,
+                                                 const std::string& posname,
+                                                 CI_RoleCode code):
+  m_individualName(indname),
+  m_organizationName(orgname),
+  m_positionName(posname), 
   m_roleCode(code)
 {}
 
 te::md::CI_ResponsibleParty::~CI_ResponsibleParty()
 {
+}
+
+te::md::CI_ResponsibleParty* te::md::CI_ResponsibleParty::clone() const
+{
+  te::md::CI_ResponsibleParty* nrp = new te::md::CI_ResponsibleParty(m_individualName,m_organizationName, m_positionName, m_roleCode);
+  return nrp;
 }
 
 void
@@ -78,4 +90,3 @@ te::md::CI_ResponsibleParty::getRoleCode() const
 {
   return m_roleCode;
 }
-

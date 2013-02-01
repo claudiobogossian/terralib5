@@ -24,11 +24,15 @@
 // TerraLib
 #include "MD_DataIdentification.h"
 
+// Boost
+#include <boost/foreach.hpp>
+
       
 te::md::MD_DataIdentification::MD_DataIdentification(te::md::CI_Citation* cite, const std::string& abstract,MD_ProgressCode status, const std::string& lang):
   MD_Identification(cite,abstract, status),
   m_dataIsCovered(true),
-  m_spatialRepresentationType(te::md::MD_vector)
+  m_spatialRepresentationType(te::md::MD_vector),
+  m_scale(0)
 {
   m_language.push_back(lang);
 }
@@ -82,6 +86,14 @@ te::md::MD_DataIdentification::addGeographicBBoxExt(const double& llx, const dou
   m_dataIsCovered = dataIsCovered;
 }
 
+void
+te::md::MD_DataIdentification::addGeographicBBoxExt(const te::gm::Envelope* bb, bool dataIsCovered)
+{
+  assert(bb);
+  m_extent.init(bb->getLowerLeftX(), bb->getLowerLeftY(), bb->getUpperRightX(), bb->getUpperRightY());
+}
+
+
 const 
 te::gm::Envelope& te::md::MD_DataIdentification::getExtent() const
 {
@@ -96,8 +108,48 @@ te::md::MD_DataIdentification::setSpatialRepType(te::md::MD_SpatialRepresentatio
 }
 
 te::md::MD_SpatialRepresentationTypeCode
-te::md::MD_DataIdentification::getSpatialRepType() const
+te::md::MD_DataIdentification::getSpatialRepTypeCode() const
 {
   return m_spatialRepresentationType;
 }
+
+
+void 
+te::md::MD_DataIdentification::setScale(long d)
+{
+  assert(d>0);
+  
+  m_scale = d;
+}
+
+long 
+te::md::MD_DataIdentification::getScale() const
+{
+  return m_scale;
+}
+
+te::md::MD_Identification* te::md::MD_DataIdentification::clone() const
+{
+  std::string l("");
+  if (!m_language.empty())
+    l = m_language[0];
+  
+  te::md::MD_DataIdentification* mid = new MD_DataIdentification(m_citation, m_abstract, m_status,l);
+
+  BOOST_FOREACH(const te::md::MD_CharacterSetCode& cs, m_charSet)
+  {
+    mid->addCharacterSet(cs);
+  }
+  BOOST_FOREACH(const te::md::MD_TopicCategoryCode& t, m_topicCategory)
+  {
+    mid->addTopicCategory(t);
+  }  
+  mid->addGeographicBBoxExt(m_extent.getLowerLeftX(),m_extent.getLowerLeftY(),
+                            m_extent.getUpperRightX(), m_extent.getUpperRightY(),
+                            m_dataIsCovered);
+  mid->setSpatialRepType(m_spatialRepresentationType);  
+  
+  return mid;
+}
+
 
