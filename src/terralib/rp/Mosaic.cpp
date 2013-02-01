@@ -187,12 +187,8 @@ namespace te
         te::srs::Converter convInstance;
         boost::shared_ptr< te::gm::GeometricTransformation > auxTransPtr;
         te::gm::Coord2D llCoord1;
-        te::gm::Coord2D lrCoord1;
-        te::gm::Coord2D ulCoord1;
         te::gm::Coord2D urCoord1;
         te::gm::Coord2D llCoord2;
-        te::gm::Coord2D lrCoord2;
-        te::gm::Coord2D ulCoord2;
         te::gm::Coord2D urCoord2;
         te::rst::Grid firstRasterGrid( 1u, 1u, new te::gm::Envelope( 0, 0, 0, 0),
           -1 );
@@ -237,7 +233,6 @@ namespace te
               auxPolygon.push_back( auxLinearRingPtr );
               auxPolygon.setSRID( mosaicSRID );
               rastersBBoxes.push_back( auxPolygon );
-
             }
             else
             {
@@ -263,8 +258,8 @@ namespace te
                 for( unsigned int inputTPsIdx = 0 ; inputTPsIdx < inputTPsSize ;
                   ++inputTPsIdx )
                 {
-                  auxTP.second = inputTPs[ inputTPsIdx - 1 ].second;
-                  lastTransf.inverseMap( inputTPs[ inputTPsIdx - 1 ].first, auxTP.first  );
+                  auxTP.second = inputTPs[ inputTPsIdx ].second;
+                  lastTransf.inverseMap( inputTPs[ inputTPsIdx ].first, auxTP.first  );
                   transParams.m_tiePoints.push_back( auxTP );
                 }
               }
@@ -279,71 +274,52 @@ namespace te
 
               // current raster corner coords (line/column)
 
-              ulCoord2.x = -0.5;
-              ulCoord2.y = -0.5;
               urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns()
                 - 0.5);
               urCoord2.y = -0.5;
-              lrCoord2.x = urCoord2.x;
-              lrCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows()
+              llCoord2.x = -0.5;
+              llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows()
                 - 0.5);
-              llCoord2.x = ulCoord2.x;
-              llCoord2.y = lrCoord2.y;
 
               // current raster corner coords (line/column) over the
               // first raster coords system (lines/columns)
 
-              auxTransPtr->inverseMap( ulCoord2, ulCoord1 );
               auxTransPtr->inverseMap( urCoord2, urCoord1 );
-              auxTransPtr->inverseMap( lrCoord2, lrCoord1 );
               auxTransPtr->inverseMap( llCoord2, llCoord1 );
 
               // the respective coords in world space (first raster)
 
-              firstRasterGrid.gridToGeo( ulCoord1.x, ulCoord1.y, ulCoord2.x,
-                ulCoord2.y );
               firstRasterGrid.gridToGeo( urCoord1.x, urCoord1.y, urCoord2.x,
                 urCoord2.y );
-              firstRasterGrid.gridToGeo( lrCoord1.x, lrCoord1.y, lrCoord2.x,
-                lrCoord2.y );
               firstRasterGrid.gridToGeo( llCoord1.x, llCoord1.y, llCoord2.x,
                 llCoord2.y );
 
               // expanding mosaic area
 
-              mosaicLLX = std::min( mosaicLLX, ulCoord2.x );
               mosaicLLX = std::min( mosaicLLX, urCoord2.x );
-              mosaicLLX = std::min( mosaicLLX, lrCoord2.x );
               mosaicLLX = std::min( mosaicLLX, llCoord2.x );
 
-              mosaicLLY = std::min( mosaicLLY, ulCoord2.y );
               mosaicLLY = std::min( mosaicLLY, urCoord2.y );
               mosaicLLY = std::min( mosaicLLY, llCoord2.y );
-              mosaicLLY = std::min( mosaicLLY, lrCoord2.y );
 
-              mosaicURX = std::max( mosaicURX, ulCoord2.x );
               mosaicURX = std::max( mosaicURX, urCoord2.x );
-              mosaicURX = std::max( mosaicURX, lrCoord2.x );
               mosaicURX = std::max( mosaicURX, llCoord2.x );
 
-              mosaicURY = std::max( mosaicURY, ulCoord2.y );
               mosaicURY = std::max( mosaicURY, urCoord2.y );
-              mosaicURY = std::max( mosaicURY, lrCoord2.y );
               mosaicURY = std::max( mosaicURY, llCoord2.y );
 
               // finding the current raster bounding box polygon (first raster world coordinates)
 
               auxPolygon.clear();
               auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-              auxLinearRingPtr->setPoint( 0, ulCoord2.x, ulCoord2.y );
+              auxLinearRingPtr->setPoint( 0, llCoord2.x, urCoord2.y );
               auxLinearRingPtr->setPoint( 1, urCoord2.x, urCoord2.y );
-              auxLinearRingPtr->setPoint( 2, lrCoord2.x, lrCoord2.y );
+              auxLinearRingPtr->setPoint( 2, urCoord2.x, llCoord2.y );
               auxLinearRingPtr->setPoint( 3, llCoord2.x, llCoord2.y );
-              auxLinearRingPtr->setPoint( 4, ulCoord2.x, ulCoord2.y );
+              auxLinearRingPtr->setPoint( 4, llCoord2.x, urCoord2.y );
               auxPolygon.push_back( auxLinearRingPtr );
               auxPolygon.setSRID( mosaicSRID );
               rastersBBoxes.push_back( auxPolygon );
-
             }
           }
           else
@@ -378,12 +354,8 @@ namespace te
             {
               if( mosaicSRID == inputRasterPtr->getGrid()->getSRID() )
               {
-                ulCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_llx;
-                ulCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_ury;
                 urCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_urx;
                 urCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_ury;
-                lrCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_urx;
-                lrCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_lly;
                 llCoord1.x = inputRasterPtr->getGrid()->getExtent()->m_llx;
                 llCoord1.y = inputRasterPtr->getGrid()->getExtent()->m_lly;
               }
@@ -393,20 +365,10 @@ namespace te
                 convInstance.setTargetSRID( mosaicSRID );
 
                 convInstance.convert(
-                  inputRasterPtr->getGrid()->getExtent()->m_llx,
-                  inputRasterPtr->getGrid()->getExtent()->m_ury,
-                  ulCoord1.x,
-                  ulCoord1.y );
-                convInstance.convert(
                   inputRasterPtr->getGrid()->getExtent()->m_urx,
                   inputRasterPtr->getGrid()->getExtent()->m_ury,
                   urCoord1.x,
                   urCoord1.y );
-                convInstance.convert(
-                  inputRasterPtr->getGrid()->getExtent()->m_urx,
-                  inputRasterPtr->getGrid()->getExtent()->m_lly,
-                  lrCoord1.x,
-                  lrCoord1.y );
                 convInstance.convert(
                   inputRasterPtr->getGrid()->getExtent()->m_llx,
                   inputRasterPtr->getGrid()->getExtent()->m_lly,
@@ -416,35 +378,27 @@ namespace te
 
               // expanding mosaic area
 
-              mosaicLLX = std::min( mosaicLLX, ulCoord1.x );
               mosaicLLX = std::min( mosaicLLX, urCoord1.x );
-              mosaicLLX = std::min( mosaicLLX, lrCoord1.x );
               mosaicLLX = std::min( mosaicLLX, llCoord1.x );
 
-              mosaicLLY = std::min( mosaicLLY, ulCoord1.y );
               mosaicLLY = std::min( mosaicLLY, urCoord1.y );
               mosaicLLY = std::min( mosaicLLY, llCoord1.y );
-              mosaicLLY = std::min( mosaicLLY, lrCoord1.y );
 
-              mosaicURX = std::max( mosaicURX, ulCoord1.x );
               mosaicURX = std::max( mosaicURX, urCoord1.x );
-              mosaicURX = std::max( mosaicURX, lrCoord1.x );
               mosaicURX = std::max( mosaicURX, llCoord1.x );
 
-              mosaicURY = std::max( mosaicURY, ulCoord1.y );
               mosaicURY = std::max( mosaicURY, urCoord1.y );
-              mosaicURY = std::max( mosaicURY, lrCoord1.y );
               mosaicURY = std::max( mosaicURY, llCoord1.y );
 
               // finding the current raster bounding box polygon (first raster world coordinates)
 
               auxPolygon.clear();
               auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
-              auxLinearRingPtr->setPoint( 0, ulCoord1.x, ulCoord1.y );
+              auxLinearRingPtr->setPoint( 0, llCoord1.x, urCoord1.y );
               auxLinearRingPtr->setPoint( 1, urCoord1.x, urCoord1.y );
-              auxLinearRingPtr->setPoint( 2, lrCoord1.x, lrCoord1.y );
+              auxLinearRingPtr->setPoint( 2, urCoord1.x, llCoord1.y );
               auxLinearRingPtr->setPoint( 3, llCoord1.x, llCoord1.y );
-              auxLinearRingPtr->setPoint( 4, ulCoord1.x, ulCoord1.y );
+              auxLinearRingPtr->setPoint( 4, llCoord1.x, urCoord1.y );
               auxPolygon.push_back( auxLinearRingPtr );
               auxPolygon.setSRID( mosaicSRID );
               rastersBBoxes.push_back( auxPolygon );
@@ -1278,18 +1232,6 @@ namespace te
             for( unsigned int overlappedResultIdx = 0 ; overlappedResultIdx <
               overlappedResult->getNumGeometries() ; ++overlappedResultIdx )
             {
-//               te::gm::Polygon const* overlappedResultElementPtr =
-//                 dynamic_cast< te::gm::Polygon const* >(
-//                 overlappedResult->getGeometryN( overlappedResultIdx ) );
-//               TERP_DEBUG_TRUE_OR_THROW( overlappedResultElementPtr,
-//                 "Invalid pointer" );
-// 
-//               te::gm::Polygon const* overlappedResultUnderCurrentSRIDElementPtr =
-//                 dynamic_cast< te::gm::Polygon const* >(
-//                 overlappedResultUnderCurrentSRID->getGeometryN( overlappedResultIdx ) );
-//               TERP_DEBUG_TRUE_OR_THROW(overlappedResultUnderCurrentSRIDElementPtr,
-//                 "Invalid pointer" );
-
               for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
                 m_inputParameters.m_inputRastersBands[ inputRasterIdx ].size() ;
                 ++inputRastersBandsIdx )
