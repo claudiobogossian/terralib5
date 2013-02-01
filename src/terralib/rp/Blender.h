@@ -83,7 +83,7 @@ namespace te
           \param pixelScales2 The values scale to be applied to raster 2 pixel values before the blended value calcule (one element for each used raster channel/band).
           \param r1ValidDataPolygonPtr A pointer to a polygon (raster 1 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
           \param r2ValidDataPolygon A pointer to a polygon (raster 2 world/projected coords) delimiting the raster region with valid data, or null if all raster data area is valid.
-          \param geomTransformation A pointer transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns), or a null value if only the spatial reference systems must be used.
+          \param geomTransformation A pointer transformation mapping raster 1 pixels ( te::gm::GTParameters::TiePoint::first ) to raster 2 pixels ( te::gm::GTParameters::TiePoint::second ) (Note: all coords are indexed by lines/columns), or a null value if only the spatial reference systems must be used.
           \return true if ok, false on errors
         */
         bool initialize( 
