@@ -26,6 +26,7 @@
 // TerraLib
 #include "../common/HexUtils.h"
 #include "../common/Translator.h"
+#include "../common/StringUtils.h"
 #include "../dataaccess/dataset/CheckConstraint.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetItem.h"
@@ -34,6 +35,8 @@
 #include "../dataaccess/dataset/Index.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
+#include "../dataaccess/datasource/BatchExecutor.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../datatype/ByteArray.h"
 #include "../datatype/DateTime.h"
 #include "../datatype/DateTimeProperty.h"
@@ -51,8 +54,10 @@
 // STL
 #include <cassert>
 #include <cctype>
+#include <fstream>
 #include <memory>
 #include <sstream>
+
 
 // Boost
 #include <boost/lexical_cast.hpp>
@@ -1071,20 +1076,26 @@ void te::mysql::JSON2MySQL(const std::string path, std::auto_ptr<te::da::DataSou
     if (!f.is_open())
       return;
     
-    std::string fullsql = "";
-
+    t->begin();
+    
     boost::property_tree::ptree pt;
     boost::property_tree::json_parser::read_json(f,pt);
     BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("SRSs"))
     {  
+      std::string fullsql = "";
       fullsql += "INSERT INTO spatial_ref_sys VALUES (";
-      fullsql += v.second.get<unsigned int>("srid") + ", ";
-      fullsql += "'', ";   // auth_name???
-      fullsql += 0 + ", "; // auth_srid???
+      fullsql += te::common::Convert2String(v.second.get<unsigned int>("srid")) + ", ";
+      fullsql += "NULL, ";   // auth_name???
+      fullsql += te::common::Convert2String(0) + ", "; // auth_srid???
       fullsql += "'" + v.second.get<std::string>("wkt") + "', "; // srtext
       fullsql += "'" + v.second.get<std::string>("pj4txt") + "');\n"; // proj4text
+
+      t->execute(fullsql);
     }
     f.close();
+
+    t->commit();
+
   }
   catch(boost::property_tree::json_parser::json_parser_error &je)
   {
