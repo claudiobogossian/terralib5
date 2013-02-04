@@ -193,8 +193,8 @@ namespace te
         int m_endingcolumn;                                //!< The column (in current line) to finalize the iteration.
         int m_startingrow;                                 //!< The starting row of the iteration.
         int m_endingrow;                                   //!< The ending row of the iteration.
-        unsigned m_maxcolumns;                             //!< The number of columns in band.
-        unsigned m_maxrows;                                //!< The number of rows in band.
+        int m_maxcolumns;                                  //!< The number of columns in band.
+        int m_maxrows;                                     //!< The number of rows in band.
         int m_actualintersection;                          //!< The actual line of the iterator.
         int m_nintersections;                              //!< The number number of intersected lines in current line of the iterator.
 
