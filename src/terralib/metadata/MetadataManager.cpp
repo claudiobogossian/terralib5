@@ -22,9 +22,9 @@
  */
 
 // TerraLib
+#include "../common/Exception.h"
 #include "../common/Translator.h"
 #include "Config.h"
-#include "Exception.h"
 #include "MetadataAnnotation.h"
 #include "MetadataManager.h"
 
