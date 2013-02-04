@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../dataaccess/Definitions.h"
+#include "../Config.h"
 
 // STL
 #include <string>
@@ -41,7 +42,7 @@ namespace te
   {
     namespace widgets
     {
-      struct DataExchangeStatus
+      struct TEQTWIDGETSEXPORT DataExchangeStatus
       {
         te::da::DataSetTypePtr m_dataset;
         bool m_successful;
