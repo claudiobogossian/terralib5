@@ -111,7 +111,11 @@ void te::serialize::Save(const te::xl::SimpleLink* link, te::xml::Writer& writer
     case te::xl::SHOW_NEW:
       writer.writeAttribute("xlink:show", "new");
     break;
-
+      
+    case te::xl::SHOW_REPLACE:
+      writer.writeAttribute("xlink:show", "replace");
+      break;     
+      
     case te::xl::SHOW_OTHER:
       writer.writeAttribute("xlink:show", "other");
   }
