@@ -15,7 +15,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEMDDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list (APPEND DEP_LIBS terralib_common terralib_maptools)
+list (APPEND DEP_LIBS terralib_common terralib_datatype terralib_geometry terralib_dataaccess)
 
 set (
   _DIRS 
