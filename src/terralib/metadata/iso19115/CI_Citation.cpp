@@ -53,3 +53,8 @@ te::md::CI_Citation::getDateType() const
 {
   return m_dateType;
 }
+
+te::md::CI_Citation* te::md::CI_Citation::clone() const
+{
+  return new te::md::CI_Citation(m_title, m_date, m_dateType);
+}

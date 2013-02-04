@@ -28,9 +28,9 @@
 #include "../../datasource/core/DataSourceTypeManager.h"
 #include "../../datasource/explorer/DataSetItem.h"
 #include "../explorer/DataSetTreeView.h"
-#include "ui/DataSetSelectorDialogForm.h"
 #include "DataSetSelectorDialog.h"
 #include "DataSetSelectorWidget.h"
+#include "ui_DataSetSelectorDialogForm.h"
 
 // Qt
 #include <QtGui/QMessageBox>

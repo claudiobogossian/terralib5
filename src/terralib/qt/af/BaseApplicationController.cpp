@@ -402,6 +402,8 @@ void te::qt::af::BaseApplicationController::initializePlugins()
   {
     te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
 
+    SplashScreenManager::getInstance().close();
+
     QString msgErr(tr("Some plugins couldn't be loaded: %1.\n "
                       "Please, refer to plugin manager to fix the problem."));
 

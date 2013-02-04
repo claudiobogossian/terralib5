@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Envelope.h
+  \file terralib/gml/Envelope.h
 
   \brief Envelope defines an extent using a pair of positions defining opposite corners in arbitrary dimensions.
  */

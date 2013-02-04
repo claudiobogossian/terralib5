@@ -43,6 +43,7 @@ set (TERRALIB_XML_FILES_LOCATION "${ROOT}/resources/xml" CACHE STRING "Location 
 set (TERRALIB_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the about logo image.")
 set (TERRALIB_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib.")
 set (TERRALIB_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme).")
+set (TERRALIB_PLUGINS_DESCRIPTION "")
 # =========================
 
 option (BUILD_ANNOTATIONTEXT "Build Annotation Text module?" ON)
@@ -57,7 +58,7 @@ option (BUILD_GML "Build GML module?" ON)
 option (BUILD_IDL "Build IDL module?" OFF)
 option (BUILD_MAPTOOLS "Build Map Tools module?" ON)
 option (BUILD_MEMORY "Build Memory module?" ON)
-option (BUILD_METADATA "Build Metadata module?" OFF)
+option (BUILD_METADATA "Build Metadata module?" ON)
 option (BUILD_MYSQL "Build MySQL module?" OFF)
 option (BUILD_OGR "Build OGR module?" ON)
 option (BUILD_PLUGIN "Build Plugin module?" ON)
@@ -312,3 +313,5 @@ include (${T5_MODULES_PATH}/Package.cmake)
 include (${T5_MODULES_PATH}/GenerateDox.cmake)
 
 set (TE_LIBRARIES "${_TE_LIBRARIES}")
+
+#set (TERRALIB_PLUGINS_DESCRIPTION ${TERRALIB_PLUGINS_DESCRIPTION} PARENT_SCOPE)

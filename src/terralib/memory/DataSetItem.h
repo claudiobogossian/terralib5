@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetItem.h
+  \file terralib/memory/DataSetItem.h
 
   \brief An implementation of the DatasetItem class for the TerraLib In-Memory Data Access driver.
 */

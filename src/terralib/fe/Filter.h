@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Filter.h
+  \file terralib/fe/Filter.h
   
   \brief A Filter is any valid predicate expression.
  */

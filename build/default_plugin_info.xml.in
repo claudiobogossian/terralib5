@@ -17,8 +17,4 @@
     <Name>Terralib Team</Name>
     <Site xlink:href="http://www.terralib.org/"></Site>
     <Email>terralib-team@terralib.org</Email>
-  </Provider>
-  <Resources>
-    <Resource name="SharedLibraryName" xlink:href="${TEPLUGIN_LIBRARY}"></Resource>
-  </Resources>
-</PluginInfo>
+  </Provider>${TEPLUGIN_REQUIREMENTS}${TEPLUGIN_RESOURCES}</PluginInfo>

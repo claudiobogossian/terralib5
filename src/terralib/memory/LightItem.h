@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file LightItem.h
+  \file terralib/memory/LightItem.h
 
   \brief A thin and lean implementation of DatasetItem class.
 */

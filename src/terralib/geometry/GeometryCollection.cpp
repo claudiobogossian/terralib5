@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/GeometryCollection.cpp
+  \file terralib/geometry/GeometryCollection.cpp
 
   \brief It is a collection of other geometric objects.
 */

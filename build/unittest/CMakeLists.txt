@@ -58,6 +58,7 @@ add_subdirectory(terralib_unittest_geometry)
 add_subdirectory(terralib_unittest_memory)
 add_subdirectory(terralib_unittest_qt_widgets)
 add_subdirectory(terralib_unittest_rp)
+add_subdirectory(terralib_unittest_raster)
 add_subdirectory(terralib_unittest_sam)
 add_subdirectory(terralib_unittest_srs)
 

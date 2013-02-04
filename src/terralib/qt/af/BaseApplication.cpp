@@ -385,7 +385,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewDataSourceExplorer, "grid-visible", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
 
   //! Menu -Tools- actions
-  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, false);
+  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true);
   initAction(m_toolsDataSourceManagement, "", "Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, false);
 
   //! Menu -Edit- actions
@@ -400,8 +400,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
 
   //! Menu -Plugins- actions
-  initAction(m_pluginsManager, "", "Management", tr("&Management..."), tr("Manage the application plug-ins"), true, false, false);
-  initAction(m_pluginsBuilder, "", "Build a new Plug-in", tr("&Build a new Plug-in..."), tr("Create a new plug-in"), true, false, false);
+  initAction(m_pluginsManager, "", "Management", tr("&Management..."), tr("Manage the application plug-ins"), true, false, true);
+  initAction(m_pluginsBuilder, "", "Build a new Plug-in", tr("&Build a new Plug-in..."), tr("Create a new plug-in"), true, false, true);
 
   //! Menu -Help- actions
   initAction(m_helpContents, "help-browser", "View Help", tr("&View help..."), tr("Shows help dialog"), true, false, false);
@@ -411,7 +411,7 @@ void te::qt::af::BaseApplication::initActions()
   //! Menu -Project- actions
   initAction(m_projectRemoveLayer, "", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
   initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, false);
-  initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, false);
+  initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
   initAction(m_projectAddLayerImage, "", "Image", tr("&Image"), tr("Add a new layer from a satellite image"), true, false, false);
   initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
@@ -604,4 +604,5 @@ void te::qt::af::BaseApplication::initToolbars()
 void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
+  connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayer()));
 }

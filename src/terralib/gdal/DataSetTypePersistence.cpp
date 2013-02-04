@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetTypePersistence.cpp
+  \file terralib/gdal/DataSetTypePersistence.cpp
 
   \brief DataSetTypePersistence implementation for GDAL data provider.
 */

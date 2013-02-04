@@ -53,7 +53,7 @@ namespace te
           \brief Constructor.
           
           \param source A URI reference that specifies the source of the application information.
-          \param info  Any descriptive information.
+          \param value  Any descriptive information.
 
           \note The AppInfo object will take the ownership of the source and value pointers.
         */

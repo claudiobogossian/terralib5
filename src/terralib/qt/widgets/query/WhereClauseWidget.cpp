@@ -25,14 +25,22 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/datasource/DataSourceCatalog.h"
+#include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/query/BinaryFunction.h"
 #include "../../../dataaccess/query/DataSetName.h"
 #include "../../../dataaccess/query/Distinct.h"
 #include "../../../dataaccess/query/Field.h"
 #include "../../../dataaccess/query/Fields.h"
 #include "../../../dataaccess/query/From.h"
+#include "../../../dataaccess/query/LiteralDouble.h"
+#include "../../../dataaccess/query/LiteralInt32.h"
+#include "../../../dataaccess/query/LiteralString.h"
 #include "../../../dataaccess/query/PropertyName.h"
 #include "../../../dataaccess/query/Select.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "ui_WhereClauseWidgetForm.h"
 #include "WhereClauseWidget.h"
 
@@ -67,6 +75,71 @@ te::qt::widgets::WhereClauseWidget::~WhereClauseWidget()
 Ui::WhereClauseWidgetForm* te::qt::widgets::WhereClauseWidget::getForm() const
 {
   return m_ui.get();
+}
+
+te::da::Where* te::qt::widgets::WhereClauseWidget::getWhere()
+{
+  int row = m_ui->m_whereClauseTableWidget->rowCount();
+
+  if(row == 0)
+    return 0;
+
+  te::da::Expression* leftSide = 0;
+  std::string lastConnectorName = "";
+
+  for(int i = 0; i < row; ++i)
+  {
+    //create binary function
+    QTableWidgetItem* itemPropName = m_ui->m_whereClauseTableWidget->item(i, 0);
+    std::string propName = itemPropName->text().toStdString();
+
+    QTableWidgetItem* itemFuncName = m_ui->m_whereClauseTableWidget->item(i, 1);
+    std::string funcName = itemFuncName->text().toStdString();
+
+    QTableWidgetItem* itemValue = m_ui->m_whereClauseTableWidget->item(i, 2);
+    QString value = itemValue->text();
+
+    te::da::Expression* exp1 = new te::da::PropertyName(propName);
+    te::da::Expression* exp2 = 0;
+    
+    if(m_ui->m_valuePropertyRadioButton->isChecked())
+    {
+      std::string valueProperty = value.toStdString();
+      exp2 = new te::da::PropertyName(valueProperty);
+    }
+    else if(m_ui->m_valueValueRadioButton->isChecked())
+    {
+        exp2 = getExpression(value, propName);
+    }
+
+    te::da::BinaryFunction* func = new te::da::BinaryFunction(funcName, exp1, exp2);
+
+    //check left side expression
+    if(leftSide != 0 && lastConnectorName.empty() == false)
+    {
+      te::da::BinaryFunction* connectFunc = new te::da::BinaryFunction(lastConnectorName, leftSide, func);
+      leftSide = connectFunc;
+    }
+    else
+    {
+      leftSide = func;
+    }
+
+    //check connector
+    QTableWidgetItem* itemConnectorName = m_ui->m_whereClauseTableWidget->item(i, 3);
+    if(itemPropName->text().isEmpty() == false)
+    {
+      lastConnectorName = itemConnectorName->text().toStdString();
+    }
+    else
+    {
+      lastConnectorName = "";
+    }
+  }
+
+  te::da::Where* w = new te::da::Where(leftSide);
+
+  return w;
 }
 
 void te::qt::widgets::WhereClauseWidget::setDataSource(const te::da::DataSourcePtr& ds)
@@ -260,4 +333,67 @@ void te::qt::widgets::WhereClauseWidget::onValuePropertyRadioButtonClicked()
   delete transactor;
   delete dataset;
   delete select;
+}
+
+te::da::Expression* te::qt::widgets::WhereClauseWidget::getExpression(const QString& value, const std::string& propName)
+{
+  //get the dataset name
+  int pos = propName.find(".");
+  std::string dataSetAliasName = propName.substr(0, pos);
+  std::string propertyName = propName.substr(pos + 1, propName.size() - 1);
+  std::string dataSetName = "";
+
+  for(size_t t = 0; t < m_fromItens.size(); ++t)
+  {
+    if(m_fromItens[t].second == dataSetAliasName)
+    {
+      dataSetName = m_fromItens[t].first;
+      break;
+    }
+  }
+
+  if(dataSetName.empty())
+    return 0;
+
+  //get the dataset property type
+  te::da::DataSourceTransactor* transactor = m_ds->getTransactor();
+  te::da::DataSourceCatalogLoader* catalog = transactor->getCatalogLoader();
+  catalog->loadCatalog(true);
+
+  te::da::DataSetType* dsType = catalog->getDataSetType(dataSetName);
+
+  if(dsType)
+  {
+    te::dt::Property* prop = dsType->getProperty(propertyName);
+
+    te::da::Literal* l = 0;
+
+    if(prop)
+    {
+      if(prop->getType() == te::dt::DOUBLE_TYPE)
+      {
+        l = new te::da::LiteralDouble(value.toDouble());
+      }
+      else if(prop->getType() == te::dt::INT32_TYPE)
+      {
+        l = new te::da::LiteralInt32(value.toInt());
+      }
+      else if(prop->getType() == te::dt::STRING_TYPE)
+      {
+        l = new te::da::LiteralString(value.toStdString());
+      }
+    }
+
+    delete dsType;
+    delete catalog;
+    delete transactor;
+
+    return l;
+  }
+
+  delete dsType;
+  delete catalog;
+  delete transactor;
+
+  return 0;
 }

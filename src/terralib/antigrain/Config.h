@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/antigrain/Config.h
 
   \brief Configuration flags for the TerraLib AGG.
  */

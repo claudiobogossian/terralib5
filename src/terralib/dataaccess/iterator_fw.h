@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file iterator_fw.h
+  \file terralib/dataaccess/iterator_fw.h
    
   \brief Forward declarations for the Iterator module.
  */

@@ -26,7 +26,7 @@
 #ifndef __TERRALIB_IDL_INTERNAL_RP_SEGMENTER_H
 #define __TERRALIB_IDL_INTERNAL_RP_SEGMENTER_H
 
-#include "Config.h"
+#include "../Config.h"
 
 #include <stdio.h>
 

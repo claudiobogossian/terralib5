@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/MultiSurface.cpp
+  \file terralib/geometry/MultiSurface.cpp
 
   \brief MultiSurface is a class that represents a 2-dimensional GeometryCollection whose elements are surfaces.
 */

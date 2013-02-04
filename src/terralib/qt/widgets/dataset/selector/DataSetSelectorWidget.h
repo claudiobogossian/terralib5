@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_DATASET_SELECTOR_INTERNAL_DATASETSELECTORWIDGET_H
 
 // TerraLib
+#include "../../../../dataaccess/Definitions.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../Config.h"
@@ -109,8 +110,8 @@ namespace te
 
           std::set<te::da::DataSetTypePtr, DataSetComparer> m_checkedDatasets;
           std::auto_ptr<Ui::DataSetSelectorWidgetForm> m_ui;
-          std::auto_ptr<DataSetDisplay> m_mapPreview;
-          std::auto_ptr<DataSetTableView> m_tblView;
+          //std::auto_ptr<DataSetDisplay> m_mapPreview;
+          //std::auto_ptr<DataSetTableView> m_tblView;
           std::auto_ptr<DataSetTreeView> m_datasetTreeView;
           te::da::DataSourceInfoPtr m_datasource;
           int m_nPreviewRows;

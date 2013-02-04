@@ -27,7 +27,8 @@
 #define __TERRALIB_PLUGINS_EXCHANGER_INTERNAL_DATAEXCHANGERWIZARD_H
 
 // TerraLib
-#include "../../../qt/widgets/datasource/core/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../Config.h"
 
 // STL
 #include <memory>
@@ -50,7 +51,7 @@ namespace te
       class DataSetSelectorWizardPage;
       class DataSourceSelectorWizardPage;
 
-      class DataExchangerWizard : public QWizard
+      class TEQTWIDGETSEXPORT DataExchangerWizard : public QWizard
       {
         Q_OBJECT
 
@@ -62,9 +63,9 @@ namespace te
 
           int nextId() const;
 
-          DataSourcePtr getDataSource() const;
+          te::da::DataSourceInfoPtr getDataSource() const;
 
-          DataSourcePtr getTargetDataSource() const;
+          te::da::DataSourceInfoPtr getTargetDataSource() const;
 
         protected slots:
 

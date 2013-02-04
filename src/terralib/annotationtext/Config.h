@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/annotationtext/Config.h
 
   \brief Configuration flags for the TerraLib Annotation Text module.  
  */

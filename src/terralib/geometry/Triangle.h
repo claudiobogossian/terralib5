@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Triangle.h
+  \file terralib/geometry/Triangle.h
 
   \brief Triangle is a polygon with 3 distinct, non-collinear vertices and no interior boundary.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/MultiPolygon.h
+  \file terralib/geometry/MultiPolygon.h
 
   \brief MultiPolygon is a MultiSurface whose elements are Polygons.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSource.h
+  \file terralib/ogr/DataSource.h
 
   \brief The OGR data source provider.  
  */

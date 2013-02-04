@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.h
+  \file terralib/ado/Exception.h
 
   \brief An exception class for ADO.
 */

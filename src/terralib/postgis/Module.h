@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/postgis/Module.h
    
   \brief The TerraLib PostGIS driver is a plugin.
 */

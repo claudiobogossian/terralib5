@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.cpp
+  \file terralib/ado/Exception.cpp
 
   \brief An exception class for ADO.
 */

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Mul.h
+  \file terralib/fe/Mul.h
 
   \brief The multiply operator.
  */

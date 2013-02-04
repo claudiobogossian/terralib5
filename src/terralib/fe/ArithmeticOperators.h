@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ArithmeticOperators.h
+  \file terralib/fe/ArithmeticOperators.h
   
   \brief It is used to indicate what arithmetic operators the a service can support.  
  */

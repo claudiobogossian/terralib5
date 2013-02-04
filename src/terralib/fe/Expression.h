@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Expression.h
+  \file terralib/fe/Expression.h
   
   \brief This is an abstract class that models a Filter Encoding expression.  
  */

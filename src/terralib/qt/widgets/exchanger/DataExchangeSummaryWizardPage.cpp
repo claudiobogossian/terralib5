@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSetType.h"
-#include "ui/DataExchangeSummaryWizardPageForm.h"
+#include "ui_DataExchangeSummaryWizardPageForm.h"
 #include "DataExchangeStatus.h"
 #include "DataExchangeSummaryWizardPage.h"
 

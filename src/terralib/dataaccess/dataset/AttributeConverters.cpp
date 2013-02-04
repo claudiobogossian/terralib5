@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/datasource/dataset/AttributeConverters.cpp
+  \file terralib/dataaccess/dataset/AttributeConverters.cpp
 
   \brief Definition of attribute converter and a set of them.
 */

@@ -32,12 +32,12 @@
 #include "../../../../memory/LightDataSet.h"
 #include "../../datasource/explorer/AbstractDataSourceTreeItem.h"
 #include "../../datasource/explorer/DataSetItem.h"
-#include "../../mapdisplay/DataSetDisplay.h"
-#include "../../table/DataSetTableView.h"
+//#include "../../mapdisplay/DataSetDisplay.h"
+//#include "../../table/DataSetTableView.h"
 #include "../explorer/DataSetTreeView.h"
 #include "../explorer/DataSetTreeModel.h"
-#include "ui/DataSetSelectorWidgetForm.h"
 #include "DataSetSelectorWidget.h"
+#include "ui_DataSetSelectorWidgetForm.h"
 
 // STL
 #include <algorithm>
@@ -63,14 +63,14 @@ te::qt::widgets::DataSetSelectorWidget::DataSetSelectorWidget(QWidget* parent, Q
   QVBoxLayout* datasetGroupBoxLayout = new QVBoxLayout(m_ui->m_datasetGroupBox);
   datasetGroupBoxLayout->addWidget(m_datasetTreeView.get(), 1);
 
-  m_mapPreview.reset(new DataSetDisplay(m_ui->m_mapPreviewGroupBox));
-  QVBoxLayout* mapPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_mapPreviewGroupBox);
-  mapPreviewGroupBoxLayout->addWidget(m_mapPreview.get(), 1);
+  //m_mapPreview.reset(new DataSetDisplay(m_ui->m_mapPreviewGroupBox));
+  //QVBoxLayout* mapPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_mapPreviewGroupBox);
+  //mapPreviewGroupBoxLayout->addWidget(m_mapPreview.get(), 1);
   //m_mapPreview->show();
 
-  m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewGroupBox));
-  QVBoxLayout* dataPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_dataPreviewGroupBox);
-  dataPreviewGroupBoxLayout->addWidget(m_tblView.get(), 1);
+  //m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewGroupBox));
+  //QVBoxLayout* dataPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_dataPreviewGroupBox);
+  //dataPreviewGroupBoxLayout->addWidget(m_tblView.get(), 1);
   //m_tblView->show();
 
 // connect signals and slots
@@ -201,8 +201,8 @@ void te::qt::widgets::DataSetSelectorWidget::previewMap(const te::da::DataSetTyp
   {
     if(m_ui->m_mapPreviewGroupBox->isChecked())
     {
-      m_mapPreview->clear();
-      m_mapPreview->draw(dataset, m_datasource);
+      //m_mapPreview->clear();
+      //m_mapPreview->draw(dataset, m_datasource);
     }
   }
   catch(...)
@@ -236,10 +236,10 @@ void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTy
     if(feature->moveNext())
       memFeature->copy(feature.get(), m_nPreviewRows);
 
-    QAbstractItemModel* oldModel = m_tblView->model();
-    m_tblView->setModel(0);
-    delete oldModel;
-    m_tblView->set(memFeature.release());
+    //QAbstractItemModel* oldModel = m_tblView->model();
+    //m_tblView->setModel(0);
+    //delete oldModel;
+    //m_tblView->set(memFeature.release());
   }
   catch(...)
   {
@@ -286,7 +286,7 @@ void te::qt::widgets::DataSetSelectorWidget::onMapPreviewToggled(bool on)
   }
   else
   {
-    m_mapPreview->clear();
+    /*m_mapPreview->clear();*/
   }
 }
 
@@ -310,9 +310,9 @@ void te::qt::widgets::DataSetSelectorWidget::onDataPreviewToggled(bool on)
   }
   else
   {
-    QAbstractItemModel* oldModel = m_tblView->model();
-    m_tblView->setModel(0);
-    delete oldModel;
+    //QAbstractItemModel* oldModel = m_tblView->model();
+    //m_tblView->setModel(0);
+    //delete oldModel;
   }
 }
 

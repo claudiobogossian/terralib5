@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/MultiPoint.cpp
+  \file terralib/geometry/MultiPoint.cpp
 
   \brief MultiPoint is a GeometryCollection whose elements are restricted to points.
 */

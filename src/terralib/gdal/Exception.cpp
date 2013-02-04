@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Exception.cpp
+  \file terralib/gdal/Exception.cpp
 
   \brief An exception class for the GDAL module.
  */

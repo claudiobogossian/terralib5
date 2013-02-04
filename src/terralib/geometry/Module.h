@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Module.h
+  \file terralib/geometry/Module.h
    
   \brief This singleton defines the TerraLib Vector Geometry module entry.  
 */

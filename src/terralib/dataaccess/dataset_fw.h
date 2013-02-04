@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file dataset_fw.h
+  \file terralib/dataaccess/dataset_fw.h
    
   \brief Forward declarations for the dataset module.
  */

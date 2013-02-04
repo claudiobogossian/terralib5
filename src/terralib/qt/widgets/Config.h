@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/qt/widgets/Config.h
 
   \brief Configuration flags for the TerraLib Qt Widgets.
  */

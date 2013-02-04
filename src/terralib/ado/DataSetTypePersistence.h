@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSetTypePersistence.h
+  \file terralib/ado/DataSetTypePersistence.h
 
   \brief DataSetTypePersistence implementation for ADO.
 */

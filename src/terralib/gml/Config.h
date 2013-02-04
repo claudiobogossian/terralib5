@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/gml/Config.h
 
   \brief Configuration flags for the GML module of TerraLib.
  */

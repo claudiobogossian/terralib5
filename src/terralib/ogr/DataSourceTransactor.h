@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Transactor.h
+  \file terralib/ogr/DataSourceTransactor.h
 
   \brief Transactor class for OGR data provider.  
  */

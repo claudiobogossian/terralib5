@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file te/geometry/Surface.cpp
+  \file terralib/geometry/Surface.cpp
 
   \brief Surface is an abstract class that represents a 2-dimensional geometric objects.
 */

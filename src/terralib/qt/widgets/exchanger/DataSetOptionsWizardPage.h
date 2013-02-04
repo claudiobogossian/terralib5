@@ -28,7 +28,8 @@
 
 // TerraLib
 #include "../../../dataaccess/Definitions.h"
-#include "../../../qt/widgets/datasource/core/DataSource.h"
+#include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../Config.h"
 
 // STL
 #include <list>
@@ -48,7 +49,7 @@ namespace te
   {
     namespace widgets
     {
-      class DataSetOptionsWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT DataSetOptionsWizardPage : public QWizardPage
       {
         Q_OBJECT
 
@@ -59,8 +60,8 @@ namespace te
           ~DataSetOptionsWizardPage();
 
           void set(const std::list<te::da::DataSetTypePtr>& datasets,
-                   const DataSourcePtr& datasource,
-                   const DataSourcePtr& targetDatasource);
+                   const te::da::DataSourceInfoPtr& datasource,
+                   const te::da::DataSourceInfoPtr& targetDatasource);
 
           const std::list<te::da::DataSetTypePtr>& getDatasets() const;
 
@@ -113,8 +114,8 @@ namespace te
 
           std::auto_ptr<Ui::DataSetOptionsWizardPageForm> m_ui;
           std::list<te::da::DataSetTypePtr> m_datasets;
-          DataSourcePtr m_datasource;
-          DataSourcePtr m_targetDatasource;
+          te::da::DataSourceInfoPtr m_datasource;
+          te::da::DataSourceInfoPtr m_targetDatasource;
       };
 
     } // end namespace widgets

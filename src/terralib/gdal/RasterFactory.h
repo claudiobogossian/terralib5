@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file RasterFactory.h
+  \file terralib/gdal/RasterFactory.h
 
   \brief This is the concrete factory for GDAL rasters.
 */
