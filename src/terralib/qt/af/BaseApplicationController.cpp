@@ -211,6 +211,7 @@ void  te::qt::af::BaseApplicationController::initialize()
   SplashScreenManager::getInstance().showMessage(tr("Application configuration file loaded!"));
 
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
+  m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
 
   qApp->setApplicationName(m_appName);
 

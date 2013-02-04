@@ -3,12 +3,13 @@ cmake_minimum_required(VERSION 2.8)
 set (PROJ_NAME "all_te")
 project(${PROJ_NAME})
 
-include (./terralib/TerraLib.cmake)
-include (./terralib_qt_plugins/TerraLib_Plugins.cmake)
+include (terralib/TerraLib.cmake)
 
 set(TE_CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 set(TE_CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
 set(TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")  
+
+include (terralib_qt_plugins/TerraLib_Plugins.cmake)
 
 set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 

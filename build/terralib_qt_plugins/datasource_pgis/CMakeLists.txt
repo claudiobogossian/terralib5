@@ -72,7 +72,7 @@ set (TEPLUGIN_DISPLAYNAME "PostGIS Data Source Qt-Widgets")
 set (TEPLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by PostGIS driver.")
 set (TEPLUGIN_LIBRARY "terralib_qt_plugin_datasource_pgis")
 set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis")
-set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_gdal.xml")
+set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_pgis.xml")
 getPluginResources("SharedLibraryName" "${TEPLUGIN_LIBRARY}" RSC_LINK)
 getPluginResources("LangFile" "pt.br" RSC_LINK2)
 set (TEPLUGIN_RESOURCES 

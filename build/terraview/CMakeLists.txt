@@ -12,12 +12,32 @@ set(INCLDIR ${SRCDIR})                            # directory where the header f
 set(PROJ_NAME "terraview")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 
-include (${CMAKE_BINARY_DIR}/terralibConfig.cmake)
+set (
+  TE_INCLUDE_DIRS
+  "${CMAKE_BINARY_DIR}" 
+  "${ROOT}/src"
+)
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost ${_Boost_VERSION} REQUIRED COMPONENTS system)
 
-include_directories (${TE_INCLUDE_DIRS} ${INCLDIR} ${Boost_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-list (APPEND _dep_libs ${QT_LIBRARIES} ${Boost_LIBRARIES}) 
+if(Boost_FOUND)
+  list (APPEND _dep_incs ${Boost_INCLUDE_DIRS})
+  list (APPEND _dep_libs ${Boost_LIBRARIES})
+endif()
+
+find_package(Qt4 ${_Qt4_VERSION} REQUIRED COMPONENTS QtCore QtGui)
+
+if(QT4_FOUND)
+  include (${QT_USE_FILE})
+  add_definitions (${QT_DEFINITIONS})
+
+  list (APPEND _dep_incs ${QT_INCLUDE_DIR})
+  list (APPEND _dep_libs ${QT_LIBRARIES})
+endif()
+
+list (APPEND _dep_incs ${TE_INCLUDE_DIRS} ${INCLDIR} ${CMAKE_CURRENT_BINARY_DIR})
+
+include_directories ("${_dep_incs}")
 
 list (APPEND 
   _dep_libs 
