@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AbstractOp.cpp
+  \file terralib/fe/AbstractOp.cpp
   
   \brief An abstract interface for operators.  
  */

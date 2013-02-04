@@ -18,7 +18,7 @@
  */
 
 /*! 
-  \file UpdateLayerVisibilty.h
+  \file UpdateLayerVisibility.h
 
   \brief This event signals that a the layer visibility changed.
  */

@@ -28,7 +28,13 @@ if(Boost_FOUND)
 endif()
 
 list (APPEND DEP_INCLUDES ${TE_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-list (APPEND DEP_LIBS ${TE_LIBRARIES})
+list (APPEND 
+  DEP_LIBS 
+  terralib_common
+  terralib_dataaccess
+  terralib_plugin
+  terralib_qt_widgets
+)
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${INCLDIR}/*.h)
@@ -39,11 +45,31 @@ endif(WIN32)
 
 add_definitions(-DTEQTPLUGINSHPDLL)
 
-set (AF_PLUGIN_FILE "qt_shp.xml")
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_shp.xml")
-
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
-                 
+
+#Exporting plug-in file
+set (TEPLUGIN_NAME "te.qt.datasource.shp")
+set (TEPLUGIN_DISPLAYNAME "ShapeFile Data Source Qt-Widgets")
+set (TEPLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by OGR driver.")
+set (TEPLUGIN_LIBRARY "terralib_qt_plugin_datasource_shp")
+set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:shp")
+set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_shp.xml")
+getPluginResources("SharedLibraryName" "${TEPLUGIN_LIBRARY}" RSC_LINK)
+getPluginResources("LangFile" "pt.br" RSC_LINK2)
+set (TEPLUGIN_RESOURCES 
+  "  <Resources>${RSC_LINK}  ${RSC_LINK2}\n  </Resources>\n"
+)
+getPluginRequirements("te.da.ogr" REQ)
+set (TEPLUGIN_REQUIREMENTS 
+  "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
+)
+
+#Exporting plug-in information for the configuration file
+set (PLG_INFO "")
+getPluginInfo("${TEPLUGIN_NAME}" "${TEPLUGIN_FILE}" PLG_INFO)
+set (TERRALIB_PLUGINS_DESCRIPTION "${TERRALIB_PLUGINS_DESCRIPTION}${PLG_INFO}" PARENT_SCOPE)
+  
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TEPLUGIN_FILE})

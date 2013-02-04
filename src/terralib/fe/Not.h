@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Not.h
+  \file terralib/fe/Not.h
 
   \brief Boolean NOT operator.
  */

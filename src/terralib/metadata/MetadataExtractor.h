@@ -16,27 +16,38 @@
  along with TerraLib. See COPYING. If not, write to
  TerraLib Team at <terralib-team@terralib.org>.
  */
+
 /*!
- \file terralib/metadata/Exception.h
- 
- \brief An exception class for the metadata module.
+ \file terralib/metadata/MetadataExtractor.h
  */
 
-#ifndef __TERRALIB_METADATA_INTERNAL_EXCEPTION_H
-#define __TERRALIB_METADATA_INTERNAL_EXCEPTION_H
 
-// TerraLib
-#include "../common/Exception.h"
-#include "Config.h"
-
+#ifndef __TERRALIB_METADATA_INTERNAL_METADATAEXTRACTOR_H
+#define __TERRALIB_METADATA_INTERNAL_METADATAEXTRACTOR_H
 
 namespace te
 {
-  namespace md
-  {
-    TE_DECLARE_EXCEPTION_CLASS(TEMDEXPORT, Exception, te::common::Exception)
+  namespace da { class DataSet; }
+  
+  namespace md 
+  { 
+    class MD_Metadata; 
+    
+//    /*! 
+//     \brief Extract some metadata from a layer. 
+//     \param l Pointer to a layer. Do not pass null.
+//     \return a pointer to a metadata record if success or null otherwise.
+//     */
+//    TEMDEXPORT MD_Metadata* Extract(const te::map::Layer* l);
+    
+    /*! 
+     \brief Extract some metadata from a layer. 
+     \param d Pointer to a layer. Do not pass null.
+     \return a pointer to a metadata record if success or null otherwise.
+     */
+    TEMDEXPORT MD_Metadata* Extract(const te::da::DataSet* d);    
     
   } // end namespace md
 }   // end namespace te
 
-#endif  // __TERRALIB_METADATA_INTERNAL_EXCEPTION_H
+#endif // __TERRALIB_METADATA_INTERNAL_METADATAEXTRACTOR_H

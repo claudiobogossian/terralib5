@@ -1,4 +1,4 @@
-﻿/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,13 +18,10 @@
  */
 
 // TerraLib
-#include <terralib/common/Platform.h>
-#include <terralib/dataaccess/Platform.h>
-#include <terralib/geometry/Platform.h>
-#include <terralib/postgis/Platform.h>
+#include <terralib/raster_fw.h>
 
-// PostGIS test suit
-#include "TsManagerPostGIS.h"
+#include <terralib/common/Module.h>
+#include <terralib/plugin.h>
 
 // cppUnit
 #include <cppunit/BriefTestProgressListener.h>
@@ -38,31 +35,29 @@
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/TestRunner.h>
 
+// Unit-Test TerraLib includes by platform
+#include "Config.h"
+
+#include <cstdlib>
+
+#define TS_TEST_NAME "testResult_raster"
+
 int main(int /*argc*/, char** /*argv*/)
 {
-// initialize TerraLib Platform
-  te::common::Platform::initialize();  
-  te::gm::Platform::initialize();
-  te::da::Platform::initialize();  
-  te::pgis::Platform::initialize();  
-
-// initialize PostGIS test suit
-  TsManagerPostGIS::initialize();
-  
-// it creates the event manager and test controller
+  // it creates the event manager and test controller
   CPPUNIT_NS::TestResult controller;
 
-// it adds a listener that collects test result 
+  // it adds a listener that collects test result 
   CPPUNIT_NS::TestResultCollector result;
 
   controller.addListener(&result);
 
-// it adds a listener that print dots as test run.
+  // it adds a listener that print dots as test run.
   CPPUNIT_NS::BriefTestProgressListener progress;
 
   controller.addListener(&progress);
 
-// it adds the top suite to the test runner
+  // it adds the top suite to the test runner
   CppUnit::Test* suite = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
 
   CPPUNIT_NS::TestRunner runner;
@@ -74,46 +69,33 @@ int main(int /*argc*/, char** /*argv*/)
   CPPUNIT_NS::CompilerOutputter outputter( &result, CPPUNIT_NS::stdCOut() );
   outputter.write();
 
-// Testing  different outputs
-  // Print only fail results showed in the DOS window in a file (at ...build\win-msvc-2008\terralib_unittest_dataaccess\)
-  std::ofstream file1( "testsResult_dos.txt" );
+// Testing  different outputs...
+
+// Print only fail results in a txt file (the same containt you see in DOS window)
+  std::ofstream file1(TE_DATA_UNITTEST_LOCALE "/" TS_TEST_NAME ".txt" );
   CPPUNIT_NS::CompilerOutputter outputter1( &result, file1);
   outputter1.write();
   file1.close();
 
-  // Printing testResult in XML file at ...build\win-msvc-2008\terralib_unittest_dataaccess\)
-  // NOTE: copy StyleSheet "report.xsl" from the cppunit library to the same dir of testResult
-  // in order to be able use a web-browser to see the testResult.   
-  CPPUNIT_NS::OFileStream file2( "testsResult_xml.xml" );
+// Printing testResults in XML file 
+  // The testResult_*.xml files will be saved at TE_DATA_UNITTEST_LOCALE directory.
+  // NOTE: styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl)
+  // and then you can open the testResults using your web-browser.
+  // One level up TE_DATA_UNITTEST_LOCALE should have a 'data' directory with all files used by unit test.
+ 
+  CPPUNIT_NS::OFileStream file2(TE_DATA_UNITTEST_LOCALE "/" TS_TEST_NAME ".xml");
   CPPUNIT_NS::XmlOutputter xml( &result, file2 );
-  xml.setStyleSheet( "report.xsl" ); //it is found at c:\....\cppunit-1.12.1\contrib\xml-xsl
+  xml.setStyleSheet( "report.xsl" ); 
   xml.write();
   file2.close();
 
-  // Print formated testResult in a file at ...build\win-msvc-2008\terralib_unittest_dataaccess\)
-  CPPUNIT_NS::OFileStream file3( "testsResult_formated.txt" );
+// Print formated testResult in a txt 
+  CPPUNIT_NS::OFileStream file3(TE_DATA_UNITTEST_LOCALE "/" TS_TEST_NAME ".txt" );
   CPPUNIT_NS::TextOutputter outputter3( &result, file3 );
   outputter3.write();
   file3.close();
 
-// Automatic unittest cannot have getchar calls since the test will never end.
-//  //Giving time to see CPPUNIT_ASSERT_MESSAGE in a DOS window //marisa
-//  {   int i = 0;
-//      CPPUNIT_NS::stdCOut() << "\n Press keyboard to exit \n";
-//      while(! getchar())
-//          i ++;
-//  } //marisa
-
   bool resultStatus = result.wasSuccessful();
-
-// finalize PostGIS test suit
-  TsManagerPostGIS::finalize();
-
-// finalize TerraLib Plataform
-  te::pgis::Platform::finalize();  
-  te::da::Platform::finalize();  
-  te::gm::Platform::finalize();
-  te::common::Platform::finalize();
 
   return resultStatus ? EXIT_SUCCESS : EXIT_FAILURE;
 }

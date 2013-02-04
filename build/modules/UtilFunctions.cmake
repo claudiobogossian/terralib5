@@ -220,29 +220,23 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   
   configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
 
-if(WIN32)  
-  install(
-    TARGETS ${PROJ_NAME}
-    RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
-  )
-else()
-  install(
-    TARGETS ${PROJ_NAME}
-    LIBRARY DESTINATION "bin/plugins" COMPONENT PLUGINS
-  )
-endif()
+  if(WIN32)  
+    install(
+      TARGETS ${PROJ_NAME}
+      RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
+    )
+  else()
+    install(
+      TARGETS ${PROJ_NAME}
+      LIBRARY DESTINATION "bin/plugins" COMPONENT PLUGINS
+    )
+  endif()
   
   install (
     FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_${proj_name}_info.xml
     DESTINATION "bin/plugins"
     COMPONENT PLUGINS
   )
-  
-  # installing libraries
-#  installTarget(${PROJ_NAME} "lib" "LIBRARIES" "bin" "BINARIES")
-  
-  # installing header files
-#  installFiles(${root_h_dir} "terralib" "HEADERS" "*.h*")
 ENDMACRO(makePluginProject)
 
 # Macro installTarget
@@ -473,4 +467,45 @@ MACRO(te_moc2 input prefix output)
   set (moc_ "")
   qt4_wrap_cpp(moc_ ${input} OPTIONS -p ${prefix})
   list(APPEND ${output} ${moc_})
-ENDMACRO()
+ENDMACRO(te_moc2)
+
+# Macro getPluginInfo
+#
+# Get xml formatted information of a plug-in 
+#
+# param plugin_name[input] Name of the plug-in.
+# param plugin_location[input] Location of the binary file of the plug-in.
+# param plugins_info[output] Variable containing information plug-ins updated.
+#
+MACRO(getPluginInfo plugin_name plugin_location plugins_info)
+set (${plugins_info}
+  "  <Plugin>\n    <Name>${plugin_name}</Name>\n    <Path xlink:href=\"${plugin_location}\"></Path>\n  </Plugin>\n"
+  )
+ENDMACRO(getPluginInfo)
+
+# Macro getPluginResources
+#
+# Get xml formatted information of a resource 
+#
+# param rsc_name[input] Resource type.
+# param rsc_link[input] Resource xlink.
+# param rsc_info[output] Resource information formatted as XML.
+#
+MACRO(getPluginResources rsc_name rsc_link rsc_info)
+  set (${rsc_info}
+  "\n    <Resource name=\"${rsc_name}\" xlink:href=\"${rsc_link}\"/>"
+  )  
+ENDMACRO(getPluginResources)
+
+# Macro getPluginRequirements
+#
+# Get xml formatted information of a resource 
+#
+# param req_name[input] Requirement name.
+# param req_info[output] Requirement information formatted as XML.
+#
+MACRO(getPluginRequirements req_name req_info)
+  set (${req_info}
+  "\n    <PluginId>${req_name}</PluginId>\n"
+  )  
+ENDMACRO(getPluginRequirements)

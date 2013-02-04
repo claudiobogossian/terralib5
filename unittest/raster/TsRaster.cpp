@@ -18,31 +18,33 @@
  */
 
 /*!
-  \file windowsunittestplatformdefines.h
-
-  \brief Windows Configuration flags for TerraLib Unittest.
+  \file TsRaster.cpp
+ 
+  \brief A test suit for the Cached Raster class.
  */
 
-#ifndef __TERRALIB_WINDOWSUNITTESTPLATFORMDEFINES_H
-#define __TERRALIB_WINDOWSUNITTESTPLATFORMDEFINES_H
+#include "TsRaster.h"
+#include "../Config.h"
 
-/** @name Flags for Unittest
- *  Flags for TerraLib Unittest
- */
-//@{
+#include <terralib/memory/CachedRaster.h>
+#include <terralib/raster/RasterFactory.h>
+#include <terralib/raster/BandProperty.h>
+#include <terralib/raster/Grid.h>
 
-/*!
-  \def TE_DATA_UNITTEST_LOCALE
+#include <terralib/dataaccess/datasource/DataSourceFactory.h>
 
-  \brief This flag tells where is the base folder for the data used in Unittests.
- */
-#ifndef TE_DATA_UNITTEST_LOCALE
-#define TE_DATA_UNITTEST_LOCALE "."
-#endif
+#include <boost/shared_ptr.hpp>
 
-//@}
+CPPUNIT_TEST_SUITE_REGISTRATION( TsRaster );
 
+void TsRaster::tcRasterConstructor()
+{
+}
 
-#endif  // __TERRALIB_WINDOWSUNITTESTPLATFORMDEFINES_H
+void TsRaster::tcRasterGrid()
+{
+}
 
-
+void TsRaster::tcRasterCopyConstructor()
+{
+}

@@ -22,21 +22,27 @@
  */
 
 // TerraLib
+#include "../../srs/Config.h"
+#include "MD_Distribution.h"
 #include "MD_Metadata.h"
 
 // STL
 #include <cassert>
 
 
-te::md::MD_Metadata::MD_Metadata(te::md::CI_ResponsibleParty* contact)
+te::md::MD_Metadata::MD_Metadata(te::md::CI_ResponsibleParty* contact) :
+  m_characterSet(te::md::MD_utf8),
+  m_referenceSystemInfo(TE_UNKNOWN_SRS),
+  m_distribution(0)
 {
-  assert(contact);
-  
-  m_contact.push_back(contact);
+  if (contact)
+    m_contact.push_back(contact);
 }
 
 te::md::MD_Metadata::~MD_Metadata()
 {
+  if (m_distribution)
+    delete m_distribution;
 }
      
 void 
@@ -167,15 +173,33 @@ te::md::MD_Metadata::getReferenceSystem() const
 }
 
 void
-te::md::MD_Metadata::addDistributionFormat(te::md::MD_Format* fmt)
+te::md::MD_Metadata::setDistribution(te::md::MD_Distribution* d)
 {
-  assert(fmt);
-  m_distribution.push_back(fmt);
+  assert(d);
+  
+  if (m_distribution)
+    delete m_distribution;
+  
+  m_distribution = d;
 }
 
-const boost::ptr_vector<te::md::MD_Format>&
-te::md::MD_Metadata::getDistributionFormats() const
+const te::md::MD_Distribution* 
+te::md::MD_Metadata::getDistribution() const
 {
   return m_distribution;
+}
+
+void 
+te::md::MD_Metadata::setLineage(const std::string& stm)
+{
+  assert(!stm.empty());
+  
+  m_lineage = stm;
+}
+
+const std::string&  
+te::md::MD_Metadata::getLineage() const
+{
+  return m_lineage;
 }
 

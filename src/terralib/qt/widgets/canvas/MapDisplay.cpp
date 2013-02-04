@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BasicMapDisplay.cpp
+  \file terralib/qt/widgets/canvas/MapDisplay.cpp
 
   \brief A Qt4 widget to control the display of a set of layers.
 */

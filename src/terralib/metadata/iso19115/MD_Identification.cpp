@@ -62,3 +62,34 @@ te::md::MD_Identification::getStatus() const
 {
   return m_status;
 }
+
+void 
+te::md::MD_Identification::addPointOfContact(CI_ResponsibleParty* p)
+{
+  assert(p);
+  m_poc.push_back(p);
+}
+
+//! Returns the resource points of contact.
+const boost::ptr_vector<te::md::CI_ResponsibleParty>& 
+te::md::MD_Identification:: getPointsOfContact() const
+{
+  return m_poc;
+}
+
+te::md::MD_Identification* te::md::MD_Identification::clone() const
+{
+  te::md::CI_Citation* ci = 0;
+  if (m_citation)
+    ci = m_citation->clone();
+  
+  te::md::MD_Identification* id = new MD_Identification(ci, m_abstract, m_status);
+  
+  boost::ptr_vector<te::md::CI_ResponsibleParty>::const_iterator it = m_poc.begin();
+  while (it != m_poc.end())
+  {
+    CI_ResponsibleParty* rp = it->clone();
+    id->addPointOfContact(rp);
+  }
+  return id;
+}

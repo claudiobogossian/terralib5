@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file And.h
+  \file terralib/fe/And.h
 
   \brief Boolean logic operator: AND.
  */

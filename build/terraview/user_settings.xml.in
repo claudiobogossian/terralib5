@@ -10,8 +10,8 @@
   
   <ToolBarIconSize>24</ToolBarIconSize>
  
-  <SpecificPlugins>
 <!-- 
+  <SpecificPlugins>
     <Plugin>
       <Name>te.da.gdal</Name>
       <Path xlink:href="plugins\gdal\plugin_info.xml"></Path>
@@ -24,17 +24,15 @@
       <Name>te.cellspace.builder</Name>
       <Path xlink:href="plugins\plugin_cellspace_builder\plugin_info.xml"></Path>
     </Plugin>
- -->
   </SpecificPlugins>
  
   <EnabledPlugins>
-<!--
     <Plugin>te.da.ogr</Plugin>
     <Plugin>te.da.gdal</Plugin>
     <Plugin>te.da.pgis</Plugin>
     <Plugin>te.plugin.builder</Plugin>
--->    
   </EnabledPlugins>
+-->    
   
   <DataSourcesFile></DataSourcesFile>
   

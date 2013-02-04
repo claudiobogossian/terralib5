@@ -18,43 +18,41 @@
  */
 
 /*!
- \file CI_Citation.cpp
-*/
+ \file terralib/metadata/iso19115/MD_Distribution.cpp
+ */
 
-// TerraLib
-#include "CI_Citation.h"
+#include "MD_Distribution.h"
+#include "MD_Format.h"
 
-// STL
 #include <cassert>
+      
+te::md::MD_Distribution::MD_Distribution()
+{} 
 
-te::md::CI_Citation::CI_Citation(const std::string& title, boost::gregorian::date date, CI_DateTypeCode dType):
-  m_title(title),
-  m_date(date), 
-  m_dateType(dType)
-{}
+te::md::MD_Distribution::~MD_Distribution()
+{} 
 
-te::md::CI_Citation::~CI_Citation()
-{}
-
-const 
-std::string& te::md::CI_Citation::getTitle() const
+void
+te::md::MD_Distribution::addDistrOption(te::md::MD_Format* opt)
 {
-  return m_title;
+  assert(opt);
+  m_distrFormats.push_back(opt);
 }
 
-const 
-boost::gregorian::date& te::md::CI_Citation::getDate() const
+const boost::ptr_vector<te::md::MD_Format>& 
+te::md::MD_Distribution::getFormats() const
 {
-  return m_date;
+  return m_distrFormats;
 }
 
-te::md::CI_DateTypeCode 
-te::md::CI_Citation::getDateType() const
+void 
+te::md::MD_Distribution::setURL(const std::string& url)
 {
-  return m_dateType;
+  m_url = url;
 }
 
-te::md::CI_Citation* te::md::CI_Citation::clone() const
+const std::string& 
+te::md::MD_Distribution::getURL() const
 {
-  return new te::md::CI_Citation(m_title, m_date, m_dateType);
+  return m_url;
 }

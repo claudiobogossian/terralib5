@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Sub.h
+  \file terralib/fe/Sub.h
 
   \brief The subtraction operator.
  */

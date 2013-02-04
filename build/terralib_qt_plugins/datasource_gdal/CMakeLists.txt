@@ -41,7 +41,13 @@ file ( GLOB
 qt4_wrap_ui(UI ${FORMS})
 
 list (APPEND DEP_INCLUDES ${TE_INCLUDE_DIRS} ${CMAKE_CURRENT_BINARY_DIR})
-list (APPEND DEP_LIBS ${TE_LIBRARIES})
+list (APPEND 
+  DEP_LIBS 
+  terralib_common
+  terralib_dataaccess
+  terralib_plugin
+  terralib_qt_widgets
+)
 
 file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${INCLDIR}/*.h)
@@ -55,10 +61,31 @@ add_definitions(-DTEQTPLUGINGDALDLL)
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
 
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/plugin_info.xml.in" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_gdal.xml")
-
 include_directories( ${DEP_INCLUDES} )
 add_library (${PROJ_NAME} SHARED ${HDRS} ${SRCS} ${UI} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
-                 
+
+#Exporting plug-in file
+set (TEPLUGIN_NAME "te.qt.datasource.gdal")
+set (TEPLUGIN_DISPLAYNAME "GDAL Data Source Qt-Widgets")
+set (TEPLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by GDAL driver.")
+set (TEPLUGIN_LIBRARY "terralib_qt_plugin_datasource_gdal")
+set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:gdal")
+set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_gdal.xml")
+getPluginResources("SharedLibraryName" "${TEPLUGIN_LIBRARY}" RSC_LINK)
+getPluginResources("LangFile" "pt.br" RSC_LINK2)
+set (TEPLUGIN_RESOURCES 
+  "  <Resources>${RSC_LINK}  ${RSC_LINK2}\n  </Resources>\n"
+)
+getPluginRequirements("te.da.gdal" REQ)
+set (TEPLUGIN_REQUIREMENTS 
+  "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
+)
+
+#Exporting plug-in information for the configuration file
+set (PLG_INFO "")
+getPluginInfo("${TEPLUGIN_NAME}" "${TEPLUGIN_FILE}" PLG_INFO)
+set (TERRALIB_PLUGINS_DESCRIPTION "${TERRALIB_PLUGINS_DESCRIPTION}${PLG_INFO}" PARENT_SCOPE)
+  
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TEPLUGIN_FILE})

@@ -18,46 +18,54 @@
  */
 
 /*!
-  \file TsGdalTransactor.h
+  \file TsRaster.h
  
-  \brief A test suit for the Gdal Transactor class.
+  \brief A test suit for the Raster Class.
  */
 
-#ifndef __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_GDALTRANSACTOR_H
-#define __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_GDALTRANSACTOR_H
+#ifndef __TERRALIB_UNITTEST_RASTER_INTERNAL_H
+#define __TERRALIB_UNITTEST_RASTER_INTERNAL_H
 
-// STL
-#include <string>
-#include <vector>
-
-#include "../dataaccess/TsDataSourceTransactor.h"
+#include <terralib/raster.h>
+#include <boost/shared_ptr.hpp>
 
 // cppUnit
 #include <cppunit/extensions/HelperMacros.h>
 
-class TsGdalTransactor : public TsDataSourceTransactor
+/*!
+  \class TsRaster
+
+  \brief A test suit for the Raster class interface.
+
+  ....
+  <br>
+  This test suite will check the Raster class
+  </ul>
+ */
+class TsRaster : public CPPUNIT_NS::TestFixture 
 {
-// It registers this class as a Test Suit
-  CPPUNIT_TEST_SUITE( TsGdalTransactor );
-
-// It registers the class methods as Test Cases belonging to the suit.  
-  INSERT_DATASOURCETRANSACTOR_TC
-
-// Adding specific Test cases for Gdal (TsGdalTransactor)
-
-  CPPUNIT_TEST_SUITE_END();  
+  CPPUNIT_TEST_SUITE( TsRaster );
   
-  public:
+  CPPUNIT_TEST(tcRasterConstructor );
+  
+  CPPUNIT_TEST(tcRasterGrid );
 
-// It sets up context before running the test.
-    void setUp();
+  CPPUNIT_TEST(tcRasterCopyConstructor );
 
-// It cleann up after the test run.
-    void tearDown();
+  // add other tests (tcXxxx)
+
+  CPPUNIT_TEST_SUITE_END();
+
+  protected :
     
-// Adding  specific Test cases for Gdal Transactor
+    void tcRasterConstructor();
 
+    void tcRasterGrid();
+    
+    void tcRasterCopyConstructor();
+
+    // add other tests...
 };
 
-#endif  // __TERRALIB_UNITTEST_DATAACCESS_INTERNAL_GDALTRANSACTOR_H
+#endif  // __TERRALIB_UNITTEST_RASTER_INTERNAL_H
 

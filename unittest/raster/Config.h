@@ -18,31 +18,18 @@
  */
 
 /*!
-  \file appleunittestplatformdefines.h
+  \file Config.h
 
-  \brief Apple Configuration flags for TerraLib Unittest.
+  \brief Configuration flags for TerraLib Unittest Raster module.
  */
 
-#ifndef __TERRALIB_APPLEUNITTESTPLATFORMDEFINES_H
-#define __TERRALIB_APPLEUNITTESTPLATFORMDEFINES_H
+#ifndef __TERRALIB_UNITTEST_RASTER_INTERNAL_CONFIG_H
+#define __TERRALIB_UNITTEST_RASTER_INTERNAL_CONFIG_H
 
-/** @name Flags for Unittest
- *  Flags for TerraLib Unittest
- */
-//@{
-
-/*!
-  \def TE_DATA_UNITTEST_LOCALE
-
-  \brief This flag tells where is the base folder for the data used in Unittests.
- */
-#ifndef TE_DATA_UNITTEST_LOCALE
-#define TE_DATA_UNITTEST_LOCALE "."
-#endif
-
-//@}
+// TerraLib
+#include "../Config.h"
 
 
-#endif  // __TERRALIB_APPLEUNITTESTPLATFORMDEFINES_H
+#endif  // __TERRALIB_UNITTEST_RASTER_INTERNAL_CONFIG_H
 
 

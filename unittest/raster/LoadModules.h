@@ -18,43 +18,38 @@
  */
 
 /*!
-  \file TsGdalCatalogLoader.cpp
+  \file LoadModules.h
  
-  \brief A test suit for the Gdal class.
+  \brief Load terralib modules.
  */
 
-// TerraLib
+#ifndef __TERRALIB_UNITTEST_RASTER_LOADMODULES_H
+#define __TERRALIB_UNITTEST_RASTER_LOADMODULES_H
+
 #include <terralib/common.h>
-#include <terralib/geometry.h>
-#include <terralib/gdal.h>
+#include <terralib/plugin.h>
+#include <terralib/Config.h>
 
-// Unit-Test TerraLib
-#include "TsManagerGdal.h"
-#include "TsGdalCatalogLoader.h"
+/*!
+  \brief Load terralib modules.
+ */
 
-#include "../dataaccess/Config.h"
-
-#ifdef TE_TEST_GDAL
-CPPUNIT_TEST_SUITE_REGISTRATION( TsGdalCatalogLoader );
-#endif
-
-void TsGdalCatalogLoader::setUp()
-{ 
-  //get values from TsManagerGdal (statics)
-  m_ds = TsManagerGdal::sm_datasource;
-  m_capabilit = TsManagerGdal::sm_capabilit;
-  m_connInfo = TsManagerGdal::sm_connInfo;
-  m_dsType = TsManagerGdal::sm_dsType;
-
-  m_nroDataSets = TsManagerGdal::sm_nroDataSets;
-  m_newDataSetType = TsManagerGdal::sm_newDataSetType;
-  m_vecDtNames = TsManagerGdal::sm_vecDtNames;
-  m_vecDtNamesAndEnvelops = TsManagerGdal::sm_vecDtNamesAndEnvelops;
-}
-
-void TsGdalCatalogLoader::tearDown() 
+void LoadModules()
 {
-  m_ds = 0;
-  m_dsType = "";
-}
+  te::plugin::PluginInfo* info;
 
+  #if TE_USE_OGR == 1
+    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
+    te::plugin::PluginManager::getInstance().add(info); 
+  #endif
+
+  #if TE_USE_GDAL
+    info = te::plugin::GetInstalledPlugin(PLUGINS_PATH + std::string("/plugin_gdal_info.xml"));
+    te::plugin::PluginManager::getInstance().add(info); 
+  #endif
+
+  te::plugin::PluginManager::getInstance().loadAll();
+
+};
+
+#endif  // __TERRALIB_UNITTEST_RASTER_LOADMODULES_H
