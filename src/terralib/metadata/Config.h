@@ -83,7 +83,7 @@
 
   #ifdef TEMDSTATIC
     #define TEMDEXPORT                          // Don't need to export/import... it is a static library
-  #elif TESEDLL
+  #elif TEMDDLL
     #define TEMDEXPORT  __declspec(dllexport)   // export DLL information
   #else
     #define TEMDEXPORT  __declspec(dllimport)   // import DLL information
