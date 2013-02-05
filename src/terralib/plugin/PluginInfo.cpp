@@ -176,7 +176,10 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
     {
       if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
          (xmlReader.getElementLocalName() != "PluginId"))
+      {
+        xmlReader.next();
         break;
+      }
 
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::VALUE);
@@ -195,7 +198,10 @@ te::plugin::PluginInfo& operator<<(te::plugin::PluginInfo& pInfo, te::xml::Reade
     {
       if((xmlReader.getNodeType() != te::xml::START_ELEMENT) ||
          (xmlReader.getElementLocalName() != "CategoryId"))
+      {
+        xmlReader.next();
         break;
+      }
 
       xmlReader.next();
       assert(xmlReader.getNodeType() == te::xml::VALUE);
