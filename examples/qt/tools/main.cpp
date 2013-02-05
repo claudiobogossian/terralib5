@@ -48,7 +48,7 @@ void LoadOGRModule()
     info.m_displayName = "OGR DataSource Driver";
     info.m_description = "This data source driver supports spatial data managed by OGR";
     info.m_engine = "C++";
-    info.m_folder = PLUGINS_PATH;
+    info.m_folder = TE_PLUGINS_PATH;
     
     std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
     
@@ -71,7 +71,7 @@ void LoadGDALModule()
     info.m_displayName = "GDAL DataSource Driver";
     info.m_description = "This data source driver supports spatial data managed by GDAL";
     info.m_engine = "C++";
-    info.m_folder = PLUGINS_PATH;
+    info.m_folder = TE_PLUGINS_PATH;
     
     std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
     

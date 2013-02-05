@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTOR_H
 
 //! TerraLib
-#include <terralib/qt/widgets/datasource/connector/AbstractDataSourceConnector.h>
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 //! Qt
 #include <QtGui/QWidget>

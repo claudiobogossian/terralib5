@@ -11,34 +11,28 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
 endif()
 
-include (${T5_MODULEPATH}/GeneralConfig.cmake)
+include (${TE_MODULEPATH}/GeneralConfig.cmake)
 
 include (${terralib_DIR}/teDepends.cmake)
 
-############### Get the data used for testing the example ###############
-set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
+############### Get the data used for testing the examples ###############
+set (TE_DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
-if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
+if(NOT EXISTS ${TE_DATA_DIR}/data/report.xsl)
   message (STATUS "-- Installing data for examples.")
-  
-  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${DATA_DIR}/data.zip)
-                  
-  execute_process(COMMAND unzip ${DATA_DIR}/data.zip
-                  WORKING_DIRECTORY ${DATA_DIR} )
-
+  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${TE_DATA_DIR}/data.zip)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${TE_DATA_DIR}/data.zip WORKING_DIRECTORY ${TE_DATA_DIR})
+  file (REMOVE ${TE_DATA_DIR}/data.zip)
   message (STATUS "-- Data files installed.")
 endif()
 
-set(TE_DATA_EXAMPLE_LOCALE "${DATA_DIR}")
+set(TE_DATA_EXAMPLE_LOCALE "${TE_DATA_DIR}")
 
 add_definitions( 
   -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
 )
 
-add_definitions(-DPLUGINS_PATH=\"${TERRALIB_BIN_DIR}\")
-
-#set (ICON_THEME "terralib" CACHE STRING "Defines the default theme to be used.")
-#set (ICON_THEME_PATH "" CACHE STRING "Lists of directories that contains icon themes.")
+add_definitions(-DTE_PLUGINS_PATH=\"${TE_BIN_DIR}\")
 
 option (EXAMPLE_ADO "Build ADO example." ON)  
 option (EXAMPLE_COLORBAR "Build colorbar example." ON)  
@@ -62,7 +56,7 @@ option (EXAMPLE_SAM "Build sam example." ON)
 option (EXAMPLE_SERIALIZATION "Build serialization example." ON)    
 option (EXAMPLE_SRS "Build srs example." ON)  
 option (EXAMPLE_ST "Build st example." ON)  
-option (EXAMPLE_MYVIEWER "Build my viewer example." ON)  
+option (EXAMPLE_MYVIEWER "Build my viewer example." OFF)  
 option (EXAMPLE_URL "Build URL example." ON)  
 option (EXAMPLE_XERCES "Build xerces example." ON)  
 option (EXAMPLE_HELP "Build help example." ON)  
@@ -235,7 +229,7 @@ if(_NOTFOUND)
 endif()
 
 find_path ( 
-  GDAL_DATADIR NAME compdcs.csv 
+  TE_GDAL_DATADIR NAME compdcs.csv 
   PATH ${TE_DEPENDENCIES_DIR} 
   PATH_SUFFIXES gdal/data 
   DOC "Path to where the gdal data directory is located."
@@ -247,11 +241,6 @@ if(WIN32)
     message (WARNING "Batch file may not contain paths to all searched dlls.")
   endif()
   
-  # Debug settings
-  set (GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/debug)
-  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.debug.bat)
-
-  # Release settings
-  set (GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
-  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.release.bat)
+  set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/debug)
+  generateRunningBatch(${TE_MODULEPATH}/runme.bat.in runme.bat)
 endif()

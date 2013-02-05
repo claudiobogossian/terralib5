@@ -1,14 +1,14 @@
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS filesystem system REQUIRED)
 if(Boost_FOUND)
-  set (DEP_LIBS ${Boost_LIBRARIES})
-  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set (TE_DEP_LIBS ${Boost_LIBRARIES})
+  set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 find_package(GDAL ${_GDAL_VERSION})
 if(GDAL_FOUND)
-	list (APPEND DEP_LIBS ${GDAL_LIBRARY})
-	list (APPEND DEP_INCLUDES ${GDAL_INCLUDE_DIR})
+	list (APPEND TE_DEP_LIBS ${GDAL_LIBRARY})
+	list (APPEND TE_DEP_INCLUDES ${GDAL_INCLUDE_DIR})
 endif()
 
 # Definitions for windows compiling
@@ -16,7 +16,7 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEMAPDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list (APPEND DEP_LIBS 
+list (APPEND TE_DEP_LIBS 
     terralib_annotationtext
 		terralib_color
 		terralib_common

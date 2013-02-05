@@ -8,8 +8,6 @@ set (_Proj4_VERSION 4.7)
 set (_Xerces_VERSION 3.1)
 set (_Qt4_VERSION 4.6.0)
 
-set (PGIS_ENABLED FALSE)
-
 if(UNIX AND NOT APPLE)
   set (_Boost_LIBS libboost_system libboost_filesystem libboost_date_time libboost_thread)
   set (_GDAL_LIBS libgdal)

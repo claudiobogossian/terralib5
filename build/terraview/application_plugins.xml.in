@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Plugins xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://www.terralib.org/schemas/af"
-         xsd:schemaLocation="http://www.terralib.org/schemas/af ${TERRALIB_SCHEMA_LOCATION}/af/af.xsd"
-         version="${TERRALIB_STRING_VERSION}"
-         release="${TERRALIB_STRING_BUILD_DATE}">
-${TERRALIB_PLUGINS_DESCRIPTION}</Plugins>
+         xsd:schemaLocation="http://www.terralib.org/schemas/af ${TE_SCHEMA_LOCATION}/af/af.xsd"
+         version="${TE_STRING_VERSION}"
+         release="${TE_STRING_BUILD_DATE}">
+${TE_PLUGINS_DESCRIPTION}</Plugins>

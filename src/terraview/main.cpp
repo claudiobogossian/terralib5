@@ -26,8 +26,8 @@
 #include "TerraViewConfig.h"
 
 // TerraLib
-#include <terralib/qt/af/BaseApplication.h>
-#include <terralib/qt/af/SplashScreenManager.h>
+#include "../terralib/qt/af/BaseApplication.h"
+#include "../terralib/qt/af/SplashScreenManager.h"
 
 // STL
 #include <cstdlib>
@@ -48,7 +48,7 @@ int main(int argc, char** argv)
 
   try
   {
-    QPixmap pixmap(TERRAVIEW_SPLASH_SCREEN_PIXMAP);
+    QPixmap pixmap(TVIEW_SPLASH_SCREEN_PIXMAP);
 
     QSplashScreen* splash(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint));
 
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 
     te::qt::af::BaseApplication tview;
 
-    tview.init(TERRAVIEW_CONFIG_FILE);
+    tview.init(TVIEW_CONFIG_FILE);
 
     splash->finish(&tview);
 

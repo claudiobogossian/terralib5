@@ -4,7 +4,7 @@
 # 3rd-party definitions.
 find_package(Boost ${_Boost_VERSION} REQUIRED)
 if(Boost_FOUND)
-  set(DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set(TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 #Definitions for windows compiling
@@ -12,7 +12,7 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEANNOTATIONTEXTDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-set(DEP_LIBS  
+set(TE_DEP_LIBS  
     terralib_common
 		terralib_datatype
 		terralib_geometry

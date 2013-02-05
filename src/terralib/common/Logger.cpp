@@ -57,7 +57,7 @@ std::string te::common::Logger::getDefaultConfigFile()
     return TE_LOGGER_DEFAULT_CONFIGURATION_FILE;
 
 // if the default file is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
-  char* e = getenv(TERRALIB_DIR_ENVIRONMENT_VARIABLE);
+  char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
 
   if(e != 0)
   {

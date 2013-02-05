@@ -7,10 +7,10 @@ endif(MSVC)
 
 find_package(Boost ${_Boost_VERSION} REQUIRED)
 if(Boost_FOUND)
-  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
-set (DEP_LIBS terralib_common)
+set (TE_DEP_LIBS terralib_common)
 
 # Files to process.
 # -------------------------------------------------- 
@@ -29,10 +29,8 @@ appPrefix ("sam" "${_DIRS}" SAM_INC_INST_DIRS)
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" HDRS "")
 
-list (APPEND _TE_INCLUDE_DIRS "${SRCDIR}" "${SRCDIR}/rtree")
-list (APPEND _TE_INST_INCLUDE_DIRS "sam" "sam/rtree")
-
-set (_TE_INCLUDE_DIRS ${_TE_INCLUDE_DIRS} PARENT_SCOPE)
-set (_TE_INST_INCLUDE_DIRS ${_TE_INST_INCLUDE_DIRS} PARENT_SCOPE)
+set (TE_INCLUDE_DIRS "${TE_INCLUDE_DIRS}" "${SRCDIR}" "${SRCDIR}/rtree" PARENT_SCOPE)
+set (TE_INST_INCLUDE_DIRS "${TE_INST_INCLUDE_DIRS}" "sam" "sam/rtree" PARENT_SCOPE)
+set (TE_MODULES "${TE_MODULES}" "sam" PARENT_SCOPE)
 
 installFiles (${SRCDIR} "terralib" "HEADERS" "*.h*")
