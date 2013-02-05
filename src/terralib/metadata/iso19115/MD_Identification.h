@@ -29,6 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "CodeList.h"
+#include "CI_ResponsibleParty.h"
 
 // STL
 #include <string>
@@ -36,7 +37,7 @@
 
 // Boost
 #include <boost/noncopyable.hpp>
-
+#include <boost/ptr_container/ptr_vector.hpp>
 namespace te
 {
   namespace md
@@ -65,11 +66,6 @@ namespace te
       //! Destructor.
       virtual ~MD_Identification();
       
-      /** @name Accessor methods
-       *  Methods used to get or set properties.
-       */
-      //@{
-      
       //! Returns the citation for the metadata.
       const CI_Citation* getCitation() const;
       
@@ -78,13 +74,24 @@ namespace te
       
       //! Returns the resource status code.
       te::md::MD_ProgressCode getStatus() const;
-            
-      //@}
       
-    private:
+      /*! 
+       \brief Adds a point of contact to the resource.
+       \param poc Pointer to a responsible party. Class takes pointer ownership. Do not pass null.
+       */
+      void addPointOfContact(CI_ResponsibleParty* p);
+      
+      //! Returns the resource points of contact.
+      const boost::ptr_vector<CI_ResponsibleParty>& getPointsOfContact() const;
+      
+      //! Gets a copy of this object.
+      virtual MD_Identification* clone() const;
+      
+    protected:
       CI_Citation* m_citation;  
       std::string m_abstract; 
       te::md::MD_ProgressCode m_status;
+      boost::ptr_vector<CI_ResponsibleParty> m_poc;
     };
     
   } // end namespace md

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Config.h
+  \file terralib/grib/Config.h
 
   \brief Configuration flags for GRIB.
 */

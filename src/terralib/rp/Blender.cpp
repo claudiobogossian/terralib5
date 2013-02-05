@@ -26,6 +26,7 @@
 
 #include "Macros.h"
 #include "../geometry/LinearRing.h"
+#include "../geometry/Envelope.h"
 #include "../raster/Raster.h"
 #include "../raster/Grid.h"
 #include "../raster/Band.h"
@@ -151,6 +152,19 @@ namespace te
           m_r1ValidDataPolygonPtr->add( newRingPtr.release() );
         }
       }
+      else
+      {
+        te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
+        auxLinearRingPtr->setPoint( 0, -0.5, -0.5 );
+        auxLinearRingPtr->setPoint( 1, ((double)raster1.getNumberOfColumns()) - 0.5, -0.5 );
+        auxLinearRingPtr->setPoint( 2, ((double)raster1.getNumberOfColumns()) - 0.5, 
+          ((double)raster1.getNumberOfRows()) - 0.5 );
+        auxLinearRingPtr->setPoint( 3, -0.5, ((double)raster1.getNumberOfRows()) - 0.5 );
+        auxLinearRingPtr->setPoint( 4, -0.5, -0.5 );
+        
+        m_r1ValidDataPolygonPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );
+        m_r1ValidDataPolygonPtr->push_back( auxLinearRingPtr );        
+      }
       
       if( r2ValidDataPolygonPtr )
       {
@@ -188,6 +202,19 @@ namespace te
           m_r2ValidDataPolygonPtr->add( newRingPtr.release() );
         }
       }
+      else
+      {
+        te::gm::LinearRing* auxLinearRingPtr = new te::gm::LinearRing(5, te::gm::LineStringType);
+        auxLinearRingPtr->setPoint( 0, -0.5, -0.5 );
+        auxLinearRingPtr->setPoint( 1, ((double)raster2.getNumberOfColumns()) - 0.5, -0.5 );
+        auxLinearRingPtr->setPoint( 2, ((double)raster2.getNumberOfColumns()) - 0.5, 
+          ((double)raster2.getNumberOfRows()) - 0.5 );
+        auxLinearRingPtr->setPoint( 3, -0.5, ((double)raster2.getNumberOfRows()) - 0.5 );
+        auxLinearRingPtr->setPoint( 4, -0.5, -0.5 );       
+        
+        m_r2ValidDataPolygonPtr = new te::gm::Polygon( 0, te::gm::PolygonType, 0, 0 );
+        m_r2ValidDataPolygonPtr->push_back( auxLinearRingPtr );        
+      }      
         
       // defining the geometric transformation  
         

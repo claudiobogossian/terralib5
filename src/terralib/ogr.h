@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file org.h
+  \file ogr.h
 
   \brief This file contains include headers for the OGR Driver Implementation of TerraLib.
 */

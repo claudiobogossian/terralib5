@@ -11,7 +11,7 @@
 
   <DataTypeCapabilities>
 
-  </DataTypeCapabilities>  
+  </DataTypeCapabilities>
     <QueryCapabilities>
     <SqlDialect>TRUE</SqlDialect>
     <Insert>TRUE</Insert>

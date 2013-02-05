@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/gml/Module.h
    
   \brief This singleton defines the TerraLib GML module entry.
 */

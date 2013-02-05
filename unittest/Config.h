@@ -18,57 +18,16 @@
  */
 
 /*!
-  \file Config.h
+  \file unittest/Config.h
+
   \brief Global configuration flags for the TerraLib Unit Tests.
- */
+*/
 
 #ifndef __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
 #define __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
 
 // TerraLib
 #include <terralib/Config.h>
-
-#if TE_PLATFORM == TE_PLATFORMCODE_MSWINDOWS
-  #include "windowsunittestplatformdefines.h"
-#elif TE_PLATFORM == TE_PLATFORMCODE_APPLE
-  #include "appleunittestplatformdefines.h"
-#elif TE_PLATFORM == TE_PLATFORMCODE_LINUX
-  #include "linuxunittestplatformdefines.h"
-  
-  #ifdef PACKAGE 
-    #undef PACKAGE 
-  #endif
-  
-  #ifdef PACKAGE_BUGREPORT 
-    #undef PACKAGE_BUGREPORT 
-  #endif
-  
-  #ifdef PACKAGE_NAME 
-    #undef PACKAGE_NAME 
-  #endif
-  
-  #ifdef PACKAGE_STRING 
-    #undef PACKAGE_STRING 
-  #endif
-  
-  #ifdef PACKAGE_TARNAME 
-    #undef PACKAGE_TARNAME 
-  #endif
-  
-  #ifdef PACKAGE_VERSION 
-    #undef PACKAGE_VERSION 
-  #endif
-  
-  #ifdef STDC_HEADERS 
-    #undef STDC_HEADERS 
-  #endif
-  
-  #ifdef VERSION 
-    #undef VERSION 
-  #endif  
-#else
-  #error "Platform not supported yet"
-#endif
 
 #endif  // __TERRALIB_UNITTEST_INTERNAL_CONFIG_H
 

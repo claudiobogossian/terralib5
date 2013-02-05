@@ -38,24 +38,24 @@
 //@{
 
 /*!
- \def TE_METADATA_TEXT_DOMAIN
- 
- \brief It contains the name of the text domain used in the translation of messages in TerraLib metadata module.
- */
+  \def TE_METADATA_TEXT_DOMAIN
+
+  \brief It contains the name of the text domain used in the translation of messages in TerraLib metadata module.
+*/
 #define TE_METADATA_TEXT_DOMAIN "temetadata"
 
 /*!
- \def TE_METADATA_TEXT_DOMAIN_DIR
- 
- \brief It contains the translation catalog directory.
- */
+  \def TE_METADATA_TEXT_DOMAIN_DIR
+
+  \brief It contains the translation catalog directory.
+*/
 #define TE_METADATA_TEXT_DOMAIN_DIR "locale"
 
 /*!
- \def TR_METADATA
- 
- \brief It marks a string in order to get translated. This is a special mark used in the Plugin module of TerraLib. 
- */
+  \def TR_METADATA
+
+  \brief It marks a string in order to get translated. This is a special mark used in the Plugin module of TerraLib. 
+*/
 #define TR_METADATA(message) TR(message, TE_METADATA_TEXT_DOMAIN)
 
 //@}
@@ -83,7 +83,7 @@
 
   #ifdef TEMDSTATIC
     #define TEMDEXPORT                          // Don't need to export/import... it is a static library
-  #elif TESEDLL
+  #elif TEMDDLL
     #define TEMDEXPORT  __declspec(dllexport)   // export DLL information
   #else
     #define TEMDEXPORT  __declspec(dllimport)   // import DLL information

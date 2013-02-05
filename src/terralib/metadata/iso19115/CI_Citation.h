@@ -78,6 +78,9 @@ namespace te
       //! Returns the citation date type.
       CI_DateTypeCode getDateType() const;
       
+      //! Creates a new copy of this object.
+      CI_Citation* clone() const;
+      
       //@}
       
     private:

@@ -171,7 +171,7 @@ namespace te
           
         /*!
           \brief Execute a mosaic of images linket by tie-points.
-          \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the first raster indexed points (lines/columns).
+          \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the mosaic raster indexed points (lines/columns).
           \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
           \param mosaicTargetMeans Mosaic target means.
           \param mosaicTargetVariances Mosaic target variances.          

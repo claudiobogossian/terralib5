@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Beyond.h
+  \file terralib/fe/Beyond.h
 
   \brief DistanceBuffer operator: Beyond.
  */

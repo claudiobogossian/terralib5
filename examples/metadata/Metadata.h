@@ -24,8 +24,15 @@
 #ifndef __TERRALIB_METADATA_EXAMPLES_METADATA_H
 #define __TERRALIB_METADATA_EXAMPLES_METADATA_H
 
+// STL
+#include <string>
+
 void ExMetadataManager();
 
-void ExMetadataAnnotate();
+void ExMetadataISO19115();
+
+void ExMetadataExtractor();
+
+void ExMetadataCycle();
 
 #endif

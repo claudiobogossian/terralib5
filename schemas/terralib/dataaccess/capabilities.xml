@@ -1,62 +1,91 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<DriverCapabilities xmlns:xlink="http://www.w3.org/1999/xlink"
-                    xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-                    xmlns="http://www.terralib.org/dataaccess"
-                    xsd:schemaLocation="http://www.terralib.org/dataaccess capabilities.xsd"
-                    version="5.0.0-20110110">
-  <Capability>
-    <Name>ACCESS_POLICY</Name>
-    <Value>RW_ACCESS</Value>
-  </Capability>
+<DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                        xmlns:te_common="http://www.terralib.org/schemas/common"
+                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess capabilities.xsd"
+                        version="5.0.0">
 
-  <Capability>
-    <Name>TRANSACTION</Name>
-    <Value>TRUE</Value>
-  </Capability>
+  <DataTypeCapabilities>
+    <DataType>BIT_TYPE</DataType>
+    <DataType>INT32_TYPE</DataType>
+    <DataType>GEOMETRY_TYPE</DataType>
+  </DataTypeCapabilities>
 
-  <Capability>
-    <Name>DATASET_PERSISTENCE</Name>
-    <Value>FALSE</Value>
-  </Capability>
-
-  <Capability>
-    <Name>DATASETTYPE_PERSISTENCE</Name>
-    <Value>FALSE</Value>
-  </Capability>
-
-  <Capability>
-    <Name>PREPARED_STATEMENT</Name>
-    <Value>FALSE</Value>
-  </Capability>
-
-  <Capability>
-    <Name>BATCH_EXECUTOR</Name>
-    <Value>FALSE</Value>
-  </Capability>
-
-  <Capability>
-    <Name>BIT_DT</Name>
-    <Value>FALSE</Value>
-  </Capability>
+  <QueryCapabilities>
+    <SQLDialect>TRUE</SQLDialect>
+    <Insert>TRUE</Insert>
+    <Update>TRUE</Update>
+    <Delete>TRUE</Delete>
+    <Create>TRUE</Create>
+    <Drop>TRUE</Drop>
+    <Alter>TRUE</Alter>
+    <Select>TRUE</Select>
+    <SelectInto>TRUE</SelectInto>
+    <SupportTransactions>TRUE</SupportTransactions>
+    <SpatialOperators>
+      <Function name="st_transform">
+        <FunctionEncoder alias="Transform"/>
+      </Function>
+    </SpatialOperators>
+    <LogicalOperators>
+      <Function name="and">
+        <BinaryOpEncoder alias="AND"/>
+      </Function>
+      <Function name="or">
+        <BinaryOpEncoder alias="OR"/>
+      </Function>
+    </LogicalOperators>
+    <ComparsionOperators>
+    </ComparsionOperators>
+    <ArithmeticOperators>
+    </ArithmeticOperators>
+    <Functions>
+      <Function name="substring">
+        <TemplateEncoder alias="substring" template="($1 from $2 for $3)"/>
+      </Function>
+    </Functions>
+    <GeomOperands>
+    </GeomOperands>
+  </QueryCapabilities>
   
-  <Capability>
-    <Name>CHAR_DT</Name>
-    <Value>FALSE</Value>
-  </Capability>
+  <DataSetTypeCapabilities>
+    <SupportPrimaryKey>TRUE</SupportPrimaryKey>
+    <SupportUniqueKey>TRUE</SupportUniqueKey>
+    <SupportForeignKey>TRUE</SupportForeignKey>
+    <SupportSequence>FALSE</SupportSequence>
+    <SupportCheckConstraints>TRUE</SupportCheckConstraints>
+    <SupportIndex>TRUE</SupportIndex>
+    <SupportRTreeIndex>TRUE</SupportRTreeIndex>
+    <SupportBTreeIndex>TRUE</SupportBTreeIndex>
+    <SupportHashIndex>FALSE</SupportHashIndex>
+    <SupportQuadTreeIndex>FALSE</SupportQuadTreeIndex>
+  </DataSetTypeCapabilities>
+  
+  <DataSetCapabilities>
+    <Bidirectional>FALSE</Bidirectional>
+    <Random>FALSE</Random>
+    <Indexed>FALSE</Indexed>
+    <EfficientMovePrevious>FALSE</EfficientMovePrevious>
+    <EfficientMoveBeforeFirst>TRUE</EfficientMoveBeforeFirst>
+    <EfficientMoveLast>FALSE</EfficientMoveLast>
+    <EfficientMoveAfterLast>FALSE</EfficientMoveAfterLast>
+    <EfficientMove>FALSE</EfficientMove>
+    <EfficientSize>FALSE</EfficientSize>
+    <Insertion>FALSE</Insertion>
+    <Update>FALSE</Update>
+    <Deletion>FALSE</Deletion>
+  </DataSetCapabilities>
+  
+  <SpecificCapabilities>
+  </SpecificCapabilities>
+  
+  <AccessPolicyName>RW_ACCESS</AccessPolicyName>
+  <SupportTransactions>TRUE</SupportTransactions>
+  <SupportDataSetPesistenceAPI>TRUE</SupportDataSetPesistenceAPI>
+  <SupportDataSetTypePesistenceAPI>TRUE</SupportDataSetTypePesistenceAPI>
+  <SupportPreparedQueryAPI>TRUE</SupportPreparedQueryAPI>
+  <SupportBatchExecutorAPI>TRUE</SupportBatchExecutorAPI>
 
-  <Capability>
-    <Name>BYTE_ARRAY_DT</Name>
-    <Value>TRUE</Value>
-  </Capability>
-
-  <Capability>
-    <Name>GEOMETRY_DT</Name>
-    <Value>TRUE</Value>
-  </Capability>
-
-  <Capability>
-    <Name>RASTER_DT</Name>
-    <Value>TRUE</Value>
-  </Capability>
-
-</DriverCapabilities>
+</DataSourceCapabilities>

@@ -12,10 +12,10 @@ endif()
 
 #Definitions for windows compiling
 if(WIN32)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEMDDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list (APPEND TE_DEP_LIBS terralib_common)
+list (APPEND DEP_LIBS terralib_common terralib_datatype terralib_geometry terralib_dataaccess)
 
 set (
   _DIRS 

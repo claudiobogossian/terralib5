@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file BinaryLogicOp.h
+  \file terralib/fe/BinaryLogicOp.h
   
   \brief A logical operator can be used to combine two or more conditional expressions.  
  */

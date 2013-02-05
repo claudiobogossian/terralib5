@@ -50,12 +50,18 @@ namespace te
       
       /*! 
        \brief Constructor.
-       \param code The responsible party role.
+       \param indname The individual name. Default: empty string.
+       \param orgname The organization name. Default: empty string.
+       \param posname The position name. Default: empty string.
+       \param code The responsible party role code. Default: provider.
        
        \note Only the role member is required, however the count of individualName + organizationName + positionName must 
        be greater than or equal to one.
        */
-      CI_ResponsibleParty(CI_RoleCode code=CI_resourceProvider);  
+      CI_ResponsibleParty(const std::string& indname = std::string(""),
+                          const std::string& orgname = std::string(""),
+                          const std::string& posname = std::string(""),
+                          CI_RoleCode code=CI_resourceProvider);  
       
       //! Destructor.
       ~CI_ResponsibleParty();
@@ -95,8 +101,10 @@ namespace te
       //! Returns the responsible party role.
       CI_RoleCode getRoleCode() const;
       
-      //@}
+      CI_ResponsibleParty* clone() const;
       
+      //@}
+
     private:
       
       std::string m_individualName;    //!< Name of the responsible individual                         
@@ -105,8 +113,7 @@ namespace te
       CI_RoleCode m_roleCode;          //!< Function performed by the responsible party.
       
       //CI_Contact* m_contact; NOT IMPLEMENTED YET.
-    };
-    
+    };    
   } // end namespace md
 }   // end namespace te
 

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Module.h
+  \file terralib/fe/Module.h
    
   \brief This singleton defines the TerraLib Filter Encoding module entry.
  */

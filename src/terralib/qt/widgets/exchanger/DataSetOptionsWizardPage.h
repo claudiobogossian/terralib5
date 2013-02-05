@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../dataaccess/Definitions.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../Config.h"
 
 // STL
 #include <list>
@@ -48,7 +49,7 @@ namespace te
   {
     namespace widgets
     {
-      class DataSetOptionsWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT DataSetOptionsWizardPage : public QWizardPage
       {
         Q_OBJECT
 
