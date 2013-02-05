@@ -10,6 +10,7 @@
 
 //TerraLib
 #include <terralib/qt/widgets.h>
+#include <terralib/common.h>
 #include <terralib/dataaccess.h>
 #include <terralib/datatype.h>
 #include <terralib/geometry.h>

@@ -13,6 +13,8 @@ set(PROJ_NAME "terralib_example_geometry")
 project(${PROJ_NAME})         # the project name is terralib_example_geometry
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_geometry
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 #Definitions for Windows compiling
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DBOOST_ALL_NO_LIB)
@@ -20,9 +22,10 @@ endif()
 	
 set(DEP_LIBS  
     terralib_common
-		terralib_datatype
-		terralib_geometry
-		terralib_srs
+	terralib_datatype
+	terralib_geometry
+	terralib_srs
+	${Boost_LIBRARIES}
     )
 	
 # Select the source and header files

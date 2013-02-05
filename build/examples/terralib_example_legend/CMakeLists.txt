@@ -14,6 +14,8 @@ set(PROJ_NAME "terralib_example_legend")
 project(${PROJ_NAME})         # the project name is terralib_example_legend
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_legend
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 
 #Definitions for Windows compiling
 if(WIN32)
@@ -45,7 +47,7 @@ set(DEP_LIBS
 	terralib_qt_widgets
 	terralib_xlink
 	${QT_LIBRARIES}
-	${POSTGRESQL_LIBRARIES})
+	${Boost_LIBRARIES})
  	
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
