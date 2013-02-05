@@ -24,7 +24,6 @@
 */
 
 // TerraLib
-#include "../../maptools/AbstractLayer.h"
 #include "Project.h"
 
 // STL
@@ -62,22 +61,22 @@ const std::string& te::qt::af::Project::getAuthor() const
   return m_author;
 }
 
-const std::list<te::map::AbstractLayer*>& te::qt::af::Project::getLayers() const
+const std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers() const
 {
   return m_layers;
 }
 
-std::list<te::map::AbstractLayer*>& te::qt::af::Project::getLayers()
+std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers()
 {
   return m_layers;
 }
 
-void te::qt::af::Project::add(te::map::AbstractLayer* layer)
+void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
 {
   m_layers.push_back(layer);
 }
 
-void te::qt::af::Project::remove(te::map::AbstractLayer* layer)
+void te::qt::af::Project::remove(const te::map::AbstractLayerPtr& layer)
 {
   std::remove(m_layers.begin(), m_layers.end(), layer);
 }
