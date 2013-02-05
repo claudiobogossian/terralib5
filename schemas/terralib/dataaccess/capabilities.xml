@@ -23,7 +23,6 @@
     <Alter>TRUE</Alter>
     <Select>TRUE</Select>
     <SelectInto>TRUE</SelectInto>
-    <SupportTransactions>TRUE</SupportTransactions>
     <SpatialOperators>
       <Function name="st_transform">
         <FunctionEncoder alias="Transform"/>
