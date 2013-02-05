@@ -33,8 +33,8 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 
 # Select the include directories
 include_directories(
-    ${TE_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIRS}
+  ${TE_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
 )
                                               
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})

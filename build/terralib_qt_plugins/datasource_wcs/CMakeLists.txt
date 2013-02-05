@@ -67,25 +67,25 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 
 #Exporting plug-in file
-set (TEPLUGIN_NAME "te.qt.datasource.wcs")
-set (TEPLUGIN_DISPLAYNAME "WCS Data Source Qt-Widgets")
-set (TEPLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by WCS driver.")
-set (TEPLUGIN_LIBRARY "terralib_qt_plugin_datasource_gdal")
-set (TEPLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:wcs")
-set (TEPLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_gdal.xml")
-getPluginResources("SharedLibraryName" "${TEPLUGIN_LIBRARY}" RSC_LINK)
+set (TE_PLUGIN_NAME "te.qt.datasource.wcs")
+set (TE_PLUGIN_DISPLAYNAME "WCS Data Source Qt-Widgets")
+set (TE_PLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by WCS driver.")
+set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_datasource_wcs")
+set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:wcs")
+set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_wcs.xml")
+getPluginResources("SharedLibraryName" "${TE_PLUGIN_LIBRARY}" RSC_LINK)
 getPluginResources("LangFile" "pt.br" RSC_LINK2)
-set (TEPLUGIN_RESOURCES 
+set (TE_PLUGIN_RESOURCES 
   "  <Resources>${RSC_LINK}  ${RSC_LINK2}\n  </Resources>\n"
 )
 getPluginRequirements("te.da.wcs" REQ)
-set (TEPLUGIN_REQUIREMENTS 
+set (TE_PLUGIN_REQUIREMENTS 
   "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
 )
 
 #Exporting plug-in information for the configuration file
-set (PLG_INFO "")
-getPluginInfo("${TEPLUGIN_NAME}" "${TEPLUGIN_FILE}" PLG_INFO)
-set (TERRALIB_PLUGINS_DESCRIPTION "${TERRALIB_PLUGINS_DESCRIPTION}${PLG_INFO}" PARENT_SCOPE)
+set (TE_PLG_INFO "")
+getPluginInfo("${TE_PLUGIN_NAME}" "${TE_PLUGIN_FILE}" TE_PLG_INFO)
+set (TE_PLUGINS_DESCRIPTION "${TE_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
   
-configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TEPLUGIN_FILE})
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TE_PLUGIN_FILE})

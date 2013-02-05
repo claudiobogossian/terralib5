@@ -68,7 +68,7 @@ void te::plugin::Module::initialize()
   pinfo.m_name = "TERRALIB_XERCES";
   pinfo.m_category = "XML";
   pinfo.m_engine = TE_CPPPLUGINENGINE_CODE;
-  pinfo.m_folder = PLUGINS_PATH;
+  pinfo.m_folder = TE_PLUGINS_PATH;
   pinfo.m_resources.push_back(te::plugin::PluginInfo::Resource("SharedLibraryName", "terralib_xerces"));
 
   te::plugin::PluginManager::getInstance().load(pinfo, true);

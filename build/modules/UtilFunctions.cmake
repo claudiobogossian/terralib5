@@ -197,7 +197,7 @@ MACRO(makeProject proj_name root_h_dir root_src_dir)
   configureProject("terralib_${proj_name}" "${root_h_dir}" "${root_src_dir}")
   include ("${proj_name}.cmake")
   
-  configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
+  configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${TE_DEP_INCLUDES}" "${TE_DEP_LIBS}")
   
   # installing libraries
   installTarget(${PROJ_NAME} "lib" "LIBRARIES" "bin" "BINARIES")
@@ -218,7 +218,7 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   configureProject("terralib_${proj_name}" "${root_h_dir}" "${root_src_dir}")
   include ("${proj_name}.cmake")
   
-  configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${DEP_INCLUDES}" "${DEP_LIBS}")
+  configureLibraryOutput(${PROJ_NAME} "${HDRS}" "${SRCS}" "${TE_DEP_INCLUDES}" "${TE_DEP_LIBS}")
 
   if(WIN32)  
     install(
@@ -288,17 +288,17 @@ ENDMACRO (installFiles)
 # param[input] dirs Directories at the build tree.
 # param[input] inst_dirs Directories at the installation tree.
 MACRO(exportModuleInformation mod_name dirs inst_dirs)
-  list (APPEND _TE_MODULES "${mod_name}")
-  list (APPEND _TE_INCLUDE_DIRS "${dirs}")
-  list (APPEND _TE_INST_INCLUDE_DIRS "${inst_dirs}")
-  list (APPEND _TE_LIBRARIES "terralib_${mod_name}")
-  list (APPEND _TE_3DS ${DEP_INCLUDES})
+  set (TE_MODULES ${TE_MODULES} "${mod_name}" PARENT_SCOPE)
+  set (TE_INCLUDE_DIRS ${TE_INCLUDE_DIRS} "${dirs}" PARENT_SCOPE)
+  set (TE_INST_INCLUDE_DIRS ${TE_INST_INCLUDE_DIRS} "${inst_dirs}" PARENT_SCOPE)
+  set (TE_LIBRARIES ${TE_LIBRARIES} "terralib_${mod_name}" PARENT_SCOPE)
+  set (TE_3DS ${TE_3DS} "${TE_DEP_INCLUDES}" PARENT_SCOPE)
   
-  set (_TE_MODULES ${_TE_MODULES} PARENT_SCOPE)
-  set (_TE_INCLUDE_DIRS ${_TE_INCLUDE_DIRS} PARENT_SCOPE)
-  set (_TE_INST_INCLUDE_DIRS ${_TE_INST_INCLUDE_DIRS} PARENT_SCOPE)
-  set (_TE_LIBRARIES ${_TE_LIBRARIES} PARENT_SCOPE)
-  set (_TE_3DS ${_TE_3DS} PARENT_SCOPE)
+#  set (_TE_MODULES ${_TE_MODULES} PARENT_SCOPE)
+#  set (_TE_INCLUDE_DIRS ${_TE_INCLUDE_DIRS} PARENT_SCOPE)
+#  set (_TE_INST_INCLUDE_DIRS ${_TE_INST_INCLUDE_DIRS} PARENT_SCOPE)
+#  set (_TE_LIBRARIES ${_TE_LIBRARIES} PARENT_SCOPE)
+#  set (_TE_3DS ${_TE_3DS} PARENT_SCOPE)
 ENDMACRO(exportModuleInformation)
 
 # Macro generateRunningBatch
@@ -311,7 +311,7 @@ MACRO(generateRunningBatch templateFileName fileName)
     get_filename_component (TE_QT_DIR ${QT_QMAKE_EXECUTABLE} PATH)
 
     set (TE_QT_DIR ${TE_QT_DIR} CACHE PATH "Location of installed Qt binaries.")
-    set (TERRALIB_BIN_DIR "${TERRALIB_BIN_DIR}" CACHE PATH "Location of the terralib binaries.")
+    set (TE_BIN_DIR "${TE_BIN_DIR}" CACHE PATH "Location of the terralib binaries.")
     
     configure_file (${templateFileName} ${CMAKE_CURRENT_BINARY_DIR}/${fileName})
   endif()
@@ -323,8 +323,8 @@ ENDMACRO(generateRunningBatch)
 # param[input] logDir
 MACRO(copyLogFiles logDir)
   if(NOT EXISTS ${logDir}/conf/te-log.conf)
-    message (STATUS "-- Copying ${DEFAULT_LOGCONF_FILE}.")
-    configure_file(${DEFAULT_LOGCONF_FILE} "${logDir}/conf/te-log.conf" COPYONLY)
+    message (STATUS "-- Copying ${TE_DEFAULT_LOGCONF_FILE}.")
+    configure_file(${TE_DEFAULT_LOGCONF_FILE} "${logDir}/conf/te-log.conf" COPYONLY)
     message (STATUS "-- te-log.conf copied to \"${logDir}/conf\".")
   endif()
 ENDMACRO(copyLogFiles)

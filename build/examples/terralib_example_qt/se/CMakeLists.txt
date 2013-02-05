@@ -30,7 +30,7 @@ if(WIN32)
 		              -DQT_THREAD_SUPPORT)
 endif()
 
-add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\")
+add_definitions(-DICON_THEME=\"${TE_ICON_THEME}\" -DICON_THEME_PATH=\"${TE_ICON_THEME_PATH}\")
 	
 set (DEP_LIBS 
     terralib_annotationtext

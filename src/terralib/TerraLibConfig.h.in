@@ -32,54 +32,54 @@
 //@{
 
 /*!
-  \def TERRALIB_MAJOR_VERSION
+  \def TE_MAJOR_VERSION
 
   \brief Major version of TerraLib (or version).
 */
-#define TERRALIB_MAJOR_VERSION ${TERRALIB_MAJOR_VERSION}
+#define TE_MAJOR_VERSION ${TE_MAJOR_VERSION}
 
 /*!
-  \def TERRALIB_MINOR_VERSION
+  \def TE_MINOR_VERSION
 
   \brief Minor version of TerraLib (or revision). 
 */
-#define TERRALIB_MINOR_VERSION ${TERRALIB_MINOR_VERSION}
+#define TE_MINOR_VERSION ${TE_MINOR_VERSION}
 
 /*!
-  \def TERRALIB_PATCH_VERSION
+  \def TE_PATCH_VERSION
 
   \brief Patched version of TerraLib (or patch).
 */
-#define TERRALIB_PATCH_VERSION ${TERRALIB_PATCH_VERSION}
+#define TE_PATCH_VERSION ${TE_PATCH_VERSION}
 
-#define TERRALIB_RELEASE_STATUS "${TERRALIB_RELEASE_STATUS}"
+#define TE_RELEASE_STATUS "${TE_RELEASE_STATUS}"
 
-#define TERRALIB_BUILD_DATE ${TERRALIB_BUILD_DATE}
+#define TE_BUILD_DATE ${TE_BUILD_DATE}
 
 /*!
-  \def TERRALIB_STRING_VERSION
+  \def TE_STRING_VERSION
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this string.
 */
-#define TERRALIB_STRING_VERSION "${TERRALIB_STRING_VERSION}"
+#define TE_STRING_VERSION "${TE_STRING_VERSION}"
 
 /*!
-  \def TERRALIB_INT_VERSION
+  \def TE_INT_VERSION
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this number.
 */
-#define TERRALIB_INT_VERSION ${TERRALIB_INT_VERSION} 
+#define TE_INT_VERSION ${TE_INT_VERSION} 
 
 //@}
 
 /*!
-  \def TERRALIB_DIR_ENVIRONMENT_VARIABLE
+  \def TE_DIR_ENVIRONMENT_VARIABLE
 
   \brief This macro defines an environment variable that indicates where TerraLib is installed.
 */
-#define TERRALIB_DIR_ENVIRONMENT_VARIABLE "${TERRALIB_DIR_ENVIRONMENT_VARIABLE}"
+#define TE_DIR_ENVIRONMENT_VARIABLE "${TE_DIR_ENVIRONMENT_VARIABLE}"
 
 /*!
   \def TE_USE_GDAL
@@ -141,11 +141,11 @@
 #cmakedefine01 TE_USE_APACHE_LOG4CXX
 
 /*!
-  \def TERRALIB_STATIC_BUILD
+  \def TE_STATIC_BUILD
 
   \brief If set to 1 this will tells TerraLib that it is statically build.
 */
-#cmakedefine01 TE_TERRALIB_STATIC_BUILD
+#cmakedefine01 TE_TE_STATIC_BUILD
 
 /*!
   \def TE_LOGGER_ENABLED

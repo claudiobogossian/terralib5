@@ -2,19 +2,19 @@
 <PluginInfo xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
-            xsd:schemaLocation="http://www.terralib.org/schemas/plugin ${TERRALIB_SCHEMA_LOCATION}/plugin/plugin_info.xsd"
-            version="${TERRALIB_STRING_VERSION}"
-            release="${TERRALIB_STRING_BUILD_DATE}"
+            xsd:schemaLocation="http://www.terralib.org/schemas/plugin ${TE_SCHEMA_LOCATION}/plugin/plugin_info.xsd"
+            version="${TE_STRING_VERSION}"
+            release="${TE_STRING_BUILD_DATE}"
             engine="C++">
-  <Name>${TEPLUGIN_NAME}</Name>
-  <DisplayName>${TEPLUGIN_DISPLAYNAME}</DisplayName>
-  <Description>${TEPLUGIN_DESCRIPTION}</Description>
-  <TerraLibVersion>${TERRALIB_STRING_VERSION}</TerraLibVersion>
+  <Name>${TE_PLUGIN_NAME}</Name>
+  <DisplayName>${TE_PLUGIN_DISPLAYNAME}</DisplayName>
+  <Description>${TE_PLUGIN_DESCRIPTION}</Description>
+  <TerraLibVersion>${TE_STRING_VERSION}</TerraLibVersion>
   <License xlink:href="http://www.gnu.org/licenses/lgpl-3.0-standalone.html">GNU Lesser General Public License v 3.0</License>
   <Category>Data Access</Category>
-  <Site xlink:href="${TEPLUGIN_HREFDOC}"></Site>
+  <Site xlink:href="${TE_PLUGIN_HREFDOC}"></Site>
   <Provider>
     <Name>Terralib Team</Name>
     <Site xlink:href="http://www.terralib.org/"></Site>
     <Email>terralib-team@terralib.org</Email>
-  </Provider>${TEPLUGIN_REQUIREMENTS}${TEPLUGIN_RESOURCES}</PluginInfo>
+  </Provider>${TE_PLUGIN_REQUIREMENTS}${TE_PLUGIN_RESOURCES}</PluginInfo>

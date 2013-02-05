@@ -6,13 +6,13 @@
 # -------------------------------------------------- 
 find_package(Boost ${_Boost_VERSION} REQUIRED)
 if(Boost_FOUND)
-  set(DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set(TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 find_package(CSQL)
 if(CSQL_FOUND)
-	list (APPEND DEP_LIBS ${CSQL_LIBRARY})
-	list (APPEND DEP_INCLUDES ${CSQL_INCLUDE_DIR})
+	list (APPEND TE_DEP_LIBS ${CSQL_LIBRARY})
+	list (APPEND TE_DEP_INCLUDES ${CSQL_INCLUDE_DIR})
 endif(CSQL_FOUND)
 
 #Definitions for windows compiling
@@ -20,7 +20,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTECSQLDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list (APPEND DEP_LIBS 
+list (APPEND TE_DEP_LIBS 
     terralib_common
 		terralib_dataaccess
 		terralib_datatype

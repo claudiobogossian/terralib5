@@ -1,14 +1,14 @@
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS thread system REQUIRED)
 if(Boost_FOUND)
-  list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  list (APPEND TE_DEP_LIBS ${Boost_LIBRARIES})
+  list (APPEND TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 find_package(Geos ${_Geos_VERSION})
 if(GEOS_FOUND)
-	list (APPEND DEP_INCLUDES ${GEOS_INCLUDE_DIR})
-  list (APPEND DEP_LIBS ${GEOS_LIBRARY})
+	list (APPEND TE_DEP_INCLUDES ${GEOS_INCLUDE_DIR})
+  list (APPEND TE_DEP_LIBS ${GEOS_LIBRARY})
   set (TE_USE_GEOS TRUE PARENT_SCOPE)
 ENDIF(GEOS_FOUND)
 
@@ -17,7 +17,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEGEOMDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
-list (APPEND DEP_LIBS  
+list (APPEND TE_DEP_LIBS  
     terralib_common
 		terralib_datatype
 		terralib_srs

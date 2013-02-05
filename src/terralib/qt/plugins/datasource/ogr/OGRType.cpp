@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../common/Translator.h"
+#include "../../../../common/Translator.h"
 #include "OGRConnector.h"
 #include "OGRType.h"
 

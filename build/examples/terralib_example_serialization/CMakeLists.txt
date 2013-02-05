@@ -26,7 +26,7 @@ set(DEP_LIBS
 	terralib_xlink
 	terralib_xml
 	terralib_xsd
-    )  
+)  
 
 # Select the source and header files
 file(GLOB SRCS ${SRCDIR}/*.cpp)
@@ -34,9 +34,9 @@ file(GLOB HDRS ${SRCDIR}/*.h)
 
 # Select the include directories
 include_directories(
-    ${TE_INCLUDE_DIRS}
+  ${TE_INCLUDE_DIRS}
 	${DEP_INCLUDES}
-    ${Boost_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
 )
 		      
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS})

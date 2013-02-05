@@ -1,13 +1,13 @@
 # Rules for processing metadata module files.
 # -------------------------------------------------- 
 
-set (DEP_INCLUDES "")   #include paths needed by metadata module.
+set (TE_DEP_INCLUDES "")   #include paths needed by metadata module.
 
 # 3rd-party definitions.
 
 find_package(Boost ${_Boost_VERSION} REQUIRED)
 if(Boost_FOUND)
-  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 #Definitions for windows compiling

@@ -44,7 +44,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS ${QT_DEFINITIONS} -DBOOST_ALL_NO_LIB)
 endif()
 
-add_definitions(-DICON_THEME=\"${ICON_THEME}\" -DICON_THEME_PATH=\"${ICON_THEME_PATH}\")
+add_definitions(-DICON_THEME=\"${TE_ICON_THEME}\" -DICON_THEME_PATH=\"${TE_ICON_THEME_PATH}\")
 
 # Select the include directories
 include_directories(

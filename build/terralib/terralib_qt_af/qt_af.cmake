@@ -4,20 +4,20 @@ if(QT4_FOUND)
   include (${QT_USE_FILE})
   add_definitions (${QT_DEFINITIONS})
 
-  set (DEP_INCLUDES ${QT_INCLUDE_DIR})
-  set (DEP_LIBS ${QT_LIBRARIES})
+  set (TE_DEP_INCLUDES ${QT_INCLUDE_DIR})
+  set (TE_DEP_LIBS ${QT_LIBRARIES})
 endif()
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS system filesystem REQUIRED)
 if(Boost_FOUND)
-  list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  list (APPEND TE_DEP_LIBS ${Boost_LIBRARIES})
+  list (APPEND TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 find_package(Xerces ${_Xerces_VERSION} REQUIRED)
 if(XERCES_FOUND)
-  list (APPEND DEP_LIBS ${XERCES_LIBRARIES})
-  list (APPEND DEP_INCLUDES ${XERCES_INCLUDE_DIRS})
+  list (APPEND TE_DEP_LIBS ${XERCES_LIBRARIES})
+  list (APPEND TE_DEP_INCLUDES ${XERCES_INCLUDE_DIRS})
 endif()
 
 
@@ -26,10 +26,10 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEQTAFDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-add_definitions (-DTERRALIB_SCHEMA_LOCATION=\"${TERRALIB_SCHEMA_LOCATION}\")
+add_definitions (-DTE_SCHEMA_LOCATION=\"${TE_SCHEMA_LOCATION}\")
 
 list ( APPEND
-  DEP_LIBS 
+  TE_DEP_LIBS 
   terralib_common 
   terralib_dataaccess 
   terralib_datatype 
@@ -83,7 +83,7 @@ list (APPEND SRCS "${MOC}")
 
 # Include directory of the image files
 list (APPEND QT_AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
-list (APPEND DEP_INCLUDES "${QT_AF_INC_DIRS}")
+list (APPEND TE_DEP_INCLUDES "${QT_AF_INC_DIRS}")
 
 #exporting module information
 exportModuleInformation ("qt_af" "${QT_AF_INC_DIRS}" "${QT_AF_INC_INST_DIRS}")

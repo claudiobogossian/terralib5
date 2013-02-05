@@ -52,7 +52,7 @@ std::string te::plugin::DefaultFinder::getDefaultDir() const
     return boost::filesystem::system_complete(TE_DEFAULT_PLUGINS_DIR).string();
 
 // if the default dir is not available in the current dir let's try an environment variable defined as TERRALIB_DIR_ENVIRONMENT_VARIABLE
-  char* e = getenv(TERRALIB_DIR_ENVIRONMENT_VARIABLE);
+  char* e = getenv(TE_DIR_ENVIRONMENT_VARIABLE);
 
   if(e != 0)
   {
