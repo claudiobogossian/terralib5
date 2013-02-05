@@ -25,6 +25,9 @@
 
 // TerraLib
 #include "../color/RGBAColor.h"
+#include "../raster/BandProperty.h"
+#include "ChannelSelection.h"
+#include "CoverageStyle.h"
 #include "Description.h"
 #include "FeatureTypeStyle.h"
 #include "Fill.h"
@@ -34,7 +37,9 @@
 #include "ParameterValue.h"
 #include "PointSymbolizer.h"
 #include "PolygonSymbolizer.h"
+#include "RasterSymbolizer.h"
 #include "Rule.h"
+#include "SelectedChannel.h"
 #include "Stroke.h"
 #include "TextSymbolizer.h"
 #include "Utils.h"
@@ -272,8 +277,12 @@ te::se::Symbolizer* te::se::CreateSymbolizer(const te::gm::GeomType& geomType)
 
 te::se::Style* te::se::CreateFeatureTypeStyle(const te::gm::GeomType& geomType)
 {
+  te::se::Symbolizer* symbolizer = CreateSymbolizer(geomType);
+  if(symbolizer == 0)
+    return 0;
+
   te::se::Rule* rule = new te::se::Rule;
-  rule->push_back(CreateSymbolizer(geomType));
+  rule->push_back(symbolizer);
 
   te::se::FeatureTypeStyle* style = new te::se::FeatureTypeStyle;
   style->push_back(rule);
@@ -281,10 +290,68 @@ te::se::Style* te::se::CreateFeatureTypeStyle(const te::gm::GeomType& geomType)
   return style;
 }
 
+te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProperty*>& properties)
+{
+  if(properties.empty())
+    return 0;
+
+  // Default raster symbolizer
+  te::se::RasterSymbolizer* rasterSymbolizer = new te::se::RasterSymbolizer;
+
+  // General parameters
+  rasterSymbolizer->setOpacity(new te::se::ParameterValue("1.0"));
+  rasterSymbolizer->setGain(new te::se::ParameterValue("1.0"));
+  rasterSymbolizer->setOffset(new te::se::ParameterValue("0.0"));
+
+  // Channel selection
+  if((properties.size() == 1) || (properties.size() == 2))
+  {
+    te::se::SelectedChannel* sc = new te::se::SelectedChannel();
+    sc->setSourceChannelName(properties[0]->m_description.empty() ? std::string("0") : properties[0]->m_description);
+
+    te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+    cs->setColorCompositionType(te::se::GRAY_COMPOSITION);
+    cs->setGrayChannel(sc);
+
+    rasterSymbolizer->setChannelSelection(cs);
+  }
+  else if(properties.size() >= 3)
+  {
+    // Red Channel
+    te::se::SelectedChannel* scr = new te::se::SelectedChannel();
+    scr->setSourceChannelName(properties[0]->m_description.empty() ? std::string("0") : properties[0]->m_description);
+
+    // Green Channel
+    te::se::SelectedChannel* scg = new te::se::SelectedChannel();
+    scg->setSourceChannelName(properties[1]->m_description.empty() ? std::string("1") : properties[1]->m_description);
+
+    // Blue channel
+    te::se::SelectedChannel* scb = new te::se::SelectedChannel();
+    scb->setSourceChannelName(properties[2]->m_description.empty() ? std::string("2") : properties[2]->m_description);
+
+    te::se::ChannelSelection* cs = new te::se::ChannelSelection();
+    cs->setColorCompositionType(te::se::RGB_COMPOSITION);
+    cs->setRedChannel(scr);
+    cs->setRedChannel(scg);
+    cs->setRedChannel(scb);
+
+    rasterSymbolizer->setChannelSelection(cs);
+  }
+
+  te::se::Rule* rule = new te::se::Rule();
+  rule->push_back(rasterSymbolizer);
+
+  te::se::CoverageStyle* style = new te::se::CoverageStyle();
+  style->push_back(rule);
+
+  return style;
+}
+
 std::string te::se::GenerateRandomColor()
 {
-  boost::random::mt19937 gen(static_cast<boost::uint32_t>(std::time(0)));
-  boost::random::uniform_int_distribution<> dist(0, 128);
+  static boost::random::mt19937 gen(static_cast<boost::uint32_t>(std::time(0)));
+  static boost::random::uniform_int_distribution<> dist(0, 128);
+
   // Creates random pastel colours
   te::color::RGBAColor color(dist(gen) + 127, dist(gen) + 127, dist(gen) + 127, TE_OPAQUE);
   return color.getColor();
