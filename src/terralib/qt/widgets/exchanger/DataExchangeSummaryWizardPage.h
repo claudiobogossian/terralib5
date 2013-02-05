@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../../../dataaccess/Definitions.h"
+#include "../Config.h"
 
 // STL
 #include <list>
@@ -47,7 +48,7 @@ namespace te
     {
       struct DataExchangeStatus;
 
-      class DataExchangeSummaryWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT DataExchangeSummaryWizardPage : public QWizardPage
       {
         Q_OBJECT
 

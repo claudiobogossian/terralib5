@@ -27,12 +27,14 @@
 #include "../common/STLUtils.h"
 #include "../geometry/Coord2D.h"
 #include "../geometry/Envelope.h"
+#include "../geometry/Polygon.h"
 #include "../srs/Converter.h"
 #include "Band.h"
 #include "BandProperty.h"
 #include "Exception.h"
 #include "Grid.h"
 #include "Interpolator.h"
+#include "PositionIterator.h"
 #include "Raster.h"
 #include "RasterFactory.h"
 #include "RasterProperty.h"
@@ -558,4 +560,38 @@ te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, do
 te::rst::Raster* te::rst::Raster::transform(int srid, double llx, double lly, double urx, double ury, double resx, double resy, const std::map<std::string, std::string>& rinfo, int m)
 {
   return te::rst::Reproject(this, srid, llx, lly, urx, ury, resx, resy, rinfo, m);
+}
+
+void te::rst::Raster::rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b)
+{
+  assert(b < getNumberOfBands());
+
+  te::rst::Band* band = getBand(b);
+
+// if vp is empty, create a vector of contrastand pixel values for neighboring polygons
+  if (vp.size() == 0)
+  {
+    int bvalue = 254;
+    for (unsigned int i = 0; i < g.size(); i++)
+    {
+      vp.push_back(bvalue % 255);
+
+      bvalue = bvalue >= 127? bvalue - 126: bvalue > 255? 0: bvalue + 127;
+    }
+  }
+
+  for (unsigned int i = 0; i < g.size(); i++)
+  {
+    te::gm::Polygon* polygon = static_cast<te::gm::Polygon*> (g[i]);
+
+    te::rst::PolygonIterator<double> it = te::rst::PolygonIterator<double>::begin(band, polygon);
+    te::rst::PolygonIterator<double> itend = te::rst::PolygonIterator<double>::end(band, polygon);
+
+    while (it != itend)
+    {
+      setValue(it.getCol(), it.getRow(), vp[i]);
+
+      ++it;
+    }
+  }
 }

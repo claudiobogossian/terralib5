@@ -13,8 +13,11 @@
   <property name="windowTitle">
    <string>GeoSpatial Data Exchange</string>
   </property>
+  <property name="wizardStyle">
+   <enum>QWizard::ModernStyle</enum>
+  </property>
   <property name="options">
-   <set>QWizard::HaveHelpButton</set>
+   <set>QWizard::HaveHelpButton|QWizard::IndependentPages</set>
   </property>
  </widget>
  <resources/>

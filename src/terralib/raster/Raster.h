@@ -566,12 +566,14 @@ namespace te
         virtual void vectorize(std::size_t /*b*/, std::vector<te::gm::Geometry*>& /*g*/) {};
 
         /*!
-          \brief Rasterizes a given vector of geometries, using GDALRasterizeGeometries function.
+          \brief Rasterizes a given vector of geometries.
 
           \param g           A vector of geometries to be rasterized.
+          \param vp          A vector of pixel values for each geometry.
+                             Can have the same size of the vector of geometries, or be null.
           \param b           The band index to rasterize.
         */
-        virtual void rasterize(std::vector<te::gm::Geometry*> /*g*/, std::size_t /*b = 0*/) {};
+        virtual void rasterize(std::vector<te::gm::Geometry*> g, std::vector<double> vp, std::size_t b = 0);
 
       protected:
 
