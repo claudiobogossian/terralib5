@@ -1,13 +1,13 @@
 # Rules for processing metadata module files.
 # -------------------------------------------------- 
 
-set (DEP_INCLUDES "")   #include paths needed by metadata module.
+set (TE_DEP_INCLUDES "")   #include paths needed by metadata module.
 
 # 3rd-party definitions.
 
 find_package(Boost ${_Boost_VERSION} REQUIRED)
 if(Boost_FOUND)
-  set (DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 #Definitions for windows compiling
@@ -15,7 +15,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list (APPEND DEP_LIBS terralib_common)
+list (APPEND TE_DEP_LIBS terralib_common)
 
 set (
   _DIRS 

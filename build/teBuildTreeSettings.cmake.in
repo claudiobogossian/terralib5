@@ -1,10 +1,10 @@
 # Compiled modules include path.
-set( TE_INCLUDE_DIRS @CMAKE_BINARY_DIR@;@_TE_INCLUDE_DIRS@)
+set( TE_INCLUDE_DIRS @CMAKE_BINARY_DIR@;@TE_INCLUDE_DIRS@)
 
 # Modules directory
-set (T5_MODULEPATH @T5_MODULES_PATH@ )
+set (TE_MODULEPATH @TE_MODULES_PATH@ )
 set (TE_DEPENDENCIES_DIR "@TE_DEPENDENCIES_DIR@" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
-list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
+list (APPEND CMAKE_MODULE_PATH "${TE_MODULEPATH}")
 
 #TerraLib dependencies dir
 if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
@@ -13,22 +13,22 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
 endif()
 
 # Configuration files folder.
-set (DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
+set (TE_DEFAULT_LOGCONF_FILE @ROOT@/log/te-log.conf)
 
 # Include the dependencies. 
-#include ( ${TERRALIB_CMAKE_DIR}/teDepends.cmake )
+#include ( ${TE_CMAKE_DIR}/teDepends.cmake )
 
-set (TERRALIB_BIN_DIR @CMAKE_RUNTIME_OUTPUT_DIRECTORY@)
-set (TERRALIB_SCHEMA_LOCATION @TERRALIB_SCHEMA_LOCATION@)
-set (TERRALIB_LOGO @TERRALIB_LOGO@)
-set (TERRALIB_JSON_FILES_LOCATION @TERRALIB_JSON_FILES_LOCATION@)
-set (TERRALIB_SQL_FILES_LOCATION @TERRALIB_SQL_FILES_LOCATION@)
-set (TERRALIB_XML_FILES_LOCATION @TERRALIB_XML_FILES_LOCATION@)
+set (TE_BIN_DIR @TE_BIN_DIR@)
+set (TE_SCHEMA_LOCATION @TE_SCHEMA_LOCATION@)
+set (TE_LOGO @TE_LOGO@)
+set (TE_JSON_FILES_LOCATION @TE_JSON_FILES_LOCATION@)
+set (TE_SQL_FILES_LOCATION @TE_SQL_FILES_LOCATION@)
+set (TE_XML_FILES_LOCATION @TE_XML_FILES_LOCATION@)
 
 set (DEPS @TE_3DS@)
 
-include ( ${T5_MODULEPATH}/Deps_versions.cmake )	
-include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
+include ( ${TE_MODULEPATH}/Deps_versions.cmake )	
+include ( ${TE_MODULEPATH}/UtilFunctions.cmake )	
 
 foreach(DEP ${DEPS})
   find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)

@@ -6,7 +6,7 @@
 # -------------------------------------------------- 
 find_package(Boost ${_Boost_VERSION} REQUIRED)
 if(Boost_FOUND)
-  set(DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  set(TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
 # Definitions for windows compiling
@@ -14,7 +14,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEXSDDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list(APPEND DEP_LIBS 
+list(APPEND TE_DEP_LIBS 
 		terralib_common
 		terralib_xml
     )

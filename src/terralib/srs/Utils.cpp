@@ -33,7 +33,7 @@ void te::srs::InitManagerFromJSON()
   try
   {
     std::ifstream f;
-    std::string jsonf = TERRALIB_JSON_FILES_LOCATION;
+    std::string jsonf = TE_JSON_FILES_LOCATION;
     jsonf += "/srs.json";
 
     f.open(jsonf.c_str());

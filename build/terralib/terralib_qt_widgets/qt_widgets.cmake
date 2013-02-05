@@ -4,25 +4,20 @@ if(QT4_FOUND)
   include (${QT_USE_FILE})
   add_definitions (${QT_DEFINITIONS})
 
-  set (DEP_INCLUDES ${QT_INCLUDE_DIR})
-  set (DEP_LIBS ${QT_LIBRARIES})
+  set (TE_DEP_INCLUDES ${QT_INCLUDE_DIR})
+  set (TE_DEP_LIBS ${QT_LIBRARIES})
 endif()
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS date_time filesystem system REQUIRED)
 if(Boost_FOUND)
-  list (APPEND DEP_LIBS ${Boost_LIBRARIES})
-  list (APPEND DEP_INCLUDES ${Boost_INCLUDE_DIRS})
+  list (APPEND TE_DEP_LIBS ${Boost_LIBRARIES})
+  list (APPEND TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
-
-#find_package(PostgreSQL ${_PostgreSQL_VERSION})
-#if(PostgreSQL_FOUND)
-#	list (APPEND DEP_INCLUDES ${PostgreSQL_INCLUDE_DIR})
-#endif()
 
 find_package(Qwt ${_Qwt_VERSION} REQUIRED)
 if(Qwt_FOUND)
-  list (APPEND DEP_LIBS ${QWT_LIBRARY})
-  list (APPEND DEP_INCLUDES ${QWT_INCLUDE_DIR})
+  list (APPEND TE_DEP_LIBS ${QWT_LIBRARY})
+  list (APPEND TE_DEP_INCLUDES ${QWT_INCLUDE_DIR})
 endif()
 
 #Definitions for Windows compiling
@@ -42,7 +37,7 @@ if(WIN32)
                   )
 endif()
 
-list (APPEND DEP_LIBS
+list (APPEND TE_DEP_LIBS
     terralib_annotationtext
 		terralib_color
 		terralib_common
@@ -75,14 +70,6 @@ set (
   widgets/dataset
   widgets/dataset/explorer
   widgets/dataset/selector
-#  widgets/datasource/connector/gdal
-#  widgets/datasource/connector/geofile
-#  widgets/datasource/connector/ogr
-#  widgets/datasource/connector/postgis
-#  widgets/datasource/connector/shp
-#  widgets/datasource/connector/wcs
-#  widgets/datasource/connector/wfs
-#  widgets/datasource/connector/wms
   widgets/datasource/core
   widgets/datasource/explorer
   widgets/datasource/selector
@@ -391,7 +378,7 @@ source_group("Generated Files" FILES ${MOC} ${MOC2} ${UI})
 # Include directory of the image files
 list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
-list (APPEND DEP_INCLUDES "${QT_INC_DIRS}")
+list (APPEND TE_DEP_INCLUDES "${QT_INC_DIRS}")
 
 list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")
 

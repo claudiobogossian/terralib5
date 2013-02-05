@@ -1,7 +1,7 @@
 find_package(IDL)
 if(IDL_FOUND)
-  list (APPEND DEP_LIBS ${IDL_LIBRARY})
-  list (APPEND DEP_INCLUDES ${IDL_INCLUDE_DIR})
+  list (APPEND TE_DEP_LIBS ${IDL_LIBRARY})
+  list (APPEND TE_DEP_INCLUDES ${IDL_INCLUDE_DIR})
 endif(IDL_FOUND)
 
 #Definitions for windows compiling
@@ -9,7 +9,7 @@ if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEIDLDLL -DBOOST_ALL_NO_LIB -DBOOST_FILESYSTEM_VERSION=3)
 endif()
 
-list (APPEND DEP_LIBS
+list (APPEND TE_DEP_LIBS
     terralib_common
     terralib_dataaccess
     terralib_datatype

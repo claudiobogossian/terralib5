@@ -2,10 +2,10 @@ set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "TerraLib / TerraView binary instalation
 set ( CPACK_PACKAGE_VENDOR "www.dpi.inpe.br" )
 set ( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/../README" )
 set ( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/../COPYING" )
-set ( CPACK_PACKAGE_VERSION "5.0.0" )
-set ( CPACK_PACKAGE_VERSION_MAJOR "5" )
-set ( CPACK_PACKAGE_VERSION_MINOR "0" )
-set ( CPACK_PACKAGE_VERSION_PATCH "0" )
+set ( CPACK_PACKAGE_VERSION_MAJOR "${TE_MAJOR_VERSION}" )
+set ( CPACK_PACKAGE_VERSION_MINOR "${TE_MINOR_VERSION}" )
+set ( CPACK_PACKAGE_VERSION_PATCH "${TE_PATCH_VERSION}" )
+set ( CPACK_PACKAGE_VERSION "${TE_STRING_VERSION}" )
 set ( CPACK_PACKAGE_CONTACT "terralib-devel@dpi.inpe.br" )
 set ( CPACK_PACKAGE_NAME "terralib" )
 set ( CPACK_PACKAGE_INSTALL_DIRECTORY "terralib-${CPACK_PACKAGE_VERSION}" )
@@ -14,21 +14,14 @@ set ( CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/../resources/images\\\\terralib_in
 getPackageName(pname)
 set ( CPACK_PACKAGE_FILE_NAME ${pname} )
 
-#set ( CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-${CPACK_PACKAGE_VERSION}-${CMAKE_SYSTEM}" )
-
-#set (packName "")
-#getPackageName(packName)
-
-#message ("pack: ${packName}")
- 
 if(WIN32)
-  include (${T5_MODULES_PATH}/NSISPackage.cmake)
+  include (${TE_MODULES_PATH}/NSISPackage.cmake)
 else ()
   set (CPACK_STRIP_FILES "")
   set (CPACK_SOURCE_STRIP_FILES "")
   
   if(UNIX AND NOT APPLE)
-    include (${T5_MODULES_PATH}/DEBPackage.cmake)
+    include (${TE_MODULES_PATH}/DEBPackage.cmake)
   endif()
 endif()
 

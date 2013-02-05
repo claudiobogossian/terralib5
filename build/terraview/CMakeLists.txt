@@ -12,12 +12,6 @@ set(INCLDIR ${SRCDIR})                            # directory where the header f
 set(PROJ_NAME "terraview")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 
-set (
-  TE_INCLUDE_DIRS
-  "${CMAKE_BINARY_DIR}" 
-  "${ROOT}/src"
-)
-
 find_package(Boost ${_Boost_VERSION} REQUIRED COMPONENTS system)
 
 if(Boost_FOUND)
@@ -35,9 +29,15 @@ if(QT4_FOUND)
   list (APPEND _dep_libs ${QT_LIBRARIES})
 endif()
 
-list (APPEND _dep_incs ${TE_INCLUDE_DIRS} ${INCLDIR} ${CMAKE_CURRENT_BINARY_DIR})
+list (APPEND 
+  _dep_incs 
+  "${CMAKE_BINARY_DIR}" 
+  "${CMAKE_CURRENT_BINARY_DIR}"
+  "${ROOT}/src"
+  "${INCLDIR}" 
+)
 
-include_directories ("${_dep_incs}")
+include_directories (${_dep_incs})
 
 list (APPEND 
   _dep_libs 
@@ -69,7 +69,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${TE_CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${TE_CMAKE_ARCHIVE_OUTPUT_DIRECTORY}")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}") 
 
-get_filename_component(TERRAVIEW_OUT_DIR "${TERRAVIEW_CONFIG_FILE}" PATH)
+get_filename_component(TVIEW_OUT_DIR "${TVIEW_CONFIG_FILE}" PATH)
 
 add_definitions (-DBOOST_ALL_NO_LIB)
 

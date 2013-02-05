@@ -39,11 +39,10 @@
 #     - xml
  
 # Compute paths
-get_filename_component(TERRALIB_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-if(EXISTS "${TERRALIB_CMAKE_DIR}/CMakeCache.txt")
+get_filename_component(TE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+if(EXISTS "${TE_CMAKE_DIR}/CMakeCache.txt")
    # In build tree
-   include("${TERRALIB_CMAKE_DIR}/teBuildTreeSettings.cmake")
-   set (TERRALIB_BIN_DIR @CMAKE_RUNTIME_OUTPUT_DIRECTORY@)
+   include("${TE_CMAKE_DIR}/teBuildTreeSettings.cmake")
 else()
   set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
   
@@ -52,40 +51,42 @@ else()
     set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
   endif()
   
-	set ( TE_DIRS @_TE_INST_INCLUDE_DIRS@ )	
-  set ( TE_ROOT_INC "${TERRALIB_CMAKE_DIR}/.." )
+	set ( TE_DIRS @TE_INST_INCLUDE_DIRS@ )	
+  set ( TE_ROOT_INC "${TE_CMAKE_DIR}/.." )
 	set ( TE_INCLUDE_DIRS "${TE_ROOT_INC}" )
 	
 	foreach( TDIR ${TE_DIRS} )
 		list ( APPEND TE_INCLUDE_DIRS "${TE_ROOT_INC}/terralib/${TDIR}")
 	endforeach()
 
-  set (T5_MODULEPATH "${TERRALIB_CMAKE_DIR}")
-  list (APPEND CMAKE_MODULE_PATH "${T5_MODULEPATH}")
+  set (TE_MODULEPATH "${TE_CMAKE_DIR}")
+  list (APPEND CMAKE_MODULE_PATH "${TE_MODULEPATH}")
   
   # Configuration files folder.
-  set (DEFAULT_LOGCONF_FILE ${TE_ROOT_INC}/log/te-log.conf)
+  set (TE_DEFAULT_LOGCONF_FILE ${TE_ROOT_INC}/log/te-log.conf)
   
   set (DEPS @TE_3DS@)
-  include ( ${T5_MODULEPATH}/Deps_versions.cmake )	
-  include ( ${T5_MODULEPATH}/UtilFunctions.cmake )	
+  include ( ${TE_MODULEPATH}/Deps_versions.cmake )	
+  include ( ${TE_MODULEPATH}/UtilFunctions.cmake )	
   
   foreach(DEP ${DEPS})
     find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
   endforeach()
   
-  set (TERRALIB_JSON_FILES_LOCATION ${TE_ROOT_INC}/resources/json)
-  set (TERRALIB_SQL_FILES_LOCATION ${TE_ROOT_INC}/resources/sql)
-  set (TERRALIB_XML_FILES_LOCATION ${TE_ROOT_INC}/resources/xml)
+  set (TE_JSON_FILES_LOCATION ${TE_ROOT_INC}/resources/json)
+  set (TE_SQL_FILES_LOCATION ${TE_ROOT_INC}/resources/sql)
+  set (TE_XML_FILES_LOCATION ${TE_ROOT_INC}/resources/xml)
+  
+  set (TE_BIN_DIR ${TE_ROOT_INC}/bin)
 endif()
  
 if(WIN32)
-  include (${T5_MODULEPATH}/WinConfig.cmake)
+  include (${TE_MODULEPATH}/WinConfig.cmake)
 endif()
 
 # Modules compiled 
 # This code is used to verify the compiled components.
-set ( TE_MODULES @_TE_MODULES@ )
+set ( TE_MODULES @TE_MODULES@ )
 
 if (terralib_FIND_COMPONENTS)
   foreach (comp ${terralib_FIND_COMPONENTS})

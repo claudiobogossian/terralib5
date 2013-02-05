@@ -15,39 +15,37 @@ include (${terralib_DIR}/teDepends.cmake)
   
 find_package (CppUnit REQUIRED)
 
-############### Get the data used for testing the example ###############
-set (DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
-set (DEFAULT_LOGFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to the folder that contains \"conf/te-log.conf\" file.")
+set (TE_DEFAULT_LOGFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to the folder that contains \"conf/te-log.conf\" file.")
 set (TE_OUTPUT_REPORT_DIR "${CMAKE_CURRENT_BINARY_DIR}/reports" CACHE PATH "Path where the report files will be generated.")
 
-if(NOT EXISTS ${DATA_DIR}/data/report.xsl)
-  message (STATUS "-- Installing data for unit tests.")
-  
-  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${DATA_DIR}/data.zip)
-                  
-  execute_process(COMMAND unzip ${DATA_DIR}/data.zip
-                  WORKING_DIRECTORY ${DATA_DIR} )
+############### Get the data used for testing the examples ###############
+set (TE_DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
 
+if(NOT EXISTS ${TE_DATA_DIR}/data/report.xsl)
+  message (STATUS "-- Installing data for examples.")
+  file(DOWNLOAD "http://www.dpi.inpe.br/terralib5/data.zip" ${TE_DATA_DIR}/data.zip)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf ${TE_DATA_DIR}/data.zip WORKING_DIRECTORY ${TE_DATA_DIR})
+  file (REMOVE ${TE_DATA_DIR}/data.zip)
   message (STATUS "-- Data files installed.")
 endif()
 
-set(TE_DATA_LOCALE "${DATA_DIR}")
+set(TE_DATA_LOCALE "${TE_DATA_DIR}")
 set(TE_DATA_UNITTEST_LOCALE ${TE_OUTPUT_REPORT_DIR})
 
 if(NOT EXISTS ${TE_DATA_UNITTEST_LOCALE})
   file (MAKE_DIRECTORY ${TE_DATA_UNITTEST_LOCALE})
 endif()
 
-configure_file(${DATA_DIR}/data/report.xsl ${TE_DATA_UNITTEST_LOCALE}/report.xsl COPYONLY)
+configure_file(${TE_DATA_DIR}/data/report.xsl ${TE_DATA_UNITTEST_LOCALE}/report.xsl COPYONLY)
 
 add_definitions( 
   -DTE_DATA_LOCALE="${TE_DATA_LOCALE}" 
   -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}" 
 )
 
-include (${T5_MODULEPATH}/GeneralConfig.cmake)
+include (${TE_MODULEPATH}/GeneralConfig.cmake)
 
-add_definitions(-DPLUGINS_PATH=\"${TERRALIB_BIN_DIR}\")
+add_definitions(-DTE_PLUGINS_PATH=\"${TE_BIN_DIR}\")
 
 # Go into sub-directories
 
@@ -81,11 +79,7 @@ if(WIN32)
     message (WARNING "Batch file may not contain paths to all searched dlls.")
   endif()
   
-  # Debug settings
-  set (GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/debug)
-  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.debug.bat)
-
   # Release settings
-  set (GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
-  generateRunningBatch(${T5_MODULEPATH}/runme.bat.in runme.release.bat)
+  set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
+  generateRunningBatch(${TE_MODULEPATH}/runme.bat.in runme.bat)
 endif()
