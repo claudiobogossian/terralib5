@@ -85,7 +85,6 @@ void TsMosaic::GeoReferencedImagesMosaic()
   
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
-  algoInputParams.m_forceInputNoDataValue = true;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
   algoInputParams.m_autoEqualize = true;  
 
@@ -182,16 +181,15 @@ void TsMosaic::TiePointsMosaic()
   r1ToR2tiePoints[ 2 ].first.y = 666;
   r1ToR2tiePoints[ 2 ].second.x = 244;
   r1ToR2tiePoints[ 2 ].second.y = 492;  
-  algoInputParams.m_tiePoints.push_back( r1ToR2tiePoints );  
+  algoInputParams.m_tiePoints.push_back( r1ToR2tiePoints );
   
   algoInputParams.m_tiePointsLinkType = 
     te::rp::Mosaic::InputParameters::AdjacentRastersLinkingTiePointsT;
   
   algoInputParams.m_interpMethod = te::rst::Interpolator::NearestNeighbor;
   algoInputParams.m_noDataValue = 0;
-  algoInputParams.m_forceInputNoDataValue = true;
   algoInputParams.m_blendMethod = te::rp::Blender::NoBlendMethod;
-  algoInputParams.m_autoEqualize = false;  
+  algoInputParams.m_autoEqualize = true;  
 
   te::rp::Mosaic::OutputParameters algoOutputParams;
   

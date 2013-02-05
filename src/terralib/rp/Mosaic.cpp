@@ -174,14 +174,18 @@ namespace te
       double mosaicURY = -1.0 * DBL_MAX; // world coords
       int mosaicSRID = 0;
       te::rst::BandProperty mosaicBaseBandProperties( 0, 0, "" );
-      std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >
-        mosaicGeomTransfms; // Mapping indexed points from each raster to the first raster indexed points.
-                            // te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
-                            // te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).
       std::vector< te::gm::Polygon > rastersBBoxes; // all rasters bounding boxes (under the first raster world coords.
-      te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
-      te::gm::LinearRing* auxLinearRingPtr = 0;
+      std::vector< te::rst::Grid > rastersGrids; //all rasters original grids under their original SRSs
+
       {
+        std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >
+          eachRasterPixelToFirstRasterPixelGeomTransfms; 
+          // Mapping indexed points from each raster to the first raster indexed points.
+          // te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
+          // te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).  
+          
+        te::gm::Polygon auxPolygon( 0, te::gm::PolygonType, 0 );
+        te::gm::LinearRing* auxLinearRingPtr = 0;        
         te::rst::Raster const* inputRasterPtr = 0;
         unsigned int inputRasterIdx = 0;
         te::srs::Converter convInstance;
@@ -190,8 +194,6 @@ namespace te
         te::gm::Coord2D urCoord1;
         te::gm::Coord2D llCoord2;
         te::gm::Coord2D urCoord2;
-        te::rst::Grid firstRasterGrid( 1u, 1u, new te::gm::Envelope( 0, 0, 0, 0),
-          -1 );
 
         m_inputParameters.m_feederRasterPtr->reset();
         while( ( inputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
@@ -200,6 +202,8 @@ namespace te
           TERP_TRUE_OR_RETURN_FALSE(
             inputRasterPtr->getAccessPolicy() & te::common::RAccess,
             "Invalid raster" );
+            
+          rastersGrids.push_back( (*inputRasterPtr->getGrid()) );
 
           // Defining the base mosaic info
 
@@ -218,9 +222,7 @@ namespace te
               mosaicSRID = inputRasterPtr->getGrid()->getSRID();
 
               mosaicBaseBandProperties = *inputRasterPtr->getBand( 0 )->getProperty();
-
-              firstRasterGrid = (*inputRasterPtr->getGrid());
-
+              
               // finding the current raster bounding box polygon (first raster world coordinates)
 
               auxPolygon.clear();
@@ -253,7 +255,7 @@ namespace te
                   m_inputParameters.m_tiePoints[ inputRasterIdx - 1 ];
                 const unsigned int inputTPsSize = inputTPs.size();
                 const te::gm::GeometricTransformation& lastTransf =
-                  (*mosaicGeomTransfms[ inputRasterIdx - 2 ].get());
+                  (*eachRasterPixelToFirstRasterPixelGeomTransfms[ inputRasterIdx - 2 ].get());
 
                 for( unsigned int inputTPsIdx = 0 ; inputTPsIdx < inputTPsSize ;
                   ++inputTPsIdx )
@@ -270,7 +272,7 @@ namespace te
                 "Geometric transformation instatiation error" );
               TERP_TRUE_OR_RETURN_FALSE( auxTransPtr->initialize( transParams ),
                 "Geometric transformation parameters calcule error" );
-              mosaicGeomTransfms.push_back( auxTransPtr );
+              eachRasterPixelToFirstRasterPixelGeomTransfms.push_back( auxTransPtr );
 
               // current raster corner coords (line/column)
 
@@ -289,9 +291,9 @@ namespace te
 
               // the respective coords in world space (first raster)
 
-              firstRasterGrid.gridToGeo( urCoord1.x, urCoord1.y, urCoord2.x,
+              rastersGrids[ 0 ].gridToGeo( urCoord1.x, urCoord1.y, urCoord2.x,
                 urCoord2.y );
-              firstRasterGrid.gridToGeo( llCoord1.x, llCoord1.y, llCoord2.x,
+              rastersGrids[ 0 ].gridToGeo( llCoord1.x, llCoord1.y, llCoord2.x,
                 llCoord2.y );
 
               // expanding mosaic area
@@ -422,6 +424,8 @@ namespace te
 
           m_inputParameters.m_feederRasterPtr->moveNext();
         }
+        
+
       }
 
       // creating the output raster
@@ -450,6 +454,59 @@ namespace te
             0 ) );
         TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
           "Output raster creation error" );
+      }
+      
+      // Finding the transformation mapping indexed points from each raster to the first raster indexed points.
+      // te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
+      // te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).             
+      
+      std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >
+        eachRasterPixelToMosaicRasterPixelGeomTransfms; 
+        
+      {
+        const double firstRasterColOffset = std::abs( rastersBBoxes[ 0 ].getMBR()->m_llx -
+          outParamsPtr->m_outputRasterPtr->getGrid()->getExtent()->getLowerLeftX() ) /
+          outParamsPtr->m_outputRasterPtr->getGrid()->getResolutionX();
+        const double firstRasterLinOffset = std::abs( rastersBBoxes[ 0 ].getMBR()->m_ury -
+          outParamsPtr->m_outputRasterPtr->getGrid()->getExtent()->getUpperRightY() ) /
+          outParamsPtr->m_outputRasterPtr->getGrid()->getResolutionY();
+          
+        for( unsigned int tiePointsIdx = 0 ; tiePointsIdx < m_inputParameters.m_tiePoints.size() ;
+          ++tiePointsIdx )
+        {
+          te::gm::GTParameters transfParams;
+          transfParams.m_tiePoints = m_inputParameters.m_tiePoints[ tiePointsIdx ];
+          
+          const double prevRasterColOffset = std::abs( rastersBBoxes[ tiePointsIdx ].getMBR()->m_llx -
+            outParamsPtr->m_outputRasterPtr->getGrid()->getExtent()->getLowerLeftX() ) /
+            outParamsPtr->m_outputRasterPtr->getGrid()->getResolutionX();
+          const double prevRasterLinOffset = std::abs( rastersBBoxes[ tiePointsIdx ].getMBR()->m_ury -
+            outParamsPtr->m_outputRasterPtr->getGrid()->getExtent()->getUpperRightY() ) /
+            outParamsPtr->m_outputRasterPtr->getGrid()->getResolutionY();          
+          
+          for( unsigned int tpIdx = 0 ; tpIdx < transfParams.m_tiePoints.size() ; 
+            ++tpIdx )
+          {
+            if( m_inputParameters.m_tiePointsLinkType == InputParameters::FirstRasterLinkingTiePointsT )
+            {
+              transfParams.m_tiePoints[ tpIdx ].first.x += firstRasterColOffset;
+              transfParams.m_tiePoints[ tpIdx ].first.y += firstRasterLinOffset;
+            }
+            else
+            {
+              transfParams.m_tiePoints[ tpIdx ].first.x += prevRasterColOffset;
+              transfParams.m_tiePoints[ tpIdx ].first.y += prevRasterLinOffset;
+            }
+          }
+          
+          boost::shared_ptr< te::gm::GeometricTransformation > auxTransPtr( 
+            te::gm::GTFactory::make( m_inputParameters.m_geomTransfName ) );
+          TERP_TRUE_OR_RETURN_FALSE( auxTransPtr.get() != 0,
+            "Geometric transformation instatiation error" );
+          TERP_TRUE_OR_RETURN_FALSE( auxTransPtr->initialize( transfParams ),
+            "Geometric transformation parameters calcule error" );
+          eachRasterPixelToMosaicRasterPixelGeomTransfms.push_back( auxTransPtr );          
+        }
       }
 
       // creating the output cache
@@ -480,7 +537,7 @@ namespace te
           }
         }
       }
-
+      
       // Copying the first image data to the output mosaic
       // and find the base mosaic mean and offset values
 
@@ -590,7 +647,8 @@ namespace te
       if( m_inputParameters.m_feederRasterPtr->getObjsCount() > 1 )
       {
         if( useTiePoints )
-          return executeTiePointsMosaic( mosaicGeomTransfms, rastersBBoxes,
+          return executeTiePointsMosaic( 
+            eachRasterPixelToMosaicRasterPixelGeomTransfms, rastersBBoxes,
             mosaicTargetMeans, mosaicTargetVariances,
             cachedRasterInstance );
         else
@@ -1116,14 +1174,12 @@ namespace te
         outputRasterBands.push_back( outputRasterBandsIdx );
         dummyRasterOffsets.push_back( 0.0 );
         dummyRasterScales.push_back( 1.0 );
-      }      
+      }
       
-      // skipping the first raster
-
+      // iterating over the other rasters
+      
       m_inputParameters.m_feederRasterPtr->reset();
       m_inputParameters.m_feederRasterPtr->moveNext();
-
-      // iterating over the other rasters
 
       while( ( nonCachedInputRasterPtr = m_inputParameters.m_feederRasterPtr->getCurrentObj() ) )
       {
@@ -1259,11 +1315,14 @@ namespace te
 
                   blenderInstance.getBlendedValue( outputRow, outputCol, inputRastersBandsIdx,
                     blendedValue );
+                    
+                  if( blendedValue != m_inputParameters.m_noDataValue )
+                  {
+                    blendedValue = std::max( blendedValue, outputBandRangeMin );
+                    blendedValue = std::min( blendedValue, outputBandRangeMax );
 
-                  blendedValue = std::max( blendedValue, outputBandRangeMin );
-                  blendedValue = std::min( blendedValue, outputBandRangeMax );
-
-                  outputBand.setValue( outputCol, outputRow, blendedValue );
+                    outputBand.setValue( outputCol, outputRow, blendedValue );
+                  }
 
                   ++itB;
                 }
@@ -1335,7 +1394,6 @@ namespace te
             const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
               m_inputParameters.m_noDataValue : cachedInputRaster.getBand(
               inputBandIdx )->getProperty()->m_noDataValue;
-            const double& outputBandNoDataValue = m_inputParameters.m_noDataValue;
 
             for( unsigned int nonOverlappednResultIdx = 0 ; nonOverlappednResultIdx < nonOverlappednResultSize ;
               ++nonOverlappednResultIdx )
@@ -1367,11 +1425,7 @@ namespace te
 
                 interpInstance.getValue( inputCol, inputRow, pixelCValue, inputBandIdx );
 
-                if( pixelCValue.real() == inputBandNoDataValue )
-                {
-                  outputBand.setValue( outputCol, outputRow, outputBandNoDataValue );
-                }
-                else
+                if( pixelCValue.real() != inputBandNoDataValue )
                 {
                   pixelValue = pixelCValue.real() * currentRasterBandsScales[
                     inputRastersBandsIdx ] + currentRasterBandsOffsets[
@@ -1393,7 +1447,7 @@ namespace te
         m_inputParameters.m_feederRasterPtr->moveNext();
       }
       
-      return false;
+      return true;
     }
 
     void Mosaic::calcBandStatistics( const te::rst::Band& band,
