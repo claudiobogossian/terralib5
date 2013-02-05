@@ -27,7 +27,6 @@
 #define __TERRALIB_QT_WIDGETS_DATASET_SELECTOR_INTERNAL_DATASETSELECTORDIALOG_H
 
 // TerraLib
-#include "../../../../dataaccess/Definitions.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../Config.h"

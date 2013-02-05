@@ -30,7 +30,6 @@
 #include "../../common/Comparators.h"
 #include "../../common/Singleton.h"
 #include "../../common/ThreadingPolicies.h"
-#include "../Definitions.h"
 #include "DataSource.h"
 
 // STL

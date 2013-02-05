@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASETITEM_H
 
 // TerraLib
-#include "../../../../dataaccess/Definitions.h"
+#include "../../../../dataaccess/dataset/DataSetType.h"
 #include "AbstractDataSourceTreeItem.h"
 
 namespace te
