@@ -14,10 +14,6 @@ project(${PROJ_NAME})         # the project name is terralib_example_dataaccess
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_dataaccess
 
 find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
-if(Boost_FOUND)
-  set(DEP_LIBS ${DEP_LIBS} ${Boost_LIBRARIES})
-  set(DEP_INCLUDES ${DEP_INCLUDES} ${Boost_INCLUDE_DIRS})
-endif()
 
 #Definitions for Windows compiling
 if(WIN32)

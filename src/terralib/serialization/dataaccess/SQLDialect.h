@@ -31,13 +31,19 @@
 
 namespace te
 {
-  namespace da { class SQLDialect; }
+  namespace da
+  {
+    class DataSourceCapabilities;
+    class SQLDialect;
+  }
 
   namespace xml { class Reader; }
 
   namespace serialize
   {
     TESERIALIZATIONEXPORT te::da::SQLDialect* ReadDialect(const std::string& dialectFileName);
+
+    TESERIALIZATIONEXPORT void Read(const std::string& dialectFileName, te::da::DataSourceCapabilities* capabilities, te::da::SQLDialect* dialect);
 
     //TESERIALIZATIONEXPORT te::da::SQLDialect* Read(te::xml::Reader& reader);
 

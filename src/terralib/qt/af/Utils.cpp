@@ -141,10 +141,10 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
-  for(std::list<te::map::AbstractLayer*>::const_iterator it = project.getLayers().begin();
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = project.getLayers().begin();
       it != project.getLayers().end();
       ++it)
-    lserial.write(*it, writer);
+    lserial.write(it->get(), writer);
 
   writer.writeEndElement("LayerList");
 

@@ -28,7 +28,7 @@
 
 // TerraLib
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/Definitions.h"
+#include "../dataaccess/dataset/DataSetType.h"
 #include "Config.h"
 
 namespace te

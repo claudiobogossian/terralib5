@@ -13,6 +13,8 @@ set(PROJ_NAME "terralib_example_datagrid")
 project(${PROJ_NAME})         # the project name is terralib_example_datagrid
 SET(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_datagrid
 
+find_package(Boost ${_Boost_VERSION} COMPONENTS system REQUIRED)
+
 
 #Definitions for Windows compiling
 if(WIN32)
@@ -32,21 +34,22 @@ endif()
 
 set(DEP_LIBS 
     terralib_annotationtext
-		terralib_color
-		terralib_common
-		terralib_dataaccess
-		terralib_datatype
-		terralib_filter
-		terralib_geometry
-		terralib_gml
-		terralib_maptools
-		terralib_plugin
-		terralib_postgis
-		terralib_qt_widgets
-		terralib_raster
-		terralib_srs
-		terralib_xlink
+	terralib_color
+	terralib_common
+	terralib_dataaccess
+	terralib_datatype
+	terralib_filter
+	terralib_geometry
+	terralib_gml
+	terralib_maptools
+	terralib_plugin
+	terralib_postgis
+	terralib_qt_widgets
+	terralib_raster
+	terralib_srs
+	terralib_xlink
     ${QT_LIBRARIES}
+	${Boost_LIBRARIES}
     )
 
 # Select the source and header files

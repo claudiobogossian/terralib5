@@ -33,6 +33,9 @@
 // STL
 #include <string>
 
+// Boost
+#include <boost/shared_ptr.hpp>
+
 namespace te
 {
 // Forward declarations 
@@ -731,6 +734,8 @@ namespace te
         bool m_fullLoaded;                                  //!< A flag to indicate if the data set type was full loaded or not from data source.
         int m_category;                                     //!< A category
     };
+
+    typedef boost::shared_ptr<DataSetType> DataSetTypePtr;
 
     inline bool te::da::DataSetType::hasGeom() const
     {

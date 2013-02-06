@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_GDAL_INTERNAL_GDALCONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../dataaccess/Definitions.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL

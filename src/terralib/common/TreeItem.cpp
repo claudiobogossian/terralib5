@@ -161,6 +161,11 @@ te::common::TreeItemPtr te::common::TreeItem::replace(std::size_t i, const TreeI
   return replacedItem;
 }
 
+bool te::common::TreeItem::isSibling(const TreeItem* item) const
+{
+  return getParent() == item->getParent();
+}
+
 std::size_t te::common::TreeItem::getChildrenCount() const
 {
   return m_children.size();
