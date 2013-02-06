@@ -265,7 +265,7 @@ install (
 )
 
 install ( 
-  DIRECTORY ${T5_MODULES_PATH}
+  DIRECTORY ${TE_MODULES_PATH}
   DESTINATION .
   COMPONENT CMAKE
   PATTERN "*Package*" EXCLUDE
@@ -314,7 +314,17 @@ install (
   COMPONENT HEADERS
 )
 
+set (_bin_dir ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+if(WIN32)
+  set (_bin_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+endif()
+
+install (
+  DIRECTORY ${_bin_dir}
+  DESTINATION "bin"
+  COMPONENT BINARIES
+  FILES_MATCHING PATTERN "*.xml"
+)
+
 include (${TE_MODULES_PATH}/Package.cmake)
 include (${TE_MODULES_PATH}/GenerateDox.cmake)
-
-#set (TE_LIBRARIES "${_TE_LIBRARIES}")

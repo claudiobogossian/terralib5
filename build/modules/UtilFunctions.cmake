@@ -223,20 +223,14 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
   if(WIN32)  
     install(
       TARGETS ${PROJ_NAME}
-      RUNTIME DESTINATION "bin/plugins" COMPONENT PLUGINS
+      RUNTIME DESTINATION "bin" COMPONENT PLUGINS
     )
   else()
     install(
       TARGETS ${PROJ_NAME}
-      LIBRARY DESTINATION "bin/plugins" COMPONENT PLUGINS
+      LIBRARY DESTINATION "bin" COMPONENT PLUGINS
     )
   endif()
-  
-  install (
-    FILES ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_${proj_name}_info.xml
-    DESTINATION "bin/plugins"
-    COMPONENT PLUGINS
-  )
 ENDMACRO(makePluginProject)
 
 # Macro installTarget
@@ -417,7 +411,7 @@ MACRO (getVSVersion v)
 ENDMACRO(getVSVersion)
 
 MACRO (getPackageName packName)
-  set (_pname "${PROJ_NAME}-${TE_VERSION}") 
+  set (_pname "terralib-${TE_VERSION}") 
   if(WIN32)
     if(MSVC)
       set (VSv "")
