@@ -30,6 +30,8 @@
 #include "../raster/Raster.h"
 
 #include <vector>
+#include <map>
+#include <boost/shared_ptr.hpp>
 
 namespace te
 {
@@ -90,6 +92,43 @@ namespace te
         std::vector< const te::rst::Raster* > m_rasters;
         
         FeederConstRasterVector();
+    };  
+    
+    /*!
+      \class FeederConstRasterFileNames
+      \brief A feeder from a vector of input rasters infos.
+      \ingroup RPModule
+     */
+    class TERPEXPORT FeederConstRasterInfo : public FeederConstRaster
+    {
+      public :
+        
+        /*!
+          \brief Constructor from a vector of input rasters pointers;
+          \param rTypes The name of the specific drivers to instantiate each raster. 
+          \param rInfos The necessary information to instantiate each raster. 
+          \note The given rasters must always be avaliable.
+        */        
+        FeederConstRasterInfo( const std::vector< std::string >& rTypes,
+          const std::vector< std::map< std::string, std::string > >& rInfos );
+        
+        ~FeederConstRasterInfo();
+        
+        //overloads
+        te::rst::Raster const* getCurrentObj() const;
+        bool moveNext();
+        void reset();
+        unsigned int getObjsCount() const;
+        unsigned int getCurrentOffset() const;
+        
+      protected :
+        
+        std::vector< std::string >::size_type m_currentOffset;
+        std::vector< std::string > m_rTypes;
+        std::vector< std::map< std::string, std::string > > m_rInfos;
+        boost::shared_ptr< te::rst::Raster > m_currentRasterPtr;
+        
+        FeederConstRasterInfo();
     };    
   } // end namespace rp
 }   // end namespace te
