@@ -46,6 +46,8 @@ namespace te
     */
     class TEPGISEXPORT DataSetTypePersistence : public te::da::DataSetTypePersistence
     {
+      using te::da::DataSetTypePersistence::add;
+      
       public:
 
         /** @name Constructor/Destructor

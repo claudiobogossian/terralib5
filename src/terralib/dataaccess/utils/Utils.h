@@ -27,7 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_UTILS_H
 
 // TerraLib
-#include "../Config.h"
+#include "../datasource/DataSource.h"
 
 // Boost
 #include <boost/ptr_container/ptr_vector.hpp>
@@ -43,7 +43,6 @@ namespace te
   {
     class DataSet;
     class DataSetType;
-    class DataSource;
     class DataSourceCatalogLoader;
     class DataSourceTransactor;
 
@@ -82,6 +81,22 @@ namespace te
     TEDATAACCESSEXPORT DataSet* GetDataSet(const std::string& name, const std::string& datasourceId);
 
     TEDATAACCESSEXPORT DataSet* GetDataSet(const std::string& name, te::da::DataSource* datasource);
+
+    /*!
+      \brief Search for a data source with the informed id in the DataSourceManager.
+
+       If the data source is not found in that manager it will try to get some information
+       in the DataSourceInfoManager and will create a new data source instance,
+       storing a reference to the new data source in the manager.
+
+       \param datasourceId  The data source to look for.
+       \param opened        Automatically open the data source.
+
+       \return A data source with the informed id.
+
+       \exception Exception It throws an exception if the informed data source could not be retrieved.
+    */
+    TEDATAACCESSEXPORT DataSourcePtr GetDataSource(const std::string& datasourceId, const bool opened = true);
 
   } // end namespace da
 }   // end namespace te
