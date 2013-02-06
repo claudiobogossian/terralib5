@@ -340,32 +340,26 @@ void TsEnvelop::tcTouches()
 
 void TsEnvelop::tcIntersection()
 {
-  te::gm::Envelope* boxAeB_res = boxA->intersection( *boxB); //rectangle
-  CPPUNIT_ASSERT(boxAeB_res->equals(*boxAeB) == true);
-  CPPUNIT_ASSERT_MESSAGE("Intersection should be a rectangle ", boxAeB_res->equals(*boxAeB) ==  true); 
+  te::gm::Envelope boxAeB_res = boxA->intersection( *boxB); //rectangle
+  CPPUNIT_ASSERT(boxAeB_res.equals(*boxAeB) == true);
+  CPPUNIT_ASSERT_MESSAGE("Intersection should be a rectangle ", boxAeB_res.equals(*boxAeB) ==  true); 
 
-  te::gm::Envelope* boxAeC = boxA->intersection( *boxC); //by a vertical  line
-  bool isLine = (boxAeC->m_llx == boxAeC->m_urx); 
+  te::gm::Envelope boxAeC = boxA->intersection( *boxC); //by a vertical  line
+  bool isLine = (boxAeC.m_llx == boxAeC.m_urx); 
   CPPUNIT_ASSERT_MESSAGE("Intersection should be a vertical line ", isLine ==  true); 
 
-  te::gm::Envelope* boxAeG = boxA->intersection( *boxG); 
-  bool isPoint = ((boxAeG->m_llx == boxAeG->m_urx) && (boxAeG->m_lly == boxAeG->m_ury)); //it is a point
+  te::gm::Envelope boxAeG = boxA->intersection( *boxG); 
+  bool isPoint = ((boxAeG.m_llx == boxAeG.m_urx) && (boxAeG.m_lly == boxAeG.m_ury)); //it is a point
   CPPUNIT_ASSERT_MESSAGE("Intersection should be a point ", isPoint ==  true);
 
-  te::gm::Envelope* boxBeF = boxB->intersection( *boxF); //by a horiz line
-  isLine = (boxBeF->m_lly == boxBeF->m_ury);
+  te::gm::Envelope boxBeF = boxB->intersection( *boxF); //by a horiz line
+  isLine = (boxBeF.m_lly == boxBeF.m_ury);
   CPPUNIT_ASSERT_MESSAGE("Intersection should be a horizontal line ", isLine ==  true); 
 
-  te::gm::Envelope* boxGeH = boxG->intersection( *boxH); //by a segment of horiz line
-  isLine = (boxGeH->m_lly == boxGeH->m_ury && boxGeH->m_llx != boxGeH->m_urx);
+  te::gm::Envelope boxGeH = boxG->intersection( *boxH); //by a segment of horiz line
+  isLine = (boxGeH.m_lly == boxGeH.m_ury && boxGeH.m_llx != boxGeH.m_urx);
   CPPUNIT_ASSERT_MESSAGE("Intersection should be a segment of horiz line ", isLine ==  true);
-
-  delete boxAeB_res;
-  delete boxAeC;
-  delete boxAeG;
-  delete boxBeF;
-  delete boxGeH;
-}  
+}
 
 
 void TsEnvelop::tcContains()

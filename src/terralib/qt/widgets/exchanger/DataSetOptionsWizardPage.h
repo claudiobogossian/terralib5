@@ -27,7 +27,7 @@
 #define __TERRALIB_PLUGINS_EXCHANGER_INTERNAL_DATASETOPTIONSWIZARDPAGE_H
 
 // TerraLib
-#include "../../../dataaccess/Definitions.h"
+#include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../Config.h"
 

@@ -33,9 +33,13 @@
 
 // STL
 #include <string>
+#include <vector>
 
 namespace te
 {
+// Forward declaration
+  namespace rst { class BandProperty; }
+
   namespace se
   {
 // Forward declarations
@@ -266,16 +270,28 @@ namespace te
     TESEEXPORT Symbolizer* CreateSymbolizer(const te::gm::GeomType& geomType);
 
     /*!
-      \brief Try creates an appropriate style based on given geometry type.
+      \brief Try creates an appropriate feature type style based on given geometry type.
 
       \param geomType The geometry type.
 
-      \return A style based on given geometry type.
+      \return A feature type style based on given geometry type.
 
       \note The caller of this method will take the ownership of the returned pointer.
       \note The method will return a NULL pointer if a default style could not be created.
     */
     TESEEXPORT Style* CreateFeatureTypeStyle(const te::gm::GeomType& geomType);
+
+    /*!
+      \brief Try creates an appropriate coverage style based on given band properties.
+
+      \param properties The band properties.
+
+      \return A coverage style based on given geometry type.
+
+      \note The caller of this method will take the ownership of the returned pointer.
+      \note The method will return a NULL pointer if a default style could not be created.
+    */
+    TESEEXPORT Style* CreateCoverageStyle(const std::vector<te::rst::BandProperty*>& properties);
 
     /*!
       \brief Creates a random RGB color encoded using two hexadecimal digits per primary-color component prefixed with a hash (#) sign.

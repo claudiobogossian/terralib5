@@ -28,8 +28,7 @@
 
 // TerraLib
 #include "../Config.h"
-#include "../Definitions.h"
-//#include "../dataset/DataSetType.h"
+#include "../dataset/DataSetType.h"
 
 // STL
 #include <map>

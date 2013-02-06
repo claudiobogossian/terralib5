@@ -12,6 +12,7 @@ endif()
 set (TE_DEP_LIBS 
     terralib_color
 		terralib_common
+		terralib_raster
 		terralib_filter
 		terralib_xlink
     )

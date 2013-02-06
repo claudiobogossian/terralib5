@@ -27,7 +27,6 @@
 #define __TERRALIB_PLUGINS_EXCHANGER_INTERNAL_DATAEXCHANGESUMMARYWIZARDPAGE_H
 
 // TerraLib
-#include "../../../dataaccess/Definitions.h"
 #include "../Config.h"
 
 // STL

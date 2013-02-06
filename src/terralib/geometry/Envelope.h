@@ -307,7 +307,6 @@ namespace te
           \param rhs The other envelope whose intersection with this envelope will be calculated.
 
           \return An envelope representing the intersection with this envelope. It can be a degenerated envelope if they only "spatially touch" each other".
-                 
 
           \pre The rhs envelope must intersects this envelope.
 
@@ -315,7 +314,7 @@ namespace te
 
           \warning Calling this method with two envelopes that doesn't intersect may return an invalid envelope.
         */
-        Envelope* intersection(const Envelope& rhs) const;
+        Envelope intersection(const Envelope& rhs) const;
 
         /*!
           \brief It updates the envelop with coordinates of another envelope.
@@ -539,7 +538,7 @@ namespace te
               (rhs.m_ury <= m_ury));
     }
 
-    inline Envelope* Envelope::intersection(const Envelope& rhs) const
+    inline Envelope Envelope::intersection(const Envelope& rhs) const
     {
       assert(intersects(rhs));
 
@@ -548,7 +547,7 @@ namespace te
       double urx = m_urx < rhs.m_urx ? m_urx : rhs.m_urx;
       double ury = m_ury < rhs.m_ury ? m_ury : rhs.m_ury;
 
-      return new Envelope(llx, lly, urx, ury);
+      return Envelope(llx, lly, urx, ury);
     }
 
     inline void Envelope::Union(const Envelope& rhs)

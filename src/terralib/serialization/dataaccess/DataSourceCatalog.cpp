@@ -26,7 +26,6 @@
 // TerraLib
 #include "../../dataaccess/dataset/DataSetType.h"
 #include "../../dataaccess/datasource/DataSourceCatalog.h"
-#include "../../dataaccess/Definitions.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
 #include "DataSetType.h"

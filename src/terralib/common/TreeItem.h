@@ -171,6 +171,15 @@ namespace te
         TreeItemPtr replace(std::size_t i, const TreeItemPtr& childItem);
 
         /*!
+          \brief It checks if the given layer is sibling of this one.
+          
+          \param layer The layer to be compared to.
+
+          \return It returns true if the layers are siblings.
+        */
+        bool isSibling(const TreeItem* item) const;
+
+        /*!
           \brief It returns the number of children of this node.
 
           \return The number of direct descendants of this node.

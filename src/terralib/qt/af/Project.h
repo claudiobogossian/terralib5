@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_AF_INTERNAL_PROJECT_H
 
 // Terralib
+#include "../../maptools/AbstractLayer.h"
 #include "Config.h"
 
 // STL
@@ -35,9 +36,6 @@
 
 namespace te
 {
-// Forward declarations
-  namespace map { class AbstractLayer; }
-
   namespace qt
   {
     namespace af
@@ -65,19 +63,19 @@ namespace te
 
           const std::string& getAuthor() const;
 
-          const std::list<te::map::AbstractLayer*>& getLayers() const;
+          const std::list<te::map::AbstractLayerPtr>& getLayers() const;
 
-          std::list<te::map::AbstractLayer*>& getLayers();
+          std::list<te::map::AbstractLayerPtr>& getLayers();
 
-          void add(te::map::AbstractLayer* layer);
+          void add(const te::map::AbstractLayerPtr& layer);
 
-          void remove(te::map::AbstractLayer* layer);
+          void remove(const te::map::AbstractLayerPtr& layer);
 
         private:
 
-          std::string m_title;                           //!< Project title.
-          std::string m_author;                          //!< Project author.
-          std::list<te::map::AbstractLayer*> m_layers;   //!< Project layers.
+          std::string m_title;                            //!< Project title.
+          std::string m_author;                           //!< Project author.
+          std::list<te::map::AbstractLayerPtr> m_layers;  //!< Project layers.
       };
 
     } // end namespace af

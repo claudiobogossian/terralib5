@@ -55,6 +55,15 @@ namespace te
                                                 const CompositeProperty* cp,
                                                 std::vector<std::size_t>& poslist);
 
+    /*!
+      \brief It convert a string to a DataType.
+
+      \param dataType String to be converted.
+      
+      \return DataType integer
+    */
+    TEDATATYPEEXPORT int Convert2Terralib(const std::string dataType);
+
   } // end namespace dt
 }   // end namespace te
 
