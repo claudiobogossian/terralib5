@@ -24,13 +24,15 @@
 */
 
 // TerraLib
+#include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../dataset/DataSetType.h"
-#include "../datasource/DataSource.h"
+#include "../datasource/DataSourceInfoManager.h"
 #include "../datasource/DataSourceManager.h"
 #include "../datasource/DataSourceCatalogLoader.h"
 #include "../datasource/DataSourceTransactor.h"
+#include "../Exception.h"
 
 #include "Utils.h"
 
@@ -241,3 +243,28 @@ te::da::DataSet* te::da::GetDataSet(const std::string& name, te::da::DataSource*
 
   return transactor->getDataSet(name);
 }
+
+te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, const bool opened)
+{
+  assert(!datasourceId.empty());
+
+  DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
+
+  if(datasource.get() == 0)
+  {
+    DataSourceInfoPtr dsinfo = te::da::DataSourceInfoManager::getInstance().get(datasourceId);
+
+    if(dsinfo.get() == 0)
+      throw Exception(TR_DATAACCESS("Could not find data source!"));
+
+    datasource = te::da::DataSourceManager::getInstance().make(datasourceId, dsinfo->getAccessDriver());
+
+    datasource->setConnectionInfo(dsinfo->getConnInfo());
+  }
+
+  if(opened && !datasource->isOpened())
+    datasource->open();
+
+  return datasource;
+}
+
