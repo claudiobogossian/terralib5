@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file SQLDialect.h
+  \file DataSourceCapabilities.h
    
-  \brief Auxiliary classes and functions to read SQL dialect information from a XML document.
+  \brief Auxiliary classes and functions to read DataSource Capabilities information from a XML document.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_SQLDIALECT_H
-#define __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_SQLDIALECT_H
+#ifndef __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_DATASOURCECAPABILITIES_H
+#define __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_DATASOURCECAPABILITIES_H
 
 // TerraLib
 #include "../Config.h"
@@ -41,12 +41,10 @@ namespace te
 
   namespace serialize
   {
-    TESERIALIZATIONEXPORT te::da::SQLDialect* ReadDialect(const std::string& dialectFileName);
+    TESERIALIZATIONEXPORT void Read(const std::string& dialectFileName, te::da::DataSourceCapabilities* capabilities, te::da::SQLDialect* dialect);
     
-    //TESERIALIZATIONEXPORT te::da::SQLDialect* Read(te::xml::Reader& reader);
-
   } // end namespace serialize
 }   // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_SQLDIALECT_H
+#endif  // __TERRALIB_SERIALIZATION_DATAACCESS_INTERNAL_DATASOURCECAPABILITIES_H
 

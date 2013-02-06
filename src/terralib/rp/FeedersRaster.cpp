@@ -23,6 +23,8 @@
 */
 
 #include "FeedersRaster.h"
+#include "Macros.h"
+#include "../raster/RasterFactory.h"
 
 namespace te
 {
@@ -76,6 +78,93 @@ namespace te
     {
       return m_currentOffset;
     }
+
+    FeederConstRasterInfo::FeederConstRasterInfo(
+      const std::vector< std::string >& rTypes,
+      const std::vector< std::map< std::string, std::string > >& rInfos )
+    : m_currentOffset( 0 ), m_rTypes( rTypes ), m_rInfos( rInfos )
+    {
+      TERP_TRUE_OR_THROW( rTypes.size() == rInfos.size(),
+        "Invalid rasters info" )
+      reset();
+    };
+    
+    FeederConstRasterInfo::FeederConstRasterInfo()
+    : m_currentOffset( 0 )
+    {
+    };    
+    
+    FeederConstRasterInfo::~FeederConstRasterInfo()
+    {
+    };
+    
+    te::rst::Raster const* FeederConstRasterInfo::getCurrentObj() const
+    {
+      return m_currentRasterPtr.get();
+    };    
+    
+    bool FeederConstRasterInfo::moveNext()
+    {
+      if( m_currentOffset == m_rTypes.size() )
+      {
+        return false;
+      }
+      else
+      {
+        ++m_currentOffset;
+        
+        if( m_currentOffset == m_rTypes.size() )
+        {
+          return false;
+        }
+        else
+        {
+          m_currentRasterPtr.reset( te::rst::RasterFactory::open( 
+            m_rTypes[ m_currentOffset ], m_rInfos[ m_currentOffset ], 
+            te::common::RAccess ) );          
+            
+          if( m_currentRasterPtr.get() )
+          {
+            return true;
+          }
+          else
+          {
+            return false;
+          }
+        }
+      }
+    }
+    
+    void FeederConstRasterInfo::reset()
+    {
+      m_currentRasterPtr.reset();
+      
+      if( ! m_rTypes.empty() )
+      {
+        m_currentRasterPtr.reset( te::rst::RasterFactory::open( m_rTypes[ 0 ],
+          m_rInfos[ 0 ], te::common::RAccess ) );          
+          
+        if( m_currentRasterPtr.get() )
+        {
+          m_currentOffset = 0;
+        }
+        else
+        {
+          m_currentOffset = m_rTypes.size();
+        }
+      }
+    }
+    
+    unsigned int FeederConstRasterInfo::getObjsCount() const
+    {
+      return (unsigned int) m_rTypes.size();
+    }
+    
+    unsigned int FeederConstRasterInfo::getCurrentOffset() const
+    {
+      return m_currentOffset;
+    }
+
   } // end namespace rp
 }   // end namespace te    
 
