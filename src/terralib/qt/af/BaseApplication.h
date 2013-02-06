@@ -69,6 +69,10 @@ namespace te
 
           void onAddDataSetLayer();
 
+          void onPluginsManager();
+
+          void onPluginsBuilder();
+
           //void layerVisibilityChanged(const QModelIndex& idx);
 
           //void drawLayers();

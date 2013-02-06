@@ -199,6 +199,23 @@ void te::qt::af::BaseApplication::onAddDataSetLayer()
   }
 }
 
+void te::qt::af::BaseApplication::onPluginsManager()
+{
+  try
+  {
+    te::qt::widgets::PluginManagerDialog dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onPluginsBuilder()
+{
+}
+
 void te::qt::af::BaseApplication::makeDialog()
 {
   initActions();
@@ -385,7 +402,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewDataSourceExplorer, "grid-visible", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
 
   //! Menu -Tools- actions
-  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true);
+  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, false);
   initAction(m_toolsDataSourceManagement, "", "Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, false);
 
   //! Menu -Edit- actions
@@ -539,7 +556,7 @@ void te::qt::af::BaseApplication::initMenus()
     //! Tools menu
   m_toolsMenu = new QMenu(m_menubar);
   m_toolsMenu->setObjectName("Tools");
-  m_toolsMenu->setTitle(tr("&Layer"));
+  m_toolsMenu->setTitle(tr("&Tools"));
 
   m_menubar->addAction(m_toolsMenu->menuAction());
 
@@ -550,7 +567,7 @@ void te::qt::af::BaseApplication::initMenus()
     //! Plugins menu
   m_pluginsMenu = new QMenu(m_menubar);
   m_pluginsMenu->setObjectName("Plugins");
-  m_toolsMenu->setTitle(tr("Pl&ugins"));
+  m_pluginsMenu->setTitle(tr("Pl&ugins"));
 
   m_menubar->addAction(m_pluginsMenu->menuAction());
 
@@ -605,4 +622,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayer()));
+  connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManager()));
+  connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilder()));
 }
