@@ -39,6 +39,7 @@
 #include "../widgets/layer/LayerExplorer.h"
 #include "../widgets/layer/LayerExplorerModel.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
+#include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
 #include "../widgets/progress/ProgressViewerBar.h"
@@ -176,7 +177,7 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::Event* evt)
   //}
 }
 
-void te::qt::af::BaseApplication::onAddDataSetLayer()
+void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 {
   try
   {
@@ -199,7 +200,7 @@ void te::qt::af::BaseApplication::onAddDataSetLayer()
   }
 }
 
-void te::qt::af::BaseApplication::onPluginsManager()
+void te::qt::af::BaseApplication::onPluginsManagerTriggered()
 {
   try
   {
@@ -212,8 +213,17 @@ void te::qt::af::BaseApplication::onPluginsManager()
   }
 }
 
-void te::qt::af::BaseApplication::onPluginsBuilder()
+void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
 {
+  try
+  {
+    te::qt::widgets::PluginBuilderWizard dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
 }
 
 void te::qt::af::BaseApplication::makeDialog()
@@ -417,8 +427,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
 
   //! Menu -Plugins- actions
-  initAction(m_pluginsManager, "", "Management", tr("&Management..."), tr("Manage the application plug-ins"), true, false, true);
-  initAction(m_pluginsBuilder, "", "Build a new Plug-in", tr("&Build a new Plug-in..."), tr("Create a new plug-in"), true, false, true);
+  initAction(m_pluginsManager, "", "Management", tr("&Management..."), tr("Manage the application plugins"), true, false, true);
+  initAction(m_pluginsBuilder, "", "Build a new Plugin", tr("&Build a new Plugin..."), tr("Create a new plugin"), true, false, true);
 
   //! Menu -Help- actions
   initAction(m_helpContents, "help-browser", "View Help", tr("&View help..."), tr("Shows help dialog"), true, false, false);
@@ -621,7 +631,7 @@ void te::qt::af::BaseApplication::initToolbars()
 void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
-  connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayer()));
-  connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManager()));
-  connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilder()));
+  connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
+  connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
+  connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
 }

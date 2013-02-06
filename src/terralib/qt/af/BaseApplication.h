@@ -67,11 +67,11 @@ namespace te
 
           void onApplicationTriggered(te::qt::af::Event* evt);
 
-          void onAddDataSetLayer();
+          void onAddDataSetLayerTriggered();
 
-          void onPluginsManager();
+          void onPluginsManagerTriggered();
 
-          void onPluginsBuilder();
+          void onPluginsBuilderTriggered();
 
           //void layerVisibilityChanged(const QModelIndex& idx);
 
