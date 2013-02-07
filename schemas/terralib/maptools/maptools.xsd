@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_map="http://www.terralib.org/maptools"
+<xsd:schema xmlns:te_map="http://www.terralib.org/schemas/maptools"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/maptools"
+            targetNamespace="http://www.terralib.org/schemas/maptools"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">

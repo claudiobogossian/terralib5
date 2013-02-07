@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_cs="http://www.terralib.org/cellspace"
-            xmlns:te_dt="http://www.terralib.org/datatype"
+<xsd:schema xmlns:te_cs="http://www.terralib.org/schemas/cellspace"
+            xmlns:te_dt="http://www.terralib.org/schemas/datatype"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/cellspace"
+            targetNamespace="http://www.terralib.org/schemas/cellspace"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -12,7 +12,7 @@
     <xsd:documentation>Definition of a cellular space</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/datatype" schemaLocation="../datatype/datatype.xsd"/>
 
   <xsd:element name="NeighborhoodList" type="te_cs:NeighborhoodListType">
     <xsd:annotation>

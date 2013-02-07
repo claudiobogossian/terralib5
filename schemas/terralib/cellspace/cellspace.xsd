@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_cs="http://www.terralib.org/cellspace"
+<xsd:schema xmlns:te_cs="http://www.terralib.org/schemas/cellspace"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/cellspace"
+            targetNamespace="http://www.terralib.org/schemas/cellspace"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
