@@ -18,26 +18,20 @@
  */
 
 /*!
-  \file terralib/maptools/QueryLayerRenderer.cpp
+  \file terralib/maptools/RendererFactory.cpp
 
-  \brief It renders the objects associated to a query layer.
+  \brief An abstract factory for layer renderers.
 */
 
 // TerraLib
-#include "QueryLayerRenderer.h"
+#include "RendererFactory.h"
 
-te::map::QueryLayerRenderer::QueryLayerRenderer()
+te::map::RendererFactory::~RendererFactory()
 {
 }
 
-te::map::QueryLayerRenderer::~QueryLayerRenderer()
-{
-}
-
-void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
-                                       Canvas* canvas,
-                                       const te::gm::Envelope& bbox,
-                                       int srid)
+te::map::RendererFactory::RendererFactory(const std::string& factoryKey)
+  : te::common::AbstractFactory<AbstractRenderer, std::string>(factoryKey)
 {
 }
 

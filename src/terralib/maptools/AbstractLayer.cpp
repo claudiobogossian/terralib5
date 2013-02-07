@@ -18,18 +18,29 @@
  */
 
 /*!
-  \file AbstractLayer.cpp
+  \file terralib/maptools/AbstractLayer.cpp
 
   \brief This is the base class for Layers.
  */
 
 // TerraLib
-#include "../geometry/Envelope.h"
-#include "../se/Style.h"
-#include "../xlink/SimpleLink.h"
+#include "../srs/Config.h"
 #include "AbstractLayer.h"
-#include "Grouping.h"
-#include "LegendItem.h"
+
+te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
+  : te::common::TreeItem(parent),
+    m_srid(TE_UNKNOWN_SRS),
+    m_visibility(NOT_VISIBLE)
+{
+}
+
+te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* parent)
+  : te::common::TreeItem(parent),
+    m_id(id),
+    m_srid(TE_UNKNOWN_SRS),
+    m_visibility(NOT_VISIBLE)
+{
+}
 
 te::map::AbstractLayer::AbstractLayer(const std::string& id,
                                       const std::string& title,
@@ -37,13 +48,13 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
   : te::common::TreeItem(parent),
     m_id(id),
     m_title(title),
-    m_visibility(NOT_VISIBLE),
-    m_icon(0)
+    m_srid(TE_UNKNOWN_SRS),
+    m_visibility(NOT_VISIBLE)
 {
 }
 
 te::map::AbstractLayer::~AbstractLayer()
-{  
+{
 }
 
 const std::string& te::map::AbstractLayer::getId() const
@@ -71,57 +82,43 @@ te::map::Visibility te::map::AbstractLayer::getVisibility() const
   return m_visibility;
 }
 
+const te::gm::Envelope& te::map::AbstractLayer::getExtent() const
+{
+  return m_mbr;
+}
+
+void te::map::AbstractLayer::setExtent(const te::gm::Envelope& mbr)
+{
+  m_mbr = mbr;
+}
+
+int te::map::AbstractLayer::getSRID() const
+{
+  return m_srid;
+}
+
+void te::map::AbstractLayer::setSRID(int srid)
+{
+  m_srid = srid;
+}
+
 void te::map::AbstractLayer::setVisibility(Visibility v)
 {
   m_visibility = v;
+
   setDescendantsVisibility(v);
-  setAscendantsVisibility();
+
+  adjustAscendantsVisibility();
 }
 
-te::xl::SimpleLink* te::map::AbstractLayer::getIcon() const
+const std::string& te::map::AbstractLayer::getIcon() const
 {
-  return m_icon.get();
+  return m_icon;
 }
 
-void te::map::AbstractLayer::setIcon(te::xl::SimpleLink* icon)
+void te::map::AbstractLayer::setIcon(const std::string& icon)
 {
-  m_icon.reset(icon);
-}
-
-bool te::map::AbstractLayer::isSibling(te::map::AbstractLayer* layer) const
-{
-  if(getParent() == layer->getParent())
-    return true;
-
-  return false;
-}
-
-te::map::Grouping* te::map::AbstractLayer::getGrouping() const
-{
-  return 0;
-}
-
-void te::map::AbstractLayer::setGrouping(te::map::Grouping* grouping)
-{
-}
-
-bool te::map::AbstractLayer::hasLegend()
-{
-  return false;
-}
-
-std::vector<te::map::LegendItem*> te::map::AbstractLayer::getLegend() const
-{
-  std::vector<te::map::LegendItem*> legend;
-  return legend;
-}
-
-void te::map::AbstractLayer::removeLegend()
-{
-}
-
-void te::map::AbstractLayer::insertLegend(const std::vector<LegendItem*>& /*legend*/)
-{
+  m_icon = icon;
 }
 
 void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
@@ -131,59 +128,62 @@ void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
 
   while(it != it_end)
   {
-    AbstractLayer* layer = static_cast<AbstractLayer*>(it->get());
+    AbstractLayer* layer = dynamic_cast<AbstractLayer*>(it->get());
 
-    layer->m_visibility = v;
+    if(layer)
+    {
+      layer->m_visibility = v;
 
-    if(v != PARTIALLY_VISIBLE)
-      layer->setDescendantsVisibility(v);
+      if(v != PARTIALLY_VISIBLE)
+        layer->setDescendantsVisibility(v);
+    }
 
     ++it;
   }
 }
 
-void te::map::AbstractLayer::setAscendantsVisibility()
+void te::map::AbstractLayer::adjustAscendantsVisibility()
 {
   if(m_parent == 0)
     return;
 
-  te::common::TreeItem::iterator it = begin();
-  te::common::TreeItem::iterator it_end = end();
-
-  te::common::TreeItem* parent = m_parent;
-
-  it = parent->begin();
-  it_end = parent->end();
+  AbstractLayer* layer = 0;
 
   bool hasNotVisible = false;
   bool hasVisible = false;
   bool hasPartiallyVisible = false;
 
+  te::common::TreeItem::iterator it = m_parent->begin();
+  te::common::TreeItem::iterator it_end = m_parent->end();
+
   while(it != it_end)
   {
-    AbstractLayer* layer = static_cast<AbstractLayer*>(it->get());
+    layer = dynamic_cast<AbstractLayer*>(it->get());
 
-    if(layer->getVisibility() == NOT_VISIBLE)
-      hasNotVisible = true;
-    else if(layer->getVisibility() == VISIBLE)
-      hasVisible = true;
-    else
-      hasPartiallyVisible = true;
+    if(layer)
+    {
+      if(layer->getVisibility() == NOT_VISIBLE)
+        hasNotVisible = true;
+      else if(layer->getVisibility() == VISIBLE)
+        hasVisible = true;
+      else
+        hasPartiallyVisible = true;
+    }
 
     ++it;
   }
 
-  Visibility parentVisibility;
+  Visibility parentVisibility = PARTIALLY_VISIBLE;
 
-  if(hasNotVisible == true && hasVisible == false && hasPartiallyVisible == false)
+  if((hasNotVisible == true) && (hasVisible == false) && (hasPartiallyVisible == false))  // just not visible
     parentVisibility = NOT_VISIBLE;
-  else if(hasNotVisible == false && hasVisible == true && hasPartiallyVisible == false)
+  else if(hasNotVisible == false && hasVisible == true && hasPartiallyVisible == false)   // just visible
     parentVisibility = VISIBLE;
-  else
-    parentVisibility = PARTIALLY_VISIBLE;
 
-  AbstractLayer* parentLayer = static_cast<AbstractLayer*>(parent);
-  parentLayer->m_visibility = parentVisibility;
+  layer = dynamic_cast<AbstractLayer*>(m_parent);
 
-  parentLayer->setAscendantsVisibility();
+  layer->m_visibility = parentVisibility;
+
+  layer->adjustAscendantsVisibility();
 }
+

@@ -18,99 +18,92 @@
  */
 
 /*!
-  \file terralib/maptools/QueryLayer.cpp
+  \file terralib/maptools/DataSetLayer.cpp
 
-  \brief A layer resulting from a query.
+  \brief A layer with reference to a dataset.
 */
 
 // TerraLib
-#include "../dataaccess/query/Select.h"
 #include "../se/Style.h"
-#include "QueryLayer.h"
+#include "DataSetLayer.h"
 
-const std::string te::map::QueryLayer::sm_type("QUERY_LAYER");
+const std::string te::map::DataSetLayer::sm_type("DATASET_LAYER");
 
-te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
+te::map::DataSetLayer::DataSetLayer(AbstractLayer* parent)
   : AbstractLayer(parent),
-    m_query(0),
     m_style(0)
 {
 }
 
-te::map::QueryLayer::QueryLayer(const std::string& id, AbstractLayer* parent)
+te::map::DataSetLayer::DataSetLayer(const std::string& id, AbstractLayer* parent)
   : AbstractLayer(id, parent),
-    m_query(0),
     m_style(0)
 {
 }
 
-te::map::QueryLayer::QueryLayer(const std::string& id,
+te::map::DataSetLayer::DataSetLayer(const std::string& id,
                                     const std::string& title,
                                     AbstractLayer* parent)
   : AbstractLayer(id, title, parent),
-    m_query(0),
     m_style(0)
 {
 }
 
-te::map::QueryLayer::~QueryLayer()
+te::map::DataSetLayer::~DataSetLayer()
 {
-  delete m_query;
   delete m_style;
 }
 
-bool te::map::QueryLayer::isValid() const
+bool te::map::DataSetLayer::isValid() const
 {
   return true;
 }
 
-void te::map::QueryLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+void te::map::DataSetLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
 }
 
-const std::string& te::map::QueryLayer::getType() const
+const std::string& te::map::DataSetLayer::getType() const
 {
   return sm_type;
 }
 
-te::da::Select* te::map::QueryLayer::getQuery() const
+const std::string& te::map::DataSetLayer::getDataSetName() const
 {
-  return m_query;
+  return m_datasetName;
 }
 
-void te::map::QueryLayer::setQuery(te::da::Select* s)
+void te::map::DataSetLayer::setDataSetName(const std::string& name)
 {
-  delete m_query;
-
-  m_query = s;
+  m_datasetName = name;
 }
 
-const std::string& te::map::QueryLayer::getDataSourceId() const
+const std::string& te::map::DataSetLayer::getDataSourceId() const
 {
   return m_datasourceId;
 }
 
-void te::map::QueryLayer::setDataSourceId(const std::string& id)
+void te::map::DataSetLayer::setDataSourceId(const std::string& id)
 {
   m_datasourceId = id;
 }
 
-const std::string& te::map::QueryLayer::getRendererType() const
+const std::string& te::map::DataSetLayer::getRendererType() const
 {
   return m_rendererType;
 }
 
-void te::map::QueryLayer::setRendererType(const std::string& t)
+void te::map::DataSetLayer::setRendererType(const std::string& t)
 {
   m_rendererType = t;
 }
 
-te::se::Style* te::map::QueryLayer::getStyle() const
+te::se::Style* te::map::DataSetLayer::getStyle() const
 {
   return m_style;
 }
 
-void te::map::QueryLayer::setStyle(te::se::Style* style)
+void te::map::DataSetLayer::setStyle(te::se::Style* style)
 {
   delete m_style;
 
