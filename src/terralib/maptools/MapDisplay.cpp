@@ -18,33 +18,30 @@
  */
 
 /*!
-  \file MapDisplay.cpp
+  \file terralib/maptools/MapDisplay.cpp
 
   \brief The map display controls how a set of layers are displayed.
 */
 
 // TerraLib
-#include "../geometry/Envelope.h"
 #include "../srs/Config.h"
 #include "MapDisplay.h"
 
 te::map::MapDisplay::MapDisplay()
   : AbstractMapDisplay(),
     m_srid(TE_UNKNOWN_SRS),
-    m_extent(0),
     m_hAlign(te::map::Center),
     m_vAlign(te::map::Center)
-{}
+{
+}
 
 te::map::MapDisplay::~MapDisplay()
 {
-  delete m_extent;
 }
 
-void te::map::MapDisplay::setLayerList(const std::list<te::map::AbstractLayer*>& order)
+void te::map::MapDisplay::setLayerList(const std::list<te::map::AbstractLayerPtr>& layers)
 {
-  if(&m_layerList != &order)
-    m_layerList = order;
+  m_layerList = layers;
 }
 
 te::map::AlignType te::map::MapDisplay::getHAlign() const
@@ -63,18 +60,14 @@ void te::map::MapDisplay::setAlign(te::map::AlignType h, te::map::AlignType v)
   m_vAlign = v;
 }
 
-const te::gm::Envelope* te::map::MapDisplay::getExtent() const
+const te::gm::Envelope& te::map::MapDisplay::getExtent() const
 {
   return m_extent;
 }
 
-void te::map::MapDisplay::setExtent(const te::gm::Envelope& e)
+void te::map::MapDisplay::setExtent(te::gm::Envelope& e, bool /*doRefresh*/)
 {
-  delete m_extent;
-  m_extent = 0;
-
-  if(e.isValid())
-    m_extent = new te::gm::Envelope(e);
+  m_extent = e;
 }
 
 int te::map::MapDisplay::getSRID() const
@@ -82,16 +75,16 @@ int te::map::MapDisplay::getSRID() const
   return m_srid;
 }
 
-void te::map::MapDisplay::setSRID(const int& srid)
+void te::map::MapDisplay::setSRID(const int& srid, bool doRefresh)
 {
   if(m_srid == srid)
     return;
 
-  if(m_extent)
-  {
-    m_extent->transform(m_srid, srid);
-    te::gm::Envelope e(*m_extent);
-    setExtent(e);
-  }
+  if(m_srid != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS)
+    m_extent.transform(m_srid, srid);
+
   m_srid = srid;
+
+  if(doRefresh)
+    refresh();
 }

@@ -18,36 +18,26 @@
  */
 
 /*!
-  \file QueryLayerRenderer.cpp
+  \file terralib/maptools/QueryLayerRenderer.cpp
 
-  \brief It renders the objects associated to a QueryLayer.
- */
+  \brief It renders the objects associated to a query layer.
+*/
 
 // TerraLib
-#include "../geometry/Envelope.h"
-#include "../se/CoverageStyle.h"
-#include "../se/FeatureTypeStyle.h"
-#include "../se/Style.h"
-#include "AbstractLayer.h"
-#include "Canvas.h"
-#include "QueryLayer.h"
 #include "QueryLayerRenderer.h"
 
 te::map::QueryLayerRenderer::QueryLayerRenderer()
-{}
+{
+}
 
 te::map::QueryLayerRenderer::~QueryLayerRenderer()
-{}
+{
+}
 
-void te::map::QueryLayerRenderer::draw(AbstractLayer* /*layer*/, Canvas* /*canvas*/,
-                                       const te::gm::Envelope& /*bbox*/, int /*srid*/)
-{}
-
-void te::map::QueryLayerRenderer::draw(QueryLayer* /*layer*/, te::se::FeatureTypeStyle* /*style*/, Canvas* /*canvas*/, 
-                                       const te::gm::Envelope& /*bbox*/, int /*srid*/)
-{}
-
-void te::map::QueryLayerRenderer::draw(QueryLayer* /*layer*/, te::se::CoverageStyle* /*style*/, Canvas* /*canvas*/,
-                                       const te::gm::Envelope& /*bbox*/, int /*srid*/)
-{}
+void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
+                                       Canvas* canvas,
+                                       const te::gm::Envelope& bbox,
+                                       int srid)
+{
+}
 

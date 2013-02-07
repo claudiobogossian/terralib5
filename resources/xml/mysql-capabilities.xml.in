@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
-						xmlns:te_da="http://www.terralib.org/dataaccess"
-						xmlns:te_dt="http://www.terralib.org/datatype"
-						xmlns:te_common="http://www.terralib.org/common"
-						xmlns:te_gm="http://www.terralib.org/geometry"
+						xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+						xmlns:te_common="http://www.terralib.org/schemas/common"
+						xmlns:te_gm="http://www.terralib.org/schemas/geometry"
 						xmlns:xlink="http://www.w3.org/1999/xlink"
 						xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
 						xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ${TE_SCHEMA_LOCATION}/dataaccess/capabilities.xsd"
@@ -21,15 +20,15 @@
     <DataType>RASTER_TYPE</DataType>
   </DataTypeCapabilities>
   <QueryCapabilities>
-    <SQLDialect>TRUE</SQLDialect>
-    <Insert>TRUE</Insert>
-    <Update>TRUE</Update>
-    <Delete>TRUE</Delete>
-    <Create>TRUE</Create>
-    <Drop>TRUE</Drop>
-    <Alter>TRUE</Alter>
-    <Select>TRUE</Select>
-    <SelectInto>TRUE</SelectInto>
+    <SQLDialect>true</SQLDialect>
+    <Insert>true</Insert>
+    <Update>true</Update>
+    <Delete>true</Delete>
+    <Create>true</Create>
+    <Drop>true</Drop>
+    <Alter>true</Alter>
+    <Select>true</Select>
+    <SelectInto>true</SelectInto>
     <SpatialOperators>
       <Function name="st_astext">
         <FunctionEncoder alias="AsText"/>
@@ -224,47 +223,47 @@
       </Function>
     </Functions>
     <GeomOperands>
-      <GeomType>PointType</GeomType>
-      <GeomType>LineStringType</GeomType>
-      <GeomType>PolygonType</GeomType>
-      <GeomType>MultiPointType</GeomType>
-      <GeomType>MultiLineStringType</GeomType>
-      <GeomType>MultiPolygonType</GeomType>
-      <GeomType>GeometryCollectionType</GeomType>
+      <GeomType>Point</GeomType>
+      <GeomType>LineString</GeomType>
+      <GeomType>Polygon</GeomType>
+      <GeomType>MultiPoint</GeomType>
+      <GeomType>MultiLineString</GeomType>
+      <GeomType>MultiPolygon</GeomType>
+      <GeomType>GeometryCollection</GeomType>
     </GeomOperands>
   </QueryCapabilities>
   <DataSetTypeCapabilities>
-    <SupportPrimaryKey>TRUE</SupportPrimaryKey>
-    <SupportUniqueKey>TRUE</SupportUniqueKey>
-    <SupportForeignKey>TRUE</SupportForeignKey>
-    <SupportSequence>FALSE</SupportSequence>
-    <SupportCheckConstraints>TRUE</SupportCheckConstraints>
-    <SupportIndex>TRUE</SupportIndex>
-    <SupportRTreeIndex>TRUE</SupportRTreeIndex>
-    <SupportBTreeIndex>TRUE</SupportBTreeIndex>
-    <SupportHashIndex>FALSE</SupportHashIndex>
-    <SupportQuadTreeIndex>FALSE</SupportQuadTreeIndex>
+    <SupportPrimaryKey>true</SupportPrimaryKey>
+    <SupportUniqueKey>true</SupportUniqueKey>
+    <SupportForeignKey>true</SupportForeignKey>
+    <SupportSequence>false</SupportSequence>
+    <SupportCheckConstraints>true</SupportCheckConstraints>
+    <SupportIndex>true</SupportIndex>
+    <SupportRTreeIndex>true</SupportRTreeIndex>
+    <SupportBTreeIndex>true</SupportBTreeIndex>
+    <SupportHashIndex>false</SupportHashIndex>
+    <SupportQuadTreeIndex>false</SupportQuadTreeIndex>
   </DataSetTypeCapabilities>
   <DataSetCapabilities>
-    <Bidirectional>FALSE</Bidirectional>
-    <Random>FALSE</Random>
-    <Indexed>FALSE</Indexed>
-    <EfficientMovePrevious>FALSE</EfficientMovePrevious>
-    <EfficientMoveBeforeFirst>TRUE</EfficientMoveBeforeFirst>
-    <EfficientMoveLast>FALSE</EfficientMoveLast>
-    <EfficientMoveAfterLast>FALSE</EfficientMoveAfterLast>
-    <EfficientMove>FALSE</EfficientMove>
-    <EfficientSize>FALSE</EfficientSize>
-    <Insertion>FALSE</Insertion>
-    <Update>FALSE</Update>
-    <Deletion>FALSE</Deletion>
+    <Bidirectional>false</Bidirectional>
+    <Random>false</Random>
+    <Indexed>false</Indexed>
+    <EfficientMovePrevious>false</EfficientMovePrevious>
+    <EfficientMoveBeforeFirst>true</EfficientMoveBeforeFirst>
+    <EfficientMoveLast>false</EfficientMoveLast>
+    <EfficientMoveAfterLast>false</EfficientMoveAfterLast>
+    <EfficientMove>false</EfficientMove>
+    <EfficientSize>false</EfficientSize>
+    <Insertion>false</Insertion>
+    <Update>false</Update>
+    <Deletion>false</Deletion>
   </DataSetCapabilities>
   <SpecificCapabilities>  
   </SpecificCapabilities>
   <AccessPolicyName>RW_ACCESS</AccessPolicyName>
-  <SupportTransactions>TRUE</SupportTransactions>
-  <SupportDataSetPesistenceAPI>TRUE</SupportDataSetPesistenceAPI>
-  <SupportDataSetTypePesistenceAPI>TRUE</SupportDataSetTypePesistenceAPI>
-  <SupportPreparedQueryAPI>TRUE</SupportPreparedQueryAPI>
-  <SupportBatchExecutorAPI>TRUE</SupportBatchExecutorAPI>
+  <SupportTransactions>true</SupportTransactions>
+  <SupportDataSetPesistenceAPI>true</SupportDataSetPesistenceAPI>
+  <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
+  <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
+  <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
 </DataSourceCapabilities>

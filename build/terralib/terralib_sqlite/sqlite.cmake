@@ -43,6 +43,7 @@ list (APPEND TE_DEP_LIBS
 		terralib_memory
 		terralib_plugin
 		terralib_raster
+		terralib_serialization
 		terralib_srs
     )
 
@@ -73,3 +74,6 @@ getPluginInfo("${TE_PLUGIN_NAME}" "${TE_PLUGIN_FILE}" TE_PLG_INFO)
 set (TE_PLUGINS_DESCRIPTION "${TE_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
 
 configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TE_PLUGIN_FILE})
+
+configure_file(${CMAKE_SOURCE_DIR}/../resources/xml/sqlite-capabilities.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sqlite-capabilities.xml)
+configure_file(${CMAKE_SOURCE_DIR}/../resources/xml/spatialite-capabilities.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/spatialite-capabilities.xml)

@@ -28,6 +28,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 //#include "../serialization/dataaccess/SQLDialect.h"
 //#include "rlite/RasterFactory.h"
 //#include "terralib/RasterFactory.h"
@@ -36,6 +37,8 @@
 #include "Globals.h"
 #include "Module.h"
 #include "Utils.h"
+
+#include "../serialization/dataaccess/DataSourceCapabilities.h"
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -86,13 +89,11 @@ void te::sqlite::Module::startup()
 // retrieve the SQL dialect
   boost::filesystem::path driverpath(m_pluginInfo.m_folder);
 
-  boost::filesystem::path spatialiteDialectFile = driverpath / "spatialite_dialect.xml";
-  
-  boost::filesystem::path nonspatialDialectFile = driverpath / "nonspatial_dialect.xml";
+  boost::filesystem::path spatialiteCapabilitiesFile = driverpath / "spatialite-capabilities.xml";
+  boost::filesystem::path sqliteCapabilitiesFile = driverpath / "sqlite-capabilities.xml";
 
-  //Globals::sm_spatiaLiteDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
-
-  //Globals::sm_nonspatialDialect = te::serialize::ReadDialect(spatialiteDialectFile.string());
+  te::serialize::Read(spatialiteCapabilitiesFile.string(), *te::sqlite::Globals::sm_spatialiteCapabilities, *te::sqlite::Globals::sm_spatialiteDialect);
+  te::serialize::Read(sqliteCapabilitiesFile.string(), *te::sqlite::Globals::sm_sqliteCapabilities, *te::sqlite::Globals::sm_sqliteDialect);
 
   TE_LOG_TRACE(TR_SQLITE("TerraLib SQLite driver startup!"));
 
@@ -113,11 +114,11 @@ void te::sqlite::Module::shutdown()
   te::da::DataSourceManager::getInstance().detachAll(Globals::sm_driverIdentifier);
 
 // release SQL dialect
-  delete Globals::sm_spatiaLiteDialect;
-  Globals::sm_spatiaLiteDialect = 0;
+  delete Globals::sm_spatialiteDialect;
+  Globals::sm_spatialiteDialect = 0;
 
-  delete Globals::sm_nonspatialDialect;
-  Globals::sm_nonspatialDialect = 0;
+  delete Globals::sm_spatialiteDialect;
+  Globals::sm_spatialiteDialect= 0;
 
 // shutdowns the SQLite library
   sqlite3_shutdown();

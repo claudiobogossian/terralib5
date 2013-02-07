@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <Project xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns:te_map="http://www.terralib.org/maptools"
-         xmlns:te_qt_af="http://www.terralib.org/qt/af"
-         xmlns="http://www.terralib.org/qt/af"
-         xsd:schemaLocation="http://www.terralib.org/qt/af project.xsd"
+         xmlns:te_map="http://www.terralib.org/schemas/maptools"
+         xmlns:te_qt_af="http://www.terralib.org/schemas/qt/af"
+         xmlns="http://www.terralib.org/schemas/qt/af"
+         xsd:schemaLocation="http://www.terralib.org/schemas/qt/af project.xsd"
          version="5.0.0"
          release="2011-01-01">
 

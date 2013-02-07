@@ -30,7 +30,7 @@
 #include <terralib/common/STLUtils.h>
 #include <terralib/dataaccess.h>
 #include <terralib/geometry.h>
-#include <terralib/maptools/Layer.h>
+#include <terralib/maptools/DataSetLayer.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
 #include <terralib/qt/widgets/canvas/MapDisplay.h>
 
@@ -40,13 +40,14 @@
 
 // STL
 #include <cassert>
+#include <memory>
 
-SelectionTool::SelectionTool(te::qt::widgets::MapDisplay* display, te::map::Layer* layer, QObject* parent) 
+SelectionTool::SelectionTool(te::qt::widgets::MapDisplay* display, te::map::DataSetLayer* layer, QObject* parent) 
   : te::qt::widgets::AbstractTool(display, parent)
 {
   assert(layer);
 
-  m_layer = dynamic_cast<te::map::Layer*>(layer);
+  m_layer = dynamic_cast<te::map::DataSetLayer*>(layer);
   assert(m_layer);
 
   // Signals & slots
@@ -70,14 +71,14 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
   QPointF qpoint = m_display->transform(e->posF());
 
   // Gets datasource and transactor
-  te::da::DataSource* dataSource = m_layer->getDataSource();
-  te::da::DataSourceTransactor* transactor = dataSource->getTransactor();
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(m_layer->getDataSourceId());
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
 
   // Bulding restriction geometry
   te::gm::Point point(qpoint.x(), qpoint.y());
 
   // Gets the dataset
-  te::da::DataSet* dataset = transactor->getDataSet(m_layer->getDataSetName(), &point, te::gm::INTERSECTS);
+  std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(m_layer->getDataSetName(), &point, te::gm::INTERSECTS));
 
   // Clear the geometries
   te::common::FreeContents(m_geoms);
@@ -115,9 +116,6 @@ bool SelectionTool::mouseReleaseEvent(QMouseEvent* e)
   if(!m_geoms.empty())
     QToolTip::showText(QCursor::pos(), information, m_display, m_display->rect());
 
-  delete dataset;
-  delete transactor;
-
   return true;
 }
 
@@ -128,7 +126,7 @@ void SelectionTool::drawGeometries()
   draft->fill(Qt::transparent);
 
   // Prepares the canvas
-  te::gm::Envelope env(*m_display->getExtent());
+  te::gm::Envelope env(m_display->getExtent());
   te::qt::widgets::Canvas canvas(draft);
   canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
   canvas.setPolygonFillColor(te::color::RGBAColor(0, 200, 0, TE_OPAQUE));

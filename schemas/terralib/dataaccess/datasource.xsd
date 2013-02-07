@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_common="http://www.terralib.org/common"
-            xmlns:te_da="http://www.terralib.org/dataaccess"
+<xsd:schema xmlns:te_common="http://www.terralib.org/schemas/common"
+            xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/dataaccess"
+            targetNamespace="http://www.terralib.org/schemas/dataaccess"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -12,7 +12,7 @@
     <xsd:documentation>A simple schema for the data source part of data access module</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/common" schemaLocation="../common/common.xsd"/>
 
   <xsd:element name="DataSource" type="te_da:DataSourceType" />
 

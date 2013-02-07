@@ -24,7 +24,7 @@
  */
 
 // TerraLib
-#include "../../../maptools/Layer.h"
+//#include "../../../maptools/Layer.h" // * Under revision *
 #include "../../../maptools/Grouping.h"
 #include "../../../maptools/LegendItem.h"
 #include "LayerItem.h"
@@ -39,7 +39,8 @@ te::qt::widgets::LegendItem::LegendItem(te::map::LegendItem* refLegendItem, QObj
 {
   m_refLayer = static_cast<AbstractTreeItem*>(parent)->getRefLayer();
 
-  te::map::Grouping* g = m_refLayer->getGrouping();
+ // * Under revision *
+ /* te::map::Grouping* g = m_refLayer->getGrouping();
   if((g->getType() == te::map::STD_DEVIATION && refLegendItem->getUpperLimit().empty()) == false)
   {
     QPixmap pixmap(16, 12);
@@ -48,7 +49,7 @@ te::qt::widgets::LegendItem::LegendItem(te::map::LegendItem* refLegendItem, QObj
     QColor qColor(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
     pixmap.fill(qColor);
     m_icon.addPixmap(pixmap);
-  }
+  }*/
 }
 
 te::qt::widgets::LegendItem::~LegendItem()

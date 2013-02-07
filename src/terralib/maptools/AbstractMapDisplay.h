@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file AbstractMapDisplay.h
+  \file terralib/maptools/AbstractMapDisplay.h
 
   \brief It defines the concept of a map display responsible for controlling how a set of layers are displayed.
 */
@@ -27,22 +27,19 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTMAPDISPLAY_H
 
 // TerraLib
-#include "Config.h"
+#include "AbstractLayer.h"
 #include "Enums.h"
 
 // STL
 #include <list>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 namespace te
 {
-// Forward declarations
-  namespace gm { class Envelope; }
-
   namespace map
   {
-// Forward declarations
-    class AbstractLayer;
-
     /*!
       \class AbstractMapDisplay
 
@@ -50,20 +47,15 @@ namespace te
 
       \sa AbstractLayer, MapDisplay
     */
-    class TEMAPEXPORT AbstractMapDisplay
+    class TEMAPEXPORT AbstractMapDisplay : public boost::noncopyable
     {
       public:
 
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
         /*! \brief It initializes a new MapDisplay. */
-        AbstractMapDisplay(){};
+        AbstractMapDisplay() { }
 
-         /*! \brief Virtual destructor. */
-        virtual ~AbstractMapDisplay(){};
+        /*! \brief Virtual destructor. */
+        virtual ~AbstractMapDisplay() { }
 
         /** @name Map Display Virtual Methods
          *  Methods to configure the MapDisplay.
@@ -73,11 +65,9 @@ namespace te
         /*!
           \brief It sets the layer list to be showed in the Map Display.
 
-          \param order The layer list.
-
-          \note The display will NOT take the ownership of the given layers.
+          \param layers The layer list.
         */
-        virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order) = 0;
+        virtual void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers) = 0;
 
         /*!
           \brief It returns the MapDisplay current horizontal align.
@@ -110,18 +100,20 @@ namespace te
 
           \note The extent coordinates are in the Map Display SRS.
         */
-        virtual const te::gm::Envelope* getExtent() const = 0;
+        virtual const te::gm::Envelope& getExtent() const = 0;
 
         /*!
-          \brief It sets the world visible area. If the given area is not proportional to the device width and height,
-                 the MapDisplay will change it in order to preserve the aspect ratio.
-                 Just successive calls to the draw method will be affected.
+          \brief It sets the world visible area and refreshes the contents in the map display.
 
-          \param e The world visible area. It coordinates must be in the Map Display SRS.
+          If the given area is not proportional to the device width and height,
+          the MapDisplay will change it in order to preserve the aspect ratio.
 
-          \todo Pensar se ter um metodo chamado getBestFit seria mais adequado para que o setExtent fosse mais burrinho, isto e, so fizesse o que manda e nao pensasse qual a melhro proporcao.
+          \param e         The world visible area.
+          \param doRefresh If true the display will refresh its contents.
+
+          \pre The world coordinates must be in the map display SRS.
         */
-        virtual void setExtent(const te::gm::Envelope& e) = 0;
+        virtual void setExtent(te::gm::Envelope& e, bool doRefresh = true) = 0;
 
         /*!
           \brief It return the Spatial Reference System used by the Map Display.
@@ -137,34 +129,41 @@ namespace te
           cause changes to the world visible area. In this case, the extent will be updated and
           new internal transformation function will be calculated.
 
-          \param srid The new Spatial Reference System to be used by the Map Display.
+          \param srid      The new Spatial Reference System to be used by the Map Display.
+          \param doRefresh If true the display will refresh its contents.
         */
-        virtual void setSRID(const int& srid) = 0;
- 
-        //@}
+        virtual void setSRID(const int& srid, bool doRefresh = true) = 0;
 
-      private:
-
-        /** @name Copy Constructor and Assignment Operator
-         *  Copy constructor and assignment operator not allowed.
-         */
-        //@{
+        /*! \brief It updates the contents in the map display. */
+        virtual void refresh() = 0;
 
         /*!
-          \brief Copy constructor not allowed.
+          \brief It returns the MapDisplay current width in pixels.
 
-          \param rhs The map display that would be copied.
+          \return The MapDisplay current width in pixels.
         */
-        AbstractMapDisplay(const AbstractMapDisplay& rhs);
+        virtual unsigned int getWidth() const = 0;
 
         /*!
-          \brief Assignment operator not allowed.
+          \brief It returns the MapDisplay current height in pixels.
 
-          \param rhs The map display whose contents would be assigned to this map display .
-
-          \return A reference to this map display.
+          \return The MapDisplay current height in pixels.
         */
-        AbstractMapDisplay& operator=(const AbstractMapDisplay& rhs);
+        virtual unsigned int getHeight() const = 0;
+
+        /*!
+          \brief It returns the MapDisplay current width in millimeters.
+
+          \return The MapDisplay current width in millimeters.
+        */
+        virtual double getWidthMM() const = 0;
+
+        /*!
+          \brief It returns the MapDisplay current height in millimeters.
+
+          \return The MapDisplay current height in millimeters.
+        */
+        virtual double getHeightMM() const = 0;
 
         //@}
     };

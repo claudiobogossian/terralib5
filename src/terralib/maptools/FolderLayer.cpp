@@ -18,33 +18,35 @@
  */
 
 /*!
-  \file FolderLayer.cpp
+  \file terralib/maptools/FolderLayer.cpp
 
-  \brief A FolderLayer can be used as a container for other kind of layers.
- */
+  \brief A layer that can be used as a container for other kind of layers.
+*/
 
 // TerraLib
-#include "../geometry/Envelope.h"
 #include "FolderLayer.h"
 
-const std::string te::map::FolderLayer::sm_type("FOLDERLAYER");
+const std::string te::map::FolderLayer::sm_type("FOLDER_LAYER");
+
+te::map::FolderLayer::FolderLayer(AbstractLayer* parent)
+  : AbstractLayer(parent)
+{
+}
+
+te::map::FolderLayer::FolderLayer(const std::string& id, AbstractLayer* parent)
+  : AbstractLayer(id, parent)
+{
+}
 
 te::map::FolderLayer::FolderLayer(const std::string& id,
-                                  const std::string& title,
-                                  AbstractLayer* parent)
-  : te::map::AbstractLayer(id, title, parent),
-    m_srid(-1),
-    m_mbr(0)
-{}
+                                    const std::string& title,
+                                    AbstractLayer* parent)
+  : AbstractLayer(id, title, parent)
+{
+}
 
 te::map::FolderLayer::~FolderLayer()
 {
-  delete m_mbr;
-}
-
-const std::string& te::map::FolderLayer::getType() const
-{
-  return sm_type;
 }
 
 bool te::map::FolderLayer::isValid() const
@@ -52,39 +54,11 @@ bool te::map::FolderLayer::isValid() const
   return true;
 }
 
-bool te::map::FolderLayer::isQueryable() const
+void te::map::FolderLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
-  return false;
 }
 
-void te::map::FolderLayer::draw(Canvas* /*canvas*/, const te::gm::Envelope& /*bbox*/, int /*srid*/)
-{}
-
-te::se::Style* te::map::FolderLayer::getStyle() const
+const std::string& te::map::FolderLayer::getType() const
 {
-  return 0;
-}
-
-void te::map::FolderLayer::setStyle(te::se::Style* /*style*/)
-{}
-
-const te::gm::Envelope* te::map::FolderLayer::getExtent() const
-{
-  return m_mbr;
-}
-
-void te::map::FolderLayer::setExtent(te::gm::Envelope* mbr)
-{
-  delete m_mbr;
-  m_mbr = mbr;
-}
-
-int te::map::FolderLayer::getSRID() const
-{
-  return m_srid;
-}
-
-void te::map::FolderLayer::setSRID(int srid)
-{
-  m_srid = srid;
+  return sm_type;
 }

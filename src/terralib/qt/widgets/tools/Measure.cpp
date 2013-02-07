@@ -121,8 +121,8 @@ bool te::qt::widgets::Measure::mouseDoubleClickEvent(QMouseEvent* e)
 
 void te::qt::widgets::Measure::drawGeometry()
 {
-  const te::gm::Envelope* env = m_display->getExtent();
-  if(env == 0)
+  const te::gm::Envelope& env = m_display->getExtent();
+  if(!env.isValid())
     return;
 
   // Clear!
@@ -132,7 +132,7 @@ void te::qt::widgets::Measure::drawGeometry()
   // Prepares the canvas
   Canvas canvas(m_display->width(), m_display->height());
   canvas.setDevice(draft, false);
-  canvas.setWindow(env->m_llx, env->m_lly, env->m_urx, env->m_ury);
+  canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
   canvas.setRenderHint(QPainter::Antialiasing, true);
 
   // Let's draw!

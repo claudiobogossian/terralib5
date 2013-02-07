@@ -7,7 +7,6 @@
 #include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
-#include <terralib/maptools/Layer.h>
 #include <terralib/qt/af/ApplicationController.h>
 #include <terralib/qt/af/BaseApplicationController.h>
 #include <terralib/qt/af/events/PointGeometries.h>
@@ -64,7 +63,8 @@ namespace te
               te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
               te::map::AbstractLayer* abs = e->m_layer;
 
-              if(abs->getType() == "LAYER")
+              // * Under revision *
+              /*if(abs->getType() == "LAYER")
               {
                 te::map::Layer* lay = static_cast<te::map::Layer*>(abs);
                 te::da::DataSourceTransactor* trans;
@@ -82,7 +82,7 @@ namespace te
                 m_layer = lay;
 
                 updateColors(m_layer);
-              }
+              }*/
             }
           break;
 

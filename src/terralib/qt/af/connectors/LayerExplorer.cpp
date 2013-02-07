@@ -6,7 +6,7 @@
 #include <terralib/qt/af/events/LayerSelected.h>
 #include <terralib/qt/af/ApplicationController.h>
 #include <terralib/qt/af/BaseApplicationController.h>
-#include <terralib/maptools/Layer.h>
+//#include <terralib/maptools/Layer.h> // * Under revision *
 
 namespace te
 {
