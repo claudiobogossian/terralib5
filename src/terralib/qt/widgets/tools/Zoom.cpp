@@ -48,8 +48,8 @@ void te::qt::widgets::Zoom::setZoomType(const ZoomType& type)
 void te::qt::widgets::Zoom::applyZoom(const QPointF& point)
 {
   // Gets the current display extent
-  const te::gm::Envelope* currentExtent = m_display->getExtent();
-  if(currentExtent == 0)
+  const te::gm::Envelope& currentExtent = m_display->getExtent();
+  if(!currentExtent.isValid())
     return;
 
   // Adjusting zoom factor based on zoomType
@@ -59,11 +59,11 @@ void te::qt::widgets::Zoom::applyZoom(const QPointF& point)
 
   // If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
   te::gm::Coord2D center;
-  point.isNull() ? center = currentExtent->getCenter() : center = te::gm::Coord2D(point.x(), point.y());
+  point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
 
   // Bulding the zoom extent based on zoom factor value and the given point
-  double w = currentExtent->getWidth() * factor * 0.5;
-  double h = currentExtent->getHeight() * factor * 0.5;
+  double w = currentExtent.getWidth() * factor * 0.5;
+  double h = currentExtent.getHeight() * factor * 0.5;
 
   te::gm::Envelope e(center.x - w, center.y - h, center.x + w, center.y + h);
 

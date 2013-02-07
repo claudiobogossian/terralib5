@@ -44,14 +44,14 @@ te::qt::widgets::MultiThreadMapDisplay::~MultiThreadMapDisplay()
   te::common::FreeContents(m_threads);
 }
 
-void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::map::AbstractLayer*>& order)
+void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::map::AbstractLayerPtr>& layers)
 {
-  te::qt::widgets::MapDisplay::setLayerList(order);
+  te::qt::widgets::MapDisplay::setLayerList(layers);
 
-  if(order.size() <= m_threads.size())
+  if(layers.size() <= m_threads.size())
     return;
 
-  std::size_t n = order.size() - m_threads.size();
+  std::size_t n = layers.size() - m_threads.size();
   for(std::size_t i = 0; i < n; ++i)
   {
     DrawLayerThread* thread = new DrawLayerThread;
@@ -65,60 +65,60 @@ void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::ma
   }
 }
 
-void te::qt::widgets::MultiThreadMapDisplay::setExtent(const te::gm::Envelope& e)
+void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
 {
   if(m_isDrawing)
     return;
 
   te::map::MapDisplay::setExtent(e);
 
-  if(m_extent == 0)
-    return;
-
   updateTransform(); /*  For while... I need the class CoordTransform! */
+
+  e = m_extent;
 
   if(m_layerList.empty())
     return;
 
   m_isDrawing = true;
 
-  draw();
+  if(doRefresh)
+    refresh();
 
   emit extentChanged();
 }
 
-QPointF te::qt::widgets::MultiThreadMapDisplay::transform(const QPointF& p)
-{
-  if(m_extent == 0)
-    return QPointF();
-
-  return m_matrix.inverted().map(p);
-}
-
-void te::qt::widgets::MultiThreadMapDisplay::draw()
+void te::qt::widgets::MultiThreadMapDisplay::refresh()
 {
   // Cleaning...
   m_displayPixmap->fill(m_backgroundColor);
 
   std::size_t i = 0;
-  std::list<te::map::AbstractLayer*>::iterator it;
+  std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
   {
-    m_threads[i]->draw(*it, *m_extent, m_srid, size(), i);
+    m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
   }
 }
 
+QPointF te::qt::widgets::MultiThreadMapDisplay::transform(const QPointF& p)
+{
+  if(!m_extent.isValid())
+    return QPointF();
+
+  return m_matrix.inverted().map(p);
+}
+
 void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
 {
-  if(m_extent == 0)
+  if(m_extent.isValid())
     return;
 
   /*  Note: For while... I need the class CoordTransform! */
   
   // Compute aspect ratio
-  double ww = m_extent->m_urx - m_extent->m_llx;
-  double wh = m_extent->m_ury - m_extent->m_lly;
+  double ww = m_extent.m_urx - m_extent.m_llx;
+  double wh = m_extent.m_ury - m_extent.m_lly;
 
   double widthByHeight = static_cast<double>(width()) / static_cast<double>(height());
 
@@ -126,23 +126,23 @@ void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
   {
     double v = ww;
     ww = wh * widthByHeight;
-    m_extent->m_llx = m_extent->m_llx - (ww - v) * 0.5;
-    m_extent->m_urx = m_extent->m_llx + ww;
+    m_extent.m_llx = m_extent.m_llx - (ww - v) * 0.5;
+    m_extent.m_urx = m_extent.m_llx + ww;
   }
   else
   {
     double v = wh;
     wh = ww / widthByHeight;
-    m_extent->m_lly = m_extent->m_lly - (wh - v) * 0.5;
-    m_extent->m_ury = m_extent->m_lly + wh;
+    m_extent.m_lly = m_extent.m_lly - (wh - v) * 0.5;
+    m_extent.m_ury = m_extent.m_lly + wh;
   }
 
   // Bulding the transform matrix
-  double xScale = static_cast<double>(width()) / (m_extent->m_urx - m_extent->m_llx);
-  double yScale = static_cast<double>(height()) / (m_extent->m_ury - m_extent->m_lly);
+  double xScale = static_cast<double>(width()) / (m_extent.m_urx - m_extent.m_llx);
+  double yScale = static_cast<double>(height()) / (m_extent.m_ury - m_extent.m_lly);
   m_matrix.reset();
   m_matrix.scale(xScale, -yScale);
-  m_matrix.translate(-m_extent->m_llx, -m_extent->m_ury);
+  m_matrix.translate(-m_extent.m_llx, -m_extent.m_ury);
 
   /* end note */
 }

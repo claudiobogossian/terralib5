@@ -48,18 +48,18 @@ bool te::qt::widgets::ZoomLeftAndRightClick::mousePressEvent(QMouseEvent* e)
   if(e->button() == Qt::LeftButton)
   {
     // Gets the current display extent
-    const te::gm::Envelope* currentExtent = m_display->getExtent();
-    if(currentExtent == 0)
-      return false; 
+    const te::gm::Envelope& currentExtent = m_display->getExtent();
+    if(!currentExtent.isValid())
+      return false;
 
     // If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
     te::gm::Coord2D center;
     QPointF point( m_display->transform( e->posF() ) );
-    point.isNull() ? center = currentExtent->getCenter() : center = te::gm::Coord2D(point.x(), point.y());
+    point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
 
     // Bulding the zoom extent based on zoom factor value and the given point
-    double w = currentExtent->getWidth() * ( 1.0 / m_zoomFactor ) * 0.5;
-    double h = currentExtent->getHeight() * ( 1.0 / m_zoomFactor ) * 0.5;
+    double w = currentExtent.getWidth() * ( 1.0 / m_zoomFactor ) * 0.5;
+    double h = currentExtent.getHeight() * ( 1.0 / m_zoomFactor ) * 0.5;
 
     te::gm::Envelope e(center.x - w, center.y - h, center.x + w, center.y + h);
 
@@ -69,18 +69,18 @@ bool te::qt::widgets::ZoomLeftAndRightClick::mousePressEvent(QMouseEvent* e)
   else if( e->button() == Qt::RightButton)
   {
     // Gets the current display extent
-    const te::gm::Envelope* currentExtent = m_display->getExtent();
-    if(currentExtent == 0)
+    const te::gm::Envelope& currentExtent = m_display->getExtent();
+    if(!currentExtent.isValid())
       return false; 
 
     // If point is not null, the zoom extent will be centered on this point. Otherwise, keep the current center.
     te::gm::Coord2D center;
     QPointF point( m_display->transform( e->posF() ) );
-    point.isNull() ? center = currentExtent->getCenter() : center = te::gm::Coord2D(point.x(), point.y());
+    point.isNull() ? center = currentExtent.getCenter() : center = te::gm::Coord2D(point.x(), point.y());
 
     // Bulding the zoom extent based on zoom factor value and the given point
-    double w = currentExtent->getWidth() * m_zoomFactor * 0.5;
-    double h = currentExtent->getHeight() * m_zoomFactor * 0.5;
+    double w = currentExtent.getWidth() * m_zoomFactor * 0.5;
+    double h = currentExtent.getHeight() * m_zoomFactor * 0.5;
 
     te::gm::Envelope e(center.x - w, center.y - h, center.x + w, center.y + h);
 

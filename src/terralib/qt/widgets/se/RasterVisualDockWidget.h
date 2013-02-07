@@ -34,7 +34,7 @@
 
 namespace te
 {
-  namespace map { class RasterLayer; }
+  namespace map { class DataSetLayer; }
   namespace qt
   {
     namespace widgets
@@ -67,7 +67,7 @@ namespace te
 
           //@}
 
-          void setRasterLayer(te::map::RasterLayer* rl);
+          void setLayer(te::map::DataSetLayer* layer);
 
         protected:
 
@@ -85,7 +85,7 @@ namespace te
         private:
 
           te::qt::widgets::RasterVisualWidget* m_visualWidget;   //!< Visual widget.
-          te::map::RasterLayer* m_layer;                         //!< Raster layer pointer;
+          te::map::DataSetLayer* m_layer;                        //!< DataSetLayer layer pointer;
       };
 
     } // end namespace widgets

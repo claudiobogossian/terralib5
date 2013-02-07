@@ -68,25 +68,61 @@ te::qt::widgets::MapDisplay::~MapDisplay()
   m_layerCanvasMap.clear();
 }
 
-void te::qt::widgets::MapDisplay::setExtent(const te::gm::Envelope& e)
+void te::qt::widgets::MapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
 {
-  te::map::MapDisplay::setExtent(e);
-
-  if(m_extent == 0)
-    return;
+  te::map::MapDisplay::setExtent(e, doRefresh);
 
   std::map<te::map::AbstractLayer*, te::qt::widgets::Canvas*>::iterator it;
   for(it = m_layerCanvasMap.begin(); it != m_layerCanvasMap.end(); ++it)
   {
     te::qt::widgets::Canvas* canvas = it->second;
-    canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
-    canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
+    canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
+    canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
     canvas->clear();
+    e = m_extent;
   }
 
-  draw();
+  if(doRefresh)
+    refresh();
 
   emit extentChanged();
+}
+
+void te::qt::widgets::MapDisplay::refresh()
+{
+  ScopedCursor cursor(Qt::WaitCursor);
+
+  // Cleaning...
+  m_displayPixmap->fill(m_backgroundColor);
+
+  QPainter painter(m_displayPixmap);
+
+  std::list<te::map::AbstractLayerPtr>::iterator it;
+
+  for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
+    draw(it->get(), painter);
+
+  update();
+}
+
+unsigned int te::qt::widgets::MapDisplay::getWidth() const
+{
+  return static_cast<unsigned int>(width());
+}
+
+unsigned int te::qt::widgets::MapDisplay::getHeight() const
+{
+  return static_cast<unsigned int>(height());
+}
+
+double te::qt::widgets::MapDisplay::getWidthMM() const
+{
+  return static_cast<double>(widthMM());
+}
+
+double te::qt::widgets::MapDisplay::getHeightMM() const
+{
+  return static_cast<double>(heightMM());
 }
 
 QPixmap* te::qt::widgets::MapDisplay::getDisplayPixmap() const
@@ -109,22 +145,6 @@ void te::qt::widgets::MapDisplay::setResizeInterval(int msec)
   m_interval = msec;
 }
 
-void te::qt::widgets::MapDisplay::draw()
-{
-  ScopedCursor cursor(Qt::WaitCursor);
-
-  // Cleaning...
-  m_displayPixmap->fill(m_backgroundColor);
-
-  QPainter painter(m_displayPixmap);
-
-  std::list<te::map::AbstractLayer*>::iterator it;
-  for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
-    draw(*it, painter);
-
-  update();
-}
-
 void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& painter)
 {
   // Checking the visibility...
@@ -139,10 +159,11 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
   te::qt::widgets::Canvas* canvas = getCanvas(layer);
 
   // Draw the current layer
-  layer->draw(canvas, *m_extent, m_srid);
+  layer->draw(canvas, m_extent, m_srid);
 
-  // Composes the result
+  // Compose the result
   QPaintDevice* device = canvas->getDevice();
+
   if(device->devType() == QInternal::Pixmap)
     painter.drawPixmap(0, 0, *static_cast<QPixmap*>(device));
   else if(device->devType() == QInternal::Image)
@@ -158,8 +179,8 @@ te::qt::widgets::Canvas* te::qt::widgets::MapDisplay::getCanvas(te::map::Abstrac
 
   // else, create one!
   te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(m_displayPixmap->width(), m_displayPixmap->height(), type);
-  canvas->calcAspectRatio(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury, m_hAlign, m_vAlign);
-  canvas->setWindow(m_extent->m_llx, m_extent->m_lly, m_extent->m_urx, m_extent->m_ury);
+  canvas->calcAspectRatio(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury, m_hAlign, m_vAlign);
+  canvas->setWindow(m_extent.m_llx, m_extent.m_lly, m_extent.m_urx, m_extent.m_ury);
   canvas->clear();
 
   m_layerCanvasMap[layer] = canvas;
@@ -228,13 +249,13 @@ void te::qt::widgets::MapDisplay::onResizeTimeout()
 
 void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize& size)
 {
-  if(m_extent == 0)
+  if(!m_extent.isValid())
   {
     update();
     return;
   }
 
-  te::gm::Envelope e = *m_extent;
+  te::gm::Envelope e = m_extent;
   if(m_resizePolicy == te::qt::widgets::MapDisplay::Fixed)
     setExtent(e);
 
@@ -262,8 +283,9 @@ void te::qt::widgets::MapDisplay::adjustExtent(const QSize& oldSize, const QSize
       e.m_ury = center.y + (newHeightW * 0.5);
     }
     break;
+
     default:
-      break;
+    break;
   }
 
   setExtent(e);
