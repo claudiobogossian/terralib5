@@ -41,7 +41,7 @@ namespace te
 
   namespace serialize
   {
-    TESERIALIZATIONEXPORT void Read(const std::string& dialectFileName, te::da::DataSourceCapabilities* capabilities, te::da::SQLDialect* dialect);
+    TESERIALIZATIONEXPORT void Read(const std::string& dialectFileName, te::da::DataSourceCapabilities& capabilities, te::da::SQLDialect& dialect);
     
   } // end namespace serialize
 }   // end namespace te

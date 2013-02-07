@@ -26,9 +26,10 @@
 // TerraLib
 #include "../common/Logger.h"
 #include "../common/Translator.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
-//#include "../serialization/dataaccess/SQLDialect.h"
+#include "../serialization/dataaccess/DataSourceCapabilities.h"
 #include "DataSourceFactory.h"
 #include "Globals.h"
 #include "Module.h"
@@ -60,12 +61,15 @@ void te::mysql::Module::startup()
   //RasterFactory::initialize();
   //RasterTableFactory::initialize();
 
-// retrieve the SQL dialect
+// retrieve the Capabilities
   boost::filesystem::path driverpath(m_pluginInfo.m_folder);
+  
+  boost::filesystem::path capabilitiesFile = driverpath / "mysql-capabilities.xml";
 
-  boost::filesystem::path dialectFile = driverpath / "mysql_dialect.xml";
+  te::mysql::Globals::sm_capabilities = new te::da::DataSourceCapabilities();
+  te::mysql::Globals::sm_queryDialect = new te::da::SQLDialect();
 
-  //Globals::sm_queryDialect = te::serialize::ReadDialect(dialectFile.string());
+  te::serialize::Read(capabilitiesFile.string(), *te::mysql::Globals::sm_capabilities, *te::mysql::Globals::sm_queryDialect);
 
   TE_LOG_TRACE(TR_MYSQL("TerraLib MySQL driver startup!"));
 
