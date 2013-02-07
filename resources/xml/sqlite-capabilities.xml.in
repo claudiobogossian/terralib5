@@ -100,96 +100,102 @@
     
 	<Functions>
 	
-		<Function name="st_abs">
-			<FunctionEncoder alias="abs"/>
+	<!-- arithmetic operators -->
+
+		<Function name="+">
+			<BinaryOpEncoder alias="+"/>
 		</Function>
-		
-		<Function name="st_acos">
-			<FunctionEncoder alias="acos"/>
+
+		<Function name="-">
+			<BinaryOpEncoder alias="-"/>
 		</Function>
-		
-		<Function name="st_asin">
-			<FunctionEncoder alias="asin"/>
+
+		<Function name="*">
+			<BinaryOpEncoder alias="*"/>
 		</Function>
-		
-		<Function name="st_atan">
-			<FunctionEncoder alias="atan"/>
+
+		<Function name="/">
+			<BinaryOpEncoder alias="/"/>
 		</Function>
-		
-		<Function name="st_ceil">
-			<FunctionEncoder alias="ceil"/>
+
+    <!-- relational operators -->
+
+		<Function name="=">
+			<BinaryOpEncoder alias="="/>
 		</Function>
-		
-		<Function name="st_cos">
-			<FunctionEncoder alias="cos"/>
+
+		<Function name="&#60;&#62;">
+			<BinaryOpEncoder alias="&#60;&#62;"/>
 		</Function>
-		
-		<Function name="st_degrees">
-			<FunctionEncoder alias="degrees"/>
+
+		<Function name="&#62;">
+			<BinaryOpEncoder alias="&#62;"/>
 		</Function>
-		
-		<Function name="st_floor">
-			<FunctionEncoder alias="floor"/>
+
+		<Function name="&#60;">
+			<BinaryOpEncoder alias="&#60;"/>
 		</Function>
-		
-		<Function name="st_ln">
-			<FunctionEncoder alias="ln"/>
+
+		<Function name="&#62;=">
+			<BinaryOpEncoder alias="&#62;="/>
 		</Function>
-		
-		<Function name="st_log">
-			<FunctionEncoder alias="log"/>
+
+		<Function name="&#60;=">
+			<BinaryOpEncoder alias="&#60;="/>
 		</Function>
-		
-		<Function name="st_log2">
-			<FunctionEncoder alias="log2"/>
+
+    <!-- logical operators -->
+    
+		<Function name="and">
+			<BinaryOpEncoder alias="AND"/>
 		</Function>
-		
-		<Function name="st_log10">
-			<FunctionEncoder alias="log10"/>
+    
+		<Function name="or">
+			<BinaryOpEncoder alias="OR"/>
 		</Function>
-		
-		<Function name="st_pow">
-			<FunctionEncoder alias="pow"/>
+    
+		<Function name="not">
+			<UnaryOpEncoder alias="NOT"/>
 		</Function>
-		
-		<Function name="st_radians">
-			<FunctionEncoder alias="radians"/>
+
+    <!-- string operators -->
+
+		<Function name="upper">
+			<FunctionEncoder alias="upper"/>
 		</Function>
-		
-		<Function name="st_round">
-			<FunctionEncoder alias="round"/>
-		</Function>
-		
-		<Function name="st_sin">
-			<FunctionEncoder alias="sin"/>
-		</Function>
-		
-		<Function name="st_sqrt">
-			<FunctionEncoder alias="sqrt"/>
-		</Function>
-		
-		<Function name="st_tan">
-			<FunctionEncoder alias="tan"/>
-		</Function>
-		
-		<Function name="st_lower">
+
+		<Function name="lower">
 			<FunctionEncoder alias="lower"/>
 		</Function>
-		
-		<Function name="st_max">
-			<FunctionEncoder alias="max"/>
+
+		<Function name="substr">
+			<FunctionEncoder alias="substr"/>
 		</Function>
-		
-		<Function name="st_min">
-			<FunctionEncoder alias="min"/>
-		</Function>
-		
-		<Function name="st_trim">
+
+		<Function name="trim">
 			<FunctionEncoder alias="trim"/>
 		</Function>
-		
-		<Function name="st_upper">
-			<FunctionEncoder alias="upper"/>
+
+    <!-- aggregate operators -->
+
+		<Function name="sum">
+			<FunctionEncoder alias="SUM"/>
+		</Function>
+
+		<Function name="avg">
+			<FunctionEncoder alias="AVG"/>
+		</Function>
+
+		<Function name="count">
+			<FunctionEncoder alias="COUNT"/>
+		</Function>
+
+		<Function name="max">
+			<FunctionEncoder alias="MAX"/>
+		</Function>
+
+		<Function name="min">
+			<FunctionEncoder alias="MIN"/>
 		</Function>
 		
     </Functions>
