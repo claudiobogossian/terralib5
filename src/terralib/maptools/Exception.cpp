@@ -18,26 +18,20 @@
  */
 
 /*!
-  \file terralib/maptools/QueryLayerRenderer.cpp
+  \file terralib/maptools/Exception.cpp
 
-  \brief It renders the objects associated to a query layer.
+  \brief An exception class for the MapTools module.
 */
 
 // TerraLib
-#include "QueryLayerRenderer.h"
+#include "Exception.h"
 
-te::map::QueryLayerRenderer::QueryLayerRenderer()
+namespace te
 {
-}
+  namespace map
+  {
+    TE_DEFINE_EXCEPTION_CLASS(Exception, te::common::Exception, "te::map::Exception")
 
-te::map::QueryLayerRenderer::~QueryLayerRenderer()
-{
-}
-
-void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
-                                       Canvas* canvas,
-                                       const te::gm::Envelope& bbox,
-                                       int srid)
-{
-}
+  } // end namespace map
+}   // end namespace te
 

@@ -332,8 +332,8 @@ te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProper
     te::se::ChannelSelection* cs = new te::se::ChannelSelection();
     cs->setColorCompositionType(te::se::RGB_COMPOSITION);
     cs->setRedChannel(scr);
-    cs->setRedChannel(scg);
-    cs->setRedChannel(scb);
+    cs->setGreenChannel(scg);
+    cs->setBlueChannel(scb);
 
     rasterSymbolizer->setChannelSelection(cs);
   }

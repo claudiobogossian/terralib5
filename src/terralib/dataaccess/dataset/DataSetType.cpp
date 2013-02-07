@@ -45,6 +45,7 @@
 te::da::DataSetType::DataSetType(const std::string& name, unsigned int id)
   : CompositeProperty(name, name, te::dt::DATASET_TYPE, id, 0),
     m_defaultGeom(0),
+    m_defaultRaster(0),
     m_catalog(0),
     m_pk(0),
     m_fullLoaded(false),
@@ -55,6 +56,7 @@ te::da::DataSetType::DataSetType(const std::string& name, unsigned int id)
 te::da::DataSetType::DataSetType(const DataSetType& rhs)
  : CompositeProperty(rhs),
    m_defaultGeom(0),
+   m_defaultRaster(0),
    m_catalog(0),
    m_pk(0),
    m_title(rhs.m_title),

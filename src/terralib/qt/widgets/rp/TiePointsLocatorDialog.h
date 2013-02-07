@@ -29,7 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "../../../raster/Raster.h"
-#include "../../../maptools/RasterLayer.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../geometry/GTParameters.h"
 #include "../../../color/RGBAColor.h"
 
@@ -112,8 +112,8 @@ namespace te
               \param f Widget flags.
           */
           TiePointsLocatorDialog(
-            te::map::RasterLayer const* inRasterLayer1Ptr,
-            te::map::RasterLayer const* inRasterLayer2Ptr,
+            const te::map::DataSetLayerPtr& inLayer1Ptr,
+            const te::map::DataSetLayerPtr& inLayer2Ptr,
             QWidget* parent = 0, 
             Qt::WindowFlags f = 0);
 
@@ -176,8 +176,10 @@ namespace te
           TiePointsLocatorAdvancedDialog* m_advDialogPtr; //!< Advanced options dialog.
           te::qt::widgets::MapDisplay* m_mapDisplay1; //!< Map display 1.
           te::qt::widgets::MapDisplay* m_mapDisplay2; //!< Map display 2.
-          te::map::RasterLayer const* m_inRasterLayer1Ptr; //! Input raster layer 1 pointer.
-          te::map::RasterLayer const* m_inRasterLayer2Ptr; //! Input raster layer 2 pointer.
+          te::map::DataSetLayerPtr m_inLayer1Ptr; //! Input data set layer 1 pointer.
+          te::map::DataSetLayerPtr m_inLayer2Ptr; //! Input data set layer 2 pointer.
+          te::rst::Raster* m_raster1;             //! Input raster 1 pointer.
+          te::rst::Raster* m_raster2;             //! Input raster 2 pointer.
           te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent1; //!< Zoom click event (map display 1).
           te::qt::widgets::ZoomLeftAndRightClick* m_zoomClickEvent2; //!< Zoom click event (map display 2).
           CoordTracking* m_coordTracking1; //!< Coord tracking (map display 1);

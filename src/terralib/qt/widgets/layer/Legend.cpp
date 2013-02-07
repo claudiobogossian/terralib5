@@ -32,7 +32,7 @@
 #include "terralib/datatype/Property.h"
 #include "terralib/maptools/Grouping.h"
 #include "terralib/maptools/GroupingAlgorithms.h"
-#include "terralib/maptools/Layer.h"
+//#include "terralib/maptools/Layer.h" // * Under revision *
 #include "LayerItem.h"
 #include "Legend.h"
 #include "ScopedCursor.h"
@@ -70,95 +70,97 @@ te::qt::widgets::Legend::Legend(te::qt::widgets::LayerItem* layerItem, QWidget* 
   // Set the attribute values
   te::da::DataSourceCatalogLoader* catalogLoader;
 
-  te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
+  // * Under revision *
+  //te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
 
-  m_t = refLayer->getDataSource()->getTransactor();
+  //m_t = refLayer->getDataSource()->getTransactor();
   catalogLoader = m_t->getCatalogLoader();
-  m_dataSetType = catalogLoader->getDataSetType(refLayer->getId());
+  //m_dataSetType = catalogLoader->getDataSetType(refLayer->getId());
 
+  // * Under revision *
   // If the layer has already a legend associated to it, set the legend parameters
-  if(refLayer->hasLegend())
-  {
-    te::map::Grouping* grouping = refLayer->getGrouping();
+  //if(refLayer->hasLegend())
+  //{
+  //  te::map::Grouping* grouping = refLayer->getGrouping();
 
-    // Get the grouping type of the layer legend
-    const te::map::GroupingType type = grouping->getType();
-    typeComboBox->setCurrentIndex(type);
+  //  // Get the grouping type of the layer legend
+  //  const te::map::GroupingType type = grouping->getType();
+  //  typeComboBox->setCurrentIndex(type);
 
-    // Set the possible layer attributes according to the grouping type and set the 
-    // layer attribute which the legend is associated to as the current one.
-    typeComboBoxActivated(typeComboBox->currentIndex());
+  //  // Set the possible layer attributes according to the grouping type and set the 
+  //  // layer attribute which the legend is associated to as the current one.
+  //  typeComboBoxActivated(typeComboBox->currentIndex());
 
-    std::string propertyName = grouping->getPropertyName();
+  //  std::string propertyName = grouping->getPropertyName();
 
-    size_t numAttributes = m_dataSetType->size();
-    for(size_t i = 0; i < numAttributes; ++i)
-    {
-      if(propertyName == attributeComboBox->itemText(i).toStdString())
-      {
-        attributeComboBox->setCurrentIndex(i);
-        break;
-      }
-    }
+  //  size_t numAttributes = m_dataSetType->size();
+  //  for(size_t i = 0; i < numAttributes; ++i)
+  //  {
+  //    if(propertyName == attributeComboBox->itemText(i).toStdString())
+  //    {
+  //      attributeComboBox->setCurrentIndex(i);
+  //      break;
+  //    }
+  //  }
 
-    // Get the number of slices of the layer legend
-    if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL)
-      slicesComboBox->setCurrentIndex(grouping->getNumSlices() - 1);
+  //  // Get the number of slices of the layer legend
+  //  if(type == te::map::EQUAL_STEPS || type == te::map::QUANTIL)
+  //    slicesComboBox->setCurrentIndex(grouping->getNumSlices() - 1);
 
-    // Get the precision of the layer legend
-    precisionComboBox->setCurrentIndex(grouping->getPrecision());
+  //  // Get the precision of the layer legend
+  //  precisionComboBox->setCurrentIndex(grouping->getPrecision());
 
-    // Get the standard deviation
-    if(type == te::map::STD_DEVIATION)
-    {
-      const float stdDev = grouping->getStdDeviation();
-      if(stdDev == 1)
-        stdDeviationComboBox->setCurrentIndex(0);
-      else if(stdDev == 0.5)
-        stdDeviationComboBox->setCurrentIndex(1);
-      else if(stdDev == 0.25)
-        stdDeviationComboBox->setCurrentIndex(2);
-    }
+  //  // Get the standard deviation
+  //  if(type == te::map::STD_DEVIATION)
+  //  {
+  //    const float stdDev = grouping->getStdDeviation();
+  //    if(stdDev == 1)
+  //      stdDeviationComboBox->setCurrentIndex(0);
+  //    else if(stdDev == 0.5)
+  //      stdDeviationComboBox->setCurrentIndex(1);
+  //    else if(stdDev == 0.25)
+  //      stdDeviationComboBox->setCurrentIndex(2);
+  //  }
 
-    // Make a copy of the legend contents of the reference layer
-    std::vector<te::map::LegendItem*> layerLegend = refLayer->getLegend();
-    size_t legendSize = layerLegend.size();
+  //  // Make a copy of the legend contents of the reference layer
+  //  std::vector<te::map::LegendItem*> layerLegend = refLayer->getLegend();
+  //  size_t legendSize = layerLegend.size();
 
-    m_legend.resize(legendSize);
-    m_legendColors.resize(legendSize);
-    for(size_t i = 0; i < legendSize; ++i)
-    {
-      m_legend[i] = new te::map::LegendItem(*layerLegend[i]);
-      m_legendColors[i] = m_legend[i]->getColor();
-    }
+  //  m_legend.resize(legendSize);
+  //  m_legendColors.resize(legendSize);
+  //  for(size_t i = 0; i < legendSize; ++i)
+  //  {
+  //    m_legend[i] = new te::map::LegendItem(*layerLegend[i]);
+  //    m_legendColors[i] = m_legend[i]->getColor();
+  //  }
 
-    m_colorBar = refLayer->getColorBar();
+  //  m_colorBar = refLayer->getColorBar();
 
-    // Set the opacity
-    te::color::RGBAColor color = m_legend[0]->getColor();
-    int opacity = (int)(color.getAlpha() * 100./255. + 0.5);
-    opacityComboBox->setCurrentIndex(opacity);
+  //  // Set the opacity
+  //  te::color::RGBAColor color = m_legend[0]->getColor();
+  //  int opacity = (int)(color.getAlpha() * 100./255. + 0.5);
+  //  opacityComboBox->setCurrentIndex(opacity);
 
-    setTableContents();
-  }
-  else
-  {
-    slicesComboBox->setCurrentIndex(4);
-    precisionComboBox->setCurrentIndex(6);
+  //  setTableContents();
+  //}
+  //else
+  //{
+  //  slicesComboBox->setCurrentIndex(4);
+  //  precisionComboBox->setCurrentIndex(6);
 
-    m_colorBar = new te::color::ColorBar();
+  //  m_colorBar = new te::color::ColorBar();
 
-    m_colorBar->setBarSize(colorBar->width());
-    m_colorBar->addColor(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), 0.);      // red
-    m_colorBar->addColor(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), 0.25);    // green
-    m_colorBar->addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.5);   // yellow
-    m_colorBar->addColor(te::color::RGBAColor(255, 0, 255, TE_OPAQUE), 0.75);  // magenta
-    m_colorBar->addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
+  //  m_colorBar->setBarSize(colorBar->width());
+  //  m_colorBar->addColor(te::color::RGBAColor(255, 0, 0, TE_OPAQUE), 0.);      // red
+  //  m_colorBar->addColor(te::color::RGBAColor(0, 255, 0, TE_OPAQUE), 0.25);    // green
+  //  m_colorBar->addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.5);   // yellow
+  //  m_colorBar->addColor(te::color::RGBAColor(255, 0, 255, TE_OPAQUE), 0.75);  // magenta
+  //  m_colorBar->addColor(te::color::RGBAColor(0, 0, 255, TE_OPAQUE), 1.0);     // blue
 
-    opacityComboBox->setCurrentIndex(100);
+  //  opacityComboBox->setCurrentIndex(100);
 
-    typeComboBoxActivated(typeComboBox->currentIndex());
-  }
+  //  typeComboBoxActivated(typeComboBox->currentIndex());
+  //}
 
   colorBar->setHeight(25);
 
@@ -250,10 +252,11 @@ void te::qt::widgets::Legend::applyPushButtonClicked()
   // Get the values of the attribute selected
   std::vector<std::string> attrValues;
 
-  te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
+  // * Under revision *
+  //te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
 
   std::string sql = "SELECT " + attributeComboBox->currentText().toStdString();
-  sql += " FROM " + refLayer->getId();
+  //sql += " FROM " + refLayer->getId();
 
   te::da::DataSet* dataset = m_t->query(sql);
 
@@ -351,12 +354,11 @@ void te::qt::widgets::Legend::okPushButtonClicked()
   grouping->setNumSlices(slicesComboBox->currentIndex() + 1);
   
   grouping->setStdDeviation(stdDeviationComboBox->currentText().toFloat());
-
-  te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
-
-  refLayer->setGrouping(grouping);
-
-  refLayer->setColorBar(m_colorBar);
+  
+  // * Under revision *
+  //te::map::LayerPtr refLayer = static_cast<te::map::Layer*>(m_layerItem->getRefLayer().get());
+  //refLayer->setGrouping(grouping);
+  //refLayer->setColorBar(m_colorBar);
 
   // Update the labels of the legend items that were changed
   std::map<int, std::string>::iterator it;

@@ -201,85 +201,86 @@ void MainWindow::setupDockWindow()
 
 void MainWindow::addRasterLayer(const QString& path)
 {
-  std::string datasetName = path.toStdString();
-  
-  // set input raster name
-  std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = datasetName;
-    
-   // open input raster
-  te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
-  ds->open(rinfo);
+ // * Under revision *
+ // std::string datasetName = path.toStdString();
+ // 
+ // // set input raster name
+ // std::map<std::string, std::string> rinfo;
+ // rinfo["URI"] = datasetName;
+ //   
+ //  // open input raster
+ // te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
+ // ds->open(rinfo);
 
-  te::da::DataSourceTransactor* tr = ds->getTransactor();
-  te::da::DataSourceCatalogLoader* cl = tr->getCatalogLoader();
+ // te::da::DataSourceTransactor* tr = ds->getTransactor();
+ // te::da::DataSourceCatalogLoader* cl = tr->getCatalogLoader();
 
-  cl->loadCatalog();
+ // cl->loadCatalog();
 
-  // Gets the number of data set types that belongs to the data source
-  boost::ptr_vector<std::string> datasets;
-  tr->getCatalogLoader()->getDataSets(datasets);
-  assert(!datasets.empty());
+ // // Gets the number of data set types that belongs to the data source
+ // boost::ptr_vector<std::string> datasets;
+ // tr->getCatalogLoader()->getDataSets(datasets);
+ // assert(!datasets.empty());
 
-  // Gets the first dataset
-  std::string dataSetName(datasets[0]);
-  te::da::DataSet* dataSet = tr->getDataSet(dataSetName);
-  te::rst::Raster* raster = dataSet->getRaster();
+ // // Gets the first dataset
+ // std::string dataSetName(datasets[0]);
+ // te::da::DataSet* dataSet = tr->getDataSet(dataSetName);
+ // te::rst::Raster* raster = dataSet->getRaster();
 
-  te::gm::Envelope* extent = raster->getExtent();
+ // te::gm::Envelope* extent = raster->getExtent();
 
- // Creates a Layer
-  te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(boost::lexical_cast<std::string>(ms_id++), datasetName);
-  rasterLayer->setDataSource(ds);
-  rasterLayer->setDataSetName(dataSetName);
-  rasterLayer->setVisibility(te::map::VISIBLE);
+ //// Creates a Layer
+ // te::map::RasterLayer* rasterLayer = new te::map::RasterLayer(boost::lexical_cast<std::string>(ms_id++), datasetName);
+ // rasterLayer->setDataSource(ds);
+ // rasterLayer->setDataSetName(dataSetName);
+ // rasterLayer->setVisibility(te::map::VISIBLE);
 
-  // Creates a Layer Renderer
-  te::map::RasterLayerRenderer* r = new te::map::RasterLayerRenderer();
-  rasterLayer->setRenderer(r);
+ // // Creates a Layer Renderer
+ // te::map::RasterLayerRenderer* r = new te::map::RasterLayerRenderer();
+ // rasterLayer->setRenderer(r);
 
-  // Adding layer to layer list
-  m_layers.push_back(rasterLayer);
+ // // Adding layer to layer list
+ // m_layers.push_back(rasterLayer);
 
-  // Storing the data source
-  m_ds.push_back(ds);
+ // // Storing the data source
+ // m_ds.push_back(ds);
 
-  // No more necessary
-  delete cl;
-  delete tr;
+ // // No more necessary
+ // delete cl;
+ // delete tr;
 
-  // Updates MapDisplay layer list and extent
-  m_display->setLayerList(m_layers);
-  m_display->setSRID(raster->getSRID());
-  m_display->setExtent(*extent);
+ // // Updates MapDisplay layer list and extent
+ // m_display->setLayerList(m_layers);
+ // m_display->setSRID(raster->getSRID());
+ // m_display->setExtent(*extent);
 
 
-  if(m_rvW)
-  {
-   //get raster properties
-    te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
+ // if(m_rvW)
+ // {
+ //  //get raster properties
+ //   te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
 
-    if(layer->getRasterSymbolizer())
-    {
-      te::rst::RasterProperty* prop = 0;
-  
-      prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
+ //   if(layer->getRasterSymbolizer())
+ //   {
+ //     te::rst::RasterProperty* prop = 0;
+ // 
+ //     prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
 
-      te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
+ //     te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)layer->getRasterSymbolizer()->clone();
 
-      disconnect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+ //     disconnect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
-      m_rvW->setBandProperty(prop->getBandProperties());
+ //     m_rvW->setBandProperty(prop->getBandProperties());
 
-      m_rvW->setRasterSymbolizer(rs);
+ //     m_rvW->setRasterSymbolizer(rs);
 
-      connect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+ //     connect(m_rvW, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
-      delete rs;
+ //     delete rs;
 
-      delete prop;
-    }
-  }
+ //     delete prop;
+ //   }
+ // }
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)
@@ -289,9 +290,7 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 
 void MainWindow::updateDisplay()
 {
-  te::gm::Envelope* e = new te::gm::Envelope(*m_display->getExtent());
-  m_display->setExtent(*e);
-  delete e;
+  m_display->refresh();
 }
 
 void MainWindow::startTools()
@@ -371,44 +370,45 @@ void MainWindow::onCoordTracked(QPointF& coordinate)
 
 void MainWindow::onReadPixelTriggered()
 {
-    delete m_tool;
-    m_tool = new ReadPixelTool(m_display, dynamic_cast<te::map::RasterLayer*>(*m_layers.begin()));
-    m_display->installEventFilter(m_tool);
+  // * Under revision *
+  /*delete m_tool;
+  m_tool = new ReadPixelTool(m_display, dynamic_cast<te::map::RasterLayer*>(*m_layers.begin()));
+  m_display->installEventFilter(m_tool);*/
 }
 
 void MainWindow::onRasterStyleTriggered()
 {
+  // * Under revision *
+  // Creates the rastersymbolizer dialog
+  //te::qt::widgets::RasterSymbolizerDialog dlg;
 
- // Creates the rastersymbolizer dialog
-  te::qt::widgets::RasterSymbolizerDialog dlg;
+  //te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
 
-  te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
+  //te::rst::RasterProperty* prop = 0;
+  //
+  //prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
 
-  te::rst::RasterProperty* prop = 0;
-  
-  prop = (te::rst::RasterProperty*)layer->getRasterProperty()->clone();
+  //dlg.setRasterProperty(layer->getRaster(), prop);
 
-  dlg.setRasterProperty(layer->getRaster(), prop);
+  //dlg.setRasterSymbolizer(layer->getRasterSymbolizer());
 
-  dlg.setRasterSymbolizer(layer->getRasterSymbolizer());
+  //if(dlg.exec() == QDialog::Accepted)
+  //{
+  //  te::se::RasterSymbolizer* rs = static_cast<te::se::RasterSymbolizer*>(dlg.getRasterSymbolizer());
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    te::se::RasterSymbolizer* rs = static_cast<te::se::RasterSymbolizer*>(dlg.getRasterSymbolizer());
+  //  //add symbolizer to a layer style
+  //  te::se::Rule* rule = new te::se::Rule();
+  //  rule->push_back(rs);
 
-    //add symbolizer to a layer style
-    te::se::Rule* rule = new te::se::Rule();
-    rule->push_back(rs);
+  //  te::se::Style* s = new te::se::CoverageStyle();
+  //  s->push_back(rule);
 
-    te::se::Style* s = new te::se::CoverageStyle();
-    s->push_back(rule);
+  //  layer->setStyle(s);
 
-    layer->setStyle(s);
+  //  updateDisplay();
+  //}
 
-    updateDisplay();
-  }
-
-  delete prop;
+  //delete prop;
 }
 
 void MainWindow::onFileSelected(QString s)
@@ -437,9 +437,9 @@ void MainWindow::onSymbolizerUpdated()
   te::se::Style* s = new te::se::CoverageStyle();
   s->push_back(rule);
 
-  te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
-
-  layer->setStyle(s);
+  // * Under revision *
+  //te::map::RasterLayer* layer = dynamic_cast<te::map::RasterLayer*>(*m_layers.begin());
+  //layer->setStyle(s);
 
   updateDisplay();
 }

@@ -23,20 +23,22 @@
   \brief A list of examples for the TerraLib Map Tools.
  */
 
+#include "MapToolsExamples.h"
+
 // TerraLib
 #include <terralib/common.h>
 #include <terralib/geometry.h>
 #include <terralib/dataaccess.h>
 #include <terralib/plugin.h>
-#include "MapToolsExamples.h"
 
 // STL
 #include <cassert>
 #include <cstdlib>
 #include <exception>
 #include <iostream>
-
 #include <locale.h>
+
+unsigned int G_ID = 0;
 
 int main(int /*argc*/, char** /*argv*/)
 {

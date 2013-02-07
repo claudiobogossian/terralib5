@@ -61,7 +61,8 @@ class ReadPixelTool : public te::qt::widgets::AbstractTool
 
   public:
 
-    ReadPixelTool(te::qt::widgets::MapDisplay* display, te::map::RasterLayer* layer, QObject* parent = 0);
+    // * Under revision *
+    ReadPixelTool(te::qt::widgets::MapDisplay* display, /*te::map::RasterLayer* layer,*/ QObject* parent = 0);
 
     ~ReadPixelTool();
 
@@ -76,7 +77,7 @@ class ReadPixelTool : public te::qt::widgets::AbstractTool
 
   private:
 
-    te::map::RasterLayer* m_layer;
+    //te::map::RasterLayer* m_layer; // * Under revision *
 };
 
 #endif  // __TERRALIB_EXAMPLES_QT_TOOLS_INTERNAL_TOOLS_SELECTION_TOOL_H
