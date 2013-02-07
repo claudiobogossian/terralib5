@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
+                        xmlns:xlink="http://www.w3.org/1999/xlink"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+                        xmlns:te_common="http://www.terralib.org/schemas/common"
+                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../../schemas/terralib/dataaccess/capabilities.xsd"
+                        version="5.0.0">
+
+
+  <DataTypeCapabilities>
+    <DataType>BIT_TYPE</DataType>
+    <DataType>INT32_TYPE</DataType>
+    <DataType>GEOMETRY_TYPE</DataType>
+  </DataTypeCapabilities>
+
+  <QueryCapabilities>
+    <SqlDialect>TRUE</SqlDialect>
+    <Insert>TRUE</Insert>
+    <Update>TRUE</Update>
+    <Delete>TRUE</Delete>
+    <Create>TRUE</Create>
+    <Drop>TRUE</Drop>
+    <Alter>TRUE</Alter>
+    <Select>TRUE</Select>
+    <SelectInto>TRUE</SelectInto>
+    <SupportTransactions>TRUE</SupportTransactions>
+	
+    <SpatialOperators>
+	
+		<Function name="st_transform">
+			<FunctionEncoder alias="Transform"/>
+		</Function>
+		
+    </SpatialOperators>
+	
+    <LogicalOperators>
+		
+		<Function name="st_and">
+			<BinaryOpEncoder alias="AND"/>
+		</Function>
+		
+		<Function name="st_or">
+			<BinaryOpEncoder alias="OR"/>
+		</Function>
+		
+		<Function name="st_not">
+			<UnaryOpEncoder alias="NOT"/>
+		</Function>
+    
+	</LogicalOperators>
+    
+	<ComparsionOperators>
+	
+		<Function name="=">
+			<BinaryOpEncoder alias="="/>
+		</Function>
+		
+		<Function name="&#60;&#62;">
+			<BinaryOpEncoder alias="&#60;&#62;"/>
+		</Function>
+		
+		<Function name="&#62;">
+			<BinaryOpEncoder alias="&#62;"/>
+		</Function>
+		
+		<Function name="&#60;">
+			<BinaryOpEncoder alias="&#60;"/>
+		</Function>
+		
+		<Function name="&#62;=">
+			<BinaryOpEncoder alias="&#62;="/>
+		</Function>
+		
+		<Function name="&#60;=">
+			<BinaryOpEncoder alias="&#60;="/>
+		</Function>
+		
+    </ComparsionOperators>
+    
+	<ArithmeticOperators>
+	
+		<Function name="+">
+			<BinaryOpEncoder alias="+"/>
+		</Function>
+		
+		<Function name="-">
+			<BinaryOpEncoder alias="-"/>
+		</Function>
+		
+		<Function name="*">
+			<BinaryOpEncoder alias="*"/>
+		</Function>
+		
+		<Function name="/">
+			<BinaryOpEncoder alias="/"/>
+		</Function>
+	
+    </ArithmeticOperators>
+    
+	<Functions>
+	
+		<Function name="st_abs">
+			<FunctionEncoder alias="abs"/>
+		</Function>
+		
+		<Function name="st_acos">
+			<FunctionEncoder alias="acos"/>
+		</Function>
+		
+		<Function name="st_asin">
+			<FunctionEncoder alias="asin"/>
+		</Function>
+		
+		<Function name="st_atan">
+			<FunctionEncoder alias="atan"/>
+		</Function>
+		
+		<Function name="st_ceil">
+			<FunctionEncoder alias="ceil"/>
+		</Function>
+		
+		<Function name="st_cos">
+			<FunctionEncoder alias="cos"/>
+		</Function>
+		
+		<Function name="st_degrees">
+			<FunctionEncoder alias="degrees"/>
+		</Function>
+		
+		<Function name="st_floor">
+			<FunctionEncoder alias="floor"/>
+		</Function>
+		
+		<Function name="st_ln">
+			<FunctionEncoder alias="ln"/>
+		</Function>
+		
+		<Function name="st_log">
+			<FunctionEncoder alias="log"/>
+		</Function>
+		
+		<Function name="st_log2">
+			<FunctionEncoder alias="log2"/>
+		</Function>
+		
+		<Function name="st_log10">
+			<FunctionEncoder alias="log10"/>
+		</Function>
+		
+		<Function name="st_pow">
+			<FunctionEncoder alias="pow"/>
+		</Function>
+		
+		<Function name="st_radians">
+			<FunctionEncoder alias="radians"/>
+		</Function>
+		
+		<Function name="st_round">
+			<FunctionEncoder alias="round"/>
+		</Function>
+		
+		<Function name="st_sin">
+			<FunctionEncoder alias="sin"/>
+		</Function>
+		
+		<Function name="st_sqrt">
+			<FunctionEncoder alias="sqrt"/>
+		</Function>
+		
+		<Function name="st_tan">
+			<FunctionEncoder alias="tan"/>
+		</Function>
+		
+		<Function name="st_lower">
+			<FunctionEncoder alias="lower"/>
+		</Function>
+		
+		<Function name="st_max">
+			<FunctionEncoder alias="max"/>
+		</Function>
+		
+		<Function name="st_min">
+			<FunctionEncoder alias="min"/>
+		</Function>
+		
+		<Function name="st_trim">
+			<FunctionEncoder alias="trim"/>
+		</Function>
+		
+		<Function name="st_upper">
+			<FunctionEncoder alias="upper"/>
+		</Function>
+		
+    </Functions>
+    
+	<GeomOperands>
+    </GeomOperands>
+	
+	
+  </QueryCapabilities>
+  
+  <DataSetTypeCapabilities>
+    <SupportPrimaryKey>TRUE</SupportPrimaryKey>
+    <SupportUniqueKey>TRUE</SupportUniqueKey>
+    <SupportForeignKey>TRUE</SupportForeignKey>
+    <SupportSequence>FALSE</SupportSequence>
+    <SupportCheckConstraints>TRUE</SupportCheckConstraints>
+    <SupportIndex>TRUE</SupportIndex>
+    <SupportRTreeIndex>TRUE</SupportRTreeIndex>
+    <SupportBTreeIndex>TRUE</SupportBTreeIndex>
+    <SupportHashIndex>FALSE</SupportHashIndex>
+    <SupportQuadTreeIndex>FALSE</SupportQuadTreeIndex>
+  </DataSetTypeCapabilities>
+  <DataSetCapabilities>
+    <Bidirectional>FALSE</Bidirectional>
+    <Random>FALSE</Random>
+    <Indexed>FALSE</Indexed>
+    <EfficientMovePrevious>FALSE</EfficientMovePrevious>
+    <EfficientMoveBeforeFirst>TRUE</EfficientMoveBeforeFirst>
+    <EfficientMoveLast>FALSE</EfficientMoveLast>
+    <EfficientMoveAfterLast>FALSE</EfficientMoveAfterLast>
+    <EfficientMove>FALSE</EfficientMove>
+    <EfficientSize>FALSE</EfficientSize>
+    <Insertion>FALSE</Insertion>
+    <Update>FALSE</Update>
+    <Deletion>FALSE</Deletion>
+  </DataSetCapabilities>
+  <SpecificCapabilities>
+
+  </SpecificCapabilities>
+  <AccessPolicyName>RW_ACCESS</AccessPolicyName>
+  <SupportTransactions>TRUE</SupportTransactions>
+  <SupportDataSetPesistenceAPI>TRUE</SupportDataSetPesistenceAPI>
+  <SupportDataSetTypePesistenceAPI>TRUE</SupportDataSetTypePesistenceAPI>
+  <SupportPreparedQueryAPI>TRUE</SupportPreparedQueryAPI>
+  <SupportBatchExecutorAPI>TRUE</SupportBatchExecutorAPI>
+</DataSourceCapabilities>
