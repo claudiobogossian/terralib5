@@ -25,14 +25,14 @@
 
 // TerraLib
 #include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/datasource//DataSourceCapabilities.h"
 #include "Globals.h"
 
 const std::string te::sqlite::Globals::sm_driverIdentifier(TE_SQLITE_DRIVER_IDENTIFIER);
-
 const std::string te::sqlite::Globals::sm_rliteIdentifier(TE_RASTERLITE_DRIVER_IDENTIFIER);
-
 const std::string te::sqlite::Globals::sm_teliteIdentifier(TE_TERRALIBLITE_DRIVER_IDENTIFIER);
 
-te::da::SQLDialect* te::sqlite::Globals::sm_spatiaLiteDialect(0);
-
-te::da::SQLDialect* te::sqlite::Globals::sm_nonspatialDialect(0);
+te::da::SQLDialect* te::sqlite::Globals::sm_spatialiteDialect(0);
+te::da::SQLDialect* te::sqlite::Globals::sm_sqliteDialect(0);
+te::da::DataSourceCapabilities* te::sqlite::Globals::sm_spatialiteCapabilities(0);
+te::da::DataSourceCapabilities* te::sqlite::Globals::sm_sqliteCapabilities(0);

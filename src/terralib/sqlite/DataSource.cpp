@@ -288,9 +288,9 @@ void te::sqlite::DataSource::open()
 
 // set SQL dialect
   if(m_useSpatiaLite)
-    m_dialect = Globals::sm_spatiaLiteDialect;
+    m_dialect = Globals::sm_spatialiteDialect;
   else
-    m_dialect = Globals::sm_nonspatialDialect;
+    m_dialect = Globals::sm_sqliteDialect;
 }
 
 void te::sqlite::DataSource::close()

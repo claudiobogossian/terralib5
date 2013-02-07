@@ -36,7 +36,11 @@
 namespace te
 {
 // Forward declaration
-  namespace da { class SQLDialect; }
+  namespace da
+  {
+    class SQLDialect;
+    class DataSourceCapabilities;
+  }
 
   namespace sqlite
   {
@@ -53,8 +57,11 @@ namespace te
         static const std::string sm_rliteIdentifier;      //!< The RasterLite driver identifier.
         static const std::string sm_teliteIdentifier;      //!< The RasterLite driver identifier.
 
-        static te::da::SQLDialect* sm_spatiaLiteDialect;  //!< The SQL dialect supported by SQLite driver when using SpatiaLite.
-        static te::da::SQLDialect* sm_nonspatialDialect;  //!< The SQL dialect supported by SQLite driver when not using SpatiaLite.
+        static te::da::SQLDialect* sm_spatialiteDialect;  //!< The SQL dialect supported by SQLite driver when using SpatiaLite.
+        static te::da::SQLDialect* sm_sqliteDialect;  //!< The SQL dialect supported by SQLite driver when not using SpatiaLite.
+
+        static te::da::DataSourceCapabilities * sm_spatialiteCapabilities;  //!< The SQL capabilities supported by SQLite driver when using SpatiaLite.
+        static te::da::DataSourceCapabilities* sm_sqliteCapabilities;  //!< The SQL capabilities supported by SQLite driver when not using SpatiaLite.
     };
 
   } // end namespace sqlite
