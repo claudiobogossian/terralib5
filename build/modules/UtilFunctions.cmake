@@ -283,7 +283,7 @@ ENDMACRO (installFiles)
 # param[input] inst_dirs Directories at the installation tree.
 MACRO(exportModuleInformation mod_name dirs inst_dirs)
   set (TE_MODULES ${TE_MODULES} "${mod_name}" PARENT_SCOPE)
-  set (TE_INCLUDE_DIRS ${TE_INCLUDE_DIRS} "${dirs}" PARENT_SCOPE)
+  set (TE_INCLUDE_DIRS "${TE_INCLUDE_DIRS}" "${dirs}" PARENT_SCOPE)
   set (TE_INST_INCLUDE_DIRS ${TE_INST_INCLUDE_DIRS} "${inst_dirs}" PARENT_SCOPE)
   set (TE_LIBRARIES ${TE_LIBRARIES} "terralib_${mod_name}" PARENT_SCOPE)
   set (TE_3DS ${TE_3DS} "${TE_DEP_INCLUDES}" PARENT_SCOPE)

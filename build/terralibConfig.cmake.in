@@ -38,51 +38,53 @@
 #     - xlink
 #     - xml
  
-# Compute paths
-get_filename_component(TE_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
-if(EXISTS "${TE_CMAKE_DIR}/CMakeCache.txt")
-   # In build tree
-   include("${TE_CMAKE_DIR}/teBuildTreeSettings.cmake")
-else()
-  set (TE_DEPENDENCIES_DIR "" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
+set (TE_AUX_DIRS @TE_AUX_DIRS@) 
+set (TE_DEPENDENCIES_DIR @TE_DEPENDENCIES_DIR@)
   
-  if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
-    list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
-    set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
-  endif()
+if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
+  list (APPEND CMAKE_PREFIX_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
+  set (CMAKE_FIND_ROOT_PATH "${TE_DEPENDENCIES_DIR}" "${TE_DEPENDENCIES_DIR}/gdal")
+endif()
   
-	set ( TE_DIRS @TE_INST_INCLUDE_DIRS@ )	
-  set ( TE_ROOT_INC "${TE_CMAKE_DIR}/.." )
-	set ( TE_INCLUDE_DIRS "${TE_ROOT_INC}" )
+set ( TE_DIRS @TE_INST_INCLUDE_DIRS@ )
+set ( TE_ROOT_INC @TE_ROOT_INC@ )	
+list (APPEND TE_INCLUDE_DIRS "${TE_ROOT_INC}" )
 	
-	foreach( TDIR ${TE_DIRS} )
-		list ( APPEND TE_INCLUDE_DIRS "${TE_ROOT_INC}/terralib/${TDIR}")
-	endforeach()
+foreach( TDIR ${TE_DIRS} )
+  list ( APPEND TE_INCLUDE_DIRS "${TE_ROOT_INC}/terralib/${TDIR}")
+endforeach()
 
-  set (TE_MODULEPATH "${TE_CMAKE_DIR}")
-  list (APPEND CMAKE_MODULE_PATH "${TE_MODULEPATH}")
-  
-  # Configuration files folder.
-  set (TE_DEFAULT_LOGCONF_FILE ${TE_ROOT_INC}/log/te-log.conf)
-  
-  set (DEPS @TE_3DS@)
-  include ( ${TE_MODULEPATH}/Deps_versions.cmake )	
-  include ( ${TE_MODULEPATH}/UtilFunctions.cmake )	
-  
-  foreach(DEP ${DEPS})
-    find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
-  endforeach()
-  
-  set (TE_JSON_FILES_LOCATION ${TE_ROOT_INC}/resources/json)
-  set (TE_SQL_FILES_LOCATION ${TE_ROOT_INC}/resources/sql)
-  set (TE_XML_FILES_LOCATION ${TE_ROOT_INC}/resources/xml)
-  
-  set (TE_BIN_DIR ${TE_ROOT_INC}/bin)
+if ( NOT "${TE_AUX_DIRS}" STREQUAL "")
+  list ( APPEND TE_INCLUDE_DIRS "${TE_AUX_DIRS}")
 endif()
- 
+
+set (TE_MODULE_PATH @TE_MODULE_PATH@)
+list (APPEND CMAKE_MODULE_PATH "${TE_MODULE_PATH}")
+  
+# Configuration files folder.
+set (TE_DEFAULT_LOGCONF_FILE @TE_DEFAULT_LOGCONF_FILE@)
+  
+set (DEPS @TE_3DS@)
+
+include ( ${TE_MODULE_PATH}/Deps_versions.cmake )	
+include ( ${TE_MODULE_PATH}/UtilFunctions.cmake )	
 if(WIN32)
-  include (${TE_MODULEPATH}/WinConfig.cmake)
+  include (${TE_MODULE_PATH}/WinConfig.cmake)
 endif()
+
+get_filename_component(CURRENT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+include ( ${CURRENT_DIR}/teDepends.cmake )
+  
+foreach(DEP ${DEPS})
+  find_package(${DEP} ${_${DEP}_VERSION} REQUIRED)
+endforeach()
+  
+set (TE_BIN_DIR @TE_BIN_DIR@)
+set (TE_SCHEMA_LOCATION @TE_SCHEMA_LOCATION@)
+set (TE_LOGO @TE_LOGO@)
+set (TE_JSON_FILES_LOCATION @TE_JSON_FILES_LOCATION@)
+set (TE_SQL_FILES_LOCATION @TE_SQL_FILES_LOCATION@)
+set (TE_XML_FILES_LOCATION @TE_XML_FILES_LOCATION@)
 
 # Modules compiled 
 # This code is used to verify the compiled components.

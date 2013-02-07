@@ -15,13 +15,13 @@ getPackageName(pname)
 set ( CPACK_PACKAGE_FILE_NAME ${pname} )
 
 if(WIN32)
-  include (${TE_MODULES_PATH}/NSISPackage.cmake)
+  include (${TE_MODULE_PATH}/NSISPackage.cmake)
 else ()
   set (CPACK_STRIP_FILES "")
   set (CPACK_SOURCE_STRIP_FILES "")
   
   if(UNIX AND NOT APPLE)
-    include (${TE_MODULES_PATH}/DEBPackage.cmake)
+    include (${TE_MODULE_PATH}/DEBPackage.cmake)
   endif()
 endif()
 

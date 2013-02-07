@@ -11,9 +11,7 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
 endif()
 
-include (${TE_MODULEPATH}/GeneralConfig.cmake)
-
-include (${terralib_DIR}/teDepends.cmake)
+include (${TE_MODULE_PATH}/GeneralConfig.cmake)
 
 ############### Get the data used for testing the examples ###############
 set (TE_DATA_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to data folder.")
@@ -242,5 +240,5 @@ if(WIN32)
   endif()
   
   set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/debug)
-  generateRunningBatch(${TE_MODULEPATH}/runme.bat.in runme.bat)
+  generateRunningBatch(${TE_MODULE_PATH}/runme.bat.in runme.bat)
 endif()

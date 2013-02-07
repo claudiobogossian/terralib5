@@ -20,6 +20,8 @@ set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 option (BUILD_TERRAVIEW "Build TerraView application?" ON)
 
 if(BUILD_TERRAVIEW)
+  include (${CMAKE_CURRENT_SOURCE_DIR}/buildTree.cmake)
+
   set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/terralib_logo.svg" CACHE STRING "File containing logo of the TerraLib")
   
   if(WIN32)
@@ -41,5 +43,5 @@ if(WIN32)
   
   # Release settings
   set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
-  generateRunningBatch(${TE_MODULES_PATH}/runme.bat.in runme.bat)
-endif()  
+  generateRunningBatch(${TE_MODULE_PATH}/runme.bat.in runme.bat)
+endif()
