@@ -24,8 +24,17 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "../se/Style.h"
 #include "DataSetLayer.h"
+#include "Exception.h"
+#include "RendererFactory.h"
+
+// Boost
+#include <boost/format.hpp>
+
+// STL
+#include <memory>
 
 const std::string te::map::DataSetLayer::sm_type("DATASET_LAYER");
 
@@ -61,6 +70,15 @@ bool te::map::DataSetLayer::isValid() const
 
 void te::map::DataSetLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
 {
+  if(m_rendererType.empty())
+    throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer type is empty!")) % getTitle()).str());
+
+  // Try get the defined renderer
+  std::auto_ptr<AbstractRenderer> renderer(RendererFactory::make(m_rendererType));
+  if(renderer.get() == 0)
+    throw Exception((boost::format(TR_MAP("Could not draw the data set layer %1%. The renderer %2% could not be created!")) % getTitle() % m_rendererType).str());
+
+  renderer->draw(this, canvas, bbox, srid);
 }
 
 const std::string& te::map::DataSetLayer::getType() const

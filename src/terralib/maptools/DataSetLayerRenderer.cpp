@@ -328,12 +328,12 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
   assert(cloader.get());
 
 // get the dataset type. TODO: Can we pass the datat set type as method parameter?
-  std::auto_ptr<te::da::DataSetType> dataSetType(cloader->getDataSetType(dsname));
+  std::auto_ptr<te::da::DataSetType> dataSetType(cloader->getDataSetType(dsname, true));
   assert(dataSetType.get());
 
-// for while, default raster property
-  assert(dataSetType->hasDefaultRaster());
-  te::rst::RasterProperty* rasterProperty = dataSetType->getDefaultRasterProperty();
+// for while, first raster property
+  assert(dataSetType->hasRaster());
+  te::rst::RasterProperty* rasterProperty = dataSetType->findFirstRasterProperty();
 
 // retrieve the data set
   std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(dsname, rasterProperty, &bbox, te::gm::INTERSECTS));

@@ -36,6 +36,7 @@
 #include <terralib/maptools.h>
 #include <terralib/se.h>
 #include <terralib/raster/Raster.h>
+#include <terralib/raster/RasterProperty.h>
 #include <terralib/qt/widgets/canvas/MultiThreadMapDisplay.h>
 #include <terralib/qt/widgets/progress/ProgressViewerBar.h>
 #include <terralib/qt/widgets/progress/ProgressViewerWidget.h>
@@ -125,10 +126,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::setupActions()
 {
-  // Add DataSet Layer
-  QAction* addDataSetLayer = new QAction(QIcon::fromTheme("list-add"), tr("Add DataSet Layer..."), this);
-  connect(addDataSetLayer, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
-  m_toolBar->addAction(addDataSetLayer);
+  // Add Vector Data
+  QAction* addVectorData = new QAction(QIcon::fromTheme("list-add"), tr("Add Vector Data..."), this);
+  connect(addVectorData, SIGNAL(triggered()), SLOT(onAddVectorDataTriggered()));
+  m_toolBar->addAction(addVectorData);
+
+  // Add Raster Data
+  QAction* addRasterData = new QAction(QIcon::fromTheme("list-add"), tr("Add Raster Data..."), this);
+  connect(addRasterData, SIGNAL(triggered()), SLOT(onAddRasterDataTriggered()));
+  m_toolBar->addAction(addRasterData);
 
   m_toolBar->addSeparator();
 
@@ -203,18 +209,17 @@ void MainWindow::setupActions()
   m_toolBar->addAction(stopAll);
 }
 
-void MainWindow::addDataSetLayer(const QString& path)
+void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
 {
   // Creates and connects data source
   std::map<std::string, std::string> connInfo;
-  connInfo["path"] = path.toStdString();
+  driver == "OGR" ? connInfo["path"] = path.toStdString() : connInfo["URI"] = path.toStdString();
 
-  // Creates and connects data source
-  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(ms_id++), "OGR", connInfo);
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(ms_id++), driver, connInfo);
 
   // Transactor and catalog loader
   std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
-   std::auto_ptr<te::da::DataSourceCatalogLoader> cl(transactor->getCatalogLoader());
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cl(transactor->getCatalogLoader());
   cl->loadCatalog();
 
   // Get the number of data set types that belongs to the data source
@@ -225,14 +230,12 @@ void MainWindow::addDataSetLayer(const QString& path)
   // MapDisplay extent
   te::gm::Envelope env;
 
+  int srid = 0;
+
   for(std::size_t i = 0; i < datasets.size(); ++i)
   {
     // Gets DataSet Type
-    te::da::DataSetType* dt = cl->getDataSetType(datasets[i]);
-
-    // Updates MapDisplay extent
-    std::auto_ptr<te::gm::Envelope> e(cl->getExtent(dt->getDefaultGeomProperty()));
-    env.Union(*e.get());
+    std::auto_ptr<te::da::DataSetType> dt(cl->getDataSetType(datasets[i]));
 
     // Creates a DataSetLayer
     te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(static_cast<unsigned int>(ms_id++)), datasets[i]);
@@ -241,13 +244,34 @@ void MainWindow::addDataSetLayer(const QString& path)
     layer->setRendererType("DATASET_LAYER_RENDERER");
     layer->setVisibility(te::map::VISIBLE);
 
+    // Gets the layer extent
+    te::gm::Envelope* e = 0;
+    if(driver == "OGR")
+      e = cl->getExtent(dt->getDefaultGeomProperty());
+    else
+    {
+      std::auto_ptr<te::rst::Raster> raster(te::map::GetRaster(layer));
+      e = new te::gm::Envelope(*raster->getExtent());
+      layer->setSRID(raster->getSRID());
+      srid = raster->getSRID();
+    }
+    
+    // Updates MapDisplay Extent
+    env.Union(*e);
+
+    // Sets the layer extent
+    layer->setExtent(*e);
+
+    delete e;
+
     // Adding layer to layer list
     m_layers.push_back(layer);
   }
 
-  // Updates MapDisplay layer list and extent
+  // Updates MapDisplay layer list, srid and extent
   m_display->setLayerList(m_layers);
-  m_display->setExtent(env);
+  m_display->setSRID(srid, false);
+  m_display->setExtent(env, true);
 }
 
 void MainWindow::contextMenuEvent(QContextMenuEvent* e)
@@ -255,11 +279,18 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
   m_menu->popup(e->globalPos());
 }
 
-void MainWindow::onAddDataSetLayerTriggered()
+void MainWindow::onAddVectorDataTriggered()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/shp/", tr("ShapeFile (*.shp)"));
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/shp/", tr("ShapeFile *.shp"));
   if(!path.isNull())
-    addDataSetLayer(path);
+    addDataSetLayer(path, "OGR");
+}
+
+void MainWindow::onAddRasterDataTriggered()
+{
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a raster file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/", tr("TIFF *.tif"));
+  if(!path.isNull())
+    addDataSetLayer(path, "GDAL");
 }
 
 void MainWindow::onPanTriggered()

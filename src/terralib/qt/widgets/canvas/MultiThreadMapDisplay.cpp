@@ -111,7 +111,7 @@ QPointF te::qt::widgets::MultiThreadMapDisplay::transform(const QPointF& p)
 
 void te::qt::widgets::MultiThreadMapDisplay::updateTransform()
 {
-  if(m_extent.isValid())
+  if(!m_extent.isValid())
     return;
 
   /*  Note: For while... I need the class CoordTransform! */

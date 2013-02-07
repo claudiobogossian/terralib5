@@ -80,7 +80,8 @@ void te::map::MapDisplay::setSRID(const int& srid, bool doRefresh)
   if(m_srid == srid)
     return;
 
-  m_extent.transform(m_srid, srid);
+  if(m_srid != TE_UNKNOWN_SRS && srid != TE_UNKNOWN_SRS)
+    m_extent.transform(m_srid, srid);
 
   m_srid = srid;
 

@@ -89,21 +89,35 @@ class MainWindow : public QMainWindow
   private:
 
     void setupActions();
-    void addDataSetLayer(const QString& path);
+
+    void addDataSetLayer(const QString& path, const std::string& driver);
+
     void contextMenuEvent(QContextMenuEvent* e);
 
   private slots:
 
-    void onAddDataSetLayerTriggered();
+    void onAddVectorDataTriggered();
+
+    void onAddRasterDataTriggered();
+
     void onPanTriggered();
+
     void onZoomInTriggered();
+
     void onZoomOutTriggered();
+
     void onZoomAreaTriggered();
+
     void onDistanceTriggered();
+
     void onAreaTriggered();
+
     void onAngleTriggered();
+
     void onSelectionTriggered();
+
     void onStopAllTriggered();
+
     void onCoordTracked(QPointF& coordinate);
 
   private:
