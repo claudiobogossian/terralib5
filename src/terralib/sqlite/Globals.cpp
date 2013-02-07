@@ -24,8 +24,6 @@
 */
 
 // TerraLib
-#include "../dataaccess/query/SQLDialect.h"
-#include "../dataaccess/datasource//DataSourceCapabilities.h"
 #include "Globals.h"
 
 const std::string te::sqlite::Globals::sm_driverIdentifier(TE_SQLITE_DRIVER_IDENTIFIER);

@@ -28,6 +28,7 @@
 #include "../common/Translator.h"
 #include "../dataaccess/datasource/DataSourceManager.h"
 #include "../dataaccess/query/SQLDialect.h"
+#include "../dataaccess/datasource/DataSourceCapabilities.h"
 //#include "../serialization/dataaccess/SQLDialect.h"
 //#include "rlite/RasterFactory.h"
 //#include "terralib/RasterFactory.h"
@@ -91,8 +92,8 @@ void te::sqlite::Module::startup()
   boost::filesystem::path spatialiteCapabilitiesFile = driverpath / "spatialite-capabilities.xml";
   boost::filesystem::path sqliteCapabilitiesFile = driverpath / "sqlite-capabilities.xml";
 
-  te::serialize::Read(spatialiteCapabilitiesFile.string(), Globals::sm_spatialiteCapabilities, Globals.sm_spatialiteDialect);
-  te::serialize::Read(sqliteCapabilitiesFile.string(), Globals::sm_sqliteCapabilities, Globals.sm_sqliteDialect);
+  te::serialize::Read(spatialiteCapabilitiesFile.string(), *te::sqlite::Globals::sm_spatialiteCapabilities, *te::sqlite::Globals::sm_spatialiteDialect);
+  te::serialize::Read(sqliteCapabilitiesFile.string(), *te::sqlite::Globals::sm_sqliteCapabilities, *te::sqlite::Globals::sm_sqliteDialect);
 
   TE_LOG_TRACE(TR_SQLITE("TerraLib SQLite driver startup!"));
 
