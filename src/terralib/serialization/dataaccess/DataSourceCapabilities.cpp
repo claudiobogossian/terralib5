@@ -46,6 +46,18 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/format.hpp>
 
+te::common::AccessPolicy Convert2Terralib(std::string accessPolicy)
+{
+  if(accessPolicy == "NO_ACCESS")
+    return te::common::NoAccess;
+  else if (accessPolicy == "R_ACCESS")
+    return te::common::RAccess;
+  else if(accessPolicy == "W_ACCESS")
+    return te::common::WAccess;
+  else if(accessPolicy == "RW_ACCESS")
+    return te::common::RWAccess;
+}
+
 void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceCapabilities* capabilities, te::da::SQLDialect* dialect)
 {
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
@@ -187,16 +199,25 @@ void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceC
 
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
-  assert(xmlReader->getElementLocalName() == "SpatialOperators");
-  
+  assert(xmlReader->getElementLocalName() == "SpatialOperators");  
+
+  te::da::SQLFunctionEncoder* sfe = 0;
+
   while(xmlReader->next() &&
         (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "Function"))
   {
-    xmlReader->next();
-    assert(xmlReader->getNodeType() == te::xml::VALUE);
-
+    
     qc.addSpatialOperator(xmlReader->getAttr("name"));
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+    assert(xmlReader->getElementLocalName() == "FunctionEncoder");
+    
+    std::string alias = xmlReader->getAttr("alias");
+    sfe = new te::da::FunctionEncoder(alias);
+
+    dialect->insert(xmlReader->getAttr("name"), sfe);
    
     xmlReader->next();
     assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
@@ -213,10 +234,17 @@ void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceC
         (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "Function"))
   {    
-    xmlReader->next();
-    assert(xmlReader->getNodeType() == te::xml::VALUE);
-
+    
     qc.addLogicalOperator(xmlReader->getAttr("name"));
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+    assert(xmlReader->getElementLocalName() == "BinaryOpEncoder");
+    
+    std::string alias = xmlReader->getAttr("alias");
+    sfe = new te::da::BinaryOpEncoder(alias);
+
+    dialect->insert(xmlReader->getAttr("name"), sfe);
 
     xmlReader->next();
     assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
@@ -233,10 +261,17 @@ void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceC
         (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "Function"))
   {
-    xmlReader->next();
-    assert(xmlReader->getNodeType() == te::xml::VALUE);
-
+    
     qc.addComparsionOperator(xmlReader->getAttr("name"));
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+    assert(xmlReader->getElementLocalName() == "BinaryOpEncoder");
+    
+    std::string alias = xmlReader->getAttr("alias");
+    sfe = new te::da::BinaryOpEncoder(alias);
+
+    dialect->insert(xmlReader->getAttr("name"), sfe);
 
     xmlReader->next();
     assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
@@ -253,10 +288,17 @@ void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceC
         (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "Function"))
   {    
-    xmlReader->next();
-    assert(xmlReader->getNodeType() == te::xml::VALUE);
-
+    
     qc.addArithmeticOperator(xmlReader->getAttr("name"));
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+    assert(xmlReader->getElementLocalName() == "BinaryOpEncoder");
+    
+    std::string alias = xmlReader->getAttr("alias");
+    sfe = new te::da::BinaryOpEncoder(alias);
+
+    dialect->insert(xmlReader->getAttr("name"), sfe);
 
     xmlReader->next();
     assert(xmlReader->getNodeType() == te::xml::END_ELEMENT);
@@ -273,10 +315,17 @@ void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceC
         (xmlReader->getNodeType() == te::xml::START_ELEMENT) &&
         (xmlReader->getElementLocalName() == "Function"))
   {    
-    xmlReader->next();
-    assert(xmlReader->getNodeType() == te::xml::VALUE);
-
+    
     qc.addFunction(xmlReader->getAttr("name"));
+
+    xmlReader->next();
+    assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+    assert(xmlReader->getElementLocalName() == "FunctionEncoder");
+    
+    std::string alias = xmlReader->getAttr("alias");
+    sfe = new te::da::FunctionEncoder(alias);
+
+    dialect->insert(xmlReader->getAttr("name"), sfe);
 
     xmlReader->next();
     assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); 
@@ -642,5 +691,71 @@ void te::serialize::Read(const std::string& dialectFileName, te::da::DataSourceC
   xmlReader->next();
   assert(xmlReader->getNodeType() == te::xml::VALUE);
 
-  //capabilities->set
+  capabilities->setAccessPolicy(Convert2Terralib(xmlReader->getElementValue()));
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // AccessPolicyName
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SupportTransactions");
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::VALUE);
+
+  capabilities->setSupportTransactions(xmlReader->getElementValueAsBoolean());
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportTransactions
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SupportDataSetPesistenceAPI");
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::VALUE);
+
+  capabilities->setSupportDataSetPesistenceAPI(xmlReader->getElementValueAsBoolean());
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportDataSetPesistenceAPI
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SupportDataSetTypePesistenceAPI");
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::VALUE);
+
+  capabilities->setSupportDataSetTypePesistenceAPI(xmlReader->getElementValueAsBoolean());
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportDataSetTypePesistenceAPI
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SupportPreparedQueryAPI");
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::VALUE);
+
+  capabilities->setSupportPreparedQueryAPI(xmlReader->getElementValueAsBoolean());
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportPreparedQueryAPI
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::START_ELEMENT);
+  assert(xmlReader->getElementLocalName() == "SupportBatchExecutorAPI");
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::VALUE);
+
+  capabilities->setSupportBatchExecutorAPI(xmlReader->getElementValueAsBoolean());
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // SupportBatchExecutorAPI
+
+  xmlReader->next();
+  assert(xmlReader->getNodeType() == te::xml::END_ELEMENT); // DataSourceCapabilities
 }
