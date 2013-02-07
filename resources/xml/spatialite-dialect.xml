@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <QueryDialect xmlns:xlink="http://www.w3.org/1999/xlink"
               xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-              xmlns="http://www.terralib.org/dataaccess"
-              xsd:schemaLocation="http://www.terralib.org/dataaccess ../../schemas/terralib/dataaccess/query_dialect.xsd"
+              xmlns="http://www.terralib.org/schemas/dataaccess"
+              xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../../schemas/terralib/dataaccess/query_dialect.xsd"
               version="5.0.0">
   <DriverName>te.da.sqlite</DriverName>
   

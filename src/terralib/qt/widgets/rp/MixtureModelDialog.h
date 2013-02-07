@@ -29,7 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "../../../color/RGBAColor.h"
-#include "../../../maptools/RasterLayer.h"
+#include "../../../maptools/DataSetLayer.h"
 #include "../../../raster/Raster.h"
 
 // Qt
@@ -110,7 +110,7 @@ namespace te
             \param f                   Widget flags.
           */
           MixtureModelDialog(//const te::rst::Raster* inputRasterPtr,
-                             const te::map::RasterLayer* inputRasterLayerPtr,
+                             const te::map::DataSetLayerPtr& inputLayerPtr,
                              const std::string& outpuRasterDSType,
                              const std::map<std::string, std::string>& outpuRasterInfo,
                              QWidget* parent = 0,

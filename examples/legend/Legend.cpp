@@ -72,7 +72,7 @@ Legend::Legend(QWidget* parent)
 
   // Mount a layer tree where each element corresponds to a dataset
   std::string dataSetName;
-  te::map::Layer* layer;
+  te::map::DataSetLayer* layer; // * Under revision *
 
   m_rootLayer = new te::map::FolderLayer("Layers", "Layers");
 
@@ -80,9 +80,9 @@ Legend::Legend(QWidget* parent)
   {
     //string id = te::common::Convert2String(static_cast<unsigned int>(i+1));
     dataSetName = dataSetList[i].toStdString();
-    
-    layer = new te::map::Layer(dataSetName, dataSetName, m_rootLayer);
-    layer->setDataSource(m_ds);
+    // * Under revision *
+    layer = new te::map::DataSetLayer(dataSetName, dataSetName, m_rootLayer);
+    layer->setDataSourceId(m_ds->getId());
     layer->setDataSetName(dataSetName);
   }
 

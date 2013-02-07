@@ -7,7 +7,7 @@
 #include <terralib/geometry/Envelope.h>
 #include <terralib/geometry/Utils.h>
 
-#include <terralib/maptools/Layer.h>
+//#include <terralib/maptools/Layer.h> // * Under revision *
 
 #include <terralib/qt/widgets/canvas/MapDisplay.h>
 #include <terralib/qt/widgets/canvas/Canvas.h>
@@ -107,7 +107,7 @@ namespace te
         {
           lay_list.push_back(it->second);
 
-          te::gm::Envelope e(*it->second->getExtent());
+          te::gm::Envelope e(it->second->getExtent());
 
           if(it->second->getSRID() != m_display->getSRID())
           {
@@ -117,7 +117,8 @@ namespace te
           env.Union(e);
         }
 
-        m_display->setLayerList(lay_list);
+        // * Under revision *
+        //m_display->setLayerList(lay_list);
 
         m_display->setExtent(env);
       }
@@ -150,7 +151,8 @@ namespace te
 
               m_geoms[POINTED] = getGeometryVector(e->m_geoms);
 
-              m_hl_visible = (e->m_layer->getVisibility() == te::map::VISIBLE);
+              // * Under revision *
+              //m_hl_visible = (e->m_layer->getVisibility() == te::map::VISIBLE);
 
               redrawHighlight();
             }
@@ -200,11 +202,11 @@ namespace te
         std::vector<te::gm::Geometry*>::iterator gIt;
         std::vector<QColor>::iterator cIt;
 
-            // Prepares the canvas
-        const te::gm::Envelope* env = m_display->getExtent();
+        // Prepares the canvas
+        const te::gm::Envelope& env = m_display->getExtent();
         te::qt::widgets::Canvas canvas(m_display->width(), m_display->height());
         canvas.setDevice(draft, false);
-        canvas.setWindow(env->m_llx, env->m_lly, env->m_urx, env->m_ury);
+        canvas.setWindow(env.m_llx, env.m_lly, env.m_urx, env.m_ury);
 
         for(vgIt=m_geoms.begin(); vgIt != m_geoms.end(); ++vgIt)
         {
@@ -246,7 +248,7 @@ namespace te
 
           for(gIt = g->begin(); gIt != g->end(); ++gIt)
           {
-            te::gm::Geometry* geo = te::gm::GetGeomFromEnvelope(env, m_display->getSRID());
+            te::gm::Geometry* geo = te::gm::GetGeomFromEnvelope(&env, m_display->getSRID());
             if(geo->intersects(*gIt))
               canvas.draw(*gIt);
           }

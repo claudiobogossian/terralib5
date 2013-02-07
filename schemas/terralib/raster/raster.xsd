@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_dt="http://www.terralib.org/datatype"
-            xmlns:te_gm="http://www.terralib.org/geometry"
-            xmlns:te_rst="http://www.terralib.org/raster"
+<xsd:schema xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+            xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+            xmlns:te_rst="http://www.terralib.org/schemas/raster"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/raster"
+            targetNamespace="http://www.terralib.org/schemas/raster"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -13,8 +13,8 @@
     <xsd:documentation>A simple schema for the geometry module</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
-  <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/datatype" schemaLocation="../datatype/datatype.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd"/>
 
   <xsd:complexType name="GridType">
     <xsd:sequence>

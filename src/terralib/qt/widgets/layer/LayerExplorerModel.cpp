@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../maptools/Layer.h"
+//#include "../../../maptools/Layer.h" // * Under revision *
 #include "LayerExplorerModel.h"
 #include "LayerItem.h"
 #include "LegendItem.h"
@@ -359,9 +359,10 @@ bool te::qt::widgets::LayerExplorerModel::dropMimeData(const QMimeData* data, Qt
   int dragRow = dragRefLayer->getIndex();
   dragRefLayerParent->remove(dragRow);
   
+  // * Under revision *
   // Construct a dummy layer and insert it as a child of the dragged item parent in the drag position
-  te::map::AbstractLayer* dummyLayer = new te::map::Layer("0", "DummyLayer", 0);
-  dragRefLayerParent->insert(dragRow, dummyLayer);
+  //te::map::AbstractLayer* dummyLayer = new te::map::Layer("0", "DummyLayer", 0);
+  //dragRefLayerParent->insert(dragRow, dummyLayer);
 
   // Create the new tree item
   m_dndNewItem = new te::qt::widgets::LayerItem(dragRefLayer, 0);
@@ -470,8 +471,9 @@ void te::qt::widgets::LayerExplorerModel::removeLegend(const QModelIndex& index)
   if(item->getRefLayer()->getType() != "LAYER")
     return;
 
-  if(item->getRefLayer()->hasLegend() == false)
-    return;
+  // * Under revision *
+  //if(item->getRefLayer()->hasLegend() == false)
+    //return;
 
   te::qt::widgets::LayerItem* layerItem = static_cast<te::qt::widgets::LayerItem*>(item);
 

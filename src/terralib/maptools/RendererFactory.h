@@ -18,43 +18,53 @@
  */
 
 /*!
-  \file terralib/maptools/QueryLayerRenderer.h
+  \file terralib/maptools/RendererFactory.h
 
-  \brief It renders the objects associated to a query layer.
+  \brief An abstract factory for layer renderers.
 */
 
-#ifndef __TERRALIB_MAPTOOLS_INTERNAL_QUERYLAYERRENDERER_H
-#define __TERRALIB_MAPTOOLS_INTERNAL_QUERYLAYERRENDERER_H
+#ifndef __TERRALIB_MAPTOOLS_INTERNAL_RENDERERFACTORY_H
+#define __TERRALIB_MAPTOOLS_INTERNAL_RENDERERFACTORY_H
 
 // TerraLib
+#include "../common/AbstractFactory.h"
 #include "AbstractRenderer.h"
 
 namespace te
 {
   namespace map
-  {
+  {   
+
     /*!
-      \class QueryLayerRenderer
+      \class RendererFactory
 
-      \brief It renders the objects associated to a query layer.
+      \brief This is the abstract factory for layer renderers.
 
-      \sa AbstractLayer, AbstractRenderer, CoverageStyleRenderer, FeatureTypeStyleRenderer, DataSetLayerRenderer, Canvas, te::se::Style
+      \sa AbstractRenderer, DataSetLayerRendererFactory, FeatureTypeStyleRendererFactory, CoverageStyleRendererFactory
     */
-    class TEMAPEXPORT QueryLayerRenderer : public AbstractRenderer
+    class TEMAPEXPORT RendererFactory : public te::common::AbstractFactory<AbstractRenderer, std::string>
     {
       public:
 
-        /*! Constructor */
-        QueryLayerRenderer();
+        /*!
+          \brief Virtual destructor.
 
-        /*! \brief Destructor. */
-        ~QueryLayerRenderer();
+          \note It will automatically unregister the factory from the dictionary.
+        */
+        virtual ~RendererFactory();
 
-        void draw(AbstractLayer* layer, Canvas* canvas, const te::gm::Envelope& bbox, int srid);
+      protected:
+
+        /*!
+          \brief It creates the factory.
+
+          \param factoryKey The key that identifies the factory.
+        */
+        RendererFactory(const std::string& factoryKey);
     };
 
   } // end namespace map
 }   // end namespace te
 
-#endif  // __TERRALIB_MAPTOOLS_INTERNAL_QUERYLAYERRENDERER_H
+#endif  // __TERRALIB_MAPTOOLS_INTERNAL_RENDERERFACTORY_H
 

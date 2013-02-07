@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/maptools/QueryLayer.h
+  \file terralib/maptools/DataSetLayer.h
 
-  \brief A layer resulting from a query.
+  \brief A layer with reference to a dataset.
 */
 
-#ifndef __TERRALIB_MAPTOOLS_INTERNAL_QUERYLAYER_H
-#define __TERRALIB_MAPTOOLS_INTERNAL_QUERYLAYER_H
+#ifndef __TERRALIB_MAPTOOLS_INTERNAL_DATASETLAYER_H
+#define __TERRALIB_MAPTOOLS_INTERNAL_DATASETLAYER_H
 
 // TerraLib
 #include "AbstractLayer.h"
@@ -32,23 +32,20 @@
 namespace te
 {
 // Forward declaration
-  namespace da { class Select; }
-
   namespace se { class Style; }
 
   namespace map
   {
     /*!
-      \class QueryLayer
+      \class DataSetLayer
 
-      \brief A layer resulting from a query.
+      \brief A layer with reference to a dataset.
 
-      A QueryLayer is a reference to a dataset that will result from
-      a query to a data source.
+      A DataSetLayer is a reference to a dataset with/without geometric attributes.
 
-      \sa AbstractLayer, DataSetLayer, RasterLayer, FolderLayer
+      \sa AbstractLayer, QueryLayer, RasterLayer, FolderLayer
     */
-    class TEMAPEXPORT QueryLayer : public AbstractLayer
+    class TEMAPEXPORT DataSetLayer : public AbstractLayer
     {
       public:
 
@@ -57,7 +54,7 @@ namespace te
 
           \param parent The parent layer (NULL if it has no parent).
         */
-        QueryLayer(AbstractLayer* parent = 0);
+        DataSetLayer(AbstractLayer* parent = 0);
 
         /*!
           \brief It initializes a new layer.
@@ -65,28 +62,28 @@ namespace te
           \param id     The layer id.
           \param parent The parent layer (NULL if it has no parent).
         */
-        QueryLayer(const std::string& id, AbstractLayer* parent = 0);
+        DataSetLayer(const std::string& id, AbstractLayer* parent = 0);
 
         /*!
-          \brief It initializes a new layer.
+          \brief It initializes a new Layer.
 
           \param id     The layer id.
           \param title  The title is a brief description about the layer.
           \param parent The parent layer (NULL if it has no parent).
         */
-        QueryLayer(const std::string& id, const std::string& title, AbstractLayer* parent = 0);
+        DataSetLayer(const std::string& id, const std::string& title, AbstractLayer* parent = 0);
 
         /*! \brief Destructor. */
-        ~QueryLayer();
+        ~DataSetLayer();
 
         bool isValid() const;
 
         void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
 
         /*!
-          \brief It returns the layer type: QUERY_LAYER.
+          \brief It returns the layer type: DATASET_LAYER.
 
-          \return The layer type: QUERY_LAYER.
+          \return The layer type: DATASET_LAYER.
         */
         const std::string& getType() const;
 
@@ -95,14 +92,14 @@ namespace te
 
           \return
         */
-        te::da::Select* getQuery() const;
+        const std::string& getDataSetName() const;
 
         /*!
           \brief
 
           \param name
         */
-        void setQuery(te::da::Select* s);
+        void setDataSetName(const std::string& name);
 
         /*!
           \brief
@@ -148,18 +145,18 @@ namespace te
 
       private:
 
-        te::da::Select* m_query;        //!< The dataset name where we will retrieve the layer objects.
-        std::string m_datasourceId;     //!< The DataSource associated to this Layer2.
-        std::string m_rendererType;     //!< A pointer to the internal renderer used to paint this layer.
-        te::se::Style* m_style;         //!< The style to be applied to the geographic objects in the layer.
+        std::string m_datasetName;    //!< The dataset name where we will retrieve the layer objects.
+        std::string m_datasourceId;   //!< The DataSource associated to this Layer2.
+        std::string m_rendererType;   //!< A pointer to the internal renderer used to paint this layer.
+        te::se::Style* m_style;       //!< The style to be applied to the geographic objects in the layer.
 
         static const std::string sm_type;  //!< A static data member used in the implementation of getType method.
     };
 
-    typedef boost::intrusive_ptr<QueryLayer> QueryLayerPtr;
+    typedef boost::intrusive_ptr<DataSetLayer> DataSetLayerPtr;
 
   } // end namespace map
 }   // end namespace te
 
-#endif  // __TERRALIB_MAPTOOLS_INTERNAL_QUERYLAYER_H
+#endif  // __TERRALIB_MAPTOOLS_INTERNAL_DATASETLAYER_H
 

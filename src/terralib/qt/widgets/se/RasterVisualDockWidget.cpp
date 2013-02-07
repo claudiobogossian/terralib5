@@ -24,17 +24,20 @@
 */
 
 // TerraLib
+#include "../../../maptools/DataSetLayer.h"
+#include "../../../maptools/Utils.h"
+#include "../../../raster/RasterProperty.h"
+#include "../../../se/CoverageStyle.h"
+#include "../../../se/RasterSymbolizer.h"
+#include "../../../se/Rule.h"
 #include "RasterVisualDockWidget.h"
 #include "RasterVisualWidget.h"
 
-#include "../../../maptools/RasterLayer.h"
-#include "../../../raster/RasterProperty.h"
-
 // Qt
-#include <QtGui/QLayout> 
+#include <QtGui/QLayout>
 
 // STL
-
+#include <cassert>
 
 te::qt::widgets::RasterVisualDockWidget::RasterVisualDockWidget(const QString & title, QWidget * parent, Qt::WindowFlags flags)
   : QDockWidget(title, parent, flags), m_layer(0)
@@ -59,30 +62,33 @@ te::qt::widgets::RasterVisualDockWidget::~RasterVisualDockWidget()
 
 }
 
-void te::qt::widgets::RasterVisualDockWidget::setRasterLayer(te::map::RasterLayer* rl)
+void te::qt::widgets::RasterVisualDockWidget::setLayer(te::map::DataSetLayer* layer)
 {
-  m_layer = rl;
+  m_layer = layer;
 
-  if(rl->getRasterSymbolizer())
-  {
-    te::rst::RasterProperty* prop = 0;
-  
-    prop = (te::rst::RasterProperty*)m_layer->getRasterProperty()->clone();
+  te::se::CoverageStyle* style = dynamic_cast<te::se::CoverageStyle*>(m_layer->getStyle());
+  assert(style);
+  assert(style->getNRules() > 0);
 
-    te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)m_layer->getRasterSymbolizer()->clone();
+  const te::se::Rule* rule = style->getRule(0);
+  assert(!rule->getSymbolizers().empty());
 
-    disconnect(m_visualWidget, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+  te::se::RasterSymbolizer* rs = dynamic_cast<te::se::RasterSymbolizer*>(rule->getSymbolizers()[0]);
+  assert(rs);
 
-    m_visualWidget->setBandProperty(prop->getBandProperties());
+  te::rst::RasterProperty* prop = te::map::GetRasterProperty(m_layer);
 
-    m_visualWidget->setRasterSymbolizer(rs);
+  disconnect(m_visualWidget, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
 
-    connect(m_visualWidget, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+  m_visualWidget->setBandProperty(prop->getBandProperties());
 
-    delete rs;
+  m_visualWidget->setRasterSymbolizer(static_cast<te::se::RasterSymbolizer*>(rs->clone()));
 
-    delete prop;
-  }
+  connect(m_visualWidget, SIGNAL(symbolizerChanged()), this, SLOT(onSymbolizerUpdated()));
+
+  delete rs;
+
+  delete prop;
 }
 
 void te::qt::widgets::RasterVisualDockWidget::updateUi()

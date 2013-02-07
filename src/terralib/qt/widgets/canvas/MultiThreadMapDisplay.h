@@ -75,14 +75,15 @@ namespace te
 
           //@}
 
-          /** @name MapDisplay Methods
-           *  Methods to configure the MapDisplay.
+          /** @name AbstractMapDisplay Methods
            */
           //@{
 
-          virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order);
+          void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers);
 
-          virtual void setExtent(const te::gm::Envelope& e);
+          void setExtent(te::gm::Envelope& e, bool doRefresh = true);
+
+          void refresh();
 
           //@}
 
@@ -96,15 +97,6 @@ namespace te
             \note This method will return a null point if the transform can not be done.
           */
           virtual QPointF transform(const QPointF& p);
-
-        protected:
-
-          /*!
-            \brief It displays the all layers.
-
-            \note It may need to retrieve data in order top display the layers.
-          */
-          virtual void draw();
 
         private:
 

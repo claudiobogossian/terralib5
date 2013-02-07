@@ -94,12 +94,20 @@ namespace te
 
           //@}
 
-          /** @name MapDisplay Methods
-           *  Methods to configure the MapDisplay.
-           */
+          /** @name AbstractMapDisplay Methods */
           //@{
 
-          virtual void setExtent(const te::gm::Envelope& e);
+          virtual void setExtent(te::gm::Envelope& e, bool doRefresh = true);
+
+          virtual void refresh();
+
+          unsigned int getWidth() const;
+
+          unsigned int getHeight() const;
+
+          double getWidthMM() const;
+
+          double getHeightMM() const;
 
           //@}
 
@@ -148,13 +156,6 @@ namespace te
           virtual QPointF transform(const QPointF& p);
 
         protected:
-
-          /*!
-            \brief It displays the all layers.
-
-            \note It may need to retrieve data in order top display the layers.
-          */
-          virtual void draw();
 
           /*!
             \brief It displays the given layer.

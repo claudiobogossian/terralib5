@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../maptools/Layer.h"
+//#include "../../../maptools/Layer.h" // * Under revision *
 #include "../../../maptools/LegendItem.h"
 #include "LayerItem.h"
 #include "LegendItem.h"
@@ -51,12 +51,13 @@ te::qt::widgets::LayerItem::LayerItem(const te::map::AbstractLayerPtr& refLayer,
     ++it;
   }
 
-  if(refLayer->hasLegend() == true)
+  // * Under revision *
+  /*if(refLayer->hasLegend() == true)
   {
     std::vector<te::map::LegendItem*> legend = refLayer->getLegend();
     for(std::size_t i = 0; i < legend.size(); ++i)
       new te::qt::widgets::LegendItem(legend[i], this);
-  }
+  }*/
 }
 
 te::qt::widgets::LayerItem::~LayerItem()
@@ -113,7 +114,8 @@ void te::qt::widgets::LayerItem::removeLegend()
     delete item;
   }
     
-  m_refLayer->removeLegend();
+  // * Under revision *
+  //m_refLayer->removeLegend();
 }
 
 void te::qt::widgets::LayerItem::insertLegend(const std::vector<te::map::LegendItem*>& legend)
@@ -123,5 +125,6 @@ void te::qt::widgets::LayerItem::insertLegend(const std::vector<te::map::LegendI
   for(std::size_t i = 0; i < legend.size(); ++i)
     new te::qt::widgets::LegendItem(legend[i], this);
 
-  m_refLayer->insertLegend(legend);
+  // * Under revision *
+  //m_refLayer->insertLegend(legend);
 }

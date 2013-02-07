@@ -30,6 +30,7 @@
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
 #include "../../../geometry/Point.h"
+#include "../../../maptools/Utils.h"
 #include "../../../raster/Grid.h"
 #include "../../../rp/MixtureModel.h"
 #include "../../../rp/MixtureModelLinearStrategy.h"
@@ -79,10 +80,10 @@ bool te::qt::widgets::MixtureModelDialogMDEventFilter::eventFilter(QObject* watc
   return false;
 }
 
-te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::RasterLayer* inputRasterLayerPtr, const std::string& outpuRasterDSType,
+te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::DataSetLayerPtr& inputLayerPtr, const std::string& outpuRasterDSType,
                                                         const std::map<std::string, std::string>& outpuRasterInfo, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_inputRasterPtr(inputRasterLayerPtr->getRaster()),
+    m_inputRasterPtr(te::map::GetRaster(inputLayerPtr.get())),
     m_outpuRasterDSType(outpuRasterDSType),
     m_outpuRasterInfo(outpuRasterInfo),
     m_maxComponentsInserted(0)
@@ -97,11 +98,12 @@ te::qt::widgets::MixtureModelDialog::MixtureModelDialog(const te::map::RasterLay
   m_mapDisplay->setMouseTracking(true);
   rasterGridLayout->addWidget(m_mapDisplay);
   m_mapDisplay->setResizePolicy(te::qt::widgets::MapDisplay::Center); // ???
-  std::list<te::map::AbstractLayer*> layerList;
-  layerList.push_back((te::map::RasterLayer*) inputRasterLayerPtr);
+  std::list<te::map::AbstractLayerPtr> layerList;
+  layerList.push_back(inputLayerPtr);
   m_mapDisplay->setLayerList(layerList);
   m_mapDisplay->setSRID(m_inputRasterPtr->getSRID());
-  m_mapDisplay->setExtent(*(m_inputRasterPtr->getExtent()));
+  te::gm::Envelope displayExtent(*(m_inputRasterPtr->getExtent()));
+  m_mapDisplay->setExtent(displayExtent);
 
 // image frame events
   m_panClickEvent = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
@@ -333,13 +335,13 @@ void te::qt::widgets::MixtureModelDialog::on_removeButton_clicked()
 void te::qt::widgets::MixtureModelDialog::on_mapDisplay_extentChanged()
 {
 // get canvas to draw the "x" on selected points
-  const te::gm::Envelope* mapDisplayExtent = m_mapDisplay->getExtent();
+  const te::gm::Envelope& mapDisplayExtent = m_mapDisplay->getExtent();
 
   m_mapDisplay->getDraftPixmap()->fill(QColor(0, 0, 0, 0));
 
   te::qt::widgets::Canvas canvasInstance(m_mapDisplay->getDraftPixmap());
-  canvasInstance.setWindow(mapDisplayExtent->m_llx, mapDisplayExtent->m_lly,
-                           mapDisplayExtent->m_urx, mapDisplayExtent->m_ury);
+  canvasInstance.setWindow(mapDisplayExtent.m_llx, mapDisplayExtent.m_lly,
+                           mapDisplayExtent.m_urx, mapDisplayExtent.m_ury);
 
   canvasInstance.setPointPattern(m_selectedPointPattern, PATTERN_W, PATTERN_W);
 
@@ -393,7 +395,7 @@ void te::qt::widgets::MixtureModelDialog::updateComponentsGrid()
   }
 
 // clear map display to redraw "x" points
-  te::gm::Envelope auxEnvelope(*m_mapDisplay->getExtent());
+  te::gm::Envelope auxEnvelope(m_mapDisplay->getExtent());
   m_mapDisplay->setExtent(auxEnvelope);
 
 // add lines

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,26 +18,30 @@
  */
 
 /*!
-  \file terralib/maptools/QueryLayerRenderer.cpp
+  \file terralib/maptools/QueryLayerRendererFactory.cpp
 
-  \brief It renders the objects associated to a query layer.
+  \brief This is the concrete factory for renderers of a QueryLayer.
 */
 
 // TerraLib
 #include "QueryLayerRenderer.h"
+#include "QueryLayerRendererFactory.h"
 
-te::map::QueryLayerRenderer::QueryLayerRenderer()
+te::map::QueryLayerRendererFactory te::map::QueryLayerRendererFactory::sm_factory;
+
+te::map::QueryLayerRendererFactory::~QueryLayerRendererFactory()
 {
 }
 
-te::map::QueryLayerRenderer::~QueryLayerRenderer()
+
+te::map::AbstractRenderer* te::map::QueryLayerRendererFactory::build()
+{
+  return new QueryLayerRenderer;
+}
+
+te::map::QueryLayerRendererFactory::QueryLayerRendererFactory()
+  : RendererFactory("QUERY_LAYER_RENDERER")
 {
 }
 
-void te::map::QueryLayerRenderer::draw(AbstractLayer* layer,
-                                       Canvas* canvas,
-                                       const te::gm::Envelope& bbox,
-                                       int srid)
-{
-}
 
