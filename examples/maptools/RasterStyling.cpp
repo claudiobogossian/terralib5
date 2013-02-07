@@ -12,6 +12,7 @@
 // STL
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <string>
 
@@ -22,21 +23,18 @@
 
 bool generatePNG = true;
 
-te::map::RasterLayer* CreateRasterLayer(const std::string& path)
+te::map::DataSetLayer* CreateRasterLayer(const std::string& path)
 {
   // Connection string to a shape file
   std::map<std::string, std::string> connInfo;
   connInfo["URI"] = path;
 
   // Creates and connects data source
-  te::da::DataSource* dataSource = te::da::DataSourceFactory::make("GDAL");
-  if(dataSource == 0)
-    throw te::common::Exception("Sorry, I can not create the GDAL driver!");
-  dataSource->open(connInfo);
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "GDAL", connInfo);
 
   // Transactor and catalog
-  te::da::DataSourceTransactor* transactor = dataSource->getTransactor();
-  te::da::DataSourceCatalogLoader* catalogLoader = transactor->getCatalogLoader();
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
+  std::auto_ptr<te::da::DataSourceCatalogLoader> catalogLoader(transactor->getCatalogLoader());
   catalogLoader->loadCatalog();
 
   // Gets the number of data set types that belongs to the data source
@@ -46,48 +44,40 @@ te::map::RasterLayer* CreateRasterLayer(const std::string& path)
 
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
-  te::da::DataSet* ds = transactor->getDataSet(dataSetName);
-  te::rst::Raster* raster = ds->getRaster();
+  std::auto_ptr<te::da::DataSet> ds(transactor->getDataSet(dataSetName));
+  std::auto_ptr<te::rst::Raster> raster(ds->getRaster());
 
   // Box
-  te::gm::Envelope* extent = raster->getExtent();
+  te::gm::Envelope extent(*raster->getExtent());
 
-  // Creates a Layer
-  te::map::RasterLayer* layer = new te::map::RasterLayer(te::common::Convert2String(0), dataSetName);
-  layer->setDataSource(dataSource);
+  // Creates a DataSetLayer
+  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(G_ID++), dataSetName);
+  layer->setDataSourceId(dataSource->getId());
   layer->setDataSetName(dataSetName);
   layer->setExtent(extent);
-
-  // Creates a Layer Renderer
-  te::map::RasterLayerRenderer* r = new te::map::RasterLayerRenderer();
-  layer->setRenderer(r);
-
-  delete catalogLoader;
-  delete transactor;
+  layer->setRendererType("DATASET_LAYER_RENDERER");
 
   return layer;
 }
 
- te::qt::widgets::Canvas* CreateCanvas(te::map::RasterLayer* layer, te::gm::Envelope* e, int srid)
+ te::qt::widgets::Canvas* CreateCanvas(te::map::DataSetLayer* layer, te::gm::Envelope* e, int srid)
 {
-  te::gm::Envelope* extent = new te::gm::Envelope(*layer->getExtent());
-  
-  if(srid != layer->getRaster()->getSRID())
-  {
-    extent->transform(layer->getRaster()->getSRID(), srid);
-  }
+  te::gm::Envelope extent(layer->getExtent());
 
-  double llx = extent->m_llx;
-  double lly = extent->m_lly;
-  double urx = extent->m_urx;
-  double ury = extent->m_ury;
+  std::auto_ptr<te::rst::Raster> raster(te::map::GetRaster(layer));
+  
+  if(srid != raster->getSRID())
+    extent.transform(raster->getSRID(), srid);
+
+  double llx = extent.m_llx;
+  double lly = extent.m_lly;
+  double urx = extent.m_urx;
+  double ury = extent.m_ury;
 
   te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(800, 600);
   canvas->calcAspectRatio(llx, lly, urx, ury);
   canvas->setWindow(llx, lly, urx, ury);
   canvas->setBackgroundColor(te::color::RGBAColor(255, 255, 255, TE_OPAQUE));
-
-  delete extent;
 
   return canvas;
 }
@@ -119,7 +109,7 @@ void paint(te::qt::widgets::Canvas* c, bool generatePNG, std::string fileName)
   c->clear();
 }
 
-void RGB_012_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void RGB_012_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -161,7 +151,7 @@ void RGB_012_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::
   paint(c, generatePNG, "RGB_012_Style");
  }
 
-void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -203,7 +193,7 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, t
   paint(c, generatePNG, "RGB_012_Transp_Style");
  }
 
- void RGB_102_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+ void RGB_102_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -245,7 +235,7 @@ void RGB_012_Transp_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, t
   paint(c, generatePNG, "RGB_102_Style");
  }
 
-void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -291,7 +281,7 @@ void RGB_012_G_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* 
   paint(c, generatePNG, "RGB_012_G_Contrast_Style");
  }
 
-void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -345,7 +335,7 @@ void RGB_012_RGB_Contrast_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer
   paint(c, generatePNG, "RGB_012_RGB_Contrast_Style");
  }
 
-void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -377,7 +367,7 @@ void MONO_0_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::E
   paint(c, generatePNG, "MONO_0_Style");
  }
 
-void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -409,7 +399,7 @@ void MONO_2_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::E
   paint(c, generatePNG, "MONO_2_Style");
  }
 
-void RED_Style(te::qt::widgets::Canvas* c, te::map::RasterLayer* l, te::gm::Envelope* e, int srid)
+void RED_Style(te::qt::widgets::Canvas* c, te::map::DataSetLayer* l, te::gm::Envelope* e, int srid)
  {
   //create default raster symbolizer
   te::se::RasterSymbolizer* rs = new te::se::RasterSymbolizer();
@@ -450,41 +440,41 @@ void DrawRasterStyledLayers()
   try
   {
     // Creates a layer of raster
-    te::map::RasterLayer* rasterLayer = CreateRasterLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif");
+    std::auto_ptr<te::map::DataSetLayer> rasterLayer(CreateRasterLayer(""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif"));
 
     // Get the box to be painted
-    te::gm::Envelope* extent = new te::gm::Envelope(*rasterLayer->getExtent());
+    te::gm::Envelope* extent = new te::gm::Envelope(rasterLayer->getExtent());
 
     // Get the projection used to be paint the raster
-    int srid = rasterLayer->getRaster()->getSRID();
+    std::auto_ptr<te::rst::Raster> raster(te::map::GetRaster(rasterLayer.get()));
+    int srid = raster->getSRID();
     //int srid = 4618; // LL SAD69
 
     // Creates a canvas
-    te::qt::widgets::Canvas* canvas = CreateCanvas(rasterLayer, extent, srid);
+    te::qt::widgets::Canvas* canvas = CreateCanvas(rasterLayer.get(), extent, srid);
 
     // RGB 012 Style
-    RGB_012_Style(canvas, rasterLayer, extent, srid);
+    RGB_012_Style(canvas, rasterLayer.get(), extent, srid);
 
     // RGB 012 with transparency Style
-    RGB_012_Transp_Style(canvas, rasterLayer, extent, srid);
+    RGB_012_Transp_Style(canvas, rasterLayer.get(), extent, srid);
 
     // RGB 012 Style
-    RGB_102_Style(canvas, rasterLayer, extent, srid);
+    RGB_102_Style(canvas, rasterLayer.get(), extent, srid);
 
     // RGB 012 with contrast in green band Style
-    RGB_012_G_Contrast_Style(canvas, rasterLayer, extent, srid);
+    RGB_012_G_Contrast_Style(canvas, rasterLayer.get(), extent, srid);
 
     // RGB 012 with contrast in RGB bands Style
-    RGB_012_RGB_Contrast_Style(canvas, rasterLayer, extent, srid);
+    RGB_012_RGB_Contrast_Style(canvas, rasterLayer.get(), extent, srid);
 
     // Mono band 0 Style
-    MONO_0_Style(canvas, rasterLayer, extent, srid);
+    MONO_0_Style(canvas, rasterLayer.get(), extent, srid);
 
     // Mono band 2 Style
-    MONO_2_Style(canvas, rasterLayer, extent, srid);
+    MONO_2_Style(canvas, rasterLayer.get(), extent, srid);
 
     delete extent;
-    delete rasterLayer;
     delete canvas;
   }
   catch(const std::exception& e)
