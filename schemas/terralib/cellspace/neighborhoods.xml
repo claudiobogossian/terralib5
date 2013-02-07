@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <NeighborhoodList xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-                   xmlns:te_common="http://www.terralib.org/common"
-                   xmlns:te_cs="http://www.terralib.org/cellspace"
-                   xmlns:te_da="http://www.terralib.org/dataaccess"
-                   xmlns:te_gm="http://www.terralib.org/geometry"
-                   xmlns:te_rst="http://www.terralib.org/raster"
-                   xmlns="http://www.terralib.org/cellspace"
-                   xsd:schemaLocation="http://www.terralib.org/cellspace cellspace.xsd"
+                   xmlns:te_common="http://www.terralib.org/schemas/common"
+                   xmlns:te_cs="http://www.terralib.org/schemas/cellspace"
+                   xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
+                   xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+                   xmlns:te_rst="http://www.terralib.org/schemas/raster"
+                   xmlns="http://www.terralib.org/schemas/cellspace"
+                   xsd:schemaLocation="http://www.terralib.org/schemas/cellspace cellspace.xsd"
                    version="5.0.0"
                    release="2011-01-01">
 

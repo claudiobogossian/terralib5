@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
-            xmlns:te_dt="http://www.terralib.org/datatype"
+<xsd:schema xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
+            xmlns:te_dt="http://www.terralib.org/schemas/datatype"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/dataaccess"
+            targetNamespace="http://www.terralib.org/schemas/dataaccess"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -12,7 +12,7 @@
     <xsd:documentation>A simple schema for the dataset part of data access module</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd" />
+  <xsd:import namespace="http://www.terralib.org/schemas/datatype" schemaLocation="../datatype/datatype.xsd" />
 
   <xsd:element name="DataSetType" type="te_da:DataSetTypeType" substitutionGroup="te_dt:CompositeProperty" />
 
