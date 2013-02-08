@@ -43,4 +43,11 @@ void Classifier();
 /* \brief Raster decomposition using Mixture Model module. */
 void MixtureModel();
 
+/* \brief Mosaic of images. */
+void Mosaic();
+
+/* \brief Mosaic of images. */
+void Register();
+
+
 #endif
