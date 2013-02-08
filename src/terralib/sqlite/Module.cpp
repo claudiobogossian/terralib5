@@ -91,6 +91,12 @@ void te::sqlite::Module::startup()
 
   boost::filesystem::path spatialiteCapabilitiesFile = driverpath / "spatialite-capabilities.xml";
   boost::filesystem::path sqliteCapabilitiesFile = driverpath / "sqlite-capabilities.xml";
+  
+  te::sqlite::Globals::sm_spatialiteCapabilities = new te::da::DataSourceCapabilities;
+  te::sqlite::Globals::sm_sqliteCapabilities = new te::da::DataSourceCapabilities;
+
+  te::sqlite::Globals::sm_spatialiteDialect = new te::da::SQLDialect();
+  te::sqlite::Globals::sm_sqliteDialect = new te::da::SQLDialect();
 
   te::serialize::Read(spatialiteCapabilitiesFile.string(), *te::sqlite::Globals::sm_spatialiteCapabilities, *te::sqlite::Globals::sm_spatialiteDialect);
   te::serialize::Read(sqliteCapabilitiesFile.string(), *te::sqlite::Globals::sm_sqliteCapabilities, *te::sqlite::Globals::sm_sqliteDialect);
