@@ -33,7 +33,7 @@
 #include <terralib/se.h>
 #include <terralib/geometry.h>
 #include <terralib/common/STLUtils.h>
-#include <terralib/maptools/RasterLayer.h>
+//#include <terralib/maptools/RasterLayer.h> // * Under revision *
 #include <terralib/maptools/RasterTransform.h>
 #include <terralib/maptools/RasterTransformConfigurer.h>
 #include <terralib/maptools/Utils.h>
@@ -47,13 +47,13 @@
 // STL
 #include <cassert>
 
-ReadPixelTool::ReadPixelTool(te::qt::widgets::MapDisplay* display, te::map::RasterLayer* layer, QObject* parent) 
+ReadPixelTool::ReadPixelTool(te::qt::widgets::MapDisplay* display, /*te::map::RasterLayer* layer,*/ QObject* parent) 
   : te::qt::widgets::AbstractTool(display, parent)
 {
-  assert(layer);
-
-  m_layer = dynamic_cast<te::map::RasterLayer*>(layer);
-  assert(m_layer);
+  // * Under revision *
+  //assert(layer);
+  //m_layer = dynamic_cast<te::map::RasterLayer*>(layer);
+  //assert(m_layer);
 }
 
 ReadPixelTool::~ReadPixelTool()
@@ -68,9 +68,13 @@ bool ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
   // Converts clicked point to world coordinates
   QPointF qpoint = m_display->transform(e->posF());
 
-  te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)m_layer->getRasterSymbolizer()->clone();
-    
-  te::rst::Raster* raster = m_layer->getRaster();
+  // * Under revision *
+  //te::se::RasterSymbolizer* rs = (te::se::RasterSymbolizer*)m_layer->getRasterSymbolizer()->clone();
+  te::se::RasterSymbolizer* rs = 0;
+
+  // * Under revision *
+  //te::rst::Raster* raster = m_layer->getRaster();
+  te::rst::Raster* raster = 0;
 
   //create the raster transform
   te::map::RasterTransform rt(raster, 0);

@@ -11,6 +11,7 @@
 // STL
 #include <cassert>
 #include <iostream>
+#include <memory>
 #include <vector>
 
 // Qt
@@ -260,21 +261,18 @@ te::se::Style* MarkPointStyle(const std::string& markName)
 }
 //@}
 
-te::map::Layer* CreateLayer(const std::string& path)
+te::map::DataSetLayer* CreateDataSetLayer(const std::string& path)
 {
   // Connection string to a shape file
   std::map<std::string, std::string> connInfo;
   connInfo["path"] = path;
 
   // Creates and connects data source
-  te::da::DataSource* dataSource = te::da::DataSourceFactory::make("OGR");
-  if(dataSource == 0)
-    throw te::common::Exception("Sorry, I can not create the OGR driver!");
-  dataSource->open(connInfo);
+  te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
 
   // Transactor and catalog
-  te::da::DataSourceTransactor* transactor = dataSource->getTransactor();
-  te::da::DataSourceCatalogLoader* catalogLoader = transactor->getCatalogLoader();
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
+  std::auto_ptr<te::da::DataSourceCatalogLoader> catalogLoader(transactor->getCatalogLoader());
   catalogLoader->loadCatalog();
 
   // Gets the number of data set types that belongs to the data source
@@ -284,42 +282,36 @@ te::map::Layer* CreateLayer(const std::string& path)
 
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
-  te::da::DataSetType* dt = catalogLoader->getDataSetType(dataSetName);
+  std::auto_ptr<te::da::DataSetType> dt(catalogLoader->getDataSetType(dataSetName));
   assert(dt->hasGeom());
 
   // Box
-  te::gm::Envelope* extent = catalogLoader->getExtent(dt->getDefaultGeomProperty());
+  std::auto_ptr<te::gm::Envelope> extent(catalogLoader->getExtent(dt->getDefaultGeomProperty()));
 
-  // Creates a Layer
-  te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(0), dataSetName);
-  layer->setDataSource(dataSource);
+  // Creates a DataSetLayer
+  te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(0), dataSetName);
+  layer->setDataSourceId(dataSource->getId());
   layer->setDataSetName(dataSetName);
-  layer->setExtent(extent);
-
-  // Creates a Layer Renderer
-  te::map::LayerRenderer* r = new te::map::LayerRenderer();
-  layer->setRenderer(r);
-
-  delete catalogLoader;
-  delete transactor;
+  layer->setExtent(*extent);
+  layer->setRendererType("DATASET_LAYER_RENDERER");
 
   return layer;
 }
 
-void Draw(te::map::Layer* layer)
+void Draw(te::map::DataSetLayer* layer)
 {
-  const te::gm::Envelope* extent = layer->getExtent();
-  double llx = extent->m_llx;
-  double lly = extent->m_lly;
-  double urx = extent->m_urx;
-  double ury = extent->m_ury;
+  const te::gm::Envelope& extent = layer->getExtent();
+  double llx = extent.m_llx;
+  double lly = extent.m_lly;
+  double urx = extent.m_urx;
+  double ury = extent.m_ury;
 
-  te::qt::widgets::Canvas* canvas = new te::qt::widgets::Canvas(512, 512);
+  std::auto_ptr<te::qt::widgets::Canvas> canvas(new te::qt::widgets::Canvas(512, 512));
   canvas->calcAspectRatio(llx, lly, urx, ury);
   canvas->setWindow(llx, lly, urx, ury);
   canvas->setBackgroundColor(te::color::RGBAColor(255, 255, 255, TE_OPAQUE));
 
-  layer->draw(canvas, *extent, 4326);
+  layer->draw(canvas.get(), extent, 4326);
 
   QPixmap* pixmap = canvas->getPixmap();
 
@@ -330,8 +322,6 @@ void Draw(te::map::Layer* layer)
   preview.setPixmap(*pixmap);
   
   dialog.exec();
-
-  delete canvas;
 }
 
 void DrawStyledLayers()
@@ -347,7 +337,7 @@ void DrawStyledLayers()
     te::map::AbstractMarkFactory::SupportedMarks(marks);
 
     // Creates a layer of polygons
-    te::map::Layer* polygons = CreateLayer("./data/shp/style/polygons.shp");
+    te::map::DataSetLayer* polygons = CreateDataSetLayer("./data/shp/style/polygons.shp");
 
     // Polygon Styles
     std::vector<te::se::Style*> polygonStyles;
@@ -367,7 +357,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of lines
-    te::map::Layer* lines = CreateLayer("./data/shp/style/lines.shp");
+    te::map::DataSetLayer* lines = CreateDataSetLayer("./data/shp/style/lines.shp");
 
     // Line Styles
     std::vector<te::se::Style*> lineStyles;
@@ -385,7 +375,7 @@ void DrawStyledLayers()
     }
 
     // Creates a layer of points
-    te::map::Layer* points = CreateLayer("./data/shp/style/points.shp");
+    te::map::DataSetLayer* points = CreateDataSetLayer("./data/shp/style/points.shp");
 
     // Point Styles
     std::vector<te::se::Style*> pointStyles;

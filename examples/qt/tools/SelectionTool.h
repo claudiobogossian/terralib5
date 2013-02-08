@@ -42,7 +42,7 @@ namespace te
 
   namespace map
   {
-    class Layer;
+    class DataSetLayer;
   }
 
   namespace qt
@@ -60,7 +60,7 @@ class SelectionTool : public te::qt::widgets::AbstractTool
 
   public:
 
-    SelectionTool(te::qt::widgets::MapDisplay* display, te::map::Layer* layer, QObject* parent = 0);
+    SelectionTool(te::qt::widgets::MapDisplay* display, te::map::DataSetLayer* layer, QObject* parent = 0);
 
     ~SelectionTool();
 
@@ -83,7 +83,7 @@ class SelectionTool : public te::qt::widgets::AbstractTool
 
   private:
 
-    te::map::Layer* m_layer;
+    te::map::DataSetLayer* m_layer;
     std::vector<te::gm::Geometry*> m_geoms;
 };
 

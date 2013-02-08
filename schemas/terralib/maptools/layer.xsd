@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_gm="http://www.terralib.org/geometry"
-            xmlns:te_map="http://www.terralib.org/maptools"
+<xsd:schema xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+            xmlns:te_map="http://www.terralib.org/schemas/maptools"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/maptools"
+            targetNamespace="http://www.terralib.org/schemas/maptools"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -12,7 +12,7 @@
     <xsd:documentation>Layer Schema</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd"/>
 
   <xsd:element name="LayerList" type="te_map:LayerListType" />
 

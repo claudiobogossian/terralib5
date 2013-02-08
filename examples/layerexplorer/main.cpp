@@ -26,7 +26,7 @@
 
 //Qt
 #include <QtGui/QApplication>
-#include <QTableView>
+#include <QtGui/QTableView>
 
 // STL
 #include <ctime>
@@ -67,9 +67,9 @@ int main(int argc, char *argv[])
       for(int k = 1; k <= maxk; ++k)
       {
         std::string kid = jid + "." + te::common::Convert2String(k);
-        title = "Layer "  + kid;
+        title = "DataSet Layer "  + kid;
 
-        te::map::Layer* fk = new te::map::Layer(kid, title, fj);
+        te::map::DataSetLayer* fk = new te::map::DataSetLayer(kid, title, fj);
       }
     }
   }

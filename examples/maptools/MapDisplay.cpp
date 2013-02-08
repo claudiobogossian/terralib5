@@ -10,6 +10,7 @@
 // STL
 #include <iostream>
 #include <list>
+#include <memory>
 
 // Qt
 #include <QtGui/QApplication>
@@ -26,20 +27,17 @@ void MapDisplay()
     connInfo["path"] = "./data/shp" ;
 
     // Creates and connects data source
-    te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-    if(ds == 0)
-      throw te::common::Exception("Sorry, I can not create the OGR driver!");
-    ds->open(connInfo);
-    
-    te::da::DataSourceTransactor* transactor = ds->getTransactor();
-    te::da::DataSourceCatalogLoader* cl = transactor->getCatalogLoader();
+    te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(G_ID++), "OGR", connInfo);
+
+    std::auto_ptr<te::da::DataSourceTransactor> transactor(dataSource->getTransactor());
+    std::auto_ptr<te::da::DataSourceCatalogLoader> cl(transactor->getCatalogLoader());
     cl->loadCatalog();
 
     // Get the number of data set types that belongs to the data source
     boost::ptr_vector<std::string> datasets;
     transactor->getCatalogLoader()->getDataSets(datasets);
 
-    te::qt::widgets::MapDisplay* mapDisplay = new te::qt::widgets::MapDisplay(QSize(700, 500));
+    std::auto_ptr<te::qt::widgets::MapDisplay> mapDisplay(new te::qt::widgets::MapDisplay(QSize(700, 500)));
 
     // MapDisplay box
     te::gm::Envelope env;
@@ -51,7 +49,7 @@ void MapDisplay()
 
     // Layer list
     std::vector<std::string*>::iterator it;
-    std::list<te::map::AbstractLayer*> layerList;
+    std::list<te::map::AbstractLayerPtr> layerList;
     int id = 0;
     for(unsigned int i=0; i<datasets.size(); ++i)
     {
@@ -65,15 +63,12 @@ void MapDisplay()
       delete e;
       
       // Creates a Layer
-      te::map::Layer* layer = new te::map::Layer(te::common::Convert2String(++id), datasets[i]);
-      layer->setDataSource(ds);
+      te::map::DataSetLayer* layer = new te::map::DataSetLayer(te::common::Convert2String(++id), datasets[i]);
+      layer->setDataSourceId(dataSource->getId());
       layer->setDataSetName(datasets[i]);
       layer->setVisibility(te::map::VISIBLE);
       layer->setStyle(styles[dt->getDefaultGeomProperty()->getGeometryType()]);
-
-      // Creates a Layer Renderer
-      te::map::LayerRenderer* r = new te::map::LayerRenderer();
-      layer->setRenderer(r);
+      layer->setRendererType("DATASET_LAYER_RENDERER");
 
       layerList.push_back(layer);
     }
@@ -86,11 +81,7 @@ void MapDisplay()
 
     app.exec();
 
-    delete mapDisplay;
-    te::common::FreeContents(layerList);
-    delete cl;
-    delete transactor;
-    delete ds;
+    layerList.clear();
   }
   catch(const std::exception& e)
   {

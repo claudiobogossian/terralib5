@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
-            xmlns:te_dt="http://www.terralib.org/datatype"
-            xmlns:te_common="http://www.terralib.org/common"
-            xmlns:te_gm="http://www.terralib.org/geometry"
+<xsd:schema xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
+            xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+            xmlns:te_common="http://www.terralib.org/schemas/common"
+            xmlns:te_gm="http://www.terralib.org/schemas/geometry"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/dataaccess"
+            targetNamespace="http://www.terralib.org/schemas/dataaccess"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -15,9 +15,9 @@
     <xsd:documentation>This XML Schema describes the information about data access driver capabilities</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
-  <xsd:import namespace="http://www.terralib.org/datatype" schemaLocation="../datatype/datatype.xsd"/>
-  <xsd:import namespace="http://www.terralib.org/geometry" schemaLocation="../geometry/geometry.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/datatype" schemaLocation="../datatype/datatype.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd"/>
   <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../ogc/xlink/1.0.0/xlinks.xsd"/>
 
   <xsd:element name="DataSourceCapabilities" type="te_da:DataSourceCapabilitiesType">
@@ -130,9 +130,7 @@
       <xsd:element name="Drop" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Alter" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Select" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="SelectInto" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="SupportTransactions" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="SpatialOperators" type="te_da:SpatialOperatorsType" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="SelectInto" type="xsd:boolean" minOccurs="1" maxOccurs="1"/><xsd:element name="SpatialOperators" type="te_da:SpatialOperatorsType" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="LogicalOperators" type="te_da:LogicalOperatorsType" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="ComparsionOperators" type="te_da:ComparsionOperatorsType" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="ArithmeticOperators" type="te_da:ArithmeticOperatorsType" minOccurs="1" maxOccurs="1"/>

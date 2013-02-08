@@ -31,6 +31,7 @@
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Grid.h"
+#include "../raster/Utils.h"
 
 
 #include <boost/shared_ptr.hpp>
@@ -179,23 +180,23 @@ namespace te
         double mappedX = 0;
         double mappedY = 0;        
           
-        transformationPtr->directMap( -0.5, -0.5, mappedX, mappedY );
+        transformationPtr->directMap( 0, 0, mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
         upperRightX = std::max( upperRightX, mappedX );
         upperRightY = std::max( upperRightY, mappedY );        
         
         transformationPtr->directMap( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 0.5, 
-          -0.5, mappedX, mappedY );
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 1.0, 
+          0, mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
         upperRightX = std::max( upperRightX, mappedX );
         upperRightY = std::max( upperRightY, mappedY );
         
         transformationPtr->directMap( 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 0.5, 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 0.5, 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfColumns()) - 1.0, 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 1.0, 
           mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
@@ -203,8 +204,8 @@ namespace te
         upperRightY = std::max( upperRightY, mappedY );
         
         transformationPtr->directMap( 
-          -0.5, 
-          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 0.5, 
+          0, 
+          ((double)m_inputParameters.m_inputRasterPtr->getNumberOfRows()) - 1.0, 
           mappedX, mappedY );
         lowerLeftX = std::min( lowerLeftX, mappedX );
         lowerLeftY = std::min( lowerLeftY, mappedY );
@@ -222,7 +223,7 @@ namespace te
           bandsProperties.push_back( new te::rst::BandProperty(
             *( m_inputParameters.m_inputRasterPtr->getBand(  
             m_inputParameters.m_inputRasterBands[ inputRasterBandsIdx ] )->getProperty() ) ) );  
-          bandsProperties[ inputRasterBandsIdx ]->m_noDataValue = 0;
+          bandsProperties[ inputRasterBandsIdx ]->m_noDataValue = m_inputParameters.m_noDataValue;
         }
         
         te::gm::Envelope* gridMbr = new te::gm::Envelope();
@@ -247,7 +248,6 @@ namespace te
       
       // Rendering the output raster
       
-      const te::rst::Raster& inputRaster = *m_inputParameters.m_inputRasterPtr;
       te::rst::Raster& outputRaster = *outParamsPtr->m_outputRasterPtr;
       const te::rst::Grid& outputGrid = *outputRaster.getGrid();
       te::rst::Interpolator interpInstance( m_inputParameters.m_inputRasterPtr,
@@ -268,6 +268,12 @@ namespace te
       {
         const unsigned int inputBandIdx = m_inputParameters.m_inputRasterBands[ inputRasterBandsIdx ];
         const double inputBandNoDataValue = m_inputParameters.m_inputRasterPtr->getBand( inputBandIdx )->getProperty()->m_noDataValue;
+        te::rst::Band& outputBand = *outputRaster.getBand( inputRasterBandsIdx );
+        
+        double outputBandRangeMin = 0;
+        double outputBandRangeMax = 0;
+        te::rst::GetDataTypeRanges( outputBand.getProperty()->m_type,
+          outputBandRangeMin, outputBandRangeMax );        
         
         for( outRow = 0 ; outRow < nRows ; ++outRow )
         {
@@ -281,11 +287,12 @@ namespace te
             
             if( cValue.real() == inputBandNoDataValue )
             {
-              
+              outputBand.setValue( outCol, outRow, m_inputParameters.m_noDataValue );
             }
             else
             {
-              
+              outputBand.setValue( outCol, outRow, std::max( outputBandRangeMin, 
+                std::min( outputBandRangeMax, cValue.real() ) ) );
             }
           }
         }

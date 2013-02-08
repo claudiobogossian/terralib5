@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<xsd:schema xmlns:te_common="http://www.terralib.org/common"
+<xsd:schema xmlns:te_common="http://www.terralib.org/schemas/common"
             xmlns:xlink="http://www.w3.org/1999/xlink"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/common"
+            targetNamespace="http://www.terralib.org/schemas/common"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">

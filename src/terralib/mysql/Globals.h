@@ -36,7 +36,11 @@
 namespace te
 {
 // Forward declaration
-  namespace da { class SQLDialect; }
+  namespace da
+  { 
+    class DataSourceCapabilities;
+    class SQLDialect;
+  }
 
   namespace mysql
   {
@@ -54,6 +58,7 @@ namespace te
         static const std::string sm_tRasterIdentifier; //!< The MySQL Tiled Raster driver identifier.
         
         static te::da::SQLDialect* sm_queryDialect;    //!< The query dialect supported by MySQL driver.
+        static te::da::DataSourceCapabilities* sm_capabilities;    //!< The query dialect supported by MySQL driver.
     };
 
   } // end namespace mysql

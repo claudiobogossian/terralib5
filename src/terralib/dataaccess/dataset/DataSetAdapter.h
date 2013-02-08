@@ -291,6 +291,39 @@ namespace te
         void adapt(const std::vector<int>& propertyIndexes, te::dt::Property* p, AttributeConverter conv);
 
         /*!
+          \brief This method tells which properties of the handled data set that have been adapted based on the given property.
+
+          \param p A property of the DataSetAdapter.
+
+          \return The properties of the handled data set have been adapted.
+
+          \note  The caller will NOT take the ownership of the returned pointers.
+        */
+        std::vector<const te::dt::Property*> getAdaptedProperties(te::dt::Property* p);
+
+        /*!
+          \brief This method tells which properties of the handled data set that have been adapted based on the given property name.
+
+          \param p A property name of the DataSetAdapter.
+
+          \return The properties of the handled data set have been adapted.
+
+          \note  The caller will NOT take the ownership of the returned pointers.
+        */
+        std::vector<const te::dt::Property*> getAdaptedProperties(const std::string& name);
+
+        /*!
+          \brief This method tells which properties of the handled data set that have been adapted based on the given property index.
+
+          \param p A property index of the DataSetAdapter.
+
+          \return The properties of the handled data set have been adapted.
+
+          \note  The caller will NOT take the ownership of the returned pointers.
+        */
+        std::vector<const te::dt::Property*> getAdaptedProperties(int i);
+
+        /*!
           \brief Static method that creates an adapter to the given data set.
 
           \param dataset The data set that will be adapted.

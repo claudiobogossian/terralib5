@@ -18,40 +18,54 @@
  */
 
 /*!
-  \file QueryLayer.cpp
+  \file terralib/maptools/QueryLayer.cpp
 
-  \brief A QueryLayer is a reference to a set of features with geometric attributes.
- */
+  \brief A layer resulting from a query.
+*/
 
 // TerraLib
-#include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/query/Select.h"
-#include "../geometry/Envelope.h"
-#include "../se/FeatureTypeStyle.h"
 #include "../se/Style.h"
 #include "QueryLayer.h"
-#include "QueryLayerRenderer.h"
 
-const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
+const std::string te::map::QueryLayer::sm_type("QUERY_LAYER");
+
+te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
+  : AbstractLayer(parent),
+    m_query(0),
+    m_style(0)
+{
+}
+
+te::map::QueryLayer::QueryLayer(const std::string& id, AbstractLayer* parent)
+  : AbstractLayer(id, parent),
+    m_query(0),
+    m_style(0)
+{
+}
 
 te::map::QueryLayer::QueryLayer(const std::string& id,
-                                const std::string& title,
-                                AbstractLayer* parent)
-  : te::map::AbstractLayer(id, title, parent),
-    m_srid(-1),
+                                    const std::string& title,
+                                    AbstractLayer* parent)
+  : AbstractLayer(id, title, parent),
     m_query(0),
-    m_ds(0),
-    m_mbr(0),
-    m_style(0),
-    m_renderer(0)
-{}
+    m_style(0)
+{
+}
 
 te::map::QueryLayer::~QueryLayer()
-{  
-  delete m_query;  
-  delete m_mbr;
+{
+  delete m_query;
   delete m_style;
-  delete m_renderer;
+}
+
+bool te::map::QueryLayer::isValid() const
+{
+  return true;
+}
+
+void te::map::QueryLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+{
 }
 
 const std::string& te::map::QueryLayer::getType() const
@@ -59,18 +73,37 @@ const std::string& te::map::QueryLayer::getType() const
   return sm_type;
 }
 
-bool te::map::QueryLayer::isValid() const
+te::da::Select* te::map::QueryLayer::getQuery() const
 {
-  return false;
+  return m_query;
 }
 
-bool te::map::QueryLayer::isQueryable() const
+void te::map::QueryLayer::setQuery(te::da::Select* s)
 {
-  return false;
+  delete m_query;
+
+  m_query = s;
 }
 
-void te::map::QueryLayer::draw(Canvas* /*canvas*/, const te::gm::Envelope& /*bbox*/, int /*srid*/)
-{}
+const std::string& te::map::QueryLayer::getDataSourceId() const
+{
+  return m_datasourceId;
+}
+
+void te::map::QueryLayer::setDataSourceId(const std::string& id)
+{
+  m_datasourceId = id;
+}
+
+const std::string& te::map::QueryLayer::getRendererType() const
+{
+  return m_rendererType;
+}
+
+void te::map::QueryLayer::setRendererType(const std::string& t)
+{
+  m_rendererType = t;
+}
 
 te::se::Style* te::map::QueryLayer::getStyle() const
 {
@@ -80,48 +113,7 @@ te::se::Style* te::map::QueryLayer::getStyle() const
 void te::map::QueryLayer::setStyle(te::se::Style* style)
 {
   delete m_style;
+
   m_style = style;
-}
-
-const te::gm::Envelope* te::map::QueryLayer::getExtent() const
-{
-  return m_mbr;
-}
-
-void te::map::QueryLayer::setExtent(te::gm::Envelope* mbr)
-{
-  delete m_mbr;
-  m_mbr = mbr;
-}
-
-int te::map::QueryLayer::getSRID() const
-{
-  return m_srid;
-}
-
-void te::map::QueryLayer::setSRID(int srid)
-{
-  m_srid = srid;
-}
-
-te::da::Select* te::map::QueryLayer::getQuery() const
-{
-  return m_query;
-}
-
-void te::map::QueryLayer::setQuery(te::da::Select* query)
-{
-  delete m_query;
-  m_query = query;
-}
-
-te::da::DataSource* te::map::QueryLayer::getDataSource() const
-{
-  return m_ds;
-}
-
-void te::map::QueryLayer::setDataSource(te::da::DataSource* ds)
-{
-  m_ds = ds;
 }
 

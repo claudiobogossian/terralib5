@@ -21,6 +21,8 @@ int main()
     Contrast();
     Classifier();
     MixtureModel();
+    Mosaic();
+    Register();
 
     te::plugin::PluginManager::getInstance().unloadAll();
     

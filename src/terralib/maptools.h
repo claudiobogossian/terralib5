@@ -38,15 +38,15 @@
 #include "maptools/Canvas.h"
 #include "maptools/Config.h"
 #include "maptools/DataGridOperation.h"
+#include "maptools/DataSetLayer.h"
+#include "maptools/DataSetLayerRenderer.h"
 #include "maptools/FolderLayer.h"
-#include "maptools/Layer.h"
-#include "maptools/LayerRenderer.h"
 #include "maptools/MapDisplay.h"
 #include "maptools/QueryEncoder.h"
 #include "maptools/QueryLayer.h"
 #include "maptools/QueryLayerRenderer.h"
-#include "maptools/RasterLayer.h"
-#include "maptools/RasterLayerRenderer.h"
+#include "maptools/RendererFactory.h"
+#include "maptools/Utils.h"
 
 namespace te
 {

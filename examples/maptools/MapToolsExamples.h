@@ -42,6 +42,9 @@
 #define TE_EXAMPLE_USE_GDAL 1
 #define TE_EXAMPLE_USE_PGIS 0
 
+// Global Id
+extern unsigned int G_ID;
+
 /*! \brief It loads the data source drivers. */
 void LoadModules();
 

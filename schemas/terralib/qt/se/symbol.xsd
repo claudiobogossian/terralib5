@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_qt_se="http://www.terralib.org/qt/se"
+<xsd:schema xmlns:te_qt_se="http://www.terralib.org/schemas/qt/se"
             xmlns:se="http://www.opengis.net/se"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/qt/se"
+            targetNamespace="http://www.terralib.org/schemas/qt/se"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">

@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MapDisplay.h
+  \file terralib/maptools/MapDisplay.h
 
   \brief The map display controls how a set of layers are displayed.
 */
@@ -44,25 +44,13 @@ namespace te
     {
       public:
 
-        /** @name Initializer Methods
-         *  Methods related to instantiation and destruction.
-         */
-        //@{
-
         /*! \brief It initializes a new MapDisplay. */
         MapDisplay();
 
-         /*! \brief Destructor. */
-        ~MapDisplay();
+        /*! \brief Virtual destructor. */
+        virtual ~MapDisplay();
 
-        //@}
-
-        /** @name MapDisplay Methods
-          *  Methods to configure the MapDisplay.
-          */
-        //@{
-
-        virtual void setLayerList(const std::list<te::map::AbstractLayer*>& order);
+        virtual void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers);
 
         virtual te::map::AlignType getHAlign() const;
 
@@ -70,46 +58,19 @@ namespace te
 
         virtual void setAlign(te::map::AlignType h, te::map::AlignType v);
 
-        virtual const te::gm::Envelope* getExtent() const;
+        virtual const te::gm::Envelope& getExtent() const;
 
-        virtual void setExtent(const te::gm::Envelope& e);
+        virtual void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 
         virtual int getSRID() const;
 
-        virtual void setSRID(const int& srid);
-
-        //@}
-
-      private:
-
-        /** @name Copy Constructor and Assignment Operator
-         *  Copy constructor and assignment operator not allowed.
-         */
-        //@{
-
-        /*!
-          \brief Copy constructor not allowed.
-
-          \param rhs The map display that would be copied.
-        */
-        MapDisplay(const MapDisplay& rhs);
-
-        /*!
-          \brief Assignment operator not allowed.
-
-          \param rhs The map display whose contents would be assigned to this map display .
-
-          \return A reference to this map display.
-        */
-        MapDisplay& operator=(const MapDisplay& rhs);
-
-        //@}
+        virtual void setSRID(const int& srid, bool doRefresh = true);
 
       protected:
 
+        te::gm::Envelope m_extent;                          //!< The display extent.
+        std::list<te::map::AbstractLayerPtr> m_layerList;   //!< The layer list to be displayed.
         int m_srid;                                         //!< The display SRS.
-        te::gm::Envelope* m_extent;                         //!< The display extent.
-        std::list<te::map::AbstractLayer*> m_layerList;     //!< The layer list to be displayed.
         te::map::AlignType m_hAlign;                        //!< The display horizontal align.
         te::map::AlignType m_vAlign;                        //!< The display vertical align.
    };
