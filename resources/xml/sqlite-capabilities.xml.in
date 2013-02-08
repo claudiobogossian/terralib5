@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <DataSourceCapabilities xmlns="http://www.terralib.org/schemas/dataaccess"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
-                        xmlns:te_common="http://www.terralib.org/schemas/common"
-                        xmlns:te_dt="http://www.terralib.org/schemas/datatype"
-                        xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ../../schemas/terralib/dataaccess/capabilities.xsd"
-                        version="5.0.0">
+						xmlns:te_dt="http://www.terralib.org/schemas/datatype"
+						xmlns:te_common="http://www.terralib.org/schemas/common"
+						xmlns:te_gm="http://www.terralib.org/schemas/geometry"
+						xmlns:xlink="http://www.w3.org/1999/xlink"
+						xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+						xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ${TE_SCHEMA_LOCATION}/dataaccess/capabilities.xsd"
+						version="${TE_STRING_VERSION}">
 
 
   <DataTypeCapabilities>
