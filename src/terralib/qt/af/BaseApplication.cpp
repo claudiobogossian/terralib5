@@ -476,6 +476,10 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->setObjectName("File");
   m_fileMenu->setTitle(tr("&File"));
 
+  m_recentProjectsMenu = new QMenu(m_fileMenu);
+  m_recentProjectsMenu->setObjectName("Recent Projects");
+  m_recentProjectsMenu->setTitle(tr("&Recent Projects"));
+
   m_menubar->addAction(m_fileMenu->menuAction());
 
   m_fileMenu->addAction(m_fileNewProject);
@@ -483,6 +487,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProjectAs);
+  m_fileMenu->addSeparator();
+  m_fileMenu->addAction(m_recentProjectsMenu->menuAction());
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addAction(m_filePrintPreview);

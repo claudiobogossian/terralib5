@@ -157,7 +157,9 @@ namespace te
           QAction *m_fileExit;
           QAction *m_filePrint;
           QAction *m_filePrintPreview;
+
           QWidget *m_centralwidget;
+          
           QMenuBar *m_menubar;
           QMenu *m_editMenu;
           QMenu *m_viewMenu;
@@ -168,6 +170,8 @@ namespace te
           QMenu *m_projectAddLayerMenu;
           QMenu *m_layerMenu;
           QMenu *m_fileMenu;
+          QMenu *m_recentProjectsMenu;
+
           QStatusBar *m_statusbar;
           QToolBar *m_fileToolBar;
           QToolBar *m_editToolBar;

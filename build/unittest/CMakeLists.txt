@@ -11,8 +11,6 @@ find_package (terralib 5.0 COMPONENTS annotationtext color common dataaccess dat
   gdal geometry gml maptools memory ogr plugin postgis qt_widgets raster rp srs st stloader 
   symbology xerces xlink xml REQUIRED)
 
-include (${terralib_DIR}/teDepends.cmake)
-  
 find_package (CppUnit REQUIRED)
 
 set (TE_DEFAULT_LOGFILE_DIR "${CMAKE_CURRENT_BINARY_DIR}" CACHE PATH "Path to the folder that contains \"conf/te-log.conf\" file.")
@@ -43,7 +41,7 @@ add_definitions(
   -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}" 
 )
 
-include (${TE_MODULEPATH}/GeneralConfig.cmake)
+include (${TE_MODULE_PATH}/GeneralConfig.cmake)
 
 add_definitions(-DTE_PLUGINS_PATH=\"${TE_BIN_DIR}\")
 
@@ -82,5 +80,5 @@ if(WIN32)
   
   # Release settings
   set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
-  generateRunningBatch(${TE_MODULEPATH}/runme.bat.in runme.bat)
+  generateRunningBatch(${TE_MODULE_PATH}/runme.bat.in runme.bat)
 endif()
