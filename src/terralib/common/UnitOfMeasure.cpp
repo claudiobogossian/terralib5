@@ -24,12 +24,14 @@
 */
 
 // TerraLib
-#include "StringUtils.h"
 #include "UnitOfMeasure.h"
 
 // STL
 #include <cassert>
-#include <sstream> 
+#include <sstream>
+
+// Boost
+#include <boost/algorithm/string/case_conv.hpp>
 
 te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol,
                                          te::common::MeasureType type, const std::string& description)
@@ -37,26 +39,32 @@ te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& nam
     m_symbol(symbol),
     m_type(type),
     m_description(description),
-    m_baseUnitId(id)
+    m_baseUnitId(id),
+    m_a(1.0),
+    m_b(0.0),
+    m_c(0.0),
+    m_d(1.0)
 {
-  m_name = te::common::Convert2UCase(name);
+  m_name = boost::to_upper_copy(name);
 }
 
-te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol, te::common::MeasureType type,
-                                         unsigned int baseUnitid,
-                                         double A, double B, double C , double D, const std::string& description)
+te::common::UnitOfMeasure::UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol,
+                                         te::common::MeasureType type, unsigned int baseUnitId,
+                                         double A, double B, double C , double D,
+                                         const std::string& description)
   : m_id(id),
     m_symbol(symbol),
     m_type(type),
     m_description(description),
-    m_baseUnitId(baseUnitid),
+    m_baseUnitId(baseUnitId),
     m_a(A),
     m_b(B),
     m_c(C),
     m_d(D)
 {
   assert((m_c + m_d) != 0);
-  m_name = te::common::Convert2UCase(name);
+
+  m_name = boost::to_upper_copy(name);
 }
 
 te::common::UnitOfMeasure::~UnitOfMeasure()
@@ -105,7 +113,7 @@ const unsigned int te::common::UnitOfMeasure::getBaseUnitId() const
 }
 
 
-void te::common::UnitOfMeasure::getConversionFactors(double& A, double& B, double& C, double& D)
+void te::common::UnitOfMeasure::getConversionFactors(double& A, double& B, double& C, double& D) const
 {
   A = m_a;
   B = m_b;
@@ -113,7 +121,7 @@ void te::common::UnitOfMeasure::getConversionFactors(double& A, double& B, doubl
   D = m_d;
 }
 
-double te::common::UnitOfMeasure::getConversionValue()
+double te::common::UnitOfMeasure::getConversionValue() const
 {
   return ((m_a + m_b) / (m_c + m_d));
 }

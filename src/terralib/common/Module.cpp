@@ -30,7 +30,6 @@
 #include "Module.h"
 #include "TerraLib.h"
 #include "Translator.h"
-#include "UnitOfMeasure.h"
 #include "UnitsOfMeasureManager.h"
 
 // STL
@@ -40,41 +39,6 @@
 // GNU Text Utilities -> it is not true for now!
 #include <locale.h>
 #endif
-
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib Common Runtime module is loaded.
-//
-//  The initialization includes:
-//  <ul>
-//  <li>Logger initialization when automatic dynamic initialization is enabled.</li>
-//  </ul>
-//*/
-//static void TeCommonInitialize()
-//{
-//// let's start the logger if developer want TerraLib to make it automatically during static initialization
-//#if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && !TE_LOGGER_DO_STATIC_INITIALIZATION
-//  TE_LOGGER_MAKE_DEFAULT_INITIALIZATION();
-//#endif
-//
-//  TE_LOG_TRACE(TR_COMMON("TerraLib Common Runtime initialized!"));
-//}
-
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib Common Runtime module is unloaded.
-//
-//  The finalization includes:
-//  <ul>
-//  <li>Logger finalization when automatic dynamic initialization is enabled.</li>
-//  </ul>
-//*/
-//static void TeCommonFinalize()
-//{
-//  TE_LOG_TRACE(TR_COMMON("TerraLib Common Runtime finalized!"));
-//
-//#if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && !TE_LOGGER_DO_STATIC_INITIALIZATION
-//  TE_LOGGER_MAKE_DEFAULT_FINALIZATION();
-//#endif
-//}
 
 const te::common::Module& sm_module = te::common::Module::getInstance();
 
@@ -110,24 +74,6 @@ te::common::Module::Module()
 
 // initialize the singleton UnitsOfMeasureManager
   UnitsOfMeasureManager::getInstance();
-  std::vector<std::string> altnames;
-  altnames.push_back("meter");
-  altnames.push_back("metro");
-  te::common::UnitOfMeasure* umeter = new te::common::UnitOfMeasure(te::common::UOM_Metre,"metre","m",te::common::Length,"SI standard unit for linear measures");
-  te::common::UnitsOfMeasureManager::getInstance().insert(umeter, altnames);
-  
-  te::common::UnitOfMeasure* ukmeter = new te::common::UnitOfMeasure(te::common::UOM_Kilometre,"kilometre","km",te::common::Length, te::common::UOM_Metre,1000);
-  te::common::UnitsOfMeasureManager::getInstance().insert(ukmeter);
-  
-  te::common::UnitOfMeasure* uradian = new te::common::UnitOfMeasure(te::common::UOM_Radian,"radian","rad",te::common::Angle,"SI standard unit for angular measures");
-  te::common::UnitsOfMeasureManager::getInstance().insert(uradian);
-  
-  te::common::UnitOfMeasure* udegree = new te::common::UnitOfMeasure(te::common::UOM_Degree,"degree","deg",te::common::Angle,te::common::UOM_Radian,3.141592653589,0,0,180);
-  te::common::UnitsOfMeasureManager::getInstance().insert(udegree);
-  
-  te::common::UnitOfMeasure* uunity = new te::common::UnitOfMeasure(te::common::UOM_Unity,"unity","unity",te::common::Scale,"EPSG standard unit for scale measures");
-  te::common::UnitsOfMeasureManager::getInstance().insert(uunity);
-  
 
 // let's start the logger if the developer wants TerraLib to make it automatically during static initialization
 #if TE_LOGGER_DO_AUTOMATIC_INITIALIZATION && TE_LOGGER_DO_STATIC_INITIALIZATION
@@ -151,6 +97,10 @@ void te::common::Module::initialize()
   TE_LOGGER_MAKE_DEFAULT_INITIALIZATION();
 #endif
 
+#ifdef TE_AUTOMATIC_INITIALIZATION
+  UnitsOfMeasureManager::getInstance().init();
+#endif
+
   TE_LOG_TRACE(TR_COMMON("TerraLib Common Runtime initialized!"));
 }
 
@@ -163,8 +113,4 @@ void te::common::Module::finalize()
 #endif
 }
 
-//// TerraLib
-//#include "ModuleUtils.h"
-//
-//TE_REGISTER_MODULE(TE_COMMON_MODULE_NAME, TeCommonInitialize, TeCommonFinalize)
-//
+

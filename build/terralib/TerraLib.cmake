@@ -72,6 +72,7 @@ option (BUILD_XML "Build XML module?" ON)
 option (BUILD_XSD "Build XSD module?" ON)
 
 option (TE_STATIC_BUILD "Build all modules as static libraries?" OFF)
+option (TE_AUTOMATIC_INITIALIZATION "Perform automatic initialization from default files?" ON)
 option (TE_LOGGER_ENABLED "Logger enabled?" ON)
 option (TE_LOGGER_DO_AUTOMATIC_INITIALIZATION "Initialize automatically logger?" ON)
 option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initialization?" OFF)

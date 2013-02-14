@@ -162,28 +162,20 @@ namespace te
         */
         double getConversion(const std::string& unitFromName, const std::string& unitToName) const;
 
+        /*!
+          \brief It initializes the list of well kown units of measure.
+
+          The list is read from a JSON file named uom.json in the path
+          indicated by TE_JSON_FILES_LOCATION macro.
+
+          \exception Exception It throws an exception if it is not possible to initialize the UOM list.
+        */
+        void init();
+
       protected:
 
         /*! \brief It initializes the Singleton. */
         UnitsOfMeasureManager();
-
-      private:
-
-        /*!
-         \brief Copy constructor not allowed.
-
-         \param rhs The right-hand-side copy that would be used to copy from.
-        */
-        UnitsOfMeasureManager(const UnitsOfMeasureManager& rhs);
-
-        /*!
-          \brief Assignment operator not allowed.
-
-          \param rhs The right-hand-side copy that would be used to copy from.
-
-          \return A reference to this object.
-        */
-        UnitsOfMeasureManager& operator=(const UnitsOfMeasureManager& rhs);
 
       private:
 

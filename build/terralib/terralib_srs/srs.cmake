@@ -16,7 +16,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTESRSDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-add_definitions (-DTE_JSON_FILES_LOCATION=\"${TE_JSON_FILES_LOCATION}\")
+#add_definitions (-DTE_JSON_FILES_LOCATION=\"${TE_JSON_FILES_LOCATION}\")
 
 list (APPEND TE_DEP_LIBS terralib_common)
 

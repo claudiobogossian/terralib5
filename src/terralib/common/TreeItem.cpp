@@ -30,7 +30,7 @@
 #include <algorithm>
 #include <cassert>
 
-const std::size_t te::common::TreeItem::npos(-1);
+const std::size_t te::common::TreeItem::npos(static_cast<std::size_t>(-1));
 
 te::common::TreeItem::TreeItem(TreeItem* parent)
   : m_parent(parent)

@@ -27,6 +27,9 @@
 #include "AboutDialog.h"
 #include "TerraView.h"
 
+// TerraLib
+#include <terralib/qt/af/ApplicationController.h>
+
 // STL
 #include <memory>
 
@@ -37,20 +40,34 @@
 TerraView::TerraView(QWidget* parent)
   : te::qt::af::BaseApplication(parent)
 {
-  QAction* helpAbout = new QAction(QIcon::fromTheme("terraview"), tr("&About..."), this);
-
-  //getMenu()->addAction(helpAbout);
-
-  connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 }
 
 TerraView::~TerraView()
 {
 }
 
-//void TerraView::init(const std::string& configFile)
-//{
-//}
+void TerraView::init()
+{
+  te::qt::af::BaseApplication::init();
+}
+
+void TerraView::init(const std::string& configFile)
+{
+  te::qt::af::BaseApplication::init(configFile);
+}
+
+void TerraView::makeDialog()
+{
+  te::qt::af::BaseApplication::makeDialog();
+
+  //QAction* helpAbout = new QAction(tr("&About..."), this);
+
+  //QMenu* hmenu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
+
+  //hmenu->addAction(helpAbout);
+
+  //connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
+}
 
 void TerraView::showAboutDialog()
 {
@@ -58,4 +75,5 @@ void TerraView::showAboutDialog()
 
   dialog->exec();
 }
+
 

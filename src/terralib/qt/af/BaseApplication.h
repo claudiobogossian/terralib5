@@ -106,8 +106,9 @@ namespace te
 
           virtual void closeEvent(QCloseEvent* e);
 
-          virtual void initAction(QAction*& act, const QString& icon, const QString& name, const QString& text, const QString& tooltip, 
-            const bool& iconVisibleInMenu, const bool& isCheckable, const bool& enabled);
+          virtual void initAction(QAction*& act, const QString& icon, const QString& name,
+                                  const QString& text, const QString& tooltip,
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled);
 
           virtual void initActions();
 
