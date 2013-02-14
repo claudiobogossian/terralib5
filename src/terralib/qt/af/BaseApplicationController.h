@@ -161,7 +161,7 @@ namespace te
 
             \note If the menu does not exists, then this function will create it.
           */
-          QMenu* getMenu(const QString& id) const;
+          QMenu* getMenu(const QString& id);
 
           /*!
             \brief Register the \a bar.
@@ -241,6 +241,8 @@ namespace te
                  means that initialize should be called before initializing the plugins.
           */
           virtual void initializePlugins();
+
+          virtual void initializeProjectMenus();
 
           /*!
             \brief Finalize the application framework.

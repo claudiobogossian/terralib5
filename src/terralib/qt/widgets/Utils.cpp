@@ -109,7 +109,7 @@ QStyle::StandardPixmap toQStyle(const QMessageBox::Icon& icon)
 
 QMenu* SearchMenu(const QString& mnuText, QMenu* mnu)
 {
-  if(mnu->title() == mnuText)
+  if(mnu->objectName() == mnuText)
     return mnu;
 
   QList<QMenu*> objs = mnu->findChildren<QMenu*>();
@@ -132,7 +132,7 @@ QMenu* SearchMenu(const QString& mnuText, QMenu* mnu)
 
 QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenu* mnu)
 {
-  if(mnu->title() == mnuText)
+  if(mnu->objectName() == mnuText)
     return mnu;
 
   if(mnuText.isEmpty())

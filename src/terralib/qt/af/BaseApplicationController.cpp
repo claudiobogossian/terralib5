@@ -47,6 +47,7 @@
 #include "Exception.h"
 #include "SplashScreenManager.h"
 #include "UserPlugins.h"
+#include "Project.h"
 
 // Qt
 #include <QtCore/QDir>
@@ -55,6 +56,7 @@
 #include <QtGui/QIcon>
 #include <QtGui/QMessageBox>
 #include <QtGui/QWidget>
+#include <QtGui/QMenu>
 
 // Boost
 #include <boost/filesystem.hpp>
@@ -134,7 +136,7 @@ QMenu* te::qt::af::BaseApplicationController::findMenu(const QString& id) const
   
   for(it_bar = m_menuBars.begin(); it_bar != m_menuBars.end(); ++it_bar)
   {
-    QMenu* mnu = te::qt::widgets::FindMenu(id, *it);
+    QMenu* mnu = te::qt::widgets::FindMenu(id, *it_bar);
 
     if(mnu != 0)
       return mnu;
@@ -143,9 +145,22 @@ QMenu* te::qt::af::BaseApplicationController::findMenu(const QString& id) const
   return 0;
 }
 
-QMenu* te::qt::af::BaseApplicationController::getMenu(const QString& id) const
+QMenu* te::qt::af::BaseApplicationController::getMenu(const QString& id)
 {
-  return 0;
+  QMenu* mnu = findMenu(id);
+
+  if(mnu == 0)
+  {
+    if(!m_menuBars.empty())
+      mnu = te::qt::widgets::GetMenu(id, m_menuBars[0]);
+    else
+    {
+      mnu = new QMenu(id);
+      m_menus.push_back(mnu);
+    }
+  }
+
+  return mnu;
 }
 
 void te::qt::af::BaseApplicationController::registerMenuBar(QMenuBar* bar)
@@ -421,6 +436,57 @@ void te::qt::af::BaseApplicationController::initializePlugins()
     //                     tr(SystemApplicationSettings::getInstance().getValue("Application.Title").c_str()),
     //                     tr(bps[kk]->m_name.c_str()));
     //}
+  }
+}
+
+void te::qt::af::BaseApplicationController::initializeProjectMenus()
+{
+  SplashScreenManager::getInstance().showMessage("Loading recent projects...");
+
+  try
+  {
+    boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
+    std::string proj_path;
+
+    bool hasProjects = p.count("MostRecentProject") > 0;
+
+    if(hasProjects)
+      proj_path = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
+
+    QMenu* mnu = getMenu("File.Recent Projects");
+
+    if(!proj_path.empty())
+    {
+      QString pp = proj_path.c_str();
+      QAction* act = mnu->addAction(pp);
+      act->setData(pp);
+
+      mnu->addSeparator();
+    }
+
+    hasProjects = p.count("RecentProjects") > 0;
+
+    if(hasProjects)
+    {
+      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("RecentProjects"))
+      {
+        QString pp = v.second.get<std::string>("<xmlattr>.xlink:href").c_str();
+        QAction* act = mnu->addAction(pp);
+        act->setData(pp);
+      }
+    }
+
+    SplashScreenManager::getInstance().showMessage("Recent projects loaded!");
+  }
+  catch(const std::exception& e)
+  {
+    te::qt::widgets::ScopedCursor acursor(Qt::ArrowCursor);
+
+    QString msgErr(tr("Error loading the registered projects: %1"));
+
+    msgErr = msgErr.arg(e.what());
+
+    QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
 }
 

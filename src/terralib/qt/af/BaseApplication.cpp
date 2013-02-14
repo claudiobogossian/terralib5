@@ -130,6 +130,17 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
 
   try
   {
+    te::qt::af::ApplicationController::getInstance().initializeProjectMenus();
+  }
+  catch(const std::exception& e)
+  {
+    QString msgErr(tr("Error loading recent projects: %1"));
+    msgErr = msgErr.arg(e.what());
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msgErr);
+  }
+
+  try
+  {
     te::qt::af::ApplicationController::getInstance().initializePlugins();
   }
   catch(const std::exception& e)
@@ -224,6 +235,10 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
+{
+}
+
 void te::qt::af::BaseApplication::makeDialog()
 {
   initActions();
@@ -234,6 +249,13 @@ void te::qt::af::BaseApplication::makeDialog()
 
   initSlotsConnections();
 
+//  QMenu* mnu = ApplicationController::getInstance().findMenu(QString("File.Recent Projects"));
+//
+//  if(mnu != 0)
+//  {
+////    QMenu* m = new QMenu("Teste", mnu);
+//    mnu->addMenu("Teste");
+//  }
 // placing tools on an exclusive group
   //QActionGroup* vis_tools_group = new QActionGroup(this);
   //vis_tools_group->setExclusive(true);
@@ -600,7 +622,10 @@ void te::qt::af::BaseApplication::initMenus()
   m_helpMenu->addAction(m_helpUpdate);
 
   //! Sets the toolbar
-  this->setMenuBar(m_menubar);
+  setMenuBar(m_menubar);
+
+  //! Register menu bar 
+  ApplicationController::getInstance().registerMenuBar(m_menubar);
 }
 
 void te::qt::af::BaseApplication::initToolbars()
@@ -630,6 +655,10 @@ void te::qt::af::BaseApplication::initToolbars()
   m_editToolBar->addAction(m_editCut);
   m_editToolBar->addAction(m_editCopy);
   m_editToolBar->addAction(m_editPaste);
+
+  //! Register menu bar 
+  ApplicationController::getInstance().registerToolBar("FileToolBar", m_fileToolBar);
+  ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()
@@ -638,4 +667,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
+  connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
 }

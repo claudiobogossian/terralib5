@@ -76,12 +76,12 @@ void te::qt::af::UserPlugins::load()
 
 // get specific user plugins
   {
-    boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
+    boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
 
-    child_exists = p.count("UserSettings.SpecificPlugins") > 0;
+    child_exists = p.count("SpecificPlugins") > 0;
 
     if(child_exists && (!p.empty()))
-      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("UserSettings.SpecificPlugins"))
+      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("SpecificPlugins"))
       {
         if(v.second.data().empty())
           continue;
@@ -97,12 +97,12 @@ void te::qt::af::UserPlugins::load()
   std::set<std::string> uPlugins;
 
   {
-    boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
+    boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
 
-    child_exists = p.count("UserSettings.EnabledPlugins") > 0;
+    child_exists = p.count("EnabledPlugins") > 0;
 
     if(child_exists && (!p.empty()))
-      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("UserSettings.EnabledPlugins"))
+      BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("EnabledPlugins"))
       {
         if(v.second.data().empty())
           continue;
