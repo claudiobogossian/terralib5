@@ -35,6 +35,12 @@
 #include <algorithm>
 #include <cassert>
 
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/format.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+
 void te::common::UnitsOfMeasureManager::insert(UnitOfMeasure* uom)
 {
   assert(uom);
@@ -218,10 +224,10 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
 {
   assert(unitFromName.empty() == false);
   assert(unitToName.empty() == false);
-  
+
   UnitOfMeasure* uFrom = this->find(unitFromName);
   UnitOfMeasure* uTo = this->find(unitToName);
-  
+
   if (uFrom->getType() != uTo->getType())
     throw Exception(TR_COMMON("There is not conversion between units for different types of measures."));
 
@@ -238,3 +244,53 @@ double te::common::UnitsOfMeasureManager::getConversion(const std::string& unitF
   }
   throw Exception(TR_COMMON("There is no known conversion."));
 }
+
+void te::common::UnitsOfMeasureManager::init()
+{
+  if(!m_uoms.empty())
+    throw Exception(TR_COMMON("The unit of measure manager is already initialized!"));
+
+  boost::property_tree::ptree pt;
+
+  boost::property_tree::json_parser::read_json(TE_JSON_FILES_LOCATION "/uom.json",pt);
+
+  BOOST_FOREACH(boost::property_tree::ptree::value_type& v, pt.get_child("UOMs"))
+  {
+    unsigned int id = v.second.get<unsigned int>("id");
+    std::string name = v.second.get<std::string>("name");
+    std::string symbol = v.second.get<std::string>("symbol");
+    std::string stype = v.second.get<std::string>("type");
+    std::string description = v.second.get<std::string>("description");
+    unsigned int targetUOM = v.second.get<unsigned int>("target_uom");
+    double a = v.second.get<double>("factor_a");
+    double b = v.second.get<double>("factor_b");
+    double c = v.second.get<double>("factor_c");
+    double d = v.second.get<double>("factor_d");
+    
+    MeasureType t = Length;
+
+    if(stype == "length")
+      t = Length;
+    else if(stype == "area")
+      t = Area;
+    else if(stype == "volume")
+      t = Volume;
+    else if(stype == "angle")
+      t = Angle;
+    else if(stype == "scale")
+      t = Scale;
+    else if(stype == "time")
+      t = Time;
+    else if(stype == "speed")
+      t = Speed;
+    else
+    {
+      throw Exception((boost::format(TR_COMMON("Invalid unit of measure type: %1%!")) % stype).str());
+    }
+
+    UnitOfMeasure* uom = new UnitOfMeasure(id, name, symbol, t, targetUOM, a, b, c, d, description);
+
+    insert(uom);
+  }
+}
+
