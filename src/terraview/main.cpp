@@ -23,11 +23,12 @@
   \brief It contains the main routine of TerraView.
 */
 
+// TerraView
+#include "TerraView.h"
 #include "TerraViewConfig.h"
 
 // TerraLib
-#include "../terralib/qt/af/BaseApplication.h"
-#include "../terralib/qt/af/SplashScreenManager.h"
+#include <terralib/qt/af/SplashScreenManager.h>
 
 // STL
 #include <cstdlib>
@@ -60,7 +61,7 @@ int main(int argc, char** argv)
 
 //    splash->show();
 
-    te::qt::af::BaseApplication tview;
+    TerraView tview;
 
     tview.init(TVIEW_CONFIG_FILE);
 
