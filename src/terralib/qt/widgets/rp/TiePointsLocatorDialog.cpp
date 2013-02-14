@@ -34,6 +34,7 @@
 #include "../../../geometry/GTFactory.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Envelope.h"
+#include "../../../maptools/Utils.h"
 #include "../../../rp/TiePointsLocator.h"
 
 #include <ui_TiePointsLocatorForm.h>
@@ -108,26 +109,29 @@ namespace te
       }
       
       TiePointsLocatorDialog::TiePointsLocatorDialog(
-        te::map::RasterLayer const* inRasterLayer1Ptr,
-        te::map::RasterLayer const* inRasterLayer2Ptr,
+        const te::map::DataSetLayerPtr& inLayer1Ptr,
+        const te::map::DataSetLayerPtr& inLayer2Ptr,
         QWidget* parent, Qt::WindowFlags f )
         : QDialog( parent, f ),
-          m_inRasterLayer1Ptr( inRasterLayer1Ptr ),
-          m_inRasterLayer2Ptr( inRasterLayer2Ptr ),
+          m_inLayer1Ptr( inLayer1Ptr ),
+          m_inLayer2Ptr( inLayer2Ptr ),
           m_lastSelectedTiePointHasFirstOk( false ),
           m_lastInsertedTPID( 0 )
       {
-        if( inRasterLayer1Ptr == 0 ) throw te::qt::widgets::Exception( 
-          "Invalid raster layer pointer" );
-        if( inRasterLayer2Ptr == 0 ) throw te::qt::widgets::Exception( 
-          "Invalid raster layer pointer" );  
+        if( inLayer1Ptr.get() == 0 ) throw te::qt::widgets::Exception( 
+          "Invalid data set layer pointer" );
+        if( inLayer1Ptr.get() == 0 ) throw te::qt::widgets::Exception( 
+          "Invalid data set layer pointer" );
           
         m_uiPtr = new Ui::TiePointsLocatorForm;
         m_uiPtr->setupUi(this);
         
+        m_raster1 = te::map::GetRaster(m_inLayer1Ptr.get());
+        m_raster2 = te::map::GetRaster(m_inLayer2Ptr.get());
+
         m_advDialogPtr = new TiePointsLocatorAdvancedDialog( this );
-        m_advDialogPtr->m_inputParameters.m_inMaskRaster1Ptr = m_inRasterLayer1Ptr->getRaster();
-        m_advDialogPtr->m_inputParameters.m_inMaskRaster2Ptr = m_inRasterLayer2Ptr->getRaster();
+        m_advDialogPtr->m_inputParameters.m_inMaskRaster1Ptr = m_raster1;
+        m_advDialogPtr->m_inputParameters.m_inMaskRaster2Ptr = m_raster2;
         
         QGridLayout* gridLayout1 = new QGridLayout( m_uiPtr->m_image1Frame );
         QGridLayout* gridLayout2 = new QGridLayout( m_uiPtr->m_image2Frame );
@@ -139,11 +143,12 @@ namespace te
         m_mapDisplay1->setMouseTracking ( true );
         gridLayout1->addWidget( m_mapDisplay1 );  
         m_mapDisplay1->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-        std::list< te::map::AbstractLayer* >  layerList1;  
-        layerList1.push_back( (te::map::RasterLayer*)inRasterLayer1Ptr );
+        std::list< te::map::AbstractLayerPtr >  layerList1;  
+        layerList1.push_back( m_inLayer1Ptr );
         m_mapDisplay1->setLayerList( layerList1 );
-        m_mapDisplay1->setSRID(m_inRasterLayer1Ptr->getRaster()->getSRID());
-        m_mapDisplay1->setExtent( *(m_inRasterLayer1Ptr->getRaster()->getExtent()) );
+        m_mapDisplay1->setSRID(m_raster1->getSRID());
+        te::gm::Envelope displayExtent1(*(m_raster1->getExtent()));
+        m_mapDisplay1->setExtent( displayExtent1 );
         
         // map display 2
           
@@ -152,11 +157,12 @@ namespace te
         m_mapDisplay2->setMouseTracking ( true );
         gridLayout2->addWidget( m_mapDisplay2 );  
         m_mapDisplay2->setResizePolicy(te::qt::widgets::MapDisplay::Center);
-        std::list< te::map::AbstractLayer* >  layerList2;  
-        layerList2.push_back( (te::map::RasterLayer*)inRasterLayer2Ptr );
+        std::list< te::map::AbstractLayerPtr >  layerList2;  
+        layerList2.push_back( m_inLayer2Ptr );
         m_mapDisplay2->setLayerList( layerList2 );
-        m_mapDisplay2->setSRID(m_inRasterLayer2Ptr->getRaster()->getSRID());
-        m_mapDisplay2->setExtent( *(m_inRasterLayer2Ptr->getRaster()->getExtent()) );       
+        m_mapDisplay2->setSRID(m_raster2->getSRID());
+        te::gm::Envelope displayExtent2(*(m_raster2->getExtent()));
+        m_mapDisplay1->setExtent( displayExtent2 );
         
         // Events
         
@@ -173,7 +179,7 @@ namespace te
         m_mapDisplay2->installEventFilter( m_zoomClickEvent2 );
         
         m_mapDisplay1->installEventFilter( m_coordTracking1 );
-        m_mapDisplay2->installEventFilter( m_coordTracking2 );          
+        m_mapDisplay2->installEventFilter( m_coordTracking2 );
         
         m_mapDisplay1->installEventFilter( m_mDEventFilter1 );
         m_mapDisplay2->installEventFilter( m_mDEventFilter2 );
@@ -198,13 +204,13 @@ namespace te
         
         // fill form
         
-        for( unsigned band1Idx = 0 ; band1Idx < m_inRasterLayer1Ptr->getRaster()->getNumberOfBands() ;
+        for( unsigned band1Idx = 0 ; band1Idx < m_raster1->getNumberOfBands() ;
           ++band1Idx )
           m_uiPtr->m_referenceBand1ComboBox->addItem( QString::number( band1Idx ) );
         
-        for( unsigned band2Idx = 0 ; band2Idx < m_inRasterLayer2Ptr->getRaster()->getNumberOfBands() ;
+        for( unsigned band2Idx = 0 ; band2Idx < m_raster2->getNumberOfBands() ;
           ++band2Idx )
-          m_uiPtr->m_referenceBand2ComboBox->addItem( QString::number( band2Idx ) );  
+          m_uiPtr->m_referenceBand2ComboBox->addItem( QString::number( band2Idx ) );
         
         // create points draw patterns
         
@@ -242,6 +248,9 @@ namespace te
         
         m_mapDisplay1->releaseKeyboard();
         m_mapDisplay2->releaseKeyboard();
+
+        delete m_raster1;
+        delete m_raster2;
         
         // delete points draw patterns
         
@@ -289,10 +298,10 @@ namespace te
         te::rp::TiePointsLocator::InputParameters inputParams = 
           m_advDialogPtr->m_inputParameters;
           
-        inputParams.m_inRaster1Ptr = m_inRasterLayer1Ptr->getRaster();
-        inputParams.m_inRaster2Ptr = m_inRasterLayer2Ptr->getRaster();
+        inputParams.m_inRaster1Ptr = m_raster1;
+        inputParams.m_inRaster2Ptr = m_raster2;
           
-        te::gm::Envelope auxEnvelope1( *m_mapDisplay1->getExtent() );
+        te::gm::Envelope auxEnvelope1( m_mapDisplay1->getExtent() );
         double r1LLX = 0;
         double r1LLY = 0;
         double r1URX = 0;
@@ -312,7 +321,7 @@ namespace te
           (double)inputParams.m_inRaster1Ptr->getNumberOfRows(),
           r1LLY ) ) - inputParams.m_raster1TargetAreaColStart + 1;
           
-        te::gm::Envelope auxEnvelope2( *m_mapDisplay2->getExtent() );
+        te::gm::Envelope auxEnvelope2( m_mapDisplay2->getExtent() );
         double r2LLX = 0;
         double r2LLY = 0;
         double r2URX = 0;
@@ -495,7 +504,7 @@ namespace te
       
       void TiePointsLocatorDialog::on_mapDisplay1_coordTracked( QPointF& coordinate )
       {
-        m_lastTrackedTiePoint.first = m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
+        m_lastTrackedTiePoint.first = m_raster1->getGrid()->geoToGrid( 
           (double)coordinate.rx(), (double)coordinate.ry() );
         
         m_uiPtr->m_currentImage1LineLineEdit->setText( QString::number( 
@@ -506,7 +515,7 @@ namespace te
       
       void TiePointsLocatorDialog::on_mapDisplay2_coordTracked( QPointF& coordinate )
       {
-        m_lastTrackedTiePoint.second = m_inRasterLayer1Ptr->getRaster()->getGrid()->geoToGrid( 
+        m_lastTrackedTiePoint.second = m_raster2->getGrid()->geoToGrid( 
           (double)coordinate.rx(), (double)coordinate.ry() );
         
         m_uiPtr->m_currentImage2LineLineEdit->setText( QString::number( 
@@ -701,13 +710,13 @@ namespace te
       
       void TiePointsLocatorDialog::refreshMapDisplay1()
       {
-        te::gm::Envelope auxEnvelope( *m_mapDisplay1->getExtent() );
+        te::gm::Envelope auxEnvelope( m_mapDisplay1->getExtent() );
         m_mapDisplay1->setExtent( auxEnvelope );
       }
       
       void TiePointsLocatorDialog::refreshMapDisplay2()
       {
-        te::gm::Envelope auxEnvelope( *m_mapDisplay2->getExtent() );
+        te::gm::Envelope auxEnvelope( m_mapDisplay2->getExtent() );
         m_mapDisplay2->setExtent( auxEnvelope );
       }
       
@@ -720,15 +729,15 @@ namespace te
       
       void TiePointsLocatorDialog::on_mapDisplay1_extentChanged()
       {
-        te::gm::Envelope const* mapDisplayExtentPtr = 
+        const te::gm::Envelope& mapDisplayExtent = 
           m_mapDisplay1->getExtent();
           
         m_mapDisplay1->getDraftPixmap()->fill( QColor( 0, 0, 0, 0 ) );
           
         te::qt::widgets::Canvas canvasInstance( m_mapDisplay1->getDraftPixmap() );
-        canvasInstance.setWindow( mapDisplayExtentPtr->m_llx,
-          mapDisplayExtentPtr->m_lly, mapDisplayExtentPtr->m_urx,
-          mapDisplayExtentPtr->m_ury );
+        canvasInstance.setWindow( mapDisplayExtent.m_llx,
+          mapDisplayExtent.m_lly, mapDisplayExtent.m_urx,
+          mapDisplayExtent.m_ury );
         
         // Drawing the colected points
         
@@ -760,7 +769,7 @@ namespace te
           tiePointsIt = m_tiePoints.find( tpID );
           assert( tiePointsIt != m_tiePoints.end() );
           
-          m_inRasterLayer1Ptr->getRaster()->getGrid()->gridToGeo( 
+          m_raster1->getGrid()->gridToGeo( 
             tiePointsIt->second.m_tiePoint.first.x, tiePointsIt->second.m_tiePoint.first.y,
             auxCoord2D.x, auxCoord2D.y );
             
@@ -774,7 +783,7 @@ namespace te
         
         if( m_lastSelectedTiePointHasFirstOk )
         {
-          m_inRasterLayer1Ptr->getRaster()->getGrid()->gridToGeo( 
+          m_raster1->getGrid()->gridToGeo( 
             m_lastSelectedTiePoint.first.x, m_lastSelectedTiePoint.first.y,
             auxCoord2D.x, auxCoord2D.y );
             
@@ -790,15 +799,15 @@ namespace te
 
       void TiePointsLocatorDialog::on_mapDisplay2_extentChanged()
       {
-        te::gm::Envelope const* mapDisplayExtentPtr = 
+        const te::gm::Envelope& mapDisplayExtent = 
           m_mapDisplay2->getExtent();
           
         m_mapDisplay2->getDraftPixmap()->fill( QColor( 0, 0, 0, 0 ) );
           
         te::qt::widgets::Canvas canvasInstance( m_mapDisplay2->getDraftPixmap() );
-        canvasInstance.setWindow( mapDisplayExtentPtr->m_llx,
-          mapDisplayExtentPtr->m_lly, mapDisplayExtentPtr->m_urx,
-          mapDisplayExtentPtr->m_ury );          
+        canvasInstance.setWindow( mapDisplayExtent.m_llx,
+          mapDisplayExtent.m_lly, mapDisplayExtent.m_urx,
+          mapDisplayExtent.m_ury );          
         
         // Drawing the colected points
         
@@ -830,7 +839,7 @@ namespace te
           tiePointsIt = m_tiePoints.find( tpID );
           assert( tiePointsIt != m_tiePoints.end() );
           
-          m_inRasterLayer2Ptr->getRaster()->getGrid()->gridToGeo( 
+          m_raster2->getGrid()->gridToGeo( 
             tiePointsIt->second.m_tiePoint.second.x, tiePointsIt->second.m_tiePoint.second.y,
             auxCoord2D.x, auxCoord2D.y );
             

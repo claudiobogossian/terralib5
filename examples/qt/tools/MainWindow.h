@@ -28,6 +28,7 @@
 
 // TerarLib
 #include <terralib/geometry/Enums.h>
+#include <terralib/maptools/AbstractLayer.h>
 
 // Qt
 #include <QtGui/QMainWindow>
@@ -39,16 +40,6 @@
 // Forward declarations
 namespace te
 {
-  namespace da
-  {
-    class DataSource;
-  }
-
-  namespace map
-  {
-    class AbstractLayer;
-  }
-  
   namespace se
   {
     class Style;
@@ -98,23 +89,35 @@ class MainWindow : public QMainWindow
   private:
 
     void setupActions();
-    void addVectorLayer(const QString& path);
-    void addRasterLayer(const QString& path);
+
+    void addDataSetLayer(const QString& path, const std::string& driver);
+
     void contextMenuEvent(QContextMenuEvent* e);
 
   private slots:
 
-    void onAddVectorLayerTriggered();
-    void onAddRasterLayerTriggered();
+    void onAddVectorDataTriggered();
+
+    void onAddRasterDataTriggered();
+
     void onPanTriggered();
+
     void onZoomInTriggered();
+
     void onZoomOutTriggered();
+
     void onZoomAreaTriggered();
+
     void onDistanceTriggered();
+
     void onAreaTriggered();
+
     void onAngleTriggered();
+
     void onSelectionTriggered();
+
     void onStopAllTriggered();
+
     void onCoordTracked(QPointF& coordinate);
 
   private:
@@ -122,8 +125,7 @@ class MainWindow : public QMainWindow
     te::qt::widgets::MapDisplay* m_display;
     te::qt::widgets::AbstractTool* m_tool;
 
-    std::vector<te::da::DataSource*> m_ds;
-    std::list<te::map::AbstractLayer*> m_layers;
+    std::list<te::map::AbstractLayerPtr> m_layers;
 
     QToolBar* m_toolBar;
     QMenu* m_menu;

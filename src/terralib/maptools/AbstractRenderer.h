@@ -52,8 +52,9 @@ namespace te
       <li>set the canvas with the appropriated style rules to draw the objects</li>
       <li>make use of a canvas to draw the objects</li>
       </ul>
-    
-      \sa AbstractLayer, Canvas
+
+      \sa AbstractLayer, Canvas, RendererFactory, FeatureTypeStyleRenderer,
+          CoverageStyleRenderer, DataSetLayerRenderer, QueryLayerRenderer
      */
     class TEMAPEXPORT AbstractRenderer
     {

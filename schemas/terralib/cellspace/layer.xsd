@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_cs="http://www.terralib.org/cellspace"
-            xmlns:te_map="http://www.terralib.org/maptools"
+<xsd:schema xmlns:te_cs="http://www.terralib.org/schemas/cellspace"
+            xmlns:te_map="http://www.terralib.org/schemas/maptools"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/cellspace"
+            targetNamespace="http://www.terralib.org/schemas/cellspace"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -16,7 +16,7 @@
 
   <xsd:include schemaLocation="neighborhood.xsd" />
 
-  <xsd:import namespace="http://www.terralib.org/maptools" schemaLocation="../maptools/maptools.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/maptools" schemaLocation="../maptools/maptools.xsd"/>
 
   <xsd:element name="CellSpaceLayer" type="te_cs:CellSpaceLayerType" substitutionGroup="te_map:AbstractLayer" />
 

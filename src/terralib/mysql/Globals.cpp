@@ -31,3 +31,4 @@ const std::string te::mysql::Globals::sm_rtableIdentifier(TE_MYSQL_RASTER_TABLE_
 const std::string te::mysql::Globals::sm_tRasterIdentifier(TE_MYSQL_TILED_RASTER_IDENTIFIER);
 
 te::da::SQLDialect* te::mysql::Globals::sm_queryDialect(0);
+te::da::DataSourceCapabilities* te::mysql::Globals::sm_capabilities(0);

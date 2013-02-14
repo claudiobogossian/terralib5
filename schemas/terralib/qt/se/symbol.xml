@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- A simple example of Symbol Library XML file -->
-<SymbolLibrary xmlns="http://www.terralib.org/qt/se"
-               xsd:schemaLocation="http://www.terralib.org/qt/se D:/terralib5/terralib5/schemas/terralib/qt/se/symbol.xsd"
-               xmlns:se="http://www.opengis.net/se"
-               xmlns:ogc="http://www.opengis.net/ogc"
+<SymbolLibrary xmlns="http://www.terralib.org/schemas/qt/se"
+               xsd:schemaLocation="http://www.terralib.org/schemas/qt/se D:/terralib5/terralib5/schemas/terralib/qt/se/symbol.xsd"
+               xmlns:se="http://www.opengis.net/schemas/se"
+               xmlns:ogc="http://www.opengis.net/schemas/ogc"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
                version="5.0.0">
 

@@ -52,6 +52,8 @@ namespace te
     */
     class TEPGISEXPORT DataSetPersistence : public te::da::DataSetPersistence
     {
+      using te::da::DataSetPersistence::add;
+      
       public:        
 
         /*!

@@ -37,6 +37,12 @@
 namespace te
 {
 // Forward declarations
+  namespace rst
+  {
+    class Raster;
+    class RasterProperty;
+  }
+
   namespace se
   {
     class Fill;
@@ -46,6 +52,8 @@ namespace te
 
   namespace map
   {
+// Forward declaration
+    class DataSetLayer;
 
     /*!
       \brief Gets the RGBA color from Stroke element.
@@ -134,6 +142,32 @@ namespace te
             The given vector style will be filled with the values: style[0] = 10; style[1] = 5; style[2] = 3; style[3] = 4.
     */
     TEMAPEXPORT void GetDashStyle(const std::string& dasharray, std::vector<double>& style);
+
+    /*!
+      \brief It gets the raster property referenced by the given data set layer.
+
+      \param layer The data set layer that will be used to retrieve the raster property.
+
+      \return The raster property referenced by the data set layer.
+
+      \note The caller will take the ownership of the returned pointer.
+
+      \exception Exception It will throw an exception if the raster property could not be retrieved.
+    */
+    TEMAPEXPORT te::rst::RasterProperty* GetRasterProperty(DataSetLayer* layer);
+
+    /*!
+      \brief It gets the raster referenced by the given data set layer.
+
+      \param layer The data set layer that will be used to retrieve the raster.
+
+      \return The raster referenced by the data set layer.
+
+      \note The caller will take the ownership of the returned pointer.
+
+      \exception Exception It will throw an exception if the raster could not be retrieved.
+    */
+    TEMAPEXPORT te::rst::Raster* GetRaster(DataSetLayer* layer);
 
   } // end namespace map
 }   // end namespace te

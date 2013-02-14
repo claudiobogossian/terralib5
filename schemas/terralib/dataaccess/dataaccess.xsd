@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_da="http://www.terralib.org/dataaccess"
+<xsd:schema xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/dataaccess"
+            targetNamespace="http://www.terralib.org/schemas/dataaccess"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">

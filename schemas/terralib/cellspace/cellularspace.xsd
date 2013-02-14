@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:te_common="http://www.terralib.org/common"
-            xmlns:te_cs="http://www.terralib.org/cellspace"
-            xmlns:te_rst="http://www.terralib.org/raster"
+<xsd:schema xmlns:te_common="http://www.terralib.org/schemas/common"
+            xmlns:te_cs="http://www.terralib.org/schemas/cellspace"
+            xmlns:te_rst="http://www.terralib.org/schemas/raster"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            targetNamespace="http://www.terralib.org/cellspace"
+            targetNamespace="http://www.terralib.org/schemas/cellspace"
             elementFormDefault="qualified"
             attributeFormDefault="unqualified"
             xml:lang="en">
@@ -13,8 +13,8 @@
     <xsd:documentation>Definition of a cellular space</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/common" schemaLocation="../common/common.xsd"/>
-  <xsd:import namespace="http://www.terralib.org/raster" schemaLocation="../raster/raster.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/common" schemaLocation="../common/common.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/raster" schemaLocation="../raster/raster.xsd"/>
 
   <xsd:element name="CellularSpaceList" type="te_cs:CellularSpaceListType">
     <xsd:annotation>

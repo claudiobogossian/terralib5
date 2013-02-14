@@ -25,6 +25,7 @@ list (APPEND TE_DEP_LIBS
 		terralib_memory
 		terralib_plugin
 		terralib_raster
+		terralib_serialization
 		terralib_srs
     )
 
@@ -55,6 +56,7 @@ getPluginInfo("${TE_PLUGIN_NAME}" "${TE_PLUGIN_FILE}" TE_PLG_INFO)
 set (TE_PLUGINS_DESCRIPTION "${TE_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
 
 configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TE_PLUGIN_FILE})
+configure_file(${CMAKE_SOURCE_DIR}/../resources/xml/mysql-capabilities.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mysql-capabilities.xml)
 
 configure_file(${CMAKE_SOURCE_DIR}/../resources/sql/mysql-ogc-sfs.sql ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mysql-ogc-sfs.sql COPYONLY)
 configure_file(${TE_JSON_FILES_LOCATION}/srs.json ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/srs.json COPYONLY)

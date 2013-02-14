@@ -24,12 +24,22 @@
 */
 
 // TerraLib
+#include "../common/Translator.h"
 #include "../common/StringUtils.h"
+#include "../dataaccess/dataset/DataSet.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../fe/Literal.h"
 #include "../se/Fill.h"
 #include "../se/ParameterValue.h"
 #include "../se/Stroke.h"
 #include "../se/SvgParameter.h"
+#include "../raster/Raster.h"
+#include "../raster/RasterProperty.h"
+#include "DataSetLayer.h"
+#include "Exception.h"
 #include "Utils.h"
 
 // STL
@@ -104,4 +114,93 @@ void te::map::GetDashStyle(const std::string& dasharray, std::vector<double>& st
   te::common::Tokenize(dasharray, values);
   for(std::size_t i = 0; i < values.size(); ++i)
     style.push_back(atof(values[i].c_str()));
+}
+
+te::rst::RasterProperty* te::map::GetRasterProperty(DataSetLayer* layer)
+{
+  if(layer == 0)
+    throw Exception(TR_MAP("The layer is invalid!"));
+
+// name of referenced data set
+  std::string dsname = layer->getDataSetName();
+
+  if(dsname.empty())
+    throw Exception(TR_MAP("The data set name referenced by the layer is empty!"));
+
+// retrieve the associated data source
+  te::da::DataSourcePtr ds = te::da::GetDataSource(layer->getDataSourceId(), true);
+
+// get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
+
+  if(transactor.get() == 0)
+    throw Exception(TR_MAP("Could not get a data source transactor!"));
+
+// get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
+
+  if(cloader.get() == 0)
+    throw Exception(TR_MAP("Could not get a data source catalog loader!"));
+
+// gets the data set type 
+  std::auto_ptr<te::da::DataSetType> dstype(cloader->getDataSetType(dsname));
+
+  if(dstype.get() == 0)
+    throw Exception(TR_MAP("Could not get the data set type!"));
+
+// gets the raster property
+  std::auto_ptr<te::rst::RasterProperty> rasterProperty(dynamic_cast<te::rst::RasterProperty*>(dstype->getProperties()[0]->clone()));
+
+  if(rasterProperty.get() == 0)
+     throw Exception(TR_MAP("Could not get the raster property!"));
+
+  return rasterProperty.release();
+}
+
+te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
+{
+  if(layer == 0)
+    throw Exception(TR_MAP("The layer is invalid!"));
+
+// name of referenced data set
+  std::string dsname = layer->getDataSetName();
+
+  if(dsname.empty())
+    throw Exception(TR_MAP("The data set name referenced by the layer is empty!"));
+
+// retrieve the associated data source
+  te::da::DataSourcePtr ds = te::da::GetDataSource(layer->getDataSourceId(), true);
+
+// get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
+
+  if(transactor.get() == 0)
+    throw Exception(TR_MAP("Could not get a data source transactor!"));
+
+// get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
+
+  if(cloader.get() == 0)
+    throw Exception(TR_MAP("Could not get a data source catalog loader!"));
+
+// gets the data set type 
+  std::auto_ptr<te::da::DataSetType> dstype(cloader->getDataSetType(dsname));
+
+  if(dstype.get() == 0)
+    throw Exception(TR_MAP("Could not get the data set type!"));
+
+  if(!dstype->hasRaster())
+    throw Exception(TR_MAP("The data set referenced by the layer not contains raster data!"));
+
+// get the referenced data set
+  std::auto_ptr<te::da::DataSet> dataset(transactor->getDataSet(dsname));
+  if(dataset.get() == 0)
+    throw Exception(TR_MAP("Could not get the data set reference by the layer!"));
+
+// gets the raster
+  std::auto_ptr<te::rst::Raster> raster(dataset->getRaster());
+  if(raster.get() == 0)
+    throw Exception(TR_MAP("Could not get the raster referenced by the layer!"));
+
+  return raster.release();
 }

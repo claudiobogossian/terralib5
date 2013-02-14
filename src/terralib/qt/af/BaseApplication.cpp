@@ -29,8 +29,6 @@
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/FolderLayer.h"
-#include "../../maptools/Layer.h"
-#include "../../maptools/RasterLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
