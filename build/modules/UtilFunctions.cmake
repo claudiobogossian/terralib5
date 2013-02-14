@@ -231,6 +231,10 @@ MACRO(makePluginProject proj_name root_h_dir root_src_dir)
       LIBRARY DESTINATION "bin" COMPONENT PLUGINS
     )
   endif()
+  
+  # installing header files
+  installFiles("${root_h_dir}" "terralib" "HEADERS" "*.h*")
+  
 ENDMACRO(makePluginProject)
 
 # Macro installTarget

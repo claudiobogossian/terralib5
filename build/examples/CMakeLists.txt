@@ -11,6 +11,8 @@ if(NOT "${TE_DEPENDENCIES_DIR}" STREQUAL "")
   set (CMAKE_FIND_ROOT_PATH ${TE_DEPENDENCIES_DIR})
 endif()
 
+message ("m: ${TE_MODULE_PATH}")
+
 include (${TE_MODULE_PATH}/GeneralConfig.cmake)
 
 ############### Get the data used for testing the examples ###############

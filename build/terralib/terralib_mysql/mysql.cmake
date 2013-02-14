@@ -58,3 +58,13 @@ configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TE_PLUGIN_FILE})
 
 configure_file(${CMAKE_SOURCE_DIR}/../resources/sql/mysql-ogc-sfs.sql ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/mysql-ogc-sfs.sql COPYONLY)
 configure_file(${TE_JSON_FILES_LOCATION}/srs.json ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/srs.json COPYONLY)
+
+#Exporting plugin information for the configuration file in install tree
+set (TE_SCHEMA_LOCATION "../schemas/terralib")
+set (TE_PLUGIN_REQUIREMENTS "")
+
+set (TE_PLG_INFO "")
+getPluginInfo("${TE_PLUGIN_NAME}" "./plugin_mysql_info.xml" TE_PLG_INFO)
+set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
+  
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/plugin_mysql_info.xml)

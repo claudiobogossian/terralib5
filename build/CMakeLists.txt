@@ -45,3 +45,39 @@ if(WIN32)
   set (TE_GDAL_BIN ${TE_DEPENDENCIES_DIR}/gdal/win32/release)
   generateRunningBatch(${TE_MODULE_PATH}/runme.bat.in runme.bat)
 endif()
+
+file(
+  GLOB xml_config
+  FILES ${CMAKE_BINARY_DIR}/toInstall/*.xml
+)
+
+file(
+  GLOB head_config
+  FILES ${CMAKE_BINARY_DIR}/toInstall/*.h
+)
+
+file(
+  GLOB script_config
+  FILES ${CMAKE_BINARY_DIR}/toInstall/*.cmake
+)
+
+install ( 
+  FILES ${xml_config}
+  DESTINATION bin
+  COMPONENT BINARIES
+)
+
+install ( 
+  FILES ${head_config}
+  DESTINATION terralib
+  COMPONENT HEADERS
+)
+
+install ( 
+  FILES ${script_config}
+  DESTINATION modules
+  COMPONENT CMAKE
+)
+
+#installFiles ("${CMAKE_BINARY_DIR}/toInstall" "terralib" "HEADERS" "*.h")
+#installFiles ("${CMAKE_BINARY_DIR}/toInstall" "bin" "BINARIES" "*.xml")

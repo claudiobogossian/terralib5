@@ -1,5 +1,6 @@
-set (ROOT "${CMAKE_INSTALL_PREFIX}")
-set (TE_ROOT_INC "${ROOT}/src/terralib") 	
+set (TE_AUX_DIRS "")
+set (ROOT "..")
+set (TE_ROOT_INC "${ROOT}") 	
 set (TE_DEFAULT_LOGCONF_FILE "${ROOT}/log/te-log.conf")
 set (TE_SCHEMA_LOCATION "${ROOT}/schemas/terralib")
 set (TE_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png")
