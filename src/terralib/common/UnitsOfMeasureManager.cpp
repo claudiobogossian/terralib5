@@ -254,7 +254,7 @@ void te::common::UnitsOfMeasureManager::init()
 
   boost::property_tree::json_parser::read_json(TE_JSON_FILES_LOCATION "/uom.json",pt);
 
-  BOOST_FOREACH(boost::property_tree::ptree::value_type& v, pt.get_child("UOMs"))
+  BOOST_FOREACH(boost::property_tree::ptree::value_type& v, pt.get_child("units"))
   {
     unsigned int id = v.second.get<unsigned int>("id");
     std::string name = v.second.get<std::string>("name");
