@@ -134,8 +134,8 @@ namespace te
             \note The search for menus will occurs in ALL OF THE REGISTERED menus and menu bars, including submenus. The correct sintaxe
             for searchies submenus may be found in the documentation of the findMenu(QString mnuText, QMenu* mnu) method.
           */
-
           //@{
+
           /*!
             \brief Register the \a mnu.
 
@@ -189,6 +189,7 @@ namespace te
             \note If the menu bar does not exists, then this function will create it.
           */
           QMenuBar* getMenuBar(const QString& id) const;
+
           //@}
 
           /*!
