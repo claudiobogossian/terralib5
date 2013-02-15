@@ -18,10 +18,10 @@
  */
 
 /*!
-  \file main.cpp
+  \file examples/dataaccess/main.cpp
 
   \brief A list of examples for the TerraLib DataAccess Module.
- */
+*/
 
 // TerraLib
 #include <terralib/common/TerraLib.h>
@@ -60,13 +60,15 @@ int main(int /*argc*/, char** /*argv*/)
 
     MemoryExample();
 
-    //   PersistenceExample(); //??? Esta caindo - em ======Adds a new property and its values  
+    //PersistenceExample();
 
     DataSetAdapter();
 
     MySQLExample();
 
     SQLiteExample();
+
+    te::plugin::PluginManager::getInstance().unloadAll();
 
     TerraLib::getInstance().finalize();
   }
@@ -88,10 +90,6 @@ int main(int /*argc*/, char** /*argv*/)
     
     return EXIT_FAILURE;
   }
-  
-  te::plugin::PluginManager::getInstance().unloadAll();
-  
-  TerraLib::getInstance().finalize();
   
   std::cout << "Press Enter to exit..." << std::endl;
   std::cin.get();
