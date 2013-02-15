@@ -28,6 +28,7 @@ set(DEP_LIBS
 		terralib_memory
 		terralib_plugin
 		terralib_raster
+		terralib_serialization
 		terralib_srs
 		${Boost_LIBRARIES}
     )

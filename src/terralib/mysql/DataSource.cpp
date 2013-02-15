@@ -438,6 +438,7 @@ void te::mysql::DataSource::createMetadata()
     
     bexecutor->execute(spath.string(), options);
 
+    // Revisar
     te::mysql::JSON2MySQL(plugin.m_folder+"/srs.json", transactor);
 
     //t.commit();
