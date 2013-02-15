@@ -46,7 +46,7 @@ void Segmenter()
 // strategy specific parameters (m_minSegmentSize: size of the smallest segment to be created; m_segmentsSimilarityThreshold: similarity between neighboring segments to merge them or not)
     te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
     segparameters.m_minSegmentSize = 50;
-    segparameters.m_segmentsSimilarityThreshold = 30;
+    segparameters.m_segmentsSimilarityThreshold = 0.3;
 
     algoInputParameters.m_strategyName = "RegionGrowing";
     algoInputParameters.setSegStrategyParams(segparameters);

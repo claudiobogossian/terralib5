@@ -58,14 +58,22 @@ namespace te
             /*! \enum SegmentFeaturesType Segment features types. */
             enum SegmentFeaturesType
             {
-              MeanFeatureType = 0, /*!< The mean of segments pixel values will be used. */
+              InvalidFeaturesType, /*!< Invalid features type. */
+              MeanFeaturesType, /*!< The mean of segments pixel values will be used. */
+              BaatzFeaturesType, /*!< The Baatz based features will be used. */
             };             
             
-            unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number).
+            unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 1).
             
-            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged.
+            double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged; valid values range: [ 0, 1 ]; default:0.5.
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:MeanFeatureType).
+            
+            std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable.
+            
+            double m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
+            
+            double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
             Parameters();
             
@@ -89,6 +97,9 @@ namespace te
         bool initialize( 
           SegmenterStrategyParameters const* const strategyParams ) 
           throw( te::rp::Exception );
+          
+        //overload
+        void reset();
         
         //overload
         bool execute( 
@@ -128,7 +139,7 @@ namespace te
             SegmenterSegmentsBlock::SegmentIdDataType m_id;
             
             /*!
-              \brief Segment size (pixels number).
+              \brief Segment area (pixels number).
             */              
             unsigned int m_size;             
             
@@ -161,10 +172,10 @@ namespace te
             
             /*!
               \brief Returns a dissimilarity index between this and the
-              other segment.
+              other segment (normalized between 0 and 1).
               \param otherSegment The other segment.
               \return A dissimilarity index between this and the
-              other segment.
+              other segment ( normalized between 0 and 1 ).
             */              
             virtual double getDissimilarityIndex( 
               Segment const * const otherSegment ) = 0;
@@ -214,11 +225,7 @@ namespace te
         {
           public:
             
-            /*!
-              \brief Segment mean values (for each band).
-              \param otherSegment The other segment.
-            */              
-            std::vector< double > m_means;
+            std::vector< double > m_means; //!< Segment mean values (for each band), normalized between 0 and 1.
             
             MeanBasedSegment();
             
@@ -243,7 +250,41 @@ namespace te
             MeanBasedSegment* mergeFeatures_otherCastPtr;
             unsigned int mergeFeatures_meansIdx;
             unsigned int mergeFeatures_meansSize;
-        };                
+        };
+        
+        /*!
+          \class BaatzBasedSegment
+          \brief A segment based on Baatz features values
+         */        
+        class TERPEXPORT BaatzBasedSegment : public Segment
+        {
+          public:
+            
+            std::vector< double > const * m_bandsWeightsPtr; //!< Bands weights.
+            
+            std::vector< double > m_sums; //!< Segment sum of pixel velues.
+            
+            std::vector< double > m_stdDev; //!< Standard deviation of pixel velues.
+            
+            BaatzBasedSegment();
+            
+            ~BaatzBasedSegment();
+            
+            //overload
+            double getDissimilarityIndex( Segment const * const otherSegment );
+            
+            //overload
+            void mergeFeatures( Segment const * const otherSegment );
+            
+          protected :
+            
+
+            
+            // Variables used by mergeFeatures method
+            BaatzBasedSegment* mergeFeatures_otherCastPtr;
+            unsigned int mergeFeatures_meansIdx;
+            unsigned int mergeFeatures_meansSize;
+        };                        
         
         /*!
           \brief true if this instance is initialized.

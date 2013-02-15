@@ -58,7 +58,7 @@
           typedef unsigned int SegmentIdDataType;           
           
           /*! Block status - default:BlockNotProcessed*/
-          unsigned int m_status;      
+          BlockStatus m_status;      
 
           /*! Block upper left X over input full image - default:UINT_MAX*/
           unsigned int m_startX;

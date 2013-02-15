@@ -58,7 +58,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 30;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -106,7 +106,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 30;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -154,7 +154,7 @@ void TsSegmenter::ThreadedProcessing()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 30;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -202,7 +202,7 @@ void TsSegmenter::RegionGrowingStrategy()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 30;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
   
   
   te::rp::Segmenter::InputParameters algoInputParams;
