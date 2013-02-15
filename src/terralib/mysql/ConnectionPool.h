@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file ConnectionPool.h
+  \file terralib/mysql/ConnectionPool.h
 
   \brief A class that implements a connection pool for MySQL driver.
 */
