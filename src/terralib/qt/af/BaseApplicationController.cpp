@@ -212,6 +212,7 @@ void  te::qt::af::BaseApplicationController::initialize()
 
   m_appName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Name"));
   m_appTitle = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.Title"));
+  m_appIconName = QString::fromStdString(te::common::SystemApplicationSettings::getInstance().getValue("Application.IconName"));
 
   qApp->setApplicationName(m_appName);
 

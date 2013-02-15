@@ -120,7 +120,7 @@ namespace te
       static T m_singleton;  // The singleton instance.
 
       return m_singleton;
-    }    
+    }
 
     template<class T> inline Singleton<T>::Singleton()
     {

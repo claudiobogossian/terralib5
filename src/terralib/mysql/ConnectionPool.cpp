@@ -48,9 +48,9 @@ class te::mysql::ConnectionPool::ConnectionPoolImpl
 
     ConnectionPoolImpl(te::mysql::DataSource* ds)
       : m_ds(ds),
-        m_initialPoolSize(MYSQL_DEFAULT_INITIAL_POOL_SIZE),
-        m_minPoolSize(MYSQL_DEFAULT_MIN_POOL_SIZE),
-        m_maxPoolSize(MYSQL_DEFAULT_MAX_POOL_SIZE),
+        m_initialPoolSize(0),
+        m_minPoolSize(0),
+        m_maxPoolSize(0),
         m_poolSize(0),
         m_maxIdleTime(MYSQL_DEFAULT_MAX_IDLE_TIME),
         m_initialized(false)

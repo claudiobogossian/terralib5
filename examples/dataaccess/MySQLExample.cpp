@@ -26,19 +26,24 @@ void createDataSource()
   dsInfo["MY_HOST_NAME"] = "localhost";
   dsInfo["MY_USER_NAME"] = "root";
   dsInfo["MY_PASSWORD"] = "admin";
-  dsInfo["MY_NEW_SCHEMA_NAME"] = DATASOURCE_NAME;
+  dsInfo["MY_SCHEMA_NAME"] = "test";  
   dsInfo["MY_PORT"] = "3306";
-  dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
-  dsInfo["MY_CREATE_OGC_METADATA_TABLES"] = "TRUE";
+  dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";  
+  dsInfo["MY_CREATE_OGC_METADATA_TABLES"] = "FALSE";
+  dsInfo["MY_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = "FALSE";
+
+  dsInfo["MY_NEW_SCHEMA_NAME"] = DATASOURCE_NAME;
+  dsInfo["MY_NEW_SCHEMA_CREATE_OGC_METADATA_TABLES"] = "TRUE";
 
   std::auto_ptr<te::da::DataSource> ds(te::da::DataSource::create("MYSQL", dsInfo));
-
-  ds->close();
 }
 
 void copyFromOGR()
 {
 #if TE_EXAMPLE_USE_OGR
+  if(DATASOURCE_NAME == "")
+    createDataSource();
+
   std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
 
   std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
@@ -55,14 +60,17 @@ void copyFromOGR()
 
   std::auto_ptr<te::da::DataSet> originDset(originTransactor->getDataSet(originDt->getName()));
 
-
   std::map<std::string, std::string> dsInfo;
   dsInfo["MY_HOST_NAME"] = "localhost";
   dsInfo["MY_USER_NAME"] = "root";
   dsInfo["MY_PASSWORD"] = "admin";
   dsInfo["MY_SCHEMA"] = DATASOURCE_NAME;
-  dsInfo["MY_PORT"] = "3306"; 
+  dsInfo["MY_PORT"] = "3306";
   dsInfo["MY_OPT_CONNECT_TIMEOUT"] = "4";
+  dsInfo["MY_CLIENT_MULTI_RESULTS"] = "TRUE";
+  dsInfo["MY_CLIENT_MULTI_STATEMENTS"] = "TRUE";
+  dsInfo["MY_OPT_CHARSET_NAME"] = "latin1";
+
   
   std::auto_ptr<te::da::DataSource> destinationDs(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
@@ -291,9 +299,10 @@ void MySQLExample()
 #if TE_EXAMPLE_USE_MYSQL
   try
   {   
-    createInsertExample();
-    readExample();
-    //copyFromOGR();
+    //createInsertExample();
+    //readExample();
+    copyFromOGR();
+    
 
   }
   catch(const std::exception& e)

@@ -1,17 +1,17 @@
 list (APPEND TE_DEP_INCLUDES "${CMAKE_CURRENT_BINARY_DIR}")
 
-set (TE_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
+set (TE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/modules")
 
-list (APPEND CMAKE_MODULE_PATH "${TE_MODULES_PATH}" )
+list (APPEND CMAKE_MODULE_PATH "${TE_MODULE_PATH}" )
 
 set (TE_DEPENDENCIES_DIR "$ENV{TE_DEPENDENCIES_DIR}" CACHE PATH "Find the directory containing terralib5 3rd-party dependencies.")
 
-include (${TE_MODULES_PATH}/GeneralConfig.cmake)
-include (${TE_MODULES_PATH}/UtilFunctions.cmake)
-include (${TE_MODULES_PATH}/Deps_versions.cmake)
+include (${TE_MODULE_PATH}/GeneralConfig.cmake)
+include (${TE_MODULE_PATH}/UtilFunctions.cmake)
+include (${TE_MODULE_PATH}/Deps_versions.cmake)
 
 if(WIN32)
-  include (${TE_MODULES_PATH}/WinConfig.cmake)
+  include (${TE_MODULE_PATH}/WinConfig.cmake)
 endif()
 
 add_definitions (-DBOOST_FILESYSTEM_VERSION=3 -DBOOST_UBLAS_TYPE_CHECK=0)
@@ -32,21 +32,10 @@ set (TE_STRING_BUILD_DATE "2013-03-01")
 set (TE_STRING_VERSION "5.0.0-alpha.1")
 set (TE_INT_VERSION "050000")
 set (TE_VERSION "${TE_MAJOR_VERSION}.${TE_MINOR_VERSION}.${TE_PATCH_VERSION}")
-set (TE_DIR_ENVIRONMENT_VARIABLE "TE_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.") 
-set (TE_SCHEMA_LOCATION "${ROOT}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file.")
-set (TE_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the TerraLib logo image.")
-set (TE_JSON_FILES_LOCATION "${ROOT}/resources/json" CACHE STRING "Location of the TerraLib initialization files.")
-set (TE_SQL_FILES_LOCATION "${ROOT}/resources/sql" CACHE STRING "Location of the TerraLib initialization files.")
-set (TE_XML_FILES_LOCATION "${ROOT}/resources/xml" CACHE STRING "Location of the TerraLib initialization files.")
-set (TE_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the about logo image.")
-set (TE_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib.")
-set (TE_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme).")
-set (TE_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme).")
-if(WIN32)
-  set (TE_BIN_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-else()
-  set (TE_BIN_DIR ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-endif()
+set (TE_DIR_ENVIRONMENT_VARIABLE "TE_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.")
+set ( TE_AUX_DIRS "${CMAKE_CURRENT_BINARY_DIR}") 	
+
+include  (${CMAKE_SOURCE_DIR}/buildTree.cmake)
 # =========================
 
 option (BUILD_ANNOTATIONTEXT "Build Annotation Text module?" ON)
@@ -83,6 +72,7 @@ option (BUILD_XML "Build XML module?" ON)
 option (BUILD_XSD "Build XSD module?" ON)
 
 option (TE_STATIC_BUILD "Build all modules as static libraries?" OFF)
+option (TE_AUTOMATIC_INITIALIZATION "Perform automatic initialization from default files?" ON)
 option (TE_LOGGER_ENABLED "Logger enabled?" ON)
 option (TE_LOGGER_DO_AUTOMATIC_INITIALIZATION "Initialize automatically logger?" ON)
 option (TE_LOGGER_DO_STATIC_INITIALIZATION "Initialize logger while static initialization?" OFF)
@@ -242,7 +232,7 @@ list (APPEND TE_INCLUDE_DIRS "${ROOT}/src")
 
 configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake @ONLY)
 configure_file (terralibConfigVersion.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake @ONLY)
-configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
+#configure_file (teBuildTreeSettings.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/teBuildTreeSettings.cmake @ONLY)
 configure_file (${ROOT}/src/terralib/TerraLibConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraLibConfig.h)
 
 # Installing CMake files
@@ -257,7 +247,7 @@ install (
 )
   
 # CMake util files
-FILE ( GLOB cmake_files "${CMAKE_CURRENT_BINARY_DIR}/terralibConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake")
+FILE ( GLOB cmake_files "${CMAKE_CURRENT_BINARY_DIR}/terralibConfigVersion.cmake")
 install ( 
   FILES ${cmake_files}
   DESTINATION modules
@@ -265,7 +255,7 @@ install (
 )
 
 install ( 
-  DIRECTORY ${T5_MODULES_PATH}
+  DIRECTORY ${TE_MODULE_PATH}
   DESTINATION .
   COMPONENT CMAKE
   PATTERN "*Package*" EXCLUDE
@@ -314,7 +304,9 @@ install (
   COMPONENT HEADERS
 )
 
-include (${TE_MODULES_PATH}/Package.cmake)
-include (${TE_MODULES_PATH}/GenerateDox.cmake)
+# Installing configuration file
+include (${CMAKE_SOURCE_DIR}/installTree.cmake)
+configure_file (terralibConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/toInstall/terralibConfig.cmake @ONLY)
 
-#set (TE_LIBRARIES "${_TE_LIBRARIES}")
+include (${TE_MODULE_PATH}/Package.cmake)
+include (${TE_MODULE_PATH}/GenerateDox.cmake)

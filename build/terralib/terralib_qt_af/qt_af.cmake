@@ -85,5 +85,7 @@ list (APPEND SRCS "${MOC}")
 list (APPEND QT_AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 list (APPEND TE_DEP_INCLUDES "${QT_AF_INC_DIRS}")
 
+set (TE_AUX_DIRS ${TE_AUX_DIRS} "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
+
 #exporting module information
 exportModuleInformation ("qt_af" "${QT_AF_INC_DIRS}" "${QT_AF_INC_INST_DIRS}")

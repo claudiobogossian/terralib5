@@ -1,0 +1,7 @@
+{"units":
+	[	{ "id" : 1024, "name" : "bin", "symbol" : "", "type" : "scale", "description" : "", "target_uom" : 9201, "factor_a" : 1, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9001, "name" : "metre", "symbol" : "", "type" : "length","description" : "", "target_uom" : 9001, "factor_a" : 1, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9002, "name" : "foot", "symbol" : "", "type" : "length", "description" : "", "target_uom" : 9001, "factor_a" : 0.3048, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 },
+		{ "id" : 9036, "name" : "kilometre", "symbol" : "", "type" : "length", "description" : "", "target_uom" : 9001, "factor_a" : 1000, "factor_b" : 0, "factor_c" : 0, "factor_d" : 1 }
+	]
+}

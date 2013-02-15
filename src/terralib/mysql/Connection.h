@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file Connection.h
+  \file terralib/mysql/Connection.h
 
   \brief A class that implements a connection to a MySQL database.
 */

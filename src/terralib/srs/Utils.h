@@ -31,12 +31,14 @@ namespace te
   namespace srs
   {
     /*! 
-      \brief This funcions initialize the Coordinate System Manager from a JSON resource file.
-      This funcions initialize the Coordinate System Manager from a JSON resource file named "srsjson.txt",
-      located within the TERRALIB_INITIALIZATION_FILES path.
-     
-      \exception It throws exception if the file is not found ou has an invalid sintax.
-      \note This function should be called one time only. 
+      \brief This funcion initializes the Coordinate System Manager from a JSON resource file.
+
+      This funcions initialize the Coordinate System Manager from a JSON resource file named "srs.json",
+      located within the TE_JSON_FILES_LOCATION path.
+
+      \exception It throws an exception if the file is not found or has an invalid syntax.
+
+      \note This function should be called one time only.
     */
     void InitManagerFromJSON();
   }

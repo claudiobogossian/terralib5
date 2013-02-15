@@ -71,6 +71,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 get_filename_component(TVIEW_OUT_DIR "${TVIEW_CONFIG_FILE}" PATH)
 
+set(TVIEW_ICON "terraview-logo" CACHE FILEPATH "Icon to be used as TerraView icon.")
+
 add_definitions (-DBOOST_ALL_NO_LIB)
 
 add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
@@ -83,3 +85,19 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_RUNTIME_OUTPUT
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/user_settings.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/application_plugins.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_CURRENT_BINARY_DIR}/TerraViewConfig.h)
+
+install(
+  TARGETS ${PROJ_NAME}
+  RUNTIME DESTINATION "bin" COMPONENT BINARIES
+  LIBRARY DESTINATION "bin" COMPONENT BINARIES
+  ARCHIVE DESTINATION "bin" COMPONENT BINARIES
+)
+
+# install tree for config files
+include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/config.xml.in ${CMAKE_BINARY_DIR}/toInstall/config.xml)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_BINARY_DIR}/toInstall/user_settings.xml)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_BINARY_DIR}/toInstall/application_plugins.xml)
+configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
+
+

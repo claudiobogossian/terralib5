@@ -70,26 +70,25 @@ namespace te
     /*!
       \enum MeasureType
 
-      \brief Defines the possible types of measurements.
+      \brief Defines the possible types of unit of measurements.
     */
     enum MeasureType
     {
-      Length,  /*!< Refers to lenght measurements. */
-      Area,    /*!< Refers to area measurements. */
-      Volume,  /*!< Refers to volume measurements. */
+      Length,  /*!< Refers to lenght measurements.  */
+      Area,    /*!< Refers to area measurements.    */
+      Volume,  /*!< Refers to volume measurements.  */
       Angle,   /*!< Refers to angular measurements. */
-      Scale,   /*!< Refers to scale measurements. */
-      Time,    /*!< Refers to time measurements. */
-      Speed    /*!< Refers to speed measurements. */
+      Scale,   /*!< Refers to scale measurements.   */
+      Time,    /*!< Refers to time measurements.    */
+      Speed    /*!< Refers to speed measurements.   */
     };
     
     /*!
-     \brief Defines some known UOM (Unit of Measure) codes.
-     
-     Values from 9001 to 9302 coincide with EPSG codes.
-     
-     */  
-    enum  
+      \brief Defines some known UOM (Unit of Measure) codes.
+
+      \note Values from 9001 to 9302 coincide with EPSG codes.
+    */
+    enum
     {
       UOM_Metre        = 9001,
       UOM_Foot         = 9002,
