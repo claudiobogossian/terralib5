@@ -39,6 +39,9 @@ void createDataSource()
 void copyFromOGR()
 {
 #if TE_EXAMPLE_USE_OGR
+  if(DATASOURCE_NAME == "")
+    createDataSource();
+
   std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
 
   std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("OGR"));
@@ -291,9 +294,9 @@ void MySQLExample()
 #if TE_EXAMPLE_USE_MYSQL
   try
   {   
-    createInsertExample();
-    readExample();
-    //copyFromOGR();
+    //createInsertExample();
+    //readExample();
+    copyFromOGR();
 
   }
   catch(const std::exception& e)

@@ -119,9 +119,9 @@ namespace te
 
       private:
 
-        DataSourceTransactor* m_t;  //!< The associated transactor.
+        DataSourceTransactor* m_t;            //!< The associated transactor.
 
-        std::vector<std::string*> m_commands;
+        std::vector<std::string*> m_commands; //!< Vector of comands.
     };
 
   } // end namespace mysql

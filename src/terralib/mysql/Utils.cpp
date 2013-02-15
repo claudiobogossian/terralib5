@@ -1087,8 +1087,10 @@ void te::mysql::JSON2MySQL(const std::string path, std::auto_ptr<te::da::DataSou
       fullsql += te::common::Convert2String(v.second.get<unsigned int>("srid")) + ", ";
       fullsql += "NULL, ";   // auth_name???
       fullsql += te::common::Convert2String(0) + ", "; // auth_srid???
-      fullsql += "'" + v.second.get<std::string>("wkt") + "', "; // srtext
-      fullsql += "'" + v.second.get<std::string>("pj4txt") + "');\n"; // proj4text
+      fullsql += "'', "; // srtext
+      fullsql += "'');\n"; // proj4text
+      //fullsql += "'" + v.second.get<std::string>("wkt") + "', "; // srtext
+      //fullsql += "'" + v.second.get<std::string>("pj4txt") + "');\n"; // proj4text
 
       t->execute(fullsql);
     }
