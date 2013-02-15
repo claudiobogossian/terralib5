@@ -16,36 +16,31 @@
   </DataTypeCapabilities>
 
   <QueryCapabilities>
-    <SqlDialect>TRUE</SqlDialect>
-    <Insert>TRUE</Insert>
-    <Update>TRUE</Update>
-    <Delete>TRUE</Delete>
-    <Create>TRUE</Create>
-    <Drop>TRUE</Drop>
-    <Alter>TRUE</Alter>
-    <Select>TRUE</Select>
-    <SelectInto>TRUE</SelectInto>
-    <SupportTransactions>TRUE</SupportTransactions>
+    <SQLDialect>true</SQLDialect>
+    <Insert>true</Insert>
+    <Update>true</Update>
+    <Delete>true</Delete>
+    <Create>true</Create>
+    <Drop>true</Drop>
+    <Alter>true</Alter>
+    <Select>true</Select>
+    <SelectInto>true</SelectInto>
 	
     <SpatialOperators>
 	
-		<Function name="st_transform">
-			<FunctionEncoder alias="Transform"/>
-		</Function>
-		
     </SpatialOperators>
 	
     <LogicalOperators>
 		
-		<Function name="st_and">
+		<Function name="and">
 			<BinaryOpEncoder alias="AND"/>
 		</Function>
 		
-		<Function name="st_or">
+		<Function name="or">
 			<BinaryOpEncoder alias="OR"/>
 		</Function>
 		
-		<Function name="st_not">
+		<Function name="not">
 			<UnaryOpEncoder alias="NOT"/>
 		</Function>
     
@@ -99,65 +94,7 @@
 	
     </ArithmeticOperators>
     
-	<Functions>
-	
-	<!-- arithmetic operators -->
-
-		<Function name="+">
-			<BinaryOpEncoder alias="+"/>
-		</Function>
-
-		<Function name="-">
-			<BinaryOpEncoder alias="-"/>
-		</Function>
-
-		<Function name="*">
-			<BinaryOpEncoder alias="*"/>
-		</Function>
-
-		<Function name="/">
-			<BinaryOpEncoder alias="/"/>
-		</Function>
-
-    <!-- relational operators -->
-
-		<Function name="=">
-			<BinaryOpEncoder alias="="/>
-		</Function>
-
-		<Function name="&#60;&#62;">
-			<BinaryOpEncoder alias="&#60;&#62;"/>
-		</Function>
-
-		<Function name="&#62;">
-			<BinaryOpEncoder alias="&#62;"/>
-		</Function>
-
-		<Function name="&#60;">
-			<BinaryOpEncoder alias="&#60;"/>
-		</Function>
-
-		<Function name="&#62;=">
-			<BinaryOpEncoder alias="&#62;="/>
-		</Function>
-
-		<Function name="&#60;=">
-			<BinaryOpEncoder alias="&#60;="/>
-		</Function>
-
-    <!-- logical operators -->
-    
-		<Function name="and">
-			<BinaryOpEncoder alias="AND"/>
-		</Function>
-    
-		<Function name="or">
-			<BinaryOpEncoder alias="OR"/>
-		</Function>
-    
-		<Function name="not">
-			<UnaryOpEncoder alias="NOT"/>
-		</Function>
+	<Functions>	
 
     <!-- string operators -->
 
@@ -208,38 +145,38 @@
   </QueryCapabilities>
   
   <DataSetTypeCapabilities>
-    <SupportPrimaryKey>TRUE</SupportPrimaryKey>
-    <SupportUniqueKey>TRUE</SupportUniqueKey>
-    <SupportForeignKey>TRUE</SupportForeignKey>
-    <SupportSequence>FALSE</SupportSequence>
-    <SupportCheckConstraints>TRUE</SupportCheckConstraints>
-    <SupportIndex>TRUE</SupportIndex>
-    <SupportRTreeIndex>TRUE</SupportRTreeIndex>
-    <SupportBTreeIndex>TRUE</SupportBTreeIndex>
-    <SupportHashIndex>FALSE</SupportHashIndex>
-    <SupportQuadTreeIndex>FALSE</SupportQuadTreeIndex>
+    <SupportPrimaryKey>true</SupportPrimaryKey>
+    <SupportUniqueKey>true</SupportUniqueKey>
+    <SupportForeignKey>true</SupportForeignKey>
+    <SupportSequence>false</SupportSequence>
+    <SupportCheckConstraints>true</SupportCheckConstraints>
+    <SupportIndex>true</SupportIndex>
+    <SupportRTreeIndex>true</SupportRTreeIndex>
+    <SupportBTreeIndex>true</SupportBTreeIndex>
+    <SupportHashIndex>false</SupportHashIndex>
+    <SupportQuadTreeIndex>false</SupportQuadTreeIndex>
   </DataSetTypeCapabilities>
   <DataSetCapabilities>
-    <Bidirectional>FALSE</Bidirectional>
-    <Random>FALSE</Random>
-    <Indexed>FALSE</Indexed>
-    <EfficientMovePrevious>FALSE</EfficientMovePrevious>
-    <EfficientMoveBeforeFirst>TRUE</EfficientMoveBeforeFirst>
-    <EfficientMoveLast>FALSE</EfficientMoveLast>
-    <EfficientMoveAfterLast>FALSE</EfficientMoveAfterLast>
-    <EfficientMove>FALSE</EfficientMove>
-    <EfficientSize>FALSE</EfficientSize>
-    <Insertion>FALSE</Insertion>
-    <Update>FALSE</Update>
-    <Deletion>FALSE</Deletion>
+    <Bidirectional>false</Bidirectional>
+    <Random>false</Random>
+    <Indexed>false</Indexed>
+    <EfficientMovePrevious>false</EfficientMovePrevious>
+    <EfficientMoveBeforeFirst>true</EfficientMoveBeforeFirst>
+    <EfficientMoveLast>false</EfficientMoveLast>
+    <EfficientMoveAfterLast>false</EfficientMoveAfterLast>
+    <EfficientMove>false</EfficientMove>
+    <EfficientSize>false</EfficientSize>
+    <Insertion>false</Insertion>
+    <Update>false</Update>
+    <Deletion>false</Deletion>
   </DataSetCapabilities>
   <SpecificCapabilities>
 
   </SpecificCapabilities>
   <AccessPolicyName>RW_ACCESS</AccessPolicyName>
-  <SupportTransactions>TRUE</SupportTransactions>
-  <SupportDataSetPesistenceAPI>TRUE</SupportDataSetPesistenceAPI>
-  <SupportDataSetTypePesistenceAPI>TRUE</SupportDataSetTypePesistenceAPI>
-  <SupportPreparedQueryAPI>TRUE</SupportPreparedQueryAPI>
-  <SupportBatchExecutorAPI>TRUE</SupportBatchExecutorAPI>
+  <SupportTransactions>true</SupportTransactions>
+  <SupportDataSetPesistenceAPI>true</SupportDataSetPesistenceAPI>
+  <SupportDataSetTypePesistenceAPI>true</SupportDataSetTypePesistenceAPI>
+  <SupportPreparedQueryAPI>true</SupportPreparedQueryAPI>
+  <SupportBatchExecutorAPI>true</SupportBatchExecutorAPI>
 </DataSourceCapabilities>
