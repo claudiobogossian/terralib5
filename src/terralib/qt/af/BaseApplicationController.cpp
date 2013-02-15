@@ -470,7 +470,10 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
     {
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("RecentProjects"))
       {
-        QString pp = v.second.get<std::string>("<xmlattr>.xlink:href").c_str();
+        if(v.second.data().empty())
+          continue;
+
+        QString pp = v.second.get<std::string>("Project.<xmlattr>.xlink:href").c_str();
         QAction* act = mnu->addAction(pp);
         act->setData(pp);
       }
