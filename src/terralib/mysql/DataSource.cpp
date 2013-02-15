@@ -252,7 +252,7 @@ void te::mysql::DataSource::create(const std::map<std::string, std::string>& dsI
   //ds->m_dsInfo["MY_CREATE_OGC_METADATA_TABLES"] = "FALSE";
   //ds->m_dsInfo["MY_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = "FALSE";
 
-  //ds->open();
+  ds->open();
 
 // try to create database
   std::string cmd("CREATE DATABASE IF NOT EXISTS ");
@@ -345,11 +345,6 @@ void te::mysql::DataSource::create(const std::map<std::string, std::string>& dsI
 
   if(it != it_end)
     m_dsInfo["MY_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = it->second;
-
-  it = dsInfo.find("MY_CREATE_OGC_METADATA_TABLES");
-
-  if(it != it_end)
-    m_dsInfo["MY_CREATE_OGC_METADATA_TABLES"] = it->second;
 
 // just to create the metadata tables
   open();
