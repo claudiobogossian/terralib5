@@ -37,6 +37,8 @@ class QWidget;
 
 /*!
   \brief The main class of TerraView.
+
+  \sa te::qt::af::BaseApplication
 */
 class TerraView : public te::qt::af::BaseApplication
 {
@@ -48,7 +50,13 @@ class TerraView : public te::qt::af::BaseApplication
 
     ~TerraView();
 
-    //void init(const std::string& configFile);
+    void init();
+
+    void init(const std::string& configFile);
+
+  protected:
+
+    void makeDialog();
 
   protected slots:
 

@@ -7,7 +7,7 @@
   <Organization>INPE</Organization>
   <Name>TerraView</Name>	
   <Title>TerraView</Title>
-  <IconName>terraview</IconName>	
+  <IconName>${TVIEW_ICON}</IconName>	
   <UserSettingsFile xlink:href="${TVIEW_OUT_DIR}/user_settings.xml"/>
   <PluginsFile xlink:href="${TVIEW_OUT_DIR}/application_plugins.xml"/>
   <HelpFile xlink:href="${TVIEW_RESOURCE_FILE}"/>
@@ -17,7 +17,6 @@
   </IconThemeInfo>
   <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
   <DefaultPluginsCategory>
-<!--
     <Category>Cellular Space</Category>
     <Category>Data Access</Category>
     <Category>Data Management</Category>
@@ -28,7 +27,6 @@
     <Category>Spatial Analysis</Category>
     <Category>Spatial Operations</Category>
     <Category>Web Services</Category>
--->    
   </DefaultPluginsCategory>
   <AboutDialogLogo xlink:href="${TE_ABOUT_LOGO}"/>
   <TerraLibLogo xlink:href="${TE_LOGO}"/>

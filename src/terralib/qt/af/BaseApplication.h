@@ -99,8 +99,9 @@ namespace te
 
           virtual void closeEvent(QCloseEvent* e);
 
-          virtual void initAction(QAction*& act, const QString& icon, const QString& name, const QString& text, const QString& tooltip, 
-            const bool& iconVisibleInMenu, const bool& isCheckable, const bool& enabled);
+          virtual void initAction(QAction*& act, const QString& icon, const QString& name,
+                                  const QString& text, const QString& tooltip,
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled);
 
           virtual void initActions();
 
@@ -156,7 +157,9 @@ namespace te
           QAction *m_fileExit;
           QAction *m_filePrint;
           QAction *m_filePrintPreview;
+
           QWidget *m_centralwidget;
+          
           QMenuBar *m_menubar;
           QMenu *m_editMenu;
           QMenu *m_viewMenu;
@@ -167,6 +170,8 @@ namespace te
           QMenu *m_projectAddLayerMenu;
           QMenu *m_layerMenu;
           QMenu *m_fileMenu;
+          QMenu *m_recentProjectsMenu;
+
           QStatusBar *m_statusbar;
           QToolBar *m_fileToolBar;
           QToolBar *m_editToolBar;

@@ -57,9 +57,11 @@ namespace te
        type of measures that they refer to and an optional description. Derived Units 
        also have the identification of its Base Unit and 4 factors to relate them,
        using the following formula:
+
        \code
        Y = (AX + B) / (CX + D)
        \endcode
+
        where Y is the measure in the derived unit and X is measure in base unit.
 
       \sa UnitsOfMeasureManager
@@ -88,17 +90,17 @@ namespace te
         \param symbol      Unit symbol.
         \param type        Unit type of measure
         \param baseUnitId  Identification of the base unit from which this is derived of.
-        \param A           A factor in the conversion formula.          
-        \param B           B factor in the conversion formula (by default it is equal to zero).
-        \param C           C factor in the conversion formula (by default it is equal to zero).
-        \param D           D factor in the conversion formula (by default it is equal to one).
+        \param A           A factor in the conversion formula.
+        \param B           B factor in the conversion formula.
+        \param C           C factor in the conversion formula.
+        \param D           D factor in the conversion formula.
         \param description Unit description (by default empty).
 
-        \note (C+D) can not be zero.
+        \note (C + D) can not be zero.
        */
-       UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol, MeasureType type, 
-                     unsigned int baseUnitid, 
-                     double A, double B=0.0, double C = 0.0, double D = 1.0, 
+       UnitOfMeasure(unsigned int id, const std::string& name, const std::string& symbol,
+                     MeasureType type, unsigned int baseUnitId, 
+                     double A, double B = 0.0, double C = 0.0, double D = 1.0, 
                      const std::string& description = "");
       
       /*! \brief Destructor. */
@@ -147,7 +149,7 @@ namespace te
       MeasureType getType() const;
 
       /*! \brief Returns true if this is a base unit; otherwise returns false. */
-        bool isBaseUnit() const;
+      bool isBaseUnit() const;
 
       /*!
         \brief Returns the base unit id from which this unit derives of. 
@@ -159,14 +161,14 @@ namespace te
       /*!
         \brief Returns the conversion factors to convert the unit to its base unit.
 
-        \param A To return the A factor in the conversion formula (output).          
-        \param B To return the B factor in the conversion formula (output).          
-        \param C To return the C factor in the conversion formula (output).          
+        \param A To return the A factor in the conversion formula (output).
+        \param B To return the B factor in the conversion formula (output).
+        \param C To return the C factor in the conversion formula (output).
         \param D To return the D factor in the conversion formula (output).
 
         \note If this is a base unit, the return values are A=1, B=0, C=0 and D=1.
       */
-      void getConversionFactors(double& A, double& B, double& C, double& D);
+      void getConversionFactors(double& A, double& B, double& C, double& D) const;
       
       /*!
         \brief Returns a multiplicative value to convert the unit to its base unit.
@@ -175,9 +177,9 @@ namespace te
 
         \return A multiplicative value to convert the unit to its base unit.
 
-        \note If this is a base unit, the returned value is 1.
+        \note If this is a base unit, the returned value is 1.0.
       */
-      double getConversionValue();
+      double getConversionValue() const;
       
       /*!
         \brief Returns the WKT description of a unit of measure.
@@ -193,8 +195,9 @@ namespace te
         std::string  m_symbol;             //!< Unit symbol.
         MeasureType  m_type;               //!< Unit type of measure.
         std::string  m_description;        //!< unit of measure description.
-        
+
         unsigned int m_baseUnitId;         //!< Unique identification number of the base unit to which a conversion operation is provided.
+
         double m_a;
         double m_b;
         double m_c;

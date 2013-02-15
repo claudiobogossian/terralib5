@@ -380,6 +380,8 @@ list (APPEND QT_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 list (APPEND QT_INC_INST_DIRS "qt/ui")
 list (APPEND TE_DEP_INCLUDES "${QT_INC_DIRS}")
 
+set (TE_AUX_DIRS ${TE_AUX_DIRS} "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
+
 list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")
 
 list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)

@@ -56,7 +56,7 @@ namespace te
           enum
           {
             ICON_DATASOURCE_SMALL,
-            ICON_DATASOURCE_CONNECTOR = 2
+            ICON_DATASOURCE_CONNECTOR
           };
 
           DataSourceType();

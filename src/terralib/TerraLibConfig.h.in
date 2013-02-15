@@ -82,6 +82,13 @@
 #define TE_DIR_ENVIRONMENT_VARIABLE "${TE_DIR_ENVIRONMENT_VARIABLE}"
 
 /*!
+  \def TE_JSON_FILES_LOCATION
+
+  \brief This macro defines the locaion of JSON resources used in TerraLib.
+*/
+#define TE_JSON_FILES_LOCATION "${TE_JSON_FILES_LOCATION}"
+
+/*!
   \def TE_USE_GDAL
 
   \brief If this flag is set to 1 the GDAL driver support will be enabled.
@@ -145,7 +152,14 @@
 
   \brief If set to 1 this will tells TerraLib that it is statically build.
 */
-#cmakedefine01 TE_TE_STATIC_BUILD
+#cmakedefine01 TE_STATIC_BUILD
+
+/*!
+  \def TE_AUTOMATIC_INITIALIZATION
+
+  \brief If set, this will tells TerraLib to read from default initialization files.
+*/
+#cmakedefine TE_AUTOMATIC_INITIALIZATION
 
 /*!
   \def TE_LOGGER_ENABLED
@@ -179,7 +193,7 @@
 */
 #cmakedefine01 TE_TRANSLATOR_ENABLED
 
-/*!  
+/*!
   \def TE_USE_GNU_TEXT_UTILITIES
 
   \brief If you want to have international support you must set this flag to 1, otherwise set it to 0 (zero).
@@ -193,7 +207,7 @@
 */
 #cmakedefine01 TE_CHARENCODING_ENABLED
 
-/*!  
+/*!
   \def TE_USE_GNU_ICONV
 
   \brief If you want to have character encoding support you must set this flag to 1, otherwise set it to 0 (zero).
@@ -201,12 +215,12 @@
 #cmakedefine01 TE_USE_GNU_ICONV
 
 /*! 
-  \brief Define to 1 if you have the <boost/version.hpp> header file. 
+  \brief Define to 1 if you have the <boost/version.hpp> header file.
 */
 #cmakedefine01 TE_HAVE_BOOST_VERSION_HPP
 
 /*! 
-  \brief Define to 1 if you have the <cppunit/Outputter.h> header file. 
+  \brief Define to 1 if you have the <cppunit/Outputter.h> header file.
 */
 #cmakedefine01 TE_HAVE_CPPUNIT_OUTPUTTER_H
 

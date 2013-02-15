@@ -135,8 +135,8 @@ namespace te
       /*!
         \brief Gets a menu or submenu contained in the \a mnu object.
 
-        This function searches by the menu exactly as the findMenu function. The difference is that if the menu do not exists,
-        this function will create it, in all levels that may be required. Use the sintaxe described above to the search / create the submenus desired.
+        This function searches by the menu exactly as the FindMenu function. The difference is that if the menu do not exists,
+        this function will create it, in all levels that may be required. Use the syntax described above to the search / create the submenus desired.
 
         \param mnuText Name of the menu. (This will be used as texts of the menus.)
 
