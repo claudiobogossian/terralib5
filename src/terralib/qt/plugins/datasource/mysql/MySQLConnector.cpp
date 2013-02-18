@@ -18,15 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/mysql/MySQLConnector.cpp
+  \file terralib/qt/plugins/datasource/mysql/MySQLConnector.cpp
 
-  \brief ....
+  \brief MySQL connector implementation for the Qt data source widget.
 */
 
 // TerraLib
-#include "../../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "MySQLConnector.h"
 #include "MySQLConnectorDialog.h"
 
@@ -39,16 +39,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-te::qt::widgets::MySQLConnector::MySQLConnector(QWidget* parent, Qt::WindowFlags f)
-  : AbstractDataSourceConnector(parent, f)
+te::qt::plugins::mysql::MySQLConnector::MySQLConnector(QWidget* parent, Qt::WindowFlags f)
+  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
 {
 }
 
-te::qt::widgets::MySQLConnector::~MySQLConnector()
+te::qt::plugins::mysql::MySQLConnector::~MySQLConnector()
 {
 }
 
-void te::qt::widgets::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<MySQLConnectorDialog> cdialog(new MySQLConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -70,7 +70,7 @@ void te::qt::widgets::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr
   }
 }
 
-void te::qt::widgets::MySQLConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::mysql::MySQLConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
@@ -99,7 +99,7 @@ void te::qt::widgets::MySQLConnector::update(std::list<te::da::DataSourceInfoPtr
   }
 }
 
-void te::qt::widgets::MySQLConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::mysql::MySQLConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
