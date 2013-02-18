@@ -20,7 +20,7 @@
 /*!
   \file terralib/postgis/Transactor.cpp
 
-  \brief Transactor class for PostGIS driver.  
+  \brief Transactor class for PostGIS driver.
 */
 
 // TerraLib

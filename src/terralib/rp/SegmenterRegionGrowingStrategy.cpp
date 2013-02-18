@@ -46,6 +46,7 @@ namespace te
 {
   namespace rp
   {
+    //-------------------------------------------------------------------------
     
     SegmenterRegionGrowingStrategy::Parameters::Parameters()
     {
@@ -65,6 +66,9 @@ namespace te
       m_minSegmentSize = params.m_minSegmentSize;
       m_segmentsSimilarityThreshold = params.m_segmentsSimilarityThreshold;
       m_segmentFeatures = params.m_segmentFeatures;
+      m_bandsWeights = params.m_bandsWeights;
+      m_colorWeight = params.m_colorWeight;
+      m_compactnessWeight = params.m_compactnessWeight;
       
       return *this;      
     }
@@ -72,15 +76,20 @@ namespace te
     void SegmenterRegionGrowingStrategy::Parameters::reset() 
     throw( te::rp::Exception )
     {
-      m_minSegmentSize = 0;
-      m_segmentsSimilarityThreshold = 0.0;
-      m_segmentFeatures = MeanFeatureType;      
+      m_minSegmentSize = 1;
+      m_segmentsSimilarityThreshold = 0.5;
+      m_segmentFeatures = MeanFeaturesType;      
+      m_bandsWeights.clear();
+      m_colorWeight = 0.5;
+      m_compactnessWeight = 0.5;
     }
     
     te::common::AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
     {
       return new te::rp::SegmenterRegionGrowingStrategy::Parameters( *this );
     }
+    
+    //-------------------------------------------------------------------------
 
     SegmenterRegionGrowingStrategy::Segment::Segment()
     {
@@ -103,14 +112,8 @@ namespace te
     {
       return *this;
     };
-
-    SegmenterRegionGrowingStrategy::MeanBasedSegment::MeanBasedSegment()
-    {
-    }
     
-    SegmenterRegionGrowingStrategy::MeanBasedSegment::~MeanBasedSegment()
-    {
-    }
+    //-------------------------------------------------------------------------
     
     SegmenterRegionGrowingStrategy::SegmentsContainer::SegmentsContainer()
     {
@@ -136,10 +139,22 @@ namespace te
       clear();
     }     
     
+    //-------------------------------------------------------------------------
+    
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::MeanBasedSegment()
+    {
+    }
+    
+    SegmenterRegionGrowingStrategy::MeanBasedSegment::~MeanBasedSegment()
+    {
+    }    
+    
     double 
     SegmenterRegionGrowingStrategy::MeanBasedSegment::getDissimilarityIndex( 
       Segment const * const otherSegment )
     {
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< MeanBasedSegment const * const >(
+        otherSegment ), "Invalid segment type" );       
       getDissimilarityIndex_otherCastPtr = 
         (MeanBasedSegment*)(otherSegment);
       
@@ -168,6 +183,8 @@ namespace te
     void SegmenterRegionGrowingStrategy::MeanBasedSegment::mergeFeatures( 
       Segment const * const otherSegment )
     {
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< MeanBasedSegment const * const >(
+        otherSegment ), "Invalid segment type" );      
       mergeFeatures_otherCastPtr = (MeanBasedSegment*)(otherSegment);
       
       mergeFeatures_meansSize = m_means.size();
@@ -189,6 +206,91 @@ namespace te
       }
     }
     
+    //-------------------------------------------------------------------------
+    
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::BaatzBasedSegment()
+    {
+    }
+    
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::~BaatzBasedSegment()
+    {
+    }    
+    
+    double 
+    SegmenterRegionGrowingStrategy::BaatzBasedSegment::getDissimilarityIndex( 
+      Segment const * const otherSegment )
+    {
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment const * const >(
+        otherSegment ), "Invalid segment type" );
+      BaatzBasedSegment const* const otherCastPtr = (BaatzBasedSegment const*)(otherSegment);
+        
+      TERP_DEBUG_TRUE_OR_THROW( m_bandsWeightsPtr, 
+        "Invalid m_bandsWeightsPtr pointer" );
+      
+      const unsigned int sumsSize = m_sums.size();
+      TERP_DEBUG_TRUE_OR_THROW( sumsSize ==
+        m_stdDev.size(),
+        "Internal error" );       
+      TERP_DEBUG_TRUE_OR_THROW( sumsSize ==
+        otherCastPtr->m_sums.size(),
+        "Internal error" );       
+        
+      double dissValue = 0.0;
+      
+      double sumCurrent = 0.0;
+      double sumOther = 0;
+      double sumUnion = 0;
+      
+      const double sizeCurrent = (double)m_size;
+      const double sizeOther = (double)otherCastPtr->m_size;
+      const double sizeUnion = sizeCurrent + sizeOther;
+      
+      double meanUnion = 0;
+      
+      double stdDevUnion = 0.0;
+      
+      double hColor = 0;
+      
+      for( unsigned int sumsIdx = 0 ; sumsIdx < sumsSize ; ++sumsIdx )
+      {
+        sumCurrent = m_sums[ sumsIdx ];
+        
+        sumOther = otherCastPtr->m_sums[ sumsIdx ];
+        
+        sumUnion = sumCurrent + sumOther;
+        
+        meanUnion = sumUnion / sizeUnion;
+        
+        stdDevUnion =
+          ( 
+            (
+              ( ( sumCurrent * sumCurrent ) / ( sizeCurrent * sizeCurrent ) )
+              *
+              ( ( sumOther * sumOther ) / ( sizeOther * sizeOther ) )
+            )
+            -
+            (
+              2.0 * meanUnion * sumUnion
+            )
+            +
+            (
+              sizeUnion * meanUnion * meanUnion
+            )
+          );        
+          
+      }
+        
+      return sqrt( dissValue );
+    };
+    
+    void SegmenterRegionGrowingStrategy::BaatzBasedSegment::mergeFeatures( 
+      Segment const * const otherSegment )
+    {
+
+    }    
+    
+    //-------------------------------------------------------------------------
+    
     SegmenterRegionGrowingStrategy::SegmenterRegionGrowingStrategy()
     {
       m_isInitialized = false;
@@ -196,6 +298,7 @@ namespace te
     
     SegmenterRegionGrowingStrategy::~SegmenterRegionGrowingStrategy()
     {
+      reset();
     }
     
     bool SegmenterRegionGrowingStrategy::initialize( 
@@ -215,7 +318,7 @@ namespace te
           "Invalid segmenter strategy parameter" )
         TERP_TRUE_OR_RETURN_FALSE( ( 
           ( m_parameters.m_segmentsSimilarityThreshold >= 0.0 )
-          && ( m_parameters.m_segmentsSimilarityThreshold <= 100.0 ) ),
+          && ( m_parameters.m_segmentsSimilarityThreshold <= 1.0 ) ),
           "Invalid segmenter strategy parameter" )        
           
         m_isInitialized = true;
@@ -227,6 +330,12 @@ namespace te
         return false;
       }
     }
+    
+    void SegmenterRegionGrowingStrategy::reset()
+    {
+      m_isInitialized = false;
+      m_parameters.reset();
+    };
     
     bool SegmenterRegionGrowingStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,
@@ -353,29 +462,66 @@ namespace te
         Matrix< SegmenterSegmentsBlock::SegmentIdDataType >::RAMMemPol ),
         "Error allocating segments Ids matrix" );
         
-      // Reading band dummy values
+      // fiding the image normalizing scale and offsets
       
+      std::vector< double > bandsPixelScales;
+      std::vector< double > bandsPixelOffsets;
       std::vector< double > bandDummyValues;
-      unsigned int inputRasterBandsIdx = 0;
       
-      for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
-        inputRasterBandsSize ; ++inputRasterBandsIdx )
       {
-        TERP_DEBUG_TRUE_OR_THROW( inputRasterBands[ 
-          inputRasterBandsIdx ] < inputRaster.getNumberOfBands(),
-          "Invalid raster band" );
-        
-        bandDummyValues.push_back( inputRaster.getBand( inputRasterBands[ 
-          inputRasterBandsIdx ] )->getProperty()->m_noDataValue );
-      }            
+        unsigned int line = 0;
+        unsigned int col = 0; 
+        unsigned int inputRasterBandsIdx = 0;
+        double value = 0;
+        double bandMinValue = DBL_MAX;
+        double bandMaxValue = -1.0 * DBL_MAX;
+
+        for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
+          inputRasterBandsSize ; ++inputRasterBandsIdx )
+        {
+          const te::rst::Band& band = *( inputRaster.getBand( 
+            inputRasterBands[ inputRasterBandsIdx ] ) );
+          const double& bandNoDataValue = band.getProperty()->m_noDataValue;
+            
+          for( line = 0 ; line < nLines ; ++line )
+          {
+            for( col = 0 ; col < nCols ; ++col )
+            {
+              band.getValue( col, line, value );            
+              
+              if( value != bandNoDataValue )
+              {
+                if( bandMinValue > value ) bandMinValue = value;
+                if( bandMaxValue < value ) bandMaxValue = value;
+              }
+            }
+          }
+          
+          bandDummyValues.push_back( bandNoDataValue );
+          
+          if( bandMaxValue == bandMinValue )
+          {
+            bandsPixelScales.push_back( 0.0 );
+            bandsPixelOffsets.push_back( 0.0 );
+          }
+          else
+          {
+            bandsPixelScales.push_back( 1.0 / ( bandMaxValue - bandMinValue ) );
+            bandsPixelOffsets.push_back( bandMinValue );
+          }
+        }
+      }
         
       // Creating each new segment
       
+      unsigned int line = 0;
       unsigned int col = 0;      
       Segment* segmentPtr = 0;
       Segment* neighborSegmentPtr = 0;
       SegmenterSegmentsBlock::SegmentIdDataType neighborSegmentId = 0;
       bool rasterValuesAreValid = true;
+      unsigned int inputRasterBandsIdx = 0;
+      double value = 0;
 
       std::list< SegmenterSegmentsBlock::SegmentIdDataType > 
         unusedLineSegmentIds;
@@ -387,28 +533,29 @@ namespace te
       std::vector< double > rasterValues;
       rasterValues.resize( inputRasterBandsSize, 0 );
       
-      for( unsigned int line = 0 ; line < nLines ; ++line )
+      for( line = 0 ; line < nLines ; ++line )
       {
         segmenterIdsManager.getNewIDs( nCols, lineSegmentIds );
         
         for( col = 0 ; col < nCols ; ++col )
         {
-          // reading data from input raster
-          
           rasterValuesAreValid = true;
           
           for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
             inputRasterBandsSize ; ++inputRasterBandsIdx )
           {
-            inputRaster.getValue( col, line, rasterValues[ 
-              inputRasterBandsIdx ], 
+            inputRaster.getValue( col, line, value, 
               inputRasterBands[ inputRasterBandsIdx ] );
               
-            if( rasterValues[ inputRasterBandsIdx ] == bandDummyValues[ 
-              inputRasterBandsIdx ] )
+            if( value == bandDummyValues[ inputRasterBandsIdx ] )
             {
               rasterValuesAreValid = false;
               break;
+            }
+            else
+            {
+              rasterValues[ inputRasterBandsIdx ] = ( value - bandsPixelOffsets[  
+                inputRasterBandsIdx ] ) * bandsPixelScales[ inputRasterBandsIdx ];
             }
           }
           
@@ -418,7 +565,7 @@ namespace te
           {
             switch( m_parameters.m_segmentFeatures )
             {
-              case Parameters::MeanFeatureType :
+              case Parameters::MeanFeaturesType :
               {
                 segmentPtr = new MeanBasedSegment();
                 ((MeanBasedSegment*)segmentPtr)->m_means = rasterValues;
@@ -960,6 +1107,8 @@ namespace te
       
       delete rasterPtr;
     }
+    
+    //-------------------------------------------------------------------------
     
     SegmenterRegionGrowingStrategyFactory::SegmenterRegionGrowingStrategyFactory()
     : te::rp::SegmenterStrategyFactory( "RegionGrowing" )

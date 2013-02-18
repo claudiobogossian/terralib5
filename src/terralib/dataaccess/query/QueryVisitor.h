@@ -53,7 +53,7 @@ namespace te
         virtual ~QueryVisitor() {}
 
         virtual void visit(const Expression& visited) = 0;
-        virtual void visit(const DataSetName& visited) = 0;        
+        virtual void visit(const DataSetName& visited) = 0;
         //virtual void visit(const FromFunctionCall& visited) = 0;
         virtual void visit(const FromItem& visited) = 0;
         virtual void visit(const Function& visited) = 0;
@@ -70,7 +70,7 @@ namespace te
         virtual void visit(const LiteralInt16& visited) = 0;
         virtual void visit(const LiteralInt32& visited) = 0;
         virtual void visit(const LiteralInt64& visited) = 0;
-        virtual void visit(const LiteralString& visited) = 0;        
+        virtual void visit(const LiteralString& visited) = 0;
         virtual void visit(const PropertyName& visited) = 0;
         virtual void visit(const Query& visited) = 0;
         virtual void visit(const Select& visited) = 0;

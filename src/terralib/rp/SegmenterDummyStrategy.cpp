@@ -50,6 +50,10 @@ namespace te
       return true;        
     }
     
+    void SegmenterDummyStrategy::reset()
+    {
+    }
+    
     bool SegmenterDummyStrategy::execute( 
       SegmenterIdsManager& segmenterIdsManager,
       const te::rst::Raster& inputRaster,
