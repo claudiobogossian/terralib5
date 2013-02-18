@@ -263,7 +263,7 @@ namespace te
 
       \note It is used by Hex2Binary function.
 
-      \result A byte representation from a two bytes hex representation.      
+      \result A byte representation from a two bytes hex representation.
      */
     inline char Hex2Char(const char* hex)
     {
