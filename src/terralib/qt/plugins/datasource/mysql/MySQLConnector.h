@@ -23,8 +23,8 @@
   \brief MySQL connector implementation for the Qt data source widget.
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_POSTGISCONNECTOR_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_POSTGISCONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTOR_H
 
 //! TerraLib
 #include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
@@ -64,5 +64,5 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_POSTGISCONNECTOR_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTOR_H
 

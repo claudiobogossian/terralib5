@@ -91,8 +91,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
   try
   {
 // check if driver is loaded
-    if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + MySQL data sources!"));
+    if(te::da::DataSourceFactory::find("MYSQL") == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data source!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -100,10 +100,10 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    m_driver.reset(te::da::DataSourceFactory::open("POSTGIS", dsInfo));
+    m_driver.reset(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
     if(m_driver.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + MySQL data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open MySQL data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -125,8 +125,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
       m_driver->setId(dsId);
       m_datasource->setTitle(title.toStdString());
       m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
-      m_datasource->setAccessDriver("POSTGIS");
-      m_datasource->setType("POSTGIS");
+      m_datasource->setAccessDriver("MYSQL");
+      m_datasource->setType("MYSQL");
     }
     else
     {
@@ -147,7 +147,7 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
   {
     QMessageBox::warning(this,
                          tr("TerraLib Qt Components"),
-                         tr("Unknown error while opening PostgreSQL database!"));
+                         tr("Unknown error while opening MySQL database!"));
     return;
   }
 
@@ -159,8 +159,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
   try
   {
 // check if driver is loaded
-    if(te::da::DataSourceFactory::find("POSTGIS") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for PostgreSQL + MySQL data sources!"));
+    if(te::da::DataSourceFactory::find("MYSQL") == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data source!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -168,10 +168,10 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
     getConnectionInfo(dsInfo);
 
 // perform connection
-    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("POSTGIS", dsInfo));
+    std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
     if(ds.get() == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open PostgreSQL + MySQL database!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open MySQL database!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
@@ -187,7 +187,7 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
   {
     QMessageBox::warning(this,
                          tr("TerraLib Qt Components"),
-                         tr("Unknown error while testing PostgreSQL + MySQL data source!"));
+                         tr("Unknown error while testing MySQL data source!"));
   }
 }
 

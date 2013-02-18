@@ -61,8 +61,8 @@ void te::qt::plugins::mysql::Plugin::shutdown()
   if(!m_initialized)
     return;
 
-  te::da::DataSourceInfoManager::getInstance().removeByType("POSTGIS");
-  te::qt::widgets::DataSourceTypeManager::getInstance().remove("POSTGIS");
+  te::da::DataSourceInfoManager::getInstance().removeByType("MYSQL");
+  te::qt::widgets::DataSourceTypeManager::getInstance().remove("MYSQL");
 
   TE_LOG_TRACE(TE_QT_PLUGIN_DATASOURCE_MYSQL("TerraLib Qt MySQL widget shutdown!"));
 

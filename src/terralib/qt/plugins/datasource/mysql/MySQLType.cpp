@@ -41,7 +41,7 @@ te::qt::plugins::mysql::MySQLType::~MySQLType()
 
 std::string te::qt::plugins::mysql::MySQLType::getName() const
 {
-  return "POSTGIS";
+  return "MYSQL";
 }
 
 std::string te::qt::plugins::mysql::MySQLType::getTitle() const
@@ -51,7 +51,7 @@ std::string te::qt::plugins::mysql::MySQLType::getTitle() const
 
 std::string te::qt::plugins::mysql::MySQLType::getDescription() const
 {
-  return TR_QT_WIDGETS("Access geospatial data in a PostgreSQL database with the geospatial extension MySQL");
+  return TR_QT_WIDGETS("Access geospatial data in a MySQL database with the geospatial extension MySQL");
 }
 
 QWidget* te::qt::plugins::mysql::MySQLType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
@@ -74,10 +74,10 @@ QIcon te::qt::plugins::mysql::MySQLType::getIcon(int iconType) const
   switch(iconType)
   {
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
-      return QIcon::fromTheme("datasource-postgis");
+      return QIcon::fromTheme("datasource-mysql");
 
     case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
-      return QIcon::fromTheme("datasource-postgis");
+      return QIcon::fromTheme("datasource-mysql");
 
     default:
       return QIcon::fromTheme("unknown-icon");
