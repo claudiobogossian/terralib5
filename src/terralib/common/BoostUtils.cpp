@@ -49,7 +49,7 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::str
   }
 }
 
-void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::pair<std::string, std::string>> & vp)
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::pair<std::string, std::string> > & vp)
 {
   BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
   {
