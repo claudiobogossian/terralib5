@@ -71,12 +71,29 @@ namespace te
     TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::map<std::string, std::string>& dict);
 
     /*!
+    \brief Converts a property tree node into a std::vector<std::pair<std::string, std::string>>
+
+    \param p    A node that can be converted to a std::vector<std::pair<std::string, std::string>>.
+    \param vp   The vector of pairs returned.
+    */
+
+    TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::pair<std::string, std::string>>& vp);
+
+    /*!
       \brief Converts a property tree node into a  std::vector<std::string>.
 
       \param p    A node that can be converted to a std::vector<std::string>.
       \param vect The vector  to output the values.
     */
     TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<std::string>& vect);
+
+    /*!
+      \brief Converts a property tree node into a  std::vector<unsigned char>.
+
+      \param p    A node that can be converted to a std::vector<unsigned char>.
+      \param vectd The vector to output the values.
+    */
+     TECOMMONEXPORT void Convert(const boost::property_tree::ptree& p, std::vector<unsigned char>& vectd);
 
     /*!
       \brief Converts a property tree node into a  std::vector<double>.

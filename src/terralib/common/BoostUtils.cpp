@@ -49,11 +49,37 @@ void te::common::Convert(const boost::property_tree::ptree& p, std::map<std::str
   }
 }
 
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::pair<std::string, std::string>> & vp)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type& v2, v.second.get_child(""))
+    {
+      //const std::string& f = v2.first.data();
+      //const std::string& s = v2.second.data();
+      std::pair<std::string, std::string> in_pair;
+      in_pair.first = v2.first.data();
+      in_pair.second = v2.second.data();
+      vp.push_back(in_pair);
+    }
+  }
+}
+
 void te::common::Convert(const boost::property_tree::ptree& p, std::vector<std::string>& vect)
 {
   BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
   {
     vect.push_back(v.second.data());
+    continue;
+  }
+}
+
+void te::common::Convert(const boost::property_tree::ptree& p, std::vector<unsigned char>& vectd)
+{
+  BOOST_FOREACH(const boost::property_tree::ptree::value_type& v, p)
+  {
+    //vectd.push_back(boost::lexical_cast<unsigned char>(v.second.data()));
+    vectd.push_back(boost::lexical_cast<unsigned char>(v.second.data()));
     continue;
   }
 }
