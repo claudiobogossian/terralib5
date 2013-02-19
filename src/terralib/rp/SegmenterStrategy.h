@@ -57,6 +57,11 @@ namespace te
         virtual bool initialize( 
           SegmenterStrategyParameters const* const strategyParams ) 
           throw( te::rp::Exception ) = 0;        
+          
+        /*!
+          \brief Clear all internal allocated resources and go back to the initial not-initialized state.
+         */
+        virtual void reset() = 0;
         
         /*!
           \brief Executes the segmentation strategy.

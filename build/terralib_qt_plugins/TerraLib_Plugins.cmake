@@ -2,6 +2,7 @@ option (BUILD_QT_PLUGIN_DATASOURCE_GDAL "Build GDAL datasource datasource plugin
 option (BUILD_QT_PLUGIN_DATASOURCE_GEOFILE "Build GeoFile datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_OGR "Build OGR datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_PGIS "Build PostGIS datasource plugin for Qt." ON)
+option (BUILD_QT_PLUGIN_DATASOURCE_MYSQL "Build PostGIS datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_SHP "Build Shapefile datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_WCS "Build WCS datasource plugin for Qt." OFF)  
 option (BUILD_QT_PLUGIN_DATASOURCE_WFS "Build WFS datasource plugin for Qt." OFF)
@@ -26,6 +27,10 @@ endif()
 
 if(BUILD_QT_PLUGIN_DATASOURCE_PGIS)
   add_subdirectory(terralib_qt_plugins/datasource_pgis)
+endif()
+
+if(BUILD_QT_PLUGIN_DATASOURCE_MYSQL)
+  add_subdirectory(terralib_qt_plugins/datasource_mysql)
 endif()
 
 if(BUILD_QT_PLUGIN_DATASOURCE_GEOFILE)

@@ -50,6 +50,9 @@ namespace te
         bool initialize( 
           SegmenterStrategyParameters const* const strategyParams ) 
           throw( te::rp::Exception );
+          
+        //overload
+        void reset();          
         
         //overload
         bool execute( 

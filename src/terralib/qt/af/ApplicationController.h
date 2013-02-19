@@ -45,7 +45,7 @@ namespace te
 
         \todo Avaliar se os singletons nao estao gerando mais do que uma instancia, devido ao ponto de inclusao!
       */
-      class ApplicationController : public te::common::Singleton<BaseApplicationController>
+      class TEQTAFEXPORT ApplicationController : public te::common::Singleton<BaseApplicationController>
       {
         friend class te::common::Singleton<BaseApplicationController>;
 

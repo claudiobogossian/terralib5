@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/mysql/MySQLConnector.cpp
+  \file terralib/qt/widgets/datasource/connector/sqlite/SQLiteConnector.cpp
 
-  \brief MySQL connector implementation for the Qt data source widget.
+  \brief ....
 */
 
 // TerraLib
-#include "../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "MySQLConnector.h"
-#include "MySQLConnectorDialog.h"
+#include "../../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../../dataaccess/datasource/DataSourceManager.h"
+#include "SQLiteConnector.h"
+#include "SQLiteConnectorDialog.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -39,18 +39,18 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-te::qt::plugins::mysql::MySQLConnector::MySQLConnector(QWidget* parent, Qt::WindowFlags f)
-  : te::qt::widgets::AbstractDataSourceConnector(parent, f)
+te::qt::widgets::SQLiteConnector::SQLiteConnector(QWidget* parent, Qt::WindowFlags f)
+  : AbstractDataSourceConnector(parent, f)
 {
 }
 
-te::qt::plugins::mysql::MySQLConnector::~MySQLConnector()
+te::qt::widgets::SQLiteConnector::~SQLiteConnector()
 {
 }
 
-void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::widgets::SQLiteConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  std::auto_ptr<MySQLConnectorDialog> cdialog(new MySQLConnectorDialog(static_cast<QWidget*>(parent())));
+  std::auto_ptr<SQLiteConnectorDialog> cdialog(new SQLiteConnectorDialog(static_cast<QWidget*>(parent())));
 
   int retval = cdialog->exec();
 
@@ -70,14 +70,14 @@ void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSource
   }
 }
 
-void te::qt::plugins::mysql::MySQLConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::widgets::SQLiteConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
     if(it->get() == 0)
       continue;
 
-    std::auto_ptr<MySQLConnectorDialog> cdialog(new MySQLConnectorDialog(static_cast<QWidget*>(parent())));
+    std::auto_ptr<SQLiteConnectorDialog> cdialog(new SQLiteConnectorDialog(static_cast<QWidget*>(parent())));
 
     cdialog->set(*it);
 
@@ -99,7 +99,7 @@ void te::qt::plugins::mysql::MySQLConnector::update(std::list<te::da::DataSource
   }
 }
 
-void te::qt::plugins::mysql::MySQLConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::widgets::SQLiteConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {

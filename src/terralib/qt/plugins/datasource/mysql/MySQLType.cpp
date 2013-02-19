@@ -18,66 +18,65 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/mysql/MySQLType.cpp
+  \file terralib/qt/plugins/datasource/mysql/MySQLType.cpp
 
   \brief MySQL data source type.
 */
 
 // TerraLib
-#include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "MySQLConnector.h"
 #include "MySQLType.h"
 
 // STL
 #include <cassert>
 
-te::qt::widgets::MySQLType::MySQLType()
+te::qt::plugins::mysql::MySQLType::MySQLType()
 {
 }
 
-te::qt::widgets::MySQLType::~MySQLType()
+te::qt::plugins::mysql::MySQLType::~MySQLType()
 {
 }
 
-std::string te::qt::widgets::MySQLType::getName() const
+std::string te::qt::plugins::mysql::MySQLType::getName() const
 {
   return "MYSQL";
 }
 
-std::string te::qt::widgets::MySQLType::getTitle() const
+std::string te::qt::plugins::mysql::MySQLType::getTitle() const
 {
   return TR_QT_WIDGETS("MySQL");
 }
 
-std::string te::qt::widgets::MySQLType::getDescription() const
+std::string te::qt::plugins::mysql::MySQLType::getDescription() const
 {
-  return TR_QT_WIDGETS("Access geospatial data in a MySQL database");
+  return TR_QT_WIDGETS("Access geospatial data in a MySQL database with the geospatial extension MySQL");
 }
 
-QWidget* te::qt::widgets::MySQLType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::mysql::MySQLType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
-    case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new MySQLConnector(parent, f);
 
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new DataSetLayerSelector(parent, f);
+//    case DataSourceType::WIDGET_LAYER_SELECTOR:
+//      return new DataSetLayerSelector(parent, f);
 
     default:
       return 0;
   }
 }
 
-QIcon te::qt::widgets::MySQLType::getIcon(int iconType) const
+QIcon te::qt::plugins::mysql::MySQLType::getIcon(int iconType) const
 {
   switch(iconType)
   {
-    case DataSourceType::ICON_DATASOURCE_SMALL:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_SMALL:
       return QIcon::fromTheme("datasource-mysql");
 
-    case DataSourceType::ICON_DATASOURCE_CONNECTOR:
+    case te::qt::widgets::DataSourceType::ICON_DATASOURCE_CONNECTOR:
       return QIcon::fromTheme("datasource-mysql");
 
     default:

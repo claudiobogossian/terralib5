@@ -43,13 +43,13 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsSegmenter );
   
+  CPPUNIT_TEST( RegionGrowingStrategy ); 
+  
   CPPUNIT_TEST( BlockProcessingWithoutMerging );
   
   CPPUNIT_TEST( BlockProcessingWithMerging );
   
-  CPPUNIT_TEST( ThreadedProcessing );
-  
-  CPPUNIT_TEST( RegionGrowingStrategy );  
+  CPPUNIT_TEST( ThreadedProcessing );  
   
   CPPUNIT_TEST_SUITE_END();
   

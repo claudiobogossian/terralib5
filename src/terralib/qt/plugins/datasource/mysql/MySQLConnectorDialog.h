@@ -23,13 +23,12 @@
   \brief ....
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_CONNECTOR_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
-#define __TERRALIB_QT_WIDGETS_CONNECTOR_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../Config.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL
 #include <memory>
@@ -43,52 +42,55 @@ namespace te
 {
   namespace qt
   {
-    namespace widgets
+    namespace plugins
     {
-      /*!
-        \class MySQLConnectorDialog
-
-        \brief ....
-      */
-      class TEQTWIDGETSEXPORT MySQLConnectorDialog : public QDialog
+      namespace mysql
       {
-        Q_OBJECT
+        /*!
+          \class MySQLConnectorDialog
 
-        public:
+          \brief ....
+        */
+        class MySQLConnectorDialog : public QDialog
+        {
+          Q_OBJECT
 
-          MySQLConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          public:
 
-          ~MySQLConnectorDialog();
+            MySQLConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          const te::da::DataSourceInfoPtr& getDataSource() const;
+            ~MySQLConnectorDialog();
 
-          const te::da::DataSourcePtr& getDriver() const;
+            const te::da::DataSourceInfoPtr& getDataSource() const;
 
-          void set(const te::da::DataSourceInfoPtr& ds);
+            const te::da::DataSourcePtr& getDriver() const;
 
-        public slots:
+            void set(const te::da::DataSourceInfoPtr& ds);
 
-          void openPushButtonPressed();
+          public slots:
 
-          void testPushButtonPressed();
+            void openPushButtonPressed();
 
-          void helpPushButtonPressed();
+            void testPushButtonPressed();
 
-        protected:
+            void helpPushButtonPressed();
 
-          void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
+          protected:
 
-          void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+            void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-        private:
+            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
-          std::auto_ptr<Ui::MySQLConnectorDialogForm> m_ui;
-          te::da::DataSourceInfoPtr m_datasource;
-          te::da::DataSourcePtr m_driver;
-      }; 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+          private:
 
-#endif  // __TERRALIB_QT_WIDGETS_CONNECTOR_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
+            std::auto_ptr<Ui::MySQLConnectorDialogForm> m_ui;
+            te::da::DataSourceInfoPtr m_datasource;
+            te::da::DataSourcePtr m_driver;
+        }; 
+      }   // end namespace mysql
+    }     // end namespace plugins
+  }       // end namespace qt
+}         // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
 

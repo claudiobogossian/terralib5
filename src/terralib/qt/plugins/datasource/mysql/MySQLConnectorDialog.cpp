@@ -24,14 +24,14 @@
 */
 
 // TerraLib
-#include "../../../../../common/Translator.h"
-#include "../../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../Exception.h"
-#include "ui/MySQLConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
 #include "MySQLConnectorDialog.h"
+#include "Ui_MySQLConnectorDialogForm.h"
 
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
@@ -42,7 +42,7 @@
 // Qt
 #include <QtGui/QMessageBox>
 
-te::qt::widgets::MySQLConnectorDialog::MySQLConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::mysql::MySQLConnectorDialog::MySQLConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::MySQLConnectorDialogForm)
 {
@@ -58,21 +58,21 @@ te::qt::widgets::MySQLConnectorDialog::MySQLConnectorDialog(QWidget* parent, Qt:
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
 }
 
-te::qt::widgets::MySQLConnectorDialog::~MySQLConnectorDialog()
+te::qt::plugins::mysql::MySQLConnectorDialog::~MySQLConnectorDialog()
 {
 }
 
-const te::da::DataSourceInfoPtr& te::qt::widgets::MySQLConnectorDialog::getDataSource() const
+const te::da::DataSourceInfoPtr& te::qt::plugins::mysql::MySQLConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-const te::da::DataSourcePtr& te::qt::widgets::MySQLConnectorDialog::getDriver() const
+const te::da::DataSourcePtr& te::qt::plugins::mysql::MySQLConnectorDialog::getDriver() const
 {
   return m_driver;
 }
 
-void te::qt::widgets::MySQLConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
+void te::qt::plugins::mysql::MySQLConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
 {
   m_datasource = ds;
 
@@ -86,13 +86,13 @@ void te::qt::widgets::MySQLConnectorDialog::set(const te::da::DataSourceInfoPtr&
   }
 }
 
-void te::qt::widgets::MySQLConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("MYSQL") == 0)
-      throw Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -103,7 +103,7 @@ void te::qt::widgets::MySQLConnectorDialog::openPushButtonPressed()
     m_driver.reset(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
     if(m_driver.get() == 0)
-      throw Exception(TR_QT_WIDGETS("Could not open MySQL data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open MySQL data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -154,13 +154,13 @@ void te::qt::widgets::MySQLConnectorDialog::openPushButtonPressed()
   accept();
 }
 
-void te::qt::widgets::MySQLConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("MYSQL") == 0)
-      throw Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -171,7 +171,7 @@ void te::qt::widgets::MySQLConnectorDialog::testPushButtonPressed()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
     if(ds.get() == 0)
-      throw Exception(TR_QT_WIDGETS("Could not open MySQL database!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open MySQL database!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
@@ -191,14 +191,14 @@ void te::qt::widgets::MySQLConnectorDialog::testPushButtonPressed()
   }
 }
 
-void te::qt::widgets::MySQLConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::mysql::MySQLConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::widgets::MySQLConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+void te::qt::plugins::mysql::MySQLConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
 {
 // clear input
   connInfo.clear();
@@ -347,7 +347,7 @@ void te::qt::widgets::MySQLConnectorDialog::getConnectionInfo(std::map<std::stri
   connInfo["MY_CLIENT_INTERACTIVE"] = m_ui->m_clientInterativeCheckBox->isChecked() ? "TRUE" : "FALSE";
 }
 
-void te::qt::widgets::MySQLConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::mysql::MySQLConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
   std::map<std::string, std::string>::const_iterator it = connInfo.find("MY_HOST_NAME");
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();

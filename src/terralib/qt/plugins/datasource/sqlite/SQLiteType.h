@@ -18,47 +18,43 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/mysql/MySQLType.h
+  \file terralib/qt/widgets/datasource/connector/sqlite/SQLiteType.h
 
-  \brief MySQL data source type.
+  \brief SQLite data source type.
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLTYPE_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLTYPE_H
+#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITETYPE_H
+#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITETYPE_H
 
 // TerraLib
-#include "../../../widgets/datasource/core/DataSourceType.h"
+#include "../../core/DataSourceType.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace plugins
+    namespace widgets
     {
-      namespace mysql
+      class TEQTWIDGETSEXPORT SQLiteType : public DataSourceType
       {
-        class MySQLType : public te::qt::widgets::DataSourceType
-        {
-          public:
+        public:
 
-            MySQLType();
+          SQLiteType();
 
-            ~MySQLType();
+          ~SQLiteType();
 
-            std::string getName() const;
+          std::string getName() const;
 
-            std::string getTitle() const;
+          std::string getTitle() const;
 
-            std::string getDescription() const;
+          std::string getDescription() const;
 
-            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-            QIcon getIcon(int iconType) const;
-        };
+          QIcon getIcon(int iconType) const;
+      }; 
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
 
-      } // end namespace mysql
-    }   // end namespace plugins
-  }     // end namespace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLTYPE_H
+#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITETYPE_H
