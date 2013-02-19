@@ -153,6 +153,28 @@ namespace te
       */
       TEQTWIDGETSEXPORT QMenu* GetMenu(const QString& mnuText, QMenuBar* bar);
 
+      /*!
+        \brief
+
+        \param
+
+        \param
+
+        \return
+      */
+      TEQTWIDGETSEXPORT QAction* FindAction(const QString& actText, QMenu* mnu);
+
+      /*!
+        \brief
+
+        \param
+
+        \param
+
+        \return
+      */
+      TEQTWIDGETSEXPORT QAction* FindAction(const QString& actText, QMenuBar* mnuBar);
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te

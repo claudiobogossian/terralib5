@@ -89,6 +89,27 @@
 #define TE_JSON_FILES_LOCATION "${TE_JSON_FILES_LOCATION}"
 
 /*!
+  \def TE_SQL_FILES_LOCATION
+
+  \brief This macro defines the locaion of SQL resources used in TerraLib.
+*/
+#define TE_SQL_FILES_LOCATION "${TE_SQL_FILES_LOCATION}"
+
+/*!
+  \def TE_XML_FILES_LOCATION
+
+  \brief This macro defines the locaion of XML resources used in TerraLib.
+*/
+#define TE_XML_FILES_LOCATION "${TE_XML_FILES_LOCATION}"
+
+/*!
+  \def TE_SCHEMA_LOCATION
+
+  \brief This macro defines the locaion of XSD schemas used in TerraLib.
+*/
+#define TE_SCHEMA_LOCATION "${TE_SCHEMA_LOCATION}"
+
+/*!
   \def TE_USE_GDAL
 
   \brief If this flag is set to 1 the GDAL driver support will be enabled.

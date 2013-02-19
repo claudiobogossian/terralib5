@@ -41,6 +41,9 @@
 // Boost
 #include <boost/format.hpp>
 
+//Qt
+#include <QtCore/QDir>
+
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
@@ -70,6 +73,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   project->setTitle(reader.getElementValue());
+  reader.next(); // End element
 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -78,10 +82,12 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   project->setAuthor(reader.getElementValue());
+  reader.next(); // End element
 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ComponentList");
+  reader.next(); // End element
 
   reader.next();
 
@@ -128,9 +134,11 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
   writer.writeStartElement("Project");
 
+  QDir schemaLocation(TE_SCHEMA_LOCATION);
+
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/af");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/af ../../myschemas/terralib/af/project.xsd");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/af " + schemaLocation.absolutePath().toStdString() + "/qt/af/project.xsd");
   writer.writeAttribute("version", "5.0.0");
   writer.writeAttribute("release", "2011-01-01");
 

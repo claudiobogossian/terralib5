@@ -55,7 +55,7 @@ te::srs::Module::~Module()
 void te::srs::Module::initialize()
 {
 
-  te::srs::InitManagerFromJSON();
+//  te::srs::InitManagerFromJSON();
 
   TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
 }

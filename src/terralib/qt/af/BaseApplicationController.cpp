@@ -170,11 +170,32 @@ void te::qt::af::BaseApplicationController::registerMenuBar(QMenuBar* bar)
 
 QMenuBar* te::qt::af::BaseApplicationController::findMenuBar(const QString& id) const
 {
-  return 0;
+  throw std::exception("Not implemented yet.");
 }
 
 QMenuBar* te::qt::af::BaseApplicationController::getMenuBar(const QString& id) const
 {
+  throw std::exception("Not implemented yet.");
+}
+
+QAction* te::qt::af::BaseApplicationController::findAction(const QString& id) const
+{
+  for(size_t i=0; i<m_menus.size(); i++)
+  {
+    QAction* act = te::qt::widgets::FindAction(id, m_menus[i]);
+    
+    if (act != 0)
+      return act;
+  }
+
+  for(size_t i=0; i<m_menuBars.size(); i++)
+  {
+    QAction* act = te::qt::widgets::FindAction(id, m_menuBars[i]);
+
+    if (act != 0)
+      return act;
+  }
+
   return 0;
 }
 
@@ -462,6 +483,8 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
       act->setData(pp);
 
       mnu->addSeparator();
+
+      m_recent_projs.append(pp);
     }
 
     hasProjects = p.count("RecentProjects") > 0;
@@ -476,6 +499,7 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
         QString pp = v.second.get<std::string>("Project.<xmlattr>.xlink:href").c_str();
         QAction* act = mnu->addAction(pp);
         act->setData(pp);
+        m_recent_projs.append(pp);
       }
     }
 
@@ -491,6 +515,47 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
+}
+
+void te::qt::af::BaseApplicationController::updateRecentProjects(const QString& prj_file)
+{
+  int pos = m_recent_projs.indexOf(prj_file);
+
+  if(pos != 0)
+  {
+    if(pos < 0)
+    {
+      if(m_recent_projs.size() >= 10) // TODO: Size of the list must be configurable.
+        m_recent_projs.removeLast();
+
+      m_recent_projs.prepend(prj_file);
+    }
+    else
+      m_recent_projs.move(pos, 0);
+
+    QMenu* mnu = getMenu("File.Recent Projects");
+
+    mnu->clear();
+
+    QString rec_prj = m_recent_projs.at(0);
+    QAction* act = mnu->addAction(rec_prj);
+    act->setData(rec_prj);
+
+    mnu->addSeparator();
+
+    if(m_recent_projs.size() > 1)
+      for(int i=1; i<m_recent_projs.size(); i++)
+      {
+        rec_prj = m_recent_projs.at(i);
+        act = mnu->addAction(rec_prj);
+        act->setData(rec_prj);
+      }
+  }
+
+  QAction* act = findAction("File.Save Project As");
+
+  if(act != 0)
+    act->setEnabled(true);
 }
 
 void te::qt::af::BaseApplicationController::finalize()
