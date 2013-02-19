@@ -73,6 +73,13 @@ namespace te
 
           void onPluginsBuilderTriggered();
 
+          /*!
+            \brief
+
+            \param
+          */
+          void onRecentProjectsTriggered(QAction* proj);
+
           //void layerVisibilityChanged(const QModelIndex& idx);
 
           //void drawLayers();

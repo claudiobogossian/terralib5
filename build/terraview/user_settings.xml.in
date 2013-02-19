@@ -6,43 +6,7 @@
               release="${TE_STRING_BUILD_DATE}">
   <SelectedIconTheme>${TE_ICONS_THEME}</SelectedIconTheme>
   
-  <LastSearchedFolder xlink:href=""/>
-  
   <ToolBarIconSize>24</ToolBarIconSize>
  
-<!-- 
-  <SpecificPlugins>
-    <Plugin>
-      <Name>te.da.gdal</Name>
-      <Path xlink:href="plugins\gdal\plugin_info.xml"></Path>
-    </Plugin>
-    <Plugin>
-      <Name>te.plugin.exchanger</Name>
-      <Path xlink:href="plugins\plugin_exchanger\plugin_info.xml"></Path>
-    </Plugin>
-    <Plugin>
-      <Name>te.cellspace.builder</Name>
-      <Path xlink:href="plugins\plugin_cellspace_builder\plugin_info.xml"></Path>
-    </Plugin>
-  </SpecificPlugins>
- 
-  <EnabledPlugins>
-    <Plugin>te.da.ogr</Plugin>
-    <Plugin>te.da.gdal</Plugin>
-    <Plugin>te.da.pgis</Plugin>
-    <Plugin>te.plugin.builder</Plugin>
-  </EnabledPlugins>
--->    
-  
-  <DataSourcesFile></DataSourcesFile>
-  
-  <MostRecentProject xlink:href=""/>
-  
-  <RecentProjects>
-<!--
-    <Project xlink:href="../../conf/brasil.xml" title="Atlas Brasil"/>
-    <Project xlink:href="../../conf/project.xml" title="Estudo Agricola do Estado de Minas Gerais"/>
-    <Project xlink:href="../../conf/super-project.xml" title="Super projeto"/>
--->    
-  </RecentProjects>
+  <MostRecentProject xlink:href="${TE_DEFAULT_PROJECT}" title="Default project"/>
 </UserSettings>

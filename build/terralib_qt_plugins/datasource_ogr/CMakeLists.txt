@@ -84,6 +84,8 @@ set (TE_PLUGIN_REQUIREMENTS
 )
 
 #Exporting plug-in information for the configuration file
+set (TE_SCHEMA_LOCATION "${CMAKE_SOURCE_DIR}/../schemas/terralib")
+
 set (TE_PLG_INFO "")
 getPluginInfo("${TE_PLUGIN_NAME}" "${TE_PLUGIN_FILE}" TE_PLG_INFO)
 set (TE_PLUGINS_DESCRIPTION "${TE_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)

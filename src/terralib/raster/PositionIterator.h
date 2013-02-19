@@ -28,6 +28,7 @@
 #define __TERRALIB_RASTER_INTERNAL_POSITIONITERATOR_H
 
 // Terralib
+#include "../common/STLUtils.h"
 #include "../geometry.h"
 #include "../raster/Band.h"
 #include "../raster/BandProperty.h"
@@ -436,7 +437,7 @@ namespace te
 
     template<class T> te::rst::PolygonIterator<T>::~PolygonIterator()
     {
-      m_intersections.clear();
+      te::common::FreeContents(m_intersections);
     }
 
     template<class T> std::vector<te::gm::LineString*> te::rst::PolygonIterator<T>::decompose(te::gm::Geometry* g)
@@ -517,6 +518,10 @@ namespace te
 
         throw(message.c_str());
       }
+
+// clean up (?)
+//      delete g;
+
       return lines;
     }
 
@@ -566,7 +571,6 @@ namespace te
 
           return;
         }
-
 
         te::gm::GeometryCollection* intersections = new te::gm::GeometryCollection(0, inter->getGeomTypeId(), inter->getSRID());
 

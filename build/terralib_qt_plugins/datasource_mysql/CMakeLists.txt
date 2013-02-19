@@ -4,11 +4,11 @@
 cmake_minimum_required(VERSION 2.8)
 
 # IMPORTANT - Controls for the source and build tree locations
-set(SRCDIR ${ROOT}/datasource/pgis)                # directory where the source files of the colorbar example are located
+set(SRCDIR ${ROOT}/datasource/mysql)                # directory where the source files of the colorbar example are located
 set(INCLDIR ${SRCDIR})                               # directory where the header files of the colorbar example are located
 
 # Set the project name
-set(PROJ_NAME "terralib_qt_plugin_datasource_pgis")
+set(PROJ_NAME "terralib_qt_plugin_datasource_mysql")
 project(${PROJ_NAME})         # the project name is terralib_example_colorbar
 set(LIB_NAME ${PROJ_NAME})    # the library name is terralib_example_colorbar
 
@@ -30,9 +30,9 @@ endif()
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/PostGISConnectorDialog.h
+  ${SRCDIR}/MySQLConnectorDialog.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/pgis" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/mysql" MOC)
 
 file ( GLOB
   FORMS ${SRCDIR}/ui/*.ui 
@@ -56,7 +56,7 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif(WIN32)
 
-add_definitions(-DTEQTPLUGINPGISDLL)
+add_definitions(-DTEQTPLUGINMYSQLDLL)
 
 source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC} ${UI})
@@ -67,18 +67,18 @@ set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${DEP_LIBS})
 
 #Exporting plug-in file
-set (TE_PLUGIN_NAME "te.qt.datasource.pgis")
-set (TE_PLUGIN_DISPLAYNAME "PostGIS Data Source Qt-Widgets")
-set (TE_PLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by PostGIS driver.")
-set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_datasource_pgis")
-set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis")
-set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_pgis.xml")
+set (TE_PLUGIN_NAME "te.qt.datasource.mysql")
+set (TE_PLUGIN_DISPLAYNAME "MySQL Data Source Qt-Widgets")
+set (TE_PLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by MySQL driver.")
+set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_datasource_mysql")
+set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:mysql")
+set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_mysql.xml")
 getPluginResources("SharedLibraryName" "${TE_PLUGIN_LIBRARY}" RSC_LINK)
 getPluginResources("LangFile" "pt.br" RSC_LINK2)
 set (TE_PLUGIN_RESOURCES 
   "  <Resources>${RSC_LINK}  ${RSC_LINK2}\n  </Resources>\n"
 )
-getPluginRequirements("te.da.pgis" REQ)
+getPluginRequirements("te.da.mysql" REQ)
 set (TE_PLUGIN_REQUIREMENTS 
   "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
 )
@@ -96,7 +96,7 @@ configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TE_PLUGIN_FILE})
 set (TE_SCHEMA_LOCATION "../schemas/terralib")
 
 set (TE_PLG_INFO "")
-getPluginInfo("${TE_PLUGIN_NAME}" "./terralib_qt_plugin_datasource_pgis.xml" TE_PLG_INFO)
+getPluginInfo("${TE_PLUGIN_NAME}" "./terralib_qt_plugin_datasource_mysql.xml" TE_PLG_INFO)
 set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
   
-configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/terralib_qt_plugin_datasource_pgis.xml)
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/terralib_qt_plugin_datasource_mysql.xml)

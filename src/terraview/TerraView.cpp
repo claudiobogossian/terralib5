@@ -60,13 +60,13 @@ void TerraView::makeDialog()
 {
   te::qt::af::BaseApplication::makeDialog();
 
-  //QAction* helpAbout = new QAction(tr("&About..."), this);
+  QMenu* hmenu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
 
-  //QMenu* hmenu = te::qt::af::ApplicationController::getInstance().getMenu("Help");
+  QAction* helpAbout = hmenu->addAction(tr("&About..."));
 
-  //hmenu->addAction(helpAbout);
+  helpAbout->setObjectName("About");
 
-  //connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
+  connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 }
 
 void TerraView::showAboutDialog()

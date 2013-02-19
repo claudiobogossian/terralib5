@@ -18,19 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/mysql/MySQLConnector.h
+  \file terralib/qt/plugins/datasource/mysql/Plugin.h
 
-  \brief MySQL connector implementation for the Qt data source widget.
+  \brief Plugin implementation for the MySQL data source widget.
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTOR_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTOR_H
+#ifndef __TE_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_PLUGIN_H
 
-//! TerraLib
-#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
-
-//! Qt
-#include <QtGui/QWidget>
+// TerraLib
+#include "../../../../plugin/Plugin.h"
+#include "Config.h"
 
 namespace te
 {
@@ -40,29 +38,24 @@ namespace te
     {
       namespace mysql
       {
-        /*!
-          \class MySQLConnector
-
-          \brief MySQL connector implementation for the Qt data source widget.
-        */
-        class MySQLConnector : public te::qt::widgets::AbstractDataSourceConnector
+        class Plugin : public te::plugin::Plugin
         {
           public:
 
-            MySQLConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            ~MySQLConnector();
+            ~Plugin();
 
-            void create(std::list<te::da::DataSourceInfoPtr>& datasources);
+            void startup();
 
-            void update(std::list<te::da::DataSourceInfoPtr>& datasources);
+            void shutdown();
+        };
 
-            void remove(std::list<te::da::DataSourceInfoPtr>& datasources);
-        }; 
       } // end namespace mysql
     }   // end namespace plugins
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTOR_H
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINMYSQLEXPORT);
 
+#endif //__TE_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_PLUGIN_H
