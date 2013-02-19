@@ -18,26 +18,26 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/mysql/MySQLConnectorDialog.cpp
+  \file terralib/qt/widgets/connector/mysql/MySQLConnectorDialog.cpp
 
-  \brief A dialog window for showing the MySQL connector widget.
+  \brief ....
 */
 
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../widgets/Exception.h"
 #include "MySQLConnectorDialog.h"
-#include "ui_MySQLConnectorDialogForm.h"
+#include "Ui_MySQLConnectorDialogForm.h"
 
 // Boost
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/lexical_cast.hpp>
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid_io.hpp>
-#include <boost/lexical_cast.hpp>
 
 // Qt
 #include <QtGui/QMessageBox>
@@ -92,7 +92,7 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("MYSQL") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data source!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -108,7 +108,7 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
     if(title.isEmpty())
-      title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_databaseComboBox->currentText().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
+      title = m_ui->m_hostNameLineEdit->text().trimmed() + QString::fromStdString("@") + m_ui->m_schemaNameComboBox->currentText().trimmed() + QString::fromStdString("@") + m_ui->m_userNameLineEdit->text().trimmed();
 
     if(m_datasource.get() == 0)
     {
@@ -123,8 +123,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
       m_datasource->setAccessDriver("MYSQL");
       m_datasource->setType("MYSQL");
     }
@@ -132,8 +132,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toStdString());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
+      m_datasource->setTitle(title.toUtf8().data());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
     }
   }
   catch(const std::exception& e)
@@ -160,7 +160,7 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("MYSQL") == 0)
-      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data source!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -207,162 +207,322 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::getConnectionInfo(std::map<st
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_HOST"] = qstr.toStdString();
+    connInfo["MY_HOST_NAME"] = qstr.toUtf8().data();
 
 // get port
   qstr = m_ui->m_portLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_PORT"] = qstr.toStdString();
+    connInfo["MY_PORT"] = qstr.toUtf8().data();
 
-// get dbname
-  qstr = m_ui->m_databaseComboBox->currentText().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_DB_NAME"] = qstr.toStdString();
-
-// get client encoding
-  qstr = m_ui->m_clientEncodingComboBox->currentText().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_CLIENT_ENCODING"] = qstr.toStdString();
-  
 // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_USER"] = qstr.toStdString();
+    connInfo["MY_USER_NAME"] = qstr.toUtf8().data();
 
 // get password
   qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_PASSWORD"] = qstr.toStdString();
+    connInfo["MY_PASSWORD"] = qstr.toUtf8().data();
 
-// get table info
+// get dbname
+  qstr = m_ui->m_schemaNameComboBox->currentText().trimmed();
+  //qstr = m_ui->m_schemaNameLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SCHEMA"] = qstr.toUtf8().data();
+
+// get charset
+  qstr = m_ui->m_charsetComboBox->currentText().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toUtf8().data();
+
+// get the default table engine for spatial tables
+  qstr = m_ui->m_spatialTableEngineComboBox->currentText().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_DEFAULT_ENGINE_FOR_SPATIAL_TABLES"] = qstr.toUtf8().data();
+
+// get the list of tables to be hidden
   qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
-
-  if(!qstr.isEmpty())
-    connInfo["PG_HIDE_TABLES"] = qstr.toStdString();
-
-  connInfo["PG_HIDE_SPATIAL_METADATA_TABLES"] = m_ui->m_hideMetadataTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
-
-  connInfo["PG_HIDE_RASTER_TABLES"] = m_ui->m_hideRasterTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
-
-// get connect_timeout
-  qstr = m_ui->m_connectTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_CONNECT_TIMEOUT"] = qstr.toStdString();
+    connInfo["MY_HIDE_TABLES"] = qstr.toUtf8().data();
 
-// get MinPoolSize
-  qstr = m_ui->m_minPoolSizeSpinBox->text().trimmed();
-  
-  if(!qstr.isEmpty())
-    connInfo["PG_MIN_POOL_SIZE"] = qstr.toStdString();
+// check raster metadata creation
+  connInfo["MY_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = m_ui->m_createRasterMetadataCheckBox->isChecked() ? "TRUE" : "FALSE";
+
+// check metadata tables visibility
+  connInfo["MY_HIDE_METADATA_TABLES"] = m_ui->m_hideMetadataTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
+
+// check raster table visibility
+ connInfo["MY_HIDE_RASTER_TABLES"] = m_ui->m_hideRasterTablesCheckBox->isChecked() ? "TRUE" : "FALSE";
 
 // get MaxPoolSize
   qstr = m_ui->m_maxPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_MAX_POOL_SIZE"] = qstr.toStdString();
+    connInfo["MY_MAX_POOL_SIZE"] = qstr.toUtf8().data();
 
-// get options
-  qstr = m_ui->m_optionsLineEdit->text().trimmed();
+// get MinPoolSize
+  qstr = m_ui->m_minPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["PG_OPTIONS"] = qstr.toStdString();
+    connInfo["MY_MIN_POOL_SIZE"] = qstr.toUtf8().data();
+
+// get idle time
+  qstr = m_ui->m_maxIdleTimeSpinBox->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_MAX_IDLE_TIME"] = qstr.toUtf8().data();
+  
+// get connect_timeout
+  qstr = m_ui->m_connectTimeoutSpinBox->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_OPT_CONNECT_TIMEOUT"] = qstr.toUtf8().data();
+
+// get connect_timeout
+  qstr = m_ui->m_readTimeoutSpinBox->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_OPT_READ_TIMEOUT"] = qstr.toUtf8().data();
+
+// get connect_timeout
+  qstr = m_ui->m_writeTimeoutSpinBox->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_OPT_WRITE_TIMEOUT"] = qstr.toUtf8().data();
+
+// get ssl info
+  qstr = m_ui->m_sslKeyLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SSL_KEY"] = qstr.toUtf8().data();
+
+  qstr = m_ui->m_sslCertLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SSL_CERT"] = qstr.toUtf8().data();
+
+  qstr = m_ui->m_sslCALineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SSL_KEY"] = qstr.toUtf8().data();
+
+  qstr = m_ui->m_sslCAPathLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SSL_CA"] = qstr.toUtf8().data();
+
+  qstr = m_ui->m_sslChiperLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SSL_CA_PATH"] = qstr.toUtf8().data();
+
+// get socket info
+  qstr = m_ui->m_socketLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_SOCKET"] = qstr.toUtf8().data();
+
+// get pipe info
+  qstr = m_ui->m_pipeLineEdit->text().trimmed();
+  
+  if(!qstr.isEmpty())
+    connInfo["MY_PIPE"] = qstr.toUtf8().data();
+
+// more options
+  connInfo["MY_CLIENT_COMPRESS"] = m_ui->m_clientCompressCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_CLIENT_LOCAL_FILES"] = m_ui->m_clientLocalFilesCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_CLIENT_MULTI_STATEMENTS"] = m_ui->m_clientMultiStatementsCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_CLIENT_MULTI_RESULTS"] = m_ui->m_clientMultiResultsCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_OPT_RECONNECT"] = m_ui->m_reconnectCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_CLIENT_IGNORE_SPACE"] = m_ui->m_ignoreSpaceCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_OPT_REPORT_DATA_TRUNCATION"] = m_ui->m_reportDataTruncationCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_CLIENT_NO_SCHEMA"] = m_ui->m_noSchemaCheckBox->isChecked() ? "TRUE" : "FALSE";
+  connInfo["MY_CLIENT_INTERACTIVE"] = m_ui->m_clientInterativeCheckBox->isChecked() ? "TRUE" : "FALSE";
 }
 
 void te::qt::plugins::mysql::MySQLConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
-  std::map<std::string, std::string>::const_iterator it = connInfo.find("PG_HOST");
+  std::map<std::string, std::string>::const_iterator it = connInfo.find("MY_HOST_NAME");
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();
 
   if(it != itend)
-    m_ui->m_hostNameLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_hostNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-  it = connInfo.find("PG_HOST_ADDR");
-
-  if(it != itend)
-    m_ui->m_hostNameLineEdit->setText(QString::fromStdString(it->second));
-
-  it = connInfo.find("PG_PORT");
+  it = connInfo.find("MY_PORT");
 
   if(it != itend)
-    m_ui->m_portLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_portLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-  it = connInfo.find("PG_DB_NAME");
+  it = connInfo.find("MY_USER_NAME");
 
   if(it != itend)
-  {
-    int pos = m_ui->m_databaseComboBox->findText(QString::fromStdString(it->second));
+    m_ui->m_userNameLineEdit->setText(QString::fromUtf8(it->second.c_str()));
 
-    if(pos != -1)
-      m_ui->m_databaseComboBox->setCurrentIndex(pos);
-    else
-    {
-      m_ui->m_databaseComboBox->addItem(QString::fromStdString(it->second));
-      m_ui->m_databaseComboBox->setCurrentIndex(0);
-    }
-  }
+  it = connInfo.find("MY_PASSWORD");
 
-  it = connInfo.find("PG_CLIENT_ENCODING");
+  if(it != itend)
+    m_ui->m_passwordLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_SCHEMA");
 
   if(it != itend)
   {
-    int pos = m_ui->m_clientEncodingComboBox->findText(QString::fromStdString(it->second));
+    int pos = m_ui->m_schemaNameComboBox->findText(QString::fromUtf8(it->second.c_str()));
 
     if(pos != -1)
-      m_ui->m_clientEncodingComboBox->setCurrentIndex(pos);
+      m_ui->m_schemaNameComboBox->setCurrentIndex(pos);
     else
     {
-      m_ui->m_clientEncodingComboBox->addItem(QString::fromStdString(it->second));
-      m_ui->m_clientEncodingComboBox->setCurrentIndex(0);
+      m_ui->m_schemaNameComboBox->addItem(QString::fromUtf8(it->second.c_str()));
+      m_ui->m_schemaNameComboBox->setCurrentIndex(0);
     }
   }
 
-  it = connInfo.find("PG_USER");
+  it = connInfo.find("MY_OPT_CHARSET_NAME");
 
   if(it != itend)
-    m_ui->m_userNameLineEdit->setText(QString::fromStdString(it->second));
+  {
+    int pos = m_ui->m_charsetComboBox->findText(QString::fromUtf8(it->second.c_str()));
 
-  it = connInfo.find("PG_PASSWORD");
+    if(pos != -1)
+      m_ui->m_charsetComboBox->setCurrentIndex(pos);
+  }
+
+  it = connInfo.find("MY_DEFAULT_ENGINE_FOR_SPATIAL_TABLES");
 
   if(it != itend)
-    m_ui->m_passwordLineEdit->setText(QString::fromStdString(it->second));
+  {
+    int pos = m_ui->m_spatialTableEngineComboBox->findText(QString::fromUtf8(it->second.c_str()));
 
-  it = connInfo.find("PG_CONNECT_TIMEOUT");
+    if(pos != -1)
+      m_ui->m_spatialTableEngineComboBox->setCurrentIndex(pos);
+  }
+
+  it = connInfo.find("MY_HIDE_TABLES");
+
+  if(it != itend)
+    m_ui->m_tablesToHideLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_CREATE_TERRALIB_RASTER_METADATA_TABLES");
+
+  m_ui->m_createRasterMetadataCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_HIDE_METADATA_TABLES");
+
+  m_ui->m_hideMetadataTablesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_HIDE_RASTER_TABLES");
+
+  m_ui->m_hideRasterTablesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_MAX_POOL_SIZE");
+
+  if(it != itend)
+    m_ui->m_minPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
+
+  it = connInfo.find("MY_MIN_POOL_SIZE");
+
+  if(it != itend)
+    m_ui->m_minPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
+
+  it = connInfo.find("MY_MAX_IDLE_TIME");
+
+  if(it != itend)
+    m_ui->m_maxIdleTimeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
+
+  it = connInfo.find("MY_OPT_CONNECT_TIMEOUT");
 
   if(it != itend)
     m_ui->m_connectTimeoutSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
 
-  it = connInfo.find("PG_MIN_POOL_SIZE");
+  it = connInfo.find("MY_OPT_READ_TIMEOUT");
 
   if(it != itend)
-    m_ui->m_minPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
+    m_ui->m_readTimeoutSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
 
-  it = connInfo.find("PG_MAX_POOL_SIZE");
-
-  if(it != itend)
-    m_ui->m_minPoolSizeSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
-
-  it = connInfo.find("PG_OPTIONS");
+  it = connInfo.find("MY_OPT_WRITE_TIMEOUT");
 
   if(it != itend)
-    m_ui->m_optionsLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_writeTimeoutSpinBox->setValue(boost::lexical_cast<int>(it->second.c_str()));
 
-  it = connInfo.find("PG_HIDE_SPATIAL_METADATA_TABLES");
-
-  m_ui->m_hideMetadataTablesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
-
-  it = connInfo.find("PG_HIDE_RASTER_TABLES");
-
-  m_ui->m_hideRasterTablesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
-
-  it = connInfo.find("PG_HIDE_TABLES");
+  it = connInfo.find("MY_SSL_KEY");
 
   if(it != itend)
-    m_ui->m_tablesToHideLineEdit->setText(QString::fromStdString(it->second));
+    m_ui->m_sslKeyLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_SSL_CERT");
+
+  if(it != itend)
+    m_ui->m_sslCertLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_SSL_CA");
+
+  if(it != itend)
+    m_ui->m_sslCALineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_SSL_CA_PATH");
+
+  if(it != itend)
+    m_ui->m_sslCAPathLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_SSL_CIPHER");
+
+  if(it != itend)
+    m_ui->m_sslChiperLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_SOCKET");
+
+  if(it != itend)
+    m_ui->m_socketLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_PIPE");
+
+  if(it != itend)
+    m_ui->m_pipeLineEdit->setText(QString::fromUtf8(it->second.c_str()));
+
+  it = connInfo.find("MY_CLIENT_COMPRESS");
+
+   m_ui->m_clientCompressCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_CLIENT_LOCAL_FILES");
+
+  if(it != itend)
+    m_ui->m_clientLocalFilesCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_CLIENT_MULTI_STATEMENTS");
+
+  if(it != itend)
+    m_ui->m_clientMultiStatementsCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_CLIENT_MULTI_RESULTS");
+
+  m_ui->m_clientMultiResultsCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_OPT_RECONNECT");
+
+  m_ui->m_reconnectCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_CLIENT_IGNORE_SPACE");
+
+  m_ui->m_ignoreSpaceCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_OPT_REPORT_DATA_TRUNCATION");
+
+  m_ui->m_reportDataTruncationCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_CLIENT_NO_SCHEMA");
+
+  m_ui->m_noSchemaCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
+
+  it = connInfo.find("MY_CLIENT_INTERACTIVE");
+
+  m_ui->m_clientInterativeCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
 }
 

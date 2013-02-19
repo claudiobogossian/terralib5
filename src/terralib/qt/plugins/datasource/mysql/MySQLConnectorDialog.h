@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/mysql/MySQLConnectorDialog.h
+  \file terralib/qt/widgets/connector/mysql/MySQLConnectorDialog.h
 
-  \brief A dialog window for showing the MySQL connector widget.
+  \brief ....
 */
 
 #ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
@@ -49,7 +49,7 @@ namespace te
         /*!
           \class MySQLConnectorDialog
 
-          \brief A dialog window for showing the MySQL connector widget.
+          \brief ....
         */
         class MySQLConnectorDialog : public QDialog
         {
@@ -86,12 +86,11 @@ namespace te
             std::auto_ptr<Ui::MySQLConnectorDialogForm> m_ui;
             te::da::DataSourceInfoPtr m_datasource;
             te::da::DataSourcePtr m_driver;
-        };
-
-      } // end namespace mysql
-    }   // end namespace plugins
-  }     // end namespace qt
-}       // end namespace te
+        }; 
+      }   // end namespace mysql
+    }     // end namespace plugins
+  }       // end namespace qt
+}         // end namespace te
 
 #endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
 
