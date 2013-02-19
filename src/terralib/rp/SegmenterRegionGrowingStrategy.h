@@ -45,7 +45,7 @@ namespace te
      */
     class TERPEXPORT SegmenterRegionGrowingStrategy : public SegmenterStrategy
     {
-      public:
+      public :
         
         /*!
           \class Parameters
@@ -58,9 +58,9 @@ namespace te
             /*! \enum SegmentFeaturesType Segment features types. */
             enum SegmentFeaturesType
             {
-              InvalidFeaturesType, /*!< Invalid features type. */
-              MeanFeaturesType, /*!< The mean of segments pixel values will be used. */
-              BaatzFeaturesType, /*!< The Baatz based features will be used. */
+              InvalidFeaturesType, //!< Invalid features type.
+              MeanFeaturesType, //!< The mean of segments pixel values will be used - Reference: S. A. Bins, L. M. G. Fonseca, G. J. Erthal e F. M. Ii, "Satellite Imagery segmentation: a region growing approach", VIII Simposio Brasileiro de Sensoriamento Remoto, Salvador, BA, 14-19 abril 1996.
+              BaatzFeaturesType, //!< The Baatz based features will be used - Reference: Baatz, M.; Schape, A. Multiresolution segmentation: an optimization approach for high quality multi-scale image segmentation. In: XII Angewandte Geographische Informationsverarbeitung, Wichmann-Verlag, Heidelberg, 2000.
             };             
             
             unsigned int m_minSegmentSize; //!< A positive minimum segment size (pixels number - default: 1).
@@ -69,7 +69,7 @@ namespace te
             
             SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:MeanFeatureType).
             
-            std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable.
+            std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
             double m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
             
@@ -124,19 +124,19 @@ namespace te
          */          
         typedef Matrix< SegmenterSegmentsBlock::SegmentIdDataType >
           SegmentsIdsContainerT;
-        
+          
         /*!
-          \class Segment
-          \brief Segment base class
+          \class SegmentFeatures
+          \brief Segment features base class
          */        
-        class TERPEXPORT Segment
+        class TERPEXPORT SegmentFeatures
         {
           public:
             
             /*!
               \brief Segment ID.
             */             
-            SegmenterSegmentsBlock::SegmentIdDataType m_id;
+            SegmenterSegmentsBlock::SegmentIdDataType m_id;            
             
             /*!
               \brief Segment area (pixels number).
@@ -163,58 +163,60 @@ namespace te
             */              
             unsigned int m_yBound;            
             
-            /*!
-              \brief Neighborhood segments.
-            */             
-            std::list< Segment* > m_neighborSegments;            
+            SegmentFeatures() {};
             
-            virtual ~Segment();
+            virtual ~SegmentFeatures() {};
             
             /*!
-              \brief Returns a dissimilarity index between this and the
-              other segment (normalized between 0 and 1).
-              \param otherSegment The other segment.
-              \return A dissimilarity index between this and the
-              other segment ( normalized between 0 and 1 ).
-            */              
-            virtual double getDissimilarityIndex( 
-              Segment const * const otherSegment ) = 0;
-              
+              \brief Creat a clone of this object.
+              \return A clone of this object.
+              \note The caller of this method must take the ownership of the returned object and delete it when necessary.
+            */                          
+            virtual SegmentFeatures* clone() = 0;
+
             /*!
-              \brief Merge specific segment features from both segments
-              into this one.
-              \param otherSegment The other segment.
-            */                
-            virtual void mergeFeatures( Segment const * const otherSegment ) = 0;
-            
-          protected :
-            
-            Segment();
-            
-          private :
-          
-            Segment( const Segment& );
-            
-            const Segment& operator=( const Segment& );
+              \brief Copy the other instance state into this one.
+              \param otherPtr The other instance ponter.
+            */
+            virtual void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr ) = 0;
         };
         
         /*!
-          \brief Internal segments container.
-          \note All segment objects will be deleted at this instance destruction time.
+          \class Segment
+          \brief Segment base class
          */        
-        class TERPEXPORT SegmentsContainer : public std::map< 
-          SegmenterSegmentsBlock::SegmentIdDataType, Segment* >
+        class TERPEXPORT Segment
         {
-          public :
-            
-            SegmentsContainer();
-            
-            ~SegmentsContainer();
+          public:
             
             /*!
-              \brief Delete all segment objects and clears the map.
-              */              
-            void deleteSegments();
+              \brief Neighborhood segments.
+            */             
+            std::list< Segment* > m_neighborSegments;             
+            
+            virtual ~Segment() {};
+            
+            /*!
+              \brief Returns the current segment internal features
+              \return Returns the current segment internal features.
+            */              
+            virtual SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures() = 0;
+            
+            /*!
+              \brief Returns the current segment internal features
+              \return Returns the current segment internal features.
+            */              
+            virtual SegmenterRegionGrowingStrategy::SegmentFeatures const* getFeatures() const = 0;
+            
+          protected :
+            
+            Segment() {};
+            
+          private :
+          
+            Segment( const Segment& ) {};
+            
+            const Segment& operator=( const Segment& other ) { return other; };
         };
         
         /*!
@@ -225,31 +227,52 @@ namespace te
         {
           public:
             
-            std::vector< double > m_means; //!< Segment mean values (for each band), normalized between 0 and 1.
+            /*!
+              \class SegmentFeatures
+              \brief Mean based segment features.
+            */              
+            class TERPEXPORT SegmentFeatures : public SegmenterRegionGrowingStrategy::SegmentFeatures
+            {
+              public :
+                
+                std::vector< double > m_means; //!< Segment mean values (for each band), normalized between 0 and 1.
+                
+                SegmentFeatures() {};
+                
+                ~SegmentFeatures() {};
+                
+                SegmenterRegionGrowingStrategy::SegmentFeatures* clone()
+                {
+                  return new SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures( *this );
+                };
+                
+                inline void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr )
+                {
+                  TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< 
+                    SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures const * const >(
+                    otherPtr ), "Invalid segment feature type" );  
+        
+                  operator=( *( (SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures const *)otherPtr ) );
+                };
+            };
             
-            MeanBasedSegment();
+            MeanBasedSegment::SegmentFeatures m_features;
             
-            ~MeanBasedSegment();
+            MeanBasedSegment() {};
+            
+            ~MeanBasedSegment() {};
             
             //overload
-            double getDissimilarityIndex( Segment const * const otherSegment );
+            inline SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures()
+            {
+              return &m_features;
+            };
             
             //overload
-            void mergeFeatures( Segment const * const otherSegment );
-            
-          protected :
-            
-            // Variables used by getDissimilarityIndex method
-            MeanBasedSegment* getDissimilarityIndex_otherCastPtr;
-            unsigned int getDissimilarityIndex_meansIdx;
-            unsigned int getDissimilarityIndex_meansSize;
-            double getDissimilarityIndex_diffValue;
-            double getDissimilarityIndex_dissValue;
-            
-            // Variables used by mergeFeatures method
-            MeanBasedSegment* mergeFeatures_otherCastPtr;
-            unsigned int mergeFeatures_meansIdx;
-            unsigned int mergeFeatures_meansSize;
+            inline SegmenterRegionGrowingStrategy::SegmentFeatures const* getFeatures() const
+            {
+              return &m_features;
+            };            
         };
         
         /*!
@@ -260,31 +283,195 @@ namespace te
         {
           public:
             
-            std::vector< double > const * m_bandsWeightsPtr; //!< Bands weights.
+            /*!
+              \class SegmentFeatures
+              \brief Baatz based segment features.
+            */              
+            class TERPEXPORT SegmentFeatures : public SegmenterRegionGrowingStrategy::SegmentFeatures
+            {
+              public :
+                
+                std::vector< double > m_sums; //!< Segment sum of segment pixel velues.
+                
+                std::vector< double > m_stdDev; //!< Standard deviation of segment pixel velues.
+                
+                unsigned int m_edgeLength; //!< Segment edge length.
+                
+                double m_compactness; //!< Compactness of the current segment.
+                
+                double m_smoothness; //!< Smoothness of the current segment.
+                
+                SegmentFeatures() {};
+                
+                ~SegmentFeatures() {};
+                
+                SegmenterRegionGrowingStrategy::SegmentFeatures* clone()
+                {
+                  return new SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures( *this );
+                };
+                
+                inline void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr )
+                {
+                  TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< 
+                    SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures const * const >(
+                    otherPtr ), "Invalid segment type" );  
+        
+                  operator=( *( (SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures const *)otherPtr ) );
+                };
+            };  
             
-            std::vector< double > m_sums; //!< Segment sum of pixel velues.
+            BaatzBasedSegment::SegmentFeatures m_features;
             
-            std::vector< double > m_stdDev; //!< Standard deviation of pixel velues.
+            BaatzBasedSegment() {};
             
-            BaatzBasedSegment();
-            
-            ~BaatzBasedSegment();
+            ~BaatzBasedSegment() {};
             
             //overload
-            double getDissimilarityIndex( Segment const * const otherSegment );
+            inline SegmenterRegionGrowingStrategy::SegmentFeatures* getFeatures()
+            {
+              return &m_features;
+            };
             
             //overload
-            void mergeFeatures( Segment const * const otherSegment );
+            inline SegmenterRegionGrowingStrategy::SegmentFeatures const* getFeatures() const
+            {
+              return &m_features;
+            };                        
+        };                   
+        
+        /*!
+          \brief Internal segments container.
+          \note All segment objects will be deleted at this instance destruction time.
+         */        
+        class TERPEXPORT SegmentsContainer : public std::map< 
+          SegmenterSegmentsBlock::SegmentIdDataType, Segment* >
+        {
+          public :
+            
+            SegmentsContainer() {};
+            
+            ~SegmentsContainer();
+            
+            /*!
+              \brief Delete all segment objects and clears the map.
+              */              
+            void deleteSegments();
+        };        
+        
+        /*!
+          \class Merger
+          \brief Segments merger
+         */        
+        class TERPEXPORT Merger
+        {
+          public:
+            
+            virtual ~Merger() {};
+            
+            /*!
+              \brief Returns a dissimilarity index between this and the
+              other segment (normalized between 0 and 1).
+              \param segment1Ptr A pointer to the first segment.
+              \param segment2Ptr A pointer to the second segment.
+              \param mergedFeatures A pointer to a valid segment features instance where the merged features values will be stored.
+              \return A dissimilarity index between this and the
+              other segment ( normalized between 0 and 1 ).
+            */              
+            virtual double getDissimilarityIndex(
+              SegmenterRegionGrowingStrategy::Segment const * const segment1Ptr, 
+              SegmenterRegionGrowingStrategy::Segment const * const segment2Ptr, 
+              SegmenterRegionGrowingStrategy::SegmentFeatures* mergedFeatures ) const = 0;
+              
+            /*!
+              \brief Merge specific segment features from both segments
+              into the first segment.
+              \param segment1Ptr The first segment.
+              \param segment2Ptr A pointer to the second segment.
+              \param mergedFeatures A pointer to a valid segment features instance where the merged features values are stored.
+            */                
+            virtual void mergeFeatures( SegmenterRegionGrowingStrategy::Segment * const segment1Ptr, 
+              Segment const * const segment2Ptr, 
+              SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const = 0;
             
           protected :
             
-
+            Merger() {};
             
-            // Variables used by mergeFeatures method
-            BaatzBasedSegment* mergeFeatures_otherCastPtr;
-            unsigned int mergeFeatures_meansIdx;
-            unsigned int mergeFeatures_meansSize;
-        };                        
+          private :
+          
+            Merger( const Merger& ) {};
+            
+            const Merger& operator=( const Merger& other ) { return other; };
+        };        
+        
+        /*!
+          \class MeanMerger
+          \brief Mean based Segments merger
+         */        
+        class TERPEXPORT MeanMerger : public SegmenterRegionGrowingStrategy::Merger
+        {
+          public:
+            
+            MeanMerger();
+            
+            ~MeanMerger();
+            
+            //overload        
+            double getDissimilarityIndex(
+              SegmenterRegionGrowingStrategy::Segment const * const segmen1tPtr, 
+              SegmenterRegionGrowingStrategy::Segment const * const segmen2tPtr, 
+              SegmenterRegionGrowingStrategy::SegmentFeatures* mergedFeatures ) const;
+              
+            //overload                
+            void mergeFeatures( SegmenterRegionGrowingStrategy::Segment * const segmen1tPtr, 
+              Segment const * const segmen2tPtr, 
+              SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const;
+        };        
+        
+        /*!
+          \class BaatzMerger
+          \brief Baatz based Segments merger
+         */        
+        class TERPEXPORT BaatzMerger : public SegmenterRegionGrowingStrategy::Merger
+        {
+          public:
+            
+            /*!
+              \brief Default constructor.
+              \param bandsWeights A reference to an external valid structure where each bands weight are stored.
+              \param segmentsIds //!< A reference to an external valid structure where each all segments IDs are stored.
+              \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
+              \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
+            */
+            BaatzMerger( const double& colorWeight, const double& compactnessWeight,
+              const std::vector< double >& bandsWeights,
+              const SegmentsIdsContainerT& segmentsIds );
+            
+            ~BaatzMerger();
+            
+            //overload        
+            double getDissimilarityIndex(
+              SegmenterRegionGrowingStrategy::Segment const * const segmen1tPtr, 
+              SegmenterRegionGrowingStrategy::Segment const * const segmen2tPtr, 
+              SegmenterRegionGrowingStrategy::SegmentFeatures* mergedFeatures ) const;
+              
+            //overload                
+            void mergeFeatures( SegmenterRegionGrowingStrategy::Segment * const segmen1tPtr, 
+              Segment const * const segmen2tPtr, 
+              SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const;
+              
+          protected :
+            
+            double m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
+            
+            double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
+            
+            std::vector< double > m_bandsWeights; //!< A vector where each bands weight are stored.
+            
+            const SegmentsIdsContainerT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
+        };          
+                
+        
         
         /*!
           \brief true if this instance is initialized.
@@ -320,6 +507,7 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire
           unique segments ids.
           \param segmentsIds The output segment ids container.
+          \param merger The merger instance to use.
           \param segments The output segments container.
           \return The number of merged segments.
         */           
@@ -327,6 +515,7 @@ namespace te
           const double similarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           SegmentsIdsContainerT& segmentsIds,
+          const Merger& merger,
           SegmentsContainer& segments );
           
         /*!
@@ -337,6 +526,7 @@ namespace te
           \param segmenterIdsManager A segments ids manager to acquire
           unique segments ids.
           \param segmentsIds The output segment ids container.
+          \param merger The merger instance to use.
           \param segments The output segments container.
           \return The number of merged segments.
         */           
@@ -344,6 +534,7 @@ namespace te
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
           SegmentsIdsContainerT& segmentsIds,
+          const Merger& merger,
           SegmentsContainer& segments );          
           
         /*!
@@ -354,6 +545,23 @@ namespace te
         */           
         void exportSegs2Tif( const SegmentsIdsContainerT& segmentsIds,
           bool normto8bits, const std::string& fileName );
+          
+        /*!
+          \brief Returns the factual edge lengh for the region formed by merging of regions with ID1 and ID2 over the gements IDs matrix segsIds.
+          \param segsIds The segment ids container.
+          \param xStart The upper left X of the bounding box surrounding both regions.
+          \param yStart The upper left Y of the bounding box surrounding both regions.
+          \param xBound The lower right X bound of the bounding box surrounding both regions.
+          \param yBound The lower right Y bound of the bounding box surrounding both regions.
+          \param id1 Region 1 ID.
+          \param id2 Region 2 ID.
+          \return The edge lengh.
+        */            
+        static unsigned int getEdgeLength( SegmentsIdsContainerT const* segsIds,
+          const unsigned int& xStart, const unsigned int& yStart,
+          const unsigned int& xBound, const unsigned int& yBound,
+          const SegmenterSegmentsBlock::SegmentIdDataType& id1,
+          const SegmenterSegmentsBlock::SegmentIdDataType& id2 );
     };
     
     /*!

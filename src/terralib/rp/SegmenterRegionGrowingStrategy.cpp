@@ -90,34 +90,6 @@ namespace te
     }
     
     //-------------------------------------------------------------------------
-
-    SegmenterRegionGrowingStrategy::Segment::Segment()
-    {
-      m_id = 0;
-      m_xStart = m_xBound = m_yStart = m_yBound = 0;
-      m_size = 0;
-    }
-    
-    SegmenterRegionGrowingStrategy::Segment::Segment( const Segment& )
-    {
-    }    
-    
-    SegmenterRegionGrowingStrategy::Segment::~Segment()
-    {
-    }
-    
-    const SegmenterRegionGrowingStrategy::Segment& 
-      SegmenterRegionGrowingStrategy::Segment::operator=( 
-      const SegmenterRegionGrowingStrategy::Segment& ) 
-    {
-      return *this;
-    };
-    
-    //-------------------------------------------------------------------------
-    
-    SegmenterRegionGrowingStrategy::SegmentsContainer::SegmentsContainer()
-    {
-    }
     
     SegmenterRegionGrowingStrategy::SegmentsContainer::~SegmentsContainer()
     {
@@ -141,132 +113,304 @@ namespace te
     
     //-------------------------------------------------------------------------
     
-    SegmenterRegionGrowingStrategy::MeanBasedSegment::MeanBasedSegment()
+    SegmenterRegionGrowingStrategy::MeanMerger::MeanMerger()
     {
     }
     
-    SegmenterRegionGrowingStrategy::MeanBasedSegment::~MeanBasedSegment()
+    SegmenterRegionGrowingStrategy::MeanMerger::~MeanMerger()
     {
     }    
     
-    double 
-    SegmenterRegionGrowingStrategy::MeanBasedSegment::getDissimilarityIndex( 
-      Segment const * const otherSegment )
+    double SegmenterRegionGrowingStrategy::MeanMerger::getDissimilarityIndex(
+      SegmenterRegionGrowingStrategy::Segment const * const segment1Ptr, 
+      SegmenterRegionGrowingStrategy::Segment const * const segment2Ptr, 
+      SegmenterRegionGrowingStrategy::SegmentFeatures* ) const
     {
       TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< MeanBasedSegment const * const >(
-        otherSegment ), "Invalid segment type" );       
-      getDissimilarityIndex_otherCastPtr = 
-        (MeanBasedSegment*)(otherSegment);
+        segment1Ptr ), "Invalid segment type" );       
+      MeanBasedSegment const * const segment1CastPtr = 
+        (MeanBasedSegment*)(segment1Ptr);
+        
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< MeanBasedSegment const * const >(
+        segment2Ptr ), "Invalid segment type" );       
+      MeanBasedSegment const * const segment2CastPtr = 
+        (MeanBasedSegment*)(segment2Ptr);
       
-      getDissimilarityIndex_meansSize = m_means.size();
-      TERP_DEBUG_TRUE_OR_THROW( getDissimilarityIndex_meansSize ==
-        getDissimilarityIndex_otherCastPtr->m_means.size(),
+      std::vector< double >::size_type meansSize = 
+        segment1CastPtr->m_features.m_means.size();
+      TERP_DEBUG_TRUE_OR_THROW( meansSize ==
+        segment2CastPtr->m_features.m_means.size(),
         "Internal error" );
         
-      getDissimilarityIndex_dissValue = 0.0;
+      double dissValue = 0.0;
+      double diffValue = 0.0;
         
-      for( getDissimilarityIndex_meansIdx = 0 ; getDissimilarityIndex_meansIdx
-        < getDissimilarityIndex_meansSize ; ++getDissimilarityIndex_meansIdx )
+      for( std::vector< double >::size_type meansIdx = 0 ; meansIdx < 
+        meansSize ; ++meansIdx )
       {
-        getDissimilarityIndex_diffValue = m_means[ 
-          getDissimilarityIndex_meansIdx ] - 
-          getDissimilarityIndex_otherCastPtr->m_means[ 
-          getDissimilarityIndex_meansIdx ];
+        diffValue = segment1CastPtr->m_features.m_means[ meansIdx ] - 
+          segment2CastPtr->m_features.m_means[ meansIdx ];
           
-        getDissimilarityIndex_dissValue += ( getDissimilarityIndex_diffValue *
-          getDissimilarityIndex_diffValue );
+        dissValue += ( diffValue * diffValue );
       }
         
-      return sqrt( getDissimilarityIndex_dissValue );
-    };
+      return sqrt( dissValue );
+    }
     
-    void SegmenterRegionGrowingStrategy::MeanBasedSegment::mergeFeatures( 
-      Segment const * const otherSegment )
+    void SegmenterRegionGrowingStrategy::MeanMerger::mergeFeatures( 
+      SegmenterRegionGrowingStrategy::Segment * const segment1Ptr, 
+      Segment const * const segment2Ptr, 
+      SegmenterRegionGrowingStrategy::SegmentFeatures const * const ) const
     {
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< MeanBasedSegment * const >(
+        segment1Ptr ), "Invalid segment type" );       
+      MeanBasedSegment * const segment1CastPtr = 
+        (MeanBasedSegment*)(segment1Ptr);
+        
       TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< MeanBasedSegment const * const >(
-        otherSegment ), "Invalid segment type" );      
-      mergeFeatures_otherCastPtr = (MeanBasedSegment*)(otherSegment);
+        segment2Ptr ), "Invalid segment type" );       
+      MeanBasedSegment const * const segment2CastPtr = 
+        (MeanBasedSegment*)(segment2Ptr);
+        
+      // Merging basic features
       
-      mergeFeatures_meansSize = m_means.size();
-      TERP_DEBUG_TRUE_OR_THROW( mergeFeatures_meansSize ==
-        mergeFeatures_otherCastPtr->m_means.size(),
+      segment1CastPtr->m_features.m_size += segment2CastPtr->m_features.m_size;
+      
+      segment1CastPtr->m_features.m_xStart = std::min( 
+        segment1CastPtr->m_features.m_xStart, 
+        segment2CastPtr->m_features.m_xStart );
+      segment1CastPtr->m_features.m_xBound = std::max( 
+        segment1CastPtr->m_features.m_xBound, 
+        segment2CastPtr->m_features.m_xBound );
+
+      segment1CastPtr->m_features.m_yStart = std::min( 
+        segment1CastPtr->m_features.m_yStart, 
+        segment2CastPtr->m_features.m_yStart );
+      segment1CastPtr->m_features.m_yBound = std::max( 
+        segment1CastPtr->m_features.m_yBound, 
+        segment2CastPtr->m_features.m_yBound );
+        
+      // Merging specific features
+        
+      std::vector< double >::size_type meansSize = 
+        segment1CastPtr->m_features.m_means.size();
+      TERP_DEBUG_TRUE_OR_THROW( meansSize ==
+        segment2CastPtr->m_features.m_means.size(),
         "Internal error" );
         
-      for( mergeFeatures_meansIdx = 0 ; mergeFeatures_meansIdx
-        < mergeFeatures_meansSize ; ++mergeFeatures_meansIdx )
+      for( std::vector< double >::size_type meansIdx = 0 ; meansIdx < 
+        meansSize ; ++meansIdx )
       {
-        m_means[ mergeFeatures_meansIdx ] = 
+        segment1CastPtr->m_features.m_means[ meansIdx ] = 
           (
-            ( m_means[ mergeFeatures_meansIdx ] * ((double)m_size ) ) +
-            ( mergeFeatures_otherCastPtr->m_means[ mergeFeatures_meansIdx ] *
-            ((double)mergeFeatures_otherCastPtr->m_size) )
+            ( 
+              segment1CastPtr->m_features.m_means[ meansIdx ] 
+              * 
+              ((double)segment1CastPtr->m_features.m_size ) 
+            ) 
+            +
+            ( 
+              segment2CastPtr->m_features.m_means[ meansIdx ] 
+              *
+              ( (double)segment2CastPtr->m_features.m_size) 
+            )
           )
           / 
-          ((double)( m_size + mergeFeatures_otherCastPtr->m_size));
+          (
+            (double)
+            ( segment1CastPtr->m_features.m_size 
+              + 
+              segment2CastPtr->m_features.m_size
+            )
+          );
       }
     }
     
     //-------------------------------------------------------------------------
     
-    SegmenterRegionGrowingStrategy::BaatzBasedSegment::BaatzBasedSegment()
+    SegmenterRegionGrowingStrategy::BaatzMerger::BaatzMerger(
+      const double& colorWeight, const double& compactnessWeight,
+      const std::vector< double >& bandsWeights,
+      const SegmentsIdsContainerT& segmentsIds )
+      : m_colorWeight( colorWeight ),
+        m_compactnessWeight( compactnessWeight ),
+        m_bandsWeights( bandsWeights ),
+        m_segmentsIds( segmentsIds )
     {
     }
     
-    SegmenterRegionGrowingStrategy::BaatzBasedSegment::~BaatzBasedSegment()
+    SegmenterRegionGrowingStrategy::BaatzMerger::~BaatzMerger()
     {
     }    
     
-    double 
-    SegmenterRegionGrowingStrategy::BaatzBasedSegment::getDissimilarityIndex( 
-      Segment const * const otherSegment )
+    double SegmenterRegionGrowingStrategy::BaatzMerger::getDissimilarityIndex(
+      SegmenterRegionGrowingStrategy::Segment const * const segment1Ptr, 
+      SegmenterRegionGrowingStrategy::Segment const * const segment2Ptr, 
+      SegmenterRegionGrowingStrategy::SegmentFeatures* mergedFeatures ) const
     {
       TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment const * const >(
-        otherSegment ), "Invalid segment type" );
-      BaatzBasedSegment const* const otherCastPtr = (BaatzBasedSegment const*)(otherSegment);
+        segment1Ptr ), "Invalid segment type" );       
+      BaatzBasedSegment const * const segment1CastPtr = 
+        (BaatzBasedSegment*)(segment1Ptr);
         
-      TERP_DEBUG_TRUE_OR_THROW( m_bandsWeightsPtr, 
-        "Invalid m_bandsWeightsPtr pointer" );
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment const * const >(
+        segment2Ptr ), "Invalid segment type" );       
+      BaatzBasedSegment const * const segment2CastPtr = 
+        (BaatzBasedSegment*)(segment2Ptr);
       
-      const unsigned int sumsSize = m_sums.size();
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment::SegmentFeatures* >(
+        mergedFeatures ), "Invalid features type" );
+      BaatzBasedSegment::SegmentFeatures*  mergedFeaturesCastPtr = 
+        (BaatzBasedSegment::SegmentFeatures*)(mergedFeatures);
+        
+      TERP_DEBUG_TRUE_OR_THROW( m_bandsWeights.size() == 
+        segment1CastPtr->m_features.m_sums.size(),
+        "Internal error" );
+      
+      const unsigned int sumsSize = segment1CastPtr->m_features.m_sums.size();
       TERP_DEBUG_TRUE_OR_THROW( sumsSize ==
-        m_stdDev.size(),
+        segment1CastPtr->m_features.m_stdDev.size(),
         "Internal error" );       
       TERP_DEBUG_TRUE_OR_THROW( sumsSize ==
-        otherCastPtr->m_sums.size(),
+        segment2CastPtr->m_features.m_sums.size(),
         "Internal error" );       
+      TERP_DEBUG_TRUE_OR_THROW( sumsSize ==
+        segment2CastPtr->m_features.m_stdDev.size(),
+        "Internal error" );         
         
-      double dissValue = 0.0;
+      mergedFeaturesCastPtr->m_sums.resize( sumsSize );
+      mergedFeaturesCastPtr->m_stdDev.resize( sumsSize );
       
-      double sumCurrent = 0.0;
-      double sumOther = 0;
-      double sumUnion = 0;
+      // globals
       
-      const double sizeCurrent = (double)m_size;
-      const double sizeOther = (double)otherCastPtr->m_size;
-      const double sizeUnion = sizeCurrent + sizeOther;
+      mergedFeaturesCastPtr->m_size = segment1CastPtr->m_features.m_size + 
+        segment2CastPtr->m_features.m_size;
+      const double sizeUnionD = (double)mergedFeaturesCastPtr->m_size;
       
-      double meanUnion = 0;
+      const double sizeSeg1D = (double)segment1CastPtr->m_features.m_size;      
+      const double sizeSeg2D = (double)segment2CastPtr->m_features.m_size;      
       
-      double stdDevUnion = 0.0;
+      // Finding the form heterogeneity
+      
+      mergedFeaturesCastPtr->m_xStart = std::min( segment1CastPtr->m_features.m_xStart,
+        segment2CastPtr->m_features.m_xStart );
+      mergedFeaturesCastPtr->m_yStart = std::min( segment1CastPtr->m_features.m_yStart,
+        segment2CastPtr->m_features.m_yStart );        
+      mergedFeaturesCastPtr->m_xBound = std::max( segment1CastPtr->m_features.m_xBound,
+        segment2CastPtr->m_features.m_xBound );      
+      mergedFeaturesCastPtr->m_yBound = std::max( segment1CastPtr->m_features.m_yBound,
+        segment2CastPtr->m_features.m_yBound );              
+      
+      mergedFeaturesCastPtr->m_edgeLength = SegmenterRegionGrowingStrategy::getEdgeLength(
+        &m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
+        mergedFeaturesCastPtr->m_yStart,
+        mergedFeaturesCastPtr->m_xBound, 
+        mergedFeaturesCastPtr->m_yBound, 
+        segment1CastPtr->m_features.m_id,
+        segment2CastPtr->m_features.m_id );
+      
+      mergedFeaturesCastPtr->m_compactness = 
+        ((double)mergedFeaturesCastPtr->m_edgeLength) /
+        std::sqrt( sizeUnionD );
+        
+      mergedFeaturesCastPtr->m_smoothness =
+        ((double)mergedFeaturesCastPtr->m_edgeLength) 
+        /
+        (double)(
+          (
+            2 * ( mergedFeaturesCastPtr->m_xBound - mergedFeaturesCastPtr->m_xStart )
+          )
+          +
+          (
+            2 * ( mergedFeaturesCastPtr->m_yBound - mergedFeaturesCastPtr->m_yStart )
+          )
+        );
+        
+      const double hCompact = 
+        ( 
+          (
+            sizeSeg1D
+            *
+            (
+              mergedFeaturesCastPtr->m_compactness 
+              - 
+              segment1CastPtr->m_features.m_compactness
+            )
+          )
+          +
+          (
+            sizeSeg2D
+            *
+            (
+              mergedFeaturesCastPtr->m_compactness 
+              - 
+              segment2CastPtr->m_features.m_compactness
+            )
+          )
+        ); 
+      
+      const double hSmooth =
+        ( 
+          (
+            sizeSeg1D
+            *
+            (
+              mergedFeaturesCastPtr->m_smoothness
+              - 
+              segment1CastPtr->m_features.m_smoothness
+            )
+          )
+          +
+          (
+            sizeSeg2D
+            *
+            (
+              mergedFeaturesCastPtr->m_smoothness 
+              - 
+              segment2CastPtr->m_features.m_smoothness
+            )
+          )
+        );
+        
+      const double hForm = 
+        (
+          (
+            m_compactnessWeight 
+            *
+            hCompact
+          )
+          +
+          (
+            ( 1.0 - m_compactnessWeight )
+            *
+            hSmooth
+          )
+        );
+      
+      // Finding the color heterogeneity
       
       double hColor = 0;
+      double sumUnion = 0;
+      double meanUnion = 0;
+      double stdDevUnion = 0.0;      
       
       for( unsigned int sumsIdx = 0 ; sumsIdx < sumsSize ; ++sumsIdx )
       {
-        sumCurrent = m_sums[ sumsIdx ];
+        const double& sumCurrent = segment1CastPtr->m_features.m_sums[ sumsIdx ];
         
-        sumOther = otherCastPtr->m_sums[ sumsIdx ];
+        const double& sumOther = segment2CastPtr->m_features.m_sums[ sumsIdx ];
         
         sumUnion = sumCurrent + sumOther;
+        mergedFeaturesCastPtr->m_sums[ sumsIdx ] = sumUnion;        
         
-        meanUnion = sumUnion / sizeUnion;
+        meanUnion = sumUnion / sizeUnionD;
         
         stdDevUnion =
           ( 
             (
-              ( ( sumCurrent * sumCurrent ) / ( sizeCurrent * sizeCurrent ) )
+              ( ( sumCurrent * sumCurrent ) / ( sizeSeg1D * sizeSeg1D ) )
               *
-              ( ( sumOther * sumOther ) / ( sizeOther * sizeOther ) )
+              ( ( sumOther * sumOther ) / ( sizeSeg2D * sizeSeg2D ) )
             )
             -
             (
@@ -274,19 +418,83 @@ namespace te
             )
             +
             (
-              sizeUnion * meanUnion * meanUnion
+              sizeUnionD * meanUnion * meanUnion
             )
-          );        
-          
+          );
+        mergedFeaturesCastPtr->m_stdDev[ sumsIdx ] = stdDevUnion;        
+         
+        hColor += 
+          ( 
+            m_bandsWeights[ sumsIdx ]
+            * 
+            ( 
+              (
+                sizeSeg1D 
+                *
+                (
+                  stdDevUnion - segment1CastPtr->m_features.m_stdDev[ sumsIdx ]
+                )
+              )
+              +
+              (
+                sizeSeg2D
+                *
+                (
+                  stdDevUnion - segment2CastPtr->m_features.m_stdDev[ sumsIdx ]
+                )
+              )
+            ) 
+          );
       }
+      
+      double dissValue = 
+        (
+          ( 
+            hColor 
+            * 
+            m_colorWeight 
+          ) 
+          + 
+          (
+            ( 1.0 - m_colorWeight )
+            *
+            hForm
+          )
+        );
         
-      return sqrt( dissValue );
-    };
+      return ( dissValue * dissValue );
+    }
     
-    void SegmenterRegionGrowingStrategy::BaatzBasedSegment::mergeFeatures( 
-      Segment const * const otherSegment )
+    void SegmenterRegionGrowingStrategy::BaatzMerger::mergeFeatures( 
+      SegmenterRegionGrowingStrategy::Segment * const segment1Ptr, 
+      Segment const * const , 
+      SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const
     {
-
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment * const >(
+        segment1Ptr ), "Invalid segment type" );       
+      BaatzBasedSegment * const segment1CastPtr = 
+        (BaatzBasedSegment*)(segment1Ptr);
+      
+      TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment::SegmentFeatures const * const>(
+        mergedFeatures ), "Invalid features type" );
+      BaatzBasedSegment::SegmentFeatures const * const  mergedFeaturesCastPtr = 
+        (BaatzBasedSegment::SegmentFeatures const * const)(mergedFeatures);
+      
+      // Merging basic features
+      
+      segment1CastPtr->m_features.m_size = mergedFeaturesCastPtr->m_size;
+      segment1CastPtr->m_features.m_xStart = mergedFeaturesCastPtr->m_xStart;
+      segment1CastPtr->m_features.m_xBound = mergedFeaturesCastPtr->m_xBound;
+      segment1CastPtr->m_features.m_yStart = mergedFeaturesCastPtr->m_yStart;
+      segment1CastPtr->m_features.m_yBound = mergedFeaturesCastPtr->m_yBound;
+        
+      // Merging specific features   
+      
+      segment1CastPtr->m_features.m_sums = mergedFeaturesCastPtr->m_sums;
+      segment1CastPtr->m_features.m_stdDev = mergedFeaturesCastPtr->m_stdDev;
+      segment1CastPtr->m_features.m_edgeLength = mergedFeaturesCastPtr->m_edgeLength;
+      segment1CastPtr->m_features.m_compactness = mergedFeaturesCastPtr->m_compactness;
+      segment1CastPtr->m_features.m_smoothness = mergedFeaturesCastPtr->m_smoothness;
     }    
     
     //-------------------------------------------------------------------------
@@ -315,12 +523,27 @@ namespace te
         m_parameters = *( paramsPtr );
         
         TERP_TRUE_OR_RETURN_FALSE( m_parameters.m_minSegmentSize > 0,
-          "Invalid segmenter strategy parameter" )
+          "Invalid segmenter strategy parameter m_minSegmentSize" )
+          
         TERP_TRUE_OR_RETURN_FALSE( ( 
           ( m_parameters.m_segmentsSimilarityThreshold >= 0.0 )
           && ( m_parameters.m_segmentsSimilarityThreshold <= 1.0 ) ),
-          "Invalid segmenter strategy parameter" )        
+          "Invalid segmenter strategy parameter m_segmentsSimilarityThreshold" )  
           
+        if( ! m_parameters.m_bandsWeights.empty() )
+        {
+          TERP_TRUE_OR_RETURN_FALSE( paramsPtr->m_bandsWeights.size(),
+            "Invalid segmenter strategy parameter m_bandsWeights" );
+          double bandsWeightsSum = 0;
+          for( unsigned int bandsWeightsIdx = 0 ; bandsWeightsIdx < 
+            paramsPtr->m_bandsWeights.size() ; ++bandsWeightsIdx )
+          {
+            bandsWeightsSum += paramsPtr->m_bandsWeights[ bandsWeightsIdx ];
+          }
+          TERP_TRUE_OR_RETURN_FALSE( bandsWeightsSum == 1.0,
+            "Invalid segmenter strategy parameter m_bandsWeights" );        
+        }
+        
         m_isInitialized = true;
         
         return true;        
@@ -349,6 +572,12 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( m_isInitialized,
         "Instance not initialized" )
         
+      // Updating the bands weights info, if needed
+      
+      if( m_parameters.m_bandsWeights.empty() )
+        m_parameters.m_bandsWeights.resize( inputRasterBands.size(), 1.0 /
+        ((double)inputRasterBands.size()) );
+        
       // Initializing segments
         
       SegmentsIdsContainerT segmentsIds;
@@ -356,6 +585,31 @@ namespace te
       TERP_TRUE_OR_RETURN_FALSE( initializeSegments( segmenterIdsManager,
         inputRaster, inputRasterBands, segmentsIds, segments ), 
         "Segments initalization error" );
+        
+      // Creating the merger instance
+      
+      std::auto_ptr< Merger > mergerPtr;
+      
+      switch( m_parameters.m_segmentFeatures )
+      {
+        case Parameters::MeanFeaturesType :
+        {
+          mergerPtr.reset( new MeanMerger() );
+          break;
+        }
+        case Parameters::BaatzFeaturesType :
+        {
+          mergerPtr.reset( new BaatzMerger( m_parameters.m_colorWeight,
+            m_parameters.m_compactnessWeight, m_parameters.m_bandsWeights,
+            segmentsIds ) );
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid segment features type" );
+          break;
+        }
+      }      
         
       // Region Growing
       
@@ -370,7 +624,7 @@ namespace te
 //        te::common::Convert2String( mergetIterations ) + ".tif" );
       
       while( ( mergedSegments = mergeSegments( similarityThreshold,
-        segmenterIdsManager, segmentsIds, segments  ) ) )
+        segmenterIdsManager, segmentsIds, *mergerPtr, segments  ) ) )
       {
         ++mergetIterations;
         
@@ -386,7 +640,7 @@ namespace te
       }
       
       while( mergeSmallSegments( m_parameters.m_minSegmentSize, 
-        segmenterIdsManager, segmentsIds, segments ) )
+        segmenterIdsManager, segmentsIds, *mergerPtr, segments ) )
       {
         ++mergetIterations;
 //        exportSegs2Tif( segmentsIds, true, "mergingSmall" + 
@@ -424,18 +678,46 @@ namespace te
     {
       TERP_TRUE_OR_THROW( m_isInitialized, "Instance not initialized" );
       
-      return 
-        (
-          ( ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) ) +
-          ( ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) ) +
-          ( (double)sizeof( MeanBasedSegment ) ) +
-          ( (double)sizeof( SegmenterSegmentsBlock::SegmentIdDataType ) ) + 
-          ( 4.0 * ((double)( sizeof(Segment*) ) ) ) 
-        )
-        /
-        ( 
-          ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) 
-        );
+      double factor = 1.0;
+      
+      switch( m_parameters.m_segmentFeatures )
+      {
+        case Parameters::MeanFeaturesType :
+        {
+          factor =
+            (
+              ( 4.0 * ((double)( sizeof(Segment*) ) ) )  +
+              ( ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) ) +
+              ( (double)sizeof( MeanBasedSegment ) )
+            )
+            /
+            ( 
+              ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) 
+            );
+          break;
+        }
+        case Parameters::BaatzFeaturesType :
+        {
+          factor =
+            (
+              ( 4.0 * ((double)( sizeof(Segment*) ) ) )  +
+              ( 3.0 * ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) ) +
+              ( (double)sizeof( BaatzBasedSegment ) )
+            )
+            /
+            ( 
+              ((double)inputRasterBandsNumber) * ((double)sizeof(double) ) 
+            );
+          break;
+        }
+        default :
+        {
+          TERP_LOG_AND_THROW( "Invalid segment features type" );
+          break;
+        }
+      } 
+      
+      return factor;
     }
     
     unsigned int SegmenterRegionGrowingStrategy::getOptimalBlocksOverlapSize() const
@@ -522,6 +804,7 @@ namespace te
       bool rasterValuesAreValid = true;
       unsigned int inputRasterBandsIdx = 0;
       double value = 0;
+      const std::vector< double > dummyZeroesVector( inputRasterBandsSize, 0 );
 
       std::list< SegmenterSegmentsBlock::SegmentIdDataType > 
         unusedLineSegmentIds;
@@ -568,7 +851,17 @@ namespace te
               case Parameters::MeanFeaturesType :
               {
                 segmentPtr = new MeanBasedSegment();
-                ((MeanBasedSegment*)segmentPtr)->m_means = rasterValues;
+                ((MeanBasedSegment*)segmentPtr)->m_features.m_means = rasterValues;
+                break;
+              }
+              case Parameters::BaatzFeaturesType :
+              {
+                segmentPtr = new BaatzBasedSegment();
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_sums = rasterValues;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_stdDev = dummyZeroesVector;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_edgeLength = 1;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_compactness = 1;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_smoothness = 1;
                 break;
               }
               default :
@@ -578,15 +871,15 @@ namespace te
               }
             }
             
-            segmentPtr->m_id = lineSegmentIds[ col ];
-            segmentPtr->m_size = 1;
-            segmentPtr->m_xStart = col;
-            segmentPtr->m_xBound = col + 1;
-            segmentPtr->m_yStart = line;
-            segmentPtr->m_yBound = line + 1;
+            segmentPtr->getFeatures()->m_id = lineSegmentIds[ col ];
+            segmentPtr->getFeatures()->m_size = 1;
+            segmentPtr->getFeatures()->m_xStart = col;
+            segmentPtr->getFeatures()->m_xBound = col + 1;
+            segmentPtr->getFeatures()->m_yStart = line;
+            segmentPtr->getFeatures()->m_yBound = line + 1;
             
-            segmentsIds( line, col ) = segmentPtr->m_id;
-            segments[ segmentPtr->m_id ] = segmentPtr;
+            segmentsIds( line, col ) = segmentPtr->getFeatures()->m_id;
+            segments[ segmentPtr->getFeatures()->m_id ] = segmentPtr;
               
             // updating the neighboorhood info
               
@@ -645,6 +938,7 @@ namespace te
       const double similarityThreshold,
       SegmenterIdsManager& segmenterIdsManager,
       SegmentsIdsContainerT& segmentsIds,
+      const Merger& merger,
       SegmentsContainer& segments )
     {
       unsigned int mergedSegmentsNumber = 0;
@@ -678,6 +972,16 @@ namespace te
       
       std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
       
+      std::auto_ptr< SegmentFeatures > auxSegFeatures1;
+      std::auto_ptr< SegmentFeatures > auxSegFeatures2;
+      if( ! segments.empty() ) 
+      {
+        auxSegFeatures1.reset( 
+          segments.begin()->second->getFeatures()->clone() );
+        auxSegFeatures2.reset( 
+          segments.begin()->second->getFeatures()->clone() );
+      }
+      
       SegmentsContainer::iterator segsIt = segments.begin();
       SegmentsContainer::iterator segsItEnd = segments.end();      
       
@@ -694,8 +998,8 @@ namespace te
         
         while( nSegsIt != nSegsItEnd )
         {
-          forwardDissimilarityValue = segsIt->second->getDissimilarityIndex(
-            *nSegsIt );
+          forwardDissimilarityValue = merger.getDissimilarityIndex( segsIt->second,
+            *nSegsIt, auxSegFeatures1.get() );
             
           if( ( forwardDissimilarityValue < similarityThreshold ) &&
             ( forwardDissimilarityValue < minForwardDissimilarityValue ) )
@@ -714,7 +1018,8 @@ namespace te
             while( nSegNSegsIt != nSegNSegsItEnd )
             {
               backwardDissimilarityValue = 
-                (*nSegsIt)->getDissimilarityIndex( *nSegNSegsIt );
+                merger.getDissimilarityIndex( *nSegsIt, *nSegNSegsIt,
+                auxSegFeatures2.get() );
                 
               if( backwardDissimilarityValue < minBackwardDissimilarityValue )
               {
@@ -741,18 +1046,8 @@ namespace te
         {
           // merging segment data
           
-          segsIt->second->mergeFeatures( *minForwardDissimilaritySegmentIt );
-          
-          segsIt->second->m_size += 
-            (*minForwardDissimilaritySegmentIt)->m_size;
-          segsIt->second->m_xStart = MIN( segsIt->second->m_xStart,
-            (*minForwardDissimilaritySegmentIt)->m_xStart );
-          segsIt->second->m_xBound = MAX( segsIt->second->m_xBound,
-            (*minForwardDissimilaritySegmentIt)->m_xBound );              
-          segsIt->second->m_yStart = MIN( segsIt->second->m_yStart,
-            (*minForwardDissimilaritySegmentIt)->m_yStart );
-          segsIt->second->m_yBound = MAX( segsIt->second->m_yBound,
-            (*minForwardDissimilaritySegmentIt)->m_yBound );              
+          merger.mergeFeatures( segsIt->second, *minForwardDissimilaritySegmentIt,
+            auxSegFeatures1.get() );
             
           // updating the min dissimilarity segment neighborhood segments
           // with the current segment
@@ -798,15 +1093,15 @@ namespace te
           
           // updating the segments Ids container
           
-          segmentsLineBound = (*minForwardDissimilaritySegmentIt)->m_yBound;
-          segmentColStart = (*minForwardDissimilaritySegmentIt)->m_xStart;
-          segmentColBound = (*minForwardDissimilaritySegmentIt)->m_xBound;          
+          segmentsLineBound = (*minForwardDissimilaritySegmentIt)->getFeatures()->m_yBound;
+          segmentColStart = (*minForwardDissimilaritySegmentIt)->getFeatures()->m_xStart;
+          segmentColBound = (*minForwardDissimilaritySegmentIt)->getFeatures()->m_xBound;          
         
           minForwardDissimilaritySegmentId = 
-            (*minForwardDissimilaritySegmentIt)->m_id;
-          currentSegmentId = segsIt->second->m_id;
+            (*minForwardDissimilaritySegmentIt)->getFeatures()->m_id;
+          currentSegmentId = segsIt->second->getFeatures()->m_id;
             
-          for( segmentsLine = (*minForwardDissimilaritySegmentIt)->m_yStart ; 
+          for( segmentsLine = (*minForwardDissimilaritySegmentIt)->getFeatures()->m_yStart ; 
             segmentsLine < segmentsLineBound ; ++segmentsLine )
           {
             segmentsIdsLinePtr = segmentsIds[ segmentsLine ];
@@ -856,6 +1151,7 @@ namespace te
       const unsigned int minSegmentSize,
       SegmenterIdsManager& segmenterIdsManager,
       SegmentsIdsContainerT& segmentsIds,
+      const Merger& merger,
       SegmentsContainer& segments )
     {
       unsigned int mergedSegmentsNumber = 0;
@@ -883,6 +1179,16 @@ namespace te
       
       SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;
       
+      std::auto_ptr< SegmentFeatures > candidateAuxSegFeatures;
+      std::auto_ptr< SegmentFeatures > minForwardDissimilarityFeatures;
+      if( ! segments.empty() ) 
+      {
+        candidateAuxSegFeatures.reset( 
+          segments.begin()->second->getFeatures()->clone() );
+        minForwardDissimilarityFeatures.reset( 
+          candidateAuxSegFeatures->clone() );
+      }      
+      
       SegmentsContainer::iterator segsIt = segments.begin();
       SegmentsContainer::iterator segsItEnd = segments.end();      
       
@@ -890,7 +1196,7 @@ namespace te
       {
         // is this a small segment ?
         
-        if( segsIt->second->m_size < minSegmentSize )
+        if( segsIt->second->getFeatures()->m_size < minSegmentSize )
         {
           // Looking for the closest neighboorhood segment
           
@@ -902,13 +1208,14 @@ namespace te
           
           while( nSegsIt != nSegsItEnd )
           {
-            forwardDissimilarityValue = segsIt->second->getDissimilarityIndex(
-              *nSegsIt );
+            forwardDissimilarityValue = merger.getDissimilarityIndex( segsIt->second,
+              *nSegsIt, candidateAuxSegFeatures.get() );
               
             if( forwardDissimilarityValue < minForwardDissimilarityValue )
             { 
               minForwardDissimilarityValue = forwardDissimilarityValue;
               minForwardDissimilaritySegmentIt = nSegsIt;
+              minForwardDissimilarityFeatures->copy( candidateAuxSegFeatures.get() );
             }
             
             ++nSegsIt;
@@ -921,23 +1228,8 @@ namespace te
             // merging the small segment data into there
             // closes segment data
             
-            (*minForwardDissimilaritySegmentIt)->mergeFeatures( 
-              segsIt->second );
-            
-            (*minForwardDissimilaritySegmentIt)->m_size += 
-              segsIt->second->m_size;
-            (*minForwardDissimilaritySegmentIt)->m_xStart = 
-              MIN( segsIt->second->m_xStart,
-              (*minForwardDissimilaritySegmentIt)->m_xStart );
-            (*minForwardDissimilaritySegmentIt)->m_xBound = 
-              MAX( segsIt->second->m_xBound,
-              (*minForwardDissimilaritySegmentIt)->m_xBound );              
-            (*minForwardDissimilaritySegmentIt)->m_yStart = 
-              MIN( segsIt->second->m_yStart,
-              (*minForwardDissimilaritySegmentIt)->m_yStart );
-            (*minForwardDissimilaritySegmentIt)->m_yBound = 
-              MAX( segsIt->second->m_yBound,
-              (*minForwardDissimilaritySegmentIt)->m_yBound );   
+            merger.mergeFeatures( (*minForwardDissimilaritySegmentIt),
+              segsIt->second, minForwardDissimilarityFeatures.get() );
               
             // updating the the small segment neighborhood segments
             // with the current closest segment
@@ -987,15 +1279,15 @@ namespace te
             
             // updating the segments Ids container
             
-            segmentsLineBound = segsIt->second->m_yBound;
-            segmentColStart = segsIt->second->m_xStart;
-            segmentColBound = segsIt->second->m_xBound;          
+            segmentsLineBound = segsIt->second->getFeatures()->m_yBound;
+            segmentColStart = segsIt->second->getFeatures()->m_xStart;
+            segmentColBound = segsIt->second->getFeatures()->m_xBound;          
           
             minForwardDissimilaritySegmentId = 
-              (*minForwardDissimilaritySegmentIt)->m_id;
-            currentSegmentId = segsIt->second->m_id;
+              (*minForwardDissimilaritySegmentIt)->getFeatures()->m_id;
+            currentSegmentId = segsIt->second->getFeatures()->m_id;
               
-            for( segmentsLine = segsIt->second->m_yStart ; 
+            for( segmentsLine = segsIt->second->getFeatures()->m_yStart ; 
               segmentsLine < segmentsLineBound ; ++segmentsLine )
             {
               segmentsIdsLinePtr = segmentsIds[ segmentsLine ];
@@ -1106,6 +1398,16 @@ namespace te
       }
       
       delete rasterPtr;
+    }
+    
+    unsigned int SegmenterRegionGrowingStrategy::getEdgeLength( 
+      SegmentsIdsContainerT const* segsIds,
+      const unsigned int& xStart, const unsigned int& yStart,
+      const unsigned int& xBound, const unsigned int& yBound,
+      const SegmenterSegmentsBlock::SegmentIdDataType& id1,
+      const SegmenterSegmentsBlock::SegmentIdDataType& id2 )
+    {
+      return 0;      
     }
     
     //-------------------------------------------------------------------------
