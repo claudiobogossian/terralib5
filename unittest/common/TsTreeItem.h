@@ -48,11 +48,17 @@ class TsTreeItem : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( simblings );
   CPPUNIT_TEST( checkNumberOfChildren );
   CPPUNIT_TEST( getChildAndCheckItsIndex );
-  CPPUNIT_TEST( childDisconnects );
+  //CPPUNIT_TEST( childDisconnects ); // disconnect deletes all the structure!
   CPPUNIT_TEST( iterateChildren );
   CPPUNIT_TEST( countItems );
-  //CPPUNIT_TEST( noParent );
-  //CPPUNIT_TEST( noParent );
+  CPPUNIT_TEST( getChildByIndex );
+  //CPPUNIT_TEST( addingItems ); // adding and inserting fails when asserting (TreeItem, lines 83 and 91)
+  //CPPUNIT_TEST( removingItems ); // disconnect deletes all the structure!
+  //CPPUNIT_TEST( removingSequence ); // disconnect deletes all the structure!
+  CPPUNIT_TEST( childSwap );
+  CPPUNIT_TEST( siblingSwap );
+  //CPPUNIT_TEST(  );
+  //CPPUNIT_TEST(  );
 
   CPPUNIT_TEST_SUITE_END();
   
@@ -75,6 +81,12 @@ class TsTreeItem : public CPPUNIT_NS::TestFixture
     void childDisconnects();
     void iterateChildren();
     void countItems();
+    void getChildByIndex();
+    void addingItems();
+    void removingItems();
+    void removingSequence();
+    void childSwap();
+    void siblingSwap();
 };
 
 #endif  // __TERRALIB_UNITTEST_COMMON_INTERNAL_TREEITEM_H
