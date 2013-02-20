@@ -189,7 +189,7 @@ QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
   QString mnuName = m_txts.at(0);
 
   for(it = mnus.begin(); it != mnus.end(); ++it)
-    if((*it)->title() == mnuName)
+    if((*it)->objectName() == mnuName)
     {
       sub = *it;
       break;
@@ -199,4 +199,45 @@ QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
     sub = bar->addMenu(mnuName);
 
   return ((m_txts.size() > 1) ? GetMenu(mnuText.mid(mnuName.size()+1), sub) : sub);
+}
+
+QAction* SearchAction(QMenu* mnu, const QString& actName)
+{
+  QList<QAction*> acts = mnu->actions();
+
+  for(int i=0; i<acts.size(); i++)
+  {
+    QAction* act = acts.at(i);
+
+    if(act->objectName() == actName)
+      return act;
+  }
+
+  return 0;
+}
+
+QAction* te::qt::widgets::FindAction(const QString& actText, QMenu* mnu)
+{
+  int pos = actText.lastIndexOf(".");
+  QString mnuName = actText.left(pos);
+  QString actionName = actText.mid(pos+1);
+
+  QMenu* sub_mnu = ((pos > 0) ? FindMenu(mnuName, mnu) : mnu);
+
+  return SearchAction(sub_mnu, actionName);
+}
+
+QAction* te::qt::widgets::FindAction(const QString& actText, QMenuBar* mnuBar)
+{
+  QList<QMenu*> mnus = mnuBar->findChildren<QMenu*>();
+
+  for(int i=0; i<mnus.size(); i++)
+  {
+    QAction* act = FindAction(actText, mnus.at(i));
+
+    if(act != 0)
+      return act;
+  }
+
+  return 0;
 }

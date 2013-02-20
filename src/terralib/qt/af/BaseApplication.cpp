@@ -60,6 +60,7 @@
 #include "Exception.h"
 #include "Project.h"
 #include "SplashScreenManager.h"
+#include "Utils.h"
 
 // Qt
 #include <QtCore/QDir>
@@ -71,6 +72,8 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
+#include <QtGui/QFileDialog>
+#include <QtGui/QApplication>
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
@@ -239,6 +242,58 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
 
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
+  if(m_project != 0)
+  {
+    delete m_project;
+    m_project = 0;
+  }
+
+  QString projFile = proj->data().toString();
+
+  m_project = te::qt::af::ReadProject(projFile.toStdString());
+
+  ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
+}
+
+void te::qt::af::BaseApplication::onOpenProjectTriggered()
+{
+  if(m_project != 0)
+  {
+    delete m_project;
+    m_project = 0;
+  }
+
+  QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), tr("XML File (*.xml *.XML)"));
+
+  if(file.isEmpty())
+    return;
+
+  try
+  {
+    m_project = te::qt::af::ReadProject(file.toStdString());
+    ApplicationController::getInstance().updateRecentProjects(file, m_project->getTitle().c_str());
+  }
+  catch(const std::exception& e)
+  {
+    QString msg("Fail to open project: %1");
+    msg = msg.arg(e.what());
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
+}
+
+void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
+{
+  if(m_project == 0)
+    return;
+
+  QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+
+  if(fileName.isEmpty())
+    return;
+
+  te::qt::af::Save(*m_project, fileName.toStdString());
+
+  ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
 }
 
 void te::qt::af::BaseApplication::makeDialog()
@@ -480,7 +535,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
   initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project..."), tr(""), true, false, false);
   initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
-  initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, false);
+  initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);
   initAction(m_fileExit, "system-log-out", "Exit", tr("E&xit"), tr(""), true, false, true);
   initAction(m_filePrint, "document-print", "Print", tr("&Print..."), tr(""), true, false, false);
   initAction(m_filePrintPreview, "document-print-preview", "Print Preview", tr("Print Pre&view..."), tr(""), true, false, false);
@@ -672,4 +727,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
+  connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
+  connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
 }

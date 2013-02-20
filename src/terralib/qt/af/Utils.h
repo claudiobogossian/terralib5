@@ -32,15 +32,16 @@
 
 namespace te
 {
+
+// Forward declaration
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
+
   namespace qt
   {
-// Forward declaration
-    namespace xml
-    {
-      class Reader;
-      class Writer;
-    }
-
     namespace af
     {
       class Project;

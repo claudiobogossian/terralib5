@@ -41,6 +41,9 @@
 // Boost
 #include <boost/format.hpp>
 
+//Qt
+#include <QtCore/QDir>
+
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
   std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
@@ -70,6 +73,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   project->setTitle(reader.getElementValue());
+  reader.next(); // End element
 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -78,10 +82,12 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
   project->setAuthor(reader.getElementValue());
+  reader.next(); // End element
 
   reader.next();
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ComponentList");
+  reader.next(); // End element
 
   reader.next();
 
@@ -128,16 +134,23 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
 
   writer.writeStartElement("Project");
 
+  QDir schemaLocation(TE_SCHEMA_LOCATION);
+
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
-  writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/af");
-  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/af ../../myschemas/terralib/af/project.xsd");
-  writer.writeAttribute("version", "5.0.0");
-  writer.writeAttribute("release", "2011-01-01");
+  writer.writeAttribute("xmlns:te_map", "http://www.terralib.org/schemas/maptools");
+  writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/qt/af");
+  writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schemaLocation.absolutePath().toStdString() + "/qt/af/project.xsd");
+  writer.writeAttribute("version", TE_STRING_VERSION);
+  writer.writeAttribute("release", TE_STRING_BUILD_DATE);
 
   writer.writeElement("Title", project.getTitle());
   writer.writeElement("Author", project.getAuthor());
 
-  writer.writeStartElement("LayerList");
+  writer.writeStartElement("ComponentList");
+  writer.writeEndElement("ComponentList");
+
+  writer.writeStartElement("te_map:LayerList");
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
@@ -146,7 +159,7 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
       ++it)
     lserial.write(it->get(), writer);
 
-  writer.writeEndElement("LayerList");
+  writer.writeEndElement("te_map:LayerList");
 
   writer.writeEndElement("Project");
 }

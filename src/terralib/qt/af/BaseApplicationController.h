@@ -36,9 +36,10 @@
 
 // Qt
 #include <QtCore/QObject>
-#include <QtCore/QString>
+#include <QtCore/QStringList>
 
 // Forward declarations
+class QAction;
 class QMenu;
 class QMenuBar;
 class QToolBar;
@@ -88,6 +89,21 @@ namespace te
           */
           virtual void setMsgBoxParentWidget(QWidget* w);
 
+          /*! 
+            \name Menus and Menubars Management.
+
+            \brief Register and recover menus and menu bars.
+
+            The methods \a find will returns a valid object only if it exists in some menu, otherwise the return will be a NULL pointer.
+            The methods \a get ALWAYS returns a valid pointer. If the requested menu or menubar does not exists these funtions will create,
+            register and return the object.
+
+            \note The identifiers of the menus are the texts presented by menus.
+            \note The search for menus will occurs in ALL OF THE REGISTERED menus and menu bars, including submenus. The correct sintaxe
+            for searchies submenus may be found in the documentation of the findMenu(QString mnuText, QMenu* mnu) method.
+          */
+          //@{
+
           /*!
             \brief Register the toolbar in the list of the known toolbars and dispatch an event.
 
@@ -120,21 +136,6 @@ namespace te
             \return A toolbar identified by \a id or \a NULL if none is found.
           */
           QToolBar* getToolBar(const QString& id) const;
-
-          /*! 
-            \name Menus and Menubars Management.
-
-            \brief Register and recover menus and menu bars.
-
-            The methods \a find will returns a valid object only if it exists in some menu, otherwise the return will be a NULL pointer.
-            The methods \a get ALWAYS returns a valid pointer. If the requested menu or menubar does not exists these funtions will create,
-            register and return the object.
-
-            \note The identifiers of the menus are the texts presented by menus.
-            \note The search for menus will occurs in ALL OF THE REGISTERED menus and menu bars, including submenus. The correct sintaxe
-            for searchies submenus may be found in the documentation of the findMenu(QString mnuText, QMenu* mnu) method.
-          */
-          //@{
 
           /*!
             \brief Register the \a mnu.
@@ -190,6 +191,13 @@ namespace te
           */
           QMenuBar* getMenuBar(const QString& id) const;
 
+          /*!
+            \brief
+
+            \return
+          */
+          QAction* findAction(const QString& id) const;
+
           //@}
 
           /*!
@@ -243,7 +251,19 @@ namespace te
           */
           virtual void initializePlugins();
 
+          /*!
+            \brief
+          */
           virtual void initializeProjectMenus();
+
+          /*!
+            \brief
+
+            \param prj_file
+
+            \param prj_title
+          */
+          void updateRecentProjects(const QString& prj_file, const QString& prj_title);
 
           /*!
             \brief Finalize the application framework.
@@ -288,6 +308,8 @@ namespace te
           QString m_appName;
           QString m_appTitle;
           QString m_appIconName;
+          QStringList m_recent_projs;                 //!< List of the recent projects.
+          QStringList m_recent_projs_titles;          //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;
           QString m_appPluginsFile;
           QString m_appHelpFile;

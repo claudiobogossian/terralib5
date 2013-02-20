@@ -52,9 +52,26 @@
 */
 #define TE_PATCH_VERSION ${TE_PATCH_VERSION}
 
+/*!
+  \def TE_RELEASE_STATUS
+
+  \brief
+*/
 #define TE_RELEASE_STATUS "${TE_RELEASE_STATUS}"
 
+/*!
+  \def TE_BUILD_DATE
+
+  \brief
+*/
 #define TE_BUILD_DATE ${TE_BUILD_DATE}
+
+/*!
+  \def TE_STRING_BUILD_DATE
+
+  \brief
+*/
+#define TE_STRING_BUILD_DATE "${TE_STRING_BUILD_DATE}"
 
 /*!
   \def TE_STRING_VERSION
@@ -87,6 +104,27 @@
   \brief This macro defines the locaion of JSON resources used in TerraLib.
 */
 #define TE_JSON_FILES_LOCATION "${TE_JSON_FILES_LOCATION}"
+
+/*!
+  \def TE_SQL_FILES_LOCATION
+
+  \brief This macro defines the locaion of SQL resources used in TerraLib.
+*/
+#define TE_SQL_FILES_LOCATION "${TE_SQL_FILES_LOCATION}"
+
+/*!
+  \def TE_XML_FILES_LOCATION
+
+  \brief This macro defines the locaion of XML resources used in TerraLib.
+*/
+#define TE_XML_FILES_LOCATION "${TE_XML_FILES_LOCATION}"
+
+/*!
+  \def TE_SCHEMA_LOCATION
+
+  \brief This macro defines the locaion of XSD schemas used in TerraLib.
+*/
+#define TE_SCHEMA_LOCATION "${TE_SCHEMA_LOCATION}"
 
 /*!
   \def TE_USE_GDAL
