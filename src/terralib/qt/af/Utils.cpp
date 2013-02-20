@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/UserApplicationSettings.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../serialization/maptools/Layer.h"
 #include "../../xml/Reader.h"
@@ -40,6 +41,7 @@
 
 // Boost
 #include <boost/format.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 //Qt
 #include <QtCore/QDir>
@@ -164,3 +166,33 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeEndElement("Project");
 }
 
+void te::qt::af::UpdateUserSettingsProjects(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
+{
+  if(prjFiles.empty())
+    return;
+
+  boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings();
+
+  p.get_child("UserSettings.MostRecentProject.<xmlattr>.xlink:href").put_value(prjFiles.at(0).toStdString());
+  p.get_child("UserSettings.MostRecentProject.<xmlattr>.title").put_value(prjTitles.at(0).toStdString());
+
+  if(prjFiles.size() > 1)
+  {
+    boost::property_tree::ptree recPrjs;
+
+    for(int i=1; i<prjFiles.size(); i++)
+    {
+      boost::property_tree::ptree prj;
+
+      prj.add("<xmlattr>.xlink:href", prjFiles.at(i).toStdString());
+      prj.add("<xmlattr>.title", prjTitles.at(i).toStdString());
+
+      recPrjs.add_child("Project", prj);
+    }
+
+    p.put_child("UserSettings.RecentProjects", recPrjs);
+  }
+
+  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::write_xml(userConfigFile, p, std::locale(), settings);
+}

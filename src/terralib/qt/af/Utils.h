@@ -30,6 +30,9 @@
 #include "../../common/Exception.h"
 #include "Config.h"
 
+// Forward declarations
+class QStringList;
+
 namespace te
 {
 
@@ -54,6 +57,7 @@ namespace te
 
       TEQTAFEXPORT void Save(const Project& project, te::xml::Writer& writer);
 
+      TEQTAFEXPORT void UpdateUserSettingsProjects(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
