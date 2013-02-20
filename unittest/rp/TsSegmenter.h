@@ -43,7 +43,9 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsSegmenter );
   
-  CPPUNIT_TEST( RegionGrowingStrategy ); 
+  CPPUNIT_TEST( RegionGrowingBaatzStrategy ); 
+  
+  CPPUNIT_TEST( RegionGrowingMeanStrategy ); 
   
   CPPUNIT_TEST( BlockProcessingWithoutMerging );
   
@@ -61,7 +63,9 @@ class TsSegmenter : public CPPUNIT_NS::TestFixture
     
     void ThreadedProcessing();
     
-    void RegionGrowingStrategy();
+    void RegionGrowingMeanStrategy();
+    
+    void RegionGrowingBaatzStrategy();
 };
 
 #endif

@@ -75,6 +75,8 @@ namespace te
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
+            unsigned int m_maxIterations; //!< The maximum number of iterations to perform - default: 0 (automatically found).
+            
             Parameters();
             
             ~Parameters();
@@ -172,13 +174,22 @@ namespace te
               \return A clone of this object.
               \note The caller of this method must take the ownership of the returned object and delete it when necessary.
             */                          
-            virtual SegmentFeatures* clone() = 0;
+            virtual SegmentFeatures* clone() const = 0;
 
             /*!
               \brief Copy the other instance state into this one.
               \param otherPtr The other instance ponter.
             */
             virtual void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr ) = 0;
+            
+          protected :
+            
+            const SegmenterRegionGrowingStrategy::SegmentFeatures& operator=(
+              const SegmenterRegionGrowingStrategy::SegmentFeatures& other );
+            
+          private :
+            
+            SegmentFeatures( const SegmenterRegionGrowingStrategy::SegmentFeatures& ) {};
         };
         
         /*!
@@ -241,19 +252,17 @@ namespace te
                 
                 ~SegmentFeatures() {};
                 
-                SegmenterRegionGrowingStrategy::SegmentFeatures* clone()
-                {
-                  return new SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures( *this );
-                };
+                //overload
+                SegmenterRegionGrowingStrategy::SegmentFeatures* clone() const;
                 
-                inline void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr )
-                {
-                  TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< 
-                    SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures const * const >(
-                    otherPtr ), "Invalid segment feature type" );  
-        
-                  operator=( *( (SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures const *)otherPtr ) );
-                };
+                //overload
+                void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr );
+                
+              private :
+                
+                SegmentFeatures( const SegmentFeatures& ) {};
+                
+                const SegmentFeatures& operator=( const SegmentFeatures& other ) { return other; };
             };
             
             MeanBasedSegment::SegmentFeatures m_features;
@@ -305,19 +314,17 @@ namespace te
                 
                 ~SegmentFeatures() {};
                 
-                SegmenterRegionGrowingStrategy::SegmentFeatures* clone()
-                {
-                  return new SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures( *this );
-                };
+                //overload
+                SegmenterRegionGrowingStrategy::SegmentFeatures* clone() const;
                 
-                inline void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr )
-                {
-                  TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< 
-                    SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures const * const >(
-                    otherPtr ), "Invalid segment type" );  
-        
-                  operator=( *( (SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures const *)otherPtr ) );
-                };
+                //overload
+                void copy( SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr );
+                
+              private :
+                
+                SegmentFeatures( const SegmentFeatures& ) {};
+                
+                const SegmentFeatures& operator=( const SegmentFeatures& other ) { return other; };                
             };  
             
             BaatzBasedSegment::SegmentFeatures m_features;
@@ -547,7 +554,7 @@ namespace te
           bool normto8bits, const std::string& fileName );
           
         /*!
-          \brief Returns the factual edge lengh for the region formed by merging of regions with ID1 and ID2 over the gements IDs matrix segsIds.
+          \brief Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
           \param segsIds The segment ids container.
           \param xStart The upper left X of the bounding box surrounding both regions.
           \param yStart The upper left Y of the bounding box surrounding both regions.
@@ -555,9 +562,9 @@ namespace te
           \param yBound The lower right Y bound of the bounding box surrounding both regions.
           \param id1 Region 1 ID.
           \param id2 Region 2 ID.
-          \return The edge lengh.
+          \return Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
         */            
-        static unsigned int getEdgeLength( SegmentsIdsContainerT const* segsIds,
+        static unsigned int getTouchingEdgeLength( const SegmentsIdsContainerT& segsIds,
           const unsigned int& xStart, const unsigned int& yStart,
           const unsigned int& xBound, const unsigned int& yBound,
           const SegmenterSegmentsBlock::SegmentIdDataType& id1,
