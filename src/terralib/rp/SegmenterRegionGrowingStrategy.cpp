@@ -35,6 +35,7 @@
 
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 
 namespace
 {
@@ -69,6 +70,7 @@ namespace te
       m_bandsWeights = params.m_bandsWeights;
       m_colorWeight = params.m_colorWeight;
       m_compactnessWeight = params.m_compactnessWeight;
+      m_maxIterations = params.m_maxIterations;
       
       return *this;      
     }
@@ -82,12 +84,91 @@ namespace te
       m_bandsWeights.clear();
       m_colorWeight = 0.5;
       m_compactnessWeight = 0.5;
+      m_maxIterations = 0;
     }
     
     te::common::AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
     {
       return new te::rp::SegmenterRegionGrowingStrategy::Parameters( *this );
     }
+    
+    //-------------------------------------------------------------------------
+    
+    const SegmenterRegionGrowingStrategy::SegmentFeatures& 
+      SegmenterRegionGrowingStrategy::SegmentFeatures::operator=(
+      const SegmenterRegionGrowingStrategy::SegmentFeatures& other )
+    {
+      m_id = other.m_id;
+      m_size = other.m_size;
+      m_xStart = other.m_xStart;
+      m_xBound = other.m_xBound;
+      m_yStart = other.m_yStart;
+      m_yBound = other.m_yBound;
+      
+      return other;
+    }
+    
+    //-------------------------------------------------------------------------
+    
+    SegmenterRegionGrowingStrategy::SegmentFeatures*
+      SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::clone()
+      const
+    {
+      SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures*
+        newInstancePtr = new
+        SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures();
+      
+      newInstancePtr->copy( this );
+        
+      return newInstancePtr;
+    }
+    
+    void SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures::copy( 
+      SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr )
+    {
+      SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures const * const
+        otherCastPtr = dynamic_cast< 
+        SegmenterRegionGrowingStrategy::MeanBasedSegment::SegmentFeatures const * const >(
+        otherPtr );
+      TERP_DEBUG_TRUE_OR_THROW( otherCastPtr, "Invalid segment feature type" );  
+        
+      m_means = otherCastPtr->m_means;
+
+      SegmenterRegionGrowingStrategy::SegmentFeatures::operator=( *otherPtr );
+    };
+    
+    //-------------------------------------------------------------------------
+    
+    SegmenterRegionGrowingStrategy::SegmentFeatures*
+      SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::clone()
+      const
+    {
+      SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures*
+        newInstancePtr = new
+        SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures();
+      
+      newInstancePtr->copy( this );
+        
+      return newInstancePtr;
+    }    
+    
+    void SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures::copy( 
+      SegmenterRegionGrowingStrategy::SegmentFeatures const * const otherPtr )
+    {
+      SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures const * const
+        otherCastPtr = dynamic_cast< 
+        SegmenterRegionGrowingStrategy::BaatzBasedSegment::SegmentFeatures const * const >(
+        otherPtr );
+      TERP_DEBUG_TRUE_OR_THROW( otherCastPtr, "Invalid segment feature type" );  
+        
+      m_sums = otherCastPtr->m_sums;
+      m_stdDev = otherCastPtr->m_stdDev;
+      m_edgeLength = otherCastPtr->m_edgeLength;
+      m_compactness = otherCastPtr->m_compactness;
+      m_smoothness = otherCastPtr->m_smoothness;
+
+      SegmenterRegionGrowingStrategy::SegmentFeatures::operator=( *otherPtr );
+    };    
     
     //-------------------------------------------------------------------------
     
@@ -301,13 +382,16 @@ namespace te
       mergedFeaturesCastPtr->m_yBound = std::max( segment1CastPtr->m_features.m_yBound,
         segment2CastPtr->m_features.m_yBound );              
       
-      mergedFeaturesCastPtr->m_edgeLength = SegmenterRegionGrowingStrategy::getEdgeLength(
-        &m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
+      mergedFeaturesCastPtr->m_edgeLength = 
+        segment1CastPtr->m_features.m_edgeLength +
+        segment2CastPtr->m_features.m_edgeLength -
+        ( 2 * SegmenterRegionGrowingStrategy::getTouchingEdgeLength(
+        m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
         mergedFeaturesCastPtr->m_yStart,
         mergedFeaturesCastPtr->m_xBound, 
         mergedFeaturesCastPtr->m_yBound, 
         segment1CastPtr->m_features.m_id,
-        segment2CastPtr->m_features.m_id );
+        segment2CastPtr->m_features.m_id ) );
       
       mergedFeaturesCastPtr->m_compactness = 
         ((double)mergedFeaturesCastPtr->m_edgeLength) /
@@ -613,30 +697,69 @@ namespace te
         
       // Region Growing
       
-      const double maxMergesNumber = (double)( 1 + ( 
-        inputRaster.getNumberOfRows() *
-        inputRaster.getNumberOfColumns() ) / 2 );
-      double similarityThreshold = DBL_MIN;
+      const unsigned int maxMergesIterations = 
+        m_parameters.m_maxIterations ? 
+          m_parameters.m_maxIterations 
+          :
+          (unsigned int)
+          ( 
+            2.0 
+            *
+            std::log( 
+              (double)
+              (
+                inputRaster.getNumberOfRows() * inputRaster.getNumberOfColumns() 
+              ) 
+            ) 
+            /
+            std::log( 2.0 ) 
+          );      
+      const unsigned int minMergesIterations = maxMergesIterations / 2;
+      const unsigned int maxMergestOnEachIteration = 
+        ( inputRaster.getNumberOfRows() * inputRaster.getNumberOfColumns() ) /
+        2;
+      double similarityThreshold = m_parameters.m_segmentsSimilarityThreshold / 
+        (double)maxMergesIterations;
       unsigned int mergedSegments = 0;
       unsigned int mergetIterations = 0;
       
 //      exportSegs2Tif( segmentsIds, true, "merging" + 
 //        te::common::Convert2String( mergetIterations ) + ".tif" );
       
-      while( ( mergedSegments = mergeSegments( similarityThreshold,
-        segmenterIdsManager, segmentsIds, *mergerPtr, segments  ) ) )
+      while ( 
+              ( mergetIterations < minMergesIterations )
+              ||
+              (
+                ( mergetIterations < maxMergesIterations )
+                &&
+                ( 
+                  ( mergedSegments = mergeSegments( similarityThreshold,
+                    segmenterIdsManager, segmentsIds, *mergerPtr, segments  ) ) 
+                  > 
+                  0 
+                )
+              )
+            )
       {
         ++mergetIterations;
         
 //        exportSegs2Tif( segmentsIds, true, "merging" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
         
-        similarityThreshold = m_parameters.m_segmentsSimilarityThreshold -
-          ( m_parameters.m_segmentsSimilarityThreshold * 
-          ((double)mergedSegments) / maxMergesNumber );
-        similarityThreshold = MAX( DBL_MIN, similarityThreshold );
-        similarityThreshold = MIN( similarityThreshold, 
-          m_parameters.m_segmentsSimilarityThreshold );
+        if( mergedSegments )
+        {
+          similarityThreshold = m_parameters.m_segmentsSimilarityThreshold -
+            ( m_parameters.m_segmentsSimilarityThreshold * 
+            ((double)mergedSegments) / ((double)maxMergestOnEachIteration) );
+          similarityThreshold = MAX( DBL_MIN, similarityThreshold );
+          similarityThreshold = MIN( similarityThreshold, 
+            m_parameters.m_segmentsSimilarityThreshold );
+        }
+        else
+        {
+          similarityThreshold = ( m_parameters.m_segmentsSimilarityThreshold * 
+            ((double)mergetIterations) / ((double)maxMergesIterations) );
+        }
       }
       
       while( mergeSmallSegments( m_parameters.m_minSegmentSize, 
@@ -859,8 +982,8 @@ namespace te
                 segmentPtr = new BaatzBasedSegment();
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_sums = rasterValues;
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_stdDev = dummyZeroesVector;
-                ((BaatzBasedSegment*)segmentPtr)->m_features.m_edgeLength = 1;
-                ((BaatzBasedSegment*)segmentPtr)->m_features.m_compactness = 1;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_edgeLength = 4;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_compactness = 4;
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_smoothness = 1;
                 break;
               }
@@ -1400,14 +1523,73 @@ namespace te
       delete rasterPtr;
     }
     
-    unsigned int SegmenterRegionGrowingStrategy::getEdgeLength( 
-      SegmentsIdsContainerT const* segsIds,
+    unsigned int SegmenterRegionGrowingStrategy::getTouchingEdgeLength( 
+      const SegmentsIdsContainerT& segsIds,
       const unsigned int& xStart, const unsigned int& yStart,
       const unsigned int& xBound, const unsigned int& yBound,
       const SegmenterSegmentsBlock::SegmentIdDataType& id1,
       const SegmenterSegmentsBlock::SegmentIdDataType& id2 )
     {
-      return 0;      
+      const unsigned int colsNumber = segsIds.getColumnsNumber();
+      const unsigned int linesNumber = segsIds.getLinesNumber();
+      
+      TERP_DEBUG_TRUE_OR_THROW( xStart < colsNumber,
+        "Internal Error" )
+      TERP_DEBUG_TRUE_OR_THROW( xBound <= colsNumber,
+        "Internal Error" )
+      TERP_DEBUG_TRUE_OR_THROW( yStart < linesNumber,
+        "Internal Error" )
+      TERP_DEBUG_TRUE_OR_THROW( yBound <= linesNumber,
+        "Internal Error" )        
+      TERP_DEBUG_TRUE_OR_THROW( xStart < xBound, "Internal Error" )
+      TERP_DEBUG_TRUE_OR_THROW( yStart < yBound, "Internal Error" )        
+      
+      // finding the pixels from the segment with id1 touching the segment
+      // with id2
+      
+      unsigned int xIdx = 0;
+      unsigned int id1PixelsCount = 0;
+      bool isCommongBorderPixel = false;
+      const unsigned int lastColIdx = colsNumber - 1;
+      const unsigned int lastLineIdx = linesNumber - 1;
+      
+      for( unsigned int yIdx = yStart ; yIdx < yBound ; ++yIdx )
+      {
+        for( xIdx = xStart; xIdx < xBound ; ++xIdx )
+        {
+          isCommongBorderPixel = false;
+          
+          if( segsIds[ yIdx ][ xIdx ] == id1 )
+          {
+            if( yIdx ) 
+              if( segsIds[ yIdx - 1 ][ xIdx ] == id2 )
+              {
+                ++id1PixelsCount;
+                continue;
+              }
+            if( xIdx ) 
+              if( segsIds[ yIdx ][ xIdx - 1 ] == id2 )
+              {
+                ++id1PixelsCount;
+                continue;
+              }  
+            if( yIdx < lastLineIdx) 
+              if( segsIds[ yIdx + 1 ][ xIdx ] == id2 )
+              {
+                ++id1PixelsCount;
+                continue;
+              }              
+            if( xIdx < lastColIdx ) 
+              if( segsIds[ yIdx ][ xIdx + 1 ] == id2 )
+              {
+                ++id1PixelsCount;
+                continue;
+              }              
+          }
+        }
+      }
+      
+      return id1PixelsCount;
     }
     
     //-------------------------------------------------------------------------
