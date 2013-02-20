@@ -207,7 +207,7 @@ namespace te
       m_file = settingsFile;
 
       if(boost::filesystem::is_regular_file(settingsFile))
-        boost::property_tree::read_xml(settingsFile, m_settings);
+        boost::property_tree::read_xml(settingsFile, m_settings, boost::property_tree::xml_parser::trim_whitespace);
     }
 
     inline void ApplicationSettings::update()

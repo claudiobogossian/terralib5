@@ -52,9 +52,26 @@
 */
 #define TE_PATCH_VERSION ${TE_PATCH_VERSION}
 
+/*!
+  \def TE_RELEASE_STATUS
+
+  \brief
+*/
 #define TE_RELEASE_STATUS "${TE_RELEASE_STATUS}"
 
+/*!
+  \def TE_BUILD_DATE
+
+  \brief
+*/
 #define TE_BUILD_DATE ${TE_BUILD_DATE}
+
+/*!
+  \def TE_STRING_BUILD_DATE
+
+  \brief
+*/
+#define TE_STRING_BUILD_DATE "${TE_STRING_BUILD_DATE}"
 
 /*!
   \def TE_STRING_VERSION

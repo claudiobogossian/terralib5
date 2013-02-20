@@ -258,8 +258,12 @@ namespace te
 
           /*!
             \brief
+
+            \param prj_file
+
+            \param prj_title
           */
-          void updateRecentProjects(const QString& prj_file);
+          void updateRecentProjects(const QString& prj_file, const QString& prj_title);
 
           /*!
             \brief Finalize the application framework.
@@ -305,6 +309,7 @@ namespace te
           QString m_appTitle;
           QString m_appIconName;
           QStringList m_recent_projs;                 //!< List of the recent projects.
+          QStringList m_recent_projs_titles;          //!< List of the titles of the recent projects.
           std::string m_appUserSettingsFile;
           QString m_appPluginsFile;
           QString m_appHelpFile;

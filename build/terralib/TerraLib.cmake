@@ -33,7 +33,7 @@ set (TE_STRING_VERSION "5.0.0-alpha.1")
 set (TE_INT_VERSION "050000")
 set (TE_VERSION "${TE_MAJOR_VERSION}.${TE_MINOR_VERSION}.${TE_PATCH_VERSION}")
 set (TE_DIR_ENVIRONMENT_VARIABLE "TE_BIN_DIR" CACHE STRING "Name of the variable containg TerraLib binaries.")
-set ( TE_AUX_DIRS "${CMAKE_CURRENT_BINARY_DIR}") 	
+set (TE_AUX_DIRS "${CMAKE_CURRENT_BINARY_DIR}") 	
 
 include  (${CMAKE_SOURCE_DIR}/buildTree.cmake)
 # =========================

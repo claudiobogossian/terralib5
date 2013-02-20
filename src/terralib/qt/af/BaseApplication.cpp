@@ -242,15 +242,27 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
 
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
+  if(m_project != 0)
+  {
+    delete m_project;
+    m_project = 0;
+  }
+
   QString projFile = proj->data().toString();
 
   m_project = te::qt::af::ReadProject(projFile.toStdString());
 
-  ApplicationController::getInstance().updateRecentProjects(projFile);
+  ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
 {
+  if(m_project != 0)
+  {
+    delete m_project;
+    m_project = 0;
+  }
+
   QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), tr("XML File (*.xml *.XML)"));
 
   if(file.isEmpty())
@@ -259,7 +271,7 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   try
   {
     m_project = te::qt::af::ReadProject(file.toStdString());
-    ApplicationController::getInstance().updateRecentProjects(file);
+    ApplicationController::getInstance().updateRecentProjects(file, m_project->getTitle().c_str());
   }
   catch(const std::exception& e)
   {
@@ -281,7 +293,7 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
 
   te::qt::af::Save(*m_project, fileName.toStdString());
 
-  ApplicationController::getInstance().updateRecentProjects(fileName);
+  ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
 }
 
 void te::qt::af::BaseApplication::makeDialog()
