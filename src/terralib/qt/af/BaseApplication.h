@@ -80,6 +80,17 @@ namespace te
           */
           void onRecentProjectsTriggered(QAction* proj);
 
+
+          /*!
+            \brief
+          */
+          void onOpenProjectTriggered();
+
+          /*!
+            \brief
+          */
+          void onSaveProjectAsTriggered();
+
           //void layerVisibilityChanged(const QModelIndex& idx);
 
           //void drawLayers();

@@ -3,7 +3,7 @@
          xmlns:te_map="http://www.terralib.org/schemas/maptools"
          xmlns:te_qt_af="http://www.terralib.org/schemas/qt/af"
          xmlns="http://www.terralib.org/schemas/qt/af"
-         xsd:schemaLocation="http://www.terralib.org/schemas/qt/af ${TE_SCHEMA_LOCATION}/af/project.xsd"
+         xsd:schemaLocation="http://www.terralib.org/schemas/qt/af ${TE_SCHEMA_LOCATION}/qt/af/project.xsd"
          version="${TE_STRING_VERSION}"
          release="${TE_STRING_BUILD_DATE}">
   <Title>Default project</Title>
