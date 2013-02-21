@@ -75,7 +75,7 @@ namespace te
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
-            unsigned int m_maxIterations; //!< The maximum number of iterations to perform - default: 0 (automatically found).
+            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity value for the cases where no segment merge occurred - defaul: 10.
             
             Parameters();
             
@@ -302,6 +302,8 @@ namespace te
                 
                 std::vector< double > m_sums; //!< Segment sum of segment pixel velues.
                 
+                std::vector< double > m_squaresSum; //!< The sum of squares of pixel values (for each band).
+                
                 std::vector< double > m_stdDev; //!< Standard deviation of segment pixel velues.
                 
                 unsigned int m_edgeLength; //!< Segment edge length.
@@ -390,8 +392,7 @@ namespace te
               SegmenterRegionGrowingStrategy::SegmentFeatures* mergedFeatures ) const = 0;
               
             /*!
-              \brief Merge specific segment features from both segments
-              into the first segment.
+              \brief Merge specific segment features from both segments into the first segment.
               \param segment1Ptr The first segment.
               \param segment2Ptr A pointer to the second segment.
               \param mergedFeatures A pointer to a valid segment features instance where the merged features values are stored.
