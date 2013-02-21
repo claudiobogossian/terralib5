@@ -10,11 +10,11 @@
   
   <ToolBarIconSize>24</ToolBarIconSize>
   
-  <SpecificPlugins></SpecificPlugins>
+  <SpecificPlugins> </SpecificPlugins>
   
-  <EnabledPlugins></EnabledPlugins>
+  <EnabledPlugins> </EnabledPlugins>
   
-  <DataSourcesFile></DataSourcesFile>
+  <DataSourcesFile>${TE_DEFAULT_DATASOURCES_FILE}</DataSourcesFile>
   
   <MostRecentProject xlink:href="${TE_DEFAULT_PROJECT}" title="Default project"/>
 
