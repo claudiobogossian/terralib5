@@ -58,6 +58,8 @@ namespace te
             void update(std::list<te::da::DataSourceInfoPtr>& datasources);
 
             void remove(std::list<te::da::DataSourceInfoPtr>& datasources);
+
+            void createNew(std::list<te::da::DataSourceInfoPtr>& datasources);
         }; 
       } // end namespace mysql
     }   // end namespace plugins

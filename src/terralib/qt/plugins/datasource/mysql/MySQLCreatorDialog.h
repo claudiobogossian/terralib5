@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/mysql/MySQLConnectorDialog.h
+  \file terralib/qt/widgets/connector/mysql/MySQLCreatorDialog.h
 
   \brief ....
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCREATORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCREATORDIALOG_H
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
@@ -36,7 +36,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class MySQLConnectorDialogForm; }
+namespace Ui { class MySQLCreatorDialogForm; }
 
 namespace te
 {
@@ -47,45 +47,45 @@ namespace te
       namespace mysql
       {
         /*!
-          \class MySQLConnectorDialog
+          \class MySQLCreationDialog
 
           \brief ....
         */
-        class MySQLConnectorDialog : public QDialog
+        class MySQLCreatorDialog : public QDialog
         {
           Q_OBJECT
 
           public:
 
-            MySQLConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            MySQLCreatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-            ~MySQLConnectorDialog();
+            ~MySQLCreatorDialog();
 
             const te::da::DataSourceInfoPtr& getDataSource() const;
 
             const te::da::DataSourcePtr& getDriver() const;
 
             void set(const te::da::DataSourceInfoPtr& ds);
-
+            
           public slots:
 
-            void openPushButtonPressed();
+            void advancedCreationOptionsCheckBoxToggled(bool t);
 
-            void testPushButtonPressed();
+            void applyPushButtonPressed();
+
+            void closePushButtonPressed();
 
             void helpPushButtonPressed();
 
-            void advancedConnectionOptionsCheckBoxToggled(bool t);
-
           protected:
-
+            
             void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
-
+            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);  
+            
           private:
 
-            std::auto_ptr<Ui::MySQLConnectorDialogForm> m_ui;
+            std::auto_ptr<Ui::MySQLCreatorDialogForm> m_ui;
             te::da::DataSourceInfoPtr m_datasource;
             te::da::DataSourcePtr m_driver;
         }; 
@@ -94,5 +94,5 @@ namespace te
   }       // end namespace qt
 }         // end namespace te
 
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCONNECTORDIALOG_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_MYSQL_INTERNAL_MYSQLCREATORDIALOG_H
 
