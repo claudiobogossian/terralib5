@@ -57,7 +57,9 @@ namespace te
 
       TEQTAFEXPORT void Save(const Project& project, te::xml::Writer& writer);
 
-      TEQTAFEXPORT void UpdateUserSettingsProjects(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
+      TEQTAFEXPORT void UpdateUserSettingsFile(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
+
+      TEQTAFEXPORT void saveDataSourcesFile();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

@@ -383,19 +383,6 @@ void  te::qt::af::BaseApplicationController::initialize()
   }
 
   m_initialized = true;
-//// load recent projects
-//  UserRecentProjects::getInstance().load();
-//
-//  splashScreen.showMessage("Recent projects loaded!", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
-//  QCoreApplication::processEvents();
-//
-//// open most recent opened project
-//  std::string mostRecentProjectFile = UserApplicationSettings::getInstance().getValue("UserSettings.MostRecentProject.<xmlattr>.xlink:href");
-//  sm_instance->fileOpenProject(mostRecentProjectFile.c_str());
-//
-//  splashScreen.showMessage("Most recent project loaded!", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
-//  QCoreApplication::processEvents();
-
 }
 
 void te::qt::af::BaseApplicationController::initializePlugins()
@@ -575,8 +562,9 @@ void te::qt::af::BaseApplicationController::finalize()
   if(!m_initialized)
     return;
 
-  UpdateUserSettingsProjects(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
-  //savePluginsFiles();
+  UpdateUserSettingsFile(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
+
+  saveDataSourcesFile();
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 

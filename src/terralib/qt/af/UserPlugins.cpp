@@ -64,7 +64,9 @@ void te::qt::af::UserPlugins::load()
     if(child_exists && (!p.empty()))
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("Plugins"))
       {
-        if(v.second.data().empty())
+        std::string first = v.first.data();
+
+        if(first != "Plugin")
           continue;
 
         const std::string& pname = v.second.get<std::string>("Name");

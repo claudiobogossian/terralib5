@@ -383,9 +383,63 @@ void te::qt::widgets::DataSourceSelectorWidget::editDataSourcePushButtonPressed(
 
 void te::qt::widgets::DataSourceSelectorWidget::createDataSourcePushButtonPressed()
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet! We will provide it soon!"));
+  QListWidgetItem* item = m_ui->m_datasourceTypeListWidget->currentItem();
+
+  if(item == 0)
+    return;
+
+  QVariant udata = item->data(Qt::UserRole);
+
+  QString dsTypeId = udata.toString();
+
+  if(dsTypeId.isEmpty())
+    return;
+
+  try
+  {
+    const DataSourceType* dsType = DataSourceTypeManager::getInstance().get(dsTypeId.toStdString());
+
+    if(dsType == 0)
+      throw Exception(TR_QT_WIDGETS("Unknown data source type!"));
+
+    std::auto_ptr<QWidget> connectorw(dsType->getWidget(DataSourceType::WIDGET_DATASOURCE_CONNECTOR, this));
+
+    if(connectorw.get() == 0)
+      throw Exception(TR_QT_WIDGETS("This type of data source hasn't provide a dialog for adding a new data source"));
+
+    AbstractDataSourceConnector* connector = dynamic_cast<AbstractDataSourceConnector*>(connectorw.get());
+
+    if(connector == 0)
+      throw Exception(TR_QT_WIDGETS("Wrong type of object for adding a new data source!"));
+
+    std::list<te::da::DataSourceInfoPtr> datasources;
+
+    connector->createNew(datasources);
+
+    /*for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
+    {
+      if(it->get() == 0)
+        return;
+
+      QListWidgetItem* item = new QListWidgetItem(QString::fromStdString((*it)->getTitle()));
+      item->setData(Qt::UserRole, QVariant(QString::fromStdString((*it)->getId())));
+      m_ui->m_datasourceListWidget->addItem(item);
+      m_ui->m_datasourceListWidget->setCurrentItem(item);
+      dataSourcePressed(item);
+    }*/
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr(e.what()));
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr("Unknown error while adding a new data source!"));
+  }
 }
 
 void te::qt::widgets::DataSourceSelectorWidget::dataSourceTypePressed(QListWidgetItem* item)
