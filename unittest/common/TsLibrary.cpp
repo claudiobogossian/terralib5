@@ -25,7 +25,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsLibrary);
 void TsLibrary::setUp()
 {
   lib1 = new te::common::Library("terralib_common_d");
-  lib2 = new te::common::Library("terralib_postgis_d.dll");
+  lib2 = new te::common::Library("terralib_postgis_d");
   lib3 = new te::common::Library("terralib_ogr_d");
 }
 
