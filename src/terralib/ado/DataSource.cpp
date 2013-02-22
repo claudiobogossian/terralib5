@@ -241,3 +241,13 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
   boost::filesystem::path path(info["dbname"]);
   return boost::filesystem::exists(path);
 }
+
+std::vector<std::string> te::ado::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
+
+std::vector<std::string>te::ado::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_ADO("Not implemented yet!"));
+}
