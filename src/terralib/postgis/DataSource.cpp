@@ -405,3 +405,12 @@ bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsIn
   return database->moveNext();
 }
 
+std::vector<std::string> te::pgis::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
+}
+
+std::vector<std::string>te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_PGIS("Not implemented yet!"));
+}

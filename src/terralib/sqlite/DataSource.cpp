@@ -436,4 +436,12 @@ bool te::sqlite::DataSource::exists(const std::map<std::string, std::string>& ds
   return boost::filesystem::exists(it->second);
 }
 
+std::vector<std::string> te::sqlite::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_SQLITE("Not implemented yet!"));
+}
 
+std::vector<std::string>te::sqlite::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_SQLITE("Not implemented yet!"));
+}

@@ -70,7 +70,7 @@ namespace te
         const std::map<std::string, std::string>& getConnectionInfo() const;
 
         const te::da::DataSourceCapabilities& getCapabilities() const;
-        
+
         const te::da::SQLDialect* getDialect() const;
 
         void open();
@@ -105,6 +105,10 @@ namespace te
         void drop(const std::map<std::string, std::string>& dsInfo);
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
 
       private:
 
