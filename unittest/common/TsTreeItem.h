@@ -58,7 +58,6 @@ class TsTreeItem : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( childSwap );
   CPPUNIT_TEST( siblingSwap );
   //CPPUNIT_TEST(  );
-  //CPPUNIT_TEST(  );
 
   CPPUNIT_TEST_SUITE_END();
   

@@ -511,6 +511,11 @@ std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedPropertie
   return result;
 }
 
+te::da::DataSet* te::da::DataSetAdapter::getInputDataSet() const
+{
+  return m_ds;
+}
+
 te::da::DataSetAdapter* te::da::DataSetAdapter::adapt(DataSet* dataset, bool isOwner)
 {
   return new DataSetAdapter(dataset, isOwner);
