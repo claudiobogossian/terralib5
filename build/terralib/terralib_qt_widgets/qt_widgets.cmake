@@ -206,8 +206,23 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datagrid" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/property/AddProperty.h
+  ${SRCDIR}/widgets/property/ConstraintsIndexesListWidget.h
+  ${SRCDIR}/widgets/property/ConstraintsIndexesPropertyDialog.h
+  ${SRCDIR}/widgets/property/ConstraintWidget.h
+  ${SRCDIR}/widgets/property/DataSetAdapterWidget.h
+  ${SRCDIR}/widgets/property/DateTimePropertyWidget.h
+  ${SRCDIR}/widgets/property/GeometryPropertyWidget.h
+  ${SRCDIR}/widgets/property/IndexWidget.h
+  ${SRCDIR}/widgets/property/NewPropertyDialog.h
+  ${SRCDIR}/widgets/property/NewPropertyWidget.h
+  ${SRCDIR}/widgets/property/NumericPropertyWidget.h
+  ${SRCDIR}/widgets/property/PrimaryKeyConstraintWidget.h
+  ${SRCDIR}/widgets/property/PropertyConverterDialog.h
   ${SRCDIR}/widgets/property/RemoveProperty.h
   ${SRCDIR}/widgets/property/RenameProperty.h
+  ${SRCDIR}/widgets/property/SimplePropertyWidget.h
+  ${SRCDIR}/widgets/property/StringPropertyWidget.h
+  ${SRCDIR}/widgets/property/UniqueKeyConstraintWidget.h
   ${SRCDIR}/widgets/property/UpdateProperty.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/property" MOC)
@@ -346,6 +361,7 @@ file(
   ${SRCDIR}/widgets/exchanger/ui/*.ui
   ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
+  ${SRCDIR}/widgets/property/ui/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui
   ${SRCDIR}/widgets/rp/ui/*.ui
   ${SRCDIR}/widgets/se/ui/*.ui

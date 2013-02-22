@@ -21,7 +21,7 @@
   \file terralib/common/HexUtils.h
 
   \brief This file contains several utilities functions for dealing with HEX strings.
- */
+*/
 
 #ifndef __TERRALIB_COMMON_INTERNAL_HEXUTILS_H
 #define __TERRALIB_COMMON_INTERNAL_HEXUTILS_H
@@ -43,7 +43,7 @@ namespace te
       \return The decimal value in a char from a given hex value (for example: 'A' => 10, '8' => 8).
 
       \note This version is not case sensitive, i. e., 'A' and 'a' will return 10.      
-     */
+    */
     inline unsigned char GetDecimalFromHexNotCS(unsigned char hexValue)
     {
       switch(hexValue)
@@ -113,7 +113,7 @@ namespace te
       \return The decimal value in a char from a given hex value (for example: 'A' => 10, '8' => 8).
 
       \note This version is upper case sensitive, i. e., 'A' will return 10 and 'a' will return a wrong value.      
-     */
+    */
     inline unsigned char GetDecimalFromHexUCase(char hexValue)
     {
       switch(hexValue)
@@ -179,7 +179,7 @@ namespace te
       \return The decimal value in a char from a given hex value (for example: 'a' => 10, '8' => 8).
 
       \note This version is lower case sensitive, i. e., 'a' will return 10 and 'A' will return a wrong value.
-     */
+    */
     inline unsigned char GetDecimalFromHexLCase(char hexValue)
     {
       switch(hexValue)
@@ -242,7 +242,7 @@ namespace te
       \param r The resulting hex encoding will be write in the r pointer.
 
       \note It is used by Binary2Hex function.
-     */
+    */
     inline void Char2Hex(unsigned char c, char* r)
     {
       static char ct[]={"0123456789ABCDEF" };
@@ -264,7 +264,7 @@ namespace te
       \note It is used by Hex2Binary function.
 
       \result A byte representation from a two bytes hex representation.
-     */
+    */
     inline char Hex2Char(const char* hex)
     {
       char c = hex[0];
@@ -295,7 +295,7 @@ namespace te
       \result A byte representation from a two bytes hex representation.
 
       \warning In our tests, this version was slower than the other.
-     */
+    */
     inline unsigned char Hex2Char2(const char* hex)
     {
       unsigned char h = 0; // high byte
@@ -460,7 +460,10 @@ namespace te
       \return An array of binary characters in binary format.
 
       \note The size of the returned array is the half of the input array.
-     */
+
+      \note The caller of this function will take the ownership of the returned
+            pointer, so it must delete it. Use delete [] returned_pointer.
+    */
     inline char* Hex2Binary(const char* hex)
     {
       std::size_t hSize = strlen(hex);
@@ -506,7 +509,7 @@ namespace te
       \note The size of the input buffer (outBuff) must be at least the half of the input array.
 
       \note The outBuff can be the same as the input buffer; in this case the input will be overwritten.      
-     */
+    */
     inline void Hex2Binary(const char* hex, std::size_t hSize, char* outBuff)
     {
       std::size_t size = hSize / 2;
@@ -544,8 +547,11 @@ namespace te
 
       \note The size of the returned array is the half of the input array.
 
+      \note The caller of this function will take the ownership of the returned
+            pointer, so it must delete it. Use delete [] returned_pointer.
+
       \warning In our tests, this version was slower than the other equivalent.
-     */
+    */
     inline char* Hex2Binary2(const char* hex)
     {
       std::size_t hSize = strlen(hex);
@@ -571,9 +577,7 @@ namespace te
       \param outBuff A pointer to a pre-allocated buffer where to output the binary version. It must have at least hSize/2 bytes.
 
       \note The size of the input buffer (outBuff) must be at least the half of the input array.
-
-      \note The outBuff can be the same as input buffer, this case the input will be overwritten.
-     */
+    */
     inline void Hex2Binary2(const char* hex, std::size_t hSize, char* outBuff)
     {
       std::size_t size = hSize / 2;

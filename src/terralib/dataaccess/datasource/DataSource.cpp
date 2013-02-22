@@ -108,3 +108,17 @@ bool te::da::DataSource::operator<(const DataSource& rhs) const
   return getId() < rhs.getId();
 }
 
+std::vector<std::string> te::da::DataSource::getDataSources(const std::string& dsType, const std::map<std::string, std::string>& info)
+{
+  std::auto_ptr<DataSource> ds(DataSourceFactory::make(dsType));
+
+  if(ds.get() == 0)
+    throw Exception(TR_DATAACCESS("Could not find the appropriate factory in order to create a data source instance!"));
+
+  return ds->getDataSources(info);
+}
+
+std::vector<std::string> te::da::DataSource::getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_DATAACCESS("Not implemented yet!"));
+}

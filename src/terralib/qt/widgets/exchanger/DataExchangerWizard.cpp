@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/DataSetPersistence.h"
 #include "../../../dataaccess/dataset/DataSetTypePersistence.h"
@@ -100,6 +101,7 @@ te::qt::widgets::DataExchangerWizard::DataExchangerWizard(QWidget* parent, Qt::W
 
 // connect signals and slots
   connect(this->button(QWizard::NextButton), SIGNAL(pressed()), this, SLOT(next()));
+  connect(this->button(QWizard::BackButton), SIGNAL(pressed()), this, SLOT(back()));
   connect(this->button(QWizard::CommitButton), SIGNAL(pressed()), this, SLOT(commit()));
   connect(this->button(QWizard::HelpButton), SIGNAL(pressed()), this, SLOT(help()));
   //connect(this->button(QWizard::FinishButton), SIGNAL(pressed()), this, SLOT(finish()));
@@ -134,8 +136,25 @@ te::da::DataSourceInfoPtr te::qt::widgets::DataExchangerWizard::getTargetDataSou
     return datasources.front();
 }
 
+void te::qt::widgets::DataExchangerWizard::back()
+{
+  this->setOption(QWizard::HaveCustomButton1, false);
+
+  if(currentId() == PAGE_SUMMARY)
+  {
+    this->setButtonText(QWizard::CustomButton1, tr("Apply"));
+    this->setOption(QWizard::HaveCustomButton1, true);
+
+    connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
+  }
+
+  QWizard::back();
+}
+
 void te::qt::widgets::DataExchangerWizard::next()
 {
+  this->setOption(QWizard::HaveCustomButton1, false);
+
   if(currentId() == PAGE_DATASOURCE_SELECTION)
   {
     m_datasetSelectorPage->set(getDataSource(), true);
@@ -144,6 +163,11 @@ void te::qt::widgets::DataExchangerWizard::next()
   {
     std::list<te::da::DataSetTypePtr> datasets = m_datasetSelectorPage->getCheckedDataSets();
     m_datasetOptionsPage->set(datasets, getDataSource(), getTargetDataSource());
+
+    this->setButtonText(QWizard::CustomButton1, tr("Apply"));
+    this->setOption(QWizard::HaveCustomButton1, true);
+
+    connect(this->button(QWizard::CustomButton1), SIGNAL(clicked()), m_datasetOptionsPage.get(), SLOT(applyChanges()));
   }
 
   QWizard::next();
@@ -151,99 +175,87 @@ void te::qt::widgets::DataExchangerWizard::next()
 
 void te::qt::widgets::DataExchangerWizard::commit()
 {
-  try
-  {
-    ScopedCursor wcursor(Qt::WaitCursor);
+  ScopedCursor wcursor(Qt::WaitCursor);
 
 // get input data source
-    te::da::DataSourceInfoPtr ids = getDataSource();
+  te::da::DataSourceInfoPtr ids = getDataSource();
 
-    if(ids.get() == 0)
-      return;
+  if(ids.get() == 0)
+    return;
 
-    te::da::DataSourcePtr idatasource = te::da::DataSourceManager::getInstance().get(ids->getId(), ids->getAccessDriver(), ids->getConnInfo());
+  te::da::DataSourcePtr idatasource = te::da::DataSourceManager::getInstance().get(ids->getId(), ids->getAccessDriver(), ids->getConnInfo());
 
-    if(idatasource.get() == 0)
-      return;
+  if(idatasource.get() == 0)
+    return;
 
 // get output data source
-    te::da::DataSourceInfoPtr ods = getTargetDataSource();
+  te::da::DataSourceInfoPtr ods = getTargetDataSource();
 
-    te::da::DataSourcePtr odatasource = te::da::DataSourceManager::getInstance().get(ods->getId(), ods->getAccessDriver(), ods->getConnInfo());
+  te::da::DataSourcePtr odatasource = te::da::DataSourceManager::getInstance().get(ods->getId(), ods->getAccessDriver(), ods->getConnInfo());
 
-    if(odatasource.get() == 0)
-      return;
+  if(odatasource.get() == 0)
+    return;
 
 // get a persistence
-    std::auto_ptr<te::da::DataSourceTransactor> otransactor(odatasource->getTransactor());
+  std::auto_ptr<te::da::DataSourceTransactor> otransactor(odatasource->getTransactor());
+  std::auto_ptr<te::da::DataSourceTransactor> itransactor(idatasource->getTransactor());
 
-    std::auto_ptr<te::da::DataSetPersistence> dp(otransactor->getDataSetPersistence());
-    std::auto_ptr<te::da::DataSetTypePersistence> dtp(otransactor->getDataSetTypePersistence());
+  std::auto_ptr<te::da::DataSetPersistence> dp(otransactor->getDataSetPersistence());
+  std::auto_ptr<te::da::DataSetTypePersistence> dtp(otransactor->getDataSetTypePersistence());
 
 // get selected datasets and modified datasets
-    std::list<DataExchangeStatus> result;
+  std::list<DataExchangeStatus> result;
 
-    std::list<te::da::DataSetTypePtr> idatasets = m_datasetSelectorPage->getCheckedDataSets();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*> odatasets = m_datasetOptionsPage->getDatasets();
 
-    std::list<te::da::DataSetTypePtr> odatasets = m_datasetOptionsPage->getDatasets();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::iterator it = odatasets.begin();
 
-    std::auto_ptr<te::da::DataSourceTransactor> itransactor(idatasource->getTransactor());
+  while(it != odatasets.end())
+  {
+    te::da::DataSetTypePtr idset = it->first;
+    te::da::DataSetTypePtr odset(it->second->getType());
 
-    std::list<te::da::DataSetTypePtr>::iterator iit = idatasets.begin();
-
-    for(std::list<te::da::DataSetTypePtr>::iterator it = odatasets.begin(); it != odatasets.end(); ++it, ++iit)
+    try
     {
-      te::da::DataSetTypePtr idset = *iit;
-      te::da::DataSetTypePtr odset = *it;
+      //boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
 
-      try
-      {
-        //boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
-
-        std::auto_ptr<te::da::DataSet> dataset(itransactor->getDataSet(idset->getName()));
+      std::auto_ptr<te::da::DataSet> dataset(itransactor->getDataSet(idset->getName()));
 
 // stay tunned: create can change idset!
-        dtp->create(odset.get());
+      dtp->create(odset.get());
 
-        if(dataset->moveNext())
-          dp->add(odset.get(), dataset.get());
+      if(dataset->moveNext())
+        dp->add(odset.get(), dataset.get());
 
-       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
+      // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 
-        DataExchangeStatus status;
-        status.m_dataset = odset;
-        status.m_successful = true;
-        //status.m_time = sec;
+      DataExchangeStatus status;
+      status.m_dataset = odset;
+      status.m_successful = true;
+      //status.m_time = sec;
 
-        result.push_back(status);
-      }
-      catch(const std::exception& e)
-      {
-        DataExchangeStatus status;
-        status.m_dataset = odset;
-        status.m_successful = false;
-        status.m_exceptionMsg = e.what();
+      result.push_back(status);
+    }
+    catch(const std::exception& e)
+    {
+      DataExchangeStatus status;
+      status.m_dataset = odset;
+      status.m_successful = false;
+      status.m_exceptionMsg = e.what();
 
-        result.push_back(status);
-      }
-      catch(...)
-      {
-        DataExchangeStatus status;
-        status.m_dataset = odset;
-        status.m_successful = false;
-        status.m_exceptionMsg = tr("Unknown error!").toStdString();
+      result.push_back(status);
+    }
+    catch(...)
+    {
+      DataExchangeStatus status;
+      status.m_dataset = odset;
+      status.m_successful = false;
+      status.m_exceptionMsg = tr("Unknown error!").toStdString();
 
-        result.push_back(status);
-      }
+      result.push_back(status);
     }
 
-    m_summaryPage->set(result);
-  }
-  catch(...)
-  {
-    QMessageBox::warning(this,
-                         tr("TerraLib Qt Components"),
-                         tr("Unknown error in data exchange!"));
+    ++it;
   }
 
   next();

@@ -95,12 +95,23 @@ namespace te
         */
         unsigned int getPrecision() const { return m_precision; }
 
+       /*!
+          \brief Sets the total count of significant digits in the whole number,
+                 that is, the number of digits to both sides of the decimal point.
+        */
+        void setPrecision(unsigned int precision) { m_precision = precision; }
+
         /*!
           \brief It returns the count of decimal digits in the fractional part, to the right of the decimal point.
 
           \return The count of decimal digits in the fractional part, to the right of the decimal point.
         */
         unsigned int getScale() const { return m_scale; }
+
+        /*!
+          \brief Sets the count of decimal digits in the fractional part, to the right of the decimal point.
+        */
+        void setScale(unsigned int scale) { m_scale = scale; }
 
         /*!
           \brief It returns a clone of the object.

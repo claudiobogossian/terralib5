@@ -32,7 +32,7 @@
 #include "../Config.h"
 
 // STL
-#include <list>
+#include <map>
 #include <memory>
 
 // Qt
@@ -45,10 +45,14 @@ class QListWidgetItem;
 
 namespace te
 {
+  namespace da { class DataSetAdapter; }
   namespace qt
   {
     namespace widgets
     {
+      class ConstraintsIndexesListWidget;
+      class DataSetAdapterWidget;
+
       class TEQTWIDGETSEXPORT DataSetOptionsWizardPage : public QWizardPage
       {
         Q_OBJECT
@@ -63,29 +67,17 @@ namespace te
                    const te::da::DataSourceInfoPtr& datasource,
                    const te::da::DataSourceInfoPtr& targetDatasource);
 
-          const std::list<te::da::DataSetTypePtr>& getDatasets() const;
+          const std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>& getDatasets() const;
+
+        public slots:
+
+          void applyChanges();
 
         protected slots:
 
-          void addUkToolButtonPressed();
-
-          void removeUkToolButtonPressed();
-
-          void editUkToolButtonPressed();
-
-          void addIndexToolButtonPressed();
-
-          void removeIndexToolButtonPressed();
-
-          void editIndexToolButtonPressed();
-
           void sridSearchToolButtonPressed();
 
-          void applyChangesPushButtonPressed();
-
           void datasetPressed(QListWidgetItem* item);
-
-          void enableApplyButton();
 
           //void checkModificationsOnFocusChange(QWidget* old, QWidget* now);
 
@@ -113,7 +105,9 @@ namespace te
         private:
 
           std::auto_ptr<Ui::DataSetOptionsWizardPageForm> m_ui;
-          std::list<te::da::DataSetTypePtr> m_datasets;
+          std::auto_ptr<te::qt::widgets::ConstraintsIndexesListWidget> m_constraintWidget;
+          std::auto_ptr<te::qt::widgets::DataSetAdapterWidget> m_dataSetAdapterWidget;
+          std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*> m_datasets;
           te::da::DataSourceInfoPtr m_datasource;
           te::da::DataSourceInfoPtr m_targetDatasource;
       };

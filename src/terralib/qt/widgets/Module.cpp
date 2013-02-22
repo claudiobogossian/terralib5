@@ -27,6 +27,10 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
+#include "property/DateTimePropertyWidgetFactory.h"
+#include "property/GeometryPropertyWidgetFactory.h"
+#include "property/NumericPropertyWidgetFactory.h"
+#include "property/StringPropertyWidgetFactory.h"
 #include "se/BasicFillWidgetFactory.h"
 #include "se/GlyphGraphicWidgetFactory.h"
 #include "se/GlyphMarkFactory.h"
@@ -129,6 +133,12 @@ void te::qt::widgets::Module::initialize()
 // It initializes the fill widgets factories
   te::qt::widgets::BasicFillWidgetFactory::initialize();
   te::qt::widgets::GraphicFillWidgetFactory::initialize();
+
+// It initializes the property widgets factories
+  te::qt::widgets::DateTimePropertyWidgetFactory::initialize();
+  te::qt::widgets::GeometryPropertyWidgetFactory::initialize();
+  te::qt::widgets::NumericPropertyWidgetFactory::initialize();
+  te::qt::widgets::StringPropertyWidgetFactory::initialize();
 
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
