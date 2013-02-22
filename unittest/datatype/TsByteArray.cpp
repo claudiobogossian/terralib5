@@ -306,3 +306,13 @@ void TsByteArray::tcGetTypeCode()
 
 //#endif
 }
+
+void TsByteArray::tcSetBytesUsed()
+{
+//#ifdef TE_COMPILE_ALL
+  te::dt::ByteArray* b = new te::dt::ByteArray();
+  b->setBytesUsed(100); 
+  CPPUNIT_ASSERT(b->bytesUsed() == 100);
+  delete b;
+//#endif
+}
