@@ -32,11 +32,13 @@
 #include "../../../dataaccess/datasource/DataSource.h"
 #include "../../../dataaccess/datasource/DataSourceCapabilities.h"
 #include "../../../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../datasource/selector/DataSourceSelectorWizardPage.h"
+#include "../datasource/selector/DataSourceSelectorWidget.h"
 #include "../utils/DoubleListWidget.h"
 #include "DataSetWidget.h"
 #include "DataSetWizardPage.h"
@@ -63,6 +65,7 @@ te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* paren
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
   this->setFixedSize(640, 480);
+  this->setWindowTitle(tr("Query Layer Builder"));
 
   addPages();
 }
@@ -74,7 +77,23 @@ te::qt::widgets::QueryLayerBuilderWizard::~QueryLayerBuilderWizard()
 
 bool te::qt::widgets::QueryLayerBuilderWizard::validateCurrentPage()
 {
-  if(currentPage() ==  m_dataSetPage.get())
+  if(currentPage() ==  m_dataSourcePage.get())
+  {
+    std::list<te::da::DataSourceInfoPtr> list = m_dataSourcePage->getSelectorWidget()->getSelecteds();
+
+    if(list.empty())
+    {
+      return false;
+    }
+
+    te::da::DataSourceInfoPtr dsInfo = *list.begin();
+    te::da::DataSourcePtr dataSource = te::da::DataSourceManager::getInstance().find(dsInfo->getId());
+
+    setDataSource(dataSource);
+
+    return m_dataSourcePage->isComplete();
+  }
+  else if(currentPage() ==  m_dataSetPage.get())
   {
     getProperties();
 
@@ -143,14 +162,14 @@ te::da::Select te::qt::widgets::QueryLayerBuilderWizard::getSelectQuery()
 
 void te::qt::widgets::QueryLayerBuilderWizard::addPages()
 {
-  //m_dataSourcePage.reset(new te::qt::widgets::DataSourceSelectorWizardPage(this));
+  m_dataSourcePage.reset(new te::qt::widgets::DataSourceSelectorWizardPage(this));
   m_dataSetPage.reset(new te::qt::widgets::DataSetWizardPage(this));
   m_fieldPage.reset(new te::qt::widgets::FieldsWizardPage(this));
   m_groupByPage.reset(new te::qt::widgets::GroupByWizardPage(this));
   m_orderByPage.reset(new te::qt::widgets::OrderByWizardPage(this));
   m_whereClausePage.reset(new te::qt::widgets::WhereClauseWizardPage(this));
 
-  //addPage(m_dataSourcePage.get());
+  addPage(m_dataSourcePage.get());
   addPage(m_dataSetPage.get());
   addPage(m_fieldPage.get());
   addPage(m_whereClausePage.get());

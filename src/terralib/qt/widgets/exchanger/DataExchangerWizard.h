@@ -69,6 +69,8 @@ namespace te
 
         protected slots:
 
+          void back();
+
           void next();
 
           void commit();
