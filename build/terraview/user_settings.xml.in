@@ -6,7 +6,18 @@
               release="${TE_STRING_BUILD_DATE}">
   <SelectedIconTheme>${TE_ICONS_THEME}</SelectedIconTheme>
   
+  <LastSearchedFolder xlink:href=""/>
+  
   <ToolBarIconSize>24</ToolBarIconSize>
- 
+  
+  <SpecificPlugins> </SpecificPlugins>
+  
+  <EnabledPlugins> </EnabledPlugins>
+  
+  <DataSourcesFile>${TE_DEFAULT_DATASOURCES_FILE}</DataSourcesFile>
+  
   <MostRecentProject xlink:href="${TE_DEFAULT_PROJECT}" title="Default project"/>
+
+  <RecentProjects></RecentProjects>
+  
 </UserSettings>

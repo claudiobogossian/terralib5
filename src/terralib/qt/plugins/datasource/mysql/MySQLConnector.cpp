@@ -29,6 +29,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "MySQLConnector.h"
 #include "MySQLConnectorDialog.h"
+#include "MySQLCreatorDialog.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -118,5 +119,17 @@ void te::qt::plugins::mysql::MySQLConnector::remove(std::list<te::da::DataSource
 // then remove data source
     te::da::DataSourceInfoManager::getInstance().remove((*it)->getId());
   }
+}
+
+void te::qt::plugins::mysql::MySQLConnector::createNew(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  std::auto_ptr<MySQLCreatorDialog> cdialog(new MySQLCreatorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+  
+  if(retval == QDialog::Rejected)
+    return;
+
+  
 }
 

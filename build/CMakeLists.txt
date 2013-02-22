@@ -78,6 +78,3 @@ install (
   DESTINATION modules
   COMPONENT CMAKE
 )
-
-#installFiles ("${CMAKE_BINARY_DIR}/toInstall" "terralib" "HEADERS" "*.h")
-#installFiles ("${CMAKE_BINARY_DIR}/toInstall" "bin" "BINARIES" "*.xml")
