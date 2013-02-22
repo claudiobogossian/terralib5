@@ -23,11 +23,12 @@
   \brief Test suite for the Units of Measure Manager class.
  */
 
-#ifndef __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_UOMM_H
-#define __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_UOMM_H
+#ifndef __TERRALIB_UNITTEST_COMMON_INTERNAL_UOMM_H
+#define __TERRALIB_UNITTEST_COMMON_INTERNAL_UOMM_H
 
 // TerraLib
 #include "Config.h"
+#include "UnitsOfMeasureManager.h"
 #include "UnitOfMeasure.h"
 
 // STL
@@ -118,4 +119,4 @@ class TsUnitsOfMeasureManager : public CPPUNIT_NS::TestFixture
 
 };
 
-#endif  // __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_UOMM_H
+#endif  // __TERRALIB_UNITTEST_COMMON_INTERNAL_UOMM_H

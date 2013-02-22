@@ -23,8 +23,8 @@
   \brief Test suite for the Units of measure  class.
  */
 
-#ifndef __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_UOM_H
-#define __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_UOM_H
+#ifndef __TERRALIB_UNITTEST_COMMON_INTERNAL_UOM_H
+#define __TERRALIB_UNITTEST_COMMON_INTERNAL_UOM_H
 
 // TerraLib
 #include "Config.h"
@@ -120,4 +120,4 @@ class TsUnitOfMeasure : public CPPUNIT_NS::TestFixture
 
 };
 
-#endif  // __TERRALIB_UNITTEST_GEOMETRY_INTERNAL_UOM_H
+#endif  // __TERRALIB_UNITTEST_COMMON_INTERNAL_UOM_H

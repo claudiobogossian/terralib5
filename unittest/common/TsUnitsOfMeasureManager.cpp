@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -17,9 +17,10 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-#include "UnitsOfMeasureManager.h"
-#include "UnitOfMeasure.h"
+// TerraLib
 #include "TsUnitsOfMeasureManager.h"
+
+// STL
 #include <string.h>
 
 CPPUNIT_TEST_SUITE_REGISTRATION( TsUnitsOfMeasureManager );
