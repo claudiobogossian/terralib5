@@ -168,6 +168,12 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
 
     getConnectionInfo(dsInfo);
 
+    // Get DataSources
+    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
+    if(!dbNames.empty())
+      for(std::size_t i = 0; i < dbNames.size(); i++)
+        m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
+
 // perform connection
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("MYSQL", dsInfo));
 
