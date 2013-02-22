@@ -57,7 +57,7 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -104,7 +104,7 @@ void TsSegmenter::BlockProcessingWithMerging()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -151,7 +151,7 @@ void TsSegmenter::ThreadedProcessing()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -199,7 +199,7 @@ void TsSegmenter::RegionGrowingMeanStrategy()
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.05;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   
   te::rp::Segmenter::InputParameters algoInputParams;
@@ -247,7 +247,7 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
-  strategyParameters.m_minSegmentSize = 50;
+  strategyParameters.m_minSegmentSize = 100;
   strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   
