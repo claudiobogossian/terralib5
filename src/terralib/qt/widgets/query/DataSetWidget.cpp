@@ -114,7 +114,12 @@ void te::qt::widgets::DataSetWidget::getDataSetNames(std::vector<std::pair<std::
 void te::qt::widgets::DataSetWidget::onDataSetComboBoxActivated(const QString& value)
 {
   if(value.isEmpty() == false)
-    m_ui->m_dataSetAliasLineEdit->setText(value);
+  {
+    std::string dataSetName = value.toStdString();
+    int pos = dataSetName.find(".");
+    std::string aliasName = dataSetName.substr(pos + 1, dataSetName.size() - 1);
+    m_ui->m_dataSetAliasLineEdit->setText(aliasName.c_str());
+  }
 }
 
 void te::qt::widgets::DataSetWidget::onAddDataSetPushButtonClicked()

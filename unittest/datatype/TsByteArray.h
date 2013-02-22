@@ -77,8 +77,9 @@ class TsByteArray : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcGetTypeCode);
   CPPUNIT_TEST( tcToString);
   CPPUNIT_TEST( tcClear);
+  CPPUNIT_TEST( tcSetBytesUsed );
  
-  CPPUNIT_TEST_SUITE_END();    
+  CPPUNIT_TEST_SUITE_END();
   
   public:
 
@@ -133,6 +134,10 @@ class TsByteArray : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: Get Type code  of ByteArray. */
     void tcGetTypeCode();
+
+    /*! \brief Test Case: Set bytes used by ByteArray. */
+    void tcSetBytesUsed();
+
   private:
 
     //te::gm::ByteArray* boxA; 

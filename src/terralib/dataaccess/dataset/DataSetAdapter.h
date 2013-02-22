@@ -323,6 +323,8 @@ namespace te
         */
         std::vector<const te::dt::Property*> getAdaptedProperties(int i);
 
+        te::da::DataSet* getInputDataSet() const;
+
         /*!
           \brief Static method that creates an adapter to the given data set.
 
