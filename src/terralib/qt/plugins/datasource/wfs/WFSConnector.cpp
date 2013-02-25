@@ -48,7 +48,7 @@ te::qt::plugins::wfs::WFSConnector::~WFSConnector()
 {
 }
 
-void te::qt::plugins::wfs::WFSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::wfs::WFSConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<WFSConnectorDialog> cdialog(new WFSConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -61,6 +61,13 @@ void te::qt::plugins::wfs::WFSConnector::create(std::list<te::da::DataSourceInfo
     te::da::DataSourceInfoManager::getInstance().add(ds);
     datasources.push_back(ds);
   }
+}
+
+void te::qt::plugins::gdal::WFSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::wfs::WFSConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)

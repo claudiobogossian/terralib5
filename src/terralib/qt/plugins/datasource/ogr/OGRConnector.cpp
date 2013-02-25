@@ -48,6 +48,28 @@ te::qt::plugins::ogr::OGRConnector::~OGRConnector()
 {
 }
 
+void te::qt::plugins::ogr::OGRConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  std::auto_ptr<OGRConnectorDialog> cdialog(new OGRConnectorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+
+  if(retval == QDialog::Rejected)
+    return;
+
+  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
+
+  if(ds.get() != 0)
+  {
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+
+    te::da::DataSourceManager::getInstance().insert(driver);
+  }
+}
+
 void te::qt::plugins::ogr::OGRConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   QMessageBox::warning(this,
@@ -105,24 +127,3 @@ void te::qt::plugins::ogr::OGRConnector::remove(std::list<te::da::DataSourceInfo
   }
 }
 
-void te::qt::plugins::ogr::OGRConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
-{
-  std::auto_ptr<OGRConnectorDialog> cdialog(new OGRConnectorDialog(static_cast<QWidget*>(parent())));
-
-  int retval = cdialog->exec();
-
-  if(retval == QDialog::Rejected)
-    return;
-
-  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
-
-  if(ds.get() != 0)
-  {
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    datasources.push_back(ds);
-
-    te::da::DataSourcePtr driver = cdialog->getDriver();
-
-    te::da::DataSourceManager::getInstance().insert(driver);
-  }
-}

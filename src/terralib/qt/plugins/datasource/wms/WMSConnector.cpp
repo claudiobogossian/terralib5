@@ -48,7 +48,7 @@ te::qt::plugins::wms::WMSConnector::~WMSConnector()
 {
 }
 
-void te::qt::plugins::wms::WMSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::wms::WMSConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<WMSConnectorDialog> cdialog(new WMSConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -61,6 +61,13 @@ void te::qt::plugins::wms::WMSConnector::create(std::list<te::da::DataSourceInfo
     te::da::DataSourceInfoManager::getInstance().add(ds);
     datasources.push_back(ds);
   }
+}
+
+void te::qt::plugins::gdal::WMSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::wms::WMSConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)
