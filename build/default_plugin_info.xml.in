@@ -3,8 +3,8 @@
             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
             xmlns="http://www.terralib.org/schemas/plugin"
             xsd:schemaLocation="http://www.terralib.org/schemas/plugin ${TE_SCHEMA_LOCATION}/plugin/plugin_info.xsd"
-            version="${TE_STRING_VERSION}"
-            release="${TE_STRING_BUILD_DATE}"
+            version="${TERRALIB_STRING_VERSION}"
+            release="${TERRALIB_STRING_BUILD_DATE}"
             engine="C++">
   <Name>${TE_PLUGIN_NAME}</Name>
   <DisplayName>${TE_PLUGIN_DISPLAYNAME}</DisplayName>
