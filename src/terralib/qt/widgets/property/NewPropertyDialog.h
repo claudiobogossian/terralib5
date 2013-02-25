@@ -33,6 +33,8 @@
 #include <QtGui/QDialog>
 #include <QtGui/QGridLayout>
 
+#include <memory>
+
 namespace Ui { class NewPropertyDialogForm; }
 
 namespace te

@@ -32,6 +32,8 @@
 // QT
 #include <QtGui/QWidget>
 
+#include <memory>
+
 namespace te
 {
   namespace dt { class SimpleProperty; }

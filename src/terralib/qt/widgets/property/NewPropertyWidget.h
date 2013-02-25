@@ -34,6 +34,8 @@
 #include <QtGui/QWidget>
 #include <QtGui/QGridLayout>
 
+#include <memory>
+
 namespace Ui { class NewPropertyWidgetForm; }
 
 namespace te

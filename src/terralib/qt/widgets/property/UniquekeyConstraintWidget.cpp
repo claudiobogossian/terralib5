@@ -27,7 +27,7 @@
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/UniqueKey.h"
 #include "DoubleListWidget.h"
-#include "UniqueKeyConstraintWidget.h"
+#include "UniquekeyConstraintWidget.h"
 #include "ui_ConstraintWidgetForm.h"
 #include "ui_DoubleListWidgetForm.h"
 

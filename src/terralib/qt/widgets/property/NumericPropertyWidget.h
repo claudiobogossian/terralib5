@@ -30,6 +30,8 @@
 #include "../Config.h"
 #include "SimplePropertyWidget.h"
 
+#include <memory>
+
 namespace Ui { class NumericPropertyWidgetForm; }
 
 namespace te

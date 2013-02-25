@@ -28,7 +28,7 @@
 #include "ConstraintsIndexesPropertyDialog.h"
 #include "IndexWidget.h"
 #include "PrimaryKeyConstraintWidget.h"
-#include "UniqueKeyConstraintWidget.h"
+#include "UniquekeyConstraintWidget.h"
 #include "ui_ConstraintsIndexesPropertyDialogForm.h"
 
 
