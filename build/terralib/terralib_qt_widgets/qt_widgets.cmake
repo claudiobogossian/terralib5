@@ -222,7 +222,7 @@ set (
   ${SRCDIR}/widgets/property/RenameProperty.h
   ${SRCDIR}/widgets/property/SimplePropertyWidget.h
   ${SRCDIR}/widgets/property/StringPropertyWidget.h
-  ${SRCDIR}/widgets/property/UniqueKeyConstraintWidget.h
+  ${SRCDIR}/widgets/property/UniquekeyConstraintWidget.h
   ${SRCDIR}/widgets/property/UpdateProperty.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/property" MOC)
