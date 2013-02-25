@@ -33,7 +33,6 @@
 #include "DataSet.h"
 
 // STL
-#include <set>
 #include <vector>
 
 namespace te
@@ -297,7 +296,7 @@ namespace te
 
           \return The properties of the handled data set have been adapted.
 
-          \note  The caller will NOT take the ownership of the returned pointers.
+          \note The caller will NOT take the ownership of the returned pointers.
         */
         std::vector<const te::dt::Property*> getAdaptedProperties(te::dt::Property* p);
 
@@ -308,7 +307,7 @@ namespace te
 
           \return The properties of the handled data set have been adapted.
 
-          \note  The caller will NOT take the ownership of the returned pointers.
+          \note The caller will NOT take the ownership of the returned pointers.
         */
         std::vector<const te::dt::Property*> getAdaptedProperties(const std::string& name);
 
@@ -319,11 +318,32 @@ namespace te
 
           \return The properties of the handled data set have been adapted.
 
-          \note  The caller will NOT take the ownership of the returned pointers.
+          \note The caller will NOT take the ownership of the returned pointers.
         */
         std::vector<const te::dt::Property*> getAdaptedProperties(int i);
 
+        /*!
+          \brief This method returns the pointer to the DataSet that is handled by adapter.
+
+          \return The pointer to the DataSet that is handled by adapter.
+
+          \note The caller will NOT take the ownership of the returned pointer.
+        */
         te::da::DataSet* getInputDataSet() const;
+
+        /*!
+          \brief This method removes a property of DataSetAdapter.
+
+          \param propertyName The property name of the DataSetAdapter that will be removed.
+        */
+        void remove(const std::string& propertyName);
+
+        /*!
+          \brief This method removes a property of DataSetAdapter.
+
+          \param i The property index of the DataSetAdapter that will be removed.
+        */
+        void remove(int i);
 
         /*!
           \brief Static method that creates an adapter to the given data set.
@@ -380,7 +400,7 @@ namespace te
         DataSetType* m_outDataSetType;                       //!< Adapter DataSetType.
         std::vector<std::vector<int> > m_propertyIndexes;    //!< A vector that stores the adapted property indexes.
         std::vector<AttributeConverter> m_converters;        //!< A vector that stores the attribute converters functions.
-        std::set<int> m_adaptedProperties;                   //!< Internal set to store the adapted properties.
+        std::vector<int> m_adaptedProperties;                //!< Internal vector to count the references to adapted properties.
     };
 
   } // end namespace da
