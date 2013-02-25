@@ -63,7 +63,7 @@ void te::qt::plugins::wfs::WFSConnector::connect(std::list<te::da::DataSourceInf
   }
 }
 
-void te::qt::plugins::gdal::WFSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::wfs::WFSConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),

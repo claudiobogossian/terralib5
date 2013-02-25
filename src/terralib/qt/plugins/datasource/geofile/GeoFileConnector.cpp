@@ -63,7 +63,7 @@ void te::qt::plugins::geofile::GeoFileConnector::connect(std::list<te::da::DataS
     te::da::DataSourceInfoManager::getInstance().add(*it);
 }
 
-void te::qt::plugins::gdal::GeoFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
