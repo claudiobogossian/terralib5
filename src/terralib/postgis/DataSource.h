@@ -69,6 +69,10 @@ namespace te
         /*! \todo No futuro, ler diretamente de um arquivo XML + alguma coisa do proprio BD. */
         const te::da::DataSourceCapabilities& getCapabilities() const;
 
+        static std::vector<std::string> getDataSources(const std::string& dsType, const std::map<std::string, std::string>& info);
+       
+        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
+
         /*! \todo No futuro, ler diretamente de um arquivo XML + alguma coisa do proprio BD. */
         const te::da::SQLDialect* getDialect() const;
 
@@ -186,6 +190,10 @@ namespace te
         void drop(const std::map<std::string, std::string>& dsInfo);
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
+
+        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
 
       private:
 

@@ -283,3 +283,13 @@ bool te::mem::DataSource::exists(const std::map<std::string, std::string>& /*dsI
 // Not supported by In-Memory driver!
   return false;
 }
+
+std::vector<std::string> te::mem::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}
+
+std::vector<std::string>te::mem::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_MEMORY("Not implemented yet!"));
+}

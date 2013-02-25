@@ -336,6 +336,31 @@ namespace te
           \note For some drivers this method doesn't have effect.
         */
         virtual void optimize(const std::map<std::string, std::string>& opInfo) = 0;
+       
+        /*!
+          \brief It returns a ecodings names string vector.
+          
+          \param dsType The data source type name (example: PostGIS, Oracle, WFS).
+          \param dsInfo The data source information.
+
+          \return Ecodings names string vector.
+
+          \exception Exception It throws an exception if the data source can not be consulted.
+        */
+        static std::vector<std::string> getDataSources(const std::string& dsType, const std::map<std::string, std::string>& info);
+
+        /*!
+          \brief It returns a DataSources names string vector.
+
+          
+          \param dsType The data source type name (example: PostGIS, Oracle, WFS).
+          \param dsInfo The data source information.
+
+          \return DataSources names string vector.
+
+          \exception Exception It throws an exception if the data source can not be consulted.
+        */
+        static std::vector<std::string> getEncodings(const std::string& dsType, const std::map<std::string, std::string>& info);
 
         /*!
           \brief It creates a new data source with the given information.
@@ -434,6 +459,28 @@ namespace te
           \note Thread-safe!
         */
         virtual bool exists(const std::map<std::string, std::string>& dsInfo) = 0;
+
+        /*!
+          \brief A pure virtual method that subclasses must implement in order to get the DataSources.
+          
+          \param dsInfo The data source information.
+
+          \return DataSources names string vector.
+
+          \exception Exception Implementations may throw exceptions.
+        */
+        virtual std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info) = 0;
+
+        /*!
+          \brief A pure virtual method that subclasses must implement in order to get the encodings
+          
+          \param dsInfo The data source information.
+
+          \return Ecodings names string vector.
+
+          \exception Exception Implementations may throw exceptions.
+        */
+        virtual std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info) = 0;
 
       protected:
 

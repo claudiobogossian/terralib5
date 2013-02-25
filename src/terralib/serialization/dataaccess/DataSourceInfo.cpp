@@ -92,9 +92,13 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Description");
   reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  ds->setDescription(reader.getElementValue());
-  reader.next();
+
+  if(reader.getNodeType() == te::xml::VALUE)
+  {
+    ds->setDescription(reader.getElementValue());
+    reader.next();
+  }
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* ConnectionInfo Element */
@@ -102,11 +106,10 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ConnectionInfo");
 
-  reader.next();
-
   std::map<std::string, std::string> conninfo;
 
-  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+  while(reader.next() &&
+        (reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName() == "Parameter"))
   {
     // Parameter Name
@@ -132,15 +135,16 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
     conninfo[paramName] = paramValue;
 
     reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of ConnectionInfo Element
   reader.next();
 
-  ds->setConnInfo(conninfo);
-
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSource Element
   reader.next();
+
+  ds->setConnInfo(conninfo);
 
   return ds.release();
 }
@@ -204,17 +208,17 @@ void te::serialize::Save(te::xml::Writer& writer)
 
     for(conIt=info.begin(); conIt!=info.end(); ++conIt)
     {
-      writer.writeStartElement("te_common::Parameter");
+      writer.writeStartElement("te_common:Parameter");
 
-      writer.writeStartElement("te_common::Name");
+      writer.writeStartElement("te_common:Name");
       writer.writeValue(conIt->first);
-      writer.writeEndElement("te_common::Name");
+      writer.writeEndElement("te_common:Name");
 
-      writer.writeStartElement("te_common::Value");
+      writer.writeStartElement("te_common:Value");
       writer.writeValue(conIt->second);
-      writer.writeEndElement("te_common::Value");
+      writer.writeEndElement("te_common:Value");
 
-      writer.writeEndElement("te_common::Parameter");
+      writer.writeEndElement("te_common:Parameter");
     }
     writer.writeEndElement("ConnectionInfo");
 
