@@ -577,7 +577,7 @@ namespace te
             hForm
           )
         );      
-      TERP_DEBUG_TRUE_OR_THROW( ! std::isnan( returnValue ), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( ( returnValue == returnValue ), "Internal error" );
       
       return returnValue;
     }
