@@ -50,24 +50,9 @@ te::qt::plugins::gdal::GDALConnector::~GDALConnector()
 
 void te::qt::plugins::gdal::GDALConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  std::auto_ptr<GDALConnectorDialog> cdialog(new GDALConnectorDialog(static_cast<QWidget*>(parent())));
-
-  int retval = cdialog->exec();
-
-  if(retval == QDialog::Rejected)
-    return;
-
-  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
-
-  if(ds.get() != 0)
-  {
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    datasources.push_back(ds);
-
-    te::da::DataSourcePtr driver = cdialog->getDriver();
-
-    te::da::DataSourceManager::getInstance().insert(driver);
-  }
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::gdal::GDALConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
@@ -120,3 +105,24 @@ void te::qt::plugins::gdal::GDALConnector::remove(std::list<te::da::DataSourceIn
   }
 }
 
+void te::qt::plugins::gdal::GDALConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  std::auto_ptr<GDALConnectorDialog> cdialog(new GDALConnectorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+
+  if(retval == QDialog::Rejected)
+    return;
+
+  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
+
+  if(ds.get() != 0)
+  {
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+
+    te::da::DataSourceManager::getInstance().insert(driver);
+  }
+}
