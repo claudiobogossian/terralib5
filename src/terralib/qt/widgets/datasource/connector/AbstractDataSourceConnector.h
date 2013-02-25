@@ -55,13 +55,13 @@ namespace te
 
           virtual ~AbstractDataSourceConnector();
 
+          virtual void connect(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
+
           virtual void create(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
 
           virtual void update(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
 
           virtual void remove(std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
-
-          virtual void createNew(std::list<te::da::DataSourceInfoPtr>& datasources);
       }; 
     } // end namespace widgets
   }   // end namespace qt

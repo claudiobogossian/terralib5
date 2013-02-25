@@ -51,24 +51,12 @@ te::qt::plugins::mysql::MySQLConnector::~MySQLConnector()
 
 void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  std::auto_ptr<MySQLConnectorDialog> cdialog(new MySQLConnectorDialog(static_cast<QWidget*>(parent())));
+  std::auto_ptr<MySQLCreatorDialog> cdialog(new MySQLCreatorDialog(static_cast<QWidget*>(parent())));
 
   int retval = cdialog->exec();
-
+  
   if(retval == QDialog::Rejected)
     return;
-
-  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
-
-  if(ds.get() != 0)
-  {
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    datasources.push_back(ds);
-
-    te::da::DataSourcePtr driver = cdialog->getDriver();
-
-    te::da::DataSourceManager::getInstance().insert(driver);
-  }
 }
 
 void te::qt::plugins::mysql::MySQLConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
@@ -121,15 +109,24 @@ void te::qt::plugins::mysql::MySQLConnector::remove(std::list<te::da::DataSource
   }
 }
 
-void te::qt::plugins::mysql::MySQLConnector::createNew(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::mysql::MySQLConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  std::auto_ptr<MySQLCreatorDialog> cdialog(new MySQLCreatorDialog(static_cast<QWidget*>(parent())));
+  std::auto_ptr<MySQLConnectorDialog> cdialog(new MySQLConnectorDialog(static_cast<QWidget*>(parent())));
 
   int retval = cdialog->exec();
-  
+
   if(retval == QDialog::Rejected)
     return;
 
-  
-}
+  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
 
+  if(ds.get() != 0)
+  {
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+
+    te::da::DataSourceManager::getInstance().insert(driver);
+  }
+}

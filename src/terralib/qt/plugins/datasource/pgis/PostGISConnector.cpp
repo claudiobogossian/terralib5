@@ -50,24 +50,9 @@ te::qt::plugins::pgis::PostGISConnector::~PostGISConnector()
 
 void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  std::auto_ptr<PostGISConnectorDialog> cdialog(new PostGISConnectorDialog(static_cast<QWidget*>(parent())));
-
-  int retval = cdialog->exec();
-
-  if(retval == QDialog::Rejected)
-    return;
-
-  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
-
-  if(ds.get() != 0)
-  {
-    te::da::DataSourceInfoManager::getInstance().add(ds);
-    datasources.push_back(ds);
-
-    te::da::DataSourcePtr driver = cdialog->getDriver();
-
-    te::da::DataSourceManager::getInstance().insert(driver);
-  }
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::pgis::PostGISConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
@@ -120,3 +105,24 @@ void te::qt::plugins::pgis::PostGISConnector::remove(std::list<te::da::DataSourc
   }
 }
 
+void te::qt::plugins::pgis::PostGISConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  std::auto_ptr<PostGISConnectorDialog> cdialog(new PostGISConnectorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+
+  if(retval == QDialog::Rejected)
+    return;
+
+  te::da::DataSourceInfoPtr ds = cdialog->getDataSource();
+
+  if(ds.get() != 0)
+  {
+    te::da::DataSourceInfoManager::getInstance().add(ds);
+    datasources.push_back(ds);
+
+    te::da::DataSourcePtr driver = cdialog->getDriver();
+
+    te::da::DataSourceManager::getInstance().insert(driver);
+  }
+}
