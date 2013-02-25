@@ -24,15 +24,20 @@
 */
 
 // TerraLib
+#include "../../../dataaccess/dataset/DataSetAdapter.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../dataaccess/dataset/Index.h"
 #include "../../../dataaccess/dataset/PrimaryKey.h"
 #include "../../../dataaccess/dataset/UniqueKey.h"
+#include "../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/GeometryProperty.h"
 #include "../../../qt/widgets/utils/ScopedCursor.h"
-#include "ui_DataSetOptionsWizardPageForm.h"
+#include "ConstraintsIndexesListWidget.h"
+#include "DataSetAdapterWidget.h"
 #include "DataSetOptionsWizardPage.h"
+#include "ui_DataSetOptionsWizardPageForm.h"
 
 // STL
 #include <algorithm>
@@ -51,35 +56,21 @@ te::qt::widgets::DataSetOptionsWizardPage::DataSetOptionsWizardPage(QWidget* par
 // setup controls
   m_ui->setupUi(this);
 
-// setup icons
-  m_ui->m_addUkToolButton->setIcon(QIcon::fromTheme("list-add"));
-  m_ui->m_removeUkToolButton->setIcon(QIcon::fromTheme("list-remove"));
-  m_ui->m_editUkToolButton->setIcon(QIcon::fromTheme("preferences-system"));
+//build form
+  m_constraintWidget.reset(new te::qt::widgets::ConstraintsIndexesListWidget(m_ui->m_constraintWidget));
+  QGridLayout* constraintLayout = new QGridLayout(m_ui->m_constraintWidget);
+  constraintLayout->addWidget(m_constraintWidget.get());
+  constraintLayout->setContentsMargins(0,0,0,0);
 
-  m_ui->m_addIndexToolButton->setIcon(QIcon::fromTheme("list-add"));
-  m_ui->m_removeIndexToolButton->setIcon(QIcon::fromTheme("list-remove"));
-  m_ui->m_editIndexToolButton->setIcon(QIcon::fromTheme("preferences-system"));
-
-// setup control options
-  m_ui->m_propertiesTableWidget->resizeColumnsToContents();
+  m_dataSetAdapterWidget.reset(new te::qt::widgets::DataSetAdapterWidget(m_ui->m_dataSetWidget));
+  QGridLayout* dataSetLayout = new QGridLayout(m_ui->m_dataSetWidget);
+  dataSetLayout->addWidget(m_dataSetAdapterWidget.get());
+  dataSetLayout->setContentsMargins(0,0,0,0);
 
 // connect signals and slots
-  connect(m_ui->m_addUkToolButton, SIGNAL(pressed()), this, SLOT(addUkToolButtonPressed()));
-  connect(m_ui->m_removeUkToolButton, SIGNAL(pressed()), this, SLOT(removeUkToolButtonPressed()));
-  connect(m_ui->m_editUkToolButton, SIGNAL(pressed()), this, SLOT(editUkToolButtonPressed()));
-
-  connect(m_ui->m_addIndexToolButton, SIGNAL(pressed()), this, SLOT(addIndexToolButtonPressed()));
-  connect(m_ui->m_removeIndexToolButton, SIGNAL(pressed()), this, SLOT(removeIndexToolButtonPressed()));
-  connect(m_ui->m_editIndexToolButton, SIGNAL(pressed()), this, SLOT(editIndexToolButtonPressed()));
-
   connect(m_ui->m_sridSearchToolButton, SIGNAL(pressed()), this, SLOT(sridSearchToolButtonPressed()));
 
-  connect(m_ui->m_applyChangesPushButton, SIGNAL(pressed()), this, SLOT(applyChangesPushButtonPressed()));
-
   connect(m_ui->m_selectedDatasetListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(datasetPressed(QListWidgetItem*)));
-
-  connect(m_ui->m_datasetNameLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(enableApplyButton()));
-  connect(m_ui->m_datasetTitleLineEdit, SIGNAL(textEdited(const QString&)), this, SLOT(enableApplyButton()));
 
   //QCoreApplication* app = QCoreApplication::instance();
   //connect(app, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(checkModificationsOnFocusChange(QWidget*, QWidget*)));
@@ -96,7 +87,6 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
   ScopedCursor wcursor(Qt::WaitCursor);
 
   m_ui->m_selectedDatasetListWidget->clear();
-  m_ui->m_applyChangesPushButton->setEnabled(false);
 
   clearForm();
 
@@ -111,12 +101,25 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     if(it->get() == 0)
       continue;
 
+    //get datasetype
     te::da::DataSetTypePtr myclone(static_cast<te::da::DataSetType*>((*it)->clone()));
 
     if(!myclone->isFullLoaded())
       te::da::LoadFull(myclone.get(), datasource->getId());
 
-    m_datasets.push_back(myclone);
+    //create dataset adapter
+    te::da::DataSourcePtr targetDataSource = te::da::DataSourceManager::getInstance().find(m_targetDatasource->getId());
+    te::da::DataSourcePtr sourceDataSource = te::da::DataSourceManager::getInstance().find(m_datasource->getId());
+
+    te::da::DataSourceTransactor* transactor = sourceDataSource->getTransactor();
+
+    te::da::DataSet* sourceDataSet = transactor->getDataSet(myclone->getName());
+
+    delete transactor;
+
+    te::da::DataSetAdapter* adapter = new te::da::DataSetAdapter(sourceDataSet, targetDataSource->getCapabilities(), true);
+
+    m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::value_type(myclone, adapter));
   }
 
   for(std::list<te::da::DataSetTypePtr>::const_iterator it = datasets.begin(); it != datasets.end(); ++it)
@@ -130,65 +133,53 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
 
     QListWidgetItem* item = new QListWidgetItem(title);
 
-    //item->setData(Qt::UserRole, QVariant(name));
-
     m_ui->m_selectedDatasetListWidget->addItem(item);
   }
 
   setControlsEnabled(false);
 }
 
-const std::list<te::da::DataSetTypePtr>& te::qt::widgets::DataSetOptionsWizardPage::getDatasets() const
+const std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>& te::qt::widgets::DataSetOptionsWizardPage::getDatasets() const
 {
   return m_datasets;
 }
 
-void te::qt::widgets::DataSetOptionsWizardPage::addUkToolButtonPressed()
+void te::qt::widgets::DataSetOptionsWizardPage::applyChanges()
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
-  //m_ui->m_applyChangesPushButton->setEnabled(true);
-}
+  QListWidgetItem* item = m_ui->m_selectedDatasetListWidget->currentItem();
 
-void te::qt::widgets::DataSetOptionsWizardPage::removeUkToolButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
-  //m_ui->m_applyChangesPushButton->setEnabled(true);
-}
+  if(item == 0)
+    return;
 
-void te::qt::widgets::DataSetOptionsWizardPage::editUkToolButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
-  //m_ui->m_applyChangesPushButton->setEnabled(true);
-}
+  std::string dataSetAdapterName = item->text().toStdString();
 
-void te::qt::widgets::DataSetOptionsWizardPage::addIndexToolButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
-  //m_ui->m_applyChangesPushButton->setEnabled(true);
-}
+  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::iterator it = m_datasets.begin();
 
-void te::qt::widgets::DataSetOptionsWizardPage::removeIndexToolButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
-  //m_ui->m_applyChangesPushButton->setEnabled(true);
-}
+  while(it != m_datasets.end())
+  {
+    if(it->second->getType()->getName() == dataSetAdapterName)
+    {
+      it->second->getType()->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toStdString());
+      it->second->getType()->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
 
-void te::qt::widgets::DataSetOptionsWizardPage::editIndexToolButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
-  //m_ui->m_applyChangesPushButton->setEnabled(true);
+      if(it->second->getType()->hasGeom())
+        it->second->getType()->getDefaultGeomProperty()->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
+
+      QString title = QString::fromStdString(it->second->getType()->getTitle());
+
+      QString name = QString::fromStdString(it->second->getType()->getName());
+
+      if(title.isEmpty())
+        title = name;
+
+      item->setText(title);
+
+      m_ui->m_selectedDatasetListWidget->update();
+
+      break;
+    }
+    ++it;
+  }
 }
 
 void te::qt::widgets::DataSetOptionsWizardPage::sridSearchToolButtonPressed()
@@ -199,149 +190,51 @@ void te::qt::widgets::DataSetOptionsWizardPage::sridSearchToolButtonPressed()
   //m_ui->m_applyChangesPushButton->setEnabled(true);
 }
 
-void te::qt::widgets::DataSetOptionsWizardPage::applyChangesPushButtonPressed()
-{
-  QList<QListWidgetItem*> items = m_ui->m_selectedDatasetListWidget->selectedItems();
-
-  if(items.empty())
-    return;
-
-  QListWidgetItem* item = items.first();
-
-  if(item == 0)
-    return;
-
-  int row = m_ui->m_selectedDatasetListWidget->row(item);
-
-  std::list<te::da::DataSetTypePtr>::iterator it = m_datasets.begin();
-
-  std::advance(it, row);
-
-  if(it == m_datasets.end())
-    return;
-
-  (*it)->setName(m_ui->m_datasetNameLineEdit->text().trimmed().toStdString());
-  (*it)->setTitle(m_ui->m_datasetTitleLineEdit->text().trimmed().toStdString());
-
-  if((*it)->hasGeom())
-    (*it)->getDefaultGeomProperty()->setSRID(boost::lexical_cast<int>(m_ui->m_sridLineEdit->text().trimmed().toStdString()));
-
-  QString title = QString::fromStdString((*it)->getTitle());
-
-  QString name = QString::fromStdString((*it)->getName());
-
-  if(title.isEmpty())
-    title = name;
-
-  item->setText(title);
-
-  m_ui->m_selectedDatasetListWidget->update();
-
-  m_ui->m_applyChangesPushButton->setEnabled(false);
-}
-
 void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* item)
 {
   if(item == 0)
     return;
 
-  int row = m_ui->m_selectedDatasetListWidget->row(item);
+  std::string dataSetAdapterName = item->text().toStdString();
 
-  std::list<te::da::DataSetTypePtr>::const_iterator it = m_datasets.begin();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::iterator it = m_datasets.begin();
 
-  std::advance(it, row);
-
-  if(it == m_datasets.end())
-    return;
-
-  te::da::DataSetTypePtr dataset = *it;
-
-// fill line edits
-  m_ui->m_datasetNameLineEdit->setEnabled(true);
-  m_ui->m_datasetNameLineEdit->setText(QString::fromStdString(dataset->getName()));
-
-  m_ui->m_datasetTitleLineEdit->setEnabled(true);
-  m_ui->m_datasetTitleLineEdit->setText(QString::fromStdString(dataset->getTitle()));
-
-  if(dataset->hasGeom())
+  while(it != m_datasets.end())
   {
-    m_ui->m_sridSearchToolButton->setEnabled(true);
-    m_ui->m_sridLineEdit->setEnabled(true);
-    m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(dataset->getDefaultGeomProperty()->getSRID())));
+    if(it->second->getType()->getName() == dataSetAdapterName)
+    {
+      te::da::DataSetType* dataset = it->second->getType();
+
+      // fill line edits
+      m_ui->m_datasetNameLineEdit->setEnabled(true);
+      m_ui->m_datasetNameLineEdit->setText(QString::fromStdString(dataset->getName()));
+
+      m_ui->m_datasetTitleLineEdit->setEnabled(true);
+      m_ui->m_datasetTitleLineEdit->setText(QString::fromStdString(dataset->getTitle()));
+
+      if(dataset->hasGeom())
+      {
+        m_ui->m_sridSearchToolButton->setEnabled(true);
+        m_ui->m_sridLineEdit->setEnabled(true);
+        if(dataset->getDefaultGeomProperty())
+          m_ui->m_sridLineEdit->setText(QString::fromStdString(boost::lexical_cast<std::string>(dataset->getDefaultGeomProperty()->getSRID())));
+      }
+      else
+      {
+        m_ui->m_sridSearchToolButton->setEnabled(false);
+        m_ui->m_sridLineEdit->setEnabled(false);
+      }
+
+      // fill property table
+      m_dataSetAdapterWidget->setAdapterParameters(it->second->getInputDataSet(), it->second, m_targetDatasource);
+
+      // fill constraints
+      te::da::DataSetTypePtr dstypePtr(dataset);
+      m_constraintWidget->setDataSetType(dstypePtr);
+      break;
+    }
+    ++it;
   }
-  else
-  {
-    m_ui->m_sridSearchToolButton->setEnabled(false);
-    m_ui->m_sridLineEdit->setEnabled(false);
-  }
-
-// fill property table
-  QTableWidget* table = m_ui->m_propertiesTableWidget;
-
-  const int nproperties = static_cast<int>(dataset->size());
-
-  if(nproperties != 0)
-    table->setEnabled(true);
-
-  table->setRowCount(nproperties);
-
-  for(int i = 0; i < nproperties; ++i)
-  {
-    const te::dt::Property* p = dataset->getProperty(i);
-
-    QTableWidgetItem* item = new QTableWidgetItem("");
-    item->setCheckState(Qt::Checked);
-    table->setItem(i, 0, item);
-
-    item = new QTableWidgetItem(QString::fromStdString(p->getName()));
-    table->setItem(i, 1, item);
-
-    item = new QTableWidgetItem(QString::fromStdString(boost::lexical_cast<std::string>(p->getType())));
-    table->setItem(i, 2, item);
-
-    const te::da::PrimaryKey* pk = dataset->getPrimaryKey();
-
-    item = new QTableWidgetItem("");
-    item->setCheckState((pk !=0 ) && (pk->has(p)) ? Qt::Checked : Qt::Unchecked);
-    table->setItem(i, 3, item);
-  }
-
-  table->resizeColumnsToContents();
-
-// fill uks
-  m_ui->m_addUkToolButton->setEnabled(true);
-
-  const std::size_t nuks = dataset->getNumberOfUniqueKeys();
-
-  for(std::size_t i = 0; i < nuks; ++i)
-  {
-    const te::da::UniqueKey* uk = dataset->getUniqueKey(i);
-
-    QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(uk->getName()));
-
-    m_ui->m_uksListWidget->addItem(item);
-  }
-
-// fill idxs
-  m_ui->m_addIndexToolButton->setEnabled(true);
-
-  const std::size_t nidxs = dataset->getNumberOfIndexes();
-
-  for(std::size_t i = 0; i < nidxs; ++i)
-  {
-    const te::da::Index* idx = dataset->getIndex(i);
-
-    QListWidgetItem* item = new QListWidgetItem(QString::fromStdString(idx->getName()));
-
-    m_ui->m_indexesListWidget->addItem(item);
-  }
-
-// disable buttons
-  m_ui->m_applyChangesPushButton->setEnabled(false);
-}
-void te::qt::widgets::DataSetOptionsWizardPage::enableApplyButton()
-{
-  m_ui->m_applyChangesPushButton->setEnabled(true);
 }
 
 //void te::qt::widgets::DataSetOptionsWizardPage::checkModificationsOnFocusChange(QWidget* old, QWidget* now)
@@ -400,26 +293,25 @@ void te::qt::widgets::DataSetOptionsWizardPage::enableApplyButton()
 
 te::da::DataSetTypePtr te::qt::widgets::DataSetOptionsWizardPage::getSelectedDataSet() const
 {
-  QList<QListWidgetItem*> items = m_ui->m_selectedDatasetListWidget->selectedItems();
-
-  if(items.empty())
-    return te::da::DataSetTypePtr();
-
-  QListWidgetItem* item = items.first();
+   QListWidgetItem* item = m_ui->m_selectedDatasetListWidget->currentItem();
 
   if(item == 0)
     return te::da::DataSetTypePtr();
 
-  int row = m_ui->m_selectedDatasetListWidget->row(item);
+  std::string dataSetAdapterName = item->text().toStdString();
 
-  std::list<te::da::DataSetTypePtr>::const_iterator it = m_datasets.begin();
+  std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::const_iterator it = m_datasets.begin();
 
-  std::advance(it, row);
-
-  if(it == m_datasets.end())
-    return te::da::DataSetTypePtr();
-
-  return *it;
+  while(it != m_datasets.end())
+  {
+    if(it->second->getType()->getName() == dataSetAdapterName)
+    {
+      return it->first;
+    }
+    ++it;
+  }
+ 
+  return te::da::DataSetTypePtr();
 }
 
 void te::qt::widgets::DataSetOptionsWizardPage::clearForm()
@@ -427,9 +319,6 @@ void te::qt::widgets::DataSetOptionsWizardPage::clearForm()
   m_ui->m_datasetNameLineEdit->clear();
   m_ui->m_datasetTitleLineEdit->clear();
   m_ui->m_sridLineEdit->clear();
-  m_ui->m_propertiesTableWidget->clearContents();
-  m_ui->m_uksListWidget->clear();
-  m_ui->m_indexesListWidget->clear();
 }
 
 void te::qt::widgets::DataSetOptionsWizardPage::setControlsEnabled(bool enabled)
@@ -438,14 +327,6 @@ void te::qt::widgets::DataSetOptionsWizardPage::setControlsEnabled(bool enabled)
   m_ui->m_datasetTitleLineEdit->setEnabled(enabled);
   m_ui->m_sridLineEdit->setEnabled(enabled);
   m_ui->m_sridSearchToolButton->setEnabled(enabled);
-  m_ui->m_propertiesTableWidget->setEnabled(enabled);
-  m_ui->m_addUkToolButton->setEnabled(enabled);
-  m_ui->m_removeUkToolButton->setEnabled(enabled);
-  m_ui->m_editUkToolButton->setEnabled(enabled);
-  m_ui->m_addIndexToolButton->setEnabled(enabled);
-  m_ui->m_removeIndexToolButton->setEnabled(enabled);
-  m_ui->m_editIndexToolButton->setEnabled(enabled);
-  m_ui->m_applyChangesPushButton->setEnabled(enabled);
 }
 
 te::qt::widgets::DataSetOptionsWizardPage::FindByName::FindByName(const QString& name)

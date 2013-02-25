@@ -61,7 +61,7 @@ namespace te
           \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
         */
         StringProperty(const std::string& name,
-                       StringType strType,
+                       StringType strType = STRING,
                        std::size_t size = 0,
                        bool isRequired = false,
                        std::string* defaultValue = 0,

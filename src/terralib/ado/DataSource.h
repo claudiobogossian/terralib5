@@ -100,6 +100,10 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
 
+        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+
       private:
 
         _ConnectionPtr m_conn;                                      //!< ADO connection
