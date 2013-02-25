@@ -180,7 +180,7 @@ void te::serialize::Save(te::xml::Writer& writer)
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/dataaccess");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/dataaccess " + p.generic_string() + "/dataaccess/dataaccess.xsd");
   writer.writeAttribute("version", TERRALIB_STRING_VERSION);
-  writer.writeAttribute("release", TERRALIB_STRING_BUILD_DATE);
+  writer.writeAttribute("release", "2013-01-01");
 
   te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
   te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
