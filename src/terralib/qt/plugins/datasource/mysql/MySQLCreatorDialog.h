@@ -81,8 +81,8 @@ namespace te
             
             void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);  
-            
+            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+
           private:
 
             std::auto_ptr<Ui::MySQLCreatorDialogForm> m_ui;
