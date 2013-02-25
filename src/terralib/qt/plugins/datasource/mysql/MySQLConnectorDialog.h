@@ -75,6 +75,8 @@ namespace te
 
             void helpPushButtonPressed();
 
+            void passwordLineEditEditingFinished();
+
             void advancedConnectionOptionsCheckBoxToggled(bool t);
 
           protected:
