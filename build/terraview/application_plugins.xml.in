@@ -3,5 +3,5 @@
          xmlns="http://www.terralib.org/schemas/af"
          xsd:schemaLocation="http://www.terralib.org/schemas/af ${TE_SCHEMA_LOCATION}/af/af.xsd"
          version="${TERRALIB_STRING_VERSION}"
-         release="${TERRALIB_STRING_BUILD_DATE}">
+         release="2013-01-01">
 ${TE_PLUGINS_DESCRIPTION}</Plugins>
