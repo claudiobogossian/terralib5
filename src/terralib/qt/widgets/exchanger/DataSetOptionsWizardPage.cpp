@@ -226,7 +226,7 @@ void te::qt::widgets::DataSetOptionsWizardPage::datasetPressed(QListWidgetItem* 
       }
 
       // fill property table
-      m_dataSetAdapterWidget->setAdapterParameters(it->second->getInputDataSet(), it->second, m_targetDatasource);
+      m_dataSetAdapterWidget->setAdapterParameters(it->second->getAdaptee(), it->second, m_targetDatasource);
 
       // fill constraints
       te::da::DataSetTypePtr dstypePtr(dataset);
