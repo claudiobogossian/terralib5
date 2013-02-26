@@ -53,6 +53,7 @@
 #include "events/LayerAdded.h"
 #include "events/LayerSelected.h"
 #include "events/TrackedCoordinate.h"
+#include "settings/SystemSettings.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "BaseApplication.h"
@@ -296,6 +297,19 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
 }
 
+void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
+{
+  try
+  {
+    te::qt::af::SystemSettings dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::makeDialog()
 {
   initActions();
@@ -491,7 +505,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewDataSourceExplorer, "grid-visible", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
 
 // Menu -Tools- actions
-  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, false);
+  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true);
   initAction(m_toolsDataSourceManagement, "", "Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, false);
 
 // Menu -Edit- actions
@@ -729,4 +743,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
+  connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
 }

@@ -29,6 +29,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "PostGISConnector.h"
 #include "PostGISConnectorDialog.h"
+#include "PostGISCreatorDialog.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -48,7 +49,7 @@ te::qt::plugins::pgis::PostGISConnector::~PostGISConnector()
 {
 }
 
-void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::pgis::PostGISConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<PostGISConnectorDialog> cdialog(new PostGISConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -68,6 +69,16 @@ void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::da::DataSourc
 
     te::da::DataSourceManager::getInstance().insert(driver);
   }
+}
+
+void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  std::auto_ptr<PostGISCreatorDialog> cdialog(new PostGISCreatorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+  
+  if(retval == QDialog::Rejected)
+    return;
 }
 
 void te::qt::plugins::pgis::PostGISConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)

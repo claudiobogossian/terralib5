@@ -407,10 +407,49 @@ bool te::pgis::DataSource::exists(const std::map<std::string, std::string>& dsIn
 
 std::vector<std::string> te::pgis::DataSource::getDataSources(const std::map<std::string, std::string>& info)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+
+// let's have an auxiliary connection
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(info);
+
+  ds->open();
+
+// try to check
+  std::string sql("SELECT datname FROM pg_database");
+
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
+
+  std::auto_ptr<te::da::DataSet> databases(transactor->query(sql));
+
+  std::vector<std::string> dbs;
+
+  while(databases->moveNext())
+    dbs.push_back(databases->getString(0));
+
+  return dbs;
 }
 
-std::vector<std::string>te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+std::vector<std::string> te::pgis::DataSource::getEncodings(const std::map<std::string, std::string>& info)
 {
-  throw Exception(TR_PGIS("Not implemented yet!"));
+  std::vector<std::string> encodings;
+
+  // let's have an auxiliary connection
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(info);
+
+  ds->open();
+
+// try to check
+  std::string sql("SELECT DISTINCT pg_catalog.pg_encoding_to_char(conforencoding) FROM pg_catalog.pg_conversion ORDER BY pg_catalog.pg_encoding_to_char(conforencoding)");
+
+  std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());
+
+  std::auto_ptr<te::da::DataSet> encs(transactor->query(sql));
+
+  while(encs->moveNext())
+    encodings.push_back(encs->getString(0));
+
+  return encodings;
 }

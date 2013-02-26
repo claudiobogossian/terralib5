@@ -65,8 +65,6 @@ namespace te
 
             const te::da::DataSourcePtr& getDriver() const;
 
-            void set(const te::da::DataSourceInfoPtr& ds);
-            
           public slots:
 
             void advancedCreationOptionsCheckBoxToggled(bool t);
@@ -77,12 +75,12 @@ namespace te
 
             void helpPushButtonPressed();
 
+            void passwordLineEditEditingFinished();
+
           protected:
-            
+
             void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);  
-            
           private:
 
             std::auto_ptr<Ui::MySQLCreatorDialogForm> m_ui;

@@ -78,10 +78,10 @@ getPluginResources("LangFile" "pt.br" RSC_LINK2)
 set (TE_PLUGIN_RESOURCES 
   "  <Resources>${RSC_LINK}  ${RSC_LINK2}\n  </Resources>\n"
 )
-getPluginRequirements("te.da.wcs" REQ)
-set (TE_PLUGIN_REQUIREMENTS 
-  "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
-)
+#getPluginRequirements("te.da.wcs" REQ)
+#set (TE_PLUGIN_REQUIREMENTS 
+#  "\n  <RequiredPlugins>${REQ}  </RequiredPlugins>\n"
+#)
 
 #Exporting plugin information for the configuration file
 set (TE_SCHEMA_LOCATION "${CMAKE_SOURCE_DIR}/../schemas/terralib")

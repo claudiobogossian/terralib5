@@ -75,6 +75,10 @@ namespace te
 
             void helpPushButtonPressed();
 
+            void advancedConnectionOptionsCheckBoxToggled(bool t);
+
+            void passwordLineEditEditingFinished();
+
           protected:
 
             void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;

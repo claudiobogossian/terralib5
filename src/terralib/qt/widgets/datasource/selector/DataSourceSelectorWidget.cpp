@@ -197,7 +197,7 @@ void te::qt::widgets::DataSourceSelectorWidget::addDataSourcePushButtonPressed()
 
     std::list<te::da::DataSourceInfoPtr> datasources;
 
-    connector->create(datasources);
+    connector->connect(datasources);
 
     for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
     {
@@ -414,7 +414,7 @@ void te::qt::widgets::DataSourceSelectorWidget::createDataSourcePushButtonPresse
 
     std::list<te::da::DataSourceInfoPtr> datasources;
 
-    connector->createNew(datasources);
+    connector->create(datasources);
 
     /*for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
     {

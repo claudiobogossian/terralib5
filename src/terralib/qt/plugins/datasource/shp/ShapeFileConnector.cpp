@@ -47,7 +47,7 @@ te::qt::plugins::shp::ShapeFileConnector::~ShapeFileConnector()
 {
 }
 
-void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::shp::ShapeFileConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   QStringList fileNames = QFileDialog::getOpenFileNames((QWidget*)parent(), tr("Open Shapefile"), QString(""), tr("Esri Shapefile (*.shp);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
@@ -82,6 +82,13 @@ void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::da::DataSour
 
     datasources.push_back(ds);
   }
+}
+
+void te::qt::plugins::shp::ShapeFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::shp::ShapeFileConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)

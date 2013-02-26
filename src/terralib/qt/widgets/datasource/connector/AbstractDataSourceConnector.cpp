@@ -34,9 +34,3 @@ te::qt::widgets::AbstractDataSourceConnector::AbstractDataSourceConnector(QWidge
 te::qt::widgets::AbstractDataSourceConnector::~AbstractDataSourceConnector()
 {
 }
-
-void te::qt::widgets::AbstractDataSourceConnector::createNew(std::list<te::da::DataSourceInfoPtr>& datasources)
-{
-  
-}
-

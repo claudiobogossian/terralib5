@@ -25,6 +25,11 @@
 
 // TerraLib
 #include "MySQLCreatorDialog.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
 #include "ui_MySQLCreatorDialogForm.h"
 
 // Qt
@@ -45,6 +50,8 @@ te::qt::plugins::mysql::MySQLCreatorDialog::MySQLCreatorDialog(QWidget* parent, 
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_ui->m_closePushButton, SIGNAL(pressed()), this, SLOT(closePushButtonPressed()));
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
+  connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
+  connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
 }
 
 te::qt::plugins::mysql::MySQLCreatorDialog::~MySQLCreatorDialog()
@@ -54,7 +61,37 @@ te::qt::plugins::mysql::MySQLCreatorDialog::~MySQLCreatorDialog()
 
 void te::qt::plugins::mysql::MySQLCreatorDialog::applyPushButtonPressed()
 {
+  try
+  {
+// check if driver is loaded
+    if(te::da::DataSourceFactory::find("MYSQL") == 0)
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for MySQL data sources!"));
 
+// get data source connection info based on form data
+    std::map<std::string, std::string> dsInfo;
+
+    getConnectionInfo(dsInfo);
+
+// create database
+    te::da::DataSource::create("MYSQL", dsInfo);
+
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr(e.what()));
+    return;
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         tr("TerraLib Qt Components"),
+                         tr("Unknown error while opening MySQL database!"));
+    return;
+  }
+
+  accept();
 }
 
 void te::qt::plugins::mysql::MySQLCreatorDialog::closePushButtonPressed()
@@ -157,15 +194,10 @@ void te::qt::plugins::mysql::MySQLCreatorDialog::getConnectionInfo(std::map<std:
     connInfo["MY_NEW_SCHEMA_COLLATE_NAME"] = qstr.toStdString();
 
   if(m_ui->m_createRasterMetadataCheckBox->isChecked())
-    connInfo["MY_NEW_SCHEMA_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = qstr.toStdString();
+    connInfo["MY_NEW_SCHEMA_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = "TRUE";
 
   if(m_ui->m_createOGCMetadataCheckBox->isChecked())
-    connInfo["MY_NEW_SCHEMA_CREATE_OGC_METADATA_TABLES"] = qstr.toStdString();
-}
-
-void te::qt::plugins::mysql::MySQLCreatorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
-{
-
+    connInfo["MY_NEW_SCHEMA_CREATE_OGC_METADATA_TABLES"] = "TRUE";
 }
 
 const te::da::DataSourceInfoPtr& te::qt::plugins::mysql::MySQLCreatorDialog::getDataSource() const
@@ -178,7 +210,17 @@ const te::da::DataSourcePtr& te::qt::plugins::mysql::MySQLCreatorDialog::getDriv
   return m_driver;
 }
 
-void te::qt::plugins::mysql::MySQLCreatorDialog::set(const te::da::DataSourceInfoPtr& ds)
+void te::qt::plugins::mysql::MySQLCreatorDialog::passwordLineEditEditingFinished()
 {
+  if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+  {
+    std::map<std::string, std::string> dsInfo;
+    getConnectionInfo(dsInfo);
 
+    // Get DataSources
+    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
+    if(!dbNames.empty())
+      for(std::size_t i = 0; i < dbNames.size(); i++)
+        m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
+  }
 }

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,27 +20,27 @@
 /*!
   \file terralib/ado/DataSourceTransactor.cpp
 
-  \brief An implementation of DataSourceTransactor class for the TerraLib ADO Data Access driver.
+  \brief Implementation of the DataSourceTransactor class for the TerraLib ADO Data Access driver.
 */
 
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../memory/DataSet.h"
-#include "../memory/DataSetItem.h"
+#include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/Query.h"
 #include "../dataaccess/query/Select.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../dataaccess/query/SQLVisitor.h"
-#include "../dataaccess/dataset/DataSetType.h"
-#include "DataSource.h"
+#include "../memory/DataSet.h"
+#include "../memory/DataSetItem.h"
 #include "DataSet.h"
-#include "SQLVisitor.h"
+#include "DataSetPersistence.h"
+#include "DataSetTypePersistence.h"
+#include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
-#include "DataSetTypePersistence.h"
-#include "DataSetPersistence.h"
 #include "Exception.h"
+#include "SQLVisitor.h"
 
 // ADO
 #import "msado15.dll" \
@@ -66,6 +66,8 @@ te::ado::DataSourceTransactor::DataSourceTransactor(DataSource* ds, _ConnectionP
 
 te::ado::DataSourceTransactor::~DataSourceTransactor()
 {
+  if(m_ds->isConnectionInUse())
+    m_ds->setConnectionAsUsed(false);
 }
 
 void te::ado::DataSourceTransactor::begin()
@@ -117,13 +119,12 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
                                                            te::common::AccessPolicy rwRole)
 {
   te::da::DataSourceCatalogLoader* loader = getCatalogLoader();
-  te::da::DataSetType* dt = 0;
-  dt = loader->getDataSetType(name);
+  te::da::DataSetType* dt = loader->getDataSetType(name);
 
   if(dt == 0)
-    throw Exception(TR_ADO("Data Set not found!"));
+    throw Exception(TR_ADO("Dataset not found!"));
 
-  //delete loader;
+  //delete loader;   check if it is to be deleted or not
 
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
@@ -131,7 +132,7 @@ te::da::DataSet* te::ado::DataSourceTransactor::getDataSet(const std::string& na
   try
   {
     TESTHR(recset->Open(_bstr_t(name.c_str()),
-      _variant_t((IDispatch*)m_conn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
+      variant_t((IDispatch*)m_conn, true), adOpenKeyset, adLockOptimistic, adCmdTable));
   }
   catch(_com_error& e)
   {

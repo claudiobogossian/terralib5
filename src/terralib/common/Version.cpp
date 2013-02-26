@@ -28,12 +28,12 @@
 
 const char* te::common::GetStrVersion()
 {
-  return TE_STRING_VERSION;
+  return TERRALIB_STRING_VERSION;
 }
 
 int te::common::GetIntVersion()
 {
-  return TE_INT_VERSION;
+  return TERRALIB_INT_VERSION;
 }
 
 

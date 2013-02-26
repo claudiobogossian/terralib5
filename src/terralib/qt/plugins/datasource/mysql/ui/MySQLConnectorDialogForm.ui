@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>620</width>
-    <height>501</height>
+    <width>564</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -64,10 +64,31 @@
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="1">
         <widget class="QGroupBox" name="m_advancedConnectionOptionsGroupBox">
+         <property name="minimumSize">
+          <size>
+           <width>271</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>271</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="title">
           <string>Advanced Connection Options</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_39">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
           <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea_2">
             <property name="frameShape">
@@ -81,7 +102,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>255</width>
+               <width>252</width>
                <height>1017</height>
               </rect>
              </property>
@@ -691,135 +712,201 @@
            <property name="title">
             <string>Connection Information</string>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_29">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_15" stretch="1,1">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_3">
-                <item>
-                 <widget class="QLabel" name="m_hostNameLabel">
-                  <property name="text">
-                   <string>Host Name/IP</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="m_hostNameLineEdit"/>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_4">
+           <layout class="QGridLayout" name="gridLayout_44">
+            <item row="0" column="0">
+             <layout class="QGridLayout" name="gridLayout_43">
+              <item row="0" column="0">
+               <layout class="QGridLayout" name="gridLayout_41">
+                <item row="0" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_3">
                   <item>
-                   <widget class="QLabel" name="m_portLabel">
+                   <widget class="QLabel" name="m_hostNameLabel">
                     <property name="text">
-                     <string>Port</string>
+                     <string>Host Name/IP</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="m_portLineEdit">
-                    <property name="maximumSize">
+                   <widget class="QLineEdit" name="m_hostNameLineEdit">
+                    <property name="minimumSize">
                      <size>
-                      <width>70</width>
-                      <height>16777215</height>
+                      <width>110</width>
+                      <height>0</height>
                      </size>
                     </property>
-                    <property name="inputMask">
-                     <string>999999999; </string>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
                     </property>
                    </widget>
                   </item>
                  </layout>
                 </item>
-                <item>
-                 <spacer name="horizontalSpacer_4">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>40</width>
-                    <height>20</height>
-                   </size>
-                  </property>
-                 </spacer>
+                <item row="1" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <widget class="QLabel" name="m_userNameLabel">
+                    <property name="text">
+                     <string>User</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="m_userNameLineEdit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QLabel" name="m_schemaLabel">
+                    <property name="text">
+                     <string>Database/Schema Name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="m_schemaNameComboBox">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="editable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="1,1">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_6">
-                <item>
-                 <widget class="QLabel" name="m_userNameLabel">
-                  <property name="text">
-                   <string>User</string>
-                  </property>
-                 </widget>
+              <item row="0" column="1">
+               <layout class="QGridLayout" name="gridLayout_42">
+                <item row="0" column="0">
+                 <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1">
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout_4">
+                    <item>
+                     <widget class="QLabel" name="m_portLabel">
+                      <property name="text">
+                       <string>Port</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="m_portLineEdit">
+                      <property name="maximumSize">
+                       <size>
+                        <width>80</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="inputMask">
+                       <string>999999999; </string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_4">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
                 </item>
-                <item>
-                 <widget class="QLineEdit" name="m_userNameLineEdit"/>
+                <item row="1" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_9">
+                  <item>
+                   <widget class="QLabel" name="m_passwordLabel">
+                    <property name="text">
+                     <string>Password</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLineEdit" name="m_passwordLineEdit">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="echoMode">
+                     <enum>QLineEdit::Password</enum>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item row="2" column="0">
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <widget class="QLabel" name="m_charsetLabel">
+                    <property name="text">
+                     <string>Charset</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QComboBox" name="m_charsetComboBox">
+                    <property name="minimumSize">
+                     <size>
+                      <width>110</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="editable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_9">
-                <item>
-                 <widget class="QLabel" name="m_passwordLabel">
-                  <property name="text">
-                   <string>Password</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="m_passwordLineEdit">
-                  <property name="echoMode">
-                   <enum>QLineEdit::Password</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QLabel" name="m_schemaLabel">
-                <property name="text">
-                 <string>Database/Schema Name</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="m_schemaNameComboBox">
-                <property name="editable">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_8">
-              <item>
-               <widget class="QLabel" name="m_charsetLabel">
-                <property name="text">
-                 <string>Charset</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="m_charsetComboBox">
-                <property name="editable">
-                 <bool>true</bool>
-                </property>
-               </widget>
               </item>
              </layout>
             </item>
@@ -844,7 +931,20 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="m_datasourceTitleLineEdit"/>
+                 <widget class="QLineEdit" name="m_datasourceTitleLineEdit">
+                  <property name="minimumSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </item>
@@ -868,13 +968,13 @@
                   <property name="minimumSize">
                    <size>
                     <width>0</width>
-                    <height>40</height>
+                    <height>0</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
                     <width>16777215</width>
-                    <height>80</height>
+                    <height>60</height>
                    </size>
                   </property>
                   <property name="toolTip">

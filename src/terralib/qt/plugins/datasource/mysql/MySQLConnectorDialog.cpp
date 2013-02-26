@@ -56,6 +56,8 @@ te::qt::plugins::mysql::MySQLConnectorDialog::MySQLConnectorDialog(QWidget* pare
   connect(m_ui->m_openPushButton, SIGNAL(pressed()), this, SLOT(openPushButtonPressed()));
   connect(m_ui->m_testPushButton, SIGNAL(pressed()), this, SLOT(testPushButtonPressed()));
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
+  connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
+  connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
   connect(m_ui->m_advancedConnectionOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(advancedConnectionOptionsCheckBoxToggled(bool)));
 }
 
@@ -167,12 +169,6 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::testPushButtonPressed()
     std::map<std::string, std::string> dsInfo;
 
     getConnectionInfo(dsInfo);
-
-    // Get DataSources
-    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
-    if(!dbNames.empty())
-      for(std::size_t i = 0; i < dbNames.size(); i++)
-        m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
 
 // perform connection
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("MYSQL", dsInfo));
@@ -536,4 +532,26 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::setConnectionInfo(const std::
 void te::qt::plugins::mysql::MySQLConnectorDialog::advancedConnectionOptionsCheckBoxToggled(bool t)
 {
   m_ui->m_advancedConnectionOptionsGroupBox->setVisible(t);
+}
+
+void te::qt::plugins::mysql::MySQLConnectorDialog::passwordLineEditEditingFinished()
+{
+  if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+  {
+    std::map<std::string, std::string> dsInfo;
+    getConnectionInfo(dsInfo);
+
+    // Get DataSources
+    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
+    if(!dbNames.empty())
+      for(std::size_t i = 0; i < dbNames.size(); i++)
+        m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
+
+    // Get Encodings
+    m_ui->m_charsetComboBox->addItem("");
+    std::vector<std::string> encodings = te::da::DataSource::getEncodings("MYSQL", dsInfo);
+    if(!encodings.empty())
+      for(std::size_t i = 0; i < encodings.size(); i++)
+        m_ui->m_charsetComboBox->addItem(encodings[i].c_str());
+  }
 }

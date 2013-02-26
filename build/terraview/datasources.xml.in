@@ -4,6 +4,6 @@
                 xmlns:te_da="http://www.terralib.org/schemas/dataaccess"
                 xmlns="http://www.terralib.org/schemas/dataaccess"
                 xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ${TE_SCHEMA_LOCATION}/dataaccess/dataaccess.xsd"
-                version="${TE_STRING_VERSION}"
-                release="${TE_STRING_BUILD_DATE}">
+                version="${TERRALIB_STRING_VERSION}"
+                release="2013-01-01">
 </DataSourceList>

@@ -145,8 +145,8 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/common/af");
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schemaLocation.absolutePath().toStdString() + "/qt/af/project.xsd");
-  writer.writeAttribute("version", TE_STRING_VERSION);
-  writer.writeAttribute("release", TE_STRING_BUILD_DATE);
+  writer.writeAttribute("version", TERRALIB_STRING_VERSION);
+  writer.writeAttribute("release", "2013-01-01");
 
   writer.writeElement("Title", project.getTitle());
   writer.writeElement("Author", project.getAuthor());
@@ -199,8 +199,7 @@ void te::qt::af::UpdateUserSettingsFile(const QStringList& prjFiles, const QStri
 
   //Enabled plugins
   //----------------
-  boost::property_tree::ptree& plgs = p.get_child("UserSettings.EnabledPlugins");
-  plgs.clear();
+  boost::property_tree::ptree plgs;
   std::vector<std::string> plugins;
   std::vector<std::string>::iterator it;
   te::plugin::PluginManager::getInstance().getPlugins(plugins);
@@ -213,6 +212,8 @@ void te::qt::af::UpdateUserSettingsFile(const QStringList& prjFiles, const QStri
       plgs.add_child("Plugin", plg);
     }
 
+  p.put_child("UserSettings.EnabledPlugins", plgs);
+  
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(userConfigFile, p, std::locale(), settings);
 }
