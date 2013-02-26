@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -29,26 +29,28 @@
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../dataaccess/query/SQLDialect.h"
 #include "../datatype/StringProperty.h"
-#include "Globals.h"
+#include "DataSet.h"
 #include "DataSource.h"
 #include "DataSourceCatalogLoader.h"
-#include "DataSet.h"
 #include "DataSourceTransactor.h"
 #include "DataSetTypePersistence.h"
 #include "Exception.h"
+#include "Globals.h"
 #include "Utils.h"
 
 #include <boost/filesystem.hpp>
 
-inline void TESTHR( HRESULT hr )
+inline void TESTHR(HRESULT hr)
 {
-	if( FAILED(hr) ) _com_issue_error( hr );
+  if(FAILED(hr))
+    _com_issue_error(hr);
 }
 
 te::da::SQLDialect* te::ado::DataSource::sm_myDialect(0);
 
 te::ado::DataSource::DataSource()
   : m_conn(0),
+    m_connInUse(false),
     m_catalog(0)
 {
   try
@@ -67,6 +69,8 @@ te::ado::DataSource::~DataSource()
 {
   try
   {
+    delete m_catalog;
+    close();
     ::CoUninitialize();
   }
   catch(_com_error& e)
@@ -90,6 +94,11 @@ void te::ado::DataSource::setConnectionInfo(const std::map<std::string, std::str
   m_connectionInfo = connInfo;
 }
 
+std::string te::ado::DataSource::getConnectionStr()
+{
+  return m_connStr;
+}
+
 const te::da::DataSourceCapabilities& te::ado::DataSource::getCapabilities() const
 {
   throw Exception(TR_ADO("Not implemented yet!"));
@@ -106,17 +115,18 @@ void te::ado::DataSource::open()
 
   m_conn = 0;
   
-  std::string info = "Provider=" + m_connectionInfo["Provider"] + ";";
-  info += "Data Source=" + m_connectionInfo["dbname"] + ";";
-  info += "User Id=" + m_connectionInfo["user"] + ";";
-  info += "Password=" + m_connectionInfo["password"] + ";";
+  m_connStr = "Provider=" + m_connectionInfo["PROVIDER"] + ";";
+  m_connStr += "Data Source=" + m_connectionInfo["DB_NAME"] + ";";
+  m_connStr += "User Id=" + m_connectionInfo["USER_NAME"] + ";";
+  m_connStr += "Password=" + m_connectionInfo["PASSWORD"] + ";";
 
-  m_strCnn = info.c_str();
+  _bstr_t connStr = m_connStr.c_str();
 
   try
   {
     m_conn.CreateInstance(__uuidof(Connection));
-    TESTHR(m_conn->Open (m_strCnn,"","",-1));
+    TESTHR(m_conn->Open(connStr,"","",-1));
+    m_connInUse = false;
   }
   catch(_com_error& e)
   {
@@ -142,9 +152,19 @@ bool te::ado::DataSource::isOpened() const
 
 bool te::ado::DataSource::isValid() const
 {
-  // Temporally
   return true;
 }
+
+bool te::ado::DataSource::isConnectionInUse() const
+{
+  return m_connInUse;
+}
+
+void te::ado::DataSource::setConnectionAsUsed(bool connInUse)
+{
+  m_connInUse = connInUse;
+}
+
 
 te::da::DataSourceCatalog* te::ado::DataSource::getCatalog() const
 {
@@ -153,22 +173,30 @@ te::da::DataSourceCatalog* te::ado::DataSource::getCatalog() const
 
 te::da::DataSourceTransactor* te::ado::DataSource::getTransactor()
 {
-  _ConnectionPtr newConn = 0;
+  _ConnectionPtr conn = 0;
 
-  newConn.CreateInstance(__uuidof(Connection));
-
-  try
+  if(m_connInUse == false)
   {
-    TESTHR(newConn->Open (m_strCnn,"","",-1));
+    conn = m_conn;
+    m_connInUse = true;
   }
-  catch(_com_error& e)
+  else
   {
-    throw Exception(TR_ADO(e.Description()));
+    conn.CreateInstance(__uuidof(Connection));
+
+    try
+    {
+      TESTHR(conn->Open(m_connStr.c_str(), "", "", -1));
+    }
+    catch(_com_error& e)
+    {
+      throw Exception(TR_ADO(e.Description()));
+    }
   }
 
-  std::auto_ptr<te::da::DataSourceTransactor> transactor(new DataSourceTransactor(this, newConn));
+  te::da::DataSourceTransactor* t(new DataSourceTransactor(this, conn));
 
-  return transactor.release();
+  return t;
 }
 
 void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*opInfo*/)
@@ -178,27 +206,43 @@ void te::ado::DataSource::optimize(const std::map<std::string, std::string>& /*o
 
 void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
 {
-  m_connectionInfo = dsInfo;
-
-  std::string info = "provider=" + m_connectionInfo["provider"] +
-  ";Data Source=" + m_connectionInfo["dbname"]+
-  ";User Id=;Password=";
-
-  m_strCnn = info.c_str();
-
-  // Let's have a connection for an auxiliary database
+  // Create a connection to an auxiliary database
   std::auto_ptr<DataSource> ds(new DataSource());
 
   ds->setConnectionInfo(dsInfo);
 
-  ADOX::_CatalogPtr pCatalog = 0;
+  // Mount the connection string
+  std::string connStr;
 
+  std::map<std::string, std::string>::const_iterator it = dsInfo.find("PROVIDER");
+  std::map<std::string, std::string>::const_iterator it_end = dsInfo.end();
+
+  if(it != it_end)
+    connStr += "Provider=" + it->second + ";";
+  else
+    throw Exception(TR_ADO("The database couldn't be created due the missing parameter: PROVIDER!"));
+
+  it = dsInfo.find("DB_NAME");
+  if(it != it_end)
+    connStr += "Data Source=" + it->second + ";";
+  else
+    throw Exception(TR_ADO("The database couldn't be created due the missing parameter: DB_NAME!"));
+
+  it = dsInfo.find("USER_NAME");
+  if(it != it_end)
+    connStr += "User Id=" + it->second + ";";
+
+  it = dsInfo.find("PASSWORD");
+  if(it != it_end)
+    connStr += "Password=" + it->second + ";";
+
+  // Create the new database
+  ADOX::_CatalogPtr pCatalog = 0;
   pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
 
   try
   {
-    pCatalog->Create(m_strCnn);
-
+    pCatalog->Create(connStr.c_str());
     ds->open();
   }
   catch(_com_error& e)
@@ -206,21 +250,72 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
     throw Exception(TR_ADO(e.Description()));
   }
 
-  if(!getTransactor()->getCatalogLoader()->datasetExists("geometry_columns"))
-  {
-    te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
+  // Create the geometry_columns dataset
+  te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
 
-    geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
-    geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
-    geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
-    geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
-    geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
-    geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
-    geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
+  geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
+  geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
+  geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
+  geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
+  geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
+  geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
+  geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
 
-    getTransactor()->getDataSetTypePersistence()->create(geomColsDt);
-  }
+  te::da::DataSourceTransactor* t = ds->getTransactor();
+
+  t->getDataSetTypePersistence()->create(geomColsDt);
+
+  delete t;
+
+  m_connectionInfo = dsInfo;
+  m_connStr = connStr;
 }
+
+//void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInfo)
+//{
+//  m_connectionInfo = dsInfo;
+//
+//  std::string info = "provider=" + m_connectionInfo["provider"] +
+//  ";Data Source=" + m_connectionInfo["dbname"]+
+//  ";User Id=;Password=";
+//
+//  m_strCnn = info.c_str();
+//
+//  // Let's have a connection for an auxiliary database
+//  std::auto_ptr<DataSource> ds(new DataSource());
+//
+//  ds->setConnectionInfo(dsInfo);
+//
+//  ADOX::_CatalogPtr pCatalog = 0;
+//
+//  pCatalog.CreateInstance(__uuidof(ADOX::Catalog));
+//
+//  try
+//  {
+//    pCatalog->Create(m_strCnn);
+//
+//    ds->open();
+//  }
+//  catch(_com_error& e)
+//  {
+//    throw Exception(TR_ADO(e.Description()));
+//  }
+//
+//  if(!getTransactor()->getCatalogLoader()->datasetExists("geometry_columns"))
+//  {
+//    te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
+//
+//    geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
+//    geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
+//    geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
+//    geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
+//    geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
+//    geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
+//    geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
+//
+//    getTransactor()->getDataSetTypePersistence()->create(geomColsDt);
+//  }
+//}
 
 void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 {
@@ -229,8 +324,8 @@ void te::ado::DataSource::drop(const std::map<std::string, std::string>& dsInfo)
 
   std::map<std::string, std::string> info = dsInfo;
 
-  boost::filesystem::path path(info["dbname"]);
-  if(boost::filesystem::remove(path))
+  boost::filesystem::path path(info["DB_NAME"]);
+  if(boost::filesystem::remove(path) == false)
     throw Exception(TR_ADO("The data source could not be dropped!"));
 }
 
@@ -238,6 +333,6 @@ bool te::ado::DataSource::exists(const std::map<std::string, std::string>& dsInf
 {
   std::map<std::string, std::string> info = dsInfo;
 
-  boost::filesystem::path path(info["dbname"]);
+  boost::filesystem::path path(info["DB_NAME"]);
   return boost::filesystem::exists(path);
 }
