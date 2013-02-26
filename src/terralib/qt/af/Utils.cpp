@@ -199,8 +199,7 @@ void te::qt::af::UpdateUserSettingsFile(const QStringList& prjFiles, const QStri
 
   //Enabled plugins
   //----------------
-  boost::property_tree::ptree& plgs = p.get_child("UserSettings.EnabledPlugins");
-  plgs.clear();
+  boost::property_tree::ptree plgs;
   std::vector<std::string> plugins;
   std::vector<std::string>::iterator it;
   te::plugin::PluginManager::getInstance().getPlugins(plugins);
@@ -213,6 +212,8 @@ void te::qt::af::UpdateUserSettingsFile(const QStringList& prjFiles, const QStri
       plgs.add_child("Plugin", plg);
     }
 
+  p.put_child("UserSettings.EnabledPlugins", plgs);
+  
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(userConfigFile, p, std::locale(), settings);
 }
