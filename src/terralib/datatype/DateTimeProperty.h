@@ -60,7 +60,7 @@ namespace te
           \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
         */
         DateTimeProperty(const std::string& name,
-                         DateTimeType dateType,
+                         DateTimeType dateType = DATE,
                          DateTimeResolution dtResolution = UNKNOWN,
                          bool isRequired = false,
                          std::string* defaultValue = 0,

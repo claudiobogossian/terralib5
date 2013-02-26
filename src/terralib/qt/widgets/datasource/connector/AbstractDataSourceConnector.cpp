@@ -34,4 +34,3 @@ te::qt::widgets::AbstractDataSourceConnector::AbstractDataSourceConnector(QWidge
 te::qt::widgets::AbstractDataSourceConnector::~AbstractDataSourceConnector()
 {
 }
-

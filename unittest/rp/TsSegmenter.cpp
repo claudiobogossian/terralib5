@@ -51,14 +51,13 @@ void TsSegmenter::BlockProcessingWithoutMerging()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Segmenter_BlockProcessingWithoutMerging_Test.tif";
   
   // Creating the algorithm parameters
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -99,14 +98,13 @@ void TsSegmenter::BlockProcessingWithMerging()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Segmenter_BlockProcessingWithMerging_Test.tif";
   
   // Creating the algorithm parameters
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -147,14 +145,13 @@ void TsSegmenter::ThreadedProcessing()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Segmenter_ThreadedProcessing_Test.tif";
   
   // Creating the algorithm parameters
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
@@ -181,7 +178,7 @@ void TsSegmenter::ThreadedProcessing()
   CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
 }
 
-void TsSegmenter::RegionGrowingStrategy()
+void TsSegmenter::RegionGrowingMeanStrategy()
 {
   // open input raster
   
@@ -195,14 +192,63 @@ void TsSegmenter::RegionGrowingStrategy()
   // access a raster datasource to create the output raster
   
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE 
-    "/data/rasters/terralib_unittest_rp_Segmenter_RegionGrowingStrategy_Test.tif";
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Segmenter_RegionGrowingMeanStrategy_Test.tif";
   
   // Creating the algorithm parameters
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
   strategyParameters.m_minSegmentSize = 50;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
+  
+  
+  te::rp::Segmenter::InputParameters algoInputParams;
+  algoInputParams.m_inputRasterPtr = inputRasterPointer.get();
+  algoInputParams.m_inputRasterBands.push_back( 0 );
+  algoInputParams.m_inputRasterBands.push_back( 1 );
+  algoInputParams.m_inputRasterBands.push_back( 2 );
+  algoInputParams.m_enableThreadedProcessing = false;
+  algoInputParams.m_maxSegThreads = 0;
+  algoInputParams.m_enableBlockProcessing = false;
+  algoInputParams.m_enableBlockMerging = false;
+  algoInputParams.m_maxBlockSize = 0;
+  algoInputParams.m_strategyName = "RegionGrowing";
+  algoInputParams.setSegStrategyParams( strategyParameters );
+  
+  te::rp::Segmenter::OutputParameters algoOutputParams;
+  algoOutputParams.m_rInfo = outputRasterInfo;
+  algoOutputParams.m_rType = "GDAL";   
+  
+  // Executing the algorithm
+  
+  te::rp::Segmenter algorithmInstance;
+  
+  CPPUNIT_ASSERT( algorithmInstance.initialize( algoInputParams ) );
+  CPPUNIT_ASSERT( algorithmInstance.execute( algoOutputParams ) );
+}
+
+void TsSegmenter::RegionGrowingBaatzStrategy()
+{
+  // open input raster
+  
+  std::map<std::string, std::string> inputRasterInfo;
+  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  
+  boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
+    inputRasterInfo ) );
+  CPPUNIT_ASSERT( inputRasterPointer.get() );
+  
+  // access a raster datasource to create the output raster
+  
+  std::map<std::string, std::string> outputRasterInfo;
+  outputRasterInfo["URI"] = "terralib_unittest_rp_Segmenter_RegionGrowingBaatzStrategy_Test.tif";
+  
+  // Creating the algorithm parameters
+  
+  te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
+  strategyParameters.m_minSegmentSize = 100;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
   
   
   te::rp::Segmenter::InputParameters algoInputParams;

@@ -106,9 +106,9 @@ void TsTreeItem::childDisconnects()
   CPPUNIT_ASSERT( child1->getChildrenCount() == 0);
   CPPUNIT_ASSERT( parent->getChildrenCount() == 2);
 
-  //child1->disconnect(); // isso estranhamente apaga o parent
-  //CPPUNIT_ASSERT( parent->getChildrenCount() == 1);  // <---- quebra, pois parent nao existe mais
-  //delete parent;
+  child1->disconnect();
+  CPPUNIT_ASSERT( parent->getChildrenCount() == 1);
+  delete parent;
 }
 
 void TsTreeItem::iterateChildren()
@@ -163,12 +163,103 @@ void TsTreeItem::countItems()
   delete parent;
 }
 
+void TsTreeItem::getChildByIndex()
+{
+  te::common::TreeItem* parent = new te::common::TreeItem();
+  te::common::TreeItem* child0 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child1 = new te::common::TreeItem(parent);
 
-//void add(const TreeItemPtr& childItem);
-//const TreeItemPtr& operator[](std::size_t i) const;
-//void insert(std::size_t i, const TreeItemPtr& childItem);
-//TreeItemPtr remove(std::size_t i);
-//std::list<TreeItemPtr> remove(std::size_t i, std::size_t count);
-//TreeItemPtr replace(std::size_t i, const TreeItemPtr& childItem);
-//void swap(const TreeItemPtr& firstChild, const TreeItemPtr& secondChild);
-//void swap(const TreeItemPtr& sibling);
+  te::common::TreeItemPtr c0 = (*parent)[0];
+  te::common::TreeItemPtr c1 = (*parent)[1];
+
+  CPPUNIT_ASSERT(c0->getIndex() == child0->getIndex());
+  CPPUNIT_ASSERT(c1->getIndex() == child1->getIndex());
+
+  delete parent;
+}
+
+void TsTreeItem::addingItems()
+{
+  te::common::TreeItem* parent = new te::common::TreeItem();
+
+  te::common::TreeItemPtr* node0 = new te::common::TreeItemPtr();
+  te::common::TreeItem* node1 = new te::common::TreeItem();
+
+  parent->add(*node0);
+  CPPUNIT_ASSERT(parent->getChildrenCount() == 0);
+
+  // node1 is now at the first position
+  parent->insert(0, node1);
+  CPPUNIT_ASSERT(parent->getChildrenCount() == 1);
+
+  te::common::TreeItemPtr c0 = (*parent)[0];
+  te::common::TreeItemPtr c1 = (*parent)[1];
+
+  CPPUNIT_ASSERT(c0->getIndex() == node1->getIndex());
+  CPPUNIT_ASSERT(c1->getIndex() == (*node0)->getIndex());
+
+  delete parent;
+}
+
+void TsTreeItem::removingItems()
+{
+  te::common::TreeItem* parent = new te::common::TreeItem();
+  te::common::TreeItem* child1 = new te::common::TreeItem(parent);
+  parent->remove(0);
+  CPPUNIT_ASSERT(parent->getChildrenCount() == 0);
+}
+
+void TsTreeItem::removingSequence()
+{
+  te::common::TreeItem* parent = new te::common::TreeItem();
+  te::common::TreeItem* child0 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child1 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child2 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child3 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child4 = new te::common::TreeItem(parent);
+  
+  parent->remove(0, 4);
+  te::common::TreeItemPtr child = parent->getChild(0);
+
+  CPPUNIT_ASSERT(child4->getIndex() == child->getIndex());
+}
+
+void TsTreeItem::childSwap()
+{
+  te::common::TreeItem* parent = new te::common::TreeItem();
+  te::common::TreeItem* child0 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child1 = new te::common::TreeItem(parent);
+
+  size_t i0 = child0->getIndex();
+  size_t i1 = child1->getIndex();
+
+  parent->swap(child0, child1);
+
+  te::common::TreeItemPtr c0 = (*parent)[0];
+  te::common::TreeItemPtr c1 = (*parent)[1];
+
+  CPPUNIT_ASSERT(c0->getIndex() == i1);
+  CPPUNIT_ASSERT(c1->getIndex() == i0);
+
+  delete parent;
+}
+
+void TsTreeItem::siblingSwap()
+{
+  te::common::TreeItem* parent = new te::common::TreeItem();
+  te::common::TreeItem* child0 = new te::common::TreeItem(parent);
+  te::common::TreeItem* child1 = new te::common::TreeItem(parent);
+
+  size_t i0 = child0->getIndex();
+  size_t i1 = child1->getIndex();
+
+  child0->swap(child1);
+
+  te::common::TreeItemPtr c0 = (*parent)[0];
+  te::common::TreeItemPtr c1 = (*parent)[1];
+
+  CPPUNIT_ASSERT(c0->getIndex() == i1);
+  CPPUNIT_ASSERT(c1->getIndex() == i0);
+
+  delete parent;
+}

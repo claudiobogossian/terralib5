@@ -48,6 +48,7 @@
 #include "SplashScreenManager.h"
 #include "UserPlugins.h"
 #include "Project.h"
+#include "Utils.h"
 
 // Qt
 #include <QtCore/QDir>
@@ -60,7 +61,7 @@
 
 // Boost
 #include <boost/filesystem.hpp>
-#include <boost/property_tree/ptree.hpp>
+
 
 const te::qt::af::BaseApplicationController& sm_core = te::qt::af::ApplicationController::getInstance();
 
@@ -170,11 +171,32 @@ void te::qt::af::BaseApplicationController::registerMenuBar(QMenuBar* bar)
 
 QMenuBar* te::qt::af::BaseApplicationController::findMenuBar(const QString& id) const
 {
-  return 0;
+  throw Exception("Not implemented yet.");
 }
 
 QMenuBar* te::qt::af::BaseApplicationController::getMenuBar(const QString& id) const
 {
+  throw Exception("Not implemented yet.");
+}
+
+QAction* te::qt::af::BaseApplicationController::findAction(const QString& id) const
+{
+  for(size_t i=0; i<m_menus.size(); i++)
+  {
+    QAction* act = te::qt::widgets::FindAction(id, m_menus[i]);
+    
+    if (act != 0)
+      return act;
+  }
+
+  for(size_t i=0; i<m_menuBars.size(); i++)
+  {
+    QAction* act = te::qt::widgets::FindAction(id, m_menuBars[i]);
+
+    if (act != 0)
+      return act;
+  }
+
   return 0;
 }
 
@@ -238,9 +260,9 @@ void  te::qt::af::BaseApplicationController::initialize()
 // read used config data
   SplashScreenManager::getInstance().showMessage(tr("Reading user settings..."));
 
-  std::string userSettingsFile = te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
+  m_appUserSettingsFile = te::common::SystemApplicationSettings::getInstance().getValue("Application.UserSettingsFile.<xmlattr>.xlink:href");
 
-  te::common::UserApplicationSettings::getInstance().load(userSettingsFile);
+  te::common::UserApplicationSettings::getInstance().load(m_appUserSettingsFile);
 
   SplashScreenManager::getInstance().showMessage(tr("User settings read!"));
 
@@ -360,19 +382,7 @@ void  te::qt::af::BaseApplicationController::initialize()
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
 
-//// load recent projects
-//  UserRecentProjects::getInstance().load();
-//
-//  splashScreen.showMessage("Recent projects loaded!", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
-//  QCoreApplication::processEvents();
-//
-//// open most recent opened project
-//  std::string mostRecentProjectFile = UserApplicationSettings::getInstance().getValue("UserSettings.MostRecentProject.<xmlattr>.xlink:href");
-//  sm_instance->fileOpenProject(mostRecentProjectFile.c_str());
-//
-//  splashScreen.showMessage("Most recent project loaded!", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
-//  QCoreApplication::processEvents();
-
+  m_initialized = true;
 }
 
 void te::qt::af::BaseApplicationController::initializePlugins()
@@ -446,22 +456,28 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
   try
   {
     boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings().get_child("UserSettings");
-    std::string proj_path;
+    std::string projPath, projTitle;
 
     bool hasProjects = p.count("MostRecentProject") > 0;
 
     if(hasProjects)
-      proj_path = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
+    {
+      projPath = p.get<std::string>("MostRecentProject.<xmlattr>.xlink:href");
+      projTitle = p.get<std::string>("MostRecentProject.<xmlattr>.title");
+    }
 
     QMenu* mnu = getMenu("File.Recent Projects");
 
-    if(!proj_path.empty())
+    if(!projPath.empty())
     {
-      QString pp = proj_path.c_str();
+      QString pp = projPath.c_str();
       QAction* act = mnu->addAction(pp);
       act->setData(pp);
 
       mnu->addSeparator();
+
+      m_recentProjs.append(pp);
+      m_recentProjsTitles.append(projTitle.c_str());
     }
 
     hasProjects = p.count("RecentProjects") > 0;
@@ -470,12 +486,12 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
     {
       BOOST_FOREACH(boost::property_tree::ptree::value_type& v, p.get_child("RecentProjects"))
       {
-        if(v.second.data().empty())
-          continue;
-
-        QString pp = v.second.get<std::string>("Project.<xmlattr>.xlink:href").c_str();
+        QString pp = v.second.get<std::string>("<xmlattr>.xlink:href").c_str();
+        QString pt = v.second.get<std::string>("<xmlattr>.title").c_str();
         QAction* act = mnu->addAction(pp);
         act->setData(pp);
+        m_recentProjs.append(pp);
+        m_recentProjsTitles.append(pt);
       }
     }
 
@@ -493,12 +509,62 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
   }
 }
 
+void te::qt::af::BaseApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
+{
+  int pos = m_recentProjs.indexOf(prjFile);
+
+  if(pos != 0)
+  {
+    if(pos < 0)
+    {
+      if(m_recentProjs.size() >= 10) // TODO: Size of the list must be configurable.
+      {
+        m_recentProjs.removeLast();
+        m_recentProjsTitles.removeLast();
+      }
+
+      m_recentProjs.prepend(prjFile);
+      m_recentProjsTitles.prepend(prjTitle);
+    }
+    else
+    {
+      m_recentProjs.move(pos, 0);
+      m_recentProjsTitles.move(pos, 0);
+    }
+
+    QMenu* mnu = getMenu("File.Recent Projects");
+
+    mnu->clear();
+
+    QString recPrj = m_recentProjs.at(0);
+    QAction* act = mnu->addAction(recPrj);
+    act->setData(recPrj);
+
+    mnu->addSeparator();
+
+    if(m_recentProjs.size() > 1)
+      for(int i=1; i<m_recentProjs.size(); i++)
+      {
+        recPrj = m_recentProjs.at(i);
+        act = mnu->addAction(recPrj);
+        act->setData(recPrj);
+      }
+  }
+
+  QAction* act = findAction("File.Save Project As");
+
+  if(act != 0)
+    act->setEnabled(true);
+}
+
 void te::qt::af::BaseApplicationController::finalize()
 {
   if(!m_initialized)
     return;
 
-  //savePluginsFiles();
+  UpdateUserSettingsFile(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
+
+  saveDataSourcesFile();
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 

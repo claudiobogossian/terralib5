@@ -27,7 +27,6 @@
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_WFS_INTERNAL_WFSCONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../dataaccess/Definitions.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL

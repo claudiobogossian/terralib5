@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file TerraLibConfig.h
+  \file terralib/TerraLibConfig.h
 
   \brief Global configuration flags for the TerraLib.
 */
@@ -32,45 +32,55 @@
 //@{
 
 /*!
-  \def TE_MAJOR_VERSION
+  \def TERRALIB_MAJOR_VERSION
 
   \brief Major version of TerraLib (or version).
 */
-#define TE_MAJOR_VERSION ${TE_MAJOR_VERSION}
+#define TERRALIB_MAJOR_VERSION ${TERRALIB_MAJOR_VERSION}
 
 /*!
-  \def TE_MINOR_VERSION
+  \def TERRALIB_MINOR_VERSION
 
   \brief Minor version of TerraLib (or revision). 
 */
-#define TE_MINOR_VERSION ${TE_MINOR_VERSION}
+#define TERRALIB_MINOR_VERSION ${TERRALIB_MINOR_VERSION}
 
 /*!
-  \def TE_PATCH_VERSION
+  \def TERRALIB_PATCH_VERSION
 
   \brief Patched version of TerraLib (or patch).
 */
-#define TE_PATCH_VERSION ${TE_PATCH_VERSION}
-
-#define TE_RELEASE_STATUS "${TE_RELEASE_STATUS}"
-
-#define TE_BUILD_DATE ${TE_BUILD_DATE}
+#define TERRALIB_PATCH_VERSION ${TERRALIB_PATCH_VERSION}
 
 /*!
-  \def TE_STRING_VERSION
+  \def TERRALIB_RELEASE_STATUS
+
+  \brief
+*/
+#define TERRALIB_RELEASE_STATUS "${TERRALIB_RELEASE_STATUS}"
+
+/*!
+  \def TERRALIB_STRING_BUILD_DATE
+
+  \brief
+*/
+#define TERRALIB_STRING_BUILD_DATE __DATE__ ## " " ## __TIME__
+
+/*!
+  \def TERRALIB_STRING_VERSION
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this string.
 */
-#define TE_STRING_VERSION "${TE_STRING_VERSION}"
+#define TERRALIB_STRING_VERSION "${TERRALIB_STRING_VERSION}"
 
 /*!
-  \def TE_INT_VERSION
+  \def TERRALIB_INT_VERSION
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools
          that must check the TerraLib version, you can test against this number.
 */
-#define TE_INT_VERSION ${TE_INT_VERSION} 
+#define TERRALIB_INT_VERSION ${TERRALIB_INT_VERSION} 
 
 //@}
 
@@ -87,6 +97,27 @@
   \brief This macro defines the locaion of JSON resources used in TerraLib.
 */
 #define TE_JSON_FILES_LOCATION "${TE_JSON_FILES_LOCATION}"
+
+/*!
+  \def TE_SQL_FILES_LOCATION
+
+  \brief This macro defines the locaion of SQL resources used in TerraLib.
+*/
+#define TE_SQL_FILES_LOCATION "${TE_SQL_FILES_LOCATION}"
+
+/*!
+  \def TE_XML_FILES_LOCATION
+
+  \brief This macro defines the locaion of XML resources used in TerraLib.
+*/
+#define TE_XML_FILES_LOCATION "${TE_XML_FILES_LOCATION}"
+
+/*!
+  \def TE_SCHEMA_LOCATION
+
+  \brief This macro defines the locaion of XSD schemas used in TerraLib.
+*/
+#define TE_SCHEMA_LOCATION "${TE_SCHEMA_LOCATION}"
 
 /*!
   \def TE_USE_GDAL

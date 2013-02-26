@@ -33,7 +33,11 @@ namespace te
 {
   namespace da { class DataSourceInfo; }
 
-  namespace xml { class Reader; }
+  namespace xml 
+  { 
+    class Reader; 
+    class Writer; 
+  }
 
   namespace serialize
   {
@@ -41,6 +45,11 @@ namespace te
 
     TESERIALIZATIONEXPORT te::da::DataSourceInfo* ReadDataSourceInfo(te::xml::Reader& reader);
 
+    TESERIALIZATIONEXPORT void Save(const std::string& fileName);
+
+    TESERIALIZATIONEXPORT void Save(std::ostream& ostr);
+
+    TESERIALIZATIONEXPORT void Save(te::xml::Writer& writer);
   } // end namespace serialize
 }   // end namespace te
 

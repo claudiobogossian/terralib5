@@ -48,14 +48,17 @@ te::qt::plugins::mysql::MySQLConnectorDialog::MySQLConnectorDialog(QWidget* pare
 {
 // add controls
   m_ui->setupUi(this);
-
+  
 // init controls
-  m_ui->m_advancedOptionsWidget->hide();
+  m_ui->m_advancedConnectionOptionsGroupBox->hide();
 
 // connect signal and slots
   connect(m_ui->m_openPushButton, SIGNAL(pressed()), this, SLOT(openPushButtonPressed()));
   connect(m_ui->m_testPushButton, SIGNAL(pressed()), this, SLOT(testPushButtonPressed()));
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
+  connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
+  connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
+  connect(m_ui->m_advancedConnectionOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(advancedConnectionOptionsCheckBoxToggled(bool)));
 }
 
 te::qt::plugins::mysql::MySQLConnectorDialog::~MySQLConnectorDialog()
@@ -123,8 +126,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
 
       m_datasource->setId(dsId);
       m_driver->setId(dsId);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
       m_datasource->setAccessDriver("MYSQL");
       m_datasource->setType("MYSQL");
     }
@@ -132,8 +135,8 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::openPushButtonPressed()
     {
       m_driver->setId(m_datasource->getId());
       m_datasource->setConnInfo(dsInfo);
-      m_datasource->setTitle(title.toUtf8().data());
-      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toUtf8().data());
+      m_datasource->setTitle(title.toStdString());
+      m_datasource->setDescription(m_ui->m_datasourceDescriptionTextEdit->toPlainText().trimmed().toStdString());
     }
   }
   catch(const std::exception& e)
@@ -207,50 +210,50 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::getConnectionInfo(std::map<st
   QString qstr = m_ui->m_hostNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_HOST_NAME"] = qstr.toUtf8().data();
+    connInfo["MY_HOST_NAME"] = qstr.toStdString();
 
 // get port
   qstr = m_ui->m_portLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PORT"] = qstr.toUtf8().data();
+    connInfo["MY_PORT"] = qstr.toStdString();
 
 // get user
   qstr = m_ui->m_userNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_USER_NAME"] = qstr.toUtf8().data();
+    connInfo["MY_USER_NAME"] = qstr.toStdString();
 
 // get password
   qstr = m_ui->m_passwordLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PASSWORD"] = qstr.toUtf8().data();
+    connInfo["MY_PASSWORD"] = qstr.toStdString();
 
 // get dbname
   qstr = m_ui->m_schemaNameComboBox->currentText().trimmed();
   //qstr = m_ui->m_schemaNameLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SCHEMA"] = qstr.toUtf8().data();
+    connInfo["MY_SCHEMA"] = qstr.toStdString();
 
 // get charset
   qstr = m_ui->m_charsetComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toUtf8().data();
+    connInfo["MY_OPT_CHARSET_NAME"] = qstr.toStdString();
 
 // get the default table engine for spatial tables
   qstr = m_ui->m_spatialTableEngineComboBox->currentText().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_DEFAULT_ENGINE_FOR_SPATIAL_TABLES"] = qstr.toUtf8().data();
+    connInfo["MY_DEFAULT_ENGINE_FOR_SPATIAL_TABLES"] = qstr.toStdString();
 
 // get the list of tables to be hidden
   qstr = m_ui->m_tablesToHideLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_HIDE_TABLES"] = qstr.toUtf8().data();
+    connInfo["MY_HIDE_TABLES"] = qstr.toStdString();
 
 // check raster metadata creation
   connInfo["MY_CREATE_TERRALIB_RASTER_METADATA_TABLES"] = m_ui->m_createRasterMetadataCheckBox->isChecked() ? "TRUE" : "FALSE";
@@ -265,75 +268,75 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::getConnectionInfo(std::map<st
   qstr = m_ui->m_maxPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_MAX_POOL_SIZE"] = qstr.toUtf8().data();
+    connInfo["MY_MAX_POOL_SIZE"] = qstr.toStdString();
 
 // get MinPoolSize
   qstr = m_ui->m_minPoolSizeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_MIN_POOL_SIZE"] = qstr.toUtf8().data();
+    connInfo["MY_MIN_POOL_SIZE"] = qstr.toStdString();
 
 // get idle time
   qstr = m_ui->m_maxIdleTimeSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_MAX_IDLE_TIME"] = qstr.toUtf8().data();
+    connInfo["MY_MAX_IDLE_TIME"] = qstr.toStdString();
   
 // get connect_timeout
   qstr = m_ui->m_connectTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_CONNECT_TIMEOUT"] = qstr.toUtf8().data();
+    connInfo["MY_OPT_CONNECT_TIMEOUT"] = qstr.toStdString();
 
 // get connect_timeout
   qstr = m_ui->m_readTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_READ_TIMEOUT"] = qstr.toUtf8().data();
+    connInfo["MY_OPT_READ_TIMEOUT"] = qstr.toStdString();
 
 // get connect_timeout
   qstr = m_ui->m_writeTimeoutSpinBox->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_OPT_WRITE_TIMEOUT"] = qstr.toUtf8().data();
+    connInfo["MY_OPT_WRITE_TIMEOUT"] = qstr.toStdString();
 
 // get ssl info
   qstr = m_ui->m_sslKeyLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_KEY"] = qstr.toUtf8().data();
+    connInfo["MY_SSL_KEY"] = qstr.toStdString();
 
   qstr = m_ui->m_sslCertLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_CERT"] = qstr.toUtf8().data();
+    connInfo["MY_SSL_CERT"] = qstr.toStdString();
 
   qstr = m_ui->m_sslCALineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_KEY"] = qstr.toUtf8().data();
+    connInfo["MY_SSL_KEY"] = qstr.toStdString();
 
   qstr = m_ui->m_sslCAPathLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_CA"] = qstr.toUtf8().data();
+    connInfo["MY_SSL_CA"] = qstr.toStdString();
 
   qstr = m_ui->m_sslChiperLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SSL_CA_PATH"] = qstr.toUtf8().data();
+    connInfo["MY_SSL_CA_PATH"] = qstr.toStdString();
 
 // get socket info
   qstr = m_ui->m_socketLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_SOCKET"] = qstr.toUtf8().data();
+    connInfo["MY_SOCKET"] = qstr.toStdString();
 
 // get pipe info
   qstr = m_ui->m_pipeLineEdit->text().trimmed();
   
   if(!qstr.isEmpty())
-    connInfo["MY_PIPE"] = qstr.toUtf8().data();
+    connInfo["MY_PIPE"] = qstr.toStdString();
 
 // more options
   connInfo["MY_CLIENT_COMPRESS"] = m_ui->m_clientCompressCheckBox->isChecked() ? "TRUE" : "FALSE";
@@ -526,3 +529,22 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::setConnectionInfo(const std::
   m_ui->m_clientInterativeCheckBox->setChecked((it != itend) && (boost::to_upper_copy(it->second) == "TRUE"));
 }
 
+void te::qt::plugins::mysql::MySQLConnectorDialog::advancedConnectionOptionsCheckBoxToggled(bool t)
+{
+  m_ui->m_advancedConnectionOptionsGroupBox->setVisible(t);
+}
+
+void te::qt::plugins::mysql::MySQLConnectorDialog::passwordLineEditEditingFinished()
+{
+  if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
+  {
+    std::map<std::string, std::string> dsInfo;
+    getConnectionInfo(dsInfo);
+
+    // Get DataSources
+    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
+    if(!dbNames.empty())
+      for(std::size_t i = 0; i < dbNames.size(); i++)
+        m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
+  }
+}

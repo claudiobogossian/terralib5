@@ -216,21 +216,27 @@ void TsArray::tcOperatorBraket()
   pos.clear();
   pos.push_back(1); // position (1, 1)
   pos.push_back(1);
+  
   te::gm::Point p1 = static_cast<te::gm::Point&>(myarray->operator[](pos));
+  te::gm::Point p1_alternative = static_cast<te::gm::Point&>((*myarray)[pos]);
+  
   CPPUNIT_ASSERT(p1.getX() == mypoint1->getX());
   CPPUNIT_ASSERT(p1.getY() == mypoint1->getY());
   CPPUNIT_ASSERT(p1.equals(mypoint1));
 
+  CPPUNIT_ASSERT(p1_alternative.getX() == mypoint1->getX());
+  CPPUNIT_ASSERT(p1_alternative.getY() == mypoint1->getY());
+  CPPUNIT_ASSERT(p1_alternative.equals(mypoint1));
 //#endif
 }
 
 void TsArray::tcClone()
 {
-//#ifdef TE_COMPILE_ALL
-  ////te::dt::Array* myclone =  myarray->clone();
-  ////std::cout << std::endl;
-  ////std::cout << "Cloned Array= " << myclone->toString() << std::endl;
-  ////CPPUNIT_ASSERT(myclone = myarray);
+//#ifdef TE_COMPILE_ALL 
+  //te::dt::Array* myclone =  myarray->clone();
+  //std::cout << std::endl;
+  //std::cout << "Cloned Array= " << myclone->toString() << std::endl;
+  //CPPUNIT_ASSERT(myclone = myarray);
   CPPUNIT_ASSERT_MESSAGE("Method clone is not working", 1==2);
 //#endif
 }

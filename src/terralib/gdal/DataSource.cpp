@@ -220,3 +220,13 @@ bool te::gdal::DataSource::exists(const std::map<std::string, std::string>& /*ds
 {
   throw Exception(TR_GDAL("Not implemented yet!"));
 }
+
+std::vector<std::string> te::gdal::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_GDAL("Not implemented yet!"));
+}
+
+std::vector<std::string>te::gdal::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_GDAL("Not implemented yet!"));
+}

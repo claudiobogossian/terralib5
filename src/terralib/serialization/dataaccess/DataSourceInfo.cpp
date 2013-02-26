@@ -28,15 +28,18 @@
 #include "../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
+#include "../../xml/Writer.h"
 #include "../Exception.h"
 #include "DataSourceInfo.h"
 
 // STL
 #include <cassert>
 #include <memory>
+#include <fstream>
 
 // Boost
 #include <boost/format.hpp>
+#include <boost/filesystem.hpp>
 
 void te::serialize::ReadDataSourceInfo(const std::string& datasourcesFileName)
 {
@@ -89,9 +92,13 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "Description");
   reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  ds->setDescription(reader.getElementValue());
-  reader.next();
+
+  if(reader.getNodeType() == te::xml::VALUE)
+  {
+    ds->setDescription(reader.getElementValue());
+    reader.next();
+  }
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
   /* ConnectionInfo Element */
@@ -99,11 +106,10 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ConnectionInfo");
 
-  reader.next();
-
   std::map<std::string, std::string> conninfo;
 
-  while((reader.getNodeType() == te::xml::START_ELEMENT) &&
+  while(reader.next() &&
+        (reader.getNodeType() == te::xml::START_ELEMENT) &&
         (reader.getElementLocalName() == "Parameter"))
   {
     // Parameter Name
@@ -129,15 +135,96 @@ te::da::DataSourceInfo* te::serialize::ReadDataSourceInfo(te::xml::Reader& reade
     conninfo[paramName] = paramValue;
 
     reader.next();
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
   }
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of ConnectionInfo Element
   reader.next();
 
-  ds->setConnInfo(conninfo);
-
   assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of DataSource Element
   reader.next();
 
+  ds->setConnInfo(conninfo);
+
   return ds.release();
 }
+
+void te::serialize::Save(const std::string& fileName)
+{
+  std::fstream ostr(fileName.c_str(), std::ios_base::out);
+
+  Save(ostr);
+
+  ostr.close();
+}
+
+void te::serialize::Save(std::ostream& ostr)
+{
+  te::xml::Writer w(ostr);
+
+  Save(w);
+}
+
+void te::serialize::Save(te::xml::Writer& writer)
+{
+  boost::filesystem::path p(TE_SCHEMA_LOCATION);
+
+
+  writer.writeStartDocument("UTF-8", "no");
+
+  writer.writeStartElement("DataSourceList");
+
+  writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
+  writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
+  writer.writeAttribute("xmlns:te_da", "http://www.terralib.org/schemas/dataaccess");
+  writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/dataaccess");
+  writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/dataaccess " + p.generic_string() + "/dataaccess/dataaccess.xsd");
+  writer.writeAttribute("version", TERRALIB_STRING_VERSION);
+  writer.writeAttribute("release", "2013-01-01");
+
+  te::da::DataSourceInfoManager::iterator itBegin = te::da::DataSourceInfoManager::getInstance().begin();
+  te::da::DataSourceInfoManager::iterator itEnd = te::da::DataSourceInfoManager::getInstance().end();
+  te::da::DataSourceInfoManager::iterator it;
+
+  for(it=itBegin; it!=itEnd; ++it)
+  {
+    writer.writeStartElement("DataSource");
+
+    writer.writeAttribute("id", it->second->getId());
+    writer.writeAttribute("type", it->second->getType());
+    writer.writeAttribute("access_driver", it->second->getAccessDriver());
+
+    writer.writeStartElement("Title");
+    writer.writeValue(it->second->getTitle());
+    writer.writeEndElement("Title");
+
+    writer.writeStartElement("Description");
+    writer.writeValue(it->second->getDescription());
+    writer.writeEndElement("Description");
+
+    writer.writeStartElement("ConnectionInfo");
+    std::map<std::string, std::string> info = it->second->getConnInfo();
+    std::map<std::string, std::string>::iterator conIt;
+
+    for(conIt=info.begin(); conIt!=info.end(); ++conIt)
+    {
+      writer.writeStartElement("te_common:Parameter");
+
+      writer.writeStartElement("te_common:Name");
+      writer.writeValue(conIt->first);
+      writer.writeEndElement("te_common:Name");
+
+      writer.writeStartElement("te_common:Value");
+      writer.writeValue(conIt->second);
+      writer.writeEndElement("te_common:Value");
+
+      writer.writeEndElement("te_common:Parameter");
+    }
+    writer.writeEndElement("ConnectionInfo");
+
+    writer.writeEndElement("DataSource");
+  }
+
+  writer.writeEndElement("DataSourceList");
+}
+

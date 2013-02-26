@@ -31,6 +31,7 @@ endif()
 set (
   HDRS_TO_MOC
   ${SRCDIR}/MySQLConnectorDialog.h
+  ${SRCDIR}/MySQLCreatorDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/mysql" MOC)
 

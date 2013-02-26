@@ -30,17 +30,21 @@
 #include "../../common/Exception.h"
 #include "Config.h"
 
+// Forward declarations
+class QStringList;
+
 namespace te
 {
+
+// Forward declaration
+  namespace xml
+  {
+    class Reader;
+    class Writer;
+  }
+
   namespace qt
   {
-// Forward declaration
-    namespace xml
-    {
-      class Reader;
-      class Writer;
-    }
-
     namespace af
     {
       class Project;
@@ -53,6 +57,9 @@ namespace te
 
       TEQTAFEXPORT void Save(const Project& project, te::xml::Writer& writer);
 
+      TEQTAFEXPORT void UpdateUserSettingsFile(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
+
+      TEQTAFEXPORT void saveDataSourcesFile();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

@@ -479,5 +479,33 @@ void te::mysql::DataSource::loadRasters()
     m_rasters[rdatasets->getString(0)] = 0;
 }
 
+std::vector<std::string> te::mysql::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  std::vector<std::string> databasesNames;
+  
+  // let's have an auxiliary connection
+  std::auto_ptr<DataSource> ds(new DataSource());
 
+  ds->setConnectionInfo(info);
 
+  ds->open();
+
+  // try to check
+  std::string sql("SHOW DATABASES");
+
+  std::auto_ptr<DataSourceTransactor> transactor(ds->getMyTransactor());
+
+  std::auto_ptr<te::da::DataSet> databases(transactor->query(sql));
+
+  while(databases->moveNext())
+  {
+    databasesNames.push_back(databases->getString(0));
+  }
+
+  return databasesNames;
+}
+
+std::vector<std::string>te::mysql::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw Exception(TR_MYSQL("Not implemented yet!"));
+}

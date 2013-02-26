@@ -48,7 +48,7 @@ te::qt::widgets::SQLiteConnector::~SQLiteConnector()
 {
 }
 
-void te::qt::widgets::SQLiteConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::widgets::SQLiteConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<SQLiteConnectorDialog> cdialog(new SQLiteConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -68,6 +68,13 @@ void te::qt::widgets::SQLiteConnector::create(std::list<te::da::DataSourceInfoPt
 
     te::da::DataSourceManager::getInstance().insert(driver);
   }
+}
+
+void te::qt::plugins::shp::SQLiteConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::widgets::SQLiteConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)

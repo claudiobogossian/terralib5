@@ -52,6 +52,9 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
   m_inDataSetType = m_ds->getType();
   assert(m_inDataSetType);
 
+  for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
+    m_adaptedProperties.push_back(0);
+
   // Creates the empty Adapter DataSetType
   m_outDataSetType = new DataSetType(m_inDataSetType->getName(), m_inDataSetType->getId());
 }
@@ -475,9 +478,9 @@ void te::da::DataSetAdapter::adapt(const std::vector<int>& propertyIndexes, te::
   // Indexing the AttributeConverter functions
   m_converters.push_back(conv);
 
-  // Adding on adapted properties list
+  // Counting reference to adapted properties
   for(std::size_t i = 0; i < propertyIndexes.size(); ++i)
-    m_adaptedProperties.insert(propertyIndexes[i]);
+    m_adaptedProperties[propertyIndexes[i]]++;
 }
 
 std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedProperties(te::dt::Property* p)
@@ -509,6 +512,37 @@ std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedPropertie
   }
 
   return result;
+}
+
+te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const
+{
+  return m_ds;
+}
+
+void te::da::DataSetAdapter::remove(const std::string& propertyName)
+{
+  std::size_t pos = m_outDataSetType->getPropertyPosition(propertyName);
+  remove(pos);
+}
+
+void te::da::DataSetAdapter::remove(int i)
+{
+  assert(i >= 0 && i < static_cast<int>(m_outDataSetType->size()));
+
+  // Property that will be removed
+  te::dt::Property* p = m_outDataSetType->getProperty(i);
+
+  // Remove from Adapter DataSetType...
+  m_outDataSetType->remove(p);
+
+  // Adjusting internal indexes...
+  const std::vector<int> indexes = m_propertyIndexes[i];
+
+  for(std::size_t i = 0; i < indexes.size(); ++i)
+    m_adaptedProperties[indexes[i]]--;
+
+  m_propertyIndexes.erase(m_propertyIndexes.begin() + i);
+  m_converters.erase(m_converters.begin() + i);
 }
 
 te::da::DataSetAdapter* te::da::DataSetAdapter::adapt(DataSet* dataset, bool isOwner)
@@ -544,11 +578,9 @@ bool te::da::DataSetAdapter::needAdapter(DataSet* dataset, const DataSourceCapab
 
 bool te::da::DataSetAdapter::isAdapted(int i) const
 {
-  std::set<int>::const_iterator it = m_adaptedProperties.find(i);
-  if(it != m_adaptedProperties.end())
-    return true;
+  assert(i >= 0 && i < static_cast<int>(m_adaptedProperties.size()));
 
-  return false;
+  return m_adaptedProperties[i] > 0;
 }
 
 te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(int i) const

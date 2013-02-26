@@ -48,7 +48,7 @@ te::qt::plugins::ogr::OGRConnector::~OGRConnector()
 {
 }
 
-void te::qt::plugins::ogr::OGRConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::ogr::OGRConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<OGRConnectorDialog> cdialog(new OGRConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -68,6 +68,13 @@ void te::qt::plugins::ogr::OGRConnector::create(std::list<te::da::DataSourceInfo
 
     te::da::DataSourceManager::getInstance().insert(driver);
   }
+}
+
+void te::qt::plugins::ogr::OGRConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::ogr::OGRConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)

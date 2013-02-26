@@ -6,7 +6,7 @@
 						xmlns:xlink="http://www.w3.org/1999/xlink"
 						xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
 						xsd:schemaLocation="http://www.terralib.org/schemas/dataaccess ${TE_SCHEMA_LOCATION}/dataaccess/capabilities.xsd"
-						version="${TE_STRING_VERSION}">
+						version="${TERRALIB_STRING_VERSION}">
   
   <DataTypeCapabilities>
     <DataType>INT16_TYPE</DataType>

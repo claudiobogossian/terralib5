@@ -29,6 +29,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "MySQLConnector.h"
 #include "MySQLConnectorDialog.h"
+#include "MySQLCreatorDialog.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -48,7 +49,7 @@ te::qt::plugins::mysql::MySQLConnector::~MySQLConnector()
 {
 }
 
-void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::mysql::MySQLConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<MySQLConnectorDialog> cdialog(new MySQLConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -68,6 +69,16 @@ void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSource
 
     te::da::DataSourceManager::getInstance().insert(driver);
   }
+}
+
+void te::qt::plugins::mysql::MySQLConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  std::auto_ptr<MySQLCreatorDialog> cdialog(new MySQLCreatorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+  
+  if(retval == QDialog::Rejected)
+    return;
 }
 
 void te::qt::plugins::mysql::MySQLConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
