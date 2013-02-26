@@ -65,8 +65,6 @@ namespace te
 
             const te::da::DataSourcePtr& getDriver() const;
 
-            void set(const te::da::DataSourceInfoPtr& ds);
-            
           public slots:
 
             void advancedCreationOptionsCheckBoxToggled(bool t);
@@ -77,11 +75,11 @@ namespace te
 
             void helpPushButtonPressed();
 
-          protected:
-            
-            void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
+            void passwordLineEditEditingFinished();
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
+          protected:
+
+            void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
           private:
 
