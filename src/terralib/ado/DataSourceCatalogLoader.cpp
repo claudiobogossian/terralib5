@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,27 +20,28 @@
 /*!
   \file terralib/ado/DataSourceCatalogLoader.cpp
 
-  \brief DataSourceCatalogLoader class implementation for ADO.
+  \brief It retrieves information about datasets in a ADO data source.
 */
 
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCatalog.h"
-#include "../datatype/SimpleProperty.h"
+
+#include "../dataaccess/dataset/Constraint.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/Constraint.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/ForeignKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/dataset/Index.h"
+#include "../dataaccess/datasource/DataSource.h"
+#include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../datatype.h"
+#include "../datatype/SimpleProperty.h"
+#include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
-#include "../geometry/Envelope.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
 #include "Exception.h"
@@ -80,7 +81,7 @@ void te::ado::DataSourceCatalogLoader::getDataSets(boost::ptr_vector<std::string
 
     ADOX::TablesPtr tables = pCatalog->GetTables();
     
-    for(long i = 0; i < tables->GetCount(); i++)
+    for(long i = 0; i < tables->GetCount(); ++i)
     {
       ADOX::_TablePtr table = tables->GetItem(i);
       std::string tableName = table->GetName();

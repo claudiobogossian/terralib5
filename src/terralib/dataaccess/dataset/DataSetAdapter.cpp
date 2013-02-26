@@ -514,7 +514,7 @@ std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedPropertie
   return result;
 }
 
-te::da::DataSet* te::da::DataSetAdapter::getInputDataSet() const
+te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const
 {
   return m_ds;
 }

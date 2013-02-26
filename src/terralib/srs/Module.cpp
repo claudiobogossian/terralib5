@@ -29,7 +29,7 @@
 #include "../common/Translator.h"
 #include "Config.h"
 #include "Module.h"
-#include "Utils.h"
+#include "SpatialReferenceSystemManager.h"
 
 const te::srs::Module& sm_module = te::srs::Module::getInstance();
 
@@ -54,8 +54,9 @@ te::srs::Module::~Module()
 
 void te::srs::Module::initialize()
 {
-
-  te::srs::InitManagerFromJSON();
+#ifdef TE_AUTOMATIC_INITIALIZATION
+  te::srs::SpatialReferenceSystemManager::getInstance().init();
+#endif
 
   TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
 }

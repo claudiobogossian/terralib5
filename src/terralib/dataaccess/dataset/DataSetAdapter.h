@@ -329,7 +329,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        te::da::DataSet* getInputDataSet() const;
+        te::da::DataSet* getAdaptee() const;
 
         /*!
           \brief This method removes a property of DataSetAdapter.

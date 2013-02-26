@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -45,13 +45,13 @@ namespace te
   { 
 // Forward declaration
     class DataSource;
-	
+
     /*!
       \class DataSourceTransactor
 
-      \brief An implementation of DataSourceTransactor class for ADO.
+      \brief Implementation of the DataSourceTransactor class for the TerraLib ADO Data Access driver.
 
-      \sate::da::DataSourceTransactor
+      \sa te::da::DataSourceTransactor
     */
     class TEADOEXPORT DataSourceTransactor : public te::da::DataSourceTransactor
     {
@@ -116,16 +116,15 @@ namespace te
         te::da::DataSource* getDataSource() const;
 
         _ConnectionPtr getADOConnection();
-		
+
       private:
 
-        DataSource* m_ds; //!< The associated data source.
-        _ConnectionPtr m_conn;
-        bool m_isInTransaction;
+        DataSource* m_ds;           //!< The data source associated to this transactor.
+        _ConnectionPtr m_conn;      //!< The ADO connection associated to this transactor.
+        bool m_isInTransaction;     //!< Flag indicating if a transaction is in progress.
     };
 
   } // end namespace ado
 }   // end namespace te
 
 #endif  // __TERRALIB_ADO_INTERNAL_DATASOURCETRANSACTOR_H
-
