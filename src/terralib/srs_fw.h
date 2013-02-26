@@ -36,6 +36,7 @@ namespace te
 	class CoordinateSystemManager;
 	class Datum;
 	class Ellipsoid;
+  class Exception;
 	class GeographicCoordinateSystem;
 	class ProjectedCoordinateSystem;
   }

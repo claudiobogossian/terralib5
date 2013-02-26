@@ -31,6 +31,7 @@
 #include "srs/SpatialReferenceSystem.h"
 #include "srs/Datum.h"
 #include "srs/Ellipsoid.h"
+#include "srs/Exception.h"
 #include "srs/GeographicCoordinateSystem.h"
 #include "srs/ProjectedCoordinateSystem.h"
 #include "srs/SpatialReferenceSystemManager.h"

@@ -175,6 +175,7 @@ void te::srs::SpatialReferenceSystemManager::remove(unsigned int id, const std::
   if (it != m_authIdV.end())
   {
     size_t idx = it-m_authIdV.begin();
+    m_authIdV.erase(m_authIdV.begin()+idx);
     m_nameV.erase(m_nameV.begin()+idx);
     m_p4txtV.erase(m_p4txtV.begin()+idx);
     m_wktV.erase(m_wktV.begin()+idx);
