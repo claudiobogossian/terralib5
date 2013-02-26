@@ -63,6 +63,13 @@ namespace te
       
       /* \brief Destructor. */
       ~SpatialReferenceSystemManager();
+      
+      /*! Inializes the manager from a JSON file containing instances of SRSs. */
+      /*!
+       This methods reads the file "TE_JSON_FILES_LOCATION/srs.json" for SRSs definitions and insert them on the manager if it is empty.
+       \exception te::srs::Exception if the JSON file is not well formed.
+       */
+      void init();
             
       /*!
        \brief Adds a  <id, authority> to the manager.

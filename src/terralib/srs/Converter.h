@@ -225,7 +225,7 @@ namespace te
       (same Datum).
 
 			\param x projected X-coordinate. Will return the geographic longitude coordinate.
-			\param y projected Y-coordinate. Will retunr the geographic latitude coordinate.
+			\param y projected Y-coordinate. Will return the geographic latitude coordinate.
       \param SRID projected SRS identifier that x and y refers to.
 			\return true if succeed and false otherwise.
 		*/
