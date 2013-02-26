@@ -95,59 +95,9 @@
              <property name="alternatingRowColors">
               <bool>true</bool>
              </property>
-             <property name="columnCount">
-              <number>10</number>
+             <property name="columnCount" stdset="0">
+              <number>0</number>
              </property>
-             <column>
-              <property name="text">
-               <string/>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Plugin</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Version</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>License</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Category</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Site</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Provider</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Provider site</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Provider e-mail</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Name</string>
-              </property>
-             </column>
             </widget>
            </item>
            <item>
