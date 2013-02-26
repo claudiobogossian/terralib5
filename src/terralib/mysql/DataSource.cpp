@@ -507,5 +507,26 @@ std::vector<std::string> te::mysql::DataSource::getDataSources(const std::map<st
 
 std::vector<std::string>te::mysql::DataSource::getEncodings(const std::map<std::string, std::string>& info)
 {
-  throw Exception(TR_MYSQL("Not implemented yet!"));
+  std::vector<std::string> encodings;
+  
+  // let's have an auxiliary connection
+  std::auto_ptr<DataSource> ds(new DataSource());
+
+  ds->setConnectionInfo(info);
+
+  ds->open();
+
+  // try to check
+  std::string sql("SHOW CHARACTER SET");
+
+  std::auto_ptr<DataSourceTransactor> transactor(ds->getMyTransactor());
+
+  std::auto_ptr<te::da::DataSet> database(transactor->query(sql));
+
+  while(database->moveNext())
+  {
+    encodings.push_back(database->getString(0));
+  }
+
+  return encodings;
 }
