@@ -546,5 +546,12 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::passwordLineEditEditingFinish
     if(!dbNames.empty())
       for(std::size_t i = 0; i < dbNames.size(); i++)
         m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
+
+    // Get Encodings
+    m_ui->m_charsetComboBox->addItem("");
+    std::vector<std::string> encodings = te::da::DataSource::getEncodings("MYSQL", dsInfo);
+    if(!encodings.empty())
+      for(std::size_t i = 0; i < encodings.size(); i++)
+        m_ui->m_charsetComboBox->addItem(encodings[i].c_str());
   }
 }

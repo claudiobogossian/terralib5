@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/plugins/datasource/pgis/PostGISConnectorDialog.h
+  \file terralib/qt/widgets/connector/pgis/PostGISCreatorDialog.h
 
-  \brief A dialog window for showing the PostGIS connector widget.
+  \brief ....
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTORDIALOG_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_PGISCREATORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_PGISCREATORDIALOG_H
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
@@ -36,7 +36,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class PostGISConnectorDialogForm; }
+namespace Ui { class PostGISCreatorDialogForm; }
 
 namespace te
 {
@@ -47,35 +47,33 @@ namespace te
       namespace pgis
       {
         /*!
-          \class PostGISConnectorDialog
+          \class PostgreSQLCreationDialog
 
-          \brief A dialog window for showing the PostGIS connector widget.
+          \brief ....
         */
-        class PostGISConnectorDialog : public QDialog
+        class PostGISCreatorDialog : public QDialog
         {
           Q_OBJECT
 
           public:
 
-            PostGISConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            PostGISCreatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-            ~PostGISConnectorDialog();
+            ~PostGISCreatorDialog();
 
             const te::da::DataSourceInfoPtr& getDataSource() const;
 
             const te::da::DataSourcePtr& getDriver() const;
 
-            void set(const te::da::DataSourceInfoPtr& ds);
-
           public slots:
 
-            void openPushButtonPressed();
+            void advancedCreationOptionsCheckBoxToggled(bool t);
 
-            void testPushButtonPressed();
+            void applyPushButtonPressed();
+
+            void closePushButtonPressed();
 
             void helpPushButtonPressed();
-
-            void advancedConnectionOptionsCheckBoxToggled(bool t);
 
             void passwordLineEditEditingFinished();
 
@@ -83,19 +81,16 @@ namespace te
 
             void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
-
           private:
 
-            std::auto_ptr<Ui::PostGISConnectorDialogForm> m_ui;
+            std::auto_ptr<Ui::PostGISCreatorDialogForm> m_ui;
             te::da::DataSourceInfoPtr m_datasource;
             te::da::DataSourcePtr m_driver;
-        };
+        }; 
+      }   // end namespace pgis
+    }     // end namespace plugins
+  }       // end namespace qt
+}         // end namespace te
 
-      } // end namespace pgis
-    }   // end namespace plugins
-  }     // end namespace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_POSTGISCONNECTORDIALOG_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_PGIS_INTERNAL_MYSQLCREATORDIALOG_H
 
