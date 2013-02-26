@@ -218,3 +218,12 @@ bool te::ogr::DataSource::exists(const std::map<std::string, std::string>& /*dsI
   throw te::common::Exception(TR_OGR("Not implemented yet!"));
 }
 
+std::vector<std::string> te::ogr::DataSource::getDataSources(const std::map<std::string, std::string>& info)
+{
+  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+}
+
+std::vector<std::string>te::ogr::DataSource::getEncodings(const std::map<std::string, std::string>& info)
+{
+  throw te::common::Exception(TR_OGR("Not implemented yet!"));
+}

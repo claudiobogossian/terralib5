@@ -23,6 +23,11 @@
  \brief A singleton to manage Coordinate Systems representations.  
 */
 
+// Boost
+#include <boost/foreach.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 // TerraLib
 #include "../common/Translator.h"
 #include "Exception.h"
@@ -41,6 +46,43 @@ te::srs::SpatialReferenceSystemManager::SpatialReferenceSystemManager()
 te::srs::SpatialReferenceSystemManager::~SpatialReferenceSystemManager()
 {
   clear();
+}
+
+void te::srs::SpatialReferenceSystemManager::init()
+{
+  if(!m_authIdV.empty())
+    throw Exception(TR_SRS("The spatial reference system manager is already initialized!"));
+  
+  try
+  {
+    std::ifstream f;
+    std::string jsonf = TE_JSON_FILES_LOCATION;
+    jsonf += "/srs.json";
+    
+    f.open(jsonf.c_str());
+    if (!f.is_open())
+      return;
+    
+    boost::property_tree::ptree pt;
+    boost::property_tree::json_parser::read_json(f,pt);
+    BOOST_FOREACH(boost::property_tree::ptree::value_type &v, pt.get_child("SRSs"))
+    {
+      add(v.second.get<std::string>("name"), v.second.get<std::string>("pj4txt"), 
+          v.second.get<std::string>("wkt"), v.second.get<unsigned int>("srid"));
+    }
+    f.close();
+  }
+  catch(boost::property_tree::json_parser::json_parser_error &je)
+  {
+    std::string errmsg = "Error parsing: " + je.filename() + ": " + je.message();
+    te::srs::Exception ex(TR_SRS(errmsg));
+    throw(ex);
+  }
+  catch (std::exception const& e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
+  return;
 }
 
 void te::srs::SpatialReferenceSystemManager::add(const std::string& name, const std::string& p4Txt, const std::string& wkt, unsigned int id, const std::string& authName)
@@ -175,6 +217,7 @@ void te::srs::SpatialReferenceSystemManager::remove(unsigned int id, const std::
   if (it != m_authIdV.end())
   {
     size_t idx = it-m_authIdV.begin();
+    m_authIdV.erase(m_authIdV.begin()+idx);
     m_nameV.erase(m_nameV.begin()+idx);
     m_p4txtV.erase(m_p4txtV.begin()+idx);
     m_wktV.erase(m_wktV.begin()+idx);

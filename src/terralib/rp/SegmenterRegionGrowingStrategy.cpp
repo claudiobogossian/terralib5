@@ -70,7 +70,7 @@ namespace te
       m_bandsWeights = params.m_bandsWeights;
       m_colorWeight = params.m_colorWeight;
       m_compactnessWeight = params.m_compactnessWeight;
-      m_maxIterations = params.m_maxIterations;
+      m_segmentsSimIncreaseSteps = params.m_segmentsSimIncreaseSteps;
       
       return *this;      
     }
@@ -84,7 +84,7 @@ namespace te
       m_bandsWeights.clear();
       m_colorWeight = 0.5;
       m_compactnessWeight = 0.5;
-      m_maxIterations = 0;
+      m_segmentsSimIncreaseSteps = 10;
     }
     
     te::common::AbstractParameters* SegmenterRegionGrowingStrategy::Parameters::clone() const
@@ -273,7 +273,7 @@ namespace te
         
       // Merging specific features
         
-      std::vector< double >::size_type meansSize = 
+      const std::vector< double >::size_type meansSize = 
         segment1CastPtr->m_features.m_means.size();
       TERP_DEBUG_TRUE_OR_THROW( meansSize ==
         segment2CastPtr->m_features.m_means.size(),
@@ -360,15 +360,19 @@ namespace te
         "Internal error" );         
         
       mergedFeaturesCastPtr->m_sums.resize( sumsSize );
+      mergedFeaturesCastPtr->m_squaresSum.resize( sumsSize );
       mergedFeaturesCastPtr->m_stdDev.resize( sumsSize );
       
       // globals
       
       mergedFeaturesCastPtr->m_size = segment1CastPtr->m_features.m_size + 
         segment2CastPtr->m_features.m_size;
+      TERP_DEBUG_TRUE_OR_THROW( mergedFeaturesCastPtr->m_size,
+        "Internal error" );
       const double sizeUnionD = (double)mergedFeaturesCastPtr->m_size;
       
       const double sizeSeg1D = (double)segment1CastPtr->m_features.m_size;      
+      
       const double sizeSeg2D = (double)segment2CastPtr->m_features.m_size;      
       
       // Finding the form heterogeneity
@@ -380,18 +384,31 @@ namespace te
       mergedFeaturesCastPtr->m_xBound = std::max( segment1CastPtr->m_features.m_xBound,
         segment2CastPtr->m_features.m_xBound );      
       mergedFeaturesCastPtr->m_yBound = std::max( segment1CastPtr->m_features.m_yBound,
-        segment2CastPtr->m_features.m_yBound );              
+        segment2CastPtr->m_features.m_yBound ); 
+        
+      TERP_DEBUG_TRUE_OR_THROW( 
+        ( mergedFeaturesCastPtr->m_xBound > mergedFeaturesCastPtr->m_xStart ),
+        "Internal error" )
+      TERP_DEBUG_TRUE_OR_THROW( 
+        ( mergedFeaturesCastPtr->m_yBound > mergedFeaturesCastPtr->m_yStart ),
+        "Internal error" )        
       
       mergedFeaturesCastPtr->m_edgeLength = 
-        segment1CastPtr->m_features.m_edgeLength +
-        segment2CastPtr->m_features.m_edgeLength -
-        ( 2 * SegmenterRegionGrowingStrategy::getTouchingEdgeLength(
-        m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
-        mergedFeaturesCastPtr->m_yStart,
-        mergedFeaturesCastPtr->m_xBound, 
-        mergedFeaturesCastPtr->m_yBound, 
-        segment1CastPtr->m_features.m_id,
-        segment2CastPtr->m_features.m_id ) );
+        segment1CastPtr->m_features.m_edgeLength 
+        +
+        segment2CastPtr->m_features.m_edgeLength 
+        -
+        ( 
+          2 
+          * 
+          SegmenterRegionGrowingStrategy::getTouchingEdgeLength(
+            m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
+            mergedFeaturesCastPtr->m_yStart,
+            mergedFeaturesCastPtr->m_xBound, 
+            mergedFeaturesCastPtr->m_yBound, 
+            segment1CastPtr->m_features.m_id,
+            segment2CastPtr->m_features.m_id ) 
+        );
       
       mergedFeaturesCastPtr->m_compactness = 
         ((double)mergedFeaturesCastPtr->m_edgeLength) /
@@ -475,35 +492,50 @@ namespace te
       
       double hColor = 0;
       double sumUnion = 0;
+      double squaresSumUnion = 0;
       double meanUnion = 0;
       double stdDevUnion = 0.0;      
       
       for( unsigned int sumsIdx = 0 ; sumsIdx < sumsSize ; ++sumsIdx )
       {
-        const double& sumCurrent = segment1CastPtr->m_features.m_sums[ sumsIdx ];
+        const double& sum1 = segment1CastPtr->m_features.m_sums[ sumsIdx ];
         
-        const double& sumOther = segment2CastPtr->m_features.m_sums[ sumsIdx ];
+        const double& sum2 = segment2CastPtr->m_features.m_sums[ sumsIdx ];
         
-        sumUnion = sumCurrent + sumOther;
+        sumUnion = sum1 + sum2;
         mergedFeaturesCastPtr->m_sums[ sumsIdx ] = sumUnion;        
         
-        meanUnion = sumUnion / sizeUnionD;
+        squaresSumUnion = segment1CastPtr->m_features.m_squaresSum[ sumsIdx ] +
+          segment2CastPtr->m_features.m_squaresSum[ sumsIdx ];
+        mergedFeaturesCastPtr->m_squaresSum[ sumsIdx ] = squaresSumUnion;
+        
+        meanUnion = (  
+                      (
+                        sum1 * sizeSeg1D
+                      )
+                      +
+                      (
+                        sum2 * sizeSeg2D
+                      )
+                    ) 
+                    / 
+                    sizeUnionD;
         
         stdDevUnion =
-          ( 
+          (
             (
-              ( ( sumCurrent * sumCurrent ) / ( sizeSeg1D * sizeSeg1D ) )
-              *
-              ( ( sumOther * sumOther ) / ( sizeSeg2D * sizeSeg2D ) )
+              squaresSumUnion
+              -
+              (
+                2.0 * meanUnion * sumUnion
+              )
+              +
+              (
+                sizeUnionD * meanUnion * meanUnion
+              )
             )
-            -
-            (
-              2.0 * meanUnion * sumUnion
-            )
-            +
-            (
-              sizeUnionD * meanUnion * meanUnion
-            )
+            /
+            sizeUnionD
           );
         mergedFeaturesCastPtr->m_stdDev[ sumsIdx ] = stdDevUnion;        
          
@@ -531,7 +563,7 @@ namespace te
           );
       }
       
-      double dissValue = 
+      double returnValue = 
         (
           ( 
             hColor 
@@ -544,9 +576,10 @@ namespace te
             *
             hForm
           )
-        );
-        
-      return ( dissValue * dissValue );
+        );      
+      TERP_DEBUG_TRUE_OR_THROW( ( returnValue == returnValue ), "Internal error" );
+      
+      return returnValue;
     }
     
     void SegmenterRegionGrowingStrategy::BaatzMerger::mergeFeatures( 
@@ -575,6 +608,7 @@ namespace te
       // Merging specific features   
       
       segment1CastPtr->m_features.m_sums = mergedFeaturesCastPtr->m_sums;
+      segment1CastPtr->m_features.m_squaresSum = mergedFeaturesCastPtr->m_squaresSum;
       segment1CastPtr->m_features.m_stdDev = mergedFeaturesCastPtr->m_stdDev;
       segment1CastPtr->m_features.m_edgeLength = mergedFeaturesCastPtr->m_edgeLength;
       segment1CastPtr->m_features.m_compactness = mergedFeaturesCastPtr->m_compactness;
@@ -609,9 +643,8 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE( m_parameters.m_minSegmentSize > 0,
           "Invalid segmenter strategy parameter m_minSegmentSize" )
           
-        TERP_TRUE_OR_RETURN_FALSE( ( 
-          ( m_parameters.m_segmentsSimilarityThreshold >= 0.0 )
-          && ( m_parameters.m_segmentsSimilarityThreshold <= 1.0 ) ),
+        TERP_TRUE_OR_RETURN_FALSE(  
+          ( m_parameters.m_segmentsSimilarityThreshold >= 0.0 ),
           "Invalid segmenter strategy parameter m_segmentsSimilarityThreshold" )  
           
         if( ! m_parameters.m_bandsWeights.empty() )
@@ -697,77 +730,50 @@ namespace te
         
       // Region Growing
       
-      const unsigned int maxMergesIterations = 
-        m_parameters.m_maxIterations ? 
-          m_parameters.m_maxIterations 
-          :
-          (unsigned int)
-          ( 
-            2.0 
-            *
-            std::log( 
-              (double)
-              (
-                inputRaster.getNumberOfRows() * inputRaster.getNumberOfColumns() 
-              ) 
-            ) 
-            /
-            std::log( 2.0 ) 
-          );      
-      const unsigned int minMergesIterations = maxMergesIterations / 2;
-      const unsigned int maxMergestOnEachIteration = 
-        ( inputRaster.getNumberOfRows() * inputRaster.getNumberOfColumns() ) /
-        2;
       double similarityThreshold = m_parameters.m_segmentsSimilarityThreshold / 
-        (double)maxMergesIterations;
+        (double)m_parameters.m_segmentsSimIncreaseSteps;
       unsigned int mergedSegments = 0;
-      unsigned int mergetIterations = 0;
+      unsigned int noMergeIterations = 0;
       
 //      exportSegs2Tif( segmentsIds, true, "merging" + 
 //        te::common::Convert2String( mergetIterations ) + ".tif" );
       
-      while ( 
-              ( mergetIterations < minMergesIterations )
-              ||
-              (
-                ( mergetIterations < maxMergesIterations )
-                &&
-                ( 
-                  ( mergedSegments = mergeSegments( similarityThreshold,
-                    segmenterIdsManager, segmentsIds, *mergerPtr, segments  ) ) 
-                  > 
-                  0 
-                )
-              )
-            )
+      while ( true )
       {
-        ++mergetIterations;
-        
+        mergedSegments = mergeSegments( similarityThreshold, segmenterIdsManager, 
+          segmentsIds, *mergerPtr, segments  );
 //        exportSegs2Tif( segmentsIds, true, "merging" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
-        
-        if( mergedSegments )
+
+        if( mergedSegments == 0 )
         {
-          similarityThreshold = m_parameters.m_segmentsSimilarityThreshold -
-            ( m_parameters.m_segmentsSimilarityThreshold * 
-            ((double)mergedSegments) / ((double)maxMergestOnEachIteration) );
+          similarityThreshold += 
+            ( 
+              ( (double)m_parameters.m_segmentsSimilarityThreshold )
+              /
+              ( (double) m_parameters.m_segmentsSimIncreaseSteps )
+            );
           similarityThreshold = MAX( DBL_MIN, similarityThreshold );
           similarityThreshold = MIN( similarityThreshold, 
             m_parameters.m_segmentsSimilarityThreshold );
-        }
-        else
-        {
-          similarityThreshold = ( m_parameters.m_segmentsSimilarityThreshold * 
-            ((double)mergetIterations) / ((double)maxMergesIterations) );
+            
+          if( noMergeIterations > m_parameters.m_segmentsSimIncreaseSteps ) break;
+          
+          ++noMergeIterations;
         }
       }
       
-      while( mergeSmallSegments( m_parameters.m_minSegmentSize, 
-        segmenterIdsManager, segmentsIds, *mergerPtr, segments ) )
+      while( true )
       {
-        ++mergetIterations;
+        mergedSegments = mergeSmallSegments( m_parameters.m_minSegmentSize, 
+          segmenterIdsManager, segmentsIds, *mergerPtr, segments );
 //        exportSegs2Tif( segmentsIds, true, "mergingSmall" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
+        
+        if( mergedSegments == 0 )
+        {
+          break;
+        }
       };
       
       // Free unused resources
@@ -912,7 +918,7 @@ namespace te
           else
           {
             bandsPixelScales.push_back( 1.0 / ( bandMaxValue - bandMinValue ) );
-            bandsPixelOffsets.push_back( bandMinValue );
+            bandsPixelOffsets.push_back( (-1.0) * bandMinValue );
           }
         }
       }
@@ -937,7 +943,9 @@ namespace te
       lineSegmentIds.reserve( nCols );
       
       std::vector< double > rasterValues;
+      std::vector< double > rasterSquareValues;
       rasterValues.resize( inputRasterBandsSize, 0 );
+      rasterSquareValues.resize( inputRasterBandsSize, 0 );
       
       for( line = 0 ; line < nLines ; ++line )
       {
@@ -960,8 +968,10 @@ namespace te
             }
             else
             {
-              rasterValues[ inputRasterBandsIdx ] = ( value - bandsPixelOffsets[  
-                inputRasterBandsIdx ] ) * bandsPixelScales[ inputRasterBandsIdx ];
+              value = ( value + bandsPixelOffsets[ inputRasterBandsIdx ] ) * 
+                bandsPixelScales[ inputRasterBandsIdx ];
+              rasterValues[ inputRasterBandsIdx ] = value;
+              rasterSquareValues[ inputRasterBandsIdx ] = value * value;
             }
           }
           
@@ -981,6 +991,7 @@ namespace te
               {
                 segmentPtr = new BaatzBasedSegment();
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_sums = rasterValues;
+                ((BaatzBasedSegment*)segmentPtr)->m_features.m_squaresSum = rasterSquareValues;
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_stdDev = dummyZeroesVector;
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_edgeLength = 4;
                 ((BaatzBasedSegment*)segmentPtr)->m_features.m_compactness = 4;
@@ -1077,7 +1088,8 @@ namespace te
       SegmenterSegmentsBlock::SegmentIdDataType 
         minForwardDissimilaritySegmentId = 0;
       
-      Segment* minBackwardDissimilaritySegmentPtr;
+      std::list< Segment* >::iterator minBackwardDissimilaritySegmentIt;
+//      Segment* minBackwardDissimilaritySegmentPtr;
       double minBackwardDissimilarityValue = 0;
       
       double forwardDissimilarityValue = 0;
@@ -1097,11 +1109,14 @@ namespace te
       
       std::auto_ptr< SegmentFeatures > auxSegFeatures1;
       std::auto_ptr< SegmentFeatures > auxSegFeatures2;
+      std::auto_ptr< SegmentFeatures > minForwardDissimilaritySegmentFeatures;
       if( ! segments.empty() ) 
       {
         auxSegFeatures1.reset( 
           segments.begin()->second->getFeatures()->clone() );
         auxSegFeatures2.reset( 
+          segments.begin()->second->getFeatures()->clone() );
+        minForwardDissimilaritySegmentFeatures.reset( 
           segments.begin()->second->getFeatures()->clone() );
       }
       
@@ -1127,40 +1142,60 @@ namespace te
           if( ( forwardDissimilarityValue < similarityThreshold ) &&
             ( forwardDissimilarityValue < minForwardDissimilarityValue ) )
           {
-            // does the neighbor wants to merge back ?
-            // Calculating all neighbor neighbor segments dissimilarity          
-            
-            minBackwardDissimilaritySegmentPtr = 0;
-            minBackwardDissimilarityValue = DBL_MAX;
-            
-            nSegNSegsIt = 
-              (*nSegsIt)->m_neighborSegments.begin();
-            nSegNSegsItEnd = 
-              (*nSegsIt)->m_neighborSegments.end();
-              
-            while( nSegNSegsIt != nSegNSegsItEnd )
-            {
-              backwardDissimilarityValue = 
-                merger.getDissimilarityIndex( *nSegsIt, *nSegNSegsIt,
-                auxSegFeatures2.get() );
-                
-              if( backwardDissimilarityValue < minBackwardDissimilarityValue )
-              {
-                minBackwardDissimilarityValue = backwardDissimilarityValue;
-                minBackwardDissimilaritySegmentPtr = (*nSegNSegsIt);
-              }
-          
-              ++nSegNSegsIt;
-            }
-              
-            if( minBackwardDissimilaritySegmentPtr == segsIt->second )
-            {
-              minForwardDissimilarityValue = forwardDissimilarityValue;
-              minForwardDissimilaritySegmentIt = nSegsIt;
-            }
+            minForwardDissimilarityValue = forwardDissimilarityValue;
+            minForwardDissimilaritySegmentIt = nSegsIt;
+            minForwardDissimilaritySegmentFeatures->copy( auxSegFeatures1.get() );
           }
             
           ++nSegsIt;
+        }
+        
+        // does the neighbor wants to merge back ?
+        
+        if( minForwardDissimilaritySegmentIt != nSegsItEnd )
+        {
+          // Calculating all neighbor neighbor segments dissimilarity          
+          
+          minBackwardDissimilaritySegmentIt = 
+            (*minForwardDissimilaritySegmentIt)->m_neighborSegments.end();
+          minBackwardDissimilarityValue = DBL_MAX;
+          
+          nSegNSegsIt = 
+            (*minForwardDissimilaritySegmentIt)->m_neighborSegments.begin();
+          nSegNSegsItEnd = 
+            (*minForwardDissimilaritySegmentIt)->m_neighborSegments.end();
+            
+          while( nSegNSegsIt != nSegNSegsItEnd )
+          {
+            backwardDissimilarityValue = 
+              merger.getDissimilarityIndex( *minForwardDissimilaritySegmentIt, 
+              *nSegNSegsIt, auxSegFeatures2.get() );
+              
+            if( backwardDissimilarityValue < minBackwardDissimilarityValue )
+            {
+              minBackwardDissimilarityValue = backwardDissimilarityValue;
+              minBackwardDissimilaritySegmentIt = nSegNSegsIt;
+            }
+        
+            ++nSegNSegsIt;
+          }
+          
+          if( 
+              ( 
+                minBackwardDissimilaritySegmentIt 
+                == 
+                (*minForwardDissimilaritySegmentIt)->m_neighborSegments.end() 
+              )
+              ||
+              (
+                ( *minBackwardDissimilaritySegmentIt ) 
+                != 
+                segsIt->second 
+              )
+            )
+          {
+            minForwardDissimilaritySegmentIt = nSegsItEnd;
+          }
         }
         
         // If the minimum dissimilary neighbor was found it will be merged
@@ -1170,7 +1205,7 @@ namespace te
           // merging segment data
           
           merger.mergeFeatures( segsIt->second, *minForwardDissimilaritySegmentIt,
-            auxSegFeatures1.get() );
+            minForwardDissimilaritySegmentFeatures.get() );
             
           // updating the min dissimilarity segment neighborhood segments
           // with the current segment

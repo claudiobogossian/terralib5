@@ -27,7 +27,6 @@
 #define __TERRALIB_QT_PLUGINS_DATASOURCE_WMS_INTERNAL_WMSCONNECTORDIALOG_H
 
 // TerraLib
-#include "../../../../dataaccess/Definitions.h"
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 
 // STL

@@ -53,6 +53,8 @@ namespace te
 
             ~MySQLConnector();
 
+            void connect(std::list<te::da::DataSourceInfoPtr>& datasources);
+
             void create(std::list<te::da::DataSourceInfoPtr>& datasources);
 
             void update(std::list<te::da::DataSourceInfoPtr>& datasources);

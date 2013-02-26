@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -15,33 +15,36 @@
     You should have received a copy of the GNU Lesser General Public License
     along with TerraLib. See COPYING. If not, write to
     TerraLib Team at <terralib-team@terralib.org>.
-*/
+ */
 
 /*!
-  \file Utils.h
+  \file terralib/qt/widgets/property/SimplePropertyWidget.cpp
 
-  \brief To hold utilitary functions for the SRS module.
+  \brief A base widget for simple properties.
 */
 
-#ifndef __TERRALIB_SRS_INTERNAL_UTILS_H
-#define __TERRALIB_SRS_INTERNAL_UTILS_H
+#include "SimplePropertyWidget.h"
 
-namespace te
+te::qt::widgets::SimplePropertyWidget::SimplePropertyWidget(QWidget* parent)
+  : QWidget(parent)
 {
-  namespace srs
-  {
-    /*! 
-      \brief This funcion initializes the Coordinate System Manager from a JSON resource file.
-
-      This funcions initialize the Coordinate System Manager from a JSON resource file named "srs.json",
-      located within the TE_JSON_FILES_LOCATION path.
-
-      \exception It throws an exception if the file is not found or has an invalid syntax.
-
-      \note This function should be called one time only.
-    */
-    void InitManagerFromJSON();
-  }
 }
 
-#endif // __TERRALIB_SRS_INTERNAL_UTILS_H
+te::qt::widgets::SimplePropertyWidget::~SimplePropertyWidget()
+{
+}
+
+bool te::qt::widgets::SimplePropertyWidget::hasAttributeRequired()
+{
+  return false;
+}
+
+bool te::qt::widgets::SimplePropertyWidget::hasAttributeAutoNumber()
+{
+  return false;
+}
+
+bool te::qt::widgets::SimplePropertyWidget::hasAttributeDefaultValue()
+{
+  return false;
+}

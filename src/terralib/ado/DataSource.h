@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -48,6 +48,7 @@ namespace te
 {
   namespace da
   {
+// Forward declarations
     class DataSourceCatalog;
   }
 
@@ -74,6 +75,8 @@ namespace te
 
         void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
 
+        std::string getConnectionStr();
+
         const te::da::DataSourceCapabilities& getCapabilities() const;
 
         const te::da::SQLDialect* getDialect() const;
@@ -85,6 +88,20 @@ namespace te
         bool isOpened() const;
 
         bool isValid() const;
+
+        /*!
+          \brief It checks if the data source connection is being used.
+
+          \return It returns true if the connection is being used.
+        */
+        bool isConnectionInUse() const;
+
+        /*!
+          \brief It sets the data source connection as being used.
+
+          \param connInUse It indicates if the data source connection is to be set as being used or not.
+        */
+        void setConnectionAsUsed(bool connInUse);
 
         te::da::DataSourceCatalog* getCatalog() const;
 
@@ -100,18 +117,21 @@ namespace te
 
         bool exists(const std::map<std::string, std::string>& dsInfo);
 
+        std::vector<std::string> getDataSources(const std::map<std::string, std::string>& info);
+
+        std::vector<std::string> getEncodings(const std::map<std::string, std::string>& info);
+
       private:
 
-        _ConnectionPtr m_conn;                                      //!< ADO connection
-        te::da::DataSourceCatalog* m_catalog;                       //!< The main system catalog.
-        _bstr_t m_strCnn;                                           //!< Connection String
-        std::map<std::string, std::string> m_connectionInfo;        //!< Connection information.
+        std::string m_connStr;                                //!< Connection string
+        std::map<std::string, std::string> m_connectionInfo;  //!< Connection information.
+        _ConnectionPtr m_conn;                                //!< ADO connection
+        bool m_connInUse;                                     //!< Flag indicating if the data source connection is being used
+        te::da::DataSourceCatalog* m_catalog;                 //!< The data source catalog.
 
-        static te::da::SQLDialect* sm_myDialect;                    //!< ADO SQL dialect.
+        static te::da::SQLDialect* sm_myDialect;                //!< ADO SQL dialect.
     };
-
   } // end namespace ado
 }   // end namespace te
 
 #endif  // __TERRALIB_ADO_INTERNAL_DATASOURCE_H
-

@@ -48,7 +48,7 @@ te::qt::plugins::geofile::GeoFileConnector::~GeoFileConnector()
 {
 }
 
-void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::geofile::GeoFileConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<GeoFileConnectorDialog> cdialog(new GeoFileConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -61,6 +61,13 @@ void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::da::DataSo
 
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
     te::da::DataSourceInfoManager::getInstance().add(*it);
+}
+
+void te::qt::plugins::geofile::GeoFileConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+{
+  QMessageBox::warning(this,
+                       tr("TerraLib Qt Components"),
+                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::geofile::GeoFileConnector::update(std::list<te::da::DataSourceInfoPtr>& /*datasources*/)

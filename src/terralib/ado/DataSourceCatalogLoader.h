@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-20013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file terralib/ado/DataSourceCatalogLoader.h
 
-  \brief DataSourceCatalogLoader class implementation for ADO.
+  \brief It retrieves information about datasets in a ADO data source.
 */
 
 #ifndef __TERRALIB_ADO_INTERNAL_DATASOURCECATALOGLOADER_H
@@ -32,7 +32,6 @@
 
 namespace te
 {
-
   namespace gm
   {
     class GeometryProperty;
@@ -46,7 +45,7 @@ namespace te
     /*!
       \class DataSourceCatalogLoader
 
-      \brief DataSourceCatalogLoader class implementation for ADO.
+      \brief It retrieves information about datasets in a ADO data source.
 
       \sa te::da::DataSourceCatalogLoader
     */
@@ -87,8 +86,8 @@ namespace te
          /*!
           \brief It loads the information about a given geometry column.
 
-          \param datasetName The name of the dataset containing the geometric property.
-          \param gp          The geometric columns to load its information.
+          \param dt The dataset containing the geometric property.
+          \param gp The geometric column to load its information.
 
           \exception It throws an exception if it can not load the information.
         */
@@ -118,9 +117,7 @@ namespace te
 
         DataSourceTransactor* m_t;  //!< The associated transactor.
     };
-
   } // end namespace ado
 }   // end namespace te
 
 #endif  // __TERRALIB_ADO_INTERNAL_DATASOURCECATALOGLOADER_H
-
