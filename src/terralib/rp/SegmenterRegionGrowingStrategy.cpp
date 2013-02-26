@@ -80,7 +80,7 @@ namespace te
     {
       m_minSegmentSize = 1;
       m_segmentsSimilarityThreshold = 0.5;
-      m_segmentFeatures = MeanFeaturesType;      
+      m_segmentFeatures = InvalidFeaturesType;      
       m_bandsWeights.clear();
       m_colorWeight = 0.5;
       m_compactnessWeight = 0.5;
@@ -312,12 +312,21 @@ namespace te
     SegmenterRegionGrowingStrategy::BaatzMerger::BaatzMerger(
       const double& colorWeight, const double& compactnessWeight,
       const std::vector< double >& bandsWeights,
-      const SegmentsIdsContainerT& segmentsIds )
-      : m_colorWeight( colorWeight ),
+      const SegmentsIdsContainerT& segmentsIds,
+      const SegmenterRegionGrowingStrategy::SegmentsContainer& segments)
+      : 
+        m_allSegsCompactnessOffset( 0 ),
+        m_allSegsCompactnessGain( 1.0 ),
+        m_allSegsSmoothnessOffset( 0 ),
+        m_allSegsSmoothnessGain( 0 ),
+        m_colorWeight( colorWeight ),
         m_compactnessWeight( compactnessWeight ),
         m_bandsWeights( bandsWeights ),
-        m_segmentsIds( segmentsIds )
+        m_segmentsIds( segmentsIds ),
+        m_segments( segments )
     {
+      m_allSegsStdDevOffsets.resize( bandsWeights.size(), 0 );
+      m_allSegsStdDevGain.resize( bandsWeights.size(), 1 );
     }
     
     SegmenterRegionGrowingStrategy::BaatzMerger::~BaatzMerger()
@@ -428,50 +437,62 @@ namespace te
         );
         
       const double hCompact = 
-        ( 
-          (
-            sizeSeg1D
-            *
+        (
+          std::abs(
+            mergedFeaturesCastPtr->m_compactness
+            -
             (
-              mergedFeaturesCastPtr->m_compactness 
-              - 
-              segment1CastPtr->m_features.m_compactness
+              (
+                (
+                  segment1CastPtr->m_features.m_compactness
+                  *
+                  sizeSeg1D
+                )
+                +
+                (
+                  segment2CastPtr->m_features.m_compactness
+                  *
+                  sizeSeg2D
+                )
+              )
+              /
+              sizeUnionD
             )
           )
           +
-          (
-            sizeSeg2D
-            *
-            (
-              mergedFeaturesCastPtr->m_compactness 
-              - 
-              segment2CastPtr->m_features.m_compactness
-            )
-          )
-        ); 
+          m_allSegsCompactnessOffset
+        )
+        *
+        m_allSegsCompactnessGain;
       
       const double hSmooth =
-        ( 
-          (
-            sizeSeg1D
-            *
+        (
+          std::abs(
+            mergedFeaturesCastPtr->m_smoothness
+            -
             (
-              mergedFeaturesCastPtr->m_smoothness
-              - 
-              segment1CastPtr->m_features.m_smoothness
+              (
+                (
+                  segment1CastPtr->m_features.m_smoothness
+                  *
+                  sizeSeg1D
+                )
+                +
+                (
+                  segment2CastPtr->m_features.m_smoothness
+                  *
+                  sizeSeg2D
+                )
+              )
+              /
+              sizeUnionD
             )
           )
           +
-          (
-            sizeSeg2D
-            *
-            (
-              mergedFeaturesCastPtr->m_smoothness 
-              - 
-              segment2CastPtr->m_features.m_smoothness
-            )
-          )
-        );
+          m_allSegsSmoothnessOffset
+        )
+        *
+        m_allSegsSmoothnessGain;
         
       const double hForm = 
         (
@@ -509,17 +530,7 @@ namespace te
           segment2CastPtr->m_features.m_squaresSum[ sumsIdx ];
         mergedFeaturesCastPtr->m_squaresSum[ sumsIdx ] = squaresSumUnion;
         
-        meanUnion = (  
-                      (
-                        sum1 * sizeSeg1D
-                      )
-                      +
-                      (
-                        sum2 * sizeSeg2D
-                      )
-                    ) 
-                    / 
-                    sizeUnionD;
+        meanUnion = ( sum1 + sum2 ) / sizeUnionD;
         
         stdDevUnion =
           (
@@ -542,28 +553,40 @@ namespace te
         hColor += 
           ( 
             m_bandsWeights[ sumsIdx ]
-            * 
-            ( 
+            *
+            (
               (
-                sizeSeg1D 
-                *
-                (
-                  stdDevUnion - segment1CastPtr->m_features.m_stdDev[ sumsIdx ]
+                std::abs(
+                  stdDevUnion
+                  -
+                  (
+                    (
+                      (
+                        segment1CastPtr->m_features.m_stdDev[ sumsIdx ]
+                        *
+                        sizeSeg1D
+                      )
+                      +
+                      (
+                        segment2CastPtr->m_features.m_stdDev[ sumsIdx ]
+                        *
+                        sizeSeg2D
+                      )
+                    )
+                    /
+                    sizeUnionD
+                  )
                 )
+                +
+                m_allSegsStdDevOffsets[ sumsIdx ]
               )
-              +
-              (
-                sizeSeg2D
-                *
-                (
-                  stdDevUnion - segment2CastPtr->m_features.m_stdDev[ sumsIdx ]
-                )
-              )
-            ) 
+              *
+              m_allSegsStdDevGain[ sumsIdx ]
+            )
           );
       }
       
-      double returnValue = 
+      return
         (
           ( 
             hColor 
@@ -576,10 +599,7 @@ namespace te
             *
             hForm
           )
-        );      
-      TERP_DEBUG_TRUE_OR_THROW( ( returnValue == returnValue ), "Internal error" );
-      
-      return returnValue;
+        );       
     }
     
     void SegmenterRegionGrowingStrategy::BaatzMerger::mergeFeatures( 
@@ -615,6 +635,105 @@ namespace te
       segment1CastPtr->m_features.m_smoothness = mergedFeaturesCastPtr->m_smoothness;
     }    
     
+    void SegmenterRegionGrowingStrategy::BaatzMerger::update()
+    {
+      SegmenterRegionGrowingStrategy::SegmentsContainer::const_iterator itB =
+        m_segments.begin();
+      const SegmenterRegionGrowingStrategy::SegmentsContainer::const_iterator itE =
+        m_segments.end();        
+      std::vector< double >::size_type dimIdx = 0;
+      std::vector< double >::size_type dimsNumber = m_bandsWeights.size();
+      
+      std::vector< double > stdDevMin( dimsNumber, DBL_MAX );
+      std::vector< double > stdDevMax( dimsNumber, -1.0 * DBL_MAX );
+      
+      double compactnessMin = DBL_MAX;
+      double compactnessMax = -1.0 * DBL_MAX;
+
+      double smoothnessMin = DBL_MAX;
+      double smoothnessMax = -1.0 * DBL_MAX;
+      
+      SegmenterRegionGrowingStrategy::BaatzBasedSegment const * segmentCastPtr = 0;
+        
+      while( itB != itE )
+      {
+        TERP_DEBUG_TRUE_OR_THROW( dynamic_cast< BaatzBasedSegment const * >(
+          itB->second ), "Invalid segment type" );       
+        segmentCastPtr = (BaatzBasedSegment const*)(itB->second);    
+        TERP_DEBUG_TRUE_OR_THROW( segmentCastPtr->m_features.m_stdDev.size()
+          == dimsNumber, "Invalid dims number" )
+          
+        for( dimIdx = 0; dimIdx < dimsNumber ; ++dimIdx )
+        {
+          if( stdDevMin[ dimIdx ] > segmentCastPtr->m_features.m_stdDev[ dimIdx ] )
+            stdDevMin[ dimIdx ] = segmentCastPtr->m_features.m_stdDev[ dimIdx ];
+          if( stdDevMax[ dimIdx ] < segmentCastPtr->m_features.m_stdDev[ dimIdx ] )
+            stdDevMax[ dimIdx ] = segmentCastPtr->m_features.m_stdDev[ dimIdx ];          
+        }
+        
+        if( compactnessMin > segmentCastPtr->m_features.m_compactness )
+          compactnessMin = segmentCastPtr->m_features.m_compactness;        
+        if( compactnessMax < segmentCastPtr->m_features.m_compactness )
+          compactnessMax = segmentCastPtr->m_features.m_compactness;        
+        
+        if( smoothnessMin > segmentCastPtr->m_features.m_smoothness )
+          smoothnessMin = segmentCastPtr->m_features.m_smoothness;
+        if( smoothnessMax < segmentCastPtr->m_features.m_smoothness )
+          smoothnessMax = segmentCastPtr->m_features.m_smoothness;
+        
+        ++itB;
+      }
+      
+      for( dimIdx = 0; dimIdx < dimsNumber ; ++dimIdx )
+      {
+        if( stdDevMax[ dimIdx ] == stdDevMin[ dimIdx ] )
+        {
+          m_allSegsStdDevOffsets[ dimIdx ] = 0.0;
+          
+          if( stdDevMax[ dimIdx ] == 0.0 )
+            m_allSegsStdDevGain[ dimIdx ] = 1.0;
+          else
+            m_allSegsStdDevGain[ dimIdx ] = 1.0 / stdDevMax[ dimIdx ];
+        }
+        else
+        {
+          m_allSegsStdDevOffsets[ dimIdx ] = -1.0 * stdDevMin[ dimIdx ];
+          m_allSegsStdDevGain[ dimIdx ] = 1.0 / 
+            ( stdDevMax[ dimIdx ] - stdDevMin[ dimIdx ] );
+        }
+      }      
+      
+      if( compactnessMax == compactnessMin )
+      {
+        m_allSegsCompactnessOffset = 0.0;
+        
+        if( compactnessMax == 0.0 )
+          m_allSegsCompactnessGain = 1.0;
+        else
+          m_allSegsCompactnessGain = 1.0 / compactnessMax;
+      }
+      else
+      {
+        m_allSegsCompactnessOffset = -1.0  * compactnessMin;
+        m_allSegsCompactnessGain = 1.0 / ( compactnessMax - compactnessMin );
+      }
+      
+      if( smoothnessMax == smoothnessMin )
+      {
+        m_allSegsSmoothnessOffset = 0.0;
+        
+        if( smoothnessMax == 0.0 )
+          m_allSegsSmoothnessGain = 1.0;
+        else
+          m_allSegsSmoothnessGain = 1.0 / smoothnessMax;
+      }
+      else
+      {
+        m_allSegsSmoothnessOffset = -1.0  * smoothnessMin;
+        m_allSegsSmoothnessGain = 1.0 / ( smoothnessMax - smoothnessMin );      
+      }
+    }
+    
     //-------------------------------------------------------------------------
     
     SegmenterRegionGrowingStrategy::SegmenterRegionGrowingStrategy()
@@ -646,6 +765,10 @@ namespace te
         TERP_TRUE_OR_RETURN_FALSE(  
           ( m_parameters.m_segmentsSimilarityThreshold >= 0.0 ),
           "Invalid segmenter strategy parameter m_segmentsSimilarityThreshold" )  
+          
+        TERP_TRUE_OR_RETURN_FALSE( m_parameters.m_segmentFeatures != 
+          SegmenterRegionGrowingStrategy::Parameters::InvalidFeaturesType,
+          "Invalid segmenter strategy parameter m_segmentFeatures" )              
           
         if( ! m_parameters.m_bandsWeights.empty() )
         {
@@ -706,19 +829,22 @@ namespace te
       // Creating the merger instance
       
       std::auto_ptr< Merger > mergerPtr;
+      bool enablelocalMutualBestFitting = false;
       
       switch( m_parameters.m_segmentFeatures )
       {
         case Parameters::MeanFeaturesType :
         {
           mergerPtr.reset( new MeanMerger() );
+          enablelocalMutualBestFitting = true;
           break;
         }
         case Parameters::BaatzFeaturesType :
         {
           mergerPtr.reset( new BaatzMerger( m_parameters.m_colorWeight,
             m_parameters.m_compactnessWeight, m_parameters.m_bandsWeights,
-            segmentsIds ) );
+            segmentsIds, segments ) );
+          enablelocalMutualBestFitting = true;
           break;
         }
         default :
@@ -728,10 +854,8 @@ namespace te
         }
       }      
         
-      // Region Growing
-      
       double similarityThreshold = m_parameters.m_segmentsSimilarityThreshold / 
-        (double)m_parameters.m_segmentsSimIncreaseSteps;
+        (double)( m_parameters.m_segmentsSimIncreaseSteps + 1 );
       unsigned int mergedSegments = 0;
       unsigned int noMergeIterations = 0;
       
@@ -741,40 +865,45 @@ namespace te
       while ( true )
       {
         mergedSegments = mergeSegments( similarityThreshold, segmenterIdsManager, 
-          segmentsIds, *mergerPtr, segments  );
+          segmentsIds, *mergerPtr, enablelocalMutualBestFitting, segments  );
 //        exportSegs2Tif( segmentsIds, true, "merging" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
 
         if( mergedSegments == 0 )
         {
-          similarityThreshold += 
-            ( 
-              ( (double)m_parameters.m_segmentsSimilarityThreshold )
-              /
-              ( (double) m_parameters.m_segmentsSimIncreaseSteps )
-            );
-          similarityThreshold = MAX( DBL_MIN, similarityThreshold );
-          similarityThreshold = MIN( similarityThreshold, 
-            m_parameters.m_segmentsSimilarityThreshold );
-            
-          if( noMergeIterations > m_parameters.m_segmentsSimIncreaseSteps ) break;
-          
           ++noMergeIterations;
+          
+          if( noMergeIterations > m_parameters.m_segmentsSimIncreaseSteps ) 
+          {
+            break;
+          }
+          else
+          {
+            similarityThreshold += 
+              ( 
+                ( (double)m_parameters.m_segmentsSimilarityThreshold )
+                /
+                ( (double)( m_parameters.m_segmentsSimIncreaseSteps + 1 ) )
+              );
+          }
         }
       }
       
-      while( true )
+      if( m_parameters.m_minSegmentSize > 1 )
       {
-        mergedSegments = mergeSmallSegments( m_parameters.m_minSegmentSize, 
-          segmenterIdsManager, segmentsIds, *mergerPtr, segments );
+        while( true )
+        {
+          mergedSegments = mergeSmallSegments( m_parameters.m_minSegmentSize, 
+            segmenterIdsManager, segmentsIds, *mergerPtr, segments );
 //        exportSegs2Tif( segmentsIds, true, "mergingSmall" + 
 //          te::common::Convert2String( mergetIterations ) + ".tif" );
-        
-        if( mergedSegments == 0 )
-        {
-          break;
+          
+          if( mergedSegments == 0 )
+          {
+            break;
+          }
         }
-      };
+      }
       
       // Free unused resources
       
@@ -1072,7 +1201,8 @@ namespace te
       const double similarityThreshold,
       SegmenterIdsManager& segmenterIdsManager,
       SegmentsIdsContainerT& segmentsIds,
-      const Merger& merger,
+      Merger& merger,
+      const bool enablelocalMutualBestFitting,
       SegmentsContainer& segments )
     {
       unsigned int mergedSegmentsNumber = 0;
@@ -1107,6 +1237,8 @@ namespace te
       
       std::list< SegmenterSegmentsBlock::SegmentIdDataType > freeSegmentIds;
       
+      // initializing the auxiliary segment features
+      
       std::auto_ptr< SegmentFeatures > auxSegFeatures1;
       std::auto_ptr< SegmentFeatures > auxSegFeatures2;
       std::auto_ptr< SegmentFeatures > minForwardDissimilaritySegmentFeatures;
@@ -1119,6 +1251,12 @@ namespace te
         minForwardDissimilaritySegmentFeatures.reset( 
           segments.begin()->second->getFeatures()->clone() );
       }
+      
+      // Updating the merger state
+      
+      merger.update();
+      
+      // iterating over each segment
       
       SegmentsContainer::iterator segsIt = segments.begin();
       SegmentsContainer::iterator segsItEnd = segments.end();      
@@ -1152,7 +1290,8 @@ namespace te
         
         // does the neighbor wants to merge back ?
         
-        if( minForwardDissimilaritySegmentIt != nSegsItEnd )
+        if( enablelocalMutualBestFitting &&
+            (minForwardDissimilaritySegmentIt != nSegsItEnd ) )
         {
           // Calculating all neighbor neighbor segments dissimilarity          
           
@@ -1309,7 +1448,7 @@ namespace te
       const unsigned int minSegmentSize,
       SegmenterIdsManager& segmenterIdsManager,
       SegmentsIdsContainerT& segmentsIds,
-      const Merger& merger,
+      Merger& merger,
       SegmentsContainer& segments )
     {
       unsigned int mergedSegmentsNumber = 0;
@@ -1337,6 +1476,8 @@ namespace te
       
       SegmenterSegmentsBlock::SegmentIdDataType currentSegmentId = 0;
       
+      // initializing the auxiliary features
+      
       std::auto_ptr< SegmentFeatures > candidateAuxSegFeatures;
       std::auto_ptr< SegmentFeatures > minForwardDissimilarityFeatures;
       if( ! segments.empty() ) 
@@ -1345,7 +1486,13 @@ namespace te
           segments.begin()->second->getFeatures()->clone() );
         minForwardDissimilarityFeatures.reset( 
           candidateAuxSegFeatures->clone() );
-      }      
+      }
+      
+      // Updating the merger state
+      
+      merger.update();
+      
+      // iterating over each segment      
       
       SegmentsContainer::iterator segsIt = segments.begin();
       SegmentsContainer::iterator segsItEnd = segments.end();      
