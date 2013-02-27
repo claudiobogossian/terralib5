@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/GridFrameFactory.h
+  \file terralib/qt/af/settings/TableFrameFactory.h
 
-  \brief A factory to build the grid frame object.
+  \brief A factory to build the Table frame object.
 */
 
-#ifndef __TERRALIB_QT_AF_GRIDFRAMEFACTORY_H
-#define __TERRALIB_QT_AF_GRIDFRAMEFACTORY_H
+#ifndef __TERRALIB_QT_AF_TABLEFRAMEFACTORY_H
+#define __TERRALIB_QT_AF_TABLEFRAMEFACTORY_H
 
 // QT
 #include <QtGui/QWidget>
@@ -33,7 +33,7 @@
 #include "../../../common/AbstractFactory.h"
 #include "../Config.h"
 #include "ComponentWidgetFactory.h"
-#include "GridFrame.h"
+#include "TableFrame.h"
 
 namespace te
 {
@@ -42,11 +42,11 @@ namespace te
     namespace af
     {
       /*!
-        \class GridFrameFactory
+        \class TableFrameFactory
 
-        \brief A factory to build the grid frame object.
+        \brief A factory to build the Table frame object.
       */
-      class TEQTAFEXPORT GridFrameFactory : public te::qt::af::ComponentWidgetFactory
+      class TEQTAFEXPORT TableFrameFactory : public te::qt::af::ComponentWidgetFactory
       {
         public:
 
@@ -56,21 +56,21 @@ namespace te
 
           const std::string& getType() const;
 
-          ~GridFrameFactory();
+          ~TableFrameFactory();
 
         protected:        
 
           te::qt::af::ComponentWidget* build();
 
-          GridFrameFactory();
+          TableFrameFactory();
 
           virtual te::qt::af::ComponentWidget* create(QWidget* parent = 0);
 
         private:
 
-          static GridFrameFactory* sm_factory;
+          static TableFrameFactory* sm_factory;
       };
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
-#endif // __TERRALIB_QT_AF_GRIDFRAMEFACTORY_H
+#endif // __TERRALIB_QT_AF_TABLEFRAMEFACTORY_H

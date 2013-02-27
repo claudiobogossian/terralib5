@@ -29,6 +29,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
 #include "PostGISConnector.h"
 #include "PostGISConnectorDialog.h"
+#include "PostGISCreatorDialog.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -72,9 +73,12 @@ void te::qt::plugins::pgis::PostGISConnector::connect(std::list<te::da::DataSour
 
 void te::qt::plugins::pgis::PostGISConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
+  std::auto_ptr<PostGISCreatorDialog> cdialog(new PostGISCreatorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+  
+  if(retval == QDialog::Rejected)
+    return;
 }
 
 void te::qt::plugins::pgis::PostGISConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)

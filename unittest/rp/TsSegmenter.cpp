@@ -246,10 +246,15 @@ void TsSegmenter::RegionGrowingBaatzStrategy()
   // Creating the algorithm parameters
   
   te::rp::SegmenterRegionGrowingStrategy::Parameters strategyParameters;
+  strategyParameters.m_minSegmentSize = 25;
+  strategyParameters.m_segmentsSimilarityThreshold = 0.3;
   strategyParameters.m_segmentFeatures = te::rp::SegmenterRegionGrowingStrategy::Parameters::BaatzFeaturesType;
-  strategyParameters.m_minSegmentSize = 100;
-  strategyParameters.m_segmentsSimilarityThreshold = 0.1;
-  
+   strategyParameters.m_bandsWeights.resize( 
+     (unsigned int)inputRasterPointer->getNumberOfBands(),
+     1.0 / ((double)inputRasterPointer->getNumberOfBands()) );
+   strategyParameters.m_colorWeight = 0.5;
+   strategyParameters.m_compactnessWeight = 0.5;
+   strategyParameters.m_segmentsSimIncreaseSteps = 10;
   
   te::rp::Segmenter::InputParameters algoInputParams;
   algoInputParams.m_inputRasterPtr = inputRasterPointer.get();

@@ -32,7 +32,6 @@
 // STL
 #include <memory>
 #include <set>
-#include <map>
 
 // Qt
 #include <QtGui/QDialog>
@@ -40,7 +39,9 @@
 // Forward declaration
 namespace Ui { class PluginManagerDialogForm; }
 
+class QModelIndex;
 class QNetworkReply;
+class QTableView;
 class QTableWidget;
 class QTableWidgetItem;
 
@@ -48,6 +49,7 @@ namespace te
 {
   namespace plugin
   {
+// Forward declaration
     struct PluginInfo;
   }
 
@@ -55,6 +57,9 @@ namespace te
   {
     namespace widgets
     {
+// Forward declaration
+      class PluginsModel;
+
       //struct iPluginInfo;
 
       class TEQTWIDGETSEXPORT PluginManagerDialog : public QDialog
@@ -81,11 +86,7 @@ namespace te
 
           void removePlugins();
 
-        signals:
-
-          void pluginsAdded(const std::map<std::string, std::string>&);
-
-          void pluginsRemoved(const std::vector<std::string>&);
+          void dataChanged(const QModelIndex&, const QModelIndex&);
 
         protected:
 
@@ -93,7 +94,7 @@ namespace te
           
           void filliPlugins();
 
-          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked, QTableWidget* table);
+          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked, QTableView* table);
 
         private:
 
@@ -101,6 +102,7 @@ namespace te
           //std::set<iPluginInfo> m_iplugins;
           std::set<int> m_changedInstalledPlugins;
           std::set<int> m_downloadPlugins;
+          PluginsModel* m_model;
       };
 
     } // end namespace widgets

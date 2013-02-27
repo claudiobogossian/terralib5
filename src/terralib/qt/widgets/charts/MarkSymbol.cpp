@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../se/Mark.h"
-#include "../../../maptools/AbstractMarkFactory.h"
+#include "../../../maptools/MarkRendererManager.h"
 
 // Qt Widgets Utils
 #include "../Utils.h"
@@ -49,7 +49,7 @@ te::qt::widgets::MarkSymbol::MarkSymbol(te::se::Mark* mark, std::size_t size) :
 void 
 te::qt::widgets::MarkSymbol::drawSymbols(QPainter* painter, const QPointF* point, int numPoints) const
 {
-  te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(m_mark, m_size);
+  te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(m_mark, m_size);
   
   QImage* image = GetImage(rgba, m_size, m_size);
 

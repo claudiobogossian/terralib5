@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/WellKnownMarkFactory.h
+  \file terralib/qt/widgets/se/WellKnownMarkRenderer.h
 
-  \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+  \brief A concrete renderer based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKFACTORY_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKFACTORY_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKRENDERER_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKRENDERER_H
 
 // TerraLib
-#include "../../../maptools/AbstractMarkFactory.h"
+#include "../../../maptools/AbstractMarkRenderer.h"
 #include "../Config.h"
 
 // Qt
@@ -43,21 +43,21 @@ namespace te
     namespace widgets
     {
       /*!
-        \class WellKnownMarkFactory
+        \class WellKnownMarkRenderer
 
-        \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+        \brief A concrete renderer based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
                It considers basic marks defined on Symbology Enconding Specification: "square", "circle", "triangle", "star", "cross", and "x".
 
-        \sa AbstractMarkFactory, AbstractFactory
+        \sa AbstractMarkRenderer
       */
-      class TEQTWIDGETSEXPORT WellKnownMarkFactory : public te::map::AbstractMarkFactory
+      class TEQTWIDGETSEXPORT WellKnownMarkRenderer : public te::map::AbstractMarkRenderer
       {
         public:
 
           /*!
             \enum MarkType
 
-            \brief This enum specifies mark types handle by this factory.
+            \brief This enum specifies mark types handle by this renderer.
           */
           enum MarkType
           {
@@ -75,49 +75,19 @@ namespace te
             Octagon     /*!< A octagon mark.     */
           };
 
-          /** @name Public Initializer
-            *  Methods for the control of the factory singleton.
-            */
-          //@{
+          /*! \brief Constructor. */
+          WellKnownMarkRenderer();
 
-          /*! \brief It initializes the factory: the singleton instance will be registered in the abstract factory AbstractMarkFactory. */
-          static void initialize();
+          /*! \brief Destructor. */
+          ~WellKnownMarkRenderer();
 
-          /*! \brief It finalizes the factory: the singleton instance will be destroyed and will be unregistered from the abstract factory AbstractMarkFactory. */
-          static void finalize();
-
-          //@}
-
-          /** @name Public Destructor
-            *  Destructor.
-            */
-          //@{
-
-          /*!
-            \brief Destructor.
-
-            \note It will automatically unregister the factory from the dictionary.
-          */
-          ~WellKnownMarkFactory();
-
-          //@} 
-
-        protected:
-
-          /** @name Re-implementation of Pure Virtual Method
-            *  Concrete factory methods.
-            */
-          //@{
-
-          te::map::AbstractMarkFactory* build();
-
-          te::color::RGBAColor** create(const te::se::Mark* mark, std::size_t size);
+          te::color::RGBAColor** render(const te::se::Mark* mark, std::size_t size);
 
           void getSupportedMarks(std::vector<std::string>& marks) const;
 
-          //@}
+        protected:
 
-          /** @name Internal methods of Qt4 Mark Factory.
+          /** @name Internal methods of Qt4 Mark Renderer.
             *  Methods that manipulate Qt4 concepts like QPainter, QImage, QBrush, QPen, QPainterPath, etc.
             */
           //@{
@@ -144,26 +114,7 @@ namespace te
 
           //@}
 
-          /** @name Protected Initializers
-            *  Initializers.
-            */
-          //@{
-
-          /*!
-            \brief It creates the factory.
-
-            The key of a WellKnownMarkFactory is a string.
-
-            \param factoryKey The key that identifies the factory.
-          */
-          WellKnownMarkFactory();
-
-          //@}
-
         private:
-
-          static std::string sm_factoryKey;                   //!< The factory key.
-          static WellKnownMarkFactory* sm_factory;            //!< A pointer to the global factory.
 
           static std::map<std::string, MarkType> sm_markMap;  //!< A map that associates a well-known mark name to the correct mark type.
 
@@ -189,4 +140,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKFACTORY_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_WELLKNOWNMARKRENDERER_H

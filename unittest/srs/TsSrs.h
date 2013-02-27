@@ -13,6 +13,8 @@ class TsSrs : public CPPUNIT_NS::TestFixture
     void tcSRSManager();
   
     void tcSRSConvertion();
+  
+    void tcSRSClear();
 
   public :
 
@@ -27,6 +29,8 @@ class TsSrs : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST( tcSRSManager );
   
     CPPUNIT_TEST( tcSRSConvertion );
+  
+    CPPUNIT_TEST( tcSRSClear );
 
 	  CPPUNIT_TEST_SUITE_END();  	
 };

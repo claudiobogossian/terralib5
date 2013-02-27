@@ -27,7 +27,7 @@
 #include "ComponentWidget.h"
 #include "ComponentWidgetFactory.h"
 #include "DisplayFrameFactory.h"
-#include "GridFrameFactory.h"
+#include "TableFrameFactory.h"
 #include "ProjectFrameFactory.h"
 #include "SystemSettings.h"
 
@@ -40,7 +40,7 @@ te::qt::af::SystemSettings::SystemSettings(QWidget* parent)
 
   //init factories
   DisplayFrameFactory::initialize();
-  GridFrameFactory::initialize();
+  TableFrameFactory::initialize();
   ProjectFrameFactory::initialize();
 
   std::vector<std::string> vec;

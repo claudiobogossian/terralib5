@@ -67,7 +67,7 @@ namespace te
             
             double m_segmentsSimilarityThreshold; //!< Segments similarity treshold - Segments with similarity values below this value will be merged; valid values range: [ 0, 1 ]; default:0.5.
             
-            SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:MeanFeatureType).
+            SegmentFeaturesType m_segmentFeatures; //!< What segment features will be used on the segmentation process (default:InvalidFeaturesType).
             
             std::vector< double > m_bandsWeights; //!< The weight given to each band, when applicable (note: the bands weights sum must always be 1) or an empty vector indicating that all bands have the same weight.
             
@@ -75,7 +75,7 @@ namespace te
             
             double m_compactnessWeight; //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             
-            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity value for the cases where no segment merge occurred - defaul: 10.
+            unsigned int m_segmentsSimIncreaseSteps; //!< The maximum number of steps to increment the similarity threshold value for the cases where no segment merge occurred - zero will disable segment similarity threshold increments - defaul: 10.
             
             Parameters();
             
@@ -400,6 +400,11 @@ namespace te
             virtual void mergeFeatures( SegmenterRegionGrowingStrategy::Segment * const segment1Ptr, 
               Segment const * const segment2Ptr, 
               SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const = 0;
+              
+            /*!
+              \brief Update the internal state.
+            */    
+            virtual void update() = 0;
             
           protected :
             
@@ -434,6 +439,9 @@ namespace te
             void mergeFeatures( SegmenterRegionGrowingStrategy::Segment * const segmen1tPtr, 
               Segment const * const segmen2tPtr, 
               SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const;
+              
+            //overload
+            void update() {};              
         };        
         
         /*!
@@ -447,13 +455,15 @@ namespace te
             /*!
               \brief Default constructor.
               \param bandsWeights A reference to an external valid structure where each bands weight are stored.
-              \param segmentsIds //!< A reference to an external valid structure where each all segments IDs are stored.
+              \param segmentsIds //!< A reference to an external valid structure where all segments IDs are stored.
+              \param segments //!< A reference to an external valid structure where each all segments stored.
               \param colorWeight //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
               \param compactnessWeight //!< The weight given to the compactness component, deafult:0.5, valid range: [0,1].
             */
             BaatzMerger( const double& colorWeight, const double& compactnessWeight,
               const std::vector< double >& bandsWeights,
-              const SegmentsIdsContainerT& segmentsIds );
+              const SegmentsIdsContainerT& segmentsIds,
+              const SegmenterRegionGrowingStrategy::SegmentsContainer& segments );
             
             ~BaatzMerger();
             
@@ -468,7 +478,22 @@ namespace te
               Segment const * const segmen2tPtr, 
               SegmenterRegionGrowingStrategy::SegmentFeatures const * const mergedFeatures ) const;
               
+            //overload
+            void update();
+              
           protected :
+            
+            std::vector< double > m_allSegsStdDevOffsets; //!< The offsets applied to normalize the standard deviation value.
+            
+            std::vector< double > m_allSegsStdDevGain; //!< The gains applied to normalize the standard deviation value.
+            
+            double m_allSegsCompactnessOffset; //!< The offsets applied to normalize the compactness value.
+            
+            double m_allSegsCompactnessGain; //!< The gains applied to normalize the compactness value.
+            
+            double m_allSegsSmoothnessOffset; //!< The offsets applied to normalize the smoothness value.
+            
+            double m_allSegsSmoothnessGain; //!< The gains applied to normalize the smoothness value.            
             
             double m_colorWeight; //!< The weight given to the color component, deafult:0.5, valid range: [0,1].
             
@@ -477,6 +502,8 @@ namespace te
             std::vector< double > m_bandsWeights; //!< A vector where each bands weight are stored.
             
             const SegmentsIdsContainerT& m_segmentsIds; //!< A reference to an external valid structure where each all segments IDs are stored.
+            
+            const SegmenterRegionGrowingStrategy::SegmentsContainer& m_segments; //!< A reference to an external valid structure where each all segments stored.
         };          
                 
         
@@ -516,6 +543,7 @@ namespace te
           unique segments ids.
           \param segmentsIds The output segment ids container.
           \param merger The merger instance to use.
+          \param enablelocalMutualBestFitting If enabled, a merge only occurs between two segments if the minimum dissimilarity criteria is best fulfilled mutually.
           \param segments The output segments container.
           \return The number of merged segments.
         */           
@@ -523,7 +551,8 @@ namespace te
           const double similarityThreshold,
           SegmenterIdsManager& segmenterIdsManager,
           SegmentsIdsContainerT& segmentsIds,
-          const Merger& merger,
+          Merger& merger,
+          const bool enablelocalMutualBestFitting,
           SegmentsContainer& segments );
           
         /*!
@@ -542,7 +571,7 @@ namespace te
           const unsigned int minSegmentSize,
           SegmenterIdsManager& segmenterIdsManager,
           SegmentsIdsContainerT& segmentsIds,
-          const Merger& merger,
+          Merger& merger,
           SegmentsContainer& segments );          
           
         /*!
@@ -563,13 +592,17 @@ namespace te
           \param yBound The lower right Y bound of the bounding box surrounding both regions.
           \param id1 Region 1 ID.
           \param id2 Region 2 ID.
+          \param edgeLength1 The touching edge length for the region 1.
+          \param edgeLength2 The touching edge length for the region 2.
           \return Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
         */            
-        static unsigned int getTouchingEdgeLength( const SegmentsIdsContainerT& segsIds,
+        static void getTouchingEdgeLength( const SegmentsIdsContainerT& segsIds,
           const unsigned int& xStart, const unsigned int& yStart,
           const unsigned int& xBound, const unsigned int& yBound,
           const SegmenterSegmentsBlock::SegmentIdDataType& id1,
-          const SegmenterSegmentsBlock::SegmentIdDataType& id2 );
+          const SegmenterSegmentsBlock::SegmentIdDataType& id2,
+          unsigned int& edgeLength1,
+          unsigned int& edgeLength2 );
     };
     
     /*!

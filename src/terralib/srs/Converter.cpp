@@ -432,7 +432,7 @@ te::srs::Converter::convertToGeographic(double &x, double &y, int SRID) const
   }
   
   projPJ pjhGeog = pj_latlong_from_proj(pjhProj);
-  int res = pj_transform(pjhGeog, pjhProj, 1, 1, &x, &y, 0);
+  int res = pj_transform(pjhProj, pjhGeog, 1, 1, &x, &y, 0);
   pj_free(pjhProj);
   pj_free(pjhGeog);
 
@@ -467,7 +467,7 @@ bool te::srs::Converter::convertToProjected(double &lon, double &lat, int SRID) 
 
   lon *= DEG_TO_RAD;
   lat *= DEG_TO_RAD;  
-  int res = pj_transform(pjhProj, pjhGeog, 1, 1, &lon, &lat, 0);
+  int res = pj_transform(pjhGeog, pjhProj, 1, 1, &lon, &lat, 0);
 
   pj_free(pjhProj);
   pj_free(pjhGeog);  

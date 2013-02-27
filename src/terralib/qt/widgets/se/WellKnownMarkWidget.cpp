@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "../../../maptools/AbstractMarkFactory.h"
+#include "../../../maptools/MarkRendererManager.h"
 #include "../../../se/Mark.h"
 #include "BasicFillWidget.h"
 #include "BasicStrokeWidget.h"
@@ -56,7 +56,7 @@ te::qt::widgets::WellKnownMarkWidget::WellKnownMarkWidget(QWidget* parent, Qt::W
   strokeLayout->addWidget(m_strokeWidget);
 
   // Gets supported marks
-  te::map::AbstractMarkFactory::SupportedMarks(m_supportedMarks);
+  te::map::MarkRendererManager::getInstance().getAllSupportedMarks(m_supportedMarks);
   for(std::size_t i = 0; i < m_supportedMarks.size(); ++i)
     m_ui->m_markTypeComboBox->addItem(m_supportedMarks[i].c_str());
 

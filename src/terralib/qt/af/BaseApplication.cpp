@@ -24,8 +24,8 @@
 */
 
 // TerraLib
-#include "../../common/progress/TaskProgress.h"
 #include "../../common/progress/ProgressManager.h"
+#include "../../common/progress/TaskProgress.h"
 #include "../../common/SystemApplicationSettings.h"
 #include "../../common/Translator.h"
 #include "../../common/UserApplicationSettings.h"
@@ -37,11 +37,11 @@
 #include "../widgets/layer/AbstractTreeItem.h"
 #include "../widgets/layer/LayerExplorer.h"
 #include "../widgets/layer/LayerExplorerModel.h"
-#include "../widgets/plugin/manager/PluginManagerDialog.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
+#include "../widgets/plugin/manager/PluginManagerDialog.h"
+#include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
-#include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
@@ -49,10 +49,11 @@
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
-#include "events/NewToolBar.h"
 #include "events/LayerAdded.h"
 #include "events/LayerSelected.h"
+#include "events/NewToolBar.h"
 #include "events/TrackedCoordinate.h"
+#include "settings/SystemSettings.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "BaseApplication.h"
@@ -65,15 +66,15 @@
 // Qt
 #include <QtCore/QDir>
 #include <QtGui/QActionGroup>
+#include <QtGui/QApplication>
 #include <QtGui/QCloseEvent>
 #include <QtGui/QDockWidget>
+#include <QtGui/QFileDialog>
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
-#include <QtGui/QFileDialog>
-#include <QtGui/QApplication>
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
@@ -296,6 +297,19 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
 }
 
+void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
+{
+  try
+  {
+    te::qt::af::SystemSettings dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::makeDialog()
 {
   initActions();
@@ -484,14 +498,14 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewMapDisplay, "display-visible", "Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true);
   initAction(m_viewDataTable, "grid-visible", "Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false);
   initAction(m_viewStyleExplorer, "grid-visible", "Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false);
-  initAction(m_viewFullScreen, "grid-visible", "Full Screen", tr("F&ull Screen..."), tr(""), true, false, false);
-  initAction(m_viewRefresh, "view-refresh", "Refresh", tr("&Refresh..."), tr(""), true, false, false);
-  initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars..."), tr(""), true, false, false);
+  initAction(m_viewFullScreen, "grid-visible", "Full Screen", tr("F&ull Screen"), tr(""), true, false, false);
+  initAction(m_viewRefresh, "view-refresh", "Refresh", tr("&Refresh"), tr(""), true, false, false);
+  initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
   initAction(m_viewGrid, "grid-visible", "Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false);
   initAction(m_viewDataSourceExplorer, "grid-visible", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
 
 // Menu -Tools- actions
-  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, false);
+  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true);
   initAction(m_toolsDataSourceManagement, "", "Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, false);
 
 // Menu -Edit- actions
@@ -506,11 +520,11 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
 
 // Menu -Plugins- actions
-  initAction(m_pluginsManager, "", "Management", tr("&Management..."), tr("Manage the application plugins"), true, false, true);
-  initAction(m_pluginsBuilder, "", "Build a new Plugin", tr("&Build a new Plugin..."), tr("Create a new plugin"), true, false, true);
+  initAction(m_pluginsManager, "", "Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true);
+  initAction(m_pluginsBuilder, "", "Build a New Plugin", tr("&Build a New Plugin..."), tr("Create a new plugin"), true, false, true);
 
 // Menu -Help- actions
-  initAction(m_helpContents, "help-browser", "View Help", tr("&View help..."), tr("Shows help dialog"), true, false, false);
+  initAction(m_helpContents, "help-browser", "View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, false);
   initAction(m_helpUpdate, "system-software-update", "Update", tr("&Update..."), tr(""), true, false, false);
   initAction(m_helpAbout, "", "About", tr("&About..."), tr(""), true, false, false);
 
@@ -519,13 +533,13 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, false);
   initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
   initAction(m_projectAddLayerImage, "", "Image", tr("&Image"), tr("Add a new layer from a satellite image"), true, false, false);
-  initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
+  //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
 // Menu -Layer- actions
   initAction(m_layerEdit, "layer-edit", "Edit", tr("&Edit"), tr(""), true, false, false);
   initAction(m_layerRename, "layer-rename", "Rename", tr("R&ename"), tr(""), true, false, false);
   initAction(m_layerExport, "", "Export", tr("E&xport..."), tr(""), true, false, false);
-  initAction(m_layerProperties, "", "Properties", tr("&Properties"), tr(""), true, false, false);
+  initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, false);
   initAction(m_layerRaise, "layer-raise", "Raise", tr("&Raise"), tr(""), true, false, false);
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
@@ -533,7 +547,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
-  initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project..."), tr(""), true, false, false);
+  initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project"), tr(""), true, false, false);
   initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
   initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);
   initAction(m_fileExit, "system-log-out", "Exit", tr("E&xit"), tr(""), true, false, true);
@@ -629,7 +643,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
   m_projectAddLayerMenu->addAction(m_projectAddLayerImage);
-  m_projectAddLayerMenu->addAction(m_projectAddLayerGraph);
+  //m_projectAddLayerMenu->addAction(m_projectAddLayerGraph);
 
 // Layer menu
   m_layerMenu = new QMenu(m_menubar);
@@ -729,4 +743,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
+  connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
 }
