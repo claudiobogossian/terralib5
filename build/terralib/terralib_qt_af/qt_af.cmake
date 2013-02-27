@@ -72,7 +72,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/settings/DisplayFrame.h
-  ${SRCDIR}/settings/GridFrame.h
+  ${SRCDIR}/settings/TableFrame.h
   ${SRCDIR}/settings/ProjectFrame.h
   ${SRCDIR}/settings/SystemSettings.h
 )
