@@ -349,7 +349,7 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
       const std::string uri = link->getHref();
       assert(!uri.empty());
 
-      std::ifstream file(uri, std::ios::in | std::ios::binary | std::ios::ate);
+      std::ifstream file(uri.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
       assert(file.is_open());
 
       std::size_t bufferSize = static_cast<std::size_t>(file.tellg());
