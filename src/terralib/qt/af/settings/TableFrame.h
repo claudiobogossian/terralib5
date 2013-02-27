@@ -18,23 +18,50 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/GridFrame.cpp
+  \file terralib/qt/af/settings/TableFrame.h
 
-  \brief A frame for setting grid options.
+  \brief A frame for setting Table options.
 */
 
-#include "ui_GridFrameForm.h"
-#include "GridFrame.h"
+#ifndef __TERRALIB_QT_AF_TABLEFRAME_H
+#define __TERRALIB_QT_AF_TABLEFRAME_H
 
-te::qt::af::GridFrame::GridFrame(QWidget* parent)
-  : ComponentWidget(parent),
-    m_ui(new Ui::GridFrameForm)
+// TerraLib
+#include "../Config.h"
+#include "ComponentWidget.h"
+
+namespace Ui { class TableFrameForm; }
+
+namespace te
 {
-  m_ui->setupUi(this);
-  m_label = "Grid";
-}
+  namespace qt
+  {
+    namespace af
+    {
+      /*!
+        \class TableFrame
 
-te::qt::af::GridFrame::~GridFrame()
-{
+        \brief A frame for setting Table options.
+      */
+      class TEQTAFEXPORT TableFrame : public ComponentWidget
+      {
+        Q_OBJECT
 
-}
+        public:
+
+          TableFrame(QWidget* parent = 0);
+
+          ~TableFrame();
+
+        private:
+
+          std::auto_ptr<Ui::TableFrameForm> m_ui;
+
+      };
+
+    }   // end namespace af
+  }     // end namespace qt
+}       // end namespace te
+
+#endif // __TERRALIB_QT_AF_TABLEFRAME_H
+

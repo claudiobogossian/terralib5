@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GridFrameForm</class>
- <widget class="QWidget" name="GridFrameForm">
+ <class>TableFrameForm</class>
+ <widget class="QWidget" name="TableFrameForm">
   <property name="geometry">
    <rect>
     <x>0</x>
