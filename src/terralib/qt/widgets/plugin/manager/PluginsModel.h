@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file PluginsModel.h
+  \file terralib/qt/widgets/plugin/manager/PluginsModel.h
 
   \brief 
 */
@@ -26,16 +26,16 @@
 #ifndef __TERRALIB_QT_WDIGETS_PLUGIN_MANAGER_INTERNAL_PLUGINSMODEL_H
 #define __TERRALIB_QT_WDIGETS_PLUGIN_MANAGER_INTERNAL_PLUGINSMODEL_H
 
+//STL
+#include <vector>
+
 //Qt
 #include <QtCore/QAbstractTableModel>
 #include <QtCore/QFlags>
 
-//STL
-#include <vector>
-
 namespace te
 {
-  // Forward declarations
+// Forward declarations
   namespace plugin
   {
     struct PluginInfo;
@@ -66,65 +66,68 @@ namespace te
 
           Q_DECLARE_FLAGS( te::qt::widgets::PluginsModel::PluginsStatus, te::qt::widgets::PluginsModel::PluginStatus )
 
-        /*!
-          \name Constructor and destructor.
-          \brief Methods used to construct and destruct the object.
-        */
-        //@{
-
           /*!
             \brief Constructor.
             
             \param parent Qt object parent.
           */
-          PluginsModel(QObject* parent=0);
+          PluginsModel(QObject* parent = 0);
 
           /*!
             \brief Destructor.
           */
           virtual ~PluginsModel();
-        //@}
 
-        /*!
-          \name QAbstractTableModel re-implementation methods.
-          \brief Re-implementation of QAbstractTableModel methods.
-        */
-        //@{
+          /*!
+            \name QAbstractTableModel re-implementation methods.
+            \brief Re-implementation of QAbstractTableModel methods.
+          */
+          //@{
 
           /*!
             \brief Returns the number of plugins regitered in plugins manager.
+
             \param parent Parent. (This is not used for this model).
+
             \return 8.
           */
-          int rowCount(const QModelIndex & parent) const;
+          int rowCount(const QModelIndex& parent) const;
 
           /*!
-            \brief Returns the number of columns.    
+            \brief Returns the number of columns.
+
             \param parent Parent index. (For this model it is not used)
+
             \return 8.
           */
-          int columnCount(const QModelIndex & parent) const;
+          int columnCount(const QModelIndex& parent) const;
 
           /*!
-            \brief Returns data identified by \a index.    
+            \brief Returns data identified by \a index.
+
             \param index Data index.
-            \param role Data role.
+            \param role  Data role.
+
             \return Data as QVariant object.
           */
-          QVariant data(const QModelIndex & index, int role) const;
+          QVariant data(const QModelIndex& index, int role) const;
 
           /*!
-            \brief Returns the data to be presented as header.    
-            \param section Column / Row number.
+            \brief Returns the data to be presented as header.
+
+            \param section     Column / Row number.
             \param orientation Horizontal / Vertical orientation options.
-            \param role Data role.
+            \param role        Data role.
+
             \return Data to be presented as header.
           */
           QVariant headerData(int section, Qt::Orientation orientation, int role) const;
 
           /*!
-            \brief Returns the flags associated with a given item.    
+            \brief Returns the flags associated with a given item.
+
             \param index Index of the cell.
+
             \return Flags related to the item.
           */
           Qt::ItemFlags flags(const QModelIndex & index) const;
@@ -145,8 +148,8 @@ namespace te
         protected:
 
           std::vector<te::plugin::PluginInfo*> m_plugins;
-          std::vector<PluginsStatus>           m_pluginsStatus;
-          std::vector<std::string>             m_pluginsFiles; 
+          std::vector<PluginsStatus> m_pluginsStatus;
+          std::vector<std::string> m_pluginsFiles; 
       };
 
       Q_DECLARE_OPERATORS_FOR_FLAGS( te::qt::widgets::PluginsModel::PluginsStatus )
