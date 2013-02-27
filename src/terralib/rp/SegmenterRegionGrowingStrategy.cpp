@@ -401,23 +401,23 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( 
         ( mergedFeaturesCastPtr->m_yBound > mergedFeaturesCastPtr->m_yStart ),
         "Internal error" )        
+        
+      unsigned int touchingEdgeLength1 = 0;
+      unsigned int touchingEdgeLength2 = 0;
+      SegmenterRegionGrowingStrategy::getTouchingEdgeLength(
+        m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
+        mergedFeaturesCastPtr->m_yStart,
+        mergedFeaturesCastPtr->m_xBound, 
+        mergedFeaturesCastPtr->m_yBound, 
+        segment1CastPtr->m_features.m_id,
+        segment2CastPtr->m_features.m_id,
+        touchingEdgeLength1,
+        touchingEdgeLength2 );
       
       mergedFeaturesCastPtr->m_edgeLength = 
-        segment1CastPtr->m_features.m_edgeLength 
+        segment1CastPtr->m_features.m_edgeLength - touchingEdgeLength1 
         +
-        segment2CastPtr->m_features.m_edgeLength 
-        -
-        ( 
-          2 
-          * 
-          SegmenterRegionGrowingStrategy::getTouchingEdgeLength(
-            m_segmentsIds, mergedFeaturesCastPtr->m_xStart, 
-            mergedFeaturesCastPtr->m_yStart,
-            mergedFeaturesCastPtr->m_xBound, 
-            mergedFeaturesCastPtr->m_yBound, 
-            segment1CastPtr->m_features.m_id,
-            segment2CastPtr->m_features.m_id ) 
-        );
+        segment2CastPtr->m_features.m_edgeLength - touchingEdgeLength2;
       
       mergedFeaturesCastPtr->m_compactness = 
         ((double)mergedFeaturesCastPtr->m_edgeLength) /
@@ -1705,12 +1705,14 @@ namespace te
       delete rasterPtr;
     }
     
-    unsigned int SegmenterRegionGrowingStrategy::getTouchingEdgeLength( 
+    void SegmenterRegionGrowingStrategy::getTouchingEdgeLength( 
       const SegmentsIdsContainerT& segsIds,
       const unsigned int& xStart, const unsigned int& yStart,
       const unsigned int& xBound, const unsigned int& yBound,
       const SegmenterSegmentsBlock::SegmentIdDataType& id1,
-      const SegmenterSegmentsBlock::SegmentIdDataType& id2 )
+      const SegmenterSegmentsBlock::SegmentIdDataType& id2,
+      unsigned int& edgeLength1,
+      unsigned int& edgeLength2 )
     {
       const unsigned int colsNumber = segsIds.getColumnsNumber();
       const unsigned int linesNumber = segsIds.getLinesNumber();
@@ -1726,12 +1728,12 @@ namespace te
       TERP_DEBUG_TRUE_OR_THROW( xStart < xBound, "Internal Error" )
       TERP_DEBUG_TRUE_OR_THROW( yStart < yBound, "Internal Error" )        
       
-      // finding the pixels from the segment with id1 touching the segment
-      // with id2
+      // finding the touching pixels
+      
+      edgeLength1 = 0;
+      edgeLength2 = 0;
       
       unsigned int xIdx = 0;
-      unsigned int id1PixelsCount = 0;
-      bool isCommongBorderPixel = false;
       const unsigned int lastColIdx = colsNumber - 1;
       const unsigned int lastLineIdx = linesNumber - 1;
       
@@ -1739,39 +1741,62 @@ namespace te
       {
         for( xIdx = xStart; xIdx < xBound ; ++xIdx )
         {
-          isCommongBorderPixel = false;
-          
           if( segsIds[ yIdx ][ xIdx ] == id1 )
           {
             if( yIdx ) 
               if( segsIds[ yIdx - 1 ][ xIdx ] == id2 )
               {
-                ++id1PixelsCount;
+                ++edgeLength1;
                 continue;
               }
             if( xIdx ) 
               if( segsIds[ yIdx ][ xIdx - 1 ] == id2 )
               {
-                ++id1PixelsCount;
+                ++edgeLength1;
                 continue;
               }  
             if( yIdx < lastLineIdx) 
               if( segsIds[ yIdx + 1 ][ xIdx ] == id2 )
               {
-                ++id1PixelsCount;
+                ++edgeLength1;
                 continue;
               }              
             if( xIdx < lastColIdx ) 
               if( segsIds[ yIdx ][ xIdx + 1 ] == id2 )
               {
-                ++id1PixelsCount;
+                ++edgeLength1;
                 continue;
               }              
           }
+          else if( segsIds[ yIdx ][ xIdx ] == id2 )
+          {
+            if( yIdx ) 
+              if( segsIds[ yIdx - 1 ][ xIdx ] == id1 )
+              {
+                ++edgeLength2;
+                continue;
+              }
+            if( xIdx ) 
+              if( segsIds[ yIdx ][ xIdx - 1 ] == id1 )
+              {
+                ++edgeLength2;
+                continue;
+              }  
+            if( yIdx < lastLineIdx) 
+              if( segsIds[ yIdx + 1 ][ xIdx ] == id1 )
+              {
+                ++edgeLength2;
+                continue;
+              }              
+            if( xIdx < lastColIdx ) 
+              if( segsIds[ yIdx ][ xIdx + 1 ] == id1 )
+              {
+                ++edgeLength2;
+                continue;
+              }              
+          }            
         }
       }
-      
-      return id1PixelsCount;
     }
     
     //-------------------------------------------------------------------------
