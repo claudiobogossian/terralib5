@@ -24,10 +24,10 @@
 */
 
 // TerraView
+#include "AboutDialog.h"
 #include "TerraLibConfig.h"
 #include "TerraViewConfig.h"
 #include "ui_AboutDialogForm.h"
-#include "AboutDialog.h"
 
 // TerraLib
 #include <terralib/common/SystemApplicationSettings.h>
