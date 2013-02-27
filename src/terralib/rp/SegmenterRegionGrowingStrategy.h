@@ -592,13 +592,17 @@ namespace te
           \param yBound The lower right Y bound of the bounding box surrounding both regions.
           \param id1 Region 1 ID.
           \param id2 Region 2 ID.
+          \param edgeLength1 The touching edge length for the region 1.
+          \param edgeLength2 The touching edge length for the region 2.
           \return Returns the count of points from region 1 (with ID1) touching the region 2 (with ID2).
         */            
-        static unsigned int getTouchingEdgeLength( const SegmentsIdsContainerT& segsIds,
+        static void getTouchingEdgeLength( const SegmentsIdsContainerT& segsIds,
           const unsigned int& xStart, const unsigned int& yStart,
           const unsigned int& xBound, const unsigned int& yBound,
           const SegmenterSegmentsBlock::SegmentIdDataType& id1,
-          const SegmenterSegmentsBlock::SegmentIdDataType& id2 );
+          const SegmenterSegmentsBlock::SegmentIdDataType& id2,
+          unsigned int& edgeLength1,
+          unsigned int& edgeLength2 );
     };
     
     /*!
