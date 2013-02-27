@@ -290,6 +290,8 @@ void te::qt::widgets::PluginManagerDialog::applyPushButtonPressed()
   m_model->clear();
 
   fillInstalledPlugins();
+
+  m_ui->m_applyPushButton->setEnabled(false);
 }
 
 void te::qt::widgets::PluginManagerDialog::helpPushButtonPressed()
@@ -476,8 +478,6 @@ void te::qt::widgets::PluginManagerDialog::fillInstalledPlugins()
   pm.getPlugins(plugins);
 
   int nrows = static_cast<int>(plugins.size());
-
-//  m_ui->m_installedPluginsTableWidget->setRowCount(nrows);
 
   for(int i = 0; i < nrows; ++i)
   {
