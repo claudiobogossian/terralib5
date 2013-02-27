@@ -50,6 +50,8 @@ te::map::MarkRendererManager::~MarkRendererManager()
 
 te::color::RGBAColor** te::map::MarkRendererManager::render(const te::se::Mark* mark, std::size_t size)
 {
+  LockWrite l;
+
   if(size == 0)
     throw Exception(TR_MAP("Requested size is invalid!"));
 
