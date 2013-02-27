@@ -61,6 +61,7 @@ te::qt::widgets::DataSetAdapterWidget::DataSetAdapterWidget(QWidget* parent, Qt:
   connect(m_ui->m_editToolButton, SIGNAL(clicked()), this, SLOT(onEditToolButtonClicked()));
   connect(m_ui->m_upToolButton, SIGNAL(clicked()), this, SLOT(onUpToolButtonClicked()));
   connect(m_ui->m_downToolButton, SIGNAL(clicked()), this, SLOT(onDownToolButtonClicked()));
+  connect(m_ui->m_tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(onCellClicked(int, int)));
 }
 
 te::qt::widgets::DataSetAdapterWidget::~DataSetAdapterWidget()
@@ -104,6 +105,16 @@ void te::qt::widgets::DataSetAdapterWidget::onAddToolButtonClicked()
 
 void te::qt::widgets::DataSetAdapterWidget::onRemoveToolButtonClicked()
 {
+  if(m_ui->m_tableWidget->currentRow() == -1)
+    return;
+
+  std::string propName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toStdString();
+
+  m_dataSetAdapter->remove(propName);
+
+  m_ui->m_removeToolButton->setEnabled(false);
+
+  fillDataSetTable();
 }
 
 void te::qt::widgets::DataSetAdapterWidget::onEditToolButtonClicked()
@@ -116,6 +127,26 @@ void te::qt::widgets::DataSetAdapterWidget::onUpToolButtonClicked()
 
 void te::qt::widgets::DataSetAdapterWidget::onDownToolButtonClicked()
 {
+}
+
+void te::qt::widgets::DataSetAdapterWidget::onCellClicked(int row, int col)
+{
+  std::string propName = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
+
+  std::vector<std::string> nap;
+
+  m_dataSetAdapter->getNonAdaptedProperties(nap);
+
+  for(size_t t = 0; t < nap.size(); ++t)
+  {
+    if(nap[t] == propName)
+    {
+      m_ui->m_removeToolButton->setEnabled(false);
+      return;
+    }
+  }
+
+  m_ui->m_removeToolButton->setEnabled(true);
 }
 
 void te::qt::widgets::DataSetAdapterWidget::buidTypeMap()
@@ -162,16 +193,16 @@ void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
     m_ui->m_tableWidget->insertRow(newrow);
 
     QTableWidgetItem* itemCheck = new QTableWidgetItem();
-    itemCheck->setFlags(Qt::ItemIsEnabled);
-    itemCheck->setIcon(QIcon::fromTheme("arrow-right"));
+    itemCheck->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+    itemCheck->setIcon(QIcon::fromTheme("check"));
     m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
 
     QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(propName));
-    itemName->setFlags(Qt::ItemIsEnabled);
+    itemName->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     m_ui->m_tableWidget->setItem(newrow, 1, itemName);
 
     QTableWidgetItem* itemType = new QTableWidgetItem(m_typeMap[dsType->getProperty(t)->getType()].c_str());
-    itemType->setFlags(Qt::ItemIsEnabled);
+    itemType->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);
     m_ui->m_tableWidget->setItem(newrow, 2, itemType);
   }
 
@@ -186,7 +217,7 @@ void te::qt::widgets::DataSetAdapterWidget::fillDataSetTable()
 
     QTableWidgetItem* itemCheck = new QTableWidgetItem();
     itemCheck->setFlags(Qt::ItemIsEnabled);
-    itemCheck->setIcon(QIcon::fromTheme("arrow-left"));
+    itemCheck->setIcon(QIcon::fromTheme("delete"));
     m_ui->m_tableWidget->setItem(newrow, 0, itemCheck);
 
     QTableWidgetItem* itemName = new QTableWidgetItem(QString::fromStdString(nonAdaptedProperties[i]));
