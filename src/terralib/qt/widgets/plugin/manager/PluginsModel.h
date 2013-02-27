@@ -64,7 +64,7 @@ namespace te
             Broked = 64
           };
 
-          Q_DECLARE_FLAGS( te::qt::widgets::PluginsModel::PluginsStatus, te::qt::widgets::PluginsModel::PluginStatus )
+          Q_DECLARE_FLAGS( PluginsStatus, te::qt::widgets::PluginsModel::PluginStatus )
 
         /*!
           \name Constructor and destructor.
