@@ -24,8 +24,10 @@
 */
 
 // TerraView
-#include "ui_AboutDialogForm.h"
 #include "AboutDialog.h"
+#include "TerraLibConfig.h"
+#include "TerraViewConfig.h"
+#include "ui_AboutDialogForm.h"
 
 // TerraLib
 #include <terralib/common/SystemApplicationSettings.h>
@@ -48,11 +50,45 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
   //}
 
   {
-    std::string logoFileName = te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href");
+    std::string logoTVFileName = TVIEW_LOGO_PIXMAP;
+    QPixmap pixmapTV(logoTVFileName.c_str());
+    pixmapTV.scaledToHeight(150, Qt::SmoothTransformation);
+    pixmapTV.scaledToWidth(150, Qt::SmoothTransformation);
+    m_ui->m_applicationLogo->setPixmap(pixmapTV);
 
-    QPixmap pixmap(logoFileName.c_str());
+    std::string logoTEFileName = te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href");
+    QPixmap pixmapTE(logoTEFileName.c_str());
+    pixmapTE.scaledToHeight(100, Qt::SmoothTransformation);
+    pixmapTE.scaledToWidth(100, Qt::SmoothTransformation);
+    m_ui->m_terralibLogo->setPixmap(pixmapTE);
 
-    m_ui->m_terralibLogo->setPixmap(pixmap);
+    std::string copyrightStr = tr("<p>Copyright &copy; 2001-2013 INPE, Tecgraf PUC-Rio, and FUNCATE<BR>").toStdString();
+    m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
+
+    std::string terraviewVersionStr = tr("TerraView Version:").toStdString() + TERRALIB_STRING_VERSION;
+    m_ui->m_terraviewVersionLabel->setText(terraviewVersionStr.c_str());
+
+    std::string terralibVersionStr = tr("TerraLib Version:").toStdString() + TERRALIB_STRING_VERSION;
+    m_ui->m_terralibVersionLabel->setText(terralibVersionStr.c_str());
+
+    std::string buildDateStr = tr("Build Date:").toStdString() + TERRALIB_STRING_BUILD_DATE;
+    m_ui->m_buildDateLabel->setText(buildDateStr.c_str());
+
+    QIcon i1(QIcon::fromTheme("datasource-gdal"));
+    QPixmap p1 = i1.pixmap(50, 50);
+    m_ui->m_thirdParty_1->setPixmap(p1);
+
+    QIcon i2(QIcon::fromTheme("datasource-mysql"));
+    QPixmap p2 = i2.pixmap(50, 50);
+    m_ui->m_thirdParty_2->setPixmap(p2);
+
+    QIcon i3(QIcon::fromTheme("datasource-postgis"));
+    QPixmap p3 = i3.pixmap(50, 50);
+    m_ui->m_thirdParty_3->setPixmap(p3);
+
+    QIcon i4(QIcon::fromTheme("ogc"));
+    QPixmap p4 = i4.pixmap(50, 50);
+    m_ui->m_thirdParty_4->setPixmap(p4);
   }
 }
 

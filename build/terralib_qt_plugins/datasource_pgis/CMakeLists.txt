@@ -31,6 +31,7 @@ endif()
 set (
   HDRS_TO_MOC
   ${SRCDIR}/PostGISConnectorDialog.h
+  ${SRCDIR}/PostGISCreatorDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/datasource/pgis" MOC)
 

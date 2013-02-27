@@ -92,6 +92,8 @@ namespace te
 
           void onDownToolButtonClicked();
 
+          void onCellClicked(int row, int col);
+
         
         protected:
 

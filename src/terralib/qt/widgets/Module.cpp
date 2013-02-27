@@ -27,17 +27,18 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
+#include "../../maptools/MarkRendererManager.h"
 #include "property/DateTimePropertyWidgetFactory.h"
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
 #include "property/StringPropertyWidgetFactory.h"
 #include "se/BasicFillWidgetFactory.h"
 #include "se/GlyphGraphicWidgetFactory.h"
-#include "se/GlyphMarkFactory.h"
+#include "se/GlyphMarkRenderer.h"
 #include "se/GraphicFillWidgetFactory.h"
 #include "se/LocalGraphicWidgetFactory.h"
 #include "se/WellKnownGraphicWidgetFactory.h"
-#include "se/WellKnownMarkFactory.h"
+#include "se/WellKnownMarkRenderer.h"
 //#include "datasource/core/DataSourceTypeManager.h"
 //#include "datasource/connector/gdal/GDALType.h"
 //#include "datasource/connector/geofile/GeoFileType.h"
@@ -119,11 +120,9 @@ void te::qt::widgets::Module::initialize()
   //DataSourceTypeManager::getInstance().add(new WFSType);
   //DataSourceTypeManager::getInstance().add(new WMSType);
 
-// It initializes the well-known mark factory
-  te::qt::widgets::WellKnownMarkFactory::initialize();
-
-// It initializes the glyph mark factory
-  te::qt::widgets::GlyphMarkFactory::initialize();
+// Mark renderers
+  te::map::MarkRendererManager::getInstance().add("", new WellKnownMarkRenderer);
+  te::map::MarkRendererManager::getInstance().add("ttf", new GlyphMarkRenderer);
 
 // It initializes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::initialize();
@@ -154,12 +153,6 @@ void te::qt::widgets::Module::finalize()
   //DataSourceTypeManager::getInstance().remove("WCS");
   //DataSourceTypeManager::getInstance().remove("WFS");
   //DataSourceTypeManager::getInstance().remove("WMS");
-
-// It finalizes the well-known mark factory
-  te::qt::widgets::WellKnownMarkFactory::finalize();
-
-// It finalizes the glyph mark factory
-  te::qt::widgets::GlyphMarkFactory::finalize();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();

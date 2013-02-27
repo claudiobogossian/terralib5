@@ -75,19 +75,27 @@ namespace te
         public slots:
 
           void onAddToolButtonClicked();
+
           void onRemoveToolButtonClicked();
+
           void onEditToolButtonClicked();
+
+          void onCellClicked(int row, int col);
 
 
         protected:
 
-          void addConstraint(te::da::Constraint* c);
+          void listDataSetProperties();
 
-          void removeConstraint(std::string name);
+          void addConstraint(te::da::Constraint* c);
 
           void addIndex(te::da::Index* i);
 
-          void removeIndex(std::string name);
+          void removePrimaryKey(const std::string& name);
+
+          void removeUniqueKey(const std::string& name);
+
+          void removeIndex(const std::string& name);
 
           void addTableItem(std::string name, std::string type, std::string properties);
 
@@ -96,8 +104,6 @@ namespace te
         private:
 
          std::auto_ptr<Ui::ConstraintsIndexesListWidgetForm> m_ui;
-         std::vector<te::da::Constraint*> m_constraints;
-         std::vector<te::da::Index*> m_indexes;
          te::da::DataSetTypePtr m_dsType;
       }; 
 

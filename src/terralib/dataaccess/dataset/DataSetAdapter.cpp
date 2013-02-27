@@ -70,6 +70,9 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, const DataSourceCapabil
   m_inDataSetType = m_ds->getType();
   assert(m_inDataSetType);
 
+  for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
+    m_adaptedProperties.push_back(0);
+
   // Creates the empty Adapter DataSetType
   m_outDataSetType = new DataSetType(m_inDataSetType->getName(), m_inDataSetType->getId());
 

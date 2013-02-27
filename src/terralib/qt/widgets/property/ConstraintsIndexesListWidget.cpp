@@ -54,12 +54,11 @@ te::qt::widgets::ConstraintsIndexesListWidget::ConstraintsIndexesListWidget(QWid
 
   connect(m_ui->m_addToolButton, SIGNAL(clicked()), this, SLOT(onAddToolButtonClicked()));
   connect(m_ui->m_removeToolButton, SIGNAL(clicked()), this, SLOT(onRemoveToolButtonClicked()));
+  connect(m_ui->m_tableWidget, SIGNAL(cellClicked(int, int)), this, SLOT(onCellClicked(int, int)));
 }
 
 te::qt::widgets::ConstraintsIndexesListWidget::~ConstraintsIndexesListWidget()
 {
-  te::common::FreeContents(m_constraints);
-  te::common::FreeContents(m_indexes);
 }
 
 Ui::ConstraintsIndexesListWidgetForm* te::qt::widgets::ConstraintsIndexesListWidget::getForm() const
@@ -70,6 +69,8 @@ Ui::ConstraintsIndexesListWidgetForm* te::qt::widgets::ConstraintsIndexesListWid
 void te::qt::widgets::ConstraintsIndexesListWidget::setDataSetType(const te::da::DataSetTypePtr& dsType)
 {
   m_dsType = dsType;
+
+  listDataSetProperties();
 }
 
 void te::qt::widgets::ConstraintsIndexesListWidget::onAddToolButtonClicked()
@@ -81,15 +82,7 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onAddToolButtonClicked()
 
   if(w.exec() == QDialog::Accepted)
   {
-    te::da::Constraint* c = w.getConstraint();
-
-    if(c)
-       addConstraint(c);
-
-    te::da::Index* i = w.getIndex();
-
-    if(i)
-      addIndex(i);
+    listDataSetProperties();
   }
 }
 
@@ -100,21 +93,25 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onRemoveToolButtonClicked()
   if(row < 0)
     return;
 
-  //remove item from vector
   std::string type = m_ui->m_tableWidget->item(row, 1)->text().toStdString();
+  std::string name = m_ui->m_tableWidget->item(row, 0)->text().toStdString();
 
-  if(type == INDEX_TYPE)
+  if(type == CONSTRAINT_PK_TYPE)
   {
-    removeIndex(m_ui->m_tableWidget->item(row, 0)->text().toStdString());
+    removePrimaryKey(name);
   }
-  else
+  else if(type == CONSTRAINT_UK_TYPE)
   {
-    removeConstraint(m_ui->m_tableWidget->item(row, 0)->text().toStdString());
+    removeUniqueKey(name);
+  }
+  else if(type == INDEX_TYPE)
+  {
+    removeIndex(name);
   }
 
-  m_ui->m_tableWidget->removeRow(row);
+  m_ui->m_removeToolButton->setEnabled(false);
 
-  m_ui->m_tableWidget->resizeColumnsToContents();
+  listDataSetProperties();
 }
 
 void te::qt::widgets::ConstraintsIndexesListWidget::onEditToolButtonClicked()
@@ -122,10 +119,42 @@ void te::qt::widgets::ConstraintsIndexesListWidget::onEditToolButtonClicked()
   //TODO
 }
 
+void te::qt::widgets::ConstraintsIndexesListWidget::onCellClicked(int row, int col)
+{
+  m_ui->m_removeToolButton->setEnabled(true);
+}
+
+void te::qt::widgets::ConstraintsIndexesListWidget::listDataSetProperties()
+{
+  m_ui->m_tableWidget->setRowCount(0);
+
+  //add primary key info
+  if(m_dsType->getPrimaryKey())
+  {
+    addConstraint(m_dsType->getPrimaryKey());
+  }
+
+  //add unique keys info
+  size_t size = m_dsType->getNumberOfUniqueKeys();
+
+  for(size_t t = 0; t < size; ++t)
+  {
+    addConstraint(m_dsType->getUniqueKey(t));
+  }
+
+  //add index info
+  size = m_dsType->getNumberOfIndexes();
+
+  for(size_t t = 0; t < size; ++t)
+  {
+    addIndex(m_dsType->getIndex(t));
+  }
+
+  m_ui->m_tableWidget->resizeColumnsToContents();
+}
+
 void te::qt::widgets::ConstraintsIndexesListWidget::addConstraint(te::da::Constraint* c)
 {
-  m_constraints.push_back(c);
-
   std::string name = c->getName();
   std::string type = "";
   std::string properties = "";
@@ -148,27 +177,8 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addConstraint(te::da::Constr
   addTableItem(name, type, properties);
 }
 
-void te::qt::widgets::ConstraintsIndexesListWidget::removeConstraint(std::string name)
-{
-  std::vector<te::da::Constraint*>::iterator it = m_constraints.begin();
-
-  while(it != m_constraints.end())
-  {
-    if((*it)->getName() == name)
-    {
-      delete(*it);
-      m_constraints.erase(it);
-
-      break;
-    }
-    ++it;
-  }
-}
-
 void te::qt::widgets::ConstraintsIndexesListWidget::addIndex(te::da::Index* i)
 {
-  m_indexes.push_back(i);
-
   std::string name = i->getName();
   std::string type = tr(INDEX_TYPE).toStdString();
   std::string properties = getPropertiesStr(i->getProperties());
@@ -176,20 +186,45 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addIndex(te::da::Index* i)
   addTableItem(name, type, properties);
 }
 
-void te::qt::widgets::ConstraintsIndexesListWidget::removeIndex(std::string name)
+void te::qt::widgets::ConstraintsIndexesListWidget::removePrimaryKey(const std::string& name)
 {
-  std::vector<te::da::Index*>::iterator it = m_indexes.begin();
+  te::da::PrimaryKey* pk = m_dsType->getPrimaryKey();
 
-  while(it != m_indexes.end())
+  if(pk && pk->getName() == name)
   {
-    if((*it)->getName() == name)
-    {
-      delete(*it);
-      m_indexes.erase(it);
+    m_dsType->remove(pk);
+  }
+}
 
+void te::qt::widgets::ConstraintsIndexesListWidget::removeUniqueKey(const std::string& name)
+{
+  size_t size = m_dsType->getNumberOfUniqueKeys();
+
+  for(size_t t = 0; t < size; ++t)
+  {
+    te::da::UniqueKey* uk  = m_dsType->getUniqueKey(t);
+
+    if(uk->getName() == name)
+    {
+      m_dsType->remove(uk);
       break;
     }
-    ++it;
+  }
+}
+
+void te::qt::widgets::ConstraintsIndexesListWidget::removeIndex(const std::string& name)
+{
+  size_t size = m_dsType->getNumberOfIndexes();
+
+  for(size_t t = 0; t < size; ++t)
+  {
+    te::da::Index* i  = m_dsType->getIndex(t);
+
+    if(i->getName() == name)
+    {
+      m_dsType->remove(i);
+      break;
+    }
   }
 }
 
@@ -208,10 +243,7 @@ void te::qt::widgets::ConstraintsIndexesListWidget::addTableItem(std::string nam
 
   QTableWidgetItem* itemProp = new QTableWidgetItem(QString::fromStdString(properties));
   m_ui->m_tableWidget->setItem(newrow, 2, itemProp);
-
-  m_ui->m_tableWidget->resizeColumnsToContents();
 }
-
 
 std::string te::qt::widgets::ConstraintsIndexesListWidget::getPropertiesStr(std::vector<te::dt::Property*> vec)
 {
@@ -226,4 +258,3 @@ std::string te::qt::widgets::ConstraintsIndexesListWidget::getPropertiesStr(std:
 
   return str;
 }
-

@@ -57,25 +57,6 @@ te::qt::widgets::ConstraintsIndexesPropertyDialog::~ConstraintsIndexesPropertyDi
 {
 }
 
-te::da::Index* te::qt::widgets::ConstraintsIndexesPropertyDialog::getIndex()
-{
-  if(m_indexWidget)
-    return m_indexWidget->getIndex();
-
-  return 0;
-}
-
-te::da::Constraint* te::qt::widgets::ConstraintsIndexesPropertyDialog::getConstraint()
-{
-  if(m_pkConstraintWidget)
-    return m_pkConstraintWidget->getConstraint();
-
-  if(m_ukConstraintWidget)
-    return m_ukConstraintWidget->getConstraint();
-
-  return 0;
-}
-
 void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_pkRadioButtonToggled(bool status)
 {
   if(status == false)
@@ -118,16 +99,22 @@ void te::qt::widgets::ConstraintsIndexesPropertyDialog::on_okPushButtonClicked()
   {
     if(m_pkConstraintWidget->checkParameters() == false)
       return;
+
+    m_pkConstraintWidget->getConstraint();
   }
   else if(m_ui->m_ukRadioButton->isChecked())
   {
     if(m_ukConstraintWidget->checkParameters() == false)
       return;
+
+    m_ukConstraintWidget->getConstraint();
   }
   else if(m_ui->m_idxRadioButton->isChecked())
   {
     if(m_indexWidget->checkParameters() == false)
       return;
+
+    m_indexWidget->getIndex();
   }
   else
   {

@@ -46,28 +46,56 @@ list ( APPEND
 set (
   _DIRS 
   .
-  events
   connectors
+  events
+  settings
 )
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/ApplicationPlugins.h
   ${SRCDIR}/BaseApplication.h
   ${SRCDIR}/BaseApplicationController.h
-  ${SRCDIR}/ApplicationPlugins.h
+  
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/connectors/MapDisplay.h
-  ${SRCDIR}/connectors/TabularViewer.h
   ${SRCDIR}/connectors/LayerExplorer.h
+  ${SRCDIR}/connectors/MapDisplay.h  
+  ${SRCDIR}/connectors/TabularViewer.h
+  
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/settings/DisplayFrame.h
+  ${SRCDIR}/settings/ProjectFrame.h
+  ${SRCDIR}/settings/SystemSettings.h
+  ${SRCDIR}/settings/TableFrame.h
+)
+
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/settings" MOC)
+
+# Select the FORMS widgets
+file(
+  GLOB FORMS
+  ${SRCDIR}/settings/ui/*.ui
+)
+
+qt4_wrap_ui(UI ${FORMS})
+
+install (
+  FILES ${UI}
+  DESTINATION terralib/qt/af/ui
+  COMPONENT HEADERS
+)
+
+source_group("Form Files" FILES ${FORMS})
 source_group("Generated Files" FILES ${MOC})
 
 # Files in build tree
@@ -79,13 +107,11 @@ appPrefix ("qt/af" "${_DIRS}" QT_AF_INC_INST_DIRS)
 # Get files by structured by folders. 
 getFfiles(${SRCDIR} "${_DIRS}" SRCS "")
 
-list (APPEND SRCS "${MOC}")
+list (APPEND SRCS "${MOC}" "${UI}")
 
 # Include directory of the image files
 list (APPEND QT_AF_INC_DIRS "${CMAKE_CURRENT_BINARY_DIR}")
 list (APPEND TE_DEP_INCLUDES "${QT_AF_INC_DIRS}")
-
-set (TE_AUX_DIRS ${TE_AUX_DIRS} "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
 
 #exporting module information
 exportModuleInformation ("qt_af" "${QT_AF_INC_DIRS}" "${QT_AF_INC_INST_DIRS}")
