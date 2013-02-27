@@ -135,6 +135,11 @@ void te::qt::af::ApplicationPlugins::removePlugin(const std::string& pluginName)
     m_plugins_files.erase(it);
 }
 
+const std::string& te::qt::af::ApplicationPlugins::getFileName() const
+{
+  return m_file;
+}
+
 void te::qt::af::ApplicationPlugins::addPlugins(const std::map<std::string, std::string>& plgs)
 {
   std::map<std::string, std::string>::const_iterator it;

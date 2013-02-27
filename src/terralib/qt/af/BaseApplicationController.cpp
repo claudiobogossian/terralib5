@@ -62,7 +62,6 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-
 const te::qt::af::BaseApplicationController& sm_core = te::qt::af::ApplicationController::getInstance();
 
 te::qt::af::BaseApplicationController::BaseApplicationController(QObject* parent)
@@ -562,7 +561,9 @@ void te::qt::af::BaseApplicationController::finalize()
   if(!m_initialized)
     return;
 
-  UpdateUserSettingsFile(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
+  UpdateApplicationPlugins();
+
+  UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
 
   saveDataSourcesFile();
 

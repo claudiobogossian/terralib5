@@ -94,7 +94,7 @@ namespace te
           
           void filliPlugins();
 
-          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked, QTableView* table);
+          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked);
 
         private:
 
