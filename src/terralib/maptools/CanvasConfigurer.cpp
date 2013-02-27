@@ -27,6 +27,7 @@
 #include "../common/StringUtils.h"
 #include "../common/STLUtils.h"
 #include "../fe/Literal.h"
+#include "../se/ExternalGraphic.h"
 #include "../se/Fill.h"
 #include "../se/Font.h"
 #include "../se/Graphic.h"
@@ -39,14 +40,16 @@
 #include "../se/SvgParameter.h"
 #include "../se/Symbolizer.h"
 #include "../se/TextSymbolizer.h"
-#include "AbstractMarkFactory.h"
+#include "../xlink/SimpleLink.h"
 #include "Canvas.h"
 #include "CanvasConfigurer.h"
+#include "MarkRendererManager.h"
 #include "Utils.h"
 
 // STL
 #include <cassert>
 #include <cstdlib>
+#include <fstream>
 #include <vector>
 
 std::map<std::string, te::map::LineCapStyle> te::map::CanvasConfigurer::sm_lineCapMap;
@@ -296,50 +299,115 @@ void te::map::CanvasConfigurer::config(const te::se::Graphic* graphic, te::map::
   if(opacity)
     alpha = (int)(te::map::GetDouble(opacity) * TE_OPAQUE);
 
-  /* TODO: Here we have a set of marks. Need review! 
-            Maybe keep a reference to the dataset and make the draw here... */
+  /* TODO: Here we have a set of marks and external graphics. Need review!
+           Some questions:
+           :: Create a Graphic2ImagePatternFactory? The factory will create an image pattern that represents the composition of marks and external graphics.
+           :: Keep a reference to the dataset and make the draw here? 
+           For while consider Mark or ExtrenalGraphic and use the first! */
 
   const std::vector<te::se::Mark*> marks = graphic->getMarks();
   if(!marks.empty())
   {
-    for(std::size_t i = 0; i < marks.size(); ++i)
+    te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(marks[0], sizeValue);
+
+    switch(configStyle)
     {
-      te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(marks[i], sizeValue);
+      case te::map::CanvasConfigurer::Fill:
+        m_canvas->setPolygonFillColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+        m_canvas->setPolygonFillPattern(rgba, sizeValue, sizeValue);
+      break;
+
+      case te::map::CanvasConfigurer::Contour:
+        m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+        m_canvas->setPolygonContourPattern(rgba, sizeValue, sizeValue);
+      break;
+
+      case te::map::CanvasConfigurer::Line:
+        m_canvas->setLineColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+        m_canvas->setLinePattern(rgba, sizeValue, sizeValue);
+      break;
+
+      case te::map::CanvasConfigurer::Point:
+        m_canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+        m_canvas->setPointPattern(rgba, sizeValue, sizeValue);
+      break;
+    }
+    te::common::Free(rgba, sizeValue);
+  }
+  else
+  {
+    const std::vector<te::se::ExternalGraphic*> exgs = graphic->getExternalGraphics();
+    if(!exgs.empty())
+    {
+      te::se::ExternalGraphic* eg = exgs[0];
+      assert(eg);
+
+      const te::xl::SimpleLink* link = eg->getOnlineResource();
+      if(link == 0)
+        return;
+
+      const std::string uri = link->getHref();
+      assert(!uri.empty());
+
+      std::ifstream file(uri.c_str(), std::ios::in | std::ios::binary | std::ios::ate);
+      assert(file.is_open());
+
+      std::size_t bufferSize = static_cast<std::size_t>(file.tellg());
+      char* data = new char[bufferSize];
+      file.seekg(0, std::ios::beg);
+      file.read(data, bufferSize);
+      file.close();
+
       switch(configStyle)
       {
         case te::map::CanvasConfigurer::Fill:
-          m_canvas->setPolygonFillColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
-          m_canvas->setPolygonFillPattern(rgba, sizeValue, sizeValue);
-          m_canvas->setPolygonPatternRotation(angle);
-          m_canvas->setPolygonPatternOpacity(alpha);
+          m_canvas->setPolygonFillColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+          m_canvas->setPolygonFillPattern(data, bufferSize, PNG);
         break;
 
         case te::map::CanvasConfigurer::Contour:
-          m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
-          m_canvas->setPolygonContourPattern(rgba, sizeValue, sizeValue);
-          m_canvas->setPolygonContourPatternRotation(angle);
-          m_canvas->setPolygonContourPatternOpacity(alpha);
+          m_canvas->setPolygonContourColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+          m_canvas->setPolygonContourPattern(data, bufferSize, PNG);
         break;
 
         case te::map::CanvasConfigurer::Line:
-          m_canvas->setLineColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
-          m_canvas->setLinePattern(rgba, sizeValue, sizeValue);
-          m_canvas->setLinePatternRotation(angle);
-          m_canvas->setLinePatternOpacity(alpha);
+          m_canvas->setLineColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+          m_canvas->setLinePattern(data, bufferSize, PNG);
         break;
 
         case te::map::CanvasConfigurer::Point:
-          m_canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT));
-          m_canvas->setPointPattern(rgba, sizeValue, sizeValue);
-          m_canvas->setPointPatternRotation(angle);
-          m_canvas->setPointPatternOpacity(alpha);
+          m_canvas->setPointColor(te::color::RGBAColor(0, 0, 0, TE_TRANSPARENT)); // It shouldn't be necessary! (Uba, Feb 2013)
+          m_canvas->setPointPattern(data, bufferSize, PNG);
         break;
       }
-      te::common::Free(rgba, sizeValue);
+
+      delete [] data;
     }
   }
 
-  /* TODO: Here we have a set of ExternalGraphic... */
+  // Setup angle and transparency
+  switch(configStyle)
+  {
+    case te::map::CanvasConfigurer::Fill:
+      m_canvas->setPolygonPatternRotation(angle);
+      m_canvas->setPolygonPatternOpacity(alpha);
+    break;
+
+    case te::map::CanvasConfigurer::Contour:
+      m_canvas->setPolygonContourPatternRotation(angle);
+      m_canvas->setPolygonContourPatternOpacity(alpha);
+    break;
+
+    case te::map::CanvasConfigurer::Line:
+      m_canvas->setLinePatternRotation(angle);
+      m_canvas->setLinePatternOpacity(alpha);
+    break;
+
+    case te::map::CanvasConfigurer::Point:
+      m_canvas->setPointPatternRotation(angle);
+      m_canvas->setPointPatternOpacity(alpha);
+    break;
+  }
 }
 
 void te::map::CanvasConfigurer::configDefaultPolygon()

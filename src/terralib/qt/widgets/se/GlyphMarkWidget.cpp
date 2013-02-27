@@ -28,7 +28,7 @@
 #include "BasicFillWidget.h"
 #include "BasicStrokeWidget.h"
 #include "CharMapWidget.h"
-#include "GlyphMarkFactory.h"
+#include "GlyphMarkRenderer.h"
 #include "GlyphMarkWidget.h"
 #include "ui_GlyphMarkWidgetForm.h"
 
@@ -97,7 +97,7 @@ void te::qt::widgets::GlyphMarkWidget::updateUi()
   QChar charCode;
   try
   {
-    te::qt::widgets::GlyphMarkFactory::decode(qName, fontName, charCode);
+    te::qt::widgets::GlyphMarkRenderer::decode(qName, fontName, charCode);
   }
   catch(...)
   {
@@ -114,7 +114,7 @@ void te::qt::widgets::GlyphMarkWidget::updateUi()
 
 void te::qt::widgets::GlyphMarkWidget::updateMarkName()
 {
-  QString name = te::qt::widgets::GlyphMarkFactory::encode(m_ui->m_fontComboBox->currentFont().family(), m_charMapWidget->getCurrentChar());
+  QString name = te::qt::widgets::GlyphMarkRenderer::encode(m_ui->m_fontComboBox->currentFont().family(), m_charMapWidget->getCurrentChar());
   m_mark->setWellKnownName(new std::string(name.toStdString()));
   emit markChanged();
 }

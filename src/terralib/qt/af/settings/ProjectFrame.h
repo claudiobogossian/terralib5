@@ -30,6 +30,8 @@
 #include "../Config.h"
 #include "ComponentWidget.h"
 
+#include <memory>
+
 namespace Ui { class ProjectFrameForm; }
 
 namespace te

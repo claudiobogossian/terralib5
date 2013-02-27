@@ -33,6 +33,8 @@
 // TerraLib
 #include "../Config.h"
 
+#include <memory>
+
 namespace Ui { class SystemSettingsForm; }
 
 namespace te

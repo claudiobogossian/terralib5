@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/WellKnownMarkFactory.cpp
+  \file terralib/qt/widgets/WellKnownMarkRenderer.cpp
 
-  \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+  \brief A concrete renderer based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
 // TerraLib
@@ -28,43 +28,29 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Mark.h"
 #include "../Utils.h"
-#include "WellKnownMarkFactory.h"
+#include "WellKnownMarkRenderer.h"
 #include "Utils.h"
 
 // STL
 #include <vector>
 
-// Factory key
-std::string te::qt::widgets::WellKnownMarkFactory::sm_factoryKey(""); // Default Mark Factory
+// MarkMap::<name -> MarkType>
+std::map<std::string, te::qt::widgets::WellKnownMarkRenderer::MarkType> te::qt::widgets::WellKnownMarkRenderer::sm_markMap;
 
-// Global factory
-te::qt::widgets::WellKnownMarkFactory* te::qt::widgets::WellKnownMarkFactory::sm_factory(0);
-
-// MarkMap::<name->MarkType>
-std::map<std::string, te::qt::widgets::WellKnownMarkFactory::MarkType> te::qt::widgets::WellKnownMarkFactory::sm_markMap;
-
-void te::qt::widgets::WellKnownMarkFactory::initialize()
+te::qt::widgets::WellKnownMarkRenderer::WellKnownMarkRenderer()
+  : te::map::AbstractMarkRenderer()
 {
-  finalize();
-  sm_factory = new WellKnownMarkFactory;
+  m_brush.setStyle(Qt::SolidPattern);
+  m_brush.setColor(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR));
+  buildMaps();
+  buildPaths();
 }
 
-void te::qt::widgets::WellKnownMarkFactory::finalize()
-{
-  delete sm_factory;
-  sm_factory = 0;
-}
-
-te::qt::widgets::WellKnownMarkFactory::~WellKnownMarkFactory()
+te::qt::widgets::WellKnownMarkRenderer::~WellKnownMarkRenderer()
 {
 }
 
-te::map::AbstractMarkFactory* te::qt::widgets::WellKnownMarkFactory::build()
-{
-  return sm_factory;
-}
-
-te::color::RGBAColor** te::qt::widgets::WellKnownMarkFactory::create(const te::se::Mark* mark, std::size_t size)
+te::color::RGBAColor** te::qt::widgets::WellKnownMarkRenderer::render(const te::se::Mark* mark, std::size_t size)
 {
   // Supports the mark?
   const std::string* name = mark->getWellKnownName();
@@ -87,51 +73,51 @@ te::color::RGBAColor** te::qt::widgets::WellKnownMarkFactory::create(const te::s
   // Let's draw the mark!
   switch(markType)
   {
-    case te::qt::widgets::WellKnownMarkFactory::Square:
+    case te::qt::widgets::WellKnownMarkRenderer::Square:
       draw(img, m_squarePath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Circle:
+    case te::qt::widgets::WellKnownMarkRenderer::Circle:
       draw(img, m_circlePath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Triangle:
+    case te::qt::widgets::WellKnownMarkRenderer::Triangle:
       draw(img, m_trianglePath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Star:
+    case te::qt::widgets::WellKnownMarkRenderer::Star:
       draw(img, m_starPath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Cross:
+    case te::qt::widgets::WellKnownMarkRenderer::Cross:
       draw(img, m_crossPath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::X:
+    case te::qt::widgets::WellKnownMarkRenderer::X:
       draw(img, m_xPath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Diamond:
+    case te::qt::widgets::WellKnownMarkRenderer::Diamond:
       draw(img, m_diamondPath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Ellipse:
+    case te::qt::widgets::WellKnownMarkRenderer::Ellipse:
       draw(img, m_ellipsePath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Semicircle:
+    case te::qt::widgets::WellKnownMarkRenderer::Semicircle:
       draw(img, m_semiCirclePath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Pentagon:
+    case te::qt::widgets::WellKnownMarkRenderer::Pentagon:
       draw(img, m_pentagonPath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Hexagon:
+    case te::qt::widgets::WellKnownMarkRenderer::Hexagon:
       draw(img, m_hexagonPath);
     break;
 
-    case te::qt::widgets::WellKnownMarkFactory::Octagon:
+    case te::qt::widgets::WellKnownMarkRenderer::Octagon:
       draw(img, m_octagonPath);
     break;
   }
@@ -144,31 +130,31 @@ te::color::RGBAColor** te::qt::widgets::WellKnownMarkFactory::create(const te::s
   return rgba;
 }
 
-void te::qt::widgets::WellKnownMarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
+void te::qt::widgets::WellKnownMarkRenderer::getSupportedMarks(std::vector<std::string>& marks) const
 {
   std::map<std::string, MarkType>::const_iterator it;
   for(it = sm_markMap.begin(); it != sm_markMap.end(); ++it)
     marks.push_back(it->first);
 }
 
-void te::qt::widgets::WellKnownMarkFactory::buildMaps()
+void te::qt::widgets::WellKnownMarkRenderer::buildMaps()
 {
   // MarkMap
-  sm_markMap["square"    ] = te::qt::widgets::WellKnownMarkFactory::Square;
-  sm_markMap["circle"    ] = te::qt::widgets::WellKnownMarkFactory::Circle;
-  sm_markMap["triangle"  ] = te::qt::widgets::WellKnownMarkFactory::Triangle;
-  sm_markMap["star"      ] = te::qt::widgets::WellKnownMarkFactory::Star;
-  sm_markMap["cross"     ] = te::qt::widgets::WellKnownMarkFactory::Cross;
-  sm_markMap["x"         ] = te::qt::widgets::WellKnownMarkFactory::X;
-  sm_markMap["diamond"   ] = te::qt::widgets::WellKnownMarkFactory::Diamond;
-  sm_markMap["ellipse"   ] = te::qt::widgets::WellKnownMarkFactory::Ellipse;
-  sm_markMap["semicircle"] = te::qt::widgets::WellKnownMarkFactory::Semicircle;
-  sm_markMap["pentagon"  ] = te::qt::widgets::WellKnownMarkFactory::Pentagon;
-  sm_markMap["hexagon"   ] = te::qt::widgets::WellKnownMarkFactory::Hexagon;
-  sm_markMap["octagon"   ] = te::qt::widgets::WellKnownMarkFactory::Octagon;
+  sm_markMap["square"    ] = te::qt::widgets::WellKnownMarkRenderer::Square;
+  sm_markMap["circle"    ] = te::qt::widgets::WellKnownMarkRenderer::Circle;
+  sm_markMap["triangle"  ] = te::qt::widgets::WellKnownMarkRenderer::Triangle;
+  sm_markMap["star"      ] = te::qt::widgets::WellKnownMarkRenderer::Star;
+  sm_markMap["cross"     ] = te::qt::widgets::WellKnownMarkRenderer::Cross;
+  sm_markMap["x"         ] = te::qt::widgets::WellKnownMarkRenderer::X;
+  sm_markMap["diamond"   ] = te::qt::widgets::WellKnownMarkRenderer::Diamond;
+  sm_markMap["ellipse"   ] = te::qt::widgets::WellKnownMarkRenderer::Ellipse;
+  sm_markMap["semicircle"] = te::qt::widgets::WellKnownMarkRenderer::Semicircle;
+  sm_markMap["pentagon"  ] = te::qt::widgets::WellKnownMarkRenderer::Pentagon;
+  sm_markMap["hexagon"   ] = te::qt::widgets::WellKnownMarkRenderer::Hexagon;
+  sm_markMap["octagon"   ] = te::qt::widgets::WellKnownMarkRenderer::Octagon;
 }
 
-void te::qt::widgets::WellKnownMarkFactory::buildPaths()
+void te::qt::widgets::WellKnownMarkRenderer::buildPaths()
 {
   // Local transformation matrix
   QTransform transform;
@@ -271,7 +257,7 @@ void te::qt::widgets::WellKnownMarkFactory::buildPaths()
   m_octagonPath = transform.scale(0.5, 0.5).rotate(180).map(m_octagonPath);
 }
 
-void te::qt::widgets::WellKnownMarkFactory::setup(QImage* img)
+void te::qt::widgets::WellKnownMarkRenderer::setup(QImage* img)
 {
   m_painter.begin(img);
   m_painter.setRenderHints(QPainter::Antialiasing);
@@ -279,14 +265,14 @@ void te::qt::widgets::WellKnownMarkFactory::setup(QImage* img)
   m_painter.setBrush(m_brush);
 }
 
-void te::qt::widgets::WellKnownMarkFactory::end()
+void te::qt::widgets::WellKnownMarkRenderer::end()
 {
   m_painter.end();
   m_pen = QPen(QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
   m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
-void te::qt::widgets::WellKnownMarkFactory::draw(QImage* img, QPainterPath& path)
+void te::qt::widgets::WellKnownMarkRenderer::draw(QImage* img, QPainterPath& path)
 {
   setup(img);
 
@@ -300,13 +286,4 @@ void te::qt::widgets::WellKnownMarkFactory::draw(QImage* img, QPainterPath& path
   m_painter.drawPath(transformedPath);
 
   end();
-}
-
-te::qt::widgets::WellKnownMarkFactory::WellKnownMarkFactory()
-  : te::map::AbstractMarkFactory(sm_factoryKey)
-{
-  m_brush.setStyle(Qt::SolidPattern);
-  m_brush.setColor(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR));
-  buildMaps();
-  buildPaths();
 }

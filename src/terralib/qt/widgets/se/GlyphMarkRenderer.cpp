@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/GlyphMarkFactory.cpp
+  \file terralib/qt/widgets/GlyphMarkRenderer.cpp
 
-  \brief A concrete factory based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
+  \brief A concrete renderer based on Qt4 for conversion of Symbology Enconding Mark elements to an image pattern.
 */
 
 // TerraLib
@@ -28,77 +28,33 @@
 #include "../../../maptools/Utils.h"
 #include "../../../se/Mark.h"
 #include "../Utils.h"
-#include "GlyphMarkFactory.h"
+#include "GlyphMarkRenderer.h"
 #include "Utils.h"
 
 // STL
 #include <algorithm>
 
-// Factory key
-std::string te::qt::widgets::GlyphMarkFactory::sm_factoryKey("ttf");
+// Renderer key
+std::string te::qt::widgets::GlyphMarkRenderer::sm_rendererKey("ttf");
 
-// Global factory
-te::qt::widgets::GlyphMarkFactory* te::qt::widgets::GlyphMarkFactory::sm_factory(0);
-
-void te::qt::widgets::GlyphMarkFactory::initialize()
+te::qt::widgets::GlyphMarkRenderer::GlyphMarkRenderer()
+  : te::map::AbstractMarkRenderer()
 {
-  finalize();
-  sm_factory = new GlyphMarkFactory;
+  m_brush.setStyle(Qt::SolidPattern);
+  m_brush.setColor(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR));
 }
 
-void te::qt::widgets::GlyphMarkFactory::finalize()
-{
-  delete sm_factory;
-  sm_factory = 0;
-}
-
-QString te::qt::widgets::GlyphMarkFactory::encode(const QString& font, const int& charCode)
-{
-  QString result = QString::fromStdString(sm_factoryKey);
-  result += "://" + font + "#0x" + QString::number(charCode, 16);
-  return result;
-}
-
-void te::qt::widgets::GlyphMarkFactory::decode(QString& name, QString& font, QChar& charCode)
-{
-  // Extract the part important to this factory!
-  QString pattern(name);
-  pattern.remove(0, sm_factoryKey.size() + 3); // removing "ttf://"
-  if(!pattern.contains("#"))
-    return; // TODO: Exception: Bad format.
-
-  // Tokenizes based on '#" separator. The first value is the font and the second is the char code...
-  QStringList myParams = pattern.split("#", QString::SkipEmptyParts);
-  if(myParams.size() < 2)
-    return; // TODO: Exception: Bad format.
-
-  // Getting char
-  bool wasConverted = false;
-  // Base 0: if the string begins with "0x", base 16 is used; if the string begins with "0", base 8 is used; otherwise, base 10 is used.
-  charCode = myParams[1].toInt(&wasConverted, 0);
-  if(!wasConverted)
-    return; // TODO: Exception: Invalid char code.
-
-  // The font name
-  font = myParams[0];
-}
-
-te::qt::widgets::GlyphMarkFactory::~GlyphMarkFactory()
+te::qt::widgets::GlyphMarkRenderer::~GlyphMarkRenderer()
 {
 }
 
-te::map::AbstractMarkFactory* te::qt::widgets::GlyphMarkFactory::build()
-{
-  return sm_factory;
-}
-
-te::color::RGBAColor** te::qt::widgets::GlyphMarkFactory::create(const te::se::Mark* mark, std::size_t size)
+te::color::RGBAColor** te::qt::widgets::GlyphMarkRenderer::render(const te::se::Mark* mark, std::size_t size)
 {
   // Decoding...
   QChar ch;
   QString fontName;
   QString name(mark->getWellKnownName()->c_str());
-  te::qt::widgets::GlyphMarkFactory::decode(name, fontName, ch); // TODO: Can throw exceptions!
+  te::qt::widgets::GlyphMarkRenderer::decode(name, fontName, ch); // TODO: Can throw exceptions!
 
   // Configuring the font
   QFont font;
@@ -135,11 +91,42 @@ te::color::RGBAColor** te::qt::widgets::GlyphMarkFactory::create(const te::se::M
   return rgba;
 }
 
-void te::qt::widgets::GlyphMarkFactory::getSupportedMarks(std::vector<std::string>& marks) const
+void te::qt::widgets::GlyphMarkRenderer::getSupportedMarks(std::vector<std::string>& marks) const
 {
 }
 
-void te::qt::widgets::GlyphMarkFactory::setup(QImage* img)
+QString te::qt::widgets::GlyphMarkRenderer::encode(const QString& font, const int& charCode)
+{
+  QString result = QString::fromStdString(sm_rendererKey);
+  result += "://" + font + "#0x" + QString::number(charCode, 16);
+  return result;
+}
+
+void te::qt::widgets::GlyphMarkRenderer::decode(QString& name, QString& font, QChar& charCode)
+{
+  // Extract the part important to this renderer!
+  QString pattern(name);
+  pattern.remove(0, sm_rendererKey.size() + 3); // removing "ttf://"
+  if(!pattern.contains("#"))
+    return; // TODO: Exception: Bad format.
+
+  // Tokenizes based on '#" separator. The first value is the font and the second is the char code...
+  QStringList myParams = pattern.split("#", QString::SkipEmptyParts);
+  if(myParams.size() < 2)
+    return; // TODO: Exception: Bad format.
+
+  // Getting char
+  bool wasConverted = false;
+  // Base 0: if the string begins with "0x", base 16 is used; if the string begins with "0", base 8 is used; otherwise, base 10 is used.
+  charCode = myParams[1].toInt(&wasConverted, 0);
+  if(!wasConverted)
+    return; // TODO: Exception: Invalid char code.
+
+  // The font name
+  font = myParams[0];
+}
+
+void te::qt::widgets::GlyphMarkRenderer::setup(QImage* img)
 {
   m_painter.begin(img);
   m_painter.setRenderHints(QPainter::Antialiasing);
@@ -147,14 +134,14 @@ void te::qt::widgets::GlyphMarkFactory::setup(QImage* img)
   m_painter.setBrush(m_brush);
 }
 
-void te::qt::widgets::GlyphMarkFactory::end()
+void te::qt::widgets::GlyphMarkRenderer::end()
 {
   m_painter.end();
   m_pen = QPen(QColor(TE_SE_DEFAULT_STROKE_BASIC_COLOR));
   m_brush = QBrush(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR), Qt::SolidPattern);
 }
 
-void te::qt::widgets::GlyphMarkFactory::draw(QImage* img, QPainterPath& path)
+void te::qt::widgets::GlyphMarkRenderer::draw(QImage* img, QPainterPath& path)
 {
   setup(img);
 
@@ -170,17 +157,10 @@ void te::qt::widgets::GlyphMarkFactory::draw(QImage* img, QPainterPath& path)
   end();
 }
 
-bool te::qt::widgets::GlyphMarkFactory::getChar(QString& charCode, QChar& ch)
+bool te::qt::widgets::GlyphMarkRenderer::getChar(QString& charCode, QChar& ch)
 {
   bool isOk = false;
   // Base 0: if the string begins with "0x", base 16 is used; if the string begins with "0", base 8 is used; otherwise, base 10 is used.
   ch = charCode.toInt(&isOk, 0);
   return isOk;
-}
-
-te::qt::widgets::GlyphMarkFactory::GlyphMarkFactory()
-  : te::map::AbstractMarkFactory(sm_factoryKey)
-{
-  m_brush.setStyle(Qt::SolidPattern);
-  m_brush.setColor(QColor(TE_SE_DEFAULT_FILL_BASIC_COLOR));
 }
