@@ -50,6 +50,11 @@ te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& rea
   else // InlineContent
     eg->setInlineContent(ReadInlineContent(reader));
 
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  reader.next();
+
   // Format
   assert(reader.getElementLocalName() == "Format");
   reader.next();
@@ -58,6 +63,9 @@ te::se::ExternalGraphic* te::serialize::ReadExternalGraphic(te::xml::Reader& rea
   reader.next();
 
   // Recodes (...)
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  reader.next();
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   reader.next();
