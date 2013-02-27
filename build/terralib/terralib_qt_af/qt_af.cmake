@@ -46,25 +46,27 @@ list ( APPEND
 set (
   _DIRS 
   .
-  events
   connectors
+  events
   settings
 )
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/ApplicationPlugins.h
   ${SRCDIR}/BaseApplication.h
   ${SRCDIR}/BaseApplicationController.h
-  ${SRCDIR}/ApplicationPlugins.h
+  
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/connectors/MapDisplay.h
-  ${SRCDIR}/connectors/TabularViewer.h
   ${SRCDIR}/connectors/LayerExplorer.h
+  ${SRCDIR}/connectors/MapDisplay.h  
+  ${SRCDIR}/connectors/TabularViewer.h
+  
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
@@ -72,9 +74,9 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/settings/DisplayFrame.h
-  ${SRCDIR}/settings/TableFrame.h
   ${SRCDIR}/settings/ProjectFrame.h
   ${SRCDIR}/settings/SystemSettings.h
+  ${SRCDIR}/settings/TableFrame.h
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/settings" MOC)
