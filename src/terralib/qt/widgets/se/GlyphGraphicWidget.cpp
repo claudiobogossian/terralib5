@@ -25,8 +25,8 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../maptools/MarkRendererManager.h"
 #include "../../../maptools/Utils.h"
-#include "../../../maptools/AbstractMarkFactory.h"
 #include "../../../se/AnchorPoint.h"
 #include "../../../se/Displacement.h"
 #include "../../../se/Graphic.h"
@@ -109,7 +109,7 @@ QIcon te::qt::widgets::GlyphGraphicWidget::getGraphicIcon(const QSize& size) con
   te::se::Mark* mark = m_glyphMarkWidget->getMark();
 
   int dimension = size.width();
-  te::color::RGBAColor** rgba = te::map::AbstractMarkFactory::make(mark, dimension);
+  te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(mark, dimension);
   QImage* img = te::qt::widgets::GetImage(rgba, dimension, dimension);
 
   QIcon icon = QIcon(QPixmap::fromImage(img->scaled(size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation)));

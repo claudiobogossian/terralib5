@@ -25,19 +25,22 @@
 
 // TerraLib
 #include "../../utils/CentralizedCheckBoxDelegate.h"
+#include "../../utils/ResourceChooser.h"
 #include "../../../../plugin/AbstractPlugin.h"
 #include "../../../../plugin/PluginInfo.h"
 #include "../../../../plugin/PluginManager.h"
-#include "ui_PluginManagerDialogForm.h"
+#include "../../../../plugin/Utils.h"
+#include "Exception.h"
 #include "PluginManagerDialog.h"
-#include <terralib/qt/widgets/utils/ResourceChooser.h>
-#include <terralib/plugin/Utils.h>
 #include "PluginsModel.h"
+#include "ui_PluginManagerDialogForm.h"
 
 // STL
 #include <algorithm>
 
 // Qt
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtCore/QUrl>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPixmap>
@@ -46,63 +49,8 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-#include <QFileInfo>
-#include <QDir>
 
-bool pluginExists(const std::string& pluginName);
-
-void makeRemove(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, 
-  const std::vector<std::string>& files)
-{
-  for(size_t i=0; i<status.size(); i++)
-    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_remove) && pluginExists(plgs[i]->m_name))
-      te::plugin::PluginManager::getInstance().remove(plgs[i]->m_name);
-}
-
-void makeDisable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, 
-  const std::vector<std::string>& files)
-{
-  for(size_t i=0; i<status.size(); i++)
-    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_disable) && te::plugin::PluginManager::getInstance().isLoaded(plgs[i]->m_name))
-      te::plugin::PluginManager::getInstance().unload(plgs[i]->m_name);
-}
-
-void makeAdd(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, 
-  const std::vector<std::string>& files)
-{
-  for(size_t i=0; i<status.size(); i++)
-    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_add) && (!pluginExists(plgs[i]->m_name)))
-      te::plugin::PluginManager::getInstance().add(*plgs[i]);
-}
-
-void makeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, 
-  const std::vector<std::string>& files)
-{
-  for(size_t i=0; i<status.size(); i++)
-    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_enable) && te::plugin::PluginManager::getInstance().isUnloadedPlugin(plgs[i]->m_name))
-      te::plugin::PluginManager::getInstance().load(plgs[i]->m_name);
-}
-
-QTableWidgetItem* getCheckableItem(const bool& isBroked)
-{
-  QTableWidgetItem* item = new QTableWidgetItem;
-
-  if(isBroked)
-  {
-    item->setFlags(item->flags() &= ~Qt::ItemIsUserCheckable);
-    item->setToolTip(QObject::tr("Plug-in broked. (Missing dependencies)"));
-  }
-  else
-  {
-    item->setFlags(item->flags() |= Qt::ItemIsUserCheckable);
-    item->setCheckState(Qt::Unchecked);
-    item->setToolTip(QObject::tr("Check for enable uncheck for disable the plug-in"));
-  }
-
-  return item;
-}
-
-bool pluginExists(const std::string& pluginName)
+bool PluginExists(const std::string& pluginName)
 {
   try
   {
@@ -115,79 +63,185 @@ bool pluginExists(const std::string& pluginName)
   }
 }
 
-void addPlugin(const QString& fileName, te::qt::widgets::PluginsModel* model)
+void CheckLoadedDependencies(te::plugin::PluginInfo* plg, std::vector<std::string>& deps)
+{
+  deps.clear();
+
+  std::vector<std::string> plgs = te::plugin::PluginManager::getInstance().getDependents(plg->m_name);
+  std::vector<std::string>::iterator it;
+
+  for(it=plgs.begin(); it!=plgs.end(); ++it)
+  {
+    std::string plgName = *it;
+
+    if(te::plugin::PluginManager::getInstance().isLoaded(plgName))
+      deps.push_back(plgName);
+  }
+}
+
+void CheckRequiredDependencies(te::plugin::PluginInfo* plg, std::vector<std::string>& deps)
+{
+  deps.clear();
+
+  std::vector<std::string> plgs = plg->m_requiredPlugins;
+  std::vector<std::string>::iterator it;
+
+  for(it=plgs.begin(); it!=plgs.end(); ++it)
+  {
+    std::string plgName = *it;
+
+    if(!PluginExists(plgName))
+    {
+      QString msg("Unable to load <b>%1</b>. Dependency missed: <ul><li><b>%2</b></li></ul>.");
+      msg = msg.arg(plg->m_name.c_str(), plgName.c_str()); 
+
+      throw te::qt::widgets::Exception(msg.toStdString());
+    }
+
+    if(!te::plugin::PluginManager::getInstance().isLoaded(plgName))
+      deps.push_back(plgName);
+  }
+}
+
+QString GetPluginDepsMessage(const std::string& plg, const std::vector<std::string>& dps)
+{
+  QString result;
+
+  if(!dps.empty())
+  {
+    std::vector<std::string>::const_iterator it;
+  
+    result = QObject::tr("Unloading <b>%1</b> will also unload the plugins: <ul>");
+    result = result.arg(plg.c_str());
+
+    for(it=dps.begin(); it!=dps.end(); ++it)
+    {
+      result += QString("<li><b>%1</b></li>");
+      result = result.arg((*it).c_str()); 
+    }
+
+    result +=  QObject::tr("</ul> Did you want to continue?");
+  }
+
+  return result;
+}
+
+QString GetPluginReqsMessage(const std::string& plg, const std::vector<std::string>& dps)
+{
+  QString result;
+
+  if(!dps.empty())
+  {
+    std::vector<std::string>::const_iterator it;
+  
+    result = QObject::tr("In order to be able to load <b>%1</b> plugin, the following plugins must also be enabled: <ul>");
+    result = result.arg(plg.c_str());
+
+    for(it=dps.begin(); it!=dps.end(); ++it)
+    {
+      result += QString("<li><b>%1</b></li>");
+      result = result.arg((*it).c_str()); 
+    }
+
+    result += QObject::tr("</ul> Allow them to be anabled?");
+  }
+
+  return result;
+}
+
+void MakeRemove(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
+{
+  std::vector<std::string> dps;
+
+  for(size_t i=0; i<status.size(); i++)
+    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_remove) && PluginExists(plgs[i]->m_name))
+    {
+      CheckLoadedDependencies(plgs[i], dps);
+
+      if(!dps.empty())
+      {
+        QString msg = GetPluginDepsMessage(plgs[i]->m_name, dps);
+        if(QMessageBox::question(parent, QObject::tr("Remove plugins"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
+          continue;
+      }
+
+      te::plugin::PluginManager::getInstance().remove(plgs[i]->m_name);
+    }
+}
+
+void MakeDisable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
+{
+  std::vector<std::string> dps;
+
+  for(size_t i=0; i<status.size(); i++)
+    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_disable) && te::plugin::PluginManager::getInstance().isLoaded(plgs[i]->m_name))
+    {
+      CheckLoadedDependencies(plgs[i], dps);
+
+      if(!dps.empty())
+      {
+        QString msg = GetPluginDepsMessage(plgs[i]->m_name, dps);
+        if(QMessageBox::question(parent, QObject::tr("Unload plugins"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
+          continue;
+      }
+
+      te::plugin::PluginManager::getInstance().unload(plgs[i]->m_name);
+    }
+}
+
+void MakeAdd(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status)
+{
+  for(size_t i=0; i<status.size(); i++)
+    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_add) && (!PluginExists(plgs[i]->m_name)))
+      te::plugin::PluginManager::getInstance().add(*plgs[i]);
+}
+
+void MakeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
+{
+  std::vector<std::string> dps;
+  std::vector<std::string>::iterator it;
+
+  for(size_t i=0; i<status.size(); i++)
+  {
+    try
+    {
+      if(status[i].testFlag(te::qt::widgets::PluginsModel::To_enable) && te::plugin::PluginManager::getInstance().isUnloadedPlugin(plgs[i]->m_name))
+      {
+        CheckRequiredDependencies(plgs[i], dps);
+
+        if(!dps.empty())
+        {
+          QString msg = GetPluginReqsMessage(plgs[i]->m_name, dps);
+
+          if(QMessageBox::question(parent, QObject::tr("Enable plugin"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
+            continue;
+
+          for(it=dps.begin(); it!=dps.end(); ++it)
+            te::plugin::PluginManager::getInstance().load(*it);
+        }
+
+        te::plugin::PluginManager::getInstance().load(plgs[i]->m_name);
+      }
+    }
+    catch(te::qt::widgets::Exception& e)
+    {
+      QMessageBox::warning(parent, QObject::tr("Fail to load plugin"), e.what());
+
+      continue;
+    }
+  }
+}
+
+void AddPlugin(const QString& fileName, te::qt::widgets::PluginsModel* model)
 {
   te::plugin::PluginInfo* pInfo = te::plugin::GetInstalledPlugin(QDir::toNativeSeparators(fileName).toStdString());
 
-  if(pluginExists(pInfo->m_name))
+  if(PluginExists(pInfo->m_name))
     return;
 
-  model->addPlugin(pInfo, te::qt::widgets::PluginsModel::To_add, fileName.toStdString());
+  model->addPlugin(pInfo, te::qt::widgets::PluginsModel::To_add);
 
   delete pInfo;
-}
-
-void removePluginsImpl(const QModelIndexList& lst, QTableWidget* table, std::vector<std::string>& removed)
-{
-  table->clearSelection();
-
-  if(lst.isEmpty())
-    return;
-
-  QList<int> rows;
-  QModelIndexList::ConstIterator it;
-
-  for(it=lst.constBegin(); it!=lst.constEnd(); ++it)
-    rows.append((*it).row());
-
-  qSort(rows);
-
-  for(int i=rows.count()-1; i>=0; i--)
-  {
-    int row=rows.value(i);
-    std::string plg_name = table->item(row, 9)->text().toStdString();
-
-    te::plugin::PluginManager::getInstance().remove(plg_name);
-    table->removeRow(row);
-    removed.push_back(plg_name);
-  }
-
-  for(int i=0; i<table->rowCount(); i++)
-  {
-    QString p_name = table->item(i, 9)->text();
-    bool plg_bk = te::plugin::PluginManager::getInstance().isBrokenPlugin(p_name.toStdString());
-
-    for(int j=0; j<10; j++)
-    {
-      QTableWidgetItem* item = table->item(i, j);
-      Qt::ItemFlags flgs = item->flags();
-
-      if(plg_bk) 
-      {
-        if(j==0)
-        {
-          table->setItem(i, j, getCheckableItem(true));
-          continue;
-        }
-
-        flgs &= ~Qt::ItemIsEditable;
-      }
-      else
-      {
-        if(j==0)
-        {
-          QTableWidgetItem* aux = getCheckableItem(false);
-          aux->setCheckState((te::plugin::PluginManager::getInstance().isLoaded(p_name.toStdString()) ? Qt::Checked : Qt::Unchecked));
-          table->setItem(i, j, aux);
-          continue;
-        }
-
-        flgs |= Qt::ItemIsEditable;
-      }
-
-      item->setFlags(flgs);
-    }
-  }
 }
 
 te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::WindowFlags f)
@@ -207,8 +261,6 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
 
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
-//  connect(m_ui->m_installedPluginsTableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(tableWidgetClicked(QTableWidgetItem*)));
-  //connect(m_ui->m_netPluginsTableWidget, SIGNAL(itemClicked(QTableWidgetItem*)), this, SLOT(tableWidgetClicked(QTableWidgetItem*)));
   connect(m_model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
 
   m_ui->m_addButton->setIcon(QIcon::fromTheme("list-add"));
@@ -217,10 +269,6 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   m_ui->m_installedPluginsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
   m_ui->m_pluginsTabWidget->setTabEnabled(1, false);
-
-  //m_ui->m_installedPluginsTableWidget->setAlternatingRowColors(true);
-  //m_ui->m_installedPluginsTableWidget->setColumnCount(9);
-  //m_ui->m_installedPluginsTableWidget->horizontalHeader()->hide();
 }
 
 te::qt::widgets::PluginManagerDialog::~PluginManagerDialog()
@@ -231,18 +279,19 @@ void te::qt::widgets::PluginManagerDialog::applyPushButtonPressed()
 {
   std::vector<te::plugin::PluginInfo*> plgs;
   std::vector<te::qt::widgets::PluginsModel::PluginsStatus> status;
-  std::vector<std::string> files;
 
-  m_model->getPluginsInfo(plgs, status, files);
+  m_model->getPluginsInfo(plgs, status);
 
-  makeRemove(plgs, status, files);
-  makeDisable(plgs, status, files);
-  makeAdd(plgs, status, files);
-  makeEnable(plgs, status, files);
+  MakeRemove(plgs, status, this);
+  MakeDisable(plgs, status, this);
+  MakeAdd(plgs, status);
+  MakeEnable(plgs, status, this);
 
   m_model->clear();
 
   fillInstalledPlugins();
+
+  m_ui->m_applyPushButton->setEnabled(false);
 }
 
 void te::qt::widgets::PluginManagerDialog::helpPushButtonPressed()
@@ -339,7 +388,7 @@ void te::qt::widgets::PluginManagerDialog::replyFinished(QNetworkReply* reply)
 
 void te::qt::widgets::PluginManagerDialog::addPlugins()
 {
-  QString rsc = ResourceChooser::getResource(qApp->applicationDirPath(), tr("XML Plug-in Files (*.xml *.XML)"), this);
+  QString rsc = ResourceChooser::getResource(qApp->applicationDirPath(), tr("TerraLib Plug-in Files (*.teplg *.TEPLG)"), this);
 //  std::map<std::string, std::string> added;
 
   try
@@ -350,14 +399,14 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
     QFileInfo info(rsc);
 
     if(info.isFile())
-      addPlugin(info.absoluteFilePath(), m_model);
+      AddPlugin(info.absoluteFilePath(), m_model);
     else
     {
       if(!info.isDir())
-        throw tr("There's no resource selected, no plug-ins found.");
+        throw tr("There's no resource selected, no plugins found.");
 
       QStringList filters;
-      filters <<"*.xml" <<"*.XML";
+      filters <<"*.teplg" <<"*.TEPLG";
 
       QDir dir(info.canonicalFilePath());
 
@@ -366,27 +415,20 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
       QStringList plgs = dir.entryList(filters, QDir::Files);
 
       if(plgs.isEmpty())
-        throw tr("There's no plug-ins found.");
+        throw tr("There's no plugins found.");
 
       QStringList::iterator it;
 
       for(it = plgs.begin(); it != plgs.end(); ++it)
-      {
-        std::string plg_file = QDir::toNativeSeparators(dir.absoluteFilePath(*it)).toStdString();
-
-        te::plugin::PluginInfo* pInfo = te::plugin::GetInstalledPlugin(plg_file);
-
-        if(pluginExists(pInfo->m_name))
-          return;
-
-        m_model->addPlugin(pInfo, te::qt::widgets::PluginsModel::To_add, plg_file);
-      }
+        AddPlugin(QDir::toNativeSeparators(dir.absoluteFilePath(*it)), m_model);
     }
+
+    m_ui->m_applyPushButton->setEnabled(true);
   }
   catch(QString& exc)
   {
     QMessageBox msg;
-    msg.setWindowTitle(tr("Fail to load plug-in files"));
+    msg.setWindowTitle(tr("Fail to load plugin files"));
     msg.setIcon(QMessageBox::Warning);
     msg.setText(exc);
     msg.exec();
@@ -394,7 +436,7 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
   catch(te::plugin::Exception& exc)
   {
     QMessageBox msg;
-    msg.setWindowTitle(tr("Fail to load plug-in files"));
+    msg.setWindowTitle(tr("Fail to load plugin files"));
     msg.setIcon(QMessageBox::Warning);
     msg.setText(exc.what());
     msg.exec();
@@ -410,8 +452,8 @@ void te::qt::widgets::PluginManagerDialog::removePlugins()
     QMessageBox q(this);
 
     q.setIcon(QMessageBox::Warning);
-    q.setWindowTitle(tr("Remove installed plug-ins"));
-    q.setText(tr("There are NOT selected plug-ins."));
+    q.setWindowTitle(tr("Remove installed plugins"));
+    q.setText(tr("There are NOT selected plugins."));
     q.exec();
 
     return;
@@ -437,12 +479,10 @@ void te::qt::widgets::PluginManagerDialog::fillInstalledPlugins()
 
   int nrows = static_cast<int>(plugins.size());
 
-//  m_ui->m_installedPluginsTableWidget->setRowCount(nrows);
-
   for(int i = 0; i < nrows; ++i)
   {
     const te::plugin::PluginInfo& plugin = pm.getPlugin(plugins[i]);
-    addEntry(i, plugin, pm.isLoaded(plugin.m_name), m_ui->m_installedPluginsTableWidget);
+    addEntry(i, plugin, pm.isLoaded(plugin.m_name));
   }
 
   m_ui->m_installedPluginsTableWidget->resizeColumnsToContents();
@@ -463,7 +503,7 @@ void te::qt::widgets::PluginManagerDialog::filliPlugins()
   //manager->get(QNetworkRequest(QUrl("http://www.dpi.inpe.br/~gribeiro/terralib5/plugins/win32/plugins.json")));
 }
 
-void te::qt::widgets::PluginManagerDialog::addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked, QTableView* table)
+void te::qt::widgets::PluginManagerDialog::addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked)
 {
   bool bk = te::plugin::PluginManager::getInstance().isBrokenPlugin(pinfo.m_name);
   te::qt::widgets::PluginsModel::PluginsStatus st;
@@ -478,6 +518,6 @@ void te::qt::widgets::PluginManagerDialog::addEntry(int i, const te::plugin::Plu
       st = te::qt::widgets::PluginsModel::Unloaded;
   }
 
-  m_model->addPlugin(&pinfo, st, "");
+  m_model->addPlugin(&pinfo, st);
 }
 

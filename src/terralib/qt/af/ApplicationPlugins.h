@@ -77,6 +77,8 @@ namespace te
 
           void removePlugin(const std::string& pluginName);
 
+          const std::string& getFileName() const;
+
         public slots:
 
           void addPlugins(const std::map<std::string, std::string>& plgs);

@@ -56,40 +56,36 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User Defined Coordinate Systems"))));
   m_ui->m_SRSTreeWidget->insertTopLevelItems(0, items);
   
-  std::pair<std::vector<std::pair<std::string,unsigned int> >::const_iterator,
-            std::vector<std::pair<std::string,unsigned int> >::const_iterator> iterId = te::srs::SpatialReferenceSystemManager::getInstance().getIteratorIds();
+  std::pair<te::srs::SpatialReferenceSystemManager::iterator,
+            te::srs::SpatialReferenceSystemManager::iterator> its = te::srs::SpatialReferenceSystemManager::getInstance().getIterators();
   
-  std::pair<std::vector<std::string>::const_iterator,
-            std::vector<std::string>::const_iterator> iterName = te::srs::SpatialReferenceSystemManager::getInstance().getIteratorNames();
-  
-  while (iterId.first != iterId.second) 
+  while (its.first != its.second) 
   {
-      if (iterId.first->first == "EPSG")
+      if (its.first->m_auth_name == "EPSG")
       {
-        if (iterId.first->second < 5000)
+        if (its.first->m_auth_id < 5000)
         {
           QTreeWidgetItem *geog = new QTreeWidgetItem(items[0]);
-          geog->setText(0, (*(iterName.first)).c_str());
-          geog->setText(1, QString("%1").arg(iterId.first->second));
+          geog->setText(0, its.first->m_name.c_str());
+          geog->setText(1, QString("%1").arg(its.first->m_auth_id));
           geog->setText(2, "EPSG");
         }
         else 
         {
           QTreeWidgetItem *proj = new QTreeWidgetItem(items[1]);
-          proj->setText(0, (*(iterName.first)).c_str());
-          proj->setText(1, QString("%1").arg(iterId.first->second));
+          proj->setText(0, its.first->m_name.c_str());
+          proj->setText(1, QString("%1").arg(its.first->m_auth_id));
           proj->setText(2, "EPSG");
         }
       }
     else 
     {
       QTreeWidgetItem *userd = new QTreeWidgetItem(items[2]);
-      userd->setText(0, (*(iterName.first)).c_str());
-      userd->setText(1, QString("%1").arg(iterId.first->second));
-      userd->setText(2, (iterId.first->first).c_str());
+      userd->setText(0, its.first->m_name.c_str());
+      userd->setText(1, QString("%1").arg(its.first->m_auth_id));
+      userd->setText(2, its.first->m_auth_name.c_str());
     }
-    ++iterId.first;
-    ++iterName.first;
+    ++its.first;
   }  
   
   m_ui->m_SRSTreeWidget->resizeColumnToContents(0);

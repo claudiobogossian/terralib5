@@ -18,52 +18,52 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/GridFrameFactory.cpp
+  \file terralib/qt/af/settings/TableFrameFactory.cpp
 
-  \brief A factory to build the grid frame object.
+  \brief A factory to build the Table frame object.
 */
 
 #include "ComponentWidgetFactory.h"
-#include "GridFrame.h"
-#include "GridFrameFactory.h"
+#include "TableFrame.h"
+#include "TableFrameFactory.h"
 
-te::qt::af::GridFrameFactory* te::qt::af::GridFrameFactory::sm_factory(0);
+te::qt::af::TableFrameFactory* te::qt::af::TableFrameFactory::sm_factory(0);
 
 
-void te::qt::af::GridFrameFactory::initialize()
+void te::qt::af::TableFrameFactory::initialize()
 {
   finalize();
-  sm_factory = new GridFrameFactory;
+  sm_factory = new TableFrameFactory;
 }
 
-void te::qt::af::GridFrameFactory::finalize()
+void te::qt::af::TableFrameFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-const std::string& te::qt::af::GridFrameFactory::getType() const
+const std::string& te::qt::af::TableFrameFactory::getType() const
 {
-  return "GridFrame";
+  return "TableFrame";
 }
 
-te::qt::af::GridFrameFactory::~GridFrameFactory()
-{
-
-}
-
-te::qt::af::ComponentWidget* te::qt::af::GridFrameFactory::build()
-{
-  return new GridFrame;
-}
-
-te::qt::af::GridFrameFactory::GridFrameFactory()
-  : te::qt::af::ComponentWidgetFactory("GridFrame")
+te::qt::af::TableFrameFactory::~TableFrameFactory()
 {
 
 }
 
-te::qt::af::ComponentWidget* te::qt::af::GridFrameFactory::create(QWidget* parent)
+te::qt::af::ComponentWidget* te::qt::af::TableFrameFactory::build()
 {
-  return new GridFrame(parent);
+  return new TableFrame;
+}
+
+te::qt::af::TableFrameFactory::TableFrameFactory()
+  : te::qt::af::ComponentWidgetFactory("TableFrame")
+{
+
+}
+
+te::qt::af::ComponentWidget* te::qt::af::TableFrameFactory::create(QWidget* parent)
+{
+  return new TableFrame(parent);
 }

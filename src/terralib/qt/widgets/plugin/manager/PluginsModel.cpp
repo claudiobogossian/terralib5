@@ -8,7 +8,7 @@
 // Qt
 #include <QtGui/QFont>
 
-std::string getData(const int& column, const te::plugin::PluginInfo& info)
+std::string GetData(const int& column, const te::plugin::PluginInfo& info)
 {
   std::string result;
 
@@ -57,7 +57,7 @@ std::string getData(const int& column, const te::plugin::PluginInfo& info)
   return result;
 }
 
-QString getHeader(const int& section)
+QString GetHeader(const int& section)
 {
   QString header;
 
@@ -140,7 +140,7 @@ QVariant te::qt::widgets::PluginsModel::data(const QModelIndex & index, int role
 
     case Qt::DisplayRole:
       return (index.column() > 0) ? 
-        QString(getData(index.column(), *(m_plugins[index.row()])).c_str()) :
+        QString(GetData(index.column(), *(m_plugins[index.row()])).c_str()) :
         QVariant();
     break;
 
@@ -181,7 +181,7 @@ QVariant te::qt::widgets::PluginsModel::headerData(int section, Qt::Orientation 
   {
     case Qt::DisplayRole:
       return (orientation == Qt::Horizontal) ?
-        getHeader(section) :
+        GetHeader(section) :
         QVariant::fromValue<int>(section+1);
     break;
 
@@ -197,7 +197,7 @@ Qt::ItemFlags te::qt::widgets::PluginsModel::flags(const QModelIndex & index) co
 
   Qt::ItemFlags flags(0);
   
-  if(!m_pluginsStatus[index.row()].testFlag(To_remove))// && !m_pluginsStatus[index.row()].testFlag(Broked))
+  if(!m_pluginsStatus[index.row()].testFlag(To_remove))
   {
     flags = flags | Qt::ItemIsEnabled;
 
@@ -236,11 +236,10 @@ bool te::qt::widgets::PluginsModel::setData(const QModelIndex & index, const QVa
   return true;
 }
 
-void te::qt::widgets::PluginsModel::addPlugin(const te::plugin::PluginInfo* info, const PluginsStatus& status, const std::string& fileName)
+void te::qt::widgets::PluginsModel::addPlugin(const te::plugin::PluginInfo* info, const PluginsStatus& status)
 {
   m_plugins.push_back(new te::plugin::PluginInfo(*info));
   m_pluginsStatus.push_back(status);
-  m_pluginsFiles.push_back(fileName);
 
   reset();
 }
@@ -255,11 +254,10 @@ void te::qt::widgets::PluginsModel::removePlugins(const QModelIndexList& plgs)
   reset();
 }
 
-void te::qt::widgets::PluginsModel::getPluginsInfo(std::vector<te::plugin::PluginInfo*>& plgs, std::vector<PluginsStatus>& status, std::vector<std::string>& files)
+void te::qt::widgets::PluginsModel::getPluginsInfo(std::vector<te::plugin::PluginInfo*>& plgs, std::vector<PluginsStatus>& status)
 {
   plgs = m_plugins;
   status = m_pluginsStatus;
-  files = m_pluginsFiles;
 }
 
 void te::qt::widgets::PluginsModel::clear()
@@ -270,6 +268,5 @@ void te::qt::widgets::PluginsModel::clear()
     delete *it;
 
   m_plugins.clear();
-  m_pluginsFiles.clear();
   m_pluginsStatus.clear();
 }

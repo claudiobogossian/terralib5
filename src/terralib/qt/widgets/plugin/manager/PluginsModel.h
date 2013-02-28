@@ -64,7 +64,7 @@ namespace te
             Broked = 64
           };
 
-          Q_DECLARE_FLAGS( te::qt::widgets::PluginsModel::PluginsStatus, te::qt::widgets::PluginsModel::PluginStatus )
+          Q_DECLARE_FLAGS( PluginsStatus, PluginStatus )
 
         /*!
           \name Constructor and destructor.
@@ -134,11 +134,11 @@ namespace te
           */
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
 
-          void addPlugin(const te::plugin::PluginInfo* info, const PluginsStatus& status, const std::string& fileName);
+          void addPlugin(const te::plugin::PluginInfo* info, const PluginsStatus& status);
 
           void removePlugins(const QModelIndexList& plgs);
 
-          void getPluginsInfo(std::vector<te::plugin::PluginInfo*>& plgs, std::vector<PluginsStatus>& status, std::vector<std::string>& files);
+          void getPluginsInfo(std::vector<te::plugin::PluginInfo*>& plgs, std::vector<PluginsStatus>& status);
 
           void clear();
 
@@ -146,7 +146,6 @@ namespace te
 
           std::vector<te::plugin::PluginInfo*> m_plugins;
           std::vector<PluginsStatus>           m_pluginsStatus;
-          std::vector<std::string>             m_pluginsFiles; 
       };
 
       Q_DECLARE_OPERATORS_FOR_FLAGS( te::qt::widgets::PluginsModel::PluginsStatus )

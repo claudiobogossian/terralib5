@@ -40,7 +40,7 @@ set (TE_PLUGIN_DISPLAYNAME "PostGIS Data Source Driver")
 set (TE_PLUGIN_DESCRIPTION "This plugin enables TerraLib to access data via PostGIS")
 set (TE_PLUGIN_LIBRARY "terralib_postgis")
 set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:pgis")
-set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/plugin_pgis_info.xml")
+set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TE_PLUGIN_NAME}.teplg")
 set (TE_PLUGIN_REQUIREMENTS "")
 
 set (RSC_LINK "")
@@ -61,7 +61,7 @@ set (TE_SCHEMA_LOCATION "../schemas/terralib")
 set (TE_PLUGIN_REQUIREMENTS "")
 
 set (TE_PLG_INFO "")
-getPluginInfo("${TE_PLUGIN_NAME}" "./plugin_pgis_info.xml" TE_PLG_INFO)
+getPluginInfo("${TE_PLUGIN_NAME}" "./${TE_PLUGIN_NAME}.teplg" TE_PLG_INFO)
 set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
   
-configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/plugin_pgis_info.xml)
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/${TE_PLUGIN_NAME}.teplg)

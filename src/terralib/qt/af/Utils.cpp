@@ -27,11 +27,13 @@
 #include "../../common/UserApplicationSettings.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../plugin/PluginManager.h"
+#include "../../plugin/PluginInfo.h"
 #include "../../serialization/maptools/Layer.h"
 #include "../../serialization/dataaccess/DataSourceInfo.h"
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
+#include "ApplicationPlugins.h"
 #include "Exception.h"
 #include "Project.h"
 #include "Utils.h"
@@ -168,14 +170,14 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeEndElement("Project");
 }
 
-void te::qt::af::UpdateUserSettingsFile(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
+void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile)
 {
   // Recent projects
   //----------------
   if(prjFiles.empty())
     return;
 
-  boost::property_tree::ptree p = te::common::UserApplicationSettings::getInstance().getAllSettings();
+  boost::property_tree::ptree& p = te::common::UserApplicationSettings::getInstance().getAllSettings();
 
   p.get_child("UserSettings.MostRecentProject.<xmlattr>.xlink:href").put_value(prjFiles.at(0).toStdString());
   p.get_child("UserSettings.MostRecentProject.<xmlattr>.title").put_value(prjTitles.at(0).toStdString());
@@ -213,12 +215,11 @@ void te::qt::af::UpdateUserSettingsFile(const QStringList& prjFiles, const QStri
     }
 
   p.put_child("UserSettings.EnabledPlugins", plgs);
-  
-  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
-  boost::property_tree::write_xml(userConfigFile, p, std::locale(), settings);
+
+  te::common::UserApplicationSettings::getInstance().changed();
 }
 
-void te::qt::af::saveDataSourcesFile()
+void te::qt::af::SaveDataSourcesFile()
 {
   std::string fileName = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DataSourcesFile");
 
@@ -226,4 +227,34 @@ void te::qt::af::saveDataSourcesFile()
     return;
 
   te::serialize::Save(fileName);
+}
+
+void te::qt::af::UpdateApplicationPlugins()
+{
+  ApplicationPlugins::getInstance().getAllSettings().get_child("Plugins").erase("Plugin");
+  boost::property_tree::ptree& p = ApplicationPlugins::getInstance().getAllSettings();
+
+  std::vector<std::string> plugins;
+  std::vector<std::string>::iterator it;
+  te::plugin::PluginManager::getInstance().getPlugins(plugins);
+
+  for(it=plugins.begin(); it!=plugins.end(); ++it)
+  {
+    const te::plugin::PluginInfo& info = te::plugin::PluginManager::getInstance().getPlugin(*it);
+    boost::property_tree::ptree plg;
+
+    std::string plgFileName = info.m_folder + "/" + info.m_name + ".teplg";
+
+    plg.add("Name", info.m_name);
+    plg.add("Path.<xmlattr>.xlink:href", plgFileName);
+
+    p.add_child("Plugins.Plugin", plg);
+  }
+
+  // Store the file.
+  boost::property_tree::xml_writer_settings<char> settings('\t', 1);
+  boost::property_tree::write_xml(ApplicationPlugins::getInstance().getFileName(), p, std::locale(), settings);
+
+  // ** Por algum motivo essa instrução não funciona: o arquivo fica todo errado, não sei porque!
+  // ApplicationPlugins::getInstance().changed();
 }

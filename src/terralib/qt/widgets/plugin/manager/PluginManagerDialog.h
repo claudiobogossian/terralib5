@@ -32,7 +32,6 @@
 // STL
 #include <memory>
 #include <set>
-#include <map>
 
 // Qt
 #include <QtGui/QDialog>
@@ -40,16 +39,17 @@
 // Forward declaration
 namespace Ui { class PluginManagerDialogForm; }
 
+class QModelIndex;
 class QNetworkReply;
+class QTableView;
 class QTableWidget;
 class QTableWidgetItem;
-class QTableView;
-class QModelIndex;
 
 namespace te
 {
   namespace plugin
   {
+// Forward declaration
     struct PluginInfo;
   }
 
@@ -57,7 +57,7 @@ namespace te
   {
     namespace widgets
     {
-      // Forward declarations
+// Forward declaration
       class PluginsModel;
 
       //struct iPluginInfo;
@@ -94,7 +94,7 @@ namespace te
           
           void filliPlugins();
 
-          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked, QTableView* table);
+          void addEntry(int i, const te::plugin::PluginInfo& pinfo, bool checked);
 
         private:
 

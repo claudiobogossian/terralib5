@@ -39,6 +39,23 @@
 #include <algorithm>
 #include <cassert>
 
+te::srs::SpatialReferenceSystemManager::srs_desc::srs_desc(const std::string& name, unsigned int auth_id, const std::string& auth_name, const std::string& p4txt, const std::string& wkt):
+  m_name(name),
+  m_auth_id(auth_id),
+  m_auth_name(auth_name),
+  m_p4txt(p4txt),
+  m_wkt(wkt)
+{}
+
+std::string 
+te::srs::SpatialReferenceSystemManager::srs_desc::srid() const
+{
+  std::string ssrid = m_auth_name;
+  ssrid += ":";
+  ssrid += boost::lexical_cast<std::string>(m_auth_id);
+  return ssrid;
+}
+
 te::srs::SpatialReferenceSystemManager::SpatialReferenceSystemManager()
 {
 }
@@ -50,7 +67,7 @@ te::srs::SpatialReferenceSystemManager::~SpatialReferenceSystemManager()
 
 void te::srs::SpatialReferenceSystemManager::init()
 {
-  if(!m_authIdV.empty())
+  if(!m_set.empty())
     throw Exception(TR_SRS("The spatial reference system manager is already initialized!"));
   
   try
@@ -90,38 +107,39 @@ void te::srs::SpatialReferenceSystemManager::add(const std::string& name, const 
   assert(id > 0);
   assert(!p4Txt.empty());
   
-  std::pair<std::string,unsigned int> mkey(authName,id);
+  std::string key = authName;
+  key += ":";
+  key += boost::lexical_cast<std::string>(id);
   
-  std::vector< std::pair<std::string,unsigned int> >::iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  if (it != m_authIdV.end())
-    throw te::srs::Exception(TR_SRS("The CS identification already exists in the manager."));
+  boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
+  if (it != boost::multi_index::get<0>(m_set).end())
+    throw te::srs::Exception(TR_SRS("The CS identification already exists in the manager.")); 
   
-  m_authIdV.push_back(mkey);
-  m_nameV.push_back(name); 
-  m_p4txtV.push_back(p4Txt);
-  m_wktV.push_back(wkt);
+  srs_desc record(name, id, authName, p4Txt, wkt);
+  m_set.insert(record);
 }
 
 bool te::srs::SpatialReferenceSystemManager::recognizes(unsigned int id, const std::string& authName) const
 {
-  std::pair<std::string,unsigned int> mkey(authName,id);
-  std::vector< std::pair<std::string,unsigned int> >::const_iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  return (it != m_authIdV.end());
+  std::string key = authName;
+  key += ":";
+  key += boost::lexical_cast<std::string>(id);
+  
+  boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
+  return (it != boost::multi_index::get<0>(m_set).end());
 }
 
 te::srs::SpatialReferenceSystem* te::srs::SpatialReferenceSystemManager::getSpatialReferenceSystem(unsigned int id, const std::string& authName) const
 {
   assert(id > 0);
   
-  std::pair<std::string,unsigned int> mkey(authName,id);
-  std::vector< std::pair<std::string,unsigned int> >::const_iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  if (it == m_authIdV.end())
+  std::string wkt = getWkt(id,authName);
+  if (wkt.empty())
     return 0;
   
-  size_t idx = it-m_authIdV.begin();
   try
   {
-    return te::srs::WKTReader::read(m_wktV[idx].c_str());
+    return te::srs::WKTReader::read(wkt.c_str());
   }
   catch(...)
   {
@@ -135,52 +153,54 @@ std::string te::srs::SpatialReferenceSystemManager::getName(unsigned int id, con
 {
   assert(id > 0);
 
-  std::pair<std::string,unsigned int> mkey(authName,id);
-  std::vector< std::pair<std::string,unsigned int> >::const_iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  if (it == m_authIdV.end())
-    return "";
-                                       
-  size_t idx = it-m_authIdV.begin();
-  std::cout << idx << std::endl;
-  return m_nameV[idx];
+  std::string key = authName;
+  key += ":";
+  key += boost::lexical_cast<std::string>(id);
+  
+  boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
+  if (it!=boost::multi_index::get<0>(m_set).end()) 
+    return it->m_name;
+  return "";
 }
 
 std::string te::srs::SpatialReferenceSystemManager::getWkt (unsigned int id, const std::string& authName) const
 {
   assert(id > 0);
   
-  std::pair<std::string,unsigned int> mkey(authName,id);
-  std::vector< std::pair<std::string,unsigned int> >::const_iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  if (it == m_authIdV.end())
-    return "";
+  std::string key = authName;
+  key += ":";
+  key += boost::lexical_cast<std::string>(id);
   
-  size_t idx = it-m_authIdV.begin();
-  return m_wktV[idx];
+  boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
+  if (it!=boost::multi_index::get<0>(m_set).end()) 
+    return it->m_wkt;
+  return "";
 }
 
 std::string te::srs::SpatialReferenceSystemManager::getP4Txt(unsigned int id, const std::string& authName) const
 {
   assert(id > 0);
   
-  std::pair<std::string,unsigned int> mkey(authName,id);
-  std::vector< std::pair<std::string,unsigned int> >::const_iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  if (it == m_authIdV.end())
-    return "";
+  std::string key = authName;
+  key += ":";
+  key += boost::lexical_cast<std::string>(id);
   
-  size_t idx = it-m_authIdV.begin();
-  return m_p4txtV[idx];
+  boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
+  if (it!=boost::multi_index::get<0>(m_set).end()) 
+    return it->m_p4txt;
+  return "";
+
 }
 
 std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getIdFromName(const std::string& name) const
 {
   assert(!name.empty());
   
-  std::vector<std::string>::const_iterator itx = std::find(m_nameV.begin(),m_nameV.end(),name);
-  if (itx == m_nameV.end())
-    throw te::srs::Exception(TR_SRS("CS name not recognized."));    
+  boost::multi_index::nth_index<srs_set,1>::type::iterator it = boost::multi_index::get<1>(m_set).find(name);
+  if (it==boost::multi_index::get<1>(m_set).end()) 
+    throw te::srs::Exception(TR_SRS("CS name not recognized."));
   
-  size_t idx = itx - m_nameV.begin();
-  return m_authIdV[idx];
+  return std::pair<std::string,unsigned int>(it->m_auth_name, it->m_auth_id);
 }
 
 
@@ -188,62 +208,52 @@ std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getI
 {
   assert(!p4Txt.empty());
   
-  std::vector<std::string>::const_iterator it = std::find(m_p4txtV.begin(),m_p4txtV.end(),p4Txt);
-  if (it == m_p4txtV.end())
-    throw te::srs::Exception(TR_SRS("CS PROJ4 text not recognized."));    
+  boost::multi_index::nth_index<srs_set,2>::type::iterator it = boost::multi_index::get<2>(m_set).find(p4Txt);
+  if (it==boost::multi_index::get<2>(m_set).end()) 
+    throw te::srs::Exception(TR_SRS("CS name not recognized."));
   
-  size_t idx = it - m_p4txtV.begin();
-  return m_authIdV[idx]; 
+  return std::pair<std::string,unsigned int>(it->m_auth_name, it->m_auth_id);
 }
 
 std::pair<std::string,unsigned int> te::srs::SpatialReferenceSystemManager::getIdFromWkt(const std::string& wkt) const
 {
   assert(!wkt.empty());
   
-  std::vector<std::string>::const_iterator itx = std::find(m_wktV.begin(),m_wktV.end(),wkt);
-  if (itx == m_wktV.end())
-    throw te::srs::Exception(TR_SRS("CS WKT not recognized."));    
-  
-  size_t idx = itx - m_wktV.begin();
-  return m_authIdV[idx];
+  boost::multi_index::nth_index<srs_set,3>::type::iterator it = boost::multi_index::get<3>(m_set).find(wkt);
+  if (it==boost::multi_index::get<3>(m_set).end()) 
+    throw te::srs::Exception(TR_SRS("CS name not recognized."));
+
+  return std::pair<std::string,unsigned int>(it->m_auth_name, it->m_auth_id);
 }
 
 void te::srs::SpatialReferenceSystemManager::remove(unsigned int id, const std::string& authName)
 {
   assert(id > 0);
   
-  std::pair<std::string,unsigned int> mkey(authName,id);
-  std::vector< std::pair<std::string,unsigned int> >::const_iterator it = std::find(m_authIdV.begin(),m_authIdV.end(),mkey);
-  if (it != m_authIdV.end())
-  {
-    size_t idx = it-m_authIdV.begin();
-    m_authIdV.erase(m_authIdV.begin()+idx);
-    m_nameV.erase(m_nameV.begin()+idx);
-    m_p4txtV.erase(m_p4txtV.begin()+idx);
-    m_wktV.erase(m_wktV.begin()+idx);
-  }
+  std::string key = authName;
+  key += ":";
+  key += boost::lexical_cast<std::string>(id);
+  
+  boost::multi_index::nth_index<srs_set,0>::type::iterator it = boost::multi_index::get<0>(m_set).find(key);
+  if (it!=boost::multi_index::get<0>(m_set).end())
+    m_set.erase(it);
 }
 
 void te::srs::SpatialReferenceSystemManager::clear()
 {
-  m_authIdV.clear();
-  m_nameV.clear();
-  m_p4txtV.clear();
-  m_wktV.clear();
+  m_set.clear();
 }
 
-
-std::pair<std::vector<std::pair<std::string,unsigned int> >::const_iterator,
-          std::vector<std::pair<std::string,unsigned int> >::const_iterator> te::srs::SpatialReferenceSystemManager::getIteratorIds() const
+std::pair<te::srs::SpatialReferenceSystemManager::iterator,te::srs::SpatialReferenceSystemManager::iterator> 
+te::srs::SpatialReferenceSystemManager::getIterators() const
 {
-  return std::pair<std::vector<std::pair<std::string,unsigned int> >::const_iterator,
-                   std::vector<std::pair<std::string,unsigned int> >::const_iterator>(m_authIdV.begin(), m_authIdV.end());
+  return std::pair<te::srs::SpatialReferenceSystemManager::iterator,
+                   te::srs::SpatialReferenceSystemManager::iterator>(boost::multi_index::get<0>(m_set).begin(), boost::multi_index::get<0>(m_set).end());
 }
 
-std::pair<std::vector<std::string>::const_iterator,
-          std::vector<std::string>::const_iterator> te::srs::SpatialReferenceSystemManager::getIteratorNames() const
+size_t te::srs::SpatialReferenceSystemManager::size() const
 {
-  return std::pair<std::vector<std::string>::const_iterator,
-         std::vector<std::string>::const_iterator>(m_nameV.begin(),m_nameV.end());
+  return m_set.size();
 }
+
 

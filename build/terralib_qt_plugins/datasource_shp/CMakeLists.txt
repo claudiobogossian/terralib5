@@ -56,7 +56,7 @@ set (TE_PLUGIN_DISPLAYNAME "ShapeFile Data Source Qt-Widgets")
 set (TE_PLUGIN_DESCRIPTION "This plugin enables widgets to create or open data managed by OGR driver.")
 set (TE_PLUGIN_LIBRARY "terralib_qt_plugin_datasource_shp")
 set (TE_PLUGIN_HREFDOC "http://www.dpi.inpe.br/terralib5/wiki/doku.php?id=wiki:designimplementation:dataaccess:shp")
-set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/terralib_qt_plugin_datasource_shp.xml")
+set (TE_PLUGIN_FILE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${TE_PLUGIN_NAME}.teplg")
 getPluginResources("SharedLibraryName" "${TE_PLUGIN_LIBRARY}" RSC_LINK)
 getPluginResources("LangFile" "pt.br" RSC_LINK2)
 set (TE_PLUGIN_RESOURCES 
@@ -80,8 +80,8 @@ configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${TE_PLUGIN_FILE})
 set (TE_SCHEMA_LOCATION "../schemas/terralib")
 
 set (TE_PLG_INFO "")
-getPluginInfo("${TE_PLUGIN_NAME}" "./terralib_qt_plugin_datasource_shp.xml" TE_PLG_INFO)
+getPluginInfo("${TE_PLUGIN_NAME}" "./${TE_PLUGIN_NAME}.teplg" TE_PLG_INFO)
 set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
   
-configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/terralib_qt_plugin_datasource_shp.xml)
+configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/${TE_PLUGIN_NAME}.teplg)
 

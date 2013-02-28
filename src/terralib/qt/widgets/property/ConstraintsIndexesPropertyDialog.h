@@ -68,13 +68,6 @@ namespace te
 
           ~ConstraintsIndexesPropertyDialog();
 
-        public:
-
-          te::da::Index* getIndex();
-
-          te::da::Constraint* getConstraint();
-
-
         public slots:
 
           void on_pkRadioButtonToggled(bool status);
