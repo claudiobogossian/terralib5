@@ -219,7 +219,7 @@ void te::qt::af::UpdateUserSettings(const QStringList& prjFiles, const QStringLi
   te::common::UserApplicationSettings::getInstance().changed();
 }
 
-void te::qt::af::saveDataSourcesFile()
+void te::qt::af::SaveDataSourcesFile()
 {
   std::string fileName = te::common::UserApplicationSettings::getInstance().getValue("UserSettings.DataSourcesFile");
 

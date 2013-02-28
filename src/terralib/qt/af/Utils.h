@@ -59,7 +59,7 @@ namespace te
 
       TEQTAFEXPORT void UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
 
-      TEQTAFEXPORT void saveDataSourcesFile();
+      TEQTAFEXPORT void SaveDataSourcesFile();
 
       TEQTAFEXPORT void UpdateApplicationPlugins();
     } // end namespace af

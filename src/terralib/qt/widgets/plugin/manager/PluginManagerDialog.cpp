@@ -25,20 +25,22 @@
 
 // TerraLib
 #include "../../utils/CentralizedCheckBoxDelegate.h"
+#include "../../utils/ResourceChooser.h"
 #include "../../../../plugin/AbstractPlugin.h"
 #include "../../../../plugin/PluginInfo.h"
 #include "../../../../plugin/PluginManager.h"
-#include "ui_PluginManagerDialogForm.h"
-#include "PluginManagerDialog.h"
-#include <terralib/qt/widgets/utils/ResourceChooser.h>
-#include <terralib/plugin/Utils.h>
-#include "PluginsModel.h"
+#include "../../../../plugin/Utils.h"
 #include "Exception.h"
+#include "PluginManagerDialog.h"
+#include "PluginsModel.h"
+#include "ui_PluginManagerDialogForm.h"
 
 // STL
 #include <algorithm>
 
 // Qt
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtCore/QUrl>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPixmap>
@@ -47,10 +49,8 @@
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
-#include <QFileInfo>
-#include <QDir>
 
-bool pluginExists(const std::string& pluginName)
+bool PluginExists(const std::string& pluginName)
 {
   try
   {
@@ -63,7 +63,7 @@ bool pluginExists(const std::string& pluginName)
   }
 }
 
-void checkLoadedDependencies(te::plugin::PluginInfo* plg, std::vector<std::string>& deps)
+void CheckLoadedDependencies(te::plugin::PluginInfo* plg, std::vector<std::string>& deps)
 {
   deps.clear();
 
@@ -79,7 +79,7 @@ void checkLoadedDependencies(te::plugin::PluginInfo* plg, std::vector<std::strin
   }
 }
 
-void checkRequiredDependencies(te::plugin::PluginInfo* plg, std::vector<std::string>& deps)
+void CheckRequiredDependencies(te::plugin::PluginInfo* plg, std::vector<std::string>& deps)
 {
   deps.clear();
 
@@ -90,7 +90,7 @@ void checkRequiredDependencies(te::plugin::PluginInfo* plg, std::vector<std::str
   {
     std::string plgName = *it;
 
-    if(!pluginExists(plgName))
+    if(!PluginExists(plgName))
     {
       QString msg("Unable to load <b>%1</b>. Dependency missed: <ul><li><b>%2</b></li></ul>.");
       msg = msg.arg(plg->m_name.c_str(), plgName.c_str()); 
@@ -103,7 +103,7 @@ void checkRequiredDependencies(te::plugin::PluginInfo* plg, std::vector<std::str
   }
 }
 
-QString getPluginDepsMessage(const std::string& plg, const std::vector<std::string>& dps)
+QString GetPluginDepsMessage(const std::string& plg, const std::vector<std::string>& dps)
 {
   QString result;
 
@@ -126,7 +126,7 @@ QString getPluginDepsMessage(const std::string& plg, const std::vector<std::stri
   return result;
 }
 
-QString getPluginReqsMessage(const std::string& plg, const std::vector<std::string>& dps)
+QString GetPluginReqsMessage(const std::string& plg, const std::vector<std::string>& dps)
 {
   QString result;
 
@@ -149,18 +149,18 @@ QString getPluginReqsMessage(const std::string& plg, const std::vector<std::stri
   return result;
 }
 
-void makeRemove(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
+void MakeRemove(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
 {
   std::vector<std::string> dps;
 
   for(size_t i=0; i<status.size(); i++)
-    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_remove) && pluginExists(plgs[i]->m_name))
+    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_remove) && PluginExists(plgs[i]->m_name))
     {
-      checkLoadedDependencies(plgs[i], dps);
+      CheckLoadedDependencies(plgs[i], dps);
 
       if(!dps.empty())
       {
-        QString msg = getPluginDepsMessage(plgs[i]->m_name, dps);
+        QString msg = GetPluginDepsMessage(plgs[i]->m_name, dps);
         if(QMessageBox::question(parent, QObject::tr("Remove plugins"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
           continue;
       }
@@ -169,18 +169,18 @@ void makeRemove(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vec
     }
 }
 
-void makeDisable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
+void MakeDisable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
 {
   std::vector<std::string> dps;
 
   for(size_t i=0; i<status.size(); i++)
     if(status[i].testFlag(te::qt::widgets::PluginsModel::To_disable) && te::plugin::PluginManager::getInstance().isLoaded(plgs[i]->m_name))
     {
-      checkLoadedDependencies(plgs[i], dps);
+      CheckLoadedDependencies(plgs[i], dps);
 
       if(!dps.empty())
       {
-        QString msg = getPluginDepsMessage(plgs[i]->m_name, dps);
+        QString msg = GetPluginDepsMessage(plgs[i]->m_name, dps);
         if(QMessageBox::question(parent, QObject::tr("Unload plugins"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
           continue;
       }
@@ -189,14 +189,14 @@ void makeDisable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::ve
     }
 }
 
-void makeAdd(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status)
+void MakeAdd(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status)
 {
   for(size_t i=0; i<status.size(); i++)
-    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_add) && (!pluginExists(plgs[i]->m_name)))
+    if(status[i].testFlag(te::qt::widgets::PluginsModel::To_add) && (!PluginExists(plgs[i]->m_name)))
       te::plugin::PluginManager::getInstance().add(*plgs[i]);
 }
 
-void makeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
+void MakeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vector<te::qt::widgets::PluginsModel::PluginsStatus>& status, QWidget* parent)
 {
   std::vector<std::string> dps;
   std::vector<std::string>::iterator it;
@@ -207,11 +207,11 @@ void makeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vec
     {
       if(status[i].testFlag(te::qt::widgets::PluginsModel::To_enable) && te::plugin::PluginManager::getInstance().isUnloadedPlugin(plgs[i]->m_name))
       {
-        checkRequiredDependencies(plgs[i], dps);
+        CheckRequiredDependencies(plgs[i], dps);
 
         if(!dps.empty())
         {
-          QString msg = getPluginReqsMessage(plgs[i]->m_name, dps);
+          QString msg = GetPluginReqsMessage(plgs[i]->m_name, dps);
 
           if(QMessageBox::question(parent, QObject::tr("Enable plugin"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
             continue;
@@ -232,11 +232,11 @@ void makeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vec
   }
 }
 
-void addPlugin(const QString& fileName, te::qt::widgets::PluginsModel* model)
+void AddPlugin(const QString& fileName, te::qt::widgets::PluginsModel* model)
 {
   te::plugin::PluginInfo* pInfo = te::plugin::GetInstalledPlugin(QDir::toNativeSeparators(fileName).toStdString());
 
-  if(pluginExists(pInfo->m_name))
+  if(PluginExists(pInfo->m_name))
     return;
 
   model->addPlugin(pInfo, te::qt::widgets::PluginsModel::To_add);
@@ -282,10 +282,10 @@ void te::qt::widgets::PluginManagerDialog::applyPushButtonPressed()
 
   m_model->getPluginsInfo(plgs, status);
 
-  makeRemove(plgs, status, this);
-  makeDisable(plgs, status, this);
-  makeAdd(plgs, status);
-  makeEnable(plgs, status, this);
+  MakeRemove(plgs, status, this);
+  MakeDisable(plgs, status, this);
+  MakeAdd(plgs, status);
+  MakeEnable(plgs, status, this);
 
   m_model->clear();
 
@@ -399,7 +399,7 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
     QFileInfo info(rsc);
 
     if(info.isFile())
-      addPlugin(info.absoluteFilePath(), m_model);
+      AddPlugin(info.absoluteFilePath(), m_model);
     else
     {
       if(!info.isDir())
@@ -420,7 +420,7 @@ void te::qt::widgets::PluginManagerDialog::addPlugins()
       QStringList::iterator it;
 
       for(it = plgs.begin(); it != plgs.end(); ++it)
-        addPlugin(QDir::toNativeSeparators(dir.absoluteFilePath(*it)), m_model);
+        AddPlugin(QDir::toNativeSeparators(dir.absoluteFilePath(*it)), m_model);
     }
 
     m_ui->m_applyPushButton->setEnabled(true);
