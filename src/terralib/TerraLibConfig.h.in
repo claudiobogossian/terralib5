@@ -64,7 +64,7 @@
 
   \brief
 */
-#define TERRALIB_STRING_BUILD_DATE __DATE__ ## " " ## __TIME__
+#define TERRALIB_STRING_BUILD_DATE __DATE__ " " __TIME__
 
 /*!
   \def TERRALIB_STRING_VERSION
