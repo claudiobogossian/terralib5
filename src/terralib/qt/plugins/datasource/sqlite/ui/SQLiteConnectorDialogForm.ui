@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GDAL Connector</string>
+   <string>SQLite Connector</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_11">
    <property name="sizeConstraint">
@@ -428,13 +428,6 @@
     </layout>
    </item>
   </layout>
-  <zorder>frame_2</zorder>
-  <zorder>line_2</zorder>
-  <zorder>m_advancedOptionsGroupBox</zorder>
-  <zorder>m_rwAccessCheckBox</zorder>
-  <zorder>groupBox_2</zorder>
-  <zorder>groupBox_3</zorder>
-  <zorder>m_advancedConnectionOptionsCheckBox</zorder>
  </widget>
  <tabstops>
   <tabstop>m_fileLineEdit</tabstop>
