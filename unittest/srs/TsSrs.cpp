@@ -65,48 +65,22 @@ void TsSrs::tcSRSManager()
   CPPUNIT_ASSERT(resultSRS);
   
   // --- Test the iterator access
-  int aux1 = 0;
-    std::pair<std::vector<std::pair<std::string,unsigned int> >::const_iterator,
-  std::vector<std::pair<std::string,unsigned int> >::const_iterator> itPair = te::srs::SpatialReferenceSystemManager::getInstance().getIteratorIds();
-  while(itPair.first != itPair.second)
+  size_t aux1=0;
+  std::pair<te::srs::SpatialReferenceSystemManager::iterator,
+            te::srs::SpatialReferenceSystemManager::iterator> its = te::srs::SpatialReferenceSystemManager::getInstance().getIterators();
+  while(its.first != its.second)
   {
     ++aux1;
-    ++itPair.first;
+    ++its.first;
   }
-  te::srs::SpatialReferenceSystemManager::getInstance().remove(TE_SRS_SIRGAS2000);
-  
-  int aux2=0;
-  itPair = te::srs::SpatialReferenceSystemManager::getInstance().getIteratorIds();
-  while(itPair.first != itPair.second)
-  {
-    ++aux2;
-    ++itPair.first;
-  }
-  CPPUNIT_ASSERT(aux2 = (aux1-1));
-  
-  std::pair<std::vector<std::string>::const_iterator,
-  std::vector<std::string>::const_iterator> itParName = te::srs::SpatialReferenceSystemManager::getInstance().getIteratorNames();
-  aux1 = 0;
-  while(itParName.first != itParName.second)
-  {
-    ++aux1;
-    ++itParName.first;
-  }
-  te::srs::SpatialReferenceSystemManager::getInstance().remove(TE_SRS_CORREGO_ALEGRE);
-  
-  aux2=0;
-  itPair = te::srs::SpatialReferenceSystemManager::getInstance().getIteratorIds();
-  while(itParName.first != itParName.second)
-  {
-    ++aux2;
-    ++itParName.first;
-  }
-  CPPUNIT_ASSERT(aux2 = (aux1-1));  
+  CPPUNIT_ASSERT(aux1 = te::srs::SpatialReferenceSystemManager::getInstance().size());  
 }
 
 void TsSrs::tcSRSConvertion()
 {
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
+//  te::srs::Converter* converter = new te::srs::Converter();
+
   CPPUNIT_ASSERT_NO_THROW(converter->setSourceSRID(TE_SRS_WGS84));
   CPPUNIT_ASSERT_NO_THROW(converter->setTargetSRID(TE_SRS_WGS84_UTM_ZONE_23S));
 
@@ -132,41 +106,9 @@ void TsSrs::tcSRSConvertion()
 	yin = 0.0;
   
   converter->convert(xin,yin);
+  
   CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,xin,0.1);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,yin,0.1); 
-  
-  double* vxin = new double(2);
-  double* vyin = new double(2);
-  
-  vxin[0] = vxin[1] = vxin[2] = -45.0;
-	vyin[0] = vyin[1] = vyin[2] = 0.0;
-  
-  
-  double* vxout = new double(2);
-  double* vyout = new double(2);
-  
-  converter->convert(vxin,vyin,vxout,vyout,3);
-  
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxout[0],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyout[0],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxout[1],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyout[1],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxout[2],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyout[2],0.1);
-  
-  converter->convert(vxin,vyin,3);
-  
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxin[0],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyin[0],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxin[1],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyin[1],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxin[2],0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyin[2],0.1);
-  
-  delete vxin;
-  delete vyin;
-  delete vxout;
-  delete vyout;
   
   xin = 500000;
 	yin = 10000000;
@@ -180,7 +122,39 @@ void TsSrs::tcSRSConvertion()
   
   converter->convertToProjected(xin, yin, TE_SRS_WGS84_UTM_ZONE_23S);
   CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,xin,0.1);
-  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,yin,0.1); 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,yin,0.1);
+  
+  std::vector<double> vxin;
+  std::vector<double> vyin;
+  
+  vxin.push_back(-45.0); vxin.push_back(-45.0); vxin.push_back(-45.0);
+  vyin.push_back(0); vyin.push_back(0); vyin.push_back(0);
+  
+  std::vector<double> vxout; vxout.resize(3);
+  std::vector<double> vyout; vyout.resize(3);
+
+  converter->convert(&vxin[0],&vyin[0],&vxout[0],&vyout[0],3);
+ 
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxout[0],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyout[0],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxout[1],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyout[1],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxout[2],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyout[2],0.1);
+  
+  converter->convert(&vxin[0],&vyin[0],3);
+  
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxin[0],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyin[0],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxin[1],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyin[1],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(500000,vxin[2],0.1);
+  CPPUNIT_ASSERT_DOUBLES_EQUAL(10000000,vyin[2],0.1);
+  
+  vxin.clear();
+  vyin.clear();
+  vxout.clear();
+  vyout.clear();
 }
 
 void TsSrs::tcSRSClear()
