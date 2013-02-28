@@ -53,11 +53,11 @@ QImage* te::qt::widgets::GetImage(te::color::RGBAColor** img, int width, int hei
 {
   QImage* qimg = new QImage(width, height, QImage::Format_ARGB32);
 
-  for(int i = 0; i < width; ++i)
+  for(int i = 0; i < height; ++i)
   {
     unsigned char* u = qimg->scanLine(i);
 
-    for(int j = 0; j < height; ++j)
+    for(int j = 0; j < width; ++j)
     {
       te::color::RGBAColor c = img[i][j];
       QRgb val = qRgba(c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha());
