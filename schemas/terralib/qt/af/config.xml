@@ -12,6 +12,7 @@
   <UserSettingsFileName>user_settings.xml</UserSettingsFileName>
   <PluginsFileName>application_plugins.xml</PluginsFileName>
   <HelpFile xlink:href="terraview.qhc"/>
+  <DataSourcesFileName>datasources.xml</DataSourcesFileName>
   <IconThemeInfo>
     <BaseDirectory xlink:href="../../icons"/>
     <DefaultTheme>tango</DefaultTheme>
