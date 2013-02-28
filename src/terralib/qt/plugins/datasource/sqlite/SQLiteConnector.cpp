@@ -24,11 +24,12 @@
 */
 
 // TerraLib
-#include "../../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSourceInfoManager.h"
-#include "../../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceInfoManager.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "SQLiteConnector.h"
 #include "SQLiteConnectorDialog.h"
+#include "SQLiteCreatorDialog.h"
 
 // Boost
 #include <boost/uuid/random_generator.hpp>
@@ -39,16 +40,16 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-te::qt::widgets::SQLiteConnector::SQLiteConnector(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::sqlite::SQLiteConnector::SQLiteConnector(QWidget* parent, Qt::WindowFlags f)
   : AbstractDataSourceConnector(parent, f)
 {
 }
 
-te::qt::widgets::SQLiteConnector::~SQLiteConnector()
+te::qt::plugins::sqlite::SQLiteConnector::~SQLiteConnector()
 {
 }
 
-void te::qt::widgets::SQLiteConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::sqlite::SQLiteConnector::connect(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   std::auto_ptr<SQLiteConnectorDialog> cdialog(new SQLiteConnectorDialog(static_cast<QWidget*>(parent())));
 
@@ -70,14 +71,17 @@ void te::qt::widgets::SQLiteConnector::connect(std::list<te::da::DataSourceInfoP
   }
 }
 
-void te::qt::plugins::shp::SQLiteConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::sqlite::SQLiteConnector::create(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
+  std::auto_ptr<SQLiteCreatorDialog> cdialog(new SQLiteCreatorDialog(static_cast<QWidget*>(parent())));
+
+  int retval = cdialog->exec();
+  
+  if(retval == QDialog::Rejected)
+    return;
 }
 
-void te::qt::widgets::SQLiteConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::sqlite::SQLiteConnector::update(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {
@@ -106,7 +110,7 @@ void te::qt::widgets::SQLiteConnector::update(std::list<te::da::DataSourceInfoPt
   }
 }
 
-void te::qt::widgets::SQLiteConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
+void te::qt::plugins::sqlite::SQLiteConnector::remove(std::list<te::da::DataSourceInfoPtr>& datasources)
 {
   for(std::list<te::da::DataSourceInfoPtr>::iterator it = datasources.begin(); it != datasources.end(); ++it)
   {

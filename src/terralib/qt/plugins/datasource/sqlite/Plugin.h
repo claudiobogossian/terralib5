@@ -18,16 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/connector/sqlite/SQLiteType.h
+  \file terralib/qt/plugins/datasource/sqlite/Plugin.h
 
-  \brief SQLite data source type.
+  \brief Plugin implementation for the SQLite data source widget.
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITETYPE_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITETYPE_H
+#ifndef __TE_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_PLUGIN_H
+#define __TE_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_PLUGIN_H
 
 // TerraLib
-#include "../../../widgets/datasource/core/DataSourceType.h"
+#include "../../../../plugin/Plugin.h"
+#include "Config.h"
 
 namespace te
 {
@@ -37,27 +38,24 @@ namespace te
     {
       namespace sqlite
       {
-        class SQLiteType : public te::qt::widgets::DataSourceType
+        class Plugin : public te::plugin::Plugin
         {
           public:
 
-            SQLiteType();
+            Plugin(const te::plugin::PluginInfo& pluginInfo);
 
-            ~SQLiteType();
+            ~Plugin();
 
-            std::string getName() const;
+            void startup();
 
-            std::string getTitle() const;
-
-            std::string getDescription() const;
-
-            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
-
-            QIcon getIcon(int iconType) const;
+            void shutdown();
         };
-      }   // end namespace sqlite
-    }     // end namespace plugins
-  }       // end namespace qt
-}         // end namespace te
 
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITETYPE_H
+      } // end namespace sqlite
+    }   // end namespace plugins
+  }     // end namespace qt
+}       // end namespace te
+
+PLUGIN_CALL_BACK_DECLARATION(TEQTPLUGINSQLITEEXPORT);
+
+#endif //__TE_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_PLUGIN_H
