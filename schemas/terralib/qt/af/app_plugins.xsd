@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:te_qt_af="http://www.terralib.org/schemas/qt/af"
+            xmlns:te_common="http://www.terralib.org/schemas/common"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://www.terralib.org/schemas/qt/af"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified"
+            xml:lang="en">
+
+  <xsd:annotation>
+    <xsd:appinfo>Framework Configuration Schema</xsd:appinfo>
+    <xsd:documentation>A simple schema for the framework configuration</xsd:documentation>
+  </xsd:annotation>
+
+  <xsd:import namespace="http://www.terralib.org/schemas/common" schemaLocation="../../common/common.xsd"/>
+  <xsd:import namespace="http://www.w3.org/1999/xlink" schemaLocation="../../../ogc/xlink/1.0.0/xlinks.xsd"/>
+
+  <xsd:element name="Plugins" type="te_qt_af:PluginsType" />
+
+  <xsd:complexType name="PluginsType">
+    <xsd:annotation>
+      <xsd:documentation>A type used to describe configurations</xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Plugin" type="te_qt_af:PluginType" minOccurs="0" maxOccurs="unbounded" />
+      
+    </xsd:sequence>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="PluginType">
+    <xsd:sequence>
+      <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Path" type="te_common:OnlineResourceType" minOccurs="1" maxOccurs="1" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

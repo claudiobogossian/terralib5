@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Plugins xmlns:te_qt_af="http://www.terralib.org/schemas/qt/af"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://www.terralib.org/schemas/qt/af"
+         xsd:schemaLocation="http://www.terralib.org/schemas/qt/af app_plugins.xsd"
+         version="5.0.0">
+  <Plugin>
+    <Name>te.da.ogr</Name>
+    <Path xlink:href="plugins\ogr\plugin_info.xml" />
+  </Plugin>  
+  <Plugin>
+    <Name>te.da.pgis</Name>
+    <Path xlink:href="plugins\postgis\plugin_info.xml" />
+  </Plugin>
+  <Plugin>
+    <Name>te.plugin.builder</Name>
+    <Path xlink:href="plugins\plugin_builder\plugin_info.xml" />
+  </Plugin>
+</Plugins>
