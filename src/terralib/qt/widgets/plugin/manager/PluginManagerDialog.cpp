@@ -134,7 +134,7 @@ QString GetPluginReqsMessage(const std::string& plg, const std::vector<std::stri
   {
     std::vector<std::string>::const_iterator it;
   
-    result = QObject::tr("To load <b>%1</b> plugin, you need to load the above requirements: <ul>");
+    result = QObject::tr("In order to be able to load <b>%1</b> plugin, the following plugins must also be enabled: <ul>");
     result = result.arg(plg.c_str());
 
     for(it=dps.begin(); it!=dps.end(); ++it)
@@ -143,7 +143,7 @@ QString GetPluginReqsMessage(const std::string& plg, const std::vector<std::stri
       result = result.arg((*it).c_str()); 
     }
 
-    result += QObject::tr("</ul> Did you want to continue?");
+    result += QObject::tr("</ul> Allow them to be anabled?");
   }
 
   return result;
