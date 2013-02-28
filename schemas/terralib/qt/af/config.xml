@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Application xmlns:te_qt_af="http://www.terralib.org/schemas/qt/af"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="http://www.terralib.org/schemas/qt/af"
+             xsd:schemaLocation="http://www.terralib.org/schemas/qt/af config.xsd"
+             version="5.0.0">
+  <Organization>INPE</Organization>
+  <Name>TerraView</Name>
+  <Title>TerraView</Title>
+  <IconName>terraview</IconName>
+  <UserSettingsFileName>user_settings.xml</UserSettingsFileName>
+  <PluginsFileName>application_plugins.xml</PluginsFileName>
+  <HelpFile xlink:href="terraview.qhc"/>
+  <IconThemeInfo>
+    <BaseDirectory xlink:href="../../icons"/>
+    <DefaultTheme>tango</DefaultTheme>
+  </IconThemeInfo>
+  <ToolBarDefaultIconSize>24</ToolBarDefaultIconSize>
+
+</Application>
