@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/af/BaseApplicationController.cpp
+  \file terralib/qt/af/ApplicationController.cpp
 
   \brief The base API for controllers of TerraLib applications.
 */
@@ -43,7 +43,7 @@
 #include "events/NewToolBar.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
-#include "BaseApplicationController.h"
+#include "ApplicationController.h"
 #include "Exception.h"
 #include "SplashScreenManager.h"
 #include "UserPlugins.h"
@@ -62,31 +62,42 @@
 // Boost
 #include <boost/filesystem.hpp>
 
-const te::qt::af::BaseApplicationController& sm_core = te::qt::af::ApplicationController::getInstance();
+te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instance(0);
 
-te::qt::af::BaseApplicationController::BaseApplicationController(QObject* parent)
-  : QObject(parent),
+te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
+  : QObject(/*parent*/),
     m_msgBoxParentWidget(0),
     m_initialized(false)
 {
+  if(sm_instance)
+    throw Exception(TR_QT_AF("Can not start another instance of the TerraLib Application Controller!"));
+
+  sm_instance = this;
 }
 
-te::qt::af::BaseApplicationController::~BaseApplicationController()
+te::qt::af::ApplicationController::~ApplicationController()
 {
   finalize();
+
+  sm_instance = 0;
 }
 
-void te::qt::af::BaseApplicationController::setConfigFile(const std::string& configFileName)
+te::qt::af::ApplicationController& te::qt::af::ApplicationController::getInstance()
+{
+  return *sm_instance;
+}
+
+void te::qt::af::ApplicationController::setConfigFile(const std::string& configFileName)
 {
   m_appConfigFile = configFileName;
 }
 
-void te::qt::af::BaseApplicationController::setMsgBoxParentWidget(QWidget* w)
+void te::qt::af::ApplicationController::setMsgBoxParentWidget(QWidget* w)
 {
   m_msgBoxParentWidget = w;
 }
 
-void te::qt::af::BaseApplicationController::addToolBar(const QString& id, QToolBar* bar)
+void te::qt::af::ApplicationController::addToolBar(const QString& id, QToolBar* bar)
 {
   registerToolBar(id, bar);
 
@@ -96,7 +107,7 @@ void te::qt::af::BaseApplicationController::addToolBar(const QString& id, QToolB
   broadcast(&evt);
 }
 
-void te::qt::af::BaseApplicationController::registerToolBar(const QString& id, QToolBar* bar)
+void te::qt::af::ApplicationController::registerToolBar(const QString& id, QToolBar* bar)
 {
   QToolBar* b = getToolBar(id);
 
@@ -106,19 +117,19 @@ void te::qt::af::BaseApplicationController::registerToolBar(const QString& id, Q
   m_toolbars[id] = bar;
 }
 
-QToolBar* te::qt::af::BaseApplicationController::getToolBar(const QString& id) const
+QToolBar* te::qt::af::ApplicationController::getToolBar(const QString& id) const
 {
   std::map<QString, QToolBar*>::const_iterator it = m_toolbars.find(id);
 
   return (it != m_toolbars.end()) ? it->second : 0;
 }
 
-void te::qt::af::BaseApplicationController::registerMenu(QMenu* mnu)
+void te::qt::af::ApplicationController::registerMenu(QMenu* mnu)
 {
   m_menus.push_back(mnu);
 }
 
-QMenu* te::qt::af::BaseApplicationController::findMenu(const QString& id) const
+QMenu* te::qt::af::ApplicationController::findMenu(const QString& id) const
 {
   std::vector<QMenu*>::const_iterator it;
 
@@ -145,7 +156,7 @@ QMenu* te::qt::af::BaseApplicationController::findMenu(const QString& id) const
   return 0;
 }
 
-QMenu* te::qt::af::BaseApplicationController::getMenu(const QString& id)
+QMenu* te::qt::af::ApplicationController::getMenu(const QString& id)
 {
   QMenu* mnu = findMenu(id);
 
@@ -163,22 +174,22 @@ QMenu* te::qt::af::BaseApplicationController::getMenu(const QString& id)
   return mnu;
 }
 
-void te::qt::af::BaseApplicationController::registerMenuBar(QMenuBar* bar)
+void te::qt::af::ApplicationController::registerMenuBar(QMenuBar* bar)
 {
   m_menuBars.push_back(bar);
 }
 
-QMenuBar* te::qt::af::BaseApplicationController::findMenuBar(const QString& id) const
+QMenuBar* te::qt::af::ApplicationController::findMenuBar(const QString& id) const
 {
   throw Exception("Not implemented yet.");
 }
 
-QMenuBar* te::qt::af::BaseApplicationController::getMenuBar(const QString& id) const
+QMenuBar* te::qt::af::ApplicationController::getMenuBar(const QString& id) const
 {
   throw Exception("Not implemented yet.");
 }
 
-QAction* te::qt::af::BaseApplicationController::findAction(const QString& id) const
+QAction* te::qt::af::ApplicationController::findAction(const QString& id) const
 {
   for(size_t i=0; i<m_menus.size(); i++)
   {
@@ -199,7 +210,7 @@ QAction* te::qt::af::BaseApplicationController::findAction(const QString& id) co
   return 0;
 }
 
-void te::qt::af::BaseApplicationController::addListener(QObject* obj)
+void te::qt::af::ApplicationController::addListener(QObject* obj)
 {
   std::set<QObject*>::const_iterator it = m_applicationItems.find(obj);
 
@@ -211,7 +222,7 @@ void te::qt::af::BaseApplicationController::addListener(QObject* obj)
   obj->connect(this, SIGNAL(triggered(te::qt::af::Event*)), SLOT(onApplicationTriggered(te::qt::af::Event*)));
 }
 
-void te::qt::af::BaseApplicationController::removeListener(QObject* obj)
+void te::qt::af::ApplicationController::removeListener(QObject* obj)
 {
   std::set<QObject*>::iterator it = m_applicationItems.find(obj);
 
@@ -223,7 +234,7 @@ void te::qt::af::BaseApplicationController::removeListener(QObject* obj)
   disconnect(SIGNAL(triggered(te::qt::af::Event*)), obj, SLOT(onApplicationTriggered(te::qt::af::Event*)));
 }
 
-void  te::qt::af::BaseApplicationController::initialize()
+void  te::qt::af::ApplicationController::initialize()
 {
   if(m_initialized)
     return;
@@ -384,7 +395,7 @@ void  te::qt::af::BaseApplicationController::initialize()
   m_initialized = true;
 }
 
-void te::qt::af::BaseApplicationController::initializePlugins()
+void te::qt::af::ApplicationController::initializePlugins()
 {
   te::qt::widgets::ScopedCursor cursor(Qt::WaitCursor);
 
@@ -448,7 +459,7 @@ void te::qt::af::BaseApplicationController::initializePlugins()
   }
 }
 
-void te::qt::af::BaseApplicationController::initializeProjectMenus()
+void te::qt::af::ApplicationController::initializeProjectMenus()
 {
   SplashScreenManager::getInstance().showMessage("Loading recent projects...");
 
@@ -508,7 +519,7 @@ void te::qt::af::BaseApplicationController::initializeProjectMenus()
   }
 }
 
-void te::qt::af::BaseApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
+void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
 {
   int pos = m_recentProjs.indexOf(prjFile);
 
@@ -556,7 +567,7 @@ void te::qt::af::BaseApplicationController::updateRecentProjects(const QString& 
     act->setEnabled(true);
 }
 
-void te::qt::af::BaseApplicationController::finalize()
+void te::qt::af::ApplicationController::finalize()
 {
   if(!m_initialized)
     return;
@@ -578,7 +589,7 @@ void te::qt::af::BaseApplicationController::finalize()
   m_initialized = false;
 }
 
-void  te::qt::af::BaseApplicationController::broadcast(te::qt::af::Event* evt)
+void  te::qt::af::ApplicationController::broadcast(te::qt::af::Event* evt)
 {
   // Need to check event send to prevent loops
   // -----------------------------------------
@@ -586,12 +597,12 @@ void  te::qt::af::BaseApplicationController::broadcast(te::qt::af::Event* evt)
   emit triggered(evt);
 }
 
-const QString& te::qt::af::BaseApplicationController::getAppTitle() const
+const QString& te::qt::af::ApplicationController::getAppTitle() const
 {
   return m_appTitle;
 }
 
-const QString& te::qt::af::BaseApplicationController::getAppIconName() const
+const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
   return m_appIconName;
 }

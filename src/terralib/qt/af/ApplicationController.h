@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/af/BaseApplicationController.h
+  \file terralib/qt/af/ApplicationController.h
 
   \brief The base API for controllers of TerraLib applications.
 */
 
-#ifndef __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATIONCONTROLLER_H
-#define __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATIONCONTROLLER_H
+#ifndef __TERRALIB_QT_AF_INTERNAL_APPLICATIONCONTROLLER_H
+#define __TERRALIB_QT_AF_INTERNAL_APPLICATIONCONTROLLER_H
 
 // Terralib
 #include "Config.h"
@@ -33,6 +33,9 @@
 #include <map>
 #include <set>
 #include <vector>
+
+// Boost
+#include <boost/noncopyable.hpp>
 
 // Qt
 #include <QtCore/QObject>
@@ -55,11 +58,13 @@ namespace te
       class Event;
 
       /*!
-        \class BaseApplicationController
+        \class ApplicationController
 
         \brief The base API for TerraLib applications.
+
+        \note Temporally this class is a singleton!
       */
-      class TEQTAFEXPORT BaseApplicationController : public QObject
+      class TEQTAFEXPORT ApplicationController : public QObject, public boost::noncopyable
       {
         Q_OBJECT
 
@@ -70,10 +75,19 @@ namespace te
 
             \param parent The parent object.
           */
-          BaseApplicationController(QObject* parent = 0);
+          ApplicationController(/*QObject* parent = 0*/);
 
           /*! \brief Destructor. */
-          virtual ~BaseApplicationController();
+          virtual ~ApplicationController();
+
+          /*!
+            \brief It gives access to the controller singleton.
+
+            \return A pointer to the application singleton.
+
+            \pre The application must have been initialized before calling this method.
+          */
+          static ApplicationController& getInstance();
 
           /*!
             \brief Tells wich configuration file to be used by the controller during its initialization.
@@ -318,11 +332,14 @@ namespace te
           QString m_appToolBarDefaultIconSize;
           std::string m_appDatasourcesFile;
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
+
+// Singleton instance
+          static ApplicationController* sm_instance;  //!< There can be only one object of class Application.
       };
 
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
 
-#endif // __TERRALIB_QT_AF_INTERNAL_BASEAPPLICATIONCONTROLLER_H
+#endif // __TERRALIB_QT_AF_INTERNAL_APPLICATIONCONTROLLER_H
 

@@ -50,6 +50,7 @@ namespace te
           POINT_GEOMETRIES,
           VISIBLE_BBOX_CHANGED,
           STYLE_CHANGED,
+          NEW_PROJECT,
           CUSTOM = 1024
         };
 
