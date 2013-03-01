@@ -22,8 +22,8 @@
   \brief Raster edges filter.
  */
 
-#ifndef __TERRALIB_RP_INTERNAL_EDGEDETECT_H
-#define __TERRALIB_RP_INTERNAL_EDGEDETECT_H
+#ifndef __TERRALIB_RP_INTERNAL_EDGEFILTER_H
+#define __TERRALIB_RP_INTERNAL_EDGEFILTER_H
 
 #include "Algorithm.h"
 #include "../raster/Raster.h"
