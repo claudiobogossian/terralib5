@@ -15,7 +15,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.1 "
-   sodipodi:docname="tree-visible.svg">
+   sodipodi:docname="view-layer-explorer.svg">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -629,7 +629,7 @@
        xlink:href="#linearGradient6310-7-0"
        id="linearGradient3448"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(8.0000001,0,0,8.0000039,7.9999995,-2.679169e-6)"
+       gradientTransform="matrix(8.0000001,0,0,8.0000039,7.9999995,-2.6791708e-6)"
        x1="3.5"
        y1="8"
        x2="3.5"
@@ -663,8 +663,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="15.839192"
-     inkscape:cx="24.650699"
-     inkscape:cy="6.276157"
+     inkscape:cx="3.2625994"
+     inkscape:cy="5.7395135"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -685,7 +685,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -695,12 +695,15 @@
      id="layer1"
      transform="translate(-314.10144,-637.84367)">
     <rect
-       y="636.64642"
-       x="313.71429"
+       y="638.1037"
+       x="313.49643"
        width="24"
        style="color:#000000;fill:none;stroke:none;stroke-width:1;marker:none;display:inline"
        id="rect12294"
-       height="24" />
+       height="24"
+       inkscape:export-filename="C:\Users\gribeiro\Desktop\icones\png\48x48\view-layer-explorer.png"
+       inkscape:export-xdpi="180"
+       inkscape:export-ydpi="180" />
     <g
        id="layer4"
        inkscape:label="box"
@@ -2143,13 +2146,19 @@
        transform="matrix(1.5495222,0,0,0.81696129,425.12559,1194.5452)" />
     <path
        inkscape:connector-curvature="0"
-       d="m 328.70193,637.21072 0,-0.40984 0,0.40984 z"
+       d="m 325.49644,650.30859 0,-0.40984 0,0.40984 z"
        id="path2907"
        sodipodi:nodetypes="ccc"
-       style="fill:#ffffff;fill-opacity:0.75688076;fill-rule:nonzero;stroke:none" />
+       style="fill:#ffffff;fill-opacity:0.75688076;fill-rule:nonzero;stroke:none"
+       inkscape:export-filename="C:\Users\gribeiro\Desktop\icones\png\48x48\view-layer-explorer.png"
+       inkscape:export-xdpi="180"
+       inkscape:export-ydpi="180" />
     <g
        id="g4200"
-       transform="matrix(1.13105,0,0,1.0965373,-44.149202,-58.634521)">
+       transform="matrix(1.13105,0,0,1.0965373,-44.149202,-58.634521)"
+       inkscape:export-filename="C:\Users\gribeiro\Desktop\icones\png\48x48\view-layer-explorer.png"
+       inkscape:export-xdpi="180"
+       inkscape:export-ydpi="180">
       <rect
          y="239.27611"
          x="81.628647"
