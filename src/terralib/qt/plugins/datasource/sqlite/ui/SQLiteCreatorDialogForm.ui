@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SQLiteConnectorDialogForm</class>
- <widget class="QDialog" name="SQLiteConnectorDialogForm">
+ <class>SQLiteCreatorDialogForm</class>
+ <widget class="QDialog" name="SQLiteCreatorDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>449</width>
-    <height>449</height>
+    <width>473</width>
+    <height>234</height>
    </rect>
   </property>
-  <property name="windowTitle">
-   <string>SQLite Connector</string>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>234</height>
+   </size>
   </property>
-  <layout class="QGridLayout" name="gridLayout_11">
+  <property name="windowTitle">
+   <string>SQLite Creator</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_9">
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
    <item row="0" column="0">
-    <layout class="QGridLayout" name="gridLayout_10">
+    <layout class="QGridLayout" name="gridLayout_8">
      <item row="0" column="0">
       <widget class="QFrame" name="frame_2">
        <property name="styleSheet">
@@ -49,82 +55,19 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <layout class="QGridLayout" name="gridLayout_9">
+      <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <layout class="QGridLayout" name="gridLayout_8">
+        <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
-          <widget class="QGroupBox" name="groupBox_2">
-           <property name="title">
-            <string>Base Information</string>
-           </property>
-           <layout class="QGridLayout" name="gridLayout_4">
-            <property name="leftMargin">
-             <number>9</number>
-            </property>
-            <property name="topMargin">
-             <number>9</number>
-            </property>
-            <item row="0" column="0">
-             <layout class="QGridLayout" name="gridLayout_3">
-              <item row="0" column="0">
-               <layout class="QVBoxLayout" name="verticalLayout_9">
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>Title</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="m_datasourceTitleLineEdit"/>
-                </item>
-               </layout>
-              </item>
-              <item row="1" column="0">
-               <layout class="QVBoxLayout" name="verticalLayout_8">
-                <item>
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>Description</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QTextEdit" name="m_datasourceDescriptionTextEdit">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>40</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>16777215</width>
-                    <height>60</height>
-                   </size>
-                  </property>
-                  <property name="toolTip">
-                   <string>A more detailed description about the data source</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </widget>
-         </item>
-         <item row="1" column="0">
           <widget class="QGroupBox" name="groupBox_3">
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>103</height>
+            </size>
+           </property>
            <property name="title">
-            <string>Connection Information</string>
+            <string>Creation Information</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_7">
             <item row="0" column="0">
@@ -134,7 +77,7 @@
                 <item>
                  <widget class="QLabel" name="m_fileLabel_2">
                   <property name="text">
-                   <string>File/URL</string>
+                   <string>New Database</string>
                   </property>
                  </widget>
                 </item>
@@ -157,23 +100,6 @@
               <item row="1" column="0">
                <layout class="QGridLayout" name="gridLayout_5">
                 <item row="0" column="0">
-                 <widget class="QCheckBox" name="m_rwAccessCheckBox">
-                  <property name="text">
-                   <string>Read/Write</string>
-                  </property>
-                  <property name="checked">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QCheckBox" name="m_createdbCheckBox">
-                  <property name="text">
-                   <string>Create if not exists</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="2" column="0">
                  <widget class="QCheckBox" name="m_allowIntermediateDirCheckBox">
                   <property name="text">
                    <string>Allow intermediate directory creation</string>
@@ -190,7 +116,7 @@
            </layout>
           </widget>
          </item>
-         <item row="2" column="0">
+         <item row="1" column="0">
           <widget class="QCheckBox" name="m_advancedConnectionOptionsCheckBox">
            <property name="text">
             <string>Advanced Connection Options</string>
@@ -203,14 +129,14 @@
         <widget class="QGroupBox" name="m_advancedOptionsGroupBox">
          <property name="minimumSize">
           <size>
-           <width>196</width>
+           <width>220</width>
            <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>196</width>
-           <height>16777215</height>
+           <width>220</width>
+           <height>134</height>
           </size>
          </property>
          <property name="title">
@@ -250,9 +176,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>194</width>
-               <height>319</height>
+               <y>-64</y>
+               <width>201</width>
+               <height>194</height>
               </rect>
              </property>
              <layout class="QGridLayout" name="gridLayout">
@@ -401,16 +327,9 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QPushButton" name="m_testPushButton">
+          <widget class="QPushButton" name="m_applyPushButton">
            <property name="text">
-            <string>&amp;Test</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="m_openPushButton">
-           <property name="text">
-            <string>&amp;Open</string>
+            <string>&amp;Apply</string>
            </property>
           </widget>
          </item>
@@ -432,11 +351,7 @@
  <tabstops>
   <tabstop>m_fileLineEdit</tabstop>
   <tabstop>m_searchDatabaseToolButton</tabstop>
-  <tabstop>m_rwAccessCheckBox</tabstop>
-  <tabstop>m_createdbCheckBox</tabstop>
   <tabstop>m_allowIntermediateDirCheckBox</tabstop>
-  <tabstop>m_datasourceTitleLineEdit</tabstop>
-  <tabstop>m_datasourceDescriptionTextEdit</tabstop>
   <tabstop>m_advancedOptionsGroupBox</tabstop>
   <tabstop>m_spatialiteSchemaRadioButton</tabstop>
   <tabstop>m_ogrSchemaRadioButton</tabstop>
@@ -444,8 +359,7 @@
   <tabstop>m_hideSpatialMetatablesCheckBox</tabstop>
   <tabstop>m_hideRasterTablesCheckBox</tabstop>
   <tabstop>m_tablesToHideLineEdit</tabstop>
-  <tabstop>m_testPushButton</tabstop>
-  <tabstop>m_openPushButton</tabstop>
+  <tabstop>m_applyPushButton</tabstop>
   <tabstop>m_closePushButton</tabstop>
   <tabstop>m_helpPushButton</tabstop>
  </tabstops>
@@ -454,7 +368,7 @@
   <connection>
    <sender>m_closePushButton</sender>
    <signal>pressed()</signal>
-   <receiver>SQLiteConnectorDialogForm</receiver>
+   <receiver>SQLiteCreatorDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

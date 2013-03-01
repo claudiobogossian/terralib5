@@ -23,10 +23,10 @@
   </RequiredPlugins>
   <RequiredModules>
     <ModuleId>te.common</ModuleId>
-	<ModuleId>te.dt</ModuleId>
+  <ModuleId>te.dt</ModuleId>
     <ModuleId>te.da</ModuleId>
-	<ModuleId>te.gm</ModuleId>
-	<ModuleId>te.srs</ModuleId>
+  <ModuleId>te.gm</ModuleId>
+  <ModuleId>te.srs</ModuleId>
   </RequiredModules>
   <Resources>
     <Resource name="SharedLibraryName" xlink:href="terralib_postgis"/>

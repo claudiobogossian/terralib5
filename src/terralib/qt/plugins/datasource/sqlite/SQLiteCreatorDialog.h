@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/connector/sqlite/SQLiteConnectorDialog.h
+  \file terralib/qt/widgets/connector/sqlite/SQLiteCreatorDialog.h
 
   \brief ....
 */
 
-#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITECONNECTORDIALOG_H
-#define __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITECONNECTORDIALOG_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITECREATORDIALOG_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITECREATORDIALOG_H
 
 // TerraLib
 #include "../../../../dataaccess/datasource/DataSource.h"
@@ -36,7 +36,7 @@
 // Qt
 #include <QtGui/QDialog>
 
-namespace Ui { class SQLiteConnectorDialogForm; }
+namespace Ui { class SQLiteCreatorDialogForm; }
 
 namespace te
 {
@@ -47,31 +47,27 @@ namespace te
       namespace sqlite
       {
         /*!
-          \class SQLiteConnectorDialog
+          \class SQLiteCreatorDialog
 
           \brief ....
         */
-        class SQLiteConnectorDialog : public QDialog
+        class SQLiteCreatorDialog : public QDialog
         {
           Q_OBJECT
 
           public:
 
-            SQLiteConnectorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+            SQLiteCreatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-            ~SQLiteConnectorDialog();
+            ~SQLiteCreatorDialog();
 
             const te::da::DataSourceInfoPtr& getDataSource() const;
 
             const te::da::DataSourcePtr& getDriver() const;
 
-            void set(const te::da::DataSourceInfoPtr& ds);
-
           public slots:
 
-            void openPushButtonPressed();
-
-            void testPushButtonPressed();
+            void applyPushButtonPressed();
 
             void helpPushButtonPressed();
 
@@ -81,11 +77,9 @@ namespace te
 
             void getConnectionInfo(std::map<std::string, std::string>& connInfo) const;
 
-            void setConnectionInfo(const std::map<std::string, std::string>& connInfo);
-
           private:
 
-            std::auto_ptr<Ui::SQLiteConnectorDialogForm> m_ui;
+            std::auto_ptr<Ui::SQLiteCreatorDialogForm> m_ui;
             te::da::DataSourceInfoPtr m_datasource;
             te::da::DataSourcePtr m_driver;
         }; 
@@ -94,5 +88,5 @@ namespace te
   }       // end namespace qt
 }         // end namespace te
 
-#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITECONNECTORDIALOG_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITECREATORDIALOG_H
 
