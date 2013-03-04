@@ -15,7 +15,7 @@ set(TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 include (terralib_qt_plugins/TerraLib_Plugins.cmake)
 
-include (third-party/qt/propertybrowser/CMakeLists.txt)
+add_subdirectory (third-party/qt/propertybrowser)
 
 set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 

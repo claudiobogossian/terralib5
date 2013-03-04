@@ -1,5 +1,5 @@
 # IMPORTANT - Controls for the source and build tree locations
-set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../") 	# the terralib root directory (change it if it is in another directory)
+set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../../../../") 	# the terralib root directory (change it if it is in another directory)
 set(SRCDIR ${ROOT}/third-party/qt/propertybrowser)   	# directory where the source files of the 
 set(INCLDIR ${SRCDIR})                               	# directory where the header files of the 
 
