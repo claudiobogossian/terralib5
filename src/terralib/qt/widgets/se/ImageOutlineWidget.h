@@ -55,7 +55,7 @@ namespace te
     namespace widgets
     {
       class PolygonSymbolizerWidget;
-      class SymbolizerPreviewWidget;
+      class SymbolPreviewWidget;
 
       /*!
         \class ImageOutlineWidget
@@ -111,7 +111,7 @@ namespace te
           std::auto_ptr<Ui::ImageOutlineWidgetForm> m_ui;             //!< Dialog form.
 
           te::qt::widgets::PolygonSymbolizerWidget* m_psWidget;       //!< Polygon Symbolizer UI.
-          te::qt::widgets::SymbolizerPreviewWidget* m_preview;        //!< Preview Widget used to visualize the symbol.
+          te::qt::widgets::SymbolPreviewWidget* m_preview;            //!< Preview Widget used to visualize the symbol.
 
           QGridLayout* m_layout;                                      //!< Qt Layout object
 

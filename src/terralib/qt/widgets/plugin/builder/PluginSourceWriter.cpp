@@ -24,7 +24,6 @@
 */
 
 #include "PluginSourceWriter.h"
-#include "../../../../common/Config.h"
 #include "../../../../common/Version.h"
 #include "../../../../common/StringUtils.h"
 
@@ -262,7 +261,7 @@ void te::qt::widgets::PluginSourceWriter::insertDefaultHeader(std::ofstream& str
   time_t now = time(0);
   char* dt = ctime(&now);
   std::string currentTime = dt;
-  std::string teVersion = te::common::GetStrVersion();
+  std::string teVersion = te::common::Version::asString();
 
   std::string defaultHeader = "";
 

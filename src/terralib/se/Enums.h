@@ -31,32 +31,18 @@ namespace te
   namespace se
   {
     /*!
-      \enum SymbolizerType
-
-      \brief Allowed symbolizers type.
-    */
-    enum SymbolizerType
-    {
-      POINT_SYMBOLIZER,    /*!< PointSymbolizer type    */
-      LINE_SYMBOLIZER,     /*!< LineSymbolizer type     */
-      POLYGON_SYMBOLIZER,  /*!< PolygonSymbolizer type  */
-      RASTER_SYMBOLIZER,   /*!< RasterSymbolizer type   */
-      TEXT_SYMBOLIZER      /*!< TextSymbolizer type     */
-    };
-
-    /*!
       \enum ColorCompositionType
 
       \brief Allowed color compositions type.
     */
     enum ColorCompositionType
     {
-      RGB_COMPOSITION,      /*!< Color composition with 3 bands    */
-      RED_COMPOSITION,      /*!< Color composition with 1 band, red channel    */
-      GREEN_COMPOSITION,    /*!< Color composition with 1 band, green channel    */
+      RGB_COMPOSITION,      /*!< Color composition with 3 bands                 */
+      RED_COMPOSITION,      /*!< Color composition with 1 band, red channel     */
+      GREEN_COMPOSITION,    /*!< Color composition with 1 band, green channel   */
       BLUE_COMPOSITION,     /*!< Color composition with 1 band, blue channel    */
       GRAY_COMPOSITION,     /*!< Color composition with 1 band, gray channel    */
-      UNKNOWN_COMPOSITION   /*!< Color composition unknown or not defined    */
+      UNKNOWN_COMPOSITION   /*!< Color composition unknown or not defined       */
     };
 
   } // end namespace se
