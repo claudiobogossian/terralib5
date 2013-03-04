@@ -78,6 +78,7 @@ void te::qt::widgets::SymbolizerPreviewWidget::updatePreview(const std::vector<t
 void te::qt::widgets::SymbolizerPreviewWidget::setSymbolizerType(const te::se::SymbolizerType& type)
 {
   delete m_geom;
+  m_geom = 0;
 
   // Offset to adjust geometries on preview size
   double offset = 10.0;

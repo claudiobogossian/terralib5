@@ -103,7 +103,7 @@ namespace te
 
             \note If there is not a current rule a NULL point will be returned.
           */
-          const te::se::Rule* getCurrentRule() const;
+          te::se::Rule* getCurrentRule();
 
           /*!
             \brief Gets the current symbolizer.
@@ -112,7 +112,13 @@ namespace te
 
             \note If there is not a current symbolizer a NULL point will be returned.
           */
-          te::se::Symbolizer* getCurrentSymbolizer() const;
+          te::se::Symbolizer* getCurrentSymbolizer();
+
+          void updateStyleTree();
+
+          void goUpSymbolizer();
+
+          void goDownSymbolizer();
 
         private:
 
@@ -120,7 +126,7 @@ namespace te
           void initialize();
 
           /*! \brief Auxiliary internal method to retrieve a rule from a QTreeWidgetItem. */
-          const te::se::Rule* getRule(QTreeWidgetItem* item) const;
+          te::se::Rule* getRule(QTreeWidgetItem* item) const;
 
           /*! \brief Auxiliary internal method to retrieve a symbolizer from a QTreeWidgetItem. */
           te::se::Symbolizer* getSymbolizer(QTreeWidgetItem* item) const;
@@ -134,9 +140,15 @@ namespace te
           */
           QTreeWidgetItem* getSelectedItem() const;
 
+          int getSymbolizerIndex(te::se::Rule* r, te::se::Symbolizer* s) const;
+
+          void swapSymbolizers(te::se::Rule* r, int indexFirst, int indexSecond);
+
         private slots:
 
           void onItemClicked(QTreeWidgetItem* item, int column);
+
+        public slots:
 
           void onSymbolizerChanged(te::se::Symbolizer* symb);
 
