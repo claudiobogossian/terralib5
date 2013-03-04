@@ -114,8 +114,7 @@ te::color::ColorBar* te::qt::qwt::ColorBar::getColorBar()
 void te::qt::qwt::ColorBar::setScaleEngine()
 {
   QwtLinearScaleEngine se;
-
-  this->setScaleDiv(se.transformation(), se.divideScale(m_interval.minValue(), m_interval.maxValue(), 8, 5));
+  this->setScaleDiv(se.divideScale(m_interval.minValue(), m_interval.maxValue(), 8, 5));
 }
 
 void te::qt::qwt::ColorBar::setClickPrecision(double precision)

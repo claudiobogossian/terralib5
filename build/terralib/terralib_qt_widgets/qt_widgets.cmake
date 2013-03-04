@@ -61,10 +61,10 @@ list (APPEND TE_DEP_LIBS
 set (
   _DIRS
   .
-  qwt
   widgets
   widgets/canvas
   widgets/charts
+  widgets/colorbar
   widgets/datagrid
   widgets/dataview
   widgets/dataset
@@ -103,16 +103,9 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/qwt/HistogramDisplay.h
-  ${SRCDIR}/qwt/HistogramSelectionCursor.h
-  ${SRCDIR}/qwt/Legend.h
-  ${SRCDIR}/qwt/Plot.h
-  ${SRCDIR}/qwt/ScatterDisplay.h
-  ${SRCDIR}/qwt/ScatterSelectionCursor.h
-  ${SRCDIR}/qwt/TimeSeriesDisplay.h
-  ${SRCDIR}/qwt/ColorBar.h
+  ${SRCDIR}/widgets/colorbar/ColorBar.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/qwt" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/widgets/colorbar" MOC)
 
 set (
   HDRS_TO_MOC
