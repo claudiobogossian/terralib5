@@ -5,6 +5,7 @@
                xmlns:se="http://www.opengis.net/schemas/se"
                xmlns:ogc="http://www.opengis.net/schemas/ogc"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+               name="TerraLib 5 Default Symbol Library"
                version="5.0.0">
 
   <!-- Line Symbols -->
