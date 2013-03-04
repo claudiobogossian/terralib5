@@ -23,11 +23,11 @@
   \brief ...
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITECONNECTOR_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITECONNECTOR_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_MYSQLCONNECTOR_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_MYSQLCONNECTOR_H
 
 // TerraLib
-#include "../core/AbstractDataSourceConnector.h"
+#include "../../../widgets/datasource/connector/AbstractDataSourceConnector.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -36,32 +36,35 @@ namespace te
 {
   namespace qt
   {
-    namespace widgets
+    namespace plugins
     {
-      /*!
-        \class SQLiteConnector
-
-        \brief ....
-      */
-      class TEQTWIDGETSEXPORT SQLiteConnector : public AbstractDataSourceConnector
+      namespace sqlite
       {
-        public:
+        /*!
+          \class SQLiteConnector
 
-          SQLiteConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          \brief SQLite connector implementation for the Qt data source widget.
+        */
+        class SQLiteConnector : public te::qt::widgets::AbstractDataSourceConnector
+        {
+          public:
 
-          ~SQLiteConnector();
+            SQLiteConnector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          void connect(std::list<te::da::DataSourceInfoPtr>& datasources);
+            ~SQLiteConnector();
 
-          void create(std::list<te::da::DataSourceInfoPtr>& datasources);
+            void connect(std::list<te::da::DataSourceInfoPtr>& datasources);
 
-          void update(std::list<te::da::DataSourceInfoPtr>& datasources);
+            void create(std::list<te::da::DataSourceInfoPtr>& datasources);
 
-          void remove(std::list<te::da::DataSourceInfoPtr>& datasources);
-      }; 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+            void update(std::list<te::da::DataSourceInfoPtr>& datasources);
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITECONNECTOR_H
+            void remove(std::list<te::da::DataSourceInfoPtr>& datasources);
+        }; 
+      }   // end namespace sqlite
+    }     // end namespace plugins
+  }       // end namespace qt
+}         // end namespace te
+
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_MYSQLCONNECTOR_H
 

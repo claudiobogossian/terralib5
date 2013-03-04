@@ -54,6 +54,7 @@ list (APPEND TE_DEP_LIBS
 		terralib_rp
     terralib_plugin
 		terralib_xlink
+		qtpropertybrowser
     )
 
 # Files to process.
@@ -78,6 +79,8 @@ set (
   widgets/layer
   widgets/progress
   widgets/property
+  widgets/propertybrowser
+  widgets/propertybrowser/qt
   widgets/rp
   widgets/se
   widgets/srs
@@ -229,6 +232,13 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/property" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/propertybrowser/AbstractPropertyItem.h
+  ${SRCDIR}/widgets/propertybrowser/AbstractPropertyManager.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/propertybrowser" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/progress/ProgressViewerBar.h
   ${SRCDIR}/widgets/progress/ProgressViewerDialog.h
   ${SRCDIR}/widgets/progress/ProgressWidgetItem.h
@@ -271,32 +281,43 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/se/AbstractGraphicWidget.h
+  ${SRCDIR}/widgets/se/BasicFillPropertyItem.h
   ${SRCDIR}/widgets/se/BasicFillWidget.h
+  ${SRCDIR}/widgets/se/BasicStrokePropertyItem.h
   ${SRCDIR}/widgets/se/BasicStrokeWidget.h
   ${SRCDIR}/widgets/se/ChannelSelectionWidget.h
   ${SRCDIR}/widgets/se/CharMapWidget.h
   ${SRCDIR}/widgets/se/ColorMapWidget.h
   ${SRCDIR}/widgets/se/ContrastEnhancementWidget.h
   ${SRCDIR}/widgets/se/GlyphGraphicWidget.h
+  ${SRCDIR}/widgets/se/GlyphMarkPropertyItem.h
   ${SRCDIR}/widgets/se/GlyphMarkWidget.h
+  ${SRCDIR}/widgets/se/GraphicPropertyItem.h
   ${SRCDIR}/widgets/se/GraphicFillWidget.h
   ${SRCDIR}/widgets/se/GraphicSelectorWidget.h
   ${SRCDIR}/widgets/se/ImageOutlineWidget.h
+  ${SRCDIR}/widgets/se/LineSymbolizerProperty.h
   ${SRCDIR}/widgets/se/LineSymbolizerWidget.h
   ${SRCDIR}/widgets/se/LocalGraphicWidget.h
   ${SRCDIR}/widgets/se/LocalImageWidget.h
   ${SRCDIR}/widgets/se/OverlapBehaviorWidget.h
+  ${SRCDIR}/widgets/se/PointSymbolizerProperty.h
   ${SRCDIR}/widgets/se/PointSymbolizerWidget.h
+  ${SRCDIR}/widgets/se/PolygonSymbolizerProperty.h
   ${SRCDIR}/widgets/se/PolygonSymbolizerWidget.h
   ${SRCDIR}/widgets/se/RasterSymbolizerDialog.h
   ${SRCDIR}/widgets/se/RasterVisualWidget.h
   ${SRCDIR}/widgets/se/RasterVisualDockWidget.h
   ${SRCDIR}/widgets/se/SelectedChannelWidget.h
   ${SRCDIR}/widgets/se/ShadedReliefWidget.h
+  ${SRCDIR}/widgets/se/StyleControllerWidget.h
   ${SRCDIR}/widgets/se/StyleExplorer.h
   ${SRCDIR}/widgets/se/SymbolEditorWidget.h
-  ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
+  ${SRCDIR}/widgets/se/SymbolSelectorDialog.h
+  ${SRCDIR}/widgets/se/SymbolTableWidget.h
+  ${SRCDIR}/widgets/se/VisualDockWidget.h
   ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
+  ${SRCDIR}/widgets/se/WellKnownMarkPropertyItem.h
   ${SRCDIR}/widgets/se/WellKnownMarkWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/se" MOC)
@@ -398,7 +419,7 @@ list (APPEND TE_DEP_INCLUDES "${QT_INC_DIRS}")
 
 set (TE_AUX_DIRS ${TE_AUX_DIRS} "${CMAKE_CURRENT_BINARY_DIR}" PARENT_SCOPE)
 
-list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}")
+list (APPEND SRCS "${MOC}" "${MOC2}" "${UI}" "${qt_pb_headers_MOC}" "${qt_pb_resources_RCC}")
 
 list (REMOVE_ITEM SRCS ${SRCDIR}/widgets/dataview/TabularViewer.cpp)
 

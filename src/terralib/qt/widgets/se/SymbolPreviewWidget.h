@@ -18,16 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/SymbolizerPreviewWidget.h
+  \file terralib/qt/widgets/se/SymbolPreviewWidget.h
 
-  \brief A widget used to preview symbolizer elements.
+  \brief A widget used to preview symbol elements.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERPREVIEWWIDGET_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERPREVIEWWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLPREVIEWWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLPREVIEWWIDGET_H
 
 // TerraLib
-#include "../../../se/Enums.h"
 #include "../Config.h"
 
 // Qt
@@ -41,27 +40,25 @@ class QLabel;
 
 namespace te
 {
-// Forward declarations
+// Forward declaration
   namespace gm
   {
     class Geometry;
-  }
-
-  namespace se
-  {
-    class Symbolizer;
   }
 
   namespace qt
   {
     namespace widgets
     {
-      /*!
-        \class SymbolizerPreviewWidget
+// Forward declaration
+      class Symbol;
 
-        \brief A widget used to preview symbolizer elements.
+      /*!
+        \class SymbolPreviewWidget
+
+        \brief A widget used to preview symbol elements.
       */
-      class TEQTWIDGETSEXPORT SymbolizerPreviewWidget : public QWidget
+      class TEQTWIDGETSEXPORT SymbolPreviewWidget : public QWidget
       {
         public:
 
@@ -71,20 +68,37 @@ namespace te
           //@{
 
           /*!
-            \brief Constructs a symbolizer preview widget with fixed size, which is a child of parent, with widget flags set to f. 
+            \brief Constructs a symbol preview widget with fixed size, which is a child of parent, with widget flags set to f.
 
             \param size The preview size.
-            \param type The symbolizer type that will be visualized on preview.
             \param parent The widget's parent.
           */
-          SymbolizerPreviewWidget(const QSize& size, const te::se::SymbolizerType& type, QWidget* parent = 0);
+          SymbolPreviewWidget(const QSize& size, QWidget* parent = 0);
 
           /*! \brief Destructor. */
-          ~SymbolizerPreviewWidget();
+          ~SymbolPreviewWidget();
 
           //@}
 
         public:
+
+          /*!
+            \brief Preview a symbol element.
+
+            \param symb A valid symbol element.
+
+            \note The widget will NOT take the ownership of the given symbol.
+          */
+          void updatePreview(Symbol* symbol);
+
+          /*!
+            \brief Preview a set of symbolizer elements.
+
+            \param symbolizers The set of symbolizer elements.
+
+            \note The widget will NOT take the ownership of the given symbolizers.
+          */
+          void updatePreview(const std::vector<te::se::Symbolizer*>& symbolizers);
 
           /*!
             \brief Preview a symbolizer element.
@@ -93,23 +107,7 @@ namespace te
 
             \note The widget will NOT take the ownership of the given symbolizer.
           */
-          void updatePreview(te::se::Symbolizer* symb);
-
-          /*!
-            \brief Preview a set of symbolizer elements.
-
-            \param symbs A valid set of symbolizer elements.
-
-            \note The widget will NOT take the ownership of the given symbolizers.
-          */
-          void updatePreview(const std::vector<te::se::Symbolizer*>& symbs);
-
-          /*!
-            \brief Sets the symbolizer type that will be visualized on preview.
-
-            \param type The symbolizer type.
-          */
-          void setSymbolizerType(const te::se::SymbolizerType& type);
+          void updatePreview(te::se::Symbolizer* symbolizer);
 
         private:
 
@@ -122,4 +120,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERPREVIEWWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLPREVIEWWIDGET_H

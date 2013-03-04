@@ -565,7 +565,7 @@ void te::qt::af::BaseApplicationController::finalize()
 
   UpdateUserSettings(m_recentProjs, m_recentProjsTitles, m_appUserSettingsFile);
 
-  saveDataSourcesFile();
+  SaveDataSourcesFile();
 
   te::plugin::PluginManager::getInstance().shutdownAll();
 

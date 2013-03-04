@@ -60,13 +60,6 @@
 #define TERRALIB_RELEASE_STATUS "${TERRALIB_RELEASE_STATUS}"
 
 /*!
-  \def TERRALIB_STRING_BUILD_DATE
-
-  \brief
-*/
-#define TERRALIB_STRING_BUILD_DATE __DATE__ ## " " ## __TIME__
-
-/*!
   \def TERRALIB_STRING_VERSION
 
   \brief This flag is used for versioning the TerraLib code. If you have plugins and other tools

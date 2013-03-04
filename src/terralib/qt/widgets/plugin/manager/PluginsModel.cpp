@@ -8,7 +8,7 @@
 // Qt
 #include <QtGui/QFont>
 
-std::string getData(const int& column, const te::plugin::PluginInfo& info)
+std::string GetData(const int& column, const te::plugin::PluginInfo& info)
 {
   std::string result;
 
@@ -57,7 +57,7 @@ std::string getData(const int& column, const te::plugin::PluginInfo& info)
   return result;
 }
 
-QString getHeader(const int& section)
+QString GetHeader(const int& section)
 {
   QString header;
 
@@ -140,7 +140,7 @@ QVariant te::qt::widgets::PluginsModel::data(const QModelIndex & index, int role
 
     case Qt::DisplayRole:
       return (index.column() > 0) ? 
-        QString(getData(index.column(), *(m_plugins[index.row()])).c_str()) :
+        QString(GetData(index.column(), *(m_plugins[index.row()])).c_str()) :
         QVariant();
     break;
 
@@ -181,7 +181,7 @@ QVariant te::qt::widgets::PluginsModel::headerData(int section, Qt::Orientation 
   {
     case Qt::DisplayRole:
       return (orientation == Qt::Horizontal) ?
-        getHeader(section) :
+        GetHeader(section) :
         QVariant::fromValue<int>(section+1);
     break;
 

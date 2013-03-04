@@ -20,13 +20,14 @@
 /*!
   \file terralib/qt/widgets/se/SymbologyPreview.h
 
-  \brief Static methods used to generate preview of Symbology elements.
+  \brief Static class used to generate preview of Symbology elements.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYPREVIEW_H
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLOGYPREVIEW_H
 
 // TerraLib
+#include "../../../common/Static.h"
 #include "../Config.h"
 
 // Qt
@@ -53,80 +54,82 @@ namespace te
   {
     namespace widgets
     {
-// Forward declarations
+// Forward declaration
       class Symbol;
 
-      namespace SymbologyPreview
+      class SymbologyPreview : public te::common::Static
       {
-         /*!
-          \brief Generates the preview of given symbolizer element.
+        public:
 
-          \param symb A valid symbolizer element.
-          \param size The preview size.
+          /*!
+            \brief Generates the preview of given symbolizer element.
 
-          \return A pixmap that represents the result of symbolizer preview.
+            \param symb A valid symbolizer element.
+            \param size The preview size.
 
-          \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
-        */
-        TEQTWIDGETSEXPORT QPixmap build(te::se::Symbolizer* symb, const QSize& size);
+            \return A pixmap that represents the result of symbolizer preview.
 
-        /*!
-          \brief Generates the preview of a set of symbolizers elements.
+            \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
+          */
+          TEQTWIDGETSEXPORT static QPixmap build(te::se::Symbolizer* symb, const QSize& size);
 
-          \param symbs A set of symbolizers elements.
-          \param size The preview size.
+          /*!
+            \brief Generates the preview of a set of symbolizers elements.
 
-          \return A pixmap that represents the composite result of symbolizers preview.
+            \param symbs A set of symbolizers elements.
+            \param size The preview size.
 
-          \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
-        */
-        TEQTWIDGETSEXPORT QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size);
+            \return A pixmap that represents the composite result of symbolizers preview.
 
-        /*!
-          \brief Generates the preview of given symbolizer element.
+            \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
+          */
+          TEQTWIDGETSEXPORT static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size);
 
-          \param symb A valid symbolizer element.
-          \param geom The geometry that will be used to draw the preview.
-          \param size The preview size.
+          /*!
+            \brief Generates the preview of given symbolizer element.
 
-          \return A pixmap that represents the result of symbolizer preview.
-        */
-        TEQTWIDGETSEXPORT QPixmap build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size);
+            \param symb A valid symbolizer element.
+            \param geom The geometry that will be used to draw the preview.
+            \param size The preview size.
 
-        /*!
-          \brief Generates the preview of a set of symbolizers elements.
+            \return A pixmap that represents the result of symbolizer preview.
+          */
+          TEQTWIDGETSEXPORT static QPixmap build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size);
 
-          \param symbs A set of symbolizers elements.
-          \param geom The geometry that will be used to draw the preview.
-          \param size The preview size.
+          /*!
+            \brief Generates the preview of a set of symbolizers elements.
 
-          \return A pixmap that represents the composite result of symbolizers preview.
-        */
-        TEQTWIDGETSEXPORT QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size);
+            \param symbs A set of symbolizers elements.
+            \param geom The geometry that will be used to draw the preview.
+            \param size The preview size.
 
-        /*!
-          \brief Generates the preview of a set of symbolizers elements included in the given rule.
+            \return A pixmap that represents the composite result of symbolizers preview.
+          */
+          TEQTWIDGETSEXPORT static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size);
 
-          \param rule A valid rule element that will be used to get the set of symbolizers.
-          \param geom The geometry that will be used to draw the preview.
-          \param size The preview size.
+          /*!
+            \brief Generates the preview of a set of symbolizers elements included in the given rule.
 
-          \return A pixmap that represents the composite result of rule's symbolizers preview.
-        */
-        TEQTWIDGETSEXPORT QPixmap build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size);
+            \param rule A valid rule element that will be used to get the set of symbolizers.
+            \param geom The geometry that will be used to draw the preview.
+            \param size The preview size.
 
-        /*!
-          \brief Generates the preview of a symbol.
+            \return A pixmap that represents the composite result of rule's symbolizers preview.
+          */
+          TEQTWIDGETSEXPORT static QPixmap build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size);
 
-          \param symbol A valid symbol.
-          \param geom The geometry that will be used to draw the preview.
-          \param size The preview size.
+          /*!
+            \brief Generates the preview of a symbol.
 
-          \return A pixmap that represents the symbol preview.
-        */
-        TEQTWIDGETSEXPORT QPixmap build(Symbol* symbol, te::gm::Geometry* geom, const QSize& size);
+            \param symbol A valid symbol.
+            \param geom The geometry that will be used to draw the preview.
+            \param size The preview size.
 
-      } // end namespace SymbologyPreview
+            \return A pixmap that represents the symbol preview.
+          */
+          TEQTWIDGETSEXPORT static QPixmap build(Symbol* symbol, te::gm::Geometry* geom, const QSize& size);
+      };
+
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te

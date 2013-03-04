@@ -18,9 +18,9 @@
  */
 
 /*!
- \file terralib/serialization/datatype/Property.cpp
+ \file terralib/metadata/serialization/MD_Metadata.cpp
  
- \brief Support for Property serialization.
+ \brief Support for MD_Metadata serialization.
  */
 
 // TerraLib
@@ -33,7 +33,6 @@
 #include "../../srs/Config.h"
 #include "../../xml/Reader.h"
 #include "../../xml/Writer.h"
-#include "../Exception.h"
 #include "MD_Metadata.h"
 
 // STL
@@ -44,7 +43,7 @@
 #include <boost/format.hpp>
 
 
-void te::serialize::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
+void te::md::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
 {
   writer.writeStartDocument("UTF-8", "no");
   writer.writeStartElement("gmd:MD_Metadata");
@@ -113,7 +112,7 @@ void te::serialize::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
   {
     for (boost::ptr_vector<te::md::CI_ResponsibleParty>::const_iterator it = mycontacts.begin();
          it != mycontacts.end(); ++it)
-      te::serialize::Save(*it,writer);
+      te::md::Save(*it,writer);
   }
   else 
     writer.writeAttribute("gco:nilReason", "unknown");
@@ -187,7 +186,7 @@ void te::serialize::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
   {
     for (boost::ptr_vector<te::md::MD_Identification>::const_iterator itd = ids.begin();
          itd != ids.end(); ++itd)
-      te::serialize::Save(*itd,writer);
+      te::md::Save(*itd,writer);
   }
   else 
     writer.writeAttribute("gco:nilReason", "unknown");
@@ -288,7 +287,7 @@ void te::serialize::Save(const te::md::MD_Metadata* md, te::xml::Writer& writer)
   writer.writeEndElement("gmd:MD_Metadata");
 }
 
-void te::serialize::Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& writer)
+void te::md::Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& writer)
 {
   writer.writeStartElement("gmd:CI_ResponsibleParty");
 
@@ -336,13 +335,13 @@ void te::serialize::Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer
   writer.writeEndElement("gmd:CI_ResponsibleParty");
 }
 
-void te::serialize::Save(const te::md::MD_Identification& id, te::xml::Writer& writer)
+void te::md::Save(const te::md::MD_Identification& id, te::xml::Writer& writer)
 {  
   // assuming that it is a data identification
   writer.writeStartElement("gmd:MD_DataIdentification");
   
   // citation has some core and mandatory elements
-  te::serialize::Save(id.getCitation(),writer);
+  te::md::Save(id.getCitation(),writer);
   
   // abstract is a core and mandatory element
   writer.writeStartElement("gmd:abstract");
@@ -367,7 +366,7 @@ void te::serialize::Save(const te::md::MD_Identification& id, te::xml::Writer& w
     writer.writeStartElement("gmd:pointOfContact");
     for (boost::ptr_vector<te::md::CI_ResponsibleParty>::const_iterator it = ctcs.begin();
          it != ctcs.end(); ++it)
-      te::serialize::Save(*it,writer);
+      te::md::Save(*it,writer);
     writer.writeEndElement("gmd:pointOfContact");
   }
   
@@ -515,7 +514,7 @@ void te::serialize::Save(const te::md::MD_Identification& id, te::xml::Writer& w
   writer.writeEndElement("gmd:MD_DataIdentification");
 }
 
-void te::serialize::Save(const te::md::CI_Citation* cite, te::xml::Writer& writer)
+void te::md::Save(const te::md::CI_Citation* cite, te::xml::Writer& writer)
 {
   writer.writeStartElement("gmd:citation");
   writer.writeStartElement("gmd:CI_Citation");

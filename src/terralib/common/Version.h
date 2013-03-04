@@ -20,7 +20,7 @@
 /*!
   \file terralib/common/Version.h
 
-  \brief Utility functions for system versioning.
+  \brief Utility class for system versioning.
 */
 
 #ifndef __TERRALIB_COMMON_INTERNAL_VERSION_H
@@ -28,14 +28,33 @@
 
 // TerraLib
 #include "Config.h"
+#include "Static.h"
+
+// STL
+#include <string>
 
 namespace te
 {
   namespace common
   {
-    TECOMMONEXPORT const char* GetStrVersion();
+    class TECOMMONEXPORT Version : public Static
+    {
+      public:
 
-    TECOMMONEXPORT int GetIntVersion();
+        static int majorNumber();
+
+        static int minorNumber();
+
+        static int patchNumber();
+
+        static std::string releaseStatus();
+
+        static std::string buildDate();
+
+        static std::string asString();
+
+        static int asInt();
+    };
 
   } // end namespace common
 }   // end namespace te

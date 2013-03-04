@@ -20,21 +20,50 @@
 /*!
   \file terralib/common/Version.cpp
 
-  \brief Utility functions for system versioning.
+  \brief Utility class for system versioning.
 */
 
 // TerraLib
 #include "Version.h"
 
-const char* te::common::GetStrVersion()
+// STL
+#include <cassert>
+
+int te::common::Version::majorNumber()
 {
-  return TERRALIB_STRING_VERSION;
+  return TERRALIB_MAJOR_VERSION;
 }
 
-int te::common::GetIntVersion()
+int te::common::Version::minorNumber()
+{
+  return TERRALIB_MINOR_VERSION;
+}
+
+int te::common::Version::patchNumber()
+{
+  return TERRALIB_PATCH_VERSION;
+}
+
+std::string te::common::Version::releaseStatus()
+{
+  assert(TERRALIB_RELEASE_STATUS);
+  return std::string(TERRALIB_RELEASE_STATUS);
+}
+
+std::string te::common::Version::buildDate()
+{
+  assert(__DATE__ " " __TIME__);
+  return std::string(__DATE__ " " __TIME__);
+}
+
+std::string te::common::Version::asString()
+{
+  assert(TERRALIB_STRING_VERSION);
+  return std::string(TERRALIB_STRING_VERSION);
+}
+
+int te::common::Version::asInt()
 {
   return TERRALIB_INT_VERSION;
 }
-
-
 

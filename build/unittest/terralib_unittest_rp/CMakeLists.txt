@@ -10,4 +10,5 @@ add_subdirectory(terralib_unittest_rp_segmenter)
 add_subdirectory(terralib_unittest_rp_tiepointslocator)
 add_subdirectory(terralib_unittest_rp_mosaic)
 add_subdirectory(terralib_unittest_rp_register)
+add_subdirectory(terralib_unittest_rp_edgefilter)
 

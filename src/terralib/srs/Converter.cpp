@@ -87,8 +87,11 @@ te::srs::Converter::~Converter()
   m_targetSRID= TE_UNKNOWN_SRS;
 
 #ifdef TE_USE_PROJ4 
-  pj_free(m_sourcePj4Handler);
-  pj_free(m_targetPj4Handler);
+  if (m_sourcePj4Handler)
+    pj_free(m_sourcePj4Handler);
+  
+  if (m_targetPj4Handler)
+    pj_free(m_targetPj4Handler);
 #endif  
   m_sourcePj4Handler = 0;
   m_targetPj4Handler = 0;

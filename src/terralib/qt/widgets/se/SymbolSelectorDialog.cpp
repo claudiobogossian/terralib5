@@ -24,11 +24,20 @@
 */
 
 // TerraLib
+#include "../../../common/Exception.h"
+#include "../../../serialization/qt/widgets/Symbol.h"
 #include "Symbol.h"
+#include "SymbolInfoDialog.h"
 #include "SymbolLibrary.h"
+#include "SymbolLibraryManager.h"
+#include "SymbolPreviewWidget.h"
 #include "SymbologyPreview.h"
 #include "SymbolSelectorDialog.h"
 #include "ui_SymbolSelectorDialogForm.h"
+
+// Qt
+#include <QtGui/QFileDialog>
+#include <QtGui/QMessageBox>
 
 // STL
 #include <cassert>
@@ -39,7 +48,20 @@ te::qt::widgets::SymbolSelectorDialog::SymbolSelectorDialog(QWidget* parent, Qt:
 {
   // Setup
   m_ui->setupUi(this);
-  m_ui->m_symbolListWidget->setIconSize(QSize(32, 32));
+  m_ui->m_symbolLibraryTreeWidget->setIconSize(QSize(32, 16));
+
+  // Preview
+  m_preview = new SymbolPreviewWidget(QSize(120, 120), this);
+
+  // Adjusting...
+  QGridLayout* previewLayout = new QGridLayout(m_ui->m_previewGroupBox);
+  previewLayout->addWidget(m_preview);
+
+  // Signals & slots
+  connect(m_ui->m_symbolLibraryTreeWidget, SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)), SLOT(onCurrentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)));
+  connect(m_ui->m_showSymbolInfoPushButton, SIGNAL(pressed()), SLOT(onShowSymbolInfoPushButtonPressed()));
+  connect(m_ui->m_loadSymbolLibraryPushButton, SIGNAL(pressed()), SLOT(onLoadSymbolLibraryPushButtonPressed()));
+  connect(m_ui->m_searchLineEdit, SIGNAL(textChanged(const QString&)), SLOT(onSearchLineEditTextChanged(const QString&)));
 
   initialize();
 }
@@ -63,39 +85,152 @@ te::qt::widgets::Symbol* te::qt::widgets::SymbolSelectorDialog::getSymbol(QWidge
 
 te::qt::widgets::Symbol* te::qt::widgets::SymbolSelectorDialog::getSymbol() const
 {
-  QList<QListWidgetItem*> selected = m_ui->m_symbolListWidget->selectedItems();
-  if(selected.empty())
+  Symbol* symbol = getSelectedSymbol();
+
+  if(symbol == 0)
     return 0;
-
-  QListWidgetItem* selectedItem = selected.at(0);
-  QString id = selectedItem->data(Qt::UserRole).toString();
-  assert(!id.isEmpty());
-
-  Symbol* symbol = SymbolLibrary::getInstance().findById(id.toStdString());
-  assert(symbol);
 
   return symbol->clone();
 }
 
+void te::qt::widgets::SymbolSelectorDialog::onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
+{
+  Symbol* symbol = getSymbolFromItem(current);
+
+  if(symbol == 0)
+    return;
+
+  m_preview->updatePreview(symbol);
+}
+
+void te::qt::widgets::SymbolSelectorDialog::onShowSymbolInfoPushButtonPressed()
+{
+  Symbol* symbol = getSelectedSymbol();
+
+  if(symbol == 0)
+    return;
+
+  SymbolInfoDialog info;
+  info.setSymbolInfo(symbol->getInfo());
+  info.setReadMode();
+
+  info.exec();
+}
+
+void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed()
+{
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a TerraLib Symbol Library File"), "", "XML (.xml)");
+  if(path.isNull())
+    return;
+
+  try
+  {
+    // te::serialize::ReadSymbolLibrary(path.toStdString());
+    // initialize();
+  }
+  catch(te::common::Exception& e)
+  {
+    QString message = "The selected symbol library could not be loaded.\n Details: ";
+    message += e.what();
+    QMessageBox::critical(this, tr("Error"), message);
+  }
+}
+
+void te::qt::widgets::SymbolSelectorDialog::onSearchLineEditTextChanged(const QString& text)
+{
+  filter(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive));
+}
+
 void te::qt::widgets::SymbolSelectorDialog::initialize()
 {
-  // Gets the loaded symbols
-  std::pair<std::map<std::string, Symbol*>::const_iterator,
-            std::map<std::string, Symbol*>::const_iterator> iterators = SymbolLibrary::getInstance().getIterator();
+  // Gets the loaded libraries
+  std::pair<std::map<std::string, SymbolLibrary*>::const_iterator,
+            std::map<std::string, SymbolLibrary*>::const_iterator> iteratorsLibrary = SymbolLibraryManager::getInstance().getIterator();
   
-  std::map<std::string, Symbol*>::const_iterator it;
-  for(it = iterators.first; it != iterators.second; ++it) // for each Symbol
+  std::map<std::string, SymbolLibrary*>::const_iterator itLibrary;
+  for(itLibrary = iteratorsLibrary.first; itLibrary != iteratorsLibrary.second; ++itLibrary) // for each library
   {
-    // The current symbol
-    Symbol* symbol = it->second;
+    QString libraryName = QString::fromStdString(itLibrary->second->getName());
 
-    // Bulding the Qt symbol item
-    QListWidgetItem* item = new QListWidgetItem(m_ui->m_symbolListWidget);
-    item->setText(symbol->getInfo().m_name.c_str());
-    item->setIcon(SymbologyPreview::build(symbol->getSymbolizers(), m_ui->m_symbolListWidget->iconSize()));
-    item->setToolTip(formatSymbolInfo(symbol->getInfo()));
-    item->setData(Qt::UserRole, QVariant(QString(symbol->getInfo().m_id.c_str())));
+    QTreeWidgetItem* libraryItem = new QTreeWidgetItem(m_ui->m_symbolLibraryTreeWidget, LIBRARY);
+    libraryItem->setText(0, libraryName);
+    libraryItem->setData(0, Qt::UserRole, libraryName);
+
+    std::pair<std::map<std::string, Symbol*>::const_iterator,
+              std::map<std::string, Symbol*>::const_iterator> iteratorsSymbol = itLibrary->second->getIterator();
+
+    std::map<std::string, Symbol*>::const_iterator itSymbol;
+
+    for(itSymbol = iteratorsSymbol.first; itSymbol != iteratorsSymbol.second; ++itSymbol) // for each Symbol
+    {
+      // The current symbol
+      Symbol* symbol = itSymbol->second;
+
+      // Bulding the Qt symbol item
+      QTreeWidgetItem* symbolItem = new QTreeWidgetItem(libraryItem, SYMBOL);
+      symbolItem->setText(0, symbol->getInfo().m_name.c_str());
+      symbolItem->setIcon(0, SymbologyPreview::build(symbol->getSymbolizers(), m_ui->m_symbolLibraryTreeWidget->iconSize()));
+      symbolItem->setToolTip(0, formatSymbolInfo(symbol->getInfo()));
+      symbolItem->setData(0, Qt::UserRole, QVariant(QString(symbol->getInfo().m_id.c_str())));
+    }
   }
+
+  m_ui->m_symbolLibraryTreeWidget->sortItems(0, Qt::AscendingOrder);
+}
+
+void te::qt::widgets::SymbolSelectorDialog::filter(const QList<QTreeWidgetItem*>& itens)
+{
+  for(int i = 0; i < m_ui->m_symbolLibraryTreeWidget->topLevelItemCount(); ++i)
+  {
+    QTreeWidgetItem* library = m_ui->m_symbolLibraryTreeWidget->topLevelItem(i);
+    assert(library && library->type() == LIBRARY);
+
+    for(int j = 0; j < library->childCount(); ++j)
+    {
+      QTreeWidgetItem* symbol = library->child(j);
+      assert(symbol && symbol->type() == SYMBOL);
+      bool hide = itens.indexOf(symbol) == -1;
+      symbol->setHidden(hide);
+    }
+  }
+  update();
+}
+
+te::qt::widgets::Symbol* te::qt::widgets::SymbolSelectorDialog::getSelectedSymbol() const
+{
+  QList<QTreeWidgetItem*> selected = m_ui->m_symbolLibraryTreeWidget->selectedItems();
+
+  if(selected.empty())
+    return 0;
+
+  return getSymbolFromItem(selected.at(0));
+}
+
+te::qt::widgets::Symbol* te::qt::widgets::SymbolSelectorDialog::getSymbolFromItem(QTreeWidgetItem* item) const
+{
+  assert(item);
+  
+  if(item->type() != SYMBOL)
+    return 0;
+
+  // Gets the library
+  QTreeWidgetItem* parent = item->parent();
+  assert(parent);
+
+  QString name = parent->data(0, Qt::UserRole).toString();
+  assert(!name.isEmpty());
+
+  SymbolLibrary* symbolLibrary = SymbolLibraryManager::getInstance().findByName(name.toStdString());
+  assert(symbolLibrary);
+
+  // Gets the symbol
+  QString id = item->data(0, Qt::UserRole).toString();
+  assert(!id.isEmpty());
+
+  Symbol* symbol = symbolLibrary->findById(id.toStdString());
+  assert(symbol);
+
+  return symbol;
 }
 
 QString te::qt::widgets::SymbolSelectorDialog::formatSymbolInfo(const te::qt::widgets::SymbolInfo& info) const
