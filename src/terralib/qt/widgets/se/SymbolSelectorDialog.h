@@ -125,6 +125,7 @@ namespace te
           /*! \brief Initialize the dialog. */
           void initialize();
 
+          /*! \brief  Auxiliary internal method to filter the symbols. */
           void filter(const QList<QTreeWidgetItem*>& itens);
 
           /*! \brief Auxiliary internal method that returns the selected symbol. */
