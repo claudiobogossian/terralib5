@@ -60,7 +60,7 @@ void te::qt::widgets::StyleExplorer::setStyle(te::se::Style* style)
   initialize();
 }
 
-const te::se::Rule* te::qt::widgets::StyleExplorer::getCurrentRule() const
+te::se::Rule* te::qt::widgets::StyleExplorer::getCurrentRule() 
 {
   QTreeWidgetItem* selectedItem = getSelectedItem();
   if(selectedItem == 0)
@@ -75,13 +75,62 @@ const te::se::Rule* te::qt::widgets::StyleExplorer::getCurrentRule() const
   return 0;
 }
 
-te::se::Symbolizer* te::qt::widgets::StyleExplorer::getCurrentSymbolizer() const
+te::se::Symbolizer* te::qt::widgets::StyleExplorer::getCurrentSymbolizer()
 {
   QTreeWidgetItem* selectedItem = getSelectedItem();
   if(selectedItem != 0 && selectedItem->type() == SYMBOLIZER)
     return getSymbolizer(selectedItem);
 
   return 0;
+}
+
+void te::qt::widgets::StyleExplorer::updateStyleTree()
+{
+  initialize();
+}
+
+void te::qt::widgets::StyleExplorer::goUpSymbolizer()
+{
+  te::se::Rule* r = getCurrentRule();
+  te::se::Symbolizer* s = getCurrentSymbolizer();
+
+  //check if exist current objects
+  if(r && s)
+  {
+    //check if exist more than one symbolizer in current rule
+    if(r->getSymbolizers().size() > 1)
+    {
+      //check if current symbolizer is not the first symbolizer
+      int index = getSymbolizerIndex(r, s);
+
+      if(index > 0)
+        swapSymbolizers(r, index, index - 1);
+
+      initialize();
+    }
+  }
+}
+
+void te::qt::widgets::StyleExplorer::goDownSymbolizer()
+{
+  te::se::Rule* r = getCurrentRule();
+  te::se::Symbolizer* s = getCurrentSymbolizer();
+
+  //check if exist current objects
+  if(r && s)
+  {
+    //check if exist more than one symbolizer in current rule
+    if(r->getSymbolizers().size() > 1)
+    {
+      //check if current symbolizer is not the first symbolizer
+      int index = getSymbolizerIndex(r, s);
+
+      if(index >= 0 && index < r->getSymbolizers().size() - 1)
+        swapSymbolizers(r, index, index + 1);
+
+      initialize();
+    }
+  }
 }
 
 void te::qt::widgets::StyleExplorer::initialize()
@@ -114,7 +163,7 @@ void te::qt::widgets::StyleExplorer::initialize()
   expandAll();
 }
 
-const te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item) const
+te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item) const
 {
   assert(item && item->type() == RULE);
   
@@ -152,6 +201,32 @@ QTreeWidgetItem* te::qt::widgets::StyleExplorer::getSelectedItem() const
     return 0;
 
   return selected.at(0);
+}
+
+int te::qt::widgets::StyleExplorer::getSymbolizerIndex(te::se::Rule* r, te::se::Symbolizer* s) const
+{
+  assert(r);
+  assert(s);
+
+  for(size_t t = 0; t < r->getSymbolizers().size(); ++t)
+  {
+    if(s == r->getSymbolizers()[t])
+      return t;
+  }
+
+  return -1;
+}
+
+void te::qt::widgets::StyleExplorer::swapSymbolizers(te::se::Rule* r, int indexFirst, int indexSecond)
+{
+  assert(r);
+
+  // Swap symbolizers
+  te::se::Symbolizer* first = r->getSymbolizer(indexFirst)->clone();
+  te::se::Symbolizer* second = r->getSymbolizer(indexSecond)->clone();
+
+  r->setSymbolizer(indexFirst,second);
+  r->setSymbolizer(indexSecond, first);
 }
 
 void te::qt::widgets::StyleExplorer::onItemClicked(QTreeWidgetItem* item, int /*column*/)
