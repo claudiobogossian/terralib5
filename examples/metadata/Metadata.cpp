@@ -24,7 +24,7 @@
 // TerraLib
 #include <terralib/metadata.h> 
 #include <terralib/dataaccess.h>
-#include <terralib/serialization/metadata/MD_Metadata.h>
+#include <terralib/metadata/serialization/MD_Metadata.h>
 #include <terralib/srs/Config.h>
 #include <terralib/xml/Writer.h>
 
@@ -163,7 +163,7 @@ ExMetadataISO19115()
   // encode the metadata record and persist it to its location.
   std::ofstream ofs(md->getMetadataURI().c_str());
   te::xml::Writer writer(ofs);
-  te::serialize::Save(md, writer);
+  te::md::Save(md, writer);
   
   delete md;
 }
@@ -239,7 +239,7 @@ void ExMetadataCycle()
     // serialize it
     std::ofstream ofs(md->getMetadataURI().c_str());
     te::xml::Writer writer(ofs);
-    te::serialize::Save(md, writer);
+    te::md::Save(md, writer);
     
     
     // feed the manager

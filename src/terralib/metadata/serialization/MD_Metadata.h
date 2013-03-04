@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/serialization/metadata/MD_Metadata.h
+  \file terralib/metadata/serialization/MD_Metadata.h
    
-  \brief Auxiliary classes and functions to serialize metadata from a XML document.
+  \brief Auxiliary classes and functions to serialize metadata to/from a XML document.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_METADADATA_INTERNAL_MD_METADATA_H
-#define __TERRALIB_SERIALIZATION_METADADATA_INTERNAL_MD_METADATA_H
+#ifndef __TERRALIB_METADADATA_INTERNAL_SERIALIZATION_MD_METADATA_H
+#define __TERRALIB_METADADATA_INTERNAL_SERIALIZATION_MD_METADATA_H
 
 // TerraLib
 #include "../Config.h"
@@ -38,32 +38,28 @@
 
 namespace te
 {
-  namespace md 
-  { 
-    class MD_Metadata; 
-    class CI_ResponsibleParty; 
-  }
-
   namespace xml
   {
     class Reader;
     class Writer;
   }
 
-  namespace serialize
-  {
-//    TESERIALIZATIONEXPORT te::md::MD_Metadata* ReadMetadataa(te::xml::Reader& reader);
+  namespace md
+  { 
+    class MD_Metadata; 
     
-    TESERIALIZATIONEXPORT void Save(const te::md::MD_Metadata* md, te::xml::Writer& writer);
+    class CI_ResponsibleParty; 
     
-    TESERIALIZATIONEXPORT void Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::MD_Metadata* md, te::xml::Writer& writer);
     
-    TESERIALIZATIONEXPORT void Save(const te::md::MD_Identification& id, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::CI_ResponsibleParty& ctc, te::xml::Writer& writer);
     
-    TESERIALIZATIONEXPORT void Save(const te::md::CI_Citation* cite, te::xml::Writer& writer);
+    TEMDEXPORT void Save(const te::md::MD_Identification& id, te::xml::Writer& writer);
     
-  } // end namespace serialize
+    TEMDEXPORT void Save(const te::md::CI_Citation* cite, te::xml::Writer& writer);
+    
+  } // end namespace md
 }   // end namespace te
 
-#endif  // __TERRALIB_SERIALIZATION_METADADATA_INTERNAL_MD_METADATA_H
+#endif  // __TERRALIB_METADADATA_INTERNAL_SERIALIZATION_MD_METADATA_H
 

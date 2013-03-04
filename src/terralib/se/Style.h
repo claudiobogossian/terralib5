@@ -102,7 +102,7 @@ namespace te
 
         size_t getNRules() const;
 
-        const Rule* getRule(size_t i) const;
+        Rule* getRule(size_t i) const;
 
         void push_back(te::xl::SimpleLink* onlineResource);
 

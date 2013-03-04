@@ -23,38 +23,41 @@
   \brief SQLite data source type.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITETYPE_H
-#define __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITETYPE_H
+#ifndef __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITETYPE_H
+#define __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITETYPE_H
 
 // TerraLib
-#include "../../core/DataSourceType.h"
+#include "../../../widgets/datasource/core/DataSourceType.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace widgets
+    namespace plugins
     {
-      class TEQTWIDGETSEXPORT SQLiteType : public DataSourceType
+      namespace sqlite
       {
-        public:
+        class SQLiteType : public te::qt::widgets::DataSourceType
+        {
+          public:
 
-          SQLiteType();
+            SQLiteType();
 
-          ~SQLiteType();
+            ~SQLiteType();
 
-          std::string getName() const;
+            std::string getName() const;
 
-          std::string getTitle() const;
+            std::string getTitle() const;
 
-          std::string getDescription() const;
+            std::string getDescription() const;
 
-          QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
+            QWidget* getWidget(int widgetType, QWidget* parent = 0, Qt::WindowFlags f = 0) const;
 
-          QIcon getIcon(int iconType) const;
-      }; 
-    } // end namespace widgets
-  }   // end namespace qt
-}     // end namespace te
+            QIcon getIcon(int iconType) const;
+        };
+      }   // end namespace sqlite
+    }     // end namespace plugins
+  }       // end namespace qt
+}         // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_CONNECTOR_SQLITE_INTERNAL_SQLITETYPE_H
+#endif  // __TERRALIB_QT_PLUGINS_DATASOURCE_SQLITE_INTERNAL_SQLITETYPE_H

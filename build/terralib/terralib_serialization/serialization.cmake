@@ -17,7 +17,6 @@ list (APPEND TE_DEP_LIBS
 		terralib_filter
 		terralib_geometry
 		terralib_maptools
-    terralib_metadata
 		terralib_qt_widgets
 		terralib_raster
 		terralib_symbology
@@ -35,7 +34,6 @@ set (
   fe
   geometry
   maptools
-  metadata
   qt
   qt/widgets
   raster

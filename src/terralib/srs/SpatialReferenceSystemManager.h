@@ -35,6 +35,13 @@
 #include <string>
 #include <vector>
 
+// Boost
+#include <boost/lexical_cast.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+
 namespace te
 {
   namespace srs
@@ -58,8 +65,47 @@ namespace te
     class TESRSEXPORT SpatialReferenceSystemManager : public te::common::Singleton<SpatialReferenceSystemManager>
     {
       friend class te::common::Singleton<SpatialReferenceSystemManager>;
+      
+    private:
+      
+      /*! This is a private struct to handle the set of SRS descriptions in the manager.
+       It is not visible outside this class. */
+      struct srs_desc
+      {
+        srs_desc(const std::string& name, unsigned int auth_id, const std::string& auth_name, const std::string& p4txt, const std::string& wkt); 
+        
+        std::string srid() const;
+        
+        std::string m_name;  
+        unsigned int m_auth_id;
+        std::string m_auth_name;
+        std::string m_p4txt;
+        std::string m_wkt;
+      };
+      
+      /*! A mult-index container with the following indexes:
+       1) an unique index by <auth_name, id>;
+       2) a non-unique index by name;
+       3) a non-unique index by p4txt;
+       4) a non unuque index by wkt;
+       */
+      typedef boost::multi_index_container<
+      srs_desc,
+      boost::multi_index::indexed_by<
+      boost::multi_index::ordered_unique<BOOST_MULTI_INDEX_CONST_MEM_FUN(srs_desc,std::string,srid)>,
+      boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_name)>,
+      boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_p4txt)>,
+      boost::multi_index::ordered_non_unique<BOOST_MULTI_INDEX_MEMBER(srs_desc,std::string,m_wkt)>
+      >
+      > srs_set;
+      
+    private:
+      
+      srs_set m_set;
     
     public:
+      
+      typedef boost::multi_index::nth_index<srs_set,0>::type::iterator iterator; 
       
       /* \brief Destructor. */
       ~SpatialReferenceSystemManager();
@@ -157,24 +203,17 @@ namespace te
        \brief Removes all coordinate system representations from the manager.
       */
       void clear();
- 
+      
+      /*! Returns the number of objects in the manager. */
+      size_t size() const;
+      
       /*!
-       \brief Returns an iterator mechanism over the coordinate system identifications in the manager.
-       The first iterator of the returned pair points to first coordinate system identification <id,authority> in the manager.
-       The second iterator of the returned pair points to the last plus one coordinate system identification <id,authority> in the manager.
-        \return a pair of iterators pointing to the first and last coordnate system representation in the manager.
+       \brief Returns an iterator mechanism over the coordinate system descriptions in the manager.
+       The first iterator of the returned pair points to first coordinate system description.
+       The second iterator of the returned pair points to the last plus one ccoordinate system description.
+      \return a pair of iterators pointing to the first and last coordnate system representation in the manager.
        */     
-      std::pair<std::vector<std::pair<std::string,unsigned int> >::const_iterator,
-                std::vector<std::pair<std::string,unsigned int> >::const_iterator> getIteratorIds() const;
-
-      /*!
-       \brief Returns an iterator mechanism over the coordinate system names in the manager.
-       The first iterator of the returned pair points to first coordinate system name in the manager.
-       The second iterator of the returned pair points to the last plus one coordinate system name in the manager.
-       \return a pair of iterators pointing to the first and last coordnate system representation in the manager.
-       */
-      std::pair<std::vector<std::string>::const_iterator,
-                std::vector<std::string>::const_iterator> getIteratorNames() const;
+      std::pair<te::srs::SpatialReferenceSystemManager::iterator,te::srs::SpatialReferenceSystemManager::iterator> getIterators() const;
       
     protected:
       
@@ -197,14 +236,8 @@ namespace te
        
        \return A reference to this object.
        */
-      SpatialReferenceSystemManager& operator=(const SpatialReferenceSystemManager& rhs);
-      
-    private:
-      
-      std::vector<std::pair<std::string,unsigned int> > m_authIdV;
-      std::vector<std::string> m_nameV;
-      std::vector<std::string> m_p4txtV;
-      std::vector<std::string> m_wktV;
+      SpatialReferenceSystemManager& operator=(const SpatialReferenceSystemManager& rhs);     
+
     };
   }
 }

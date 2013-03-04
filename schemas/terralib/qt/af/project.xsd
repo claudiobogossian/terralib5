@@ -27,7 +27,6 @@
       <xsd:element ref="te_map:LayerList" minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="version" type="xsd:string" use="required"/>
-    <xsd:attribute name="release" type="xsd:date" use="required"/>
   </xsd:complexType>
 
   <xsd:element name="ComponentList" type="te_qt_af:ComponentListType" />

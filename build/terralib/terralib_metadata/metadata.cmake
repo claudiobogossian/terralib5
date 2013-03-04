@@ -5,8 +5,9 @@ set (TE_DEP_INCLUDES "")   #include paths needed by metadata module.
 
 # 3rd-party definitions.
 
-find_package(Boost ${_Boost_VERSION} REQUIRED)
+find_package(Boost ${_Boost_VERSION} COMPONENTS date_time REQUIRED)
 if(Boost_FOUND)
+  set (TE_DEP_LIBS ${Boost_LIBRARIES})
   set (TE_DEP_INCLUDES ${Boost_INCLUDE_DIRS})
 endif()
 
@@ -15,12 +16,19 @@ if(WIN32)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS -DTEMDDLL -DBOOST_ALL_NO_LIB)
 endif(WIN32)
 
-list (APPEND TE_DEP_LIBS terralib_common terralib_datatype terralib_geometry terralib_dataaccess)
+list (APPEND TE_DEP_LIBS 
+  terralib_common 
+  terralib_dataaccess
+  terralib_datatype 
+  terralib_geometry
+  terralib_xml
+  )
 
 set (
   _DIRS 
   .
   iso19115
+  serialization
 )
 
 # Files in build tree

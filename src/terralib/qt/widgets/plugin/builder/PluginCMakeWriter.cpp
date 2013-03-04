@@ -24,7 +24,6 @@
 */
 
 #include "PluginCMakeWriter.h"
-#include "../../../../common/Config.h"
 #include "../../../../common/Version.h"
 
 // STL Includes
@@ -221,7 +220,7 @@ void te::qt::widgets::PluginCMakeWriter::insertDefaultHeader(std::ofstream& stre
   char* dt = ctime(&now);
   std::string currentTime = dt;
   std::string fileName = CMAKE_FILE_NAME;
-  std::string teVersion = te::common::GetStrVersion();
+  std::string teVersion = te::common::Version::asString();
 
   std::string defaultHeader = "";
 
@@ -242,7 +241,7 @@ void te::qt::widgets::PluginCMakeWriter::insertDefaultXMLHeader(std::ofstream& s
   char* dt = ctime(&now);
   std::string currentTime = dt;
   std::string fileName = CMAKE_FILE_NAME;
-  std::string teVersion = te::common::GetStrVersion();
+  std::string teVersion = te::common::Version::asString();
 
   std::string defaultHeader = "";
 
