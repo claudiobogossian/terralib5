@@ -313,7 +313,8 @@ set (
   ${SRCDIR}/widgets/se/StyleControllerWidget.h
   ${SRCDIR}/widgets/se/StyleExplorer.h
   ${SRCDIR}/widgets/se/SymbolEditorWidget.h
-  ${SRCDIR}/widgets/se/SymbolizerTableWidget.h
+  ${SRCDIR}/widgets/se/SymbolSelectorDialog.h
+  ${SRCDIR}/widgets/se/SymbolTableWidget.h
   ${SRCDIR}/widgets/se/VisualDockWidget.h
   ${SRCDIR}/widgets/se/WellKnownGraphicWidget.h
   ${SRCDIR}/widgets/se/WellKnownMarkPropertyItem.h
