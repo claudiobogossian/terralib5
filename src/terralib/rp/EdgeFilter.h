@@ -133,19 +133,40 @@ namespace te
         
         /*!
           \brief Type definition for a filter method pointer.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.          
          */
-        typedef void (EdgeFilter::*FilterMethodPointerT)( const te::rst::Band& srcBand,
-          te::rst::Band& dstBand );
+        typedef void (EdgeFilter::*FilterMethodPointerT)( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx );
         
         bool m_isInitialized; //!< Is this instance already initialized?
         
         EdgeFilter::InputParameters m_inputParameters; //!< Input parameters.
         
-        void RobertsFilter( const te::rst::Band& srcBand,
-          te::rst::Band& dstBand );
+        /*!
+          \brief Applay the Roberts filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.          
+         */        
+        void RobertsFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx  );
           
-        void SobelFilter( const te::rst::Band& srcBand,
-          te::rst::Band& dstBand );
+        /*!
+          \brief Applay the Sobel filter over the source raster band.
+          \param srcRaster Source raster.
+          \param srcBandIdx Source raster band index.
+          \param dstRaster Destination raster.
+          \param dstBandIdx Destination raster band index.          
+         */     
+        void SobelFilter( const te::rst::Raster& srcRaster,
+          const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+          const unsigned int dstBandIdx  );
 
     };
 

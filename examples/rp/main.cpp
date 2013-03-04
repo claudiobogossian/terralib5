@@ -23,6 +23,7 @@ int main()
     MixtureModel();
     Mosaic();
     Register();
+    EdgeFilter();
 
     te::plugin::PluginManager::getInstance().unloadAll();
     

@@ -49,5 +49,7 @@ void Mosaic();
 /* \brief Mosaic of images. */
 void Register();
 
+/* \brief Edges detection. */
+void EdgeFilter();
 
 #endif
