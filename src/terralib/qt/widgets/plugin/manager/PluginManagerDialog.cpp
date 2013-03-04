@@ -389,7 +389,6 @@ void te::qt::widgets::PluginManagerDialog::replyFinished(QNetworkReply* reply)
 void te::qt::widgets::PluginManagerDialog::addPlugins()
 {
   QString rsc = ResourceChooser::getResource(qApp->applicationDirPath(), tr("TerraLib Plug-in Files (*.teplg *.TEPLG)"), this);
-//  std::map<std::string, std::string> added;
 
   try
   {
