@@ -30,7 +30,7 @@
 #include "StyleControllerWidget.h"
 
 #include "StyleExplorer.h"
-#include "SymbolizerPreviewWidget.h"
+#include "SymbolPreviewWidget.h"
 
 // STL
 #include <cassert>
@@ -50,13 +50,13 @@ te::qt::widgets::StyleControllerWidget::StyleControllerWidget(QWidget* parent, Q
   connect(m_explorer, SIGNAL(ruleClicked(const te::se::Rule*)), this, SLOT(onRuleClicked(const te::se::Rule*)));
 
   //add rule preview
-  m_rulePreview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(121,121), te::se::POLYGON_SYMBOLIZER, m_ui->m_ruleFrame);
+  m_rulePreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_ruleFrame);
   QGridLayout* lr = new QGridLayout(m_ui->m_ruleFrame);
   lr->setContentsMargins(0,0,0,0);
   lr->addWidget(m_rulePreview);
 
   //add symbolizer preview
-  m_symbPreview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(121,121), te::se::POLYGON_SYMBOLIZER, m_ui->m_symbFrame);
+  m_symbPreview = new te::qt::widgets::SymbolPreviewWidget(QSize(121,121), m_ui->m_symbFrame);
   QGridLayout* ls = new QGridLayout(m_ui->m_symbFrame);
   ls->setContentsMargins(0,0,0,0);
   ls->addWidget(m_symbPreview);
@@ -87,30 +87,6 @@ void te::qt::widgets::StyleControllerWidget::updateUi()
   m_ui->m_downSymbToolButton->setIcon(QIcon::fromTheme("go-down").pixmap(16,16));
   m_ui->m_addSymbToolButton->setIcon(QIcon::fromTheme("list-add").pixmap(16,16));
   m_ui->m_delSymbToolButton->setIcon(QIcon::fromTheme("list-remove").pixmap(16,16));
-}
-
-void te::qt::widgets::StyleControllerWidget::updateSymbolizerType(te::se::Symbolizer* s)
-{
-  if(s->getType() == "PolygonSymbolizer")
-  {
-    m_rulePreview->setSymbolizerType(te::se::POLYGON_SYMBOLIZER);
-    m_symbPreview->setSymbolizerType(te::se::POLYGON_SYMBOLIZER);
-  }
-  else if(s->getType() == "LineSymbolizer")
-  {
-    m_rulePreview->setSymbolizerType(te::se::LINE_SYMBOLIZER);
-    m_symbPreview->setSymbolizerType(te::se::LINE_SYMBOLIZER);
-  }
-  else if(s->getType() == "PointSymbolizer")
-  {
-    m_rulePreview->setSymbolizerType(te::se::POINT_SYMBOLIZER);
-    m_symbPreview->setSymbolizerType(te::se::POINT_SYMBOLIZER);
-  }
-  else if(s->getType() == "RasterSymbolizer")
-  {
-    m_rulePreview->setSymbolizerType(te::se::RASTER_SYMBOLIZER);
-    m_symbPreview->setSymbolizerType(te::se::RASTER_SYMBOLIZER);
-  }
 }
 
 void te::qt::widgets::StyleControllerWidget::onAddSymbolizerClicked()
@@ -155,8 +131,6 @@ void te::qt::widgets::StyleControllerWidget::onSymbolizerChanged(te::se::Symboli
 
 void te::qt::widgets::StyleControllerWidget::onSymbolizerClicked(te::se::Symbolizer* symb)
 {
-  updateSymbolizerType(symb);
-
   m_symbPreview->updatePreview(symb);
 
   te::se::Rule* rule = m_explorer->getCurrentRule();
@@ -169,10 +143,6 @@ void te::qt::widgets::StyleControllerWidget::onSymbolizerClicked(te::se::Symboli
 
 void te::qt::widgets::StyleControllerWidget::onRuleClicked(const te::se::Rule* rule)
 {
-  if(rule->getSymbolizers().empty() ==  false)
-  {
-    updateSymbolizerType(rule->getSymbolizers()[0]);
-
+  if(!rule->getSymbolizers().empty())
     m_rulePreview->updatePreview(rule->getSymbolizers());
-  }
 }

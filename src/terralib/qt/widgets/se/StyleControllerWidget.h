@@ -56,7 +56,7 @@ namespace te
     {
 // Forward declarations
       class StyleExplorer;
-      class SymbolizerPreviewWidget;
+      class SymbolPreviewWidget;
 
       /*!
         \class StyleControllerWidget
@@ -99,8 +99,6 @@ namespace te
           /*! \brief Updates the widget form based on internal mark element. */
           void updateUi();
 
-          void updateSymbolizerType(te::se::Symbolizer* s);
-
         protected slots:
 
           void onAddSymbolizerClicked();
@@ -127,8 +125,8 @@ namespace te
           std::auto_ptr<Ui::StyleControllerWidgetForm> m_ui;    //!< Widget form.
 
           te::qt::widgets::StyleExplorer* m_explorer;
-          te::qt::widgets::SymbolizerPreviewWidget* m_rulePreview;
-          te::qt::widgets::SymbolizerPreviewWidget* m_symbPreview;
+          te::qt::widgets::SymbolPreviewWidget* m_rulePreview;
+          te::qt::widgets::SymbolPreviewWidget* m_symbPreview;
       }; 
 
     } // end namespace widgets

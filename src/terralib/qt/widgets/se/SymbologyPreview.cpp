@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/SymbologyPreview.cpp
 
-  \brief Static methods used to generate preview of Symbology elements.
+  \brief Static class used to generate preview of Symbology elements.
 */
 
 // TerraLib
@@ -90,12 +90,6 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbo
 QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size)
 {
   assert(symb);
-  
-  if(symb->getType() == "RasterSymbolizer")
-  {
-    return QPixmap();
-  }
-
   assert(geom);
   assert(!size.isEmpty());
 

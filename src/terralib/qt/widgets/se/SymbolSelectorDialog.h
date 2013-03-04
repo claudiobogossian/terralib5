@@ -36,6 +36,7 @@
 #include <memory>
 
 // Forward declaraion
+class QTreeWidgetItem;
 namespace Ui { class SymbolSelectorDialogForm; }
 
 namespace te
@@ -47,6 +48,7 @@ namespace te
 // Forward declarations
       class Symbol;
       struct SymbolInfo;
+      class SymbolPreviewWidget;
 
       /*!
         \class SymbolSelectorDialog
@@ -55,6 +57,21 @@ namespace te
       */
       class TEQTWIDGETSEXPORT SymbolSelectorDialog : public QDialog
       {
+        Q_OBJECT
+
+        private:
+
+          /*!
+            \enum NodeType
+
+            \brief Auxiliary internal enumeration to control the tree nodes.
+          */
+          enum NodeType
+          {
+            LIBRARY = 0, /*!< Library root node. */
+            SYMBOL  = 1  /*!< Symbol node.       */
+          };
+
         public:
 
           /** @name Initializer Methods
@@ -93,10 +110,28 @@ namespace te
           */
           Symbol* getSymbol() const;
 
+        private slots:
+
+          void onCurrentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+
+          void onShowSymbolInfoPushButtonPressed();
+          
+          void onLoadSymbolLibraryPushButtonPressed();
+
+          void onSearchLineEditTextChanged(const QString& text);
+
         private:
 
           /*! \brief Initialize the dialog. */
           void initialize();
+
+          void filter(const QList<QTreeWidgetItem*>& itens);
+
+          /*! \brief Auxiliary internal method that returns the selected symbol. */
+          Symbol* getSelectedSymbol() const;
+
+          /*! \brief Auxiliary internal method that returns the symbol given a list widget item. */
+          Symbol* getSymbolFromItem(QTreeWidgetItem* item) const;
 
           /*! \brief Auxiliary internal method to format a symbol info to be used on tool tips. */
           QString formatSymbolInfo(const SymbolInfo& info) const;
@@ -104,6 +139,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::SymbolSelectorDialogForm> m_ui; //!< Dialog form.
+          SymbolPreviewWidget* m_preview;                   //!< Preview Widget used to visualize the symbol.
       }; 
 
     } // end namespace widgets
