@@ -118,7 +118,8 @@ void te::ado::DataSource::open()
   m_connStr = "Provider=" + m_connectionInfo["PROVIDER"] + ";";
   m_connStr += "Data Source=" + m_connectionInfo["DB_NAME"] + ";";
   m_connStr += "User Id=" + m_connectionInfo["USER_NAME"] + ";";
-  m_connStr += "Password=" + m_connectionInfo["PASSWORD"] + ";";
+  // Microsoft Access password
+  m_connStr += "Jet OLEDB:Database Password=" + m_connectionInfo["PASSWORD"] + ";";
 
   _bstr_t connStr = m_connStr.c_str();
 
@@ -234,7 +235,7 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
 
   it = dsInfo.find("PASSWORD");
   if(it != it_end)
-    connStr += "Password=" + it->second + ";";
+    connStr += "Jet OLEDB:Database Password=" + it->second + ";";
 
   // Create the new database
   ADOX::_CatalogPtr pCatalog = 0;
@@ -250,22 +251,27 @@ void te::ado::DataSource::create(const std::map<std::string, std::string>& dsInf
     throw Exception(TR_ADO(e.Description()));
   }
 
-  // Create the geometry_columns dataset
-  te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
+  it = dsInfo.find("CREATE_OGC_METADATA_TABLES");
+  if(it != it_end && it->second == "TRUE")
+  {
 
-  geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
-  geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
-  geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
-  geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
-  geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
-  geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
-  geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
+    // Create the geometry_columns dataset
+    te::da::DataSetType* geomColsDt = new te::da::DataSetType("geometry_columns");
 
-  te::da::DataSourceTransactor* t = ds->getTransactor();
+    geomColsDt->add(new te::dt::StringProperty("f_table_catalog", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::StringProperty("f_table_schema", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::StringProperty("f_table_name", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::StringProperty("f_geometry_column", te::dt::VAR_STRING, 256));
+    geomColsDt->add(new te::dt::SimpleProperty("coord_dimension", te::dt::INT32_TYPE));
+    geomColsDt->add(new te::dt::SimpleProperty("srid", te::dt::INT32_TYPE));
+    geomColsDt->add(new te::dt::StringProperty("type", te::dt::VAR_STRING, 30));
 
-  t->getDataSetTypePersistence()->create(geomColsDt);
+    te::da::DataSourceTransactor* t = ds->getTransactor();
 
-  delete t;
+    t->getDataSetTypePersistence()->create(geomColsDt);
+
+    delete t;
+  }
 
   m_connectionInfo = dsInfo;
   m_connStr = connStr;
