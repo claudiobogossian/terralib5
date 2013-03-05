@@ -2,7 +2,7 @@
 
 // TerraLib
 #include <terralib/color/ColorBar.h>
-#include <terralib/qt/qwt/ColorBar.h>
+#include <terralib/qt/widgets/colorbar/ColorBar.h>
 #include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
 #include <terralib/qt/widgets/utils/DoubleListWidget.h>
 #include <terralib/qt/widgets/utils/ListWidget.h>

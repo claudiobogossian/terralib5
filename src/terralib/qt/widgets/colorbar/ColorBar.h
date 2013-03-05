@@ -52,233 +52,233 @@ namespace te
     namespace widgets
     {
       class ColorPickerToolButton;
-    }
 
-    namespace qwt
-    {
-      /*!
-      \class ColorBar
-
-      \brief It QWidget implementation of color bar.
-      
-      It is used to construct color bar.
-      */
-
-      class TEQTWIDGETSEXPORT ColorBar: public QwtScaleWidget
+      namespace colorbar
       {
+        /*!
+        \class ColorBar
+
+        \brief It QWidget implementation of color bar.
+      
+        It is used to construct color bar.
+        */
+
+        class TEQTWIDGETSEXPORT ColorBar: public QwtScaleWidget
+        {
         
-        Q_OBJECT
+          Q_OBJECT
         
-        public:
+          public:
 
-          /** @name Initializer Methods
-           *  Methods related to instantiation and destruction.
-           */
-          //@{
+            /** @name Initializer Methods
+             *  Methods related to instantiation and destruction.
+             */
+            //@{
 
-          /*!
-          \brief It initializes a new ColorBar.
+            /*!
+            \brief It initializes a new ColorBar.
 
-          \param parent
-          */
+            \param parent
+            */
 
-          ColorBar(QWidget* parent = 0);
+            ColorBar(QWidget* parent = 0);
 
-          /*! 
-          \brief Destructor */
+            /*! 
+            \brief Destructor */
 
-          ~ColorBar();
+            ~ColorBar();
 
-          //@}
+            //@}
 
-        public:
+          public:
 
-          /** @name Accessor methods
-          *  Methods used to get or set properties.
-          */
-          //@{
+            /** @name Accessor methods
+            *  Methods used to get or set properties.
+            */
+            //@{
 
-          /*!
-          \brief Sets the height of colobar.
+            /*!
+            \brief Sets the height of colobar.
 
-          \param Value of height.
-          */
+            \param Value of height.
+            */
 
-          void setHeight(int value);
+            void setHeight(int value);
 
-          /*!
-          \brief It sets the min e max value of colorbar.
+            /*!
+            \brief It sets the min e max value of colorbar.
 
-          \param Minimum value.
-          \param Maximum value.
-          */
+            \param Minimum value.
+            \param Maximum value.
+            */
 
-          void setInterval(double min, double max);
+            void setInterval(double min, double max);
 
-          /*!
-          \brief It sets the color bar.
+            /*!
+            \brief It sets the color bar.
 
-          \param te::color::colorBar to paint in the colorbar.
-          */
+            \param te::color::colorBar to paint in the colorbar.
+            */
 
-          void setColorBar(te::color::ColorBar* cb);
+            void setColorBar(te::color::ColorBar* cb);
 
-          /*!
-          \brief It sets the precision of mouse click.
+            /*!
+            \brief It sets the precision of mouse click.
 
-          \param double precision of click.
-          */
+            \param double precision of click.
+            */
 
-          void setClickPrecision(double precision);
+            void setClickPrecision(double precision);
 
-          /*!
-          \brief It returns the colorbar.
+            /*!
+            \brief It returns the colorbar.
 
-          \return Current color bar.
-          */
+            \return Current color bar.
+            */
 
-          te::color::ColorBar* getColorBar();
+            te::color::ColorBar* getColorBar();
 
-          //@}
+            //@}
 
-        protected:
-          /** @name Private methods
-          *  Methods used to manange colors and events.
-          */
-          //@{
+          protected:
+            /** @name Private methods
+            *  Methods used to manange colors and events.
+            */
+            //@{
 
-          /*!
-          \brief Sets the transformation and the scale of colorbar values.
-          */
+            /*!
+            \brief Sets the transformation and the scale of colorbar values.
+            */
 
-          void setScaleEngine();
+            void setScaleEngine();
 
-          /*!
-          \brief It build and paint the colorbar.
-          */
+            /*!
+            \brief It build and paint the colorbar.
+            */
 
-          void buildColorBar();
+            void buildColorBar();
 
-          /*!
-          \brief It returns the pin based on mouse click and the click precision
+            /*!
+            \brief It returns the pin based on mouse click and the click precision
 
-          \param pos Mouse click X on toolbar
+            \param pos Mouse click X on toolbar
 
-          \return Pin found or -1, if not found.
-          */
+            \return Pin found or -1, if not found.
+            */
 
-          double getPin(int pos);
+            double getPin(int pos);
 
-          /*!
-          \brief It convert a mouse position to a toolbar position
+            /*!
+            \brief It convert a mouse position to a toolbar position
 
-          \param pos Mouse click X on toolbar
+            \param pos Mouse click X on toolbar
 
-          \return Toolbar position
-          */
-          double convert2toolbarPos(int pos);
+            \return Toolbar position
+            */
+            double convert2toolbarPos(int pos);
 
-          /*!
-          \brief Inherit of QEvent, receive events to paint e update widgets.
+            /*!
+            \brief Inherit of QEvent, receive events to paint e update widgets.
 
-          \param QPaintEvent
-          */
+            \param QPaintEvent
+            */
 
-          virtual void paintEvent(QPaintEvent* e);
+            virtual void paintEvent(QPaintEvent* e);
 
-          /*!
-          \brief It waits a pressEvent from mouse to do something.
+            /*!
+            \brief It waits a pressEvent from mouse to do something.
 
-          \param QMouseEvent
-          \note In this case, it treat the remove colorStops funciontion
-          \note and sets the start position to move stops.
-          */
+            \param QMouseEvent
+            \note In this case, it treat the remove colorStops funciontion
+            \note and sets the start position to move stops.
+            */
 
-          virtual void mousePressEvent(QMouseEvent* e);
+            virtual void mousePressEvent(QMouseEvent* e);
 
-          /*!
-          \brief It waits a releaseEvent from mouse to do something.
+            /*!
+            \brief It waits a releaseEvent from mouse to do something.
 
-          \param QMouseEvent
-          \note In this case, it treat the finalization of move colorStops.
-          */
+            \param QMouseEvent
+            \note In this case, it treat the finalization of move colorStops.
+            */
 
-          virtual void mouseReleaseEvent(QMouseEvent* e);
+            virtual void mouseReleaseEvent(QMouseEvent* e);
 
-          /*!
-          \brief It waits a moveEvent from mouse to do something.
+            /*!
+            \brief It waits a moveEvent from mouse to do something.
 
-          \param QMouseEvent
-          \note In this case, it treat the moce of colorStops.
-          */
+            \param QMouseEvent
+            \note In this case, it treat the moce of colorStops.
+            */
 
-          virtual void mouseMoveEvent(QMouseEvent* e);
+            virtual void mouseMoveEvent(QMouseEvent* e);
 
-          /*!
-          \brief It waits the wheel from mouse to do something.
+            /*!
+            \brief It waits the wheel from mouse to do something.
 
-          \param QWheelEvent
-          \note In this case, it change the color lightness.
-          */
+            \param QWheelEvent
+            \note In this case, it change the color lightness.
+            */
 
-          virtual void wheelEvent(QWheelEvent* e);
+            virtual void wheelEvent(QWheelEvent* e);
 
-          //@}
+            //@}
 
-        protected slots:
+          protected slots:
           
-          /*!
-          \brief It add a colorbar pin.
-          */
-          void addPin();
+            /*!
+            \brief It add a colorbar pin.
+            */
+            void addPin();
 
-          /*!
-          \brief It remove a colorbar pin.
-          */
-          void removePin();
+            /*!
+            \brief It remove a colorbar pin.
+            */
+            void removePin();
 
-          /*!
-          \brief It edit a colorbar pin.
-          */
-          void editPin();
+            /*!
+            \brief It edit a colorbar pin.
+            */
+            void editPin();
 
-          /*!
-          \brief It changes the pins positions for an equal distribution.
-          */
-          void equalStep();
+            /*!
+            \brief It changes the pins positions for an equal distribution.
+            */
+            void equalStep();
 
-        protected:
+          protected:
 
-          te::color::ColorBar* m_colorBar;       //!< Color map information
+            te::color::ColorBar* m_colorBar;       //!< Color map information
           
-          QwtInterval m_interval;                //!< Color vector.
+            QwtInterval m_interval;                //!< Color vector.
 
-          int m_height;                          //!< Height of colobar.
+            int m_height;                          //!< Height of colobar.
 
-          double m_initialXPos;                  //!< Position initial to move color.
+            double m_initialXPos;                  //!< Position initial to move color.
 
-          double m_clickPrecision;               //!< Precision of click to get a color stop.
+            double m_clickPrecision;               //!< Precision of click to get a color stop.
 
-          double m_currentPinPos;                //!< Value of the current Pin position.
+            double m_currentPinPos;                //!< Value of the current Pin position.
 
-          QMenu* m_colorBarMenu;                 //!< Popup menu for Pin on color bar.
+            QMenu* m_colorBarMenu;                 //!< Popup menu for Pin on color bar.
 
-          QMenu* m_pinMenu;                      //!< Popup menu for Pin on color bar.
+            QMenu* m_pinMenu;                      //!< Popup menu for Pin on color bar.
 
-          te::qt::widgets::ColorPickerToolButton* m_colorBarPicker; //!< Color picker for colorbar menu.
+            te::qt::widgets::ColorPickerToolButton* m_colorBarPicker; //!< Color picker for colorbar menu.
 
-          te::qt::widgets::ColorPickerToolButton* m_pinPicker; //!< Color picker for pin menu.
+            te::qt::widgets::ColorPickerToolButton* m_pinPicker; //!< Color picker for pin menu.
 
-          QWidgetAction* m_addPinAction;         //!< Add Pin Action
+            QWidgetAction* m_addPinAction;         //!< Add Pin Action
 
-          QWidgetAction* m_editPinAction;        //!< Edit Pin Action
+            QWidgetAction* m_editPinAction;        //!< Edit Pin Action
 
-          QAction* m_removePinAction;            //!< Remove Pin Action
+            QAction* m_removePinAction;            //!< Remove Pin Action
 
-          QAction* m_equalStepAction;            //!< Equal Step Pin Action
+            QAction* m_equalStepAction;            //!< Equal Step Pin Action
 
-      };
-    } // end namespace qwt
+        };
+      } // end namespace qwt
+    }
   } // end namespace qt
 }
 #endif // __TERRALIB_QT_QWT_INTERNAL_COLORBAR_H_

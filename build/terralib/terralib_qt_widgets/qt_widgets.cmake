@@ -105,7 +105,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/colorbar/ColorBar.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/widgets/colorbar" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
 set (
   HDRS_TO_MOC
