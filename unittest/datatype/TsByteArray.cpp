@@ -72,6 +72,7 @@ void TsByteArray::tcInit()
   char *data;
   data = new char[21];
   strcpy(data,"12345678901234567890"); //20 bytes
+  //char data[] = "12345678901234567890"; //20 bytes - on delete b - cai se declarar data assim.
 
   te::dt::ByteArray *b = new te::dt::ByteArray(data,20) ;
   CPPUNIT_ASSERT(b->capacity() == 20);
@@ -82,7 +83,7 @@ void TsByteArray::tcInit()
   CPPUNIT_ASSERT(strlen(data) == strlen(dataR));
   CPPUNIT_ASSERT(  data == dataR ); //init will take the ownership of the data
   CPPUNIT_ASSERT( *data == *dataR );
-  CPPUNIT_ASSERT_MESSAGE("getData does not return expected data - strlen+1 should be passed in �init�.", strcmp(data,dataR) == 0);
+  CPPUNIT_ASSERT( strncmp(data,dataR,20) == 0);
 
   delete b;  //it will also delete char *data
 
@@ -123,10 +124,10 @@ void TsByteArray::tcTake()
   size_t s = strlen(dataR);
   CPPUNIT_ASSERT(strlen(data) == strlen(dataR));
   CPPUNIT_ASSERT(data == dataR );
-  CPPUNIT_ASSERT(strcmp(data,dataR) == 0);
+  CPPUNIT_ASSERT(strncmp(data,dataR,strlen(data)) == 0);
   CPPUNIT_ASSERT(memcmp(data,dataR,s) == 0);
 
-  delete b;  //char *data is also deleted.
+  delete b;
 
 //#endif
 }
@@ -135,23 +136,22 @@ void TsByteArray::tcTake1()
 {
 //#ifdef TE_COMPILE_ALL
 
-  char *data2;
-  data2 = new char[33];
-  strcpy(data2,"12345678901234567890123456789012"); //32 bytes
+  char *data;
+  data = new char[33];
+  strcpy(data,"12345678901234567890123456789012"); //32 bytes
   te::dt::ByteArray *b2 = new te::dt::ByteArray(100) ;
   CPPUNIT_ASSERT(b2->capacity() == 100);
   CPPUNIT_ASSERT(b2->bytesUsed() == 0);
 
-  b2->take(data2,100,32);
+  b2->take(data,100,32);
   CPPUNIT_ASSERT(b2->bytesUsed() == 32);
   CPPUNIT_ASSERT(b2->capacity() == 100);
 
   char* dataR2 = b2->getData();
   size_t s2 = strlen(dataR2);
-  CPPUNIT_ASSERT(data2 == dataR2);
-  CPPUNIT_ASSERT(strlen(data2) == strlen(dataR2));
-  CPPUNIT_ASSERT(strcmp(data2,dataR2) == 0);
-  CPPUNIT_ASSERT(memcmp(data2,dataR2,s2) == 0);
+  CPPUNIT_ASSERT(data == dataR2);
+  CPPUNIT_ASSERT(strncmp(data,dataR2,strlen(data)) == 0);
+  CPPUNIT_ASSERT(memcmp(data,dataR2,strlen(data)) == 0);
 
   delete b2;
 
@@ -169,13 +169,11 @@ void TsByteArray::tcCopy()
   b->copy(data,20);
   CPPUNIT_ASSERT(b->capacity() == 20);
   char* dataR = b->getData();
-  size_t s = strlen(dataR);
-  CPPUNIT_ASSERT(strlen(data) == strlen(dataR));
-  CPPUNIT_ASSERT(data == dataR );
-  CPPUNIT_ASSERT(strcmp(data,dataR) == 0);
-  CPPUNIT_ASSERT(memcmp(data,dataR,s) == 0);
+  CPPUNIT_ASSERT(data != dataR );  //as the capacity(15) < 20, a new pointer is allocated with 20 bytes 
+  CPPUNIT_ASSERT(strncmp(data,dataR,strlen(data)) == 0);
+  CPPUNIT_ASSERT(memcmp(data,dataR,strlen(data)) == 0);
 
-  delete b;  //char *data is also deleted.
+  delete b;
 
 //#endif
 }
@@ -207,8 +205,7 @@ void TsByteArray::tcCopy1()
 
   char* dataR2 = b->getData();
   size_t s2 = strlen(dataR2);
-  CPPUNIT_ASSERT(strlen(dataR2) == 52);
-  CPPUNIT_ASSERT(strlen(data2)+strlen(data) == s2);
+  CPPUNIT_ASSERT(strlen(data2)+strlen(data) == b->bytesUsed());
 
   delete b;
 
@@ -246,12 +243,11 @@ void TsByteArray::tcClone()
   te::dt::ByteArray bclone =  *static_cast<te::dt::ByteArray*>(b->clone());
   CPPUNIT_ASSERT(bclone.capacity() == 20);
   CPPUNIT_ASSERT(bclone.bytesUsed() == 20);
-  CPPUNIT_ASSERT(bclone.getData() == b->getData());
-
+  CPPUNIT_ASSERT(strncmp(bclone.getData(),b->getData(),b->bytesUsed()) == 0);
+  CPPUNIT_ASSERT(b->getData() != bclone.getData());
   char* dataR = b->getData();
-  CPPUNIT_ASSERT(strlen(data) == strlen(dataR));
-  CPPUNIT_ASSERT(strcmp(data,dataR) == 0);
-  CPPUNIT_ASSERT(memcmp(data,dataR,strlen(dataR)) == 0);
+  CPPUNIT_ASSERT(strncmp(data,dataR,s) == 0);
+  CPPUNIT_ASSERT(memcmp(data,dataR,strlen(data)) == 0);
 
   delete b;
 
@@ -272,8 +268,8 @@ void TsByteArray::tcByteArrayConstructor()
 // Checking Assign Operator
   char * datab1 = b1.getData();
   CPPUNIT_ASSERT(memcmp(b.getData(),baux.getData(),strlen(data)) == 0);
-  CPPUNIT_ASSERT(memcmp(b1.getData(),b.getData(),strlen(datab1)) == 0);
-  CPPUNIT_ASSERT(strcmp(b1.getData(),b.getData()) == 0);
+  CPPUNIT_ASSERT(memcmp(b1.getData(),b.getData(),strlen(data)) == 0);
+  CPPUNIT_ASSERT(strncmp(b1.getData(),b.getData(), strlen(data)) == 0);
 
 //#endif
 }
@@ -283,11 +279,15 @@ void TsByteArray::tcToString()
 //#ifdef TE_COMPILE_ALL
   char* d20 = new char[21];
   strcpy(d20,"12345678901234567890");
+  std::string hex("3132333435363738393031323334353637383930");
+  strcpy(d20,"12345678901234567890");
   size_t s = strlen(d20);
   te::dt::ByteArray* b = new te::dt::ByteArray(d20,s);
   CPPUNIT_ASSERT(b->capacity() == 20);
   CPPUNIT_ASSERT(b->bytesUsed() == 20);
   std::string ss = b->toString();
+
+  CPPUNIT_ASSERT(strncmp(hex.c_str(),ss.c_str(),s*2) == 0);
 
   delete b;
 
@@ -300,7 +300,7 @@ void TsByteArray::tcGetTypeCode()
   strcpy(d20,"12345678901234567890");
   size_t s = strlen(d20);
   te::dt::ByteArray* b = new te::dt::ByteArray(d20,s);
-  CPPUNIT_ASSERT(b->getTypeCode() == te::dt::ARRAY_TYPE);
+  CPPUNIT_ASSERT(b->getTypeCode() == te::dt::BYTE_ARRAY_TYPE);
 
   delete b;
 
@@ -314,5 +314,45 @@ void TsByteArray::tcSetBytesUsed()
   b->setBytesUsed(100); 
   CPPUNIT_ASSERT(b->bytesUsed() == 100);
   delete b;
+//#endif
+}
+
+void TsByteArray::tcOperator()
+{
+//#ifdef TE_COMPILE_ALL
+  
+  te::dt::ByteArray b1;
+  int i = 3 ;
+  te::dt::ByteArray b2 =  operator <<( b1, i);
+  char* res = b2.getData();
+  std::string ss = b2.toString();
+  int x = *res;
+  CPPUNIT_ASSERT(*res == i );
+
+  b1.clear(); b2.clear();
+  unsigned int ui =  127 ; // 2147483647 ;
+  te::dt::ByteArray bui =  operator <<( b1, ui);
+  char* res1 = bui.getData();
+  ss  = bui.toString();
+  unsigned int xx = *res1;
+  CPPUNIT_ASSERT(*res1 == ui );
+
+
+  b1.clear(); b2.clear();
+  float f = 3.55f;
+  b2 = operator <<( b1, f);
+  res =  b2.getData();
+  ss  =  b2.toString();
+  float ff = *res;
+  CPPUNIT_ASSERT(*res == f );
+
+  b1.clear(); b2.clear();
+  double d = 3.55;
+  b2 = operator <<( b1, f);
+  res =  b2.getData();
+  ss  =  b2.toString();
+  double dd = *res;
+  CPPUNIT_ASSERT(*res == d );
+
 //#endif
 }

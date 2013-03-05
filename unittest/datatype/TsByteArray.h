@@ -36,7 +36,7 @@
 #include <cstring>
 
 //TerraLib 
-//#include <terralib/common.h>
+#include <terralib/common.h>
 #include <terralib/datatype.h>
 #include <terralib/geometry.h>
 
@@ -78,7 +78,8 @@ class TsByteArray : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcToString);
   CPPUNIT_TEST( tcClear);
   CPPUNIT_TEST( tcSetBytesUsed );
- 
+  CPPUNIT_TEST( tcOperator );
+
   CPPUNIT_TEST_SUITE_END();
   
   public:
@@ -137,6 +138,9 @@ class TsByteArray : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: Set bytes used by ByteArray. */
     void tcSetBytesUsed();
+
+    /*! \brief Test Case: Test operator << (writes simple data types (int,double, float) to bytearray */
+    void tcOperator();
 
   private:
 
