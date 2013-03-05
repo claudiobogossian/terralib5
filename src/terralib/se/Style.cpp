@@ -102,7 +102,7 @@ void te::se::Style::push_back(Rule* rule)
   m_rules.push_back(rule);
 }
 
-const te::se::Rule* te::se::Style::getRule(size_t i) const
+te::se::Rule* te::se::Style::getRule(size_t i) const
 {
   assert(i < m_rules.size());
   return m_rules[i];

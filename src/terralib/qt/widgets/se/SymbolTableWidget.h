@@ -18,50 +18,38 @@
  */
 
 /*!
-  \file terralib/qt/widgets/se/SymbolizerTableWidget.h
+  \file terralib/qt/widgets/se/SymbolTableWidget.h
 
-  \brief A widget used to preview a set of symbolizer elements as separated visual layers.
+  \brief A widget used to preview a symbol as separated layers.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERTABLEWIDGET_H
-#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERTABLEWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLTABLEWIDGET_H
+#define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLTABLEWIDGET_H
 
 // TerraLib
-#include "../../../se/Enums.h"
 #include "../Config.h"
 
 // Qt
 #include <QtGui/QWidget>
-
-// STL
-#include <vector>
 
 // Forward declarations
 class QTableWidget;
 
 namespace te
 {
-// Forward declarations
-  namespace gm
-  {
-    class Geometry;
-  }
-
-  namespace se
-  {
-    class Symbolizer;
-  }
-
   namespace qt
   {
     namespace widgets
     {
-      /*!
-        \class SymbolizerTableWidget
+// Forward declaration
+      class Symbol;
 
-        \brief A widget used to preview a set of symbolizer elements as separated visual layers.
+      /*!
+        \class SymbolTableWidget
+
+        \brief A widget used to preview a symbol as separated layers.
       */
-      class TEQTWIDGETSEXPORT SymbolizerTableWidget : public QWidget
+      class TEQTWIDGETSEXPORT SymbolTableWidget : public QWidget
       {
         Q_OBJECT
 
@@ -73,41 +61,33 @@ namespace te
           //@{
 
           /*!
-            \brief Constructs a symbolizer table widget with fixed size, which is a child of parent, with widget flags set to f. 
+            \brief Constructs a symbol table widget with fixed size, which is a child of parent, with widget flags set to f. 
 
             \param size The preview size.
-            \param type The symbolizer type that will be visualized on preview.
             \param parent The widget's parent.
           */
-          SymbolizerTableWidget(const QSize& size, const te::se::SymbolizerType& type, QWidget* parent = 0);
+          SymbolTableWidget(const QSize& size, QWidget* parent = 0);
 
           /*! \brief Destructor. */
-          ~SymbolizerTableWidget();
+          ~SymbolTableWidget();
 
           //@}
 
         public:
 
           /*!
-            \brief Preview a set of symbolizer elements.
+            \brief Preview a symbol element.
 
-            \param symbs A valid set of symbolizer elements.
+            \param symb A valid symbol element.
 
-            \note The widget will NOT take the ownership of the given symbolizers.
+            \note The widget will NOT take the ownership of the given symbol.
           */
-          void updatePreview(const std::vector<te::se::Symbolizer*>& symbs);
+          void updatePreview(Symbol* symbol);
 
           /*!
-            \brief Sets the symbolizer type that will be visualized on preview.
+            \brief Selects the given index on symbol table layer.
 
-            \param type The symbolizer type.
-          */
-          void setSymbolizerType(const te::se::SymbolizerType& type);
-
-          /*!
-            \brief Selects the given index on symbolizer visual table layer.
-
-            \param index The symbolizer index.
+            \param index The symbolizer index of symbol.
           */
           void selectSymbolizer(const int& index);
 
@@ -125,7 +105,7 @@ namespace te
         signals:
 
           /*!
-            \brief This signal is emitted when a symbolizer is clicked.
+            \brief This signal is emitted when a symbolizer of the symbol is clicked.
 
             \param index The symbolizer index.
           */
@@ -134,7 +114,6 @@ namespace te
         private:
 
           QTableWidget* m_previewTable; //!< Qt element that will be used to visualize preview results.
-          te::gm::Geometry* m_geom;     //!< Geometry used to draw the preview.
           QSize m_size;                 //!< Preview size.
       };
 
@@ -142,4 +121,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLIZERTABLEWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLTABLEWIDGET_H

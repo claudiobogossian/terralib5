@@ -29,9 +29,10 @@
 #include "LineSymbolizerWidget.h"
 #include "PointSymbolizerWidget.h"
 #include "PolygonSymbolizerWidget.h"
+#include "Symbol.h"
 #include "SymbolEditorWidget.h"
-#include "SymbolizerPreviewWidget.h"
-#include "SymbolizerTableWidget.h"
+#include "SymbolPreviewWidget.h"
+#include "SymbolTableWidget.h"
 #include "ui_SymbolEditorWidgetForm.h"
 
 // Qt
@@ -40,22 +41,22 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::SymbolEditorWidget::SymbolEditorWidget(const te::se::SymbolizerType& type, QWidget* parent)
+te::qt::widgets::SymbolEditorWidget::SymbolEditorWidget(QWidget* parent)
   : QWidget(parent),
     m_ui(new Ui::SymbolEditorWidgetForm),
-    m_type(type)
+    m_symbol(new Symbol)
 {
   m_ui->setupUi(this);
 
   // Preview
-  m_preview = new SymbolizerPreviewWidget(QSize(120, 120), type, this);
+  m_preview = new SymbolPreviewWidget(QSize(120, 120), this);
 
   // Adjusting...
   QGridLayout* previewLayout = new QGridLayout(m_ui->m_previewGroupBox);
   previewLayout->addWidget(m_preview);
 
   // Layers
-  m_symbolTable = new SymbolizerTableWidget(QSize(120, 42), type, this);
+  m_symbolTable = new SymbolTableWidget(QSize(120, 42), this);
   m_symbolTable->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
   // Adjusting...
@@ -82,7 +83,7 @@ te::qt::widgets::SymbolEditorWidget::SymbolEditorWidget(const te::se::Symbolizer
 
 te::qt::widgets::SymbolEditorWidget::~SymbolEditorWidget()
 {
-  te::common::FreeContents(m_symbs);
+  delete m_symbol;
 }
 
 void te::qt::widgets::SymbolEditorWidget::initialize()
@@ -99,65 +100,62 @@ void te::qt::widgets::SymbolEditorWidget::initialize()
 
 void te::qt::widgets::SymbolEditorWidget::updateUi()
 {
-  m_preview->updatePreview(m_symbs);
-  m_symbolTable->updatePreview(m_symbs);
+  m_preview->updatePreview(m_symbol);
+  m_symbolTable->updatePreview(m_symbol);
 }
 
 void te::qt::widgets::SymbolEditorWidget::createNewSymbolizer()
 {
-  QWidget* symbolizerWidget = 0;
-  switch(m_type)
-  {
-    case te::se::POINT_SYMBOLIZER:
-    {
-      PointSymbolizerWidget* pts = new PointSymbolizerWidget;
-      m_symbs.push_back(pts->getSymbolizer());
-      symbolizerWidget = pts;
-    }
-    break;
+  //QWidget* symbolizerWidget = 0;
+  //switch(m_type)
+  //{
+  //  case te::se::POINT_SYMBOLIZER:
+  //  {
+  //    PointSymbolizerWidget* pts = new PointSymbolizerWidget;
+  //    m_symbs.push_back(pts->getSymbolizer());
+  //    symbolizerWidget = pts;
+  //  }
+  //  break;
 
-    case te::se::LINE_SYMBOLIZER:
-    {
-      LineSymbolizerWidget* ls = new LineSymbolizerWidget;
-      m_symbs.push_back(ls->getSymbolizer());
-      symbolizerWidget = ls;
-    }
-    break;
+  //  case te::se::LINE_SYMBOLIZER:
+  //  {
+  //    LineSymbolizerWidget* ls = new LineSymbolizerWidget;
+  //    m_symbs.push_back(ls->getSymbolizer());
+  //    symbolizerWidget = ls;
+  //  }
+  //  break;
 
-    case te::se::POLYGON_SYMBOLIZER:
-    {
-      PolygonSymbolizerWidget* ps = new PolygonSymbolizerWidget;
-      m_symbs.push_back(ps->getSymbolizer());
-      symbolizerWidget = ps;
-    }
-    break;
-    
-    case te::se::RASTER_SYMBOLIZER:
-    case te::se::TEXT_SYMBOLIZER:
-    {
-    }
-  }
-  // Adding on stack
-  m_symbolizersStackedWidget->addWidget(symbolizerWidget);
-  // Connecting signal & slot
-  connect(symbolizerWidget, SIGNAL(symbolizerChanged()), SLOT(onSymbolizerChanged()));
-  // Makes this new widget the current
-  m_symbolizersStackedWidget->setCurrentIndex(m_symbolizersStackedWidget->count() - 1);
+  //  case te::se::POLYGON_SYMBOLIZER:
+  //  {
+  //    PolygonSymbolizerWidget* ps = new PolygonSymbolizerWidget;
+  //    m_symbs.push_back(ps->getSymbolizer());
+  //    symbolizerWidget = ps;
+  //  }
+  //  break;
+  //  
+  //  case te::se::RASTER_SYMBOLIZER:
+  //  case te::se::TEXT_SYMBOLIZER:
+  //  {
+  //  }
+  //}
+  //// Adding on stack
+  //m_symbolizersStackedWidget->addWidget(symbolizerWidget);
+  //// Connecting signal & slot
+  //connect(symbolizerWidget, SIGNAL(symbolizerChanged()), SLOT(onSymbolizerChanged()));
+  //// Makes this new widget the current
+  //m_symbolizersStackedWidget->setCurrentIndex(m_symbolizersStackedWidget->count() - 1);
 
-  // Updating preview
-  updateUi();
+  //// Updating preview
+  //updateUi();
 
-  // Select on symbolizer table
-  m_symbolTable->selectSymbolizer(m_symbs.size() - 1);
+  //// Select on symbolizer table
+  //m_symbolTable->selectSymbolizer(m_symbs.size() - 1);
 }
 
 void te::qt::widgets::SymbolEditorWidget::swapSymbolizers(const int& indexFirst, const int& indexSecond)
 {
   // Swap symbolizers
-  te::se::Symbolizer* first = m_symbs[indexFirst];
-  te::se::Symbolizer* second = m_symbs[indexSecond];
-  m_symbs[indexFirst] = second;
-  m_symbs[indexSecond] = first;
+  m_symbol->swapSymbolizers(indexFirst, indexSecond);
 
   // Swap widget symbolizers
   QWidget* firstWidget = m_symbolizersStackedWidget->widget(indexFirst);
@@ -173,17 +171,16 @@ void te::qt::widgets::SymbolEditorWidget::onAddToolButtonClicked()
 
 void te::qt::widgets::SymbolEditorWidget::onRemoveToolButtonClicked()
 {
-  if(m_symbs.size() == 1) // We have only one symbolizer. No remove!
+  if(m_symbol->getSymbolizersCount() == 1) // We have only one symbolizer. No remove!
     return;
 
   QWidget* w = m_symbolizersStackedWidget->currentWidget();
 
   int index  = m_symbolizersStackedWidget->indexOf(w);
-  assert(index >= 0 && index < static_cast<int>(m_symbs.size()));
+  assert(index >= 0 && index < static_cast<int>(m_symbol->getSymbolizersCount()));
 
   // Removing symbolizer
-  delete m_symbs[index];
-  m_symbs.erase(m_symbs.begin() + index);
+  m_symbol->removeSymbolizer(index);
   
   // Removing widget associated with the removed symbolizer
   m_symbolizersStackedWidget->removeWidget(w);
@@ -198,7 +195,7 @@ void te::qt::widgets::SymbolEditorWidget::onRemoveToolButtonClicked()
 void te::qt::widgets::SymbolEditorWidget::onUpToolButtonClicked()
 {
   int index  = m_symbolizersStackedWidget->currentIndex();
-  assert(index >= 0 && index < static_cast<int>(m_symbs.size()));
+  assert(index >= 0 && index < static_cast<int>(m_symbol->getSymbolizersCount()));
   
   if(index == 0) // Not go-up a top symbolizer!
     return;
@@ -215,9 +212,9 @@ void te::qt::widgets::SymbolEditorWidget::onUpToolButtonClicked()
 void te::qt::widgets::SymbolEditorWidget::onDownToolButtonClicked()
 {
   int index  = m_symbolizersStackedWidget->currentIndex();
-  assert(index >= 0 && index < static_cast<int>(m_symbs.size()));
+  assert(index >= 0 && index < static_cast<int>(m_symbol->getSymbolizersCount()));
   
-  if(index == m_symbs.size() - 1) // Not go-down a down symbolizer!
+  if(index == m_symbol->getSymbolizersCount() - 1) // Not go-down a down symbolizer!
     return;
 
   // Swap
@@ -243,7 +240,7 @@ void te::qt::widgets::SymbolEditorWidget::onSymbolizerChanged()
      }
   */
 
-  int index = m_symbolizersStackedWidget->currentIndex();
+ /* int index = m_symbolizersStackedWidget->currentIndex();
   assert(index >= 0 && index < static_cast<int>(m_symbs.size()));
 
   QWidget* w = m_symbolizersStackedWidget->currentWidget();
@@ -266,5 +263,5 @@ void te::qt::widgets::SymbolEditorWidget::onSymbolizerChanged()
     case te::se::RASTER_SYMBOLIZER:
     {}
   }
-  updateUi();
+  updateUi();*/
 }

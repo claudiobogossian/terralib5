@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../qt/widgets/se/Symbol.h"
 #include "../../../qt/widgets/se/SymbolLibrary.h"
+#include "../../../qt/widgets/se/SymbolLibraryManager.h"
 #include "../../../xml/Reader.h"
 #include "../../../xml/ReaderFactory.h"
 #include "../../Exception.h"
@@ -53,14 +54,20 @@ void te::serialize::ReadSymbolLibrary(const std::string& symbolLibraryFileName)
   if(reader->getElementLocalName() != "SymbolLibrary")
     throw Exception((boost::format(TR_SERIALIZATION("The first tag in the document %1% is not 'SymbolLibrary'.")) % symbolLibraryFileName).str());
 
+  std::string name = reader->getAttr("name");
+
+  std::auto_ptr<te::qt::widgets::SymbolLibrary> library(new te::qt::widgets::SymbolLibrary(name));
+
   reader->next();
 
   while((reader->getNodeType() == te::xml::START_ELEMENT) &&
         (reader->getElementLocalName() == "Symbol"))
   {
     te::qt::widgets::Symbol* symbol = ReadSymbol(*reader);
-    te::qt::widgets::SymbolLibrary::getInstance().insert(symbol);
+    library->insert(symbol);
   }
+
+  te::qt::widgets::SymbolLibraryManager::getInstance().insert(library.release());
 
   assert(reader->getNodeType() == te::xml::END_DOCUMENT);
 }

@@ -1,3 +1,4 @@
+option (BUILD_QT_PLUGIN_DATASOURCE_ADO "Build ADO datasource datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_GDAL "Build GDAL datasource datasource plugin for Qt." ON)
 option (BUILD_QT_PLUGIN_DATASOURCE_GEOFILE "Build GeoFile datasource plugin for Qt." OFF)
 option (BUILD_QT_PLUGIN_DATASOURCE_MYSQL "Build PostGIS datasource plugin for Qt." OFF)
@@ -18,6 +19,10 @@ set (
 set(ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../src/terralib/qt/plugins")  # change this if the terralib root directory is somewhere else
  
 # Go into sub-directories
+if(BUILD_QT_PLUGIN_DATASOURCE_ADO)
+  add_subdirectory(terralib_qt_plugins/datasource_ado)
+endif()
+
 if(BUILD_QT_PLUGIN_DATASOURCE_GDAL)
   add_subdirectory(terralib_qt_plugins/datasource_gdal)
 endif()

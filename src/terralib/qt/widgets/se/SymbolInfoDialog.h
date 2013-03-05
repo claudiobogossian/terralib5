@@ -85,6 +85,8 @@ namespace te
           */
           void setSymbolInfo(const SymbolInfo& info);
 
+          void setReadMode(bool enable = true);
+
         private:
 
           /*! \brief Updates the dialog form based on internal symbol info object. */
