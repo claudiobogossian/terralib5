@@ -35,7 +35,7 @@
 void IndexPointUsingRTree()
 {
   std::vector<te::gm::Point*> pointVec;  
-  te::sam::rtree::Index<size_t, 4> rtree;
+  te::sam::rtree::Index<std::size_t, 4> rtree;
 
   pointVec.reserve(100);
 
@@ -48,11 +48,11 @@ void IndexPointUsingRTree()
 
   for(int i = 0; i < 100; ++i)
   {
-    std::vector<size_t> report;
+    std::vector<std::size_t> report;
     const te::gm::Envelope* mbr = pointVec[i]->getMBR();
 
     assert(rtree.search(*mbr, report) == 1);
-    assert(report[0] == static_cast<size_t>(i));
+    assert(report[0] == static_cast<std::size_t>(i));
   }
 
   te::common::FreeContents(pointVec);

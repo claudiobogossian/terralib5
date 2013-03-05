@@ -104,7 +104,7 @@ te::qt::widgets::PluginBuilderWizard::PluginBuilderWizard(QWidget* parent)
   categList.push_back("Web Services");
 
   //fill interface
-  m_ui->m_terralibVersionLineEdit->setText(te::common::GetStrVersion());
+  m_ui->m_terralibVersionLineEdit->setText(te::common::Version::asString().c_str());
   m_ui->m_pluginCategoryComboBox->addItems(categList);
   m_ui->m_pluginLicenseComboBox->addItems(licenses);
 

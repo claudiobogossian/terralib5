@@ -15,6 +15,8 @@ set(TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 include (terralib_qt_plugins/TerraLib_Plugins.cmake)
 
+add_subdirectory (third-party/qt/propertybrowser)
+
 set (ROOT "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 option (BUILD_TERRAVIEW "Build TerraView application?" ON)

@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/SymbologyPreview.cpp
 
-  \brief Static methods used to generate preview of Symbology elements.
+  \brief Static class used to generate preview of Symbology elements.
 */
 
 // TerraLib

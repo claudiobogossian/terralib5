@@ -25,15 +25,12 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../se.h"
 #include "ImageOutlineWidget.h"
 #include "LineSymbolizerWidget.h"
 #include "PolygonSymbolizerWidget.h"
-#include "SymbolizerPreviewWidget.h"
+#include "SymbolPreviewWidget.h"
 #include "ui_ImageOutlineWidgetForm.h"
-#include "../../../se.h"
-
-// Qt
-
 
 // STL
 #include <cassert>
@@ -56,7 +53,7 @@ te::qt::widgets::ImageOutlineWidget::ImageOutlineWidget(QWidget* parent, Qt::Win
   l->setContentsMargins(0,0,0,0);
   l->setAlignment(Qt::AlignTop);
   
-  m_preview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(120, 120), te::se::RASTER_SYMBOLIZER, m_ui->m_previewWidget);
+  m_preview = new te::qt::widgets::SymbolPreviewWidget(QSize(120, 120), m_ui->m_previewWidget);
 
   l->addWidget(m_preview);
 
@@ -145,8 +142,6 @@ void te::qt::widgets::ImageOutlineWidget::onPolygonSymbolizerClicked()
   m_psWidget->show();
 
   m_io->setSymbolizer(m_psWidget->getSymbolizer());
-
-  m_preview->setSymbolizerType(te::se::POLYGON_SYMBOLIZER);
 
   updateUi();
 }

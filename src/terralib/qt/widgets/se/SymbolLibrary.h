@@ -20,14 +20,13 @@
 /*!
   \file terralib/qt/widgets/se/SymbolLibrary.h
 
-  \brief The SymbolLibrary is a singleton that can be used to manage all loaded symbols in TerraLib.
+  \brief This class represents a library of symbols.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLLIBRARY_H
 #define __TERRALIB_QT_WIDGETS_SE_INTERNAL_SYMBOLLIBRARY_H
 
 // TerraLib
-#include "../../../common/Singleton.h"
 #include "../Config.h"
 
 // STL 
@@ -46,32 +45,29 @@ namespace te
       /*!
         \class SymbolLibrary
 
-        \brief The SymbolLibrary is a singleton that can be used to manage all loaded symbols in TerraLib.
+        \brief This class represents a library of symbols.
       
-        \sa Singleton
+        \sa Symbol, SymbolLibaryManager
       */
-      class TEQTWIDGETSEXPORT SymbolLibrary : public te::common::Singleton<SymbolLibrary>
+      class TEQTWIDGETSEXPORT SymbolLibrary
       {
-        friend class te::common::Singleton<SymbolLibrary>;
-
         public:
 
-          /** @name SymbolLibrary Accessor Method
-           *  Method used to access the data stored on this manager.
-           */
-          //@{
+          /*! \brief Constructor. */
+          SymbolLibrary(const std::string& name);
+
+          /*! \brief Destructor. */
+          ~SymbolLibrary();
 
           /*!
-            \brief It inserts a new symbol that will be managed by SymbolLibrary.
+            \brief It inserts a new symbol to this library.
 
-            \param symbol The new symbol to be managed by this manager.
-
-            \exception Exception If the symbol doesn't exist it will raise an exception.
+            \param symbol The new symbol that will be added to this library.
           */
           void insert(Symbol* symbol);
 
           /*!
-            \brief It removes the symbol from the manager.
+            \brief It removes the symbol from this library.
 
             \param symbol The symbol to be removed.
 
@@ -89,44 +85,23 @@ namespace te
           Symbol* findById(const std::string& id) const;
 
           /*!
-            \brief It returns a pair of iterators over the symbols of this manager.
+            \brief It returns a pair of iterators over the symbols of this library.
 
-            \return A pair of iterators over the symbols of this manager where pair.first will be
+            \return A pair of iterators over the symbols of this library where pair.first will be
                     the beginning and pair.second will be the end iterator.
           */
           std::pair<std::map<std::string, Symbol*>::const_iterator,
                     std::map<std::string, Symbol*>::const_iterator> getIterator() const;
 
-          /*! \brief It unloads all symbols managed by SymbolLibrary. */
+          const std::string& getName() const;
+
+          /*! \brief It removes all symbols from this library. */
           void clear();
-
-          //@}
-
-          /** @name Initializer Methods
-           *  Methods related to instantiation and destruction.
-           */
-          //@{
-
-          /*! \brief Destructor. */
-          ~SymbolLibrary();
-
-          //@}
-
-        protected:
-
-          /** @name Initializer Methods
-           *  Methods related to instantiation and destruction.
-           */
-          //@{
-
-          /*! \brief It initializes the Singleton. */
-          SymbolLibrary();
-
-          //@}
 
         private:
 
-          std::map<std::string, Symbol*> m_symbolMap; //!< A list of symbols, a map from symbol id to symbol instance.
+          std::string m_name;                         //!< The name of the symbol library.
+          std::map<std::string, Symbol*> m_symbolMap; //!< The set of symbols.
     };
 
     } // end namespace widgets

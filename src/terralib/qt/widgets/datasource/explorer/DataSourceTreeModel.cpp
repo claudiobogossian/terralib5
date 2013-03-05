@@ -207,7 +207,7 @@ QModelIndex te::qt::widgets::DataSourceTreeModel::index(int row, int column, con
   if(!parent.isValid()) // is it a top-level item?
   {
 // yes!
-    if(m_items.empty() || (row >= m_items.size()))
+    if(m_items.empty() || (static_cast<std::size_t>(row) >= m_items.size()))
       return QModelIndex();
 
     AbstractDataSourceTreeItem* item = const_cast<AbstractDataSourceTreeItem*>(&m_items[row]);

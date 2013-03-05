@@ -31,6 +31,7 @@
 
 // TerraLib
 #include <terralib/common/SystemApplicationSettings.h>
+#include <terralib/common/Version.h>
 
 // Qt
 #include <QtGui/QPixmap>
@@ -65,13 +66,13 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
     std::string copyrightStr = tr("<p>Copyright &copy; 2001-2013 INPE, Tecgraf PUC-Rio, and FUNCATE<BR>").toStdString();
     m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
 
-    std::string terraviewVersionStr = tr("TerraView Version:").toStdString() + TERRALIB_STRING_VERSION;
+    std::string terraviewVersionStr = tr("TerraView Version: ").toStdString() + TERRALIB_STRING_VERSION;
     m_ui->m_terraviewVersionLabel->setText(terraviewVersionStr.c_str());
 
-    std::string terralibVersionStr = tr("TerraLib Version:").toStdString() + TERRALIB_STRING_VERSION;
+    std::string terralibVersionStr = tr("TerraLib Version: ").toStdString() + TERRALIB_STRING_VERSION;
     m_ui->m_terralibVersionLabel->setText(terralibVersionStr.c_str());
 
-    std::string buildDateStr = tr("Build Date:").toStdString() + TERRALIB_STRING_BUILD_DATE;
+    std::string buildDateStr = tr("Build Date: ").toStdString() + te::common::Version::buildDate();
     m_ui->m_buildDateLabel->setText(buildDateStr.c_str());
 
     QIcon i1(QIcon::fromTheme("datasource-gdal"));

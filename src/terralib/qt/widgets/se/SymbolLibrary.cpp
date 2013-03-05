@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/se/SymbolLibrary.cpp
  
-  \brief The SymbolLibrary is a singleton that can be used to manage all loaded symbols in TerraLib.
+  \brief This class represents a library of symbols.
 */
 
 // TerraLib
@@ -32,6 +32,16 @@
 
 // STL
 #include <cassert>
+
+te::qt::widgets::SymbolLibrary::SymbolLibrary(const std::string& name)
+  : m_name(name)
+{
+  assert(!name.empty());
+}
+
+te::qt::widgets::SymbolLibrary::~SymbolLibrary()
+{
+}
 
 void te::qt::widgets::SymbolLibrary::insert(te::qt::widgets::Symbol* symbol)
 {
@@ -74,16 +84,13 @@ std::pair<std::map<std::string, te::qt::widgets::Symbol*>::const_iterator,
                    std::map<std::string, Symbol*>::const_iterator>(m_symbolMap.begin(), m_symbolMap.end());
 }
 
+const std::string& te::qt::widgets::SymbolLibrary::getName() const
+{
+  return m_name;
+}
+
 void te::qt::widgets::SymbolLibrary::clear()
 {
   te::common::FreeContents(m_symbolMap);
   m_symbolMap.clear();
-}
-
-te::qt::widgets::SymbolLibrary::~SymbolLibrary()
-{
-}
-
-te::qt::widgets::SymbolLibrary::SymbolLibrary()
-{
 }

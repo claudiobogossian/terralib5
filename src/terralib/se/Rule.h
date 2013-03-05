@@ -139,6 +139,8 @@ namespace te
 
         void push_back(Symbolizer* s);
 
+        void setSymbolizer(size_t i, Symbolizer* s);
+
         const std::vector<Symbolizer*>& getSymbolizers() const;
 
         const Symbolizer* getSymbolizer(size_t i) const;
