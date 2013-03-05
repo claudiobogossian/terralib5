@@ -55,11 +55,11 @@ void LoadOGRModule()
     info.m_description = "This data source driver supports spatial data managed by OGR";
     info.m_engine = "C++";
     info.m_folder = TE_PLUGINS_PATH;
-    
+
     std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
-    
+
     info.m_resources.push_back(rsc);
-    
+
     te::plugin::PluginManager::getInstance().load(info);
   }
   catch(...)
@@ -78,9 +78,7 @@ int main(int /*argc*/, char** /*argv*/)
     LoadOGRModule();
     
     //pegar um data set
-    //std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Solutions/examples/data/charts");
-    std::string ogrInfo("connection_string=C:/Users/andre.oliveira/Funcate/Projetos/Fontes/data");
-    
+    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionStr(ogrInfo);
@@ -88,8 +86,7 @@ int main(int /*argc*/, char** /*argv*/)
     
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
 
-    //te::da::DataSet* dataset = transactor->getDataSet("mapa_distritos_sp");
-    te::da::DataSet* dataset = transactor->getDataSet("OcorrenciasPoA");
+    te::da::DataSet* dataset = transactor->getDataSet("Muni_SM_Setoresrec_pol");
     if(dataset==0)
     {
        delete dataset;
@@ -103,19 +100,15 @@ int main(int /*argc*/, char** /*argv*/)
 
     //Getting the Columns that will be used to populate the graph
 
-//     std::string renda = "RENDA_FAM";
-//     std::string anosest = "ANOS_EST";
-    std::string idademed = "IDADE_MED";
-    std::string data = "DATA";
+    std::string microregiao = "MICROREGIA";
 
-
-    int dataIdx= type->getPropertyPosition(data);
+    int microregiaoIdx= type->getPropertyPosition(microregiao);
 
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, dataIdx);
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, microregiaoIdx);
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
 
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
@@ -141,7 +134,7 @@ int main(int /*argc*/, char** /*argv*/)
     int ret = app.exec();
 
 	  //delete pointers
-    //delete chartDisplay; // quando attacha não precisa deletar!!!! => ele cai!
+
     //delete scatterChart;
     //delete scatter;
     delete histogramChart;
