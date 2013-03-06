@@ -24,53 +24,52 @@
 */
 
 // TerraLib
-#include "../../../../../common/Translator.h"
-#include "../../../layer/selector/core/DataSetLayerSelector.h"
+#include "../../../../common/Translator.h"
 #include "SQLiteConnector.h"
 #include "SQLiteType.h"
 
 // STL
 #include <cassert>
 
-te::qt::widgets::SQLiteType::SQLiteType()
+te::qt::plugins::sqlite::SQLiteType::SQLiteType()
 {
 }
 
-te::qt::widgets::SQLiteType::~SQLiteType()
+te::qt::plugins::sqlite::SQLiteType::~SQLiteType()
 {
 }
 
-std::string te::qt::widgets::SQLiteType::getName() const
+std::string te::qt::plugins::sqlite::SQLiteType::getName() const
 {
   return "SQLITE";
 }
 
-std::string te::qt::widgets::SQLiteType::getTitle() const
+std::string te::qt::plugins::sqlite::SQLiteType::getTitle() const
 {
   return TR_QT_WIDGETS("SQLite");
 }
 
-std::string te::qt::widgets::SQLiteType::getDescription() const
+std::string te::qt::plugins::sqlite::SQLiteType::getDescription() const
 {
   return TR_QT_WIDGETS("Access geospatial data stored in SQLite database");
 }
 
-QWidget* te::qt::widgets::SQLiteType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
+QWidget* te::qt::plugins::sqlite::SQLiteType::getWidget(int widgetType, QWidget* parent, Qt::WindowFlags f) const
 {
   switch(widgetType)
   {
     case DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new SQLiteConnector(parent, f);
 
-    case DataSourceType::WIDGET_LAYER_SELECTOR:
-      return new DataSetLayerSelector(parent, f);
+    //case DataSourceType::WIDGET_LAYER_SELECTOR:
+    //  return new DataSetLayerSelector(parent, f);
 
     default:
       return 0;
   }
 }
 
-QIcon te::qt::widgets::SQLiteType::getIcon(int iconType) const
+QIcon te::qt::plugins::sqlite::SQLiteType::getIcon(int iconType) const
 {
   switch(iconType)
   {

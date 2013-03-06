@@ -24,13 +24,13 @@
 */
 
 // TerraLib
-#include "../../../../../common/Translator.h"
-#include "../../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSourceFactory.h"
-#include "../../../../../dataaccess/datasource/DataSourceInfo.h"
-#include "../../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../Exception.h"
-#include "ui/SQLiteConnectorDialogForm.h"
+#include "../../../../common/Translator.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceFactory.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../widgets/Exception.h"
+#include "Ui_SQLiteConnectorDialogForm.h"
 #include "SQLiteConnectorDialog.h"
 
 // Boost
@@ -43,7 +43,7 @@
 #include <QtGui/QFileDialog>
 #include <QtGui/QMessageBox>
 
-te::qt::widgets::SQLiteConnectorDialog::SQLiteConnectorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::plugins::sqlite::SQLiteConnectorDialog::SQLiteConnectorDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::SQLiteConnectorDialogForm)
 {
@@ -51,7 +51,7 @@ te::qt::widgets::SQLiteConnectorDialog::SQLiteConnectorDialog(QWidget* parent, Q
   m_ui->setupUi(this);
 
 // init controls
-  m_ui->m_advancedOptionsWidget->hide();
+  m_ui->m_advancedOptionsGroupBox->hide();
 
 // connect signal and slots
   connect(m_ui->m_openPushButton, SIGNAL(pressed()), this, SLOT(openPushButtonPressed()));
@@ -60,21 +60,21 @@ te::qt::widgets::SQLiteConnectorDialog::SQLiteConnectorDialog(QWidget* parent, Q
   connect(m_ui->m_searchDatabaseToolButton, SIGNAL(pressed()), this, SLOT(searchDatabaseToolButtonPressed()));
 }
 
-te::qt::widgets::SQLiteConnectorDialog::~SQLiteConnectorDialog()
+te::qt::plugins::sqlite::SQLiteConnectorDialog::~SQLiteConnectorDialog()
 {
 }
 
-const te::da::DataSourceInfoPtr& te::qt::widgets::SQLiteConnectorDialog::getDataSource() const
+const te::da::DataSourceInfoPtr& te::qt::plugins::sqlite::SQLiteConnectorDialog::getDataSource() const
 {
   return m_datasource;
 }
 
-const te::da::DataSourcePtr& te::qt::widgets::SQLiteConnectorDialog::getDriver() const
+const te::da::DataSourcePtr& te::qt::plugins::sqlite::SQLiteConnectorDialog::getDriver() const
 {
   return m_driver;
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::set(const te::da::DataSourceInfoPtr& ds)
 {
   m_datasource = ds;
 
@@ -88,13 +88,13 @@ void te::qt::widgets::SQLiteConnectorDialog::set(const te::da::DataSourceInfoPtr
   }
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::openPushButtonPressed()
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::openPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("SQLITE") == 0)
-      throw Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -105,7 +105,7 @@ void te::qt::widgets::SQLiteConnectorDialog::openPushButtonPressed()
     m_driver.reset(te::da::DataSourceFactory::open("SQLITE", dsInfo));
 
     if(m_driver.get() == 0)
-      throw Exception(TR_QT_WIDGETS("Could not open SQLite data source due to an unknown error!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open SQLite data source due to an unknown error!"));
 
     QString title = m_ui->m_datasourceTitleLineEdit->text().trimmed();
 
@@ -156,13 +156,13 @@ void te::qt::widgets::SQLiteConnectorDialog::openPushButtonPressed()
   accept();
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::testPushButtonPressed()
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::testPushButtonPressed()
 {
   try
   {
 // check if driver is loaded
     if(te::da::DataSourceFactory::find("SQLITE") == 0)
-      throw Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Sorry! No data access driver loaded for SQLite data sources!"));
 
 // get data source connection info based on form data
     std::map<std::string, std::string> dsInfo;
@@ -173,7 +173,7 @@ void te::qt::widgets::SQLiteConnectorDialog::testPushButtonPressed()
     std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::open("SQLITE", dsInfo));
 
     if(ds.get() == 0)
-      throw Exception(TR_QT_WIDGETS("Could not open SQLite database!"));
+      throw te::qt::widgets::Exception(TR_QT_WIDGETS("Could not open SQLite database!"));
 
     QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
@@ -193,16 +193,16 @@ void te::qt::widgets::SQLiteConnectorDialog::testPushButtonPressed()
   }
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::helpPushButtonPressed()
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::helpPushButtonPressed()
 {
   QMessageBox::warning(this,
                        tr("TerraLib Qt Components"),
                        tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::searchDatabaseToolButtonPressed()
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::searchDatabaseToolButtonPressed()
 {
-  QString fileName = QFileDialog::getOpenFileName(this, tr("Open SQLite Database"), QString(""), tr("Database files (*.sqlite, *.db);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
+  QString fileName = QFileDialog::getOpenFileName(this, tr("Open SQLite Database"), QString(""), tr("Database files (*.sqlite *.db);; All Files (*.*)"), 0, QFileDialog::ReadOnly);
 
   if(fileName.isEmpty())
     return;
@@ -210,7 +210,7 @@ void te::qt::widgets::SQLiteConnectorDialog::searchDatabaseToolButtonPressed()
   m_ui->m_fileLineEdit->setText(fileName);
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const
 {
 // clear input
   connInfo.clear();
@@ -245,7 +245,7 @@ void te::qt::widgets::SQLiteConnectorDialog::getConnectionInfo(std::map<std::str
     connInfo["SQLITE_HIDE_TABLES"] = qstr.toUtf8().data();
 }
 
-void te::qt::widgets::SQLiteConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
+void te::qt::plugins::sqlite::SQLiteConnectorDialog::setConnectionInfo(const std::map<std::string, std::string>& connInfo)
 {
   std::map<std::string, std::string>::const_iterator it = connInfo.find("SQLITE_FILE");
   std::map<std::string, std::string>::const_iterator itend = connInfo.end();

@@ -65,7 +65,7 @@ void te::qt::widgets::DataExchangeSummaryWizardPage::set(const std::list<DataExc
 
   for(std::list<DataExchangeStatus>::const_iterator it = result.begin(); it != result.end(); ++it)
   {
-    QTableWidgetItem* item = new QTableWidgetItem(it->m_successful ? QIcon::fromTheme("successful") : QIcon::fromTheme("execution-error"), "");
+    QTableWidgetItem* item = new QTableWidgetItem(it->m_successful ? QIcon::fromTheme("check") : QIcon::fromTheme("delete"), "");
     m_ui->m_reportTableWidget->setItem(row, 0, item);
 
     item = new QTableWidgetItem(QString::fromStdString(it->m_dataset->getName()));

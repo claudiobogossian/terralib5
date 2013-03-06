@@ -141,8 +141,11 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="decimals">
+                 <number>0</number>
+                </property>
                 <property name="maximum">
-                 <double>1024.000000000000000</double>
+                 <double>16384.000000000000000</double>
                 </property>
                 <property name="value">
                  <double>16.000000000000000</double>

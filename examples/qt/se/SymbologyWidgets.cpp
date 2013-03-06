@@ -15,8 +15,8 @@
 #include <terralib/qt/widgets/se/SymbolSelectorDialog.h>
 #include <terralib/qt/widgets/se/SymbolEditorWidget.h>
 #include <terralib/qt/widgets/se/SymbolInfoDialog.h>
-#include <terralib/qt/widgets/se/SymbolizerPreviewWidget.h>
-#include <terralib/qt/widgets/se/SymbolizerTableWidget.h>
+#include <terralib/qt/widgets/se/SymbolPreviewWidget.h>
+#include <terralib/qt/widgets/se/SymbolTableWidget.h>
 #include <terralib/qt/widgets/se/WellKnownMarkDialog.h>
 
 // Qt
@@ -36,6 +36,7 @@ void SymbolSelector()
 {
   // Loads the Symbol Library from XML file
   te::serialize::ReadSymbolLibrary("D:/SymbolLibrary.xml");
+  te::serialize::ReadSymbolLibrary("D:/MapIconsCollection.xml");
 
   // Selects a symbol
   te::qt::widgets::Symbol* symbol =  te::qt::widgets::SymbolSelectorDialog::getSymbol(0);
@@ -59,9 +60,9 @@ void SymbolSelector()
 void SymbolEditor()
 {
   // Widgets for symbol edition...
-  te::qt::widgets::SymbolEditorWidget* editPointSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::POINT_SYMBOLIZER);
-  te::qt::widgets::SymbolEditorWidget* editLineSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::LINE_SYMBOLIZER);
-  te::qt::widgets::SymbolEditorWidget* editPolygonSymbolizer = new te::qt::widgets::SymbolEditorWidget(te::se::POLYGON_SYMBOLIZER);
+  te::qt::widgets::SymbolEditorWidget* editPointSymbolizer = new te::qt::widgets::SymbolEditorWidget();
+  te::qt::widgets::SymbolEditorWidget* editLineSymbolizer = new te::qt::widgets::SymbolEditorWidget();
+  te::qt::widgets::SymbolEditorWidget* editPolygonSymbolizer = new te::qt::widgets::SymbolEditorWidget();
 
   // Symbol Information
   te::qt::widgets::SymbolInfo info;
@@ -116,21 +117,22 @@ void SymbolizerWidgets()
 
 void PreviewWidgets()
 {
-  std::vector<te::se::Symbolizer*> symbs;
-  symbs.push_back(te::se::CreateLineSymbolizer(te::se::CreateStroke("#000000", "9.0")));
-  symbs.push_back(te::se::CreateLineSymbolizer(te::se::CreateStroke("#808080", "5.0")));
-  symbs.push_back(te::se::CreateLineSymbolizer(te::se::CreateStroke("#FFFF00", "2.0", "1.0", "2 2")));
-
   QDialog dlg;
   dlg.setWindowTitle("Symbolizer Preview Example");
 
+  // Creates the symbol
+  te::qt::widgets::Symbol* symbol = new te::qt::widgets::Symbol;
+  symbol->addSymbolizer(te::se::CreateLineSymbolizer(te::se::CreateStroke("#000000", "9.0")));
+  symbol->addSymbolizer(te::se::CreateLineSymbolizer(te::se::CreateStroke("#808080", "5.0")));
+  symbol->addSymbolizer(te::se::CreateLineSymbolizer(te::se::CreateStroke("#FFFF00", "2.0", "1.0", "2 2")));
+
   // Preview
-  te::qt::widgets::SymbolizerPreviewWidget* preview = new te::qt::widgets::SymbolizerPreviewWidget(QSize(150, 150), te::se::LINE_SYMBOLIZER, &dlg);
-  preview->updatePreview(symbs);
+  te::qt::widgets::SymbolPreviewWidget* preview = new te::qt::widgets::SymbolPreviewWidget(QSize(150, 150), &dlg);
+  preview->updatePreview(symbol);
 
   // Table preview
-  te::qt::widgets::SymbolizerTableWidget* table = new te::qt::widgets::SymbolizerTableWidget(QSize(150, 32), te::se::LINE_SYMBOLIZER, &dlg);
-  table->updatePreview(symbs);
+  te::qt::widgets::SymbolTableWidget* table = new te::qt::widgets::SymbolTableWidget(QSize(150, 32), &dlg);
+  table->updatePreview(symbol);
   table->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
   // Adjusting...
@@ -141,7 +143,7 @@ void PreviewWidgets()
 
   dlg.exec();
 
-  te::common::FreeContents(symbs);
+  delete symbol;
 }
 
 void BasicWidgets()

@@ -37,7 +37,7 @@
 #include <memory>
 #include <vector>
 
-// Forward declaraion
+// Forward declarations
 class QStackedWidget;
 namespace Ui { class SymbolEditorWidgetForm; }
 
@@ -54,8 +54,9 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class SymbolizerPreviewWidget;
-      class SymbolizerTableWidget;
+      class Symbol;
+      class SymbolPreviewWidget;
+      class SymbolTableWidget;
 
       /*!
         \class SymbolEditorWidget
@@ -76,10 +77,9 @@ namespace te
           /*!
             \brief Constructs a symbol editor, which is a child of parent, with widget flags set to f. 
 
-            \param type The symbolizer type that will be edited by this widget.
             \param parent The widget's parent.
           */
-          SymbolEditorWidget(const te::se::SymbolizerType& type, QWidget* parent = 0);
+          SymbolEditorWidget(QWidget* parent = 0);
 
           /*! \brief Destructor. */
           ~SymbolEditorWidget();
@@ -115,11 +115,10 @@ namespace te
         private:
 
           std::auto_ptr<Ui::SymbolEditorWidgetForm> m_ui;    //!< Widget form.
-          SymbolizerPreviewWidget* m_preview;                //!< Preview Widget used to visualize the symbol.
-          SymbolizerTableWidget* m_symbolTable;              //!< Table Widget used to visualize the symbol as separated visual layers.
+          SymbolPreviewWidget* m_preview;                    //!< Preview Widget used to visualize the symbol.
+          SymbolTableWidget* m_symbolTable;                  //!< Table Widget used to visualize the symbol as separated visual layers.
           QStackedWidget* m_symbolizersStackedWidget;        //!< Set of symbolizers widgets.
-          std::vector<te::se::Symbolizer*> m_symbs;          //!< Set of symbolizers.
-          te::se::SymbolizerType m_type;                     //!< The symbolizer type.
+          Symbol* m_symbol;                                  //!< Symbol handled by this widget.
       };
 
     } // end namespace widgets

@@ -141,6 +141,14 @@ void te::se::Rule::push_back(Symbolizer* s)
   m_symbolizers.push_back(s);
 }
 
+void te::se::Rule::setSymbolizer(size_t i, te::se::Symbolizer* s)
+{
+  assert(s);
+  assert(i < m_symbolizers.size());
+  delete m_symbolizers[i];
+  m_symbolizers[i] = s;
+}
+
 const std::vector<te::se::Symbolizer*>& te::se::Rule::getSymbolizers() const
 {
   return m_symbolizers;

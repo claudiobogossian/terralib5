@@ -27,6 +27,7 @@
 #include "../../common/Logger.h"
 #include "../../common/TerraLib.h"
 #include "../../common/Translator.h"
+#include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
 #include "layer/explorer/AbstractLayerTreeItemFactory.h"
 #include "property/DateTimePropertyWidgetFactory.h"
@@ -34,6 +35,7 @@
 #include "property/NumericPropertyWidgetFactory.h"
 #include "property/StringPropertyWidgetFactory.h"
 #include "se/BasicFillWidgetFactory.h"
+#include "se/ExternalGraphicRenderer.h"
 #include "se/GlyphGraphicWidgetFactory.h"
 #include "se/GlyphMarkRenderer.h"
 #include "se/GraphicFillWidgetFactory.h"
@@ -77,6 +79,9 @@ void te::qt::widgets::Module::initialize()
 // Mark renderers
   te::map::MarkRendererManager::getInstance().add("", new WellKnownMarkRenderer);
   te::map::MarkRendererManager::getInstance().add("ttf", new GlyphMarkRenderer);
+
+// ExternalGraphic renderer
+  te::map::ExternalGraphicRendererManager::getInstance().add(new ExternalGraphicRenderer);
 
 // It initializes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::initialize();
