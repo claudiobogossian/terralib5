@@ -68,5 +68,17 @@
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
+  
+  <xsd:element name="FolderLayer" type="te_map:FolderLayerType" substitutionGroup="te_map:AbstractLayer" />
+
+  <xsd:complexType name="FolderLayerType">
+    <xsd:complexContent>
+      <xsd:extension base="te_map:AbstractLayerType">
+        <xsd:sequence>
+          <xsd:element ref="te_map:LayerList" minOccurs="0" maxOccurs="1" />
+        </xsd:sequence>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
 </xsd:schema>
