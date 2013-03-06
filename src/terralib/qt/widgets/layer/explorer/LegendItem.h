@@ -64,6 +64,8 @@ namespace te
 
           bool setData(const QVariant& value, int role = Qt::EditRole);
 
+          AbstractLayerTreeItem* clone(QObject* parent = 0);
+
         private:
 
           const te::se::Rule* m_rule;

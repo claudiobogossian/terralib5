@@ -81,7 +81,7 @@ bool te::qt::widgets::LegendItem::canFetchMore() const
 
 Qt::ItemFlags te::qt::widgets::LegendItem::flags() const
 {
-  return Qt::ItemIsUserCheckable;
+  return Qt::ItemIsEnabled;
 }
 
 void te::qt::widgets::LegendItem::fetchMore()
@@ -104,5 +104,10 @@ bool te::qt::widgets::LegendItem::setData(const QVariant& value, int role)
   //}
 
   return false;
+}
+
+te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
+{
+  return new LegendItem(m_rule, parent);
 }
 

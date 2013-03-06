@@ -60,6 +60,9 @@ namespace te
 
           QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
+          bool dropMimeData(const QMimeData* data, Qt::DropAction action,
+                            int row, int column, const QModelIndex& parent);
+
           void fetchMore(const QModelIndex& parent);
 
           Qt::ItemFlags flags(const QModelIndex& index) const;
@@ -70,11 +73,17 @@ namespace te
 
           //bool insertRows(int row, int count, const QModelIndex & parent = QModelIndex());
 
+          QMimeData* mimeData(const QModelIndexList& indexes) const;
+
+          QStringList mimeTypes() const;
+
           QModelIndex parent(const QModelIndex & index) const;
 
           int rowCount(const QModelIndex & parent = QModelIndex()) const;
 
           bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+
+          Qt::DropActions supportedDropActions() const;
 
           void setCheckable(const bool checkable);
 

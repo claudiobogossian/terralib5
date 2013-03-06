@@ -72,6 +72,8 @@ namespace te
           virtual bool hasChildren() const = 0;
 
           virtual bool setData(const QVariant& value, int role = Qt::EditRole) = 0;
+
+          virtual AbstractLayerTreeItem* clone(QObject* parent = 0) = 0;
       };
 
     } // end namespace widgets

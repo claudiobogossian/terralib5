@@ -41,6 +41,8 @@ te::qt::widgets::LayerTreeView::LayerTreeView(QWidget* parent)
   : QTreeView(parent)
 {
   setAcceptDrops(true);
+  setDragEnabled(true);
+  setRootIsDecorated(true);
 
   viewport()->setAutoFillBackground(true);
 
@@ -120,38 +122,46 @@ void te::qt::widgets::LayerTreeView::itemPressed(const QModelIndex & index)
 void te::qt::widgets::LayerTreeView::dragEnterEvent(QDragEnterEvent* e)
 {
   //viewport()->setStyleSheet("background-color: lightblue");
-  viewport()->setBackgroundRole(QPalette::Highlight);
-  e->acceptProposedAction();
+  //viewport()->setBackgroundRole(QPalette::Highlight);
+  //e->acceptProposedAction();
+
+  QTreeView::dragEnterEvent(e);
 }
 
 void te::qt::widgets::LayerTreeView::dragMoveEvent(QDragMoveEvent* e)
 {
   e->acceptProposedAction();
+
+  QTreeView::dragMoveEvent(e);
 }
 
 void te::qt::widgets::LayerTreeView::dragLeaveEvent(QDragLeaveEvent* e)
 {
   //viewport()->setStyleSheet("background-color: white");
-  viewport()->setBackgroundRole(QPalette::Base);
-  e->accept();
+  //viewport()->setBackgroundRole(QPalette::Base);
+  //e->accept();
+
+  QTreeView::dragLeaveEvent(e);
 }
 
 void te::qt::widgets::LayerTreeView::dropEvent(QDropEvent* e)
 {
-  viewport()->setBackgroundRole(QPalette::Base);
-  //viewport()->setStyleSheet("background-color: white");
+  //viewport()->setBackgroundRole(QPalette::Base);
+  ////viewport()->setStyleSheet("background-color: white");
 
-  const QMimeData* mimeData = e->mimeData();
+  //const QMimeData* mimeData = e->mimeData();
 
-  if(mimeData->hasUrls())
-  {
-    QList<QUrl> urlList = mimeData->urls();
+  //if(mimeData->hasUrls())
+  //{
+  //  QList<QUrl> urlList = mimeData->urls();
 
-    QString text;
+  //  QString text;
 
-    for(QList<QUrl>::Iterator it = urlList.begin(); it != urlList.end(); ++it)
-    {
-      QString url = it->path();
-    }
-  }
+  //  for(QList<QUrl>::Iterator it = urlList.begin(); it != urlList.end(); ++it)
+  //  {
+  //    QString url = it->path();
+  //  }
+  //}
+
+  QTreeView::dropEvent(e);
 }

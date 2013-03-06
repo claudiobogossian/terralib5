@@ -81,7 +81,7 @@ bool te::qt::widgets::DataSetLayerItem::canFetchMore() const
 
 Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
 {
-  return Qt::ItemIsUserCheckable;
+  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled;
 }
 
 void te::qt::widgets::DataSetLayerItem::fetchMore()
@@ -104,6 +104,11 @@ bool te::qt::widgets::DataSetLayerItem::setData(const QVariant& value, int role)
   }
 
   return false;
+}
+
+te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::DataSetLayerItem::clone(QObject* parent)
+{
+  return new DataSetLayerItem(m_layer, parent);
 }
 
 const te::map::DataSetLayerPtr& te::qt::widgets::DataSetLayerItem::getLayer() const

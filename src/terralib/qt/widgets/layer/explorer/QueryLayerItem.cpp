@@ -84,7 +84,7 @@ bool te::qt::widgets::QueryLayerItem::canFetchMore() const
 
 Qt::ItemFlags te::qt::widgets::QueryLayerItem::flags() const
 {
-  return Qt::ItemIsUserCheckable;
+  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled;
 }
 
 void te::qt::widgets::QueryLayerItem::fetchMore()
@@ -107,6 +107,11 @@ bool te::qt::widgets::QueryLayerItem::setData(const QVariant& value, int role)
   }
 
   return false;
+}
+
+te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::QueryLayerItem::clone(QObject* parent)
+{
+  return new QueryLayerItem(m_layer, parent);
 }
 
 const te::map::QueryLayerPtr& te::qt::widgets::QueryLayerItem::getLayer() const

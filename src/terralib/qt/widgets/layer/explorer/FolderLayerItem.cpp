@@ -27,6 +27,7 @@
 #include "../../../../maptools/FolderLayer.h"
 #include "../../../../common/Translator.h"
 #include "../../Exception.h"
+#include "AbstractLayerTreeItemFactory.h"
 #include "FolderLayerItem.h"
 
 // Qt
@@ -37,6 +38,11 @@ te::qt::widgets::FolderLayerItem::FolderLayerItem(const te::map::AbstractLayerPt
   : AbstractLayerTreeItem(parent)
 {
   m_layer = boost::dynamic_pointer_cast<te::map::FolderLayer>(l);
+
+  for(te::map::AbstractLayer::const_iterator it = l->begin(); it != l->end(); ++it)
+  {
+    /*AbstractLayerTreeItem* litem = */AbstractLayerTreeItemFactory::make(boost::dynamic_pointer_cast<te::map::AbstractLayer>(*it), this);
+  }
 }
 
 te::qt::widgets::FolderLayerItem::~FolderLayerItem()
@@ -76,12 +82,12 @@ QMenu* te::qt::widgets::FolderLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::FolderLayerItem::canFetchMore() const
 {
-  return false;
+  return !children().empty();
 }
 
 Qt::ItemFlags te::qt::widgets::FolderLayerItem::flags() const
 {
-  return Qt::ItemIsUserCheckable;
+  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 }
 
 void te::qt::widgets::FolderLayerItem::fetchMore()
@@ -90,7 +96,7 @@ void te::qt::widgets::FolderLayerItem::fetchMore()
 
 bool te::qt::widgets::FolderLayerItem::hasChildren() const
 {
-  return false;
+  return !children().empty();
 }
 
 bool te::qt::widgets::FolderLayerItem::setData(const QVariant& value, int role)
@@ -104,6 +110,11 @@ bool te::qt::widgets::FolderLayerItem::setData(const QVariant& value, int role)
   }
 
   return false;
+}
+
+te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::FolderLayerItem::clone(QObject* parent)
+{
+  return new FolderLayerItem(m_layer, parent);
 }
 
 const te::map::FolderLayerPtr& te::qt::widgets::FolderLayerItem::getLayer() const
