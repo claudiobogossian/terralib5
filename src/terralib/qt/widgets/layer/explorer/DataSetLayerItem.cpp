@@ -81,7 +81,7 @@ bool te::qt::widgets::DataSetLayerItem::canFetchMore() const
 
 Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
 {
-  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled;
+  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;;
 }
 
 void te::qt::widgets::DataSetLayerItem::fetchMore()

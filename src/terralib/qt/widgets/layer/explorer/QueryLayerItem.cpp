@@ -84,7 +84,7 @@ bool te::qt::widgets::QueryLayerItem::canFetchMore() const
 
 Qt::ItemFlags te::qt::widgets::QueryLayerItem::flags() const
 {
-  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled;
+  return Qt::ItemIsUserCheckable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;;
 }
 
 void te::qt::widgets::QueryLayerItem::fetchMore()
