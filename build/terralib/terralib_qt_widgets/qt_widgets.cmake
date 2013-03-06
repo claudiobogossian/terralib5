@@ -76,7 +76,7 @@ set (
   widgets/datasource/selector
   widgets/datasource/connector
   widgets/exchanger
-  widgets/layer
+  widgets/layer/explorer
   widgets/progress
   widgets/property
   widgets/propertybrowser
@@ -166,14 +166,16 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/layer/AbstractTreeItem.h
-  ${SRCDIR}/widgets/layer/LayerExplorer.h
-  ${SRCDIR}/widgets/layer/LayerExplorerModel.h
-  ${SRCDIR}/widgets/layer/LayerItem.h
-  ${SRCDIR}/widgets/layer/LegendItem.h
-  ${SRCDIR}/widgets/layer/Legend.h
+  ${SRCDIR}/widgets/layer/explorer/AbstractLayerTreeItem.h
+  ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
+  ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
+  ${SRCDIR}/widgets/layer/explorer/LayerExplorer.h
+  ${SRCDIR}/widgets/layer/explorer/LayerTreeModel.h
+  ${SRCDIR}/widgets/layer/explorer/LayerTreeView.h
+  ${SRCDIR}/widgets/layer/explorer/LegendItem.h
+  ${SRCDIR}/widgets/layer/explorer/QueryLayerItem.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
 
 set (
   HDRS_TO_MOC
@@ -380,7 +382,6 @@ file(
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
   ${SRCDIR}/widgets/exchanger/ui/*.ui
-  ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/property/ui/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui

@@ -45,8 +45,8 @@ te::map::QueryLayer::QueryLayer(const std::string& id, AbstractLayer* parent)
 }
 
 te::map::QueryLayer::QueryLayer(const std::string& id,
-                                    const std::string& title,
-                                    AbstractLayer* parent)
+                                const std::string& title,
+                                AbstractLayer* parent)
   : AbstractLayer(id, title, parent),
     m_query(0),
     m_style(0)

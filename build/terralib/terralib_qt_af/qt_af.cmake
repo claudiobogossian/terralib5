@@ -53,9 +53,10 @@ set (
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/ApplicationController.h
   ${SRCDIR}/ApplicationPlugins.h
   ${SRCDIR}/BaseApplication.h
-  ${SRCDIR}/BaseApplicationController.h
+  
   
 )
 
@@ -96,7 +97,7 @@ install (
 )
 
 source_group("Form Files" FILES ${FORMS})
-source_group("Generated Files" FILES ${MOC})
+source_group("Generated Files" FILES ${MOC} ${UI})
 
 # Files in build tree
 appPrefix ("${SRCDIR}" "${_DIRS}" QT_AF_INC_DIRS)
