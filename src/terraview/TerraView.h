@@ -35,6 +35,17 @@
 // Forward declarations
 class QWidget;
 
+namespace te
+{
+  namespace qt
+  {
+    namespace widgets
+    {
+      class HelpManagerImpl;
+    }
+  }
+}
+
 /*!
   \brief The main class of TerraView.
 
@@ -61,6 +72,10 @@ class TerraView : public te::qt::af::BaseApplication
   protected slots:
 
     void showAboutDialog();
+
+  protected:
+
+    te::qt::widgets::HelpManagerImpl* m_helpManager;
 };
 
 #endif  // __TERRAVIEW_INTERNAL_TERRAVIEW_H

@@ -98,6 +98,14 @@ install(
   ARCHIVE DESTINATION "bin" COMPONENT BINARIES
 )
 
+removeFileIfExists(${CMAKE_BINARY_DIR}/help/help.qhc)
+removeFileIfExists(${CMAKE_BINARY_DIR}/help/doc_widgets.qch)
+
+configure_file (${ROOT}/resources/help/help.qhcp.in ${ROOT}/resources/help/help.qhcp)
+
+makeQHelp(${ROOT}/resources/help/help.qhcp ${CMAKE_BINARY_DIR}/help/help.qhc)
+makeQHelpProject(${ROOT}/resources/help/widgets/doc_widgets.qhp ${CMAKE_BINARY_DIR}/help/doc_widgets.qch)
+
 # install tree for config files
 include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
 set (TE_DEFAULT_PROJECT "./default_project.xml")  

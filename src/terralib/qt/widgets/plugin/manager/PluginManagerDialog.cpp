@@ -260,7 +260,6 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   filliPlugins();
 
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
 
   m_ui->m_addButton->setIcon(QIcon::fromTheme("list-add"));
@@ -269,6 +268,8 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   m_ui->m_installedPluginsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
   m_ui->m_pluginsTabWidget->setTabEnabled(1, false);
+
+  m_ui->m_helpPushButton->setPageReference("pluginmanager/PluginManager.html");
 }
 
 te::qt::widgets::PluginManagerDialog::~PluginManagerDialog()
@@ -292,13 +293,6 @@ void te::qt::widgets::PluginManagerDialog::applyPushButtonPressed()
   fillInstalledPlugins();
 
   m_ui->m_applyPushButton->setEnabled(false);
-}
-
-void te::qt::widgets::PluginManagerDialog::helpPushButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("We will provide this functionality soon!"));
 }
 
 void te::qt::widgets::PluginManagerDialog::tableWidgetClicked(QTableWidgetItem* item)

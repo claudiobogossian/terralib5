@@ -58,6 +58,8 @@ namespace te
           */
           virtual void showHelp (const QString& htmRef ) = 0;
 
+          virtual void showDocumentation (const QString& page ) = 0;
+
           /*!
             \brief Appends a collection of help documentation to the existing collection.
 

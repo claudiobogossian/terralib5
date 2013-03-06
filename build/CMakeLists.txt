@@ -32,7 +32,7 @@ if(BUILD_TERRAVIEW)
     set(TVIEW_CONFIG_FILE "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}/config.xml" CACHE STRING "File containing main configurations of the TerraView application")
   endif()
 
-  set(TVIEW_RESOURCE_FILE "terraview.rcc" CACHE STRING "File containing resources description of the TerraView application")
+  set(TVIEW_RESOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/help/help.qhc" CACHE STRING "File containing resources description of the TerraView application")
   
   add_subdirectory (./terraview)
 endif()

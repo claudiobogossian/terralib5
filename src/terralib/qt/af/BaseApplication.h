@@ -73,6 +73,8 @@ namespace te
 
           void onPluginsBuilderTriggered();
 
+          void onHelpTriggered();
+
           /*!
             \brief
 

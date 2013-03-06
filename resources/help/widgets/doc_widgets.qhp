@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+  <namespace>dpi.inpe.br.terraview</namespace>
+  <virtualFolder>doc</virtualFolder>
+  <filterSection>
+    <filterAttribute>plugin</filterAttribute>
+    <toc>
+      <section title="Qt components" ref="./index.html">
+        <section title="Plugins Manager" ref="./pluginmanager/PluginManager.html"/>
+      </section>
+    </toc>
+    <keywords>
+      <keyword name="Components" ref="./index.html"/>
+      <keyword name="Plugin manager" ref="./pluginmanager/PluginManager.html"/>
+    </keywords>
+     <files>
+      <file>index.html</file>
+      <file>pluginmanager/PluginManager.html</file>
+      <file>pluginmanager/*.png</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

@@ -40,7 +40,7 @@ te::qt::widgets::HelpManagerImpl* te::qt::widgets::HelpManager::getImpl() const
 void te::qt::widgets::HelpManager::showHelp(const QString& htmRef)
 {
   if(m_impl != 0)
-    m_impl->showHelp(htmRef);
+    m_impl->showDocumentation(htmRef);
 }
 
 void te::qt::widgets::HelpManager::appendDoc(const QString& docRef)

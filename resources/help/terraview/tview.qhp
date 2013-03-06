@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+   <namespace>dpi.inpe.br.terraview</namespace>
+   <virtualFolder>doc</virtualFolder>
+   <filterSection>
+       <filterAttribute>help</filterAttribute>
+       <toc>
+           <section title="TerraView User Manual" ref="./index.html">
+           </section>
+       </toc>
+       <files>
+           <file>*.html</file>
+       </files>
+   </filterSection>
+</QtHelpProject>
