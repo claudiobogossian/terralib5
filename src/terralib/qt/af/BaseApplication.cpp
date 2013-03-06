@@ -246,17 +246,29 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
 
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
-  if(m_project != 0)
-  {
-    delete m_project;
-    m_project = 0;
-  }
+  delete m_project;
+  m_project = 0;
 
   QString projFile = proj->data().toString();
 
-  m_project = te::qt::af::ReadProject(projFile.toStdString());
+  try
+  {
+    m_project = te::qt::af::ReadProject(projFile.toStdString());
 
-  ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
+    ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
+
+    NewProject evt(m_project);
+
+    ApplicationController::getInstance().broadcast(&evt);
+  }
+  catch(const std::exception& e)
+  {
+    QString msg(tr("Fail to open project: %1"));
+
+    msg = msg.arg(e.what());
+
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
@@ -274,6 +286,10 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
     m_project = te::qt::af::ReadProject(file.toStdString());
 
     ApplicationController::getInstance().updateRecentProjects(file, m_project->getTitle().c_str());
+
+    NewProject evt(m_project);
+
+    ApplicationController::getInstance().broadcast(&evt);
   }
   catch(const std::exception& e)
   {
@@ -283,10 +299,6 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
 
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
   }
-
-  NewProject evt(m_project);
-
-  ApplicationController::getInstance().broadcast(&evt);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
