@@ -57,6 +57,11 @@ te::common::TreeItem::~TreeItem()
   }
 }
 
+bool te::common::TreeItem::hasChildren() const
+{
+  return !m_children.empty();
+}
+
 te::common::TreeItem* te::common::TreeItem::getParent() const
 {
   return m_parent;
@@ -80,9 +85,11 @@ const te::common::TreeItemPtr& te::common::TreeItem::operator[](std::size_t i) c
 
 void te::common::TreeItem::add(const TreeItemPtr& childItem)
 {
-  assert(childItem);
+  assert(childItem.get());
 
-  childItem->setParent(this);
+  m_children.push_back(childItem);
+
+  childItem->m_parent = this;
 }
 
 void te::common::TreeItem::insert(std::size_t i, const TreeItemPtr& childItem)
