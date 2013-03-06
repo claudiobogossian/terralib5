@@ -8,7 +8,6 @@
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
 #include <terralib/qt/af/ApplicationController.h>
-#include <terralib/qt/af/BaseApplicationController.h>
 #include <terralib/qt/af/events/PointGeometries.h>
 #include <terralib/qt/af/events/StyleChanged.h>
 

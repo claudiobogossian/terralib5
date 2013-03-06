@@ -31,6 +31,7 @@
 #include "../../datatype/Property.h"
 #include "../../datatype/SimpleData.h"
 #include "../../geometry/Geometry.h"
+#include "../../geometry/GeometryProperty.h"
 #include "../../raster/Raster.h"
 #include "../datasource/DataSourceCapabilities.h"
 #include "../Exception.h"
@@ -79,22 +80,33 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, const DataSourceCapabil
   // Gets the DataTypeCapabilities
   const DataTypeCapabilities& dtCapabilities = capabilities.getDataTypeCapabilities();
 
-  // Try automatic build the adapter
+   // Try automatic build the adapter
   const std::vector<te::dt::Property*> properties = m_inDataSetType->getProperties();
   for(std::size_t i = 0; i < properties.size(); ++i)
   {
     te::dt::Property* p = properties[i];
     assert(p);
 
+    te::dt::Property* propertyClone = 0;
+
     if(dtCapabilities.supports(p->getType()))
-      adapt(i, p->clone());
+      propertyClone = p->clone();
     else
     {
       // Try create the property from data source capabilities hint
       const te::dt::Property* hintProperty = dtCapabilities.getHint(p->getType());
       if(hintProperty)
-        adapt(i, hintProperty->clone());
+      propertyClone = hintProperty->clone();
     }
+
+    if(!propertyClone)
+      continue;
+
+    adapt(i, propertyClone);
+
+    if(m_inDataSetType->hasDefaultGeom())
+      if(i == m_inDataSetType->getDefaultGeomPropertyPos())
+        m_outDataSetType->setDefaultGeomProperty(dynamic_cast<te::gm::GeometryProperty*>(propertyClone));
   }
 }
 

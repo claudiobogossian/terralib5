@@ -213,7 +213,7 @@ void te::qt::widgets::DataExchangerWizard::commit()
   while(it != odatasets.end())
   {
     te::da::DataSetTypePtr idset = it->first;
-    te::da::DataSetTypePtr odset(it->second->getType());
+    te::da::DataSetType* odset = it->second->getType();
 
     try
     {
@@ -222,10 +222,10 @@ void te::qt::widgets::DataExchangerWizard::commit()
       std::auto_ptr<te::da::DataSet> dataset(itransactor->getDataSet(idset->getName()));
 
 // stay tunned: create can change idset!
-      dtp->create(odset.get());
+      dtp->create(odset);
 
       if(dataset->moveNext())
-        dp->add(odset.get(), dataset.get());
+        dp->add(odset, dataset.get());
 
       // boost::chrono::duration<double> sec = boost::chrono::system_clock::now() - start;
 
@@ -257,6 +257,8 @@ void te::qt::widgets::DataExchangerWizard::commit()
 
     ++it;
   }
+
+  m_summaryPage->set(result);
 
   next();
 }

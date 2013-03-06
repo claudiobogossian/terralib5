@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,29 +18,21 @@
  */
 
 /*!
-  \file Project.h
-   
-  \brief Auxiliary classes and functions to read project information from a XML document.
+  \file terralib/qt/widgets/layer/explorer/AbstractLayerTreeItem.cpp
+
+  \brief The class that represents an item in a LayerTreeModel.
 */
 
-#ifndef __TERRALIB_SERIALIZATION_MAPTOOLS_INTERNAL_PROJECT_H
-#define __TERRALIB_SERIALIZATION_MAPTOOLS_INTERNAL_PROJECT_H
-
 // TerraLib
-#include "../../Config.h"
+#include "AbstractLayerTreeItem.h"
 
-namespace te
+te::qt::widgets::AbstractLayerTreeItem::AbstractLayerTreeItem(QObject* parent)
+  : QObject(parent)
 {
-  //namespace map { class Project; }
+}
 
-  namespace xml { class Reader; }
+te::qt::widgets::AbstractLayerTreeItem::~AbstractLayerTreeItem()
+{
+}
 
-  namespace serialize
-  {
-    TESERIALIZATIONEXPORT void ReadProject(const std::string& projectFileName);
-
-  } // end namespace serialize
-}   // end namespace te
-
-#endif  // __TERRALIB_SERIALIZATION_MAPTOOLS_INTERNAL_PROJECT_H
 

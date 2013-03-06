@@ -29,6 +29,7 @@
 #include "../../common/Translator.h"
 #include "../../maptools/ExternalGraphicRendererManager.h"
 #include "../../maptools/MarkRendererManager.h"
+#include "layer/explorer/AbstractLayerTreeItemFactory.h"
 #include "property/DateTimePropertyWidgetFactory.h"
 #include "property/GeometryPropertyWidgetFactory.h"
 #include "property/NumericPropertyWidgetFactory.h"
@@ -41,45 +42,8 @@
 #include "se/LocalGraphicWidgetFactory.h"
 #include "se/WellKnownGraphicWidgetFactory.h"
 #include "se/WellKnownMarkRenderer.h"
-//#include "datasource/core/DataSourceTypeManager.h"
-//#include "datasource/connector/gdal/GDALType.h"
-//#include "datasource/connector/geofile/GeoFileType.h"
-//#include "datasource/connector/ogr/OGRType.h"
-//#include "datasource/connector/postgis/PostGISType.h"
-//#include "datasource/connector/shp/ShapeFileType.h"
-//#include "datasource/connector/wcs/WCSType.h"
-//#include "datasource/connector/wfs/WFSType.h"
-//#include "datasource/connector/wms/WMSType.h"
 #include "Config.h"
 #include "Module.h"
-
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib Qt Widgets module is loaded.
-//
-//  \note This function doesn't perform operations for this module.
-//*/
-//static void TeQtWidgetsInitialize()
-//{
-//// It initializes the widgets factories
-//  te::qt::widgets::FolderLayerItemFactory::initialize();
-//  te::qt::widgets::LayerItemFactory::initialize();
-//
-//  TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
-//}
-//
-///*!
-//  \brief This is a helper function that will be automatically called when the TerraLib Qt Widgets module is unloaded.
-//
-//  \note This function doesn't perform operations for this module.
-//*/
-//static void TeQtWidgetsFinalize()
-//{
-//// It finalizes the widgets factories
-//  te::qt::widgets::FolderLayerItemFactory::finalize();
-//  te::qt::widgets::LayerItemFactory::finalize();
-//
-//  TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
-//}
 
 const te::qt::widgets::Module& sm_module = te::qt::widgets::Module::getInstance();
 
@@ -112,16 +76,6 @@ te::qt::widgets::Module::~Module()
 
 void te::qt::widgets::Module::initialize()
 {
-// Initializes the data source types
-  //DataSourceTypeManager::getInstance().add(new GDALType);
-  //DataSourceTypeManager::getInstance().add(new GeoFileType);
-  //DataSourceTypeManager::getInstance().add(new OGRType);
-  //DataSourceTypeManager::getInstance().add(new PostGISType);
-  //DataSourceTypeManager::getInstance().add(new ShapeFileType);
-  //DataSourceTypeManager::getInstance().add(new WCSType);
-  //DataSourceTypeManager::getInstance().add(new WFSType);
-  //DataSourceTypeManager::getInstance().add(new WMSType);
-
 // Mark renderers
   te::map::MarkRendererManager::getInstance().add("", new WellKnownMarkRenderer);
   te::map::MarkRendererManager::getInstance().add("ttf", new GlyphMarkRenderer);
@@ -144,20 +98,16 @@ void te::qt::widgets::Module::initialize()
   te::qt::widgets::NumericPropertyWidgetFactory::initialize();
   te::qt::widgets::StringPropertyWidgetFactory::initialize();
 
+// It initializes the layer item factory
+  AbstractLayerTreeItemFactory::initialize();
+
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets initialized!"));
 }
 
 void te::qt::widgets::Module::finalize()
 {
-// Removes the data source types
-  //DataSourceTypeManager::getInstance().remove("GDAL");
-  //DataSourceTypeManager::getInstance().remove("GEOFILE");
-  //DataSourceTypeManager::getInstance().remove("OGR");
-  //DataSourceTypeManager::getInstance().remove("POSTGIS");
-  //DataSourceTypeManager::getInstance().remove("SHAPEFILE");
-  //DataSourceTypeManager::getInstance().remove("WCS");
-  //DataSourceTypeManager::getInstance().remove("WFS");
-  //DataSourceTypeManager::getInstance().remove("WMS");
+// It finalizes the layer item factory
+  AbstractLayerTreeItemFactory::initialize();
 
 // It finalizes the graphic widgets factories
   te::qt::widgets::WellKnownGraphicWidgetFactory::finalize();
@@ -171,7 +121,3 @@ void te::qt::widgets::Module::finalize()
   TE_LOG_TRACE(TR_QT_WIDGETS("TerraLib Qt Widgets finalized!"));
 }
 
-//// TerraLib
-//#include "../../common/ModuleUtils.h"
-//
-//TE_REGISTER_MODULE(TE_QTWIDGETS_MODULE_NAME, TeQtWidgetsInitialize, TeQtWidgetsFinalize)

@@ -30,6 +30,7 @@
 #include "../../xml/Writer.h"
 #include "../../maptools/AbstractLayer.h"
 #include "../../maptools/DataSetLayer.h"
+#include "../../maptools/FolderLayer.h"
 #include "../../maptools/QueryLayer.h"
 #include "../geometry/Envelope.h"
 #include "../Exception.h"
@@ -44,8 +45,10 @@
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader);
 te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader);
+te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader);
 void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
+void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 
 void te::serialize::Layer::reg(const std::string& layerType, const LayerFnctSerializeType& fncts)
 {
@@ -88,6 +91,7 @@ te::serialize::Layer::Layer()
 {
   m_fncts["DATASETLAYER"] = std::make_pair(LayerReadFnctType(&DataSetLayerReader), LayerWriteFnctType(&DataSetLayerWriter));
   m_fncts["QUERYLAYER"] = std::make_pair(LayerReadFnctType(&QueryLayerReader), LayerWriteFnctType(&QueryLayerWriter));
+  m_fncts["FOLDERLAYER"] = std::make_pair(LayerReadFnctType(&FolderLayerReader), LayerWriteFnctType(&FolderLayerWriter));
 }
 
 te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
@@ -280,6 +284,60 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   return layer.release();
 }
 
+te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
+{
+  std::string id = reader.getAttr(0);
+
+  /* Title Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Title");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  std::string title = reader.getElementValue();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  /* Visible Element */
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "Visible");
+  reader.next();
+  assert(reader.getNodeType() == te::xml::VALUE);
+  bool visible = reader.getElementValueAsBoolean();
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+
+  reader.next();
+  assert(reader.getNodeType() == te::xml::START_ELEMENT);
+  assert(reader.getElementLocalName() == "LayerList");
+
+  reader.next();
+
+  std::auto_ptr<te::map::FolderLayer> flayer(new te::map::FolderLayer(id, title, 0));
+
+  flayer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
+
+  const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
+
+  while((reader.getNodeType() != te::xml::END_ELEMENT) &&
+        (reader.getElementLocalName() != "LayerList"))
+  {
+    te::map::AbstractLayerPtr layer(lserial.read(reader));
+
+    if(layer.get() == 0)
+      break;
+
+    flayer->add(layer);
+  }
+
+  reader.next();
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "FolderLayer");
+
+  return flayer.release();
+}
+
 void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
 {
   const te::map::DataSetLayer* layer = dynamic_cast<const te::map::DataSetLayer*>(alayer);
@@ -323,3 +381,27 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
 
   writer.writeEndElement("QueryLayer");
 }
+
+void FolderLayerWriter(const te::map::AbstractLayer* /*alayer*/, te::xml::Writer& /*writer*/)
+{
+  throw te::serialize::Exception("Not implemented yet!");
+  //const te::map::DataSetLayer* layer = dynamic_cast<const te::map::DataSetLayer*>(alayer);
+
+  //if(layer == 0)
+  //  return;
+
+  //writer.writeStartElement("DataSetLayer");
+
+  //writer.writeAttribute("id", layer->getId());
+  //writer.writeElement("Title", layer->getTitle());
+  //writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
+  //writer.writeElement("DataSetName", layer->getDataSetName());
+  //writer.writeElement("DataSourceId", layer->getDataSourceId());
+  //writer.writeElement("SRID", layer->getSRID());
+  //te::serialize::SaveExtent(&layer->getExtent(), writer);
+  //writer.writeElement("RendererId", layer->getRendererType());
+  //writer.writeElement("StyleId", "x");
+
+  //writer.writeEndElement("DataSetLayer");
+}
+
