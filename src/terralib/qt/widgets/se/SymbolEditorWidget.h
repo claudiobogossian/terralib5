@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../se/Enums.h"
 #include "../Config.h"
+#include "Symbol.h"
 
 // Qt
 #include <QtGui/QWidget>
@@ -54,7 +55,6 @@ namespace te
     namespace widgets
     {
 // Forward declarations
-      class Symbol;
       class SymbolPreviewWidget;
       class SymbolTableWidget;
 
@@ -77,9 +77,10 @@ namespace te
           /*!
             \brief Constructs a symbol editor, which is a child of parent, with widget flags set to f. 
 
+            \type The Symbol type that will be handled by the widget.
             \param parent The widget's parent.
           */
-          SymbolEditorWidget(QWidget* parent = 0);
+          SymbolEditorWidget(const SymbolType& type, QWidget* parent = 0);
 
           /*! \brief Destructor. */
           ~SymbolEditorWidget();
@@ -119,6 +120,7 @@ namespace te
           SymbolTableWidget* m_symbolTable;                  //!< Table Widget used to visualize the symbol as separated visual layers.
           QStackedWidget* m_symbolizersStackedWidget;        //!< Set of symbolizers widgets.
           Symbol* m_symbol;                                  //!< Symbol handled by this widget.
+          SymbolType m_type;                                 //!< The Symbol type handled by this widget.
       };
 
     } // end namespace widgets
