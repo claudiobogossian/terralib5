@@ -42,14 +42,18 @@
 class TsClassifier : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsClassifier );
+  
+  CPPUNIT_TEST( MAP );
 
   CPPUNIT_TEST( ISOSeg );
-
+  
   CPPUNIT_TEST_SUITE_END();
 
   protected :
 
     void ISOSeg();
+    
+    void MAP();
 };
 
 #endif  // __TERRALIB_UNITTEST_RP_CLASSIFIER_INTERNAL_H
