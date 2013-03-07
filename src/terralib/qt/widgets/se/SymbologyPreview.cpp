@@ -39,7 +39,7 @@
 
 QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, const QSize& size)
 {
-  double offset = 2.0;
+  double offset = 10.0;
 
   te::gm::Geometry* geom = 0;
   if(symb->getType() == "PolygonSymbolizer")
