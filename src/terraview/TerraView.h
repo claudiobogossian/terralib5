@@ -73,6 +73,8 @@ class TerraView : public te::qt::af::BaseApplication
 
     void showAboutDialog();
 
+    void onHelpTriggered();
+
   protected:
 
     te::qt::widgets::HelpManagerImpl* m_helpManager;

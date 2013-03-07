@@ -242,10 +242,10 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onHelpTriggered()
-{
-  te::qt::widgets::HelpManager::getInstance().showHelp("index.html", "dpi.inpe.br.terraview");
-}
+//void te::qt::af::BaseApplication::onHelpTriggered()
+//{
+//  te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
+//}
 
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {

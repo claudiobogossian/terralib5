@@ -269,7 +269,7 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
 
   m_ui->m_pluginsTabWidget->setTabEnabled(1, false);
 
-  m_ui->m_helpPushButton->setPageReference("pluginmanager/PluginManager.html");
+  m_ui->m_helpPushButton->setPageReference("widgets/pluginmanager/PluginManager.html");
 }
 
 te::qt::widgets::PluginManagerDialog::~PluginManagerDialog()
