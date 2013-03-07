@@ -24,8 +24,6 @@
 */
 
 // TerraLib
-#include "../../../common/UnitOfMeasure.h"
-#include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../se/LineSymbolizer.h"
 #include "BasicStrokeWidget.h"
 #include "LineSymbolizerWidget.h"
@@ -53,12 +51,6 @@ te::qt::widgets::LineSymbolizerWidget::LineSymbolizerWidget(QWidget* parent, Qt:
   QGridLayout* layout = new QGridLayout(m_ui->m_strokeGroupBox);
   layout->addWidget(m_strokeWidget);
   layout->setAlignment(Qt::AlignTop);
-
-  // UOM
-  std::vector<te::common::UnitOfMeasure*>::const_iterator uomIt;
-  std::pair<std::vector<te::common::UnitOfMeasure*>::const_iterator, std::vector<te::common::UnitOfMeasure*>::const_iterator> its = te::common::UnitsOfMeasureManager::getInstance().getIterator();
-  for(uomIt = its.first; uomIt != its.second; ++uomIt)
-    m_ui->m_uomComboBox->addItem((*uomIt)->getSymbol().c_str());
 
   // Setups initial line symbolizer
   m_symb->setStroke(m_strokeWidget->getStroke());

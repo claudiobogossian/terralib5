@@ -24,8 +24,6 @@
 */
 
 // TerraLib
-#include "../../../common/UnitOfMeasure.h"
-#include "../../../common/UnitsOfMeasureManager.h"
 #include "../../../se/PolygonSymbolizer.h"
 #include "AbstractFillWidget.h"
 #include "AbstractFillWidgetFactory.h"
@@ -77,12 +75,6 @@ te::qt::widgets::PolygonSymbolizerWidget::PolygonSymbolizerWidget(QWidget* paren
   QGridLayout* strokeLayout = new QGridLayout(m_ui->m_strokeGroupBox);
   strokeLayout->addWidget(m_strokeWidget);
   strokeLayout->setAlignment(Qt::AlignTop);
-
-  // UOM
-  std::vector<te::common::UnitOfMeasure*>::const_iterator uomIt;
-  std::pair<std::vector<te::common::UnitOfMeasure*>::const_iterator, std::vector<te::common::UnitOfMeasure*>::const_iterator> its = te::common::UnitsOfMeasureManager::getInstance().getIterator();
-  for(uomIt = its.first; uomIt != its.second; ++uomIt)
-    m_ui->m_uomComboBox->addItem((*uomIt)->getSymbol().c_str());
 
   // Setups initial polygon symbolizer
   te::qt::widgets::AbstractFillWidget* w = static_cast<te::qt::widgets::AbstractFillWidget*>(m_fillWidgets->currentWidget());
