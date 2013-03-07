@@ -18,17 +18,24 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/selector/core/DataSetLayerSelector.h
+  \file terralib/qt/widgets/layer/selector/AbstractLayerSelector.h
 
-  \brief ....
+  \brief An abstract class for layer selection widgets.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_CORE_INTERNAL_DATASETLAYERSELECTOR_H
-#define __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_CORE_INTERNAL_DATASETLAYERSELECTOR_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_ABSTRACTLAYERSELECTOR_H
+#define __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_ABSTRACTLAYERSELECTOR_H
 
 // TerraLib
-#include "../../../../../dataaccess/Definitions.h"
-#include "AbstractLayerSelector.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "../../../../maptools/AbstractLayer.h"
+#include "../../Config.h"
+
+// STL
+#include <list>
+
+// Qt
+#include <QtGui/QWidget>
 
 namespace te
 {
@@ -37,32 +44,28 @@ namespace te
     namespace widgets
     {
       /*!
-        \class DataSetLayerSelector
+        \class AbstractLayerSelector
 
-        \brief ....
+        \brief An abstract class for layer selection widgets.
       */
-      class TEQTWIDGETSEXPORT DataSetLayerSelector : public AbstractLayerSelector
+      class TEQTWIDGETSEXPORT AbstractLayerSelector : public QWidget
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerSelector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          AbstractLayerSelector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~DataSetLayerSelector();
+          ~AbstractLayerSelector();
 
-          void set(const std::list<te::da::DataSourceInfoPtr>& datasources);
+          virtual void set(const std::list<te::da::DataSourceInfoPtr>& datasources) = 0;
 
-          std::list<te::map::AbstractLayerPtr> getLayers();
-
-        private:
-
-          std::list<te::da::DataSourceInfoPtr> m_datasources;
+          virtual std::list<te::map::AbstractLayerPtr> getLayers() = 0;
       }; 
 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_CORE_INTERNAL_DATASETLAYERSELECTOR_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_ABSTRACTLAYERSELECTOR_H
 

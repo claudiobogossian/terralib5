@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/selector/core/AbstractLayerSelector.cpp
+  \file terralib/qt/widgets/layer/selector/AbstractLayerSelector.cpp
 
-  \brief ....
+  \brief An abstract class for layer selection widgets.
 */
 
 // TerraLib

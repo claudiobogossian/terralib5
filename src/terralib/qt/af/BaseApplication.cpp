@@ -32,10 +32,13 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/datasource/core/DataSourceType.h"
+#include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/dataview/TabularViewer.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
+#include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
 #include "../widgets/progress/ProgressViewerBar.h"
@@ -74,6 +77,12 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
+
+// STL
+#include <memory>
+
+// Boost
+#include <boost/format.hpp>
 
 te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   : QMainWindow(parent, 0),
@@ -206,6 +215,50 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
 
     if(retval == QDialog::Rejected)
       return;
+
+    std::list<te::da::DataSourceInfoPtr> selectedDatasources = dselector->getSelecteds();
+
+    if(selectedDatasources.empty())
+      return;
+
+    dselector.reset(0);
+
+    const std::string& dsTypeId = selectedDatasources.front()->getType();
+
+    const te::qt::widgets::DataSourceType* dsType = te::qt::widgets::DataSourceTypeManager::getInstance().get(dsTypeId);
+
+    std::auto_ptr<QWidget> lselectorw(dsType->getWidget(te::qt::widgets::DataSourceType::WIDGET_LAYER_SELECTOR, this));
+
+    if(lselectorw.get() == 0)
+      throw Exception((boost::format(TR_QT_AF("No layer selector widget found for this type of data source: %1%!")) % dsTypeId).str());
+
+    te::qt::widgets::AbstractLayerSelector* lselector = dynamic_cast<te::qt::widgets::AbstractLayerSelector*>(lselectorw.get());
+
+    if(lselector == 0)
+      throw Exception(TR_QT_AF("Wrong type of object for layer selection!"));
+
+    lselector->set(selectedDatasources);
+
+    std::list<te::map::AbstractLayerPtr> layers = lselector->getLayers();
+
+    lselectorw.reset(0);
+
+    if(m_project == 0)
+      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
+// TODO: use signal/slot to avoid inserting direct in th explorer and in the project!
+    std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin();
+    std::list<te::map::AbstractLayerPtr>::const_iterator itend = layers.end();
+
+    while(it != itend)
+    {
+      m_project->add(*it);
+
+      if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
+        m_explorer->getExplorer()->add(*it);
+
+      ++it;
+    }
   }
   catch(const std::exception& e)
   {

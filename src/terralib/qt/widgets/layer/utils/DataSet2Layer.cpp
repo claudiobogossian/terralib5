@@ -29,7 +29,7 @@
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
-#include "../../../../maptools/Layer.h"
+#include "../../../../maptools/DataSetLayer.h"
 #include "../../Exception.h"
 #include "DataSet2Layer.h"
 
@@ -42,7 +42,7 @@ te::qt::widgets::DataSet2Layer::DataSet2Layer(const std::string& datasourceId)
 {
 }
 
-te::map::LayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da::DataSetTypePtr& dataset) const
+te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da::DataSetTypePtr& dataset) const
 {
   if(dataset.get() == 0)
     throw Exception(TR_QT_WIDGETS("Can not convert a NULL dataset to a layer!"));
@@ -51,21 +51,21 @@ te::map::LayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da::DataS
   boost::uuids::uuid u = gen();
   std::string id = boost::uuids::to_string(u);
 
-  te::map::LayerPtr layer(new te::map::Layer(id, dataset->getTitle().empty() ? dataset->getName() : dataset->getTitle()));
+  te::map::DataSetLayerPtr layer(new te::map::DataSetLayer(id, dataset->getTitle().empty() ? dataset->getName() : dataset->getTitle()));
   layer->setDataSetName(dataset->getName());
-  layer->setDataSource(m_datasourceId);
+  layer->setDataSourceId(m_datasourceId);
   layer->setVisibility(te::map::NOT_VISIBLE);
 
   if(dataset->hasGeom())
   {
     te::gm::GeometryProperty* gp = dataset->getDefaultGeomProperty();
     layer->setSRID(gp->getSRID());
-    layer->setExtent(gp->getExtent() ? new te::gm::Envelope(*(gp->getExtent())) : new te::gm::Envelope);
+    layer->setExtent(gp->getExtent() ? te::gm::Envelope(*(gp->getExtent())) : te::gm::Envelope());
   }
   else
   {
     layer->setSRID(0);
-    layer->setExtent(new te::gm::Envelope);
+    layer->setExtent(te::gm::Envelope());
   }
 
   return layer;

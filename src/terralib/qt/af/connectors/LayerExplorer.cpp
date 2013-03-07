@@ -38,6 +38,11 @@ te::qt::af::LayerExplorer::~LayerExplorer()
 {
 }
 
+te::qt::widgets::LayerExplorer* te::qt::af::LayerExplorer::getExplorer() const
+{
+  return m_explorer;
+}
+
 void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::Event* evt)
 {
   switch(evt->getId())

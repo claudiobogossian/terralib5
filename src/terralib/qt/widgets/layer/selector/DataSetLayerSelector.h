@@ -18,16 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/selector/core/HiddenDataSetLayerSelector.h
+  \file terralib/qt/widgets/layer/selector/DataSetLayerSelector.h
 
-  \brief ....
+  \brief A simple widget that allows the selection of datasets from a given data source.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_CORE_INTERNAL_HIDDENDATASETLAYERSELECTOR_H
-#define __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_CORE_INTERNAL_HIDDENDATASETLAYERSELECTOR_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_DATASETLAYERSELECTOR_H
+#define __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_DATASETLAYERSELECTOR_H
 
 // TerraLib
-#include "../../../../../dataaccess/Definitions.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "AbstractLayerSelector.h"
 
 namespace te
@@ -37,19 +37,19 @@ namespace te
     namespace widgets
     {
       /*!
-        \class HiddenDataSetLayerSelector
+        \class DataSetLayerSelector
 
-        \brief ....
+        \brief A simple widget that allows the selection of datasets from a given data source.
       */
-      class TEQTWIDGETSEXPORT HiddenDataSetLayerSelector : public AbstractLayerSelector
+      class TEQTWIDGETSEXPORT DataSetLayerSelector : public AbstractLayerSelector
       {
-        //Q_OBJECT
+        Q_OBJECT
 
         public:
 
-          HiddenDataSetLayerSelector(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          DataSetLayerSelector(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~HiddenDataSetLayerSelector();
+          ~DataSetLayerSelector();
 
           void set(const std::list<te::da::DataSourceInfoPtr>& datasources);
 
@@ -64,5 +64,5 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_CORE_INTERNAL_HIDDENDATASETLAYERSELECTOR_H
+#endif  // __TERRALIB_QT_WIDGETS_LAYER_SELECTOR_INTERNAL_DATASETLAYERSELECTOR_H
 

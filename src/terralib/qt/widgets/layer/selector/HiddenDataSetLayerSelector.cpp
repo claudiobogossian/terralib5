@@ -24,15 +24,15 @@
 */
 
 // TerraLib
-#include "../../../../../dataaccess/dataset/DataSetType.h"
-#include "../../../../../dataaccess/datasource/DataSource.h"
-#include "../../../../../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../../../../../dataaccess/datasource/DataSourceManager.h"
-#include "../../../../../dataaccess/datasource/DataSourceTransactor.h"
-#include "../../../../../dataaccess/utils/Utils.h"
-#include "../../../../../maptools/AbstractLayer.h"
-#include "../../../../../maptools/Layer.h"
-#include "../../utils/DataSet2Layer.h"
+#include "../../../../dataaccess/dataset/DataSetType.h"
+#include "../../../../dataaccess/datasource/DataSource.h"
+#include "../../../../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../../../../dataaccess/datasource/DataSourceManager.h"
+#include "../../../../dataaccess/datasource/DataSourceTransactor.h"
+#include "../../../../dataaccess/utils/Utils.h"
+#include "../../../../maptools/AbstractLayer.h"
+#include "../../../../maptools/DataSetLayer.h"
+#include "../utils/DataSet2Layer.h"
 #include "HiddenDataSetLayerSelector.h"
 
 // STL
@@ -86,7 +86,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
     {
       te::da::DataSetTypePtr dataset(cloader->getDataSetType(datasets[i], true));
 
-      te::map::LayerPtr layer = converter(dataset);
+      te::map::DataSetLayerPtr layer = converter(dataset);
 
       layers.push_back(layer);
     }

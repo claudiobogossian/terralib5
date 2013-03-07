@@ -77,6 +77,8 @@ set (
   widgets/datasource/connector
   widgets/exchanger
   widgets/layer/explorer
+  widgets/layer/selector
+  widgets/layer/utils
   widgets/progress
   widgets/property
   widgets/propertybrowser
@@ -169,6 +171,14 @@ set (
   ${SRCDIR}/widgets/layer/explorer/QueryLayerItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/layer/selector/AbstractLayerSelector.h
+  ${SRCDIR}/widgets/layer/selector/DataSetLayerSelector.h
+  ${SRCDIR}/widgets/layer/selector/HiddenDataSetLayerSelector.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/selector" MOC)
 
 set (
   HDRS_TO_MOC

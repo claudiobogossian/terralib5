@@ -18,16 +18,15 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/selector/core/DataSetLayerSelector.cpp
+  \file terralib/qt/widgets/layer/selector/DataSetLayerSelector.cpp
 
-  \brief ....
+  \brief A simple widget that allows the selection of datasets from a given data source.
 */
 
 // TerraLib
-#include "../../../../../maptools/AbstractLayer.h"
-#include "../../../../../maptools/Layer.h"
-#include "../../../dataset/selector/DataSetSelectorDialog.h"
-#include "../../utils/DataSet2Layer.h"
+#include "../../../../maptools/DataSetLayer.h"
+#include "../../dataset/selector/DataSetSelectorDialog.h"
+#include "../utils/DataSet2Layer.h"
 #include "DataSetLayerSelector.h"
 
 // STL
