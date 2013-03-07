@@ -57,13 +57,20 @@ int te::qt::widgets::FolderLayerItem::columnCount() const
 QVariant te::qt::widgets::FolderLayerItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("layer"));
+    return QVariant(QIcon::fromTheme("folder-layer"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));
 
   if(role == Qt::CheckStateRole)
-    return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
+  {
+    if(m_layer->getVisibility() == te::map::VISIBLE)
+      return QVariant(Qt::Checked);
+    else if(m_layer->getVisibility() == te::map::NOT_VISIBLE)
+      return QVariant(Qt::Unchecked);
+    else
+      return QVariant(Qt::PartiallyChecked);
+  }
 
   return QVariant();
 }
