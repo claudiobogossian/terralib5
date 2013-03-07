@@ -52,6 +52,7 @@ te::qt::widgets::DataSourceSelectorDialog::DataSourceSelectorDialog(QWidget* par
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_selectPushButton, SIGNAL(pressed()), this, SLOT(selectPushButtonPressed()));
   connect(m_selectorWidget->getForm()->m_datasourceListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(checkButtonsState()));
+  connect(m_selectorWidget->getForm()->m_datasourceListWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPushButtonPressed()));
 }
 
 te::qt::widgets::DataSourceSelectorDialog::~DataSourceSelectorDialog()

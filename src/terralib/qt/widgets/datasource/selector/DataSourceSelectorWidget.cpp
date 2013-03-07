@@ -87,6 +87,8 @@ te::qt::widgets::DataSourceSelectorWidget::DataSourceSelectorWidget(QWidget* par
   connect(m_ui->m_createDataSourceToolButton, SIGNAL(pressed()), this, SLOT(createDataSourcePushButtonPressed()));
   connect(m_ui->m_datasourceTypeListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(dataSourceTypePressed(QListWidgetItem*)));
   connect(m_ui->m_datasourceListWidget, SIGNAL(itemPressed(QListWidgetItem*)), this, SLOT(dataSourcePressed(QListWidgetItem*)));
+  connect(m_ui->m_datasourceListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(dataSourceDoubleClicked(QListWidgetItem*)));
+
 }
 
 te::qt::widgets::DataSourceSelectorWidget::~DataSourceSelectorWidget()
@@ -538,6 +540,11 @@ void te::qt::widgets::DataSourceSelectorWidget::dataSourcePressed(QListWidgetIte
   //m_ui->m_createDataSourceToolButton->setEnabled(m_createButtonEnabled);
 
   //emit hasSelectedDataSource(true);
+}
+
+void te::qt::widgets::DataSourceSelectorWidget::dataSourceDoubleClicked(QListWidgetItem * item)
+{
+  item->setSelected(true);
 }
 
 //void te::qt::widgets::DataSourceSelectorDialog::add(DataSourcePtr ds)
