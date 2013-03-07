@@ -34,15 +34,11 @@
 #include "widgets/datagrid/DataGridModel.h"
 #include "widgets/datagrid/DataGridView.h"
 #include "widgets/datagrid/HeaderView.h"
-#include "widgets/layer/AbstractTreeItem.h"
-#include "widgets/layer/LayerExplorer.h"
-#include "widgets/layer/LayerExplorerModel.h"
-#include "widgets/layer/LayerItem.h"
-#include "widgets/layer/LegendItem.h"
-
+#include "widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "widgets/layer/explorer/LayerExplorer.h"
 
 namespace te
-{  
+{
   namespace qt
   {
     /*!
@@ -50,11 +46,11 @@ namespace te
 
       In this namespace you will find just Qt components. Some of them
       have a dialog window others are just cusmozied controls (like lists, buttons and menus).
-     */
+    */
     namespace widgets
     {
     }
-  }	// end namespace qt
+  } // end namespace qt
 }   // end namespace te
 
 #endif  // __TERRALIB_QT_INTERNAL_WIDGETS_H

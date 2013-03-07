@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -17,30 +17,42 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*!
-  \file Project.h
-   
-  \brief Auxiliary classes and functions to read project information from a XML document.
+/*! 
+  \file NewProject.h
+
+  \brief This event signals that a new project ...
 */
 
-#ifndef __TERRALIB_SERIALIZATION_MAPTOOLS_INTERNAL_PROJECT_H
-#define __TERRALIB_SERIALIZATION_MAPTOOLS_INTERNAL_PROJECT_H
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
 
 // TerraLib
-#include "../../Config.h"
+#include "Enums.h"
+#include "Event.h"
 
 namespace te
 {
-  //namespace map { class Project; }
-
-  namespace xml { class Reader; }
-
-  namespace serialize
+  namespace qt
   {
-    TESERIALIZATIONEXPORT void ReadProject(const std::string& projectFileName);
+    namespace af
+    {
+// Forward declarations
+      class Project;
 
-  } // end namespace serialize
-}   // end namespace te
+      struct NewProject : public Event
+      {
+        Project* m_project;
 
-#endif  // __TERRALIB_SERIALIZATION_MAPTOOLS_INTERNAL_PROJECT_H
+        NewProject(Project* project)
+          : Event(te::qt::af::evt::NEW_PROJECT),
+            m_project(project)
+        {
+        }
+      };
+
+    } // end namespace af
+  }   // end namespace qt
+}     // end namespace te
+
+#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
 

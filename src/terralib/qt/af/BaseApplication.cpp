@@ -35,9 +35,7 @@
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/dataview/TabularViewer.h"
 #include "../widgets/help/HelpManager.h"
-#include "../widgets/layer/AbstractTreeItem.h"
-#include "../widgets/layer/LayerExplorer.h"
-#include "../widgets/layer/LayerExplorerModel.h"
+#include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
 #include "../widgets/progress/ProgressViewerBar.h"
@@ -52,13 +50,13 @@
 #include "connectors/TabularViewer.h"
 #include "events/LayerAdded.h"
 #include "events/LayerSelected.h"
+#include "events/NewProject.h"
 #include "events/NewToolBar.h"
 #include "events/TrackedCoordinate.h"
 #include "settings/SystemSettings.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "BaseApplication.h"
-#include "BaseApplicationController.h"
 #include "Exception.h"
 #include "Project.h"
 #include "SplashScreenManager.h"
@@ -82,8 +80,11 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
     m_explorer(0),
     m_display(0),
     m_viewer(0),
-    m_project(0)
+    m_project(0),
+    m_controller(0)
 {
+  m_controller = new ApplicationController;
+
   if (objectName().isEmpty())
     setObjectName("BaseApplicationForm");
 
@@ -97,12 +98,14 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
-  delete m_explorer;
+  //delete m_explorer;
   delete m_display;
   delete m_viewer;
   delete m_project;
 
   te::qt::af::ApplicationController::getInstance().finalize();
+
+  delete m_controller;
 }
 
 void te::qt::af::BaseApplication::init()
@@ -249,26 +252,35 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
 
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
-  if(m_project != 0)
-  {
-    delete m_project;
-    m_project = 0;
-  }
+  delete m_project;
+  m_project = 0;
 
   QString projFile = proj->data().toString();
 
-  m_project = te::qt::af::ReadProject(projFile.toStdString());
+  try
+  {
+    m_project = te::qt::af::ReadProject(projFile.toStdString());
 
-  ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
+    ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
+
+    NewProject evt(m_project);
+
+    ApplicationController::getInstance().broadcast(&evt);
+  }
+  catch(const std::exception& e)
+  {
+    QString msg(tr("Fail to open project: %1"));
+
+    msg = msg.arg(e.what());
+
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
 {
-  if(m_project != 0)
-  {
-    delete m_project;
-    m_project = 0;
-  }
+  delete m_project;
+  m_project = 0;
 
   QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), tr("XML File (*.xml *.XML)"));
 
@@ -278,12 +290,19 @@ void te::qt::af::BaseApplication::onOpenProjectTriggered()
   try
   {
     m_project = te::qt::af::ReadProject(file.toStdString());
+
     ApplicationController::getInstance().updateRecentProjects(file, m_project->getTitle().c_str());
+
+    NewProject evt(m_project);
+
+    ApplicationController::getInstance().broadcast(&evt);
   }
   catch(const std::exception& e)
   {
-    QString msg("Fail to open project: %1");
+    QString msg(tr("Fail to open project: %1"));
+
     msg = msg.arg(e.what());
+
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
   }
 }
@@ -342,16 +361,21 @@ void te::qt::af::BaseApplication::makeDialog()
   //m_ui->m_angle_act->setActionGroup(vis_tools_group);
   //m_ui->m_distance_act->setActionGroup(vis_tools_group);
 
-// initializing basic components
+// initializing well known widgets
 
-// layer explorer
+// 1. Layer Explorer
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
-  lexplorer->setModel(new te::qt::widgets::LayerExplorerModel(new te::map::FolderLayer("MainLayer", tr("My Layers").toStdString()), lexplorer));
-  //connect(lexplorer, SIGNAL(checkBoxWasClicked(const QModelIndex&)), SLOT(layerVisibilityChanged(const QModelIndex&)));
 
-  m_explorer = new te::qt::af::LayerExplorer(lexplorer);
+  QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
-// map display
+  connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
+  connect(lexplorer, SIGNAL(visibilityChanged(bool)), m_viewLayerExplorer, SLOT(setChecked(bool)));
+
+  m_viewLayerExplorer->setChecked(true);
+
+  m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
+
+// 2. Map Display
   te::qt::widgets::MapDisplay* map = new te::qt::widgets::MultiThreadMapDisplay(QSize(512, 512), this);
   map->setResizePolicy(te::qt::widgets::MapDisplay::Center);
   map->setMouseTracking(true);
@@ -363,7 +387,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_viewer = new te::qt::af::TabularViewer(view);
 
-// Connecting framework
+// adding framework listners
   te::qt::af::ApplicationController::getInstance().addListener(this);
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
@@ -371,15 +395,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
 
 // initializing connector widgets
-
-  QDockWidget* doc = new QDockWidget(tr("Layer explorer"), this);
-  doc->setWidget(lexplorer);
-  QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, doc);
-  doc->connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewLayerExplorer->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
-  m_viewLayerExplorer->setChecked(true);
-
-  doc = new QDockWidget(tr("Main display"), this);
+  QDockWidget* doc = new QDockWidget(tr("Main display"), this);
   doc->setWidget(map);
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
@@ -500,7 +516,7 @@ void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon,
 void te::qt::af::BaseApplication::initActions()
 {
 // Menu -View- actions
-  initAction(m_viewLayerExplorer, "tree-visible", "Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true);
+  initAction(m_viewLayerExplorer, "view-layer-explorer", "Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true);
   initAction(m_viewMapDisplay, "display-visible", "Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true);
   initAction(m_viewDataTable, "grid-visible", "Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false);
   initAction(m_viewStyleExplorer, "grid-visible", "Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false);

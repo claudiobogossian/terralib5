@@ -2,7 +2,7 @@
 
 // TerraLib
 #include <terralib/color/ColorBar.h>
-#include <terralib/qt/qwt/ColorBar.h>
+#include <terralib/qt/widgets/colorbar/ColorBar.h>
 #include <terralib/qt/widgets/utils/ColorPickerToolButton.h>
 #include <terralib/qt/widgets/utils/DoubleListWidget.h>
 #include <terralib/qt/widgets/utils/ListWidget.h>
@@ -75,7 +75,7 @@ void UtilsWidgets()
   c.addColor(te::color::RGBAColor(255, 255, 0, TE_OPAQUE), 0.33);
   c.addColor(te::color::RGBAColor(0 ,0, 255, TE_OPAQUE), 0.66);
 
-  te::qt::qwt::ColorBar* cm = new te::qt::qwt::ColorBar(&d);
+  te::qt::widgets::colorbar::ColorBar* cm = new te::qt::widgets::colorbar::ColorBar(&d);
   layout->addWidget(cm, 3, 0, 1, 3);
 
   cm->setHeight(20);

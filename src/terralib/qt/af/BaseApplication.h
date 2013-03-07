@@ -32,6 +32,9 @@
 // STL
 #include <map>
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 // Qt
 #include <QtGui/QMainWindow>
 
@@ -43,13 +46,14 @@ namespace te
     namespace af
     {
 // Forwar declarations
+      class ApplicationController;
       class Event;
       class LayerExplorer;
       class MapDisplay;
       class Project;
       class TabularViewer;
 
-      class TEQTAFEXPORT BaseApplication : public QMainWindow
+      class TEQTAFEXPORT BaseApplication : public QMainWindow, public boost::noncopyable
       {
         Q_OBJECT
 
@@ -198,15 +202,19 @@ namespace te
           QToolBar *m_fileToolBar;
           QToolBar *m_editToolBar;
 
-          //! TerraLib components
-          LayerExplorer* m_explorer;
+// Well known Widgets
+          LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.
           MapDisplay* m_display;
           TabularViewer* m_viewer;
+
+// Project
           Project* m_project;
 
           //QDockWidget* m_progressDock;                                    //!< Dock widget used to show progress information
 
           //te::qt::widgets::RasterVisualDockWidget* m_rasterVisualDock;    //!< Used to raster enhancement operations
+
+          te::qt::af::ApplicationController* m_controller;
       };
     } // end namespace af
   }   // end namespace qt

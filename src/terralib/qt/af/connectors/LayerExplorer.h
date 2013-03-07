@@ -18,45 +18,43 @@
  */
 
 /*! 
-  \file connectors/LayerExplorer.h
+  \file terralib/qt/af/connectors/LayerExplorer.h
 
-  \brief A connector of the te::qt::widgets::LayerExplorer for the application framework.
- */
+  \brief A connector for the te::qt::widgets::LayerExplorer class to the Application Framework.
+*/
 
-#ifndef __TERRALIB_QT_AF_INTERNAL_LAYEREXPLORER_H
-#define __TERRALIB_QT_AF_INTERNAL_LAYEREXPLORER_H
+#ifndef __TERRALIB_QT_AF_CONNECTORS_INTERNAL_LAYEREXPLORER_H
+#define __TERRALIB_QT_AF_CONNECTORS_INTERNAL_LAYEREXPLORER_H
 
-//! Terralib include files
-#include <terralib/qt/af/Config.h>
+// Terralib
+#include "../Config.h"
 
-//! Qt include files
-#include <QObject>
+// Qt
+#include <QtCore/QObject>
 
-//! Forward declarations
+// Forward declarations
 class QItemSelection;
 
 namespace te
 {
   namespace qt
   {
-    //! Forward declarations
-    namespace widgets
-    {
-      class LayerExplorer;
-    }
+// Forward declarations
+    namespace widgets { class LayerExplorer; }
 
     namespace af
     {
-      //! Forward declarations
+// Forward declarations
       class Event;
 
       /*!
         \class LayerExplorer
-        
-        \brief A connector of the te::qt::widgets::LayerExplorer for the application framework.
-        
-        This is used to listen events sent by application framework and acts on a te::qt::widgets::LayerExplorer object.
-        
+
+        \brief A connector for the te::qt::widgets::LayerExplorer class to the Application Framework.
+
+        It is used to listen events sent by the application framework.
+        It is a proxy for the te::qt::widgets::LayerExplorer.
+
         \ingroup afconnector
       */
       class TEQTAFEXPORT LayerExplorer : public QObject
@@ -67,36 +65,44 @@ namespace te
 
           /*!
             \brief Constructor.
+
             \param explorer te::qt::widgets::LayerExplorer to be listened.
           */
-          LayerExplorer(te::qt::widgets::LayerExplorer* explorer);
+          LayerExplorer(te::qt::widgets::LayerExplorer* explorer, QObject* parent = 0);
 
-          /*!
-            \brief destructor.
-          */
+          /*! \brief Destructor. */
           ~LayerExplorer();
 
         protected slots:
 
           /*!
             \brief Listener to the application framewrork events.
-            \param evt Event sent by framework.
+
+            \param evt An event sent by framework.
           */
           void onApplicationTriggered(te::qt::af::Event* evt);
 
           /*!
-            \brief Updates the tabular viewer with the data of the new layer, if the selected itens has one.
-            \param selected The selected items in tabular viewer.
-            \param unselected The items that were unselected.
+            \brief Perform changes whenever the selection over the layer tree changes.
+
+            It will update well known components like:
+            <ul>
+            <li>data tables: if the selected item has one;</li>
+            </ul>
+
+            \param selected   The new selected items in the layer tree.
+            \param deselected The items that were deselected from the layer tree.
           */
-          void layerChanged(const QItemSelection& selected, const QItemSelection& unselected);
+          void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
 
         protected:
 
           te::qt::widgets::LayerExplorer* m_explorer; //!< Pointer to a component te::qt::widgets::LayerExplorer.
       };
-    }
-  }
-}
 
-#endif //! __TERRALIB_QT_AF_INTERNAL_LAYEREXPLORER_H
+    } // end namespace af
+  }   // end namespace qt
+}     // end namespace te
+
+#endif // __TERRALIB_QT_AF_CONNECTORS_INTERNAL_LAYEREXPLORER_H
+

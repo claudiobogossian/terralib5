@@ -17,7 +17,6 @@
 #include <terralib/qt/widgets/tools/CoordTracking.h>
 
 #include <terralib/qt/af/ApplicationController.h>
-#include <terralib/qt/af/BaseApplicationController.h>
 #include <terralib/qt/af/events/DisplayResized.h>
 #include <terralib/qt/af/events/CurrentToolChanged.h>
 #include <terralib/qt/af/events/TrackedCoordinate.h>

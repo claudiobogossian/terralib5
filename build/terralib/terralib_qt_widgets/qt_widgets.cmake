@@ -62,10 +62,10 @@ list (APPEND TE_DEP_LIBS
 set (
   _DIRS
   .
-  qwt
   widgets
   widgets/canvas
   widgets/charts
+  widgets/colorbar
   widgets/datagrid
   widgets/dataview
   widgets/dataset
@@ -76,7 +76,7 @@ set (
   widgets/datasource/selector
   widgets/datasource/connector
   widgets/exchanger
-  widgets/layer
+  widgets/layer/explorer
   widgets/progress
   widgets/property
   widgets/propertybrowser
@@ -106,16 +106,9 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/qwt/HistogramDisplay.h
-  ${SRCDIR}/qwt/HistogramSelectionCursor.h
-  ${SRCDIR}/qwt/Legend.h
-  ${SRCDIR}/qwt/Plot.h
-  ${SRCDIR}/qwt/ScatterDisplay.h
-  ${SRCDIR}/qwt/ScatterSelectionCursor.h
-  ${SRCDIR}/qwt/TimeSeriesDisplay.h
-  ${SRCDIR}/qwt/ColorBar.h
+  ${SRCDIR}/widgets/colorbar/ColorBar.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/qwt" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
 set (
   HDRS_TO_MOC
@@ -166,14 +159,16 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/layer/AbstractTreeItem.h
-  ${SRCDIR}/widgets/layer/LayerExplorer.h
-  ${SRCDIR}/widgets/layer/LayerExplorerModel.h
-  ${SRCDIR}/widgets/layer/LayerItem.h
-  ${SRCDIR}/widgets/layer/LegendItem.h
-  ${SRCDIR}/widgets/layer/Legend.h
+  ${SRCDIR}/widgets/layer/explorer/AbstractLayerTreeItem.h
+  ${SRCDIR}/widgets/layer/explorer/DataSetLayerItem.h
+  ${SRCDIR}/widgets/layer/explorer/FolderLayerItem.h
+  ${SRCDIR}/widgets/layer/explorer/LayerExplorer.h
+  ${SRCDIR}/widgets/layer/explorer/LayerTreeModel.h
+  ${SRCDIR}/widgets/layer/explorer/LayerTreeView.h
+  ${SRCDIR}/widgets/layer/explorer/LegendItem.h
+  ${SRCDIR}/widgets/layer/explorer/QueryLayerItem.h
 )
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer" MOC)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
 
 set (
   HDRS_TO_MOC
@@ -380,7 +375,6 @@ file(
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
   ${SRCDIR}/widgets/exchanger/ui/*.ui
-  ${SRCDIR}/widgets/layer/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/property/ui/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui

@@ -60,14 +60,12 @@ namespace te
 
   namespace qt
   {
-    namespace qwt
-    {
-      class ColorBar;
-    }
-
     namespace widgets
     {
-
+      namespace colorbar
+      {
+        class ColorBar;
+      }
       /*!
         \class ColorMapWidget
 
@@ -127,7 +125,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ColorMapWidgetForm> m_ui;                 //!< Dialog form.
-          te::qt::qwt::ColorBar* m_cbWidget;                          //!< QWT widget for color bar.
+          te::qt::widgets::colorbar::ColorBar* m_cbWidget;           //!< QWT widget for color bar.
           te::se::ColorMap* m_cm;                                     //!< SE Color Map element.
           te::color::ColorBar* m_cb;                                  //!< Terralib color bar objetc
 

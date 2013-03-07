@@ -24,6 +24,7 @@
 
 #include "EdgeFilter.h"
 #include "Macros.h"
+#include "Functions.h"
 #include "../raster/RasterFactory.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Grid.h"
@@ -141,7 +142,6 @@ namespace te
       
       std::auto_ptr< te::rst::Raster > bufferRaster1Ptr;
       std::auto_ptr< te::rst::Raster > bufferRaster2Ptr;
-      std::vector< unsigned int > outputRastersBands;
       
       {
         std::vector< te::rst::BandProperty* > outRasterBandsProperties;
@@ -154,24 +154,30 @@ namespace te
           assert( m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] <
             m_inputParameters.m_inRasterPtr->getNumberOfBands() );
             
-          outputRastersBands.push_back( inRasterBandsIdx );
-
           outRasterBandsProperties.push_back( new te::rst::BandProperty(
             *( m_inputParameters.m_inRasterPtr->getBand(
             m_inputParameters.m_inRasterBands[
             inRasterBandsIdx ] )->getProperty() ) ) );
             
           if( m_inputParameters.m_iterationsNumber > 1 )
+          {
             bufferRaster1BandsProperties.push_back( new te::rst::BandProperty(
               *( m_inputParameters.m_inRasterPtr->getBand(
               m_inputParameters.m_inRasterBands[
               inRasterBandsIdx ] )->getProperty() ) ) );
+            bufferRaster1BandsProperties[ inRasterBandsIdx ]->m_type =
+              te::dt::DOUBLE_TYPE;
+          }
             
           if( m_inputParameters.m_iterationsNumber > 2 )
+          {
             bufferRaster2BandsProperties.push_back( new te::rst::BandProperty(
               *( m_inputParameters.m_inRasterPtr->getBand(
               m_inputParameters.m_inRasterBands[
               inRasterBandsIdx ] )->getProperty() ) ) );             
+            bufferRaster2BandsProperties[ inRasterBandsIdx ]->m_type =
+              te::dt::DOUBLE_TYPE;
+          }
         }
 
         outParamsPtr->m_outputRasterPtr.reset(
@@ -238,22 +244,19 @@ namespace te
         }
       }
       
+      te::rst::Raster const* srcRasterPtr = 0;
+      te::rst::Raster* dstRasterPtr = 0;
+      te::rst::Raster const* auxRasterPtr = 0;      
+      
       for( unsigned int iteration = 0 ; iteration < 
         m_inputParameters.m_iterationsNumber ; ++iteration )
       {
         // defining the source raster and
         // destination raster
         
-        te::rst::Raster const* srcRasterPtr = 0;
-        te::rst::Raster* dstRasterPtr = 0;
-        te::rst::Raster const* auxRasterPtr = 0;
-        std::vector< unsigned int > const* srcRasterBandsPtr = 0;
-        std::vector< unsigned int > const* dstRasterBandsPtr = 0;
-        
         if( iteration == 0 )
         {
           srcRasterPtr = m_inputParameters.m_inRasterPtr;
-          srcRasterBandsPtr = &m_inputParameters.m_inRasterBands;
           
           if( m_inputParameters.m_iterationsNumber == 1 )
           {
@@ -263,7 +266,6 @@ namespace te
           {
             dstRasterPtr = bufferRaster1Ptr.get();
           }
-          dstRasterBandsPtr = &outputRastersBands;
         }
         else if( iteration == ( m_inputParameters.m_iterationsNumber - 1 ) )
         {
@@ -287,9 +289,9 @@ namespace te
         for( unsigned int inRasterBandsIdx = 0 ; inRasterBandsIdx <
           m_inputParameters.m_inRasterBands.size() ; ++inRasterBandsIdx )
         {
-          (this->*(filterPointer) )( 
-            *( srcRasterPtr->getBand( srcRasterBandsPtr->operator[]( inRasterBandsIdx ) ) ),
-            *( dstRasterPtr->getBand( dstRasterBandsPtr->operator[]( inRasterBandsIdx ) ) ) );          
+          (this->*(filterPointer))( *srcRasterPtr, ( iteration == 0 ) ? 
+            m_inputParameters.m_inRasterBands[ inRasterBandsIdx ] : 
+            inRasterBandsIdx, *dstRasterPtr, inRasterBandsIdx );          
         }
 
       }
@@ -348,28 +350,37 @@ namespace te
       return m_isInitialized;
     }
 
-    void EdgeFilter::RobertsFilter( const te::rst::Band& srcBand,
-      te::rst::Band& dstBand )
+    void EdgeFilter::RobertsFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx )
     {
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_blkh ==
-        dstBand.getProperty()->m_blkh, "Internal error" );
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_blkw ==  
-        dstBand.getProperty()->m_blkw, "Internal error" );
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_nblocksx ==  
-        dstBand.getProperty()->m_nblocksx, "Internal error" );
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_nblocksy ==  
-        dstBand.getProperty()->m_nblocksy, "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );
         
-      const unsigned int nRows = (unsigned int)( srcBand.getProperty()->m_blkw *
-        srcBand.getProperty()->m_nblocksx );
-      const unsigned int rowsBound = ( nRows ? ( nRows - 1 ) : 0 );
+      const unsigned int nRows = (unsigned int)( srcRaster.getNumberOfRows() );
+      const unsigned int rowsBound = (unsigned int)( nRows ? 
+        ( nRows - 1 ) : 0 );
+      
+      const unsigned int nCols = (unsigned int)( srcRaster.getNumberOfColumns() );
+      const unsigned int colsBound = (unsigned int)( nCols ? 
+        ( nCols - 1 ) : 0 );
         
-      const unsigned int nCols = (unsigned int)( srcBand.getProperty()->m_blkh *
-        srcBand.getProperty()->m_nblocksy );        
-      const unsigned int colsBound = ( nCols ? ( nCols - 1 ) : 0 );
+      const te::rst::Band& srcBand = *srcRaster.getBand( srcBandIdx );
+      te::rst::Band& dstBand = *dstRaster.getBand( dstBandIdx );
       
       const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
       const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::getDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );
       
       unsigned int col = 0;
       double value1diag = 0;
@@ -378,6 +389,7 @@ namespace te
       double value2adiag = 0;      
       double diagDiff = 0;
       double adiagDiff = 0;
+      double outValue = 0;
       
       for( unsigned int row = 0; row < nRows ; ++row )
       {
@@ -416,8 +428,12 @@ namespace te
             diagDiff = value1diag - value2diag;
             adiagDiff = value1adiag - value2adiag;
             
-            dstBand.setValue( col, row, std::sqrt( ( diagDiff * diagDiff ) +
-              ( adiagDiff * adiagDiff ) ) );
+            outValue = std::sqrt( ( diagDiff * diagDiff ) +
+              ( adiagDiff * adiagDiff ) );
+            outValue = std::max( outValue, dstBandAllowedMin );
+            outValue = std::min( outValue, dstBandAllowedMax );
+            
+            dstBand.setValue( col, row, outValue );
           }
           else
           {
@@ -427,28 +443,37 @@ namespace te
       }
     }
     
-    void EdgeFilter::SobelFilter( const te::rst::Band& srcBand,
-      te::rst::Band& dstBand )
+    void EdgeFilter::SobelFilter( const te::rst::Raster& srcRaster,
+      const unsigned int srcBandIdx, te::rst::Raster& dstRaster,
+      const unsigned int dstBandIdx )
     {
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_blkh ==
-        dstBand.getProperty()->m_blkh, "Internal error" );
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_blkw ==  
-        dstBand.getProperty()->m_blkw, "Internal error" );
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_nblocksx ==  
-        dstBand.getProperty()->m_nblocksx, "Internal error" );
-      TERP_DEBUG_TRUE_OR_THROW( srcBand.getProperty()->m_nblocksy ==  
-        dstBand.getProperty()->m_nblocksy, "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfColumns() ==
+        dstRaster.getNumberOfColumns(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcRaster.getNumberOfRows() ==
+        dstRaster.getNumberOfRows(), "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( srcBandIdx < srcRaster.getNumberOfBands(), 
+        "Internal error" );
+      TERP_DEBUG_TRUE_OR_THROW( dstBandIdx < dstRaster.getNumberOfBands(), 
+        "Internal error" );
         
-      const unsigned int nRows = (unsigned int)( srcBand.getProperty()->m_blkw *
-        srcBand.getProperty()->m_nblocksx );
-      const unsigned int rowsBound = ( nRows ? ( nRows - 1 ) : 0 );
+      const unsigned int nRows = (unsigned int)( srcRaster.getNumberOfRows() );
+      const unsigned int rowsBound = (unsigned int)( nRows ? 
+        ( nRows - 1 ) : 0 );
+      
+      const unsigned int nCols = (unsigned int)( srcRaster.getNumberOfColumns() );
+      const unsigned int colsBound = (unsigned int)( nCols ? 
+        ( nCols - 1 ) : 0 );
         
-      const unsigned int nCols = (unsigned int)( srcBand.getProperty()->m_blkh *
-        srcBand.getProperty()->m_nblocksy );        
-      const unsigned int colsBound = ( nCols ? ( nCols - 1 ) : 0 );
+      const te::rst::Band& srcBand = *srcRaster.getBand( srcBandIdx );
+      te::rst::Band& dstBand = *dstRaster.getBand( dstBandIdx );
       
       const double srcNoDataValue = srcBand.getProperty()->m_noDataValue;
       const double dstNoDataValue = dstBand.getProperty()->m_noDataValue;
+      
+      double dstBandAllowedMin = 0;
+      double dstBandAllowedMax = 0;
+      te::rp::getDataTypeRange( dstBand.getProperty()->getType(), dstBandAllowedMin,
+        dstBandAllowedMax );      
       
       unsigned int col = 0;
       double value1 = 0;
@@ -461,6 +486,7 @@ namespace te
       double value8 = 0;
       double gY = 0;
       double gX = 0;
+      double outValue = 0;
       
       for( unsigned int row = 0; row < nRows ; ++row )
       {
@@ -529,9 +555,13 @@ namespace te
               ( value1 + ( 2.0 * value2 ) + value3 );
             gX = value3 + ( 2.0 * value5 ) + value8 -
               ( value1 + ( 2.0 * value4 ) + value6 );
+              
+            outValue = std::sqrt( ( gY * gY ) +
+              ( gX * gX ) );
+            outValue = std::max( outValue, dstBandAllowedMin );
+            outValue = std::min( outValue, dstBandAllowedMax );              
             
-            dstBand.setValue( col, row, std::sqrt( ( gY * gY ) +
-              ( gX * gX ) ) );
+            dstBand.setValue( col, row, outValue );
           }
           else
           {

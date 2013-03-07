@@ -48,7 +48,6 @@ namespace te
     {
       /*!
         \class Event
-        \ingroup afevents
 
         \brief A base class for application events.
 
@@ -56,6 +55,8 @@ namespace te
         use to notify changes in the application state.
 
         One must specialize this class in order to notify specific events.
+
+        \ingroup afevents
       */
       class Event
       {

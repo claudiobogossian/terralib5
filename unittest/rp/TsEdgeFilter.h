@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,26 +18,38 @@
  */
 
 /*!
-  \file Project.cpp
-   
-  \brief Auxiliary classes and functions to read project information from a XML document.
-*/
+  \file TsEdgeFilter.h
+ 
+  \brief A test suit for the EdgeFilter Class.
+ */
 
-// TerraLib
-#include "../../xml/Reader.h"
-#include "../../xml/ReaderFactory.h"
-#include "../Exception.h"
-#include "Project.h"
+#ifndef __TERRALIB_UNITTEST_RP_EDGEFILTER_INTERNAL_H
+#define __TERRALIB_UNITTEST_RP_EDGEFILTER_INTERNAL_H
 
-#include <memory>
+// cppUnit
+#include <cppunit/extensions/HelperMacros.h>
 
-void te::serialize::ReadProject(const std::string& projectFileName)
+/*!
+  \class TsEdgeFilter
+
+  \brief A test suit for the EdgeFilter class interface.
+ */
+class TsEdgeFilter : public CPPUNIT_NS::TestFixture 
 {
-  std::auto_ptr<te::xml::Reader> xmlReader(te::xml::ReaderFactory::make());
+  CPPUNIT_TEST_SUITE( TsEdgeFilter );
+  
+  CPPUNIT_TEST( SobelFilter );
+  
+  CPPUNIT_TEST( RobertsFilter );
+  
+  CPPUNIT_TEST_SUITE_END();
 
-  xmlReader->read(projectFileName);
+protected :
 
-  while(xmlReader->next())
-    ;
-}
+  void SobelFilter();
+  
+  void RobertsFilter();
 
+};
+
+#endif

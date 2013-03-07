@@ -44,7 +44,7 @@ namespace te
     {
       struct TEQTWIDGETSEXPORT DataExchangeStatus
       {
-        te::da::DataSetTypePtr m_dataset;
+        te::da::DataSetType* m_dataset;
         bool m_successful;
         boost::chrono::duration<double> m_time;
         std::string m_exceptionMsg;
