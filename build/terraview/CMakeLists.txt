@@ -98,13 +98,24 @@ install(
   ARCHIVE DESTINATION "bin" COMPONENT BINARIES
 )
 
-removeFileIfExists(${CMAKE_BINARY_DIR}/help/help.qhc)
-removeFileIfExists(${CMAKE_BINARY_DIR}/help/doc_widgets.qch)
+#removeFileIfExists(${CMAKE_BINARY_DIR}/help/help.qhc)
+#removeFileIfExists(${CMAKE_BINARY_DIR}/help/cache/doc_widgets.qch)
+#removeFileIfExists(${CMAKE_BINARY_DIR}/help/cache/help.qhcp)
+#removeFileIfExists(${CMAKE_BINARY_DIR}/help/cache/doc_widgets.qch)
+#removeFileIfExists(${CMAKE_BINARY_DIR}/help/cache/tview.qch)
 
-configure_file (${ROOT}/resources/help/help.qhcp.in ${ROOT}/resources/help/help.qhcp)
+#file (REMOVE_RECURSE ${CMAKE_BINARY_DIR}/help)
 
-makeQHelp(${ROOT}/resources/help/help.qhcp ${CMAKE_BINARY_DIR}/help/help.qhc)
-makeQHelpProject(${ROOT}/resources/help/widgets/doc_widgets.qhp ${CMAKE_BINARY_DIR}/help/doc_widgets.qch)
+#set (TE_HELP_RSC_DIR ${ROOT}/resources/help)
+
+#configure_file (${ROOT}/resources/help/help.qhcp.in ${CMAKE_BINARY_DIR}/help/help_files/help.qhcp)
+#configure_file (${ROOT}/resources/help/about.txt ${CMAKE_BINARY_DIR}/help/help_files/about.txt COPYONLY)
+#configure_file (${ROOT}/resources/help/about.txt ${CMAKE_BINARY_DIR}/help/help_files/sobre.txt COPYONLY)
+
+#configure_file (${ROOT}/resources/help/widgets/doc_widgets.qhp.in ${CMAKE_BINARY_DIR}/help/help_files/doc_widgets.qhp)
+#configure_file (${ROOT}/resources/help/terraview/tview.qhp.in ${CMAKE_BINARY_DIR}/help/help_files/tview.qhp)
+
+#makeQHelp(${CMAKE_BINARY_DIR}/help/help_files/help.qhcp ${CMAKE_BINARY_DIR}/help/help.qhc)
 
 # install tree for config files
 include (${CMAKE_CURRENT_SOURCE_DIR}/installConfig.cmake)
@@ -114,5 +125,4 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/user_settings.xml.in ${CMAKE_BINARY_
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/application_plugins.xml.in ${CMAKE_BINARY_DIR}/toInstall/application_plugins.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/project.xml.in ${CMAKE_BINARY_DIR}/toInstall/default_project.xml)
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/TerraViewConfig.h.in ${CMAKE_BINARY_DIR}/toInstall/TerraViewConfig.h)
-
-
+  

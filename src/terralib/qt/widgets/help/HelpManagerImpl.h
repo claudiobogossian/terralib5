@@ -51,14 +51,20 @@ namespace te
 
             \param htmRef Reference to some page on the help collection.
 
+            \param nSpace Namespace to be used.
+
             \note There is a syntax for the argument. If it is not respected, we CAN NOT garantee the correct operation. 
                   The right syntax is as follows: "qthelp://<NAMESPACE defined in Qt help project/<virtual folder>/<fileName>",
                   i.e. qthelp://dpi.inpe.br.terraview.5.0/doc/associando_arquivos_sites.htm, "dpi.inpe.br.terraview.5.0" is the namespace defined in the Qt help project file, 
                   "doc" is the virtual folder, also defined in Qt project file, and "associando_arquivos_sites.htm" is file compiled within the project.
           */
-          virtual void showHelp (const QString& htmRef ) = 0;
+          virtual void showHelp (const QString& htmRef, const QString& nSpace="") = 0;
 
-          virtual void showDocumentation (const QString& page ) = 0;
+
+          /*!
+            \brief
+          */
+//          virtual void showDocumentation (const QString& page, const QString& nSpace="") = 0;
 
           /*!
             \brief Appends a collection of help documentation to the existing collection.

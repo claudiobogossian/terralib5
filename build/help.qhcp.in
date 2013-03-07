@@ -2,14 +2,13 @@
 <QHelpCollectionProject version="1.0">
     <assistant>
       <title>TerraView Help</title>
-      <startPage></startPage>
-      <currentFilter>plugin</currentFilter>
+      <startPage>qthelp://dpi.inpe.br.terraview/doc/terraview/index.html</startPage> 
+      <currentFilter>help</currentFilter>
       <applicationIcon>${TE_LOGO}</applicationIcon>
-      <enableFilterFunctionality>true</enableFilterFunctionality>
+      <enableFilterFunctionality>false</enableFilterFunctionality>
       <enableDocumentationManager>false</enableDocumentationManager>
       <enableAddressBar visible="true">false</enableAddressBar>
-      <cacheDirectory base="collection"></cacheDirectory>
-      <startPage>qthelp://dpi.inpe.br.terraview/doc/index.html</startPage>
+      <cacheDirectory base="collection">cache</cacheDirectory>
       <aboutMenuText>
          <text>About TerraView... </text>
          <text language="pt">Sobre o TerraView ...</text>
@@ -23,12 +22,17 @@
     <docFiles>
       <generate>
         <file>
-          <input>widgets/doc_widgets.qhp</input>
-          <output>widgets/doc_widgets.qch</output>
+          <input>./doc_widgets.qhp</input>
+          <output>./doc_widgets.qch</output>
+        </file>
+        <file>
+          <input>./tview.qhp</input>
+          <output>./tview.qch</output>
         </file>
       </generate>
       <register>
-        <file>widgets/doc_widgets.qch</file>
+        <file>./tview.qch</file>
+        <file>./doc_widgets.qch</file>
       </register>
     </docFiles>
 </QHelpCollectionProject>

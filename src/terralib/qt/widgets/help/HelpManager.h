@@ -79,8 +79,12 @@ namespace te
           \brief Opens the help on the selected page.
 
           \param htmRef Reference to some page on the help collection.
+
+          \param nSpace
         */
-        void showHelp (const QString& htmRef);
+        void showHelp (const QString& htmRef, const QString& nSpace="");
+
+
 
         /*!
           \brief Appends a project of help documentation to the existing collection.

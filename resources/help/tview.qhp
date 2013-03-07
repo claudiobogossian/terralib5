@@ -4,12 +4,13 @@
    <virtualFolder>doc</virtualFolder>
    <filterSection>
        <filterAttribute>help</filterAttribute>
+       <filterAttribute>terraview</filterAttribute>
        <toc>
-           <section title="TerraView User Manual" ref="./index.html">
+           <section title="TerraView User Manual" ref="./terraview/index.html">
            </section>
        </toc>
        <files>
-           <file>*.html</file>
+           <file>terraview/index.html</file>
        </files>
    </filterSection>
 </QtHelpProject>
