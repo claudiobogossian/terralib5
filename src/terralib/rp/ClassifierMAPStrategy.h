@@ -67,10 +67,8 @@ namespace te
             MClassesSamplesCT const* m_trainSamplesPtr; //!< A pointer to a always-valid structure where trainning samples are stored.
 
             std::vector< double > m_classThresholds;  //!< A threshould value for each class. Values from 0 to 1.
-  
-            std::vector< double > m_prioriProbs; //!< Priori probabilities, one for each class. Values from 0 to 1.
             
-            
+            std::vector< double > m_prioriProbs; //!< Priori probabilities, one for each class. Values from 0 to 1 (use an empty vector to allow internal calcule of priori probabilities).            
     
             Parameters();
 
@@ -104,11 +102,27 @@ namespace te
         
         ClassifierMAPStrategy::Parameters m_initParams; //!< Initialization parameters.
         
-        Parameters::ClassSamplesContainerT m_classesMeans; //!< Classes means;
+        std::vector< Parameters::ClassIDT > m_classesIndex2ID; //!< An class index ordered vector of classes IDs;
+        
+        std::vector< std::vector< double > > m_classesMeans; //!< Classes means;
         
         std::vector< boost::numeric::ublas::matrix< double > > m_classesCovarianceMatrixes; //!< Classes covariance matrixes.
         
-        bool calcPrioriProbs();
+        std::vector< boost::numeric::ublas::matrix< double > > m_classesCovarianceInvMatrixes; //!< Classes covariance inverse matrixes.
+        
+        std::vector< double > m_classesOptizedMAPDiscriminantTerm;  //!< An optimized portion of the MAP discriminant function.
+        
+        /*!
+          \brief Calcule of priori probabilities following the current internal state.
+          \param inputRaster Input raster.
+          \param inputRasterBands Input raster bands.
+          \param prioriProbabilities The calculated probabilities.
+          \return true if ok, false on errors.
+        */
+        bool getPrioriProbabilities(
+          const te::rst::Raster& inputRaster, 
+          const std::vector<unsigned int>& inputRasterBands,
+          std::vector< double >& prioriProbabilities ) const;        
     };
 
     /*!
