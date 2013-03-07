@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QHelpCollectionProject version="1.0">
+    <assistant>
+      <title>TerraView Help</title>
+      <startPage>qthelp://dpi.inpe.br.terraview/doc/terraview/index.html</startPage> 
+      <currentFilter>help</currentFilter>
+      <applicationIcon>${TE_LOGO}</applicationIcon>
+      <enableFilterFunctionality>false</enableFilterFunctionality>
+      <enableDocumentationManager>false</enableDocumentationManager>
+      <enableAddressBar visible="true">false</enableAddressBar>
+      <cacheDirectory base="collection">cache</cacheDirectory>
+      <aboutMenuText>
+         <text>About TerraView... </text>
+         <text language="pt">Sobre o TerraView ...</text>
+      </aboutMenuText>
+      <aboutDialog>
+         <file>about.txt</file>
+         <file language="en">sobre.txt</file>
+         <icon>${TE_LOGO}</icon>
+      </aboutDialog>
+    </assistant>
+    <docFiles>
+      <generate>
+        <file>
+          <input>./doc_widgets.qhp</input>
+          <output>./doc_widgets.qch</output>
+        </file>
+        <file>
+          <input>./tview.qhp</input>
+          <output>./tview.qch</output>
+        </file>
+      </generate>
+      <register>
+        <file>./tview.qch</file>
+        <file>./doc_widgets.qch</file>
+      </register>
+    </docFiles>
+</QHelpCollectionProject>

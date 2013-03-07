@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+  <namespace>dpi.inpe.br.qtwidgets</namespace>
+  <virtualFolder>doc</virtualFolder>
+  <filterSection>
+    <filterAttribute>help</filterAttribute>
+    <toc>
+      <section title="Qt components" ref="./widgets/index.html">
+        <section title="Plugins Manager" ref="./widgets/pluginmanager/PluginManager.html"/>
+      </section>
+    </toc>
+    <keywords>
+      <keyword name="Components" ref="./widgets/index.html"/>
+      <keyword name="Plugin manager" ref="./widgets/pluginmanager/PluginManager.html"/>
+    </keywords>
+     <files>
+      <file>widgets/index.html</file>
+      <file>widgets/pluginmanager/PluginManager.html</file>
+      <file>widgets/pluginmanager/*.png</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

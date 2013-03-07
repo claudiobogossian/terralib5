@@ -29,6 +29,7 @@
 
 // TerraLib
 #include <terralib/qt/af/ApplicationController.h>
+#include <terralib/qt/widgets/help/HelpManager.h>
 
 // STL
 #include <memory>
@@ -67,6 +68,8 @@ void TerraView::makeDialog()
   helpAbout->setObjectName("About");
 
   connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
+
+  connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
 }
 
 void TerraView::showAboutDialog()
@@ -74,6 +77,11 @@ void TerraView::showAboutDialog()
   std::auto_ptr<AboutDialog> dialog(new AboutDialog(this));
 
   dialog->exec();
+}
+
+void TerraView::onHelpTriggered()
+{
+  te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
 }
 
 

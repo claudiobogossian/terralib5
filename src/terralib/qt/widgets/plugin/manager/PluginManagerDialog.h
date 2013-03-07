@@ -76,8 +76,6 @@ namespace te
 
           void applyPushButtonPressed();
 
-          void helpPushButtonPressed();
-
           void tableWidgetClicked(QTableWidgetItem* item);
 
           void replyFinished(QNetworkReply*);

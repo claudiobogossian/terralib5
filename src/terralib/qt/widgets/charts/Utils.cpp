@@ -304,7 +304,7 @@ QwtText* te::qt::widgets::Terralib2Qwt(const std::string& text)
 {
   QwtText* result = new QwtText(text.c_str()); 
   result->setBackgroundBrush(QBrush(QColor(0, 255, 0)));
-  result->setBackgroundPen(QPen(Qt::red, 3, Qt::SolidLine));
+  result->setBorderPen(QPen(Qt::red, 3, Qt::SolidLine));
   return result;
 }
 

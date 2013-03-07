@@ -34,6 +34,7 @@
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
 #include "../widgets/dataview/TabularViewer.h"
+#include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
@@ -243,6 +244,11 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
   }
 }
+
+//void te::qt::af::BaseApplication::onHelpTriggered()
+//{
+//  te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
+//}
 
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
@@ -540,7 +546,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_pluginsBuilder, "", "Build a New Plugin", tr("&Build a New Plugin..."), tr("Create a new plugin"), true, false, true);
 
 // Menu -Help- actions
-  initAction(m_helpContents, "help-browser", "View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, false);
+  initAction(m_helpContents, "help-browser", "View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, true);
   initAction(m_helpUpdate, "system-software-update", "Update", tr("&Update..."), tr(""), true, false, false);
   initAction(m_helpAbout, "", "About", tr("&About..."), tr(""), true, false, false);
 
@@ -760,4 +766,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
+  connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
 }

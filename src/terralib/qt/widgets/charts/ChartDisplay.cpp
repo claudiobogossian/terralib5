@@ -55,9 +55,9 @@ te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent) :
   // mostra a grade vertical
   grid->enableY(true);
   //a grade (mais espacada) e' mostrada em preto e linha solido
-  grid->setMajPen(QPen(Qt::black, 0, Qt::SolidLine));
+  grid->setMajorPen(QPen(Qt::black, 0, Qt::SolidLine));
   //a grade e' mostrada em cinza e pontilhado
-  grid->setMinPen(QPen(Qt::gray, 0, Qt::DotLine));
+  grid->setMinorPen(QPen(Qt::gray, 0, Qt::DotLine));
   grid->attach(this);
 }
 

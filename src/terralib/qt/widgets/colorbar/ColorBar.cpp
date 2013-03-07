@@ -23,7 +23,7 @@
 
 using namespace std;
 
-te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::BottomScale, parent),
+te::qt::widgets::colorbar::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::BottomScale, parent),
   m_colorBar(0),
   m_currentPinPos(0),
   m_colorBarMenu(0),
@@ -80,18 +80,18 @@ te::qt::qwt::ColorBar::ColorBar(QWidget* parent) : QwtScaleWidget(QwtScaleDraw::
 
 }
 
-te::qt::qwt::ColorBar::~ColorBar()
+te::qt::widgets::colorbar::ColorBar::~ColorBar()
 {
 }
 
-void te::qt::qwt::ColorBar::setHeight(int value)
+void te::qt::widgets::colorbar::ColorBar::setHeight(int value)
 {
   m_height = value;
 
   this->setColorBarWidth(m_height);
 }
 
-void te::qt::qwt::ColorBar::setInterval(double min, double max)
+void te::qt::widgets::colorbar::ColorBar::setInterval(double min, double max)
 {
   m_interval.setMinValue(min);
   m_interval.setMaxValue(max);
@@ -99,31 +99,30 @@ void te::qt::qwt::ColorBar::setInterval(double min, double max)
   //setScaleEngine();
 }
 
-void te::qt::qwt::ColorBar::setColorBar(te::color::ColorBar* cb)
+void te::qt::widgets::colorbar::ColorBar::setColorBar(te::color::ColorBar* cb)
 {
   m_colorBar = cb;
 
   buildColorBar();
 }
 
-te::color::ColorBar* te::qt::qwt::ColorBar::getColorBar()
+te::color::ColorBar* te::qt::widgets::colorbar::ColorBar::getColorBar()
 {
   return m_colorBar;
 }
 
-void te::qt::qwt::ColorBar::setScaleEngine()
+void te::qt::widgets::colorbar::ColorBar::setScaleEngine()
 {
   QwtLinearScaleEngine se;
-
-  this->setScaleDiv(se.transformation(), se.divideScale(m_interval.minValue(), m_interval.maxValue(), 8, 5));
+  this->setScaleDiv(se.divideScale(m_interval.minValue(), m_interval.maxValue(), 8, 5));
 }
 
-void te::qt::qwt::ColorBar::setClickPrecision(double precision)
+void te::qt::widgets::colorbar::ColorBar::setClickPrecision(double precision)
 {
   m_clickPrecision = precision;
 }
 
-void te::qt::qwt::ColorBar::buildColorBar()
+void te::qt::widgets::colorbar::ColorBar::buildColorBar()
 {
   if(m_colorBar && m_colorBar->getColorMap().size() >= 2)
   {
@@ -155,7 +154,7 @@ void te::qt::qwt::ColorBar::buildColorBar()
   }
 }
 
-void te::qt::qwt::ColorBar::removePin()
+void te::qt::widgets::colorbar::ColorBar::removePin()
 {
   if(m_currentPinPos != 0 && m_currentPinPos != 1)
     m_colorBar->remove(m_currentPinPos);
@@ -164,7 +163,7 @@ void te::qt::qwt::ColorBar::removePin()
   this->repaint();
 }
 
-void te::qt::qwt::ColorBar::editPin()
+void te::qt::widgets::colorbar::ColorBar::editPin()
 {
   QColor c = m_pinPicker->getColor();
   te::color::RGBAColor rgbaC(c.red(), c.green(), c.blue(), c.alpha());
@@ -175,7 +174,7 @@ void te::qt::qwt::ColorBar::editPin()
   this->repaint();
 }
 
-void te::qt::qwt::ColorBar::addPin()
+void te::qt::widgets::colorbar::ColorBar::addPin()
 {
   QColor c = m_colorBarPicker->getColor();
   te::color::RGBAColor rgbaC(c.red(), c.green(), c.blue(), c.alpha());
@@ -188,7 +187,7 @@ void te::qt::qwt::ColorBar::addPin()
   this->repaint();
 }
 
-void te::qt::qwt::ColorBar::equalStep()
+void te::qt::widgets::colorbar::ColorBar::equalStep()
 {
   std::map<double, te::color::RGBAColor>::const_iterator it = m_colorBar->getColorMap().begin();
 
@@ -221,7 +220,7 @@ void te::qt::qwt::ColorBar::equalStep()
   this->repaint();
 }
 
-void te::qt::qwt::ColorBar::paintEvent(QPaintEvent* e)
+void te::qt::widgets::colorbar::ColorBar::paintEvent(QPaintEvent* e)
 {
   QwtScaleWidget::paintEvent(e);
 
@@ -250,7 +249,7 @@ void te::qt::qwt::ColorBar::paintEvent(QPaintEvent* e)
   }
 }
 
-void te::qt::qwt::ColorBar::mousePressEvent(QMouseEvent* e)
+void te::qt::widgets::colorbar::ColorBar::mousePressEvent(QMouseEvent* e)
 {
   if(!m_colorBar)
     return;
@@ -283,7 +282,7 @@ void te::qt::qwt::ColorBar::mousePressEvent(QMouseEvent* e)
 
 }
 
-void te::qt::qwt::ColorBar::mouseReleaseEvent(QMouseEvent* e)
+void te::qt::widgets::colorbar::ColorBar::mouseReleaseEvent(QMouseEvent* e)
 {
   //finalize moving stop from colobar
   if (e->button() == Qt::LeftButton)
@@ -292,7 +291,7 @@ void te::qt::qwt::ColorBar::mouseReleaseEvent(QMouseEvent* e)
   }
 }
 
-void te::qt::qwt::ColorBar::mouseMoveEvent(QMouseEvent* e)
+void te::qt::widgets::colorbar::ColorBar::mouseMoveEvent(QMouseEvent* e)
 {
   double currentPos = convert2toolbarPos(e->x());
   
@@ -313,7 +312,7 @@ void te::qt::qwt::ColorBar::mouseMoveEvent(QMouseEvent* e)
 
 }
 
-void te::qt::qwt::ColorBar::wheelEvent(QWheelEvent* e)
+void te::qt::widgets::colorbar::ColorBar::wheelEvent(QWheelEvent* e)
 {
   double pin = getPin(e->x());
 
@@ -355,7 +354,7 @@ void te::qt::qwt::ColorBar::wheelEvent(QWheelEvent* e)
 
 }
 
-double te::qt::qwt::ColorBar::getPin(int pos)
+double te::qt::widgets::colorbar::ColorBar::getPin(int pos)
 {
   double width = this->width(); 
   double currentPos = (double) pos / width;
@@ -383,7 +382,7 @@ double te::qt::qwt::ColorBar::getPin(int pos)
     return -1;
 }
 
-double te::qt::qwt::ColorBar::convert2toolbarPos(int pos)
+double te::qt::widgets::colorbar::ColorBar::convert2toolbarPos(int pos)
 {
   double width = this->width(); 
   double currentPos = (double) pos / width;

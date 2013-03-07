@@ -68,15 +68,14 @@ namespace te
 
           /*!
             \brief It starts the Qt assistant help process pointing out to the given collection file.
-
-            \param proc           A Qt process object to be used to launch the Assistant.
-            \param collectionFile The collection file to be opened by Qt Assistant.
+            
+            \return True if start assistant with no problems, false otherwise.
           */
-          static void initAssistant(QProcess* proc, const QString& collectionFile);
+          bool startAssistant();
 
         public slots:
 
-          void showHelp(const QString& htmRef);
+          void showHelp(const QString& htmRef, const QString& nSpace="");
 
           void appendDoc(const QString& docRef);
 

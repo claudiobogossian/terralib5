@@ -26,7 +26,7 @@
 // TerraLib
 
 #include "../../../color/ColorBar.h"
-#include "../../qwt/ColorBar.h"
+#include "../../widgets/colorbar/ColorBar.h"
 #include "../../../se/ColorMap.h"
 #include "../../../se/Categorize.h"
 #include "../../../se/Interpolate.h"
@@ -60,7 +60,7 @@ te::qt::widgets::ColorMapWidget::ColorMapWidget(QWidget* parent, Qt::WindowFlags
 
   QGridLayout* l = new QGridLayout(m_ui->m_colorBarWidget);
   l->setContentsMargins(0,0,0,0);
-  m_cbWidget = new te::qt::qwt::ColorBar(m_ui->m_colorBarWidget);
+  m_cbWidget = new  te::qt::widgets::colorbar::ColorBar(m_ui->m_colorBarWidget);
   l->addWidget(m_cbWidget);
 
   m_ui->m_minValueLineEdit->setValidator(new QDoubleValidator(this));
