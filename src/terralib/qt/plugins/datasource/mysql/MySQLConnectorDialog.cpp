@@ -538,20 +538,25 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::passwordLineEditEditingFinish
 {
   if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
   {
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    try
+    {
+      std::map<std::string, std::string> dsInfo;
+      getConnectionInfo(dsInfo);
 
-    // Get DataSources
-    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
-    if(!dbNames.empty())
-      for(std::size_t i = 0; i < dbNames.size(); i++)
-        m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
+      // Get DataSources
+      std::vector<std::string> dbNames = te::da::DataSource::getDataSources("MYSQL", dsInfo);
+      if(!dbNames.empty())
+        for(std::size_t i = 0; i < dbNames.size(); i++)
+          m_ui->m_schemaNameComboBox->addItem(dbNames[i].c_str());
 
-    // Get Encodings
-    m_ui->m_charsetComboBox->addItem("");
-    std::vector<std::string> encodings = te::da::DataSource::getEncodings("MYSQL", dsInfo);
-    if(!encodings.empty())
-      for(std::size_t i = 0; i < encodings.size(); i++)
-        m_ui->m_charsetComboBox->addItem(encodings[i].c_str());
+      // Get Encodings
+      m_ui->m_charsetComboBox->addItem("");
+      std::vector<std::string> encodings = te::da::DataSource::getEncodings("MYSQL", dsInfo);
+      if(!encodings.empty())
+        for(std::size_t i = 0; i < encodings.size(); i++)
+          m_ui->m_charsetComboBox->addItem(encodings[i].c_str());
+    }
+    catch(...)
+    {}
   }
 }
