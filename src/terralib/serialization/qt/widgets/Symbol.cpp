@@ -110,18 +110,6 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
     reader.next();
   }
 
-  // Symbol Category
-  if(reader.getElementLocalName() == "Category")
-  {
-    assert(reader.getNodeType() == te::xml::START_ELEMENT);
-    reader.next();
-    info.m_category = reader.getElementValue();
-    reader.next();
-
-    assert(reader.getNodeType() == te::xml::END_ELEMENT);
-    reader.next();
-  }
-
   // Symbol Tags
   if(reader.getElementLocalName() == "Tags")
   {
@@ -134,7 +122,7 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
     reader.next();
   }
 
-  // Symbol Tags
+  // Symbol Description
   if(reader.getElementLocalName() == "Description")
   {
     assert(reader.getNodeType() == te::xml::START_ELEMENT);
@@ -152,7 +140,7 @@ te::qt::widgets::Symbol* te::serialize::ReadSymbol(te::xml::Reader& reader)
   assert(reader.getElementLocalName().find("Symbolizer") != std::string::npos);
 
   while((reader.getNodeType() == te::xml::START_ELEMENT) &&
-        (reader.getElementLocalName().find("Symbolizer") != std::string::npos)) // TODO: For while using find("Symbolizer")... Actually, I would like to search by the registered names of symbolizer.
+        (reader.getElementLocalName().find("Symbolizer") != std::string::npos))
     symbol->addSymbolizer(te::serialize::Symbolizer::getInstance().read(reader));
 
   assert(reader.getNodeType() == te::xml::END_ELEMENT);

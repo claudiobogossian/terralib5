@@ -35,8 +35,7 @@
 void SymbolSelector()
 {
   // Loads the Symbol Library from XML file
-  te::serialize::ReadSymbolLibrary("D:/SymbolLibrary.xml");
-  te::serialize::ReadSymbolLibrary("D:/MapIconsCollection.xml");
+  te::serialize::ReadSymbolLibrary("D:/terralib5/terralib5/schemas/terralib/qt/se/symbol.xml");
 
   // Selects a symbol
   te::qt::widgets::Symbol* symbol =  te::qt::widgets::SymbolSelectorDialog::getSymbol(0);
@@ -49,7 +48,6 @@ void SymbolSelector()
   std::cout << "- ID: " << info.m_id << std::endl;
   std::cout << "- Name: " << info.m_name << std::endl;
   std::cout << "- Author: " << info.m_author << std::endl;
-  std::cout << "- Category: " << info.m_category << std::endl;
   std::cout << "- Tags: " << info.m_tags << std::endl;
   std::cout << "- Description: " << info.m_description << std::endl;
   std::cout << "- Number of Symbolizers: " << symbol->getSymbolizersCount() << std::endl;
@@ -60,16 +58,15 @@ void SymbolSelector()
 void SymbolEditor()
 {
   // Widgets for symbol edition...
-  te::qt::widgets::SymbolEditorWidget* editPointSymbolizer = new te::qt::widgets::SymbolEditorWidget();
-  te::qt::widgets::SymbolEditorWidget* editLineSymbolizer = new te::qt::widgets::SymbolEditorWidget();
-  te::qt::widgets::SymbolEditorWidget* editPolygonSymbolizer = new te::qt::widgets::SymbolEditorWidget();
+  te::qt::widgets::SymbolEditorWidget* editPointSymbol = new te::qt::widgets::SymbolEditorWidget(te::qt::widgets::PointSymbol);
+  te::qt::widgets::SymbolEditorWidget* editLineSymbol = new te::qt::widgets::SymbolEditorWidget(te::qt::widgets::LineSymbol);
+  te::qt::widgets::SymbolEditorWidget* editPolygonSymbol = new te::qt::widgets::SymbolEditorWidget(te::qt::widgets::PolygonSymbol);
 
   // Symbol Information
   te::qt::widgets::SymbolInfo info;
   info.m_id = "179C25E4-AABC-4F63-8C10-AAD00CCE74F9";
   info.m_name = "Brazilian Highway";
   info.m_author = "TerraLib Team";
-  info.m_category = "Brazilian Road Symbols";
   info.m_tags = "highway; road; Brazil";
   info.m_description = "This symbol is used to represent highways.";
   te::qt::widgets::SymbolInfoDialog* symbolInfo = new te::qt::widgets::SymbolInfoDialog; 
@@ -78,9 +75,9 @@ void SymbolEditor()
   // Grouping to show!
   QMdiArea mainWidget;
   mainWidget.setWindowTitle("Symbol Editors");
-  mainWidget.addSubWindow(editPointSymbolizer)->setWindowTitle("Point Symbol");
-  mainWidget.addSubWindow(editLineSymbolizer)->setWindowTitle("Line Symbol");
-  mainWidget.addSubWindow(editPolygonSymbolizer)->setWindowTitle("Polygon Symbol");
+  mainWidget.addSubWindow(editPointSymbol)->setWindowTitle("Point Symbol");
+  mainWidget.addSubWindow(editLineSymbol)->setWindowTitle("Line Symbol");
+  mainWidget.addSubWindow(editPolygonSymbol)->setWindowTitle("Polygon Symbol");
   mainWidget.addSubWindow(symbolInfo);
   mainWidget.show();
 

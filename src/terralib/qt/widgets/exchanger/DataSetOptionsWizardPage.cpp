@@ -101,25 +101,28 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     if(it->get() == 0)
       continue;
 
-    //get datasetype
-    te::da::DataSetTypePtr myclone(static_cast<te::da::DataSetType*>((*it)->clone()));
-
-    if(!myclone->isFullLoaded())
-      te::da::LoadFull(myclone.get(), datasource->getId());
-
-    //create dataset adapter
-    te::da::DataSourcePtr targetDataSource = te::da::DataSourceManager::getInstance().find(m_targetDatasource->getId());
     te::da::DataSourcePtr sourceDataSource = te::da::DataSourceManager::getInstance().find(m_datasource->getId());
 
-    te::da::DataSourceTransactor* transactor = sourceDataSource->getTransactor();
+    te::da::DataSourcePtr targetDataSource = te::da::DataSourceManager::getInstance().find(m_targetDatasource->getId());
 
-    te::da::DataSet* sourceDataSet = transactor->getDataSet(myclone->getName());
+    te::da::DataSourceTransactor* transactor = sourceDataSource->getTransactor();
+    
+    te::da::DataSet* sourceDataSet = transactor->getDataSet((*it)->getName());
+
+    sourceDataSet->loadTypeInfo();
 
     delete transactor;
 
+    //get datasetype
+    te::da::DataSetTypePtr dt(static_cast<te::da::DataSetType*>(sourceDataSet->getType()->clone()));
+
+    if(!dt->isFullLoaded())
+      te::da::LoadFull(dt.get(), datasource->getId());
+
+    //create dataset adapter
     te::da::DataSetAdapter* adapter = new te::da::DataSetAdapter(sourceDataSet, targetDataSource->getCapabilities(), true);
 
-    m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::value_type(myclone, adapter));
+    m_datasets.insert(std::map<te::da::DataSetTypePtr, te::da::DataSetAdapter*>::value_type(dt, adapter));
   }
 
   for(std::list<te::da::DataSetTypePtr>::const_iterator it = datasets.begin(); it != datasets.end(); ++it)

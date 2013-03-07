@@ -378,20 +378,24 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
 {
   if(m_ui->m_userNameLineEdit->text() != "" && m_ui->m_passwordLineEdit->text() != "")
   {
-    std::map<std::string, std::string> dsInfo;
-    getConnectionInfo(dsInfo);
+    try{
+      std::map<std::string, std::string> dsInfo;
+      getConnectionInfo(dsInfo);
 
-    // Get DataSources
-    std::vector<std::string> dbNames = te::da::DataSource::getDataSources("POSTGIS", dsInfo);
-    if(!dbNames.empty())
-      for(std::size_t i = 0; i < dbNames.size(); i++)
-        m_ui->m_databaseComboBox->addItem(dbNames[i].c_str());
+      // Get DataSources
+      std::vector<std::string> dbNames = te::da::DataSource::getDataSources("POSTGIS", dsInfo);
+      if(!dbNames.empty())
+        for(std::size_t i = 0; i < dbNames.size(); i++)
+          m_ui->m_databaseComboBox->addItem(dbNames[i].c_str());
 
-    // Get Encodings
-    m_ui->m_clientEncodingComboBox->addItem("");
-    std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
-    if(!encodings.empty())
-      for(std::size_t i = 0; i < encodings.size(); i++)
-        m_ui->m_clientEncodingComboBox->addItem(encodings[i].c_str());
+      // Get Encodings
+      m_ui->m_clientEncodingComboBox->addItem("");
+      std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
+      if(!encodings.empty())
+        for(std::size_t i = 0; i < encodings.size(); i++)
+          m_ui->m_clientEncodingComboBox->addItem(encodings[i].c_str());
+    }
+    catch(...)
+    {}
   }
 }

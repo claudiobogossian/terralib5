@@ -86,6 +86,15 @@ void te::qt::widgets::Symbol::addSymbolizer(te::se::Symbolizer* symb)
   m_symbs.push_back(symb);
 }
 
+void te::qt::widgets::Symbol::setSymbolizer(const std::size_t& i, te::se::Symbolizer* symb)
+{
+  assert(symb);
+  assert(i < m_symbs.size());
+
+  delete m_symbs[i];
+  m_symbs[i] = symb;
+}
+
 void te::qt::widgets::Symbol::removeSymbolizer(const std::size_t& i)
 {
   assert(i < m_symbs.size());

@@ -135,6 +135,16 @@ namespace te
         void addSymbolizer(te::se::Symbolizer* symb);
 
         /*!
+          \brief It sets the given Symbolizer at the given position.
+
+          \param i    The Symbolizer position.
+          \param symb The Symbolizer that will be added.
+
+          \note The symbol will take the ownership of the given Symbolizer.
+        */
+        void setSymbolizer(const std::size_t& i, te::se::Symbolizer* symb);
+
+        /*!
           \brief It removes the specified Symbolizer from the list of Symbolizers of the symbol.
 
           \param i The Symbolizer index.

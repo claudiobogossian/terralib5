@@ -41,10 +41,11 @@
 // STL
 #include <cassert>
 
-te::qt::widgets::SymbolEditorWidget::SymbolEditorWidget(QWidget* parent)
+te::qt::widgets::SymbolEditorWidget::SymbolEditorWidget(const SymbolType& type, QWidget* parent)
   : QWidget(parent),
     m_ui(new Ui::SymbolEditorWidgetForm),
-    m_symbol(new Symbol)
+    m_symbol(new Symbol),
+    m_type(type)
 {
   m_ui->setupUi(this);
 
@@ -106,50 +107,45 @@ void te::qt::widgets::SymbolEditorWidget::updateUi()
 
 void te::qt::widgets::SymbolEditorWidget::createNewSymbolizer()
 {
-  //QWidget* symbolizerWidget = 0;
-  //switch(m_type)
-  //{
-  //  case te::se::POINT_SYMBOLIZER:
-  //  {
-  //    PointSymbolizerWidget* pts = new PointSymbolizerWidget;
-  //    m_symbs.push_back(pts->getSymbolizer());
-  //    symbolizerWidget = pts;
-  //  }
-  //  break;
+  QWidget* symbolizerWidget = 0;
+  switch(m_type)
+  {
+    case PointSymbol:
+    {
+      PointSymbolizerWidget* pts = new PointSymbolizerWidget;
+      m_symbol->addSymbolizer(pts->getSymbolizer());
+      symbolizerWidget = pts;
+    }
+    break;
 
-  //  case te::se::LINE_SYMBOLIZER:
-  //  {
-  //    LineSymbolizerWidget* ls = new LineSymbolizerWidget;
-  //    m_symbs.push_back(ls->getSymbolizer());
-  //    symbolizerWidget = ls;
-  //  }
-  //  break;
+    case LineSymbol:
+    {
+      LineSymbolizerWidget* ls = new LineSymbolizerWidget;
+      m_symbol->addSymbolizer(ls->getSymbolizer());
+      symbolizerWidget = ls;
+    }
+    break;
 
-  //  case te::se::POLYGON_SYMBOLIZER:
-  //  {
-  //    PolygonSymbolizerWidget* ps = new PolygonSymbolizerWidget;
-  //    m_symbs.push_back(ps->getSymbolizer());
-  //    symbolizerWidget = ps;
-  //  }
-  //  break;
-  //  
-  //  case te::se::RASTER_SYMBOLIZER:
-  //  case te::se::TEXT_SYMBOLIZER:
-  //  {
-  //  }
-  //}
-  //// Adding on stack
-  //m_symbolizersStackedWidget->addWidget(symbolizerWidget);
-  //// Connecting signal & slot
-  //connect(symbolizerWidget, SIGNAL(symbolizerChanged()), SLOT(onSymbolizerChanged()));
-  //// Makes this new widget the current
-  //m_symbolizersStackedWidget->setCurrentIndex(m_symbolizersStackedWidget->count() - 1);
+    case PolygonSymbol:
+    {
+      PolygonSymbolizerWidget* ps = new PolygonSymbolizerWidget;
+      m_symbol->addSymbolizer(ps->getSymbolizer());
+      symbolizerWidget = ps;
+    }
+    break;
+  }
+  // Adding on stack
+  m_symbolizersStackedWidget->addWidget(symbolizerWidget);
+  // Connecting signal & slot
+  connect(symbolizerWidget, SIGNAL(symbolizerChanged()), SLOT(onSymbolizerChanged()));
+  // Makes this new widget the current
+  m_symbolizersStackedWidget->setCurrentIndex(m_symbolizersStackedWidget->count() - 1);
 
-  //// Updating preview
-  //updateUi();
+  // Updating preview
+  updateUi();
 
-  //// Select on symbolizer table
-  //m_symbolTable->selectSymbolizer(m_symbs.size() - 1);
+  // Select on symbolizer table
+  m_symbolTable->selectSymbolizer(m_symbol->getSymbolizersCount() - 1);
 }
 
 void te::qt::widgets::SymbolEditorWidget::swapSymbolizers(const int& indexFirst, const int& indexSecond)
@@ -235,33 +231,27 @@ void te::qt::widgets::SymbolEditorWidget::onSymbolizerChanged()
      {
        int index = m_symbolizersStackedWidget->currentIndex();
        assert(index >= 0 && index < static_cast<int>(m_symbs.size()));
-       delete m_symbs[index];
-       m_symbs[index] = symb;
+       m_symbol->setSymbolizer(index, symb);
      }
   */
 
- /* int index = m_symbolizersStackedWidget->currentIndex();
-  assert(index >= 0 && index < static_cast<int>(m_symbs.size()));
+  int index = m_symbolizersStackedWidget->currentIndex();
+  assert(index >= 0 && index < static_cast<int>(m_symbol->getSymbolizersCount()));
 
   QWidget* w = m_symbolizersStackedWidget->currentWidget();
-  delete m_symbs[index];
   switch(m_type)
   {
-    case te::se::POINT_SYMBOLIZER:
-      m_symbs[index] = static_cast<PointSymbolizerWidget*>(w)->getSymbolizer();
+    case PointSymbol:
+      m_symbol->setSymbolizer(index, static_cast<PointSymbolizerWidget*>(w)->getSymbolizer());
     break;
 
-    case te::se::LINE_SYMBOLIZER:
-      m_symbs[index] = static_cast<LineSymbolizerWidget*>(w)->getSymbolizer();
+    case LineSymbol:
+      m_symbol->setSymbolizer(index, static_cast<LineSymbolizerWidget*>(w)->getSymbolizer());
     break;
 
-    case te::se::POLYGON_SYMBOLIZER:
-      m_symbs[index] = static_cast<PolygonSymbolizerWidget*>(w)->getSymbolizer();
+    case PolygonSymbol:
+      m_symbol->setSymbolizer(index, static_cast<PolygonSymbolizerWidget*>(w)->getSymbolizer());
     break;
-    
-    case te::se::TEXT_SYMBOLIZER:
-    case te::se::RASTER_SYMBOLIZER:
-    {}
   }
-  updateUi();*/
+  updateUi();
 }

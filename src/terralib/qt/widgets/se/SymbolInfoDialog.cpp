@@ -53,7 +53,6 @@ void te::qt::widgets::SymbolInfoDialog::setReadMode(bool enable)
 {
   m_ui->m_nameLineEdit->setReadOnly(enable);
   m_ui->m_authorLineEdit->setReadOnly(enable);
-  m_ui->m_categoryLineEdit->setReadOnly(enable);
   m_ui->m_tagsLineEdit->setReadOnly(enable);
   m_ui->m_descriptionTextEdit->setReadOnly(enable);
 }
@@ -63,7 +62,6 @@ void te::qt::widgets::SymbolInfoDialog::updateUi()
   m_ui->m_idLineEdit->setText(m_symbolInfo.m_id.c_str());
   m_ui->m_nameLineEdit->setText(m_symbolInfo.m_name.c_str());
   m_ui->m_authorLineEdit->setText(m_symbolInfo.m_author.c_str());
-  m_ui->m_categoryLineEdit->setText(m_symbolInfo.m_category.c_str());
   m_ui->m_tagsLineEdit->setText(m_symbolInfo.m_tags.c_str());
   m_ui->m_descriptionTextEdit->setText(m_symbolInfo.m_description.c_str());
 }

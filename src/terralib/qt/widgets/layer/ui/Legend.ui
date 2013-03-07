@@ -154,7 +154,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0" colspan="4">
-       <widget class="te::qt::qwt::ColorBar" name="colorBar" native="true">
+       <widget class="te::qt::widgets::colorbar::ColorBar" name="colorBar" native="true">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -319,7 +319,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>te::qt::qwt::ColorBar</class>
+   <class>te::qt::widgets::colorbar::ColorBar</class>
    <extends>QWidget</extends>
    <header>ColorBar.h</header>
    <container>1</container>

@@ -148,9 +148,9 @@ namespace te
 
       private:
 
-        te::da::Select* m_query;        //!< The dataset name where we will retrieve the layer objects.
         std::string m_datasourceId;     //!< The DataSource associated to this Layer2.
         std::string m_rendererType;     //!< A pointer to the internal renderer used to paint this layer.
+        te::da::Select* m_query;        //!< The dataset name where we will retrieve the layer objects.
         te::se::Style* m_style;         //!< The style to be applied to the geographic objects in the layer.
 
         static const std::string sm_type;  //!< A static data member used in the implementation of getType method.

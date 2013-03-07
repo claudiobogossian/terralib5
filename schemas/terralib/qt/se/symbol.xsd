@@ -34,7 +34,6 @@
       <xsd:element name="Id" type="xsd:string" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Name" type="xsd:string" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="Author" type="xsd:string" minOccurs="0" maxOccurs="1"/>
-      <xsd:element name="Category" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="Tags" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="Description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
       <xsd:element ref="se:Symbolizer" minOccurs="1" maxOccurs="unbounded"/>

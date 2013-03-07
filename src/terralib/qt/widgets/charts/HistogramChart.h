@@ -93,6 +93,7 @@ namespace te
 
             Histogram* m_histogram; //!< The histogram that will be shown on this chart.
             StringScaleDraw* m_histogramScaleDraw; //!< Scale draw that defines how a label will be displayed on this chart.
+//            HistogramStyle* m_style; 
 
       };
     } // end namespace widgets

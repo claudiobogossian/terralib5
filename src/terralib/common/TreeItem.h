@@ -86,6 +86,13 @@ namespace te
         virtual ~TreeItem();
 
         /*!
+          \brief It returns true if the item has descendants.
+
+          \return True if the item has descendants.
+        */
+        bool hasChildren() const;
+
+        /*!
           \brief It returns a pointer to the parent of this node.
 
           \return It returns a pointer to the parent node.
