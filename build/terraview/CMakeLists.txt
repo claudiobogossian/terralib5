@@ -71,7 +71,10 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${TE_CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 
 get_filename_component(TVIEW_OUT_DIR "${TVIEW_CONFIG_FILE}" PATH)
 
-set(TVIEW_ICON "${ROOT}/resources/images/terraview_logo.svg" CACHE STRING "Icon to be used as TerraView icon.")
+set(TVIEW_TE_LOGO "${ROOT}/resources/images/png/terralib_logo_128_transp.png" CACHE STRING "Image to be used as TerraLib logo.")
+set(TVIEW_LOGO "${ROOT}/resources/images/png/terraview_logo_256_transp.png" CACHE STRING "Image to be used as TerraView logo.")
+set(TVIEW_LARGE_LOGO "${ROOT}/resources/images/png/terraview_large_logo_64x256_transp.png" CACHE STRING "Image to be used as TerraView large logo.")
+set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/png/terraview_splashscreen.png" CACHE STRING "Image to be used as TerraView Splash Screen")
 
 add_definitions (-DBOOST_ALL_NO_LIB)
 

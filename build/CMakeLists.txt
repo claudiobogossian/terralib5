@@ -24,8 +24,6 @@ option (BUILD_TERRAVIEW "Build TerraView application?" ON)
 if(BUILD_TERRAVIEW)
   include (${CMAKE_CURRENT_SOURCE_DIR}/buildTree.cmake)
 
-  set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/terralib_logo.svg" CACHE STRING "File containing logo of the TerraLib")
-  
   if(WIN32)
     set(TVIEW_CONFIG_FILE "${TE_CMAKE_RUNTIME_OUTPUT_DIRECTORY}/config.xml" CACHE STRING "File containing main configurations of the TerraView application")
   else()

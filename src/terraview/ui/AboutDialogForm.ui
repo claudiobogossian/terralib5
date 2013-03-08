@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>783</width>
-    <height>499</height>
+    <width>741</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>About TerraView</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_9">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_8">
      <item row="0" column="0">
@@ -21,48 +24,101 @@
        <item row="0" column="0">
         <layout class="QGridLayout" name="gridLayout_6">
          <item row="0" column="0">
-          <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+          <widget class="QLabel" name="m_applicationLogo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>256</width>
+             <height>256</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>256</width>
+             <height>256</height>
+            </size>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout">
-             <item>
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="m_applicationLogo">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="maximumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="m_terralibLogo">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>128</width>
+               <height>128</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>128</width>
+               <height>128</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="1">
+        <widget class="Line" name="line_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <layout class="QGridLayout" name="gridLayout_3">
+           <item row="0" column="0">
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
               <spacer name="horizontalSpacer_4">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
@@ -75,12 +131,8 @@
                </property>
               </spacer>
              </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <spacer name="horizontalSpacer_3">
+             <item row="0" column="2">
+              <spacer name="horizontalSpacer_5">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -92,8 +144,8 @@
                </property>
               </spacer>
              </item>
-             <item>
-              <widget class="QLabel" name="m_terralibLogo">
+             <item row="0" column="1">
+              <widget class="QLabel" name="m_applicationLargeLogo">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
@@ -102,14 +154,14 @@
                </property>
                <property name="minimumSize">
                 <size>
-                 <width>150</width>
-                 <height>150</height>
+                 <width>256</width>
+                 <height>64</height>
                 </size>
                </property>
                <property name="maximumSize">
                 <size>
-                 <width>150</width>
-                 <height>150</height>
+                 <width>256</width>
+                 <height>64</height>
                 </size>
                </property>
                <property name="text">
@@ -117,140 +169,15 @@
                </property>
               </widget>
              </item>
-             <item>
-              <spacer name="horizontalSpacer_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
             </layout>
            </item>
-          </layout>
-         </item>
-         <item row="1" column="0">
-          <layout class="QGridLayout" name="gridLayout_5">
-           <item row="0" column="0">
-            <widget class="QLabel" name="m_thirdParty_1">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
+           <item row="1" column="0">
+            <widget class="QLabel" name="m_copyrightLabel">
              <property name="text">
-              <string/>
+              <string>Copyright:</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="m_thirdParty_2">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QLabel" name="m_thirdParty_3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QLabel" name="m_thirdParty_4">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-       <item row="0" column="1">
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0" rowspan="2">
-          <widget class="Line" name="line_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <layout class="QGridLayout" name="gridLayout_2">
            <item row="2" column="0">
             <widget class="QLabel" name="m_descriptionLabel">
              <property name="text">
@@ -277,34 +204,9 @@ p, li { white-space: pre-wrap; }
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="m_aboutLabel">
-             <property name="font">
-              <font>
-               <pointsize>12</pointsize>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:12pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;About &lt;span style=&quot; color:#ffaa00;&quot;&gt;Terra&lt;/span&gt;&lt;span style=&quot; color:#0055ff;&quot;&gt;View&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="m_copyrightLabel">
-             <property name="text">
-              <string>Copyright:</string>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
-         <item row="1" column="1">
+         <item row="1" column="0">
           <layout class="QGridLayout" name="gridLayout_4">
            <item row="0" column="0">
             <widget class="Line" name="line_3">
@@ -392,10 +294,10 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
   <zorder></zorder>
-  <zorder>m_thirdParty_1</zorder>
-  <zorder>m_thirdParty_2</zorder>
-  <zorder>m_thirdParty_3</zorder>
-  <zorder>m_thirdParty_4</zorder>
+  <zorder>m_applicationLargeLogo</zorder>
+  <zorder>horizontalSpacer_4</zorder>
+  <zorder>horizontalSpacer_5</zorder>
+  <zorder>m_applicationLargeLogo</zorder>
  </widget>
  <resources/>
  <connections>

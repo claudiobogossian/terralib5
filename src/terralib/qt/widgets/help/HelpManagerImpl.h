@@ -58,7 +58,7 @@ namespace te
                   i.e. qthelp://dpi.inpe.br.terraview.5.0/doc/associando_arquivos_sites.htm, "dpi.inpe.br.terraview.5.0" is the namespace defined in the Qt help project file, 
                   "doc" is the virtual folder, also defined in Qt project file, and "associando_arquivos_sites.htm" is file compiled within the project.
           */
-          virtual void showHelp (const QString& htmRef, const QString& nSpace="") = 0;
+          virtual void showHelp(const QString& htmRef, const QString& nSpace = "") = 0;
 
 
           /*!

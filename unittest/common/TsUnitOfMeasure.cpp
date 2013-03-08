@@ -30,10 +30,10 @@ CPPUNIT_TEST_SUITE_REGISTRATION( TsUnitOfMeasure );
 
 void TsUnitOfMeasure::setUp()
 {
-  uomA = new te::common::UnitOfMeasure(9030, "NAUTICAL MILE", "TestSymbolA", te::common::MeasureType::Length, 9001, 1852, 0, 0, 1, "TestDescriptionA");
-  uomB = new te::common::UnitOfMeasure(9101, "RADIAN", "TestSymbolB", te::common::MeasureType::Angle, 9101, 1, 0, 0, 1, "TestDescriptionB");
-  uomC = new te::common::UnitOfMeasure(9102, "DEGREE", "TestSymbolC", te::common::MeasureType::Angle, 9101, 3.14159265358979, 0, 0, 180, "TestDescriptionC");
-  uomD = new te::common::UnitOfMeasure(9201, "UNITY", "TesSymbolD", te::common::MeasureType::Scale, 9201, 1, 0, 0, 1, "TestDescriptionD");
+  uomA = new te::common::UnitOfMeasure(9030, "NAUTICAL MILE", "TestSymbolA", te::common::Length, 9001, 1852, 0, 0, 1, "TestDescriptionA");
+  uomB = new te::common::UnitOfMeasure(9101, "RADIAN", "TestSymbolB", te::common::Angle, 9101, 1, 0, 0, 1, "TestDescriptionB");
+  uomC = new te::common::UnitOfMeasure(9102, "DEGREE", "TestSymbolC", te::common::Angle, 9101, 3.14159265358979, 0, 0, 180, "TestDescriptionC");
+  uomD = new te::common::UnitOfMeasure(9201, "UNITY", "TesSymbolD", te::common::Scale, 9201, 1, 0, 0, 1, "TestDescriptionD");
 }
 
 void TsUnitOfMeasure::tearDown()
@@ -66,7 +66,7 @@ void TsUnitOfMeasure::tcGetSymbol()
 
 void TsUnitOfMeasure::tcGetType()
 {
-  CPPUNIT_ASSERT(uomA->getType() == te::common::MeasureType::Length);
+  CPPUNIT_ASSERT(uomA->getType() == te::common::Length);
 }
 
 void TsUnitOfMeasure::tcIsBaseUnit()

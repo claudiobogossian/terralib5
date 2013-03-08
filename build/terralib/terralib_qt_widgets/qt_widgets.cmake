@@ -79,6 +79,7 @@ set (
   widgets/layer/explorer
   widgets/layer/selector
   widgets/layer/utils
+  widgets/mapdisplay
   widgets/progress
   widgets/property
   widgets/propertybrowser
@@ -179,6 +180,12 @@ set (
   ${SRCDIR}/widgets/layer/selector/HiddenDataSetLayerSelector.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/selector" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/mapdisplay/DataSetDisplay.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/mapdisplay" MOC)
 
 set (
   HDRS_TO_MOC

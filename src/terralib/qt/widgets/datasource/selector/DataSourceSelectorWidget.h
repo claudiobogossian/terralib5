@@ -108,6 +108,8 @@ namespace te
           void dataSourceTypePressed(QListWidgetItem* item);
 
           void dataSourcePressed(QListWidgetItem* item);
+          
+          void dataSourceDoubleClicked(QListWidgetItem * item);
 
         private:
 
