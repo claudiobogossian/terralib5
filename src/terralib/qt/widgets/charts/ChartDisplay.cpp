@@ -32,7 +32,7 @@
 #include <qwt_text.h>
 
 //Qt
-#include <QPen>
+#include <QtGui/QPen>
 
 #include "Utils.h"
 #include "ChartDisplay.h"

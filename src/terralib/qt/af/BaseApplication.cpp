@@ -570,14 +570,14 @@ void te::qt::af::BaseApplication::initActions()
 {
 // Menu -View- actions
   initAction(m_viewLayerExplorer, "view-layer-explorer", "Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true);
-  initAction(m_viewMapDisplay, "display-visible", "Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true);
-  initAction(m_viewDataTable, "grid-visible", "Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false);
+  initAction(m_viewMapDisplay, "view-map-display", "Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true);
+  initAction(m_viewDataTable, "view-data-table", "Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false);
   initAction(m_viewStyleExplorer, "grid-visible", "Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false);
-  initAction(m_viewFullScreen, "grid-visible", "Full Screen", tr("F&ull Screen"), tr(""), true, false, false);
+  initAction(m_viewFullScreen, "view-fullscreen", "Full Screen", tr("F&ull Screen"), tr(""), true, false, false);
   initAction(m_viewRefresh, "view-refresh", "Refresh", tr("&Refresh"), tr(""), true, false, false);
   initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
-  initAction(m_viewGrid, "grid-visible", "Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false);
-  initAction(m_viewDataSourceExplorer, "grid-visible", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
+  initAction(m_viewGrid, "view-grid", "Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false);
+  initAction(m_viewDataSourceExplorer, "view-datasource-explorer", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
 
 // Menu -Tools- actions
   initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true);

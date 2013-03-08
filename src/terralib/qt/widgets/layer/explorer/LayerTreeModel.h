@@ -91,6 +91,8 @@ namespace te
 
           void add(const te::map::AbstractLayerPtr& layer);
 
+          void dataChangedForDescendants(const QModelIndex& parent);
+
         private:
 
           std::vector<AbstractLayerTreeItem*> m_items;
