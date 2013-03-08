@@ -148,7 +148,6 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schemaLocation.absolutePath().toStdString() + "/qt/af/project.xsd");
   writer.writeAttribute("version", TERRALIB_STRING_VERSION);
-  writer.writeAttribute("release", "2013-01-01");
 
   writer.writeElement("Title", project.getTitle());
   writer.writeElement("Author", project.getAuthor());

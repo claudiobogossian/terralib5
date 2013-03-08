@@ -59,8 +59,8 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // link specific parameters with chosen implementation
   te::rp::SegmenterRegionGrowingStrategy::Parameters segparameters;
-  segparameters.m_minSegmentSize = 250;
-  segparameters.m_segmentsSimilarityThreshold = 30;
+  segparameters.m_minSegmentSize = 50;
+  segparameters.m_segmentsSimilarityThreshold = 0.10;
   segparameters.m_segmentFeatures = 
     te::rp::SegmenterRegionGrowingStrategy::Parameters::MeanFeaturesType;
 
@@ -206,8 +206,6 @@ void TsClassifier::MAP()
 // link specific parameters with chosen implementation
   te::rp::ClassifierMAPStrategy::Parameters classifierparameters;
   classifierparameters.m_trainSamplesPtr = &allClassesSamples;
-  classifierparameters.m_classThresholds.push_back( 0.5 );
-  classifierparameters.m_classThresholds.push_back( 0.5 );
 
   algoInputParameters.m_strategyName = "map";
   algoInputParameters.setClassifierStrategyParams(classifierparameters);

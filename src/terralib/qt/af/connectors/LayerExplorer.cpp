@@ -53,7 +53,7 @@ void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::Event* evt)
 
       te::qt::af::NewProject* nevt = dynamic_cast<te::qt::af::NewProject*>(evt);
 
-      if(nevt == 0 || nevt->m_project == 0)
+      if(nevt == 0 || nevt->m_project == 0 || nevt->m_project->getLayers().size() == 0)
         return;
 
       m_explorer->setLayers(nevt->m_project->getLayers());

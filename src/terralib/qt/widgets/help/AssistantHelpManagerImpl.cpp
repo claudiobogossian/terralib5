@@ -107,10 +107,10 @@ void te::qt::widgets::AssistantHelpManagerImpl::showHelp(const QString& htmRef, 
 
   QString nS = (nSpace.isEmpty()) ? "dpi.inpe.br.qtwidgets" : nSpace;
 
-  QByteArray ba("SetSource ");
-  ba.append("qthelp://" + nS + "/doc/");
+  QByteArray ba;
+  ba.append("setSource qthelp://" + nS + "/doc/" + htmRef.toLocal8Bit() + '\n');
 
-  m_proc->write(ba + htmRef.toLocal8Bit() + '\n');
+  m_proc->write(ba);
 }
 
 void te::qt::widgets::AssistantHelpManagerImpl::appendDoc(const QString& docRef)

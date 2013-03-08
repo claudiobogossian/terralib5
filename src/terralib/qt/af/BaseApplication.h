@@ -99,6 +99,8 @@ namespace te
 
           void onToolsCustomizeTriggered();
 
+          void onProjectPropertiesTriggered();
+
           //void layerVisibilityChanged(const QModelIndex& idx);
 
           //void drawLayers();

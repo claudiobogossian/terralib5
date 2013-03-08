@@ -43,8 +43,8 @@ if(QT_FOUND)
     COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_BINARY_DIR}/help/widgets
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/about.txt
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/sobre.txt
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/doc_widgets.qhp
-    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/tview.qhp
+    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/widgets.qhp
+    COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/terraview.qhp
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_BINARY_DIR}/help/help.qhcp
     DEPENDS ${CMAKE_BINARY_DIR}/help/help.qhc
     COMMENT "Removing copied files"

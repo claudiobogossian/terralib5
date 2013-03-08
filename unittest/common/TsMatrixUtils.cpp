@@ -87,3 +87,44 @@ void TsMatrixUtils::getPseudoInverseMatrix()
   CPPUNIT_ASSERT( std::abs( outputMatrix( 2 , 1 ) - 0.250000 ) < 0.000001 );
   CPPUNIT_ASSERT( std::abs( outputMatrix( 2 , 2 ) + 0.125000 ) < 0.000001 );
 }
+
+void TsMatrixUtils::GetDeterminant()
+{
+  {
+    boost::numeric::ublas::matrix< double > inputMatrix( 1, 1 );
+    inputMatrix( 0 , 0 ) = 1;
+    double determinant = 0;
+    CPPUNIT_ASSERT( te::common::GetDeterminant( inputMatrix, determinant ) );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( determinant, 1.0, 0.0000000001 );
+  }
+
+  {
+    boost::numeric::ublas::matrix< double > inputMatrix( 2, 2 );
+    inputMatrix( 0 , 0 ) = 5;
+    inputMatrix( 0 , 1 ) = 3;
+    inputMatrix( 1 , 0 ) = 2;
+    inputMatrix( 1 , 1 ) = 4;
+    double determinant = 0;
+    CPPUNIT_ASSERT( te::common::GetDeterminant( inputMatrix, determinant ) );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( determinant, 14, 0.0000000001 );
+  }
+  
+  {
+    boost::numeric::ublas::matrix< double > inputMatrix( 3, 3 );
+    inputMatrix( 0 , 0 ) = 1;
+    inputMatrix( 0 , 1 ) = 2;
+    inputMatrix( 0 , 2 ) = 3;
+    inputMatrix( 1 , 0 ) = 4;
+    inputMatrix( 1 , 1 ) = 5;
+    inputMatrix( 1 , 2 ) = 6;
+    inputMatrix( 2 , 0 ) = 7;
+    inputMatrix( 2 , 1 ) = 8;
+    inputMatrix( 2 , 2 ) = 10;
+    
+    double determinant = 0;
+    CPPUNIT_ASSERT( te::common::GetDeterminant( inputMatrix, determinant ) );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( determinant, -3.0, 0.0000000001 );
+  }  
+
+}
+

@@ -4,7 +4,6 @@
    <virtualFolder>doc</virtualFolder>
    <filterSection>
        <filterAttribute>help</filterAttribute>
-       <filterAttribute>terraview</filterAttribute>
        <toc>
            <section title="TerraView User Manual" ref="./terraview/index.html">
            </section>
