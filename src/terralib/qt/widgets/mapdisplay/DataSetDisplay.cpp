@@ -127,6 +127,7 @@ void te::qt::widgets::DataSetDisplay::clear()
     m_canvas.reset(new Canvas(width(), height()));
 
   m_canvas->setBackgroundColor(te::color::RGBAColor(255, 255, 255, 0));
+  m_canvas->clear();
 
   repaint();
 }
