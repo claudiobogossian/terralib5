@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="327.70499"
-   height="342.81204"
+   width="389.74219"
+   height="342.548"
    id="svg3472"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="New document 3">
+   sodipodi:docname="terraview-logo.svg">
   <defs
      id="defs3474" />
   <sodipodi:namedview
@@ -24,9 +24,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="54.082522"
-     inkscape:cy="42.834588"
+     inkscape:zoom="1.4"
+     inkscape:cx="382.10006"
+     inkscape:cy="204.08994"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -34,11 +34,11 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="499"
-     inkscape:window-height="474"
-     inkscape:window-x="488"
-     inkscape:window-y="1360"
-     inkscape:window-maximized="0" />
+     inkscape:window-width="1920"
+     inkscape:window-height="1019"
+     inkscape:window-x="-9"
+     inkscape:window-y="1191"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata3477">
     <rdf:RDF>
@@ -55,9 +55,9 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-713.2904,-232.38474)">
+     transform="translate(-167.98607,-318.23104)">
     <g
-       transform="translate(2364.9898,54.655938)"
+       transform="translate(1852.9758,140.21566)"
        id="g5896">
       <path
          inkscape:connector-curvature="0"
