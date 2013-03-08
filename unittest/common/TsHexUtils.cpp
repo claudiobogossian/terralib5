@@ -202,8 +202,8 @@ void TsHexUtils::tcGetDecimalFromHexLCase()
 void TsHexUtils::tcChar2Hex()
 {
   // Reading from json file into ascii_tab property tree and converting to ascii_json vector
-  std::vector<std::pair<std::string, std::string>>  ascii_json;
-  std::vector<std::pair<std::string, std::string>>::iterator itpair; 
+  std::vector<std::pair<std::string, std::string> >  ascii_json;
+  std::vector<std::pair<std::string, std::string> >::iterator itpair; 
   boost::property_tree::ptree ascii_tab;
   boost::property_tree::read_json("../data/module_common/hexutils/ascii_tab.json", ascii_tab);
   te::common::Convert(ascii_tab.get_child("ascii_t"), ascii_json);
@@ -212,18 +212,20 @@ void TsHexUtils::tcChar2Hex()
   for(itpair = ascii_json.begin(); itpair < ascii_json.end(); itpair++)
   {
     std::cout << "First: " << (*itpair).first << " Second: " << (*itpair).second  << std::endl;
-    char *res = new char[];
+    char *res = new char[2];
     //char* rt = new char[2];
     //rt = "41";
+
     char c1 = *(((*itpair).first).c_str());
     unsigned char c = *(((*itpair).first).c_str());    
     te::common::Char2Hex(c1,res);
+
     std::cout << " Output res: " << res << std::endl;
-    res[2] = '\0';
+    //res[2] = '\0';
     std::cout << " Input: " << ((*itpair).first).c_str() << " Output Char2Hex : " << res  << std::endl;
     const char* itout = ((*itpair).second).c_str();
-    //char c_itout = *(((*itpair).first).c_str());
-    CPPUNIT_ASSERT(*res == *itout);
+    CPPUNIT_ASSERT( strncmp(res,itout,2)== 0 );
+   delete[] res;
   }
 }
 
@@ -286,131 +288,215 @@ void TsHexUtils::tcHex2Char()
   std::cout << std::endl;
 
   // Block of final test - reading from  json 
-  {
-    // Reading from json file into ascii_tab property tree and converting to ascii_json vector 
-    std::vector<std::pair<std::string, std::string>>  ascii_json;
-    std::vector<std::pair<std::string, std::string>>::iterator itpair; 
-    boost::property_tree::ptree ascii_tab;
-    boost::property_tree::read_json("../data/module_common/hexutils/ascii_tab.json", ascii_tab);
+  // Reading from json file into ascii_tab property tree and converting to ascii_json vector 
+  std::vector<std::pair<std::string, std::string> >  ascii_json;
+  std::vector<std::pair<std::string, std::string> >::iterator itpair; 
+  boost::property_tree::ptree ascii_tab;
+  boost::property_tree::read_json("../data/module_common/hexutils/ascii_tab.json", ascii_tab);
   
-    te::common::Convert(ascii_tab.get_child("ascii_t"), ascii_json);
-    std::cout << std::endl;
+  te::common::Convert(ascii_tab.get_child("ascii_t"), ascii_json);
+  std::cout << std::endl;
 
-    for(itpair = ascii_json.begin(); itpair < ascii_json.end(); itpair++)
-    {
-      std::cout << "First: " << (*itpair).first << " Second: " <<(*itpair).second  << std::endl;
-      const char* h = ((*itpair).second).c_str();    
-      char res_ascii = te::common::Hex2Char(((*itpair).second).c_str());
-      const char cres_ascci = res_ascii;
-      const char* itout = ((*itpair).first).c_str();
-      char c_itout = *(((*itpair).first).c_str());
-      CPPUNIT_ASSERT(res_ascii == c_itout);
-      CPPUNIT_ASSERT(te::common::Hex2Char(((*itpair).second).c_str()) == *(((*itpair).first).c_str()) );
-    }
+  for(itpair = ascii_json.begin(); itpair < ascii_json.end(); itpair++)
+  {
+    std::cout << "First: " << (*itpair).first << " Second: " <<(*itpair).second  << std::endl;
+    const char* h = ((*itpair).second).c_str();    
+    char res_ascii = te::common::Hex2Char(((*itpair).second).c_str());
+    const char cres_ascci = res_ascii;
+    const char* itout = ((*itpair).first).c_str();
+    char c_itout = *(((*itpair).first).c_str());
+    std::cout << "First: " << (*itpair).first << " Second: " <<(*itpair).second <<  " Result: " << res_ascii  << std::endl;
+
+    CPPUNIT_ASSERT_MESSAGE("Upper case sensitive!",res_ascii == c_itout);
+    CPPUNIT_ASSERT(te::common::Hex2Char(((*itpair).second).c_str()) == *(((*itpair).first).c_str()) );    
   }
 }
 
 void TsHexUtils::tcHex2Char2()
-{
-  char hex1[]= "0x41";  //character 'A' in hex
-  unsigned char res1 = te::common::Hex2Char2(hex1);
-  std::cout << "Output tcHex2Char2 res1: " << res1  << std::endl;
-  char hex2[]=  "0x39";  //character '9' in hex 
-  unsigned char res2 = te::common::Hex2Char2(hex2);
-  std::cout << "Output tcHex2Char2 res2: " << res2  << std::endl;
+{ 
+  // Initial tests
+  char hex1[]= "41";  //character 'A' in hex
+  char res1 = te::common::Hex2Char2(hex1);
+  std::cout << " Input: " << hex1 << " Output tcHex2Char2 res1: " << res1  << std::endl;
 
-  {
-    char hex1[]= "41";  //character 'A' in hex
-    char res1 = te::common::Hex2Char2(hex1);
-    std::cout << " Input: " << hex1 << " Output tcHex2Char2 res1: " << res1  << std::endl;
+  char hex2[] = "39";  //character '9' in hex 
+  char res2 = te::common::Hex2Char2(hex2);
+  std::cout << " Input: " << hex2 << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hex2[] = "39";  //character '9' in hex 
-    char res2 = te::common::Hex2Char2(hex2);
-    std::cout << " Input: " << hex2 << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hex3[] = "61";  //character 'a' in hex 
+  res2 = te::common::Hex2Char2(hex3);
+  std::cout << " Input: " << hex3 << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hex3[] = "61";  //character 'A' in hex 
-    res2 = te::common::Hex2Char2(hex3);
-    std::cout << " Input: " << hex3 << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hex4[] = "4a";  //character 'J' in hex  "4a" retorna ´j´
+  res2 = te::common::Hex2Char2(hex4);
+  std::cout << " Input: " << hex4 << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hex4[] = "4a";  //character 'J' in hex  "4a" retorna ´j´
-    res2 = te::common::Hex2Char2(hex4);
-    std::cout << " Input: " << hex4 << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hex5[] = "46";  //character 'F'  in hex 
+  res2 = te::common::Hex2Char2(hex5);
+  std::cout << " Input: " << hex5 << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hex5[] = "46";  //character 'F'  in hex 
-    res2 = te::common::Hex2Char2(hex5);
-    std::cout << " Input: " << hex5 << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexG[] = "47";  //character 'G'  in hex 
+  res2 = te::common::Hex2Char2(hexG);
+  std::cout << " Input: " << hexG << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexG[] = "47";  //character 'G'  in hex 
-    res2 = te::common::Hex2Char2(hexG);
-    std::cout << " Input: " << hexG << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexa[] = "61";  //character 'a'  in hex 
+  res2 = te::common::Hex2Char2(hexa);
+  std::cout << " Input: " << hexa << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexa[] = "61";  //character 'a'  in hex 
-    res2 = te::common::Hex2Char2(hexa);
-    std::cout << " Input: " << hexa << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexf[] = "66";  //character 'f'  in hex 
+  res2 = te::common::Hex2Char2(hexf);
+  std::cout << " Input: " << hexf << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexf[] = "66";  //character 'f'  in hex 
-    res2 = te::common::Hex2Char2(hexf);
-    std::cout << " Input: " << hexf << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexg[] = "67";  //character 'g'  in hex 
+  res2 = te::common::Hex2Char2(hexg);
+  std::cout << " Input: " << hexg << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexg[] = "67";  //character 'g'  in hex 
-    res2 = te::common::Hex2Char2(hexg);
-    std::cout << " Input: " << hexg << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexZ[] = "5a";  //character 'Z'  in hex   ("5a"  retorna 'z' e ao maiusculo)
+  res2 = te::common::Hex2Char2(hexZ);
+  std::cout << " Input 5a: " << hexZ << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexZ[] = "5a";  //character 'Z'  in hex   ("5a"  retorna 'z' e ao maiusculo)
-    res2 = te::common::Hex2Char2(hexZ);
-    std::cout << " Input 5a: " << hexZ << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexZ1[] = "5A";  //character 'Z'  in hex   (Hex2Char("5a")  retorna 'z' )
+  res2 = te::common::Hex2Char2(hexZ1);
+  std::cout << " Input 5A: " << hexZ1 << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexZ1[] = "5A";  //character 'Z'  in hex   (Hex2Char("5a")  retorna 'z' )
-    res2 = te::common::Hex2Char2(hexZ1);
-    std::cout << " Input 5A: " << hexZ1 << " Output tcHex2Char2 res2: " << res2  << std::endl;
+  char hexm[] = "6d";  //character 'm'  in hex (it does not accept lower case - return wrong value
+  res2 = te::common::Hex2Char2(hexm);
+  std::cout << " Input: " << hexm << " Output tcHex2Char2 res2: " << res2  << std::endl;
 
-    char hexm[] = "6d";  //character 'm'  in hex (it does not accept lower case - return wrong value
-    res2 = te::common::Hex2Char2(hexm);
-    std::cout << " Input: " << hexm << " Output tcHex2Char2 res2: " << res2  << std::endl;
-
-    char hex_xx[] = "7b";  //character '{'  in hex 
-    char res_xx = te::common::Hex2Char2(hex_xx);
-    std::cout << " Input {: " << hex_xx << " Output tcHex2Char2 res2: " << res_xx  << std::endl;
-  }
+  char hex_xx[] = "7b";  //character '{'  in hex 
+  char res_xx = te::common::Hex2Char2(hex_xx);
+  std::cout << " Input {: " << hex_xx << " Output tcHex2Char2 res2: " << res_xx  << std::endl;
 
   // Final tests - reading from json
-  {
-    // Reading from json file into ascii_tab property tree and converting to ascii_json vector
-    std::vector<std::pair<std::string, std::string>>  ascii_json;
-    std::vector<std::pair<std::string, std::string>>::iterator itpair; 
-    boost::property_tree::ptree ascii_tab;
-    boost::property_tree::read_json("../data/module_common/hexutils/ascii_tab.json", ascii_tab);
-    te::common::Convert(ascii_tab.get_child("ascii_t"), ascii_json);
+  // Reading from json file into ascii_tab property tree and converting to ascii_json vector
+  std::vector<std::pair<std::string, std::string> >  ascii_json;
+  std::vector<std::pair<std::string, std::string> >::iterator itpair; 
+  boost::property_tree::ptree ascii_tab;
+  boost::property_tree::read_json("../data/module_common/hexutils/ascii_tab.json", ascii_tab);
+  te::common::Convert(ascii_tab.get_child("ascii_t"), ascii_json);
 
-    for(itpair = ascii_json.begin(); itpair < ascii_json.end(); itpair++)
-    {
-      std::cout << " First: " << (*itpair).first << " Second: " <<(*itpair).second  << std::endl;
-      const char* h = ((*itpair).second).c_str();    
-      char res_ascii = te::common::Hex2Char2(((*itpair).second).c_str());
-      const char cres_ascci = res_ascii;
-      const char* itout = ((*itpair).first).c_str();
-      char c_itout = *(((*itpair).first).c_str());
-      CPPUNIT_ASSERT(res_ascii == c_itout);
-      CPPUNIT_ASSERT(te::common::Hex2Char2(((*itpair).second).c_str()) == *(((*itpair).first).c_str()) );
-    }
+  for(itpair = ascii_json.begin(); itpair < ascii_json.end(); itpair++)
+  {
+    std::cout << " First: " << (*itpair).first << " Second: " <<(*itpair).second  << std::endl;
+    const char* h = ((*itpair).second).c_str();    
+    char res_ascii = te::common::Hex2Char2(((*itpair).second).c_str());
+    const char cres_ascci = res_ascii;
+    const char* itout = ((*itpair).first).c_str();
+    char c_itout = *(((*itpair).first).c_str());
+    CPPUNIT_ASSERT(res_ascii == c_itout);
+    CPPUNIT_ASSERT(te::common::Hex2Char2(((*itpair).second).c_str()) == *(((*itpair).first).c_str()) );
   }
 }
 
 void TsHexUtils::tcHex2Binary_1()
 {
+  std::string hex_pairs = "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E" ;
+  std::string char_expect = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" ; //expected ascci (Dec 32 to 126)
+
+  const char* hex_pair  = hex_pairs.c_str();
+  const char* expected_res = char_expect.c_str();
+
+  char* result = te::common::Hex2Binary(hex_pair);  
+  //result[len] = '\0';
+  std::cout << " hex_pair: " << hex_pair << " Output: " << result  << " Expected Output: " << expected_res << std::endl;
+
+  CPPUNIT_ASSERT_MESSAGE("Lower case letter (a-f) in hex representaton return wrong value",strncmp(result,expected_res,strlen(expected_res)) == 0);
+  delete[] result;
 }
+
 void TsHexUtils::tcHex2Binary_2()
 {
+  std::string hex_pairs = "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E" ;
+  std::string char_expect = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" ; //expected ascci (Dec 32 to 126)
+  
+  std::string char_simb = "202122232425262728292A2B2C2D2E2F";
+  std::string char_simb_expect = " !\"#$%&'()*+,-./"; //From Dec 32 - 47
+  
+  const char* hex_pair  = hex_pairs.c_str();
+  const char* expected_res = char_expect.c_str();
+  size_t ss = strlen(hex_pair)/2;
+
+  char* result = te::common::Hex2Binary(hex_pair);  
+  //result[ss] = '\0';
+  std::cout << " hex_pair: " << hex_pair << " Output: " << result  << std::endl;
+  std::cout << " Expected Output: " << expected_res << std::endl;
+
+  CPPUNIT_ASSERT_MESSAGE("Only Upper case letter (A-F) in hex input",strncmp(result,expected_res,ss ) == 0);
+  
+  //Using strncmp with strlen instead of adding the null '\0' at the end of result
+  char* result_simbol = te::common::Hex2Binary(char_simb.c_str());
+  CPPUNIT_ASSERT(strncmp(result_simbol,char_simb_expect.c_str(),strlen(char_simb_expect.c_str())) == 0);
+  delete[] result;
 }
-void TsHexUtils::tcHex2Binary2_1()
+
+void TsHexUtils::tcHex2Binary_3()
 {
+  std::string hex_pairs = "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E" ;
+  std::string char_expect = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" ; //expected ascci (Dec 32 to 126)
+  const char* hex_pair  = hex_pairs.c_str();
+  char *result = new char[strlen(hex_pairs.c_str())/2+1];
+  const char* expected_res = char_expect.c_str();
+
+  te::common::Hex2Binary(hex_pair,strlen(hex_pair),result );  
+  result[strlen(hex_pair)/2] = '\0' ;
+  std::cout << " Input  hex pairs: " << hex_pair << std::endl;
+  std::cout << " Output result   : " << result   << std::endl;
+  std::cout << " Expected result : " << expected_res << std::endl;
+
+  CPPUNIT_ASSERT(strncmp(result,expected_res,strlen(hex_pair)/2) == 0);
+  delete[] result;
 }
-void TsHexUtils::tcHex2Binary2_2()
+
+void TsHexUtils::tcHex2Binary2()
 {
+  std::string hex_pairs = "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E" ;
+  std::string char_expect = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" ; //expected ascci (Dec 32 to 126)
+  const char* hex_pair  = hex_pairs.c_str();
+  const char* expected_res = char_expect.c_str();
+
+  char* result = te::common::Hex2Binary2(hex_pair);  
+ 
+  std::cout << " Input  hex pairs: " << hex_pair << std::endl;
+  std::cout << " Output result   : " << result   << std::endl;
+  std::cout << " Expected result : " << expected_res << std::endl;
+
+  CPPUNIT_ASSERT(strncmp(result,expected_res,strlen(hex_pair)/2) == 0);
+  delete[] result;
 }
-void TsHexUtils::tcBinary2Hex_1()
+
+void TsHexUtils::tcBinary2Hex2_1()
 {
+  std::string hex_pairs = "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E" ;
+  std::string char_expect = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" ; //expected ascci (Dec 32 to 126)
+  const char* hex_pair  = hex_pairs.c_str();
+  size_t ss = strlen(hex_pair)/2 ;
+  char *result = new char[ss+1];
+  const char* expected_res = char_expect.c_str();
+  
+  te::common::Hex2Binary2(hex_pair,strlen(hex_pair),result );  
+  result[ss] = '\0';
+
+  std::cout << " Input  hex pairs: " << hex_pair << std::endl;
+  std::cout << " Output result   : " << result   << std::endl;
+  std::cout << " Expected result : " << expected_res << std::endl;
+
+  CPPUNIT_ASSERT(strncmp(result,expected_res,ss) == 0);
+  delete[] result;
 }
-void TsHexUtils::tcBinary2Hex_2()
+
+void TsHexUtils::tcBinary2Hex_size()
 {
+  std::string expected_hex = "202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F404142434445464748494A4B4C4D4E4F505152535455565758595A5B5C5D5E5F606162636465666768696A6B6C6D6E6F707172737475767778797A7B7C7D7E" ;
+  std::string input_values = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~" ; //expected ascci (Dec 32 to 126)
+  const char* expected_hex_result  = expected_hex.c_str();
+  const char* inp_values = input_values.c_str();
+
+  char* result = te::common::Binary2Hex(inp_values,strlen(inp_values));  
+
+  std::cout << " Input  inp_values: " << inp_values << std::endl;
+  std::cout << " Output result   : " << result   << std::endl;
+  std::cout << " Expected char   : " << expected_hex_result << std::endl;
+
+  CPPUNIT_ASSERT(strcmp(result,expected_hex_result) == 0);
+  delete[] result;
 }

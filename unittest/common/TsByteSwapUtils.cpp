@@ -100,17 +100,17 @@ void TsByteSwapUtils::tcSwapBytes()
   char input_letter[] = "ABCDabcdefghij";
   int len = strlen(input_letter);
   te::common::SwapBytes(input_letter);
-  std::cout << "Input ABCDabcd " << input_letter  << std::endl;
-  CPPUNIT_ASSERT(strncmp(input_letter, "jihgfedcbaDCBA", len ) == 0);
+  std::cout << " Input ABCDabcdefghij " << input_letter  << std::endl;
+  CPPUNIT_ASSERT_MESSAGE("SwapBytes of n bytes (ABCDabcdefghij) is not working!", strncmp(input_letter, "jihgfedcbaDCBA", len ) == 0);
 
   char input_num[] = "12345678";
   te::common::SwapBytes(input_num);
-  std::cout << "Input 12345678 " << input_num  << std::endl;
+  std::cout << " Input 12345678 " << input_num  << std::endl;
   CPPUNIT_ASSERT(strncmp(input_num, "87654321", 8 ) == 0);
 
   char input_symb[] = "!@#$%&*(";
   te::common::SwapBytes(input_symb);
-  std::cout << "Input !@#$%&*( " << input_symb  << std::endl;
+  std::cout << " Input !@#$%&*( " << input_symb  << std::endl;
   CPPUNIT_ASSERT(strncmp(input_symb, "(*&%$#@!", 8 ) == 0);
 }
 
@@ -118,17 +118,17 @@ void TsByteSwapUtils::tcSwap8Bytes()
 {
   char input_letter[] = "ABCDabcd";
   te::common::Swap8Bytes(input_letter);
-  std::cout << "Input ABCDabcd " << input_letter  << std::endl;
+  std::cout << " Input ABCDabcd " << input_letter  << std::endl;
   CPPUNIT_ASSERT(strncmp(input_letter, "dcbaDCBA", 8 ) == 0);
 
   char input_num[] = "12345678";
   te::common::Swap8Bytes(input_num);
-  std::cout << "Input 12345678 " << input_num  << std::endl;
+  std::cout << " Input 12345678 " << input_num  << std::endl;
   CPPUNIT_ASSERT(strncmp(input_num, "87654321", 8 ) == 0);
 
   char input_symb[] = "!@#$%&*(";
   te::common::Swap8Bytes(input_symb);
-  std::cout << "Input !@#$%&*( " << input_symb  << std::endl;
+  std::cout << " Input !@#$%&*( " << input_symb  << std::endl;
   CPPUNIT_ASSERT(strncmp(input_symb, "(*&%$#@!", 8 ) == 0);
 }
 
@@ -145,27 +145,27 @@ void TsByteSwapUtils::tcSwapBytes_bint16()
   int ss; 
   
   //Swap bytes 2x and the result must be equal the input.
-  std::cout << "Input  min  " << i16min  << std::endl;
+  std::cout << " Input  min  " << i16min  << std::endl;
   ss = sizeof(i16min);
   te::common::SwapBytes(i16min);
-  std::cout << "Input  swap " << i16min  << std::endl;
+  std::cout << " Input  swap " << i16min  << std::endl;
   te::common::SwapBytes(i16min);
-  std::cout << "Swap again  " << i16min  << std::endl;
+  std::cout << " Swap again  " << i16min  << std::endl;
 
   CPPUNIT_ASSERT(i16min == i16min_swap2);
 
-  std::cout << "Input  max  " << i16max  << std::endl;
+  std::cout << " Input  max  " << i16max  << std::endl;
   ss = sizeof(i16max);
   te::common::SwapBytes(i16max);
-  std::cout << "Input  swap " << i16max  << std::endl;
+  std::cout << " Input  swap " << i16max  << std::endl;
   te::common::SwapBytes(i16max);
-  std::cout << "Swap again  " << i16max  << std::endl;
+  std::cout << " Swap again  " << i16max  << std::endl;
   CPPUNIT_ASSERT(i16max == i16max_swap2);
 
-  std::cout << "Input  med  " << i16med  << std::endl;
+  std::cout << " Input  med  " << i16med  << std::endl;
   ss = sizeof(i16med);
   te::common::SwapBytes(i16med);
-  std::cout << "Input  swap " << i16med  << std::endl;
+  std::cout << " Input  swap " << i16med  << std::endl;
   te::common::SwapBytes(i16med);
   std::cout << "Swap again  " << i16med  << std::endl;
   CPPUNIT_ASSERT(i16med == i16med_swap2);
