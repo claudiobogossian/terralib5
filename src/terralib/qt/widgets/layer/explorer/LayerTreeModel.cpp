@@ -281,6 +281,9 @@ bool te::qt::widgets::LayerTreeModel::hasChildren(const QModelIndex& parent) con
 
 QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QModelIndex& parent) const
 {
+  if(m_items.empty())
+    return QModelIndex();
+
   if(!parent.isValid()) // is it a top-level item?
   {
 // yes!
