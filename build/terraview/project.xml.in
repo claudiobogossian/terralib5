@@ -4,8 +4,7 @@
          xmlns:te_qt_af="http://www.terralib.org/schemas/qt/af"
          xmlns="http://www.terralib.org/schemas/qt/af"
          xsd:schemaLocation="http://www.terralib.org/schemas/qt/af ${TE_SCHEMA_LOCATION}/qt/af/project.xsd"
-         version="${TERRALIB_STRING_VERSION}"
-         release="2013-01-01">
+         version="${TERRALIB_STRING_VERSION}">
   <Title>Default project</Title>
   <Author>INPE</Author>
   <ComponentList>

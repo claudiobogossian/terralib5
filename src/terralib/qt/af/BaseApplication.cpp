@@ -61,6 +61,7 @@
 #include "Project.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
+#include "ProjectEditor.h"
 
 // Qt
 #include <QtCore/QDir>
@@ -335,6 +336,19 @@ void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
+{
+  if(m_project == 0)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no current project."));
+    return;
+  }
+
+  ProjectEditor editor(this);
+  editor.setProject(m_project);
+  editor.exec();
+}
+
 void te::qt::af::BaseApplication::makeDialog()
 {
   initActions();
@@ -552,7 +566,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Project- actions
   initAction(m_projectRemoveLayer, "", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
-  initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, false);
+  initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true);
   initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
   initAction(m_projectAddLayerImage, "", "Image", tr("&Image"), tr("Add a new layer from a satellite image"), true, false, false);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
@@ -767,4 +781,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
+  connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
 }
