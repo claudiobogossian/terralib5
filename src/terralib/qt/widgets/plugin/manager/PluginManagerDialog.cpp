@@ -34,6 +34,7 @@
 #include "PluginManagerDialog.h"
 #include "PluginsModel.h"
 #include "ui_PluginManagerDialogForm.h"
+#include "../../help/HelpManager.h"
 
 // STL
 #include <algorithm>
@@ -261,6 +262,7 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
 
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
+  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), SLOT(onHelpPushButtonPressed()));
 
   m_ui->m_addButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removeButton->setIcon(QIcon::fromTheme("list-remove"));
@@ -268,8 +270,6 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   m_ui->m_installedPluginsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
   m_ui->m_pluginsTabWidget->setTabEnabled(1, false);
-
-  m_ui->m_helpPushButton->setPageReference("widgets/pluginmanager/PluginManager.html");
 }
 
 te::qt::widgets::PluginManagerDialog::~PluginManagerDialog()
@@ -460,6 +460,11 @@ void te::qt::widgets::PluginManagerDialog::removePlugins()
 void te::qt::widgets::PluginManagerDialog::dataChanged(const QModelIndex&, const QModelIndex&)
 {
   m_ui->m_applyPushButton->setEnabled(true);
+}
+
+void te::qt::widgets::PluginManagerDialog::onHelpPushButtonPressed()
+{
+  te::qt::widgets::HelpManager::getInstance().showHelp("widgets/pluginmanager/PluginManager.html", "dpi.inpe.br.qtwidgets");
 }
 
 void te::qt::widgets::PluginManagerDialog::fillInstalledPlugins()

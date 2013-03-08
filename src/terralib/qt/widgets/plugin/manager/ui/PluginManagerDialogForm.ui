@@ -26,7 +26,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
+        <widget class="QPushButton" name="m_helpPushButton">
          <property name="text">
           <string>&amp;Help</string>
          </property>

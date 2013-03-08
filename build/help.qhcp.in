@@ -22,17 +22,17 @@
     <docFiles>
       <generate>
         <file>
-          <input>./doc_widgets.qhp</input>
-          <output>./doc_widgets.qch</output>
+          <input>terraview.qhp</input>
+          <output>terraview.qch</output>
         </file>
         <file>
-          <input>./tview.qhp</input>
-          <output>./tview.qch</output>
+          <input>widgets.qhp</input>
+          <output>widgets.qch</output>
         </file>
       </generate>
       <register>
-        <file>./tview.qch</file>
-        <file>./doc_widgets.qch</file>
+        <file>terraview.qch</file>
+        <file>widgets.qch</file>
       </register>
     </docFiles>
 </QHelpCollectionProject>
