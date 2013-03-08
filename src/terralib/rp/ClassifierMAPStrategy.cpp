@@ -28,6 +28,9 @@
 #include "ClassifierMAPStrategy.h"
 #include "Macros.h"
 #include "../raster/Band.h"
+#include "../common/MatrixUtils.h"
+
+#include <cfloat>
 
 namespace
 {
@@ -50,7 +53,6 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
   reset();
 
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
-  m_classThresholds = rhs.m_classThresholds;
   m_prioriProbs = rhs.m_prioriProbs;
 
   return *this;
@@ -59,7 +61,6 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
 void te::rp::ClassifierMAPStrategy::Parameters::reset() throw(te::rp::Exception)
 {
   m_trainSamplesPtr = 0;
-  m_classThresholds.clear();
   m_prioriProbs.clear();
 }
 
@@ -82,10 +83,13 @@ te::rp::ClassifierMAPStrategy::~ClassifierMAPStrategy()
 bool te::rp::ClassifierMAPStrategy::initialize(
   te::rp::StrategyParameters const* const strategyParams) throw(te::rp::Exception)
 {
+  m_isInitialized = false;
   m_initParams.reset();
+  m_classesIndex2ID.clear();
   m_classesMeans.clear();
   m_classesCovarianceMatrixes.clear();
-  m_isInitialized = false;
+  m_classesCovarianceInvMatrixes.clear();
+  m_classesOptizedMAPDiscriminantTerm.clear();  
   
   ClassifierMAPStrategy::Parameters const * const castParamsPtr = 
     dynamic_cast< ClassifierMAPStrategy::Parameters const * >( strategyParams );
@@ -97,18 +101,9 @@ bool te::rp::ClassifierMAPStrategy::initialize(
     "Invalid classes samples pointer" )
   TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->size() > 0,
     "Invalid classes samples number" )
+  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->begin()->second.size() > 0,
+    "Invalid classes samples number" )    
     
-  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_classThresholds.size() ==
-    castParamsPtr->m_trainSamplesPtr->size(), "Invalid classes thresholds" );
-  for( std::vector< double >::size_type csIdx = 0 ; csIdx < 
-    castParamsPtr->m_classThresholds.size() ; ++csIdx )
-  {
-    TERP_TRUE_OR_RETURN_FALSE( 
-      ( castParamsPtr->m_classThresholds[ csIdx ] >= 0.0 ) &&
-      ( castParamsPtr->m_classThresholds[ csIdx ] <= 1.0 ),
-      "Invalid classes thresholds" );                    
-  }
-
   if( ! castParamsPtr->m_prioriProbs.empty() )
   {
     TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_prioriProbs.size() ==
@@ -125,7 +120,10 @@ bool te::rp::ClassifierMAPStrategy::initialize(
   
   m_initParams = (*castParamsPtr);
   
-  // Calculating the classes means vectors
+  // Calculating m_classesMeans and m_classesIndex2ID
+  
+  const unsigned int dimsNumber = (unsigned int)
+    castParamsPtr->m_trainSamplesPtr->begin()->second.operator[]( 0 ).size();  
   
   {
     Parameters::MClassesSamplesCT::const_iterator classesIt = 
@@ -135,11 +133,11 @@ bool te::rp::ClassifierMAPStrategy::initialize(
       
     while( classesIt != classesItE )
     {
+      const Parameters::ClassIDT& classID = classesIt->first;
+      
       const Parameters::ClassSamplesContainerT& classSamples = classesIt->second;
       TERP_TRUE_OR_RETURN_FALSE( classSamples.size() > 0,
         "Invalid class samples number" );
-        
-      const unsigned int dimsNumber = (unsigned int)classSamples.begin()->size();
         
       Parameters::ClassSampleT classMeans( dimsNumber, 0.0 );      
       
@@ -157,25 +155,26 @@ bool te::rp::ClassifierMAPStrategy::initialize(
           
         while( samplesIt != samplesItE )
         {
+          TERP_TRUE_OR_RETURN_FALSE( samplesIt->size() == dimsNumber,
+            "Sample size mismatch" )
           dimMean += samplesIt->operator[]( dimIdx );
           
           ++samplesIt;
         }
+        
+        dimMean /= (double)( classSamples.size() );
       }
       
-      for( dimIdx = 0 ; dimIdx < dimsNumber ; ++dimIdx )
-      {
-        classMeans[ dimIdx ] /= (double)( classSamples.size() );
-      }      
-      
       m_classesMeans.push_back( classMeans );
+      m_classesIndex2ID.push_back( classID );
       
       ++classesIt;
     }
     
   }
   
-  // Calculating the classes covariances matrixes
+  // Calculating m_classesCovarianceMatrixes, m_classesCovarianceInvMatrixes
+  // and m_classesCovarianceMatrixesHalfDetLog
   
   {
     Parameters::MClassesSamplesCT::const_iterator classesIt = 
@@ -190,12 +189,10 @@ bool te::rp::ClassifierMAPStrategy::initialize(
       TERP_TRUE_OR_RETURN_FALSE( classSamples.size() > 0,
         "Invalid class samples number" );
         
-      const Parameters::ClassSampleT& classMeans = m_classesMeans[ classIdx ];
-        
-      const unsigned int dimsNumber = (unsigned int)classSamples.begin()->size();
+      const std::vector< double >& classMeans = m_classesMeans[ classIdx ];
         
       boost::numeric::ublas::matrix< double > classCovarianceMatrix( dimsNumber, dimsNumber );      
-      
+           
       unsigned int dimIdx1 = 0;
       unsigned int dimIdx2 = 0; 
       
@@ -203,7 +200,7 @@ bool te::rp::ClassifierMAPStrategy::initialize(
       {
         const double& dimMean1 = classMeans[ dimIdx1 ];
         
-        for( dimIdx1 = 0 ; dimIdx1 < dimsNumber ; ++dimIdx1 )
+        for( dimIdx2 = 0 ; dimIdx2 < dimsNumber ; ++dimIdx2 )
         {  
           const double& dimMean2 = classMeans[ dimIdx2 ];
           
@@ -220,24 +217,36 @@ bool te::rp::ClassifierMAPStrategy::initialize(
             covariance += 
               (
                 ( samplesIt->operator[]( dimIdx1 ) - dimMean1 )
-                +
+                *
                 ( samplesIt->operator[]( dimIdx2 ) - dimMean2 )
               );
             
             ++samplesIt;
           }
+          
+          covariance /= (double)( classSamples.size() );
         }
       }
       
-      for( dimIdx1 = 0 ; dimIdx1 < dimsNumber ; ++dimIdx1 )
-      {
-        for( dimIdx1 = 0 ; dimIdx1 < dimsNumber ; ++dimIdx1 )
-        {  
-          classCovarianceMatrix( dimIdx1, dimIdx2 ) /= (double)( classSamples.size() );
-        }
-      }      
-      
       m_classesCovarianceMatrixes.push_back( classCovarianceMatrix );
+      
+      double classCovarianceMatrixDet = 0;
+      TERP_TRUE_OR_RETURN_FALSE( te::common::GetDeterminant( classCovarianceMatrix,
+        classCovarianceMatrixDet ), "Determinant matrix error" );
+      if( classCovarianceMatrixDet > 0.0 )
+      {
+        m_classesOptizedMAPDiscriminantTerm.push_back( -0.5 * std::log( 
+          classCovarianceMatrixDet ) );
+      }
+      else
+      {
+        m_classesOptizedMAPDiscriminantTerm.push_back( 0.0 );
+      }
+      
+      boost::numeric::ublas::matrix< double > classCovarianceInvMatrix;
+      TERP_TRUE_OR_RETURN_FALSE( te::common::getInverseMatrix( classCovarianceMatrix,
+        classCovarianceInvMatrix ), "Inverse matrix calcule error" );
+      m_classesCovarianceInvMatrixes.push_back( classCovarianceInvMatrix );
       
       ++classIdx;
       ++classesIt;
@@ -261,130 +270,228 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
   TERP_TRUE_OR_RETURN_FALSE( m_isInitialized, 
     "Classification strategy not initialized" );
   TERP_TRUE_OR_RETURN_FALSE( inputRasterBands.size() > 0, "Invalid input bands" );
-  TERP_TRUE_OR_RETURN_FALSE( outputRasterBand < outputRaster.getNumberOfBands(),
+  TERP_TRUE_OR_RETURN_FALSE( inputRasterBands.size() == m_classesMeans[ 0 ].size(), 
+    "Invalid input bands" );
+  TERP_DEBUG_TRUE_OR_THROW( outputRasterBand < outputRaster.getNumberOfBands(),
     "Invalid output band" );
+  TERP_DEBUG_TRUE_OR_THROW( inputRaster.getNumberOfColumns() ==
+    outputRaster.getNumberOfColumns(), "Rasters dims mismatch" );
+  TERP_DEBUG_TRUE_OR_THROW( inputRaster.getNumberOfRows() ==
+    outputRaster.getNumberOfRows(), "Rasters dims mismatch" );
     
-  // Calculating priory probabilities
+  // progress
   
-  boost::numeric::ublas::matrix< double > prioriProbs( inputRasterBands.size(), 1 );
+  std::auto_ptr< te::common::TaskProgress > progressPtr;
+  if( enableProgressInterface )
+  {
+    progressPtr.reset( new te::common::TaskProgress );
+    
+    if( m_initParams.m_prioriProbs.empty() )
+      progressPtr->setTotalSteps( 2 * inputRaster.getNumberOfRows() );
+    else
+      progressPtr->setTotalSteps( inputRaster.getNumberOfRows() );
+    
+    progressPtr->setMessage( "Classifying" );
+  }    
+    
+  // Dealing with the logarithm of priori probabilities
+  
+  std::vector< double > logPrioriProbs;
   
   if( m_initParams.m_prioriProbs.empty() )
   {
-    TERP_TRUE_OR_RETURN_FALSE( calcPrioriProbs(), "Priori probabilities calculer error" );
+    TERP_TRUE_OR_RETURN_FALSE( getPrioriProbabilities( inputRaster,
+      inputRasterBands, progressPtr.get(), logPrioriProbs ), "Priori probabilities calcule error" );
+      
+    for( unsigned int pIdx = 0 ; pIdx < logPrioriProbs.size() ; ++pIdx )
+      logPrioriProbs[ pIdx ] = ( logPrioriProbs[ pIdx ] > 0.0 ) ?
+        std::log( logPrioriProbs[ pIdx ] ) : 0.0;
   }
   else
   {
-    for( std::vector< double >::size_type pIdx = 0 ; pIdx < 
-      m_initParams.m_prioriProbs.size() ; ++pIdx )
-    {
-      prioriProbs( pIdx, 0 ) = m_initParams.m_prioriProbs[ pIdx ];
-    }
+    for( unsigned int pIdx = 0 ; pIdx < m_initParams.m_prioriProbs.size() ;
+      ++pIdx )
+      logPrioriProbs.push_back( std::log( m_initParams.m_prioriProbs[ pIdx ] ) );
   }
   
-  // Calculating the means vector
+  // Classifying
   
-  boost::numeric::ublas::matrix< double > means( inputRasterBands.size(), 1 );
-
+  const unsigned int classesNumber = (unsigned int)m_classesMeans.size();
+  const unsigned int nRows = (unsigned int)inputRaster.getNumberOfRows();
+  const unsigned int nCols = (unsigned int)inputRaster.getNumberOfColumns();
+  const unsigned int nDims = (unsigned int)inputRasterBands.size();
+  unsigned int col = 0;
+  unsigned int dim = 0;
+  boost::numeric::ublas::matrix< double > sample( nDims, 1 );
+  boost::numeric::ublas::matrix< double > sampleMinusMean( nDims, 1 );
+  boost::numeric::ublas::matrix< double > sampleMinusMeanT( 1, nDims );
+  boost::numeric::ublas::matrix< double > auxMatrix;
+  boost::numeric::ublas::matrix< double > mahalanobisDistanceMatrix;
+  unsigned int bandIdx = 0;
+  unsigned int classIdx = 0;
+  double discriminantFunctionValue = 0;
+  double closestClassdiscriminantFunctionValue = 0;
+  unsigned int closestClassIdx = 0;
+  
+  for( unsigned int row = 0 ; row < nRows ; ++row )
   {
-    std::vector< unsigned int >::size_type inputRasterBandsIdx = 0;
-    const unsigned int nCols = inputRaster.getNumberOfColumns();
-    const unsigned int nRows = inputRaster.getNumberOfRows();
-    unsigned int col = 0;
-    unsigned int row = 0;
-    double value = 0;
-    
-    for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
-      m_initParams.m_prioriProbs.size() ; ++inputRasterBandsIdx )
+    for( col = 0 ; col < nCols ; ++col )
     {
-      const unsigned int bandIdx = inputRasterBands[ inputRasterBandsIdx ];
-      TERP_TRUE_OR_THROW( bandIdx < inputRaster.getNumberOfBands(),
-        "Invalid band index" );
-      const te::rst::Band& band = ( *inputRaster.getBand( bandIdx ) );
+      // Creating the sample
       
-      means( inputRasterBandsIdx, 0 ) = 0;
-      
-      for( row = 0 ; row < nRows ; ++row )
-        for( col = 0 ; col < nCols ; ++col )
-        {
-          band.getValue( col, row, value );
-          means( inputRasterBandsIdx, 0 ) += value;          
-        }
-    }
-    
-    for( inputRasterBandsIdx = 0 ; inputRasterBandsIdx < 
-      m_initParams.m_prioriProbs.size() ; ++inputRasterBandsIdx )
-    {
-       means( inputRasterBandsIdx, 0 ) /= (double)( nCols * nRows );
-    }  
-  }
-  
-  // Calculating the covariance matrix
-  
-  boost::numeric::ublas::matrix< double > covariance( inputRasterBands.size(), 
-    inputRasterBands.size() );
-  
-  {
-    const unsigned int nCols = inputRaster.getNumberOfColumns();
-    const unsigned int nRows = inputRaster.getNumberOfRows();
-    unsigned int col = 0;
-    unsigned int row = 0;
-    double value1 = 0;
-    double value2 = 0;
-    std::vector< unsigned int >::size_type inputRasterBandsIdx1 = 0;
-    std::vector< unsigned int >::size_type inputRasterBandsIdx2 = 0;
-    
-    for( inputRasterBandsIdx1 = 0 ; 
-      inputRasterBandsIdx1 <  m_initParams.m_prioriProbs.size() ; 
-      ++inputRasterBandsIdx1 )
-    {
-      const unsigned int bandIdx1 = inputRasterBands[ inputRasterBandsIdx1 ];
-      const te::rst::Band& band1 = ( *inputRaster.getBand( bandIdx1 ) );
-      
-      for( inputRasterBandsIdx2 = 0 ; 
-        inputRasterBandsIdx2 <  m_initParams.m_prioriProbs.size() ; 
-        ++inputRasterBandsIdx2 )
+      for( dim = 0 ; dim < nDims ; ++dim )
       {
-        const unsigned int bandIdx2 = inputRasterBands[ inputRasterBandsIdx2 ];
-        const te::rst::Band& band2 = ( *inputRaster.getBand( bandIdx2 ) );
-        
-        covariance( inputRasterBandsIdx1, inputRasterBandsIdx2 ) = 0;
-        
-        for( row = 0 ; row < nRows ; ++row )
-          for( col = 0 ; col < nCols ; ++col )
-          {
-            band1.getValue( col, row, value1 );
-            band2.getValue( col, row, value2 );
-            
-            covariance( inputRasterBandsIdx1, inputRasterBandsIdx2 ) += 
-              (
-                ( value1 - means( inputRasterBandsIdx1, 0 ) )
-                +
-                ( value2 - means( inputRasterBandsIdx2, 0 ) )
-              );
-          }        
+        bandIdx = inputRasterBands[ dim ];
+        TERP_DEBUG_TRUE_OR_THROW( bandIdx < inputRaster.getNumberOfBands(),
+          "Invalid band index" );
+          
+        inputRaster.getValue( col, row, sample( dim, 0 ), bandIdx );
       }
-    }
+      
+      // Looking the the closest class
+      
+      closestClassdiscriminantFunctionValue = -1.0 * DBL_MAX;
+      
+      for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
+      {
+        const Parameters::ClassSampleT& classMeans = m_classesMeans[ classIdx ];
+        
+        for( dim = 0 ; dim < nDims ; ++dim )
+        {
+          sampleMinusMean( dim, 0 ) = sampleMinusMeanT( 0, dim ) =
+            ( sample( dim, 0 ) - classMeans[ dim ] );
+        }
+        
+        //calculate the mahalanobis distance: (x-mean)T * CovMatrizInvert * (x-mean)
+        auxMatrix = boost::numeric::ublas::prod( sampleMinusMeanT, 
+          m_classesCovarianceInvMatrixes[ classIdx ] );
+        mahalanobisDistanceMatrix = boost::numeric::ublas::prod( auxMatrix, sampleMinusMean );
+        TERP_DEBUG_TRUE_OR_THROW( mahalanobisDistanceMatrix.size1() == 1, "Internal error" );
+        TERP_DEBUG_TRUE_OR_THROW( mahalanobisDistanceMatrix.size2() == 1, "Internal error" );
+        
+        discriminantFunctionValue = logPrioriProbs[ classIdx ] 
+          + m_classesOptizedMAPDiscriminantTerm[ classIdx ]
+          - ( 0.5 * mahalanobisDistanceMatrix( 0, 0 ) );
+        
+        if( discriminantFunctionValue > closestClassdiscriminantFunctionValue )
+        {
+          closestClassdiscriminantFunctionValue = discriminantFunctionValue;
+          closestClassIdx = classIdx;
+        }
+      }
+      
+      outputRaster.setValue( col, row, m_classesIndex2ID[ closestClassIdx ] );      
+    }    
     
-    for( inputRasterBandsIdx1 = 0 ; 
-      inputRasterBandsIdx1 <  m_initParams.m_prioriProbs.size() ; 
-      ++inputRasterBandsIdx1 )
+    if( enableProgressInterface )
     {
-      for( inputRasterBandsIdx2 = 0 ; 
-        inputRasterBandsIdx2 <  m_initParams.m_prioriProbs.size() ; 
-        ++inputRasterBandsIdx2 )
-      {    
-        covariance( inputRasterBandsIdx1, inputRasterBandsIdx2 ) /=
-          (double)( nCols * nRows  );
-      }
-    }
-  }
+      progressPtr->pulse();
+      if( ! progressPtr->isActive() ) return false;
+    }         
+  }    
   
   return true;
 }
 
-bool te::rp::ClassifierMAPStrategy::calcPrioriProbs()
+bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
+  const te::rst::Raster& inputRaster, 
+  const std::vector<unsigned int>& inputRasterBands,
+  te::common::TaskProgress * const progressPtr,
+  std::vector< double >& prioriProbabilities ) const
 {
-  return false;
+  TERP_DEBUG_TRUE_OR_THROW( m_isInitialized, 
+    "Classification strategy not initialized" );
+  TERP_DEBUG_TRUE_OR_THROW( inputRasterBands.size() > 0, "Invalid input bands" );
+  TERP_DEBUG_TRUE_OR_THROW( inputRasterBands.size() == m_classesMeans[ 0 ].size(), 
+    "Invalid input bands" );
+    
+  prioriProbabilities.clear();
+  
+  // Classifying
+  
+  const unsigned int classesNumber = (unsigned int)m_classesMeans.size();
+  const unsigned int nRows = (unsigned int)inputRaster.getNumberOfRows();
+  const unsigned int nCols = (unsigned int)inputRaster.getNumberOfColumns();
+  const unsigned int nDims = (unsigned int)inputRasterBands.size();
+  const double initialPrioriProbLog = std::log( 1.0 / ( (double)classesNumber ) );
+  unsigned int col = 0;
+  unsigned int dim = 0;
+  boost::numeric::ublas::matrix< double > sample( nDims, 1 );
+  boost::numeric::ublas::matrix< double > sampleMinusMean( nDims, 1 );
+  boost::numeric::ublas::matrix< double > sampleMinusMeanT( 1, nDims );
+  boost::numeric::ublas::matrix< double > auxMatrix;
+  boost::numeric::ublas::matrix< double > mahalanobisDistanceMatrix;
+  unsigned int bandIdx = 0;
+  unsigned int classIdx = 0;
+  double discriminantFunctionValue = 0;
+  double closestClassdiscriminantFunctionValue = 0;
+  unsigned int closestClassIdx = 0;
+  std::vector< unsigned long int > elementsNumberByClass( classesNumber, 0 );
+  
+  for( unsigned int row = 0 ; row < nRows ; ++row )
+  {
+    for( col = 0 ; col < nCols ; ++col )
+    {
+      // Creating the sample
+      
+      for( dim = 0 ; dim < nDims ; ++dim )
+      {
+        bandIdx = inputRasterBands[ dim ];
+        TERP_DEBUG_TRUE_OR_THROW( bandIdx < inputRaster.getNumberOfBands(),
+          "Invalid band index" );
+          
+        inputRaster.getValue( col, row, sample( dim, 0 ), bandIdx );
+      }
+      
+      // Looking the the closest class
+      
+      closestClassdiscriminantFunctionValue = -1.0 * DBL_MAX;
+      
+      for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
+      {
+        const Parameters::ClassSampleT& classMeans = m_classesMeans[ classIdx ];
+        
+        for( dim = 0 ; dim < nDims ; ++dim )
+        {
+          sampleMinusMean( dim, 0 ) = sampleMinusMeanT( 0, dim ) =
+            ( sample( dim, 0 ) - classMeans[ dim ] );
+        }
+        
+        //calculate the mahalanobis distance: (x-mean)T * CovMatrizInvert * (x-mean)
+        auxMatrix = boost::numeric::ublas::prod( sampleMinusMeanT, 
+          m_classesCovarianceInvMatrixes[ classIdx ] );
+        mahalanobisDistanceMatrix = boost::numeric::ublas::prod( auxMatrix, sampleMinusMean );
+        TERP_DEBUG_TRUE_OR_THROW( mahalanobisDistanceMatrix.size1() == 1, "Internal error" );
+        TERP_DEBUG_TRUE_OR_THROW( mahalanobisDistanceMatrix.size2() == 1, "Internal error" );
+        
+        discriminantFunctionValue = initialPrioriProbLog 
+          + m_classesOptizedMAPDiscriminantTerm[ classIdx ]
+          - ( 0.5 * mahalanobisDistanceMatrix( 0, 0 ) );
+        
+        if( discriminantFunctionValue > closestClassdiscriminantFunctionValue )
+        {
+          closestClassdiscriminantFunctionValue = discriminantFunctionValue;
+          closestClassIdx = classIdx;
+        }
+      }
+      
+      ++( elementsNumberByClass[ closestClassIdx ] );
+    } 
+    
+    if( progressPtr )
+    {
+      progressPtr->pulse();
+      if( ! progressPtr->isActive() ) return false;
+    }    
+  }   
+  
+  for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
+  {    
+    prioriProbabilities.push_back( ( (double)elementsNumberByClass[ classIdx ] ) /
+      ( (double)( nRows * nCols ) ) );
+  }  
+  
+  return true;
 }
 
 //-----------------------------------------------------------------------------

@@ -73,6 +73,8 @@ namespace te
           /*! \brief Destructor. */
           ~LayerExplorer();
 
+          te::qt::widgets::LayerExplorer* getExplorer() const;
+
         protected slots:
 
           /*!

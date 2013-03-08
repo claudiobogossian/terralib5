@@ -1,21 +1,20 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- A simple example of Symbol Library XML file -->
+<!-- A simple example of TerraLib Symbol Library XML file -->
 <SymbolLibrary xmlns="http://www.terralib.org/schemas/qt/se"
-               xsd:schemaLocation="http://www.terralib.org/schemas/qt/se D:/terralib5/terralib5/schemas/terralib/qt/se/symbol.xsd"
-               xmlns:se="http://www.opengis.net/schemas/se"
-               xmlns:ogc="http://www.opengis.net/schemas/ogc"
+               xsd:schemaLocation="http://www.terralib.org/schemas/qt/se symbol.xsd"
+               xmlns:se="http://www.opengis.net/se"
+               xmlns:ogc="http://www.opengis.net/ogc"
                xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:xlink="http://www.w3.org/1999/xlink"
                name="TerraLib 5 Default Symbol Library"
                version="5.0.0">
 
-  <!-- Line Symbols -->
   <Symbol>
-    <Id>179C25E4-AABC-4F63-8C10-AAD00CCE74F9</Id>
-    <Name>Brazilian Highway</Name>
-    <Author>Douglas Uba</Author>
-    <Category>Brazilian Road Symbols</Category>
-    <Tags>highway;road;Brazil</Tags>
-    <Description>This symbol is used to represent highways</Description>
+    <Id>0</Id>
+    <Name>Highway</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>line; highway; road;</Tags>
+    <Description>This symbol can be used to represent highways.</Description>
     <se:LineSymbolizer>
       <se:Stroke>
         <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
@@ -26,7 +25,7 @@
       <se:Stroke>
         <se:SvgParameter name="stroke"><ogc:Literal>#808080</ogc:Literal></se:SvgParameter>
         <se:SvgParameter name="stroke-width"><ogc:Literal>3</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
+    </se:Stroke>
     </se:LineSymbolizer>
     <se:LineSymbolizer>
       <se:Stroke>
@@ -36,72 +35,13 @@
       </se:Stroke>
     </se:LineSymbolizer>
   </Symbol>
-  
-  <Symbol>
-    <Id>179C2522-AABC-4F63-8C10-AAD00CCE74F9</Id>
-    <Name>Street</Name>
-    <Author>Douglas Uba</Author>
-    <Tags>street;city</Tags>
-    <se:LineSymbolizer>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#808080</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>5</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:LineSymbolizer>
-    <se:LineSymbolizer>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#FFFFFF</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>3</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:LineSymbolizer>
-  </Symbol>
 
   <Symbol>
-    <Id>179C2522-AABC-4E83-8C10-AAD00CCE74F9</Id>
-    <Name>Street</Name>
-    <Author>Douglas Uba</Author>
-    <Tags>street;city</Tags>
-    <se:LineSymbolizer>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#DCDCDC</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>8</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:LineSymbolizer>
-    <se:LineSymbolizer>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#FFBB11</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>6</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:LineSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>179C21E4-AABC-4F63-8C10-AAD00CCE74F9</Id>
-    <Name>Simple Line</Name>
-    <se:LineSymbolizer>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>2</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:LineSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>179C21E1-AABC-4F63-8C10-AAD00CCE74F9</Id>
-    <Name>River</Name>
-    <se:LineSymbolizer>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#0000FF</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>3</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-dasharray"><ogc:Literal>1 1</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:LineSymbolizer>
-  </Symbol>
-
-  <!-- Polygon Symbols -->
-  <Symbol>
-    <Id>179C25E4-AABC-4F63-8C10-AAD00CCE74F8</Id>
+    <Id>1</Id>
     <Name>Red</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>red; polygon; fill; area;</Tags>
+    <Description>A basic polygon symbol.</Description>
     <se:PolygonSymbolizer>
       <se:Fill>
         <se:SvgParameter name="fill"><ogc:Literal>#FF0000</ogc:Literal></se:SvgParameter>
@@ -114,54 +54,11 @@
   </Symbol>
 
   <Symbol>
-    <Id>179C25E4-AABC-4F63-8C10-AAD00CCE14F8</Id>
-    <Name>Blue</Name>
-    <se:PolygonSymbolizer>
-      <se:Fill>
-        <se:SvgParameter name="fill"><ogc:Literal>#0000FF</ogc:Literal></se:SvgParameter>
-      </se:Fill>
-      <se:Stroke>
-        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
-      </se:Stroke>
-    </se:PolygonSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>179C25E4-AABC-4F63-8C10-ACD00CCE14F8</Id>
-    <Name>Forest</Name>
-    <Author>Douglas Uba</Author>
-    <se:PolygonSymbolizer>
-      <se:Fill>
-        <se:SvgParameter name="fill"><ogc:Literal>#33BB11</ogc:Literal></se:SvgParameter>
-        <se:SvgParameter name="fill-opacity"><ogc:Literal>0.8</ogc:Literal></se:SvgParameter>
-      </se:Fill>
-    </se:PolygonSymbolizer>
-    <se:PolygonSymbolizer>
-      <se:Fill>
-        <se:GraphicFill>
-          <se:Graphic>
-            <se:Mark>
-              <se:WellKnownName>triangle</se:WellKnownName>
-              <se:Fill>
-                <se:SvgParameter name="fill"><ogc:Literal>#993322</ogc:Literal></se:SvgParameter>
-              </se:Fill>
-              <se:Stroke>
-                <se:SvgParameter name="stroke"><ogc:Literal>#900020</ogc:Literal></se:SvgParameter>
-                <se:SvgParameter name="stroke-width"><ogc:Literal>2</ogc:Literal></se:SvgParameter>
-              </se:Stroke>
-            </se:Mark>
-            <se:Size><ogc:Literal>12</ogc:Literal></se:Size>
-          </se:Graphic>
-        </se:GraphicFill>
-      </se:Fill>
-    </se:PolygonSymbolizer>
-  </Symbol>
-
-  <!-- Point Symbols -->
-  <Symbol>
-    <Id>179C25E4-AABC-4F63-8C10-AAD00CCE7410</Id>
-    <Name>Yellow Star</Name>
+    <Id>2</Id>
+    <Name>Star</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>point; star; yellow</Tags>
+    <Description>A basic point symbol.</Description>
     <se:PointSymbolizer>
       <se:Graphic>
         <se:Mark>
@@ -174,124 +71,81 @@
             <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
           </se:Stroke>
        </se:Mark>
-       <se:Size><ogc:Literal>12</ogc:Literal></se:Size>
-      </se:Graphic>
-    </se:PointSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>179C25E4-AABC-4F63-8C10-AAD001CE7410</Id>
-    <Name>Green Circle</Name>
-    <se:PointSymbolizer>
-      <se:Graphic>
-        <se:Mark>
-          <se:WellKnownName>circle</se:WellKnownName>
-          <se:Fill>
-            <se:SvgParameter name="fill"><ogc:Literal>#00FF00</ogc:Literal></se:SvgParameter>
-          </se:Fill>
-          <se:Stroke>
-            <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-            <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
-          </se:Stroke>
-       </se:Mark>
-       <se:Size><ogc:Literal>12</ogc:Literal></se:Size>
-      </se:Graphic>
-    </se:PointSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>172C25E4-AABC-4F63-8C10-AAD001CE7410</Id>
-    <Name>Red Cross</Name>
-    <se:PointSymbolizer>
-      <se:Graphic>
-        <se:Mark>
-          <se:WellKnownName>cross</se:WellKnownName>
-          <se:Fill>
-            <se:SvgParameter name="fill"><ogc:Literal>#FF0000</ogc:Literal></se:SvgParameter>
-          </se:Fill>
-          <se:Stroke>
-            <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-            <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
-          </se:Stroke>
-       </se:Mark>
-       <se:Size><ogc:Literal>12</ogc:Literal></se:Size>
-      </se:Graphic>
-    </se:PointSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>172CDEDD-AABC-4F63-8C10-AAD001CE7410</Id>
-    <Name>Cyan Square</Name>
-    <se:PointSymbolizer>
-      <se:Graphic>
-        <se:Mark>
-          <se:WellKnownName>square</se:WellKnownName>
-          <se:Fill>
-            <se:SvgParameter name="fill"><ogc:Literal>#00FFFF</ogc:Literal></se:SvgParameter>
-          </se:Fill>
-          <se:Stroke>
-            <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-            <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
-          </se:Stroke>
-       </se:Mark>
-       <se:Size><ogc:Literal>12</ogc:Literal></se:Size>
-      </se:Graphic>
-    </se:PointSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>172CDEDD-ABBC-4F63-8C10-AAD001CE7410</Id>
-    <Name>Magenta Triangle</Name>
-    <se:PointSymbolizer>
-      <se:Graphic>
-        <se:Mark>
-          <se:WellKnownName>triangle</se:WellKnownName>
-          <se:Fill>
-            <se:SvgParameter name="fill"><ogc:Literal>#FF00FF</ogc:Literal></se:SvgParameter>
-          </se:Fill>
-          <se:Stroke>
-            <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-            <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
-          </se:Stroke>
-       </se:Mark>
-       <se:Size><ogc:Literal>12</ogc:Literal></se:Size>
-      </se:Graphic>
-    </se:PointSymbolizer>
-  </Symbol>
-
-  <Symbol>
-    <Id>172CDEDD-ABBC-4F63-8C10-AAD0B1CE7410</Id>
-    <Name>Capital</Name>
-    <Author>Douglas Uba</Author>
-    <Category>Cities and places</Category>
-    <Tags>cities;places;capital;country</Tags>
-    <Description>This symbol is used to represent capitals</Description>
-    <se:PointSymbolizer>
-      <se:Graphic>
-        <se:Mark>
-          <se:WellKnownName>circle</se:WellKnownName>
-          <se:Fill>
-            <se:SvgParameter name="fill"><ogc:Literal>#FFFFFF</ogc:Literal></se:SvgParameter>
-          </se:Fill>
-          <se:Stroke>
-            <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-            <se:SvgParameter name="stroke-width"><ogc:Literal>2</ogc:Literal></se:SvgParameter>
-          </se:Stroke>
-       </se:Mark>
        <se:Size><ogc:Literal>16</ogc:Literal></se:Size>
       </se:Graphic>
     </se:PointSymbolizer>
-    <se:PointSymbolizer>
-      <se:Graphic>
-        <se:Mark>
-          <se:WellKnownName>circle</se:WellKnownName>
-          <se:Fill>
-            <se:SvgParameter name="fill"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
-          </se:Fill>
-       </se:Mark>
-       <se:Size><ogc:Literal>8</ogc:Literal></se:Size>
-      </se:Graphic>
-    </se:PointSymbolizer>
+  </Symbol>
+  
+  <Symbol>
+    <Id>19</Id>
+    <Name>Simple Line</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>line; simple</Tags>
+    <Description>A basic line symbol.</Description>
+    <se:LineSymbolizer>
+      <se:Stroke>
+        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
+        <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
+      </se:Stroke>
+	</se:LineSymbolizer>
+  </Symbol>
+  
+  <Symbol>
+    <Id>20</Id>
+    <Name>Dot Line</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>line; dot</Tags>
+    <Description>A basic line symbol.</Description>
+    <se:LineSymbolizer>
+      <se:Stroke>
+        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
+        <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
+		<se:SvgParameter name="stroke-dasharray"><ogc:Literal>2 2</ogc:Literal></se:SvgParameter>
+      </se:Stroke>
+	</se:LineSymbolizer>
+  </Symbol>
+  
+  <Symbol>
+    <Id>21</Id>
+    <Name>Dash Line</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>line; dash</Tags>
+    <Description>A basic line symbol.</Description>
+    <se:LineSymbolizer>
+      <se:Stroke>
+        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
+        <se:SvgParameter name="stroke-width"><ogc:Literal>1</ogc:Literal></se:SvgParameter>
+		<se:SvgParameter name="stroke-dasharray"><ogc:Literal>5 5</ogc:Literal></se:SvgParameter>
+      </se:Stroke>
+	</se:LineSymbolizer>
+  </Symbol>
+  
+  <Symbol>
+    <Id>22</Id>
+    <Name>Simple Line</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>line; simple</Tags>
+    <Description>A basic line symbol.</Description>
+    <se:LineSymbolizer>
+      <se:Stroke>
+        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
+        <se:SvgParameter name="stroke-width"><ogc:Literal>3</ogc:Literal></se:SvgParameter>
+      </se:Stroke>
+	</se:LineSymbolizer>
+  </Symbol>
+  
+  <Symbol>
+    <Id>23</Id>
+    <Name>Simple Line</Name>
+    <Author>TerraLib Team</Author>
+    <Tags>line; simple</Tags>
+    <Description>A basic line symbol.</Description>
+    <se:LineSymbolizer>
+      <se:Stroke>
+        <se:SvgParameter name="stroke"><ogc:Literal>#000000</ogc:Literal></se:SvgParameter>
+        <se:SvgParameter name="stroke-width"><ogc:Literal>5</ogc:Literal></se:SvgParameter>
+      </se:Stroke>
+	</se:LineSymbolizer>
   </Symbol>
 
 </SymbolLibrary>

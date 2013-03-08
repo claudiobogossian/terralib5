@@ -419,6 +419,24 @@ bool te::qt::widgets::LayerTreeModel::setData(const QModelIndex& index, const QV
 
   emit dataChanged(index, index);
 
+  if(role == Qt::CheckStateRole)
+  {
+    if(hasChildren(index))
+      dataChangedForDescendants(index);
+
+    if(parent(index).isValid())
+    {
+// emit the dataChanged signal for the ascendants indexes
+      QModelIndex ascendentIndex = parent(index);
+
+      while(ascendentIndex.isValid())
+      {
+        emit dataChanged(ascendentIndex, ascendentIndex);
+        ascendentIndex = parent(ascendentIndex);
+      }
+    }
+  }
+
   return retval;
 }
 
@@ -454,5 +472,23 @@ void te::qt::widgets::LayerTreeModel::add(const te::map::AbstractLayerPtr& layer
   m_items.push_back(litem);
 
   endInsertRows();
+}
+
+void te::qt::widgets::LayerTreeModel::dataChangedForDescendants(const QModelIndex& parent)
+{
+  if(!parent.isValid())
+    return;
+
+  int rows = rowCount(parent);
+
+  for(int i = 0; i != rows; ++i)
+  {
+    QModelIndex idx = index(i, 0, parent);
+
+    emit dataChanged(idx, idx);
+
+    if(hasChildren(idx))
+      dataChangedForDescendants(idx);
+  }
 }
 

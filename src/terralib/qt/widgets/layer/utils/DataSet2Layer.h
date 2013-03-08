@@ -27,8 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_UTILS_INTERNAL_DATASET2LAYER_H
 
 // TerraLib
-#include "../../../../dataaccess/Definitions.h"
-#include "../../../../maptools/forward.h"
+#include "../../../../maptools/DataSetLayer.h"
 #include "../../Config.h"
 
 // STL
@@ -46,7 +45,7 @@ namespace te
 
         DataSet2Layer(const std::string& datasourceId);
 
-        te::map::LayerPtr operator()(const te::da::DataSetTypePtr& dataset) const;
+        te::map::DataSetLayerPtr operator()(const te::da::DataSetTypePtr& dataset) const;
       };
 
     } // end namespace widgets

@@ -48,7 +48,7 @@ te::qt::widgets::SymbolSelectorDialog::SymbolSelectorDialog(QWidget* parent, Qt:
 {
   // Setup
   m_ui->setupUi(this);
-  m_ui->m_symbolLibraryTreeWidget->setIconSize(QSize(32, 16));
+  m_ui->m_symbolLibraryTreeWidget->setIconSize(QSize(32, 32));
 
   // Preview
   m_preview = new SymbolPreviewWidget(QSize(120, 120), this);
@@ -130,7 +130,7 @@ void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed
   }
   catch(te::common::Exception& e)
   {
-    QString message = "The selected symbol library could not be loaded.\n Details: ";
+    QString message = tr("The selected symbol library could not be loaded.\n Details: )");
     message += e.what();
     QMessageBox::critical(this, tr("Error"), message);
   }
@@ -138,7 +138,11 @@ void te::qt::widgets::SymbolSelectorDialog::onLoadSymbolLibraryPushButtonPressed
 
 void te::qt::widgets::SymbolSelectorDialog::onSearchLineEditTextChanged(const QString& text)
 {
-  filter(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive));
+  QList<QTreeWidgetItem*> itens = m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  itens.append(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));
+  itens.append(m_ui->m_symbolLibraryTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 2));
+
+  filter(itens);
 }
 
 void te::qt::widgets::SymbolSelectorDialog::initialize()
@@ -172,10 +176,15 @@ void te::qt::widgets::SymbolSelectorDialog::initialize()
       symbolItem->setIcon(0, SymbologyPreview::build(symbol->getSymbolizers(), m_ui->m_symbolLibraryTreeWidget->iconSize()));
       symbolItem->setToolTip(0, formatSymbolInfo(symbol->getInfo()));
       symbolItem->setData(0, Qt::UserRole, QVariant(QString(symbol->getInfo().m_id.c_str())));
+      symbolItem->setText(1, symbol->getInfo().m_author.c_str());
+      symbolItem->setText(2, symbol->getInfo().m_tags.c_str());
+      symbolItem->setText(3, symbol->getInfo().m_description.c_str());
     }
   }
 
   m_ui->m_symbolLibraryTreeWidget->sortItems(0, Qt::AscendingOrder);
+  m_ui->m_symbolLibraryTreeWidget->resizeColumnToContents(0);
+  m_ui->m_symbolLibraryTreeWidget->expandAll();
 }
 
 void te::qt::widgets::SymbolSelectorDialog::filter(const QList<QTreeWidgetItem*>& itens)
@@ -238,7 +247,6 @@ QString te::qt::widgets::SymbolSelectorDialog::formatSymbolInfo(const te::qt::wi
   QString information("<h3>Symbol Information</h3><ul>");
   information += "<li><b>Name: </b>" + QString(info.m_name.c_str()) + "</li>";
   information += "<li><b>Author: </b>" + QString(info.m_author.c_str()) + "</li>";
-  information += "<li><b>Category: </b>" + QString(info.m_category.c_str()) + "</li>";
   information += "<li><b>Tags: </b>" + QString(info.m_tags.c_str()) + "</li>";
   information += "<li><b>Description: </b>" + QString(info.m_description.c_str()) + "</li>";
   information += "</ul>";

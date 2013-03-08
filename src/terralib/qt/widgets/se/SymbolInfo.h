@@ -35,19 +35,33 @@ namespace te
   {
     namespace widgets
     {
+
+    /*!
+      \struct SymbolType
+      
+      \brief Enumeration that indicates the symbol type.
+
+      \sa Symbol
+    */
+    enum SymbolType
+    {
+      PolygonSymbol, /*!< Polygon symbol type  */
+      LineSymbol,    /*!< Line symbol type     */
+      PointSymbol    /*!< Point symbol type    */
+    };
+
     /*!
       \struct SymbolInfo
       
       \brief Information about a given Symbol.
 
       \sa Symbol
-     */
+    */
     struct SymbolInfo
     {
       std::string m_id;          /*!< Symbol identifier            */
       std::string m_name;        /*!< Symbol name                  */
       std::string m_author;      /*!< Author of the symbol         */
-      std::string m_category;    /*!< Symbol category *            */
       std::string m_tags;        /*!< Keywords for the symbol      */
       std::string m_description; /*!< Description about the symbol */
       // more... - type?

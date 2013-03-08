@@ -82,9 +82,7 @@ namespace te
 
           \param nSpace
         */
-        void showHelp (const QString& htmRef, const QString& nSpace="");
-
-
+        void showHelp(const QString& htmRef, const QString& nSpace = "");
 
         /*!
           \brief Appends a project of help documentation to the existing collection.
