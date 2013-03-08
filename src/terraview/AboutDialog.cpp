@@ -42,55 +42,30 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-  //{
-  //  std::string logoFileName = te::common::SystemApplicationSettings::getInstance().getValue("Application.AboutDialogLogo.<xmlattr>.xlink:href");
+  std::string logoTVFileName = TVIEW_LOGO_PIXMAP;
+  QPixmap pixmapTV(logoTVFileName.c_str());
+  m_ui->m_applicationLogo->setPixmap(pixmapTV);
 
-  //  QPixmap pixmap(logoFileName.c_str());
+  std::string logoTVLargeFileName = TVIEW_LARGE_LOGO_PIXMAP;
+  QPixmap pixmapTVLarge(logoTVLargeFileName.c_str());
+  m_ui->m_applicationLargeLogo->setPixmap(pixmapTVLarge);
 
-  //  m_ui->m_applicationLogo->setPixmap(pixmap);
-  //}
+  std::string logoTEFileName = TVIEW_TE_LOGO_PIXMAP;
+  QPixmap pixmapTE(logoTEFileName.c_str());
+  m_ui->m_terralibLogo->setPixmap(pixmapTE);
 
-  {
-    std::string logoTVFileName = TVIEW_LOGO_PIXMAP;
-    QPixmap pixmapTV(logoTVFileName.c_str());
-    pixmapTV.scaledToHeight(150, Qt::SmoothTransformation);
-    pixmapTV.scaledToWidth(150, Qt::SmoothTransformation);
-    m_ui->m_applicationLogo->setPixmap(pixmapTV);
+  std::string copyrightStr = tr("<p>Copyright &copy; 2010-2013 INPE<BR>").toStdString();
+  m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
 
-    std::string logoTEFileName = te::common::SystemApplicationSettings::getInstance().getValue("Application.TerraLibLogo.<xmlattr>.xlink:href");
-    QPixmap pixmapTE(logoTEFileName.c_str());
-    pixmapTE.scaledToHeight(100, Qt::SmoothTransformation);
-    pixmapTE.scaledToWidth(100, Qt::SmoothTransformation);
-    m_ui->m_terralibLogo->setPixmap(pixmapTE);
+  std::string terraviewVersionStr = tr("TerraView Version: ").toStdString() + TERRALIB_STRING_VERSION;
+  m_ui->m_terraviewVersionLabel->setText(terraviewVersionStr.c_str());
 
-    std::string copyrightStr = tr("<p>Copyright &copy; 2001-2013 INPE, Tecgraf PUC-Rio, and FUNCATE<BR>").toStdString();
-    m_ui->m_copyrightLabel->setText(copyrightStr.c_str());
+  std::string terralibVersionStr = tr("TerraLib Version: ").toStdString() + TERRALIB_STRING_VERSION;
+  m_ui->m_terralibVersionLabel->setText(terralibVersionStr.c_str());
 
-    std::string terraviewVersionStr = tr("TerraView Version: ").toStdString() + TERRALIB_STRING_VERSION;
-    m_ui->m_terraviewVersionLabel->setText(terraviewVersionStr.c_str());
+  std::string buildDateStr = tr("Build Date: ").toStdString() + te::common::Version::buildDate();
+  m_ui->m_buildDateLabel->setText(buildDateStr.c_str());
 
-    std::string terralibVersionStr = tr("TerraLib Version: ").toStdString() + TERRALIB_STRING_VERSION;
-    m_ui->m_terralibVersionLabel->setText(terralibVersionStr.c_str());
-
-    std::string buildDateStr = tr("Build Date: ").toStdString() + te::common::Version::buildDate();
-    m_ui->m_buildDateLabel->setText(buildDateStr.c_str());
-
-    QIcon i1(QIcon::fromTheme("datasource-gdal"));
-    QPixmap p1 = i1.pixmap(50, 50);
-    m_ui->m_thirdParty_1->setPixmap(p1);
-
-    QIcon i2(QIcon::fromTheme("datasource-mysql"));
-    QPixmap p2 = i2.pixmap(50, 50);
-    m_ui->m_thirdParty_2->setPixmap(p2);
-
-    QIcon i3(QIcon::fromTheme("datasource-postgis"));
-    QPixmap p3 = i3.pixmap(50, 50);
-    m_ui->m_thirdParty_3->setPixmap(p3);
-
-    QIcon i4(QIcon::fromTheme("ogc"));
-    QPixmap p4 = i4.pixmap(50, 50);
-    m_ui->m_thirdParty_4->setPixmap(p4);
-  }
 }
 
 AboutDialog::~AboutDialog()
