@@ -310,6 +310,8 @@ namespace te
 
           const QString& getAppIconName() const;
 
+          QString getMostRecentProject() const;
+
         protected:
 
           std::map<QString, QToolBar*> m_toolbars;    //!< Toolbars registered.

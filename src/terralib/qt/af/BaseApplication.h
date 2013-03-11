@@ -77,51 +77,23 @@ namespace te
 
           void onPluginsBuilderTriggered();
 
-//          void onHelpTriggered();
-
-          /*!
-            \brief
-
-            \param
-          */
           void onRecentProjectsTriggered(QAction* proj);
 
+          void onNewProjectTriggered();
 
-          /*!
-            \brief
-          */
           void onOpenProjectTriggered();
 
-          /*!
-            \brief
-          */
           void onSaveProjectAsTriggered();
 
           void onToolsCustomizeTriggered();
 
           void onProjectPropertiesTriggered();
 
-          //void layerVisibilityChanged(const QModelIndex& idx);
-
-          //void drawLayers();
-
-          //void setPanTool(bool status);
-
-          //void setZoomAreaTool(bool status);
-
-          //void setAngleTool(bool status);
-
-          //void setAreaMeasureTool(bool status);
-
-          //void setDistanceTool(bool status);
-
-          //void openPluginsManager();
-
-          //void openDSrcManager();
-
-          //void showProgressDock();
-
         protected:
+
+          virtual void openProject(const QString& projectFileName);
+
+          virtual void newProject();
 
           virtual void makeDialog();
 
@@ -140,51 +112,51 @@ namespace te
           virtual void initSlotsConnections();
 
           //! Qt components
-          QAction *m_viewLayerExplorer;
-          QAction *m_viewMapDisplay;
-          QAction *m_viewDataTable;
-          QAction *m_viewStyleExplorer;
-          QAction *m_editUndo;
-          QAction *m_editRedo;
-          QAction *m_editCut;
-          QAction *m_editCopy;
-          QAction *m_editPaste;
-          QAction *m_editSelectAll;
-          QAction *m_editClear;
-          QAction *m_editFind;
-          QAction *m_editReplace;
-          QAction *m_viewFullScreen;
-          QAction *m_viewRefresh;
-          QAction *m_toolsCustomize;
-          QAction *m_pluginsManager;
-          QAction *m_pluginsBuilder;
-          QAction *m_helpContents;
-          QAction *m_helpUpdate;
-          QAction *m_viewToolBars;
-          QAction *m_viewGrid;
-          QAction *m_viewDataSourceExplorer;
-          QAction *m_projectRemoveLayer;
-          QAction *m_projectProperties;
-          QAction *m_projectAddLayerDataset;
-          QAction *m_projectAddLayerImage;
-          QAction *m_projectAddLayerGraph;
-          QAction *m_layerEdit;
-          QAction *m_layerRename;
-          QAction *m_layerExport;
-          QAction *m_layerProperties;
-          QAction *m_layerRaise;
-          QAction *m_layerLower;
-          QAction *m_layerToTop;
-          QAction *m_layerToBottom;
-          QAction *m_toolsDataSourceManagement;
-          QAction *m_helpAbout;
-          QAction *m_fileNewProject;
-          QAction *m_fileSaveProject;
-          QAction *m_fileSaveProjectAs;
-          QAction *m_fileOpenProject;
-          QAction *m_fileExit;
-          QAction *m_filePrint;
-          QAction *m_filePrintPreview;
+          QAction* m_viewLayerExplorer;
+          QAction* m_viewMapDisplay;
+          QAction* m_viewDataTable;
+          QAction* m_viewStyleExplorer;
+          QAction* m_editUndo;
+          QAction* m_editRedo;
+          QAction* m_editCut;
+          QAction* m_editCopy;
+          QAction* m_editPaste;
+          QAction* m_editSelectAll;
+          QAction* m_editClear;
+          QAction* m_editFind;
+          QAction* m_editReplace;
+          QAction* m_viewFullScreen;
+          QAction* m_viewRefresh;
+          QAction* m_toolsCustomize;
+          QAction* m_pluginsManager;
+          QAction* m_pluginsBuilder;
+          QAction* m_helpContents;
+          QAction* m_helpUpdate;
+          QAction* m_viewToolBars;
+          QAction* m_viewGrid;
+          QAction* m_viewDataSourceExplorer;
+          QAction* m_projectRemoveLayer;
+          QAction* m_projectProperties;
+          QAction* m_projectAddLayerDataset;
+          QAction* m_projectAddLayerImage;
+          QAction* m_projectAddLayerGraph;
+          QAction* m_layerEdit;
+          QAction* m_layerRename;
+          QAction* m_layerExport;
+          QAction* m_layerProperties;
+          QAction* m_layerRaise;
+          QAction* m_layerLower;
+          QAction* m_layerToTop;
+          QAction* m_layerToBottom;
+          QAction* m_toolsDataSourceManagement;
+          QAction* m_helpAbout;
+          QAction* m_fileNewProject;
+          QAction* m_fileSaveProject;
+          QAction* m_fileSaveProjectAs;
+          QAction* m_fileOpenProject;
+          QAction* m_fileExit;
+          QAction* m_filePrint;
+          QAction* m_filePrintPreview;
 
           QWidget *m_centralwidget;
           
