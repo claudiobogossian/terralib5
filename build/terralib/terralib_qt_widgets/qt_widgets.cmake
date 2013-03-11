@@ -381,6 +381,7 @@ set (
   ${SRCDIR}/widgets/query/DataSetWizardPage.h
   ${SRCDIR}/widgets/query/FieldsWizardPage.h
   ${SRCDIR}/widgets/query/GroupByWizardPage.h
+  ${SRCDIR}/widgets/query/LayerAttributesWizardPage.h
   ${SRCDIR}/widgets/query/OrderByWidget.h
   ${SRCDIR}/widgets/query/OrderByWizardPage.h
   ${SRCDIR}/widgets/query/QueryBuilderWizard.h
