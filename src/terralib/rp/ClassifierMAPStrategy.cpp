@@ -53,8 +53,8 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
   reset();
 
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
-  m_classThresholds = rhs.m_classThresholds;
   m_prioriProbs = rhs.m_prioriProbs;
+  m_prioriCalcSampleStep = rhs.m_prioriCalcSampleStep;
 
   return *this;
 }
@@ -62,8 +62,8 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
 void te::rp::ClassifierMAPStrategy::Parameters::reset() throw(te::rp::Exception)
 {
   m_trainSamplesPtr = 0;
-  m_classThresholds.clear();
   m_prioriProbs.clear();
+  m_prioriCalcSampleStep = 2;
 }
 
 te::common::AbstractParameters* te::rp::ClassifierMAPStrategy::Parameters::clone() const
@@ -103,18 +103,9 @@ bool te::rp::ClassifierMAPStrategy::initialize(
     "Invalid classes samples pointer" )
   TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->size() > 0,
     "Invalid classes samples number" )
+  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_trainSamplesPtr->begin()->second.size() > 0,
+    "Invalid classes samples number" )    
     
-  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_classThresholds.size() ==
-    castParamsPtr->m_trainSamplesPtr->size(), "Invalid classes thresholds" );
-  for( std::vector< double >::size_type csIdx = 0 ; csIdx < 
-    castParamsPtr->m_classThresholds.size() ; ++csIdx )
-  {
-    TERP_TRUE_OR_RETURN_FALSE( 
-      ( castParamsPtr->m_classThresholds[ csIdx ] >= 0.0 ) &&
-      ( castParamsPtr->m_classThresholds[ csIdx ] <= 1.0 ),
-      "Invalid classes thresholds" );                    
-  }
-
   if( ! castParamsPtr->m_prioriProbs.empty() )
   {
     TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_prioriProbs.size() ==
@@ -129,9 +120,15 @@ bool te::rp::ClassifierMAPStrategy::initialize(
     }
   }
   
+  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_prioriCalcSampleStep > 0,
+    "Invalid sample step" );
+  
   m_initParams = (*castParamsPtr);
   
   // Calculating m_classesMeans and m_classesIndex2ID
+  
+  const unsigned int dimsNumber = (unsigned int)
+    castParamsPtr->m_trainSamplesPtr->begin()->second.operator[]( 0 ).size();  
   
   {
     Parameters::MClassesSamplesCT::const_iterator classesIt = 
@@ -146,8 +143,6 @@ bool te::rp::ClassifierMAPStrategy::initialize(
       const Parameters::ClassSamplesContainerT& classSamples = classesIt->second;
       TERP_TRUE_OR_RETURN_FALSE( classSamples.size() > 0,
         "Invalid class samples number" );
-        
-      const unsigned int dimsNumber = (unsigned int)classSamples.begin()->size();
         
       Parameters::ClassSampleT classMeans( dimsNumber, 0.0 );      
       
@@ -165,16 +160,15 @@ bool te::rp::ClassifierMAPStrategy::initialize(
           
         while( samplesIt != samplesItE )
         {
+          TERP_TRUE_OR_RETURN_FALSE( samplesIt->size() == dimsNumber,
+            "Sample size mismatch" )
           dimMean += samplesIt->operator[]( dimIdx );
           
           ++samplesIt;
         }
+        
+        dimMean /= (double)( classSamples.size() );
       }
-      
-      for( dimIdx = 0 ; dimIdx < dimsNumber ; ++dimIdx )
-      {
-        classMeans[ dimIdx ] /= (double)( classSamples.size() );
-      }      
       
       m_classesMeans.push_back( classMeans );
       m_classesIndex2ID.push_back( classID );
@@ -201,8 +195,6 @@ bool te::rp::ClassifierMAPStrategy::initialize(
         "Invalid class samples number" );
         
       const std::vector< double >& classMeans = m_classesMeans[ classIdx ];
-        
-      const unsigned int dimsNumber = (unsigned int)classSamples.begin()->size();
         
       boost::numeric::ublas::matrix< double > classCovarianceMatrix( dimsNumber, dimsNumber );      
            
@@ -236,16 +228,10 @@ bool te::rp::ClassifierMAPStrategy::initialize(
             
             ++samplesIt;
           }
+          
+          covariance /= (double)( classSamples.size() );
         }
       }
-      
-      for( dimIdx1 = 0 ; dimIdx1 < dimsNumber ; ++dimIdx1 )
-      {
-        for( dimIdx2 = 0 ; dimIdx2 < dimsNumber ; ++dimIdx2 )
-        {  
-          classCovarianceMatrix( dimIdx1, dimIdx2 ) /= (double)( classSamples.size() );
-        }
-      }      
       
       m_classesCovarianceMatrixes.push_back( classCovarianceMatrix );
       
@@ -298,6 +284,22 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
   TERP_DEBUG_TRUE_OR_THROW( inputRaster.getNumberOfRows() ==
     outputRaster.getNumberOfRows(), "Rasters dims mismatch" );
     
+  // progress
+  
+  std::auto_ptr< te::common::TaskProgress > progressPtr;
+  if( enableProgressInterface )
+  {
+    progressPtr.reset( new te::common::TaskProgress );
+    
+    if( m_initParams.m_prioriProbs.empty() )
+      progressPtr->setTotalSteps( inputRaster.getNumberOfRows() +
+        ( inputRaster.getNumberOfRows() / m_initParams.m_prioriCalcSampleStep ) );
+    else
+      progressPtr->setTotalSteps( inputRaster.getNumberOfRows() );
+    
+    progressPtr->setMessage( "Classifying" );
+  }    
+    
   // Dealing with the logarithm of priori probabilities
   
   std::vector< double > logPrioriProbs;
@@ -305,7 +307,7 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
   if( m_initParams.m_prioriProbs.empty() )
   {
     TERP_TRUE_OR_RETURN_FALSE( getPrioriProbabilities( inputRaster,
-      inputRasterBands, logPrioriProbs ), "Priori probabilities calcule error" );
+      inputRasterBands, progressPtr.get(), logPrioriProbs ), "Priori probabilities calcule error" );
       
     for( unsigned int pIdx = 0 ; pIdx < logPrioriProbs.size() ; ++pIdx )
       logPrioriProbs[ pIdx ] = ( logPrioriProbs[ pIdx ] > 0.0 ) ?
@@ -354,7 +356,7 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
       
       // Looking the the closest class
       
-      closestClassdiscriminantFunctionValue = 0;
+      closestClassdiscriminantFunctionValue = -1.0 * DBL_MAX;
       
       for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
       {
@@ -386,6 +388,12 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
       
       outputRaster.setValue( col, row, m_classesIndex2ID[ closestClassIdx ] );      
     }    
+    
+    if( enableProgressInterface )
+    {
+      progressPtr->pulse();
+      if( ! progressPtr->isActive() ) return false;
+    }         
   }    
   
   return true;
@@ -394,6 +402,7 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
 bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
   const te::rst::Raster& inputRaster, 
   const std::vector<unsigned int>& inputRasterBands,
+  te::common::TaskProgress * const progressPtr,
   std::vector< double >& prioriProbabilities ) const
 {
   TERP_DEBUG_TRUE_OR_THROW( m_isInitialized, 
@@ -424,11 +433,11 @@ bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
   double closestClassdiscriminantFunctionValue = 0;
   unsigned int closestClassIdx = 0;
   std::vector< unsigned long int > elementsNumberByClass( classesNumber, 0 );
-  unsigned long int totalElementsNumber = 0;
+  unsigned int totalSamplesNumber = 0;
   
-  for( unsigned int row = 0 ; row < nRows ; ++row )
+  for( unsigned int row = 0 ; row < nRows ; row += m_initParams.m_prioriCalcSampleStep )
   {
-    for( col = 0 ; col < nCols ; ++col )
+    for( col = 0 ; col < nCols ; col += m_initParams.m_prioriCalcSampleStep )
     {
       // Creating the sample
       
@@ -443,7 +452,7 @@ bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
       
       // Looking the the closest class
       
-      closestClassdiscriminantFunctionValue = 0;
+      closestClassdiscriminantFunctionValue = -1.0 * DBL_MAX;
       
       for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
       {
@@ -473,18 +482,31 @@ bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
         }
       }
       
-      ++( elementsNumberByClass[ classIdx ] );
-      ++totalElementsNumber;
-    }   
+      ++( elementsNumberByClass[ closestClassIdx ] );
+      ++totalSamplesNumber;
+    } 
     
+    if( progressPtr )
+    {
+      progressPtr->pulse();
+      if( ! progressPtr->isActive() ) return false;
+    }    
+  }   
+  
+  if( totalSamplesNumber )
+  {
     for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
     {    
       prioriProbabilities.push_back( ( (double)elementsNumberByClass[ classIdx ] ) /
-        ( (double)totalElementsNumber ) );
-    }
-  }    
+        ( (double)( totalSamplesNumber ) ) );
+    }  
   
-  return true;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 //-----------------------------------------------------------------------------

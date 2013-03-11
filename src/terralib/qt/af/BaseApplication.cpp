@@ -62,6 +62,7 @@
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"
+#include "ProjectEditor.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 
@@ -107,7 +108,7 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
 
 te::qt::af::BaseApplication::~BaseApplication()
 {
-  //delete m_explorer;
+  delete m_explorer;
   delete m_display;
   delete m_viewer;
   delete m_project;
@@ -170,6 +171,14 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
 
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msgErr);
   }
+
+// try to load the last opened project
+  QString recentProject = te::qt::af::ApplicationController::getInstance().getMostRecentProject();
+
+  if(recentProject.isEmpty())
+    newProject();
+  else
+    openProject(recentProject);
 }
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::Event* evt)
@@ -298,66 +307,26 @@ void te::qt::af::BaseApplication::onPluginsBuilderTriggered()
   }
 }
 
-//void te::qt::af::BaseApplication::onHelpTriggered()
-//{
-//  te::qt::widgets::HelpManager::getInstance().showHelp("terraview/index.html", "dpi.inpe.br.terraview");
-//}
-
 void te::qt::af::BaseApplication::onRecentProjectsTriggered(QAction* proj)
 {
-  delete m_project;
-  m_project = 0;
-
   QString projFile = proj->data().toString();
 
-  try
-  {
-    m_project = te::qt::af::ReadProject(projFile.toStdString());
+  openProject(projFile);
+}
 
-    ApplicationController::getInstance().updateRecentProjects(projFile, m_project->getTitle().c_str());
-
-    NewProject evt(m_project);
-
-    ApplicationController::getInstance().broadcast(&evt);
-  }
-  catch(const std::exception& e)
-  {
-    QString msg(tr("Fail to open project: %1"));
-
-    msg = msg.arg(e.what());
-
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
-  }
+void te::qt::af::BaseApplication::onNewProjectTriggered()
+{
+  newProject();
 }
 
 void te::qt::af::BaseApplication::onOpenProjectTriggered()
 {
-  delete m_project;
-  m_project = 0;
-
   QString file = QFileDialog::getOpenFileName(this, tr("Open project file"), qApp->applicationDirPath(), tr("XML File (*.xml *.XML)"));
 
   if(file.isEmpty())
     return;
 
-  try
-  {
-    m_project = te::qt::af::ReadProject(file.toStdString());
-
-    ApplicationController::getInstance().updateRecentProjects(file, m_project->getTitle().c_str());
-
-    NewProject evt(m_project);
-
-    ApplicationController::getInstance().broadcast(&evt);
-  }
-  catch(const std::exception& e)
-  {
-    QString msg(tr("Fail to open project: %1"));
-
-    msg = msg.arg(e.what());
-
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
-  }
+  openProject(file);
 }
 
 void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
@@ -386,6 +355,59 @@ void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
   {
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
   }
+}
+
+void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
+{
+  if(m_project == 0)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no current project."));
+    return;
+  }
+
+  ProjectEditor editor(this);
+  editor.setProject(m_project);
+  editor.exec();
+}
+
+void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
+{
+  delete m_project;
+
+  m_project = 0;
+
+  try
+  {
+    m_project = te::qt::af::ReadProject(projectFileName.toStdString());
+
+    ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
+
+    NewProject evt(m_project);
+
+    ApplicationController::getInstance().broadcast(&evt);
+  }
+  catch(const std::exception& e)
+  {
+    QString msg(tr("Fail to open project: %1"));
+
+    msg = msg.arg(e.what());
+
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
+}
+
+void te::qt::af::BaseApplication::newProject()
+{
+  delete m_project;
+
+  m_project = new Project;
+
+  m_project->setTitle("New Project");
+  m_project->setAuthor("Unknown");
+
+  NewProject evt(m_project);
+
+  ApplicationController::getInstance().broadcast(&evt);
 }
 
 void te::qt::af::BaseApplication::makeDialog()
@@ -605,7 +627,7 @@ void te::qt::af::BaseApplication::initActions()
 
 // Menu -Project- actions
   initAction(m_projectRemoveLayer, "", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
-  initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, false);
+  initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true);
   initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
   initAction(m_projectAddLayerImage, "", "Image", tr("&Image"), tr("Add a new layer from a satellite image"), true, false, false);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
@@ -820,4 +842,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
+  connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
 }

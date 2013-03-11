@@ -86,6 +86,8 @@ namespace te
 
           void dataChanged(const QModelIndex&, const QModelIndex&);
 
+          void onHelpPushButtonPressed();
+
         protected:
 
           void fillInstalledPlugins();

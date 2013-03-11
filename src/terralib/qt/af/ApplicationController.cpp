@@ -606,3 +606,9 @@ const QString& te::qt::af::ApplicationController::getAppIconName() const
 {
   return m_appIconName;
 }
+
+QString te::qt::af::ApplicationController::getMostRecentProject() const
+{
+  return m_recentProjs.isEmpty() ? QString("") : m_recentProjs.front();
+}
+

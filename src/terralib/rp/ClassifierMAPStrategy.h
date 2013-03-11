@@ -27,6 +27,7 @@
 
 #include "ClassifierStrategy.h"
 #include "ClassifierStrategyFactory.h"
+#include "../common/progress/TaskProgress.h"
 #include "Config.h"
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -66,9 +67,9 @@ namespace te
             
             MClassesSamplesCT const* m_trainSamplesPtr; //!< A pointer to a always-valid structure where trainning samples are stored.
 
-            std::vector< double > m_classThresholds;  //!< A threshould value for each class. Values from 0 to 1.
-            
             std::vector< double > m_prioriProbs; //!< Priori probabilities, one for each class. Values from 0 to 1 (use an empty vector to allow internal calcule of priori probabilities).            
+            
+            unsigned int m_prioriCalcSampleStep; //!< A positive non-zero sample step used when calculating piori probabilities (default:2 - half of samples will be used);
     
             Parameters();
 
@@ -116,12 +117,14 @@ namespace te
           \brief Calcule of priori probabilities following the current internal state.
           \param inputRaster Input raster.
           \param inputRasterBands Input raster bands.
+          \param progressPtr A pointer to a progress interface, or a null pointer if no progress must be updated.
           \param prioriProbabilities The calculated probabilities.
           \return true if ok, false on errors.
         */
         bool getPrioriProbabilities(
           const te::rst::Raster& inputRaster, 
           const std::vector<unsigned int>& inputRasterBands,
+          te::common::TaskProgress * const progressPtr,
           std::vector< double >& prioriProbabilities ) const;        
     };
 

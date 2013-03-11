@@ -12,8 +12,11 @@
    viewBox="0 0 80 80"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.2 r9819"
-   sodipodi:docname="mysql-dolphin.svg">
+   inkscape:version="0.48.1 "
+   sodipodi:docname="datasource-mysql.svg"
+   inkscape:export-filename="C:\Users\gribeiro\Desktop\icones\datasource-mysql.png"
+   inkscape:export-xdpi="43.200001"
+   inkscape:export-ydpi="43.200001">
   <metadata
      id="metadata40">
     <rdf:RDF>
@@ -22,7 +25,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -37,13 +40,13 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="706"
+     inkscape:window-width="1280"
+     inkscape:window-height="962"
      id="namedview36"
      showgrid="false"
      inkscape:zoom="1.4569705"
      inkscape:cx="144.83562"
-     inkscape:cy="125.38065"
+     inkscape:cy="119.54663"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"

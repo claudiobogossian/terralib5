@@ -33,7 +33,7 @@
 #include "../../datasource/explorer/AbstractDataSourceTreeItem.h"
 #include "../../datasource/explorer/DataSetItem.h"
 #include "../../mapdisplay/DataSetDisplay.h"
-//#include "../../table/DataSetTableView.h"
+#include "../../table/DataSetTableView.h"
 #include "../explorer/DataSetTreeView.h"
 #include "../explorer/DataSetTreeModel.h"
 #include "DataSetSelectorWidget.h"
@@ -68,10 +68,10 @@ te::qt::widgets::DataSetSelectorWidget::DataSetSelectorWidget(QWidget* parent, Q
   mapPreviewGroupBoxLayout->addWidget(m_mapPreview.get(), 1);
   m_mapPreview->show();
 
-  //m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewGroupBox));
-  //QVBoxLayout* dataPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_dataPreviewGroupBox);
-  //dataPreviewGroupBoxLayout->addWidget(m_tblView.get(), 1);
-  //m_tblView->show();
+  m_tblView.reset(new DataSetTableView(m_ui->m_dataPreviewGroupBox));
+  QVBoxLayout* dataPreviewGroupBoxLayout = new QVBoxLayout(m_ui->m_dataPreviewGroupBox);
+  dataPreviewGroupBoxLayout->addWidget(m_tblView.get(), 1);
+  m_tblView->show();
 
 // connect signals and slots
   connect(m_datasetTreeView.get(), SIGNAL(clicked(DataSetItem*)), this, SLOT(onDataSetClicked(DataSetItem*)));
@@ -236,10 +236,10 @@ void te::qt::widgets::DataSetSelectorWidget::previewData(const te::da::DataSetTy
     if(feature->moveNext())
       memFeature->copy(feature.get(), m_nPreviewRows);
 
-    //QAbstractItemModel* oldModel = m_tblView->model();
-    //m_tblView->setModel(0);
-    //delete oldModel;
-    //m_tblView->set(memFeature.release());
+    QAbstractItemModel* oldModel = m_tblView->model();
+    m_tblView->setModel(0);
+    delete oldModel;
+    m_tblView->set(memFeature.release());
   }
   catch(...)
   {
@@ -310,9 +310,9 @@ void te::qt::widgets::DataSetSelectorWidget::onDataPreviewToggled(bool on)
   }
   else
   {
-    //QAbstractItemModel* oldModel = m_tblView->model();
-    //m_tblView->setModel(0);
-    //delete oldModel;
+    QAbstractItemModel* oldModel = m_tblView->model();
+    m_tblView->setModel(0);
+    delete oldModel;
   }
 }
 

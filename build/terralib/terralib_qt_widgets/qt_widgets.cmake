@@ -87,6 +87,7 @@ set (
   widgets/rp
   widgets/se
   widgets/srs
+  widgets/table
   widgets/tools
   widgets/help
   widgets/plugin/builder
@@ -340,6 +341,14 @@ set (
   ${SRCDIR}/widgets/srs/SRSManagerDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/srs" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/table/DataSetTableDockWidget.h
+  ${SRCDIR}/widgets/table/DataSetTableModel.h
+  ${SRCDIR}/widgets/table/DataSetTableView.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/table" MOC)
 
 set (
   HDRS_TO_MOC

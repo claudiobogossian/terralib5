@@ -1,11 +1,11 @@
 set (TE_ROOT_INC "${ROOT}/src")
 set (TE_DEFAULT_LOGCONF_FILE "${ROOT}/log/te-log.conf" CACHE STRING "Location of the plugin_info.xsd file."FORCE)
 set (TE_SCHEMA_LOCATION "${ROOT}/schemas/terralib" CACHE STRING "Location of the plugin_info.xsd file." FORCE)
-set (TE_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the TerraLib logo image." FORCE)
+set (TE_LOGO "${ROOT}/resources/images/png/terralib-globe.png" CACHE STRING "Location of the TerraLib logo image." FORCE)
 set (TE_JSON_FILES_LOCATION "${ROOT}/resources/json" CACHE STRING "Location of the TerraLib   files." FORCE)
 set (TE_SQL_FILES_LOCATION "${ROOT}/resources/sql" CACHE STRING "Location of the TerraLib initialization files." FORCE)
 set (TE_XML_FILES_LOCATION "${ROOT}/resources/xml" CACHE STRING "Location of the TerraLib initialization files." FORCE)
-set (TE_ABOUT_LOGO "${ROOT}/resources/themes/terralib/128x128/terralib_logo_128x128.png" CACHE STRING "Location of the about logo image." FORCE)
+set (TE_ABOUT_LOGO "${ROOT}/resources/images/png/terralib.png" CACHE STRING "Location of the about logo image." FORCE)
 set (TE_ICONS_THEME_PATH "${ROOT}/resources/themes" CACHE STRING "Location of the theme of icons available in TerraLib." FORCE)
 set (TE_ICONS_THEME "terralib" CACHE STRING "Name of the theme of icons (by default we will use terralib theme)." FORCE)
 
