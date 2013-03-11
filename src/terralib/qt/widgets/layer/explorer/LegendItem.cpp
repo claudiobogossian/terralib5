@@ -25,7 +25,9 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../se/Description.h"
 #include "../../../../se/Rule.h"
+#include "../../se/SymbologyPreview.h"
 #include "../../Exception.h"
 #include "LegendItem.h"
 
@@ -50,11 +52,21 @@ int te::qt::widgets::LegendItem::columnCount() const
 
 QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
 {
-  //if(role == Qt::DecorationRole)
-  //  return QVariant(QIcon::fromTheme("layer"));
+  if(role == Qt::DecorationRole)
+  {
+    //QPixmap p = SymbologyPreview::build(m_rule, geom, QSize(16, 16));
+  }
 
-  //if(role == Qt::DisplayRole)
-  //  return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));
+  if(role == Qt::DisplayRole)
+  {
+    if(m_rule->getDescription())
+      return QVariant(QString::fromStdString(m_rule->getDescription()->getTitle()));
+
+    if(m_rule->getName())
+      return QVariant(QString::fromStdString(*(m_rule->getName())));
+
+    return QVariant(QString(tr("No Description")));
+  }
 
   //if(role == Qt::CheckStateRole)
   //  return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
