@@ -33,6 +33,7 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../maptools/QueryLayer.h"
 #include "../geometry/Envelope.h"
+#include "../se/Style.h"
 #include "../Exception.h"
 #include "Layer.h"
 
@@ -163,15 +164,27 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
-  /* StyleId Element */
+  /* has a Style Element ? */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "StyleId");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string style = reader.getElementValue();
-  reader.next();
+
+  std::auto_ptr<te::se::Style> style;
+
+  if((reader.getNodeType() == te::xml::START_ELEMENT) &&
+     (reader.getElementLocalName() == "Style"))
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+    style.reset(te::serialize::Style::getInstance().read(reader));
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    assert(reader.getElementLocalName() == "Style");
+
+    reader.next();
+  }
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSetLayer");
 
   reader.next();
 
@@ -182,9 +195,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   layer->setDataSetName(dataset);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
-
-  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Layer Element
-  reader.next();
+  layer->setStyle(style.release());
 
   return layer.release();
 }

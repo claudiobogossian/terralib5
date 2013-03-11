@@ -68,6 +68,8 @@ namespace te
             MClassesSamplesCT const* m_trainSamplesPtr; //!< A pointer to a always-valid structure where trainning samples are stored.
 
             std::vector< double > m_prioriProbs; //!< Priori probabilities, one for each class. Values from 0 to 1 (use an empty vector to allow internal calcule of priori probabilities).            
+            
+            unsigned int m_prioriCalcSampleStep; //!< A positive non-zero sample step used when calculating piori probabilities (default:2 - half of samples will be used);
     
             Parameters();
 
