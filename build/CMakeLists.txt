@@ -32,9 +32,11 @@ if(BUILD_TERRAVIEW)
 
   set(TVIEW_RESOURCE_FILE "${CMAKE_CURRENT_BINARY_DIR}/help/help.qhc" CACHE STRING "File containing resources description of the TerraView application")
   
+  add_subdirectory (./terraview)
+
   include (${TE_MODULE_PATH}/GenerateQHelp.cmake)
   
-  add_subdirectory (./terraview)
+  add_dependencies (terraview "Generate QHelp")
 
 endif()
 
