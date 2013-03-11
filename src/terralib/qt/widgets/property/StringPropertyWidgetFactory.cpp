@@ -40,7 +40,7 @@ void te::qt::widgets::StringPropertyWidgetFactory::finalize()
   sm_factory = 0;
 }
 
-const int& te::qt::widgets::StringPropertyWidgetFactory::getType() const
+int te::qt::widgets::StringPropertyWidgetFactory::getType() const
 {
   return te::dt::STRING_TYPE;
 }

@@ -40,7 +40,7 @@ void te::qt::widgets::GeometryPropertyWidgetFactory::finalize()
   sm_factory = 0;
 }
 
-const int& te::qt::widgets::GeometryPropertyWidgetFactory::getType() const
+int te::qt::widgets::GeometryPropertyWidgetFactory::getType() const
 {
   return te::dt::GEOMETRY_TYPE;
 }

@@ -54,6 +54,7 @@ const te::rp::ClassifierMAPStrategy::Parameters& te::rp::ClassifierMAPStrategy::
 
   m_trainSamplesPtr = rhs.m_trainSamplesPtr;
   m_prioriProbs = rhs.m_prioriProbs;
+  m_prioriCalcSampleStep = rhs.m_prioriCalcSampleStep;
 
   return *this;
 }
@@ -62,6 +63,7 @@ void te::rp::ClassifierMAPStrategy::Parameters::reset() throw(te::rp::Exception)
 {
   m_trainSamplesPtr = 0;
   m_prioriProbs.clear();
+  m_prioriCalcSampleStep = 2;
 }
 
 te::common::AbstractParameters* te::rp::ClassifierMAPStrategy::Parameters::clone() const
@@ -117,6 +119,9 @@ bool te::rp::ClassifierMAPStrategy::initialize(
         "Invalid classes priory probabilities" );                    
     }
   }
+  
+  TERP_TRUE_OR_RETURN_FALSE( castParamsPtr->m_prioriCalcSampleStep > 0,
+    "Invalid sample step" );
   
   m_initParams = (*castParamsPtr);
   
@@ -287,7 +292,8 @@ bool te::rp::ClassifierMAPStrategy::execute(const te::rst::Raster& inputRaster,
     progressPtr.reset( new te::common::TaskProgress );
     
     if( m_initParams.m_prioriProbs.empty() )
-      progressPtr->setTotalSteps( 2 * inputRaster.getNumberOfRows() );
+      progressPtr->setTotalSteps( inputRaster.getNumberOfRows() +
+        ( inputRaster.getNumberOfRows() / m_initParams.m_prioriCalcSampleStep ) );
     else
       progressPtr->setTotalSteps( inputRaster.getNumberOfRows() );
     
@@ -427,10 +433,11 @@ bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
   double closestClassdiscriminantFunctionValue = 0;
   unsigned int closestClassIdx = 0;
   std::vector< unsigned long int > elementsNumberByClass( classesNumber, 0 );
+  unsigned int totalSamplesNumber = 0;
   
-  for( unsigned int row = 0 ; row < nRows ; ++row )
+  for( unsigned int row = 0 ; row < nRows ; row += m_initParams.m_prioriCalcSampleStep )
   {
-    for( col = 0 ; col < nCols ; ++col )
+    for( col = 0 ; col < nCols ; col += m_initParams.m_prioriCalcSampleStep )
     {
       // Creating the sample
       
@@ -476,6 +483,7 @@ bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
       }
       
       ++( elementsNumberByClass[ closestClassIdx ] );
+      ++totalSamplesNumber;
     } 
     
     if( progressPtr )
@@ -485,13 +493,20 @@ bool te::rp::ClassifierMAPStrategy::getPrioriProbabilities(
     }    
   }   
   
-  for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
-  {    
-    prioriProbabilities.push_back( ( (double)elementsNumberByClass[ classIdx ] ) /
-      ( (double)( nRows * nCols ) ) );
-  }  
+  if( totalSamplesNumber )
+  {
+    for( classIdx = 0 ; classIdx < classesNumber ; ++classIdx )
+    {    
+      prioriProbabilities.push_back( ( (double)elementsNumberByClass[ classIdx ] ) /
+        ( (double)( totalSamplesNumber ) ) );
+    }  
   
-  return true;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
 }
 
 //-----------------------------------------------------------------------------

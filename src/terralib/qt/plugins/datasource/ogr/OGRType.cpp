@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../widgets/layer/selector/DataSetLayerSelector.h"
 #include "OGRConnector.h"
 #include "OGRType.h"
 
@@ -61,8 +62,8 @@ QWidget* te::qt::plugins::ogr::OGRType::getWidget(int widgetType, QWidget* paren
     case te::qt::widgets::DataSourceType::WIDGET_DATASOURCE_CONNECTOR:
       return new OGRConnector(parent, f);
 
-//    case DataSourceType::WIDGET_LAYER_SELECTOR:
-//      return new DataSetLayerSelector(parent, f);
+    case DataSourceType::WIDGET_LAYER_SELECTOR:
+      return new te::qt::widgets::DataSetLayerSelector(parent, f);
 
     default:
       return 0;

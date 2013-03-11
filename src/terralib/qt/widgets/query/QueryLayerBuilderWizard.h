@@ -29,6 +29,7 @@
 // TerraLib
 #include "../Config.h"
 #include "../../../dataaccess/datasource/DataSource.h"
+#include "../../../maptools/AbstractLayer.h"
 
 // Qt
 #include <QtGui/QWizard>
@@ -44,6 +45,7 @@ namespace te
       class DataSetWizardPage;
       class FieldsWizardPage;
       class GroupByWizardPage;
+      class LayerAttributesWizardPage;
       class OrderByWizardPage;
       class WhereClauseWizardPage;
 
@@ -62,6 +64,8 @@ namespace te
 
           te::da::Select getSelectQuery();
 
+          te::map::AbstractLayerPtr getQueryLayer();
+
         protected:
 
           void addPages();
@@ -79,6 +83,7 @@ namespace te
           std::auto_ptr<te::qt::widgets::DataSetWizardPage> m_dataSetPage;
           std::auto_ptr<te::qt::widgets::FieldsWizardPage> m_fieldPage;
           std::auto_ptr<te::qt::widgets::GroupByWizardPage> m_groupByPage;
+          std::auto_ptr<te::qt::widgets::LayerAttributesWizardPage> m_layerAttrPage;
           std::auto_ptr<te::qt::widgets::OrderByWizardPage> m_orderByPage;
           std::auto_ptr<te::qt::widgets::WhereClauseWizardPage> m_whereClausePage;
 

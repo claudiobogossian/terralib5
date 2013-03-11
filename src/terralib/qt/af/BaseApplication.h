@@ -72,6 +72,8 @@ namespace te
           void onApplicationTriggered(te::qt::af::Event* evt);
 
           void onAddDataSetLayerTriggered();
+		  
+		  void onAddQueryDataSetLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -138,7 +140,7 @@ namespace te
           QAction* m_projectRemoveLayer;
           QAction* m_projectProperties;
           QAction* m_projectAddLayerDataset;
-          QAction* m_projectAddLayerImage;
+          QAction *m_projectAddLayerQueryDataSet;
           QAction* m_projectAddLayerGraph;
           QAction* m_layerEdit;
           QAction* m_layerRename;
