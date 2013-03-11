@@ -63,7 +63,7 @@
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"
-#include "ProjectEditor.h"
+#include "ProjectEditorDialog.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 
@@ -400,7 +400,7 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
     return;
   }
 
-  ProjectEditor editor(this);
+  ProjectEditorDialog editor(this);
   editor.setProject(m_project);
   editor.exec();
 }
