@@ -127,34 +127,34 @@ void te::serialize::Save(const te::se::Rule* rule, te::xml::Writer& writer)
   if(rule == 0)
     return;
 
-  writer.writeStartElement("Rule");
+  writer.writeStartElement("se:Rule");
 
-  WriteStringPtrHelper("Name", rule->getName(), writer);
+  WriteStringPtrHelper("se:Name", rule->getName(), writer);
   Save(rule->getDescription(), writer);
 
   const te::se::Graphic* legendGraphic = rule->getLegendGraphic();
   if(legendGraphic)
   {
-    writer.writeStartElement("LegendGraphic");
+    writer.writeStartElement("se:LegendGraphic");
     Save(rule->getLegendGraphic(), writer);
-    writer.writeEndElement("LegendGraphic");
+    writer.writeEndElement("se:LegendGraphic");
   }
 
   if(rule->getFilter())
     Save(rule->getFilter(), writer);
   else if(rule->hasElseFilter())
-    writer.writeElement("ElseFilter", "");
+    writer.writeElement("se:ElseFilter", "");
 
   if(rule->getMinScaleDenominator() != 0.0)
-    writer.writeElement("MinScaleDenominator", rule->getMinScaleDenominator());
+    writer.writeElement("se:MinScaleDenominator", rule->getMinScaleDenominator());
 
   if(rule->getMaxScaleDenominator() != std::numeric_limits<double>::infinity())
-    writer.writeElement("MaxScaleDenominator", rule->getMaxScaleDenominator());
+    writer.writeElement("se:MaxScaleDenominator", rule->getMaxScaleDenominator());
 
   const std::vector<te::se::Symbolizer*> symbs = rule->getSymbolizers();
   for(std::size_t i = 0; i < symbs.size(); ++i)
     Symbolizer::getInstance().write(symbs[i], writer);
 
-  writer.writeEndElement("Rule");
+  writer.writeEndElement("se:Rule");
 }
 

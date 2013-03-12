@@ -67,10 +67,10 @@ void te::serialize::Save(const te::se::Halo* halo, te::xml::Writer& writer)
   if(halo == 0)
     return;
 
-  writer.writeStartElement("Halo");
+  writer.writeStartElement("se:Halo");
 
-  WriteParameterValuePtrHelper("Radius", halo->getRadius(), writer);
+  WriteParameterValuePtrHelper("se:Radius", halo->getRadius(), writer);
   Save(halo->getFill(), writer);
 
-  writer.writeEndElement("Halo");
+  writer.writeEndElement("se:Halo");
 }

@@ -59,12 +59,12 @@ void te::serialize::Save(const te::se::Font* font, te::xml::Writer& writer)
   if(font == 0)
     return;
 
-  writer.writeStartElement("Font");
+  writer.writeStartElement("se:Font");
 
   Save(font->getFamily(), writer);
   Save(font->getStyle(), writer);
   Save(font->getWeight(), writer);
   Save(font->getSize(), writer);
 
-  writer.writeEndElement("Font");
+  writer.writeEndElement("se:Font");
 }

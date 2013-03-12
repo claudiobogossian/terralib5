@@ -82,11 +82,11 @@ void te::serialize::Save(const te::se::Mark* mark, te::xml::Writer& writer)
   if(mark == 0)
     return;
 
-  writer.writeStartElement("Mark");
+  writer.writeStartElement("se:Mark");
 
   const std::string* wellKnownName = mark->getWellKnownName();
   if(wellKnownName)
-    writer.writeElement("WellKnownName", *wellKnownName);
+    writer.writeElement("se:WellKnownName", *wellKnownName);
   else
   {
     const te::xl::SimpleLink* link = mark->getOnlineResource();
@@ -100,13 +100,13 @@ void te::serialize::Save(const te::se::Mark* mark, te::xml::Writer& writer)
     }
     const std::string* format = mark->getFormat();
     assert(format);
-    writer.writeElement("Format", *format);
+    writer.writeElement("se:Format", *format);
 
-    writer.writeElement("MarkIndex", mark->getMarkIndex());
+    writer.writeElement("se:MarkIndex", mark->getMarkIndex());
   }
 
   Save(mark->getFill(), writer);
   Save(mark->getStroke(), writer);
 
-  writer.writeEndElement("Mark");
+  writer.writeEndElement("se:Mark");
 }

@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   {
     QPixmap pixmap(TVIEW_SPLASH_SCREEN_PIXMAP);
 
-    QSplashScreen* splash(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint));
+    QSplashScreen* splash(new QSplashScreen(pixmap/*, Qt::WindowStaysOnTopHint*/));
 
     splash->setAttribute(Qt::WA_DeleteOnClose, true);
 

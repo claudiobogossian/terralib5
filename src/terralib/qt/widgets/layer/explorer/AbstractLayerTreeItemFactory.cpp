@@ -45,9 +45,9 @@ void te::qt::widgets::AbstractLayerTreeItemFactory::initialize()
   if(!sm_factories.empty())
     return;
 
-  sm_factories["DATASET_LAYER"] =  boost::bind(boost::factory<DataSetLayerItem*>(),_1, _2);
-  sm_factories["QUERY_LAYER"] =  boost::bind(boost::factory<QueryLayerItem*>(),_1, _2);
-  sm_factories["FOLDER_LAYER"] =  boost::bind(boost::factory<FolderLayerItem*>(),_1, _2);
+  sm_factories["DATASETLAYER"] =  boost::bind(boost::factory<DataSetLayerItem*>(),_1, _2);
+  sm_factories["QUERYLAYER"] =  boost::bind(boost::factory<QueryLayerItem*>(),_1, _2);
+  sm_factories["FOLDERLAYER"] =  boost::bind(boost::factory<FolderLayerItem*>(),_1, _2);
 }
 
 void te::qt::widgets::AbstractLayerTreeItemFactory::finalize()

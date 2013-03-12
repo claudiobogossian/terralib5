@@ -63,7 +63,7 @@
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"
-#include "ProjectEditor.h"
+#include "ProjectInfoDialog.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 
@@ -400,7 +400,7 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
     return;
   }
 
-  ProjectEditor editor(this);
+  ProjectInfoDialog editor(this);
   editor.setProject(m_project);
   editor.exec();
 }
@@ -681,7 +681,7 @@ void te::qt::af::BaseApplication::initActions()
 
 
 // Menu -File- actions
-  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
+  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
   initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project"), tr(""), true, false, false);
   initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
   initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);

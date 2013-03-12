@@ -62,8 +62,8 @@ void te::serialize::Save(const te::se::InlineContent* ic, te::xml::Writer& write
   if(ic == 0)
     return;
 
-  writer.writeStartElement("InlineContent");
+  writer.writeStartElement("se:InlineContent");
   ic->getEncoding() == te::se::InlineContent::XML ? writer.writeAttribute("enconding", "xml") : writer.writeAttribute("enconding", "base64");
   writer.writeValue(ic->getData());
-  writer.writeEndElement("InlineContent");
+  writer.writeEndElement("se:InlineContent");
 }

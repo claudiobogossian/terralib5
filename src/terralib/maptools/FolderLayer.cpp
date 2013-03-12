@@ -26,7 +26,7 @@
 // TerraLib
 #include "FolderLayer.h"
 
-const std::string te::map::FolderLayer::sm_type("FOLDER_LAYER");
+const std::string te::map::FolderLayer::sm_type("FOLDERLAYER");
 
 te::map::FolderLayer::FolderLayer(AbstractLayer* parent)
   : AbstractLayer(parent)

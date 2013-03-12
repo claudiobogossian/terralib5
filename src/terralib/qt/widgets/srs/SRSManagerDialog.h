@@ -30,8 +30,9 @@
 #include "../Config.h"
 
   // Qt
-#include <QtGui/QDialog>
 #include <QtGui/QTreeWidgetItem>
+#include <QtGui/QDialog>
+
   //STL
 #include <string>
 
@@ -69,7 +70,23 @@ namespace te
          */
         ~SRSManagerDialog();
         
+        /*!
+         \brief Returns the selected SRS in the window. 
+         \return a const pair <srid,auth_name> reference, with an SRS identification given by an authority. If the user doesn't
+                select a SRS the pair will have a TE_UNKNOW_SRS and an empty auth_name.
+         */
         const std::pair<int, std::string>& getSelectedSRS() const;
+        
+        /*!
+         \brief Pops up a modal SRS selector dialog with the given window title, lets the user select a SRS, 
+         and returns that SRS.
+         \param parent Dialog parent.
+         \param title  Dialog title.
+         \return a pair <srid,auth_name>, with an SRS identification given by an authority. If the user doesn't
+         select a SRS the pair will have a TE_UNKNOW_SRS and an empty auth_name.
+         */
+        static std::pair<int, std::string> getSRS(QWidget* parent, const QString& title = "");
+        
         
       protected slots:
         
@@ -80,8 +97,11 @@ namespace te
         void onCancelPushButtonClicked();
         void onHelpPushButtonClicked();
         void onFindSRSPushButtonClicked();
+        void onSearchLineEditTextChanged(const QString& text);
         
       private:
+        
+        void filter(const QList<QTreeWidgetItem*>& itens);
         
         Ui::SRSManagerDialogForm* m_ui;   //!< Dialog form.   
         te::qt::widgets::SRSDialog* m_srsDiag;          //!< A single SRS dialog.   
