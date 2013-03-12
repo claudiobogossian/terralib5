@@ -59,7 +59,7 @@ te::qt::widgets::LayerTreeModel::~LayerTreeModel()
 bool te::qt::widgets::LayerTreeModel::canFetchMore(const QModelIndex& parent) const
 {
   if(!parent.isValid())
-    return !m_items.empty(); //  return false;
+    return !m_items.empty();
 
   AbstractLayerTreeItem* item = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
 

@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/dataset/explorer/DataSetTreeModel.cpp
 
-  \brief ????
+  \brief A simple model for datasets belonging to a data source.
 */
 
 // TerraLib
@@ -36,14 +36,17 @@
 
 te::qt::widgets::DataSetTreeModel::DataSetTreeModel(const te::da::DataSourceInfoPtr& datasource, QWidget* parent)
   : QAbstractItemModel(parent),
+    m_datasets(0),
     m_checkable(false),
     m_forceCatalogCache(false)
 {
-  m_datasets.reset(new DataSetGroupItem(datasource, 0));
+  if(datasource.get() != 0)
+    m_datasets = new DataSetGroupItem(datasource, 0);
 }
 
 te::qt::widgets::DataSetTreeModel::~DataSetTreeModel()
 {
+  delete m_datasets;
 }
 
 bool te::qt::widgets::DataSetTreeModel::canFetchMore(const QModelIndex& parent) const
@@ -59,17 +62,9 @@ bool te::qt::widgets::DataSetTreeModel::canFetchMore(const QModelIndex& parent) 
   return item->canFetchMore();
 }
 
-int te::qt::widgets::DataSetTreeModel::columnCount(const QModelIndex& parent) const
+int te::qt::widgets::DataSetTreeModel::columnCount(const QModelIndex& /*parent*/) const
 {
-  if(!parent.isValid())
-    return 1; // DataSetGroupItem is the root
-
-  AbstractDataSourceTreeItem* item = static_cast<AbstractDataSourceTreeItem*>(parent.internalPointer());
-
-  if(item == 0)
-    return 0;
-
-  return item->columnCount();
+  return 1;
 }
 
 QVariant te::qt::widgets::DataSetTreeModel::data(const QModelIndex& index, int role) const
@@ -136,12 +131,12 @@ void te::qt::widgets::DataSetTreeModel::fetchMore(const QModelIndex& parent)
 Qt::ItemFlags te::qt::widgets::DataSetTreeModel::flags(const QModelIndex& index) const
 {
   if(!index.isValid())
-    return Qt::ItemIsEnabled;
+    return QAbstractItemModel::flags(index);
 
   AbstractDataSourceTreeItem* item = static_cast<AbstractDataSourceTreeItem*>(index.internalPointer());
 
   if(item == 0)
-    return Qt::ItemIsEnabled;
+    return QAbstractItemModel::flags(index);
 
   try
   {
@@ -160,16 +155,16 @@ Qt::ItemFlags te::qt::widgets::DataSetTreeModel::flags(const QModelIndex& index)
                          tr("Unknown error in dataset explorer model!"));
   }
 
-  return Qt::ItemIsEnabled;
+  return QAbstractItemModel::flags(index);
 }
 
 bool te::qt::widgets::DataSetTreeModel::hasChildren(const QModelIndex& parent) const
 {
+  if(!parent.isValid())
+    return true;
+
   try
   {
-    if(!parent.isValid())
-      return true;        // root items are always expansibles!
-
     AbstractDataSourceTreeItem* item = static_cast<AbstractDataSourceTreeItem*>(parent.internalPointer());
 
     if(item == 0)
@@ -195,22 +190,26 @@ bool te::qt::widgets::DataSetTreeModel::hasChildren(const QModelIndex& parent) c
 
 QModelIndex te::qt::widgets::DataSetTreeModel::index(int row, int column, const QModelIndex& parent) const
 {
+  if(m_datasets == 0)
+    return QModelIndex();
+
   if(!parent.isValid()) // is it the top-level item? we have just one descendent from root!
   {
-    if(m_datasets.get() == 0 || (row != 0))
+    if(row != 0)
       return QModelIndex();
 
-    AbstractDataSourceTreeItem* item = m_datasets.get();
-
-    return createIndex(row, column, item);
+    return createIndex(row, column, m_datasets);
   }
 
   AbstractDataSourceTreeItem* parentItem = static_cast<AbstractDataSourceTreeItem*>(parent.internalPointer());
 
-  if(parentItem == 0 || parentItem->children().empty())  // if there isn't a child, return an invalid index
+  if(parentItem == 0 || parentItem->children().empty() || ( row >= parentItem->children().size()))  // if there isn't a child, return an invalid index
     return QModelIndex();
 
-  AbstractDataSourceTreeItem* item = static_cast<AbstractDataSourceTreeItem*>(parentItem->children().at(row));
+  AbstractDataSourceTreeItem* item = dynamic_cast<AbstractDataSourceTreeItem*>(parentItem->children().at(row));
+
+  if(item == 0)
+    return QModelIndex();
 
   return createIndex(row, column, item);
 }
@@ -225,7 +224,33 @@ QModelIndex te::qt::widgets::DataSetTreeModel::parent(const QModelIndex& index) 
   if(item == 0 || item->parent() == 0)
     return QModelIndex();
 
-  return createIndex(index.row(), index.column(), static_cast<AbstractDataSourceTreeItem*>(item->parent()));
+  AbstractDataSourceTreeItem* parentItem = dynamic_cast<AbstractDataSourceTreeItem*>(item->parent());
+
+  if(parentItem == 0)
+    return QModelIndex();
+
+  AbstractDataSourceTreeItem* grandParentItem = dynamic_cast<AbstractDataSourceTreeItem*>(parentItem->parent());
+
+  if(grandParentItem == 0)
+  {
+// the parent is a top level item
+    return createIndex(0, index.column(), parentItem);
+  }
+  else
+  {
+// the parent has a grandparent
+    const QObjectList& items = grandParentItem->children();
+
+    int i = 0;
+
+    for(QObjectList::const_iterator it = items.begin(); it != items.end(); ++it, ++i)
+    {
+      if((*it) == parentItem)
+        return createIndex(i, index.column(), parentItem);
+    }
+  }
+
+  return QModelIndex();
 }
 
 int te::qt::widgets::DataSetTreeModel::rowCount(const QModelIndex& parent) const
