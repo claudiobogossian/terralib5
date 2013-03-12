@@ -80,7 +80,7 @@ void te::se::Style::push_back(const std::string& semanticTypeIdentifier)
   m_semanticTypeIdentifiers->push_back(semanticTypeIdentifier);
 }
 
-const std::string& te::se::Style::getSemanticTypeIdentifier(size_t i)
+const std::string& te::se::Style::getSemanticTypeIdentifier(std::size_t i)
 {
   assert(m_semanticTypeIdentifiers && (i < m_semanticTypeIdentifiers->size()));
   return (*m_semanticTypeIdentifiers)[i];
@@ -91,9 +91,9 @@ const std::vector<std::string>* te::se::Style::getSemanticTypeIdentifiers() cons
   return m_semanticTypeIdentifiers;
 }
 
-size_t te::se::Style::getNRules() const
+const std::vector<te::se::Rule*>& te::se::Style::getRules() const
 {
-  return m_rules.size();
+  return m_rules;
 }
 
 void te::se::Style::push_back(Rule* rule)
@@ -102,7 +102,7 @@ void te::se::Style::push_back(Rule* rule)
   m_rules.push_back(rule);
 }
 
-te::se::Rule* te::se::Style::getRule(size_t i) const
+te::se::Rule* te::se::Style::getRule(std::size_t i) const
 {
   assert(i < m_rules.size());
   return m_rules[i];
@@ -114,12 +114,12 @@ void te::se::Style::push_back(te::xl::SimpleLink* onlineResource)
   m_onlineResources.push_back(onlineResource);
 }
 
-size_t te::se::Style::getNOnlineResources() const
+const std::vector<te::xl::SimpleLink*>& te::se::Style::getOnlineResources() const
 {
-  return m_onlineResources.size();
+  return m_onlineResources;
 }
 
-const te::xl::SimpleLink* te::se::Style::getOnlineResource(size_t i) const
+const te::xl::SimpleLink* te::se::Style::getOnlineResource(std::size_t i) const
 {
   assert(i < m_onlineResources.size());
   return m_onlineResources[i];

@@ -25,9 +25,11 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
-#include "../../../../maptools/AbstractLayer.h"
+#include "../../../../maptools/DataSetLayer.h"
+#include "../../../../se/Style.h"
 #include "../../Exception.h"
 #include "DataSetLayerItem.h"
+#include "LegendItem.h"
 
 // Qt
 #include <QtGui/QMenu>
@@ -37,6 +39,14 @@ te::qt::widgets::DataSetLayerItem::DataSetLayerItem(const te::map::AbstractLayer
   : AbstractLayerTreeItem(parent)
 {
   m_layer = boost::dynamic_pointer_cast<te::map::DataSetLayer>(l);
+
+  if(m_layer->getStyle())
+  {
+    const std::vector<te::se::Rule*>& rules = m_layer->getStyle()->getRules();
+
+    for(std::size_t i = 0; i != rules.size(); ++i)
+      new LegendItem(rules[i], this);
+  }
 }
 
 te::qt::widgets::DataSetLayerItem::~DataSetLayerItem()
@@ -54,7 +64,7 @@ QVariant te::qt::widgets::DataSetLayerItem::data(int /*column*/, int role) const
     return QVariant(QIcon::fromTheme("dataset-layer"));
 
   if(role == Qt::DisplayRole)
-    return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));
+    return QVariant(QString::fromStdString(m_layer->getTitle()));
 
   if(role == Qt::CheckStateRole)
     return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
@@ -76,7 +86,7 @@ QMenu* te::qt::widgets::DataSetLayerItem::getMenu(QWidget* /*parent*/) const
 
 bool te::qt::widgets::DataSetLayerItem::canFetchMore() const
 {
-  return false;
+  return !children().isEmpty();
 }
 
 Qt::ItemFlags te::qt::widgets::DataSetLayerItem::flags() const
@@ -90,7 +100,7 @@ void te::qt::widgets::DataSetLayerItem::fetchMore()
 
 bool te::qt::widgets::DataSetLayerItem::hasChildren() const
 {
-  return false;
+  return !children().isEmpty();
 }
 
 bool te::qt::widgets::DataSetLayerItem::setData(const QVariant& value, int role)

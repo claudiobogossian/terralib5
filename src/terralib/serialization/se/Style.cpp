@@ -258,16 +258,17 @@ void FeatureTypeStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
   }
 
   // Rules
-  std::size_t nRules = fts->getNRules();
+  std::size_t nRules = fts->getRules().size();
+
   if(nRules > 0)
   {
-    for(std::size_t i = 0; i < fts->getNRules(); ++i)
+    for(std::size_t i = 0; i != nRules; ++i)
       te::serialize::Save(fts->getRule(i), writer);
   }
   else // OnlineResources
   {
-    assert(fts->getNOnlineResources() > 0);
-    for(std::size_t i = 0; i < fts->getNOnlineResources(); ++i)
+    assert(fts->getOnlineResources().size() > 0);
+    for(std::size_t i = 0; i < fts->getOnlineResources().size(); ++i)
       te::serialize::WriteOnlineResourceHelper(fts->getOnlineResource(i), writer);
   }
 
@@ -307,16 +308,17 @@ void CoverageStyleWriter(const te::se::Style* style, te::xml::Writer& writer)
   }
 
   // Rules
-  std::size_t nRules = cs->getNRules();
+  std::size_t nRules = cs->getRules().size();
+
   if(nRules > 0)
   {
-    for(std::size_t i = 0; i < cs->getNRules(); ++i)
+    for(std::size_t i = 0; i != nRules; ++i)
       te::serialize::Save(cs->getRule(i), writer);
   }
   else // OnlineResources
   {
-    assert(cs->getNOnlineResources() > 0);
-    for(std::size_t i = 0; i < cs->getNOnlineResources(); ++i)
+    assert(cs->getOnlineResources().size() > 0);
+    for(std::size_t i = 0; i < cs->getOnlineResources().size(); ++i)
       te::serialize::WriteOnlineResourceHelper(cs->getOnlineResource(i), writer);
   }
 
