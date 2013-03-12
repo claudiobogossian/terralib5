@@ -678,7 +678,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
 
 // Menu -File- actions
-  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
+  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
   initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project"), tr(""), true, false, false);
   initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
   initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);
