@@ -145,6 +145,11 @@ void te::qt::af::Save(const te::qt::af::Project& project, te::xml::Writer& write
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   writer.writeAttribute("xmlns:te_map", "http://www.terralib.org/schemas/maptools");
   writer.writeAttribute("xmlns:te_qt_af", "http://www.terralib.org/schemas/common/af");
+
+  writer.writeAttribute("xmlns:se", "http://www.opengis.net/se");
+  writer.writeAttribute("xmlns:ogc", "http://www.opengis.net/ogc");
+  writer.writeAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
+
   writer.writeAttribute("xmlns", "http://www.terralib.org/schemas/qt/af");
   writer.writeAttribute("xsd:schemaLocation", "http://www.terralib.org/schemas/qt/af " + schemaLocation.absolutePath().toStdString() + "/qt/af/project.xsd");
   writer.writeAttribute("version", TERRALIB_STRING_VERSION);
