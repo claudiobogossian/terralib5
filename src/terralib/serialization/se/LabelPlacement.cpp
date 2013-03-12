@@ -60,7 +60,7 @@ void te::serialize::Save(const te::se::LabelPlacement* lp, te::xml::Writer& writ
   if(lp == 0)
     return;
 
-  writer.writeStartElement("LabelPlacement");
+  writer.writeStartElement("se:LabelPlacement");
 
   const te::se::PointPlacement* pp = lp->getPointPlacement();
   if(pp)
@@ -72,5 +72,5 @@ void te::serialize::Save(const te::se::LabelPlacement* lp, te::xml::Writer& writ
     Save(linePlacement, writer);
   }
 
-  writer.writeEndElement("LabelPlacement");
+  writer.writeEndElement("se:LabelPlacement");
 }

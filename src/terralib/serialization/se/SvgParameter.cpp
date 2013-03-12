@@ -74,11 +74,11 @@ void te::serialize::Save(const te::se::SvgParameter* p, te::xml::Writer& writer)
   if(p == 0)
     return;
 
-  writer.writeStartElement("SvgParameter");
+  writer.writeStartElement("se:SvgParameter");
 
   writer.writeAttribute("name", p->getName());
 
   Save(static_cast<const te::se::ParameterValue*>(p), writer);
 
-  writer.writeEndElement("SvgParameter");
+  writer.writeEndElement("se:SvgParameter");
 }

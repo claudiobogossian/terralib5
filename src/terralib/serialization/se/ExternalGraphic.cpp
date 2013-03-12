@@ -78,7 +78,7 @@ void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& wri
   if(eg == 0)
     return;
 
-  writer.writeStartElement("ExternalGraphic");
+  writer.writeStartElement("se:ExternalGraphic");
 
   const te::xl::SimpleLink* link = eg->getOnlineResource();
   if(link)
@@ -91,9 +91,9 @@ void te::serialize::Save(const te::se::ExternalGraphic* eg, te::xml::Writer& wri
   }
   const std::string& format = eg->getFormat();
   assert(!format.empty());
-  writer.writeElement("Format", format);
+  writer.writeElement("se:Format", format);
 
   // Recodes (...)
 
-  writer.writeEndElement("ExternalGraphic");
+  writer.writeEndElement("se:ExternalGraphic");
 }

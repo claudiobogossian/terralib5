@@ -58,9 +58,9 @@ void te::serialize::WriteBaseSymbolizerHelper(const te::xl::SimpleLink* link, te
   if(link == 0)
     return;
 
-  writer.writeStartElement("BaseSymbolizer");
+  writer.writeStartElement("se:BaseSymbolizer");
   WriteOnlineResourceHelper(link, writer);
-  writer.writeEndElement("BaseSymbolizer");
+  writer.writeEndElement("se:BaseSymbolizer");
 }
 
 void te::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te::xml::Writer& writer)
@@ -68,9 +68,9 @@ void te::serialize::WriteOnlineResourceHelper(const te::xl::SimpleLink* link, te
   if(link == 0)
     return;
 
-  writer.writeStartElement("OnlineResource");
+  writer.writeStartElement("se:OnlineResource");
   Save(link, writer);
-  writer.writeEndElement("OnlineResource");
+  writer.writeEndElement("se:OnlineResource");
 }
 
 void te::serialize::WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, te::xml::Writer& writer)
@@ -79,7 +79,7 @@ void te::serialize::WriteSymbolizerHelper(const te::se::Symbolizer* symbolizer, 
 
   writer.writeAttribute("version", symbolizer->getVersion());
   //writer.writeAttribute("uom", symbolizer->getUom()); // TODO: URI from te::common:: UnitOfMeasure!
-  WriteStringPtrHelper("Name", &symbolizer->getName(), writer);
+  WriteStringPtrHelper("se:Name", &symbolizer->getName(), writer);
   Save(symbolizer->getDescription(), writer);
   WriteBaseSymbolizerHelper(symbolizer->getBaseSymbolizer(), writer);
 }
@@ -134,9 +134,9 @@ void te::serialize::WriteGeometryPropertyHelper(const te::fe::PropertyName* p, t
   if(p == 0)
     return;
 
-  writer.writeStartElement("Geometry");
+  writer.writeStartElement("se:Geometry");
   te::serialize::Expression::getInstance().write(p, writer);
-  writer.writeEndElement("Geometry");
+  writer.writeEndElement("se:Geometry");
 }
 
 te::fe::PropertyName* te::serialize::ReadGeometryPropertyHelper(te::xml::Reader& reader)

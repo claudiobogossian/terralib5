@@ -63,10 +63,10 @@ void te::serialize::Save(const te::se::AnchorPoint* ap, te::xml::Writer& writer)
   if(ap == 0)
     return;
 
-  writer.writeStartElement("AnchorPoint");
+  writer.writeStartElement("se:AnchorPoint");
 
-  WriteParameterValuePtrHelper("AnchorPointX", ap->getAnchorPointX(), writer);
-  WriteParameterValuePtrHelper("AnchorPointY", ap->getAnchorPointY(), writer);
+  WriteParameterValuePtrHelper("se:AnchorPointX", ap->getAnchorPointX(), writer);
+  WriteParameterValuePtrHelper("se:AnchorPointY", ap->getAnchorPointY(), writer);
 
-  writer.writeEndElement("AnchorPoint");
+  writer.writeEndElement("se:AnchorPoint");
 }
