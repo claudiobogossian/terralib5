@@ -377,7 +377,15 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
   writer.writeElement("SRID", layer->getSRID());
   te::serialize::SaveExtent(&layer->getExtent(), writer);
   writer.writeElement("RendererId", layer->getRendererType());
-  writer.writeElement("StyleId", "x");
+
+  if(layer->getStyle())
+  {
+    writer.writeStartElement("Style");
+
+    te::serialize::Style::getInstance().write(layer->getStyle(), writer);
+
+    writer.writeEndElement("Style");
+  }
 
   writer.writeEndElement("DataSetLayer");
 }
@@ -394,12 +402,20 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("Title", layer->getTitle());
   writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  //writer.writeElement("Query", layer->getQuery()); Uba
+  writer.writeElement("Query", "");
   writer.writeElement("DataSourceId", layer->getDataSourceId());
   writer.writeElement("SRID", layer->getSRID());
   te::serialize::SaveExtent(&layer->getExtent(), writer);
   writer.writeElement("RendererId", layer->getRendererType());
-  writer.writeElement("StyleId", "z");
+
+  if(layer->getStyle())
+  {
+    writer.writeStartElement("Style");
+
+    te::serialize::Style::getInstance().write(layer->getStyle(), writer);
+
+    writer.writeEndElement("Style");
+  }
 
   writer.writeEndElement("QueryLayer");
 }

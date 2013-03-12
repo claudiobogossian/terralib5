@@ -58,9 +58,14 @@ void te::serialize::Save(const te::se::ParameterValue* p, te::xml::Writer& write
     return;
 
   std::size_t n = p->getNParameters();
-  for(std::size_t i = 0; i < n; ++i)
+
+  for(std::size_t i = 0; i != n; ++i)
   {
     const te::se::ParameterValue::Parameter* param = p->getParameter(i);
-    Expression::getInstance().write(param->m_expression, writer);
+
+    if(param->m_mixedData)
+      writer.writeValue(*(param->m_mixedData));
+    else
+      Expression::getInstance().write(param->m_expression, writer);
   }
 }

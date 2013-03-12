@@ -92,7 +92,7 @@ void te::serialize::Save(const te::se::Interpolate* interpolate, te::xml::Writer
   if(interpolate == 0)
     return;
 
-  writer.writeStartElement("Interpolate");
+  writer.writeStartElement("se:Interpolate");
 
   writer.writeAttribute("fallbackValue", interpolate->getFallbackValue());
 
@@ -124,12 +124,12 @@ void te::serialize::Save(const te::se::Interpolate* interpolate, te::xml::Writer
     break;
   }
 
-  WriteParameterValuePtrHelper("LookupValue", interpolate->getLookupValue(), writer);
+  WriteParameterValuePtrHelper("se:LookupValue", interpolate->getLookupValue(), writer);
 
   const std::vector<te::se::InterpolationPoint*> ipts = interpolate->getInterpolationPoints();
   assert(!ipts.empty());
   for(std::size_t i = 0; i < ipts.size(); ++i)
     Save(ipts[i], writer);
 
-  writer.writeEndElement("Interpolate");
+  writer.writeEndElement("se:Interpolate");
 }

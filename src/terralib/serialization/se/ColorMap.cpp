@@ -61,7 +61,7 @@ void te::serialize::Save(const te::se::ColorMap* cm, te::xml::Writer& writer)
   if(cm == 0)
     return;
 
-  writer.writeStartElement("ColorMap");
+  writer.writeStartElement("se:ColorMap");
 
   te::se::Categorize* categorize = cm->getCategorize();
   if(categorize)
@@ -73,5 +73,5 @@ void te::serialize::Save(const te::se::ColorMap* cm, te::xml::Writer& writer)
     Save(interpolate, writer);
   }
 
-  writer.writeEndElement("ColorMap");
+  writer.writeEndElement("se:ColorMap");
 }

@@ -90,7 +90,7 @@ void te::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
   if(c == 0)
     return;
 
-  writer.writeStartElement("Categorize");
+  writer.writeStartElement("se:Categorize");
 
   writer.writeAttribute("fallbackValue", c->getFallbackValue());
 
@@ -109,8 +109,8 @@ void te::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
     break;  
   }
 
-  WriteParameterValuePtrHelper("LookupValue", c->getLookupValue(), writer);
-  WriteParameterValuePtrHelper("Value", c->getValue(), writer);
+  WriteParameterValuePtrHelper("se:LookupValue", c->getLookupValue(), writer);
+  WriteParameterValuePtrHelper("se:Value", c->getValue(), writer);
 
   std::vector<te::se::ParameterValue*> thresholds = c->getThresholds();
   std::vector<te::se::ParameterValue*> values = c->getThresholdValues();
@@ -118,9 +118,9 @@ void te::serialize::Save(const te::se::Categorize* c, te::xml::Writer& writer)
 
   for(std::size_t i = 0; i < thresholds.size(); ++i)
   {
-    WriteParameterValuePtrHelper("Threshold", thresholds[i], writer);
-    WriteParameterValuePtrHelper("Value", values[i], writer);
+    WriteParameterValuePtrHelper("se:Threshold", thresholds[i], writer);
+    WriteParameterValuePtrHelper("se:Value", values[i], writer);
   }
 
-  writer.writeEndElement("Categorize");
+  writer.writeEndElement("se:Categorize");
 }

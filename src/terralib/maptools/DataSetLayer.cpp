@@ -36,7 +36,7 @@
 // STL
 #include <memory>
 
-const std::string te::map::DataSetLayer::sm_type("DATASET_LAYER");
+const std::string te::map::DataSetLayer::sm_type("DATASETLAYER");
 
 te::map::DataSetLayer::DataSetLayer(AbstractLayer* parent)
   : AbstractLayer(parent),

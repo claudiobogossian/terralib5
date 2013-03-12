@@ -28,7 +28,7 @@
 #include "../se/Style.h"
 #include "QueryLayer.h"
 
-const std::string te::map::QueryLayer::sm_type("QUERY_LAYER");
+const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
 
 te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
   : AbstractLayer(parent),
