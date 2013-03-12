@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceExplorer.cpp
+  \file terralib/qt/widgets/datasource/explorer/DataSourceExplorer.cpp
 
   \brief A widget designed to explore the data sources of an application.
 */

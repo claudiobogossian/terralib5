@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file DataSourceExplorer.h
+  \file terralib/qt/widgets/datasource/explorer/DataSourceExplorer.h
 
   \brief A widget designed to explore the data sources of an application.
 */
@@ -55,13 +55,13 @@ namespace te
 
           DataSourceExplorer(QWidget* parent = 0, Qt::WindowFlags flags = 0);
 
-          ~DataSourceExplorer();        
+          ~DataSourceExplorer();
 
           DataSourceToolBox* getToolBox() const;
 
         private:
 
-          DataSourceToolBox* m_toolBox;     
+          DataSourceToolBox* m_toolBox;
       }; 
     } // end namespace widgets
   }   // end namespace qt
