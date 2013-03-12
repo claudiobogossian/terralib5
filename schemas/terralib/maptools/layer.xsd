@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:te_gm="http://www.terralib.org/schemas/geometry"
             xmlns:te_map="http://www.terralib.org/schemas/maptools"
+            xmlns:se="http://www.opengis.net/se"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
             targetNamespace="http://www.terralib.org/schemas/maptools"
             elementFormDefault="qualified"
@@ -12,7 +13,8 @@
     <xsd:documentation>Layer Schema</xsd:documentation>
   </xsd:annotation>
 
-  <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd"/>
+  <xsd:import namespace="http://www.terralib.org/schemas/geometry" schemaLocation="../geometry/geometry.xsd" />
+  <xsd:import namespace="http://www.opengis.net/se" schemaLocation="../../ogc/se/1.1.0/FeatureStyle.xsd" />
 
   <xsd:element name="LayerList" type="te_map:LayerListType" />
 
@@ -46,7 +48,7 @@
           <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
           <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
-          <xsd:element name="StyleId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+          <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -63,7 +65,7 @@
           <xsd:element name="SRID" type="xsd:integer" minOccurs="1" maxOccurs="1" />
           <xsd:element name="Extent" type="te_gm:EnvelopeType" minOccurs="1" maxOccurs="1" />
           <xsd:element name="RendererId" type="xsd:string" minOccurs="1" maxOccurs="1" />
-          <xsd:element name="StyleId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+          <xsd:element name="Style" type="te_map:StyleType" minOccurs="0" maxOccurs="1"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -79,6 +81,16 @@
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="StyleType">
+    <xsd:annotation>
+      <xsd:documentation>The layer style</xsd:documentation>
+    </xsd:annotation>
+    <xsd:choice minOccurs="1" maxOccurs="1">
+      <xsd:element ref="se:FeatureTypeStyle" />
+      <xsd:element ref="se:CoverageStyle" />
+    </xsd:choice>
   </xsd:complexType>
 
 </xsd:schema>

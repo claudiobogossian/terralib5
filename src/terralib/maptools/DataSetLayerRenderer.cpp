@@ -191,7 +191,7 @@ void te::map::DataSetLayerRenderer::drawGeometries(DataSetLayer* layer,
   te::map::CanvasConfigurer cc(canvas);
 
 // number of rules defined on feature type style
-  std::size_t nRules = fts->getNRules();
+  std::size_t nRules = fts->getRules().size();
 
   for(std::size_t i = 0; i < nRules; ++i) // for each <Rule>
   {
@@ -364,7 +364,7 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
     throw Exception(TR_MAP("The layer style is not a Coverage Style!"));
 
 // get the raster symbolizer
-  std::size_t nRules = cs->getNRules();
+  std::size_t nRules = cs->getRules().size();
   assert(nRules >= 1);
 
 // for while, consider one rule

@@ -33,9 +33,6 @@
 // STL
 #include <vector>
 
-// Boost
-#include <boost/ptr_container/ptr_vector.hpp>
-
 //Qt
 #include <QtCore/QAbstractItemModel>
 
@@ -94,7 +91,7 @@ namespace te
 
         private:
 
-          boost::ptr_vector<AbstractDataSourceTreeItem> m_items;
+          std::vector<AbstractDataSourceTreeItem*> m_items;
           bool m_checkable;
       };
 

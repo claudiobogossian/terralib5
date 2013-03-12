@@ -64,7 +64,7 @@ te::da::DataSetType* te::serialize::ReadDataSetType(te::xml::Reader& reader)
 
 void te::serialize::Save(const te::da::DataSetType* dt, te::xml::Writer& writer)
 {
-  writer.writeStartElement("DataSetType");
+  writer.writeStartElement("te_da:DataSetType");
 
   writer.writeAttribute("id", dt->getId());
   writer.writeAttribute("name", dt->getName());
@@ -75,6 +75,6 @@ void te::serialize::Save(const te::da::DataSetType* dt, te::xml::Writer& writer)
   for(std::size_t i = 0; i < nprops; ++i)
     Save(dt->getProperty(i), writer);
 
-  writer.writeEndElement("DataSetType");
+  writer.writeEndElement("te_da:DataSetType");
 }
 

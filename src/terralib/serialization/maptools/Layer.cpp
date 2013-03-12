@@ -32,7 +32,9 @@
 #include "../../maptools/DataSetLayer.h"
 #include "../../maptools/FolderLayer.h"
 #include "../../maptools/QueryLayer.h"
+#include "../../se/Style.h"
 #include "../geometry/Envelope.h"
+#include "../se/Style.h"
 #include "../Exception.h"
 #include "Layer.h"
 
@@ -163,15 +165,27 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
-  /* StyleId Element */
+  /* has a Style Element ? */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "StyleId");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string style = reader.getElementValue();
-  reader.next();
+
+  std::auto_ptr<te::se::Style> style;
+
+  if((reader.getNodeType() == te::xml::START_ELEMENT) &&
+     (reader.getElementLocalName() == "Style"))
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+    style.reset(te::serialize::Style::getInstance().read(reader));
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    assert(reader.getElementLocalName() == "Style");
+
+    reader.next();
+  }
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "DataSetLayer");
 
   reader.next();
 
@@ -182,9 +196,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   layer->setDataSetName(dataset);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
-
-  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of Layer Element
-  reader.next();
+  layer->setStyle(style.release());
 
   return layer.release();
 }
@@ -258,15 +270,27 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
-  /* StyleId Element */
+    /* has a Style Element ? */
   reader.next();
-  assert(reader.getNodeType() == te::xml::START_ELEMENT);
-  assert(reader.getElementLocalName() == "StyleId");
-  reader.next();
-  assert(reader.getNodeType() == te::xml::VALUE);
-  std::string style = reader.getElementValue();
-  reader.next();
+
+  std::auto_ptr<te::se::Style> style;
+
+  if((reader.getNodeType() == te::xml::START_ELEMENT) &&
+     (reader.getElementLocalName() == "Style"))
+  {
+    reader.next();
+    assert(reader.getNodeType() == te::xml::START_ELEMENT);
+
+    style.reset(te::serialize::Style::getInstance().read(reader));
+
+    assert(reader.getNodeType() == te::xml::END_ELEMENT);
+    assert(reader.getElementLocalName() == "Style");
+
+    reader.next();
+  }
+
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "QueryLayer");
 
   reader.next();
 
@@ -277,9 +301,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   //layer->setQuery(query); Uba
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
-
-  assert(reader.getNodeType() == te::xml::END_ELEMENT); // End of QueryLayer Element
-  reader.next();
+  layer->setStyle(style.release());
 
   return layer.release();
 }
@@ -345,19 +367,27 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
   if(layer == 0)
     return;
 
-  writer.writeStartElement("DataSetLayer");
+  writer.writeStartElement("te_map:DataSetLayer");
 
   writer.writeAttribute("id", layer->getId());
-  writer.writeElement("Title", layer->getTitle());
-  writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  writer.writeElement("DataSetName", layer->getDataSetName());
-  writer.writeElement("DataSourceId", layer->getDataSourceId());
-  writer.writeElement("SRID", layer->getSRID());
+  writer.writeElement("te_map:Title", layer->getTitle());
+  writer.writeElement("te_map:Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
+  writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::SaveExtent(&layer->getExtent(), writer);
-  writer.writeElement("RendererId", layer->getRendererType());
-  writer.writeElement("StyleId", "x");
+  writer.writeElement("te_map:RendererId", layer->getRendererType());
 
-  writer.writeEndElement("DataSetLayer");
+  if(layer->getStyle())
+  {
+    writer.writeStartElement("te_map:Style");
+
+    te::serialize::Style::getInstance().write(layer->getStyle(), writer);
+
+    writer.writeEndElement("te_map:Style");
+  }
+
+  writer.writeEndElement("te_map:DataSetLayer");
 }
 
 void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
@@ -367,19 +397,27 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   if(layer == 0)
     return;
 
-  writer.writeStartElement("QueryLayer");
+  writer.writeStartElement("te_map:QueryLayer");
 
   writer.writeAttribute("id", layer->getId());
-  writer.writeElement("Title", layer->getTitle());
-  writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  //writer.writeElement("Query", layer->getQuery()); Uba
-  writer.writeElement("DataSourceId", layer->getDataSourceId());
-  writer.writeElement("SRID", layer->getSRID());
+  writer.writeElement("te_map:Title", layer->getTitle());
+  writer.writeElement("te_map:Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("te_map:Query", "");
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
+  writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::SaveExtent(&layer->getExtent(), writer);
-  writer.writeElement("RendererId", layer->getRendererType());
-  writer.writeElement("StyleId", "z");
+  writer.writeElement("te_map:RendererId", layer->getRendererType());
 
-  writer.writeEndElement("QueryLayer");
+  if(layer->getStyle())
+  {
+    writer.writeStartElement("te_map:Style");
+
+    te::serialize::Style::getInstance().write(layer->getStyle(), writer);
+
+    writer.writeEndElement("te_map:Style");
+  }
+
+  writer.writeEndElement("te_map:QueryLayer");
 }
 
 void FolderLayerWriter(const te::map::AbstractLayer* /*alayer*/, te::xml::Writer& /*writer*/)

@@ -44,6 +44,7 @@
 #include "../widgets/progress/ProgressViewerBar.h"
 #include "../widgets/progress/ProgressViewerDialog.h"
 #include "../widgets/progress/ProgressViewerWidget.h"
+#include "../widgets/query/QueryLayerBuilderWizard.h"
 #include "../widgets/se/RasterVisualDockWidget.h"
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
@@ -62,7 +63,7 @@
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"
-#include "ProjectEditor.h"
+#include "ProjectInfoDialog.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 
@@ -281,6 +282,40 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
   }
 }
 
+void te::qt::af::BaseApplication::onAddQueryDataSetLayerTriggered()
+{
+   try
+  {
+    std::auto_ptr<te::qt::widgets::QueryLayerBuilderWizard> qlb(new te::qt::widgets::QueryLayerBuilderWizard(this));
+
+    int retval = qlb->exec();
+
+    if(retval == QDialog::Rejected)
+      return;
+
+    te::map::AbstractLayerPtr layer = qlb->getQueryLayer();
+
+    if(m_project == 0)
+      throw Exception(TR_QT_AF("Error: there is no opened project!"));
+
+    m_project->add(layer);
+
+    if((m_explorer != 0) && (m_explorer->getExplorer() != 0))
+      m_explorer->getExplorer()->add(layer);
+
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+  catch(...)
+  {
+    QMessageBox::warning(this,
+                         te::qt::af::ApplicationController::getInstance().getAppTitle(),
+                         tr("Unknown error while trying to add a layer from a queried dataset!"));
+  }
+}
+
 void te::qt::af::BaseApplication::onPluginsManagerTriggered()
 {
   try
@@ -365,22 +400,26 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
     return;
   }
 
-  ProjectEditor editor(this);
+  ProjectInfoDialog editor(this);
   editor.setProject(m_project);
   editor.exec();
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
-  delete m_project;
-
-  m_project = 0;
-
   try
   {
-    m_project = te::qt::af::ReadProject(projectFileName.toStdString());
+    Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+
+    delete m_project;
+
+    m_project = nproject;
 
     ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
+
+    QString projectTile(tr(" - Project: %1"));
+
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
     NewProject evt(m_project);
 
@@ -404,6 +443,10 @@ void te::qt::af::BaseApplication::newProject()
 
   m_project->setTitle("New Project");
   m_project->setAuthor("Unknown");
+
+  QString projectTile(tr(" - Project: %1"));
+
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
   NewProject evt(m_project);
 
@@ -629,7 +672,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_projectRemoveLayer, "", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
   initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true);
   initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
-  initAction(m_projectAddLayerImage, "", "Image", tr("&Image"), tr("Add a new layer from a satellite image"), true, false, false);
+  initAction(m_projectAddLayerQueryDataSet, "", "Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
 // Menu -Layer- actions
@@ -643,7 +686,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
 
 // Menu -File- actions
-  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
+  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
   initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project"), tr(""), true, false, false);
   initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
   initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);
@@ -739,7 +782,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
-  m_projectAddLayerMenu->addAction(m_projectAddLayerImage);
+  m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
   //m_projectAddLayerMenu->addAction(m_projectAddLayerGraph);
 
 // Layer menu
@@ -835,9 +878,11 @@ void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
+  connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryDataSetLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
+  connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));

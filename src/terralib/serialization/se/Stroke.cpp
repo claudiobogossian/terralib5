@@ -74,13 +74,13 @@ void te::serialize::Save(const te::se::Stroke* stroke, te::xml::Writer& writer)
   if(stroke == 0)
     return;
 
-  writer.writeStartElement("Stroke");
+  writer.writeStartElement("se:Stroke");
 
   if(stroke->getGraphicFill())
   {
-    writer.writeStartElement("GraphicFill");
+    writer.writeStartElement("se:GraphicFill");
     Save(stroke->getGraphicFill(), writer);
-    writer.writeEndElement("GraphicFill");
+    writer.writeEndElement("se:GraphicFill");
   }
   else if(stroke->getGraphicStroke())
     Save(stroke->getGraphicStroke(), writer);
@@ -93,5 +93,5 @@ void te::serialize::Save(const te::se::Stroke* stroke, te::xml::Writer& writer)
   Save(stroke->getDashArray(), writer);
   Save(stroke->setDashOffset(), writer);
 
-  writer.writeEndElement("Stroke");
+  writer.writeEndElement("se:Stroke");
 }

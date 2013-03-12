@@ -67,19 +67,19 @@ void te::serialize::Save(const te::se::RasterSymbolizer::OverlapBehavior& type, 
     break;
 
     case te::se::RasterSymbolizer::AVERAGE:
-      writer.writeElement("OverlapBehavior", "AVERAGE");
+      writer.writeElement("se:OverlapBehavior", "AVERAGE");
     break;
 
     case te::se::RasterSymbolizer::EARLIEST_ON_TOP:
-      writer.writeElement("OverlapBehavior", "EARLIEST_ON_TOP");
+      writer.writeElement("se:OverlapBehavior", "EARLIEST_ON_TOP");
     break;
 
     case te::se::RasterSymbolizer::LATEST_ON_TOP:
-      writer.writeElement("OverlapBehavior", "LATEST_ON_TOP");
+      writer.writeElement("se:OverlapBehavior", "LATEST_ON_TOP");
     break;
 
     case te::se::RasterSymbolizer::RANDOM:
-      writer.writeElement("OverlapBehavior", "RANDOM");
+      writer.writeElement("se:OverlapBehavior", "RANDOM");
     break;
   }
 }

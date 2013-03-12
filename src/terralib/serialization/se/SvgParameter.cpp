@@ -44,15 +44,22 @@ te::se::SvgParameter* te::serialize::ReadSvgParameter(te::xml::Reader& reader)
   std::string name = reader.getAttr("name");
   assert(!name.empty());
 
-  reader.next();
-
   std::auto_ptr<te::se::SvgParameter> svgParam(new te::se::SvgParameter(name));
+
+  reader.next();
 
   // Expression TODO: (n's expressions?)
   te::se::ParameterValue::Parameter* p = new te::se::ParameterValue::Parameter;
-  p->m_expression = Expression::getInstance().read(reader);
-  
-  // TODO: and mixed data?!
+
+  if(reader.getNodeType() == te::xml::VALUE)
+  {
+    p->m_mixedData = new std::string(reader.getElementValue());
+    reader.next();
+  }
+  else
+  {
+    p->m_expression = Expression::getInstance().read(reader);
+  }
 
   svgParam->add(p);
 
@@ -67,11 +74,11 @@ void te::serialize::Save(const te::se::SvgParameter* p, te::xml::Writer& writer)
   if(p == 0)
     return;
 
-  writer.writeStartElement("SvgParameter");
+  writer.writeStartElement("se:SvgParameter");
 
   writer.writeAttribute("name", p->getName());
 
   Save(static_cast<const te::se::ParameterValue*>(p), writer);
 
-  writer.writeEndElement("SvgParameter");
+  writer.writeEndElement("se:SvgParameter");
 }

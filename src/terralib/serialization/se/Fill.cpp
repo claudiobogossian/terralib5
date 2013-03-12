@@ -69,14 +69,14 @@ void te::serialize::Save(const te::se::Fill* fill, te::xml::Writer& writer)
   if(fill == 0)
     return;
 
-  writer.writeStartElement("Fill");
+  writer.writeStartElement("se:Fill");
 
   const te::se::Graphic* g = fill->getGraphicFill();
   if(g)
   {
-    writer.writeStartElement("GraphicFill");
+    writer.writeStartElement("se:GraphicFill");
     Save(g, writer);
-    writer.writeEndElement("GraphicFill");
+    writer.writeEndElement("se:GraphicFill");
   }
   else
   {
@@ -84,5 +84,5 @@ void te::serialize::Save(const te::se::Fill* fill, te::xml::Writer& writer)
     Save(fill->getOpacity(), writer);
   }
 
-  writer.writeEndElement("Fill");
+  writer.writeEndElement("se:Fill");
 }

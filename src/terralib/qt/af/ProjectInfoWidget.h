@@ -18,17 +18,23 @@
  */
 
 /*! 
-  \file terralib/qt/af/ProjectEditor.h
+  \file terralib/qt/af/ProjectInfo.h
 
   \brief 
 */
 
-#ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTEDITOR_H
-#define __TERRALIB_QT_AF_INTERNAL_PROJECTEDITOR_H
+#ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFOWIDGET_H
+#define __TERRALIB_QT_AF_INTERNAL_PROJECTINFOWIDGET_H
 
-#include <QtGui/QDialog>
+#include <QtGui/QWidget>
 
 #include "Config.h"
+
+// Forward declaration
+namespace Ui
+{
+  class ProjectInfoWidgetForm;
+}
 
 namespace te
 {
@@ -38,33 +44,29 @@ namespace te
     {
       // Forward declaration
       class Project;
-      class ProjectInfo;
 
-      class TEQTAFEXPORT ProjectEditor : public QDialog
+      class TEQTAFEXPORT ProjectInfoWidget : public QWidget
       {
-        Q_OBJECT
-
         public:
 
-          ProjectEditor(QWidget* parent=0);
+          ProjectInfoWidget(QWidget* parent=0);
 
-          ~ProjectEditor();
+          ~ProjectInfoWidget();
 
           void setProject(Project* proj);
 
-        protected slots:
-
-          void onOkPushButtonPressed();
-
-          void onHelpPushButtonPressed();
+          void updateProjectInfo();
 
         protected:
 
-          ProjectInfo* m_info;
+          Project* m_proj;
+
+        private:
+
+          Ui::ProjectInfoWidgetForm* m_ui;
       };
     }
   }
 }
 
-
-#endif //__TERRALIB_QT_AF_INTERNAL_PROJECTEDITOR_H
+#endif //__TERRALIB_QT_AF_INTERNAL_PROJECTINFOWIDGET_H

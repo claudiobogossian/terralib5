@@ -55,10 +55,10 @@ void te::serialize::Save(const te::se::ImageOutline* imageOutline, te::xml::Writ
   if(imageOutline == 0)
     return;
 
-  writer.writeStartElement("ImageOutline");
+  writer.writeStartElement("se:ImageOutline");
 
   assert(imageOutline->getSymbolizer());
   Symbolizer::getInstance().write(imageOutline->getSymbolizer(), writer);
 
-  writer.writeEndElement("ImageOutline");
+  writer.writeEndElement("se:ImageOutline");
 }

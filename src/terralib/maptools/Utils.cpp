@@ -102,10 +102,16 @@ std::string te::map::GetString(const te::se::ParameterValue* param)
   const te::se::ParameterValue::Parameter* p = param->getParameter(0);
   assert(p);
 
-  te::fe::Literal* l = dynamic_cast<te::fe::Literal*>(p->m_expression);
-  assert(l);
-
-  return l->getValue();
+  if(p->m_mixedData)
+  {
+    return *p->m_mixedData;
+  }
+  else //if(p->m_expression)
+  {
+    te::fe::Literal* l = dynamic_cast<te::fe::Literal*>(p->m_expression);
+    assert(l);
+    return l->getValue();
+  }
 }
 
 void te::map::GetDashStyle(const std::string& dasharray, std::vector<double>& style)

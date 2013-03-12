@@ -53,11 +53,11 @@ void te::serialize::SaveExtent(const te::gm::Envelope* e, te::xml::Writer& write
 {
   assert(e);
 
-  writer.writeStartElement("Extent");
+  writer.writeStartElement("te_map:Extent");
   writer.writeAttribute("llx", e->m_llx);
   writer.writeAttribute("lly", e->m_lly);
   writer.writeAttribute("urx", e->m_urx);
   writer.writeAttribute("ury", e->m_lly);
-  writer.writeEndElement("Extent");
+  writer.writeEndElement("te_map:Extent");
 }
 

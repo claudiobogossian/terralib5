@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,19 +18,25 @@
  */
 
 /*!
-  \file terralib/qt/widgets/datasource/explorer/DataSourceExplorer.h
+  \file terralib/qt/widgets/query/LayerAttributesWizardPage.h
 
-  \brief A widget designed to explore the data sources of an application.
+  \brief This file has the LayerAttributesWizardPage class.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_DATASOURCEEXPLORER_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_DATASOURCEEXPLORER_H
+#ifndef __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_LAYERATTRIBUTESWIZARDPAGE_H
+#define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_LAYERATTRIBUTESWIZARDPAGE_H
 
 // TerraLib
-#include "../../Config.h"
+#include "../Config.h"
+
+// STL
+#include <string>
+#include <memory>
 
 // Qt
-#include <QtGui/QDockWidget>
+#include <QtGui/QWizardPage>
+
+namespace Ui { class LayerAttributesWidgetForm; }
 
 namespace te
 {
@@ -38,33 +44,37 @@ namespace te
   {
     namespace widgets
     {
-      class DataSourceToolBox;
-
       /*!
-        \class DataSourceExplorer
+        \class LayerAttributesWizardPage
 
-        \brief A widget designed to explore the data sources of an application.
-
-        \sa DataSourceToolBox, DataSourceExplorerTreeView, DataSourceExplorerTreeModel
+        \brief This class is used to define the layer attributes information.
       */
-      class TEQTWIDGETSEXPORT DataSourceExplorer : public QDockWidget
+      class TEQTWIDGETSEXPORT LayerAttributesWizardPage : public QWizardPage
       {
         Q_OBJECT
 
         public:
 
-          DataSourceExplorer(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+          LayerAttributesWizardPage(QWidget* parent = 0);
 
-          ~DataSourceExplorer();
+          ~LayerAttributesWizardPage();
 
-          DataSourceToolBox* getToolBox() const;
+          bool isComplete() const;
+
+
+        public:
+
+          std::string getLayerName();
+
 
         private:
 
-          DataSourceToolBox* m_toolBox;
+         std::auto_ptr<Ui::LayerAttributesWidgetForm> m_ui;
       }; 
+
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_DATASOURCEEXPLORER_H
+#endif  // __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_LAYERATTRIBUTEWIZARDPAGE_H
+

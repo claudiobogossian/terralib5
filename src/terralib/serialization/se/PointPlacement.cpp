@@ -72,11 +72,11 @@ void te::serialize::Save(const te::se::PointPlacement* pp, te::xml::Writer& writ
   if(pp == 0)
     return;
 
-  writer.writeStartElement("PointPlacement");
+  writer.writeStartElement("se:PointPlacement");
 
   Save(pp->getAnchorPoint(), writer);
   Save(pp->getDisplacement(), writer);
-  WriteParameterValuePtrHelper("Rotation", pp->getRotation(), writer);
+  WriteParameterValuePtrHelper("se:Rotation", pp->getRotation(), writer);
 
-  writer.writeEndElement("PointPlacement");
+  writer.writeEndElement("se:PointPlacement");
 }

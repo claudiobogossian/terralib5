@@ -93,7 +93,7 @@ void te::serialize::Save(const te::se::Graphic* graphic, te::xml::Writer& writer
   if(graphic == 0)
     return;
 
-  writer.writeStartElement("Graphic");
+  writer.writeStartElement("se:Graphic");
 
   const std::vector<te::se::Mark*> marks = graphic->getMarks();
   for(std::size_t i = 0; i < marks.size(); ++i)
@@ -103,12 +103,12 @@ void te::serialize::Save(const te::se::Graphic* graphic, te::xml::Writer& writer
   for(std::size_t i = 0; i < egs.size(); ++i)
     Save(egs[i], writer);
 
-  WriteParameterValuePtrHelper("Opacity", graphic->getOpacity(), writer);
-  WriteParameterValuePtrHelper("Size", graphic->getSize(), writer);
-  WriteParameterValuePtrHelper("Rotation", graphic->getRotation(), writer);
+  WriteParameterValuePtrHelper("se:Opacity", graphic->getOpacity(), writer);
+  WriteParameterValuePtrHelper("se:Size", graphic->getSize(), writer);
+  WriteParameterValuePtrHelper("se:Rotation", graphic->getRotation(), writer);
 
   Save(graphic->getAnchorPoint(), writer);
   Save(graphic->getDisplacement(), writer);
 
-  writer.writeEndElement("Graphic");
+  writer.writeEndElement("se:Graphic");
 }

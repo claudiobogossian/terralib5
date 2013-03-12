@@ -40,7 +40,7 @@ void te::qt::widgets::NumericPropertyWidgetFactory::finalize()
   sm_factory = 0;
 }
 
-const int& te::qt::widgets::NumericPropertyWidgetFactory::getType() const
+int te::qt::widgets::NumericPropertyWidgetFactory::getType() const
 {
   return te::dt::NUMERIC_TYPE;
 }
