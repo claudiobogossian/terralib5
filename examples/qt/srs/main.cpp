@@ -41,18 +41,21 @@
 
 void SRSManagerDialogExample( int argc, char** argv )
 {
-  
- // Executing the dialog
-  
   QApplication app(argc,argv);
   
+  std::pair<int, std::string> srid = te::qt::widgets::SRSManagerDialog::getSRS(0);
+  QMessageBox msgBox;
+  QString mess = QString("1) SRId: %1, Authority: %2").arg(srid.first).arg(srid.second.c_str()); 
+  msgBox.setText(mess);
+  msgBox.exec();
+   
   te::qt::widgets::SRSManagerDialog* srsManDialog = new te::qt::widgets::SRSManagerDialog();
   
   while (srsManDialog->exec() == QDialog::Accepted)
   {
     const std::pair<int, std::string>& srid = srsManDialog->getSelectedSRS();
     QMessageBox msgBox;
-    QString mess = QString("SRId: %1, Authority: %2").arg(srid.first).arg(srid.second.c_str()); 
+    QString mess = QString("2) SRId: %1, Authority: %2").arg(srid.first).arg(srid.second.c_str()); 
     msgBox.setText(mess);
     msgBox.exec();
   }
