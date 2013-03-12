@@ -392,8 +392,18 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::passwordLineEditEditingFinis
       m_ui->m_clientEncodingComboBox->addItem("");
       std::vector<std::string> encodings = te::da::DataSource::getEncodings("POSTGIS", dsInfo);
       if(!encodings.empty())
+      {
         for(std::size_t i = 0; i < encodings.size(); i++)
           m_ui->m_clientEncodingComboBox->addItem(encodings[i].c_str());
+
+        int idx;
+#ifdef WIN32
+        idx = m_ui->m_clientEncodingComboBox->findText("WIN1252");
+#else
+        idx = m_ui->m_clientEncodingComboBox->findText("UTF8");
+#endif
+        m_ui->m_clientEncodingComboBox->setCurrentIndex(idx);
+      }
     }
     catch(...)
     {}

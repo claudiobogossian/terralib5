@@ -66,7 +66,7 @@ namespace te
 
             \return The type of component widget that the factory knows how to create.
           */
-          virtual const int& getType() const = 0;
+          virtual int getType() const = 0;
 
         protected:
 

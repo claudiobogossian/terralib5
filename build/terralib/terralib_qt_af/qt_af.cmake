@@ -56,7 +56,7 @@ set (
   ${SRCDIR}/ApplicationController.h
   ${SRCDIR}/ApplicationPlugins.h
   ${SRCDIR}/BaseApplication.h
-  ${SRCDIR}/ProjectEditor.h
+  ${SRCDIR}/ProjectEditorDialog.h
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af" MOC)

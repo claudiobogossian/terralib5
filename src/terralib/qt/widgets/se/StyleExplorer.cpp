@@ -125,7 +125,7 @@ void te::qt::widgets::StyleExplorer::goDownSymbolizer()
       //check if current symbolizer is not the first symbolizer
       int index = getSymbolizerIndex(r, s);
 
-      if(index >= 0 && index < r->getSymbolizers().size() - 1)
+      if((index >= 0) && (index < (static_cast<int>(r->getSymbolizers().size()) - 1)))
         swapSymbolizers(r, index, index + 1);
 
       initialize();
@@ -140,7 +140,8 @@ void te::qt::widgets::StyleExplorer::initialize()
   QTreeWidgetItem* root = new QTreeWidgetItem(this, STYLE);
   root->setText(0, m_style->getType().c_str());
 
-  std::size_t nRules = m_style->getNRules();
+  std::size_t nRules = m_style->getRules().size();
+
   for(std::size_t i = 0; i < nRules; ++i) // for each rule
   {
     const te::se::Rule* rule = m_style->getRule(i);
@@ -169,7 +170,7 @@ te::se::Rule* te::qt::widgets::StyleExplorer::getRule(QTreeWidgetItem* item) con
   
   // Gets the Rule index
   std::size_t index = item->data(0, Qt::UserRole).toUInt();
-  assert(index >= 0 && index < m_style->getNRules());
+  assert((index >= 0) && (index < m_style->getRules().size()));
   
   return m_style->getRule(index);
 }

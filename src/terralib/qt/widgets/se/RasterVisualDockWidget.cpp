@@ -68,7 +68,7 @@ void te::qt::widgets::RasterVisualDockWidget::setLayer(te::map::DataSetLayer* la
 
   te::se::CoverageStyle* style = dynamic_cast<te::se::CoverageStyle*>(m_layer->getStyle());
   assert(style);
-  assert(style->getNRules() > 0);
+  assert(style->getRules().size() > 0);
 
   const te::se::Rule* rule = style->getRule(0);
   assert(!rule->getSymbolizers().empty());

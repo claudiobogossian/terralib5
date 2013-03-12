@@ -40,7 +40,7 @@ void te::qt::widgets::DateTimePropertyWidgetFactory::finalize()
   sm_factory = 0;
 }
 
-const int& te::qt::widgets::DateTimePropertyWidgetFactory::getType() const
+int te::qt::widgets::DateTimePropertyWidgetFactory::getType() const
 {
   return te::dt::DATETIME_TYPE;
 }

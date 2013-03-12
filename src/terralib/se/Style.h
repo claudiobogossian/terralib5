@@ -94,21 +94,21 @@ namespace te
 
         void push_back(const std::string& semanticTypeIdentifier);
 
-        const std::string& getSemanticTypeIdentifier(size_t i);
+        const std::string& getSemanticTypeIdentifier(std::size_t i);
 
         const std::vector<std::string>* getSemanticTypeIdentifiers() const;
 
         void push_back(Rule* rule);
 
-        size_t getNRules() const;
+        const std::vector<Rule*>& getRules() const;
 
-        Rule* getRule(size_t i) const;
+        Rule* getRule(std::size_t i) const;
 
         void push_back(te::xl::SimpleLink* onlineResource);
 
-        size_t getNOnlineResources() const;
+        const std::vector<te::xl::SimpleLink*>& getOnlineResources() const;
 
-        const te::xl::SimpleLink* getOnlineResource(size_t i) const;
+        const te::xl::SimpleLink* getOnlineResource(std::size_t i) const;
 
         void setVersion(const std::string& v);
 

@@ -553,8 +553,18 @@ void te::qt::plugins::mysql::MySQLConnectorDialog::passwordLineEditEditingFinish
       m_ui->m_charsetComboBox->addItem("");
       std::vector<std::string> encodings = te::da::DataSource::getEncodings("MYSQL", dsInfo);
       if(!encodings.empty())
+      {
         for(std::size_t i = 0; i < encodings.size(); i++)
           m_ui->m_charsetComboBox->addItem(encodings[i].c_str());
+
+        int idx;
+#ifdef WIN32
+        idx = m_ui->m_charsetComboBox->findText("latin1");
+#else
+        idx = m_ui->m_charsetComboBox->findText("utf8");
+#endif
+        m_ui->m_charsetComboBox->setCurrentIndex(idx);
+      }
     }
     catch(...)
     {}

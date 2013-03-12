@@ -55,7 +55,7 @@ namespace te
 
           static void finalize();
 
-          const int& getType() const;
+          int getType() const;
 
           ~DateTimePropertyWidgetFactory();
 

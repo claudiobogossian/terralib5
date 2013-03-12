@@ -37,6 +37,7 @@
 #include "../../../dataaccess/query/QueryCapabilities.h"
 #include "../../../dataaccess/query/Select.h"
 #include "../../../dataaccess/utils/Utils.h"
+#include "../../../maptools/QueryLayer.h"
 #include "../datasource/selector/DataSourceSelectorWizardPage.h"
 #include "../datasource/selector/DataSourceSelectorWidget.h"
 #include "../utils/DoubleListWidget.h"
@@ -44,6 +45,7 @@
 #include "DataSetWizardPage.h"
 #include "FieldsWizardPage.h"
 #include "GroupByWizardPage.h"
+#include "LayerAttributesWizardPage.h"
 #include "OrderByWidget.h"
 #include "OrderByWizardPage.h"
 #include "WhereClauseWidget.h"
@@ -55,6 +57,10 @@
 // Qt
 #include <QtGui/QMessageBox>
 #include <QtGui/QIcon>
+
+// Boost
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 
 te::qt::widgets::QueryLayerBuilderWizard::QueryLayerBuilderWizard(QWidget* parent)
@@ -120,6 +126,10 @@ bool te::qt::widgets::QueryLayerBuilderWizard::validateCurrentPage()
   {
     return m_orderByPage->isComplete();
   }
+  else if(currentPage() ==  m_layerAttrPage.get())
+  {
+    return m_layerAttrPage->isComplete();
+  }
 
   return false;
 }
@@ -160,12 +170,30 @@ te::da::Select te::qt::widgets::QueryLayerBuilderWizard::getSelectQuery()
   return s;
 }
 
+te::map::AbstractLayerPtr te::qt::widgets::QueryLayerBuilderWizard::getQueryLayer()
+{
+  static boost::uuids::basic_random_generator<boost::mt19937> gen;
+  boost::uuids::uuid u = gen();
+  std::string id = boost::uuids::to_string(u);
+
+  std::string title = m_layerAttrPage->getLayerName();
+
+  te::da::Select* s = new te::da::Select(getSelectQuery());
+
+  te::map::QueryLayerPtr layer(new te::map::QueryLayer(id, title));
+
+  layer->setQuery(s);
+
+  return layer;
+}
+
 void te::qt::widgets::QueryLayerBuilderWizard::addPages()
 {
   m_dataSourcePage.reset(new te::qt::widgets::DataSourceSelectorWizardPage(this));
   m_dataSetPage.reset(new te::qt::widgets::DataSetWizardPage(this));
   m_fieldPage.reset(new te::qt::widgets::FieldsWizardPage(this));
   m_groupByPage.reset(new te::qt::widgets::GroupByWizardPage(this));
+  m_layerAttrPage.reset(new te::qt::widgets::LayerAttributesWizardPage(this));
   m_orderByPage.reset(new te::qt::widgets::OrderByWizardPage(this));
   m_whereClausePage.reset(new te::qt::widgets::WhereClauseWizardPage(this));
 
@@ -175,6 +203,7 @@ void te::qt::widgets::QueryLayerBuilderWizard::addPages()
   addPage(m_whereClausePage.get());
   addPage(m_groupByPage.get());
   addPage(m_orderByPage.get());
+  addPage(m_layerAttrPage.get());
 }
 
 void te::qt::widgets::QueryLayerBuilderWizard::getDataSets()
