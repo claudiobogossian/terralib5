@@ -110,18 +110,23 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/colorbar/ColorBar.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
-
-set (
-  HDRS_TO_MOC
   ${SRCDIR}/widgets/canvas/DrawLayerThread.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/colorbar/ColorBar.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
+
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/charts/histogramCreatorWidget.h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/charts" MOC)
 
 set (
   HDRS_TO_MOC

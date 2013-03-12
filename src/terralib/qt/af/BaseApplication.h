@@ -72,8 +72,8 @@ namespace te
           void onApplicationTriggered(te::qt::af::Event* evt);
 
           void onAddDataSetLayerTriggered();
-		  
-		  void onAddQueryDataSetLayerTriggered();
+
+          void onAddQueryDataSetLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -90,6 +90,10 @@ namespace te
           void onToolsCustomizeTriggered();
 
           void onProjectPropertiesTriggered();
+
+          void onLayerHistogramTriggered();
+
+          void onLayerScatterTriggered();
 
         protected:
 
@@ -150,6 +154,8 @@ namespace te
           QAction* m_layerLower;
           QAction* m_layerToTop;
           QAction* m_layerToBottom;
+          QAction* m_layerHistogram;
+          QAction* m_layerScatter;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -171,6 +177,7 @@ namespace te
           QMenu *m_projectMenu;
           QMenu *m_projectAddLayerMenu;
           QMenu *m_layerMenu;
+          QMenu *m_layerChartsMenu;
           QMenu *m_fileMenu;
           QMenu *m_recentProjectsMenu;
 

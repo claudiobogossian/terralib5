@@ -676,6 +676,9 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
+  initAction(m_layerHistogram, "layer-histogram", "Histogram", tr("&Histogram"), tr(""), true, false, true);
+  initAction(m_layerScatter, "layer-scatter", "Scatter", tr("&Scatter"), tr(""), true, false, true);
+
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
@@ -770,17 +773,23 @@ void te::qt::af::BaseApplication::initMenus()
   m_menubar->addAction(m_projectMenu->menuAction());
 
   m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+
   m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
+
   //m_projectAddLayerMenu->addAction(m_projectAddLayerGraph);
 
 // Layer menu
   m_layerMenu = new QMenu(m_menubar);
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
+
+  m_layerChartsMenu = new QMenu(m_layerMenu);
+  m_layerChartsMenu->setObjectName("Charts");
+  m_layerChartsMenu->setTitle(tr("&Charts"));
 
   m_menubar->addAction(m_layerMenu->menuAction());
 
@@ -789,10 +798,16 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerExport);
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addSeparator();
+
   m_layerMenu->addAction(m_layerRaise);
   m_layerMenu->addAction(m_layerLower);
   m_layerMenu->addAction(m_layerToTop);
   m_layerMenu->addAction(m_layerToBottom);
+  m_layerMenu->addSeparator();
+
+  m_layerMenu->addAction(m_layerChartsMenu->menuAction());
+  m_layerChartsMenu->addAction(m_layerHistogram);
+  m_layerChartsMenu->addAction(m_layerScatter);
 
 // Tools menu
   m_toolsMenu = new QMenu(m_menubar);
@@ -866,6 +881,32 @@ void te::qt::af::BaseApplication::initToolbars()
   ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
 }
 
+void te::qt::af::BaseApplication::onLayerHistogramTriggered()
+{
+  try
+  {
+   // te::qt::widgets::HistogramCreatorWidget dlg(this);
+   // dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onLayerScatterTriggered()
+{
+  try
+  {
+   // te::qt::widgets::HistogramCreatorWidget dlg(this);
+   // dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
@@ -879,4 +920,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
+  connect(m_layerHistogram, SIGNAL(triggered()), SLOT(onLayerChartsTriggered()));
+  connect(m_layerScatter, SIGNAL(triggered()), SLOT(onLayerChartsTriggered()));
 }
