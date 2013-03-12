@@ -172,7 +172,7 @@ void te::serialize::Save(te::xml::Writer& writer)
 
   writer.writeStartDocument("UTF-8", "no");
 
-  writer.writeStartElement("DataSourceList");
+  writer.writeStartElement("te_da:DataSourceList");
 
   writer.writeAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema-instance");
   writer.writeAttribute("xmlns:te_common", "http://www.terralib.org/schemas/common");
@@ -188,21 +188,21 @@ void te::serialize::Save(te::xml::Writer& writer)
 
   for(it=itBegin; it!=itEnd; ++it)
   {
-    writer.writeStartElement("DataSource");
+    writer.writeStartElement("te_da:DataSource");
 
     writer.writeAttribute("id", it->second->getId());
     writer.writeAttribute("type", it->second->getType());
     writer.writeAttribute("access_driver", it->second->getAccessDriver());
 
-    writer.writeStartElement("Title");
+    writer.writeStartElement("te_da:Title");
     writer.writeValue(it->second->getTitle());
-    writer.writeEndElement("Title");
+    writer.writeEndElement("te_da:Title");
 
-    writer.writeStartElement("Description");
+    writer.writeStartElement("te_da:Description");
     writer.writeValue(it->second->getDescription());
-    writer.writeEndElement("Description");
+    writer.writeEndElement("te_da:Description");
 
-    writer.writeStartElement("ConnectionInfo");
+    writer.writeStartElement("te_da:ConnectionInfo");
     std::map<std::string, std::string> info = it->second->getConnInfo();
     std::map<std::string, std::string>::iterator conIt;
 
@@ -220,11 +220,11 @@ void te::serialize::Save(te::xml::Writer& writer)
 
       writer.writeEndElement("te_common:Parameter");
     }
-    writer.writeEndElement("ConnectionInfo");
+    writer.writeEndElement("te_da:ConnectionInfo");
 
-    writer.writeEndElement("DataSource");
+    writer.writeEndElement("te_da:DataSource");
   }
 
-  writer.writeEndElement("DataSourceList");
+  writer.writeEndElement("te_da:DataSourceList");
 }
 

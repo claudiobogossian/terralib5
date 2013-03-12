@@ -89,11 +89,11 @@ te::dt::Property* te::serialize::ReadProperty(te::xml::Reader& reader)
 
 void te::serialize::Save(const te::dt::Property* p, te::xml::Writer& writer)
 {
-  writer.writeStartElement("Property");
+  writer.writeStartElement("te_dt:Property");
 
   writer.writeAttribute("id", p->getId());
   writer.writeAttribute("name", p->getName());
   writer.writeAttribute("datatype", p->getType());
 
-  writer.writeEndElement("Property");
+  writer.writeEndElement("te_dt:Property");
 }
