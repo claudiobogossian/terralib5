@@ -1,5 +1,5 @@
 #include "LayerInfoItem.h"
-#include "AbstractPropertyManager.h"
+#include "../../widgets/propertybrowser/AbstractPropertyManager.h"
 
 #include "../../../../maptools/AbstractLayer.h"
 
@@ -56,6 +56,8 @@ te::qt::widgets::LayerInfoItem::LayerInfoItem(QtTreePropertyBrowser* pb, te::map
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(urx_prop, m_layer->getExtent().getUpperRightX());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(ury_prop, m_layer->getExtent().getUpperRightY());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(vis_prop, (int) m_layer->getVisibility());
+  
+  addProperty(layerInfo_prop, tr("Layer properties"), Qt::gray);
 }
 
 te::qt::widgets::LayerInfoItem::~LayerInfoItem()

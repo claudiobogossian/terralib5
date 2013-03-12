@@ -27,7 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERINFOITEM_H
 
 #include "../../Config.h"
-#include "AbstractPropertyItem.h"
+#include "../../widgets/propertybrowser/AbstractPropertyItem.h"
 
 namespace te
 {
