@@ -23,8 +23,8 @@
   \brief 
 */
 
-#ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTEDITORDIALOG_H
-#define __TERRALIB_QT_AF_INTERNAL_PROJECTEDITORDIALOG_H
+#ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
+#define __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
 
 #include <QtGui/QDialog>
 
@@ -40,15 +40,15 @@ namespace te
       class Project;
       class ProjectInfoWidget;
 
-      class TEQTAFEXPORT ProjectEditorDialog : public QDialog
+      class TEQTAFEXPORT ProjectInfoDialog : public QDialog
       {
         Q_OBJECT
 
         public:
 
-          ProjectEditorDialog(QWidget* parent=0);
+          ProjectInfoDialog(QWidget* parent=0);
 
-          ~ProjectEditorDialog();
+          ~ProjectInfoDialog();
 
           void setProject(Project* proj);
 
@@ -67,4 +67,4 @@ namespace te
 }
 
 
-#endif //__TERRALIB_QT_AF_INTERNAL_PROJECTEDITORDIALOG_H
+#endif //__TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H

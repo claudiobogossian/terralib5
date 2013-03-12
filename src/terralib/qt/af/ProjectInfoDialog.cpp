@@ -1,4 +1,4 @@
-#include "ProjectEditorDialog.h"
+#include "ProjectInfoDialog.h"
 #include "ProjectInfoWidget.h"
 
 // Qt
@@ -7,7 +7,7 @@
 #include <QtGui/QVBoxLayout>
 #include <QtGui/QGridLayout>
 
-te::qt::af::ProjectEditorDialog::ProjectEditorDialog(QWidget* parent) :
+te::qt::af::ProjectInfoDialog::ProjectInfoDialog(QWidget* parent) :
 QDialog(parent)
 {
   QDialog::setWindowTitle(tr("Project properties editor"));
@@ -45,21 +45,21 @@ QDialog(parent)
   connect(helpButton, SIGNAL(pressed()), SLOT(onHelpPushButtonPressed()));
 }
 
-te::qt::af::ProjectEditorDialog::~ProjectEditorDialog()
+te::qt::af::ProjectInfoDialog::~ProjectInfoDialog()
 {
 }
 
-void te::qt::af::ProjectEditorDialog::setProject(Project* proj)
+void te::qt::af::ProjectInfoDialog::setProject(Project* proj)
 {
   m_info->setProject(proj);
 }
 
-void te::qt::af::ProjectEditorDialog::onOkPushButtonPressed()
+void te::qt::af::ProjectInfoDialog::onOkPushButtonPressed()
 {
   m_info->updateProjectInfo();
   QDialog::accept();
 }
 
-void te::qt::af::ProjectEditorDialog::onHelpPushButtonPressed()
+void te::qt::af::ProjectInfoDialog::onHelpPushButtonPressed()
 {
 }
