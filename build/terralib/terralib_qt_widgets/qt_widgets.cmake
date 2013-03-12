@@ -79,6 +79,7 @@ set (
   widgets/layer/explorer
   widgets/layer/selector
   widgets/layer/utils
+  widgets/layer/info
   widgets/mapdisplay
   widgets/progress
   widgets/property
@@ -173,6 +174,12 @@ set (
   ${SRCDIR}/widgets/layer/explorer/QueryLayerItem.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/layer/info/LayerInfoItem.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/info" MOC)
 
 set (
   HDRS_TO_MOC
