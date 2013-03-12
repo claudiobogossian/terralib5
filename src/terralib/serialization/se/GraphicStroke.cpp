@@ -73,14 +73,14 @@ void te::serialize::Save(const te::se::GraphicStroke* graphicStroke, te::xml::Wr
   if(graphicStroke == 0)
     return;
 
-  writer.writeStartElement("GraphicStroke");
+  writer.writeStartElement("se:GraphicStroke");
 
   const te::se::Graphic* graphic = graphicStroke->getGraphic();
   assert(graphic);
   Save(graphic, writer);
 
-  WriteParameterValuePtrHelper("InitialGap", graphicStroke->getInitialGap(), writer);
-  WriteParameterValuePtrHelper("Gap", graphicStroke->getGap(), writer);
+  WriteParameterValuePtrHelper("se:InitialGap", graphicStroke->getInitialGap(), writer);
+  WriteParameterValuePtrHelper("se:Gap", graphicStroke->getGap(), writer);
 
-  writer.writeEndElement("GraphicStroke");
+  writer.writeEndElement("se:GraphicStroke");
 }

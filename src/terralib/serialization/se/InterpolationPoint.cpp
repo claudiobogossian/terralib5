@@ -66,11 +66,11 @@ void te::serialize::Save(const te::se::InterpolationPoint* ip, te::xml::Writer& 
   if(ip == 0)
     return;
 
-  writer.writeStartElement("InterpolationPoint");
+  writer.writeStartElement("se:InterpolationPoint");
   
-  writer.writeElement("Data", ip->getData());
+  writer.writeElement("se:Data", ip->getData());
   assert(ip->getValue());
-  WriteParameterValuePtrHelper("Value", ip->getValue(), writer);
+  WriteParameterValuePtrHelper("se:Value", ip->getValue(), writer);
 
-  writer.writeEndElement("InterpolationPoint");
+  writer.writeEndElement("se:InterpolationPoint");
 }

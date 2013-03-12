@@ -6,14 +6,17 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>326</width>
-    <height>260</height>
+    <width>422</width>
+    <height>372</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Project Information</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="margin">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
@@ -31,13 +34,6 @@
       </layout>
      </item>
      <item>
-      <widget class="Line" name="line">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QLabel" name="label_2">
@@ -50,13 +46,6 @@
         <widget class="QLineEdit" name="m_author"/>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
      </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_3">

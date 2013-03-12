@@ -63,10 +63,10 @@ void te::serialize::Save(const te::se::Displacement* d, te::xml::Writer& writer)
   if(d == 0)
     return;
 
-  writer.writeStartElement("Displacement");
+  writer.writeStartElement("se:Displacement");
 
-  WriteParameterValuePtrHelper("DisplacementX", d->getDisplacementX(), writer);
-  WriteParameterValuePtrHelper("DisplacementY", d->getDisplacementY(), writer);
+  WriteParameterValuePtrHelper("se:DisplacementX", d->getDisplacementX(), writer);
+  WriteParameterValuePtrHelper("se:DisplacementY", d->getDisplacementY(), writer);
 
-  writer.writeEndElement("Displacement");
+  writer.writeEndElement("se:Displacement");
 }

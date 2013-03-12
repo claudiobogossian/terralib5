@@ -69,13 +69,13 @@ void te::serialize::Save(const te::se::ShadedRelief* sr, te::xml::Writer& writer
   if(sr == 0)
     return;
 
-  writer.writeStartElement("ShadedRelief");
+  writer.writeStartElement("se:ShadedRelief");
 
   std::string brightnessOnlyValue;
   sr->isBrightnessOnly() ? brightnessOnlyValue = "true" : brightnessOnlyValue = "false";
 
-  writer.writeElement("BrightnessOnly", brightnessOnlyValue);
-  writer.writeElement("ReliefFactor", sr->getReliefFactor());
+  writer.writeElement("se:BrightnessOnly", brightnessOnlyValue);
+  writer.writeElement("se:ReliefFactor", sr->getReliefFactor());
 
-  writer.writeEndElement("ShadedRelief");
+  writer.writeEndElement("se:ShadedRelief");
 }

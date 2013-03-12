@@ -49,8 +49,19 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), SLOT(onCancelPushButtonClicked()));   
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), SLOT(onHelpPushButtonClicked())); 
   connect(m_ui->m_findSRSPushButton, SIGNAL(clicked()), SLOT(onFindSRSPushButtonClicked()));
+  connect(m_ui->m_searchedSRSLineEdit, SIGNAL(textChanged(const QString&)),SLOT(onSearchLineEditTextChanged(const QString&)));
   
   QList<QTreeWidgetItem *> items;
+//  QTreeWidgetItem* gs = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic Spatial Coordinate Systems")));
+//  QTreeWidgetItem* ps = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Projected Spatial Coordinate Systems")));
+//  QTreeWidgetItem* us = new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User Defined Coordinate Systems")));
+//  gs->setExpanded(true);
+//  ps->setExpanded(true);
+//  us->setExpanded(true);
+//  items.append(gs);
+//  items.append(ps);
+//  items.append(us);
+  
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Geoographic Spatial Coordinate Systems"))));
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("Projected Spatial Coordinate Systems"))));
   items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(tr("User Defined Coordinate Systems"))));
@@ -87,9 +98,15 @@ te::qt::widgets::SRSManagerDialog::SRSManagerDialog(QWidget* parent, Qt::WindowF
     }
     ++its.first;
   }  
-  
   m_ui->m_SRSTreeWidget->resizeColumnToContents(0);
-
+  
+  unsigned int ntl =  m_ui->m_SRSTreeWidget->topLevelItemCount();
+  for(int i = 0; i < ntl; ++i)
+  {
+    QTreeWidgetItem* item = m_ui->m_SRSTreeWidget->topLevelItem(i);
+    item->setExpanded(true);
+  }
+  
   m_srsDiag = new te::qt::widgets::SRSDialog(this); 
 }
 
@@ -104,6 +121,43 @@ const std::pair<int, std::string>& te::qt::widgets::SRSManagerDialog::getSelecte
   return m_selSrsId;
 }
 
+
+std::pair<int, std::string> te::qt::widgets::SRSManagerDialog::getSRS(QWidget* parent, const QString& title)
+{
+  SRSManagerDialog dlg(parent);
+  
+  if(!title.isEmpty())
+    dlg.setWindowTitle(title);
+  
+  if(dlg.exec() == QDialog::Accepted)
+    return std::make_pair<int, std::string>(dlg.m_selSrsId.first, dlg.m_selSrsId.second);
+  
+  return std::make_pair<int, std::string>(TE_UNKNOWN_SRS, "");
+}
+
+void te::qt::widgets::SRSManagerDialog::onSearchLineEditTextChanged(const QString& text)
+{
+  QList<QTreeWidgetItem*> itens = m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 0);
+  itens.append(m_ui->m_SRSTreeWidget->findItems(text, Qt::MatchContains | Qt::MatchRecursive, 1));  
+  filter(itens);
+}
+
+
+void te::qt::widgets::SRSManagerDialog::filter(const QList<QTreeWidgetItem*>& itens)
+{
+  for(int i = 0; i < m_ui->m_SRSTreeWidget->topLevelItemCount(); ++i)
+  {
+    QTreeWidgetItem* item = m_ui->m_SRSTreeWidget->topLevelItem(i);
+    
+    for(int j = 0; j < item->childCount(); ++j)
+    {
+      QTreeWidgetItem* srs = item->child(j);
+      bool hide = itens.indexOf(srs) == -1;
+      srs->setHidden(hide);
+    }
+  }
+  update();
+}
 
 void te::qt::widgets::SRSManagerDialog::onFindSRSPushButtonClicked() 
 {

@@ -215,7 +215,7 @@ void MainWindow::addDataSetLayer(const QString& path, const std::string& driver)
   std::map<std::string, std::string> connInfo;
   driver == "OGR" ? connInfo["path"] = path.toStdString() : connInfo["URI"] = path.toStdString();
 
-  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().open(te::common::Convert2String(ms_id++), driver, connInfo);
+  te::da::DataSourcePtr ds = te::da::DataSourceManager::getInstance().open(boost::lexical_cast<std::string>(ms_id++), driver, connInfo);
 
   // Transactor and catalog loader
   std::auto_ptr<te::da::DataSourceTransactor> transactor(ds->getTransactor());

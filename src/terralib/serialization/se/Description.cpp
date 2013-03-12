@@ -79,14 +79,14 @@ void te::serialize::Save(const te::se::Description* d, te::xml::Writer& writer)
   if(d == 0)
     return;
 
-  writer.writeStartElement("Description");
+  writer.writeStartElement("se:Description");
   
   if(!d->getTitle().empty())
-    writer.writeElement("Title", d->getTitle());
+    writer.writeElement("se:Title", d->getTitle());
   
   if(!d->getAbstract().empty())
-    writer.writeElement("Abstract", d->getAbstract());
+    writer.writeElement("se:Abstract", d->getAbstract());
 
-  writer.writeEndElement("Description");
+  writer.writeEndElement("se:Description");
 }
 
