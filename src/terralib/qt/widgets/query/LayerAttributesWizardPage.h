@@ -31,6 +31,7 @@
 
 // STL
 #include <string>
+#include <memory>
 
 // Qt
 #include <QtGui/QWizardPage>
