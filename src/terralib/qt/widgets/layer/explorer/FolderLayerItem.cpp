@@ -119,12 +119,14 @@ bool te::qt::widgets::FolderLayerItem::setData(const QVariant& value, int role)
   return false;
 }
 
-te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::FolderLayerItem::clone(QObject* parent)
-{
-  return new FolderLayerItem(m_layer, parent);
-}
-
-const te::map::FolderLayerPtr& te::qt::widgets::FolderLayerItem::getLayer() const
+te::map::AbstractLayerPtr te::qt::widgets::FolderLayerItem::getLayer() const
 {
   return m_layer;
 }
+
+//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::FolderLayerItem::clone(QObject* parent)
+//{
+//  return new FolderLayerItem(m_layer, parent);
+//}
+
+

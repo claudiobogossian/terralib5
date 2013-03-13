@@ -57,6 +57,25 @@ te::qt::widgets::LayerTreeView::~LayerTreeView()
 {
 }
 
+std::list<te::qt::widgets::AbstractLayerTreeItem*> te::qt::widgets::LayerTreeView::getSelectedItems() const
+{
+  std::list<AbstractLayerTreeItem*> layers;
+
+  QModelIndexList indexes = selectedIndexes();
+
+  QModelIndex idx;
+
+  foreach(idx, indexes)
+  {
+    AbstractLayerTreeItem* layer = static_cast<AbstractLayerTreeItem*>(idx.internalPointer());
+
+    if(layer != 0)
+      layers.push_back(layer);
+  }
+
+  return layers;
+}
+
 void te::qt::widgets::LayerTreeView::add(const te::map::AbstractLayerPtr& layer)
 {
   LayerTreeModel* model = dynamic_cast<LayerTreeModel*>(this->model());
