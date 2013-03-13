@@ -79,6 +79,33 @@ namespace te
         /*! \brief Destructor. */
         ~QueryLayer();
 
+        const LayerSchema* getSchema() const;
+
+        te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        te::da::DataSet* getData(const te::gm::Envelope& e,
+                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        te::da::DataSet* getData(const te::dt::Property& p,
+                                 const te::gm::Envelope& e,
+                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        te::da::DataSet* getData(const te::gm::Geometry& g,
+                                 te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
+        te::da::DataSet* getData(const te::dt::Property& p,
+                                 const te::gm::Geometry& g,
+                                 te::gm::SpatialRelation r,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
         bool isValid() const;
 
         void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid);

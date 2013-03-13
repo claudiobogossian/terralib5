@@ -62,9 +62,9 @@ namespace te
 
           bool setData(const QVariant& value, int role = Qt::EditRole);
 
-          AbstractLayerTreeItem* clone(QObject* parent = 0);
+          te::map::AbstractLayerPtr getLayer() const;
 
-          const te::map::DataSetLayerPtr& getLayer() const;
+          //AbstractLayerTreeItem* clone(QObject* parent = 0);
 
         private:
 

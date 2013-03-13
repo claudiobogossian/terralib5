@@ -63,6 +63,51 @@ te::map::DataSetLayer::~DataSetLayer()
   delete m_style;
 }
 
+const te::map::LayerSchema* te::map::DataSetLayer::getSchema() const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travType, 
+                                                te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
+                                                te::gm::SpatialRelation r,
+                                                te::common::TraverseType travType,
+                                                te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
+                                                const te::gm::Envelope& e,
+                                                te::gm::SpatialRelation r,
+                                                te::common::TraverseType travType,
+                                                te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
+                                                te::gm::SpatialRelation r,
+                                                te::common::TraverseType travType, 
+                                                te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
+                                                const te::gm::Geometry& g,
+                                                te::gm::SpatialRelation r,
+                                                te::common::TraverseType travType,
+                                                te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
 bool te::map::DataSetLayer::isValid() const
 {
   return true;
