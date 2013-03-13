@@ -132,10 +132,20 @@ void TsArray::tcGetDimension()
   pos.push_back(1);
   pos.push_back(1);
 
-//  int i = 25;
-//  b.insert(i, pos); //integer is imcompatible with te::dt::AbstractData
+  // Inserting INT32 elements in a 1-dimension array 
+  te::dt::Array b1(1,te::dt:: INT32_TYPE);
 
-  CPPUNIT_ASSERT_MESSAGE("It is allowed to declare 'te::dt::Array b(3,te::dt::INT16_TYPE)', but it does not allow insert elements of type te::dt::INT16_TYPE", 1 == 2);
+  CPPUNIT_ASSERT(b.getDimension() == 1);
+
+  CPPUNIT_ASSERT(b.getTypeCode() == te::dt::ARRAY_TYPE);
+
+  CPPUNIT_ASSERT(b.getElementsTypeCode() == te::dt::INT32_TYPE);
+
+  pos.push_back(1); // position (1)
+  //int i = 25;
+  //b1.insert(i, pos); //integer is incompatible with te::dt::AbstractData
+
+  CPPUNIT_ASSERT_MESSAGE("It is allowed to declare 'te::dt::Array b(3,te::dt::INT32_TYPE)', but it does not allow insert elements of type te::dt::INT32_TYPE", 1 == 2);
 //#endif
 }
 
@@ -233,11 +243,10 @@ void TsArray::tcOperatorBraket()
 void TsArray::tcClone()
 {
 //#ifdef TE_COMPILE_ALL 
-  //te::dt::Array* myclone =  myarray->clone();
-  //std::cout << std::endl;
-  //std::cout << "Cloned Array= " << myclone->toString() << std::endl;
-  //CPPUNIT_ASSERT(myclone = myarray);
-  CPPUNIT_ASSERT_MESSAGE("Method clone is not working", 1==2);
+  te::dt::AbstractData* myclone =  myarray->clone();
+  std::cout << std::endl;
+  std::cout << "Cloned Array= " << myclone->toString() << std::endl;
+  CPPUNIT_ASSERT(strcmp((myclone->toString()).c_str(), (myarray->toString()).c_str()) == 0);
 //#endif
 }
 

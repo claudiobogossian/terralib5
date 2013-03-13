@@ -48,14 +48,12 @@ class TsHexUtils : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcGetDecimalFromHexUCase );
   CPPUNIT_TEST( tcGetDecimalFromHexLCase );
   
-  //CPPUNIT_TEST( tcHex2Char );
-  //CPPUNIT_TEST( tcHex2Char2 );
-  //CPPUNIT_TEST( tcHex2Binary_1 );
-  //CPPUNIT_TEST( tcHex2Binary_2 );
-  //CPPUNIT_TEST( tcHex2Binary2_1 );
-  //CPPUNIT_TEST( tcHex2Binary2_2 );
-  //CPPUNIT_TEST( tcBinary2Hex_1 );
-  //CPPUNIT_TEST( tcBinary2Hex_2 );
+  CPPUNIT_TEST( tcHex2Binary_1 );
+  CPPUNIT_TEST( tcHex2Binary_2 );
+  CPPUNIT_TEST( tcHex2Binary_3 );
+  CPPUNIT_TEST( tcHex2Binary2 );
+  CPPUNIT_TEST( tcBinary2Hex2_1 );
+  CPPUNIT_TEST( tcBinary2Hex_size );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -91,13 +89,13 @@ class TsHexUtils : public CPPUNIT_NS::TestFixture
     /*! \brief Test Case: It  Converts Hex to Binary. */
     void tcHex2Binary_2();
     /*! \brief Test Case: It Converts Hex to Binary. */
-    void tcHex2Binary2_1();
+    void tcHex2Binary_3();
     /*! \brief Test Case: It  Converts Hex to Binary. */
-    void tcHex2Binary2_2();
+    void tcHex2Binary2();
     /*! \brief Test Case: It Converts Binary to Hex */
-    void tcBinary2Hex_1();
+    void tcBinary2Hex2_1();
     /*! \brief Test Case: It Converts Binary to Hex. */
-    void tcBinary2Hex_2();
+    void tcBinary2Hex_size();
 };
 
 #endif  // __TERRALIB_UNITTEST_COMMON_INTERNAL_HEXUTILS_H
