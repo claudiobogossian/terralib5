@@ -71,7 +71,7 @@ namespace te
 
             \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
           */
-          TEQTWIDGETSEXPORT static QPixmap build(te::se::Symbolizer* symb, const QSize& size);
+          static QPixmap build(const te::se::Symbolizer* symb, const QSize& size);
 
           /*!
             \brief Generates the preview of a set of symbolizers elements.
@@ -83,7 +83,7 @@ namespace te
 
             \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
           */
-          TEQTWIDGETSEXPORT static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size);
+          static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size);
 
           /*!
             \brief Generates the preview of given symbolizer element.
@@ -94,7 +94,7 @@ namespace te
 
             \return A pixmap that represents the result of symbolizer preview.
           */
-          TEQTWIDGETSEXPORT static QPixmap build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size);
+          static QPixmap build(const te::se::Symbolizer* symb, const te::gm::Geometry* geom, const QSize& size);
 
           /*!
             \brief Generates the preview of a set of symbolizers elements.
@@ -105,7 +105,7 @@ namespace te
 
             \return A pixmap that represents the composite result of symbolizers preview.
           */
-          TEQTWIDGETSEXPORT static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size);
+          static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const te::gm::Geometry* geom, const QSize& size);
 
           /*!
             \brief Generates the preview of a set of symbolizers elements included in the given rule.
@@ -116,7 +116,7 @@ namespace te
 
             \return A pixmap that represents the composite result of rule's symbolizers preview.
           */
-          TEQTWIDGETSEXPORT static QPixmap build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size);
+          static QPixmap build(const te::se::Rule* rule, const te::gm::Geometry* geom, const QSize& size);
 
           /*!
             \brief Generates the preview of a symbol.
@@ -127,7 +127,7 @@ namespace te
 
             \return A pixmap that represents the symbol preview.
           */
-          TEQTWIDGETSEXPORT static QPixmap build(Symbol* symbol, te::gm::Geometry* geom, const QSize& size);
+          static QPixmap build(const Symbol* symbol, const te::gm::Geometry* geom, const QSize& size);
       };
 
     }   // end namespace widgets

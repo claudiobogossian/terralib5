@@ -48,7 +48,7 @@ namespace te
 
   namespace da
   {
-// Forward declarations    
+// Forward declarations
     class BatchExecutor;
     class DataSet;
     class DataSetPersistence;

@@ -37,7 +37,7 @@
 // STL
 #include <cassert>
 
-QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb, const QSize& size)
 {
   double offset = 10.0;
 
@@ -87,7 +87,7 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbo
   return result;
 }
 
-QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb, const te::gm::Geometry* geom, const QSize& size)
 {
   assert(symb);
   assert(geom);
@@ -108,7 +108,7 @@ QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Symbolizer* symb, te::g
   return *canvas.getPixmap();
 }
 
-QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbolizer*>& symbs, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbolizer*>& symbs, const te::gm::Geometry* geom, const QSize& size)
 {
   QPixmap result(size);
   result.fill(Qt::transparent);
@@ -124,14 +124,14 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbo
   return result;
 }
 
-QPixmap te::qt::widgets::SymbologyPreview::build(te::se::Rule* rule, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Rule* rule, const te::gm::Geometry* geom, const QSize& size)
 {
   assert(rule);
 
   return build(rule->getSymbolizers(), geom, size);
 }
 
-QPixmap te::qt::widgets::SymbologyPreview::build(te::qt::widgets::Symbol* symbol, te::gm::Geometry* geom, const QSize& size)
+QPixmap te::qt::widgets::SymbologyPreview::build(const te::qt::widgets::Symbol* symbol, const te::gm::Geometry* geom, const QSize& size)
 {
   assert(symbol);
 

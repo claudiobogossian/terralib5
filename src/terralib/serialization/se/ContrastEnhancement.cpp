@@ -74,7 +74,7 @@ void te::serialize::Save(const te::se::ContrastEnhancement* ce, te::xml::Writer&
   if(ce == 0)
     return;
 
-  writer.writeStartElement("ContrastEnhancement");
+  writer.writeStartElement("se:ContrastEnhancement");
   te::se::ContrastEnhancement::ContrastEnhancementType type = ce->getContrastEnhancementType();
   switch(type)
   {
@@ -82,15 +82,15 @@ void te::serialize::Save(const te::se::ContrastEnhancement* ce, te::xml::Writer&
     break;
 
     case te::se::ContrastEnhancement::ENHANCEMENT_HISTOGRAM:
-      writer.writeElement("Histogram", ""); // TODO: Writer method to writer a empty element, i.e. <Histogram/>
+      writer.writeElement("se:Histogram", ""); // TODO: Writer method to writer a empty element, i.e. <Histogram/>
     break;
 
     case te::se::ContrastEnhancement::ENHANCEMENT_NORMALIZE:
-      writer.writeElement("Normalize", ""); // TODO: Writer method to writer a empty element, i.e. <Normalize/>
+      writer.writeElement("se:Normalize", ""); // TODO: Writer method to writer a empty element, i.e. <Normalize/>
     break;
   }
 
-  writer.writeElement("GammaValue", ce->getGammaValue());
+  writer.writeElement("se:GammaValue", ce->getGammaValue());
 
-  writer.writeEndElement("ContrastEnhancement");
+  writer.writeEndElement("se:ContrastEnhancement");
 }

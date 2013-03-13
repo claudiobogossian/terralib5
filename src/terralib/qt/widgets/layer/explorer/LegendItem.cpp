@@ -25,12 +25,19 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../geometry/Point.h"
+#include "../../../../geometry/Polygon.h"
+#include "../../../../geometry/LinearRing.h"
+#include "../../../../geometry/LineString.h"
+#include "../../../../se/Description.h"
 #include "../../../../se/Rule.h"
+#include "../../se/SymbologyPreview.h"
 #include "../../Exception.h"
 #include "LegendItem.h"
 
 // Qt
 #include <QtGui/QMenu>
+#include <QtGui/QPixmap>
 #include <QtGui/QWidget>
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
@@ -50,11 +57,34 @@ int te::qt::widgets::LegendItem::columnCount() const
 
 QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
 {
-  //if(role == Qt::DecorationRole)
-  //  return QVariant(QIcon::fromTheme("layer"));
+  if(role == Qt::DecorationRole)
+  {
+    te::gm::Polygon pol(1, te::gm::PolygonType);
 
-  //if(role == Qt::DisplayRole)
-  //  return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));
+    te::gm::LinearRing* ring = new te::gm::LinearRing(6, te::gm::LineStringType);
+
+    ring->setPoint(0, 2, 2);
+    ring->setPoint(1, 2, 8);
+    ring->setPoint(2, 8, 14);
+    ring->setPoint(3, 14, 8);
+    ring->setPoint(4, 14, 2);
+    ring->setPoint(5, 2, 2);
+
+    pol.setRingN(0, ring);
+
+    return QVariant(QIcon(SymbologyPreview::build(m_rule, &pol, QSize(16, 16))));
+  }
+
+  if(role == Qt::DisplayRole)
+  {
+    if(m_rule->getDescription())
+      return QVariant(QString::fromStdString(m_rule->getDescription()->getTitle()));
+
+    if(m_rule->getName())
+      return QVariant(QString::fromStdString(*(m_rule->getName())));
+
+    return QVariant(QString(tr("No Description")));
+  }
 
   //if(role == Qt::CheckStateRole)
   //  return QVariant(m_layer->getVisibility() == te::map::VISIBLE ? Qt::Checked : Qt::Unchecked);
@@ -106,8 +136,13 @@ bool te::qt::widgets::LegendItem::setData(const QVariant& value, int role)
   return false;
 }
 
-te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
+te::map::AbstractLayerPtr te::qt::widgets::LegendItem::getLayer() const
 {
-  return new LegendItem(m_rule, parent);
+  return te::map::AbstractLayerPtr(0);
 }
+
+//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
+//{
+//  return new LegendItem(m_rule, parent);
+//}
 

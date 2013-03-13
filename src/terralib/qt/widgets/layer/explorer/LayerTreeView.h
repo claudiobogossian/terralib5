@@ -30,6 +30,9 @@
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../Config.h"
 
+// STL
+#include <list>
+
 // Qt
 #include <QtGui/QTreeView>
 
@@ -57,6 +60,8 @@ namespace te
           LayerTreeView(QWidget* parent = 0);
 
           ~LayerTreeView();
+
+          std::list<AbstractLayerTreeItem*> getSelectedItems() const;
 
         signals:
 

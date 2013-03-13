@@ -28,7 +28,7 @@
 #include "../se/Style.h"
 #include "QueryLayer.h"
 
-const std::string te::map::QueryLayer::sm_type("QUERY_LAYER");
+const std::string te::map::QueryLayer::sm_type("QUERYLAYER");
 
 te::map::QueryLayer::QueryLayer(AbstractLayer* parent)
   : AbstractLayer(parent),
@@ -57,6 +57,51 @@ te::map::QueryLayer::~QueryLayer()
 {
   delete m_query;
   delete m_style;
+}
+
+const te::map::LayerSchema* te::map::QueryLayer::getSchema() const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(te::common::TraverseType /*travType*/, 
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(const te::gm::Envelope& /*e*/,
+                                              te::gm::SpatialRelation /*r*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
+                                              const te::gm::Envelope& /*e*/,
+                                              te::gm::SpatialRelation /*r*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(const te::gm::Geometry& /*g*/,
+                                              te::gm::SpatialRelation /*r*/,
+                                              te::common::TraverseType /*travType*/, 
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
+                                              const te::gm::Geometry& /*g*/,
+                                              te::gm::SpatialRelation /*r*/,
+                                              te::common::TraverseType /*travType*/,
+                                              te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
 }
 
 bool te::map::QueryLayer::isValid() const

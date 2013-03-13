@@ -38,6 +38,7 @@
 #include "../widgets/dataview/TabularViewer.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
+#include "../widgets/layer/explorer/LayerTreeView.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
@@ -63,7 +64,7 @@
 #include "BaseApplication.h"
 #include "Exception.h"
 #include "Project.h"
-#include "ProjectEditor.h"
+#include "ProjectInfoDialog.h"
 #include "SplashScreenManager.h"
 #include "Utils.h"
 
@@ -400,22 +401,26 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
     return;
   }
 
-  ProjectEditor editor(this);
+  ProjectInfoDialog editor(this);
   editor.setProject(m_project);
   editor.exec();
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
-  delete m_project;
-
-  m_project = 0;
-
   try
   {
-    m_project = te::qt::af::ReadProject(projectFileName.toStdString());
+    Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+
+    delete m_project;
+
+    m_project = nproject;
 
     ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
+
+    QString projectTile(tr(" - Project: %1"));
+
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
     NewProject evt(m_project);
 
@@ -439,6 +444,10 @@ void te::qt::af::BaseApplication::newProject()
 
   m_project->setTitle("New Project");
   m_project->setAuthor("Unknown");
+
+  QString projectTile(tr(" - Project: %1"));
+
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
   NewProject evt(m_project);
 
@@ -477,6 +486,8 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
+
+  //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
   connect(lexplorer, SIGNAL(visibilityChanged(bool)), m_viewLayerExplorer, SLOT(setChecked(bool)));
@@ -678,7 +689,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
 
 // Menu -File- actions
-  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, false);
+  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
   initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project"), tr(""), true, false, false);
   initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
   initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);
@@ -874,6 +885,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
+  connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));

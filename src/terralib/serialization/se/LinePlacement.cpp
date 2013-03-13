@@ -106,24 +106,24 @@ void te::serialize::Save(const te::se::LinePlacement* lp, te::xml::Writer& write
   if(lp == 0)
     return;
 
-  writer.writeStartElement("LinePlacement");
+  writer.writeStartElement("se:LinePlacement");
   
-  WriteParameterValuePtrHelper("PerpendicularOffset", lp->getPerpendicularOffset(), writer);
+  WriteParameterValuePtrHelper("se:PerpendicularOffset", lp->getPerpendicularOffset(), writer);
 
   std::string isRepeated;
   lp->isRepeated() ? isRepeated = "true" : isRepeated = "false";
-  writer.writeElement("IsRepeated", isRepeated);
+  writer.writeElement("se:IsRepeated", isRepeated);
 
-  WriteParameterValuePtrHelper("InitialGap", lp->getInitialGap(), writer);
-  WriteParameterValuePtrHelper("Gap", lp->getGap(), writer);
+  WriteParameterValuePtrHelper("se:InitialGap", lp->getInitialGap(), writer);
+  WriteParameterValuePtrHelper("se:Gap", lp->getGap(), writer);
 
   std::string isAligned;
   lp->isAligned() ? isAligned = "true" : isAligned = "false";
-  writer.writeElement("IsAligned", isAligned);
+  writer.writeElement("se:IsAligned", isAligned);
 
   std::string generalizeLine;
   lp->getGeneralizeLine() ? generalizeLine = "true" : generalizeLine = "false";
-  writer.writeElement("GeneralizeLine", generalizeLine);
+  writer.writeElement("se:GeneralizeLine", generalizeLine);
 
-  writer.writeEndElement("LinePlacement");
+  writer.writeEndElement("se:LinePlacement");
 }

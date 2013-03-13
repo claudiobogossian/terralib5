@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/dataset/explorer/DataSetTreeModel.h
 
-  \brief ????
+  \brief A simple model for datasets belonging to a data source.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_DATASET_EXPLORER_INTERNAL_DATASETTREEMODEL_H
@@ -30,10 +30,7 @@
 #include "../../../../dataaccess/datasource/DataSourceInfo.h"
 #include "../../Config.h"
 
-// STL
-#include <memory>
-
-//Qt
+// Qt
 #include <QtCore/QAbstractItemModel>
 
 class QWidget;
@@ -86,9 +83,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<DataSetGroupItem> m_datasets;
-          bool m_checkable;
-          bool m_forceCatalogCache;
+          DataSetGroupItem* m_datasets; //!< A container for the datasets of the input data source.
+          bool m_checkable;             //!< If true the model allows for checkable items.
+          bool m_forceCatalogCache;     //!< If true every information looked in the data source catalog is also cahed in the data source catalog.
       };
 
     } // end namespace widgets

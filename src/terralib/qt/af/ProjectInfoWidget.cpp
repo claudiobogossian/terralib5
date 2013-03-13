@@ -1,20 +1,20 @@
-#include "ui_ProjectInfo.h"
-#include "ProjectInfo.h"
+#include "ui_ProjectInfoWidgetForm.h"
+#include "ProjectInfoWidget.h"
 #include "Project.h"
 
-te::qt::af::ProjectInfo::ProjectInfo(QWidget* parent) :
+te::qt::af::ProjectInfoWidget::ProjectInfoWidget(QWidget* parent) :
 QWidget(parent),
-  m_ui(new Ui::ProjectInfo),
+  m_ui(new Ui::ProjectInfoWidgetForm),
   m_proj(0)
 {
   m_ui->setupUi(this);
 }
 
-te::qt::af::ProjectInfo::~ProjectInfo()
+te::qt::af::ProjectInfoWidget::~ProjectInfoWidget()
 {
 }
 
-void te::qt::af::ProjectInfo::setProject(Project* project)
+void te::qt::af::ProjectInfoWidget::setProject(Project* project)
 {
   m_proj = project;
 
@@ -30,7 +30,7 @@ void te::qt::af::ProjectInfo::setProject(Project* project)
   }
 }
 
-void te::qt::af::ProjectInfo::updateProjectInfo()
+void te::qt::af::ProjectInfoWidget::updateProjectInfo()
 {
   if(m_proj != 0)
   {
