@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtCore/QMutex>
+#include <QtCore/QString>
 #include <QtCore/QTimer>
 #include <QtCore/QThread>
 #include <QtGui/QImage>
@@ -85,6 +86,15 @@ namespace te
           */
           void draw(te::map::AbstractLayer* layer, const te::gm::Envelope& box, int srid, const QSize& size, const int& index);
 
+           /*! \brief This method tells if the thread finished with success. */
+          bool finishedWithSuccess() const;
+
+          /*! \brief This method returns an error message if the thread has not finished with success. Otherwise, the error message is empty. */
+          QString getErrorMessage() const;
+
+          /*! \brief This method returns the layer handled by this thread. */
+          te::map::AbstractLayer* getLayer() const;
+
         protected:
 
           /* \brief Starts the thread. i.e. performs the layer draw. */
@@ -120,7 +130,7 @@ namespace te
 
         protected:
 
-          te::map::AbstractLayer* m_layer; //!< The layer that will be draw.
+          te::map::AbstractLayer* m_layer; //!< The layer that will be drawn.
           te::gm::Envelope m_env;          //!< The interest area to draw the layer.
           int m_srid;                      //!< The SRS to be used to draw the layer objects.
           int m_index;                     //!< An optional index that can be provided by the caller to keep the draw order.
@@ -128,6 +138,8 @@ namespace te
           QMutex m_mutex;                  //!< Controls the serialization between threads.
           QTimer m_feedback;               //!< Timer used to send feedback. The feedback will be sent right after timeout() QTimer's signal.
           int m_interval;                  //!< Interval used to send feedbacks.
+          bool m_finishedWithSuccess;      //!< A flag that indicates if the layer could be drawn.
+          QString m_errorMessage;          //!< A string that contains an error message.
       };
 
     } // end namespace widgets
