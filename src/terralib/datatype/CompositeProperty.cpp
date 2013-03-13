@@ -78,8 +78,6 @@ void te::dt::CompositeProperty::add(const std::vector<Property*>& ps)
 {
   std::size_t size = ps.size();
 
-  m_properties.resize(m_properties.size() + size);
-
   for(std::size_t i = 0; i < size; ++i)
   {    
     assert(ps[i]->getParent() == 0);

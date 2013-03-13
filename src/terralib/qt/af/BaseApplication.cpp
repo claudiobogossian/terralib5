@@ -410,15 +410,19 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
-  delete m_project;
-
-  m_project = 0;
-
   try
   {
-    m_project = te::qt::af::ReadProject(projectFileName.toStdString());
+    Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
+
+    delete m_project;
+
+    m_project = nproject;
 
     ApplicationController::getInstance().updateRecentProjects(projectFileName, m_project->getTitle().c_str());
+
+    QString projectTile(tr(" - Project: %1"));
+
+    setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
     NewProject evt(m_project);
 
@@ -442,6 +446,10 @@ void te::qt::af::BaseApplication::newProject()
 
   m_project->setTitle("New Project");
   m_project->setAuthor("Unknown");
+
+  QString projectTile(tr(" - Project: %1"));
+
+  setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
   NewProject evt(m_project);
 
@@ -918,6 +926,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
+  connect(m_fileNewProject, SIGNAL(triggered()), SLOT(onNewProjectTriggered()));
   connect(m_fileOpenProject, SIGNAL(triggered()), SLOT(onOpenProjectTriggered()));
   connect(m_fileSaveProjectAs, SIGNAL(triggered()), SLOT(onSaveProjectAsTriggered()));
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));

@@ -25,6 +25,10 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
+#include "../../../../geometry/Point.h"
+#include "../../../../geometry/Polygon.h"
+#include "../../../../geometry/LinearRing.h"
+#include "../../../../geometry/LineString.h"
 #include "../../../../se/Description.h"
 #include "../../../../se/Rule.h"
 #include "../../se/SymbologyPreview.h"
@@ -33,6 +37,7 @@
 
 // Qt
 #include <QtGui/QMenu>
+#include <QtGui/QPixMap>
 #include <QtGui/QWidget>
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
@@ -54,7 +59,20 @@ QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
   {
-    //QPixmap p = SymbologyPreview::build(m_rule, geom, QSize(16, 16));
+    te::gm::Polygon pol(1, te::gm::PolygonType);
+
+    te::gm::LinearRing* ring = new te::gm::LinearRing(6, te::gm::LineStringType);
+
+    ring->setPoint(0, 2, 2);
+    ring->setPoint(1, 2, 8);
+    ring->setPoint(2, 8, 14);
+    ring->setPoint(3, 14, 8);
+    ring->setPoint(4, 14, 2);
+    ring->setPoint(5, 2, 2);
+
+    pol.setRingN(0, ring);
+
+    return QVariant(QIcon(SymbologyPreview::build(m_rule, &pol, QSize(16, 16))));
   }
 
   if(role == Qt::DisplayRole)

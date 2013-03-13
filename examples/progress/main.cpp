@@ -25,11 +25,11 @@ int main(int argc, char *argv[])
     
     //console sleeper
     std::cout << std::endl << "Console progress Test using multi tasks... " << std::endl;
-    //ConsoleSleeper();
+    ConsoleSleeper();
 
     //console sleeper multi thread
     std::cout << std::endl << "Console progress Test using multi thread... " << std::endl;
-    //ConsoleSleeperMultiThread();
+    ConsoleSleeperMultiThread();
 
     //qt sleeper
     QtSleeper(argc, argv);

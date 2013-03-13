@@ -367,27 +367,27 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
   if(layer == 0)
     return;
 
-  writer.writeStartElement("DataSetLayer");
+  writer.writeStartElement("te_map:DataSetLayer");
 
   writer.writeAttribute("id", layer->getId());
-  writer.writeElement("Title", layer->getTitle());
-  writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  writer.writeElement("DataSetName", layer->getDataSetName());
-  writer.writeElement("DataSourceId", layer->getDataSourceId());
-  writer.writeElement("SRID", layer->getSRID());
+  writer.writeElement("te_map:Title", layer->getTitle());
+  writer.writeElement("te_map:Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("te_map:DataSetName", layer->getDataSetName());
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
+  writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::SaveExtent(&layer->getExtent(), writer);
-  writer.writeElement("RendererId", layer->getRendererType());
+  writer.writeElement("te_map:RendererId", layer->getRendererType());
 
   if(layer->getStyle())
   {
-    writer.writeStartElement("Style");
+    writer.writeStartElement("te_map:Style");
 
     te::serialize::Style::getInstance().write(layer->getStyle(), writer);
 
-    writer.writeEndElement("Style");
+    writer.writeEndElement("te_map:Style");
   }
 
-  writer.writeEndElement("DataSetLayer");
+  writer.writeEndElement("te_map:DataSetLayer");
 }
 
 void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& writer)
@@ -397,27 +397,27 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
   if(layer == 0)
     return;
 
-  writer.writeStartElement("QueryLayer");
+  writer.writeStartElement("te_map:QueryLayer");
 
   writer.writeAttribute("id", layer->getId());
-  writer.writeElement("Title", layer->getTitle());
-  writer.writeElement("Visible", layer->getVisibility() == te::map::VISIBLE);
-  writer.writeElement("Query", "");
-  writer.writeElement("DataSourceId", layer->getDataSourceId());
-  writer.writeElement("SRID", layer->getSRID());
+  writer.writeElement("te_map:Title", layer->getTitle());
+  writer.writeElement("te_map:Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("te_map:Query", "");
+  writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
+  writer.writeElement("te_map:SRID", layer->getSRID());
   te::serialize::SaveExtent(&layer->getExtent(), writer);
-  writer.writeElement("RendererId", layer->getRendererType());
+  writer.writeElement("te_map:RendererId", layer->getRendererType());
 
   if(layer->getStyle())
   {
-    writer.writeStartElement("Style");
+    writer.writeStartElement("te_map:Style");
 
     te::serialize::Style::getInstance().write(layer->getStyle(), writer);
 
-    writer.writeEndElement("Style");
+    writer.writeEndElement("te_map:Style");
   }
 
-  writer.writeEndElement("QueryLayer");
+  writer.writeEndElement("te_map:QueryLayer");
 }
 
 void FolderLayerWriter(const te::map::AbstractLayer* /*alayer*/, te::xml::Writer& /*writer*/)
