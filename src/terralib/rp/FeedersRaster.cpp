@@ -115,6 +115,7 @@ namespace te
         
         if( m_currentOffset == m_rTypes.size() )
         {
+          m_currentRasterPtr.reset();
           return false;
         }
         else

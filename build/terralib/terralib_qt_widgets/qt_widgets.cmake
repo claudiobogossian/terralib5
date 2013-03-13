@@ -179,7 +179,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/layer/info/AbstractLayerInfoWidget.h
+  ${SRCDIR}/widgets/layer/info/LayerPropertiesInfo.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/info" MOC)
 

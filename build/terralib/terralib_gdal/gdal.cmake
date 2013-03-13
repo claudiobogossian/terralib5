@@ -33,7 +33,7 @@ file(GLOB SRCS ${SRCDIR}/*.cpp)
 file(GLOB HDRS ${SRCDIR}/*.h)
 
 #exporting module information
-exportModuleInformation("gdal" "${SRCDIR}" "${gdal}")
+exportModuleInformation("gdal" "${SRCDIR}" "gdal")
 
 #generatin configuration file
 set (TE_PLUGIN_NAME "te.da.gdal")

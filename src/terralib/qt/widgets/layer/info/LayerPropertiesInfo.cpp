@@ -1,9 +1,9 @@
-#include "AbstractLayerInfoWidget.h"
+#include "LayerPropertiesInfo.h"
 #include "../../widgets/propertybrowser/AbstractPropertyManager.h"
 
 #include "../../../../maptools/AbstractLayer.h"
 
-te::qt::widgets::AbstractLayerInfoWidget::AbstractLayerInfoWidget(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer) :
+te::qt::widgets::LayerPropertiesInfo::LayerPropertiesInfo(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer) :
   te::qt::widgets::AbstractPropertyItem(pb),
   m_layer(layer)
 {
@@ -61,14 +61,14 @@ te::qt::widgets::AbstractLayerInfoWidget::AbstractLayerInfoWidget(QtTreeProperty
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(ury_prop, m_layer->getExtent().getUpperRightY());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(vis_prop, (int) m_layer->getVisibility());
   
-  addProperty(layerInfo_prop, tr("AbstractLayer"), Qt::gray);
+  addProperty(layerInfo_prop, tr("Layer properties"), Qt::lightGray);
 }
 
-te::qt::widgets::AbstractLayerInfoWidget::~AbstractLayerInfoWidget()
+te::qt::widgets::LayerPropertiesInfo::~LayerPropertiesInfo()
 {
 }
 
-void te::qt::widgets::AbstractLayerInfoWidget::valueChanged(QtProperty* p, int value)
+void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, int value)
 {
   if(p->propertyName() == "srid")
     m_layer->setSRID(value);
@@ -76,7 +76,7 @@ void te::qt::widgets::AbstractLayerInfoWidget::valueChanged(QtProperty* p, int v
     m_layer->setVisibility((te::map::Visibility)value);
 }
 
-void te::qt::widgets::AbstractLayerInfoWidget::valueChanged(QtProperty* p, QString value)
+void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, QString value)
 {
   if(p->propertyName() == "title")
     m_layer->setTitle(value.toStdString());
