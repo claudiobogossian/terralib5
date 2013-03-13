@@ -487,7 +487,7 @@ void te::qt::af::BaseApplication::makeDialog()
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
-  lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
+  //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
   connect(lexplorer, SIGNAL(visibilityChanged(bool)), m_viewLayerExplorer, SLOT(setChecked(bool)));
