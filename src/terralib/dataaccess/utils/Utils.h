@@ -72,6 +72,8 @@ namespace te
 
     TEDATAACCESSEXPORT void GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::DataSourceTransactor* transactor);
 
+    TEDATAACCESSEXPORT std::string GetCategoryName(int category);
+
     TEDATAACCESSEXPORT bool HasDataSet(const std::string& datasourceId);
 
     TEDATAACCESSEXPORT bool HasDataSet(te::da::DataSource* datasource);

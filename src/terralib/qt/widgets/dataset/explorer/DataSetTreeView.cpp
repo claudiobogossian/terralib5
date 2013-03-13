@@ -24,22 +24,36 @@
 */
 
 // TerraLib
-#include "../../datasource/explorer/DataSetGroupItem.h"
+//#include "../../datasource/explorer/DataSetGroupItem.h"
+#include "../../datasource/explorer/DataSetCategoryGroupItem.h"
 #include "../../datasource/explorer/DataSetItem.h"
+//#include "DataSetTreeModel.h"
+#include "DataSetCategoryModel.h"
 #include "DataSetTreeModel.h"
 #include "DataSetTreeView.h"
 
 // STL
 #include <memory>
 
+// Qt
+#include <QtGui/QMenu>
+
 te::qt::widgets::DataSetTreeView::DataSetTreeView(QWidget* parent)
-  : QTreeView(parent)
+  : QTreeView(parent),
+    m_categoryModel(0),
+    m_treeModel(0),
+    m_ds(te::da::DataSourceInfoPtr()),
+    m_isCategoryModel(true),
+    m_useCheckableItems(true)
 {
+  this->setContextMenuPolicy(Qt::CustomContextMenu);
+
   connect(this, SIGNAL(activated(const QModelIndex&)), this, SLOT(onItemActivated(const QModelIndex&)));
   connect(this, SIGNAL(clicked(const QModelIndex&)), this, SLOT(onItemClicked(const QModelIndex&)));
   connect(this, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(onItemDoubleClicked(const QModelIndex&)));
   connect(this, SIGNAL(entered(const QModelIndex&)), this, SLOT(onItemEntered(const QModelIndex&)));
   connect(this, SIGNAL(pressed(const QModelIndex&)), this, SLOT(onItemPressed(const QModelIndex&)));
+  connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(customContextMenu(const QPoint&)));
 }
 
 te::qt::widgets::DataSetTreeView::~DataSetTreeView()
@@ -48,11 +62,19 @@ te::qt::widgets::DataSetTreeView::~DataSetTreeView()
 
 void te::qt::widgets::DataSetTreeView::set(const te::da::DataSourceInfoPtr& ds, bool useCheckableItems)
 {
-  std::auto_ptr<DataSetTreeModel> model(new DataSetTreeModel(ds, this));
+  m_ds = ds;
 
-  model->setCheckable(useCheckableItems);
+  m_treeModel.reset(new DataSetTreeModel(ds, this));
+  m_categoryModel.reset(new DataSetCategoryModel(ds, this));
 
-  this->setModel(model.release());
+  m_useCheckableItems = useCheckableItems;
+
+  m_treeModel->setCheckable(m_useCheckableItems);
+  m_categoryModel->setCheckable(m_useCheckableItems);
+  
+  this->setModel(m_categoryModel.get());
+
+  m_isCategoryModel = true;
 }
 
 std::list<te::qt::widgets::DataSetItem*> te::qt::widgets::DataSetTreeView::getSelectedDataSets() const
@@ -112,7 +134,8 @@ void te::qt::widgets::DataSetTreeView::onItemActivated(const QModelIndex & index
     return;
   }
 
-  DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
+  //DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
+  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
   if(dgitem != 0)
     emit activated(dgitem);
@@ -125,7 +148,7 @@ void te::qt::widgets::DataSetTreeView::onItemClicked(const QModelIndex & index)
   if(item == 0)
     return;
 
-  DataSetTreeModel* model = dynamic_cast<DataSetTreeModel*>(this->model());
+  QAbstractItemModel* model = this->model();
 
   DataSetItem* ditem = dynamic_cast<DataSetItem*>(item);
 
@@ -133,7 +156,7 @@ void te::qt::widgets::DataSetTreeView::onItemClicked(const QModelIndex & index)
   {
     emit clicked(ditem);
 
-    if(model && !model->isCheckable())
+    if(model && !m_useCheckableItems)
       return;
 
     QVariant value = item->data(0, Qt::CheckStateRole);
@@ -145,16 +168,16 @@ void te::qt::widgets::DataSetTreeView::onItemClicked(const QModelIndex & index)
   }
   else
   {
-    DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
+    DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
     if(dgitem != 0)
     {
       emit clicked(dgitem);
 
-      if(model && !model->isCheckable())
+      if(model && !m_useCheckableItems)
         return;
 
-      if(model && !model->isCheckable())
+      if(model && !m_useCheckableItems)
         return;
 
       QVariant value = item->data(0, Qt::CheckStateRole);
@@ -182,7 +205,7 @@ void te::qt::widgets::DataSetTreeView::onItemDoubleClicked(const QModelIndex & i
     return;
   }
 
-  DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
+  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
   if(dgitem != 0)
     emit doubleClicked(dgitem);
@@ -203,7 +226,7 @@ void te::qt::widgets::DataSetTreeView::onItemEntered(const QModelIndex & index)
     return;
   }
 
-  DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
+  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
   if(dgitem != 0)
     emit entered(dgitem);
@@ -224,9 +247,50 @@ void te::qt::widgets::DataSetTreeView::onItemPressed(const QModelIndex & index)
     return;
   }
 
-  DataSetGroupItem* dgitem = dynamic_cast<DataSetGroupItem*>(item);
+  DataSetCategoryGroupItem* dgitem = dynamic_cast<DataSetCategoryGroupItem*>(item);
 
   if(dgitem != 0)
     emit pressed(dgitem);
 }
 
+void te::qt::widgets::DataSetTreeView::customContextMenu(const QPoint &point)
+{
+  QMenu *menu = new QMenu("", this);
+
+  QAction * organize = new QAction(tr("Organize by category"), menu);
+  organize->setCheckable(true);
+
+  if(m_isCategoryModel)
+    organize->setChecked(true);
+
+  connect(organize, SIGNAL(toggled(bool)), this, SLOT(onModelToggled(bool)));
+  menu->addAction(organize);
+  menu->exec(QCursor::pos());
+}
+
+void te::qt::widgets::DataSetTreeView::onModelToggled(bool checked)
+{
+  if(checked)
+    this->setModel(m_categoryModel.get());
+  else
+    this->setModel(m_treeModel.get());
+
+  m_isCategoryModel = checked;
+
+  QAbstractItemModel* nmodel = model();
+
+  QModelIndex idx = nmodel->index(0, 0);
+
+  expand(idx);
+
+  if(m_isCategoryModel)
+  {
+    AbstractDataSourceTreeItem* item = static_cast<AbstractDataSourceTreeItem*>(idx.internalPointer());
+
+    for(std::size_t i = 0; i < item->children().size(); i++)
+    {
+      QModelIndex idxChild = nmodel->index(i, 0, idx);
+      expand(idxChild);
+    }
+  }
+}
