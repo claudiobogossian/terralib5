@@ -111,16 +111,6 @@ void te::map::AbstractLayer::setVisibility(Visibility v)
   adjustAscendantsVisibility();
 }
 
-const std::string& te::map::AbstractLayer::getIcon() const
-{
-  return m_icon;
-}
-
-void te::map::AbstractLayer::setIcon(const std::string& icon)
-{
-  m_icon = icon;
-}
-
 void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
 {
   te::common::TreeItem::iterator it = begin();
