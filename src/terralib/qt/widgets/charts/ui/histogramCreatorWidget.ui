@@ -60,7 +60,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="PropertyComboBox">
+        <widget class="QComboBox" name="propertyComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>

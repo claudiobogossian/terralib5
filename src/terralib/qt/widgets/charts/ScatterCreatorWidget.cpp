@@ -23,20 +23,14 @@
   \brief A widget created to customize the style parameters of a chart
 */
 
-#include "ui_histogramCreatorWidget.h"
-#include "HistogramCreatorWidget.h"
+#include "ui_scatterCreatorWidget.h"
+#include "ScatterCreatorWidget.h"
 
-te::qt::widgets::HistogramCreatorWidget::HistogramCreatorWidget(QWidget* parent, Qt::WindowFlags f)
-  : QWidget(parent, f),
-    m_ui(new Ui::histogramWidget)
-{
-    m_ui->setupUi(this);
-}
+te::qt::widgets::ScatterCreatorWidget::ScatterCreatorWidget(QWidget* parent, Qt::WindowFlags f){}
+te::qt::widgets::ScatterCreatorWidget::~ScatterCreatorWidget(){}
 
-te::qt::widgets::HistogramCreatorWidget::~HistogramCreatorWidget(){}
-
-void te::qt::widgets::HistogramCreatorWidget::onStylePushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onBarStylePushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onOkPushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onCancelPushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onHelpPushButtonClicked(){}
+void te::qt::widgets::ScatterCreatorWidget::onStylePushButtonClicked(){}
+void te::qt::widgets::ScatterCreatorWidget::onPlotStylePushButtonClicked(){}
+void te::qt::widgets::ScatterCreatorWidget::onOkPushButtonClicked(){}
+void te::qt::widgets::ScatterCreatorWidget::onCancelPushButtonClicked(){}
+void te::qt::widgets::ScatterCreatorWidget::onHelpPushButtonClicked(){}

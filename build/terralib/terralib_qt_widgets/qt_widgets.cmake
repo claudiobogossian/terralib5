@@ -122,11 +122,13 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
-#set (
-#  HDRS_TO_MOC
-#  ${SRCDIR}/widgets/charts/histogramCreatorWidget.h
-#)
-#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/charts" MOC)
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/charts/ChartStyleWidget.h
+  ${SRCDIR}/widgets/charts/HistogramCreatorWidget.h
+  ${SRCDIR}/widgets/charts/ScatterCreatorWidget.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/charts" MOC)
 
 set (
   HDRS_TO_MOC
@@ -401,7 +403,7 @@ file(
   GLOB FORMS
   ${SRCDIR}/widgets/*.ui
   ${SRCDIR}/widgets/canvas/*.ui
-  ${SRCDIR}/widgets/charts/*.ui
+  ${SRCDIR}/widgets/charts/ui/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui

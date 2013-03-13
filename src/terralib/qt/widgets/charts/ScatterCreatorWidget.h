@@ -18,19 +18,21 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramStyleWidget.h
+  \file terralib/qt/widgets/charts/histogramCreatorWidget.h
 
-  \brief A widget created to customize the style parameters of a Histogram chart
+  \brief A widget used to define the basic parameters of a new histogram.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLEWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLEWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H
 
 //TerraLib
 #include "../Config.h"
 
 // Qt
 #include <QtGui/QWidget>
+
+namespace Ui { class scatterWidget; }
 
 namespace te
 {
@@ -40,39 +42,37 @@ namespace te
     {
 
     /*!
-        \class HistogramStyle
+        \class Scatter creator
 
-        \brief A wdiget used to customize a Histogram chart's style parameters.
+        \brief A wdiget used to customize a Scatter parameters.
       */
-      class TEQTWIDGETSEXPORT HistogramStyleWidget : public QWidget
+      class TEQTWIDGETSEXPORT ScatterCreatorWidget : public QWidget
       {
 
         Q_OBJECT
 
         public:
 
-          HistogramStyleWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ScatterCreatorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~HistogramStyleWidget();
+          ~ScatterCreatorWidget();
 
-         // Ui::HistogramStyleWidgetForm* getForm() const;
+          Ui::scatterWidget* getForm() const;
 
         protected slots:
 
-          void onTitleStylePushButtonClicked();
-          void onBarStylePushButtonClicked();
-          void onBackgroundPushButtonClicked();
-          void onGridCheckBoxToggled();
+          void onStylePushButtonClicked();
+          void onPlotStylePushButtonClicked();
           void onOkPushButtonClicked();
           void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
 
         private:
 
-         // std::unique_ptr<Ui::HistogramStyleWidgetForm> m_ui;
+          std::auto_ptr<Ui::scatterWidget> m_ui;
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMSTYLEWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H

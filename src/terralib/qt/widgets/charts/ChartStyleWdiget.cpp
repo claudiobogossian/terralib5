@@ -23,20 +23,16 @@
   \brief A widget created to customize the style parameters of a chart
 */
 
-#include "ui_histogramCreatorWidget.h"
-#include "HistogramCreatorWidget.h"
+#include "ui_chartStyleWidget.h"
+#include "ChartStyleWidget.h"
 
-te::qt::widgets::HistogramCreatorWidget::HistogramCreatorWidget(QWidget* parent, Qt::WindowFlags f)
-  : QWidget(parent, f),
-    m_ui(new Ui::histogramWidget)
-{
-    m_ui->setupUi(this);
-}
+te::qt::widgets::ChartStyleWidget::ChartStyleWidget(QWidget* parent, Qt::WindowFlags f){}
+te::qt::widgets::ChartStyleWidget::~ChartStyleWidget(){}
 
-te::qt::widgets::HistogramCreatorWidget::~HistogramCreatorWidget(){}
-
-void te::qt::widgets::HistogramCreatorWidget::onStylePushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onBarStylePushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onOkPushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onCancelPushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorWidget::onHelpPushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onTitleStylePushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onLabelStylePushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onBackgroundPushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onGridCheckBoxToggled(){}
+void te::qt::widgets::ChartStyleWidget::onOkPushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onCancelPushButtonClicked(){}
+void te::qt::widgets::ChartStyleWidget::onHelpPushButtonClicked(){}

@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>scatterWidget</class>
- <widget class="QWidget" name="scatterWidget">
-  <property name="windowModality">
-   <enum>Qt::NonModal</enum>
-  </property>
+ <class>HistogramDialog</class>
+ <widget class="QDialog" name="HistogramDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>331</width>
-    <height>190</height>
+    <height>180</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,17 +19,17 @@
   <property name="minimumSize">
    <size>
     <width>331</width>
-    <height>190</height>
+    <height>180</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>331</width>
-    <height>190</height>
+    <height>180</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>Scatter</string>
+   <string>Histogram</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
@@ -40,9 +37,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
-        <widget class="QLabel" name="propertyXLabel">
+        <widget class="QLabel" name="propertyLabel">
          <property name="text">
-          <string>Property X:</string>
+          <string>Property:</string>
          </property>
         </widget>
        </item>
@@ -60,7 +57,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="propertyXComboBox">
+        <widget class="QComboBox" name="propertyComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -80,9 +77,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QLabel" name="propertyYLabel">
+        <widget class="QLabel" name="slicesLabel">
          <property name="text">
-          <string>Property Y:</string>
+          <string>Number of Slices:</string>
          </property>
         </widget>
        </item>
@@ -100,18 +97,15 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="propertyYComboBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
+        <widget class="QSpinBox" name="slicesSpinBox">
          <property name="minimumSize">
           <size>
            <width>75</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="minimum">
+          <number>2</number>
          </property>
         </widget>
        </item>
@@ -151,9 +145,9 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QLabel" name="plotStyleLabel">
+        <widget class="QLabel" name="barStyleLabel">
          <property name="text">
-          <string>Plot Style:</string>
+          <string>Bar Style:</string>
          </property>
         </widget>
        </item>
@@ -171,7 +165,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="plotStylePushButton">
+        <widget class="QPushButton" name="barStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>

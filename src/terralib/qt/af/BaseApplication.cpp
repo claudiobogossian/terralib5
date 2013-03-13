@@ -32,6 +32,9 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/charts/HistogramCreatorWidget.h"
+#include "../widgets/charts/ScatterCreatorWidget.h"
+#include "../widgets/charts/ChartStyleWidget.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -885,8 +888,8 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-   // te::qt::widgets::HistogramCreatorWidget dlg(this);
-   // dlg.exec();
+    te::qt::widgets::HistogramCreatorWidget dlg(this);
+    dlg.show();
   }
   catch(const std::exception& e)
   {
@@ -898,8 +901,8 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-   // te::qt::widgets::HistogramCreatorWidget dlg(this);
-   // dlg.exec();
+    te::qt::widgets::ScatterCreatorWidget dlg(this);
+    dlg.show();
   }
   catch(const std::exception& e)
   {
@@ -920,6 +923,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
-  connect(m_layerHistogram, SIGNAL(triggered()), SLOT(onLayerChartsTriggered()));
-  connect(m_layerScatter, SIGNAL(triggered()), SLOT(onLayerChartsTriggered()));
+  connect(m_layerHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
+  connect(m_layerScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
 }
