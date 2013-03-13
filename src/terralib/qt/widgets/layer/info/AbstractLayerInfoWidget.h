@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/info/LayerInfoItem.h
+  \file terralib/qt/widgets/info/AbstractLayerInfoWidget.h
 
   \brief 
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERINFOITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERINFOITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_ABSTRACTLAYERINFOWIDGET_H
+#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_ABSTRACTLAYERINFOWIDGET_H
 
 #include "../../Config.h"
 #include "../../widgets/propertybrowser/AbstractPropertyItem.h"
@@ -41,21 +41,23 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT LayerInfoItem : public AbstractPropertyItem
+      class TEQTWIDGETSEXPORT AbstractLayerInfoWidget : public AbstractPropertyItem
       {
         Q_OBJECT
 
         public:
 
           /*! \brief Constructor */
-          LayerInfoItem(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer);
+          AbstractLayerInfoWidget(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer);
 
           /*! \brief Destructor. */
-          ~LayerInfoItem();
+          ~AbstractLayerInfoWidget();
 
         public slots:
 
           virtual void valueChanged(QtProperty* p, int value);
+
+          virtual void valueChanged(QtProperty* p, QString value);
 
         protected:
 
@@ -65,4 +67,4 @@ namespace te
   }
 }
 
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_LAYERINFOITEM_H
+#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_ABSTRACTLAYERINFOWIDGET_H

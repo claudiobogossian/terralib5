@@ -1,9 +1,9 @@
-#include "LayerInfoItem.h"
+#include "AbstractLayerInfoWidget.h"
 #include "../../widgets/propertybrowser/AbstractPropertyManager.h"
 
 #include "../../../../maptools/AbstractLayer.h"
 
-te::qt::widgets::LayerInfoItem::LayerInfoItem(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer) :
+te::qt::widgets::AbstractLayerInfoWidget::AbstractLayerInfoWidget(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer) :
   te::qt::widgets::AbstractPropertyItem(pb),
   m_layer(layer)
 {
@@ -12,12 +12,15 @@ te::qt::widgets::LayerInfoItem::LayerInfoItem(QtTreePropertyBrowser* pb, te::map
   // Attributes
   QtProperty* id_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Id"));
   layerInfo_prop->addSubProperty(id_prop);
+  id_prop->setEnabled(false);
 
   QtProperty* title_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->addProperty(tr("Title"));
   layerInfo_prop->addSubProperty(title_prop);
+  title_prop->setPropertyName("title");
 
   QtProperty* srid_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_intManager->addProperty(tr("SRID"));
   layerInfo_prop->addSubProperty(srid_prop);
+  srid_prop->setPropertyName("srid");
 
   /// Bounding Box
   QtProperty* bbox_prop = te::qt::widgets::AbstractPropertyManager::getInstance().m_groupManager->addProperty(tr("Bounding box"));
@@ -46,6 +49,7 @@ te::qt::widgets::LayerInfoItem::LayerInfoItem(QtTreePropertyBrowser* pb, te::map
   te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setEnumNames(vis_prop, visEnum);
 
   layerInfo_prop->addSubProperty(vis_prop);
+  vis_prop->setPropertyName("visibility");
 
   //setting values
   te::qt::widgets::AbstractPropertyManager::getInstance().m_stringManager->setValue(id_prop, m_layer->getId().c_str());
@@ -57,13 +61,23 @@ te::qt::widgets::LayerInfoItem::LayerInfoItem(QtTreePropertyBrowser* pb, te::map
   te::qt::widgets::AbstractPropertyManager::getInstance().m_doubleManager->setValue(ury_prop, m_layer->getExtent().getUpperRightY());
   te::qt::widgets::AbstractPropertyManager::getInstance().m_enumManager->setValue(vis_prop, (int) m_layer->getVisibility());
   
-  addProperty(layerInfo_prop, tr("Layer properties"), Qt::gray);
+  addProperty(layerInfo_prop, tr("AbstractLayer"), Qt::gray);
 }
 
-te::qt::widgets::LayerInfoItem::~LayerInfoItem()
+te::qt::widgets::AbstractLayerInfoWidget::~AbstractLayerInfoWidget()
 {
 }
 
-void te::qt::widgets::LayerInfoItem::valueChanged(QtProperty* p, int value)
+void te::qt::widgets::AbstractLayerInfoWidget::valueChanged(QtProperty* p, int value)
 {
+  if(p->propertyName() == "srid")
+    m_layer->setSRID(value);
+  else if(p->propertyName() == "visibility")
+    m_layer->setVisibility((te::map::Visibility)value);
+}
+
+void te::qt::widgets::AbstractLayerInfoWidget::valueChanged(QtProperty* p, QString value)
+{
+  if(p->propertyName() == "title")
+    m_layer->setTitle(value.toStdString());
 }
