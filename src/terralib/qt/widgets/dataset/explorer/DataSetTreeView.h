@@ -32,6 +32,7 @@
 
 // STL
 #include <list>
+#include <memory>
 
 // Qt
 #include <QtGui/QTreeView>
@@ -42,8 +43,10 @@ namespace te
   {
     namespace widgets
     {
-      class DataSetGroupItem;
+      class DataSetCategoryGroupItem;
       class DataSetItem;
+      class DataSetTreeModel;
+      class DataSetCategoryModel;
 
       /*!
         \class DataSetTreeView
@@ -72,27 +75,27 @@ namespace te
 
           void activated(DataSetItem* item);
 
-          void activated(DataSetGroupItem* item);
+          void activated(DataSetCategoryGroupItem* item);
 
           void clicked(DataSetItem* item);
 
-          void clicked(DataSetGroupItem* item);
+          void clicked(DataSetCategoryGroupItem* item);
 
           void doubleClicked(DataSetItem* item);
 
-          void doubleClicked(DataSetGroupItem* item);
+          void doubleClicked(DataSetCategoryGroupItem* item);
 
           void entered(DataSetItem* item);
 
-          void entered(DataSetGroupItem* item);
+          void entered(DataSetCategoryGroupItem* item);
 
           void pressed(DataSetItem* item);
 
-          void pressed(DataSetGroupItem* item);
+          void pressed(DataSetCategoryGroupItem* item);
 
           void toggled(DataSetItem* item);
 
-          void toggled(DataSetGroupItem* item);
+          void toggled(DataSetCategoryGroupItem* item);
 
         protected slots:
 
@@ -105,6 +108,18 @@ namespace te
           void onItemEntered(const QModelIndex & index);
 
           void onItemPressed(const QModelIndex & index);
+
+          void customContextMenu(const QPoint &point);
+
+          void onModelToggled(bool checked);
+
+        private:
+
+          std::auto_ptr<DataSetCategoryModel> m_categoryModel;
+          std::auto_ptr<DataSetTreeModel> m_treeModel;
+          te::da::DataSourceInfoPtr m_ds;
+          bool m_isCategoryModel;
+          bool m_useCheckableItems;
       }; 
     } // end namespace widgets
   }   // end namespace qt

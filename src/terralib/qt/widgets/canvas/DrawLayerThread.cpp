@@ -56,6 +56,9 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
   m_srid = srid;
   m_index = index;
 
+  m_finishedWithSuccess = true;
+  m_errorMessage.clear();
+
   // Creates the result image
   if(m_image.size() != size)
   {
@@ -65,6 +68,21 @@ void te::qt::widgets::DrawLayerThread::draw(te::map::AbstractLayer* layer, const
 
   // Requests the thread execution!
   start();
+}
+
+bool te::qt::widgets::DrawLayerThread::finishedWithSuccess() const
+{
+  return m_finishedWithSuccess;
+}
+
+QString te::qt::widgets::DrawLayerThread::getErrorMessage() const
+{
+  return m_errorMessage;
+}
+
+te::map::AbstractLayer* te::qt::widgets::DrawLayerThread::getLayer() const
+{
+  return m_layer;
 }
 
 void te::qt::widgets::DrawLayerThread::run()
@@ -77,7 +95,15 @@ void te::qt::widgets::DrawLayerThread::run()
   canvas.clear();
 
   // Let's draw!
-  m_layer->draw(&canvas, m_env, m_srid);
+  try
+  {
+    m_layer->draw(&canvas, m_env, m_srid);
+  }
+  catch(const std::exception& e)
+  {
+    m_finishedWithSuccess = false;
+    m_errorMessage = QString(tr("The layer") + " %1 " + tr("could not be drawn! Details:") + " %2").arg(m_layer->getTitle().c_str()).arg(e.what());
+  }
 }
 
 void te::qt::widgets::DrawLayerThread::onStarted()

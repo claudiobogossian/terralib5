@@ -32,6 +32,7 @@
 #include "../datasource/DataSourceManager.h"
 #include "../datasource/DataSourceCatalogLoader.h"
 #include "../datasource/DataSourceTransactor.h"
+#include "../Enums.h"
 #include "../Exception.h"
 
 #include "Utils.h"
@@ -193,6 +194,40 @@ void te::da::GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::DataS
   cloader->getDataSets(datasets);
 }
 
+std::string te::da::GetCategoryName(int category)
+{
+  switch(category)
+  {
+    case te::da::UNKNOWN_DATASET_TYPE:
+      return "Unknown";
+      break;
+    case te::da::TABLE_TYPE:
+      return "Table";
+      break;
+    case te::da::SYSTEM_TABLE_TYPE:
+      return "System";
+      break;
+    case te::da::VIEW_TYPE:
+      return "View";
+      break;
+    case te::da::QUERY_TYPE:
+      return "Query";
+      break;
+    case te::da::INDEX_TYPE:
+      return "Index";
+      break;
+    case te::da::SEQUENCE_TYPE:
+      return "Sequence";
+      break;
+    case te::da::TRIGGER_TYPE:
+      return "Trigger";
+      break;
+    case te::da::REGULAR_FILE_TYPE:
+      return "Regular File";
+      break;
+  }
+}
+
 bool te::da::HasDataSet(const std::string& datasourceId)
 {
   assert(!datasourceId.empty());
@@ -267,4 +302,6 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
 
   return datasource;
 }
+
+
 
