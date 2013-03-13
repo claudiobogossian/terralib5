@@ -39,8 +39,8 @@ te::map::FolderLayer::FolderLayer(const std::string& id, AbstractLayer* parent)
 }
 
 te::map::FolderLayer::FolderLayer(const std::string& id,
-                                    const std::string& title,
-                                    AbstractLayer* parent)
+                                  const std::string& title,
+                                  AbstractLayer* parent)
   : AbstractLayer(id, title, parent)
 {
 }
@@ -49,12 +49,57 @@ te::map::FolderLayer::~FolderLayer()
 {
 }
 
+const te::map::LayerSchema* te::map::FolderLayer::getSchema() const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::FolderLayer::getData(te::common::TraverseType /*travType*/, 
+                                                te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::FolderLayer::getData(const te::gm::Envelope& /*e*/,
+                                                te::gm::SpatialRelation /*r*/,
+                                                te::common::TraverseType /*travType*/,
+                                                te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
+                                                const te::gm::Envelope& /*e*/,
+                                                te::gm::SpatialRelation /*r*/,
+                                                te::common::TraverseType /*travType*/,
+                                                te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::FolderLayer::getData(const te::gm::Geometry& /*g*/,
+                                                te::gm::SpatialRelation /*r*/,
+                                                te::common::TraverseType /*travType*/, 
+                                                te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
+te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
+                                                const te::gm::Geometry& /*g*/,
+                                                te::gm::SpatialRelation /*r*/,
+                                                te::common::TraverseType /*travType*/,
+                                                te::common::AccessPolicy /*rwRole*/) const
+{
+  return 0;
+}
+
 bool te::map::FolderLayer::isValid() const
 {
   return true;
 }
 
-void te::map::FolderLayer::draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid)
+void te::map::FolderLayer::draw(Canvas* /*canvas*/, const te::gm::Envelope& /*bbox*/, int /*srid*/)
 {
 }
 

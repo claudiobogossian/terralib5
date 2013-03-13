@@ -41,6 +41,7 @@ list ( APPEND
   terralib_serialization
   terralib_xerces
   terralib_xml
+  qtpropertybrowser
 )
 
 set (
