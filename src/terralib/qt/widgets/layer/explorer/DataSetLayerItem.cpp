@@ -116,12 +116,13 @@ bool te::qt::widgets::DataSetLayerItem::setData(const QVariant& value, int role)
   return false;
 }
 
-te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::DataSetLayerItem::clone(QObject* parent)
-{
-  return new DataSetLayerItem(m_layer, parent);
-}
-
-const te::map::DataSetLayerPtr& te::qt::widgets::DataSetLayerItem::getLayer() const
+te::map::AbstractLayerPtr te::qt::widgets::DataSetLayerItem::getLayer() const
 {
   return m_layer;
 }
+
+//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::DataSetLayerItem::clone(QObject* parent)
+//{
+//  return new DataSetLayerItem(m_layer, parent);
+//}
+

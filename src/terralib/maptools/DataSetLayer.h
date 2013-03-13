@@ -34,6 +34,8 @@ namespace te
 // Forward declaration
   namespace se { class Style; }
 
+  namespace da { class DataSetType; }
+
   namespace map
   {
     /*!
@@ -173,7 +175,7 @@ namespace te
       private:
 
         std::string m_datasetName;    //!< The dataset name where we will retrieve the layer objects.
-        std::string m_datasourceId;   //!< The DataSource associated to this Layer2.
+        std::string m_datasourceId;   //!< The DataSource associated to this layer.
         std::string m_rendererType;   //!< A pointer to the internal renderer used to paint this layer.
         te::se::Style* m_style;       //!< The style to be applied to the geographic objects in the layer.
 

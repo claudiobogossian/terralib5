@@ -73,7 +73,7 @@ namespace te
 
           void onAddDataSetLayerTriggered();
 		  
-		  void onAddQueryDataSetLayerTriggered();
+		      void onAddQueryDataSetLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -90,6 +90,8 @@ namespace te
           void onToolsCustomizeTriggered();
 
           void onProjectPropertiesTriggered();
+
+          void onLayerPropertiesTriggered();
 
         protected:
 

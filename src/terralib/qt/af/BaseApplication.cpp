@@ -38,6 +38,9 @@
 #include "../widgets/dataview/TabularViewer.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
+#include "../widgets/layer/explorer/LayerTreeView.h"
+#include "../widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
@@ -82,6 +85,7 @@
 
 // STL
 #include <memory>
+#include <list>
 
 // Boost
 #include <boost/format.hpp>
@@ -405,6 +409,27 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   editor.exec();
 }
 
+void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
+{
+  std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+  if(layers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  // Docking
+  QDockWidget* doc = new QDockWidget(this, Qt::Dialog);
+
+  te::qt::widgets::LayerPropertiesInfoWidget* info = new te::qt::widgets::LayerPropertiesInfoWidget((*(layers.begin()))->getLayer().get(), doc);
+
+  doc->setWidget(info);
+  doc->setWindowTitle(info->windowTitle());
+
+  doc->show();
+}
+
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
@@ -486,9 +511,9 @@ void te::qt::af::BaseApplication::makeDialog()
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
 
-  connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
-  connect(lexplorer, SIGNAL(visibilityChanged(bool)), m_viewLayerExplorer, SLOT(setChecked(bool)));
+  //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
 
+  connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
   m_viewLayerExplorer->setChecked(true);
 
   m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
@@ -517,14 +542,12 @@ void te::qt::af::BaseApplication::makeDialog()
   doc->setWidget(map);
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewMapDisplay->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_viewMapDisplay->setChecked(true);
 
   doc = new QDockWidget(tr("Tabular data viewer"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
   doc->connect(m_viewDataTable, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewDataTable->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_viewDataTable->setChecked(false);
   doc->setVisible(false);
 
@@ -533,7 +556,6 @@ void te::qt::af::BaseApplication::makeDialog()
 //  connect(m_rasterVisualDock, SIGNAL(symbolizerChanged()), this, SLOT(drawLayers()));
 //  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, m_rasterVisualDock);
 //  m_rasterVisualDock->connect(m_ui->m_viewRasterVisual, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-//  m_ui->m_viewRasterVisual->connect(m_rasterVisualDock, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
 //  m_ui->m_viewRasterVisual->setChecked(false);
 //  m_rasterVisualDock->setVisible(false);
 
@@ -679,7 +701,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerEdit, "layer-edit", "Edit", tr("&Edit"), tr(""), true, false, false);
   initAction(m_layerRename, "layer-rename", "Rename", tr("R&ename"), tr(""), true, false, false);
   initAction(m_layerExport, "", "Export", tr("E&xport..."), tr(""), true, false, false);
-  initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, false);
+  initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, true);
   initAction(m_layerRaise, "layer-raise", "Raise", tr("&Raise"), tr(""), true, false, false);
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
@@ -888,4 +910,5 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
+  connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
 }

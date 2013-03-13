@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2013 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/layer/explorer/DataSetLayerItem.h
+  \file terralib/qt/widgets/datasource/explorer/DataSetCategoryGroupItem.h
 
-  \brief The class that represents a dataset layer item in a LayerTreeModel.
+  \brief A class used to group a set of dataset items in a DataSourceTreeModel.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
-#define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#ifndef __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASETCATEGORYGROUPITEM_H
+#define __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASETCATEGORYGROUPITEM_H
 
 // TerraLib
-#include "../../../../maptools/DataSetLayer.h"
-#include "AbstractLayerTreeItem.h"
+#include "../../../../dataaccess/datasource/DataSourceInfo.h"
+#include "AbstractDataSourceTreeItem.h"
 
 namespace te
 {
@@ -36,15 +36,15 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT DataSetLayerItem : public AbstractLayerTreeItem
+      class TEQTWIDGETSEXPORT DataSetCategoryGroupItem : public AbstractDataSourceTreeItem
       {
         Q_OBJECT
 
         public:
 
-          DataSetLayerItem(const te::map::AbstractLayerPtr& l, QObject* parent = 0);
+          DataSetCategoryGroupItem(const te::da::DataSourceInfoPtr& ds, AbstractDataSourceTreeItem* parent = 0);
 
-          ~DataSetLayerItem();
+          ~DataSetCategoryGroupItem();
 
           int columnCount() const;
 
@@ -62,16 +62,16 @@ namespace te
 
           bool setData(const QVariant& value, int role = Qt::EditRole);
 
-          te::map::AbstractLayerPtr getLayer() const;
-
-          //AbstractLayerTreeItem* clone(QObject* parent = 0);
+          bool isChecked() const;
 
         private:
 
-          te::map::DataSetLayerPtr m_layer;
+          te::da::DataSourceInfoPtr m_ds;
+          bool m_checked;
+          mutable bool m_isInvalid;
       }; 
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_DATASETLAYERITEM_H
+#endif  // __TERRALIB_QT_WIDGETS_DATASOURCE_EXPLORER_INTERNAL_DATASETCATEGORYGROUPITEM_H

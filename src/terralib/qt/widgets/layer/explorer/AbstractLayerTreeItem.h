@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_LAYER_EXPLORER_INTERNAL_ABSTRACTLAYERTREEITEM_H
 
 // TerraLib
+#include "../../../../maptools/AbstractLayer.h"
 #include "../../Config.h"
 
 //Qt
@@ -73,7 +74,9 @@ namespace te
 
           virtual bool setData(const QVariant& value, int role = Qt::EditRole) = 0;
 
-          virtual AbstractLayerTreeItem* clone(QObject* parent = 0) = 0;
+          virtual te::map::AbstractLayerPtr getLayer() const = 0;
+
+          //virtual AbstractLayerTreeItem* clone(QObject* parent = 0) = 0;
       };
 
     } // end namespace widgets
