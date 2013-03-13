@@ -42,16 +42,15 @@ AboutDialog::AboutDialog(QWidget* parent, Qt::WindowFlags f)
 {
   m_ui->setupUi(this);
 
-  std::string logoTVFileName = TVIEW_LOGO_PIXMAP;
-  QPixmap pixmapTV(logoTVFileName.c_str());
-  m_ui->m_applicationLogo->setPixmap(pixmapTV);
-
   std::string logoTVLargeFileName = TVIEW_LARGE_LOGO_PIXMAP;
   QPixmap pixmapTVLarge(logoTVLargeFileName.c_str());
   m_ui->m_applicationLargeLogo->setPixmap(pixmapTVLarge);
 
   std::string logoTEFileName = TVIEW_TE_LOGO_PIXMAP;
   QPixmap pixmapTE(logoTEFileName.c_str());
+
+  pixmapTE = pixmapTE.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
   m_ui->m_terralibLogo->setPixmap(pixmapTE);
 
   std::string copyrightStr = tr("<p>Copyright &copy; 2010-2013 INPE<BR>").toStdString();
