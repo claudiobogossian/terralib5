@@ -37,7 +37,7 @@
 
 // Qt
 #include <QtGui/QMenu>
-#include <QtGui/QPixMap>
+#include <QtGui/QPixmap>
 #include <QtGui/QWidget>
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
