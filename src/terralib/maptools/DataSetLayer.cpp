@@ -25,6 +25,10 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSetType.h"
+#include "../dataaccess/datasource/DataSourceCatalogLoader.h"
+#include "../dataaccess/datasource/DataSourceTransactor.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../se/Style.h"
 #include "DataSetLayer.h"
 #include "Exception.h"
@@ -65,13 +69,37 @@ te::map::DataSetLayer::~DataSetLayer()
 
 const te::map::LayerSchema* te::map::DataSetLayer::getSchema() const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  assert(!m_datasetName.empty());
+
+  return cloader->getDataSetType(m_datasetName);
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travType, 
                                                 te::common::AccessPolicy rwRole) const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  assert(!m_datasetName.empty());
+
+  return t->getDataSet(m_datasetName, travType, rwRole);
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
@@ -79,7 +107,19 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
                                                 te::common::TraverseType travType,
                                                 te::common::AccessPolicy rwRole) const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  assert(!m_datasetName.empty());
+
+  return t->getDataSet(m_datasetName, &e, r, travType, rwRole);
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
@@ -88,7 +128,19 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
                                                 te::common::TraverseType travType,
                                                 te::common::AccessPolicy rwRole) const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  assert(!m_datasetName.empty());
+
+  return t->getDataSet(m_datasetName, &p, &e, r, travType, rwRole);
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
@@ -96,7 +148,19 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
                                                 te::common::TraverseType travType, 
                                                 te::common::AccessPolicy rwRole) const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  assert(!m_datasetName.empty());
+
+  return t->getDataSet(m_datasetName, &g, r, travType, rwRole);
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
@@ -105,7 +169,19 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
                                                 te::common::TraverseType travType,
                                                 te::common::AccessPolicy rwRole) const
 {
-  return 0;
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  // Get a catalog loader
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(t->getCatalogLoader());
+  assert(cloader.get());
+
+  assert(!m_datasetName.empty());
+
+  return t->getDataSet(m_datasetName, &p, &g, r, travType, rwRole);
 }
 
 bool te::map::DataSetLayer::isValid() const

@@ -91,6 +91,8 @@ namespace te
 
           void onProjectPropertiesTriggered();
 
+          void onLayerPropertiesTriggered();
+
           void onDrawTriggered();
 
           void onZoomInTriggered();
