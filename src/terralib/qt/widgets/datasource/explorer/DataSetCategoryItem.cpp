@@ -69,10 +69,10 @@ int te::qt::widgets::DataSetCategoryItem::columnCount() const
 QVariant te::qt::widgets::DataSetCategoryItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme(te::da::GetCategoryName(m_category).c_str()));
+    return QVariant(QIcon::fromTheme(te::da::GetDataSetCategoryName(m_category).c_str()));
 
   if(role == Qt::DisplayRole)
-    return QVariant(QString(te::da::GetCategoryName(m_category).c_str()));
+    return QVariant(QString(te::da::GetDataSetCategoryName(m_category).c_str()));
 
   if(role == Qt::CheckStateRole)
     return QVariant(m_checked ? Qt::Checked : Qt::Unchecked);

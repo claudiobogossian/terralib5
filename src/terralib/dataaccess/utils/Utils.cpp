@@ -194,7 +194,7 @@ void te::da::GetDataSets(boost::ptr_vector<std::string>& datasets, te::da::DataS
   cloader->getDataSets(datasets);
 }
 
-std::string te::da::GetCategoryName(int category)
+std::string te::da::GetDataSetCategoryName(int category)
 {
   switch(category)
   {
