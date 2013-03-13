@@ -124,9 +124,9 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/charts/ChartStyleWidget.h
-  ${SRCDIR}/widgets/charts/HistogramCreatorWidget.h
-  ${SRCDIR}/widgets/charts/ScatterCreatorWidget.h
+  ${SRCDIR}/widgets/charts/ChartStyleDialog.h
+  ${SRCDIR}/widgets/charts/HistogramCreatorDialog.h
+  ${SRCDIR}/widgets/charts/ScatterCreatorDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/charts" MOC)
 

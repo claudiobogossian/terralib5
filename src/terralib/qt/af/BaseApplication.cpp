@@ -32,9 +32,9 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
-#include "../widgets/charts/HistogramCreatorWidget.h"
-#include "../widgets/charts/ScatterCreatorWidget.h"
-#include "../widgets/charts/ChartStyleWidget.h"
+#include "../widgets/charts/HistogramCreatorDialog.h"
+#include "../widgets/charts/ScatterCreatorDialog.h"
+#include "../widgets/charts/ChartStyleDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -896,8 +896,8 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-    te::qt::widgets::HistogramCreatorWidget dlg(this);
-    dlg.show();
+    te::qt::widgets::HistogramCreatorDialog dlg(this);
+    dlg.exec();
   }
   catch(const std::exception& e)
   {
@@ -909,8 +909,8 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-    te::qt::widgets::ScatterCreatorWidget dlg(this);
-    dlg.show();
+    te::qt::widgets::ScatterCreatorDialog dlg(this);
+    dlg.exec();
   }
   catch(const std::exception& e)
   {

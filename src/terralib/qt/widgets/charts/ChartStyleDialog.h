@@ -18,21 +18,21 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramCreatorWidget.h
+  \file terralib/qt/widgets/charts/chartStyleWidget.h
 
-  \brief A widget used to define the basic parameters of a new histogram.
+  \brief A widget created to customize the style parameters of a chart
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEWIDGET_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEWIDGET_H
 
 //TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QtGui/QDialog>
 
-namespace Ui { class histogramWidget; }
+namespace Ui { class ChartStyleDialog; }
 
 namespace te
 {
@@ -42,37 +42,39 @@ namespace te
     {
 
     /*!
-        \class Histogram Creator
+        \class Chart Style
 
-        \brief A wdiget used to customize a Histogram parameters.
+        \brief A wdiget used to customize a chart's style parameters.
       */
-      class TEQTWIDGETSEXPORT HistogramCreatorWidget : public QWidget
+      class TEQTWIDGETSEXPORT ChartStyleDialog : public QDialog
       {
 
         Q_OBJECT
 
         public:
 
-          HistogramCreatorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ChartStyleDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~HistogramCreatorWidget();
+          ~ChartStyleDialog();
 
-          Ui::histogramWidget* getForm() const;
+          Ui::ChartStyleDialog* getForm() const;
 
         protected slots:
 
-          void onStylePushButtonClicked();
-          void onBarStylePushButtonClicked();
+          void onTitleStylePushButtonClicked();
+          void onLabelStylePushButtonClicked();
+          void onBackgroundPushButtonClicked();
+          void onGridCheckBoxToggled();
           void onOkPushButtonClicked();
           void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
 
         private:
 
-          std::auto_ptr<Ui::histogramWidget> m_ui;
+          std::auto_ptr<Ui::ChartStyleDialog> m_ui;
       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEWIDGET_H

@@ -57,7 +57,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="propertyComboBox">
+        <widget class="QComboBox" name="m_propertyComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -97,7 +97,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QSpinBox" name="slicesSpinBox">
+        <widget class="QSpinBox" name="m_slicesSpinBox">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -134,7 +134,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="stylePushButton">
+        <widget class="QPushButton" name="m_stylePushButton">
          <property name="text">
           <string>Style</string>
          </property>
@@ -165,7 +165,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="barStylePushButton">
+        <widget class="QPushButton" name="m_barStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -199,7 +199,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="helpPushButton">
+        <widget class="QPushButton" name="m_helpPushButton">
          <property name="text">
           <string>Help</string>
          </property>
@@ -219,14 +219,14 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="okPushButton">
+        <widget class="QPushButton" name="m_okPushButton">
          <property name="text">
           <string>OK</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="cancelPushButton">
+        <widget class="QPushButton" name="m_cancelPushButton">
          <property name="text">
           <string>Cancel</string>
          </property>

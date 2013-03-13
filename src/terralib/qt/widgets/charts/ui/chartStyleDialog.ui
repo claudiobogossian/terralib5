@@ -105,7 +105,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLineEdit" name="chartTitleLineEdit_2">
+        <widget class="QLineEdit" name="m_chartTitleLineEdit">
          <property name="minimumSize">
           <size>
            <width>175</width>
@@ -139,7 +139,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="titleStylePushButton_2">
+        <widget class="QPushButton" name="m_titleStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -176,7 +176,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLineEdit" name="labelXlLineEdit_2">
+        <widget class="QLineEdit" name="m_labelXlLineEdit">
          <property name="minimumSize">
           <size>
            <width>175</width>
@@ -210,7 +210,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLineEdit" name="labelYlLineEdit_2">
+        <widget class="QLineEdit" name="m_labelYlLineEdit">
          <property name="minimumSize">
           <size>
            <width>175</width>
@@ -244,7 +244,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="labelStylePushButton_2">
+        <widget class="QPushButton" name="m_labelStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -281,7 +281,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="backgroundPushButton_2">
+        <widget class="QPushButton" name="m_backgroundPushButton">
          <property name="text">
           <string>Color</string>
          </property>
@@ -312,7 +312,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QCheckBox" name="gridCheckBox_2">
+        <widget class="QCheckBox" name="m_gridCheckBox">
          <property name="text">
           <string/>
          </property>
@@ -334,7 +334,7 @@
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
-        <widget class="QPushButton" name="helpPushButton_2">
+        <widget class="QPushButton" name="m_helpPushButton">
          <property name="text">
           <string>Help</string>
          </property>
@@ -354,14 +354,14 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="okPushButton_2">
+        <widget class="QPushButton" name="m_okPushButton">
          <property name="text">
           <string>OK</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="cancelPushButton_2">
+        <widget class="QPushButton" name="m_cancelPushButton">
          <property name="text">
           <string>Cancel</string>
          </property>

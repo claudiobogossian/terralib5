@@ -57,7 +57,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="propertyXComboBox">
+        <widget class="QComboBox" name="m_propertyXComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -97,7 +97,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QComboBox" name="propertyYComboBox">
+        <widget class="QComboBox" name="m_propertyYComboBox">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -137,7 +137,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="stylePushButton">
+        <widget class="QPushButton" name="m_stylePushButton">
          <property name="text">
           <string>Style</string>
          </property>
@@ -168,7 +168,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="plotStylePushButton">
+        <widget class="QPushButton" name="m_plotStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -202,7 +202,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="helpPushButton">
+        <widget class="QPushButton" name="m_helpPushButton">
          <property name="text">
           <string>Help</string>
          </property>
@@ -222,14 +222,14 @@
         </spacer>
        </item>
        <item>
-        <widget class="QPushButton" name="okPushButton">
+        <widget class="QPushButton" name="m_okPushButton">
          <property name="text">
           <string>OK</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="cancelPushButton">
+        <widget class="QPushButton" name="m_cancelPushButton">
          <property name="text">
           <string>Cancel</string>
          </property>

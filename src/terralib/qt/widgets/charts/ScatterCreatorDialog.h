@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramCreatorWidget.h
+  \file terralib/qt/widgets/charts/ScatterCreatorDialog.h
 
-  \brief A widget used to define the basic parameters of a new histogram.
+  \brief A widget used to define the basic parameters of a new Scatter chart.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCREATORWIDGET_H
@@ -30,9 +30,9 @@
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QtGui/QDialog>
 
-namespace Ui { class scatterWidget; }
+namespace Ui { class ScatterDialog; }
 
 namespace te
 {
@@ -46,18 +46,18 @@ namespace te
 
         \brief A wdiget used to customize a Scatter parameters.
       */
-      class TEQTWIDGETSEXPORT ScatterCreatorWidget : public QWidget
+      class TEQTWIDGETSEXPORT ScatterCreatorDialog : public QDialog
       {
 
         Q_OBJECT
 
         public:
 
-          ScatterCreatorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ScatterCreatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
 
-          ~ScatterCreatorWidget();
+          ~ScatterCreatorDialog();
 
-          Ui::scatterWidget* getForm() const;
+          Ui::ScatterDialog* getForm() const;
 
         protected slots:
 
@@ -69,7 +69,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::scatterWidget> m_ui;
+          std::auto_ptr<Ui::ScatterDialog> m_ui;
       };
     } // end namespace widgets
   }   // end namespace qt
