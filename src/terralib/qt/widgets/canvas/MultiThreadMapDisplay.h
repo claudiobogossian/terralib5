@@ -30,6 +30,8 @@
 #include "MapDisplay.h"
 
 // Qt
+#include <QtCore/QMap>
+#include <QtCore/QString>
 #include <QtGui/QImage>
 
 // STL
@@ -107,6 +109,19 @@ namespace te
           void showFeedback(const QImage& image);
 
           void onDrawLayerFinished(const int& index, const QImage& image);
+
+        signals:
+
+          /*!
+            \brief This signal is emitted when the draw process ends. i.e. when all layers have been drawn.
+
+            \param errors A map that indicates the errors that could be occurred during the draw process. i.e layer id -> error message
+
+            \note The signal parameter maps the layer id (that generated the error) to an error message.
+
+            \note The signal parameter can be empty. It indicates that no error occurred.
+          */
+          void drawLayersFinished(const QMap<QString, QString>& errors);
 
         private:
 

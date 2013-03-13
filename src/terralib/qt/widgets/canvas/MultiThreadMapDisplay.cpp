@@ -174,4 +174,16 @@ void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& inde
   repaint(); // or update()? Which is the best here?!
 
   m_isDrawing = false;
+
+  // Building the error messages
+  QMap<QString, QString> errors;
+  for(std::size_t i = 0; i < m_threads.size(); ++i)
+  {
+    DrawLayerThread* t = m_threads[i];
+    if(t->finishedWithSuccess())
+      continue;
+    errors.insert(t->getLayer()->getId().c_str(), t->getErrorMessage());
+  }
+
+  emit drawLayersFinished(errors);
 }

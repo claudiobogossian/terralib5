@@ -38,6 +38,7 @@
 #include "../widgets/dataview/TabularViewer.h"
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
+#include "../widgets/layer/explorer/LayerTreeView.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
@@ -485,6 +486,8 @@ void te::qt::af::BaseApplication::makeDialog()
   te::qt::widgets::LayerExplorer* lexplorer = new te::qt::widgets::LayerExplorer(this);
 
   QMainWindow::addDockWidget(Qt::LeftDockWidgetArea, lexplorer);
+
+  //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
   connect(lexplorer, SIGNAL(visibilityChanged(bool)), m_viewLayerExplorer, SLOT(setChecked(bool)));

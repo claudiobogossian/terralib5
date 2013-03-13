@@ -37,7 +37,7 @@
 
 // Qt
 #include <QtGui/QMenu>
-#include <QtGui/QPixMap>
+#include <QtGui/QPixmap>
 #include <QtGui/QWidget>
 
 te::qt::widgets::LegendItem::LegendItem(const te::se::Rule* rule, QObject* parent)
@@ -136,8 +136,13 @@ bool te::qt::widgets::LegendItem::setData(const QVariant& value, int role)
   return false;
 }
 
-te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
+te::map::AbstractLayerPtr te::qt::widgets::LegendItem::getLayer() const
 {
-  return new LegendItem(m_rule, parent);
+  return te::map::AbstractLayerPtr(0);
 }
+
+//te::qt::widgets::AbstractLayerTreeItem* te::qt::widgets::LegendItem::clone(QObject* parent)
+//{
+//  return new LegendItem(m_rule, parent);
+//}
 

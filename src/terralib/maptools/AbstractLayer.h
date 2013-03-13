@@ -27,7 +27,9 @@
 #define __TERRALIB_MAPTOOLS_INTERNAL_ABSTRACTLAYER_H
 
 // TerraLib
+#include "../common/Enums.h"
 #include "../common/TreeItem.h"
+#include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "Config.h"
 #include "Enums.h"
@@ -38,12 +40,22 @@
 namespace te
 {
 // Forward declaration
-  namespace gm { class Envelope; }
+  namespace dt { class Property; }
+
+  namespace da
+  {
+    class DataSet;
+    class DataSetType;
+  }
+
+  namespace gm { class Geometry; }
 
   namespace map
   {
 // Forward declaration
     class Canvas;
+
+    typedef te::da::DataSetType LayerSchema;
 
     /*!
       \class AbstractLayer
@@ -130,36 +142,6 @@ namespace te
         void setVisibility(Visibility v);
 
         /*!
-          \brief It returns the icon used when showing the layer.
-
-          \return The icon used when showing the layer.
-        */
-        const std::string& getIcon() const;
-
-        /*!
-          \brief It sets an optional icon to be used when showing the layer.
-
-          \param icon The location of an icon file (PNG, JPEG, GIF or ICO).
-        */
-        void setIcon(const std::string& icon);
-
-        /*!
-          \brief It returns the layer type.
-
-          \return The layer type.
-        */
-        virtual const std::string& getType() const = 0;
-
-        /*!
-          \brief It returns true if the layer can be used for instance to draw, otherwise, it returns false.
-
-          This method can be used to check if the data referenced by the layer is available (accessible), or not.
-
-          \return True, if the layer is valid, otherwise, it returns false.
-        */
-        virtual bool isValid() const = 0;
-
-        /*!
           \brief It returns the Layer extent (or minimum bounding box).
 
           \return The Layer extent (or minimum bounding box) with coordinates in the same SRS as the layer.
@@ -188,6 +170,49 @@ namespace te
           \param srid The Spatial Reference System ID to be associated to the Layer.
         */
         void setSRID(int srid);
+
+        virtual const LayerSchema* getSchema() const = 0;
+
+        virtual te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        virtual te::da::DataSet* getData(const te::gm::Envelope& e,
+                                         te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        virtual te::da::DataSet* getData(const te::dt::Property& p,
+                                         const te::gm::Envelope& e,
+                                         te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        virtual te::da::DataSet* getData(const te::gm::Geometry& g,
+                                         te::gm::SpatialRelation r = te::gm::INTERSECTS,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        virtual te::da::DataSet* getData(const te::dt::Property& p,
+                                         const te::gm::Geometry& g,
+                                         te::gm::SpatialRelation r,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+
+        /*!
+          \brief It returns the layer type.
+
+          \return The layer type.
+        */
+        virtual const std::string& getType() const = 0;
+
+        /*!
+          \brief It returns true if the layer can be used for instance to draw, otherwise, it returns false.
+
+          This method can be used to check if the data referenced by the layer is available (accessible), or not.
+
+          \return True, if the layer is valid, otherwise, it returns false.
+        */
+        virtual bool isValid() const = 0;
 
         /*!
           \brief It draws the layer geographic objects in the given canvas using the informed SRS.
@@ -218,7 +243,6 @@ namespace te
 
         std::string m_id;             //!< Layer id.
         std::string m_title;          //!< A brief description of this Layer that can be used by applications to show a text identifying this Layer.
-        std::string m_icon;           //!< The icon used to show the layer when needed.
         te::gm::Envelope m_mbr;       //!< The layer bounding box.
         int m_srid;                   //!< The identifier of the layer spatial reference system.
         Visibility m_visibility;      //!< A flag that indicates the visibility status of the layer.
