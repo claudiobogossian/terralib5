@@ -276,12 +276,12 @@ namespace te
 
               // current raster corner coords (line/column)
 
-              urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns()
-                - 0.5);
-              urCoord2.y = -0.5;
-              llCoord2.x = -0.5;
-              llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows()
-                - 0.5);
+              urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns())
+                - 1.0;
+              urCoord2.y = 0.0;
+              llCoord2.x = 0.0;
+              llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows())
+                - 1.0;
 
               // current raster corner coords (line/column) over the
               // first raster coords system (lines/columns)
