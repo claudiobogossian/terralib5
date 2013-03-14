@@ -38,7 +38,9 @@ class TsMosaic : public CPPUNIT_NS::TestFixture
 {
   CPPUNIT_TEST_SUITE( TsMosaic );
   
-  CPPUNIT_TEST( TiePointsMosaic );
+  CPPUNIT_TEST( TiePointsMosaicTest2 );
+  
+  CPPUNIT_TEST( TiePointsMosaicTest1 );  
   
   CPPUNIT_TEST( GeoReferencedImagesMosaic );
   
@@ -47,7 +49,10 @@ class TsMosaic : public CPPUNIT_NS::TestFixture
 protected :
 
   void GeoReferencedImagesMosaic();
-  void TiePointsMosaic();
+  
+  void TiePointsMosaicTest1();
+  
+  void TiePointsMosaicTest2();
 
 };
 
