@@ -146,7 +146,7 @@ namespace te
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
-          QAction* m_viewToolBars;
+          //QAction* m_viewToolBars;
           QAction* m_viewGrid;
           QAction* m_viewDataSourceExplorer;
           QAction* m_projectRemoveLayer;
@@ -188,6 +188,7 @@ namespace te
           QMenuBar* m_menubar;
           //QMenu* m_editMenu;
           QMenu* m_viewMenu;
+          QMenu* m_viewToolBarsMenu;
           QMenu* m_toolsMenu;
           QMenu* m_pluginsMenu;
           QMenu* m_helpMenu;

@@ -687,7 +687,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_viewStyleExplorer, "grid-visible", "Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false);
   initAction(m_viewFullScreen, "view-fullscreen", "Full Screen", tr("F&ull Screen"), tr(""), true, false, false);
   initAction(m_viewRefresh, "view-refresh", "Refresh", tr("&Refresh"), tr(""), true, false, false);
-  initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
+  //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
   initAction(m_viewGrid, "view-grid", "Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false);
   initAction(m_viewDataSourceExplorer, "view-datasource-explorer", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
 
@@ -823,7 +823,12 @@ void te::qt::af::BaseApplication::initMenus()
 
   m_menubar->addAction(m_viewMenu->menuAction());
 
-  m_viewMenu->addAction(m_viewToolBars);
+  m_viewToolBarsMenu = new QMenu();
+  m_viewToolBarsMenu->setObjectName("Toolbars");
+  m_viewToolBarsMenu->setTitle(tr("&Toolbars"));
+  m_viewMenu->addMenu(m_viewToolBarsMenu);
+
+  //m_viewMenu->addAction(m_viewToolBars);
   m_viewMenu->addSeparator();
   m_viewMenu->addAction(m_viewLayerExplorer);
   m_viewMenu->addAction(m_viewMapDisplay);
@@ -939,7 +944,7 @@ void te::qt::af::BaseApplication::initToolbars()
   m_statusbar->setObjectName("StatusBar");
   setStatusBar(m_statusbar);
 
-  // File Tool Bar
+// File Tool Bar
   m_fileToolBar = new QToolBar(this);
   m_fileToolBar->setObjectName("FileToolBar");
   addToolBar(Qt::TopToolBarArea, m_fileToolBar);
@@ -948,7 +953,9 @@ void te::qt::af::BaseApplication::initToolbars()
   m_fileToolBar->addAction(m_fileOpenProject);
   m_fileToolBar->addAction(m_fileSaveProject);
 
-  // Edit Tool Bar
+  m_viewToolBarsMenu->addAction(m_fileToolBar->toggleViewAction());
+
+// Edit Tool Bar
   //m_editToolBar = new QToolBar(this);
   //m_editToolBar->setObjectName("EditToolBar");
   //addToolBar(Qt::TopToolBarArea, m_editToolBar);
@@ -960,7 +967,9 @@ void te::qt::af::BaseApplication::initToolbars()
   //m_editToolBar->addAction(m_editCopy);
   //m_editToolBar->addAction(m_editPaste);
 
-  // Visualization Tool Bar
+  //m_viewToolBarsMenu->addAction(m_editToolBar->toggleViewAction());
+
+// Map Display Tool Bar
   m_mapToolBar = new QToolBar(this);
   m_mapToolBar->setObjectName("MapToolBar");
   addToolBar(Qt::TopToolBarArea, m_mapToolBar);
@@ -978,7 +987,9 @@ void te::qt::af::BaseApplication::initToolbars()
   m_mapToolBar->addAction(m_mapMeasureArea);
   m_mapToolBar->addAction(m_mapMeasureAngle);
 
-  // Registering...
+  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
+
+// registering the toolbars
   ApplicationController::getInstance().registerToolBar("FileToolBar", m_fileToolBar);
   //ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
   ApplicationController::getInstance().registerToolBar("MapToolBar", m_mapToolBar);
