@@ -56,6 +56,7 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   layer->setDataSetName(dataset->getName());
   layer->setDataSourceId(m_datasourceId);
   layer->setVisibility(te::map::NOT_VISIBLE);
+  layer->setRendererType("DATASET_LAYER_RENDERER");
 
   if(dataset->hasGeom())
   {

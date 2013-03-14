@@ -95,6 +95,18 @@ namespace te
 
           void onLayerScatterTriggered();
 
+          void onLayerPropertiesTriggered();
+
+          void onDrawTriggered();
+
+          void onZoomInTriggered();
+
+          void onZoomOutTriggered();
+
+          void onZoomAreaTriggered();
+
+          void onPanTriggered();
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -165,25 +177,39 @@ namespace te
           QAction* m_fileExit;
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
+          QAction* m_mapDraw;
+          QAction* m_mapZoomIn;
+          QAction* m_mapZoomOut;
+          QAction* m_mapZoomArea;
+          QAction* m_mapPan;
+          QAction* m_mapZoomExtent;
+          QAction* m_mapPreviousExtent;
+          QAction* m_mapNextExtent;
+          QAction* m_mapMeasureDistance;
+          QAction* m_mapMeasureArea;
+          QAction* m_mapMeasureAngle;
 
-          QWidget *m_centralwidget;
+          QWidget* m_centralwidget;
           
-          QMenuBar *m_menubar;
-          QMenu *m_editMenu;
-          QMenu *m_viewMenu;
-          QMenu *m_toolsMenu;
-          QMenu *m_pluginsMenu;
-          QMenu *m_helpMenu;
-          QMenu *m_projectMenu;
-          QMenu *m_projectAddLayerMenu;
-          QMenu *m_layerMenu;
-          QMenu *m_layerChartsMenu;
-          QMenu *m_fileMenu;
-          QMenu *m_recentProjectsMenu;
 
-          QStatusBar *m_statusbar;
-          QToolBar *m_fileToolBar;
-          QToolBar *m_editToolBar;
+          QMenuBar* m_menubar;
+          QMenu* m_editMenu;
+          QMenu* m_viewMenu;
+          QMenu* m_toolsMenu;
+          QMenu* m_pluginsMenu;
+          QMenu* m_helpMenu;
+          QMenu* m_projectMenu;
+          QMenu* m_projectAddLayerMenu;
+          QMenu* m_layerMenu;
+          QMenu *m_layerChartsMenu;
+          QMenu* m_fileMenu;
+          QMenu* m_recentProjectsMenu;
+          QMenu* m_mapMenu;
+
+          QStatusBar* m_statusbar;
+          QToolBar* m_fileToolBar;
+          QToolBar* m_editToolBar;
+          QToolBar* m_mapToolBar;
 
 // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.

@@ -553,8 +553,8 @@ void te::da::DataSetAdapter::remove(int i)
   // Adjusting internal indexes...
   const std::vector<int> indexes = m_propertyIndexes[i];
 
-  for(std::size_t i = 0; i < indexes.size(); ++i)
-    m_adaptedProperties[indexes[i]]--;
+  for(std::size_t j = 0; j < indexes.size(); ++j)
+    m_adaptedProperties[indexes[j]]--;
 
   m_propertyIndexes.erase(m_propertyIndexes.begin() + i);
   m_converters.erase(m_converters.begin() + i);

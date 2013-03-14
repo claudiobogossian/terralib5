@@ -42,6 +42,8 @@
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/layer/explorer/LayerExplorer.h"
 #include "../widgets/layer/explorer/LayerTreeView.h"
+#include "../widgets/layer/explorer/AbstractLayerTreeItem.h"
+#include "../widgets/layer/info/LayerPropertiesInfoWidget.h"
 #include "../widgets/layer/selector/AbstractLayerSelector.h"
 #include "../widgets/plugin/builder/PluginBuilderWizard.h"
 #include "../widgets/plugin/manager/PluginManagerDialog.h"
@@ -53,6 +55,7 @@
 #include "../widgets/tools/Measure.h"
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
+#include "../widgets/tools/ZoomClick.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
@@ -86,6 +89,7 @@
 
 // STL
 #include <memory>
+#include <list>
 
 // Boost
 #include <boost/format.hpp>
@@ -409,6 +413,51 @@ void te::qt::af::BaseApplication::onProjectPropertiesTriggered()
   editor.exec();
 }
 
+void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
+{
+  std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+  if(layers.empty())
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+    return;
+  }
+
+  // Docking
+  QDockWidget* doc = new QDockWidget(this, Qt::Dialog);
+
+  te::qt::widgets::LayerPropertiesInfoWidget* info = new te::qt::widgets::LayerPropertiesInfoWidget((*(layers.begin()))->getLayer().get(), doc);
+
+  doc->setWidget(info);
+  doc->setWindowTitle(info->windowTitle());
+
+  doc->show();
+}
+
+void te::qt::af::BaseApplication::onDrawTriggered()
+{
+  if(m_project == 0)
+    return;
+
+  m_display->draw(m_project->getLayers());
+}
+
+void te::qt::af::BaseApplication::onZoomInTriggered()
+{
+}
+
+void te::qt::af::BaseApplication::onZoomOutTriggered()
+{
+}
+
+void te::qt::af::BaseApplication::onZoomAreaTriggered()
+{
+}
+
+void te::qt::af::BaseApplication::onPanTriggered()
+{
+}
+
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
@@ -493,8 +542,6 @@ void te::qt::af::BaseApplication::makeDialog()
   //lexplorer->getTreeView()->setSelectionMode(QAbstractItemView::MultiSelection);
 
   connect(m_viewLayerExplorer, SIGNAL(toggled(bool)), lexplorer, SLOT(setVisible(bool)));
-  connect(lexplorer, SIGNAL(visibilityChanged(bool)), m_viewLayerExplorer, SLOT(setChecked(bool)));
-
   m_viewLayerExplorer->setChecked(true);
 
   m_explorer = new te::qt::af::LayerExplorer(lexplorer, this);
@@ -523,14 +570,12 @@ void te::qt::af::BaseApplication::makeDialog()
   doc->setWidget(map);
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewMapDisplay->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_viewMapDisplay->setChecked(true);
 
   doc = new QDockWidget(tr("Tabular data viewer"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
   doc->connect(m_viewDataTable, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-  m_viewDataTable->connect(doc, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
   m_viewDataTable->setChecked(false);
   doc->setVisible(false);
 
@@ -539,7 +584,6 @@ void te::qt::af::BaseApplication::makeDialog()
 //  connect(m_rasterVisualDock, SIGNAL(symbolizerChanged()), this, SLOT(drawLayers()));
 //  QMainWindow::addDockWidget(Qt::RightDockWidgetArea, m_rasterVisualDock);
 //  m_rasterVisualDock->connect(m_ui->m_viewRasterVisual, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
-//  m_ui->m_viewRasterVisual->connect(m_rasterVisualDock, SIGNAL(visibilityChanged(bool)), SLOT(setChecked(bool)));
 //  m_ui->m_viewRasterVisual->setChecked(false);
 //  m_rasterVisualDock->setVisible(false);
 
@@ -685,7 +729,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerEdit, "layer-edit", "Edit", tr("&Edit"), tr(""), true, false, false);
   initAction(m_layerRename, "layer-rename", "Rename", tr("R&ename"), tr(""), true, false, false);
   initAction(m_layerExport, "", "Export", tr("E&xport..."), tr(""), true, false, false);
-  initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, false);
+  initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, true);
   initAction(m_layerRaise, "layer-raise", "Raise", tr("&Raise"), tr(""), true, false, false);
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
@@ -702,6 +746,29 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_fileExit, "system-log-out", "Exit", tr("E&xit"), tr(""), true, false, true);
   initAction(m_filePrint, "document-print", "Print", tr("&Print..."), tr(""), true, false, false);
   initAction(m_filePrintPreview, "document-print-preview", "Print Preview", tr("Print Pre&view..."), tr(""), true, false, false);
+
+// Menu -Map- actions
+  initAction(m_mapDraw, "map-draw", "Draw", tr("&Draw Layers"), tr("Draw the visible layers"), true, false, true);
+  initAction(m_mapZoomIn, "zoom-in", "Zoom In", tr("Zoom &In"), tr(""), true, true, false);
+  initAction(m_mapZoomOut, "zoom-out", "Zoom Out", tr("Zoom &Out"), tr(""), true, true, false);
+  initAction(m_mapZoomArea, "zoom-area", "Zoom Area", tr("Zoom &Area"), tr(""), true, true, false);
+  initAction(m_mapPan, "pan", "Pan", tr("&Pan"), tr(""), true, true, false);
+  initAction(m_mapZoomExtent, "zoom-extent", "Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, false);
+  initAction(m_mapPreviousExtent, "edit-undo", "Previous Extent", tr("P&revious Extent"), tr(""), true, false, false);
+  initAction(m_mapNextExtent, "edit-redo", "Next Extent", tr("&Next Extent"), tr(""), true, false, false);
+  initAction(m_mapMeasureDistance, "distance-measure", "Measure Distance", tr("Measure Dis&tance"), tr(""), true, true, false);
+  initAction(m_mapMeasureArea, "area-measure", "Measure Area", tr("Measure &Area"), tr(""), true, true, false);
+  initAction(m_mapMeasureAngle, "angle-measure", "Measure Angle", tr("Measure &Angle"), tr(""), true, true, false);
+
+// Group the map tools
+  QActionGroup* mapToolsGroup = new QActionGroup(this);
+  mapToolsGroup->addAction(m_mapZoomIn);
+  mapToolsGroup->addAction(m_mapZoomOut);
+  mapToolsGroup->addAction(m_mapZoomArea);
+  mapToolsGroup->addAction(m_mapPan);
+  mapToolsGroup->addAction(m_mapMeasureDistance);
+  mapToolsGroup->addAction(m_mapMeasureArea);
+  mapToolsGroup->addAction(m_mapMeasureAngle);
 }
 
 void te::qt::af::BaseApplication::initMenus()
@@ -823,6 +890,27 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerChartsMenu->addAction(m_layerHistogram);
   m_layerChartsMenu->addAction(m_layerScatter);
 
+// Map Menu
+  m_mapMenu = new QMenu(m_menubar);
+  m_mapMenu->setObjectName("Map");
+  m_mapMenu->setTitle(tr("&Map"));
+
+  m_menubar->addAction(m_mapMenu->menuAction());
+
+  m_mapMenu->addAction(m_mapDraw);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapZoomIn);
+  m_mapMenu->addAction(m_mapZoomOut);
+  m_mapMenu->addAction(m_mapZoomArea);
+  m_mapMenu->addAction(m_mapPan);
+  m_mapMenu->addAction(m_mapZoomExtent);
+  m_mapMenu->addAction(m_mapPreviousExtent);
+  m_mapMenu->addAction(m_mapNextExtent);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapMeasureDistance);
+  m_mapMenu->addAction(m_mapMeasureArea);
+  m_mapMenu->addAction(m_mapMeasureAngle);
+
 // Tools menu
   m_toolsMenu = new QMenu(m_menubar);
   m_toolsMenu->setObjectName("Tools");
@@ -864,25 +952,25 @@ void te::qt::af::BaseApplication::initMenus()
 
 void te::qt::af::BaseApplication::initToolbars()
 {
+ // Status Bar
   m_statusbar = new QStatusBar(this);
-  m_fileToolBar = new QToolBar(this);
-  m_editToolBar = new QToolBar(this);
-
-  m_statusbar->setObjectName("Status bar");
+  m_statusbar->setObjectName("StatusBar");
   setStatusBar(m_statusbar);
 
-  m_fileToolBar->setObjectName("File tool bar");
+  // File Tool Bar
+  m_fileToolBar = new QToolBar(this);
+  m_fileToolBar->setObjectName("FileToolBar");
   addToolBar(Qt::TopToolBarArea, m_fileToolBar);
-  m_fileToolBar->setWindowTitle(tr("File tool bar"));
-
-  m_editToolBar->setObjectName("Edit tool bar");
-  addToolBar(Qt::TopToolBarArea, m_editToolBar);
-  m_fileToolBar->setWindowTitle(tr("Edit tool bar"));
-
+  m_fileToolBar->setWindowTitle(tr("File Tool Bar"));
   m_fileToolBar->addAction(m_fileNewProject);
   m_fileToolBar->addAction(m_fileOpenProject);
   m_fileToolBar->addAction(m_fileSaveProject);
 
+  // Edit Tool Bar
+  m_editToolBar = new QToolBar(this);
+  m_editToolBar->setObjectName("EditToolBar");
+  addToolBar(Qt::TopToolBarArea, m_editToolBar);
+  m_editToolBar->setWindowTitle(tr("Edit Tool Bar"));
   m_editToolBar->addAction(m_editUndo);
   m_editToolBar->addAction(m_editRedo);
   m_editToolBar->addSeparator();
@@ -890,9 +978,28 @@ void te::qt::af::BaseApplication::initToolbars()
   m_editToolBar->addAction(m_editCopy);
   m_editToolBar->addAction(m_editPaste);
 
-  //! Register menu bar 
+  // Visualization Tool Bar
+  m_mapToolBar = new QToolBar(this);
+  m_mapToolBar->setObjectName("MapToolBar");
+  addToolBar(Qt::TopToolBarArea, m_mapToolBar);
+  m_mapToolBar->setWindowTitle(tr("Map Tool Bar"));
+  m_mapToolBar->addAction(m_mapDraw);
+  m_mapToolBar->addAction(m_mapZoomIn);
+  m_mapToolBar->addAction(m_mapZoomOut);
+  m_mapToolBar->addAction(m_mapZoomArea);
+  m_mapToolBar->addAction(m_mapPan);
+  m_mapToolBar->addAction(m_mapZoomExtent);
+  m_mapToolBar->addAction(m_mapPreviousExtent);
+  m_mapToolBar->addAction(m_mapNextExtent);
+  m_mapToolBar->addSeparator();
+  m_mapToolBar->addAction(m_mapMeasureDistance);
+  m_mapToolBar->addAction(m_mapMeasureArea);
+  m_mapToolBar->addAction(m_mapMeasureAngle);
+
+  // Registering...
   ApplicationController::getInstance().registerToolBar("FileToolBar", m_fileToolBar);
   ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
+  ApplicationController::getInstance().registerToolBar("MapToolBar", m_mapToolBar);
 }
 
 void te::qt::af::BaseApplication::onLayerHistogramTriggered()
@@ -938,4 +1045,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
   connect(m_layerHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
   connect(m_layerScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
+  connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+
 }
