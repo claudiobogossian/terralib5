@@ -73,7 +73,7 @@ namespace te
 
           void onAddDataSetLayerTriggered();
 
-          void onAddQueryDataSetLayerTriggered();
+          void onAddQueryLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -130,15 +130,15 @@ namespace te
           QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
-          QAction* m_editUndo;
-          QAction* m_editRedo;
-          QAction* m_editCut;
-          QAction* m_editCopy;
-          QAction* m_editPaste;
-          QAction* m_editSelectAll;
-          QAction* m_editClear;
-          QAction* m_editFind;
-          QAction* m_editReplace;
+          //QAction* m_editUndo;
+          //QAction* m_editRedo;
+          //QAction* m_editCut;
+          //QAction* m_editCopy;
+          //QAction* m_editPaste;
+          //QAction* m_editSelectAll;
+          //QAction* m_editClear;
+          //QAction* m_editFind;
+          //QAction* m_editReplace;
           QAction* m_viewFullScreen;
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
@@ -146,7 +146,7 @@ namespace te
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
-          QAction* m_viewToolBars;
+          //QAction* m_viewToolBars;
           QAction* m_viewGrid;
           QAction* m_viewDataSourceExplorer;
           QAction* m_projectRemoveLayer;
@@ -186,8 +186,9 @@ namespace te
           QWidget* m_centralwidget;
           
           QMenuBar* m_menubar;
-          QMenu* m_editMenu;
+          //QMenu* m_editMenu;
           QMenu* m_viewMenu;
+          QMenu* m_viewToolBarsMenu;
           QMenu* m_toolsMenu;
           QMenu* m_pluginsMenu;
           QMenu* m_helpMenu;
@@ -200,7 +201,7 @@ namespace te
 
           QStatusBar* m_statusbar;
           QToolBar* m_fileToolBar;
-          QToolBar* m_editToolBar;
+          //QToolBar* m_editToolBar;
           QToolBar* m_mapToolBar;
 
 // Well known Widgets

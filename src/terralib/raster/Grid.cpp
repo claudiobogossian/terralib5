@@ -30,8 +30,8 @@
 
 // STL
 #include <algorithm>
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 te::rst::Grid::Grid(unsigned int nCols,
                     unsigned int nRows,
