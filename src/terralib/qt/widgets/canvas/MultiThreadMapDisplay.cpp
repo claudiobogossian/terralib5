@@ -48,10 +48,19 @@ void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::ma
 {
   te::qt::widgets::MapDisplay::setLayerList(layers);
 
-  if(layers.size() <= m_threads.size())
+  // Consider only the visible + partially visible layers
+  m_visibleLayers.clear();
+  std::list<te::map::AbstractLayerPtr>::const_iterator it;
+  for(it = layers.cbegin(); it != layers.cend(); ++it)
+  {
+    if((*it)->getVisibility() != te::map::NOT_VISIBLE)
+      m_visibleLayers.push_back(*it);
+  }
+
+  if(m_visibleLayers.size() <= m_threads.size())
     return;
 
-  std::size_t n = layers.size() - m_threads.size();
+  std::size_t n = m_visibleLayers.size() - m_threads.size();
   for(std::size_t i = 0; i < n; ++i)
   {
     DrawLayerThread* thread = new DrawLayerThread;
@@ -92,11 +101,17 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
   // Cleaning...
   m_displayPixmap->fill(m_backgroundColor);
 
+  if(m_visibleLayers.empty())
+  {
+    repaint();
+    return;
+  }
+
   std::size_t i = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it;
-  for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
+  for(it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it) // for each layer.
   {
-    m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
+    m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i); // TODO: each thread should draw the layer children!
     i++;
   }
 }
@@ -158,7 +173,7 @@ void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)
 void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& index, const QImage& image)
 {
   m_images.insert(std::pair<int, QImage>(index, image));
-  if(m_images.size() != m_layerList.size())
+  if(m_images.size() != m_visibleLayers.size())
     return;
 
   m_displayPixmap->fill(m_backgroundColor);
