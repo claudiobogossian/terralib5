@@ -171,7 +171,6 @@ namespace te
 
           MapDisplay* m_display; //!< The map display associated with the tool.
           QCursor m_cursor;      //!< The default tool cursor.
-          QCursor m_oldCursor;   //!< The cursor that has been used on map display before of this tool. Setted again on tool destruction.
       };
 
     } // end namespace widgets
