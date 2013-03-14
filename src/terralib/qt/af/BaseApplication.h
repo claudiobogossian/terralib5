@@ -73,7 +73,7 @@ namespace te
 
           void onAddDataSetLayerTriggered();
 
-          void onAddQueryDataSetLayerTriggered();
+          void onAddQueryLayerTriggered();
 
           void onPluginsManagerTriggered();
 

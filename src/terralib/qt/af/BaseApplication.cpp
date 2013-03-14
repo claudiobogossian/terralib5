@@ -85,8 +85,8 @@
 #include <QtGui/QToolBar>
 
 // STL
-#include <memory>
 #include <list>
+#include <memory>
 
 // Boost
 #include <boost/format.hpp>
@@ -287,7 +287,7 @@ void te::qt::af::BaseApplication::onAddDataSetLayerTriggered()
   }
 }
 
-void te::qt::af::BaseApplication::onAddQueryDataSetLayerTriggered()
+void te::qt::af::BaseApplication::onAddQueryLayerTriggered()
 {
    try
   {
@@ -716,7 +716,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_helpAbout, "", "About", tr("&About..."), tr(""), true, false, false);
 
 // Menu -Project- actions
-  initAction(m_projectRemoveLayer, "", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
+  initAction(m_projectRemoveLayer, "layer-remove", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
   initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true);
   initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
   initAction(m_projectAddLayerQueryDataSet, "", "Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true);
@@ -988,7 +988,7 @@ void te::qt::af::BaseApplication::initSlotsConnections()
 {
   connect(m_fileExit, SIGNAL(triggered()), SLOT(close()));
   connect(m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayerTriggered()));
-  connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryDataSetLayerTriggered()));
+  connect(m_projectAddLayerQueryDataSet, SIGNAL(triggered()), SLOT(onAddQueryLayerTriggered()));
   connect(m_pluginsManager, SIGNAL(triggered()), SLOT(onPluginsManagerTriggered()));
   connect(m_pluginsBuilder, SIGNAL(triggered()), SLOT(onPluginsBuilderTriggered()));
   connect(m_recentProjectsMenu, SIGNAL(triggered(QAction*)), SLOT(onRecentProjectsTriggered(QAction*)));
