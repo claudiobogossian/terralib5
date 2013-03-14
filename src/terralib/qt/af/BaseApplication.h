@@ -130,15 +130,15 @@ namespace te
           QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
-          QAction* m_editUndo;
-          QAction* m_editRedo;
-          QAction* m_editCut;
-          QAction* m_editCopy;
-          QAction* m_editPaste;
-          QAction* m_editSelectAll;
-          QAction* m_editClear;
-          QAction* m_editFind;
-          QAction* m_editReplace;
+          //QAction* m_editUndo;
+          //QAction* m_editRedo;
+          //QAction* m_editCut;
+          //QAction* m_editCopy;
+          //QAction* m_editPaste;
+          //QAction* m_editSelectAll;
+          //QAction* m_editClear;
+          //QAction* m_editFind;
+          //QAction* m_editReplace;
           QAction* m_viewFullScreen;
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
@@ -186,7 +186,7 @@ namespace te
           QWidget* m_centralwidget;
           
           QMenuBar* m_menubar;
-          QMenu* m_editMenu;
+          //QMenu* m_editMenu;
           QMenu* m_viewMenu;
           QMenu* m_toolsMenu;
           QMenu* m_pluginsMenu;
@@ -200,7 +200,7 @@ namespace te
 
           QStatusBar* m_statusbar;
           QToolBar* m_fileToolBar;
-          QToolBar* m_editToolBar;
+          //QToolBar* m_editToolBar;
           QToolBar* m_mapToolBar;
 
 // Well known Widgets

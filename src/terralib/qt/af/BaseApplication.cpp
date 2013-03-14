@@ -550,12 +550,12 @@ void te::qt::af::BaseApplication::makeDialog()
 
   m_display = new te::qt::af::MapDisplay(map);
 
-// tabular viewer
+// 3. Data Table
   te::qt::widgets::TabularViewer* view = new te::qt::widgets::TabularViewer(this);
 
   m_viewer = new te::qt::af::TabularViewer(view);
 
-// adding framework listners
+// registering framework listeners
   te::qt::af::ApplicationController::getInstance().addListener(this);
   te::qt::af::ApplicationController::getInstance().addListener(m_explorer);
   te::qt::af::ApplicationController::getInstance().addListener(m_display);
@@ -563,13 +563,13 @@ void te::qt::af::BaseApplication::makeDialog()
 
 
 // initializing connector widgets
-  QDockWidget* doc = new QDockWidget(tr("Main display"), this);
+  QDockWidget* doc = new QDockWidget(tr("Map Display"), this);
   doc->setWidget(map);
   QMainWindow::setCentralWidget(doc);
   doc->connect(m_viewMapDisplay, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
   m_viewMapDisplay->setChecked(true);
 
-  doc = new QDockWidget(tr("Tabular data viewer"), this);
+  doc = new QDockWidget(tr("Data Table"), this);
   doc->setWidget(view);
   QMainWindow::addDockWidget(Qt::BottomDockWidgetArea, doc);
   doc->connect(m_viewDataTable, SIGNAL(toggled(bool)), SLOT(setVisible(bool)));
@@ -696,15 +696,15 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_toolsDataSourceManagement, "", "Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, false);
 
 // Menu -Edit- actions
-  initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
-  initAction(m_editRedo, "edit-redo", "Redo", tr("&Redo"), tr("Redo the last operation"), true, false, false);
-  initAction(m_editCut, "edit-cut", "Cut", tr("Cu&t"), tr(""), true, true, false);
-  initAction(m_editCopy, "edit-copy", "Copy", tr("&Copy"), tr(""), true, true, false);
-  initAction(m_editPaste, "edit-paste", "&Paste", tr("&Paste"), tr(""), true, true, false);
-  initAction(m_editSelectAll, "edit-select-all", "Select All", tr("Select &All"), tr(""), true, true, false);
-  initAction(m_editClear, "edit-clear", "Clear", tr("C&lear"), tr(""), true, true, false);
-  initAction(m_editFind, "edit-find", "Find", tr("&Find..."), tr(""), true, true, false);
-  initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
+  //initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
+  //initAction(m_editRedo, "edit-redo", "Redo", tr("&Redo"), tr("Redo the last operation"), true, false, false);
+  //initAction(m_editCut, "edit-cut", "Cut", tr("Cu&t"), tr(""), true, true, false);
+  //initAction(m_editCopy, "edit-copy", "Copy", tr("&Copy"), tr(""), true, true, false);
+  //initAction(m_editPaste, "edit-paste", "&Paste", tr("&Paste"), tr(""), true, true, false);
+  //initAction(m_editSelectAll, "edit-select-all", "Select All", tr("Select &All"), tr(""), true, true, false);
+  //initAction(m_editClear, "edit-clear", "Clear", tr("C&lear"), tr(""), true, true, false);
+  //initAction(m_editFind, "edit-find", "Find", tr("&Find..."), tr(""), true, true, false);
+  //initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
 
 // Menu -Plugins- actions
   initAction(m_pluginsManager, "", "Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true);
@@ -725,7 +725,7 @@ void te::qt::af::BaseApplication::initActions()
 // Menu -Layer- actions
   initAction(m_layerEdit, "layer-edit", "Edit", tr("&Edit"), tr(""), true, false, false);
   initAction(m_layerRename, "layer-rename", "Rename", tr("R&ename"), tr(""), true, false, false);
-  initAction(m_layerExport, "", "Export", tr("E&xport..."), tr(""), true, false, false);
+  initAction(m_layerExport, "document-export", "Export", tr("E&xport..."), tr(""), true, false, false);
   initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, true);
   initAction(m_layerRaise, "layer-raise", "Raise", tr("&Raise"), tr(""), true, false, false);
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
@@ -797,24 +797,24 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_fileExit);
 
 // Edit menu
-  m_editMenu = new QMenu(m_menubar);
-  m_editMenu->setObjectName("Edit");
-  m_editMenu->setTitle(tr("&Edit"));
+  //m_editMenu = new QMenu(m_menubar);
+  //m_editMenu->setObjectName("Edit");
+  //m_editMenu->setTitle(tr("&Edit"));
 
-  m_menubar->addAction(m_editMenu->menuAction());
+  //m_menubar->addAction(m_editMenu->menuAction());
 
-  m_editMenu->addAction(m_editUndo);
-  m_editMenu->addAction(m_editRedo);
-  m_editMenu->addSeparator();
-  m_editMenu->addAction(m_editCut);
-  m_editMenu->addAction(m_editCopy);
-  m_editMenu->addAction(m_editPaste);
-  m_editMenu->addSeparator();
-  m_editMenu->addAction(m_editSelectAll);
-  m_editMenu->addAction(m_editClear);
-  m_editMenu->addSeparator();
-  m_editMenu->addAction(m_editFind);
-  m_editMenu->addAction(m_editReplace);
+  //m_editMenu->addAction(m_editUndo);
+  //m_editMenu->addAction(m_editRedo);
+  //m_editMenu->addSeparator();
+  //m_editMenu->addAction(m_editCut);
+  //m_editMenu->addAction(m_editCopy);
+  //m_editMenu->addAction(m_editPaste);
+  //m_editMenu->addSeparator();
+  //m_editMenu->addAction(m_editSelectAll);
+  //m_editMenu->addAction(m_editClear);
+  //m_editMenu->addSeparator();
+  //m_editMenu->addAction(m_editFind);
+  //m_editMenu->addAction(m_editReplace);
 
 // View menu
   m_viewMenu = new QMenu(m_menubar);
@@ -949,16 +949,16 @@ void te::qt::af::BaseApplication::initToolbars()
   m_fileToolBar->addAction(m_fileSaveProject);
 
   // Edit Tool Bar
-  m_editToolBar = new QToolBar(this);
-  m_editToolBar->setObjectName("EditToolBar");
-  addToolBar(Qt::TopToolBarArea, m_editToolBar);
-  m_editToolBar->setWindowTitle(tr("Edit Tool Bar"));
-  m_editToolBar->addAction(m_editUndo);
-  m_editToolBar->addAction(m_editRedo);
-  m_editToolBar->addSeparator();
-  m_editToolBar->addAction(m_editCut);
-  m_editToolBar->addAction(m_editCopy);
-  m_editToolBar->addAction(m_editPaste);
+  //m_editToolBar = new QToolBar(this);
+  //m_editToolBar->setObjectName("EditToolBar");
+  //addToolBar(Qt::TopToolBarArea, m_editToolBar);
+  //m_editToolBar->setWindowTitle(tr("Edit Tool Bar"));
+  //m_editToolBar->addAction(m_editUndo);
+  //m_editToolBar->addAction(m_editRedo);
+  //m_editToolBar->addSeparator();
+  //m_editToolBar->addAction(m_editCut);
+  //m_editToolBar->addAction(m_editCopy);
+  //m_editToolBar->addAction(m_editPaste);
 
   // Visualization Tool Bar
   m_mapToolBar = new QToolBar(this);
@@ -980,7 +980,7 @@ void te::qt::af::BaseApplication::initToolbars()
 
   // Registering...
   ApplicationController::getInstance().registerToolBar("FileToolBar", m_fileToolBar);
-  ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
+  //ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
   ApplicationController::getInstance().registerToolBar("MapToolBar", m_mapToolBar);
 }
 
