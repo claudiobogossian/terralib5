@@ -132,6 +132,8 @@ set (
   ${SRCDIR}/widgets/datasource/explorer/ForeignKeyItem.h
   ${SRCDIR}/widgets/datasource/explorer/ConstraintsItem.h
   ${SRCDIR}/widgets/datasource/explorer/IndexGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSetCategoryGroupItem.h
+  ${SRCDIR}/widgets/datasource/explorer/DataSetCategoryItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSetGroupItem.h
   ${SRCDIR}/widgets/datasource/explorer/IndexItem.h
   ${SRCDIR}/widgets/datasource/explorer/DataSetItem.h
@@ -177,7 +179,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/explorer" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/layer/info/AbstractLayerInfoWidget.h
+  ${SRCDIR}/widgets/layer/info/LayerPropertiesInfo.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/info" MOC)
 
@@ -213,6 +215,7 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/dataset/selector" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/dataset/explorer/DataSetExplorer.h
+  ${SRCDIR}/widgets/dataset/explorer/DataSetCategoryModel.h
   ${SRCDIR}/widgets/dataset/explorer/DataSetTreeModel.h
   ${SRCDIR}/widgets/dataset/explorer/DataSetTreeView.h
 )

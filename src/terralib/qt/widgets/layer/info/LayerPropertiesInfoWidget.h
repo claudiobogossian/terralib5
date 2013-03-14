@@ -18,16 +18,14 @@
  */
 
 /*!
-  \file terralib/qt/widgets/info/AbstractLayerInfoWidget.h
+  \file terralib/qt/widgets/info/LayerPropertiesInfoWidget.h
 
   \brief 
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_ABSTRACTLAYERINFOWIDGET_H
-#define __TERRALIB_QT_WIDGETS_LAYER_INTERNAL_ABSTRACTLAYERINFOWIDGET_H
+#include <QtGui/QWidget>
 
 #include "../../Config.h"
-#include "../../widgets/propertybrowser/AbstractPropertyItem.h"
 
 namespace te
 {
@@ -41,30 +39,14 @@ namespace te
   {
     namespace widgets
     {
-      class TEQTWIDGETSEXPORT AbstractLayerInfoWidget : public AbstractPropertyItem
+      class TEQTWIDGETSEXPORT LayerPropertiesInfoWidget : public QWidget
       {
-        Q_OBJECT
-
         public:
+           
+          LayerPropertiesInfoWidget(te::map::AbstractLayer* layer, QWidget* parent=0);
 
-          /*! \brief Constructor */
-          AbstractLayerInfoWidget(QtTreePropertyBrowser* pb, te::map::AbstractLayer* layer);
-
-          /*! \brief Destructor. */
-          ~AbstractLayerInfoWidget();
-
-        public slots:
-
-          virtual void valueChanged(QtProperty* p, int value);
-
-          virtual void valueChanged(QtProperty* p, QString value);
-
-        protected:
-
-          te::map::AbstractLayer* m_layer;
+          ~LayerPropertiesInfoWidget();
       };
     }
   }
 }
-
-#endif //__TERRALIB_QT_WIDGETS_LAYER_INTERNAL_ABSTRACTLAYERINFOWIDGET_H

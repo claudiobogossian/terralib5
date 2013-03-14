@@ -72,8 +72,8 @@ namespace te
           void onApplicationTriggered(te::qt::af::Event* evt);
 
           void onAddDataSetLayerTriggered();
-		  
-		  void onAddQueryDataSetLayerTriggered();
+
+          void onAddQueryLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -90,6 +90,18 @@ namespace te
           void onToolsCustomizeTriggered();
 
           void onProjectPropertiesTriggered();
+
+          void onLayerPropertiesTriggered();
+
+          void onDrawTriggered();
+
+          void onZoomInTriggered();
+
+          void onZoomOutTriggered();
+
+          void onZoomAreaTriggered();
+
+          void onPanTriggered();
 
         protected:
 
@@ -118,15 +130,15 @@ namespace te
           QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
-          QAction* m_editUndo;
-          QAction* m_editRedo;
-          QAction* m_editCut;
-          QAction* m_editCopy;
-          QAction* m_editPaste;
-          QAction* m_editSelectAll;
-          QAction* m_editClear;
-          QAction* m_editFind;
-          QAction* m_editReplace;
+          //QAction* m_editUndo;
+          //QAction* m_editRedo;
+          //QAction* m_editCut;
+          //QAction* m_editCopy;
+          //QAction* m_editPaste;
+          //QAction* m_editSelectAll;
+          //QAction* m_editClear;
+          //QAction* m_editFind;
+          //QAction* m_editReplace;
           QAction* m_viewFullScreen;
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
@@ -159,24 +171,37 @@ namespace te
           QAction* m_fileExit;
           QAction* m_filePrint;
           QAction* m_filePrintPreview;
+          QAction* m_mapDraw;
+          QAction* m_mapZoomIn;
+          QAction* m_mapZoomOut;
+          QAction* m_mapZoomArea;
+          QAction* m_mapPan;
+          QAction* m_mapZoomExtent;
+          QAction* m_mapPreviousExtent;
+          QAction* m_mapNextExtent;
+          QAction* m_mapMeasureDistance;
+          QAction* m_mapMeasureArea;
+          QAction* m_mapMeasureAngle;
 
-          QWidget *m_centralwidget;
+          QWidget* m_centralwidget;
           
-          QMenuBar *m_menubar;
-          QMenu *m_editMenu;
-          QMenu *m_viewMenu;
-          QMenu *m_toolsMenu;
-          QMenu *m_pluginsMenu;
-          QMenu *m_helpMenu;
-          QMenu *m_projectMenu;
-          QMenu *m_projectAddLayerMenu;
-          QMenu *m_layerMenu;
-          QMenu *m_fileMenu;
-          QMenu *m_recentProjectsMenu;
+          QMenuBar* m_menubar;
+          //QMenu* m_editMenu;
+          QMenu* m_viewMenu;
+          QMenu* m_toolsMenu;
+          QMenu* m_pluginsMenu;
+          QMenu* m_helpMenu;
+          QMenu* m_projectMenu;
+          QMenu* m_projectAddLayerMenu;
+          QMenu* m_layerMenu;
+          QMenu* m_fileMenu;
+          QMenu* m_recentProjectsMenu;
+          QMenu* m_mapMenu;
 
-          QStatusBar *m_statusbar;
-          QToolBar *m_fileToolBar;
-          QToolBar *m_editToolBar;
+          QStatusBar* m_statusbar;
+          QToolBar* m_fileToolBar;
+          //QToolBar* m_editToolBar;
+          QToolBar* m_mapToolBar;
 
 // Well known Widgets
           LayerExplorer* m_explorer;  //!< A dockable tree view for the layers in the application project.

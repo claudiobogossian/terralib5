@@ -18,44 +18,26 @@
  */
 
 /*! 
-  \file connectors/MapDisplay.h
+  \file terralib/qt/af/connectors/MapDisplay.h
 
-  \brief A connector of the te::qt::widgets::MapDisplay for the application framework.
- */
+  \brief A connector of the te::qt::widgets::MapDisplay class to the Application Framework.
+*/
 
-#ifndef __TERRALIB_QT_AF_INTERNAL_MAPDISPLAY_H
-#define __TERRALIB_QT_AF_INTERNAL_MAPDISPLAY_H
+#ifndef __TERRALIB_QT_AF_CONNECTORS_INTERNAL_MAPDISPLAY_H
+#define __TERRALIB_QT_AF_CONNECTORS_INTERNAL_MAPDISPLAY_H
 
-//! Terralib include files
-#include <terralib/qt/af/Config.h>
+// Terralib
+#include "../../../maptools/AbstractLayer.h"
+#include "../Config.h"
 
-//! Qt include files
-#include <QObject>
-#include <QColor>
-
-//! STL include files
-#include <map>
-#include <vector>
-
-//! Forward declarations
-class QPointF;
+// Qt
+#include <QtCore/QObject>
 
 namespace te
 {
-  //! Forward declarations
-  namespace map
-  {
-    class AbstractLayer;
-  }
-
-  namespace gm
-  {
-    class Geometry;
-  }
-
+// Forward declaration
   namespace qt
   {
-    //! Forward declarations
     namespace widgets
     {
       class MapDisplay;
@@ -64,28 +46,17 @@ namespace te
 
     namespace af
     {
-      //! Forward declarations
+// Forward declaration
       class Event;
-
-      /*!
-        \enum HLGROUP
-        \brief Defines the groups of highlighted objects to be used.
-      */
-      enum HLGROUP
-      {
-        QUERIED,              //!< Queried items.
-        POINTED,              //!< Pointed items.
-        POINTED_AND_QUERIED,  //!< Pointed and queried items.
-        USER_DEFINED          //!< User groups must have values greater than this.
-      };
 
       /*!
         \class MapDisplay
         
-        \brief A connector of the te::qt::widgets::MapDisplay for the application framework.
-  
-        This is used to listen events sent by application framework and acts on a te::qt::widgets::MapDisplay object and vice-versa.
-        
+        \brief A connector of the te::qt::widgets::MapDisplay class to the Application Framework.
+
+        It is used to listen events sent by the application framework.
+        It is a proxy for the te::qt::widgets::MapDisplay.
+
         \ingroup afconnector
       */
       class TEQTAFEXPORT MapDisplay : public QObject
@@ -96,72 +67,48 @@ namespace te
 
           /*!
             \brief Constructor.
-            \param display The te::qt::widgets::MapDisplay to be presented.
+
+            \param display te::qt::widgets::MapDisplay to be listened.
           */
           MapDisplay(te::qt::widgets::MapDisplay* display);
 
-          /*!
-            \brief destructor.
-          */
+          /*! \brief destructor. */
           ~MapDisplay();
 
-          /*!
-            \brief Reimplementation of the QObject method.
-            \param watched The object that raises the event. 
-            \param event The event sent.
-          */
-          bool eventFilter (QObject* watched, QEvent* evt);
+          te::qt::widgets::MapDisplay* getDisplay();
 
           /*!
-            \brief Draws the layers.
-            \param layers Map containing ordered layers.
+            \brief It draws the given layer list.
+
+            \param layers The layer list.
           */
-          void drawLayers(const std::map<int, te::map::AbstractLayer*>& layers);
+          void draw(const std::list<te::map::AbstractLayerPtr>& layers);
 
           /*!
             \brief Updates the current tool being used on te::qt::widgets::MapDisplay.
+
             \param tool The new te::qt::widgets::AbstractTool.
-            \note This object takes the ownership of the tool.
+
+            \note The class will take the ownership of the given pointer.
           */
           void setCurrentTool(te::qt::widgets::AbstractTool* tool);
-
-          /*!
-            \brief Returns the componet mapdisplay being assisted.
-            \return The pointer to MapDisplay.
-          */
-          te::qt::widgets::MapDisplay* getDisplayComponent();
 
         protected slots:
 
           /*!
             \brief Listener to the application framewrork events.
-            \param evt Event sent by framework.
-          */
-          void onApplicationTriggered(te::qt::af::Event* evt);
 
-          /*!
-            \brief Dispatches an Event to framework sinalizing the coord tracking.
-            \param pos The mouse coordinate as coordinate in world reference system.
+            \param e An event sent by framework.
           */
-          void onCoordTracked(QPointF& pos);
-
-          /*!
-            \brief Redraws the objects highlighted.
-            \details Uses the draft pixmap of the MapDisplay to draw the highlighted objects. It will be used to compose the image to be shown on
-            MapDisplay.
-          */
-          void redrawHighlight();
+          void onApplicationTriggered(te::qt::af::Event* e);
 
         protected:
 
-          te::qt::widgets::MapDisplay* m_display;                 //!< Pointer to a component MapDisplay.
-          te::qt::widgets::AbstractTool* m_current_tool;          //!< Pointer to the current tool being used.
-          std::vector< std::vector<te::gm::Geometry*> > m_geoms;  //!< Vector of geometries in each group of a layer.
-          std::vector<QColor> m_colors;                           //!< Colors of each group.
-          bool m_hl_visible;                                      //!< Layer visibility.
+          te::qt::widgets::MapDisplay* m_display; //!< Pointer to a component te::qt::widgets::MapDisplay.
+          te::qt::widgets::AbstractTool* m_tool;  //!< Pointer to the current tool being used.
       };
     }
   }
 }
 
-#endif //! __TERRALIB_QT_AF_INTERNAL_MAPDISPLAY_H
+#endif // __TERRALIB_QT_AF_CONNECTORS_INTERNAL_MAPDISPLAY_H
