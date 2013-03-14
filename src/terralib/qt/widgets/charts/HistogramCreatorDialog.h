@@ -36,6 +36,13 @@ namespace Ui { class HistogramDialog; }
 
 namespace te
 {
+
+  namespace da
+  {
+    class DataSet;
+    class DataSetType;
+  }
+
   namespace qt
   {
     namespace widgets
@@ -53,7 +60,7 @@ namespace te
 
         public:
 
-          HistogramCreatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~HistogramCreatorDialog();
 
@@ -69,7 +76,9 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramDialog> m_ui;
+          std::auto_ptr<Ui::HistogramDialog>  m_ui;
+          te::da::DataSet*                    m_dataSet;
+
       };
     } // end namespace widgets
   }   // end namespace qt

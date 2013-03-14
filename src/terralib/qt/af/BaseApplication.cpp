@@ -899,7 +899,8 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-    te::qt::widgets::HistogramCreatorDialog dlg(this);
+    te::da::DataSet* dataset;
+    te::qt::widgets::HistogramCreatorDialog dlg(dataset, this);
     dlg.exec();
   }
   catch(const std::exception& e)

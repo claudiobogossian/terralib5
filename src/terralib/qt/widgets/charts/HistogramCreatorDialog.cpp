@@ -26,12 +26,27 @@
 #include "ui_histogramCreatorDialog.h"
 #include "HistogramCreatorDialog.h"
 #include "ChartStyleDialog.h"
+#include "Histogram.h"
+#include "HistogramChart.h"
+#include "ChartDisplay.h"
+#include "../../../qt/widgets/charts/Utils.h"
+#include "../../../dataaccess.h"
+#include "../../../datatype/Property.h"
 
-te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::HistogramDialog)
+    m_ui(new Ui::HistogramDialog),
+    m_dataSet (dataSet)
 {
-    m_ui->setupUi(this);
+  m_ui->setupUi(this);
+  QString item;
+  std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
+
+  for (double i = 0; i < properties.size(); i++)
+  {
+    item.fromStdString(properties[i]->getName());
+    m_ui->m_propertyComboBox->addItem(item);
+  }
 
 // connect signal and slots
   connect(m_ui->m_stylePushButton, SIGNAL(clicked()), this, SLOT(onStylePushButtonClicked()));
@@ -49,7 +64,40 @@ void te::qt::widgets::HistogramCreatorDialog::onStylePushButtonClicked()
     dlg.exec();
 }
 
-void te::qt::widgets::HistogramCreatorDialog::onBarStylePushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorDialog::onCancelPushButtonClicked(){}
-void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked(){}
+void te::qt::widgets::HistogramCreatorDialog::onBarStylePushButtonClicked()
+{
+
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
+{
+
+  //Acquiring the dataset Properties types
+  te::da::DataSetType* type = m_dataSet->getType();
+
+  //Getting the Columns that will be used to populate the graph
+  QString aux = m_ui->m_propertyComboBox->currentText();
+  std::string selectedProperty = aux.toStdString();
+  int selectedPropertyIdx= type->getPropertyPosition(selectedProperty);
+
+  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+  te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
+
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
+
+  histogramChart->attach(chartDisplay);
+
+  chartDisplay->show();
+
+  chartDisplay->replot();
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onCancelPushButtonClicked()
+{
+
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
+{
+
+}
