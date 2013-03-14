@@ -83,6 +83,7 @@
 #include <QtGui/QMessageBox>
 #include <QtGui/QStatusBar>
 #include <QtGui/QToolBar>
+#include <QtGui/QToolButton>
 
 // STL
 #include <list>
@@ -439,20 +440,77 @@ void te::qt::af::BaseApplication::onDrawTriggered()
   m_display->draw(m_project->getLayers());
 }
 
-void te::qt::af::BaseApplication::onZoomInTriggered()
+void te::qt::af::BaseApplication::onZoomInToggled(bool checked)
 {
+  if(!checked)
+    return;
+
+  te::qt::widgets::ZoomClick* zoomIn = new te::qt::widgets::ZoomClick(m_display->getDisplay(), 2.0);
+  m_display->setCurrentTool(zoomIn);
 }
 
-void te::qt::af::BaseApplication::onZoomOutTriggered()
+void te::qt::af::BaseApplication::onZoomOutToggled(bool checked)
 {
+  if(!checked)
+    return;
+
+  te::qt::widgets::ZoomClick* zoomOut = new te::qt::widgets::ZoomClick(m_display->getDisplay(), 2.0, te::qt::widgets::Zoom::Out);
+  m_display->setCurrentTool(zoomOut);
 }
 
-void te::qt::af::BaseApplication::onZoomAreaTriggered()
+void te::qt::af::BaseApplication::onZoomAreaToggled(bool checked)
 {
+  if(!checked)
+    return;
+
+  te::qt::widgets::ZoomArea* zoomArea = new te::qt::widgets::ZoomArea(m_display->getDisplay(), Qt::BlankCursor);
+  m_display->setCurrentTool(zoomArea);
 }
 
-void te::qt::af::BaseApplication::onPanTriggered()
+void te::qt::af::BaseApplication::onPanToggled(bool checked)
 {
+  if(!checked)
+    return;
+
+  te::qt::widgets::Pan* pan = new te::qt::widgets::Pan(m_display->getDisplay(), Qt::OpenHandCursor, Qt::ClosedHandCursor);
+  m_display->setCurrentTool(pan);
+}
+
+void te::qt::af::BaseApplication::onMeasureDistanceToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Measure* distance = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Distance);
+  m_display->setCurrentTool(distance);
+}
+
+void te::qt::af::BaseApplication::onMeasureAreaToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Measure* area = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Area);
+  m_display->setCurrentTool(area);
+}
+
+void te::qt::af::BaseApplication::onMeasureAngleToggled(bool checked)
+{
+  if(!checked)
+    return;
+
+  te::qt::widgets::Measure* angle = new te::qt::widgets::Measure(m_display->getDisplay(), te::qt::widgets::Measure::Angle);
+  m_display->setCurrentTool(angle);
+}
+
+void te::qt::af::BaseApplication::onStopDrawTriggered()
+{
+  te::common::ProgressManager::getInstance().cancelTasks(te::common::TaskProgress::DRAW);
+}
+
+void te::qt::af::BaseApplication::showProgressDockWidget()
+{
+  m_progressDockWidget->setVisible(true);
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
@@ -585,24 +643,24 @@ void te::qt::af::BaseApplication::makeDialog()
 //  m_rasterVisualDock->setVisible(false);
 
 // Progress support
-  //te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
-  //te::common::ProgressManager::getInstance().addViewer(pvb);
+  te::qt::widgets::ProgressViewerBar* pvb = new te::qt::widgets::ProgressViewerBar(this);
+  pvb->setFixedWidth(250);
+  te::common::ProgressManager::getInstance().addViewer(pvb);
 
-  //te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
-  //te::common::ProgressManager::getInstance().addViewer(pvw);
+  te::qt::widgets::ProgressViewerWidget* pvw = new te::qt::widgets::ProgressViewerWidget(this);
+  te::common::ProgressManager::getInstance().addViewer(pvw);
 
-  //statusBar()->addPermanentWidget(pvb);
+  m_statusbar->addPermanentWidget(pvb);
 
-  //connect(pvb, SIGNAL(clicked()), this, SLOT(showProgressDock()));
+  connect(pvb, SIGNAL(clicked()), this, SLOT(showProgressDockWidget()));
 
-  //m_progressDock = new QDockWidget(this);
-  //m_progressDock->setWidget(pvw);
-  //m_progressDock->setMinimumWidth(250);
-  //m_progressDock->setAllowedAreas(Qt::RightDockWidgetArea);
-  //m_progressDock->setWindowTitle(tr("Tasks Progress"));
-  //addDockWidget(Qt::RightDockWidgetArea, m_progressDock);
-
-  //m_progressDock->setVisible(false);
+  m_progressDockWidget = new QDockWidget(this);
+  m_progressDockWidget->setWidget(pvw);
+  m_progressDockWidget->setMinimumWidth(250);
+  m_progressDockWidget->setAllowedAreas(Qt::RightDockWidgetArea);
+  m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
+  addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
+  m_progressDockWidget->setVisible(false);
 
 // setting icons
 //  m_ui->m_fileNewProject->setIcon(QIcon::fromTheme("document-new"));
@@ -742,17 +800,18 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_filePrintPreview, "document-print-preview", "Print Preview", tr("Print Pre&view..."), tr(""), true, false, false);
 
 // Menu -Map- actions
-  initAction(m_mapDraw, "map-draw", "Draw", tr("&Draw Layers"), tr("Draw the visible layers"), true, false, true);
-  initAction(m_mapZoomIn, "zoom-in", "Zoom In", tr("Zoom &In"), tr(""), true, true, false);
-  initAction(m_mapZoomOut, "zoom-out", "Zoom Out", tr("Zoom &Out"), tr(""), true, true, false);
-  initAction(m_mapZoomArea, "zoom-area", "Zoom Area", tr("Zoom &Area"), tr(""), true, true, false);
-  initAction(m_mapPan, "pan", "Pan", tr("&Pan"), tr(""), true, true, false);
+  initAction(m_mapDraw, "map-draw", "Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true);
+  initAction(m_mapZoomIn, "zoom-in", "Zoom In", tr("Zoom &In"), tr(""), true, true, true);
+  initAction(m_mapZoomOut, "zoom-out", "Zoom Out", tr("Zoom &Out"), tr(""), true, true, true);
+  initAction(m_mapZoomArea, "zoom-area", "Zoom Area", tr("Zoom &Area"), tr(""), true, true, true);
+  initAction(m_mapPan, "pan", "Pan", tr("&Pan"), tr(""), true, true, true);
   initAction(m_mapZoomExtent, "zoom-extent", "Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, false);
-  initAction(m_mapPreviousExtent, "edit-undo", "Previous Extent", tr("P&revious Extent"), tr(""), true, false, false);
+  initAction(m_mapPreviousExtent, "edit-undo", "Previous Extent", tr("&Previous Extent"), tr(""), true, false, false);
   initAction(m_mapNextExtent, "edit-redo", "Next Extent", tr("&Next Extent"), tr(""), true, false, false);
-  initAction(m_mapMeasureDistance, "distance-measure", "Measure Distance", tr("Measure Dis&tance"), tr(""), true, true, false);
+  initAction(m_mapMeasureDistance, "distance-measure", "Measure Distance", tr("Measure &Distance"), tr(""), true, true, false);
   initAction(m_mapMeasureArea, "area-measure", "Measure Area", tr("Measure &Area"), tr(""), true, true, false);
   initAction(m_mapMeasureAngle, "angle-measure", "Measure Angle", tr("Measure &Angle"), tr(""), true, true, false);
+  initAction(m_mapStopDraw, "process-stop", "Stop Draw", tr("&Stop Draw"), tr("Stop all draw tasks"), true, false, true);
 
 // Group the map tools
   QActionGroup* mapToolsGroup = new QActionGroup(this);
@@ -897,6 +956,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addAction(m_mapMeasureDistance);
   m_mapMenu->addAction(m_mapMeasureArea);
   m_mapMenu->addAction(m_mapMeasureAngle);
+  m_mapMenu->addSeparator();
+  m_mapMenu->addAction(m_mapStopDraw);
 
 // Tools menu
   m_toolsMenu = new QMenu(m_menubar);
@@ -982,10 +1043,10 @@ void te::qt::af::BaseApplication::initToolbars()
   m_mapToolBar->addAction(m_mapZoomExtent);
   m_mapToolBar->addAction(m_mapPreviousExtent);
   m_mapToolBar->addAction(m_mapNextExtent);
-  m_mapToolBar->addSeparator();
-  m_mapToolBar->addAction(m_mapMeasureDistance);
-  m_mapToolBar->addAction(m_mapMeasureArea);
-  m_mapToolBar->addAction(m_mapMeasureAngle);
+
+  QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
+  stopDrawToolButton->setDefaultAction(m_mapStopDraw);
+  m_statusbar->addPermanentWidget(stopDrawToolButton);
 
   m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
 
@@ -1009,6 +1070,15 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
-  connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
+
+  connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
+  connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
+  connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));
+  connect(m_mapZoomArea, SIGNAL(toggled(bool)), SLOT(onZoomAreaToggled(bool)));
+  connect(m_mapPan, SIGNAL(toggled(bool)), SLOT(onPanToggled(bool)));
+  connect(m_mapMeasureDistance, SIGNAL(toggled(bool)), SLOT(onMeasureDistanceToggled(bool)));
+  connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
+  connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
+  connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
 }
