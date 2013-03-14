@@ -30,6 +30,7 @@
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../../maptools/DataSetLayer.h"
+#include "../../../../se/Utils.h"
 #include "../../Exception.h"
 #include "DataSet2Layer.h"
 
@@ -63,6 +64,7 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
     te::gm::GeometryProperty* gp = dataset->getDefaultGeomProperty();
     layer->setSRID(gp->getSRID());
     layer->setExtent(gp->getExtent() ? te::gm::Envelope(*(gp->getExtent())) : te::gm::Envelope());
+    layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
   }
   else
   {
@@ -72,4 +74,3 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
 
   return layer;
 }
-
