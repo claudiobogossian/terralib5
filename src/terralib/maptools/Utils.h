@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../color/RGBAColor.h"
+#include "AbstractLayer.h"
 #include "Config.h"
 
 // STL
@@ -168,6 +169,22 @@ namespace te
       \exception Exception It will throw an exception if the raster could not be retrieved.
     */
     TEMAPEXPORT te::rst::Raster* GetRaster(DataSetLayer* layer);
+
+    /*!
+      \brief It gets the visible layers of the given layer list.
+
+      \param layers        The layer list that will be consulted.
+      \param visibleLayers A layer list that will be filled with the visible layers.
+    */
+    TEMAPEXPORT void GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layers, std::list<te::map::AbstractLayerPtr>& visibleLayers);
+
+     /*!
+      \brief It gets the visible layers of the given layer.
+
+      \param layer         The layer that will be consulted.
+      \param visibleLayers A layer list that will be filled with the visible layers.
+    */
+    TEMAPEXPORT void GetVisibleLayers(const te::map::AbstractLayerPtr& layer, std::list<te::map::AbstractLayerPtr>& visibleLayers);
 
   } // end namespace map
 }   // end namespace te

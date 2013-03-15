@@ -95,13 +95,23 @@ namespace te
 
           void onDrawTriggered();
 
-          void onZoomInTriggered();
+          void onZoomInToggled(bool checked);
 
-          void onZoomOutTriggered();
+          void onZoomOutToggled(bool checked);
 
-          void onZoomAreaTriggered();
+          void onZoomAreaToggled(bool checked);
 
-          void onPanTriggered();
+          void onPanToggled(bool checked);
+
+          void onMeasureDistanceToggled(bool checked);
+
+          void onMeasureAreaToggled(bool checked);
+
+          void onMeasureAngleToggled(bool checked);
+
+          void onStopDrawTriggered();
+
+          void showProgressDockWidget();
 
         protected:
 
@@ -182,6 +192,7 @@ namespace te
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
+          QAction* m_mapStopDraw;
 
           QWidget* m_centralwidget;
           
@@ -212,7 +223,7 @@ namespace te
 // Project
           Project* m_project;
 
-          //QDockWidget* m_progressDock;                                    //!< Dock widget used to show progress information
+          QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information
 
           //te::qt::widgets::RasterVisualDockWidget* m_rasterVisualDock;    //!< Used to raster enhancement operations
 
