@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../maptools/Utils.h"
 #include "DrawLayerThread.h"
 #include "MultiThreadMapDisplay.h"
 
@@ -48,14 +49,9 @@ void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::ma
 {
   te::qt::widgets::MapDisplay::setLayerList(layers);
 
-  // Consider only the visible + partially visible layers
+  // Considering only the visible layers
   m_visibleLayers.clear();
-  std::list<te::map::AbstractLayerPtr>::const_iterator it;
-  for(it = layers.cbegin(); it != layers.cend(); ++it)
-  {
-    if((*it)->getVisibility() != te::map::NOT_VISIBLE)
-      m_visibleLayers.push_back(*it);
-  }
+  te::map::GetVisibleLayers(m_layerList, m_visibleLayers);
 
   if(m_visibleLayers.size() <= m_threads.size())
     return;
@@ -111,7 +107,7 @@ void te::qt::widgets::MultiThreadMapDisplay::refresh()
   std::list<te::map::AbstractLayerPtr>::iterator it;
   for(it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it) // for each layer.
   {
-    m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i); // TODO: each thread should draw the layer children!
+    m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
   }
 }
