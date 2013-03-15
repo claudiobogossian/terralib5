@@ -292,26 +292,29 @@ void te::gdal::CatalogLoader::getProperties(te::da::DataSetType* dt)
   assert(dt);
 
   GDALDataset* dataset = static_cast<GDALDataset*>(GDALOpen(dt->getName().c_str(), GA_ReadOnly));
-  
+
   if (!dataset)
     throw Exception(TR_GDAL("GDAL couldn't retrieve the dataset properties."));
-  
+
   te::rst::Grid* grid = GetGrid(dataset);
-  
+
   std::vector<te::rst::BandProperty*> bprops;
-  
+
   GetBandProperties(dataset, bprops);
-  
+
   std::map<std::string, std::string> rinfo;
-  
+
   rinfo["URI"] = dataset->GetDescription();
   
   te::rst::RasterProperty* rp = new te::rst::RasterProperty(grid, bprops, rinfo);
- 
+
   dt->add(rp);
-  
+
+  dt->setDefaultRasterProperty(rp);
+
+  dt->setFullLoaded(true);
+
   GDALClose(dataset);
-  
 }
 
 
@@ -334,6 +337,8 @@ te::da::DataSetType* te::gdal::CatalogLoader::getDataSetType(GDALDataset* datase
   te::da::DataSetType* dt = new te::da::DataSetType(rpath.filename().string());
 
   dt->add(rp);
+
+  dt->setDefaultRasterProperty(rp);
 
   dt->setFullLoaded(true);
 
