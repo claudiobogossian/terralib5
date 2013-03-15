@@ -65,6 +65,51 @@ void TsGeometricTransformations::tearDown()
 {
 }
 
+void TsGeometricTransformations::tcRSTGT()
+{
+  std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
+    te::gm::GTFactory::make( "RST" ) );
+  CPPUNIT_ASSERT( transfPtr.get() != 0 );
+    
+  te::gm::GTParameters transfParams;
+  
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 0, 0 ), te::gm::Coord2D( 0, 0 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 10, 0 ), te::gm::Coord2D( 20, 0 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 0, 10 ), te::gm::Coord2D( 0, 20 ) ) );
+  transfParams.m_tiePoints.push_back( te::gm::GTParameters::TiePoint( 
+    te::gm::Coord2D( 10, 10 ), te::gm::Coord2D( 20, 20 ) ) );
+    
+
+  CPPUNIT_ASSERT( transfPtr->initialize( transfParams ) );
+  
+  CPPUNIT_ASSERT( transfPtr->getName() == "RST" );
+  
+  TESTDIRECTMAPPING( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
+    te::gm::Coord2D( 0, 0 ), 0.0000001 );
+  TESTDIRECTMAPPING( transfPtr.get(), te::gm::Coord2D( 10, 0 ), 
+    te::gm::Coord2D( 20, 0 ), 0.0000001 );        
+  TESTDIRECTMAPPING( transfPtr.get(), te::gm::Coord2D( 0, 10 ), 
+    te::gm::Coord2D( 0, 20 ), 0.0000001 );    
+  TESTDIRECTMAPPING( transfPtr.get(), te::gm::Coord2D( 10, 10 ), 
+    te::gm::Coord2D( 20, 20 ), 0.0000001 );    
+  TESTDIRECTMAPPING( transfPtr.get(), te::gm::Coord2D( 5, 5 ), 
+    te::gm::Coord2D( 10, 10 ), 0.0000001 );    
+    
+  TESTINVERSEMAPPING( transfPtr.get(), te::gm::Coord2D( 0, 0 ), 
+    te::gm::Coord2D( 0, 0 ), 0.0000001 );
+  TESTINVERSEMAPPING( transfPtr.get(), te::gm::Coord2D( 10, 0 ), 
+    te::gm::Coord2D( 20, 0 ), 0.0000001 );        
+  TESTINVERSEMAPPING( transfPtr.get(), te::gm::Coord2D( 0, 10 ), 
+    te::gm::Coord2D( 0, 20 ), 0.0000001 );    
+  TESTINVERSEMAPPING( transfPtr.get(), te::gm::Coord2D( 10, 10 ), 
+    te::gm::Coord2D( 20, 20 ), 0.0000001 );    
+  TESTINVERSEMAPPING( transfPtr.get(), te::gm::Coord2D( 5, 5 ), 
+    te::gm::Coord2D( 10, 10 ), 0.0000001 );    
+}
+
 void TsGeometricTransformations::tcAffine()
 {
   std::auto_ptr< te::gm::GeometricTransformation > transfPtr( 
