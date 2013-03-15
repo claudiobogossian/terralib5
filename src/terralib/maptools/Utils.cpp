@@ -231,6 +231,6 @@ void te::map::GetVisibleLayers(const te::map::AbstractLayerPtr& layer, std::list
 void te::map::GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layers, std::list<te::map::AbstractLayerPtr>& visibleLayers)
 {
   std::list<te::map::AbstractLayerPtr>::const_iterator it;
-  for(it = layers.cbegin(); it != layers.cend(); ++it)
+  for(it = layers.begin(); it != layers.end(); ++it)
     GetVisibleLayers(it->get(), visibleLayers);
 }
