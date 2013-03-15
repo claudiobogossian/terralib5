@@ -30,7 +30,10 @@
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../../maptools/DataSetLayer.h"
+#include "../../../../raster/Grid.h"
+#include "../../../../raster/RasterProperty.h"
 #include "../../../../se/Utils.h"
+#include "../../../../srs/Config.h"
 #include "../../Exception.h"
 #include "DataSet2Layer.h"
 
@@ -66,9 +69,17 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
     layer->setExtent(gp->getExtent() ? te::gm::Envelope(*(gp->getExtent())) : te::gm::Envelope());
     layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
   }
+  else if(dataset->hasRaster())
+  {
+    te::rst::Grid* grid = dataset->getDefaultRasterProperty()->getGrid();
+
+    layer->setSRID(grid->getSRID());
+    layer->setExtent(*(grid->getExtent()));
+    layer->setStyle(te::se::CreateCoverageStyle(dataset->getDefaultRasterProperty()->getBandProperties()));
+  }
   else
   {
-    layer->setSRID(0);
+    layer->setSRID(TE_UNKNOWN_SRS);
     layer->setExtent(te::gm::Envelope());
   }
 

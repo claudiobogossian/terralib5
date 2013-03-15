@@ -93,6 +93,10 @@ namespace te
 
           void onLayerPropertiesTriggered();
 
+          void onLayerHistogramTriggered();
+
+          void onLayerScatterTriggered();
+
           void onDrawTriggered();
 
           void onZoomInToggled(bool checked);
@@ -172,6 +176,8 @@ namespace te
           QAction* m_layerLower;
           QAction* m_layerToTop;
           QAction* m_layerToBottom;
+          QAction* m_layerChartsHistogram;
+          QAction* m_layerChartsScatter;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
@@ -196,6 +202,7 @@ namespace te
 
           QWidget* m_centralwidget;
           
+
           QMenuBar* m_menubar;
           //QMenu* m_editMenu;
           QMenu* m_viewMenu;
@@ -206,6 +213,7 @@ namespace te
           QMenu* m_projectMenu;
           QMenu* m_projectAddLayerMenu;
           QMenu* m_layerMenu;
+          QMenu *m_layerChartsMenu;
           QMenu* m_fileMenu;
           QMenu* m_recentProjectsMenu;
           QMenu* m_mapMenu;

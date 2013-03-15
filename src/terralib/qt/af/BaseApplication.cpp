@@ -32,6 +32,9 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/charts/ChartStyleDialog.h"
+#include "../widgets/charts/HistogramCreatorDialog.h"
+#include "../widgets/charts/ScatterCreatorDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -119,6 +122,7 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_display;
   delete m_viewer;
   delete m_project;
+  delete m_progressDockWidget;
 
   te::qt::af::ApplicationController::getInstance().finalize();
 
@@ -430,6 +434,42 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
   doc->setWindowTitle(info->windowTitle());
 
   doc->show();
+}
+
+void te::qt::af::BaseApplication::onLayerHistogramTriggered()
+{
+  try
+  {
+
+    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+    
+    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
+    te::qt::widgets::HistogramCreatorDialog dlg(dataset, this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onLayerScatterTriggered()
+{
+  try
+  {
+    te::qt::widgets::ScatterCreatorDialog dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
 }
 
 void te::qt::af::BaseApplication::onDrawTriggered()
@@ -789,6 +829,9 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
+  initAction(m_layerChartsHistogram, "histogram-chart", "Histogram", tr("&Histogram"), tr(""), true, false, false);
+  initAction(m_layerChartsScatter, "scatter-chart", "Scatter", tr("&Scatter"), tr(""), true, false, false);
+
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
@@ -912,11 +955,13 @@ void te::qt::af::BaseApplication::initMenus()
   m_menubar->addAction(m_projectMenu->menuAction());
 
   m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+
   m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();
   m_projectMenu->addAction(m_projectProperties);
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
+
   //m_projectAddLayerMenu->addAction(m_projectAddLayerGraph);
 
 // Layer menu
@@ -931,10 +976,20 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerExport);
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addSeparator();
+
   m_layerMenu->addAction(m_layerRaise);
   m_layerMenu->addAction(m_layerLower);
   m_layerMenu->addAction(m_layerToTop);
   m_layerMenu->addAction(m_layerToBottom);
+  m_layerMenu->addSeparator();
+
+  m_layerChartsMenu = new QMenu(m_layerMenu);
+  m_layerChartsMenu->setObjectName("Charts");
+  m_layerChartsMenu->setTitle(tr("&Charts"));
+
+  m_layerMenu->addMenu(m_layerChartsMenu);
+  m_layerChartsMenu->addAction(m_layerChartsHistogram);
+  m_layerChartsMenu->addAction(m_layerChartsScatter);
 
 // Map Menu
   m_mapMenu = new QMenu(m_menubar);
@@ -1070,8 +1125,9 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
+  connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
+  connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
-
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));
   connect(m_mapZoomOut, SIGNAL(toggled(bool)), SLOT(onZoomOutToggled(bool)));

@@ -32,6 +32,7 @@
 #include "Config.h"
 
 // STL
+#include <list>
 #include <string>
 #include <vector>
 

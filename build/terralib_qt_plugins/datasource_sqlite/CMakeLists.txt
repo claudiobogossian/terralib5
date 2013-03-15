@@ -101,3 +101,9 @@ getPluginInfo("${TE_PLUGIN_NAME}" "./terralib_qt_plugin_datasource_sqlite.xml" T
 set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" PARENT_SCOPE)
   
 configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/terralib_qt_plugin_datasource_sqlite.xml)
+
+install(
+  TARGETS ${PROJ_NAME}
+  RUNTIME DESTINATION "bin" 
+  COMPONENT PLUGINS
+)

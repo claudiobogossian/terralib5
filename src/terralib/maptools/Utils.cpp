@@ -223,14 +223,15 @@ void te::map::GetVisibleLayers(const te::map::AbstractLayerPtr& layer, std::list
 
   for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
   {
-    te::map::AbstractLayerPtr child(static_cast<te::map::AbstractLayer*>(layer->getChild(i).get()));
+    te::map::AbstractLayerPtr child(boost::dynamic_pointer_cast<AbstractLayer>(layer->getChild(i)));
+
     GetVisibleLayers(child, visibleLayers);
   }
 }
 
 void te::map::GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layers, std::list<te::map::AbstractLayerPtr>& visibleLayers)
 {
-  std::list<te::map::AbstractLayerPtr>::const_iterator it;
-  for(it = layers.begin(); it != layers.end(); ++it)
-    GetVisibleLayers(it->get(), visibleLayers);
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
+    GetVisibleLayers(*it, visibleLayers);
 }
+

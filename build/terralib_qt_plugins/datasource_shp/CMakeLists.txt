@@ -85,3 +85,8 @@ set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" 
   
 configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/${TE_PLUGIN_NAME}.teplg)
 
+install(
+  TARGETS ${PROJ_NAME}
+  RUNTIME DESTINATION "bin" 
+  COMPONENT PLUGINS
+)
