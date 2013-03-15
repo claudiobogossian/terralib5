@@ -434,6 +434,42 @@ void te::qt::af::BaseApplication::onLayerPropertiesTriggered()
   doc->show();
 }
 
+void te::qt::af::BaseApplication::onLayerHistogramTriggered()
+{
+  try
+  {
+
+    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+    
+    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
+    te::qt::widgets::HistogramCreatorDialog dlg(dataset, this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
+void te::qt::af::BaseApplication::onLayerScatterTriggered()
+{
+  try
+  {
+    te::qt::widgets::ScatterCreatorDialog dlg(this);
+    dlg.exec();
+  }
+  catch(const std::exception& e)
+  {
+    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
+  }
+}
+
 void te::qt::af::BaseApplication::onDrawTriggered()
 {
   if(m_project == 0)
@@ -734,8 +770,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
-  initAction(m_layerHistogram, "layer-histogram", "Histogram", tr("&Histogram"), tr(""), true, false, true);
-  initAction(m_layerScatter, "layer-scatter", "Scatter", tr("&Scatter"), tr(""), true, false, true);
+  initAction(m_layerHistogram, "layer-histogram", "Histogram", tr("&Histogram"), tr(""), true, false, false);
+  initAction(m_layerScatter, "layer-scatter", "Scatter", tr("&Scatter"), tr(""), true, false, false);
 
 
 // Menu -File- actions
@@ -1000,33 +1036,6 @@ void te::qt::af::BaseApplication::initToolbars()
   ApplicationController::getInstance().registerToolBar("FileToolBar", m_fileToolBar);
   ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
   ApplicationController::getInstance().registerToolBar("MapToolBar", m_mapToolBar);
-}
-
-void te::qt::af::BaseApplication::onLayerHistogramTriggered()
-{
-  try
-  {
-    te::da::DataSet* dataset;
-    te::qt::widgets::HistogramCreatorDialog dlg(dataset, this);
-    dlg.exec();
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
-  }
-}
-
-void te::qt::af::BaseApplication::onLayerScatterTriggered()
-{
-  try
-  {
-    te::qt::widgets::ScatterCreatorDialog dlg(this);
-    dlg.exec();
-  }
-  catch(const std::exception& e)
-  {
-    QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), e.what());
-  }
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()

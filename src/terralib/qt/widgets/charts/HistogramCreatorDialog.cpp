@@ -33,6 +33,9 @@
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 
+//QT
+#include <QDialog>
+
 te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::HistogramDialog),
@@ -44,7 +47,7 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
 
   for (double i = 0; i < properties.size(); i++)
   {
-    item.fromStdString(properties[i]->getName());
+    item = item.fromStdString(properties[i]->getName());
     m_ui->m_propertyComboBox->addItem(item);
   }
 
@@ -81,15 +84,25 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
   int selectedPropertyIdx= type->getPropertyPosition(selectedProperty);
 
   te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+//passar como parametro o HistogramStyle
   te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
 
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
+  QDialog dlg(this);
+  QGridLayout* lay = new QGridLayout(&dlg);
+  dlg.setLayout(lay);
+  
+//passar como parametro o chartstyle
+  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
+
+  lay->addWidget(chartDisplay);
 
   histogramChart->attach(chartDisplay);
 
   chartDisplay->show();
 
   chartDisplay->replot();
+
+  dlg.exec();
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onCancelPushButtonClicked()

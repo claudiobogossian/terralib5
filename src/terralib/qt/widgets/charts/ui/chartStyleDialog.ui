@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>333</width>
+    <height>249</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -16,95 +16,92 @@
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
-  <property name="minimumSize">
-   <size>
-    <width>400</width>
-    <height>300</height>
-   </size>
-  </property>
-  <property name="maximumSize">
-   <size>
-    <width>400</width>
-    <height>300</height>
-   </size>
-  </property>
   <property name="windowTitle">
    <string>Chart Style</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_5">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_4">
      <item row="0" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_18">
-       <item>
-        <spacer name="horizontalSpacer_19">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="TitleLabel_2">
-         <property name="text">
-          <string>Chart Style</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_20">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item row="1" column="0">
-      <widget class="Line" name="topLine_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_11">
-       <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
         <widget class="QLabel" name="chartTitleLabel_2">
          <property name="text">
           <string>Title:</string>
          </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
         </widget>
        </item>
-       <item>
-        <spacer name="horizontalSpacer_12">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="1" column="0">
+        <widget class="QLabel" name="titleStyleLabel_3">
+         <property name="text">
+          <string>Title Style:</string>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
-        </spacer>
+        </widget>
        </item>
-       <item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelXLabel_2">
+         <property name="text">
+          <string>Label x:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="labelYLabel_2">
+         <property name="text">
+          <string>Label y:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="titleStyleLabel_4">
+         <property name="text">
+          <string>label Style:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="backgroundLabel_2">
+         <property name="text">
+          <string>Background Color:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="gridLabel_2">
+         <property name="text">
+          <string>Grid:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="1">
+      <layout class="QGridLayout" name="gridLayout_2">
+       <item row="0" column="0" colspan="2">
         <widget class="QLineEdit" name="m_chartTitleLineEdit">
          <property name="minimumSize">
           <size>
@@ -114,18 +111,20 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_12">
-       <item>
-        <widget class="QLabel" name="titleStyleLabel_3">
+       <item row="1" column="0">
+        <widget class="QPushButton" name="m_titleStylePushButton">
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Title Style:</string>
+          <string>Style...</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="1">
         <spacer name="horizontalSpacer_13">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -138,44 +137,7 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QPushButton" name="m_titleStylePushButton">
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Style</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_13">
-       <item>
-        <widget class="QLabel" name="labelXLabel_2">
-         <property name="text">
-          <string>Label x:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_14">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
+       <item row="2" column="0" colspan="2">
         <widget class="QLineEdit" name="m_labelXlLineEdit">
          <property name="minimumSize">
           <size>
@@ -185,31 +147,7 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_14">
-       <item>
-        <widget class="QLabel" name="labelYLabel_2">
-         <property name="text">
-          <string>Label y:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_15">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
+       <item row="3" column="0" colspan="2">
         <widget class="QLineEdit" name="m_labelYlLineEdit">
          <property name="minimumSize">
           <size>
@@ -219,18 +157,20 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_15">
-       <item>
-        <widget class="QLabel" name="titleStyleLabel_4">
+       <item row="4" column="0">
+        <widget class="QPushButton" name="m_labelStylePushButton">
+         <property name="minimumSize">
+          <size>
+           <width>75</width>
+           <height>20</height>
+          </size>
+         </property>
          <property name="text">
-          <string>label Style:</string>
+          <string>Style...</string>
          </property>
         </widget>
        </item>
-       <item>
+       <item row="4" column="1">
         <spacer name="horizontalSpacer_16">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -243,31 +183,14 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QPushButton" name="m_labelStylePushButton">
-         <property name="minimumSize">
-          <size>
-           <width>75</width>
-           <height>20</height>
-          </size>
-         </property>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="m_backgroundPushButton">
          <property name="text">
-          <string>Style</string>
+          <string>Color...</string>
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_16">
-       <item>
-        <widget class="QLabel" name="backgroundLabel_2">
-         <property name="text">
-          <string>Background Color:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="5" column="1">
         <spacer name="horizontalSpacer_17">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -280,26 +203,15 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QPushButton" name="m_backgroundPushButton">
+       <item row="6" column="0">
+        <widget class="QCheckBox" name="m_gridCheckBox">
          <property name="text">
-          <string>Color</string>
+          <string/>
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_17">
-       <item>
-        <widget class="QLabel" name="gridLabel_2">
-         <property name="text">
-          <string>Grid:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="horizontalSpacer_18">
+       <item row="6" column="1">
+        <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
@@ -311,26 +223,12 @@
          </property>
         </spacer>
        </item>
-       <item>
-        <widget class="QCheckBox" name="m_gridCheckBox">
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
     <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="0">
-      <widget class="Line" name="bottomLine_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
@@ -368,6 +266,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="0" column="0">
+      <widget class="Line" name="bottomLine_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
