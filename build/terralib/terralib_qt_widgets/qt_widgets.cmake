@@ -111,18 +111,25 @@ set (MOC "")
 # Select the header files for moc'ing
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/widgets/colorbar/ColorBar.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
-
-set (
-  HDRS_TO_MOC
   ${SRCDIR}/widgets/canvas/DrawLayerThread.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/colorbar/ColorBar.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/colorbar" MOC)
+
+set (
+  HDRS_TO_MOC
+  ${SRCDIR}/widgets/charts/ChartStyleDialog.h
+  ${SRCDIR}/widgets/charts/HistogramCreatorDialog.h
+  ${SRCDIR}/widgets/charts/ScatterCreatorDialog.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/charts" MOC)
 
 set (
   HDRS_TO_MOC
@@ -406,7 +413,7 @@ file(
   GLOB FORMS
   ${SRCDIR}/widgets/*.ui
   ${SRCDIR}/widgets/canvas/*.ui
-  ${SRCDIR}/widgets/charts/*.ui
+  ${SRCDIR}/widgets/charts/ui/*.ui
   ${SRCDIR}/widgets/datagrid/*.ui
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui

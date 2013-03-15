@@ -80,6 +80,7 @@ namespace te
       m_forceInputNoDataValue = false;
       m_blendMethod = te::rp::Blender::NoBlendMethod;
       m_autoEqualize = true;
+      m_useRasterCache = true;
     }
 
     const Mosaic::InputParameters& Mosaic::InputParameters::operator=(
@@ -96,6 +97,7 @@ namespace te
       m_forceInputNoDataValue = params.m_forceInputNoDataValue;
       m_blendMethod = params.m_blendMethod;
       m_autoEqualize = params.m_autoEqualize;
+      m_useRasterCache = params.m_useRasterCache;
 
       return *this;
     }
@@ -276,12 +278,12 @@ namespace te
 
               // current raster corner coords (line/column)
 
-              urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns()
-                - 0.5);
-              urCoord2.y = -0.5;
-              llCoord2.x = -0.5;
-              llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows()
-                - 0.5);
+              urCoord2.x = ((double)inputRasterPtr->getGrid()->getNumberOfColumns())
+                - 1.0;
+              urCoord2.y = 0.0;
+              llCoord2.x = 0.0;
+              llCoord2.y = ((double)inputRasterPtr->getGrid()->getNumberOfRows())
+                - 1.0;
 
               // current raster corner coords (line/column) over the
               // first raster coords system (lines/columns)
@@ -429,6 +431,8 @@ namespace te
       }
 
       // creating the output raster
+      
+      te::rst::Raster* outputRasterPtr = 0;
 
       {
         std::vector< te::rst::BandProperty* > bandsProperties;
@@ -454,6 +458,8 @@ namespace te
             0 ) );
         TERP_TRUE_OR_RETURN_FALSE( outParamsPtr->m_outputRasterPtr.get(),
           "Output raster creation error" );
+          
+        outputRasterPtr = outParamsPtr->m_outputRasterPtr.get();
       }
       
       // Finding the transformation mapping indexed points from each raster to the first raster indexed points.
@@ -511,22 +517,29 @@ namespace te
 
       // creating the output cache
 
-      te::mem::CachedRaster cachedRasterInstance(
-        *(outParamsPtr->m_outputRasterPtr.get()), 25, 5 );
+      std::auto_ptr< te::mem::CachedRaster > cachedRasterInstancePtr;
+      
+      if( m_inputParameters.m_useRasterCache )
+      {
+        cachedRasterInstancePtr.reset( new te::mem::CachedRaster(
+          *(outParamsPtr->m_outputRasterPtr.get()), 25, 0 ) );   
+          
+        outputRasterPtr = cachedRasterInstancePtr.get();
+      }
 
       // fill output with no data values
 
       {
-        const unsigned int nBands = cachedRasterInstance.getNumberOfBands();
-        const unsigned int nRows = cachedRasterInstance.getNumberOfRows();
-        const unsigned int nCols = cachedRasterInstance.getNumberOfColumns();
+        const unsigned int nBands = outputRasterPtr->getNumberOfBands();
+        const unsigned int nRows = outputRasterPtr->getNumberOfRows();
+        const unsigned int nCols = outputRasterPtr->getNumberOfColumns();
         unsigned int col = 0;
         unsigned int row = 0;
         unsigned int bandIdx = 0;
 
         for( bandIdx = 0 ; bandIdx < nBands ; ++bandIdx )
         {
-          te::rst::Band& outBand = (*cachedRasterInstance.getBand( bandIdx ));
+          te::rst::Band& outBand = ( *( outputRasterPtr->getBand( bandIdx ) ) );
 
           for( row = 0 ; row < nRows ; ++row )
           {
@@ -541,8 +554,8 @@ namespace te
       // Copying the first image data to the output mosaic
       // and find the base mosaic mean and offset values
 
-      std::vector< double > mosaicTargetMeans( cachedRasterInstance.getNumberOfBands(), 0 );
-      std::vector< double > mosaicTargetVariances( cachedRasterInstance.getNumberOfBands(), 0 );
+      std::vector< double > mosaicTargetMeans( outputRasterPtr->getNumberOfBands(), 0 );
+      std::vector< double > mosaicTargetVariances( outputRasterPtr->getNumberOfBands(), 0 );
 
       {
         m_inputParameters.m_feederRasterPtr->reset();
@@ -556,17 +569,17 @@ namespace te
         inputRasterPtr->getGrid()->gridToGeo( 0.0, 0.0, inXStartGeo, inYStartGeo );
         double outRowStartDouble = 0;
         double outColStartDouble = 0;
-        cachedRasterInstance.getGrid()->geoToGrid( inXStartGeo, inYStartGeo,
+        outputRasterPtr->getGrid()->geoToGrid( inXStartGeo, inYStartGeo,
           outColStartDouble, outRowStartDouble );
 
         const unsigned int outRowStart = (unsigned int)std::max( 0.0, outRowStartDouble );
         const unsigned int outColStart = (unsigned int)std::max( 0.0, outColStartDouble );
         const unsigned int outRowsBound = std::min( outRowStart +
           inputRasterPtr->getNumberOfRows(),
-          cachedRasterInstance.getNumberOfRows() );
+          outputRasterPtr->getNumberOfRows() );
         const unsigned int outColsBound = std::min( outColStart +
           inputRasterPtr->getNumberOfColumns(),
-          cachedRasterInstance.getNumberOfColumns() );
+          outputRasterPtr->getNumberOfColumns() );
 
         const unsigned int nBands = (unsigned int)
           m_inputParameters.m_inputRastersBands[ 0 ].size();
@@ -589,7 +602,7 @@ namespace te
             m_inputParameters.m_noDataValue : inputRasterPtr->getBand( inputBandIdx
             )->getProperty()->m_noDataValue;
           te::rst::Band& outBand =
-            (*cachedRasterInstance.getBand( inputRastersBandsIdx ));
+            (*outputRasterPtr->getBand( inputRastersBandsIdx ));
           unsigned int validPixelsNumber = 0;
 
           double& mean = mosaicTargetMeans[ inputRastersBandsIdx ];
@@ -650,10 +663,10 @@ namespace te
           return executeTiePointsMosaic( 
             eachRasterPixelToMosaicRasterPixelGeomTransfms, rastersBBoxes,
             mosaicTargetMeans, mosaicTargetVariances,
-            cachedRasterInstance );
+            *outputRasterPtr );
         else
           return executeGeoMosaic( rastersBBoxes, mosaicTargetMeans, mosaicTargetVariances,
-            cachedRasterInstance);
+            *outputRasterPtr);
       }
       else
         return true;
@@ -767,21 +780,29 @@ namespace te
 
         TERP_DEBUG_TRUE_OR_THROW( rastersBBoxes[ inputRasterIdx ].getSRID() == outputRaster.getSRID(),
           "Invalid boxes SRID" );
+          
+        te::rst::Raster const* inputRasterPtr = nonCachedInputRasterPtr;
 
-        te::mem::CachedRaster cachedInputRaster( *nonCachedInputRasterPtr, 25, 5 );
+        std::auto_ptr< te::mem::CachedRaster > cachedInputRasterPtr;
+        if( m_inputParameters.m_useRasterCache )
+        {
+          cachedInputRasterPtr.reset( new te::mem::CachedRaster(
+            *nonCachedInputRasterPtr, 25, 0 ) );
+          inputRasterPtr = cachedInputRasterPtr.get();
+        }        
 
-        const te::rst::Grid& inputGrid = (*cachedInputRaster.getGrid());
+        const te::rst::Grid& inputGrid = (*inputRasterPtr->getGrid());
 
         // reprojection issues
 
         bool mustReproject = false;
         te::srs::Converter convInstance;
 
-        if( outputRaster.getSRID() != cachedInputRaster.getSRID() )
+        if( outputRaster.getSRID() != inputRasterPtr->getSRID() )
         {
           mustReproject = true;
           convInstance.setSourceSRID( outputRaster.getSRID() );
-          convInstance.setTargetSRID( cachedInputRaster.getSRID() );
+          convInstance.setTargetSRID( inputRasterPtr->getSRID() );
         }
 
         // Generating the offset and gain info for eath band from the current raster
@@ -801,7 +822,7 @@ namespace te
             const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][
               inputRastersBandsIdx ];
 
-            calcBandStatistics( (*cachedInputRaster.getBand( inputBandIdx ) ),
+            calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ),
               m_inputParameters.m_forceInputNoDataValue,
               m_inputParameters.m_noDataValue,
               currentRasterMean,
@@ -868,7 +889,7 @@ namespace te
               overlappedResult->clone() );
 
             if( mustReproject )
-              overlappedResultUnderCurrentSRID->transform( cachedInputRaster.getSRID() );
+              overlappedResultUnderCurrentSRID->transform( inputRasterPtr->getSRID() );
           }
 
           // blending
@@ -895,7 +916,7 @@ namespace te
               TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
                 outputRaster,
                 outputRasterBands,
-                cachedInputRaster,
+                *inputRasterPtr,
                 m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
                 m_inputParameters.m_blendMethod,
                 te::rst::Interpolator::NearestNeighbor,
@@ -990,7 +1011,7 @@ namespace te
 
         if( nonOverlappedResult.get() )
         {
-          te::rst::Interpolator interpInstance( &cachedInputRaster,
+          te::rst::Interpolator interpInstance( inputRasterPtr,
             m_inputParameters.m_interpMethod );
 
           for( unsigned int inputRastersBandsIdx = 0 ; inputRastersBandsIdx <
@@ -1009,7 +1030,7 @@ namespace te
             const std::size_t nonOverlappednResultSize =
               nonOverlappedResult->getNumGeometries();
             const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
-              m_inputParameters.m_noDataValue : cachedInputRaster.getBand(
+              m_inputParameters.m_noDataValue : inputRasterPtr->getBand(
               inputBandIdx )->getProperty()->m_noDataValue;
             const double& outputBandNoDataValue = m_inputParameters.m_noDataValue;
 
@@ -1185,7 +1206,15 @@ namespace te
       {
         const unsigned int inputRasterIdx = m_inputParameters.m_feederRasterPtr->getCurrentOffset();
 
-        te::mem::CachedRaster cachedInputRaster( *nonCachedInputRasterPtr, 25, 5 );
+        te::rst::Raster const* inputRasterPtr = nonCachedInputRasterPtr;
+
+        std::auto_ptr< te::mem::CachedRaster > cachedInputRasterPtr;
+        if( m_inputParameters.m_useRasterCache )
+        {
+          cachedInputRasterPtr.reset( new te::mem::CachedRaster(
+            *nonCachedInputRasterPtr, 25, 0 ) );
+          inputRasterPtr = cachedInputRasterPtr.get();
+        } 
         
         // Generating the offset and gain info for eath band from the current raster
 
@@ -1204,7 +1233,7 @@ namespace te
             const unsigned int inputBandIdx = m_inputParameters.m_inputRastersBands[ inputRasterIdx ][
               inputRastersBandsIdx ];
 
-            calcBandStatistics( (*cachedInputRaster.getBand( inputBandIdx ) ),
+            calcBandStatistics( (*inputRasterPtr->getBand( inputBandIdx ) ),
               m_inputParameters.m_forceInputNoDataValue,
               m_inputParameters.m_noDataValue,
               currentRasterMean,
@@ -1270,7 +1299,7 @@ namespace te
             TERP_TRUE_OR_RETURN_FALSE( blenderInstance.initialize(
               outputRaster,
               outputRasterBands,
-              cachedInputRaster,
+              *inputRasterPtr,
               m_inputParameters.m_inputRastersBands[ inputRasterIdx ],
               m_inputParameters.m_blendMethod,
               te::rst::Interpolator::NearestNeighbor,
@@ -1371,7 +1400,7 @@ namespace te
 
         if( nonOverlappedResult.get() )
         {
-          te::rst::Interpolator interpInstance( &cachedInputRaster,
+          te::rst::Interpolator interpInstance( inputRasterPtr,
             m_inputParameters.m_interpMethod );
           const te::gm::GeometricTransformation& transformation = 
              *(mosaicGeomTransfms[ inputRasterIdx - 1 ]);
@@ -1392,7 +1421,7 @@ namespace te
             const std::size_t nonOverlappednResultSize =
               nonOverlappedResult->getNumGeometries();
             const double inputBandNoDataValue = m_inputParameters.m_forceInputNoDataValue ?
-              m_inputParameters.m_noDataValue : cachedInputRaster.getBand(
+              m_inputParameters.m_noDataValue : inputRasterPtr->getBand(
               inputBandIdx )->getProperty()->m_noDataValue;
 
             for( unsigned int nonOverlappednResultIdx = 0 ; nonOverlappednResultIdx < nonOverlappednResultSize ;

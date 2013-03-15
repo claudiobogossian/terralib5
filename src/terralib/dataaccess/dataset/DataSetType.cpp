@@ -70,6 +70,13 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
     m_defaultGeom = static_cast<te::gm::GeometryProperty*>(getProperty(pos));
   }
 
+// locate raster attribute
+  if(rhs.hasDefaultRaster())
+  {
+    std::size_t pos = rhs.getDefaultRasterPropertyPos();
+    m_defaultRaster = static_cast<te::rst::RasterProperty*>(getProperty(pos));
+  }
+
   if(rhs.m_idxs.empty() == false)
   {
     const std::size_t size = rhs.m_idxs.size();
@@ -112,7 +119,7 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
       const std::size_t pos = getPropertyPosition(pkProperties[i]->getName());
       m_pk->add(m_properties[pos]);
     }
-    
+
 // get associated index
     if(rhs.m_pk->getAssociatedIndex())
     {
@@ -148,7 +155,7 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
         const std::size_t pos = getPropertyPosition(ukProperties[j]->getName());
         uk->add(m_properties[pos]);
       }
-      
+
 // get associated index
       if(rhsUk->getAssociatedIndex())
       {
@@ -161,14 +168,14 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
             uk->setAssociatedIndex(m_idxs[i]);
             break;
           }
-        }      
-      }      
+        }
+      }
       //m_uniqueKeys.push_back(uk);
     }
   }
 
   if(rhs.m_checkConstraints.empty() == false)
-  {   
+  {
     const std::size_t size = rhs.m_checkConstraints.size();
 
     for(std::size_t i = 0; i < size; ++i)
@@ -194,12 +201,12 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
       fk->setOnDeleteAction(rhsFk->getOnDeleteAction());
       fk->setOnUpdateAction(rhsFk->getOnUpdateAction());
       fk->setDataSetType(this);
-      
+
       //referenced dataset type and properties
       fk->setReferencedDataSetType(rhsFk->getReferencedDataSetType());
       const std::vector<te::dt::Property*> refProperties = fk->getReferencedProperties();
       fk->setReferencedProperties(refProperties);
-            
+
       //own properties
       const std::vector<te::dt::Property*>& fkProperties = rhsFk->getProperties();
       const std::size_t fkSize = fkProperties.size();
@@ -208,7 +215,7 @@ te::da::DataSetType::DataSetType(const DataSetType& rhs)
       {
         const std::size_t pos = getPropertyPosition(fkProperties[j]->getName());
         fk->add(m_properties[pos]);
-      }                    
+      }
       m_foreignKeys.push_back(fk);
     }
   } 
@@ -256,6 +263,11 @@ te::rst::RasterProperty* te::da::DataSetType::findFirstRasterProperty() const
     return static_cast<te::rst::RasterProperty*>(p);
 
   return 0;
+}
+
+std::size_t te::da::DataSetType::getDefaultRasterPropertyPos() const
+{
+  return CompositeProperty::getPropertyPosition(m_defaultRaster);
 }
 
 void te::da::DataSetType::setPrimaryKey(PrimaryKey* pk)
@@ -472,13 +484,13 @@ void te::da::DataSetType::remove(Index* idx)
 void te::da::DataSetType::clearIndexes()
 {
   std::size_t size = m_idxs.size();
-    
+
   for(std::size_t i = 0; i < size; ++i)
   {
 // is there associated pk?
     if(m_pk && m_pk->getAssociatedIndex() == m_idxs[i])
       m_pk->setAssociatedIndex(0);
-      
+
 // is there associated uk?
     std::size_t ssize = m_uniqueKeys.size();
 
@@ -497,7 +509,7 @@ void te::da::DataSetType::clearIndexes()
 te::da::ForeignKey* te::da::DataSetType::getForeignKey(const std::string& name) const
 {
   std::size_t size = m_foreignKeys.size();
-  
+
   for(std::size_t i = 0; i < size; ++i)
   {
     if(m_foreignKeys[i]->getName() == name)
@@ -660,7 +672,7 @@ void te::da::DataSetType::removeUniqueKeys(Property* p)
 {
   std::size_t size = m_uniqueKeys.size();
   std::size_t i = 0;
-  
+
   while(i < size)
   {
     if(m_uniqueKeys[i]->has(p))
@@ -678,7 +690,7 @@ void te::da::DataSetType::removeIndexes(Property* p)
 {
   std::size_t size = m_idxs.size();
   std::size_t i = 0;
-  
+
   while(i < size)
   {
     if(m_idxs[i]->has(p))
@@ -699,7 +711,7 @@ void te::da::DataSetType::removeForeignKeys(Property* p)
   {
     std::size_t size = m_foreignKeys.size();
     std::size_t i = 0;
-    
+
     while(i < size)
     {
       if(m_foreignKeys[i]->has(p))
@@ -733,7 +745,7 @@ void te::da::DataSetType::removeForeignKeys(Property* p)
       {
         DataSetType* fkFT = it->second->getDataSetType();
         fkFT->remove(it->second);
-      }      
+      }
     }
   }
 }

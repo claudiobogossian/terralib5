@@ -44,6 +44,8 @@ namespace te
       \class Grid
 
       \brief A rectified grid is the spatial support for raster data.
+      
+      \note The pixel [0,0] center is considered the grid extent top-left reference.
 
       \sa Raster
     */

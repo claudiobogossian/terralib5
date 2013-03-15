@@ -86,6 +86,8 @@ namespace te
             
             bool m_autoEqualize; //!< Auto equalization will be performed using the overlaped image areas (default:true).
             
+            bool m_useRasterCache; //!< Enable(true) or disable the use of raster caching (default:true).
+            
             InputParameters();
             
             InputParameters( const InputParameters& );

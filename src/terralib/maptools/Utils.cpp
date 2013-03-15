@@ -210,3 +210,28 @@ te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
 
   return raster.release();
 }
+
+void te::map::GetVisibleLayers(const te::map::AbstractLayerPtr& layer, std::list<te::map::AbstractLayerPtr>& visibleLayers)
+{
+  te::map::Visibility visibility = layer->getVisibility();
+
+  if(visibility == te::map::NOT_VISIBLE)
+    return;
+
+  if(visibility == te::map::VISIBLE)
+    visibleLayers.push_back(layer);
+
+  for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
+  {
+    te::map::AbstractLayerPtr child(boost::dynamic_pointer_cast<AbstractLayer>(layer->getChild(i)));
+
+    GetVisibleLayers(child, visibleLayers);
+  }
+}
+
+void te::map::GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layers, std::list<te::map::AbstractLayerPtr>& visibleLayers)
+{
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
+    GetVisibleLayers(*it, visibleLayers);
+}
+
