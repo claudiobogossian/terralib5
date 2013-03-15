@@ -97,6 +97,10 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Rule* rule, const
 QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb, const te::gm::Geometry* geom, const QSize& size)
 {
   assert(symb);
+
+  if(symb->getType() == "RasterSymbolizer")
+    return QPixmap();
+
   assert(geom);
   assert(!size.isEmpty());
 
