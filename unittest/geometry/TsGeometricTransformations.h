@@ -46,10 +46,11 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE( TsGeometricTransformations );
 
 // It registers the class methods as Test Cases belonging to the suit 
+  CPPUNIT_TEST( tcRSTGT );
   CPPUNIT_TEST( tcAffine );
   CPPUNIT_TEST( tcSecondDegreePolynomialGT );
   CPPUNIT_TEST( tcThirdDegreePolynomialGT );
-  CPPUNIT_TEST( tcProjectiveGT );
+  CPPUNIT_TEST( tcProjectiveGT );  
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -64,6 +65,9 @@ class TsGeometricTransformations : public CPPUNIT_NS::TestFixture
   protected:
       
 // Test Cases:
+
+    /*! \brief Test Case: RST transformation. */
+    void tcRSTGT();    
 
     /*! \brief Test Case: Affine transformation. */
     void tcAffine();
