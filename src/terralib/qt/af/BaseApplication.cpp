@@ -32,9 +32,9 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
+#include "../widgets/charts/ChartStyleDialog.h"
 #include "../widgets/charts/HistogramCreatorDialog.h"
 #include "../widgets/charts/ScatterCreatorDialog.h"
-#include "../widgets/charts/ChartStyleDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -122,6 +122,7 @@ te::qt::af::BaseApplication::~BaseApplication()
   delete m_display;
   delete m_viewer;
   delete m_project;
+  delete m_progressDockWidget;
 
   te::qt::af::ApplicationController::getInstance().finalize();
 
@@ -828,8 +829,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
-  initAction(m_layerHistogram, "layer-histogram", "Histogram", tr("&Histogram"), tr(""), true, false, false);
-  initAction(m_layerScatter, "layer-scatter", "Scatter", tr("&Scatter"), tr(""), true, false, false);
+  initAction(m_layerChartsHistogram, "histogram-chart", "Histogram", tr("&Histogram"), tr(""), true, false, false);
+  initAction(m_layerChartsScatter, "scatter-chart", "Scatter", tr("&Scatter"), tr(""), true, false, false);
 
 
 // Menu -File- actions
@@ -968,10 +969,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
 
-  m_layerChartsMenu = new QMenu(m_layerMenu);
-  m_layerChartsMenu->setObjectName("Charts");
-  m_layerChartsMenu->setTitle(tr("&Charts"));
-
   m_menubar->addAction(m_layerMenu->menuAction());
 
   m_layerMenu->addAction(m_layerEdit);
@@ -986,9 +983,13 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerToBottom);
   m_layerMenu->addSeparator();
 
-  m_layerMenu->addAction(m_layerChartsMenu->menuAction());
-  m_layerChartsMenu->addAction(m_layerHistogram);
-  m_layerChartsMenu->addAction(m_layerScatter);
+  m_layerChartsMenu = new QMenu(m_layerMenu);
+  m_layerChartsMenu->setObjectName("Charts");
+  m_layerChartsMenu->setTitle(tr("&Charts"));
+
+  m_layerMenu->addMenu(m_layerChartsMenu);
+  m_layerChartsMenu->addAction(m_layerChartsHistogram);
+  m_layerChartsMenu->addAction(m_layerChartsScatter);
 
 // Map Menu
   m_mapMenu = new QMenu(m_menubar);
@@ -1124,8 +1125,8 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_toolsCustomize, SIGNAL(triggered()), SLOT(onToolsCustomizeTriggered()));
   connect(m_helpContents, SIGNAL(triggered()), SLOT(onHelpTriggered()));
   connect(m_projectProperties, SIGNAL(triggered()), SLOT(onProjectPropertiesTriggered()));
-  connect(m_layerHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
-  connect(m_layerScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
+  connect(m_layerChartsHistogram, SIGNAL(triggered()), SLOT(onLayerHistogramTriggered()));
+  connect(m_layerChartsScatter, SIGNAL(triggered()), SLOT(onLayerScatterTriggered()));
   connect(m_layerProperties, SIGNAL(triggered()), SLOT(onLayerPropertiesTriggered()));
   connect(m_mapDraw, SIGNAL(triggered()), SLOT(onDrawTriggered()));
   connect(m_mapZoomIn, SIGNAL(toggled(bool)), SLOT(onZoomInToggled(bool)));

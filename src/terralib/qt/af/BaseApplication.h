@@ -91,11 +91,11 @@ namespace te
 
           void onProjectPropertiesTriggered();
 
+          void onLayerPropertiesTriggered();
+
           void onLayerHistogramTriggered();
 
           void onLayerScatterTriggered();
-
-          void onLayerPropertiesTriggered();
 
           void onDrawTriggered();
 
@@ -176,8 +176,8 @@ namespace te
           QAction* m_layerLower;
           QAction* m_layerToTop;
           QAction* m_layerToBottom;
-          QAction* m_layerHistogram;
-          QAction* m_layerScatter;
+          QAction* m_layerChartsHistogram;
+          QAction* m_layerChartsScatter;
           QAction* m_toolsDataSourceManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
