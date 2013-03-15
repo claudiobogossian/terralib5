@@ -265,6 +265,11 @@ te::rst::RasterProperty* te::da::DataSetType::findFirstRasterProperty() const
   return 0;
 }
 
+std::size_t te::da::DataSetType::getDefaultRasterPropertyPos() const
+{
+  return CompositeProperty::getPropertyPosition(m_defaultRaster);
+}
+
 void te::da::DataSetType::setPrimaryKey(PrimaryKey* pk)
 {
   if(pk == m_pk)
