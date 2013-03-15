@@ -102,8 +102,16 @@ set (TE_INST_PLUGINS_DESCRIPTION "${TE_INST_PLUGINS_DESCRIPTION}${TE_PLG_INFO}" 
   
 configure_file(${CMAKE_SOURCE_DIR}/default_plugin_info.xml.in ${CMAKE_BINARY_DIR}/toInstall/terralib_qt_plugin_datasource_sqlite.xml)
 
-install(
-  TARGETS ${PROJ_NAME}
-  RUNTIME DESTINATION "bin" 
-  COMPONENT PLUGINS
-)
+if(WIN32)
+  install(
+    TARGETS ${PROJ_NAME}
+    RUNTIME DESTINATION "bin" 
+    COMPONENT PLUGINS
+  )
+else()
+  install(
+    TARGETS ${PROJ_NAME}
+    ARCHIVE DESTINATION "lib" COMPONENT PLUGINS
+    ARCHIVE DESTINATION "lib" COMPONENT PLUGINS
+  )
+endif()
