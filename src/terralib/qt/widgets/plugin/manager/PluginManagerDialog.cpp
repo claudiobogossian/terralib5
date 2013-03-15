@@ -243,6 +243,22 @@ void AddPlugin(const QString& fileName, te::qt::widgets::PluginsModel* model)
   delete pInfo;
 }
 
+Qt::CheckState getCheckState(te::qt::widgets::PluginsModel* model)
+{
+  int rows = model->rowCount(QModelIndex());
+  int st = model->index(0,0).data(Qt::CheckStateRole).toInt();
+
+  for(int i=1; i<rows; i++)
+  {
+    int st2 = model->index(i,0).data(Qt::CheckStateRole).toInt();
+
+    if(st2 != st)
+      return Qt::PartiallyChecked;
+  }
+
+  return (Qt::CheckState) st;
+}
+
 te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::PluginManagerDialogForm)
@@ -261,6 +277,7 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
   connect(m_ui->m_helpPushButton, SIGNAL(pressed()), SLOT(onHelpPushButtonPressed()));
+  connect(m_ui->m_enableAll, SIGNAL(clicked(bool)), SLOT(onEnableAllChanged(bool)));
 
   m_ui->m_addButton->setIcon(QIcon::fromTheme("list-add"));
   m_ui->m_removeButton->setIcon(QIcon::fromTheme("list-remove"));
@@ -268,6 +285,8 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   m_ui->m_installedPluginsTableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
   m_ui->m_pluginsTabWidget->setTabEnabled(1, false);
+
+  m_ui->m_enableAll->setCheckState(getCheckState(m_model));
 }
 
 te::qt::widgets::PluginManagerDialog::~PluginManagerDialog()
@@ -455,14 +474,34 @@ void te::qt::widgets::PluginManagerDialog::removePlugins()
   m_ui->m_applyPushButton->setEnabled(true);
 }
 
-void te::qt::widgets::PluginManagerDialog::dataChanged(const QModelIndex&, const QModelIndex&)
+void te::qt::widgets::PluginManagerDialog::dataChanged(const QModelIndex& index, const QModelIndex&)
 {
   m_ui->m_applyPushButton->setEnabled(true);
+  m_ui->m_enableAll->setCheckState(getCheckState(m_model));
 }
 
 void te::qt::widgets::PluginManagerDialog::onHelpPushButtonPressed()
 {
   te::qt::widgets::HelpManager::getInstance().showHelp("widgets/pluginmanager/PluginManager.html", "dpi.inpe.br.qtwidgets");
+}
+
+void te::qt::widgets::PluginManagerDialog::onEnableAllChanged(bool st)
+{
+  Qt::CheckState state = (st) ? Qt::Checked : Qt::Unchecked;
+
+  m_ui->m_enableAll->setCheckState(state);
+//  if(!m_doNothing)
+  {
+    int nrows = m_model->rowCount(QModelIndex());
+
+    for(int i=0; i<nrows; i++)
+    {
+      QModelIndex idx = m_model->index(i, 0);
+      m_model->setData(idx, QVariant(state), Qt::CheckStateRole);
+    }
+  }
+
+  m_ui->m_enableAll->setCheckState(getCheckState(m_model));
 }
 
 void te::qt::widgets::PluginManagerDialog::fillInstalledPlugins()

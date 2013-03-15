@@ -215,7 +215,7 @@ bool te::qt::widgets::PluginsModel::setData(const QModelIndex & index, const QVa
   if(!index.isValid())
     return false;
 
-  if(role == Qt::CheckStateRole)
+  if(role == Qt::CheckStateRole && !m_pluginsStatus[index.row()].testFlag(Broked))
   {
     if(value.toInt() == Qt::Checked)
     {
