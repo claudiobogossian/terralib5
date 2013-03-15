@@ -73,6 +73,7 @@ namespace te
           void onOkPushButtonClicked();
           void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
+          void onPropertyComboBoxIndexChanged();
 
         private:
 

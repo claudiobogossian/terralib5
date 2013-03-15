@@ -829,9 +829,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
   initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
   initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
-  initAction(m_layerChartsHistogram, "histogram-chart", "Histogram", tr("&Histogram"), tr(""), true, false, false);
-  initAction(m_layerChartsScatter, "scatter-chart", "Scatter", tr("&Scatter"), tr(""), true, false, false);
-
+  initAction(m_layerChartsHistogram, "chart-bar", "Histogram", tr("&Histogram"), tr(""), true, false, true);
+  initAction(m_layerChartsScatter, "chart-scatter", "Scatter", tr("&Scatter"), tr(""), true, false, true);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
@@ -977,12 +976,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addSeparator();
 
-  m_layerMenu->addAction(m_layerRaise);
-  m_layerMenu->addAction(m_layerLower);
-  m_layerMenu->addAction(m_layerToTop);
-  m_layerMenu->addAction(m_layerToBottom);
-  m_layerMenu->addSeparator();
-
   m_layerChartsMenu = new QMenu(m_layerMenu);
   m_layerChartsMenu->setObjectName("Charts");
   m_layerChartsMenu->setTitle(tr("&Charts"));
@@ -990,6 +983,15 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addMenu(m_layerChartsMenu);
   m_layerChartsMenu->addAction(m_layerChartsHistogram);
   m_layerChartsMenu->addAction(m_layerChartsScatter);
+  m_layerMenu->addSeparator();
+
+  m_layerMenu->addAction(m_layerRaise);
+  m_layerMenu->addAction(m_layerLower);
+  m_layerMenu->addAction(m_layerToTop);
+  m_layerMenu->addAction(m_layerToBottom);
+
+
+
 
 // Map Menu
   m_mapMenu = new QMenu(m_menubar);

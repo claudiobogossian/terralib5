@@ -57,6 +57,7 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
+  connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged()), this, SLOT(onPropertyComboBoxIndexChanged()));
 }
 
 te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog(){}
@@ -113,4 +114,9 @@ void te::qt::widgets::HistogramCreatorDialog::onCancelPushButtonClicked()
 void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
 {
 
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged()
+{
+  std::cout << "teste";
 }
