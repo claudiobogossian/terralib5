@@ -59,7 +59,7 @@ QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
   {
-    te::gm::Polygon pol(1, te::gm::PolygonType);
+    /*te::gm::Polygon pol(1, te::gm::PolygonType);
 
     te::gm::LinearRing* ring = new te::gm::LinearRing(6, te::gm::LineStringType);
 
@@ -72,7 +72,9 @@ QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
 
     pol.setRingN(0, ring);
 
-    return QVariant(QIcon(SymbologyPreview::build(m_rule, &pol, QSize(16, 16))));
+    return QVariant(QIcon(SymbologyPreview::build(m_rule, &pol, QSize(16, 16))));*/
+
+    return QVariant(QIcon(SymbologyPreview::build(m_rule, QSize(16, 16))));
   }
 
   if(role == Qt::DisplayRole)

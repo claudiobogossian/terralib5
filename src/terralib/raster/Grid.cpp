@@ -30,8 +30,8 @@
 
 // STL
 #include <algorithm>
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 te::rst::Grid::Grid(unsigned int nCols,
                     unsigned int nRows,
@@ -233,7 +233,7 @@ double te::rst::Grid::getResolutionX() const
 
 double te::rst::Grid::getResolutionY() const
 {
-  return std::abs( m_geoT[5] );
+  return ( -1.0 * m_geoT[5] );
 }
 
 int te::rst::Grid::getSRID() const

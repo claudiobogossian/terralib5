@@ -39,26 +39,16 @@ te::qt::widgets::AbstractTool::AbstractTool(te::qt::widgets::MapDisplay* display
     m_cursor(cursor)
 {
   assert(m_display);
-
-  // Stores the current map display cursor
-  m_oldCursor = m_display->cursor();
-
-  // Adjusts the map display cursor based on tool cursor
-  if(m_cursor.shape() != Qt::BlankCursor)
-    m_display->setCursor(m_cursor);
 }
 
 te::qt::widgets::AbstractTool::~AbstractTool()
 {
-  // Roll back the old map display cursor
-  m_display->setCursor(m_oldCursor);
+  // Roll back the default map display cursor
+  m_display->setCursor(Qt::ArrowCursor);
 }
 
 bool te::qt::widgets::AbstractTool::eventFilter(QObject* watched, QEvent* e)
 {
-  if(watched != m_display)
-    return false;
-
   switch(e->type())
   {
     case QEvent::MouseButtonPress:
@@ -72,6 +62,13 @@ bool te::qt::widgets::AbstractTool::eventFilter(QObject* watched, QEvent* e)
 
     case QEvent::MouseButtonDblClick:
       return mouseDoubleClickEvent(static_cast<QMouseEvent*>(e));
+
+    case QEvent::Enter:
+    {
+      if(m_cursor.shape() != Qt::BlankCursor)
+        m_display->setCursor(m_cursor);
+      return false;
+    }
 
     default:
       return QObject::eventFilter(watched, e);

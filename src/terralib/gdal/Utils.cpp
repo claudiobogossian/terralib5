@@ -87,7 +87,16 @@ te::rst::Grid* te::gdal::GetGrid(GDALDataset* gds)
   }
 
   double gtp[6];
-  gds->GetGeoTransform(gtp);
+  if( gds->GetGeoTransform(gtp) == CE_Failure )
+  {
+    gtp[ 0 ] = 0.0;
+    gtp[ 1 ] = 1.0;
+    gtp[ 2 ] = 0.0;
+    gtp[ 3 ] = 0.0;
+    gtp[ 4 ] = 0.0;
+    gtp[ 5 ] = -1.0;
+  }
+  
   te::rst::Grid* grid = new te::rst::Grid(gds->GetRasterXSize(),gds->GetRasterYSize());
   grid->setGeoreference(gtp,srid);
   return grid;
