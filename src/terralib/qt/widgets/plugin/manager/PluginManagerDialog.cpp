@@ -45,8 +45,6 @@
 #include <QtCore/QUrl>
 #include <QtGui/QMessageBox>
 #include <QtGui/QPixmap>
-#include <QtGui/QTableWidget>
-#include <QtGui/QTableWidgetItem>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
 #include <QtNetwork/QNetworkRequest>
