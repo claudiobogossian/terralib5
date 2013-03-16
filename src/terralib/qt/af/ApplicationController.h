@@ -54,10 +54,12 @@ namespace te
   {
     namespace af
     {
-// Forward declarations
-      class Event;
-
-      /*!
+      namespace evt
+      {
+      // Forward declarations
+        struct Event;
+      }
+             /*!
         \class ApplicationController
 
         \brief The base API for TerraLib applications.
@@ -295,14 +297,14 @@ namespace te
 
             \param evt Event to be sent.
           */
-          void broadcast(te::qt::af::Event* evt);
+          void broadcast(te::qt::af::evt::Event* evt);
 
         signals:
 
           /*!
             \brief Signal emmited for the aplication framework listeners.
           */
-          void triggered(te::qt::af::Event*);
+          void triggered(te::qt::af::evt::Event*);
 
         public:
 

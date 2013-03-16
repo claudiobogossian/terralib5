@@ -40,7 +40,7 @@
 #include "../widgets/help/HelpManager.h"
 #include "../widgets/Utils.h"
 #include "../widgets/utils/ScopedCursor.h"
-#include "events/NewToolBar.h"
+#include "events/ApplicationEvents.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "ApplicationController.h"
@@ -102,7 +102,7 @@ void te::qt::af::ApplicationController::addToolBar(const QString& id, QToolBar* 
   registerToolBar(id, bar);
 
 // send event: tool bar added
-  te::qt::af::NewToolBar evt(bar);
+  te::qt::af::evt::ToolbarAdded evt(bar);
 
   broadcast(&evt);
 }
@@ -219,7 +219,7 @@ void te::qt::af::ApplicationController::addListener(QObject* obj)
 
   m_applicationItems.insert(obj);
 
-  obj->connect(this, SIGNAL(triggered(te::qt::af::Event*)), SLOT(onApplicationTriggered(te::qt::af::Event*)));
+  obj->connect(this, SIGNAL(triggered(te::qt::af::evt::Event*)), SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
 }
 
 void te::qt::af::ApplicationController::removeListener(QObject* obj)
@@ -231,7 +231,7 @@ void te::qt::af::ApplicationController::removeListener(QObject* obj)
 
   m_applicationItems.erase(it);
 
-  disconnect(SIGNAL(triggered(te::qt::af::Event*)), obj, SLOT(onApplicationTriggered(te::qt::af::Event*)));
+  disconnect(SIGNAL(triggered(te::qt::af::evt::Event*)), obj, SLOT(onApplicationTriggered(te::qt::af::evt::Event*)));
 }
 
 void  te::qt::af::ApplicationController::initialize()
@@ -589,7 +589,7 @@ void te::qt::af::ApplicationController::finalize()
   m_initialized = false;
 }
 
-void  te::qt::af::ApplicationController::broadcast(te::qt::af::Event* evt)
+void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)
 {
   // Need to check event send to prevent loops
   // -----------------------------------------

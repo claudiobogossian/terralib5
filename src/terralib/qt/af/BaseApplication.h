@@ -47,11 +47,15 @@ namespace te
     {
 // Forwar declarations
       class ApplicationController;
-      class Event;
       class LayerExplorer;
       class MapDisplay;
       class Project;
       class TabularViewer;
+
+      namespace evt
+      {
+        struct Event;
+      }
 
       class TEQTAFEXPORT BaseApplication : public QMainWindow, public boost::noncopyable
       {
@@ -69,7 +73,7 @@ namespace te
 
         protected slots:
 
-          void onApplicationTriggered(te::qt::af::Event* evt);
+          void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           void onAddDataSetLayerTriggered();
 

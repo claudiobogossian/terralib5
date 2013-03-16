@@ -59,11 +59,10 @@
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
-#include "events/LayerAdded.h"
-#include "events/LayerSelected.h"
-#include "events/NewProject.h"
-#include "events/NewToolBar.h"
-#include "events/TrackedCoordinate.h"
+#include "events/LayerEvents.h"
+#include "events/ProjectEvents.h"
+#include "events/ApplicationEvents.h"
+#include "events/ToolEvents.h"
 #include "settings/SystemSettings.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
@@ -192,7 +191,7 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
     openProject(recentProject);
 }
 
-void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::Event* evt)
+void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
   //switch(evt->getId())
   //{
@@ -569,7 +568,7 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
-    NewProject evt(m_project);
+    te::qt::af::evt::ProjectAdded evt(m_project);
 
     ApplicationController::getInstance().broadcast(&evt);
   }
@@ -596,7 +595,7 @@ void te::qt::af::BaseApplication::newProject()
 
   setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
-  NewProject evt(m_project);
+  te::qt::af::evt::ProjectAdded evt(m_project);
 
   ApplicationController::getInstance().broadcast(&evt);
 }
