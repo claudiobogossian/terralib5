@@ -107,137 +107,42 @@ QStyle::StandardPixmap toQStyle(const QMessageBox::Icon& icon)
   }
 }
 
-QMenu* SearchMenu(const QString& mnuText, QMenu* mnu)
-{
-  if(mnu->objectName() == mnuText)
-    return mnu;
-
-  QList<QMenu*> objs = mnu->findChildren<QMenu*>();
-  
-  if(!objs.isEmpty())
-  {
-    QList<QMenu*>::iterator it;
-    
-    for(it = objs.begin(); it != objs.end(); ++it)
-    {
-      QMenu* res = SearchMenu(mnuText, *it);
-
-      if(res != 0)
-        return res;
-    }
-  }
-
-  return 0;
-}
-
 QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenu* mnu)
 {
-  if(mnu->objectName() == mnuText)
-    return mnu;
-
-  if(mnuText.isEmpty())
-    return 0;
-
-  QStringList m_txts = mnuText.split(".");
-  QString mnuName = m_txts.at(0);
-
-  QMenu* sub_m = SearchMenu(mnuName, mnu);
-
-  if(m_txts.size() > 1)
-    return FindMenu(mnuText.mid(mnuName.size()+1), sub_m);
-
-  return sub_m;
+  return mnu->findChild<QMenu*>(mnuText);
 }
 
 QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenuBar* bar)
 {
-  QList<QMenu*> mnus = bar->findChildren<QMenu*>();
-  QList<QMenu*>::iterator it;
-  QMenu* sub = 0;
-
-  for(it = mnus.begin(); it != mnus.end(); ++it)
-  {
-    sub = FindMenu(mnuText, *it);
-
-    if(sub != 0)
-      break;
-  }
-
-  return sub;
+  return bar->findChild<QMenu*>(mnuText);
 }
 
 QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenu* mnu)
 {
-  QStringList m_txts = mnuText.split(".");
-  QMenu* sub;
+  QMenu* res = FindMenu(mnuText, mnu);
 
-  QString mnuName = m_txts.at(0);
-  sub = SearchMenu(mnuName, mnu);
+  if(res == 0)
+    return new QMenu(mnuText, mnu);
 
-  if(sub == 0)
-    sub = mnu->addMenu(mnuName);
-
-  return ((m_txts.size() > 1) ? GetMenu(mnuText.mid(mnuName.size()+1), sub) : sub);
+  return res;
 }
 
 QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
 {
-  QStringList m_txts = mnuText.split(".");
-  QList<QMenu*> mnus = bar->findChildren<QMenu*>();
-  QList<QMenu*>::iterator it;
-  QMenu* sub = 0;
-  QString mnuName = m_txts.at(0);
+  QMenu* mnu = FindMenu(mnuText, bar);
 
-  for(it = mnus.begin(); it != mnus.end(); ++it)
-    if((*it)->objectName() == mnuName)
-    {
-      sub = *it;
-      break;
-    }
+  if(mnu == 0)
+    return new QMenu(mnuText, bar);
 
-  if(sub == 0)
-    sub = bar->addMenu(mnuName);
-
-  return ((m_txts.size() > 1) ? GetMenu(mnuText.mid(mnuName.size()+1), sub) : sub);
-}
-
-QAction* SearchAction(QMenu* mnu, const QString& actName)
-{
-  QList<QAction*> acts = mnu->actions();
-
-  for(int i=0; i<acts.size(); i++)
-  {
-    QAction* act = acts.at(i);
-
-    if(act->objectName() == actName)
-      return act;
-  }
-
-  return 0;
+  return mnu;
 }
 
 QAction* te::qt::widgets::FindAction(const QString& actText, QMenu* mnu)
 {
-  int pos = actText.lastIndexOf(".");
-  QString mnuName = actText.left(pos);
-  QString actionName = actText.mid(pos+1);
-
-  QMenu* sub_mnu = ((pos > 0) ? FindMenu(mnuName, mnu) : mnu);
-
-  return SearchAction(sub_mnu, actionName);
+  return mnu->findChild<QAction*>(actText);
 }
 
 QAction* te::qt::widgets::FindAction(const QString& actText, QMenuBar* mnuBar)
 {
-  QList<QMenu*> mnus = mnuBar->findChildren<QMenu*>();
-
-  for(int i=0; i<mnus.size(); i++)
-  {
-    QAction* act = FindAction(actText, mnus.at(i));
-
-    if(act != 0)
-      return act;
-  }
-
-  return 0;
+  return mnuBar->findChild<QAction*>(actText);
 }

@@ -154,6 +154,12 @@ namespace te
           QToolBar* getToolBar(const QString& id) const;
 
           /*!
+            \brief Return the list of registered toolbars.
+          */
+
+          std::vector<QToolBar*> getToolBars() const;
+
+          /*!
             \brief Register the \a mnu.
 
             \param mnu Pointer to the menu to be registered.

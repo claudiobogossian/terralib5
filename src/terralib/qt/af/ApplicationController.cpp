@@ -124,6 +124,17 @@ QToolBar* te::qt::af::ApplicationController::getToolBar(const QString& id) const
   return (it != m_toolbars.end()) ? it->second : 0;
 }
 
+std::vector<QToolBar*> te::qt::af::ApplicationController::getToolBars() const
+{
+  std::vector<QToolBar*> res;
+  std::map<QString, QToolBar*>::const_iterator it;
+
+  for(it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
+    res.push_back(it->second);
+
+  return res;
+}
+
 void te::qt::af::ApplicationController::registerMenu(QMenu* mnu)
 {
   m_menus.push_back(mnu);

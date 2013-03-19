@@ -56,6 +56,8 @@
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
+#include "../widgets/utils/AddToolBarDialog.h"
+//#include "../widgets/utils/ToolBarCustomize.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
@@ -113,6 +115,32 @@ te::qt::af::BaseApplication::BaseApplication(QWidget* parent)
   m_centralwidget = new QWidget(this);
   m_centralwidget->setObjectName("centralwidget");
   setCentralWidget(m_centralwidget);
+
+  // Initilazing menus
+  m_menubar = new QMenuBar(this);
+  m_fileMenu = new QMenu(m_menubar);
+  m_recentProjectsMenu = new QMenu(m_fileMenu);
+  m_menubar->addAction(m_fileMenu->menuAction());
+  m_viewMenu = new QMenu(m_menubar);
+  m_menubar->addAction(m_viewMenu->menuAction());
+  m_viewToolBarsMenu = new QMenu(m_viewMenu);
+  m_viewMenu->addMenu(m_viewToolBarsMenu);
+  m_projectMenu = new QMenu(m_menubar);
+  m_projectAddLayerMenu = new QMenu(m_projectMenu);
+  m_menubar->addAction(m_projectMenu->menuAction());
+  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
+  m_layerMenu = new QMenu(m_menubar);
+  m_menubar->addAction(m_layerMenu->menuAction());
+  m_layerChartsMenu = new QMenu(m_layerMenu);
+  m_layerMenu->addMenu(m_layerChartsMenu);
+  m_mapMenu = new QMenu(m_menubar);
+  m_menubar->addAction(m_mapMenu->menuAction());
+  m_toolsMenu = new QMenu(m_menubar);
+  m_menubar->addAction(m_toolsMenu->menuAction());
+  m_pluginsMenu = new QMenu(m_menubar);
+  m_menubar->addAction(m_pluginsMenu->menuAction());
+  m_helpMenu = new QMenu(m_menubar);
+  m_menubar->addAction(m_helpMenu->menuAction());
 }
 
 te::qt::af::BaseApplication::~BaseApplication()
@@ -552,6 +580,28 @@ void te::qt::af::BaseApplication::showProgressDockWidget()
   m_progressDockWidget->setVisible(true);
 }
 
+void te::qt::af::BaseApplication::onAddToolBarTriggered()
+{
+  te::qt::widgets::AddToolBarDialog dlg(this);
+  dlg.setAvailableActions(menuBar());
+  
+  if(dlg.exec() == QDialog::Accepted)
+  {
+    QToolBar* bar = dlg.getCreatedToolBar();
+    bar->setParent(this);
+
+    ApplicationController::getInstance().registerToolBar(bar->objectName(), bar);
+ 
+    addToolBar(Qt::TopToolBarArea, bar);
+  }
+}
+
+//void te::qt::af::BaseApplication::onManageToolbarsTriggered()
+//{
+//  te::qt::widgets::ToolBarCustomize* c = new te::qt::widgets::ToolBarCustomize(m_menubar, ApplicationController::getInstance().getToolBars(), this);
+//  c->show();
+//}
+
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
@@ -757,9 +807,9 @@ void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon, const QString& name,
                                              const QString& text, const QString& tooltip,
                                              bool iconVisibleInMenu, bool isCheckable,
-                                             bool enabled)
+                                             bool enabled, QMenuBar* menu)
 {
-  act = new QAction(this);
+  act = new QAction (menu);
 
   if(!icon.isEmpty())
     act->setIcon(QIcon::fromTheme(icon));
@@ -778,19 +828,23 @@ void te::qt::af::BaseApplication::initAction(QAction*& act, const QString& icon,
 void te::qt::af::BaseApplication::initActions()
 {
 // Menu -View- actions
-  initAction(m_viewLayerExplorer, "view-layer-explorer", "Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true);
-  initAction(m_viewMapDisplay, "view-map-display", "Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true);
-  initAction(m_viewDataTable, "view-data-table", "Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false);
-  initAction(m_viewStyleExplorer, "grid-visible", "Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false);
-  initAction(m_viewFullScreen, "view-fullscreen", "Full Screen", tr("F&ull Screen"), tr(""), true, false, false);
-  initAction(m_viewRefresh, "view-refresh", "Refresh", tr("&Refresh"), tr(""), true, false, false);
+  initAction(m_viewLayerExplorer, "view-layer-explorer", "View.Layer Explorer", tr("&Layer Explorer"), tr("Show or hide the layer explorer"), true, true, true, m_menubar);
+  initAction(m_viewMapDisplay, "view-map-display", "View.Map Display", tr("&Map Display"), tr("Show or hide the map display"), true, true, true, m_menubar);
+  initAction(m_viewDataTable, "view-data-table", "View.Data Table", tr("&Data Table"), tr("Show or hide the data table"), true, true, false, m_menubar);
+  initAction(m_viewStyleExplorer, "grid-visible", "View.Style Explorer", tr("&Style Explorer"), tr("Show or hide the style explorer"), true, true, false, m_menubar);
+  initAction(m_viewFullScreen, "view-fullscreen", "View.Full Screen", tr("F&ull Screen"), tr(""), true, false, false, m_menubar);
+  initAction(m_viewRefresh, "view-refresh", "View.Refresh", tr("&Refresh"), tr(""), true, false, false, m_menubar);
   //initAction(m_viewToolBars, "", "Toolbars", tr("&Toolbars"), tr(""), true, false, false);
-  initAction(m_viewGrid, "view-grid", "Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false);
-  initAction(m_viewDataSourceExplorer, "view-datasource-explorer", "Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), true, true, false);
+  initAction(m_viewGrid, "view-grid", "View.Grid", tr("&Grid"), tr("Show or hide the geographic grid"), true, true, false, m_menubar);
+  initAction(m_viewDataSourceExplorer, "view-datasource-explorer", "View.Data Source Explorer", tr("&Data Source Explorer"), tr("Show or hide the data source explorer"), 
+    true, true, false, m_menubar);
 
 // Menu -Tools- actions
-  initAction(m_toolsCustomize, "preferences-system", "Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true);
-  initAction(m_toolsDataSourceManagement, "", "Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, false);
+  initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
+  initAction(m_toolsDataSourceManagement, "", "Tools.Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, 
+    false, m_menubar);
+  initAction(m_toolsAddToolBar, "", "Tools.Add Tool Bar", tr("&Add Tool Bar..."), tr("Create a customized tool bar"), true, false, true, m_menubar);
+//  initAction(m_toolbarsManagement, "", "Tools.Toolbars customization", tr("Customize &ToolBars..."), tr("Manage the toolbars"), true, false, true, m_menubar);
 
 // Menu -Edit- actions
   //initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
@@ -804,56 +858,56 @@ void te::qt::af::BaseApplication::initActions()
   //initAction(m_editReplace, "edit-find-replace", "Replace", tr("R&eplace..."), tr(""), true, true, false);
 
 // Menu -Plugins- actions
-  initAction(m_pluginsManager, "", "Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true);
-  initAction(m_pluginsBuilder, "", "Build a New Plugin", tr("&Build a New Plugin..."), tr("Create a new plugin"), true, false, true);
+  initAction(m_pluginsManager, "", "Plugins.Management", tr("&Manage Plugins..."), tr("Manage the application plugins"), true, false, true, m_menubar);
+  initAction(m_pluginsBuilder, "", "Plugins.Build a New Plugin", tr("&Build a New Plugin..."), tr("Create a new plugin"), true, false, true, m_menubar);
 
 // Menu -Help- actions
-  initAction(m_helpContents, "help-browser", "View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, true);
-  initAction(m_helpUpdate, "system-software-update", "Update", tr("&Update..."), tr(""), true, false, false);
-  initAction(m_helpAbout, "", "About", tr("&About..."), tr(""), true, false, false);
+  initAction(m_helpContents, "help-browser", "Help.View Help", tr("&View Help..."), tr("Shows help dialog"), true, false, true, m_menubar);
+  initAction(m_helpUpdate, "system-software-update", "Help.Update", tr("&Update..."), tr(""), true, false, false, m_menubar);
+  initAction(m_helpAbout, "", "Help.About", tr("&About..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Project- actions
-  initAction(m_projectRemoveLayer, "layer-remove", "Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false);
-  initAction(m_projectProperties, "", "Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true);
-  initAction(m_projectAddLayerDataset, "", "Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true);
-  initAction(m_projectAddLayerQueryDataSet, "", "Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true);
+  initAction(m_projectRemoveLayer, "layer-remove", "Project.Remove Layer", tr("&Remove Layer"), tr("Remove layer from the project"), true, false, false, m_menubar);
+  initAction(m_projectProperties, "", "Project.Properties", tr("&Properties..."), tr("Show the project properties"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerDataset, "", "Project.Add Layer.Dataset", tr("&Dataset..."), tr("Add a new layer from a dataset"), true, false, true, m_menubar);
+  initAction(m_projectAddLayerQueryDataSet, "", "Project.Add Layer.Query Dataset", tr("&Query Dataset..."), tr("Add a new layer from a queried dataset"), true, false, true, m_menubar);
   //initAction(m_projectAddLayerGraph, "", "Graph", tr("&Graph"), tr("Add a new layer from a graph"), true, false, false);
 
 // Menu -Layer- actions
-  initAction(m_layerEdit, "layer-edit", "Edit", tr("&Edit"), tr(""), true, false, false);
-  initAction(m_layerRename, "layer-rename", "Rename", tr("R&ename"), tr(""), true, false, false);
-  initAction(m_layerExport, "document-export", "Export", tr("E&xport..."), tr(""), true, false, false);
-  initAction(m_layerProperties, "", "Properties", tr("&Properties..."), tr(""), true, false, true);
-  initAction(m_layerRaise, "layer-raise", "Raise", tr("&Raise"), tr(""), true, false, false);
-  initAction(m_layerLower, "layer-lower", "Lower", tr("&Lower"), tr(""), true, false, false);
-  initAction(m_layerToTop, "layer-to-top", "To Top", tr("To &Top"), tr(""), true, false, false);
-  initAction(m_layerToBottom, "layer-to-bottom", "To Bottom", tr("To &Bottom"), tr(""), true, false, false);
-  initAction(m_layerChartsHistogram, "histogram-chart", "Histogram", tr("&Histogram"), tr(""), true, false, false);
-  initAction(m_layerChartsScatter, "scatter-chart", "Scatter", tr("&Scatter"), tr(""), true, false, false);
+  initAction(m_layerEdit, "layer-edit", "Layer.Edit", tr("&Edit"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerRename, "layer-rename", "Layer.Rename", tr("R&ename"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerExport, "document-export", "Layer.Export", tr("E&xport..."), tr(""), true, false, false, m_menubar);
+  initAction(m_layerProperties, "", "Layer.Properties", tr("&Properties..."), tr(""), true, false, true, m_menubar);
+  initAction(m_layerRaise, "layer-raise", "Layer.Raise", tr("&Raise"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerToTop, "layer-to-top", "Layer.To Top", tr("To &Top"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerChartsHistogram, "histogram-chart", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerChartsScatter, "scatter-chart", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, false, m_menubar);
 
 
 // Menu -File- actions
-  initAction(m_fileNewProject, "document-new", "New Project", tr("&New Project"), tr(""), true, false, true);
-  initAction(m_fileSaveProject, "document-save", "Save Project", tr("&Save Project"), tr(""), true, false, false);
-  initAction(m_fileSaveProjectAs, "document-save-as", "Save Project As", tr("Save Project &As..."), tr(""), true, false, false);
-  initAction(m_fileOpenProject, "document-open", "Open Project", tr("&Open Project..."), tr(""), true, false, true);
-  initAction(m_fileExit, "system-log-out", "Exit", tr("E&xit"), tr(""), true, false, true);
-  initAction(m_filePrint, "document-print", "Print", tr("&Print..."), tr(""), true, false, false);
-  initAction(m_filePrintPreview, "document-print-preview", "Print Preview", tr("Print Pre&view..."), tr(""), true, false, false);
+  initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
+  initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, false, m_menubar);
+  initAction(m_fileSaveProjectAs, "document-save-as", "File.Save Project As", tr("Save Project &As..."), tr(""), true, false, false, m_menubar);
+  initAction(m_fileOpenProject, "document-open", "File.Open Project", tr("&Open Project..."), tr(""), true, false, true, m_menubar);
+  initAction(m_fileExit, "system-log-out", "File.Exit", tr("E&xit"), tr(""), true, false, true, m_menubar);
+  initAction(m_filePrint, "document-print", "File.Print", tr("&Print..."), tr(""), true, false, false, m_menubar);
+  initAction(m_filePrintPreview, "document-print-preview", "File.Print Preview", tr("Print Pre&view..."), tr(""), true, false, false, m_menubar);
 
 // Menu -Map- actions
-  initAction(m_mapDraw, "map-draw", "Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true);
-  initAction(m_mapZoomIn, "zoom-in", "Zoom In", tr("Zoom &In"), tr(""), true, true, true);
-  initAction(m_mapZoomOut, "zoom-out", "Zoom Out", tr("Zoom &Out"), tr(""), true, true, true);
-  initAction(m_mapZoomArea, "zoom-area", "Zoom Area", tr("Zoom &Area"), tr(""), true, true, true);
-  initAction(m_mapPan, "pan", "Pan", tr("&Pan"), tr(""), true, true, true);
-  initAction(m_mapZoomExtent, "zoom-extent", "Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, false);
-  initAction(m_mapPreviousExtent, "edit-undo", "Previous Extent", tr("&Previous Extent"), tr(""), true, false, false);
-  initAction(m_mapNextExtent, "edit-redo", "Next Extent", tr("&Next Extent"), tr(""), true, false, false);
-  initAction(m_mapMeasureDistance, "distance-measure", "Measure Distance", tr("Measure &Distance"), tr(""), true, true, false);
-  initAction(m_mapMeasureArea, "area-measure", "Measure Area", tr("Measure &Area"), tr(""), true, true, false);
-  initAction(m_mapMeasureAngle, "angle-measure", "Measure Angle", tr("Measure &Angle"), tr(""), true, true, false);
-  initAction(m_mapStopDraw, "process-stop", "Stop Draw", tr("&Stop Draw"), tr("Stop all draw tasks"), true, false, true);
+  initAction(m_mapDraw, "map-draw", "Map.Draw", tr("&Draw"), tr("Draw the visible layers"), true, false, true, m_menubar);
+  initAction(m_mapZoomIn, "zoom-in", "Map.Zoom In", tr("Zoom &In"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapZoomOut, "zoom-out", "Map.Zoom Out", tr("Zoom &Out"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapZoomArea, "zoom-area", "Map.Zoom Area", tr("Zoom &Area"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapPan, "pan", "Map.Pan", tr("&Pan"), tr(""), true, true, true, m_menubar);
+  initAction(m_mapZoomExtent, "zoom-extent", "Map.Zoom Extent", tr("Zoom &Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapPreviousExtent, "edit-undo", "Map.Previous Extent", tr("&Previous Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapNextExtent, "edit-redo", "Map.Next Extent", tr("&Next Extent"), tr(""), true, false, false, m_menubar);
+  initAction(m_mapMeasureDistance, "distance-measure", "Map.Measure Distance", tr("Measure &Distance"), tr(""), true, true, false, m_menubar);
+  initAction(m_mapMeasureArea, "area-measure", "Map.Measure Area", tr("Measure &Area"), tr(""), true, true, false, m_menubar);
+  initAction(m_mapMeasureAngle, "angle-measure", "Map.Measure Angle", tr("Measure &Angle"), tr(""), true, true, false, m_menubar);
+  initAction(m_mapStopDraw, "process-stop", "Map.Stop Draw", tr("&Stop Draw"), tr("Stop all draw tasks"), true, false, true, m_menubar);
 
 // Group the map tools
   QActionGroup* mapToolsGroup = new QActionGroup(this);
@@ -869,20 +923,15 @@ void te::qt::af::BaseApplication::initActions()
 void te::qt::af::BaseApplication::initMenus()
 {
 // Making menus
-  m_menubar = new QMenuBar(this);
   m_menubar->setObjectName(QString::fromUtf8("menubar"));
   m_menubar->setGeometry(QRect(0, 0, 640, 21));
 
 // File menu
-  m_fileMenu = new QMenu(m_menubar);
   m_fileMenu->setObjectName("File");
   m_fileMenu->setTitle(tr("&File"));
 
-  m_recentProjectsMenu = new QMenu(m_fileMenu);
-  m_recentProjectsMenu->setObjectName("Recent Projects");
+  m_recentProjectsMenu->setObjectName("File.Recent Projects");
   m_recentProjectsMenu->setTitle(tr("&Recent Projects"));
-
-  m_menubar->addAction(m_fileMenu->menuAction());
 
   m_fileMenu->addAction(m_fileNewProject);
   m_fileMenu->addAction(m_fileOpenProject);
@@ -890,7 +939,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProjectAs);
   m_fileMenu->addSeparator();
-  m_fileMenu->addAction(m_recentProjectsMenu->menuAction());
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addAction(m_filePrintPreview);
@@ -918,14 +966,10 @@ void te::qt::af::BaseApplication::initMenus()
   //m_editMenu->addAction(m_editReplace);
 
 // View menu
-  m_viewMenu = new QMenu(m_menubar);
   m_viewMenu->setObjectName("View");
   m_viewMenu->setTitle(tr("&View"));
 
-  m_menubar->addAction(m_viewMenu->menuAction());
-
-  m_viewToolBarsMenu = new QMenu();
-  m_viewToolBarsMenu->setObjectName("Toolbars");
+  m_viewToolBarsMenu->setObjectName("View.Toolbars");
   m_viewToolBarsMenu->setTitle(tr("&Toolbars"));
   m_viewMenu->addMenu(m_viewToolBarsMenu);
 
@@ -943,17 +987,11 @@ void te::qt::af::BaseApplication::initMenus()
   m_viewMenu->addAction(m_viewRefresh);
 
 // Project menu
-  m_projectMenu = new QMenu(m_menubar);
   m_projectMenu->setObjectName("Project");
   m_projectMenu->setTitle(tr("&Project"));
 
-  m_projectAddLayerMenu = new QMenu(m_projectMenu);
-  m_projectAddLayerMenu->setObjectName("Add Layer");
+  m_projectAddLayerMenu->setObjectName("Project.Add Layer");
   m_projectAddLayerMenu->setTitle(tr("&Add Layer"));
-
-  m_menubar->addAction(m_projectMenu->menuAction());
-
-  m_projectMenu->addAction(m_projectAddLayerMenu->menuAction());
 
   m_projectMenu->addAction(m_projectRemoveLayer);
   m_projectMenu->addSeparator();
@@ -961,14 +999,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_projectAddLayerMenu->addAction(m_projectAddLayerDataset);
   m_projectAddLayerMenu->addAction(m_projectAddLayerQueryDataSet);
 
-  //m_projectAddLayerMenu->addAction(m_projectAddLayerGraph);
-
-// Layer menu
-  m_layerMenu = new QMenu(m_menubar);
   m_layerMenu->setObjectName("Layer");
   m_layerMenu->setTitle(tr("&Layer"));
-
-  m_menubar->addAction(m_layerMenu->menuAction());
 
   m_layerMenu->addAction(m_layerEdit);
   m_layerMenu->addAction(m_layerRename);
@@ -982,8 +1014,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerToBottom);
   m_layerMenu->addSeparator();
 
-  m_layerChartsMenu = new QMenu(m_layerMenu);
-  m_layerChartsMenu->setObjectName("Charts");
+  m_layerChartsMenu->setObjectName("Layer.Charts");
   m_layerChartsMenu->setTitle(tr("&Charts"));
 
   m_layerMenu->addMenu(m_layerChartsMenu);
@@ -991,11 +1022,8 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerChartsMenu->addAction(m_layerChartsScatter);
 
 // Map Menu
-  m_mapMenu = new QMenu(m_menubar);
   m_mapMenu->setObjectName("Map");
   m_mapMenu->setTitle(tr("&Map"));
-
-  m_menubar->addAction(m_mapMenu->menuAction());
 
   m_mapMenu->addAction(m_mapDraw);
   m_mapMenu->addSeparator();
@@ -1014,33 +1042,27 @@ void te::qt::af::BaseApplication::initMenus()
   m_mapMenu->addAction(m_mapStopDraw);
 
 // Tools menu
-  m_toolsMenu = new QMenu(m_menubar);
   m_toolsMenu->setObjectName("Tools");
   m_toolsMenu->setTitle(tr("&Tools"));
 
-  m_menubar->addAction(m_toolsMenu->menuAction());
-
+//  m_toolsMenu->addAction(m_toolbarsManagement);
+  m_toolsMenu->addAction(m_toolsAddToolBar);
+  m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsDataSourceManagement);
   m_toolsMenu->addSeparator();
-  m_toolsMenu->addAction(m_toolsCustomize);
+  m_toolsMenu->addAction(m_toolsCustomize);  
 
 // Plugins menu
-  m_pluginsMenu = new QMenu(m_menubar);
   m_pluginsMenu->setObjectName("Plugins");
   m_pluginsMenu->setTitle(tr("Pl&ugins"));
-
-  m_menubar->addAction(m_pluginsMenu->menuAction());
 
   m_pluginsMenu->addAction(m_pluginsManager);
   m_pluginsMenu->addSeparator();
   m_pluginsMenu->addAction(m_pluginsBuilder);
 
 // Help menu
-  m_helpMenu = new QMenu(m_menubar);
   m_helpMenu->setObjectName("Help");
   m_helpMenu->setTitle(tr("&Help"));
-
-  m_menubar->addAction(m_helpMenu->menuAction());
 
   m_helpMenu->addAction(m_helpContents);
   m_helpMenu->addAction(m_helpUpdate);
@@ -1136,4 +1158,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
+  connect(m_toolsAddToolBar, SIGNAL(triggered()), SLOT(onAddToolBarTriggered()));
+//  connect(m_toolbarsManagement, SIGNAL(triggered()), SLOT(onManageToolbarsTriggered()));
 }
