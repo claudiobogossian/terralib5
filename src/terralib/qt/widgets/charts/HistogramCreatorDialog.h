@@ -32,6 +32,8 @@
 // Qt
 #include <QtGui/QDialog>
 
+#include <memory>
+
 namespace Ui { class HistogramDialog; }
 
 namespace te
