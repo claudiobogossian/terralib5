@@ -34,7 +34,9 @@
 #include "../../../datatype/Property.h"
 
 //QT
-#include <QDialog>
+#include <QtGui/QDialog>
+
+#include <iostream>
 
 te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
