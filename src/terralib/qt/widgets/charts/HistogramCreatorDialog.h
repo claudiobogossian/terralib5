@@ -48,6 +48,10 @@ namespace te
     namespace widgets
     {
 
+    //forward declarations
+    class Histogram;
+    class HistogramChart;
+
     /*!
         \class Histogram Creator
 
@@ -73,12 +77,15 @@ namespace te
           void onOkPushButtonClicked();
           void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
-          void onPropertyComboBoxIndexChanged();
+          void onPropertyComboBoxIndexChanged(QString text);
 
         private:
 
           std::auto_ptr<Ui::HistogramDialog>  m_ui;
           te::da::DataSet*                    m_dataSet;
+          te::da::DataSetType*                m_type;
+          te::qt::widgets::Histogram*         m_histogram;
+          te::qt::widgets::HistogramChart*    m_histogramChart;
 
       };
     } // end namespace widgets
