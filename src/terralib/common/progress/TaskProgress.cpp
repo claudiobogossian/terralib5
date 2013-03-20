@@ -28,10 +28,10 @@
 #include "ProgressTimer.h"
 #include "TaskProgress.h"
 
-te::common::TaskProgress::TaskProgress(const std::string& message, const unsigned int& type)
+te::common::TaskProgress::TaskProgress(const std::string& message, const unsigned int& type, int totalSteps)
   : m_id(-1),
     m_type(type),
-    m_totalSteps(0),
+    m_totalSteps(totalSteps),
     m_currentStep(0),
     m_currentPropStep(0),
     m_message(message),
@@ -41,8 +41,10 @@ te::common::TaskProgress::TaskProgress(const std::string& message, const unsigne
     m_useTimer(false),
     m_timer(0)
 {
-  //get task id from progress manager singleton
+ //get task id from progress manager singleton
   m_id = te::common::ProgressManager::getInstance().addTask(this);
+
+  setTotalSteps(totalSteps);
 }
 
 te::common::TaskProgress::~TaskProgress()
@@ -69,6 +71,9 @@ int te::common::TaskProgress::getTotalSteps()
 
 void te::common::TaskProgress::setTotalSteps(int value)
 {
+  if(value <= 0)
+    return;
+
   m_totalSteps = value;
 
   if(m_timer)

@@ -63,7 +63,7 @@ namespace te
         };
 
         /*! \brief Default constructor. */
-        TaskProgress(const std::string& message = "", const unsigned int& type = UNDEFINED);
+        TaskProgress(const std::string& message = "", const unsigned int& type = UNDEFINED, int totalSteps = 0);
 
         /*! \brief Destructor. */
         ~TaskProgress();
