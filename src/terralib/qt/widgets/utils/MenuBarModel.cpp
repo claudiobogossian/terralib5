@@ -43,7 +43,12 @@ QVariant te::qt::widgets::MenuBarModel::data (const QModelIndex & index, int rol
     break;
 
     case Qt::DisplayRole:
-      return m_actions[index.row()]->text(); 
+      {
+        QString name = m_actions[index.row()]->objectName();
+        int pos = name.lastIndexOf(".");
+
+        return (pos < 0) ? m_actions[index.row()]->text() : name.mid(pos+1); 
+      }
     break;
 
     case Qt::DecorationRole:

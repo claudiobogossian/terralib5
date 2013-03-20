@@ -32,6 +32,9 @@
 // Qt
 #include <QtGui/QDialog>
 
+//STL
+#include <memory>
+
 namespace Ui { class ScatterDialog; }
 
 namespace te
