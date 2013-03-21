@@ -121,7 +121,7 @@ namespace te
 
           void showProgressDockWidget();
 
-          void onAddToolBarTriggered();
+          void onCustomizeToolBarsTriggered();
 
 //          void onManageToolbarsTriggered();
 
@@ -187,7 +187,7 @@ namespace te
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
           QAction* m_toolsDataSourceManagement;
-          QAction* m_toolsAddToolBar;
+          QAction* m_toolsCustomizeToolBars;
 //          QAction* m_toolbarsManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;

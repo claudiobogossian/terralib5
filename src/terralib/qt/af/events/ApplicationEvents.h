@@ -88,16 +88,16 @@ namespace te
         };
 
         /*!
-          \struct ToolbarAdded
+          \struct ToolBarAdded
 
           \brief This event signals that a new toolbar was added.
 
           \ingroup afevents
         */
 
-        struct ToolbarAdded : public Event
+        struct ToolBarAdded : public Event
         {
-          ToolbarAdded(QToolBar* toolbar) :
+          ToolBarAdded(QToolBar* toolbar) :
           Event(TOOLBAR_ADDED),
           m_toolbar(toolbar)
           {

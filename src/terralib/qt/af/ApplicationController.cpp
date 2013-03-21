@@ -102,7 +102,7 @@ void te::qt::af::ApplicationController::addToolBar(const QString& id, QToolBar* 
   registerToolBar(id, bar);
 
 // send event: tool bar added
-  te::qt::af::evt::ToolbarAdded evt(bar);
+  te::qt::af::evt::ToolBarAdded evt(bar);
 
   broadcast(&evt);
 }
@@ -133,6 +133,14 @@ std::vector<QToolBar*> te::qt::af::ApplicationController::getToolBars() const
     res.push_back(it->second);
 
   return res;
+}
+
+void te::qt::af::ApplicationController::removeToolBar(const QString& id)
+{
+  std::map<QString, QToolBar*>::iterator it = m_toolbars.find(id);
+
+  if(it != m_toolbars.end())
+    m_toolbars.erase(it);
 }
 
 void te::qt::af::ApplicationController::registerMenu(QMenu* mnu)

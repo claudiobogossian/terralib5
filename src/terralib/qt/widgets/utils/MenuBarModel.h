@@ -41,12 +41,28 @@ namespace te
   {
     namespace widgets
     {
+
+      /*!
+        \class MenuBarModel
+
+        \brief Defines a model, based on a QMenuBar, to present all system buttons as a table.
+      */
       class MenuBarModel : public QAbstractTableModel
       {
         public:
 
+          /*!
+            \brief Constructor.
+
+            \param mnuBar The menu bar to be used.
+
+            \param parent Parent object.
+          */
           MenuBarModel(QMenuBar* mnuBar, QObject* parent=0);
 
+          /*!
+            \brief Destructor.
+          */
           ~MenuBarModel();
 
           virtual Qt::ItemFlags	flags (const QModelIndex & index) const;      
@@ -61,6 +77,11 @@ namespace te
 
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
 
+          /*!
+            \brief Check the actions contained in \a toolbar.
+
+            \param toolBar The toolbar to be used by the model.
+          */
           void updateActionsState(QToolBar* toolBar);
 
           /*!
@@ -68,12 +89,15 @@ namespace te
           */
           std::vector<QAction*> getActions() const;
 
+          /*!
+            \brief Sets the menu bar to be used in the model.
+          */
           void setMenuBar(QMenuBar* mnuBar);
 
         protected:
 
-          std::vector<QAction*> m_actions;
-          std::vector<bool> m_actionsActivation;
+          std::vector<QAction*> m_actions;        //!< System buttons.
+          std::vector<bool> m_actionsActivation;  //!< State of each system button. (True insert, False do nothing).
      };
     }
   }

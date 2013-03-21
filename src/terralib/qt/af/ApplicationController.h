@@ -79,7 +79,9 @@ namespace te
           */
           ApplicationController(/*QObject* parent = 0*/);
 
-          /*! \brief Destructor. */
+          /*! 
+            \brief Destructor. 
+          */
           virtual ~ApplicationController();
 
           /*!
@@ -155,9 +157,17 @@ namespace te
 
           /*!
             \brief Return the list of registered toolbars.
-          */
 
+            \return List of registered ToolBars.
+          */
           std::vector<QToolBar*> getToolBars() const;
+
+          /*!
+            \brief Removes the toolbar identified by \a id.
+
+            \param id Identifier of the tool bar.
+          */
+          void removeToolBar(const QString& id);
 
           /*!
             \brief Register the \a mnu.
@@ -214,9 +224,13 @@ namespace te
           QMenuBar* getMenuBar(const QString& id) const;
 
           /*!
-            \brief
+            \brief Returns the action identified by \a id or NULL if there's not an action identified by \a id.
 
-            \return
+            \param id Identifier if the action. 
+
+            \return QAction identified or NULL if could not find one.
+
+            \note There's a rule to determine \a id. The text of menus and submenus separated by '.' character.
           */
           QAction* findAction(const QString& id) const;
 
@@ -308,7 +322,7 @@ namespace te
         signals:
 
           /*!
-            \brief Signal emmited for the aplication framework listeners.
+            \brief Signal emmited to the aplication framework listeners.
           */
           void triggered(te::qt::af::evt::Event*);
 

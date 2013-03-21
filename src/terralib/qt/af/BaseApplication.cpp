@@ -56,8 +56,8 @@
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
-#include "../widgets/utils/AddToolBarDialog.h"
-//#include "../widgets/utils/ToolBarCustomize.h"
+//#include "../widgets/utils/AddToolBarDialog.h"
+#include "../widgets/utils/CustomizeToolBarsDialog.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"
@@ -580,27 +580,45 @@ void te::qt::af::BaseApplication::showProgressDockWidget()
   m_progressDockWidget->setVisible(true);
 }
 
-void te::qt::af::BaseApplication::onAddToolBarTriggered()
+void te::qt::af::BaseApplication::onCustomizeToolBarsTriggered()
 {
-  te::qt::widgets::AddToolBarDialog dlg(this);
-  dlg.setAvailableActions(menuBar());
-  
-  if(dlg.exec() == QDialog::Accepted)
-  {
-    QToolBar* bar = dlg.getCreatedToolBar();
-    bar->setParent(this);
+  te::qt::widgets::CustomizeToolBarsDialog dlg(QMainWindow::menuBar(), ApplicationController::getInstance().getToolBars(), this);
 
-    ApplicationController::getInstance().registerToolBar(bar->objectName(), bar);
- 
-    addToolBar(Qt::TopToolBarArea, bar);
+  dlg.exec();
+
+  // Created bars
+  std::vector<QToolBar*> bars = dlg.getCreatedToolBars();
+  std::vector<QToolBar*>::iterator it;
+
+  for(it=bars.begin(); it!=bars.end(); ++it)
+  {
+    (*it)->setParent(this);
+
+    QMainWindow::addToolBar(Qt::TopToolBarArea, *it);
+    ApplicationController::getInstance().registerToolBar((*it)->objectName(), *it);
+
+    QMenu* mnu = ApplicationController::getInstance().findMenu("View.Toolbars");
+
+    if(mnu)
+    {
+      QAction* act = (*it)->toggleViewAction();
+      act->setObjectName("View.Toolbars." + (*it)->objectName());
+      (*it)->setWindowTitle((*it)->objectName());
+      mnu->addAction(act);
+    }
+  }
+
+  // Removed bars
+  std::vector<QString> removed = dlg.getRemovedBars();
+  std::vector<QString>::iterator it2;
+
+  for(it2=removed.begin(); it2!=removed.end(); ++it2)
+  {
+    ApplicationController::getInstance().removeToolBar(*it2);
+    QString actName = "View.Toolbars." + (*it2); 
+    delete ApplicationController::getInstance().findAction(actName);
   }
 }
-
-//void te::qt::af::BaseApplication::onManageToolbarsTriggered()
-//{
-//  te::qt::widgets::ToolBarCustomize* c = new te::qt::widgets::ToolBarCustomize(m_menubar, ApplicationController::getInstance().getToolBars(), this);
-//  c->show();
-//}
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
@@ -843,7 +861,7 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceManagement, "", "Tools.Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, 
     false, m_menubar);
-  initAction(m_toolsAddToolBar, "", "Tools.Add Tool Bar", tr("&Add Tool Bar..."), tr("Create a customized tool bar"), true, false, true, m_menubar);
+  initAction(m_toolsCustomizeToolBars, "", "Tools.Customize Tool Bars", tr("&Customize Tool Bars..."), tr("Customize existing tool bars"), true, false, true, m_menubar);
 //  initAction(m_toolbarsManagement, "", "Tools.Toolbars customization", tr("Customize &ToolBars..."), tr("Manage the toolbars"), true, false, true, m_menubar);
 
 // Menu -Edit- actions
@@ -1046,7 +1064,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsMenu->setTitle(tr("&Tools"));
 
 //  m_toolsMenu->addAction(m_toolbarsManagement);
-  m_toolsMenu->addAction(m_toolsAddToolBar);
+  m_toolsMenu->addAction(m_toolsCustomizeToolBars);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsDataSourceManagement);
   m_toolsMenu->addSeparator();
@@ -1083,7 +1101,7 @@ void te::qt::af::BaseApplication::initToolbars()
 
 // File Tool Bar
   m_fileToolBar = new QToolBar(this);
-  m_fileToolBar->setObjectName("FileToolBar");
+  m_fileToolBar->setObjectName("File Tool Bar");
   addToolBar(Qt::TopToolBarArea, m_fileToolBar);
   m_fileToolBar->setWindowTitle(tr("File Tool Bar"));
   m_fileToolBar->addAction(m_fileNewProject);
@@ -1108,7 +1126,7 @@ void te::qt::af::BaseApplication::initToolbars()
 
 // Map Display Tool Bar
   m_mapToolBar = new QToolBar(this);
-  m_mapToolBar->setObjectName("MapToolBar");
+  m_mapToolBar->setObjectName("Map Tool Bar");
   addToolBar(Qt::TopToolBarArea, m_mapToolBar);
   m_mapToolBar->setWindowTitle(tr("Map Tool Bar"));
   m_mapToolBar->addAction(m_mapDraw);
@@ -1127,9 +1145,9 @@ void te::qt::af::BaseApplication::initToolbars()
   m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
 
 // registering the toolbars
-  ApplicationController::getInstance().registerToolBar("FileToolBar", m_fileToolBar);
+  ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
   //ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
-  ApplicationController::getInstance().registerToolBar("MapToolBar", m_mapToolBar);
+  ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()
@@ -1158,6 +1176,6 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
-  connect(m_toolsAddToolBar, SIGNAL(triggered()), SLOT(onAddToolBarTriggered()));
+  connect(m_toolsCustomizeToolBars, SIGNAL(triggered()), SLOT(onCustomizeToolBarsTriggered()));
 //  connect(m_toolbarsManagement, SIGNAL(triggered()), SLOT(onManageToolbarsTriggered()));
 }
