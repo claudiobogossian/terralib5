@@ -95,63 +95,38 @@ te::gm::GeometricTransformation* te::gm::AffineGT::clone() const
         
 bool te::gm::AffineGT::computeParameters( GTParameters& params ) const
 {
-    /*
-            u = a1.x + a2.y + a3
-            v = b1.x + b2.y + b3
-
-            A . X + L = 0
-            N = At . A
-            U = At . L
-            X = - (N ^ -1) . U
-
-            A = |x1 y1 1  0  0  0|     Xt = |a1 a2 a3 b1 b2 b3|
-                |0  0  0  x1 y1 1|
-                |x2 y2 1  0  0  0|
-                |0  0  0  x2 y2 1|     Lt = |u1 v1 u2 v2 ... un vn|
-                |.  .  .  .  .  .|
-                |xn yn 1  0  0  0|
-                |0  0  0  xn yn 1|
-
-    */
-
   const unsigned int tiepointsSize = params.m_tiePoints.size();
   if( tiepointsSize < 3 ) return false;
 
-  /* L calcule */
-  
   boost::numeric::ublas::matrix< double > L( 2*tiepointsSize, 1 );
-
-  for ( unsigned int L_block_offset = 0 ; ( L_block_offset < tiepointsSize ); 
-    ++L_block_offset ) 
-  {
-    const Coord2D& u_v = params.m_tiePoints[ L_block_offset ].second;
-    
-    L( L_block_offset*2     , 0) = u_v.x;
-    L( L_block_offset*2 + 1 , 0) = u_v.y;
-  }
-  
-  /* A calcule */
-
   boost::numeric::ublas::matrix< double > A( 2*tiepointsSize, 6 );
+  unsigned int index1 = 0;
+  unsigned int index2 = 0;  
   
-  for ( unsigned int A_block_offset = 0 ; (A_block_offset < tiepointsSize) ;
-        ++A_block_offset)
+  for ( unsigned int tpIdx = 0 ; tpIdx < tiepointsSize ; ++tpIdx)
   {
+    const Coord2D& x_y = params.m_tiePoints[ tpIdx ].first;
+    const Coord2D& u_v = params.m_tiePoints[ tpIdx ].second;
+    
+    index1 = tpIdx*2;
+    index2 = index1 + 1;    
 
-    const Coord2D& x_y = params.m_tiePoints[ A_block_offset ].first;
-
-    A( A_block_offset*2  , 0 ) = x_y.x ;
-    A( A_block_offset*2  , 1 ) = x_y.y ;
-    A( A_block_offset*2  , 2 ) = 1 ;
-    A( A_block_offset*2  , 3 ) = 0 ;
-    A( A_block_offset*2  , 4 ) = 0 ;
-    A( A_block_offset*2  , 5 ) = 0 ;
-    A( A_block_offset*2+1, 0 ) = 0 ;
-    A( A_block_offset*2+1, 1 ) = 0 ;
-    A( A_block_offset*2+1, 2 ) = 0 ;
-    A( A_block_offset*2+1, 3 ) = x_y.x ;
-    A( A_block_offset*2+1, 4 ) = x_y.y ;
-    A( A_block_offset*2+1, 5 ) = 1 ; 
+    A( index1, 0 ) = x_y.x ;
+    A( index1, 1 ) = x_y.y ;
+    A( index1, 2 ) = 1 ;
+    A( index1, 3 ) = 0 ;
+    A( index1, 4 ) = 0 ;
+    A( index1, 5 ) = 0 ;
+    
+    A( index2, 0 ) = 0 ;
+    A( index2, 1 ) = 0 ;
+    A( index2, 2 ) = 0 ;
+    A( index2, 3 ) = x_y.x ;
+    A( index2, 4 ) = x_y.y ;
+    A( index2, 5 ) = 1 ; 
+    
+    L( index1, 0) = u_v.x;
+    L( index2, 0) = u_v.y;    
   }
 
   /* At calcule */

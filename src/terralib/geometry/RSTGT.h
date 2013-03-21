@@ -46,9 +46,19 @@ namespace te
       \note The transformation parameters (inside GTParameters::m_directParameters) are disposed on the following form:
 
       \code
-        | u | = | a -b c | * | x |
-        | v |   | b  a d |   | y |
-                | 0  0 1 |   | 1 |
+           u = a.x - b.y + c
+           v = b.x + a.y + d
+            
+  -        | u | = | a -b c | * | x |
+  -        | v |   | b  a d |   | y |
+  -        | 1 |   | 0  0 1 |   | 1 |            
+
+           |u0| = |x0  -y0  1  0|.|a|
+           |v0|   |y0   x0  0  1| |b|
+           |u1|   |x1  -y12 1  0| |c|
+           |v1|   |y1   y1  0  1| |d|
+           |..|   |.............|
+           |..|   |.............|
 
         GTParameters::m_directParameters = [ a b c d ]
       \endcode

@@ -44,7 +44,7 @@ void TsTiePointsLocator::saveImagesAndTiePoints(
   const std::string& tifFileNameBeginning )
 {
   std::map<std::string, std::string> rInfo1;
-  rInfo1["URI"] = TE_DATA_LOCALE "/" + tifFileNameBeginning + "_raster1.tif";
+  rInfo1["URI"] = tifFileNameBeginning + "_raster1.tif";
   
   std::vector<te::rst::BandProperty*> bandsProperties1;
   bandsProperties1.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
@@ -137,6 +137,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -188,6 +189,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -238,6 +240,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaWidth = 400;
   algoInputParams.m_raster2TargetAreaHeight = 400;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -279,6 +282,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -319,6 +323,7 @@ void TsTiePointsLocator::MoravecStrategyMaximumOffset()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_maxR1ToR2Offset = 20;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -361,6 +366,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_rastersRescaleFactor = 0.5;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -402,6 +408,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -451,6 +458,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaWidth = 600;
   algoInputParams.m_raster2TargetAreaHeight = 700;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -502,6 +510,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -544,6 +553,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -584,6 +594,7 @@ void TsTiePointsLocator::SurfStrategyMaximumOffset()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_maxR1ToR2Offset = 20;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -626,6 +637,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_rastersRescaleFactor = 0.5;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
