@@ -33,6 +33,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
+#include <string>
 #include <vector>
 
 namespace te
@@ -115,7 +116,17 @@ namespace te
       \return The object id set generated from the given dataset.
     */
     TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset);
-    
+
+    /*
+      \brief It generates the set of unique ids for every element of the given dataset using a set of attributes.
+
+      \param dataset A pointer to a valid data set.
+      \param names   A non empty vector of property names to be used to identify the elements.
+     
+      \return The object id set generated from the given dataset.
+    */
+    TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::string>& names);
+
     /*
       \brief It generates the set of unique ids for every element of the given dataset using a set of attributes.
 

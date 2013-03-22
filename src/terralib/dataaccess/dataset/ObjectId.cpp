@@ -24,8 +24,6 @@
 */
 
 // TerraLib
-#include "../../common/STLUtils.h"
-#include "../../datatype/AbstractData.h"
 #include "ObjectId.h"
 
 // STL
@@ -37,10 +35,9 @@ te::da::ObjectId::ObjectId()
 
 te::da::ObjectId::~ObjectId()
 {
-  te::common::FreeContents(m_data);
 }
 
-const std::map<std::size_t, te::dt::AbstractData*>& te::da::ObjectId::getValue() const
+const boost::ptr_vector<te::dt::AbstractData>& te::da::ObjectId::getValue() const
 {
   return m_data;
 }
@@ -49,19 +46,15 @@ std::string te::da::ObjectId::getValueAsString() const
 {
   std::string value;
 
-  for(std::map<std::size_t, te::dt::AbstractData*>::const_iterator it = m_data.begin(); it != m_data.end(); ++it)
-    value = it->second->toString();
+  for(std::size_t i = 0; i < m_data.size(); ++i)
+    value = m_data[i].toString();
   
   return value;
 }
 
-void te::da::ObjectId::addValue(const std::size_t& index, te::dt::AbstractData* data)
+void te::da::ObjectId::addValue(te::dt::AbstractData* data)
 {
   assert(data);
 
-  std::map<std::size_t, te::dt::AbstractData*>::iterator it = m_data.find(index);
-  if(it != m_data.end())
-    delete it->second;
-
-  m_data[index] = data;
+  m_data.push_back(data);
 }
