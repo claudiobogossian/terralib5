@@ -228,3 +228,8 @@ void te::da::ObjectIdSet::setIsFromUniqueKeys(bool value)
 {
   m_isFromUk = value;
 }
+
+std::size_t te::da::ObjectIdSet::size() const
+{
+  return m_oids.size();
+}
