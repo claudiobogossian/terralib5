@@ -33,8 +33,12 @@
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
 #include "../events/NewProject.h"
+#include "../ApplicationController.h"
 #include "../Project.h"
 #include "MapDisplay.h"
+
+// Qt
+#include <QtGui/QContextMenuEvent>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
@@ -47,6 +51,22 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Zoom Wheel tool
   m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 2.0, this));
+
+  // Build the popup menu
+  m_menu.addAction(ApplicationController::getInstance().findAction("Draw"));
+  m_menu.addSeparator();
+  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom In"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom Out"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom Area"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Pan"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom Extent")); 
+  m_menu.addAction(ApplicationController::getInstance().findAction("Previous Extent"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Next Extent"));
+  m_menu.addSeparator();
+  m_menu.addAction(ApplicationController::getInstance().findAction("Stop Draw"));
+
+  // To show popup menu
+  m_display->installEventFilter(this);
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -57,6 +77,17 @@ te::qt::af::MapDisplay::~MapDisplay()
 te::qt::widgets::MapDisplay*  te::qt::af::MapDisplay::getDisplay()
 {
   return m_display;
+}
+
+bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
+{
+  switch(e->type())
+  {
+    case QEvent::ContextMenu:
+      m_menu.exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+    break;
+  }
+  return false;
 }
 
 void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& layers)

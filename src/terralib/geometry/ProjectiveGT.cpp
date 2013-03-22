@@ -150,10 +150,14 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
   const unsigned int tiepointsSize = params.m_tiePoints.size();
   if( tiepointsSize < 4 ) return false;
 
-  /* L and A calcule */
-
-  boost::numeric::ublas::matrix< double > L( 2*tiepointsSize, 1 );
-  boost::numeric::ublas::matrix< double > A( 2*tiepointsSize, 8 );  
+  // Direct mapping
+  boost::numeric::ublas::matrix< double > L_DM( 2*tiepointsSize, 1 );
+  boost::numeric::ublas::matrix< double > A_DM( 2*tiepointsSize, 8 ); 
+  
+  //Inverse mapping
+  boost::numeric::ublas::matrix< double > L_IM( 2*tiepointsSize, 1 );
+  boost::numeric::ublas::matrix< double > A_IM( 2*tiepointsSize, 8 );  
+  
   unsigned int index1 = 0;
   unsigned int index2 = 0;
   
@@ -166,102 +170,96 @@ bool te::gm::ProjectiveGT::computeParameters( GTParameters& params ) const
     const Coord2D& x_y = params.m_tiePoints[ blockOffset ].first;
     const Coord2D& u_v = params.m_tiePoints[ blockOffset ].second;
     
-    L( index1, 0) = u_v.x;
-    L( index2, 0) = u_v.y;
+    L_DM( index1, 0) = u_v.x;
+    L_DM( index2, 0) = u_v.y;
     
-    A( index1, 0 ) = x_y.x ;
-    A( index1, 1 ) = x_y.y ;
-    A( index1, 2 ) = 1 ;
-    A( index1, 3 ) = 0 ;
-    A( index1, 4 ) = 0 ;
-    A( index1, 5 ) = 0 ;
-    A( index1, 6 ) = - x_y.x * u_v.x;
-    A( index1, 7 ) = - x_y.y * u_v.x;
+    A_DM( index1, 0 ) = x_y.x ;
+    A_DM( index1, 1 ) = x_y.y ;
+    A_DM( index1, 2 ) = 1 ;
+    A_DM( index1, 3 ) = 0 ;
+    A_DM( index1, 4 ) = 0 ;
+    A_DM( index1, 5 ) = 0 ;
+    A_DM( index1, 6 ) = - x_y.x * u_v.x;
+    A_DM( index1, 7 ) = - x_y.y * u_v.x;
     
-    A( index2, 0 ) = 0;
-    A( index2, 1 ) = 0;
-    A( index2, 2 ) = 0;
-    A( index2, 3 ) = x_y.x ;
-    A( index2, 4 ) = x_y.y ;
-    A( index2, 5 ) = 1 ;
-    A( index2, 6 ) = - x_y.x * u_v.y;
-    A( index2, 7 ) = - x_y.y * u_v.y;
+    A_DM( index2, 0 ) = 0;
+    A_DM( index2, 1 ) = 0;
+    A_DM( index2, 2 ) = 0;
+    A_DM( index2, 3 ) = x_y.x ;
+    A_DM( index2, 4 ) = x_y.y ;
+    A_DM( index2, 5 ) = 1 ;
+    A_DM( index2, 6 ) = - x_y.x * u_v.y;
+    A_DM( index2, 7 ) = - x_y.y * u_v.y;
+    
+    L_IM( index1, 0) = x_y.x;
+    L_IM( index2, 0) = x_y.y;
+    
+    A_IM( index1, 0 ) = u_v.x ;
+    A_IM( index1, 1 ) = u_v.y ;
+    A_IM( index1, 2 ) = 1 ;
+    A_IM( index1, 3 ) = 0 ;
+    A_IM( index1, 4 ) = 0 ;
+    A_IM( index1, 5 ) = 0 ;
+    A_IM( index1, 6 ) = - u_v.x * x_y.x;
+    A_IM( index1, 7 ) = - u_v.y * x_y.x;
+    
+    A_IM( index2, 0 ) = 0;
+    A_IM( index2, 1 ) = 0;
+    A_IM( index2, 2 ) = 0;
+    A_IM( index2, 3 ) = u_v.x ;
+    A_IM( index2, 4 ) = u_v.y ;
+    A_IM( index2, 5 ) = 1 ;
+    A_IM( index2, 6 ) = - u_v.x * x_y.y;
+    A_IM( index2, 7 ) = - u_v.y * x_y.y;    
   }
   
-//  std::cout << std::endl << "L:" << std::endl << L << std::endl;
-//  std::cout << std::endl << "A:" << std::endl << A << std::endl;
-
   /* At calcule */
-  boost::numeric::ublas::matrix< double > At( boost::numeric::ublas::trans( A ) ) ;
+  boost::numeric::ublas::matrix< double > A_DM_t( boost::numeric::ublas::trans( A_DM ) ) ;
+  boost::numeric::ublas::matrix< double > A_IM_t( boost::numeric::ublas::trans( A_IM ) ) ;
 
   /* N calcule */
-  boost::numeric::ublas::matrix< double > N( boost::numeric::ublas::prod( At, A ) );
+  boost::numeric::ublas::matrix< double > N_DM( boost::numeric::ublas::prod( A_DM_t, A_DM ) );
+  boost::numeric::ublas::matrix< double > N_IM( boost::numeric::ublas::prod( A_IM_t, A_IM ) );
 
   /* U calcule */
-  boost::numeric::ublas::matrix< double > U( boost::numeric::ublas::prod( At, L ) );
+  boost::numeric::ublas::matrix< double > U_DM( boost::numeric::ublas::prod( A_DM_t, L_DM ) );
+  boost::numeric::ublas::matrix< double > U_IM( boost::numeric::ublas::prod( A_IM_t, L_IM ) );
 
   /* N_inv calcule */
-  boost::numeric::ublas::matrix< double > N_inv;
+  boost::numeric::ublas::matrix< double > N_DM_inv;
+  boost::numeric::ublas::matrix< double > N_IM_inv;
   
-  if ( te::common::getInverseMatrix( N, N_inv ) ) 
-  {
-    /* direct parameters calcule */
+  if ( ! te::common::getInverseMatrix( N_DM, N_DM_inv ) ) return false;
 
-    boost::numeric::ublas::matrix< double > X( 
-      boost::numeric::ublas::prod( N_inv, U ) );
+  boost::numeric::ublas::matrix< double > X_DM( 
+    boost::numeric::ublas::prod( N_DM_inv, U_DM ) );
       
-//    std::cout << std::endl << "X:" << std::endl << X << std::endl;
-    
-    params.m_directParameters.resize( 8 );
-    params.m_directParameters[0] = X(0,0);
-    params.m_directParameters[1] = X(1,0);
-    params.m_directParameters[2] = X(2,0);
-    params.m_directParameters[3] = X(3,0);
-    params.m_directParameters[4] = X(4,0);
-    params.m_directParameters[5] = X(5,0);
-    params.m_directParameters[6] = X(6,0);
-    params.m_directParameters[7] = X(7,0);
-    
-    /* inverse parameters calcule */
-    
-    boost::numeric::ublas::matrix< double > XExpanded( 3, 3 );
-    XExpanded( 0, 0 ) = X(0,0);
-    XExpanded( 0, 1 ) = X(1,0);
-    XExpanded( 0, 2 ) = X(2,0);
-    XExpanded( 1, 0 ) = X(3,0);
-    XExpanded( 1, 1 ) = X(4,0);
-    XExpanded( 1, 2 ) = X(5,0);
-    XExpanded( 2, 0 ) = X(6,0);
-    XExpanded( 2, 1 ) = X(7,0);
-    XExpanded( 2, 2 ) = 1;
-    
-//    std::cout << std::endl << "XExpanded:" << std::endl << XExpanded << std::endl;
-    
-    boost::numeric::ublas::matrix< double > XExpandedInv;
+  params.m_directParameters.resize( 8 );
+  params.m_directParameters[0] = X_DM(0,0);
+  params.m_directParameters[1] = X_DM(1,0);
+  params.m_directParameters[2] = X_DM(2,0);
+  params.m_directParameters[3] = X_DM(3,0);
+  params.m_directParameters[4] = X_DM(4,0);
+  params.m_directParameters[5] = X_DM(5,0);
+  params.m_directParameters[6] = X_DM(6,0);
+  params.m_directParameters[7] = X_DM(7,0);
+  
+  if ( ! te::common::getInverseMatrix( N_IM, N_IM_inv ) ) return false;
 
-    if( te::common::getInverseMatrix( XExpanded, XExpandedInv ) ) 
-    {
-//      std::cout << std::endl << "XExpandedInv:" << std::endl << XExpandedInv << std::endl;
+  boost::numeric::ublas::matrix< double > X_IM( 
+    boost::numeric::ublas::prod( N_IM_inv, U_IM ) );
       
-      params.m_inverseParameters.resize( 8 );
-      params.m_inverseParameters[0] = XExpandedInv(0,0);
-      params.m_inverseParameters[1] = XExpandedInv(0,1);
-      params.m_inverseParameters[2] = XExpandedInv(0,2);
-      params.m_inverseParameters[3] = XExpandedInv(1,0);
-      params.m_inverseParameters[4] = XExpandedInv(1,1);
-      params.m_inverseParameters[5] = XExpandedInv(1,2);
-      params.m_inverseParameters[6] = XExpandedInv(2,0);
-      params.m_inverseParameters[7] = XExpandedInv(2,1);
-      
-      return true;
-    } 
-    else 
-    {
-      return false;
-    }
-  } else {
-    return false;   
-  }
+  params.m_inverseParameters.resize( 8 );
+  params.m_inverseParameters[0] = X_IM(0,0);
+  params.m_inverseParameters[1] = X_IM(1,0);
+  params.m_inverseParameters[2] = X_IM(2,0);
+  params.m_inverseParameters[3] = X_IM(3,0);
+  params.m_inverseParameters[4] = X_IM(4,0);
+  params.m_inverseParameters[5] = X_IM(5,0);
+  params.m_inverseParameters[6] = X_IM(6,0);
+  params.m_inverseParameters[7] = X_IM(7,0);  
+  
+  return true;
 }
 
 te::gm::ProjectiveGTFactory::ProjectiveGTFactory()

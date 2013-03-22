@@ -200,31 +200,33 @@ std::string te::da::GetCategoryName(int category)
   {
     case te::da::UNKNOWN_DATASET_TYPE:
       return "Unknown";
-      break;
+
     case te::da::TABLE_TYPE:
       return "Table";
-      break;
+
     case te::da::SYSTEM_TABLE_TYPE:
       return "System";
-      break;
+
     case te::da::VIEW_TYPE:
       return "View";
-      break;
+
     case te::da::QUERY_TYPE:
       return "Query";
-      break;
+
     case te::da::INDEX_TYPE:
       return "Index";
-      break;
+
     case te::da::SEQUENCE_TYPE:
       return "Sequence";
-      break;
+
     case te::da::TRIGGER_TYPE:
       return "Trigger";
-      break;
+
     case te::da::REGULAR_FILE_TYPE:
       return "Regular File";
-      break;
+
+    default:
+      return "";
   }
 }
 
@@ -303,5 +305,12 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
   return datasource;
 }
 
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* /*dataset*/)
+{
+  return 0; // TODO!
+}
 
-
+te::da::ObjectIdSet* GenerateOIDSet(te::da::DataSet* /*dataset*/, const std::vector<std::size_t>& /*indexes*/)
+{
+  return 0; // TODO!
+}

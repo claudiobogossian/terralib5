@@ -28,6 +28,7 @@
 
 // TerraLib
 #include "../color/RGBAColor.h"
+#include "../geometry/Envelope.h"
 #include "AbstractLayer.h"
 #include "Config.h"
 
@@ -179,13 +180,39 @@ namespace te
     */
     TEMAPEXPORT void GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layers, std::list<te::map::AbstractLayerPtr>& visibleLayers);
 
-     /*!
+    /*!
       \brief It gets the visible layers of the given layer.
 
       \param layer         The layer that will be consulted.
       \param visibleLayers A layer list that will be filled with the visible layers.
     */
     TEMAPEXPORT void GetVisibleLayers(const te::map::AbstractLayerPtr& layer, std::list<te::map::AbstractLayerPtr>& visibleLayers);
+
+    /*!
+      \brief It calculates the extent of the given layers in the given SRID.
+
+      \param layers       The layer list that will be consulted.
+      \param srid         The result extent SRID.
+      \param onlyVisibles A flag that indicates if the method should consider only the visible layers.
+
+      \return The extent of the given layers in the given SRID.
+
+      \note This method considers the children of layers.
+    */
+    TEMAPEXPORT te::gm::Envelope GetExtent(const std::list<te::map::AbstractLayerPtr>& layers, int srid, bool onlyVisibles);
+
+    /*!
+      \brief It calculates the extent of the given layer in the given SRID.
+
+      \param layer        The layer that will be consulted.
+      \param srid         The result extent SRID.
+      \param onlyVisibles A flag that indicates if the method should consider only the visible layers.
+
+      \return The extent of the given layer in the given SRID.
+
+      \note This method considers the children of layer.
+    */
+    TEMAPEXPORT te::gm::Envelope GetExtent(const  te::map::AbstractLayerPtr& layer, int srid, bool onlyVisibles);
 
   } // end namespace map
 }   // end namespace te

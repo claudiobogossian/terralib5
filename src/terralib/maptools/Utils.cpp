@@ -36,6 +36,7 @@
 #include "../se/ParameterValue.h"
 #include "../se/Stroke.h"
 #include "../se/SvgParameter.h"
+#include "../srs/Config.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
 #include "DataSetLayer.h"
@@ -235,3 +236,31 @@ void te::map::GetVisibleLayers(const std::list<te::map::AbstractLayerPtr>& layer
     GetVisibleLayers(*it, visibleLayers);
 }
 
+te::gm::Envelope te::map::GetExtent(const std::list<te::map::AbstractLayerPtr>& layers, int srid, bool onlyVisibles)
+{
+  te::gm::Envelope e;
+
+  for(std::list<te::map::AbstractLayerPtr>::const_iterator it = layers.begin(); it != layers.end(); ++it)
+    e.Union(GetExtent(*it, srid, onlyVisibles));
+
+  return e;
+}
+
+te::gm::Envelope te::map::GetExtent(const  te::map::AbstractLayerPtr& layer, int srid, bool onlyVisibles)
+{
+  if(onlyVisibles && layer->getVisibility() == te::map::NOT_VISIBLE)
+    return te::gm::Envelope();
+
+  te::gm::Envelope e = layer->getExtent();
+
+  if((layer->getSRID() != TE_UNKNOWN_SRS) && (srid != TE_UNKNOWN_SRS))
+    e.transform(layer->getSRID(), srid);
+
+  for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
+  {
+    te::map::AbstractLayerPtr child(boost::dynamic_pointer_cast<AbstractLayer>(layer->getChild(i)));
+    e.Union(GetExtent(child, srid, onlyVisibles));
+  }
+
+  return e;
+}
