@@ -84,8 +84,10 @@ namespace te
 
             \note It will not take the ownership of the pointers.
           */
-          void setValues();     
-          
+          void setValues();
+          void setSymbol( QwtSymbol *symbol );
+          void setSamples( const QVector<QPointF> &samples );
+
         private:
           Scatter*                m_scatter; //!< The scatter that will be shown on this chart.
           te::se::Mark*           m_mark; //!< The symbol that defines the look of a scatter's point.

@@ -232,8 +232,24 @@
     </layout>
    </item>
   </layout>
-  <zorder>propertyYLabel</zorder>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_cancelPushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>ScatterDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>302</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>305</x>
+     <y>176</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -23,15 +23,19 @@
   \brief A widget used to create a nem Histogram chart.
 */
 
+//Terralib
 #include "ui_histogramCreatorDialog.h"
 #include "HistogramCreatorDialog.h"
 #include "ChartStyleDialog.h"
 #include "Histogram.h"
 #include "HistogramChart.h"
+#include "HistogramStyle.h"
 #include "ChartDisplay.h"
-#include "../../../qt/widgets/charts/Utils.h"
+#include "../utils/ColorPickerToolButton.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
+#include "../../../qt/widgets/charts/Utils.h"
+#include "../../../qt/widgets/se/Utils.h"
 
 //QT
 #include <QtGui/QDialog>
@@ -44,6 +48,17 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
     m_dataSet (dataSet)
 {
   m_ui->setupUi(this);
+
+  // Color Picker
+  m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
+  m_colorPicker->setFixedSize(107, 24);
+
+  // Adjusting...
+  QGridLayout* layout = new QGridLayout(m_ui->m_colorPickerFrame);
+  layout->setContentsMargins(0, 0, 0, 0);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addWidget(m_colorPicker);
+
   QString item;
   std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
 
@@ -53,13 +68,14 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
     m_ui->m_propertyComboBox->addItem(item);
   }
 
+  m_histogramStyle = new te::qt::widgets::HistogramStyle();
+
 // connect signal and slots
   connect(m_ui->m_stylePushButton, SIGNAL(clicked()), this, SLOT(onStylePushButtonClicked()));
-  connect(m_ui->m_barStylePushButton, SIGNAL(clicked()), this, SLOT(onBarStylePushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
+  connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
 }
 
 te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog()
@@ -69,13 +85,8 @@ te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog()
 
 void te::qt::widgets::HistogramCreatorDialog::onStylePushButtonClicked()
 {
-    te::qt::widgets::ChartStyleDialog dlg(this);
-    dlg.exec();
-}
-
-void te::qt::widgets::HistogramCreatorDialog::onBarStylePushButtonClicked()
-{
-
+  te::qt::widgets::ChartStyleDialog dlg(this, 0, "Histogram", m_ui->m_propertyComboBox->currentText(), "Frequency");
+  dlg.exec();
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
@@ -88,10 +99,16 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
   QString aux = m_ui->m_propertyComboBox->currentText();
   std::string selectedProperty = aux.toStdString();
   int selectedPropertyIdx= m_type->getPropertyPosition(selectedProperty);
+  int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
 
+  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  {
+  m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+  }
+  else
+  {
   m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
-//passar como parametro o HistogramStyle
-  m_histogramChart = new te::qt::widgets::HistogramChart(m_histogram);
+  }
 
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);
@@ -102,19 +119,18 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 
   lay->addWidget(chartDisplay);
 
+  m_histogramChart = new te::qt::widgets::HistogramChart(m_histogram);
+  QwtColumnSymbol *symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
+  symbol->setPalette(m_color);
+  m_histogramChart->setSymbol(symbol);
   m_histogramChart->attach(chartDisplay);
 
   chartDisplay->show();
 
   chartDisplay->replot();
 
-  dlg.exec();
   this->close();
-}
-
-void te::qt::widgets::HistogramCreatorDialog::onCancelPushButtonClicked()
-{
-
+  dlg.exec();
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
@@ -138,4 +154,17 @@ void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QS
   {
   m_ui->m_slicesSpinBox->setEnabled(true);
   }
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onColorChanged(const QColor& color)
+{
+  // The new fill color
+  m_color.setRgb(color.red(), color.green(), color.blue(), m_color.alpha());
+
+  updateUiFillColor();
+}
+
+void te::qt::widgets::HistogramCreatorDialog::updateUiFillColor()
+{
+  m_colorPicker->setColor(m_color);
 }

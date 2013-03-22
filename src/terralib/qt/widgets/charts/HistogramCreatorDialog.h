@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramCreatorDialog.h
+  \file terralib/qt/widgets/charts/HistogramCreatorDialog.h
 
   \brief A widget used to define the basic parameters of a new histogram.
 */
@@ -41,6 +41,7 @@ namespace te
 
   namespace da
   {
+    //forward declarations
     class DataSet;
     class DataSetType;
   }
@@ -53,6 +54,8 @@ namespace te
     //forward declarations
     class Histogram;
     class HistogramChart;
+    class HistogramStyle;
+    class ColorPickerToolButton;
 
     /*!
         \class Histogram Creator
@@ -72,14 +75,16 @@ namespace te
 
           Ui::HistogramDialog* getForm() const;
 
+          /*! \brief Updates the widget form element used to visualize the fill color. */
+          void updateUiFillColor();
+
         protected slots:
 
           void onStylePushButtonClicked();
-          void onBarStylePushButtonClicked();
           void onOkPushButtonClicked();
-          void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
           void onPropertyComboBoxIndexChanged(QString text);
+          void onColorChanged(const QColor& color);
 
         private:
 
@@ -88,6 +93,9 @@ namespace te
           te::da::DataSetType*                m_type;
           te::qt::widgets::Histogram*         m_histogram;
           te::qt::widgets::HistogramChart*    m_histogramChart;
+          te::qt::widgets::HistogramStyle*    m_histogramStyle;
+          ColorPickerToolButton*              m_colorPicker;
+          QColor                              m_color;
 
       };
     } // end namespace widgets

@@ -55,7 +55,7 @@ namespace te
 
         public:
 
-          ChartStyleDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ChartStyleDialog(QWidget* parent = 0, Qt::WindowFlags f = 0, QString title = "", QString PropertyX = "", QString PropertyY = "");
 
           ~ChartStyleDialog();
 
@@ -68,7 +68,6 @@ namespace te
           void onBackgroundPushButtonClicked();
           void onGridCheckBoxToggled();
           void onOkPushButtonClicked();
-          void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
 
         private:

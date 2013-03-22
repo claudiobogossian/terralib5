@@ -109,6 +109,9 @@
            <height>20</height>
           </size>
          </property>
+         <property name="text">
+          <string/>
+         </property>
         </widget>
        </item>
        <item row="1" column="0">
@@ -154,6 +157,9 @@
            <width>175</width>
            <height>20</height>
           </size>
+         </property>
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -279,5 +285,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>m_cancelPushButton</sender>
+   <signal>pressed()</signal>
+   <receiver>ChartStyleDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>280</x>
+     <y>228</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>294</x>
+     <y>250</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

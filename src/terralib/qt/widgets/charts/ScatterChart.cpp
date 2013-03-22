@@ -54,7 +54,8 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   setSymbol(chartSymbol);
 
   //Set Values
-  setValues();
+//  setSamples();
+    setValues();
 }
 
 
@@ -72,7 +73,8 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, te::se::Mark* style, 
   setSymbol(chartSymbol);
 
   //Set Values
-  setValues();
+//  setSamples();
+    setValues();
 }
 
 void te::qt::widgets::ScatterChart::setValues()
@@ -85,6 +87,24 @@ void te::qt::widgets::ScatterChart::setValues()
   }
 
   setRawSamples(m_scatter->getX(), m_scatter->getY(), size);
+}
+
+void te::qt::widgets::ScatterChart::setSymbol( QwtSymbol *symbol )
+{
+    setSymbol( symbol );
+
+    if ( symbol == NULL )
+    {
+        setStyle( QwtPlotCurve::Dots );
+    }
+}
+
+void te::qt::widgets::ScatterChart::setSamples( const QVector<QPointF> &samples )
+{
+    setPaintAttribute( 
+        QwtPlotCurve::ImageBuffer, samples.size() > 1000 );
+
+    setSamples( samples );
 }
 
 te::qt::widgets::ScatterChart::~ScatterChart()

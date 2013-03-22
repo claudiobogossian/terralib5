@@ -440,7 +440,6 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-
     std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
@@ -463,7 +462,16 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-    te::qt::widgets::ScatterCreatorDialog dlg(this);
+    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+    
+    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
+    te::qt::widgets::ScatterCreatorDialog dlg(dataset, this);
     dlg.exec();
   }
   catch(const std::exception& e)

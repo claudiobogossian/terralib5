@@ -98,17 +98,12 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
     
     setData(new QwtIntervalSeriesData(samples));
   }
-
-//chamar as funcoes (que estarao no Utils) para converter objetos terralib para QWT
-//1. cor
-  QwtColumnSymbol *symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
-  setSymbol(symbol);
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
 {  
   delete m_histogram;
-  delete m_histogramScaleDraw;
+//  delete m_histogramScaleDraw;
 }
 
 te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw()
