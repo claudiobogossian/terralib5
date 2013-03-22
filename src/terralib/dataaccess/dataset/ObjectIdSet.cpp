@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../../common/Translator.h"
 #include "../query/And.h"
 #include "../query/DataSetName.h"
 #include "../query/EqualTo.h"
@@ -31,10 +32,12 @@
 #include "../query/Fields.h"
 #include "../query/From.h"
 #include "../query/FromItem.h"
+#include "../query/In.h"
 #include "../query/Literal.h"
 #include "../query/PropertyName.h"
 #include "../query/Select.h"
 #include "../query/Where.h"
+#include "../Exception.h"
 #include "DataSetType.h"
 #include "ObjectId.h"
 #include "ObjectIdSet.h"
@@ -96,7 +99,43 @@ void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
 
 te::da::Select* te::da::ObjectIdSet::getQuery() const
 {
-  return 0; // TODO!
+  if(m_isFromPk && m_indexes.size() == 1) // The best case?
+  {
+    // Build an IN Clause
+
+    assert(m_type);
+
+    const std::string& propertyName = m_type->getProperty(m_indexes[0])->getName();
+
+    In* in = new In(propertyName);
+
+    for(std::size_t i = 0; i < m_oids.size(); ++i) // for each unique id
+    {
+      assert(!m_oids.is_null(i));
+
+      const boost::ptr_vector<te::dt::AbstractData>& data = m_oids[i].getValue();
+      assert(data.size() == 1);
+
+      in->add(new Literal(data[0]));
+    }
+
+    Where* filter = new Where(in);
+
+    // All fields
+    te::da::Fields* all = new te::da::Fields;
+    all->push_back(new te::da::Field("*"));
+
+    // What is the data set?
+    FromItem* fromItem = new DataSetName(m_type->getName());
+    From* from = new From;
+    from->push_back(fromItem);
+
+    return new Select(all, from, filter);
+  }
+
+  // TODO: The other cases! Build an union of Selects?
+
+  throw Exception(TR_DATAACCESS("Could not create the query from the ObjectIdSet!"));
 }
 
 te::da::Select* te::da::ObjectIdSet::getQuery(std::size_t i) const
