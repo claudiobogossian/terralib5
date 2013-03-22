@@ -27,17 +27,14 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_OBJECTID_H
 
 // TerraLib
+#include "../../datatype/AbstractData.h"
 #include "../Config.h"
 
-// STL
-#include <map>
-#include <string>
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
-// Forward declaration
-  namespace dt { class AbstractData; }
-
   namespace da
   {
     /*!
@@ -60,11 +57,11 @@ namespace te
         /*!
           \brief It gets the properties values used to uniquely identify a data set element.
           
-          \return A map from property indexes to their value.
+          \return A vector with the property values.
 
           \note The caller will NOT take the ownership of the returned pointers.
         */
-        const std::map<std::size_t, te::dt::AbstractData*>& getValue() const;
+        const boost::ptr_vector<te::dt::AbstractData>& getValue() const;
 
         /*!
           \brief It gets the properties values used to uniquely identify a data set element as string.
@@ -76,16 +73,15 @@ namespace te
         /*!
           \brief It adds a property value to uniquely identify a data set element.
 
-          \param index The property index.
-          \param data  The value of the property.
+          \param data The value of the property.
 
           \note This class will take the ownership of the given pointer.
         */
-        void addValue(const std::size_t& index, te::dt::AbstractData* data);
+        void addValue(te::dt::AbstractData* data);
 
       private:
 
-        std::map<std::size_t, te::dt::AbstractData*> m_data; //!< A map of property indexes to abstract data.
+        boost::ptr_vector<te::dt::AbstractData> m_data; //!< A vector of property values.
     };
 
   } // end namespace da

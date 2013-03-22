@@ -58,6 +58,35 @@ const te::da::DataSetType* te::da::ObjectIdSet::getType() const
   return m_type;
 }
 
+void te::da::ObjectIdSet::addProperty(const std::string& name)
+{
+  assert(m_type);
+
+  addProperty(m_type->getPropertyPosition(name));
+}
+
+void te::da::ObjectIdSet::addProperty(std::size_t i)
+{
+  m_indexes.push_back(i);
+}
+
+void te::da::ObjectIdSet::setProperties(const std::vector<std::string>& names)
+{
+  assert(m_type);
+
+  std::vector<std::size_t> indexes;
+
+  for(std::size_t i = 0; i < names.size(); ++i)
+    indexes.push_back(m_type->getPropertyPosition(names[i]));
+
+  setProperties(indexes);
+}
+
+void te::da::ObjectIdSet::setProperties(const std::vector<std::size_t>& indexes)
+{
+  m_indexes = indexes;
+}
+
 void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
 {
   assert(oid);
@@ -86,23 +115,23 @@ te::da::Select* te::da::ObjectIdSet::getQuery(std::size_t i) const
      let's build the restriction expressions */
 
   // The object id values
-  const std::map<std::size_t, te::dt::AbstractData*>& data = oid.getValue();
+  const boost::ptr_vector<te::dt::AbstractData>& data = oid.getValue();
   assert(!data.empty());
+  assert(data.size() == m_indexes.size());
 
   // For each value
-  std::map<std::size_t, te::dt::AbstractData*>::const_iterator it;
-  for(it = data.begin(); it != data.end(); ++it)
+  for(std::size_t i = 0; i < data.size(); ++i)
   {
     // What property was used?
-    te::dt::Property* p = m_type->getProperty(it->first);
+    te::dt::Property* p = m_type->getProperty(m_indexes[i]);
 
     assert(p);
     assert(!p->getName().empty());
-    assert(it->second);
+    assert(!data.is_null(i));
 
     // The restriction is an EqualTo expression
     PropertyName* propertyName = new PropertyName(p->getName());
-    Literal* value = new Literal(it->second);
+    Literal* value = new Literal(data[i]);
 
     expressions.push_back(new EqualTo(propertyName, value));
   }

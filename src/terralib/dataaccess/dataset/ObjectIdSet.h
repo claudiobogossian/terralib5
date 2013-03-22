@@ -34,8 +34,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
-#include <map>
-#include <string>
+#include <vector>
 
 namespace te
 {
@@ -75,6 +74,34 @@ namespace te
           \return The type of the data set that generated the unique ids.
         */
         const DataSetType* getType() const;
+
+        /*!
+          \brief It adds a propety that will be used to generate the unique ids.
+
+          \param name A propety name that will be used to generate the unique ids.
+        */
+        void addProperty(const std::string& name);
+
+        /*!
+          \brief It adds a propety that will be used to generate the unique ids.
+
+          \param i A propety index that will be used to generate the unique ids.
+        */
+        void addProperty(std::size_t i);
+
+        /*!
+          \brief It sets the properties that will be used to generate the unique ids.
+
+          \param names A vector with the propety names that will be used to generate the unique ids.
+        */
+        void setProperties(const std::vector<std::string>& names);
+
+        /*!
+          \brief It sets the properties that will be used to generate the unique ids.
+
+          \param indexes A vector with the propety indexes that will be used to generate the unique ids.
+        */
+        void setProperties(const std::vector<std::size_t>& indexes);
 
         /*!
           \brief It adds an object id to this object id set.
@@ -121,9 +148,10 @@ namespace te
       private:
 
         const DataSetType* m_type;          //!< A pointer to the type of the data set that generates the unique ids.
+        std::vector<std::size_t> m_indexes; //!< A vector with the property indexes used to generate de unique ids.
+        boost::ptr_vector<ObjectId> m_oids; //!< The set of unique ids.
         bool m_isFromPk;                    //!< A flag that indicates if the unique ids was generated from primary key properties.
         bool m_isFromUk;                    //!< A flag that indicates if the unique ids was generated from unique key properties.
-        boost::ptr_vector<ObjectId> m_oids; //!< The set of unique ids.
     };
 
   } // end namespace da
