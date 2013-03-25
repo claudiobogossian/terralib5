@@ -316,6 +316,9 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
   const DataSetType* type = dataset->getType();
   assert(type);
 
+  if(!type->isFullLoaded())
+    dataset->loadTypeInfo();
+
   // A vector with the property indexes that will be used to generate the unique ids
   std::vector<std::size_t> oidprops;
 

@@ -145,6 +145,9 @@ namespace te
         /*! It sets if the unique id were generated from unique key properties. */
         void setIsFromUniqueKeys(bool value);
 
+        /*! It returns the object id set size. */
+        std::size_t size() const;
+
       private:
 
         const DataSetType* m_type;          //!< A pointer to the type of the data set that generates the unique ids.
