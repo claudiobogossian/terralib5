@@ -37,6 +37,8 @@
 #include "dataset/DataSetTypePersistence.h"
 #include "dataset/ForeignKey.h"
 #include "dataset/Index.h"
+#include "dataset/ObjectId.h"
+#include "dataset/ObjectIdSet.h"
 #include "dataset/PrimaryKey.h"
 #include "dataset/Sequence.h"
 #include "dataset/UniqueKey.h"

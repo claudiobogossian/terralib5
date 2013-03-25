@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMenu>
 
 namespace te
 {
@@ -80,6 +81,8 @@ namespace te
 
           te::qt::widgets::MapDisplay* getDisplay();
 
+          bool eventFilter(QObject* watched, QEvent* e);
+
           /*!
             \brief It draws the given layer list.
 
@@ -109,6 +112,7 @@ namespace te
 
           te::qt::widgets::MapDisplay* m_display; //!< Pointer to a component te::qt::widgets::MapDisplay.
           te::qt::widgets::AbstractTool* m_tool;  //!< Pointer to the current tool being used.
+          QMenu m_menu;                           //!< The map display popup menu.
       };
     }
   }

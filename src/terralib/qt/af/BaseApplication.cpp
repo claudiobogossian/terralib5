@@ -903,7 +903,6 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerChartsHistogram, "histogram-chart", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, false, m_menubar);
   initAction(m_layerChartsScatter, "scatter-chart", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, false, m_menubar);
 
-
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
   initAction(m_fileSaveProject, "document-save", "File.Save Project", tr("&Save Project"), tr(""), true, false, false, m_menubar);
@@ -1026,18 +1025,21 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerProperties);
   m_layerMenu->addSeparator();
 
-  m_layerMenu->addAction(m_layerRaise);
-  m_layerMenu->addAction(m_layerLower);
-  m_layerMenu->addAction(m_layerToTop);
-  m_layerMenu->addAction(m_layerToBottom);
-  m_layerMenu->addSeparator();
-
   m_layerChartsMenu->setObjectName("Layer.Charts");
   m_layerChartsMenu->setTitle(tr("&Charts"));
 
   m_layerMenu->addMenu(m_layerChartsMenu);
   m_layerChartsMenu->addAction(m_layerChartsHistogram);
   m_layerChartsMenu->addAction(m_layerChartsScatter);
+  m_layerMenu->addSeparator();
+
+  m_layerMenu->addAction(m_layerRaise);
+  m_layerMenu->addAction(m_layerLower);
+  m_layerMenu->addAction(m_layerToTop);
+  m_layerMenu->addAction(m_layerToBottom);
+
+
+
 
 // Map Menu
   m_mapMenu->setObjectName("Map");

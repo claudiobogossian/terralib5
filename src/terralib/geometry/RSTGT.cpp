@@ -95,18 +95,6 @@ te::gm::GeometricTransformation* te::gm::RSTGT::clone() const
         
 bool te::gm::RSTGT::computeParameters( GTParameters& params ) const
 {
-    /*
-            u = a.x - b.y + c
-            v = b.x + a.y + d
-
-            A = |-y0  x0  1  0|
-                |x0   y0  0  1|
-                |-y1  x12 1  0|
-                |x1   y1  0  1|
-                |.  .  .  .  .|
-                |.  .  .  .  .|
-    */
-
   const unsigned int tiepointsSize = params.m_tiePoints.size();
   if( tiepointsSize < 2 ) return false;
   
@@ -128,13 +116,13 @@ bool te::gm::RSTGT::computeParameters( GTParameters& params ) const
     A( index1, 2 ) = 1.0;
     A( index1, 3 ) = 0.0;
     
-    A( index2, 0 ) = x_y.x;
-    A( index2, 1 ) = x_y.y;
+    A( index2, 0 ) = x_y.y;
+    A( index2, 1 ) = x_y.x;
     A( index2, 2 ) = 0.0;
     A( index2, 3 ) = 1.0;    
     
     L( index1, 0 ) = u_v.x;
-    L( index2, 0 ) = u_v.x;
+    L( index2, 0 ) = u_v.y;
   }  
   
 //  std::cout << std::endl << "L:" << std::endl << L << std::endl;
