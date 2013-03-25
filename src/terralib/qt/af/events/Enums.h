@@ -39,18 +39,18 @@ namespace te
       {
         enum
         {
-          APP_CLOSE,
-          NEW_TOOLBAR,
+          APP_CLOSED,
+          TOOLBAR_ADDED,
           DISPLAY_RESIZED,
           LAYER_ADDED,
-          UPDATE_LAYER_VISIBILTY,
+          LAYER_VISIBILTY_CHANGED,
           TOOL_CHANGED,
           LAYER_SELECTED,
-          TRACK_COORDINATE,
+          COORDINATE_TRACKED,
           POINT_GEOMETRIES,
           VISIBLE_BBOX_CHANGED,
           STYLE_CHANGED,
-          NEW_PROJECT,
+          PROJECT_ADDED,
           CUSTOM = 1024
         };
 

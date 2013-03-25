@@ -32,7 +32,7 @@
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
-#include "../events/NewProject.h"
+#include "../events/ProjectEvents.h"
 #include "../ApplicationController.h"
 #include "../Project.h"
 #include "MapDisplay.h"
@@ -147,6 +147,6 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
   m_display->installEventFilter(m_tool);
 }
 
-void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::Event* e)
+void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
 }

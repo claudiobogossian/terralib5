@@ -294,6 +294,8 @@ set (
   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
   ${SRCDIR}/widgets/utils/FileChooser.h
   ${SRCDIR}/widgets/utils/ResourceChooser.h
+  ${SRCDIR}/widgets/utils/CustomizeToolBarsDialog.h
+#  ${SRCDIR}/widgets/utils/AddToolBarDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
 

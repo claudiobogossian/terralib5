@@ -54,10 +54,12 @@ namespace te
   {
     namespace af
     {
-// Forward declarations
-      class Event;
-
-      /*!
+      namespace evt
+      {
+      // Forward declarations
+        struct Event;
+      }
+             /*!
         \class ApplicationController
 
         \brief The base API for TerraLib applications.
@@ -77,7 +79,9 @@ namespace te
           */
           ApplicationController(/*QObject* parent = 0*/);
 
-          /*! \brief Destructor. */
+          /*! 
+            \brief Destructor. 
+          */
           virtual ~ApplicationController();
 
           /*!
@@ -152,6 +156,20 @@ namespace te
           QToolBar* getToolBar(const QString& id) const;
 
           /*!
+            \brief Return the list of registered toolbars.
+
+            \return List of registered ToolBars.
+          */
+          std::vector<QToolBar*> getToolBars() const;
+
+          /*!
+            \brief Removes the toolbar identified by \a id.
+
+            \param id Identifier of the tool bar.
+          */
+          void removeToolBar(const QString& id);
+
+          /*!
             \brief Register the \a mnu.
 
             \param mnu Pointer to the menu to be registered.
@@ -206,9 +224,13 @@ namespace te
           QMenuBar* getMenuBar(const QString& id) const;
 
           /*!
-            \brief
+            \brief Returns the action identified by \a id or NULL if there's not an action identified by \a id.
 
-            \return
+            \param id Identifier if the action. 
+
+            \return QAction identified or NULL if could not find one.
+
+            \note There's a rule to determine \a id. The text of menus and submenus separated by '.' character.
           */
           QAction* findAction(const QString& id) const;
 
@@ -295,14 +317,14 @@ namespace te
 
             \param evt Event to be sent.
           */
-          void broadcast(te::qt::af::Event* evt);
+          void broadcast(te::qt::af::evt::Event* evt);
 
         signals:
 
           /*!
-            \brief Signal emmited for the aplication framework listeners.
+            \brief Signal emmited to the aplication framework listeners.
           */
-          void triggered(te::qt::af::Event*);
+          void triggered(te::qt::af::evt::Event*);
 
         public:
 

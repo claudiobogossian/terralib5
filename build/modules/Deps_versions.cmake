@@ -32,7 +32,7 @@ MACRO (getLibrariesNames packName libs)
     math (EXPR lim ${numLibs}-1)
     
     foreach(lib ${_${packName}_LIBS})
-      set (ret "${ret} ${lib} (>= ${_${packName}_VERSION})")
+      set (ret "${ret} ${lib}") # (>= ${_${packName}_VERSION})")
       
       if(count LESS lim)
         set (ret ${ret},)
