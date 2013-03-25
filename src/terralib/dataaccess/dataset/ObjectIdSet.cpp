@@ -185,8 +185,8 @@ te::da::Select* te::da::ObjectIdSet::getQuery(std::size_t i) const
     finalRestriction = new And(expressions[0], expressions[1]);
     for(std::size_t i = 2; i < expressions.size(); ++i)
     {
-      And* and = new And(finalRestriction, expressions[i]);
-      finalRestriction = and;
+      And* andPtr = new And(finalRestriction, expressions[i]);
+      finalRestriction = andPtr;
     }
   }
   Where* filter = new Where(finalRestriction);
