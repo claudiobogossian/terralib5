@@ -53,17 +53,17 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 2.0, this));
 
   // Build the popup menu
-  m_menu.addAction(ApplicationController::getInstance().findAction("Draw"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Draw"));
   m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom In"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom Out"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom Area"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Pan"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Zoom Extent")); 
-  m_menu.addAction(ApplicationController::getInstance().findAction("Previous Extent"));
-  m_menu.addAction(ApplicationController::getInstance().findAction("Next Extent"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Area"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Next Extent"));
   m_menu.addSeparator();
-  m_menu.addAction(ApplicationController::getInstance().findAction("Stop Draw"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Stop Draw"));
 
   // To show popup menu
   m_display->installEventFilter(this);
