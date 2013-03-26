@@ -17,18 +17,16 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*! 
-  \file NewProject.h
+/*!
+  \file ProjectEvents.h
 
-  \brief This event signals that a new project ...
+  \brief Contains the list of the project events.
 */
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
-
-// TerraLib
-#include "Enums.h"
 #include "Event.h"
+#include "Enums.h"
 
 namespace te
 {
@@ -36,23 +34,29 @@ namespace te
   {
     namespace af
     {
-// Forward declarations
+      // Forward declarations
       class Project;
 
-      struct NewProject : public Event
+      namespace evt
       {
-        Project* m_project;
+        /*!
+          \struct ProjectAdded
 
-        NewProject(Project* project)
-          : Event(te::qt::af::evt::NEW_PROJECT),
-            m_project(project)
+          \brief Signals that a new project was created.
+        */
+        struct ProjectAdded : public Event
         {
-        }
-      };
+          ProjectAdded(Project* proj) :
+          Event(PROJECT_ADDED),
+          m_proj(proj)
+          {
+          }
 
-    } // end namespace af
-  }   // end namespace qt
-}     // end namespace te
+          Project* m_proj;
+        };
+      }
+    }
+  }
+}
 
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
-
+#endif //__TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H

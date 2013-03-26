@@ -47,11 +47,15 @@ namespace te
     {
 // Forwar declarations
       class ApplicationController;
-      class Event;
       class LayerExplorer;
       class MapDisplay;
       class Project;
       class TabularViewer;
+
+      namespace evt
+      {
+        struct Event;
+      }
 
       class TEQTAFEXPORT BaseApplication : public QMainWindow, public boost::noncopyable
       {
@@ -69,7 +73,7 @@ namespace te
 
         protected slots:
 
-          void onApplicationTriggered(te::qt::af::Event* evt);
+          void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           void onAddDataSetLayerTriggered();
 
@@ -117,6 +121,10 @@ namespace te
 
           void showProgressDockWidget();
 
+          void onCustomizeToolBarsTriggered();
+
+//          void onManageToolbarsTriggered();
+
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -129,7 +137,7 @@ namespace te
 
           virtual void initAction(QAction*& act, const QString& icon, const QString& name,
                                   const QString& text, const QString& tooltip,
-                                  bool iconVisibleInMenu, bool isCheckable, bool enabled);
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QMenuBar* menu);
 
           virtual void initActions();
 
@@ -179,6 +187,8 @@ namespace te
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
           QAction* m_toolsDataSourceManagement;
+          QAction* m_toolsCustomizeToolBars;
+//          QAction* m_toolbarsManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
           QAction* m_fileSaveProject;

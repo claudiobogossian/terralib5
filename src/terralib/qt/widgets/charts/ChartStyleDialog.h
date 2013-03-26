@@ -32,6 +32,7 @@
 // Qt
 #include <QtGui/QDialog>
 
+//STL
 #include <memory>
 
 namespace Ui { class ChartStyleDialog; }

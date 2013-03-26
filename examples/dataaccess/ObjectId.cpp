@@ -44,6 +44,8 @@ void ObjectId()
   assert(oids);
   std::cout << "OIDs size: " << oids->size() << std::endl;
 
+  dataset->moveBeforeFirst();
+
   assert(dataset->size() == oids->size());
   assert(oids->isFromPrimaryKey());
 
@@ -58,7 +60,20 @@ void ObjectId()
 
   std::cout << "The SQL is: " << sql << std::endl;
 
+// let's retrieve the indentified elements
+  te::da::DataSet* identified = transactor->query(sql);
+
+  assert(identified);
+  assert(dataset->size() == identified->size());
+
+  std::cout << "== DataSet Retrieved From Box == " << std::endl;
+  PrintDataSet(dataset);
+
+  std::cout << "== DataSet Retrieved From ObjectIdSet == " << std::endl;
+  PrintDataSet(identified);
+
   // Cleaning All!
+  delete identified;
   delete select;
   delete oids;
   delete dataset;

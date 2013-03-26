@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file MultiThreadMapDisplay.h
+  \file terralib/qt/widgets/canvas/MultiThreadMapDisplay.h
 
   \brief A multi thread Qt4 widget to control the display of a set of layers.
 */
@@ -80,8 +80,6 @@ namespace te
           /** @name AbstractMapDisplay Methods
            */
           //@{
-
-          void setLayerList(const std::list<te::map::AbstractLayerPtr>& layers);
 
           void setExtent(te::gm::Envelope& e, bool doRefresh = true);
 

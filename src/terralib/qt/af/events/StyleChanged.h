@@ -44,41 +44,35 @@ namespace te
   {
     namespace af
     {
-      /*!
-        \class StyleChanged
-
-        \brief Event emitted the style of some group has changed.
-        
-        \ingroup afevents
-      */
-      class StyleChanged : public Event
+      namespace evt
       {
-      public:
-
         /*!
-          \brief Constructor.
-          \param layer The layer wich the group is associated to.
-          \param group The identifier of the group of highlight.
-          \param color Pointer to the color selected.
-        */
-        StyleChanged(te::map::Layer* layer, const int& group, const QColor* color) :
-        Event(te::qt::af::evt::STYLE_CHANGED),
-        m_group(group),
-        m_color(color)
-        {
-        }
+          \class StyleChanged
 
-        /*!
-          \brief Destructor.
+          \brief Event emitted the style of some group has changed.
+        
+          \ingroup afevents
         */
-        ~StyleChanged()
+        struct StyleChanged : public Event
         {
-        }
+          /*!
+            \brief Constructor.
+            \param layer The layer wich the group is associated to.
+            \param group The identifier of the group of highlight.
+            \param color Pointer to the color selected.
+          */
+          StyleChanged(te::map::Layer* layer, const int& group, const QColor* color) :
+          Event(STYLE_CHANGED),
+          m_group(group),
+          m_color(color)
+          {
+          }
 
-        int m_group;              //!< Identifier of the group.
-        const QColor* m_color;    //!< New color selected.
-        te::map::Layer* m_layer;  //!< Layer to be updated the color.
-      };
+          int m_group;              //!< Identifier of the group.
+          const QColor* m_color;    //!< New color selected.
+          te::map::Layer* m_layer;  //!< Layer to be updated the color.
+        };
+      }
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
