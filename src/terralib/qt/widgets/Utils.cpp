@@ -117,24 +117,87 @@ QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenuBar* bar)
   return bar->findChild<QMenu*>(mnuText);
 }
 
+//QMenu* GetMenu(const QString& fullName, QMenu* mnu)
+//{
+//  QStringList ls = fullName.split('.');
+//
+//  while (!ls.empty())
+//  {
+//    QMenu* menu = te::qt::widgets::FindMenu(ls[0], mnu);
+//
+//    if(menu == 0)
+//    {
+//      menu = new QMenu(mnu);
+//      mnu->addMenu(menu);
+//
+//
+//    }
+//  }
+//}
+
+QMenu* CreateMenu(const QString& mnuName, QMenu* p)
+{
+  QMenu* mnu = p->findChild<QMenu*>(mnuName);
+
+  if(mnu == 0)
+  {
+    QStringList ls = mnuName.split("."); 
+    mnu = p->addMenu(ls[ls.size()-1]);
+
+    mnu->setObjectName(mnuName);
+  }
+
+  return mnu;
+}
+
+QMenu* CreateMenu(const QString& mnuName, QMenuBar* p)
+{
+  QMenu* mnu = p->findChild<QMenu*>(mnuName);
+
+  if(mnu == 0)
+  {
+    QStringList ls = mnuName.split("."); 
+    mnu = p->addMenu(ls[ls.size()-1]);
+
+    mnu->setObjectName(mnuName);
+  }
+
+  return mnu;
+}
+
 QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenu* mnu)
 {
   QMenu* res = FindMenu(mnuText, mnu);
 
-  if(res == 0)
-    return new QMenu(mnuText, mnu);
+  QStringList mnus = mnuText.split('.');
+
+  for(int i=1; i<mnus.size(); i++)
+    mnus[i] = mnus[i-1] + "." + mnus[i];
+
+  for(int i=0; i<mnus.size(); i++)
+    res = (i == 0) ? 
+      CreateMenu(mnus[i], mnu) : 
+      CreateMenu(mnus[i], res);
 
   return res;
 }
 
 QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
 {
-  QMenu* mnu = FindMenu(mnuText, bar);
+  QMenu* res = FindMenu(mnuText, bar);
 
-  if(mnu == 0)
-    return new QMenu(mnuText, bar);
+  QStringList mnus = mnuText.split('.');
 
-  return mnu;
+  for(int i=1; i<mnus.size(); i++)
+    mnus[i] = mnus[i-1] + "." + mnus[i];
+
+  for(int i=0; i<mnus.size(); i++)
+  {
+    res = (i == 0) ?
+      CreateMenu(mnus[i], bar) :
+      CreateMenu(mnus[i], res);
+  }
+  return res;
 }
 
 QAction* te::qt::widgets::FindAction(const QString& actText, QMenu* mnu)
