@@ -20,7 +20,7 @@ void createDataSource()
   time_t t;
   t = time(NULL);
 
-  DATASOURCE_NAME = "teste"+ te::common::Convert2String(t);
+  DATASOURCE_NAME = "teste"+ boost::lexical_cast<int>(t);
   
   std::map<std::string, std::string> dsInfo;
   dsInfo["MY_HOST_NAME"] = "localhost";
