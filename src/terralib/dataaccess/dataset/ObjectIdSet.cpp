@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../datatype/Enums.h"
 #include "../query/And.h"
 #include "../query/DataSetName.h"
 #include "../query/EqualTo.h"
@@ -34,6 +35,7 @@
 #include "../query/FromItem.h"
 #include "../query/In.h"
 #include "../query/Literal.h"
+#include "../query/LiteralString.h"
 #include "../query/PropertyName.h"
 #include "../query/Select.h"
 #include "../query/Where.h"
@@ -116,7 +118,10 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
       const boost::ptr_vector<te::dt::AbstractData>& data = m_oids[i].getValue();
       assert(data.size() == 1);
 
-      in->add(new Literal(data[0]));
+      if (m_type->getProperty(m_indexes[0])->getType() == te::dt::STRING_TYPE)
+          in->add(new LiteralString(data[0].toString()));
+      else
+        in->add(new Literal(data[0]));
     }
 
     Where* filter = new Where(in);
