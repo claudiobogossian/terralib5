@@ -103,11 +103,11 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 
   if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
   {
-  m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+    m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
   }
   else
   {
-  m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+    m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
   }
 
   QDialog dlg(this);
@@ -120,9 +120,7 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
   lay->addWidget(chartDisplay);
 
   m_histogramChart = new te::qt::widgets::HistogramChart(m_histogram);
-  QwtColumnSymbol *symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
-  symbol->setPalette(m_color);
-  m_histogramChart->setSymbol(symbol);
+  m_histogramChart->setSymbol(m_histogramStyle->getSymbol());
   m_histogramChart->attach(chartDisplay);
 
   chartDisplay->show();
@@ -159,12 +157,8 @@ void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QS
 void te::qt::widgets::HistogramCreatorDialog::onColorChanged(const QColor& color)
 {
   // The new fill color
-  m_color.setRgb(color.red(), color.green(), color.blue(), m_color.alpha());
+  m_histogramStyle->getColor().setRgb(color.red(), color.green(), color.blue(), m_histogramStyle->getColor().alpha());
 
-  updateUiFillColor();
-}
-
-void te::qt::widgets::HistogramCreatorDialog::updateUiFillColor()
-{
-  m_colorPicker->setColor(m_color);
+  m_colorPicker->setColor(m_histogramStyle->getColor());
+//  m_histogramChart->setSymbol(m_histogramStyle->getSymbol());
 }

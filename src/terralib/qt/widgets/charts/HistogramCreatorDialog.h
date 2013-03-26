@@ -75,9 +75,6 @@ namespace te
 
           Ui::HistogramDialog* getForm() const;
 
-          /*! \brief Updates the widget form element used to visualize the fill color. */
-          void updateUiFillColor();
-
         protected slots:
 
           void onStylePushButtonClicked();
@@ -95,7 +92,6 @@ namespace te
           te::qt::widgets::HistogramChart*    m_histogramChart;
           te::qt::widgets::HistogramStyle*    m_histogramStyle;
           ColorPickerToolButton*              m_colorPicker;
-          QColor                              m_color;
 
       };
     } // end namespace widgets

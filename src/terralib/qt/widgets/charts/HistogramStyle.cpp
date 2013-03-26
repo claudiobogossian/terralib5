@@ -30,6 +30,7 @@
 
 //QT
 #include "qcolor.h"
+#include "qpalette.h"
 
 //QWT
 #include "qwt_column_symbol.h"
@@ -37,10 +38,16 @@
 te::qt::widgets::HistogramStyle::HistogramStyle()
 {
   m_fill = new te::se::Fill();
+  m_stroke = new te::se::Stroke();
+  m_symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
+  m_color.fromRgb(155, 155, 155);
 }
 
-te::qt::widgets::HistogramStyle::HistogramStyle(te::se::Fill* fill)
-: m_fill(fill)
+te::qt::widgets::HistogramStyle::HistogramStyle(te::se::Fill* fill, te::se::Stroke* stroke, QwtColumnSymbol* symbol, QColor color)
+: m_fill(fill),
+  m_stroke(stroke),
+  m_symbol(symbol),
+  m_color(color)
 {
 }
 
@@ -66,5 +73,32 @@ te::se::Stroke* te::qt::widgets::HistogramStyle::getStroke()
 void te::qt::widgets::HistogramStyle::setStroke(te::se::Stroke* newStroke)
 {
   m_stroke = newStroke;
+}
+
+QwtColumnSymbol* te::qt::widgets::HistogramStyle::getSymbol()
+{
+  return m_symbol;
+}
+
+void te::qt::widgets::HistogramStyle::setSymbol(QwtColumnSymbol* newSymbol)
+{
+  m_symbol = newSymbol;
+}
+
+
+QColor& te::qt::widgets::HistogramStyle::getColor()
+{
+  return m_color;
+}
+
+void te::qt::widgets::HistogramStyle::setColor(QColor newColor)
+{
+  m_color = newColor;
+  adjustSymbol();
+}
+
+void te::qt::widgets::HistogramStyle::adjustSymbol()
+{
+  m_symbol->setPalette(m_color);
 }
 
