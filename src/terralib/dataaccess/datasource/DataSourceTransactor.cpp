@@ -146,8 +146,9 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const te::da::ObjectId
   assert(oids);
   assert(oids->size() > 0);
   
-  te::da::Select* select = oids->getQuery();
-  assert(select);
+  std::auto_ptr<te::da::Select> select(oids->getQuery());
+  assert(select.get());
   
-  return query(select,travType,rwRole);
+  te::da::DataSet* ds = query(select.get(),travType,rwRole);
+  return ds;
 }
