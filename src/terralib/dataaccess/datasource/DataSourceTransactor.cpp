@@ -28,11 +28,15 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../datatype/Property.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/ObjectIdSet.h"
 #include "../Exception.h"
+#include "../query/Select.h"
+#include "../query/SQLVisitor.h"
 #include "DataSource.h"
 #include "DataSourceCatalog.h"
 #include "DataSourceCatalogLoader.h"
 #include "DataSourceTransactor.h"
+
 
 // STL
 #include <memory>
@@ -135,3 +139,16 @@ te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const std::string& nam
   }
 }
 
+te::da::DataSet* te::da::DataSourceTransactor::getDataSet(const te::da::ObjectIdSet* oids, 
+                    te::common::TraverseType travType, 
+                    te::common::AccessPolicy rwRole)
+{
+  assert(oids);
+  assert(oids->size() > 0);
+  
+  std::auto_ptr<te::da::Select> select(oids->getQuery());
+  assert(select.get());
+  
+  te::da::DataSet* ds = query(select.get(),travType,rwRole);
+  return ds;
+}

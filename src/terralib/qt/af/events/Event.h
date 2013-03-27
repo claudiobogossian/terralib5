@@ -46,8 +46,10 @@ namespace te
   {
     namespace af
     {
+      namespace evt
+      {
       /*!
-        \class Event
+        \struct Event
 
         \brief A base class for application events.
 
@@ -56,50 +58,22 @@ namespace te
 
         One must specialize this class in order to notify specific events.
 
-        \ingroup afevents
-      */
-      class Event
-      {
-        public:
-
+          \ingroup afevents
+        */
+        struct Event
+        {
           /*!
-            \brief Returns the event identifier.
-            \return Identifier of the event.
+            \brief Constructor.
           */
-          int getId() const;
-
-        protected:
-
-          /*!
-            \brief Contructor.
-            \param id The identifier.
-          */
-          Event(int id);
-
-          /*!
-            \brief Virtual destructor.
-          */
-          virtual ~Event();
-
-        private:
+        
+          Event(const int& id)
+          {
+            m_id = id;
+          }
 
           int m_id;         //!< Identifier.
-      };
-
-      inline int Event::getId() const
-      {
-        return m_id;
+        };
       }
-
-      inline Event::Event(int id)
-        : m_id(id)
-      {
-      }
-
-      inline Event::~Event()
-      {
-      }
-
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

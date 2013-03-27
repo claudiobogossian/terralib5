@@ -55,6 +55,7 @@ namespace te
     class DataSetTypePersistence;
     class DataSource;
     class DataSourceCatalogLoader;
+    class ObjectIdSet;
     class PreparedQuery;
     class Query;
     class Select;
@@ -331,6 +332,25 @@ namespace te
         virtual DataSet* query(const std::string& query, 
                                te::common::TraverseType travType = te::common::FORWARDONLY, 
                                te::common::AccessPolicy rwRole= te::common::RAccess) = 0;
+      
+        /*
+         \brief Returns a dataset from a set of objects identification.
+         \param oids     Pointer to a set of object ids. Do not pass null. Do not pass set empty.
+         \param travType The traverse type associated to the returned dataset. 
+         \param rwRole   The read and write permission associated to the returned dataset. 
+         
+         \return A pointer to a dataset. The caller of this method will take the ownership of the returned data set.
+         
+         \exception Exception It can throws an exception if:
+         <ul>
+         <li>something goes wrong during data retrieval</li>
+         <li>if the data source driver doesn't support the traversal type</li>
+         <li>if the data source driver doesn't support the access policy</li>
+         </ul>
+         */
+       virtual DataSet* getDataSet(const ObjectIdSet* oids, 
+                                  te::common::TraverseType travType = te::common::FORWARDONLY, 
+                                  te::common::AccessPolicy rwRole= te::common::RAccess);
 
         //@}
 

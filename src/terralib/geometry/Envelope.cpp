@@ -95,8 +95,20 @@ void te::gm::Envelope::transform(int oldsrid, int newsrid)
 
   converter->setSourceSRID(oldsrid);
   converter->setTargetSRID(newsrid);
+  
+  double x1, x2, x3, x4;
+  double y1, y2, y3, y4;
 
-  converter->convert(m_llx, m_lly);
-  converter->convert(m_urx, m_ury);
+  // convert the four corners
+  converter->convert(m_llx, m_lly, x1, y1);
+  converter->convert(m_urx, m_lly, x2, y2);
+  converter->convert(m_urx, m_ury, x3, y3);
+  converter->convert(m_llx, m_ury, x4, y4);
+  
+  // evaluate the minimum box that includes all four corner
+  m_llx = std::min(std::min(x1,x4),std::min(x2,x3));
+  m_urx = std::max(std::max(x1,x4),std::max(x2,x3));
+  m_lly = std::min(std::min(y1,y4),std::min(y2,y3));
+  m_ury = std::max(std::max(y1,y4),std::max(y2,y3));
 }
 

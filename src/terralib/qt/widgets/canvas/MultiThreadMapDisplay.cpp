@@ -18,13 +18,14 @@
  */
 
 /*!
-  \file MultiThreadMapDisplay.cpp
+  \file terralib/qt/widgets/canvas/MultiThreadMapDisplay.cpp
 
   \brief A multi thread Qt4 widget to control the display of a set of layers.
 */
 
 // TerraLib
 #include "../../../common/STLUtils.h"
+#include "../../../maptools/Utils.h"
 #include "DrawLayerThread.h"
 #include "MultiThreadMapDisplay.h"
 
@@ -44,27 +45,6 @@ te::qt::widgets::MultiThreadMapDisplay::~MultiThreadMapDisplay()
   te::common::FreeContents(m_threads);
 }
 
-void te::qt::widgets::MultiThreadMapDisplay::setLayerList(const std::list<te::map::AbstractLayerPtr>& layers)
-{
-  te::qt::widgets::MapDisplay::setLayerList(layers);
-
-  if(layers.size() <= m_threads.size())
-    return;
-
-  std::size_t n = layers.size() - m_threads.size();
-  for(std::size_t i = 0; i < n; ++i)
-  {
-    DrawLayerThread* thread = new DrawLayerThread;
-
-    if(m_showFeedback) // Do you want show feedbacks?
-      connect(thread, SIGNAL(feedback(QImage)), this, SLOT(showFeedback(QImage)));
-
-    connect(thread, SIGNAL(drawLayerFinished(int, QImage)), this, SLOT(onDrawLayerFinished(int, QImage)));
-
-    m_threads.push_back(thread);
-  }
-}
-
 void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool doRefresh)
 {
   if(m_isDrawing)
@@ -76,11 +56,6 @@ void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool
 
   e = m_extent;
 
-  if(m_layerList.empty())
-    return;
-
-  m_isDrawing = true;
-
   if(doRefresh)
     refresh();
 
@@ -89,12 +64,40 @@ void te::qt::widgets::MultiThreadMapDisplay::setExtent(te::gm::Envelope& e, bool
 
 void te::qt::widgets::MultiThreadMapDisplay::refresh()
 {
+  if(m_isDrawing)
+    return;
+
   // Cleaning...
   m_displayPixmap->fill(m_backgroundColor);
 
+  // Considering only the visible layers
+  m_visibleLayers.clear();
+  te::map::GetVisibleLayers(m_layerList, m_visibleLayers);
+
+  if(m_visibleLayers.empty())
+  {
+    repaint();
+    return;
+  }
+
+  int n = m_visibleLayers.size() - m_threads.size();
+  for(int i = 0; i < n; ++i)
+  {
+    DrawLayerThread* thread = new DrawLayerThread;
+
+    if(m_showFeedback) // Do you want show feedbacks?
+      connect(thread, SIGNAL(feedback(QImage)), this, SLOT(showFeedback(QImage)));
+
+    connect(thread, SIGNAL(drawLayerFinished(int, QImage)), this, SLOT(onDrawLayerFinished(int, QImage)));
+
+    m_threads.push_back(thread);
+  }
+
+  m_isDrawing = true;
+
   std::size_t i = 0;
   std::list<te::map::AbstractLayerPtr>::iterator it;
-  for(it = m_layerList.begin(); it != m_layerList.end(); ++it) // for each layer
+  for(it = m_visibleLayers.begin(); it != m_visibleLayers.end(); ++it) // for each layer.
   {
     m_threads[i]->draw(it->get(), m_extent, m_srid, size(), i);
     i++;
@@ -158,8 +161,13 @@ void te::qt::widgets::MultiThreadMapDisplay::showFeedback(const QImage& image)
 void te::qt::widgets::MultiThreadMapDisplay::onDrawLayerFinished(const int& index, const QImage& image)
 {
   m_images.insert(std::pair<int, QImage>(index, image));
-  if(m_images.size() != m_layerList.size())
+  if(m_images.size() != m_visibleLayers.size())
+  {
+    QPainter painter(m_displayPixmap);
+    painter.drawImage(0, 0, image);
+    repaint();
     return;
+  }
 
   m_displayPixmap->fill(m_backgroundColor);
 

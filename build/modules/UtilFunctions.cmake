@@ -292,12 +292,6 @@ MACRO(exportModuleInformation mod_name dirs inst_dirs)
   set (TE_INST_INCLUDE_DIRS ${TE_INST_INCLUDE_DIRS} "${inst_dirs}" PARENT_SCOPE)
   set (TE_LIBRARIES ${TE_LIBRARIES} "terralib_${mod_name}" PARENT_SCOPE)
   set (TE_3DS ${TE_3DS} "${TE_DEP_INCLUDES}" PARENT_SCOPE)
-  
-#  set (_TE_MODULES ${_TE_MODULES} PARENT_SCOPE)
-#  set (_TE_INCLUDE_DIRS ${_TE_INCLUDE_DIRS} PARENT_SCOPE)
-#  set (_TE_INST_INCLUDE_DIRS ${_TE_INST_INCLUDE_DIRS} PARENT_SCOPE)
-#  set (_TE_LIBRARIES ${_TE_LIBRARIES} PARENT_SCOPE)
-#  set (_TE_3DS ${_TE_3DS} PARENT_SCOPE)
 ENDMACRO(exportModuleInformation)
 
 # Macro generateRunningBatch

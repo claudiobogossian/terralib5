@@ -39,7 +39,7 @@
 
 QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb, const QSize& size)
 {
-  double offset = 10.0;
+  double offset = 2.0;
 
   te::gm::Geometry* geom = 0;
   if(symb->getType() == "PolygonSymbolizer")
@@ -87,9 +87,20 @@ QPixmap te::qt::widgets::SymbologyPreview::build(const std::vector<te::se::Symbo
   return result;
 }
 
+QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Rule* rule, const QSize& size)
+{
+  assert(rule);
+
+  return build(rule->getSymbolizers(), size);
+}
+
 QPixmap te::qt::widgets::SymbologyPreview::build(const te::se::Symbolizer* symb, const te::gm::Geometry* geom, const QSize& size)
 {
   assert(symb);
+
+  if(symb->getType() == "RasterSymbolizer")
+    return QPixmap();
+
   assert(geom);
   assert(!size.isEmpty());
 

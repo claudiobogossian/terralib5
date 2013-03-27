@@ -101,7 +101,7 @@ void te::gm::SecondDegreePolynomialGT::inverseMap( const GTParameters& params, c
           
 unsigned int te::gm::SecondDegreePolynomialGT::getMinRequiredTiePoints() const
 {
-  return 6;
+  return 7;
 }
 
 te::gm::GeometricTransformation* te::gm::SecondDegreePolynomialGT::clone() const
@@ -122,7 +122,7 @@ bool te::gm::SecondDegreePolynomialGT::computeParameters( GTParameters& params )
   // Creating the equation system parameters
   
   const unsigned int tiepointsSize = params.m_tiePoints.size();
-  if( tiepointsSize < 6 ) return false;
+  if( tiepointsSize < 7 ) return false;
   
   boost::numeric::ublas::matrix< double > W( tiepointsSize, 6 );
   boost::numeric::ublas::matrix< double > WI( tiepointsSize, 6 );

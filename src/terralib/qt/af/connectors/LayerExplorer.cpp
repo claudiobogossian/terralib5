@@ -22,7 +22,7 @@
 #include "../../widgets/layer/explorer/LayerTreeModel.h"
 #include "../../widgets/layer/explorer/LayerTreeView.h"
 #include "../events/Event.h"
-#include "../events/NewProject.h"
+#include "../events/ProjectEvents.h"
 #include "../Project.h"
 #include "LayerExplorer.h"
 
@@ -43,20 +43,20 @@ te::qt::widgets::LayerExplorer* te::qt::af::LayerExplorer::getExplorer() const
   return m_explorer;
 }
 
-void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::Event* evt)
+void te::qt::af::LayerExplorer::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
-  switch(evt->getId())
+  switch(evt->m_id)
   {
-    case te::qt::af::evt::NEW_PROJECT:
+    case te::qt::af::evt::PROJECT_ADDED:
     {
       assert(m_explorer);
 
-      te::qt::af::NewProject* nevt = dynamic_cast<te::qt::af::NewProject*>(evt);
+      te::qt::af::evt::ProjectAdded* nevt = static_cast<te::qt::af::evt::ProjectAdded*>(evt);
 
-      if(nevt == 0 || nevt->m_project == 0)
+      if(nevt == 0 || nevt->m_proj == 0)
         return;
 
-      m_explorer->setLayers(nevt->m_project->getLayers());
+      m_explorer->setLayers(nevt->m_proj->getLayers());
 
       assert(m_explorer->getTreeView());
       assert(m_explorer->getTreeView()->selectionModel());

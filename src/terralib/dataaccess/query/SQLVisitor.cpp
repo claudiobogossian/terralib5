@@ -36,6 +36,7 @@
 #include "GroupBy.h"
 #include "GroupByItem.h"
 #include "Having.h"
+#include "In.h"
 #include "Join.h"
 #include "JoinCondition.h"
 #include "JoinConditionOn.h"
@@ -301,6 +302,26 @@ void te::da::SQLVisitor::visit(const SubSelect& visited)
     m_sql += " AS ";
     m_sql += visited.getAlias();
   }  
+}
+
+void te::da::SQLVisitor::visit(const In& visited)
+{
+  assert(visited.getPropertyName());
+  visited.getPropertyName()->accept(*this);
+  
+  m_sql += " IN";
+  m_sql += "(";
+
+  for(size_t i = 0; i < visited.getNumArgs(); ++i)
+  {
+    if(i != 0)
+      m_sql += ", ";
+
+    assert(visited[i]);
+    visited[i]->accept(*this);
+  }
+
+  m_sql += ")";
 }
 
 void te::da::SQLVisitor::visitDistinct(const te::da::Distinct& visited)

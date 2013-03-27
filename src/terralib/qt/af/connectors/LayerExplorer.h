@@ -44,9 +44,11 @@ namespace te
 
     namespace af
     {
-// Forward declarations
-      class Event;
-
+      namespace evt
+      {
+      // Forward declarations
+        struct Event;
+      }
       /*!
         \class LayerExplorer
 
@@ -82,7 +84,7 @@ namespace te
 
             \param evt An event sent by framework.
           */
-          void onApplicationTriggered(te::qt::af::Event* evt);
+          void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           /*!
             \brief Perform changes whenever the selection over the layer tree changes.

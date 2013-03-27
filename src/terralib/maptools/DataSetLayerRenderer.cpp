@@ -409,11 +409,15 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
   message += " " + layer->getTitle() + ". ";
 
 // create the draw task
-  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW);
-  task.setTotalSteps(gridCanvas->getNumberOfRows());
+  te::common::TaskProgress task(message, te::common::TaskProgress::DRAW, gridCanvas->getNumberOfRows());
 
-// create a RGBA array that will be drawn in the canvas. i.e. This array is the result of the render process
-  te::color::RGBAColor** rgba = new te::color::RGBAColor*[gridCanvas->getNumberOfRows()];
+// create a RGBA array that will be drawn in the canvas. i.e. This array is the result of the render process.
+  //te::color::RGBAColor** rgba = new te::color::RGBAColor*[gridCanvas->getNumberOfRows()];
+
+// create a RGBA array that will be drawn in the canvas. i.e. This array represents a row of the render process.
+  te::color::RGBAColor** row = new te::color::RGBAColor*[1];
+  te::color::RGBAColor* columns = new te::color::RGBAColor[gridCanvas->getNumberOfColumns()];
+  row[0] = columns;
 
 // create a SRS converter
   std::auto_ptr<te::srs::Converter> converter(new te::srs::Converter());
@@ -423,14 +427,6 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
 // fill the result RGBA array
   for(unsigned int r = 0; r < gridCanvas->getNumberOfRows(); ++r)
   {
-    if(!task.isActive())
-    {
-      te::common::Free(rgba, gridCanvas->getNumberOfRows());
-      return;
-    }
-
-    te::color::RGBAColor* columns = new te::color::RGBAColor[gridCanvas->getNumberOfColumns()];
-
     for(unsigned int c = 0; c < gridCanvas->getNumberOfColumns(); ++c)
     {
       te::gm::Coord2D inputGeo = gridCanvas->gridToGeo(c, r);
@@ -453,13 +449,32 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
       columns[c] = color;
     }
 
-    rgba[r] = columns;
+    //rgba[r] = columns;
+
+    if(!task.isActive())
+    {
+// draw the part of result
+      //canvas->drawImage(0, 0, rgba, canvas->getWidth(), r + 1);
+      canvas->drawImage(0, r, row, canvas->getWidth(), 1);
+
+// free memory
+      //te::common::Free(rgba, r + 1);
+      te::common::Free(row, 1);
+
+      return;
+    }
+
+    canvas->drawImage(0, r, row, canvas->getWidth(), 1);
 
     task.pulse();
   }
 
 // put the result in the canvas
-  canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());
+  //canvas->drawImage(0, 0, rgba, canvas->getWidth(), canvas->getHeight());
+
+// free memory
+  //te::common::Free(rgba, gridCanvas->getNumberOfRows());
+  te::common::Free(row, 1);
 
 // image outline
   if(rasterSymbolizer->getImageOutline() == 0)

@@ -25,10 +25,6 @@
 
 // TerraLib
 #include "../../../../common/Translator.h"
-#include "../../../../geometry/Point.h"
-#include "../../../../geometry/Polygon.h"
-#include "../../../../geometry/LinearRing.h"
-#include "../../../../geometry/LineString.h"
 #include "../../../../se/Description.h"
 #include "../../../../se/Rule.h"
 #include "../../se/SymbologyPreview.h"
@@ -59,20 +55,7 @@ QVariant te::qt::widgets::LegendItem::data(int /*column*/, int role) const
 {
   if(role == Qt::DecorationRole)
   {
-    te::gm::Polygon pol(1, te::gm::PolygonType);
-
-    te::gm::LinearRing* ring = new te::gm::LinearRing(6, te::gm::LineStringType);
-
-    ring->setPoint(0, 2, 2);
-    ring->setPoint(1, 2, 8);
-    ring->setPoint(2, 8, 14);
-    ring->setPoint(3, 14, 8);
-    ring->setPoint(4, 14, 2);
-    ring->setPoint(5, 2, 2);
-
-    pol.setRingN(0, ring);
-
-    return QVariant(QIcon(SymbologyPreview::build(m_rule, &pol, QSize(16, 16))));
+    return QVariant(QIcon(SymbologyPreview::build(m_rule, QSize(16, 16))));
   }
 
   if(role == Qt::DisplayRole)

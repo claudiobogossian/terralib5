@@ -57,8 +57,10 @@ if(QT_FOUND)
     VERBATIM
   )
   
- 
-# install do arquivo gerado
-
-# ddpendencias de build, pelo menos do instalador  
+  install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/help
+    DESTINATION . 
+    COMPONENT BINARIES
+  )
+  
 endif()

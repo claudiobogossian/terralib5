@@ -17,18 +17,16 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*! 
-  \file AppClose.h
+/*!
+  \file ProjectEvents.h
 
-  \brief This event signals that the application is about to close.
- */
+  \brief Contains the list of the project events.
+*/
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_APPCLOSE_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_APPCLOSE_H
-
-// TerraLib
-#include "Enums.h"
 #include "Event.h"
+#include "Enums.h"
 
 namespace te
 {
@@ -36,36 +34,29 @@ namespace te
   {
     namespace af
     {
-      /*!
-        \class AppClose
-        
-        \brief This event signals that the application is about to close.
-        
-        \ingroup afevents
-      */
-      class AppClose : public Event
+      // Forward declarations
+      class Project;
+
+      namespace evt
       {
-        public:
+        /*!
+          \struct ProjectAdded
 
-          /*!
-            \brief Constructor
-          */
-          AppClose()
-            : Event(te::qt::af::evt::APP_CLOSE)
+          \brief Signals that a new project was created.
+        */
+        struct ProjectAdded : public Event
+        {
+          ProjectAdded(Project* proj) :
+          Event(PROJECT_ADDED),
+          m_proj(proj)
           {
           }
 
-          /*!
-            \brief Destructor
-          */
-          ~AppClose()
-          {
-          }
-      };
+          Project* m_proj;
+        };
+      }
+    }
+  }
+}
 
-    } // end namespace af
-  }   // end namespace qt
-}     // end namespace te
-
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_APPCLOSE_H
-
+#endif //__TERRALIB_QT_AF_EVENTS_INTERNAL_PROJECTEVENTS_H

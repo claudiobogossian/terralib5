@@ -3,7 +3,7 @@
 #include <terralib/qt/widgets/dataview/TabularViewer.h>
 #include <terralib/qt/widgets/dataview/HLDelegateDecorator.h>
 
-#include <terralib/qt/af/events/LayerSelected.h>
+#include <terralib/qt/af/events/LayerEvents.h>
 #include <terralib/dataaccess/dataset/DataSet.h>
 #include <terralib/dataaccess/datasource/DataSource.h>
 #include <terralib/dataaccess/datasource/DataSourceTransactor.h>
@@ -11,7 +11,7 @@
 #include <terralib/qt/af/events/PointGeometries.h>
 #include <terralib/qt/af/events/StyleChanged.h>
 
-te::da::DataSet* getDataSet(te::da::DataSource* src, te::da::DataSourceTransactor*& trans, const std::string& dsetName)
+te::da::DataSet* GetDataSet(te::da::DataSource* src, te::da::DataSourceTransactor*& trans, const std::string& dsetName)
 {
   if(src != 0 && !dsetName.empty())
   {
@@ -50,16 +50,16 @@ namespace te
         delete m_trans;
       }
 
-      void TabularViewer::onApplicationTriggered(te::qt::af::Event* evt)
+      void TabularViewer::onApplicationTriggered(te::qt::af::evt::Event* evt)
       {
         if(!m_viewer->isVisible())
           return;
 
-        switch(evt->getId())
+        switch(evt->m_id)
         {
           case te::qt::af::evt::LAYER_SELECTED:
             {
-              te::qt::af::LayerSelected* e = static_cast<te::qt::af::LayerSelected*>(evt);
+              te::qt::af::evt::LayerSelected* e = static_cast<te::qt::af::evt::LayerSelected*>(evt);
               te::map::AbstractLayer* abs = e->m_layer;
 
               // * Under revision *
@@ -89,9 +89,10 @@ namespace te
           break;
         }
       }
+
       void TabularViewer::pointedObjects(const std::map<std::string, te::gm::Geometry*>& geoms)
       {
-        PointGeometries evt(m_layer, &geoms);
+        te::qt::af::evt::PointGeometries evt(m_layer, &geoms);
         ApplicationController::getInstance().broadcast(&evt);
       }
 
@@ -104,7 +105,7 @@ namespace te
 
         (*cs)[g] = c;
 
-        StyleChanged evt(m_layer, g, &c);
+        te::qt::af::evt::StyleChanged evt(m_layer, g, &c);
         ApplicationController::getInstance().broadcast(&evt);
       }
 

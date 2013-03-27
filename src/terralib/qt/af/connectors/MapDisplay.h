@@ -32,6 +32,7 @@
 
 // Qt
 #include <QtCore/QObject>
+#include <QtGui/QMenu>
 
 namespace te
 {
@@ -46,8 +47,11 @@ namespace te
 
     namespace af
     {
-// Forward declaration
-      class Event;
+      namespace evt
+      {
+      // Forward declaration
+        struct Event;
+      }
 
       /*!
         \class MapDisplay
@@ -77,6 +81,8 @@ namespace te
 
           te::qt::widgets::MapDisplay* getDisplay();
 
+          bool eventFilter(QObject* watched, QEvent* e);
+
           /*!
             \brief It draws the given layer list.
 
@@ -100,12 +106,13 @@ namespace te
 
             \param e An event sent by framework.
           */
-          void onApplicationTriggered(te::qt::af::Event* e);
+          void onApplicationTriggered(te::qt::af::evt::Event* e);
 
         protected:
 
           te::qt::widgets::MapDisplay* m_display; //!< Pointer to a component te::qt::widgets::MapDisplay.
           te::qt::widgets::AbstractTool* m_tool;  //!< Pointer to the current tool being used.
+          QMenu m_menu;                           //!< The map display popup menu.
       };
     }
   }

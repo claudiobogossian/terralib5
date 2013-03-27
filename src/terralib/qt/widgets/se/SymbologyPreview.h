@@ -81,9 +81,21 @@ namespace te
 
             \return A pixmap that represents the composite result of symbolizers preview.
 
-            \note A default geometry will be created based on symbolizer type and will be used to draw the preview.
+            \note Default geometry will be created based on symbolizers type and will be used to draw the preview.
           */
           static QPixmap build(const std::vector<te::se::Symbolizer*>& symbs, const QSize& size);
+
+          /*!
+            \brief Generates the preview of a set of symbolizers elements included in the given rule.
+
+            \param rule A valid rule element that will be used to get the set of symbolizers.
+            \param size The preview size.
+
+            \return A pixmap that represents the composite result of rule's symbolizers preview.
+
+            \note Default geometries will be created based on symbolizers type and will be used to draw the preview.
+          */
+          static QPixmap build(const te::se::Rule* rule, const QSize& size);
 
           /*!
             \brief Generates the preview of given symbolizer element.

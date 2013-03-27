@@ -66,6 +66,11 @@ file(
   FILES ${CMAKE_BINARY_DIR}/toInstall/*.cmake
 )
 
+file(
+  GLOB plg_config
+  FILES ${CMAKE_BINARY_DIR}/toInstall/*.teplg
+)
+
 install ( 
   FILES ${xml_config}
   DESTINATION bin
@@ -82,4 +87,10 @@ install (
   FILES ${script_config}
   DESTINATION modules
   COMPONENT CMAKE
+)
+
+install ( 
+  FILES ${plg_config}
+  DESTINATION "bin"
+  COMPONENT PLUGINS
 )

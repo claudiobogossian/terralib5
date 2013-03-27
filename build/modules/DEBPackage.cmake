@@ -1,4 +1,5 @@
 # Configurations for packaging using DEB
+INCLUDE (InstallRequiredSystemLibraries)
 
 set (p_deps "libstdc++ | libstdc++6 (>=4.5.2), gcc (>=4.5.2)")
 
@@ -21,7 +22,8 @@ set (CPACK_DEBIAN_PACKAGE_DESCRIPTION "Terralib 5 package for Linux users.")
 # CPACK_DEBIAN_PACKAGE_SECTION
 # CPACK_DEBIAN_PACKAGE_PRIORITY
 set (CPACK_DEBIAN_PACKAGE_HOMEPAGE "http://www.dpi.inpe.br/terralib5/wiki")
-set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set (CPACK_STRIP_FILES "bin")
+set (CPACK_SOURCE_STRIP_FILES "")
 # CPACK_DEBIAN_PACKAGE_DEBUG
 # CPACK_DEBIAN_PACKAGE_PREDEPENDS
 # CPACK_DEBIAN_PACKAGE_ENHANCES
@@ -30,4 +32,4 @@ set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 # CPACK_DEBIAN_PACKAGE_PROVIDES
 # CPACK_DEBIAN_PACKAGE_REPLACES
 
-message ("pack: ${CPACK_PACKAGE_FILE_NAME}")
+#message ("pack: ${CPACK_PACKAGE_FILE_NAME}")
