@@ -134,6 +134,11 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
   if(parent == QModelIndex() && static_cast<std::size_t>(row) >= m_items.size())
     return QModelIndex();
 
+  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+
+  if(parentItem && row >= parentItem->children().count())
+    return QModelIndex();
+
   if(!parent.isValid()) // is it a top-level item?
   {
 // yes!
@@ -142,7 +147,7 @@ QModelIndex te::qt::widgets::LayerTreeModel::index(int row, int column, const QM
     return createIndex(row, column, item);
   }
 
-  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+  //AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
 
   if(parentItem == 0)
     throw Exception(TR_QT_WIDGETS("Invalid data associated to the layer model!"));
@@ -252,15 +257,11 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
     {
       // Drop item is not a top level item
       if(dropIndex.row() == -1)
-      {
         row = 0;
-        newItemParentIndex = dropParentIndex;
-      }
       else
-      {
         newItemRow = dropIndex.row();  // The item will be inserted in the position of the dropped item.
-        newItemParentIndex = dropIndex;
-      }
+
+      newItemParentIndex = dropParentIndex;
     }
   }
   else
@@ -325,9 +326,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
 bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-  beginRemoveRows(parent, row, row + count - 1);
-
   AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+
+  beginRemoveRows(parent, row, row + count - 1);
 
   if(!parent.isValid())
   {
