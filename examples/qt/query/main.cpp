@@ -64,7 +64,7 @@ int main(int argc, char** argv)
     QIcon::setThemeSearchPaths(paths);
 
     // Load datasource
-    std::string fileName = TE_DATA_EXAMPLE_LOCALE;
+    std::string fileName = TE_DATA_EXAMPLE_DIR;
                 fileName+= "/data/shp/munic_2001.shp";
 
     //LoadShapeDataSource(fileName, "MunicShp2001");

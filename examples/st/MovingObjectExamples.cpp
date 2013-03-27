@@ -16,7 +16,7 @@ void MovingObjectExamples()
   {
     std::vector<te::st::MovingObject*> output;
     
-    std::string XMLFileName = TE_DATA_EXAMPLE_LOCALE"\\data\\kml\\t_40_41_metadata.xml";
+    std::string XMLFileName = TE_DATA_EXAMPLE_DIR"\\data\\kml\\t_40_41_metadata.xml";
   
     MovingObjectsFromKMLAndMetadata(output, XMLFileName);
 
@@ -32,7 +32,7 @@ void MovingObjectExamples()
 
     //==== extrair trajetorias
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
-    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"\\data\\kml\\t41_region.shp");
+    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"\\data\\kml\\t41_region.shp");
     ds->setConnectionStr(ogrInfo);
     ds->open();
     te::da::DataSourceTransactor* t = ds->getTransactor();

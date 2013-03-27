@@ -99,10 +99,10 @@ int main(int /*argc*/, char** /*argv*/)
     outputter.write();
     
     // Printing testResult in XML file 
-    // The testResult_*.xml files will be saved at TE_DATA_UNITTEST_LOCALE directory.
+    // The testResult_*.xml files will be saved at TE_OUTPUT_REPORT_DIR directory.
     // The styleSheet 'report.xsl' should be at this directory (found originally at <third-party-lib>\cppunit-1.12.1\contrib\xml-xsl).
-    // One level up TE_DATA_UNITTEST_LOCALE should have a 'data' directory with all files used by unit test.  
-    CPPUNIT_NS::OFileStream file2( TE_DATA_UNITTEST_LOCALE "/testsResult_qtwidgets_xml.xml" );
+    // One level up TE_OUTPUT_REPORT_DIR should have a 'data' directory with all files used by unit test.  
+    CPPUNIT_NS::OFileStream file2( TE_OUTPUT_REPORT_DIR "/testsResult_qtwidgets_xml.xml" );
     CPPUNIT_NS::XmlOutputter xml( &result, file2 );
     xml.setStyleSheet( "report.xsl" );
     xml.write();

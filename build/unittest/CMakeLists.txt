@@ -27,18 +27,15 @@ if(NOT EXISTS ${TE_DATA_DIR}/data/report.xsl)
   message (STATUS "-- Data files installed.")
 endif()
 
-set(TE_DATA_LOCALE "${TE_DATA_DIR}")
-set(TE_DATA_UNITTEST_LOCALE ${TE_OUTPUT_REPORT_DIR})
-
-if(NOT EXISTS ${TE_DATA_UNITTEST_LOCALE})
-  file (MAKE_DIRECTORY ${TE_DATA_UNITTEST_LOCALE})
+if(NOT EXISTS ${TE_OUTPUT_REPORT_DIR})
+  file (MAKE_DIRECTORY ${TE_OUTPUT_REPORT_DIR})
 endif()
 
-configure_file(${TE_DATA_DIR}/data/report.xsl ${TE_DATA_UNITTEST_LOCALE}/report.xsl COPYONLY)
+configure_file(${TE_DATA_DIR}/data/report.xsl ${TE_OUTPUT_REPORT_DIR}/report.xsl COPYONLY)
 
 add_definitions( 
-  -DTE_DATA_LOCALE="${TE_DATA_LOCALE}" 
-  -DTE_DATA_UNITTEST_LOCALE="${TE_DATA_UNITTEST_LOCALE}" 
+   -DTE_DATA_DIR="${TE_DATA_DIR}"
+   -DTE_OUTPUT_REPORT_DIR="${TE_OUTPUT_REPORT_DIR}" 
 )
 
 include (${TE_MODULE_PATH}/GeneralConfig.cmake)
@@ -62,7 +59,7 @@ add_subdirectory(terralib_unittest_srs)
 get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
 
 if(_NOTFOUND)
-  message (WARNING "Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+  message (WARNING "Set TE_DEPENDENCIES_DIR to search for the 3rd-party libraries first in this path.")
 endif()
 
 find_path ( 

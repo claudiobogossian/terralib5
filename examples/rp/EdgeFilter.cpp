@@ -15,7 +15,7 @@ void EdgeFilter()
     // Openning the the input image
     
     std::map<std::string, std::string> auxRasterInfo;    
-    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters/cbers_rgb342_crop1.tif";
+    auxRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers_rgb342_crop1.tif";
     te::rst::Raster* inputRasterPointer = te::rst::RasterFactory::open(
       auxRasterInfo );
     if( inputRasterPointer == 0 )
@@ -41,7 +41,7 @@ void EdgeFilter()
     te::rp::EdgeFilter::OutputParameters algoOutputParams;
     
     algoOutputParams.m_rInfo["URI"] =  
-      TE_DATA_EXAMPLE_LOCALE "/EdgeFilterExample.tif";  
+      TE_DATA_EXAMPLE_DIR "/EdgeFilterExample.tif";  
     algoOutputParams.m_rType = "GDAL";
     
     // Executing the algorithm

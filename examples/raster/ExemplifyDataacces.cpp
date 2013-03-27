@@ -30,7 +30,7 @@ void DataSetTypePersistence()
    
     // access a datasource to persist it
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
     ds->open(connInfo);
@@ -83,7 +83,7 @@ void DataSet()
 
 // access a datasource to persist it
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
     ds->open(connInfo);
@@ -132,7 +132,7 @@ void DataSetPersistence()
   {
     std::cout << "=== Example DataSetPersistence === " << std::endl;
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
     ds->open(connInfo);
@@ -172,7 +172,7 @@ void DataSource()
   {
     std::cout << "=== Example Data Source === " << std::endl;
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
     ds->open(connInfo);

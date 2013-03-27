@@ -46,11 +46,11 @@ int main(int /*argc*/, char** /*argv*/)
 
     LoadModules();
 
-    OGRExampleRead();
+    //OGRExampleRead();
 
     ORGExampleWrite();
 
-    PostGISExample();
+    //PostGISExample();
     
     QueryExample(); //??? tem codigo comentado - cai...
 

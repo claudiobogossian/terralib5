@@ -13,7 +13,7 @@ void CopyingData()
   try
   {
 // let's take the input dataset
-  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp/munic_2001.shp");
+  std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp");
 
   te::da::DataSource* dsOrigin = te::da::DataSourceFactory::make("OGR");
   dsOrigin->setConnectionStr(ogrInfo);

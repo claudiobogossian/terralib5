@@ -40,17 +40,17 @@ void TsMosaic::GeoReferencedImagesMosaic()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster3Pointer.get() );    
@@ -108,17 +108,17 @@ void TsMosaic::TiePointsMosaicTest1()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop1.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop2.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop3_EPSG_22522.tif";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster3Pointer.get() );    
@@ -211,17 +211,17 @@ void TsMosaic::TiePointsMosaicTest2()
   
   std::map<std::string, std::string> auxRasterInfo;
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop1.jpg";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop1.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );    
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop2.jpg";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop2.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster2Pointer.get() );
   
-  auxRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers_rgb342_crop3.jpg";
+  auxRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers_rgb342_crop3.jpg";
   boost::shared_ptr< te::rst::Raster > inputRaster3Pointer ( te::rst::RasterFactory::open(
     auxRasterInfo ) );
   CPPUNIT_ASSERT( inputRaster3Pointer.get() );    
