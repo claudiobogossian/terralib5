@@ -28,13 +28,13 @@ void Segmenter()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
+    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedMean.tif";
 
 // define segmentation parameters
 
@@ -98,7 +98,7 @@ void Segmenter()
     }
 
     std::map<std::string, std::string> osinfo;
-    osinfo["connection_string"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmentedMean.shp";
+    osinfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedMean.shp";
     te::da::DataSource* ds = te::da::DataSource::create("OGR", osinfo);
     te::da::DataSourceTransactor* trans = ds->getTransactor();
     te::da::DataSetPersistence* pers = trans->getDataSetPersistence();
@@ -131,13 +131,13 @@ void Segmenter()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
+    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedBaatz.tif";
 
 // define segmentation parameters
 
@@ -204,7 +204,7 @@ void Segmenter()
     }
 
     std::map<std::string, std::string> osinfo;
-    osinfo["connection_string"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmentedBaatz.shp";
+    osinfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmentedBaatz.shp";
     te::da::DataSource* ds = te::da::DataSource::create("OGR", osinfo);
     te::da::DataSourceTransactor* trans = ds->getTransactor();
     te::da::DataSetPersistence* pers = trans->getDataSetPersistence();

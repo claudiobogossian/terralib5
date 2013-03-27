@@ -14,7 +14,7 @@ void OpenFile()
     bool res = dsGDAL->isOpened();  // expect false;
 
     std::map<std::string, std::string> connInfo;
-    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif" ;  
+    connInfo["SOURCE"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif" ;  
     dsGDAL->open(connInfo);
     res = dsGDAL->isOpened();  // expect true
     res = dsGDAL->isValid();   // expect true
@@ -39,7 +39,7 @@ void OpenDirectory()
   try
   {
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters" ;  
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters" ;  
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
 
     bool res;
@@ -70,7 +70,7 @@ void DataSourceTransactor()
   try
   {
     std::map<std::string, std::string> connInfo;
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
     ds->open(connInfo);
 

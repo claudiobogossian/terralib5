@@ -16,7 +16,7 @@ void RasterizePolygonSet()
   {
     std::cout << "This is a test to open a shapefile and save some polygons in a raster file." << std::endl << std::endl;
 
-    std::string ogrInfo = "connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp/munic_2001.shp";
+    std::string ogrInfo = "connection_string="TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
     te::da::DataSource* ds_pols = te::da::DataSourceFactory::make("OGR");
     ds_pols->open(ogrInfo);
 
@@ -72,7 +72,7 @@ void RasterizePolygonSet()
 
 // access a datasource to persist it
           std::map<std::string, std::string> connInfoRaster;
-          connInfoRaster["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+          connInfoRaster["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
           te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
           ds->open(connInfoRaster);
 

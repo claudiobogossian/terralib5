@@ -96,13 +96,13 @@ void DummyClassifier()
 
 // open input raster
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_classified_dummy.tif";
+    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_dummy.tif";
 
 // create 4 input polygons
     std::vector<te::gm::Polygon*> pin = CreatePolygons(rin);
@@ -160,7 +160,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
+  orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
 
 // input parameters
   te::rp::Segmenter::InputParameters algoInputParameters;
@@ -208,13 +208,13 @@ void ISOSegClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_classified_isoseg.tif";
+    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_isoseg.tif";
 
 // to apply ISOSeg the image must be segmented
   std::vector<te::gm::Polygon*> polygons = SegmentImage(rin);
@@ -275,13 +275,13 @@ void MAPClassifier()
 
 // first open the input image
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
 // create output raster info
     std::map<std::string, std::string> orinfo;
-    orinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop_classified_MAP.tif";
+    orinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop_classified_MAP.tif";
 
 // Defining the classes samples
 
