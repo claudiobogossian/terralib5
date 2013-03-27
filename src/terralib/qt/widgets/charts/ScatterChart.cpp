@@ -54,8 +54,7 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   setSymbol(chartSymbol);
 
   //Set Values
-//  setSamples();
-    setValues();
+  setData();
 }
 
 
@@ -65,46 +64,27 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, te::se::Mark* style, 
   m_mark(style),
   m_size(size)
 {
-  //Set style
-  setStyle(QwtPlotCurve::NoCurve);
 
   //Set Symbol
   MarkSymbol* chartSymbol = new MarkSymbol(m_mark, m_size);
   setSymbol(chartSymbol);
 
   //Set Values
-//  setSamples();
-    setValues();
+  setData();
 }
 
-void te::qt::widgets::ScatterChart::setValues()
+void te::qt::widgets::ScatterChart::setData()
 {
-  std::size_t size = m_scatter->size();
-  if(size == 0)
+  QPolygonF samples;
+
+  for (int i = 0; i < m_scatter->size(); i++)
   {
-    setRawSamples(0, 0, size);
-    return;
+    samples += QPointF( m_scatter->getX(i), m_scatter->getY(i));
+  
   }
 
-  setRawSamples(m_scatter->getX(), m_scatter->getY(), size);
-}
-
-void te::qt::widgets::ScatterChart::setSymbol( QwtSymbol *symbol )
-{
-    setSymbol( symbol );
-
-    if ( symbol == NULL )
-    {
-        setStyle( QwtPlotCurve::Dots );
-    }
-}
-
-void te::qt::widgets::ScatterChart::setSamples( const QVector<QPointF> &samples )
-{
-    setPaintAttribute( 
-        QwtPlotCurve::ImageBuffer, samples.size() > 1000 );
-
-    setSamples( samples );
+  setPaintAttribute(QwtPlotCurve::ImageBuffer);
+  setSamples( samples );
 }
 
 te::qt::widgets::ScatterChart::~ScatterChart()

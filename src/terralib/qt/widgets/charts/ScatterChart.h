@@ -79,14 +79,7 @@ namespace te
           
         private:
 
-          /*!
-            \brief Set the scatter data
-
-            \note It will not take the ownership of the pointers.
-          */
-          void setValues();
-          void setSymbol( QwtSymbol *symbol );
-          void setSamples( const QVector<QPointF> &samples );
+          void setData();
 
         private:
           Scatter*                m_scatter; //!< The scatter that will be shown on this chart.

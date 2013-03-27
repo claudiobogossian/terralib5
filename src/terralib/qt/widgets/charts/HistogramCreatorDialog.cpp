@@ -160,5 +160,4 @@ void te::qt::widgets::HistogramCreatorDialog::onColorChanged(const QColor& color
   m_histogramStyle->getColor().setRgb(color.red(), color.green(), color.blue(), m_histogramStyle->getColor().alpha());
 
   m_colorPicker->setColor(m_histogramStyle->getColor());
-//  m_histogramChart->setSymbol(m_histogramStyle->getSymbol());
 }

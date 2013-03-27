@@ -908,8 +908,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToTop, "layer-to-top", "Layer.To Top", tr("To &Top"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar);
-  initAction(m_layerChartsHistogram, "histogram-chart", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, false, m_menubar);
-  initAction(m_layerChartsScatter, "scatter-chart", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);
