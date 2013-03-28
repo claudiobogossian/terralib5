@@ -53,8 +53,8 @@ namespace te
         {
           ToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool) :
           Event(TOOL_CHANGED),
-          m_newTool(newTool),
-          m_oldTool(oldTool)
+          m_oldTool(oldTool),
+          m_newTool(newTool)
           {
           }
 
