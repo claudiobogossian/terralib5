@@ -18,9 +18,9 @@ void UpdateToolBar(QToolBar* bar, const std::vector<QAction*>& acts)
 }
 
 te::qt::widgets::CustomizeToolBarsDialog::CustomizeToolBarsDialog(QMenuBar* mbar, std::vector<QToolBar*> tbars, QWidget* parent) :
-QDialog(parent),
-  m_ui(new Ui::CustomizeToolBarsDialogForm),
-  m_removing(false)
+  QDialog(parent),
+  m_removing(false),
+  m_ui(new Ui::CustomizeToolBarsDialogForm)
 {
   m_ui->setupUi(this);
 

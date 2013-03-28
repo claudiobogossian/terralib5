@@ -102,29 +102,32 @@ void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
 
 te::da::Select* te::da::ObjectIdSet::getQuery() const
 {
-  assert(m_type);    // Build an IN Clause
-
+  assert(m_type);    
+  
   Expression* ins = 0;
   Expression* tmp = 0;
   
+  // for each property used to be part of the object identification
+  // builds a IN clause.
   for(size_t j=0; j<m_indexes.size(); ++j) // for each property to be considered
   {
     const std::string& propertyName = m_type->getProperty(m_indexes[j])->getName();
-
+    
     In* in = new In(propertyName);
-
-    for(std::size_t i = 0; i < m_oids.size(); ++i) // for each unique id
+    
+    // for each object in the set include its property value in the IN clause
+    for(std::size_t i = 0; i < m_oids.size(); ++i) 
     {
       assert(!m_oids.is_null(i));
-
+      
       const boost::ptr_vector<te::dt::AbstractData>& data = m_oids[i].getValue();
-      //assert(data.size() == 1);
-
+      
       if (m_type->getProperty(m_indexes[j])->getType() == te::dt::STRING_TYPE)
-          in->add(new LiteralString(data[j].toString()));
+        in->add(new LiteralString(data[j].toString()));
       else
         in->add(new Literal(data[j]));
     }
+    
     if (j>0)
     {
       tmp = *ins && *in;
@@ -134,26 +137,21 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
     }
     else 
       ins = in;
-    
   }
-
-    Where* filter = new Where(ins);
-
-    // All fields
-    te::da::Fields* all = new te::da::Fields;
-    all->push_back(new te::da::Field("*"));
-
-    // What is the data set?
-    FromItem* fromItem = new DataSetName(m_type->getName());
-    From* from = new From;
-    from->push_back(fromItem);
-
-    return new Select(all, from, filter);
-//  }
-//
-//  // TODO: The other cases! Build an union of Selects?
-//
-//  throw Exception(TR_DATAACCESS("Could not create the query from the ObjectIdSet!"));
+  
+  // filter is one or more IN clauses
+  Where* filter = new Where(ins);
+  
+  // all fields
+  te::da::Fields* all = new te::da::Fields;
+  all->push_back(new te::da::Field("*"));
+  
+  // from the data set?
+  FromItem* fromItem = new DataSetName(m_type->getName());
+  From* from = new From;
+  from->push_back(fromItem);
+  
+  return new Select(all, from, filter);
 }
 
 te::da::Select* te::da::ObjectIdSet::getQuery(std::size_t i) const
