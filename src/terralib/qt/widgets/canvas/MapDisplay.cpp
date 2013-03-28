@@ -153,7 +153,7 @@ void te::qt::widgets::MapDisplay::draw(te::map::AbstractLayer* layer, QPainter& 
 
   // Recursive draw
   for(std::size_t i = 0; i < layer->getChildrenCount(); ++i)
-    draw(layer, painter);
+    draw(boost::dynamic_pointer_cast<te::map::AbstractLayer>(layer->getChild(i)).get(), painter);
   
   // Retrieves a canvas to current layer
   te::qt::widgets::Canvas* canvas = getCanvas(layer);
