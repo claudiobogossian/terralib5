@@ -78,7 +78,7 @@ int main(int /*argc*/, char** /*argv*/)
     LoadOGRModule();
     
     //pegar um data set
-    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
+    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionStr(ogrInfo);

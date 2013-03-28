@@ -54,7 +54,7 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 
   //const std::string dataSet1Name( "cbers2b_rgb342_crop.tif" );
   //std::map<std::string, std::string> rinfo1;
-  //rinfo1["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters";
+  //rinfo1["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters";
   //std::auto_ptr< te::da::DataSource > ds1( te::da::DataSourceFactory::make("GDAL") );
   //ds1->open(rinfo1);
   //if( ! ds1->isOpened() )
@@ -77,7 +77,7 @@ void TiePointsLocatorDialogExample( int argc, char** argv )
 
   //const std::string dataSet2Name( "cbers2b_rgb342_crop.tif" );
   //std::map<std::string, std::string> rinfo2;
-  //rinfo2["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters";
+  //rinfo2["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters";
   //std::auto_ptr< te::da::DataSource > ds2( te::da::DataSourceFactory::make("GDAL") );
   //ds2->open(rinfo2);
   //if( ! ds2->isOpened() )
@@ -120,14 +120,14 @@ void SegmenterDialogExample( int argc, char** argv )
   // open the input raster
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
 
   // Defining the output raster info
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE
+  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR
     "/data/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
 
   // Executing the dialog
@@ -152,14 +152,14 @@ void ContrastDialogExample( int argc, char** argv )
   // open the input raster
 
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(rinfo) );
 
   // Defining the output raster info
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE
+  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR
     "/data/rasters/terralib_example_qt_rp_ContrastDialog.tif";
 
   // Executing the dialog
@@ -183,20 +183,20 @@ void ClassifierDialogExample(int argc, char** argv)
 {
 // open the input raster
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
   std::auto_ptr<te::rst::Raster> inputRasterPointer(te::rst::RasterFactory::open(rinfo));
 
 // define the output raster info
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE"/data/rasters/terralib_example_qt_rp_ClassifierDialog.tif";
+  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/terralib_example_qt_rp_ClassifierDialog.tif";
 
 // execute the dialog
   QApplication app(argc, argv);
 
 // open a previously segmentation (from SegmenterDialogExample)
   std::map<std::string, std::string> segmentedinfo;
-  segmentedinfo["URI"] = TE_DATA_EXAMPLE_LOCALE"/data/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
+  segmentedinfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/terralib_example_qt_rp_SegmenterDialog.tif";
   std::auto_ptr<te::rst::Raster> segmentedraster(te::rst::RasterFactory::open(segmentedinfo));
 
 // vectorize the segmentation
@@ -224,7 +224,7 @@ void MixtureModelDialogExample(int argc, char** argv)
 // open the input raster
   const std::string dsname("cbers2b_rgb342_crop.tif");
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_EXAMPLE_LOCALE "/data/rasters";
+  rinfo["URI"] = TE_DATA_EXAMPLE_DIR "/data/rasters";
   std::auto_ptr<te::da::DataSource> ds(te::da::DataSourceFactory::make("GDAL"));
   ds->open(rinfo);
   if(!ds->isOpened())
@@ -249,7 +249,7 @@ void MixtureModelDialogExample(int argc, char** argv)
 
 // define the output raster info
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_LOCALE"/data/rasters/terralib_example_qt_rp_MixtureModelDialog.tif";
+  outputRasterInfo["URI"] = TE_DATA_EXAMPLE_DIR"/data/rasters/terralib_example_qt_rp_MixtureModelDialog.tif";
 
 // execute the dialog
   QApplication app(argc, argv);

@@ -52,7 +52,7 @@ int main(int /*argc*/, char** /*argv*/)
     connInfo["host"] = "localhost";
     connInfo["user"] = "";
     connInfo["password"] = "";
-    connInfo["dbname"] = ""TE_DATA_EXAMPLE_LOCALE"/data/mdb/Northwind.mdb";
+    connInfo["dbname"] = ""TE_DATA_EXAMPLE_DIR"/data/mdb/Northwind.mdb";
    
     // Create a data source using the data source factory
     te::da::DataSource* ds = te::da::DataSourceFactory::make("ADO");

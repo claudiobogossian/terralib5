@@ -17,7 +17,7 @@ void RasterInMemory()
 
     std::map<std::string, std::string> rinfo;
 
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
     te::rst::Raster* memraster = te::rst::RasterFactory::open(std::string("MEM"), rinfo);
 

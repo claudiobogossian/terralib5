@@ -21,15 +21,15 @@ void SplitComplexImage()
     std::cout << "This is a test to open a complex image and split into real/imaginary rasters." << std::endl << std::endl;
 
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/te_complex.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/te_complex.tif";
 
     te::rst::Raster* inraster = te::rst::RasterFactory::open(rinfo);
 
     std::map<std::string, std::string> realinfo;
-    realinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/real.tif";
+    realinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/real.tif";
 
     std::map<std::string, std::string> imaginfo;
-    imaginfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/imag.tif";
+    imaginfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/imag.tif";
 
     te::rst::Grid* realgrid = new te::rst::Grid(*inraster->getGrid());
 
