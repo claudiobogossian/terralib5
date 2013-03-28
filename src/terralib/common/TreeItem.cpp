@@ -118,7 +118,7 @@ te::common::TreeItemPtr te::common::TreeItem::remove(std::size_t i)
 
   TreeItemPtr childItem(*it);
 
-  childItem->disconnect();
+  //childItem->disconnect();
 
   m_children.erase(it);
 

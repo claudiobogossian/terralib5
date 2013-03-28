@@ -23,7 +23,7 @@ void DrawPNG()
 
     te::da::DataSource* dsOGR = te::da::DataSourceFactory::make("OGR");
     std::map<std::string, std::string> connInfo;    
-    connInfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/shp/munic_2001.shp";
+    connInfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp";
     dsOGR->open(connInfo);
 
     te::da::DataSourceTransactor* t = dsOGR->getTransactor();

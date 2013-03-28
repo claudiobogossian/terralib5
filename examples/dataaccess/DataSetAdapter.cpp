@@ -46,7 +46,7 @@ te::dt::AbstractData* TupleToStringUpperCaseConverter(te::da::DataSet* dataset, 
 void DataSetAdapter()
 {
   /* Accessing a shapefile */
-  std::string ogrConnInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp/munic_2001.shp");
+  std::string ogrConnInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp/munic_2001.shp");
 
   te::da::DataSource* ogrDataSource = te::da::DataSourceFactory::make("OGR");
   ogrDataSource->setConnectionStr(ogrConnInfo);

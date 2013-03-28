@@ -12,7 +12,7 @@ void OGRExampleRead()
 #if TE_EXAMPLE_USE_OGR
   try
   {
-    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_LOCALE"/data/shp");
+    std::string ogrInfo("connection_string="TE_DATA_EXAMPLE_DIR"/data/shp");
 
     te::da::DataSource* ds = te::da::DataSourceFactory::make("OGR");
     ds->setConnectionStr(ogrInfo);
@@ -52,7 +52,7 @@ void ORGExampleWrite()
 
     te::da::DataSetType* newDt = new te::da::DataSetType(*datas->getType());
     std::map<std::string, std::string> ogrInfo;
-    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_LOCALE"/data/shp/soilmeasure.shp";
+    ogrInfo["connection_string"] = ""TE_DATA_EXAMPLE_DIR"/data/shp/soilmeasure.shp";
     te::da::DataSource* ds = te::da::DataSource::create("OGR", ogrInfo);
       
     te::da::DataSourceTransactor* trans = ds->getTransactor();

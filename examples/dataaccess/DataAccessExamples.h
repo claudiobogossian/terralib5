@@ -240,4 +240,6 @@ void DataSetAdapter();
 /*! \brief ObjectId example. */
 void ObjectId();
 
+void ObjectId2();
+
 #endif  // __TERRALIB_EXAMPLES_DATAACCESS_INTERNAL_DATAACCESSEXAMPLES_H

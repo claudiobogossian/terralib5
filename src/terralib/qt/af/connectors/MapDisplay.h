@@ -47,8 +47,11 @@ namespace te
 
     namespace af
     {
-// Forward declaration
-      class Event;
+      namespace evt
+      {
+      // Forward declaration
+        struct Event;
+      }
 
       /*!
         \class MapDisplay
@@ -103,7 +106,7 @@ namespace te
 
             \param e An event sent by framework.
           */
-          void onApplicationTriggered(te::qt::af::Event* e);
+          void onApplicationTriggered(te::qt::af::evt::Event* e);
 
         protected:
 

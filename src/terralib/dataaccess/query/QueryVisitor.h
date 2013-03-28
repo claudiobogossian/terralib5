@@ -75,6 +75,7 @@ namespace te
         virtual void visit(const Query& visited) = 0;
         virtual void visit(const Select& visited) = 0;
         virtual void visit(const SubSelect& visited) = 0;
+        virtual void visit(const In& visited) = 0;
     };
 
   } // end namespace da

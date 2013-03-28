@@ -47,39 +47,33 @@ namespace te
   {
     namespace af
     {
-      /*!
-        \class PointGeometries
-
-        \brief Event emitted when geometries were pointed.
-        
-        \ingroup afevents
-      */
-      class PointGeometries : public Event
+      namespace evt
       {
-      public:
-
         /*!
-          \brief Constructor.
-          \param layer The layer that contains the pointed geometries.
-          \param geoms A map of geometries, relating identifiers to geometries.
-        */
-        PointGeometries(te::map::Layer* layer, const std::map<std::string, te::gm::Geometry*>* geoms) :
-        Event(te::qt::af::evt::POINT_GEOMETRIES),
-        m_geoms(geoms),
-        m_layer(layer)
-        {
-        }
+          \class PointGeometries
 
-        /*!
-          \brief Destructor.
+          \brief Event emitted when geometries were pointed.
+        
+          \ingroup afevents
         */
-        ~PointGeometries()
+        struct PointGeometries : public Event
         {
-        }
+          /*!
+            \brief Constructor.
+            \param layer The layer that contains the pointed geometries.
+            \param geoms A map of geometries, relating identifiers to geometries.
+          */
+          PointGeometries(te::map::Layer* layer, const std::map<std::string, te::gm::Geometry*>* geoms) :
+          Event(POINT_GEOMETRIES),
+          m_geoms(geoms),
+          m_layer(layer)
+          {
+          }
 
-        const std::map<std::string, te::gm::Geometry*>* m_geoms;  //!< Pointer to a map of geometries.
-        te::map::Layer* m_layer;                                  //!< Layer that contains the geometries.
-      };
+          const std::map<std::string, te::gm::Geometry*>* m_geoms;  //!< Pointer to a map of geometries.
+          te::map::Layer* m_layer;                                  //!< Layer that contains the geometries.
+        };
+      }
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

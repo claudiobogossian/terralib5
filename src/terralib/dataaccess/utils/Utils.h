@@ -111,7 +111,7 @@ namespace te
       This method tries to use the primary key properties to generate the unique ids. If they do not exist it tries
       to use unique keys. If they do not exist then it uses all the properties.
      
-      \param dataset A pointer to a valid data set.
+      \param dataset A pointer to a valid data set. Do not pass null.
 
       \return The object id set generated from the given dataset.
     */
