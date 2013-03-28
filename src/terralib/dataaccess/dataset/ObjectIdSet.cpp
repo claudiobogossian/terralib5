@@ -29,6 +29,7 @@
 #include "../query/And.h"
 #include "../query/DataSetName.h"
 #include "../query/EqualTo.h"
+#include "../query/Expression.h"
 #include "../query/Field.h"
 #include "../query/Fields.h"
 #include "../query/From.h"
@@ -101,13 +102,14 @@ void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
 
 te::da::Select* te::da::ObjectIdSet::getQuery() const
 {
-  if(m_isFromPk && m_indexes.size() == 1) // The best case?
+  assert(m_type);    // Build an IN Clause
+
+  Expression* ins = 0;
+  Expression* tmp = 0;
+  
+  for(size_t j=0; j<m_indexes.size(); ++j) // for each property to be considered
   {
-    // Build an IN Clause
-
-    assert(m_type);
-
-    const std::string& propertyName = m_type->getProperty(m_indexes[0])->getName();
+    const std::string& propertyName = m_type->getProperty(m_indexes[j])->getName();
 
     In* in = new In(propertyName);
 
@@ -116,15 +118,26 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
       assert(!m_oids.is_null(i));
 
       const boost::ptr_vector<te::dt::AbstractData>& data = m_oids[i].getValue();
-      assert(data.size() == 1);
+      //assert(data.size() == 1);
 
-      if (m_type->getProperty(m_indexes[0])->getType() == te::dt::STRING_TYPE)
-          in->add(new LiteralString(data[0].toString()));
+      if (m_type->getProperty(m_indexes[j])->getType() == te::dt::STRING_TYPE)
+          in->add(new LiteralString(data[j].toString()));
       else
-        in->add(new Literal(data[0]));
+        in->add(new Literal(data[j]));
     }
+    if (j>0)
+    {
+      tmp = *ins && *in;
+      delete ins;
+      delete in;
+      ins = tmp;
+    }
+    else 
+      ins = in;
+    
+  }
 
-    Where* filter = new Where(in);
+    Where* filter = new Where(ins);
 
     // All fields
     te::da::Fields* all = new te::da::Fields;
@@ -136,11 +149,11 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
     from->push_back(fromItem);
 
     return new Select(all, from, filter);
-  }
-
-  // TODO: The other cases! Build an union of Selects?
-
-  throw Exception(TR_DATAACCESS("Could not create the query from the ObjectIdSet!"));
+//  }
+//
+//  // TODO: The other cases! Build an union of Selects?
+//
+//  throw Exception(TR_DATAACCESS("Could not create the query from the ObjectIdSet!"));
 }
 
 te::da::Select* te::da::ObjectIdSet::getQuery(std::size_t i) const

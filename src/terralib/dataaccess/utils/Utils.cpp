@@ -356,7 +356,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
     return oids;
   }
   
-  // Here, the data set not have primary key properties or unique key properties. 
+  // Here, the data set do not have primary key properties or unique key properties. 
   // So, use all the non geometric properties.
   const std::vector<te::dt::Property*>& props = type->getProperties();
   for(std::size_t i = 0; i < props.size(); ++i)
@@ -402,7 +402,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std:
     ObjectId* oid = new ObjectId;
 
     for(std::size_t i = 0; i < indexes.size(); ++i)
-      oid->addValue(dataset->getValue(i));
+      oid->addValue(dataset->getValue(indexes[i]));
 
     oids->add(oid);
   }
