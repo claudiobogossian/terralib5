@@ -81,31 +81,6 @@ namespace te
         protected :
           
           double m_zoomFactor;   //!< Factor used to zoom. i.e. A factor value of 2.0 (default) will generate a new extent twice (%) bigger or smaller, depending of ZoomType.
-
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          ZoomLeftAndRightClick(const ZoomLeftAndRightClick& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          ZoomLeftAndRightClick& operator=(const ZoomLeftAndRightClick& rhs);
-
-          //@}
       };
 
     } // end namespace widgets

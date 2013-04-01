@@ -29,6 +29,9 @@
 // TerraLib
 #include "../Config.h"
 
+// Boost
+#include <boost/noncopyable.hpp>
+
 // Qt
 #include <QtCore/QObject>
 #include <QtGui/QCursor>
@@ -52,7 +55,7 @@ namespace te
                them, according to specific tool behavior. Tools, in general, receives map display interaction events, like
                MouseClick, MouseMove, etc. Tools are created to do some GIS operation using the user interactions.
       */
-      class TEQTWIDGETSEXPORT AbstractTool : public QObject
+      class TEQTWIDGETSEXPORT AbstractTool : public QObject, public boost::noncopyable
       {
         public:
 
@@ -139,31 +142,6 @@ namespace te
                   It is up to the developer to ensure that the application interprets these events correctly.
           */
           virtual bool mouseDoubleClickEvent(QMouseEvent* e);
-
-          //@}
-
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          AbstractTool(const AbstractTool& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          AbstractTool& operator=(const AbstractTool& rhs);
 
           //@}
 

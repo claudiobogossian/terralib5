@@ -24,7 +24,7 @@
 */
 
 // TerraLib
-#include "MapDisplay.h"
+#include "../canvas/MapDisplay.h"
 #include "ZoomKeyboard.h"
 
 // Qt
