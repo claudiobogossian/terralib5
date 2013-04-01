@@ -25,9 +25,9 @@ void ArithmeticWithRaster()
 
 // set raster names
     std::map<std::string, std::string> sri, srndvi, srndvin, srden;
-    sri["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
-    srndvi["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_ndvi.tif";
-    srndvin["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_ndvi_normalized.tif";
+    sri["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
+    srndvi["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi.tif";
+    srndvin["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_ndvi_normalized.tif";
     srden["URI"] = "ndvi_den.tif"; // temporary raster dataset
 
 // open input raster (band 0 = Red, band 1 = IRed, band 2 = Blue)
@@ -44,7 +44,7 @@ void ArithmeticWithRaster()
 
 // access a raster datasource to create temporary raster
     std::map<std::string, std::string> connInfoRaster;
-    connInfoRaster["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters";
+    connInfoRaster["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters";
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
     ds->open(connInfoRaster);
 

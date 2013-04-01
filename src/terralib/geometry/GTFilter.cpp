@@ -440,8 +440,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
     
     // Updating iteration related variables
     
-    if( useDynamicMaxIterations && ( currentIteration != 0 ) &&
-      ( bestParams.m_tiePoints.size() != 0 ) )
+    if( useDynamicMaxIterations && ( currentIteration != 0 ) )
     {
       if( bestParams.m_tiePoints.size() == inputTPNmb )
       {
@@ -480,7 +479,7 @@ void te::gm::GTFilter::applyRansacThreadEntry(
         dynamicMaxIterations = ( dynamicMaxIterationsEstimation > dynamicMaxIterations ) ?
           ( dynamicMaxIterations + ( ( dynamicMaxIterationsEstimation - dynamicMaxIterations ) / 2 ) )
           :
-          ( dynamicMaxIterationsEstimation + ( ( dynamicMaxIterations - dynamicMaxIterationsEstimation ) / 2 ) );
+          ( dynamicMaxIterations - ( ( dynamicMaxIterations - dynamicMaxIterationsEstimation ) / 2 ) );
           
         dynamicMaxConsecutiveInvalidIterations = std::max( (RansacItCounterT)1, dynamicMaxIterations / 2 );
       }

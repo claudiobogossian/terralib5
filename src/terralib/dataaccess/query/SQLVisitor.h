@@ -89,6 +89,7 @@ namespace te
         virtual void visit(const Query& visited);
         virtual void visit(const Select& visited);
         virtual void visit(const SubSelect& visited);
+        virtual void visit(const In& visited);
 
 
 // these methods are not true visitors... but let's keep the idea!

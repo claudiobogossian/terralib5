@@ -24,14 +24,18 @@
 */
 
 // TerraLib
+#include "../../../../common/Translator.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
 #include "../../../../dataaccess/datasource/DataSource.h"
 #include "../../../../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../../../../dataaccess/datasource/DataSourceManager.h"
 #include "../../../../dataaccess/datasource/DataSourceTransactor.h"
 #include "../../../../dataaccess/utils/Utils.h"
+#include "../../../../geometry/Envelope.h"
+#include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
 #include "../../../../maptools/DataSetLayer.h"
+#include "../../Exception.h"
 #include "../utils/DataSet2Layer.h"
 #include "HiddenDataSetLayerSelector.h"
 
@@ -66,7 +70,7 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
       datasource = te::da::DataSourceManager::getInstance().get((*it)->getId(), (*it)->getAccessDriver(), (*it)->getConnInfo());
 
       if(datasource.get() == 0)
-        continue;
+        throw Exception(TR_QT_WIDGETS("Could not retrieve the data source instance!"));
     }
 
     if(!datasource->isOpened())
@@ -85,6 +89,14 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
     for(std::size_t i = 0; i < datasets.size(); ++i)
     {
       te::da::DataSetTypePtr dataset(cloader->getDataSetType(datasets[i], true));
+
+      if(dataset->hasDefaultGeom() && (dataset->getDefaultGeomProperty()->getExtent() == 0))
+      {
+// load geometry extent
+        te::gm::Envelope* mbr = cloader->getExtent(dataset->getDefaultGeomProperty());
+
+        dataset->getDefaultGeomProperty()->setExtent(mbr);
+      }
 
       te::map::DataSetLayerPtr layer = converter(dataset);
 

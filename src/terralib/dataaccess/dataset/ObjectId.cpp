@@ -1,4 +1,4 @@
-/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -17,42 +17,44 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*! 
-  \file NewProject.h
+/*!
+  \file terralib/dataaccess/dataset/ObjectId.cpp
 
-  \brief This event signals that a new project ...
+  \brief This class represents an unique id for a data set element.
 */
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
-
 // TerraLib
-#include "Enums.h"
-#include "Event.h"
+#include "ObjectId.h"
 
-namespace te
+// STL
+#include <cassert>
+
+te::da::ObjectId::ObjectId()
 {
-  namespace qt
-  {
-    namespace af
-    {
-// Forward declarations
-      class Project;
+}
 
-      struct NewProject : public Event
-      {
-        Project* m_project;
+te::da::ObjectId::~ObjectId()
+{
+}
 
-        NewProject(Project* project)
-          : Event(te::qt::af::evt::NEW_PROJECT),
-            m_project(project)
-        {
-        }
-      };
+const boost::ptr_vector<te::dt::AbstractData>& te::da::ObjectId::getValue() const
+{
+  return m_data;
+}
 
-    } // end namespace af
-  }   // end namespace qt
-}     // end namespace te
+std::string te::da::ObjectId::getValueAsString() const
+{
+  std::string value;
 
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_NEWPROJECT_H
+  for(std::size_t i = 0; i < m_data.size(); ++i)
+    value = m_data[i].toString();
+  
+  return value;
+}
 
+void te::da::ObjectId::addValue(te::dt::AbstractData* data)
+{
+  assert(data);
+
+  m_data.push_back(data);
+}

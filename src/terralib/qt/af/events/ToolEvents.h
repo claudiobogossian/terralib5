@@ -17,18 +17,16 @@
     TerraLib Team at <terralib-team@terralib.org>.
  */
 
-/*! 
-  \file CurrentToolChanged.h
+/*!
+  \file ToolsEvents.h
 
-  \brief This event signals that the tool being used, on current map display, changed.
- */
+  \brief Contains the list of the tools related events.
+*/
+#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_TOOLSEVENTS_H
+#define __TERRALIB_QT_AF_EVENTS_INTERNAL_TOOLSEVENTS_H
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_CURRENTTOOLCHANGED_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_CURRENTTOOLCHANGED_H
-
-// TerraLib
-#include "Enums.h"
 #include "Event.h"
+#include "Enums.h"
 
 namespace te
 {
@@ -42,43 +40,50 @@ namespace te
 
     namespace af
     {
-      /*!
-        \class CurrentToolChanged
-
-        \brief This event signals that the tool being used, on current map display, changed.
-        
-        \ingroup afevents
-      */
-      class CurrentToolChanged : public Event
+      namespace evt
       {
-        public:
+        /*!
+          \struct ToolChanged
 
-          /*!
-            \brief Constructor.
-            \param newTool The tool that will be used.
-            \param oldTool The tool that are being used.
-          */
-          CurrentToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool) : 
-          Event(te::qt::af::evt::TOOL_CHANGED),
+          \brief This event signals that the tool being used, on current map display, changed.
+
+          \ingroup afevents
+        */
+        struct ToolChanged : public Event
+        {
+          ToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool) :
+          Event(TOOL_CHANGED),
           m_oldTool(oldTool),
           m_newTool(newTool)
           {
           }
 
-          /*!
-            \brief Destructor.
-          */
-          ~CurrentToolChanged()
+          te::qt::widgets::AbstractTool* m_oldTool;     //!< Previously tool being used.
+          te::qt::widgets::AbstractTool* m_newTool;     //!< The new tool to be used.
+        };
+
+        /*!
+          \struct
+
+          \brief
+
+          \ingroup afevents
+        */
+        struct CoordinateTracked : public Event
+        {
+          CoordinateTracked(const double& x, const double& y) :
+          Event(COORDINATE_TRACKED),
+          m_x(x),
+          m_y(y)
           {
           }
 
-          te::qt::widgets::AbstractTool* m_oldTool;     //!< Previously tool being used.
-          te::qt::widgets::AbstractTool* m_newTool;     //!< The new tool to be used.
-      };
+          double m_x,
+                m_y;
+        };
+      }
+    }
+  }
+}
 
-    } // end namespace af
-  }   // end namespace qt
-}     // end namespace te
-
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_CURRENTTOOLCHANGED_H
-
+#endif //__TERRALIB_QT_AF_EVENTS_INTERNAL_TOOLSEVENTS_H

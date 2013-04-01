@@ -65,7 +65,7 @@ void TerraView::makeDialog()
 
   QAction* helpAbout = hmenu->addAction(tr("&About..."));
 
-  helpAbout->setObjectName("About");
+  helpAbout->setObjectName("Help.About");
 
   connect(helpAbout, SIGNAL(triggered()), this, SLOT(showAboutDialog()));
 

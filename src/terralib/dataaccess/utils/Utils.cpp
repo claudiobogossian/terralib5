@@ -27,7 +27,11 @@
 #include "../../common/Translator.h"
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
+#include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/ObjectIdSet.h"
+#include "../dataset/PrimaryKey.h"
+#include "../dataset/UniqueKey.h"
 #include "../datasource/DataSourceInfoManager.h"
 #include "../datasource/DataSourceManager.h"
 #include "../datasource/DataSourceCatalogLoader.h"
@@ -200,31 +204,33 @@ std::string te::da::GetDataSetCategoryName(int category)
   {
     case te::da::UNKNOWN_DATASET_TYPE:
       return "Unknown";
-      break;
+
     case te::da::TABLE_TYPE:
       return "Table";
-      break;
+
     case te::da::SYSTEM_TABLE_TYPE:
       return "System";
-      break;
+
     case te::da::VIEW_TYPE:
       return "View";
-      break;
+
     case te::da::QUERY_TYPE:
       return "Query";
-      break;
+
     case te::da::INDEX_TYPE:
       return "Index";
-      break;
+
     case te::da::SEQUENCE_TYPE:
       return "Sequence";
-      break;
+
     case te::da::TRIGGER_TYPE:
       return "Trigger";
-      break;
+
     case te::da::REGULAR_FILE_TYPE:
       return "Regular File";
-      break;
+
+    default:
+      return "";
   }
 }
 
@@ -303,5 +309,103 @@ te::da::DataSourcePtr te::da::GetDataSource(const std::string& datasourceId, con
   return datasource;
 }
 
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
+{
+  assert(dataset);
+  
+  const DataSetType* type = dataset->getType();
+  assert(type);
 
+  if(!type->isFullLoaded())
+    dataset->loadTypeInfo();
 
+  // A vector with the property indexes that will be used to generate the unique ids
+  std::vector<std::size_t> oidprops;
+
+  // Try to use the primary key properties
+  PrimaryKey* pk = type->getPrimaryKey();
+  if(pk != 0)
+  {
+    const std::vector<te::dt::Property*>& pkProperties = pk->getProperties();
+
+    for(std::size_t i = 0; i < pkProperties.size(); ++i)
+      oidprops.push_back(type->getPropertyPosition(pkProperties[i]->getName()));
+
+    ObjectIdSet* oids = te::da::GenerateOIDSet(dataset, oidprops);
+    oids->setIsFromPrimaryKey(true);
+
+    return oids;
+  }
+
+  // Try to use the unique key properties
+  if(type->getNumberOfUniqueKeys() > 0)
+  {
+    for(std::size_t i = 0; i < type->getNumberOfUniqueKeys(); ++i)
+    {
+      UniqueKey* uk = type->getUniqueKey(i);
+
+      const std::vector<te::dt::Property*>& ukProperties = uk->getProperties();
+
+      for(std::size_t j = 0; j < ukProperties.size(); ++j)
+        oidprops.push_back(type->getPropertyPosition(ukProperties[j]->getName()));
+    }
+    
+    ObjectIdSet* oids = te::da::GenerateOIDSet(dataset, oidprops);
+    oids->setIsFromUniqueKeys(true);
+
+    return oids;
+  }
+  
+  // Here, the data set do not have primary key properties or unique key properties. 
+  // So, use all the non geometric properties.
+  const std::vector<te::dt::Property*>& props = type->getProperties();
+  for(std::size_t i = 0; i < props.size(); ++i)
+  {
+    if (props[i]->getType() == te::dt::GEOMETRY_TYPE ||
+        props[i]->getType() == te::dt::RASTER_TYPE)
+      continue;
+    oidprops.push_back(i);
+  }
+
+  return te::da::GenerateOIDSet(dataset, oidprops);
+}
+
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::string>& names)
+{
+  assert(dataset);
+  assert(!names.empty());
+  
+  const DataSetType* type = dataset->getType();
+  assert(type);
+
+  std::vector<std::size_t> indexes;
+
+  for(std::size_t i = 0; i < names.size(); ++i)
+    indexes.push_back(type->getPropertyPosition(names[i]));
+
+  return te::da::GenerateOIDSet(dataset, indexes);
+}
+
+te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset, const std::vector<std::size_t>& indexes)
+{
+  assert(dataset);
+  assert(!indexes.empty());
+  
+  const DataSetType* type = dataset->getType();
+  assert(type);
+  
+  ObjectIdSet* oids = new ObjectIdSet(type);
+  oids->setProperties(indexes);
+
+  while(dataset->moveNext())
+  {
+    ObjectId* oid = new ObjectId;
+
+    for(std::size_t i = 0; i < indexes.size(); ++i)
+      oid->addValue(dataset->getValue(indexes[i]));
+
+    oids->add(oid);
+  }
+
+  return oids;
+}

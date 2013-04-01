@@ -47,11 +47,15 @@ namespace te
     {
 // Forwar declarations
       class ApplicationController;
-      class Event;
       class LayerExplorer;
       class MapDisplay;
       class Project;
       class TabularViewer;
+
+      namespace evt
+      {
+        struct Event;
+      }
 
       class TEQTAFEXPORT BaseApplication : public QMainWindow, public boost::noncopyable
       {
@@ -69,11 +73,11 @@ namespace te
 
         protected slots:
 
-          void onApplicationTriggered(te::qt::af::Event* evt);
+          void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           void onAddDataSetLayerTriggered();
 
-          void onAddQueryDataSetLayerTriggered();
+          void onAddQueryLayerTriggered();
 
           void onPluginsManagerTriggered();
 
@@ -93,15 +97,33 @@ namespace te
 
           void onLayerPropertiesTriggered();
 
+          void onLayerHistogramTriggered();
+
+          void onLayerScatterTriggered();
+
           void onDrawTriggered();
 
-          void onZoomInTriggered();
+          void onZoomInToggled(bool checked);
 
-          void onZoomOutTriggered();
+          void onZoomOutToggled(bool checked);
 
-          void onZoomAreaTriggered();
+          void onZoomAreaToggled(bool checked);
 
-          void onPanTriggered();
+          void onPanToggled(bool checked);
+
+          void onMeasureDistanceToggled(bool checked);
+
+          void onMeasureAreaToggled(bool checked);
+
+          void onMeasureAngleToggled(bool checked);
+
+          void onStopDrawTriggered();
+
+          void showProgressDockWidget();
+
+          void onCustomizeToolBarsTriggered();
+
+//          void onManageToolbarsTriggered();
 
         protected:
 
@@ -115,7 +137,7 @@ namespace te
 
           virtual void initAction(QAction*& act, const QString& icon, const QString& name,
                                   const QString& text, const QString& tooltip,
-                                  bool iconVisibleInMenu, bool isCheckable, bool enabled);
+                                  bool iconVisibleInMenu, bool isCheckable, bool enabled, QMenuBar* menu);
 
           virtual void initActions();
 
@@ -130,15 +152,15 @@ namespace te
           QAction* m_viewMapDisplay;
           QAction* m_viewDataTable;
           QAction* m_viewStyleExplorer;
-          QAction* m_editUndo;
-          QAction* m_editRedo;
-          QAction* m_editCut;
-          QAction* m_editCopy;
-          QAction* m_editPaste;
-          QAction* m_editSelectAll;
-          QAction* m_editClear;
-          QAction* m_editFind;
-          QAction* m_editReplace;
+          //QAction* m_editUndo;
+          //QAction* m_editRedo;
+          //QAction* m_editCut;
+          //QAction* m_editCopy;
+          //QAction* m_editPaste;
+          //QAction* m_editSelectAll;
+          //QAction* m_editClear;
+          //QAction* m_editFind;
+          //QAction* m_editReplace;
           QAction* m_viewFullScreen;
           QAction* m_viewRefresh;
           QAction* m_toolsCustomize;
@@ -146,7 +168,7 @@ namespace te
           QAction* m_pluginsBuilder;
           QAction* m_helpContents;
           QAction* m_helpUpdate;
-          QAction* m_viewToolBars;
+          //QAction* m_viewToolBars;
           QAction* m_viewGrid;
           QAction* m_viewDataSourceExplorer;
           QAction* m_projectRemoveLayer;
@@ -162,7 +184,11 @@ namespace te
           QAction* m_layerLower;
           QAction* m_layerToTop;
           QAction* m_layerToBottom;
+          QAction* m_layerChartsHistogram;
+          QAction* m_layerChartsScatter;
           QAction* m_toolsDataSourceManagement;
+          QAction* m_toolsCustomizeToolBars;
+//          QAction* m_toolbarsManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
           QAction* m_fileSaveProject;
@@ -182,25 +208,29 @@ namespace te
           QAction* m_mapMeasureDistance;
           QAction* m_mapMeasureArea;
           QAction* m_mapMeasureAngle;
+          QAction* m_mapStopDraw;
 
           QWidget* m_centralwidget;
           
+
           QMenuBar* m_menubar;
-          QMenu* m_editMenu;
+          //QMenu* m_editMenu;
           QMenu* m_viewMenu;
+          QMenu* m_viewToolBarsMenu;
           QMenu* m_toolsMenu;
           QMenu* m_pluginsMenu;
           QMenu* m_helpMenu;
           QMenu* m_projectMenu;
           QMenu* m_projectAddLayerMenu;
           QMenu* m_layerMenu;
+          QMenu *m_layerChartsMenu;
           QMenu* m_fileMenu;
           QMenu* m_recentProjectsMenu;
           QMenu* m_mapMenu;
 
           QStatusBar* m_statusbar;
           QToolBar* m_fileToolBar;
-          QToolBar* m_editToolBar;
+          //QToolBar* m_editToolBar;
           QToolBar* m_mapToolBar;
 
 // Well known Widgets
@@ -211,7 +241,7 @@ namespace te
 // Project
           Project* m_project;
 
-          //QDockWidget* m_progressDock;                                    //!< Dock widget used to show progress information
+          QDockWidget* m_progressDockWidget; //!< Dock widget used to show progress information
 
           //te::qt::widgets::RasterVisualDockWidget* m_rasterVisualDock;    //!< Used to raster enhancement operations
 

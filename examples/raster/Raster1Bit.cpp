@@ -47,7 +47,7 @@ void Raster1Bit()
 
 // 2. create tiff with 1bit using gdal, need to set NBIT=1
     std::map<std::string, std::string> rinfo;
-    rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/creating-1bit-raster.tif";
+    rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/creating-1bit-raster.tif";
     rinfo["NBITS"] = "1";
 
     bprops.clear();

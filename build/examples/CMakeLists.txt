@@ -26,10 +26,10 @@ if(NOT EXISTS ${TE_DATA_DIR}/data/report.xsl)
   message (STATUS "-- Data files installed.")
 endif()
 
-set(TE_DATA_EXAMPLE_LOCALE "${TE_DATA_DIR}")
+set(TE_DATA_EXAMPLE_DIR "${TE_DATA_DIR}")
 
 add_definitions( 
-  -DTE_DATA_EXAMPLE_LOCALE="${TE_DATA_EXAMPLE_LOCALE}" 
+  -DTE_DATA_EXAMPLE_DIR="${TE_DATA_EXAMPLE_DIR}" 
 )
 
 add_definitions(-DTE_PLUGINS_PATH=\"${TE_BIN_DIR}\")
@@ -225,7 +225,7 @@ endif()
 get_cmake_property (_NOTFOUND PACKAGES_NOT_FOUND)
 
 if(_NOTFOUND)
-  message (WARNING "${_NOTFOUND}. Set TE_DEPENDENCIES_DIR to search, for the 3rd-party libraries, first in this path.")
+  message (WARNING "${_NOTFOUND}. Set TE_DEPENDENCIES_DIR to search for the 3rd-party libraries first in this path.")
 endif()
 
 find_path ( 

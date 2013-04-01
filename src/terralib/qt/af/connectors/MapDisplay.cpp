@@ -32,9 +32,13 @@
 #include "../../widgets/tools/AbstractTool.h"
 #include "../../widgets/tools/ZoomWheel.h"
 #include "../../widgets/tools/CoordTracking.h"
-#include "../events/NewProject.h"
+#include "../events/ProjectEvents.h"
+#include "../ApplicationController.h"
 #include "../Project.h"
 #include "MapDisplay.h"
+
+// Qt
+#include <QtGui/QContextMenuEvent>
 
 te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
   : QObject(display),
@@ -47,6 +51,22 @@ te::qt::af::MapDisplay::MapDisplay(te::qt::widgets::MapDisplay* display)
 
   // Zoom Wheel tool
   m_display->installEventFilter(new te::qt::widgets::ZoomWheel(m_display, 2.0, this));
+
+  // Build the popup menu
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Draw"));
+  m_menu.addSeparator();
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom In"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Out"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Area"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Pan"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Zoom Extent")); 
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Previous Extent"));
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Next Extent"));
+  m_menu.addSeparator();
+  m_menu.addAction(ApplicationController::getInstance().findAction("Map.Stop Draw"));
+
+  // To show popup menu
+  m_display->installEventFilter(this);
 }
 
 te::qt::af::MapDisplay::~MapDisplay()
@@ -57,6 +77,17 @@ te::qt::af::MapDisplay::~MapDisplay()
 te::qt::widgets::MapDisplay*  te::qt::af::MapDisplay::getDisplay()
 {
   return m_display;
+}
+
+bool te::qt::af::MapDisplay::eventFilter(QObject* /*watched*/, QEvent* e)
+{
+  switch(e->type())
+  {
+    case QEvent::ContextMenu:
+      m_menu.exec(static_cast<QContextMenuEvent*>(e)->globalPos());
+    break;
+  }
+  return false;
 }
 
 void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& layers)
@@ -116,6 +147,6 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
   m_display->installEventFilter(m_tool);
 }
 
-void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::Event* e)
+void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
 }

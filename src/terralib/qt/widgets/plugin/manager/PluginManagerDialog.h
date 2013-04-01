@@ -88,6 +88,8 @@ namespace te
 
           void onHelpPushButtonPressed();
 
+          void onEnableAllChanged(bool st);
+
         protected:
 
           void fillInstalledPlugins();

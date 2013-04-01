@@ -66,8 +66,11 @@ namespace te
 
     namespace af
     {
-      //! Forward declarations
-      class Event;
+      namespace evt
+      {
+        //! Forward declarations
+        struct Event;
+      }
 
       /*!
         \class TabularViewer
@@ -99,7 +102,7 @@ namespace te
           /*!
             \brief Listener to the application framewrork events.
           */
-          void onApplicationTriggered(te::qt::af::Event* evt);
+          void onApplicationTriggered(te::qt::af::evt::Event* evt);
 
           void pointedObjects(const std::map<std::string, te::gm::Geometry*>& geoms);
 

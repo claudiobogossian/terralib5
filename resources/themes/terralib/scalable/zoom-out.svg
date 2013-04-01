@@ -16,7 +16,7 @@
    id="svg3915"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="zoom-in.svg">
+   sodipodi:docname="zoom-out.svg">
   <defs
      id="defs3917">
     <linearGradient
@@ -272,7 +272,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
         <dc:creator>
           <cc:Agent>
             <dc:title />
@@ -291,7 +291,7 @@
      transform="translate(-468.69227,-698.37228)">
     <g
        id="zoom-out"
-       transform="matrix(-1,0,0,0.997925,495.36931,454.32368)"
+       transform="matrix(1,0,0,0.997925,467.64507,454.32368)"
        inkscape:label="#zoom-out">
       <g
          id="g5796">

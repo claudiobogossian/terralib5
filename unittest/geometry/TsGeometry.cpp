@@ -1356,7 +1356,7 @@ void TsGeometry::loadGeometry(std::vector<WKBEntry>& hwkbVec) const
 {
   hwkbVec.clear();
 
-  FILE* f = fopen( TE_DATA_LOCALE "/data/hwkb.csv", "r");
+  FILE* f = fopen( TE_DATA_DIR "/data/hwkb.csv", "r");
 
   CPPUNIT_ASSERT(f != NULL);
 

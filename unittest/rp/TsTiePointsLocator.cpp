@@ -44,7 +44,7 @@ void TsTiePointsLocator::saveImagesAndTiePoints(
   const std::string& tifFileNameBeginning )
 {
   std::map<std::string, std::string> rInfo1;
-  rInfo1["URI"] = TE_DATA_LOCALE "/" + tifFileNameBeginning + "_raster1.tif";
+  rInfo1["URI"] = tifFileNameBeginning + "_raster1.tif";
   
   std::vector<te::rst::BandProperty*> bandsProperties1;
   bandsProperties1.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
@@ -75,7 +75,7 @@ void TsTiePointsLocator::saveImagesAndTiePoints(
     }
   
   std::map<std::string, std::string> rInfo2;
-  rInfo2["URI"] = TE_DATA_LOCALE "/" + tifFileNameBeginning + "_raster2.tif";
+  rInfo2["URI"] = TE_DATA_DIR "/" + tifFileNameBeginning + "_raster2.tif";
   
   std::vector<te::rst::BandProperty*> bandsProperties2;
   bandsProperties2.push_back(new te::rst::BandProperty( 0, te::dt::UCHAR_TYPE, "" ));
@@ -119,7 +119,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -137,6 +137,7 @@ void TsTiePointsLocator::MoravecStrategySameImage()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -160,7 +161,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   // openning input rasters
   
   std::map<std::string, std::string> inputRaster1Info;
-  inputRaster1Info["URI"] = TE_DATA_LOCALE 
+  inputRaster1Info["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
@@ -168,7 +169,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );     
   
   std::map<std::string, std::string> inputRaster2Info;
-  inputRaster2Info["URI"] = TE_DATA_LOCALE 
+  inputRaster2Info["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
@@ -188,6 +189,7 @@ void TsTiePointsLocator::MoravecStrategyHalfRotated90Image()
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -212,7 +214,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -238,6 +240,7 @@ void TsTiePointsLocator::MoravecStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaWidth = 400;
   algoInputParams.m_raster2TargetAreaHeight = 400;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -261,7 +264,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -279,6 +282,7 @@ void TsTiePointsLocator::MoravecStrategyMultipleThreads()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -300,7 +304,7 @@ void TsTiePointsLocator::MoravecStrategyMaximumOffset()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -319,6 +323,7 @@ void TsTiePointsLocator::MoravecStrategyMaximumOffset()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_maxR1ToR2Offset = 20;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -342,7 +347,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -361,6 +366,7 @@ void TsTiePointsLocator::MoravecStrategyRescaleFactor()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_rastersRescaleFactor = 0.5;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -384,7 +390,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -402,6 +408,7 @@ void TsTiePointsLocator::SurfStrategySameImage()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -425,7 +432,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -451,6 +458,7 @@ void TsTiePointsLocator::SurfStrategySameImageDifBoxes()
   algoInputParams.m_raster2TargetAreaWidth = 600;
   algoInputParams.m_raster2TargetAreaHeight = 700;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -474,7 +482,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   // openning input rasters
   
   std::map<std::string, std::string> inputRaster1Info;
-  inputRaster1Info["URI"] = TE_DATA_LOCALE 
+  inputRaster1Info["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster1Pointer ( te::rst::RasterFactory::open(
@@ -482,7 +490,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   CPPUNIT_ASSERT( inputRaster1Pointer.get() );     
   
   std::map<std::string, std::string> inputRaster2Info;
-  inputRaster2Info["URI"] = TE_DATA_LOCALE 
+  inputRaster2Info["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop_contrast_halfsampled_90rotation.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRaster2Pointer ( te::rst::RasterFactory::open(
@@ -502,6 +510,7 @@ void TsTiePointsLocator::SurfStrategyHalfRotated90Image()
   algoInputParams.m_pixelSizeXRelation = 20.0 / 40.0;
   algoInputParams.m_pixelSizeYRelation = 20.0 / 40.0;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
 
@@ -526,7 +535,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -544,6 +553,7 @@ void TsTiePointsLocator::SurfStrategyMultipleThreads()
   algoInputParams.m_inRaster2Bands.push_back( 0 );
   algoInputParams.m_enableMultiThread = true;
   algoInputParams.m_maxTiePoints = 1000;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -565,7 +575,7 @@ void TsTiePointsLocator::SurfStrategyMaximumOffset()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -584,6 +594,7 @@ void TsTiePointsLocator::SurfStrategyMaximumOffset()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_maxR1ToR2Offset = 20;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   
@@ -607,7 +618,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   // openning input raster
   
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE 
+  inputRasterInfo["URI"] = TE_DATA_DIR 
     "/data/rasters/cbers_b2_crop.tif";
     
   boost::shared_ptr< te::rst::Raster > inputRasterPointer ( te::rst::RasterFactory::open(
@@ -626,6 +637,7 @@ void TsTiePointsLocator::SurfStrategyRescaleFactor()
   algoInputParams.m_enableMultiThread = false;
   algoInputParams.m_maxTiePoints = 1000;
   algoInputParams.m_rastersRescaleFactor = 0.5;
+  algoInputParams.m_geomTransfName = "RST";
 
   te::rp::TiePointsLocator::OutputParameters algoOutputParams;
   

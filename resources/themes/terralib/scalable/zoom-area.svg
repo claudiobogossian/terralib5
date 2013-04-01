@@ -329,13 +329,12 @@
          id="rect3802"
          width="23.03879"
          height="22.233543"
-         x="-26.017"
+         x="2.9782104"
          y="245.35295"
-         transform="scale(-1,1)"
          ry="2.5048182" />
       <g
          id="g5796"
-         transform="translate(0.52110979,0)">
+         transform="matrix(-1,0,0,1,28.474101,0)">
         <path
            sodipodi:type="arc"
            style="color:#000000;fill:none;stroke:#000000;stroke-width:0.94033492;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:0;stroke-opacity:0.26512966;stroke-dasharray:none;stroke-dashoffset:0;marker:none;display:inline"

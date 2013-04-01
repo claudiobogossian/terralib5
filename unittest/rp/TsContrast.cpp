@@ -41,7 +41,7 @@ void TsContrast::LinearContrast()
   // open input raster
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -50,7 +50,7 @@ void TsContrast::LinearContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/terralib_unittest_rp_Contrast_noOptimization_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_Contrast_noOptimization_Test.tif";
 
   // Creating the algorithm parameters
 
@@ -80,7 +80,7 @@ void TsContrast::HistogramEqualizationContrast()
   // open input raster
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -89,7 +89,7 @@ void TsContrast::HistogramEqualizationContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/terralib_unittest_rp_HistogramEqualizationContrast_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_HistogramEqualizationContrast_Test.tif";
 
   // Creating the algorithm parameters
 
@@ -118,7 +118,7 @@ void TsContrast::SetMeanAndStdContrast()
   // open input raster
 
   std::map<std::string, std::string> inputRasterInfo;
-  inputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/cbers2b_rgb342_crop.tif";
+  inputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/cbers2b_rgb342_crop.tif";
 
   boost::shared_ptr< te::rst::Raster > inputRasterPointer( te::rst::RasterFactory::open(
     inputRasterInfo ) );
@@ -127,7 +127,7 @@ void TsContrast::SetMeanAndStdContrast()
   // access a raster datasource to create the output raster
 
   std::map<std::string, std::string> outputRasterInfo;
-  outputRasterInfo["URI"] = TE_DATA_LOCALE "/data/rasters/terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
+  outputRasterInfo["URI"] = TE_DATA_DIR "/data/rasters/terralib_unittest_rp_SetMeanAndStdContrast_Test.tif";
 
   // Creating the algorithm parameters
 

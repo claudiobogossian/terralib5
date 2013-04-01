@@ -56,8 +56,8 @@ int te::qt::widgets::FolderLayerItem::columnCount() const
 
 QVariant te::qt::widgets::FolderLayerItem::data(int /*column*/, int role) const
 {
-  if(role == Qt::DecorationRole)
-    return QVariant(QIcon::fromTheme("folder-layer"));
+  //if(role == Qt::DecorationRole)
+  //  return QVariant(QIcon::fromTheme("folder-layer"));
 
   if(role == Qt::DisplayRole)
     return QVariant(QString::fromUtf8(m_layer->getTitle().c_str()));

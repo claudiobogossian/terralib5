@@ -24,6 +24,7 @@
 */
 
 // TerraLib
+#include "../color/ColorTransform.h"
 #include "../color/RGBAColor.h"
 #include "../raster/BandProperty.h"
 #include "ChannelSelection.h"
@@ -44,13 +45,9 @@
 #include "TextSymbolizer.h"
 #include "Utils.h"
 
-// Boost
-#include <boost/random/mersenne_twister.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
-
 // STL
 #include <cassert>
-#include <ctime>
+#include <cstdlib>
 
 te::se::Stroke* te::se::CreateStroke(const std::string& color, const std::string& width)
 {
@@ -349,10 +346,10 @@ te::se::Style* te::se::CreateCoverageStyle(const std::vector<te::rst::BandProper
 
 std::string te::se::GenerateRandomColor()
 {
-  static boost::random::mt19937 gen(static_cast<boost::uint32_t>(std::time(0)));
-  static boost::random::uniform_int_distribution<> dist(0, 128);
+  te::color::ColorTransform t;
+  t.setHsv(rand() % 360, 64 + (rand() % 192), 128 + (rand() % 128));
 
-  // Creates random pastel colours
-  te::color::RGBAColor color(dist(gen) + 127, dist(gen) + 127, dist(gen) + 127, TE_OPAQUE);
+  te::color::RGBAColor color(t.getRgba());
+
   return color.getColor();
 }
