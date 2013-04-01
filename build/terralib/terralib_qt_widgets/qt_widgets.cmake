@@ -77,6 +77,7 @@ set (
   widgets/datasource/connector
   widgets/exchanger
   widgets/layer/explorer
+  widgets/layer/search
   widgets/layer/selector
   widgets/layer/utils
   widgets/layer/info
@@ -192,6 +193,13 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/info" MOC)
 
 set (
   HDRS_TO_MOC
+  ${SRCDIR}/widgets/layer/search/LayerSearchWidget.h
+  ${SRCDIR}/widgets/layer/search/LayerSearchWizardPage.h
+)
+te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/layer/search" MOC)
+
+set (
+  HDRS_TO_MOC
   ${SRCDIR}/widgets/layer/selector/AbstractLayerSelector.h
   ${SRCDIR}/widgets/layer/selector/DataSetLayerSelector.h
   ${SRCDIR}/widgets/layer/selector/HiddenDataSetLayerSelector.h
@@ -303,7 +311,11 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
+  ${SRCDIR}/widgets/rp/ContrastWizard.h
+  ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
+  ${SRCDIR}/widgets/rp/RasterInfoWidget.h
+  ${SRCDIR}/widgets/rp/RasterInfoWizardPage.h
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
@@ -421,6 +433,7 @@ file(
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
   ${SRCDIR}/widgets/exchanger/ui/*.ui
+  ${SRCDIR}/widgets/layer/search/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/property/ui/*.ui
   ${SRCDIR}/widgets/utils/ui/*.ui
