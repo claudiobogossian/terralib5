@@ -258,7 +258,4 @@ void te::qt::af::UpdateApplicationPlugins()
   // Store the file.
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(ApplicationPlugins::getInstance().getFileName(), p, std::locale(), settings);
-
-  // ** Por algum motivo essa instrução não funciona: o arquivo fica todo errado, não sei porque!
-  // ApplicationPlugins::getInstance().changed();
 }

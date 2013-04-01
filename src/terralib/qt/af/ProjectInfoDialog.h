@@ -18,9 +18,9 @@
  */
 
 /*! 
-  \file terralib/qt/af/ProjectEditor.h
+  \file terralib/qt/af/ProjectInfoDialog.h
 
-  \brief 
+  \brief A dialog for edition of te::qt::af::Project informations.
 */
 
 #ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFODIALOG_H
@@ -40,27 +40,51 @@ namespace te
       class Project;
       class ProjectInfoWidget;
 
+      /*!
+        \class
+
+        \brief
+      */
       class TEQTAFEXPORT ProjectInfoDialog : public QDialog
       {
         Q_OBJECT
 
         public:
 
+          /*!
+            \brief Constructor.
+
+            \param parent QWidget parent.
+          */
           ProjectInfoDialog(QWidget* parent=0);
 
+          /*!
+            \brief Destructor.
+          */
           ~ProjectInfoDialog();
 
+          /*!
+            \brief Sets the project to be inspected.
+
+            \param proj The te::qt::af::Project to be presented.
+          */
           void setProject(Project* proj);
 
         protected slots:
 
+          /*!
+            \brief Called on ok button pressed.
+          */
           void onOkPushButtonPressed();
 
+          /*!
+            \brief Called on help button pressed.
+          */
           void onHelpPushButtonPressed();
 
         protected:
 
-          ProjectInfoWidget* m_info;
+          ProjectInfoWidget* m_info;    //!< Pointer to the widget that contains information about te::qt::af::Project.
       };
     }
   }

@@ -50,18 +50,20 @@ namespace te
         public:
           
           /*!
+            \enum PluginStatus
+
             \brief Define possible states for the plugin.
           */
           enum PluginStatus
           {
-            No_operation = 0,
-            To_add = 1,
-            To_remove = 2,
-            To_enable = 4,
-            To_disable = 8,
-            Loaded = 16,
-            Unloaded = 32,
-            Broked = 64
+            No_operation = 0,   //!< No operation.
+            To_add = 1,         //!< Plugin to be added.
+            To_remove = 2,      //!< Plugin to be removed.
+            To_enable = 4,      //!< Plugin to be loaded.
+            To_disable = 8,     //!< Plugin to be unloaded.
+            Loaded = 16,        //!< Plugin is loaded.
+            Unloaded = 32,      //!< Plugin is unloaded.
+            Broked = 64         //!< Plugin haas missed dependencies.
           };
 
           Q_DECLARE_FLAGS( PluginsStatus, PluginStatus )
@@ -129,23 +131,45 @@ namespace te
           */
           Qt::ItemFlags flags(const QModelIndex & index) const;
 
-          /*!
-            \brief
-          */
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
+          //@}
 
+          /*!
+            \brief Adds information about plugin.
+
+            \param info Information of the plugin.
+
+            \param status Status of plugin.
+
+            \sa PluginStatus
+          */
           void addPlugin(const te::plugin::PluginInfo* info, const PluginsStatus& status);
 
+          /*!
+            \brief Remove the selected plugins.
+
+            \param plgs Indexes of the plugins to be removed.
+          */
           void removePlugins(const QModelIndexList& plgs);
 
+          /*!
+            \brief Returns plugins informations.
+
+            \param[out] plgs List of plugins.
+
+            \param[out] status List of the status of the plugins.
+          */
           void getPluginsInfo(std::vector<te::plugin::PluginInfo*>& plgs, std::vector<PluginsStatus>& status);
 
+          /*!
+            \brief Clear the list of plugins and status.
+          */
           void clear();
 
         protected:
 
-          std::vector<te::plugin::PluginInfo*> m_plugins;
-          std::vector<PluginsStatus>           m_pluginsStatus;
+          std::vector<te::plugin::PluginInfo*> m_plugins;       //!< List of informations about plugins.
+          std::vector<PluginsStatus>           m_pluginsStatus; //!< List of status of each plugin.
       };
 
       Q_DECLARE_OPERATORS_FOR_FLAGS( te::qt::widgets::PluginsModel::PluginsStatus )

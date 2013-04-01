@@ -43,16 +43,23 @@ namespace te
           \struct ProjectAdded
 
           \brief Signals that a new project was created.
+
+          \ingroup afevents
         */
         struct ProjectAdded : public Event
         {
+          /*!
+            \brief Constructor.
+
+            \param proj The pointer to the project added.
+          */
           ProjectAdded(Project* proj) :
           Event(PROJECT_ADDED),
           m_proj(proj)
           {
           }
 
-          Project* m_proj;
+          Project* m_proj;    //!< Pointer to the newe project.
         };
       }
     }
