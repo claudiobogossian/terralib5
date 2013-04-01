@@ -3,9 +3,9 @@
 #include "Project.h"
 
 te::qt::af::ProjectInfoWidget::ProjectInfoWidget(QWidget* parent) :
-QWidget(parent),
-  m_ui(new Ui::ProjectInfoWidgetForm),
-  m_proj(0)
+  QWidget(parent),
+  m_proj(0),
+  m_ui(new Ui::ProjectInfoWidgetForm)
 {
   m_ui->setupUi(this);
 }
