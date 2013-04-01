@@ -86,31 +86,6 @@ namespace te
 
           //@}
 
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          RubberBand(const RubberBand& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          RubberBand& operator=(const RubberBand& rhs);
-
-          //@}
-
         protected:
 
           QPoint m_origin;  //!< Origin point on mouse pressed.
