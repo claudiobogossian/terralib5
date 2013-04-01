@@ -86,31 +86,6 @@ namespace te
 
           /*! This signal is emitted when a coordinate was tracked. */
           void coordTracked(QPointF& coordinate);
-
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          CoordTracking(const CoordTracking& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          CoordTracking& operator=(const CoordTracking& rhs);
-
-          //@}
       };
 
     } // end namespace widgets
