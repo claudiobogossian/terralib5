@@ -38,7 +38,9 @@ void te::da::BinaryOpEncoder::toSQL(const Function& f,
   assert(f.getNumArgs() == 2);
   buff += "(";
   f[0]->accept(v);
+  buff += " ";
   buff += m_name;
+  buff += " ";
   f[1]->accept(v);
   buff += ")";
 }

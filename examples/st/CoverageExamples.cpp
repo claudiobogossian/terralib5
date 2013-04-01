@@ -17,7 +17,7 @@ void CoverageExamples()
   {  
     te::st::Coverage* output = 0;
     
-    std::string XMLFileName = TE_DATA_EXAMPLE_LOCALE"\\data\\geotif\\coverage_angra_metadata.xml";
+    std::string XMLFileName = TE_DATA_EXAMPLE_DIR"\\data\\geotif\\coverage_angra_metadata.xml";
   
     te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");
 

@@ -281,14 +281,14 @@ void MainWindow::contextMenuEvent(QContextMenuEvent* e)
 
 void MainWindow::onAddVectorDataTriggered()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/shp/", tr("ShapeFile *.shp"));
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a vector file..."), ""TE_DATA_EXAMPLE_DIR"/data/shp/", tr("ShapeFile *.shp"));
   if(!path.isNull())
     addDataSetLayer(path, "OGR");
 }
 
 void MainWindow::onAddRasterDataTriggered()
 {
-  QString path = QFileDialog::getOpenFileName(this, tr("Select a raster file..."), ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/", tr("TIFF *.tif"));
+  QString path = QFileDialog::getOpenFileName(this, tr("Select a raster file..."), ""TE_DATA_EXAMPLE_DIR"/data/rasters/", tr("TIFF *.tif"));
   if(!path.isNull())
     addDataSetLayer(path, "GDAL");
 }

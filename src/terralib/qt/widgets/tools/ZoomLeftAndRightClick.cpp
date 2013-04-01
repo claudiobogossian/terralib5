@@ -24,10 +24,10 @@
 */
 
 // TerraLib
-#include "MapDisplay.h"
-#include "ZoomLeftAndRightClick.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
+#include "../canvas/MapDisplay.h"
+#include "ZoomLeftAndRightClick.h"
 
 // Qt
 #include <QtGui/QMouseEvent>

@@ -17,7 +17,7 @@ void RasterSymbologyWidgets()
 
   // set input raster name
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = ""TE_DATA_EXAMPLE_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = ""TE_DATA_EXAMPLE_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
 // open input raster
   te::da::DataSource* ds = te::da::DataSourceFactory::make("GDAL");

@@ -234,7 +234,7 @@
        x2="14.320742"
        y1="251"
        x1="8"
-       gradientTransform="translate(-0.2456535,-0.55361527)"
+       gradientTransform="matrix(-1,0,0,1,27.969895,-0.55361527)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient6172"
        xlink:href="#linearGradient3480-0"
@@ -294,7 +294,8 @@
        transform="matrix(-1,0,0,0.997925,495.36931,454.32368)"
        inkscape:label="#zoom_in">
       <g
-         id="g5796">
+         id="g5796"
+         transform="matrix(-1,0,0,1,27.724241,0)">
         <path
            sodipodi:type="arc"
            style="color:#000000;fill:none;stroke:#000000;stroke-width:0.94033492;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:0;stroke-opacity:0.26512966;stroke-dasharray:none;stroke-dashoffset:0;marker:none;display:inline"
@@ -333,7 +334,7 @@
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="ccccccccccccc"
          id="path10609"
-         d="m 10.754347,250.44641 2,0 0.0273,3 3,0.029 -0.0273,1.9938 -3,-0.0291 0.0273,3.0063 -2,0 -0.0273,-3.0063 -3.0273005,0 0.0273,-1.9937 3.0273005,0 -0.0273,-3 z"
+         d="m 16.969894,250.44641 -2,0 -0.0273,3 -3,0.029 0.0273,1.9938 3,-0.0291 -0.0273,3.0063 2,0 0.0273,-3.0063 3.027301,0 -0.0273,-1.9937 -3.027301,0 0.0273,-3 z"
          style="fill:url(#linearGradient6172);fill-opacity:1;fill-rule:evenodd;stroke:none" />
     </g>
   </g>

@@ -48,7 +48,7 @@ std::vector<te::gm::Polygon*> SegmentImage(te::rst::Raster* rin)
 
 // create output raster info
   std::map<std::string, std::string> orinfo;
-  orinfo["URI"] = TE_DATA_LOCALE"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
+  orinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop_segmented.tif";
 
 // input parameters
   te::rp::Segmenter::InputParameters algoInputParameters;
@@ -93,7 +93,7 @@ void TsClassifier::ISOSeg()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 
@@ -140,7 +140,7 @@ void TsClassifier::MAP()
 {
 // first open the input image
   std::map<std::string, std::string> rinfo;
-  rinfo["URI"] = TE_DATA_LOCALE"/data/rasters/cbers2b_rgb342_crop.tif";
+  rinfo["URI"] = TE_DATA_DIR"/data/rasters/cbers2b_rgb342_crop.tif";
 
   te::rst::Raster* rin = te::rst::RasterFactory::open(rinfo);
 

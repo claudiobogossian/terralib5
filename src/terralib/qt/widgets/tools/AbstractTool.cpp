@@ -24,8 +24,8 @@
 */
 
 // TerraLib
+#include "../canvas/MapDisplay.h"
 #include "AbstractTool.h"
-#include "MapDisplay.h"
 
 // Qt
 #include <QtGui/QMouseEvent>

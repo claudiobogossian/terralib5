@@ -25,7 +25,7 @@
 
 // TerraLib
 #include "../../../geometry/Envelope.h"
-#include "MapDisplay.h"
+#include "../canvas/MapDisplay.h"
 #include "Pan.h"
 
 // Qt
