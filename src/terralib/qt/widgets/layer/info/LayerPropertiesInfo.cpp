@@ -76,7 +76,7 @@ void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, int value
     m_layer->setVisibility((te::map::Visibility)value);
 }
 
-void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, QString value)
+void te::qt::widgets::LayerPropertiesInfo::valueChanged(QtProperty* p, const QString& value)
 {
   if(p->propertyName() == "title")
     m_layer->setTitle(value.toStdString());
