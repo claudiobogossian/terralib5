@@ -31,6 +31,9 @@
 #include "../../../rp/Contrast.h"
 #include "../Config.h"
 
+// STL
+#include <memory>
+
 // Qt
 #include <QtGui/QWizardPage>
 
