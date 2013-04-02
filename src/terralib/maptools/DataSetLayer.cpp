@@ -33,6 +33,7 @@
 #include "DataSetLayer.h"
 #include "Exception.h"
 #include "RendererFactory.h"
+#include "Utils.h"
 
 // Boost
 #include <boost/format.hpp>
@@ -99,7 +100,9 @@ te::da::DataSet* te::map::DataSetLayer::getData(te::common::TraverseType travTyp
 
   assert(!m_datasetName.empty());
 
-  return t->getDataSet(m_datasetName, travType, rwRole);
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
@@ -119,7 +122,9 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Envelope& e,
 
   assert(!m_datasetName.empty());
 
-  return t->getDataSet(m_datasetName, &e, r, travType, rwRole);
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &e, r, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
@@ -140,7 +145,9 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
 
   assert(!m_datasetName.empty());
 
-  return t->getDataSet(m_datasetName, &p, &e, r, travType, rwRole);
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &e, r, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
@@ -160,7 +167,9 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::gm::Geometry& g,
 
   assert(!m_datasetName.empty());
 
-  return t->getDataSet(m_datasetName, &g, r, travType, rwRole);
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &g, r, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
 }
 
 te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
@@ -181,7 +190,9 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
 
   assert(!m_datasetName.empty());
 
-  return t->getDataSet(m_datasetName, &p, &g, r, travType, rwRole);
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &g, r, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
 }
 
 bool te::map::DataSetLayer::isValid() const
