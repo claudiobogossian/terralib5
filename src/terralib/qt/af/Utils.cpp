@@ -94,14 +94,7 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "ComponentList");
   reader.next(); // End element
-
-  reader.next();
-
-  while(reader.getNodeType() == te::xml::START_ELEMENT &&
-        reader.getElementLocalName() != "LayerList")
-  {
-    // pegar os valores de cada componente e enviar um sinal para que ele possa ler os valores
-  }
+  reader.next(); // next after </ComponentList>
 
   assert(reader.getNodeType() == te::xml::START_ELEMENT);
   assert(reader.getElementLocalName() == "LayerList");
@@ -110,15 +103,23 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
-  while(reader.getNodeType() == te::xml::START_ELEMENT)
+  while((reader.getNodeType() != te::xml::END_ELEMENT) &&
+        (reader.getElementLocalName() != "LayerList"))
   {
-    te::map::AbstractLayer* layer(lserial.read(reader));
+    te::map::AbstractLayerPtr layer(lserial.read(reader));
 
-    if(layer == 0)
+    if(layer.get() == 0)
       break;
 
     project->add(layer);
   }
+
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "LayerList");
+
+  reader.next();
+  assert((reader.getNodeType() == te::xml::END_ELEMENT) || (reader.getNodeType() == te::xml::END_DOCUMENT));
+  assert(reader.getElementLocalName() == "Project");
 
   return project.release();
 }
@@ -258,7 +259,4 @@ void te::qt::af::UpdateApplicationPlugins()
   // Store the file.
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(ApplicationPlugins::getInstance().getFileName(), p, std::locale(), settings);
-
-  // ** Por algum motivo essa instrução não funciona: o arquivo fica todo errado, não sei porque!
-  // ApplicationPlugins::getInstance().changed();
 }

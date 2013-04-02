@@ -26,7 +26,7 @@
 // TerraLib
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Envelope.h"
-#include "MapDisplay.h"
+#include "../canvas/MapDisplay.h"
 #include "Zoom.h"
 
 te::qt::widgets::Zoom::Zoom(te::qt::widgets::MapDisplay* display, const double& zoomFactor, const ZoomType& type, QObject* parent) 

@@ -31,8 +31,8 @@
 #include "../../../geometry/LineString.h"
 #include "../../../geometry/Point.h"
 #include "../../../geometry/Polygon.h"
-#include "Canvas.h"
-#include "MapDisplay.h"
+#include "../canvas/Canvas.h"
+#include "../canvas/MapDisplay.h"
 #include "Measure.h"
 
 // Qt
