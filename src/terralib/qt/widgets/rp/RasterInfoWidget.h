@@ -30,6 +30,7 @@
 #include "../Config.h"
 
 // STL
+#include <memory>
 #include <string>
 #include <map>
 

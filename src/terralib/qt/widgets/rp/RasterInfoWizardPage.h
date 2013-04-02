@@ -29,6 +29,9 @@
 // TerraLib
 #include "../Config.h"
 
+// STL
+#include <memory>
+
 // Qt
 #include <QtGui/QWizardPage>
 
