@@ -76,6 +76,8 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
   m_mapDisplay->setExtent(calculateExtent(), false);
+
+  listBands();
 }
 
 te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputParams()
