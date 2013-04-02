@@ -49,18 +49,61 @@ namespace te
     {
       class Project;
 
+      /*!
+        \brief Reads and return a te::qt::af::Project from the file.
+
+        \param uri Location of the te::qt::af::Project file.
+
+        \return A pointer to the te::qt::af::Project defined in the \a uri file.
+      */
       TEQTAFEXPORT Project* ReadProject(const std::string& uri);
 
+      /*!
+        \brief Reads and return a te::qt::af::Project using \a reader XML reader.
+
+        \param reader The XML reader to be used.
+
+        \return A pointer to the te::qt::af::Project.
+      */
       TEQTAFEXPORT Project* ReadProject(te::xml::Reader& reader);
 
+      /*!
+        \brief Saves the informations of the project in the \a uri file.
+
+        \param project The te::qt::af::Project to be saved.
+
+        \param uri File location.
+      */
       TEQTAFEXPORT void Save(const Project& project, const std::string& uri);
 
+      /*!
+        \brief Saves the informations of the te::qt::af::Project using \a writer XML writer.
+
+        \param project The te::qt::af::Project to be saved.
+
+        \param writer The XML writer to be used.
+      */
       TEQTAFEXPORT void Save(const Project& project, te::xml::Writer& writer);
 
+      /*!
+        \brief Updates user settings file section about information of the projects.
+
+        \param prjFiles List of the files containing projects.
+
+        \param prjTitles List of the titles of the projects.
+
+        \param userConfigFile Name of the user configuration file.
+      */
       TEQTAFEXPORT void UpdateUserSettings(const QStringList& prjFiles, const QStringList& prjTitles, const std::string& userConfigFile);
 
+      /*!
+        \brief Saves data sources file.
+      */
       TEQTAFEXPORT void SaveDataSourcesFile();
 
+      /*!
+        \brief Update plugins file.
+      */
       TEQTAFEXPORT void UpdateApplicationPlugins();
     } // end namespace af
   }   // end namespace qt

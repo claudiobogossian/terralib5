@@ -84,31 +84,6 @@ namespace te
 
           //@}
 
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          Pan(const Pan& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          Pan& operator=(const Pan& rhs);
-
-          //@}
-
         protected:
 
           bool m_panStarted;      //!< Flag that indicates if pan operation was started.

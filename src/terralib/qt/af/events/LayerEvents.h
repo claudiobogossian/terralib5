@@ -54,6 +54,7 @@ namespace te
         {
           /*!
             \brief Constructor.
+
             \param newLayer Pointer to the layer created.
           */
           LayerAdded(te::map::AbstractLayer* newlayer) : 
@@ -74,6 +75,13 @@ namespace te
         */
         struct LayerVisibilityChanged : public Event 
         {
+          /*! 
+            \brief Constructor.
+
+            \param layer The pointer to the layer.
+
+            \param visible The new visibility state: true -> visible, false -> not visible.
+          */
           LayerVisibilityChanged(te::map::AbstractLayer* layer, const bool& visible) :
           Event(LAYER_VISIBILTY_CHANGED),
           m_layer(layer),
@@ -94,6 +102,11 @@ namespace te
         */
         struct LayerSelected : public Event
         {
+          /*!
+            \brief Construtor.
+
+            \param layer The new selected layer.
+          */
           LayerSelected(te::map::AbstractLayer* layer) :
           Event(LAYER_SELECTED),
           m_layer(layer)

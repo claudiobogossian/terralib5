@@ -357,6 +357,8 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
   assert(reader.getElementLocalName() == "FolderLayer");
 
+  reader.next();
+
   return flayer.release();
 }
 
