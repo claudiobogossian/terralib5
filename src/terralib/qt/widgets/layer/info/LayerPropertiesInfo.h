@@ -57,7 +57,7 @@ namespace te
 
           virtual void valueChanged(QtProperty* p, int value);
 
-          virtual void valueChanged(QtProperty* p, QString value);
+          virtual void valueChanged(QtProperty* p, const QString& value);
 
         protected:
 
