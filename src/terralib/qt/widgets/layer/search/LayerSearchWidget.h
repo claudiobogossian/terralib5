@@ -32,6 +32,7 @@
 
 // STL
 #include <list>
+#include <memory>
 
 // Qt
 #include <QtGui/QWidget>

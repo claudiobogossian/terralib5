@@ -43,7 +43,7 @@ namespace te
     /*!
       \class Mosaic
       \brief Create a mosaic from a set of rasters.
-      \note The first raster will always be taken as reference.
+      \note The first raster will always be taken as reference to define the mosaic resolution and SRS.
       \ingroup RPAlgorithms
      */
     class TERPEXPORT Mosaic : public Algorithm
@@ -157,37 +157,17 @@ namespace te
         
         /*!
           \brief Execute a mosaic of georeferenced images.
-          \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
-          \param mosaicTargetMeans Mosaic target means.
-          \param mosaicTargetVariances Mosaic target variances.            
-          \param outputRaster Pre-initialized output mosaic raster.
-          \note The first sequenced raster will not be processed.
-          \note te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
-          \note te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).          
+          \param outputParams The algorithm execution parameters.
           \return true if ok, false on errors.
         */
-        bool executeGeoMosaic( const std::vector< te::gm::Polygon >& rastersBBoxes,
-          const std::vector< double >& mosaicTargetMeans,
-          const std::vector< double >& mosaicTargetVariances,                               
-          te::rst::Raster& outputRaster );
+        bool executeGeoMosaic( Mosaic::OutputParameters& outputParams );
           
         /*!
           \brief Execute a mosaic of images linket by tie-points.
-          \param mosaicGeomTransfms Transfomrations mapping indexed points (line/coluns) from each raster to the mosaic raster indexed points (lines/columns).
-          \param rastersBBoxes All rasters bounding boxes (under the first raster world coords).
-          \param mosaicTargetMeans Mosaic target means.
-          \param mosaicTargetVariances Mosaic target variances.          
-          \param outputRaster Pre-initialized output mosaic raster.
-          \note The first sequenced raster will not be processed.
-          \note te::gm::GTParameters::TiePoint::first are mosaic reaster indexed points (lines/cols),
-          \note te::gm::GTParameters::TiePoint::second are the other rasters indexed points (lines/cols).
+          \param outputParams The algorithm execution parameters.
           \return true if ok, false on errors.
         */
-        bool executeTiePointsMosaic( const std::vector< boost::shared_ptr< te::gm::GeometricTransformation > >&
-          mosaicGeomTransfms, const std::vector< te::gm::Polygon >& rastersBBoxes,
-          const std::vector< double >& mosaicTargetMeans,
-          const std::vector< double >& mosaicTargetVariances,
-          te::rst::Raster& outputRaster );          
+        bool executeTiePointsMosaic( Mosaic::OutputParameters& outputParams );          
           
         /*!
           \brief Raster band statistics calcule.
