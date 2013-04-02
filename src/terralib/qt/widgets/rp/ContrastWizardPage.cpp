@@ -50,6 +50,12 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   m_mapDisplay.reset( new te::qt::widgets::MapDisplay(m_ui->m_frame->size(), m_ui->m_frame));
   displayLayout->addWidget(m_mapDisplay.get());
 
+//set icons
+  m_ui->m_rRadioButton->setIcon(QIcon::fromTheme("bullet-red"));
+  m_ui->m_gRadioButton->setIcon(QIcon::fromTheme("bullet-green"));
+  m_ui->m_bRadioButton->setIcon(QIcon::fromTheme("bullet-blue"));
+  m_ui->m_mRadioButton->setIcon(QIcon::fromTheme("bullet-black"));
+
 //configure page
   this->setTitle(tr("Contrast"));
   this->setSubTitle(tr("Select the type of contrast and set their specific parameters."));
@@ -98,16 +104,15 @@ te::rp::Contrast::InputParameters te::qt::widgets::ContrastWizardPage::getInputP
     algoInputParams.m_sMASCStdInput = m_ui->m_sMASCStdInputLineEdit->text().toDouble();
   }
 
-  QList<QListWidgetItem *> selectedBands = m_ui->m_inputRasterBandsListWidget->selectedItems();
-
-  QList<QListWidgetItem *>::const_iterator itBegin = selectedBands.begin();
-  QList<QListWidgetItem *>::const_iterator itEnd = selectedBands.end();
-
-  while(itBegin != itEnd)
+  if(m_ui->m_mRadioButton->isChecked())
   {
-    algoInputParams.m_inRasterBands.push_back((*itBegin)->text().toUInt());
-    
-    ++itBegin;
+    algoInputParams.m_inRasterBands.push_back(m_ui->m_mComboBox->currentText().toUInt());
+  }
+  else
+  {
+    algoInputParams.m_inRasterBands.push_back(m_ui->m_rComboBox->currentText().toUInt());
+    algoInputParams.m_inRasterBands.push_back(m_ui->m_gComboBox->currentText().toUInt());
+    algoInputParams.m_inRasterBands.push_back(m_ui->m_bComboBox->currentText().toUInt());
   }
 
   return algoInputParams;
@@ -206,7 +211,10 @@ void te::qt::widgets::ContrastWizardPage::listBands()
     {
       for(unsigned int i = 0; i < inputRst->getNumberOfBands(); ++i)
       {
-        m_ui->m_inputRasterBandsListWidget->addItem(QString::number(i));
+        m_ui->m_rComboBox->addItem(QString::number(i));
+        m_ui->m_gComboBox->addItem(QString::number(i));
+        m_ui->m_bComboBox->addItem(QString::number(i));
+        m_ui->m_mComboBox->addItem(QString::number(i));
       }
     }
   }
