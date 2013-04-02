@@ -24,18 +24,22 @@
 */
 
 //Terralib
-#include "ui_histogramCreatorDialog.h"
-#include "HistogramCreatorDialog.h"
-#include "ChartStyleDialog.h"
-#include "Histogram.h"
-#include "HistogramChart.h"
-#include "HistogramStyle.h"
 #include "ChartDisplay.h"
+#include "ChartStyleDialog.h"
 #include "../utils/ColorPickerToolButton.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
+#include "HistogramCreatorDialog.h"
+#include "Histogram.h"
+#include "HistogramChart.h"
+#include "HistogramStyle.h"
 #include "../../../qt/widgets/charts/Utils.h"
 #include "../../../qt/widgets/se/Utils.h"
+#include "../../../raster.h"
+#include "../../../raster/RasterSummary.h"
+#include "../../../raster/RasterSummaryManager.h"
+#include "ui_histogramCreatorDialog.h"
+
 
 //QT
 #include <QtGui/QDialog>
@@ -53,22 +57,36 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
   m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
   m_colorPicker->setFixedSize(107, 24);
 
-  // Adjusting...
+  // Adjusting the color picker
   QGridLayout* layout = new QGridLayout(m_ui->m_colorPickerFrame);
   layout->setContentsMargins(0, 0, 0, 0);
   layout->setSizeConstraint(QLayout::SetFixedSize);
   layout->addWidget(m_colorPicker);
 
   QString item;
-  std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
 
-  for (double i = 0; i < properties.size(); i++)
+  if(dataSet->getRaster())
+    {
+      size_t size =  dataSet->getRaster()->getNumberOfBands();
+      for (unsigned int i = 0; i < size; i++)
+      {
+        item = QString::number(i);
+        m_ui->m_propertyComboBox->addItem(item);
+      }
+    }
+  else
   {
-    item = item.fromStdString(properties[i]->getName());
-    m_ui->m_propertyComboBox->addItem(item);
+    std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
+
+    for (double i = 0; i < properties.size(); i++)
+    {
+      item = QString::fromStdString(properties[i]->getName());
+      m_ui->m_propertyComboBox->addItem(item);
+    }
   }
 
-  m_histogramStyle = new te::qt::widgets::HistogramStyle();
+  m_histogramStyle = new te::qt::widgets::HistogramStyle(); 
+  m_chartDisplay = new te::qt::widgets::ChartDisplay();
 
 // connect signal and slots
   connect(m_ui->m_stylePushButton, SIGNAL(clicked()), this, SLOT(onStylePushButtonClicked()));
@@ -92,40 +110,45 @@ void te::qt::widgets::HistogramCreatorDialog::onStylePushButtonClicked()
 void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 {
 
-  //Acquiring the dataset Properties types
-  m_type = m_dataSet->getType();
-
-  //Getting the Columns that will be used to populate the graph
-  QString aux = m_ui->m_propertyComboBox->currentText();
-  std::string selectedProperty = aux.toStdString();
-  int selectedPropertyIdx= m_type->getPropertyPosition(selectedProperty);
-  int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
-
-  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  if(m_dataSet->getRaster())
   {
-    m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+    int teste  =  m_ui->m_propertyComboBox->currentIndex();
+    m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
   }
   else
   {
-    m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+    //Acquiring the dataset Properties types
+    m_type = m_dataSet->getType();
+
+    //Getting the Columns that will be used to populate the graph
+    int selectedPropertyIdx= m_type->getPropertyPosition(m_ui->m_propertyComboBox->currentText().toStdString());
+    int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
+
+    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    {
+      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+    }
+    else
+    {
+      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+    }
   }
 
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);
   dlg.setLayout(lay);
-  
-//passar como parametro o chartstyle
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
 
-  lay->addWidget(chartDisplay);
+  m_chartDisplay->setParent(&dlg);
+
+  lay->addWidget(m_chartDisplay);
 
   m_histogramChart = new te::qt::widgets::HistogramChart(m_histogram);
   m_histogramChart->setSymbol(m_histogramStyle->getSymbol());
-  m_histogramChart->attach(chartDisplay);
+  m_histogramChart->attach(m_chartDisplay);
 
-  chartDisplay->show();
+  m_chartDisplay->show();
 
-  chartDisplay->replot();
+  m_chartDisplay->replot();
 
   this->close();
   dlg.exec();
@@ -141,23 +164,30 @@ void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QS
   m_type = m_dataSet->getType();
   QString aux = m_ui->m_propertyComboBox->currentText();
   std::string selectedProperty = aux.toStdString();
-  int selectedPropertyIdx= m_type->getPropertyPosition(selectedProperty);
-  int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
+  if(!(m_dataSet->getRaster()))
+  {
+    int selectedPropertyIdx= m_type->getPropertyPosition(selectedProperty);
+    int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
 
-  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
-  {
-  m_ui->m_slicesSpinBox->setEnabled(false);
+    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    {
+    m_ui->m_slicesSpinBox->setEnabled(false);
+    }
+    else
+    {
+    m_ui->m_slicesSpinBox->setEnabled(true);
+    }
   }
-  else
+  else 
   {
-  m_ui->m_slicesSpinBox->setEnabled(true);
+    m_ui->m_slicesSpinBox->setEnabled(false);
   }
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onColorChanged(const QColor& color)
 {
   // The new fill color
-  m_histogramStyle->getColor().setRgb(color.red(), color.green(), color.blue(), m_histogramStyle->getColor().alpha());
+  m_histogramStyle->setColor(color);
 
   m_colorPicker->setColor(m_histogramStyle->getColor());
 }

@@ -31,15 +31,14 @@
 
 //QWT
 #include <qwt_plot_curve.h>
+#include <qwt_symbol.h>
 
 //STL
 #include <vector>
 
 namespace te
 {
-  // Forward declarations
-  namespace se { class Mark; }
-   
+
   namespace qt
   {
     namespace widgets
@@ -71,7 +70,7 @@ namespace te
             \note It will take the ownership of the pointer "style".
             \note It will not take the ownership of the pointer "data".
           */
-          ScatterChart(Scatter* data, te::se::Mark* style, size_t size);
+          ScatterChart(Scatter* data,QwtSymbol* symbol, size_t size);
                     
 
           /*! \brief Destructor. */
@@ -83,7 +82,7 @@ namespace te
 
         private:
           Scatter*                m_scatter; //!< The scatter that will be shown on this chart.
-          te::se::Mark*           m_mark; //!< The symbol that defines the look of a scatter's point.
+          QwtSymbol*              m_symbol; //!< The symbol that defines the look of a scatter's point.
           std::size_t             m_size; //!< The size of a scatter's point.                                        
       }; 
     } // end namespace widgets

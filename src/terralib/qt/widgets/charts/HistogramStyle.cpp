@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/HistogramStyle.h
+  \file terralib/qt/widgets/charts/HistogramStyle.cpp
 
   \brief A class used to define the style of a histogram's chart
 */
@@ -40,8 +40,6 @@ te::qt::widgets::HistogramStyle::HistogramStyle()
   m_fill = new te::se::Fill();
   m_stroke = new te::se::Stroke();
   m_symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
-  m_color.fromRgb(100, 100, 100);
-  m_symbol->setPalette(m_color);
 }
 
 te::qt::widgets::HistogramStyle::HistogramStyle(te::se::Fill* fill, te::se::Stroke* stroke, QwtColumnSymbol* symbol, QColor color)

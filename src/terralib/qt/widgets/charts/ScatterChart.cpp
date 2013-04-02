@@ -32,9 +32,7 @@
 
 #include "ScatterChart.h"
 #include "Scatter.h"
-#include "MarkSymbol.h"
 #include "Utils.h"
-
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   QwtPlotCurve(),
@@ -44,30 +42,24 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   setStyle(QwtPlotCurve::NoCurve);
 
   //Build a default Mark
-  te::se::Stroke* stroke = te::se::CreateStroke("#000000", "1"); //black e espessura 1
-  te::se::Fill* fill = te::se::CreateFill("#000000", "1.0");  //black 100% opaco
-  m_mark = te::se::CreateMark("triangle", stroke, fill);
-  m_size = 10;
-
-  //Set Symbol
-  MarkSymbol* chartSymbol = new MarkSymbol(m_mark, m_size);
-  setSymbol(chartSymbol);
+   m_symbol = new QwtSymbol( QwtSymbol::Ellipse,
+        QBrush( Qt::yellow ), QPen( Qt::red, 2 ), QSize( 8, 8 ) );
+    setSymbol( m_symbol );
 
   //Set Values
   setData();
 }
 
 
-te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, te::se::Mark* style, size_t size) :
+te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, QwtSymbol* symbol, size_t size) :
   QwtPlotCurve(),
   m_scatter(data),
-  m_mark(style),
+  m_symbol(symbol),
   m_size(size)
 {
 
   //Set Symbol
-  MarkSymbol* chartSymbol = new MarkSymbol(m_mark, m_size);
-  setSymbol(chartSymbol);
+  setSymbol(m_symbol);
 
   //Set Values
   setData();
@@ -83,12 +75,10 @@ void te::qt::widgets::ScatterChart::setData()
   
   }
 
-  setPaintAttribute(QwtPlotCurve::ImageBuffer);
   setSamples( samples );
 }
 
 te::qt::widgets::ScatterChart::~ScatterChart()
 {  
-  delete m_mark;  
+  delete m_scatter;  
 }
-

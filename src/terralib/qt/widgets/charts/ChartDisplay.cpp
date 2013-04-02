@@ -24,8 +24,11 @@
 */
 
 // TerraLib
-#include "../../../se.h"
+#include "ChartDisplay.h"
+#include "Utils.h"
 #include "../../../color/RGBAColor.h"
+#include "../../../se.h"
+
 
 //Qwt
 #include <qwt_plot_grid.h>
@@ -33,10 +36,6 @@
 
 //Qt
 #include <QtGui/QPen>
-
-#include "Utils.h"
-#include "ChartDisplay.h"
-
 
 te::qt::widgets::ChartDisplay::ChartDisplay(QWidget* parent) : 
   QwtPlot(parent),

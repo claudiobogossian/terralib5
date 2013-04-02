@@ -56,6 +56,7 @@ namespace te
     class Histogram;
     class HistogramChart;
     class HistogramStyle;
+    class ChartDisplay;
     class ColorPickerToolButton;
 
     /*!
@@ -92,6 +93,7 @@ namespace te
           te::qt::widgets::Histogram*         m_histogram;
           te::qt::widgets::HistogramChart*    m_histogramChart;
           te::qt::widgets::HistogramStyle*    m_histogramStyle;
+          te::qt::widgets::ChartDisplay*      m_chartDisplay;
           ColorPickerToolButton*              m_colorPicker;
 
       };
