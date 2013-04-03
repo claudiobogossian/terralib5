@@ -44,6 +44,10 @@ namespace te
     namespace widgets
     {
 
+    class ColorPickerToolButton;
+    class ChartStyle;
+    class ChartDisplay;
+
     /*!
         \class Chart Style
 
@@ -56,7 +60,7 @@ namespace te
 
         public:
 
-          ChartStyleDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ChartStyleDialog(QWidget* parent = 0, Qt::WindowFlags f = 0, QString title = "", QString PropertyX = "", QString PropertyY = "");
 
           ~ChartStyleDialog();
 
@@ -64,17 +68,20 @@ namespace te
 
         protected slots:
 
+          void onTitleLineEditFinish();
           void onTitleStylePushButtonClicked();
           void onLabelStylePushButtonClicked();
-          void onBackgroundPushButtonClicked();
           void onGridCheckBoxToggled();
           void onOkPushButtonClicked();
-          void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
+          void onColorChanged(const QColor& color);
 
         private:
 
           std::auto_ptr<Ui::ChartStyleDialog> m_ui;
+          ColorPickerToolButton*              m_colorPicker;
+          te::qt::widgets::ChartStyle*        m_chartStyle;
+          te::qt::widgets::ChartDisplay*      m_display;
       };
     } // end namespace widgets
   }   // end namespace qt

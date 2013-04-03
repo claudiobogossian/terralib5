@@ -18,7 +18,7 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramCreatorDialog.h
+  \file terralib/qt/widgets/charts/HistogramCreatorDialog.h
 
   \brief A widget used to define the basic parameters of a new histogram.
 */
@@ -42,6 +42,7 @@ namespace te
 
   namespace da
   {
+    //forward declarations
     class DataSet;
     class DataSetType;
   }
@@ -50,6 +51,13 @@ namespace te
   {
     namespace widgets
     {
+
+    //forward declarations
+    class Histogram;
+    class HistogramChart;
+    class HistogramStyle;
+    class ChartDisplay;
+    class ColorPickerToolButton;
 
     /*!
         \class Histogram Creator
@@ -72,16 +80,21 @@ namespace te
         protected slots:
 
           void onStylePushButtonClicked();
-          void onBarStylePushButtonClicked();
           void onOkPushButtonClicked();
-          void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
-          void onPropertyComboBoxIndexChanged();
+          void onPropertyComboBoxIndexChanged(QString text);
+          void onColorChanged(const QColor& color);
 
         private:
 
           std::auto_ptr<Ui::HistogramDialog>  m_ui;
           te::da::DataSet*                    m_dataSet;
+          te::da::DataSetType*                m_type;
+          te::qt::widgets::Histogram*         m_histogram;
+          te::qt::widgets::HistogramChart*    m_histogramChart;
+          te::qt::widgets::HistogramStyle*    m_histogramStyle;
+          te::qt::widgets::ChartDisplay*      m_chartDisplay;
+          ColorPickerToolButton*              m_colorPicker;
 
       };
     } // end namespace widgets
