@@ -49,7 +49,7 @@
 #include <cassert>
 
 te::da::ObjectIdSet::ObjectIdSet(const te::da::DataSetType* type)
-  : m_type(type),
+  : m_type(static_cast<DataSetType*>(type->clone())),
     m_isFromPk(false),
     m_isFromUk(false)
 {
@@ -57,6 +57,7 @@ te::da::ObjectIdSet::ObjectIdSet(const te::da::DataSetType* type)
 
 te::da::ObjectIdSet::~ObjectIdSet()
 {
+  delete m_type;
 }
 
 const te::da::DataSetType* te::da::ObjectIdSet::getType() const
@@ -102,7 +103,7 @@ void te::da::ObjectIdSet::add(te::da::ObjectId* oid)
 
 te::da::Select* te::da::ObjectIdSet::getQuery() const
 {
-  assert(m_type);    
+  assert(m_type);
   
   Expression* ins = 0;
   Expression* tmp = 0;

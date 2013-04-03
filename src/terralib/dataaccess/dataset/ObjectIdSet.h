@@ -150,7 +150,7 @@ namespace te
 
       private:
 
-        const DataSetType* m_type;          //!< A pointer to the type of the data set that generates the unique ids.
+        DataSetType* m_type;                //!< A pointer to the type of the data set that generates the unique ids.
         std::vector<std::size_t> m_indexes; //!< A vector with the property indexes used to generate de unique ids.
         boost::ptr_vector<ObjectId> m_oids; //!< The set of unique ids.
         bool m_isFromPk;                    //!< A flag that indicates if the unique ids was generated from primary key properties.
