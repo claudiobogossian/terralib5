@@ -44,21 +44,21 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
     histogram->getType() == te::dt::FLOAT_TYPE || histogram->getType() == te::dt::DOUBLE_TYPE || 
     histogram->getType() == te::dt::NUMERIC_TYPE)
   {
-    std::map<double, int>::const_iterator it;
-    std::map<int, int> vmap;
+    std::map<double,  unsigned int>::const_iterator it;
+    std::map<int,  unsigned int> vmap;
 
     int i = 0;
-    it = histogram->getValues().begin();
+    it = histogram->getValues()->begin();
     double ini = histogram->getMinValue();
 
     double vx = ini + histogram->getInterval();
 
-    while(vx <= histogram->getValues().rbegin()->first)
+    while(vx <= histogram->getValues()->rbegin()->first)
     {
       vmap[i] = 0;
       if(fabs(vx) < 0.000000000001)
         vx = 0.;
-      while(it != histogram->getValues().end())
+      while(it != histogram->getValues()->end())
       {
         if(it->first >= ini && it->first < vx)
           vmap[i] += it->second;
@@ -81,13 +81,13 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
 
   else if (histogram->getType() == te::dt::DATETIME_TYPE || histogram->getType() == te::dt::STRING_TYPE)
   {
-    std::map<std::string, int>::iterator it;
-    it  = histogram->getStringValues().begin();
+    std::map<std::string,  unsigned int>::iterator it;
+    it  = histogram->getStringValues()->begin();
     m_histogramScaleDraw = new StringScaleDraw(histogram->getStringInterval());
-    QVector<QwtIntervalSample> samples(histogram->getStringValues().size());
+    QVector<QwtIntervalSample> samples(histogram->getStringValues()->size());
     double LabelInterval = 0.0;
 
-    while (it != histogram->getStringValues().end())
+    while (it != histogram->getStringValues()->end())
     {
       QwtInterval qwtInterval(LabelInterval, LabelInterval+5);
       qwtInterval.setBorderFlags(QwtInterval::ExcludeMaximum);
@@ -98,17 +98,29 @@ te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
     
     setData(new QwtIntervalSeriesData(samples));
   }
+  else
+  {
 
-//chamar as funcoes (que estarao no Utils) para converter objetos terralib para QWT
-//1. cor
-  QwtColumnSymbol *symbol = new QwtColumnSymbol(QwtColumnSymbol::Box);
-  setSymbol(symbol);
+    std::map<double,  unsigned int>::const_iterator it;
+    it = histogram->getValues()->begin();
+    double interval = 0.0;
+  
+    while (it != histogram->getValues()->end())
+    {
+      QwtInterval qwtInterval(interval, interval+1);
+      samples.push_back(QwtIntervalSample(it->second, qwtInterval));
+      interval++;
+      it++;
+    }
+
+    setData(new QwtIntervalSeriesData(samples));
+  }
 }
 
 te::qt::widgets::HistogramChart::~HistogramChart()
 {  
   delete m_histogram;
-  delete m_histogramScaleDraw;
+//  delete m_histogramScaleDraw;
 }
 
 te::qt::widgets::StringScaleDraw* te::qt::widgets::HistogramChart::getScaleDraw()

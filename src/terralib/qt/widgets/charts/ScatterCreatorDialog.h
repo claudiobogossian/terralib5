@@ -39,10 +39,21 @@ namespace Ui { class ScatterDialog; }
 
 namespace te
 {
+
+  namespace da
+  {
+    class DataSet;
+    class DataSetType;
+  }
+
   namespace qt
   {
     namespace widgets
     {
+
+    //forward declarations
+    class Scatter;
+    class ScatterChart;
 
     /*!
         \class Scatter creator
@@ -56,7 +67,7 @@ namespace te
 
         public:
 
-          ScatterCreatorDialog(QWidget* parent = 0, Qt::WindowFlags f = 0);
+          ScatterCreatorDialog(te::da::DataSet* dataSet, QWidget* parent = 0, Qt::WindowFlags f = 0);
 
           ~ScatterCreatorDialog();
 
@@ -67,12 +78,15 @@ namespace te
           void onStylePushButtonClicked();
           void onPlotStylePushButtonClicked();
           void onOkPushButtonClicked();
-          void onCancelPushButtonClicked();
           void onHelpPushButtonClicked();
 
         private:
 
-          std::auto_ptr<Ui::ScatterDialog> m_ui;
+          std::auto_ptr<Ui::ScatterDialog>  m_ui;
+          te::da::DataSet*                  m_dataSet;
+          te::da::DataSetType*              m_type;
+          te::qt::widgets::Scatter*         m_scatter;
+          te::qt::widgets::ScatterChart*    m_scatterChart;
       };
     } // end namespace widgets
   }   // end namespace qt

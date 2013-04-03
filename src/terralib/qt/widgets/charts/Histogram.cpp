@@ -47,22 +47,22 @@ void te::qt::widgets::Histogram::setType(int new_type)
  m_histogramType = new_type;
 }
 
-std::map<double, int>& te::qt::widgets::Histogram::getValues()
+std::map<double,  unsigned int>* te::qt::widgets::Histogram::getValues()
 {
   return m_values;
 }
 
-std::map<std::string, int>& te::qt::widgets::Histogram::getStringValues()
+std::map<std::string,  unsigned int>* te::qt::widgets::Histogram::getStringValues()
 {
   return m_StringValues;
 }
 
-void te::qt::widgets::Histogram::setValues(std::map<double, int> new_values)
+void te::qt::widgets::Histogram::setValues(std::map<double,  unsigned int>* new_values)
 {
   m_values = new_values;
 }
 
-void te::qt::widgets::Histogram::setStringValues(std::map<std::string, int> new_values)
+void te::qt::widgets::Histogram::setStringValues(std::map<std::string,  unsigned int>* new_values)
 {
   m_StringValues = new_values;
 }
@@ -99,6 +99,6 @@ void te::qt::widgets::Histogram::setStringInterval( std::set <std::string> new_I
 
 void te::qt::widgets::Histogram::add(std::pair<double, int> new_value)
 {
-  m_values.insert(new_value);
+  m_values->insert(new_value);
 }
 
