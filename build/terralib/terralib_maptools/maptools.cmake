@@ -25,6 +25,7 @@ list (APPEND TE_DEP_LIBS
 		terralib_filter
 		terralib_geometry
 		terralib_gml
+		terralib_memory
 		terralib_raster
 		terralib_srs
 		terralib_symbology

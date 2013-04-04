@@ -40,6 +40,11 @@
 namespace te
 {
 // Forward declarations
+  namespace da
+  {
+    class DataSet;
+  }
+
   namespace rst
   {
     class Raster;
@@ -213,6 +218,22 @@ namespace te
       \note This method considers the children of layer.
     */
     TEMAPEXPORT te::gm::Envelope GetExtent(const  te::map::AbstractLayerPtr& layer, int srid, bool onlyVisibles);
+
+    /*!
+      \brief It creates a new In-Memory dataset with the items from the given dataset.
+
+      \param dataset The dataset which will provide the items. Do not pass NULL!
+
+      \return A new In-Memory dataset.
+
+      \note The new dataset will not have a transactor associated to it.
+
+      \note To copy all items the caller is responsible for informing the 
+            dataset in the right position. i.e. at before begin.
+
+      \note The caller will take the ownership of the returned pointer.
+    */
+    TEMAPEXPORT te::da::DataSet* DataSet2Memory(te::da::DataSet* dataset);
 
   } // end namespace map
 }   // end namespace te

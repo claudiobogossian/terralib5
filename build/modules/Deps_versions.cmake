@@ -1,5 +1,5 @@
 # List of versions of 3rd-parties dependencies
-set (_Boost_VERSION 1.46)
+set (_Boost_VERSION 1.47)
 set (_GDAL_VERSION 1.8.1)
 set (_Geos_VERSION 3.2)
 set (_PostgreSQL_VERSION 9)
@@ -9,7 +9,7 @@ set (_Xerces_VERSION 3.1)
 set (_Qt4_VERSION 4.6.0)
 
 if(UNIX AND NOT APPLE)
-  set (_Boost_LIBS libboost_system libboost_filesystem libboost_date_time libboost_thread)
+  set (_Boost_LIBS libboost_system.so.1.47.0 libboost-filesystem libboost-date-time libboost-thread)
   set (_GDAL_LIBS libgdal)
   set (_Geos_LIBS libgeos)
   set (_PostgreSQL_LIBS libpq)
@@ -32,7 +32,7 @@ MACRO (getLibrariesNames packName libs)
     math (EXPR lim ${numLibs}-1)
     
     foreach(lib ${_${packName}_LIBS})
-      set (ret "${ret} ${lib}") # (>= ${_${packName}_VERSION})")
+      set (ret "${ret} ${lib} (>= ${_${packName}_VERSION})")
       
       if(count LESS lim)
         set (ret ${ret},)

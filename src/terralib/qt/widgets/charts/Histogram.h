@@ -82,7 +82,7 @@ namespace te
             \return A  map containing the histogram values. 
           */
 
-          std::map<double, int>& getValues();
+          std::map<double, unsigned int>* getValues();
       
           /*!            
             \brief It sets the map containing the histogram values. 
@@ -90,7 +90,7 @@ namespace te
             \param new_values The new map of values
           */
 
-          void setValues(std::map<double, int> new_values);
+          void setValues(std::map<double, unsigned int>* new_values);
 
           
           /*!            
@@ -99,7 +99,7 @@ namespace te
             \return A  map containing the histogram values. 
           */
 
-          std::map<std::string, int>& getStringValues();
+          std::map<std::string, unsigned int>* getStringValues();
       
           /*!            
             \brief It sets the map containing the histogram String values. 
@@ -107,7 +107,7 @@ namespace te
             \param new_values The new map of values
           */
 
-          void setStringValues(std::map<std::string, int> new_values);
+          void setStringValues(std::map<std::string, unsigned int>* new_values);
 
           /*!            
             \brief It returns the histogram's minimum value. 
@@ -169,9 +169,9 @@ namespace te
 
           int m_histogramType;                           //!< Histogram's type
 
-          std::map<double, int> m_values;               //!< Histogram's numeric values
+          std::map<double, unsigned int>* m_values;               //!< Histogram's numeric values
 
-          std::map<std::string, int> m_StringValues;    //!< Histogram string values 
+          std::map<std::string, unsigned int>* m_StringValues;    //!< Histogram string values 
 
           double m_minValue;                            //!< Histogram's minimum numeric value
 

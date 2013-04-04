@@ -58,6 +58,9 @@ namespace te
         */
         struct AppClosed : public Event
         {
+          /*!
+            \brief Constructor.
+          */
           AppClosed() : 
           Event(APP_CLOSED)
           {
@@ -73,7 +76,15 @@ namespace te
         */
         struct DisplayResized : public Event
         {
+          /*!
+            \brief Constructor.
 
+            \param display The pointer to the display resized.
+
+            \param newSize The new size of the display.
+
+            \param oldSize The old size if the display.
+          */
           DisplayResized(te::qt::widgets::MapDisplay* display, const QSize& newSize, const QSize& oldSize) :
           Event(DISPLAY_RESIZED),
           m_display(display),
@@ -97,6 +108,11 @@ namespace te
 
         struct ToolBarAdded : public Event
         {
+          /*!
+            \brief Constructor.
+
+            \param toolbar Pointer to the new tool bar.
+          */
           ToolBarAdded(QToolBar* toolbar) :
           Event(TOOLBAR_ADDED),
           m_toolbar(toolbar)
