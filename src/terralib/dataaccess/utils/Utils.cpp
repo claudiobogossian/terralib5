@@ -29,6 +29,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/ObjectId.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../dataset/PrimaryKey.h"
 #include "../dataset/UniqueKey.h"
@@ -331,10 +332,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
     for(std::size_t i = 0; i < pkProperties.size(); ++i)
       oidprops.push_back(type->getPropertyPosition(pkProperties[i]->getName()));
 
-    ObjectIdSet* oids = te::da::GenerateOIDSet(dataset, oidprops);
-    oids->setIsFromPrimaryKey(true);
-
-    return oids;
+    return te::da::GenerateOIDSet(dataset, oidprops);
   }
 
   // Try to use the unique key properties
@@ -350,10 +348,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
         oidprops.push_back(type->getPropertyPosition(ukProperties[j]->getName()));
     }
     
-    ObjectIdSet* oids = te::da::GenerateOIDSet(dataset, oidprops);
-    oids->setIsFromUniqueKeys(true);
-
-    return oids;
+    return te::da::GenerateOIDSet(dataset, oidprops);
   }
   
   // Here, the data set do not have primary key properties or unique key properties. 
