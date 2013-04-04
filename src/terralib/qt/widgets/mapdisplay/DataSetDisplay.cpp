@@ -99,12 +99,10 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
 
   te::gm::GeometryProperty* gp = dataset->getDefaultGeomProperty();
 
-  te::da::LoadExtent(gp, transactor.get());
+  std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(gp, transactor.get()));
 
-  if(gp->getExtent() == 0)
+  if(mbr.get() == 0)
     return;
-
-  std::auto_ptr<te::gm::Envelope> mbr(new te::gm::Envelope(*(gp->getExtent())));
 
   m_canvas->calcAspectRatio(mbr.get());
 

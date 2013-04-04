@@ -47,7 +47,7 @@ std::string te::da::ObjectId::getValueAsString() const
   std::string value;
 
   for(std::size_t i = 0; i < m_data.size(); ++i)
-    value = m_data[i].toString();
+    value += m_data[i].toString();
   
   return value;
 }
@@ -57,4 +57,9 @@ void te::da::ObjectId::addValue(te::dt::AbstractData* data)
   assert(data);
 
   m_data.push_back(data);
+}
+
+bool te::da::ObjectId::operator<(const ObjectId& rhs) const
+{
+  return getValueAsString() < rhs.getValueAsString();
 }

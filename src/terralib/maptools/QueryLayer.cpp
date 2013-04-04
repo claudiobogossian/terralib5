@@ -104,6 +104,12 @@ te::da::DataSet* te::map::QueryLayer::getData(const te::dt::Property& /*p*/,
   return 0;
 }
 
+te::da::DataSet* te::map::QueryLayer::getSelected(te::common::TraverseType travType,
+                                                  te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
 bool te::map::QueryLayer::isValid() const
 {
   return true;

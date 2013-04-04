@@ -54,6 +54,8 @@ namespace te
   {
     namespace af
     {
+      class Project;
+
       namespace evt
       {
       // Forward declarations
@@ -288,18 +290,34 @@ namespace te
           virtual void initializePlugins();
 
           /*!
-            \brief
+            \brief Initializes the menus for the most recent open projects.
           */
           virtual void initializeProjectMenus();
 
           /*!
-            \brief
+            \brief Update the list of recent projects. This is commonly used when there's a new most recent project.
 
-            \param prj_file
+            \param prj_file Complete file name for the project file.
 
-            \param prj_title
+            \param prj_title Title of the project.
           */
           void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
+
+          /*!
+            \brief Set the current project.
+
+            \param prj Pointer to a current project.
+
+          */
+          void set(te::qt::af::Project* prj);
+
+          /*!
+            \brief Get the current project.
+
+            \return Pointer to a current project if defined or a null pointer in other case.
+
+          */
+          te::qt::af::Project* get();
 
           /*!
             \brief Finalize the application framework.
@@ -328,10 +346,25 @@ namespace te
 
         public:
 
+          /*!
+            \brief Returns the application title.
+
+            \return Application title.
+          */
           const QString& getAppTitle() const;
 
+          /*!
+            \brief Returns the application icon.
+
+            \return Application icon.
+          */
           const QString& getAppIconName() const;
 
+          /*!
+            \brief Returns the most recent project.
+
+            \return Application most recent opened project.
+          */
           QString getMostRecentProject() const;
 
         protected:
@@ -340,22 +373,24 @@ namespace te
           std::vector<QMenu*> m_menus;                //!< Menus registered.
           std::vector<QMenuBar*> m_menuBars;          //!< Menu bars registered.
           std::set<QObject*> m_applicationItems;      //!< The list of registered application items.
-          QWidget* m_msgBoxParentWidget;              //!<
+          QWidget* m_msgBoxParentWidget;              //!< Parent used to show message boxes.
           std::string m_appConfigFile;                //!< The application framework configuration file.
-          QString m_appOrganization;
-          QString m_appName;
-          QString m_appTitle;
-          QString m_appIconName;
-          QStringList m_recentProjs;                 //!< List of the recent projects.
-          QStringList m_recentProjsTitles;          //!< List of the titles of the recent projects.
-          std::string m_appUserSettingsFile;
-          QString m_appPluginsFile;
-          QString m_appHelpFile;
-          QString m_appIconThemeDir;
-          QString m_appDefaultIconTheme;
-          QString m_appToolBarDefaultIconSize;
-          std::string m_appDatasourcesFile;
+          QString m_appOrganization;                  //!< Organization name.
+          QString m_appName;                          //!< Application name.
+          QString m_appTitle;                         //!< Application title.
+          QString m_appIconName;                      //!< Icon used in the application.
+          QStringList m_recentProjs;                  //!< List of the recent projects.
+          QStringList m_recentProjsTitles;            //!< List of the titles of the recent projects.
+          std::string m_appUserSettingsFile;          //!< Name of the user settings file.
+          QString m_appPluginsFile;                   //!< Name of the plugins file.
+          QString m_appHelpFile;                      //!< Name of the help file.
+          QString m_appIconThemeDir;                  //!< Directory of the application icon theme.
+          QString m_appDefaultIconTheme;              //!< Name of the icon theme to be used.
+          QString m_appToolBarDefaultIconSize;        //!< Size of the tool buttons.
+          std::string m_appDatasourcesFile;           //!< Name of the file containing datasources used.
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
+
+          Project* m_project;                         //!< Pointer to current project.
 
 // Singleton instance
           static ApplicationController* sm_instance;  //!< There can be only one object of class Application.

@@ -75,7 +75,7 @@ namespace te
           \post The GeometryProperty will take the ownership of the defaultValue.
 
           \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-         */
+        */
         GeometryProperty(const std::string& name,
                          bool isRequired = false,
                          std::string* defaultValue = 0,
@@ -83,7 +83,7 @@ namespace te
                          te::dt::Property* parent = 0);
 
         /*!
-          \brief It constructs a new GeometryProperty.          
+          \brief It constructs a new GeometryProperty.
 
           \param name         The geometric property name.
           \param srid         The SRS of the geometries.
@@ -96,7 +96,7 @@ namespace te
           \post The GeometryProperty will take the ownership of the defaultValue.
 
           \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
-         */
+        */
         GeometryProperty(const std::string& name,
                          int srid,
                          te::gm::GeomType subtype,
@@ -109,61 +109,41 @@ namespace te
           \brief Copy constructor.
 
           \param rhs The right-hand-side copy that would be used to copy from.
-         */
+        */
         GeometryProperty(const GeometryProperty& rhs);
 
         /*! \brief Destructor. */
-        ~GeometryProperty();        
-
-        /*!
-          \brief It returns the extent of the geometries having this property.
-
-          \return The extent of the geometries of this dataset or NULL if none is known.
-
-          \note The caller of this method will not take the ownership of the returned information.
-         */
-        Envelope* getExtent() const { return m_bounds; }
-
-        /*!
-          \brief It sets the geometry property extent.
-
-          \param e The geometry property extent.
-
-          \post Any previous extent will be released.
-          
-          \note The geometric property will take the ownership of the given envelope.
-         */
-        void setExtent(Envelope* e);
+        ~GeometryProperty();
 
         /*!
           \brief It returns the spatial reference system identifier associated to this property.
 
           \return The SRS id associated to the property.
-         */
+        */
         int getSRID() const { return m_srid; }
 
         /*!
           \brief It sets the spatial reference system identifier associated to this property.
 
           \param srid The SRS id associated to the property.
-         */
+        */
         void setSRID(int srid) { m_srid = srid; }
 
         /*!
           \brief It returns the geometry subtype allowed for the property.
 
           \return The geometry subtype.
-         */
+        */
         GeomType getGeometryType() const { return m_geomType; }
 
         /*!
           \brief It sets the geometry subtype.
           
           \param t The geometry subtype.
-         */
+        */
         void setGeometryType(GeomType t) { m_geomType = t; }
 
-          //@}
+        //@}
 
         /** @name Implementation From Superclass Property
          *  Methods re-implemented from the superclass Property.
@@ -176,7 +156,7 @@ namespace te
           The new property will NOT have associations to other elements.
 
           \return A clone of the object.
-         */
+        */
         te::dt::Property* clone() const;
 
         //@}
@@ -189,14 +169,13 @@ namespace te
           \param rhs The right-hand-side copy that would be used to copy from.
 
           \return A reference to this object.
-         */
+        */
         GeometryProperty& operator=(const GeometryProperty& rhs);
 
       protected:
-        
-        int m_srid;             //!< The DataSetType SRS.
+
+        int m_srid;             //!< The SRS associated to the property.
         GeomType m_geomType;    //!< The geometry type.
-        Envelope* m_bounds;     //!< The extent of the geometries of this dataset.
     };
 
   } // end namespace gm

@@ -97,7 +97,7 @@ void te::common::TreeItem::insert(std::size_t i, const TreeItemPtr& childItem)
   assert(i <= m_children.size());
   assert(childItem);
 
-  childItem->disconnect();
+  //childItem->disconnect();
 
   childItem->m_parent = this;
 

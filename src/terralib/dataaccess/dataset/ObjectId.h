@@ -79,6 +79,8 @@ namespace te
         */
         void addValue(te::dt::AbstractData* data);
 
+        bool operator<(const ObjectId& rhs) const;
+
       private:
 
         boost::ptr_vector<te::dt::AbstractData> m_data; //!< A vector of property values.

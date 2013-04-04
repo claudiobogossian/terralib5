@@ -134,31 +134,6 @@ namespace te
 
           void onExtentChanged();
 
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          Measure(const Measure& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          Measure& operator=(const Measure& rhs);
-
-          //@}
-
         protected:
 
           std::vector<te::gm::Coord2D> m_coords;  //!< The coord list managed by the measure tool.

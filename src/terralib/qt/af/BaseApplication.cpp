@@ -467,7 +467,6 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-
     std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
@@ -490,7 +489,16 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-    te::qt::widgets::ScatterCreatorDialog dlg(this);
+    std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
+
+    if(layers.empty())
+    {
+      QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("There's no selected layer."));
+      return;
+    }
+    
+    te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
+    te::qt::widgets::ScatterCreatorDialog dlg(dataset, this);
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -636,6 +644,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
+    te::qt::af::ApplicationController::getInstance().set(m_project);
+
     te::qt::af::evt::ProjectAdded evt(m_project);
 
     ApplicationController::getInstance().broadcast(&evt);
@@ -662,6 +672,8 @@ void te::qt::af::BaseApplication::newProject()
   QString projectTile(tr(" - Project: %1"));
 
   setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+
+  te::qt::af::ApplicationController::getInstance().set(m_project);
 
   te::qt::af::evt::ProjectAdded evt(m_project);
 
@@ -900,8 +912,8 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_layerLower, "layer-lower", "Layer.Lower", tr("&Lower"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToTop, "layer-to-top", "Layer.To Top", tr("To &Top"), tr(""), true, false, false, m_menubar);
   initAction(m_layerToBottom, "layer-to-bottom", "Layer.To Bottom", tr("To &Bottom"), tr(""), true, false, false, m_menubar);
-  initAction(m_layerChartsHistogram, "histogram-chart", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, false, m_menubar);
-  initAction(m_layerChartsScatter, "scatter-chart", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, false, m_menubar);
+  initAction(m_layerChartsHistogram, "chart-bar", "Layer.Charts.Histogram", tr("&Histogram"), tr(""), true, false, true, m_menubar);
+  initAction(m_layerChartsScatter, "chart-scatter", "Layer.Charts.Scatter", tr("&Scatter"), tr(""), true, false, true, m_menubar);
 
 // Menu -File- actions
   initAction(m_fileNewProject, "document-new", "File.New Project", tr("&New Project"), tr(""), true, false, true, m_menubar);

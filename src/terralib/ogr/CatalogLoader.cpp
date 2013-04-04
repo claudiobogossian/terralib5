@@ -91,11 +91,11 @@ te::da::DataSetType* te::ogr::CatalogLoader::getDataSetType(const std::string& d
       }
     }
 
-    if(dt->hasGeom())
-    {
-      te::gm::Envelope* env = getExtent(dt->getDefaultGeomProperty());
-      dt->getDefaultGeomProperty()->setExtent(env);
-    }
+    //if(dt->hasGeom())
+    //{
+    //  te::gm::Envelope* env = getExtent(dt->getDefaultGeomProperty());
+    //  dt->getDefaultGeomProperty()->setExtent(env);
+    //}
   }
 
   return dt;

@@ -51,6 +51,14 @@ namespace te
         */
         struct ToolChanged : public Event
         {
+
+          /*!
+            \brief Constructor.
+
+            \param newTool Pointer to the new tool to be used.
+
+            \param oldTool Pointer to the previously used tool.
+          */
           ToolChanged(te::qt::widgets::AbstractTool* newTool, te::qt::widgets::AbstractTool* oldTool) :
           Event(TOOL_CHANGED),
           m_oldTool(oldTool),
@@ -63,14 +71,21 @@ namespace te
         };
 
         /*!
-          \struct
+          \struct CoordinateTracked
 
-          \brief
+          \brief Signals a mouse moved over the current display.
 
           \ingroup afevents
         */
         struct CoordinateTracked : public Event
         {
+          /*!
+            \brief Constructor.
+
+            \param x The X coordinate component.
+
+            \param y The Y coordinate component.
+          */
           CoordinateTracked(const double& x, const double& y) :
           Event(COORDINATE_TRACKED),
           m_x(x),
@@ -78,8 +93,8 @@ namespace te
           {
           }
 
-          double m_x,
-                m_y;
+          double m_x,     //!< X component of the coordinate.
+                m_y;      //!< Y component of the coordinate.
         };
       }
     }

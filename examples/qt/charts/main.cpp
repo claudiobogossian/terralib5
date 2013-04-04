@@ -86,7 +86,7 @@ int main(int /*argc*/, char** /*argv*/)
     
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
 
-    te::da::DataSet* dataset = transactor->getDataSet("Muni_SM_Setoresrec_pol");
+    te::da::DataSet* dataset = transactor->getDataSet("mapa_distritos_sp");
     if(dataset==0)
     {
        delete dataset;
@@ -100,15 +100,17 @@ int main(int /*argc*/, char** /*argv*/)
 
     //Getting the Columns that will be used to populate the graph
 
-    std::string microregiao = "MICROREGIA";
+    std::string renda = "RENDA_FAM";
+    std::string anosest = "ANOS_EST";
 
-    int microregiaoIdx= type->getPropertyPosition(microregiao);
+    int rendaIdx= type->getPropertyPosition(renda);
+    int anosestIdx= type->getPropertyPosition(anosest);
 
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, microregiaoIdx);
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, rendaIdx, 10);
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
 
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
@@ -118,17 +120,17 @@ int main(int /*argc*/, char** /*argv*/)
     chartDisplay->show();
 
     chartDisplay->replot();
-    
-// 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
-// 
-//     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
-// 
+
+//    te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
+
+//    te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
+
 //     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
 //     chartDisplay->show();
-// 
+
 //     scatterChart->attach(chartDisplay);
 //     chartDisplay->show();
-// 
+
 //     chartDisplay->replot();
 
     int ret = app.exec();

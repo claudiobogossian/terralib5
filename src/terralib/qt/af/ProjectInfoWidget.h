@@ -18,9 +18,9 @@
  */
 
 /*! 
-  \file terralib/qt/af/ProjectInfo.h
+  \file terralib/qt/af/ProjectInfoWidget.h
 
-  \brief 
+  \brief Contains a widget for define Project informations.
 */
 
 #ifndef __TERRALIB_QT_AF_INTERNAL_PROJECTINFOWIDGET_H
@@ -45,25 +45,46 @@ namespace te
       // Forward declaration
       class Project;
 
+      /*!
+        \class ProjectInfoWidget
+
+        \brief A widget for present te::qt::af::Project informations.
+      */
       class TEQTAFEXPORT ProjectInfoWidget : public QWidget
       {
         public:
 
+          /*!
+            \brief Constructor.
+
+            \param parent QWidget parent.
+          */
           ProjectInfoWidget(QWidget* parent=0);
 
+          /*!
+            \brief Destructor.
+          */
           ~ProjectInfoWidget();
 
+          /*!
+            \brief Updates the te::qt::af::Project being visualized.
+
+            \param proj The te::qt::af::Project to be presented.
+          */
           void setProject(Project* proj);
 
+          /*!
+            \brief Updates the te::qt::af::Project informations.
+          */
           void updateProjectInfo();
 
         protected:
 
-          Project* m_proj;
+          Project* m_proj;      //!< te::qt::af::Project being presented.
 
         private:
 
-          Ui::ProjectInfoWidgetForm* m_ui;
+          Ui::ProjectInfoWidgetForm* m_ui;  //!< Pointer to the form.
       };
     }
   }

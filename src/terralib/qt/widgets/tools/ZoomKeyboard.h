@@ -77,31 +77,6 @@ namespace te
           bool eventFilter(QObject* watched, QEvent* e);
 
           //@}
-
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          ZoomKeyboard(const ZoomKeyboard& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          ZoomKeyboard& operator=(const ZoomKeyboard& rhs);
-
-          //@}
       };
 
     } // end namespace widgets

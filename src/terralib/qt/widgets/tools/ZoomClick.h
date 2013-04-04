@@ -78,31 +78,6 @@ namespace te
           bool mousePressEvent(QMouseEvent* e);
 
           //@}
-
-        private:
-
-          /** @name Copy Constructor and Assignment Operator
-           *  Copy constructor and assignment operator not allowed.
-           */
-          //@{
-
-          /*!
-            \brief Copy constructor not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-          */
-          ZoomClick(const ZoomClick& rhs);
-
-          /*!
-            \brief Assignment operator not allowed.
-
-            \param rhs The right-hand-side copy that would be used to copy from.
-
-            \return A reference to this object.
-          */
-          ZoomClick& operator=(const ZoomClick& rhs);
-
-          //@}
       };
 
     } // end namespace widgets

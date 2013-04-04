@@ -29,6 +29,7 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../dataset/DataSet.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/ObjectId.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../dataset/PrimaryKey.h"
 #include "../dataset/UniqueKey.h"
@@ -38,7 +39,6 @@
 #include "../datasource/DataSourceTransactor.h"
 #include "../Enums.h"
 #include "../Exception.h"
-
 #include "Utils.h"
 
 // STL
@@ -130,7 +130,7 @@ void te::da::LoadProperties(te::da::DataSetType* dataset, te::da::DataSourceTran
   cloader->getProperties(dataset);
 }
 
-void te::da::LoadExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId, bool refresh)
+te::gm::Envelope* te::da::GetExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId)
 {
   assert(gp);
   assert(!datasourceId.empty());
@@ -138,34 +138,31 @@ void te::da::LoadExtent(te::gm::GeometryProperty* gp, const std::string& datasou
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
-    return;
+    throw Exception(TR_DATAACCESS("Could not retrieve data source in order to search for a property extent!"));
 
-  LoadExtent(gp, datasource.get(), refresh);
+  return GetExtent(gp, datasource.get());
 }
 
-void te::da::LoadExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource, bool refresh)
+te::gm::Envelope* te::da::GetExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource)
 {
   assert(gp);
   assert(datasource);
 
   std::auto_ptr<DataSourceTransactor> transactor(datasource->getTransactor());
 
-  LoadExtent(gp, transactor.get(), refresh);
+  return GetExtent(gp, transactor.get());
 }
 
-void te::da::LoadExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor, bool refresh)
+te::gm::Envelope* te::da::GetExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor)
 {
   assert(gp);
   assert(transactor);
-
-  if(gp->getExtent() && !refresh)
-    return;
 
   std::auto_ptr<DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
 
   te::gm::Envelope* mbr = cloader->getExtent(gp);
 
-  gp->setExtent(mbr);
+  return mbr;
 }
 
 void te::da::GetDataSets(boost::ptr_vector<std::string>& datasets, const std::string& datasourceId)
@@ -331,10 +328,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
     for(std::size_t i = 0; i < pkProperties.size(); ++i)
       oidprops.push_back(type->getPropertyPosition(pkProperties[i]->getName()));
 
-    ObjectIdSet* oids = te::da::GenerateOIDSet(dataset, oidprops);
-    oids->setIsFromPrimaryKey(true);
-
-    return oids;
+    return te::da::GenerateOIDSet(dataset, oidprops);
   }
 
   // Try to use the unique key properties
@@ -350,10 +344,7 @@ te::da::ObjectIdSet* te::da::GenerateOIDSet(te::da::DataSet* dataset)
         oidprops.push_back(type->getPropertyPosition(ukProperties[j]->getName()));
     }
     
-    ObjectIdSet* oids = te::da::GenerateOIDSet(dataset, oidprops);
-    oids->setIsFromUniqueKeys(true);
-
-    return oids;
+    return te::da::GenerateOIDSet(dataset, oidprops);
   }
   
   // Here, the data set do not have primary key properties or unique key properties. 
