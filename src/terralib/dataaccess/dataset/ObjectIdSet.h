@@ -27,13 +27,11 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_OBJECTIDSET_H
 
 // TerraLib
+#include "../../common/Comparators.h"
 #include "../Config.h"
-#include "ObjectId.h"
-
-// Boost
-#include <boost/ptr_container/ptr_vector.hpp>
 
 // STL
+#include <set>
 #include <vector>
 
 namespace te
@@ -43,6 +41,7 @@ namespace te
 // Forward declaration
     class DataSet;
     class DataSetType;
+    class ObjectId;
     class Select;
 
     /*!
@@ -122,39 +121,44 @@ namespace te
         Select* getQuery() const;
 
         /*!
-          \brief It returns the query that can be used to retrieve the data set that contains the i-th indentified element.
-
-          \return The query that can be used to retrieve the data set that contains the i-th indentified element.
-
-          \note The caller will take the ownership of the given pointer.
+          \brief It clears this object id set.
         */
-        Select* getQuery(std::size_t i) const;
-
-        /*! \brief It clears this object id set. */
         void clear();
 
-        /*! \brief It returns true if the unique ids were generated from primary key properties. Otherwise, it returns false. */
-        bool isFromPrimaryKey() const;
+        /*!
+          \brief It returns the object id set size.
 
-        /*! It sets if the unique id were generated from primary key properties. */
-        void setIsFromPrimaryKey(bool value);
-
-        /*! \brief It returns true if the unique id were generated from unique key properties. Otherwise, it returns false. */
-        bool isFromUniqueKeys() const;
-
-        /*! It sets if the unique id were generated from unique key properties. */
-        void setIsFromUniqueKeys(bool value);
-
-        /*! It returns the object id set size. */
+          \return The object id set size.
+        */
         std::size_t size() const;
+
+        /*!
+          \brief It performs the union operation between this ObjectIdSet and the given ObjectIdSet.
+
+          \param rhs A valid ObjectIdSet that will be used on union operation. Do not pass NULL!
+
+          \note The ObjectIdSet will take the ownership of the given pointer.
+
+          \note The given pointer will be invalidated at end of union operation.
+        */
+        void Union(ObjectIdSet* rhs);
+
+        /*!
+          \brief It performs the difference operation between this ObjectIdSet and the given ObjectIdSet.
+
+          \param rhs A valid ObjectIdSet that will be used on difference operation. Do not pass NULL!
+
+          \note The ObjectIdSet will take the ownership of the given pointer.
+
+          \note The given pointer will be invalidated at end of difference operation.
+        */
+        void difference(ObjectIdSet* rhs);
 
       private:
 
-        DataSetType* m_type;                //!< A pointer to the type of the data set that generates the unique ids.
-        std::vector<std::size_t> m_indexes; //!< A vector with the property indexes used to generate de unique ids.
-        boost::ptr_vector<ObjectId> m_oids; //!< The set of unique ids.
-        bool m_isFromPk;                    //!< A flag that indicates if the unique ids was generated from primary key properties.
-        bool m_isFromUk;                    //!< A flag that indicates if the unique ids was generated from unique key properties.
+        DataSetType* m_type;                                          //!< A pointer to the type of the data set that generates the unique ids.
+        std::vector<std::size_t> m_indexes;                           //!< A vector with the property indexes used to generate de unique ids.
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*>> m_oids;   //!< The set of unique ids.
     };
 
   } // end namespace da
