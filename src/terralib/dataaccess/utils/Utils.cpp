@@ -39,7 +39,6 @@
 #include "../datasource/DataSourceTransactor.h"
 #include "../Enums.h"
 #include "../Exception.h"
-
 #include "Utils.h"
 
 // STL
@@ -131,7 +130,7 @@ void te::da::LoadProperties(te::da::DataSetType* dataset, te::da::DataSourceTran
   cloader->getProperties(dataset);
 }
 
-void te::da::LoadExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId, bool refresh)
+te::gm::Envelope* te::da::GetExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId)
 {
   assert(gp);
   assert(!datasourceId.empty());
@@ -139,34 +138,31 @@ void te::da::LoadExtent(te::gm::GeometryProperty* gp, const std::string& datasou
   DataSourcePtr datasource(te::da::DataSourceManager::getInstance().find(datasourceId));
 
   if(datasource.get() == 0)
-    return;
+    throw Exception(TR_DATAACCESS("Could not retrieve data source in order to search for a property extent!"));
 
-  LoadExtent(gp, datasource.get(), refresh);
+  return GetExtent(gp, datasource.get());
 }
 
-void te::da::LoadExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource, bool refresh)
+te::gm::Envelope* te::da::GetExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource)
 {
   assert(gp);
   assert(datasource);
 
   std::auto_ptr<DataSourceTransactor> transactor(datasource->getTransactor());
 
-  LoadExtent(gp, transactor.get(), refresh);
+  return GetExtent(gp, transactor.get());
 }
 
-void te::da::LoadExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor, bool refresh)
+te::gm::Envelope* te::da::GetExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor)
 {
   assert(gp);
   assert(transactor);
-
-  if(gp->getExtent() && !refresh)
-    return;
 
   std::auto_ptr<DataSourceCatalogLoader> cloader(transactor->getCatalogLoader());
 
   te::gm::Envelope* mbr = cloader->getExtent(gp);
 
-  gp->setExtent(mbr);
+  return mbr;
 }
 
 void te::da::GetDataSets(boost::ptr_vector<std::string>& datasets, const std::string& datasourceId)

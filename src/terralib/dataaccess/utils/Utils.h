@@ -40,6 +40,7 @@ namespace te
 {
   namespace gm
   {
+    class Envelope;
     class GeometryProperty;
   }
 
@@ -65,11 +66,26 @@ namespace te
 
     TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, te::da::DataSourceTransactor* transactor);
 
-    TEDATAACCESSEXPORT void LoadExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId, bool refresh = false);
+    /*!
+      \return The data extent considering the informed property. The caller will take the ownership of the returned box.
 
-    TEDATAACCESSEXPORT void LoadExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource, bool refresh = false);
+      \exception Exception It throws an exception if the extent can not be determined.
+    */
+    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::gm::GeometryProperty* gp, const std::string& datasourceId);
 
-    TEDATAACCESSEXPORT void LoadExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor, bool refresh = false);
+    /*!
+      \return The data extent considering the informed property. The caller will take the ownership of the returned box.
+
+      \exception Exception It throws an exception if the extent can not be determined.
+    */
+    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::gm::GeometryProperty* gp, te::da::DataSource* datasource);
+
+    /*!
+      \return The data extent considering the informed property. The caller will take the ownership of the returned box.
+
+      \exception Exception It throws an exception if the extent can not be determined.
+    */
+    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::gm::GeometryProperty* gp, te::da::DataSourceTransactor* transactor);
 
     TEDATAACCESSEXPORT void GetDataSets(boost::ptr_vector<std::string>& datasets, const std::string& datasourceId);
 

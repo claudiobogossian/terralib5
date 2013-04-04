@@ -29,6 +29,7 @@
 // TerraLib
 #include <terralib/geometry.h>
 #include <terralib/datatype.h>
+#include <terralib/raster.h>
 
 // STL
 #include <ctime>
@@ -446,4 +447,242 @@ void TsPropertyTypes::tcCompositeProperty()
   CPPUNIT_ASSERT(composite_type_clone->getName() == "composite_name");
   CPPUNIT_ASSERT(composite_type_clone->getId() == 666);
   CPPUNIT_ASSERT(composite_type_clone->getParent() == 0);
+}
+
+void TsPropertyTypes::tcBitProperty()
+{
+  te::dt::BitProperty bitp("attr_bit");
+  te::dt::BitProperty bitpn("attr_bitn", 4, false, new std::string("0000"), 23, 0);
+
+  CPPUNIT_ASSERT(bitp.getName() == "attr_bit");
+  CPPUNIT_ASSERT(bitp.getType() == te::dt::BIT_TYPE);
+  CPPUNIT_ASSERT(bitp.getId() == 0);
+  CPPUNIT_ASSERT(bitp.getParent() == 0); 
+  CPPUNIT_ASSERT(bitp.isRequired() == false);
+  CPPUNIT_ASSERT(bitp.getDefaultValue() == 0);
+  CPPUNIT_ASSERT(bitp.numBits() == 1);
+
+  bitp.setNumBits(2);
+  bitp.setDefaultValue(new std::string("11"));
+  std::string* def = bitp.getDefaultValue();
+  CPPUNIT_ASSERT(*(bitp.getDefaultValue()) == "11");
+  CPPUNIT_ASSERT(bitp.numBits() == 2);
+
+  // Copy constructor
+  te::dt::BitProperty bit_copy(bitpn);
+  CPPUNIT_ASSERT(bit_copy.getName() == "attr_bitn");
+  CPPUNIT_ASSERT(bit_copy.getType() == te::dt::BIT_TYPE);
+  CPPUNIT_ASSERT(bit_copy.getId() == 23);
+  CPPUNIT_ASSERT(bit_copy.getParent() == 0); 
+  CPPUNIT_ASSERT(bit_copy.isRequired() == false);
+  CPPUNIT_ASSERT(*(bit_copy.getDefaultValue()) == "0000");
+  CPPUNIT_ASSERT(bit_copy.numBits() == 4);
+
+  // clone
+  bit_copy.setDefaultValue(new std::string("11111"));
+  te::dt::Property* bit_clone = bit_copy.clone();
+  CPPUNIT_ASSERT(bit_clone->getName() == "attr_bitn");
+  CPPUNIT_ASSERT(bit_clone->getType() == te::dt::BIT_TYPE);
+  CPPUNIT_ASSERT(bit_clone->getId() == 23);
+  CPPUNIT_ASSERT(bit_clone->getParent() == 0); 
+  CPPUNIT_ASSERT(static_cast<te::dt::BitProperty*>(bit_clone)->isRequired() == false);
+  CPPUNIT_ASSERT(*(static_cast<te::dt::BitProperty*>(bit_clone)->getDefaultValue()) == "11111");
+  CPPUNIT_ASSERT(static_cast<te::dt::BitProperty*>(bit_clone)->numBits() == 4);
+
+  std::string* ss = static_cast<te::dt::BitProperty*>(bit_clone)->getDefaultValue();
+  CPPUNIT_ASSERT_MESSAGE("DefaultValue is accepting value bigger than size!",static_cast<te::dt::BitProperty*>(bit_clone)->numBits() == ss->size());
+}
+
+void TsPropertyTypes::tcArrayProperty()
+{
+  te::dt::BitProperty* bitp= new te::dt::BitProperty("attr_bit");
+  te::dt::ArrayProperty arrb("attr_array", bitp, false,0,23,0);
+  te::dt::ArrayProperty arrb_copy(arrb);
+  te::dt::ArrayProperty* arrb_clone = static_cast<te::dt::ArrayProperty*>(arrb_copy.clone());
+
+  CPPUNIT_ASSERT(arrb.getType() == te::dt::ARRAY_TYPE );
+  CPPUNIT_ASSERT(arrb.getName() == "attr_array");
+  CPPUNIT_ASSERT(arrb.isAutoNumber() ==  false);
+  CPPUNIT_ASSERT(arrb.isRequired() == false);
+  CPPUNIT_ASSERT(arrb.getDefaultValue() == 0);
+  CPPUNIT_ASSERT(arrb.getId() == 23); 
+  CPPUNIT_ASSERT(arrb.getElementType() == bitp );
+  // Check elementType´s parent
+  CPPUNIT_ASSERT(((arrb.getElementType())->getParent()) == &arrb );
+
+  te::gm::GeometryProperty* geomp = new te::gm::GeometryProperty("geom");
+  te::dt::ArrayProperty arrg("attr_array", geomp);
+  te::dt::ArrayProperty arrg_copy(arrg);
+  CPPUNIT_ASSERT(((arrg.getElementType())->getParent()) == &arrg );
+  CPPUNIT_ASSERT(arrg.getElementType() == geomp );
+
+  //CPPUNIT_ASSERT(arrg_copy.getElementType() == geomp );
+  CPPUNIT_ASSERT(arrg_copy.getElementType()->getType() == te::dt::GEOMETRY_TYPE );
+
+  // Clone
+  te::dt::ArrayProperty* arrg_clone = static_cast<te::dt::ArrayProperty*>(arrg_copy.clone());
+  CPPUNIT_ASSERT(arrg_clone->getType() == te::dt::ARRAY_TYPE );
+  CPPUNIT_ASSERT(arrg_clone->getName() == "attr_array");
+  CPPUNIT_ASSERT(arrg_clone->isAutoNumber() ==  false);
+  CPPUNIT_ASSERT(arrg_clone->isRequired() == false);
+  CPPUNIT_ASSERT(arrg_clone->getDefaultValue() == 0);
+  CPPUNIT_ASSERT(arrg_clone->getId() == 0);
+
+  //CPPUNIT_ASSERT(arrg_clone->getElementType() == geomp ); 
+  CPPUNIT_ASSERT(arrg_clone->getElementType()->getType() == te::dt::GEOMETRY_TYPE );
+}
+
+void TsPropertyTypes::tcRasterProperty()
+{
+  te::rst::RasterProperty rs("rst_prop");
+
+  // describes the raster that you want
+  te::rst::Grid* grid = new te::rst::Grid(100, 100);
+  grid->setGeoreference(te::gm::Coord2D(100, 100), 29183, 1,1);
+
+  std::vector<te::rst::BandProperty*> bprops;
+  bprops.push_back(new te::rst::BandProperty(0, te::dt::UCHAR_TYPE));
+
+  std::map<std::string, std::string> rinfo;
+
+  // property name is empty in this constructor
+  te::rst::RasterProperty* rstp = new te::rst::RasterProperty(grid, bprops, rinfo);
+   
+  te::rst::RasterProperty rs_grid(grid, bprops, rinfo);
+
+  // SimpleProperties gets...
+  CPPUNIT_ASSERT(rs_grid.getType() == te::dt::RASTER_TYPE);
+  CPPUNIT_ASSERT(rs_grid.getName() == "");
+  CPPUNIT_ASSERT(rs_grid.isAutoNumber() == false);
+  CPPUNIT_ASSERT(rs_grid.isRequired() == false);
+  CPPUNIT_ASSERT(rs_grid.getDefaultValue() == 0);
+  CPPUNIT_ASSERT(rs_grid.getId() == 0);
+  CPPUNIT_ASSERT(rs_grid.getParent() == 0);
+  
+  // RasterProperties gets and sets
+  std::vector<te::rst::BandProperty*> bprops_ret = rs_grid.getBandProperties();
+  CPPUNIT_ASSERT(bprops_ret == bprops);
+  rs_grid.setName("rst_name");
+  CPPUNIT_ASSERT(rs_grid.getName() == "rst_name");  
+
+  te::rst::BandProperty* band_add1 = new te::rst::BandProperty(1, te::dt::DOUBLE_TYPE);
+  te::rst::BandProperty* band_add2 = new te::rst::BandProperty(2, te::dt::DOUBLE_TYPE);
+  rs_grid.add(band_add1);
+  rs_grid.set(0,band_add2);
+  bprops_ret =  rs_grid.getBandProperties();
+  CPPUNIT_ASSERT(band_add2 == bprops_ret[0]);
+  CPPUNIT_ASSERT(band_add1 == bprops_ret[1]);
+}
+
+void TsPropertyTypes::tcRasterPropertyClone()
+{
+  // describes the raster that you want
+  te::rst::Grid* grid = new te::rst::Grid(100, 100);
+  grid->setGeoreference(te::gm::Coord2D(100, 100), 29183, 1,1);
+
+  std::vector<te::rst::BandProperty*> bprops;
+  bprops.push_back(new te::rst::BandProperty(0, te::dt::UCHAR_TYPE));
+
+  std::map<std::string, std::string> rinfo;
+
+  // property name is empty in this constructor
+  te::rst::RasterProperty* rstp = new te::rst::RasterProperty(grid, bprops, rinfo);
+   
+  te::rst::RasterProperty rs_grid(grid, bprops, rinfo);
+/*
+  // SimpleProperties gets...
+  CPPUNIT_ASSERT(rs_grid.getType() == te::dt::RASTER_TYPE);
+  CPPUNIT_ASSERT(rs_grid.getName() == "");
+  CPPUNIT_ASSERT(rs_grid.isAutoNumber() == false);
+  CPPUNIT_ASSERT(rs_grid.isRequired() == false);
+  CPPUNIT_ASSERT(rs_grid.getDefaultValue() == 0);
+  CPPUNIT_ASSERT(rs_grid.getId() == 0);
+  CPPUNIT_ASSERT(rs_grid.getParent() == 0);
+  
+  // RasterProperties gets and sets
+  std::vector<te::rst::BandProperty*> bprops_ret = rs_grid.getBandProperties();
+  CPPUNIT_ASSERT(bprops_ret == bprops);
+  rs_grid.setName("rst_name");
+  CPPUNIT_ASSERT(rs_grid.getName() == "rst_name");  
+
+  te::rst::BandProperty* band_add1 = new te::rst::BandProperty(1, te::dt::DOUBLE_TYPE);
+  te::rst::BandProperty* band_add2 = new te::rst::BandProperty(2, te::dt::DOUBLE_TYPE);
+  rs_grid.add(band_add1);
+  rs_grid.set(0,band_add2);
+  bprops_ret =  rs_grid.getBandProperties();
+  CPPUNIT_ASSERT(band_add2 == bprops_ret[0]);
+  CPPUNIT_ASSERT(band_add1 == bprops_ret[1]);
+*/
+  // clone 
+  te::rst::RasterProperty* rstp_clone = static_cast<te::rst::RasterProperty*>(rstp->clone());
+  te::rst::RasterProperty* rstp_clone1 = static_cast<te::rst::RasterProperty*>(rs_grid.clone());
+
+  CPPUNIT_ASSERT(rstp_clone->getType() == te::dt::RASTER_TYPE);
+  CPPUNIT_ASSERT(rstp_clone->getName() == "");
+  CPPUNIT_ASSERT(rstp_clone->isAutoNumber() == false);
+  CPPUNIT_ASSERT(rstp_clone->isRequired() == false);
+  CPPUNIT_ASSERT(rstp_clone->getDefaultValue() == 0);
+  CPPUNIT_ASSERT(rstp_clone->getId() == 0);
+  CPPUNIT_ASSERT(rstp_clone->getParent() == 0); 
+  CPPUNIT_ASSERT(rstp_clone->getBandProperties()[0] == rstp->getBandProperties()[0]); 
+  CPPUNIT_ASSERT(rstp_clone->getBandProperties()[1] == rstp->getBandProperties()[1]); 
+}
+
+void TsPropertyTypes::tcRasterPropertyAssignOp()
+{
+  // describes the raster that you want
+  te::rst::Grid* grid = new te::rst::Grid(100, 100);
+  grid->setGeoreference(te::gm::Coord2D(100, 100), 29183, 1,1);
+
+  std::vector<te::rst::BandProperty*> bprops;
+  bprops.push_back(new te::rst::BandProperty(0, te::dt::UCHAR_TYPE));
+
+  std::map<std::string, std::string> rinfo;
+
+  // property name is empty in this constructor
+  te::rst::RasterProperty* rstp = new te::rst::RasterProperty(grid, bprops, rinfo);
+   
+  te::rst::RasterProperty rs_grid(grid, bprops, rinfo);
+/*
+  // SimpleProperties gets...
+  CPPUNIT_ASSERT(rs_grid.getType() == te::dt::RASTER_TYPE);
+  CPPUNIT_ASSERT(rs_grid.getName() == "");
+  CPPUNIT_ASSERT(rs_grid.isAutoNumber() == false);
+  CPPUNIT_ASSERT(rs_grid.isRequired() == false);
+  CPPUNIT_ASSERT(rs_grid.getDefaultValue() == 0);
+  CPPUNIT_ASSERT(rs_grid.getId() == 0);
+  CPPUNIT_ASSERT(rs_grid.getParent() == 0);
+  
+  // RasterProperties gets and sets
+  std::vector<te::rst::BandProperty*> bprops_ret = rs_grid.getBandProperties();
+  CPPUNIT_ASSERT(bprops_ret == bprops);
+  rs_grid.setName("rst_name");
+  CPPUNIT_ASSERT(rs_grid.getName() == "rst_name");  
+
+  te::rst::BandProperty* band_add1 = new te::rst::BandProperty(1, te::dt::DOUBLE_TYPE);
+  te::rst::BandProperty* band_add2 = new te::rst::BandProperty(2, te::dt::DOUBLE_TYPE);
+  rs_grid.add(band_add1);
+  rs_grid.set(0,band_add2);
+  bprops_ret =  rs_grid.getBandProperties();
+  CPPUNIT_ASSERT(band_add2 == bprops_ret[0]);
+  CPPUNIT_ASSERT(band_add1 == bprops_ret[1]);
+*/
+  // Assign Operator
+  te::rst::RasterProperty rstp_assign("rs_assign_name");
+  rstp_assign = *rstp;
+  rstp_assign.operator=(*rstp);
+  //te::rst::RasterProperty rstp_assign1("rs_assign_name1");
+  //rstp_assign1.operator=(rs_grid);
+
+  //CPPUNIT_ASSERT_MESSAGE ("Assign operator and clone do not work at te::common::Copy(rhs.m_bands, m_bands)", 1 > 1);
+ 
+  CPPUNIT_ASSERT(rstp_assign.getType() == te::dt::RASTER_TYPE);
+  CPPUNIT_ASSERT(rstp_assign.getName() == "");
+  CPPUNIT_ASSERT(rstp_assign.isAutoNumber() == false);
+  CPPUNIT_ASSERT(rstp_assign.isRequired() == false);
+  CPPUNIT_ASSERT(rstp_assign.getDefaultValue() == 0);
+  CPPUNIT_ASSERT(rstp_assign.getId() == 0);
+  CPPUNIT_ASSERT(rstp_assign.getParent() == 0); 
+  CPPUNIT_ASSERT(rstp_assign.getBandProperties()[0] == rstp->getBandProperties()[0]); 
+  CPPUNIT_ASSERT(rstp_assign.getBandProperties()[1] == rstp->getBandProperties()[1]); 
 }
