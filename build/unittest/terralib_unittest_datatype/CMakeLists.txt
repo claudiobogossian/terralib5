@@ -32,6 +32,7 @@ list (
   terralib_common
 	terralib_datatype
 	terralib_geometry
+	terralib_raster
 	terralib_srs
   )
 
