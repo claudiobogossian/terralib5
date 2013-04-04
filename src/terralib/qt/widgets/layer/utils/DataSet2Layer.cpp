@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../../common/Translator.h"
 #include "../../../../dataaccess/dataset/DataSetType.h"
+#include "../../../../dataaccess/utils/Utils.h"
 #include "../../../../geometry/Envelope.h"
 #include "../../../../geometry/GeometryProperty.h"
 #include "../../../../maptools/AbstractLayer.h"
@@ -65,8 +66,9 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   if(dataset->hasGeom())
   {
     te::gm::GeometryProperty* gp = dataset->getDefaultGeomProperty();
+    std::auto_ptr<te::gm::Envelope> mbr(te::da::GetExtent(gp, m_datasourceId));
     layer->setSRID(gp->getSRID());
-    layer->setExtent(gp->getExtent() ? te::gm::Envelope(*(gp->getExtent())) : te::gm::Envelope());
+    layer->setExtent(*mbr);
     layer->setStyle(te::se::CreateFeatureTypeStyle(gp->getGeometryType()));
   }
   else if(dataset->hasRaster())
@@ -80,7 +82,7 @@ te::map::DataSetLayerPtr te::qt::widgets::DataSet2Layer::operator()(const te::da
   else
   {
     layer->setSRID(TE_UNKNOWN_SRS);
-    layer->setExtent(te::gm::Envelope());
+    //layer->setExtent(te::gm::Envelope());
   }
 
   return layer;
