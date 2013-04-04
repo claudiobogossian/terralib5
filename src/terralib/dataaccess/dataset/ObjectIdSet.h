@@ -158,7 +158,7 @@ namespace te
 
         DataSetType* m_type;                                          //!< A pointer to the type of the data set that generates the unique ids.
         std::vector<std::size_t> m_indexes;                           //!< A vector with the property indexes used to generate de unique ids.
-        std::set<ObjectId*, te::common::LessCmp<ObjectId*>> m_oids;   //!< The set of unique ids.
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;   //!< The set of unique ids.
     };
 
   } // end namespace da

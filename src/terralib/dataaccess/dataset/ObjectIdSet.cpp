@@ -117,7 +117,7 @@ te::da::Select* te::da::ObjectIdSet::getQuery() const
     In* in = new In(propertyName);
 
     // for each object in the set include its property value in the IN clause
-    std::set<ObjectId*, te::common::LessCmp<ObjectId*>>::const_iterator it;
+    std::set<ObjectId*, te::common::LessCmp<ObjectId*> >::const_iterator it;
     for(it = m_oids.begin(); it != m_oids.end(); ++it)
     {
       const boost::ptr_vector<te::dt::AbstractData>& data = (*it)->getValue();
@@ -171,9 +171,9 @@ void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)
 
   std::auto_ptr<ObjectIdSet*> toDelete(&rhs);
 
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*>>& newOids = rhs->m_oids;
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& newOids = rhs->m_oids;
 
-  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*>>::iterator it;
+  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it;
   for(it = newOids.begin(); it != newOids.end(); ++it)
     m_oids.find(*it) == m_oids.end() ? add(*it) : delete *it;
 
@@ -189,15 +189,15 @@ void te::da::ObjectIdSet::difference(te::da::ObjectIdSet* rhs)
   if(m_oids.empty())
     return;
 
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*>>& oidsToRemove = rhs->m_oids;
+  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& oidsToRemove = rhs->m_oids;
   
   if(oidsToRemove.empty())
     return;
   
-  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*>>::iterator it;
+  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it;
   for(it = oidsToRemove.begin(); it != oidsToRemove.end(); ++it)
   {
-    std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*>>::iterator itSearch = m_oids.find(*it);
+    std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator itSearch = m_oids.find(*it);
 
     if(itSearch == m_oids.end())
       continue;
