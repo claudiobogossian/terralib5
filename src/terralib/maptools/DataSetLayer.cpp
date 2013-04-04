@@ -195,6 +195,20 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
   return DataSet2Memory(dataset.get());
 }
 
+te::da::DataSet* te::map::DataSetLayer::getSelected(te::common::TraverseType travType,
+                                                    te::common::AccessPolicy rwRole) const
+{
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_selected, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
+}
+
 bool te::map::DataSetLayer::isValid() const
 {
   return true;

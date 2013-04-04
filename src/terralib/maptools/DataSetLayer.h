@@ -105,6 +105,9 @@ namespace te
                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                  te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
+        te::da::DataSet* getSelected(te::common::TraverseType travType = te::common::FORWARDONLY,
+                                     te::common::AccessPolicy rwRole = te::common::RAccess) const;
+
         bool isValid() const;
 
         void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid);
