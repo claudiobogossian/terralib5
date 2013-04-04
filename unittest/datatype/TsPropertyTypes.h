@@ -43,11 +43,14 @@
   <br>
   This test suite will check the following:
   <ul>
+  <li>BitProperty;</li>
   <li>NumericProperty;</li>
   <li>StringProperty;</li>
   <li>SimpleProperty;</li>
   <li>GeometryProperty;</li>
   <li>CompositeProperty;</li>
+  <li>ArrayProperty;</li>
+  <li>RasterProperty;</li>
   <li>Other Test Suites are implemented to test ByteaArray, DateTime, Array etc;</li>
   </ul>
  */
@@ -62,9 +65,14 @@ class TsPropertyTypes : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST( tcSimpleProperty );
   CPPUNIT_TEST( tcGeometryPropertyFirstConstructor );
   CPPUNIT_TEST( tcGeometryPropertyCopyConstructor );
+  CPPUNIT_TEST( tcGeometryPropertyFirstConstructorAssign );
   CPPUNIT_TEST( tcGeometryProperty );
   CPPUNIT_TEST( tcCompositeProperty );
-  CPPUNIT_TEST( tcGeometryPropertyFirstConstructorAssign );
+  CPPUNIT_TEST( tcBitProperty );
+  CPPUNIT_TEST( tcArrayProperty );
+  CPPUNIT_TEST( tcRasterProperty );
+  CPPUNIT_TEST( tcRasterPropertyClone );
+  CPPUNIT_TEST( tcRasterPropertyAssignOp );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -103,6 +111,21 @@ class TsPropertyTypes : public CPPUNIT_NS::TestFixture
 
    /*! \brief Test Case: Composite properties (enum 20) . */
     void tcCompositeProperty();
+
+    /*! \brief Test Case: Bit properties. */
+    void tcBitProperty();
+
+    /*! \brief Test Case: Array properties. */
+    void tcArrayProperty();
+
+    /*! \brief Test Case: Array properties. */
+    void tcRasterProperty();
+
+    /*! \brief Test Case: Array properties. */
+    void tcRasterPropertyClone();
+
+    /*! \brief Test Case: Array properties. */
+    void tcRasterPropertyAssignOp();
 };
 
 #endif  // __TERRALIB_UNITTEST_DATATYPE_INTERNAL_PROPERTYTYPES_H
