@@ -33,6 +33,7 @@
 // STL
 #include <set>
 #include <vector>
+#include <string>
 
 namespace te
 {
