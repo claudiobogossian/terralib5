@@ -122,7 +122,12 @@ void te::map::AbstractLayer::select(te::da::ObjectIdSet* oids)
   m_selected->Union(oids);
 }
 
-void te::map::AbstractLayer::deselect(te::da::ObjectIdSet* oids)
+const te::da::ObjectIdSet* te::map::AbstractLayer::getSelected() const
+{
+  return m_selected;
+}
+
+void te::map::AbstractLayer::deselect(const te::da::ObjectIdSet* oids)
 {
   assert(m_selected);
 
