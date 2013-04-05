@@ -61,6 +61,14 @@ namespace te
 
           Project* m_proj;    //!< Pointer to the newe project.
         };
+
+        struct ProjectUnsaved : public Event
+        {
+          ProjectUnsaved() :
+          Event(PROJECT_UNSAVED)
+          {
+          }
+        };
       }
     }
   }

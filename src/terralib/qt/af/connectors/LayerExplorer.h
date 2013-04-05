@@ -40,7 +40,11 @@ namespace te
   namespace qt
   {
 // Forward declarations
-    namespace widgets { class LayerExplorer; }
+    namespace widgets 
+    { 
+      class LayerExplorer; 
+      class AbstractLayerTreeItem;
+    }
 
     namespace af
     {
@@ -98,6 +102,8 @@ namespace te
             \param deselected The items that were deselected from the layer tree.
           */
           void onSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected);
+
+          void layerVisibility(te::qt::widgets::AbstractLayerTreeItem* item, bool checked);
 
         protected:
 

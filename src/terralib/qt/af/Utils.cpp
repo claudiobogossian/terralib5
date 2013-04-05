@@ -65,7 +65,11 @@ te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
   if(xmlReader->getElementLocalName() != "Project")
     throw Exception((boost::format(TR_QT_AF("The first tag in the document %1% is not 'Project'.")) % uri).str());
 
-  return ReadProject(*xmlReader);
+  Project* proj = ReadProject(*xmlReader);
+
+  proj->setFileName(uri);
+
+  return proj;
 }
 
 te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
@@ -120,6 +124,8 @@ te::qt::af::Project* te::qt::af::ReadProject(te::xml::Reader& reader)
   reader.next();
   assert((reader.getNodeType() == te::xml::END_ELEMENT) || (reader.getNodeType() == te::xml::END_DOCUMENT));
   assert(reader.getElementLocalName() == "Project");
+
+  project->projectChanged(false);
 
   return project.release();
 }

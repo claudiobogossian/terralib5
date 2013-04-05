@@ -149,4 +149,10 @@ void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 
 void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
 {
+  switch (e->m_id)
+  {
+    case te::qt::af::evt::PROJECT_ADDED:
+      draw(static_cast<te::qt::af::evt::ProjectAdded*>(e)->m_proj->getLayers());
+    break;
+  }
 }

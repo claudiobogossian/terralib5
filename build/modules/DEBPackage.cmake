@@ -1,5 +1,4 @@
 # Configurations for packaging using DEB
-INCLUDE (InstallRequiredSystemLibraries)
 
 set (p_deps "libstdc++ | libstdc++6 (>=4.5.2), gcc (>=4.5.2)")
 
