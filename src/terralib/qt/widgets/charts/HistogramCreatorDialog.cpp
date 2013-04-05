@@ -23,15 +23,23 @@
   \brief A widget used to create a nem Histogram chart.
 */
 
-#include "ui_histogramCreatorDialog.h"
-#include "HistogramCreatorDialog.h"
-#include "ChartStyleDialog.h"
-#include "Histogram.h"
-#include "HistogramChart.h"
+//Terralib
+#include "BasicFillDialog.h"
+#include "BasicStrokeDialog.h"
 #include "ChartDisplay.h"
-#include "../../../qt/widgets/charts/Utils.h"
+#include "ChartStyleDialog.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
+#include "HistogramCreatorDialog.h"
+#include "Histogram.h"
+#include "HistogramChart.h"
+#include "HistogramStyle.h"
+#include "../../../qt/widgets/charts/Utils.h"
+#include "../../../qt/widgets/se/Utils.h"
+#include "../../../raster.h"
+#include "../../../raster/RasterSummary.h"
+#include "../../../raster/RasterSummaryManager.h"
+#include "ui_histogramCreatorDialog.h"
 
 //QT
 #include <QtGui/QDialog>
@@ -44,73 +52,107 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
     m_dataSet (dataSet)
 {
   m_ui->setupUi(this);
-  QString item;
-  std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
 
-  for (double i = 0; i < properties.size(); i++)
+  QString item;
+
+  if(dataSet->getRaster())
+    {
+      size_t size =  dataSet->getRaster()->getNumberOfBands();
+      for (unsigned int i = 0; i < size; i++)
+      {
+        item = QString::number(i);
+        m_ui->m_propertyComboBox->addItem(item);
+      }
+    }
+  else
   {
-    item = item.fromStdString(properties[i]->getName());
-    m_ui->m_propertyComboBox->addItem(item);
+    std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
+
+    for (double i = 0; i < properties.size(); i++)
+    {
+      item = QString::fromStdString(properties[i]->getName());
+      m_ui->m_propertyComboBox->addItem(item);
+    }
   }
+
+  m_histogramStyle = new te::qt::widgets::HistogramStyle(); 
+  m_chartDisplay = new te::qt::widgets::ChartDisplay();
 
 // connect signal and slots
   connect(m_ui->m_stylePushButton, SIGNAL(clicked()), this, SLOT(onStylePushButtonClicked()));
-  connect(m_ui->m_barStylePushButton, SIGNAL(clicked()), this, SLOT(onBarStylePushButtonClicked()));
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
-  connect(m_ui->m_cancelPushButton, SIGNAL(clicked()), this, SLOT(onCancelPushButtonClicked()));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
-  connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged()), this, SLOT(onPropertyComboBoxIndexChanged()));
+  connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
+  connect(m_ui->m_fillPushButton, SIGNAL(clicked()), this, SLOT(onFillPushButtonClicked()));
+  connect(m_ui->m_strokePushButton, SIGNAL(clicked()), this, SLOT(onStrokePushButtonClicked()));
 }
 
-te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog(){}
+te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog()
+{
+
+}
 
 void te::qt::widgets::HistogramCreatorDialog::onStylePushButtonClicked()
 {
-    te::qt::widgets::ChartStyleDialog dlg(this);
-    dlg.exec();
-}
-
-void te::qt::widgets::HistogramCreatorDialog::onBarStylePushButtonClicked()
-{
-
+  te::qt::widgets::ChartStyleDialog dlg(this, 0, "Histogram", m_ui->m_propertyComboBox->currentText(), "Frequency");
+  dlg.exec();
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 {
 
-  //Acquiring the dataset Properties types
-  te::da::DataSetType* type = m_dataSet->getType();
+  if(m_dataSet->getRaster())
+  {
+    int teste  =  m_ui->m_propertyComboBox->currentIndex();
+    m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
+  }
+  else
+  {
+    //Acquiring the dataset Properties types
+    m_type = m_dataSet->getType();
 
-  //Getting the Columns that will be used to populate the graph
-  QString aux = m_ui->m_propertyComboBox->currentText();
-  std::string selectedProperty = aux.toStdString();
-  int selectedPropertyIdx= type->getPropertyPosition(selectedProperty);
+    //Getting the Columns that will be used to populate the graph
+    int selectedPropertyIdx= m_type->getPropertyPosition(m_ui->m_propertyComboBox->currentText().toStdString());
+    int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
 
-  te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
-//passar como parametro o HistogramStyle
-  te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
+    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    {
+      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+    }
+    else
+    {
+      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+    }
+  }
 
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);
   dlg.setLayout(lay);
-  
-//passar como parametro o chartstyle
-  te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
 
-  lay->addWidget(chartDisplay);
+  m_chartDisplay->setParent(&dlg);
+  m_chartDisplay->setTitle("Histogram");
 
-  histogramChart->attach(chartDisplay);
+  lay->addWidget(m_chartDisplay);
 
-  chartDisplay->show();
+  m_histogramChart = new te::qt::widgets::HistogramChart(m_histogram);
 
-  chartDisplay->replot();
+  QPen barPen;
+  QBrush barBrush;
+
+  te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
+  te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
+  barBrush.setStyle(Qt::BrushStyle::SolidPattern);
+
+  m_histogramChart->setPen(barPen);
+  m_histogramChart->setBrush(barBrush);
+
+  m_histogramChart->attach(m_chartDisplay);
+
+  m_chartDisplay->show();
+
+  m_chartDisplay->replot();
 
   dlg.exec();
-}
-
-void te::qt::widgets::HistogramCreatorDialog::onCancelPushButtonClicked()
-{
-
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
@@ -118,7 +160,37 @@ void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
 
 }
 
-void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged()
+void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QString text)
 {
-  std::cout << "teste";
+  m_type = m_dataSet->getType();
+  QString aux = m_ui->m_propertyComboBox->currentText();
+  std::string selectedProperty = aux.toStdString();
+  if(!(m_dataSet->getRaster()))
+  {
+    int selectedPropertyIdx= m_type->getPropertyPosition(selectedProperty);
+    int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
+
+    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    {
+    m_ui->m_slicesSpinBox->setEnabled(false);
+    }
+    else
+    {
+    m_ui->m_slicesSpinBox->setEnabled(true);
+    }
+  }
+  else 
+  {
+    m_ui->m_slicesSpinBox->setEnabled(false);
+  }
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onFillPushButtonClicked()
+{
+  m_histogramStyle->setFill(te::qt::widgets::BasicFillDialog::getFill(m_histogramStyle->getFill(), 0, "Bar Fill"));
+}
+
+void te::qt::widgets::HistogramCreatorDialog::onStrokePushButtonClicked()
+{
+    m_histogramStyle->setStroke(te::qt::widgets::BasicStrokeDialog::getStroke(m_histogramStyle->getStroke(), 0, "Bar Fill"));
 }

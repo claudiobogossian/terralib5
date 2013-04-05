@@ -24,13 +24,16 @@
 */
 
 // TerraLib
-#include "../../../se.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
 #include "../../../datatype.h"
-#include "Utils.h"
-#include "Scatter.h"
 #include "Histogram.h"
+#include "../../../raster.h"
+#include "../../../raster/RasterSummary.h"
+#include "../../../raster/RasterSummaryManager.h"
+#include "Scatter.h"
+#include "../../../se.h"
+#include "Utils.h"
 
 //QT
 #include <QPen>
@@ -167,14 +170,14 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
   newHistogram->setType(propType);
 
   //The vector containing the frequency of each interval, will be used to every property type
-  std::vector<int> values;
+  std::vector< unsigned int> values;
 
    if((propType >= te::dt::INT16_TYPE && propType <= te::dt::UINT64_TYPE) || 
      propType == te::dt::FLOAT_TYPE || propType == te::dt::DOUBLE_TYPE || 
      propType == te::dt::NUMERIC_TYPE)
    {
 
-     std::map<double, int> histogramValues;
+     std::map<double,  unsigned int>* histogramValues = new std::map<double,  unsigned int>;
 
      double minValue, maxValue;
      minValue = std::numeric_limits<double>::max();
@@ -225,8 +228,8 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
      //With both the intervals and values ready, the map can be populated
      for (unsigned int i= 0; i<intervals.size(); i++)
      {
-       std::pair<double, int> new_pair(intervals[i], values[i]);
-       histogramValues.insert(new_pair);
+       std::pair<double,  unsigned int> new_pair(intervals[i], values[i]);
+       histogramValues->insert(new_pair);
      }
 
      newHistogram->setValues(histogramValues);
@@ -242,61 +245,68 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 {
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
-  int propType = dataset->getType()->getProperty(propId)->getType();
-
-  newHistogram->setType(propType);
-
-  //The vector containing the frequency of each interval, will be used to every property type
-  std::vector<int> values;
-    
-  if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+  if(dataset->getRaster())
   {
+    const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(), te::rst::SUMMARY_R_HISTOGRAM);
+    newHistogram->setValues(rs->at(propId).m_histogramR);
+  }
+  else
+  {
+    int propType = dataset->getType()->getProperty(propId)->getType();
 
-    std::set <std::string> intervals;
-    std::set <std::string>::iterator intervalsIt;
-    std::map<std::string, int> histogramValues;
+    newHistogram->setType(propType);
 
-    //Adjusting the histogram's intervals
-    while(dataset->moveNext())
+    //The vector containing the frequency of each interval, will be used to every property type
+    std::vector< unsigned int> values;
+    
+    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
-      std::string interval = dataset->getString(propId);
 
-      //Every unique string will be an interval
-      intervals.insert(interval);
-    }
+      std::set <std::string> intervals;
+      std::set <std::string>::iterator intervalsIt;
+      std::map<std::string,  unsigned int>* histogramValues = new std::map<std::string,  unsigned int>;
 
-    values.resize(intervals.size(), 0);
-    dataset->moveBeforeFirst();
-    newHistogram->setStringInterval(intervals);
-
-    //Adjusting the Histogram's values
-    while(dataset->moveNext())
-    {
-      std::string currentValue = dataset->getString(propId);
-      int i;
-
-      for (  i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
+      //Adjusting the histogram's intervals
+      while(dataset->moveNext())
       {
-        if(currentValue == *intervalsIt)
+        std::string interval = dataset->getString(propId);
+
+        //Every unique string will be an interval
+        intervals.insert(interval);
+      }
+
+      values.resize(intervals.size(), 0);
+      dataset->moveBeforeFirst();
+      newHistogram->setStringInterval(intervals);
+
+      //Adjusting the Histogram's values
+      while(dataset->moveNext())
+      {
+        std::string currentValue = dataset->getString(propId);
+        int i;
+
+        for (  i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
         {
-          values[i] =  values[i]+1;
-          break;
+          if(currentValue == *intervalsIt)
+          {
+            values[i] =  values[i]+1;
+            break;
+          }
         }
       }
-    }
 
-    //With both the intervals and values ready, the map can be populated
-    int i;
-    for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
-    {
-      std::pair<std::string, int> new_pair(*intervalsIt, values[i]);
-      histogramValues.insert(new_pair);
-    }
+      //With both the intervals and values ready, the map can be populated
+      int i;
+      for (i= 0, intervalsIt = intervals.begin(); intervalsIt != intervals.end(); intervalsIt++,i++)
+      {
+        std::pair<std::string, unsigned int> new_pair(*intervalsIt, values[i]);
+        histogramValues->insert(new_pair);
+      }
 
-    newHistogram->setStringValues(histogramValues);
-    dataset->moveBeforeFirst();
+      newHistogram->setStringValues(histogramValues);
+      dataset->moveBeforeFirst();
+    }
   }
-
   return newHistogram;
 }
 
