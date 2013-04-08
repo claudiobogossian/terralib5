@@ -142,7 +142,7 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 
   te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
   te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
-  barBrush.setStyle(Qt::BrushStyle::SolidPattern);
+  barBrush.setStyle(Qt::SolidPattern);
 
   m_histogramChart->setPen(barPen);
   m_histogramChart->setBrush(barBrush);
