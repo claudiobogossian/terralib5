@@ -181,14 +181,23 @@ namespace te
         */
         void select(te::da::ObjectIdSet* oids);
 
-         /*!
+        /*!
           \brief It removes the given oids from the selected group of this Layer.
 
           \param oids The oids that will be removed.
 
-          \note The Layer will take the ownership of the given pointer.
+          \note The Layer will NOT take the ownership of the given pointer.
         */
-        void deselect(te::da::ObjectIdSet* oids);
+        void deselect(const te::da::ObjectIdSet* oids);
+
+        /*!
+          \brief It returns the selected group of this Layer.
+
+          \retrun The selected group of this Layer.
+
+          \note The caller will NOT take the ownership of the given pointer.
+        */
+        const te::da::ObjectIdSet* getSelected() const;
 
         /*!
           \brief It returns the layer schema.
@@ -346,9 +355,10 @@ namespace te
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
 
         /*!
-          \brief It gets the dataset based on the selected group of this layer.
+          \brief It gets the dataset from the given set of objects identification.
 
-          \param travType The traverse type associated to the returned dataset. 
+          \param oids     The set of object ids.
+          \param travType The traverse type associated to the returned dataset.
           \param rwRole   The read and write permission associated to the returned dataset. 
 
           \return The caller of this method will take the ownership of the returned dataset.
@@ -362,8 +372,9 @@ namespace te
 
           \note Not thread-safe!
         */
-        virtual te::da::DataSet* getSelected(te::common::TraverseType travType = te::common::FORWARDONLY,
-                                             te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
+        virtual te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
         /*!
           \brief It returns the layer type.
 

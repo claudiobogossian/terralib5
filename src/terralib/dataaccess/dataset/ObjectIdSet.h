@@ -33,6 +33,7 @@
 // STL
 #include <set>
 #include <vector>
+#include <string>
 
 namespace te
 {
@@ -148,17 +149,15 @@ namespace te
 
           \param rhs A valid ObjectIdSet that will be used on difference operation. Do not pass NULL!
 
-          \note The ObjectIdSet will take the ownership of the given pointer.
-
-          \note The given pointer will be invalidated at end of difference operation.
+          \note The ObjectIdSet will NOT take the ownership of the given pointer.
         */
-        void difference(ObjectIdSet* rhs);
+        void difference(const ObjectIdSet* rhs);
 
       private:
 
         DataSetType* m_type;                                          //!< A pointer to the type of the data set that generates the unique ids.
         std::vector<std::size_t> m_indexes;                           //!< A vector with the property indexes used to generate de unique ids.
-        std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;   //!< The set of unique ids.
+        std::set<ObjectId*, te::common::LessCmp<ObjectId*> > m_oids;  //!< The set of unique ids.
     };
 
   } // end namespace da

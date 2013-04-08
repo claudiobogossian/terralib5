@@ -106,8 +106,9 @@ namespace te
                                  te::common::TraverseType travType = te::common::FORWARDONLY,
                                  te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
-        te::da::DataSet* getSelected(te::common::TraverseType travType = te::common::FORWARDONLY,
-                                     te::common::AccessPolicy rwRole = te::common::RAccess) const;
+        te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
+                                 te::common::TraverseType travType = te::common::FORWARDONLY,
+                                 te::common::AccessPolicy rwRole = te::common::RAccess) const;
 
         bool isValid() const;
 
