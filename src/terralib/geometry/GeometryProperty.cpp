@@ -35,8 +35,7 @@ te::gm::GeometryProperty::GeometryProperty(const std::string& name,
                                            te::dt::Property* parent)
   : SimpleProperty(name, te::dt::GEOMETRY_TYPE, isRequired, defaultValue, id, parent),
     m_srid(0),
-    m_geomType(UnknownGeometryType),
-    m_bounds(0)
+    m_geomType(UnknownGeometryType)
 {
 }
 
@@ -49,29 +48,19 @@ te::gm::GeometryProperty::GeometryProperty(const std::string& name,
                                            te::dt::Property* parent)
   : SimpleProperty(name, te::dt::GEOMETRY_TYPE, isRequired, defaultValue, id, parent),
     m_srid(srid),
-    m_geomType(subtype),
-    m_bounds(0)
+    m_geomType(subtype)
 {
 }
 
 te::gm::GeometryProperty::GeometryProperty(const GeometryProperty& rhs)
   : SimpleProperty(rhs),
     m_srid(rhs.m_srid),
-    m_geomType(rhs.m_geomType),
-    m_bounds(0)
+    m_geomType(rhs.m_geomType)
 {
-  m_bounds = rhs.m_bounds ? new Envelope(*(rhs.m_bounds)) : 0;
 }
 
 te::gm::GeometryProperty::~GeometryProperty()
 {
-  delete m_bounds;
-}
-
-void te::gm::GeometryProperty::setExtent(Envelope* e)
-{
-  delete m_bounds;
-  m_bounds = e;
 }
 
 te::dt::Property* te::gm::GeometryProperty::clone() const

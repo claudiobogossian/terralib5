@@ -54,6 +54,8 @@ namespace te
   {
     namespace af
     {
+      class Project;
+
       namespace evt
       {
       // Forward declarations
@@ -302,6 +304,22 @@ namespace te
           void updateRecentProjects(const QString& prjFile, const QString& prjTitle);
 
           /*!
+            \brief Set the current project.
+
+            \param prj Pointer to a current project.
+
+          */
+          void set(te::qt::af::Project* prj);
+
+          /*!
+            \brief Get the current project.
+
+            \return Pointer to a current project if defined or a null pointer in other case.
+
+          */
+          te::qt::af::Project* get();
+
+          /*!
             \brief Finalize the application framework.
 
             \details This method will unload all TerraLib modules, plugins, and dynamic libraries that are loaded.
@@ -371,6 +389,8 @@ namespace te
           QString m_appToolBarDefaultIconSize;        //!< Size of the tool buttons.
           std::string m_appDatasourcesFile;           //!< Name of the file containing datasources used.
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
+
+          Project* m_project;                         //!< Pointer to current project.
 
 // Singleton instance
           static ApplicationController* sm_instance;  //!< There can be only one object of class Application.

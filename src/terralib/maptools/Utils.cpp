@@ -26,12 +26,12 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../common/StringUtils.h"
-#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
 #include "../dataaccess/utils/Utils.h"
 #include "../fe/Literal.h"
+#include "../memory/DataSet.h"
 #include "../se/Fill.h"
 #include "../se/ParameterValue.h"
 #include "../se/Stroke.h"
@@ -263,4 +263,16 @@ te::gm::Envelope te::map::GetExtent(const  te::map::AbstractLayerPtr& layer, int
   }
 
   return e;
+}
+
+te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
+{
+  assert(dataset);
+
+  if(dataset->isEmpty())
+    return new te::mem::DataSet(static_cast<te::da::DataSetType*>(dataset->getType()->clone()));
+
+  dataset->moveNext();
+
+  return new te::mem::DataSet(*dataset);
 }

@@ -117,23 +117,15 @@ QMenu* te::qt::widgets::FindMenu(const QString& mnuText, QMenuBar* bar)
   return bar->findChild<QMenu*>(mnuText);
 }
 
-//QMenu* GetMenu(const QString& fullName, QMenu* mnu)
-//{
-//  QStringList ls = fullName.split('.');
-//
-//  while (!ls.empty())
-//  {
-//    QMenu* menu = te::qt::widgets::FindMenu(ls[0], mnu);
-//
-//    if(menu == 0)
-//    {
-//      menu = new QMenu(mnu);
-//      mnu->addMenu(menu);
-//
-//
-//    }
-//  }
-//}
+QAction* te::qt::widgets::FindAction(const QString& actText, QMenu* mnu)
+{
+  return mnu->findChild<QAction*>(actText);
+}
+
+QAction* te::qt::widgets::FindAction(const QString& actText, QMenuBar* mnuBar)
+{
+  return mnuBar->findChild<QAction*>(actText);
+}
 
 QMenu* CreateMenu(const QString& mnuName, QMenu* p)
 {
@@ -152,14 +144,19 @@ QMenu* CreateMenu(const QString& mnuName, QMenu* p)
 
 QMenu* CreateMenu(const QString& mnuName, QMenuBar* p)
 {
-  QMenu* mnu = p->findChild<QMenu*>(mnuName);
+  QMenu* mnu = te::qt::widgets::FindMenu(mnuName, p);
 
   if(mnu == 0)
   {
     QStringList ls = mnuName.split("."); 
-    mnu = p->addMenu(ls[ls.size()-1]);
-
+    mnu = new QMenu(ls[ls.size()-1], p);
     mnu->setObjectName(mnuName);
+
+    QMenu* helpMnu = te::qt::widgets::FindMenu("Help", p);
+
+    QAction* act = (helpMnu == 0) ? 0 : helpMnu->menuAction();
+     
+    p->insertMenu(act, mnu);
   }
 
   return mnu;
@@ -198,14 +195,4 @@ QMenu* te::qt::widgets::GetMenu(const QString& mnuText, QMenuBar* bar)
       CreateMenu(mnus[i], res);
   }
   return res;
-}
-
-QAction* te::qt::widgets::FindAction(const QString& actText, QMenu* mnu)
-{
-  return mnu->findChild<QAction*>(actText);
-}
-
-QAction* te::qt::widgets::FindAction(const QString& actText, QMenuBar* mnuBar)
-{
-  return mnuBar->findChild<QAction*>(actText);
 }

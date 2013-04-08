@@ -24,8 +24,8 @@
 */
 
 //Terralib
-#include "HistogramStyle.h";
 #include "../../../se/Fill.h"
+#include "HistogramStyle.h"
 #include "../../../se/Stroke.h"
 
 te::qt::widgets::HistogramStyle::HistogramStyle()
@@ -62,10 +62,5 @@ te::se::Stroke* te::qt::widgets::HistogramStyle::getStroke()
 void te::qt::widgets::HistogramStyle::setStroke(te::se::Stroke* newStroke)
 {
   m_stroke = newStroke;
-}
-
-void te::qt::widgets::HistogramStyle::adjustSymbol()
-{
-
 }
 

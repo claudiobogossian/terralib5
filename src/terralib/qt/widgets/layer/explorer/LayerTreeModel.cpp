@@ -267,10 +267,10 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   else
   {
     // row >= 0
+    newItemRow = row;
+
     if(dropParentIndex == QModelIndex())
     {
-      newItemRow = row;
-
       // Drop item is a top level item
       if(dropIndex.row() == -1)
         newItemParentIndex = QModelIndex();   // The item will be inserted as a top level item in the row-th position
@@ -317,6 +317,15 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
     // Reinsert the saved items into the tree
     for(int i = 0; i < savedItemsList.count(); ++i)
       savedItemsList.at(i)->setParent(newItemParent);
+
+    // Update the visibility of the layer tree
+    Qt::CheckState visibility = Qt::PartiallyChecked;
+    if(newItem->getLayer().get()->getVisibility() == te::map::VISIBLE)
+      visibility = Qt::Checked;
+    else 
+      visibility = Qt::Unchecked;
+
+    setData(index(newItemRow, 0, newItemParentIndex), visibility, Qt::CheckStateRole);
   }
 
   endInsertRows();
@@ -326,8 +335,6 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
 bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QModelIndex& parent)
 {
-  AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
-
   beginRemoveRows(parent, row, row + count - 1);
 
   if(!parent.isValid())
@@ -341,21 +348,17 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     QModelIndex childIndex = parent.child(row, 0);
     AbstractLayerTreeItem* childItem = static_cast<AbstractLayerTreeItem*>(childIndex.internalPointer());
 
-    // Get the item parent
-    AbstractLayerTreeItem* itemParent = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
+    // Get the item associated to the parent
+    AbstractLayerTreeItem* parentItem = static_cast<AbstractLayerTreeItem*>(parent.internalPointer());
 
     // First, remove the associated layer associated to the item
     te::map::AbstractLayer* layer = childItem->getLayer().get();
-    te::map::AbstractLayer* layerParent = static_cast<te::map::AbstractLayer*>(layer->getParent());
+    te::map::AbstractLayer* parentLayer = static_cast<te::map::AbstractLayer*>(parentItem->getLayer().get());
 
-    // Get the index of the associated layer
-    std::size_t i = layer->getIndex();
-
-    if(layerParent)
-      layerParent->remove(i);
+    parentLayer->remove(row);
 
     // Finally, remove the item from the tree
-    const QList<QObject*>& childrenList = itemParent->children();
+    const QList<QObject*>& childrenList = parentItem->children();
     int numChildren = childrenList.count();
 
     if (numChildren == 0 || row < 0 || row >= numChildren)
@@ -364,6 +367,32 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
     childItem->setParent(0);
 
     delete childItem;
+
+    // Update the visibility of the layer tree
+    bool allVisible = true;
+    bool allNotVisible = true;
+
+    if(parentLayer->hasChildren() == false)
+      allVisible = false;
+    else
+    {
+      for(std::size_t i = 0; i < parentLayer->getChildrenCount(); ++i)
+      {
+        te::map::AbstractLayer* l = static_cast<te::map::AbstractLayer*>(parentLayer->getChild(i).get());
+        if(l->getVisibility() == te::map::VISIBLE)
+          allNotVisible = false;
+        else if(l->getVisibility() == te::map::NOT_VISIBLE)
+          allVisible = false;
+      }
+    }
+
+    Qt::CheckState visibility = Qt::PartiallyChecked;
+    if(allVisible == true && allNotVisible == false)
+      visibility = Qt::Checked;
+    else if(allVisible == false && allNotVisible == true)
+      visibility = Qt::Unchecked;
+
+    setData(parent, visibility, Qt::CheckStateRole);
   }
 
   endRemoveRows();

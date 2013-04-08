@@ -467,7 +467,6 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
 {
   try
   {
-
     std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
@@ -490,7 +489,6 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
 {
   try
   {
-
     std::list<te::qt::widgets::AbstractLayerTreeItem*> layers = m_explorer->getExplorer()->getTreeView()->getSelectedItems();
 
     if(layers.empty())
@@ -646,6 +644,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 
     setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
 
+    te::qt::af::ApplicationController::getInstance().set(m_project);
+
     te::qt::af::evt::ProjectAdded evt(m_project);
 
     ApplicationController::getInstance().broadcast(&evt);
@@ -672,6 +672,8 @@ void te::qt::af::BaseApplication::newProject()
   QString projectTile(tr(" - Project: %1"));
 
   setWindowTitle(te::qt::af::ApplicationController::getInstance().getAppTitle() + projectTile.arg(m_project->getTitle().c_str()));
+
+  te::qt::af::ApplicationController::getInstance().set(m_project);
 
   te::qt::af::evt::ProjectAdded evt(m_project);
 

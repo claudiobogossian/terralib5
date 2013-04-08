@@ -94,7 +94,6 @@ namespace te
           te::qt::widgets::HistogramChart*    m_histogramChart;
           te::qt::widgets::HistogramStyle*    m_histogramStyle;
           te::qt::widgets::ChartDisplay*      m_chartDisplay;
-
       };
     } // end namespace widgets
   }   // end namespace qt

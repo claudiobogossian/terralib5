@@ -130,6 +130,7 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
   dlg.setLayout(lay);
 
   m_chartDisplay->setParent(&dlg);
+
   m_chartDisplay->setTitle("Histogram");
 
   lay->addWidget(m_chartDisplay);
@@ -152,6 +153,7 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 
   m_chartDisplay->replot();
 
+  this->close();
   dlg.exec();
 }
 

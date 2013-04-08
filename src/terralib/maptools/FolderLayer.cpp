@@ -94,6 +94,13 @@ te::da::DataSet* te::map::FolderLayer::getData(const te::dt::Property& /*p*/,
   return 0;
 }
 
+te::da::DataSet* te::map::FolderLayer::getData(const te::da::ObjectIdSet* oids,
+                                               te::common::TraverseType travType,
+                                               te::common::AccessPolicy rwRole) const
+{
+  return 0;
+}
+
 bool te::map::FolderLayer::isValid() const
 {
   return true;

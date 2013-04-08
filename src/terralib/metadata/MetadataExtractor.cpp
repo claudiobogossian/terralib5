@@ -59,8 +59,7 @@ te::md::MD_Metadata* te::md::Extract(const te::da::DataSet* d)
   {
     te::gm::GeometryProperty* gp = dst->getDefaultGeomProperty();
     md->setReferenceSystem(gp->getSRID());
-    if (gp->getExtent())
-      id->addGeographicBBoxExt(gp->getExtent());
+    id->addGeographicBBoxExt(const_cast<te::da::DataSet*>(d)->getExtent(gp));
   }
   return md;
 }

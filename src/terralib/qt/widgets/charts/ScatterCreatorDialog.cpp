@@ -91,6 +91,7 @@ void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
   m_type = m_dataSet->getType();
 
   QString aux = m_ui->m_propertyXComboBox->currentText();
+
   QString aux2 = m_ui->m_propertyYComboBox->currentText();
 
   std::string selectedPropertyX = aux.toStdString();
@@ -106,8 +107,9 @@ void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);
   dlg.setLayout(lay);
-  
+
   te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
+
   chartDisplay->setTitle("Scatter");
 
   lay->addWidget(chartDisplay);

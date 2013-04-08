@@ -49,18 +49,20 @@ void LoadOGRModule()
 {
   try
   {
-    te::plugin::PluginInfo info; 
-    info.m_name = "te.da.ogr";
-    info.m_displayName = "OGR DataSource Driver";
-    info.m_description = "This data source driver supports spatial data managed by OGR";
-    info.m_engine = "C++";
-    info.m_folder = TE_PLUGINS_PATH;
+    te::plugin::PluginInfo* info; 
+    ////info.m_name = "te.da.ogr";
+    ////info.m_displayName = "OGR DataSource Driver";
+    ////info.m_description = "This data source driver supports spatial data managed by OGR";
+    ////info.m_engine = "C++";
+    ////info.m_folder = TE_PLUGINS_PATH;
 
-    std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
+    ////std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
 
-    info.m_resources.push_back(rsc);
+    ////info.m_resources.push_back(rsc);
+    info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+    te::plugin::PluginManager::getInstance().add(info); 
 
-    te::plugin::PluginManager::getInstance().load(info);
+    te::plugin::PluginManager::getInstance().loadAll();
   }
   catch(...)
   {
@@ -86,7 +88,7 @@ int main(int /*argc*/, char** /*argv*/)
     
     te::da::DataSourceTransactor* transactor = ds->getTransactor();
 
-    te::da::DataSet* dataset = transactor->getDataSet("Muni_SM_Setoresrec_pol");
+    te::da::DataSet* dataset = transactor->getDataSet("mapa_distritos_sp");
     if(dataset==0)
     {
        delete dataset;
@@ -100,15 +102,17 @@ int main(int /*argc*/, char** /*argv*/)
 
     //Getting the Columns that will be used to populate the graph
 
-    std::string microregiao = "MICROREGIA";
+    std::string renda = "RENDA_FAM";
+    std::string anosest = "ANOS_EST";
 
-    int microregiaoIdx= type->getPropertyPosition(microregiao);
+    int rendaIdx= type->getPropertyPosition(renda);
+    int anosestIdx= type->getPropertyPosition(anosest);
 
     int argc = 1;
     QApplication app(argc, 0);
     QString title("Testing Chart Widgets");
 
-    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, microregiaoIdx);
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(dataset, rendaIdx, 10);
     te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
 
     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
@@ -118,17 +122,17 @@ int main(int /*argc*/, char** /*argv*/)
     chartDisplay->show();
 
     chartDisplay->replot();
-    
-// 	  te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
-// 
-//     te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
-// 
+
+//    te::qt::widgets::Scatter* scatter = te::qt::widgets::createScatter(dataset, rendaIdx, anosestIdx );
+
+//    te::qt::widgets::ScatterChart* scatterChart = new te::qt::widgets::ScatterChart(scatter);
+
 //     te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay();
 //     chartDisplay->show();
-// 
+
 //     scatterChart->attach(chartDisplay);
 //     chartDisplay->show();
-// 
+
 //     chartDisplay->replot();
 
     int ret = app.exec();
