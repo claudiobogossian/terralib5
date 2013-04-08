@@ -690,7 +690,7 @@ void te::qt::af::BaseApplication::checkProjectSave()
       {
         QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
 
-        if(fileName.isEmpty())
+        if(!fileName.isEmpty())
         {
           fName = fileName.toStdString();
           m_project->setFileName(fName);
