@@ -67,7 +67,8 @@ te::qt::af::ApplicationController* te::qt::af::ApplicationController::sm_instanc
 te::qt::af::ApplicationController::ApplicationController(/*QObject* parent*/)
   : QObject(/*parent*/),
     m_msgBoxParentWidget(0),
-    m_initialized(false)
+    m_initialized(false),
+    m_project(0)
 {
   if(sm_instance)
     throw Exception(TR_QT_AF("Can not start another instance of the TerraLib Application Controller!"));
@@ -584,6 +585,16 @@ void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjF
 
   if(act != 0)
     act->setEnabled(true);
+}
+
+void te::qt::af::ApplicationController::set(te::qt::af::Project* prj)
+{
+  m_project = prj;
+}
+
+te::qt::af::Project* te::qt::af::ApplicationController::get()
+{
+  return m_project;
 }
 
 void te::qt::af::ApplicationController::finalize()

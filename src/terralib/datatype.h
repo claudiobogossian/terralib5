@@ -29,6 +29,7 @@
 // TerraLib
 #include "datatype/AbstractData.h"
 #include "datatype/ArrayProperty.h"
+#include "datatype/BitProperty.h"
 #include "datatype/ByteArray.h"
 #include "datatype/CompositeData.h"
 #include "datatype/CompositeProperty.h"

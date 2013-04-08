@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../common/Translator.h"
+#include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../dataaccess/datasource/DataSourceTransactor.h"
@@ -191,6 +192,23 @@ te::da::DataSet* te::map::DataSetLayer::getData(const te::dt::Property& p,
   assert(!m_datasetName.empty());
 
   std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(m_datasetName, &p, &g, r, travType, rwRole));
+
+  return DataSet2Memory(dataset.get());
+}
+
+te::da::DataSet* te::map::DataSetLayer::getData(const te::da::ObjectIdSet* oids,
+                                                te::common::TraverseType travType,
+                                                te::common::AccessPolicy rwRole) const
+{
+  assert(oids);
+
+  te::da::DataSourcePtr ds = te::da::GetDataSource(m_datasourceId, true);
+
+  // Get a transactor
+  std::auto_ptr<te::da::DataSourceTransactor> t(ds->getTransactor());
+  assert(t.get());
+
+  std::auto_ptr<te::da::DataSet> dataset(t->getDataSet(oids, travType, rwRole));
 
   return DataSet2Memory(dataset.get());
 }

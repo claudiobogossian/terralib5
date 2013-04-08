@@ -46,6 +46,7 @@ namespace te
   {
     class DataSet;
     class DataSetType;
+    class ObjectIdSet;
   }
 
   namespace gm { class Geometry; }
@@ -172,6 +173,33 @@ namespace te
         void setSRID(int srid);
 
         /*!
+          \brief It adds the given oids to the selected group of this Layer.
+
+          \param oids The oids that will be added.
+
+          \note The Layer will take the ownership of the given pointer.
+        */
+        void select(te::da::ObjectIdSet* oids);
+
+        /*!
+          \brief It removes the given oids from the selected group of this Layer.
+
+          \param oids The oids that will be removed.
+
+          \note The Layer will NOT take the ownership of the given pointer.
+        */
+        void deselect(const te::da::ObjectIdSet* oids);
+
+        /*!
+          \brief It returns the selected group of this Layer.
+
+          \retrun The selected group of this Layer.
+
+          \note The caller will NOT take the ownership of the given pointer.
+        */
+        const te::da::ObjectIdSet* getSelected() const;
+
+        /*!
           \brief It returns the layer schema.
 
           \return The Layer schema.
@@ -197,7 +225,6 @@ namespace te
 
           \note Not thread-safe!
         */
-
         virtual te::da::DataSet* getData(te::common::TraverseType travType = te::common::FORWARDONLY, 
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
 
@@ -229,8 +256,6 @@ namespace te
 
           \note Not thread-safe!
         */
-
-
         virtual te::da::DataSet* getData(const te::gm::Envelope& e,
                                          te::gm::SpatialRelation r = te::gm::INTERSECTS,
                                          te::common::TraverseType travType = te::common::FORWARDONLY,
@@ -260,7 +285,6 @@ namespace te
 
           \note Not thread-safe!
         */
-
         virtual te::da::DataSet* getData(const te::dt::Property& p,
                                          const te::gm::Envelope& e,
                                          te::gm::SpatialRelation r = te::gm::INTERSECTS,
@@ -295,7 +319,6 @@ namespace te
 
           \note Not thread-safe!
         */
-
         virtual te::da::DataSet* getData(const te::gm::Geometry& g,
                                          te::gm::SpatialRelation r = te::gm::INTERSECTS,
                                          te::common::TraverseType travType = te::common::FORWARDONLY, 
@@ -325,13 +348,33 @@ namespace te
           
           \note Not thread-safe!
         */
-
         virtual te::da::DataSet* getData(const te::dt::Property& p,
                                          const te::gm::Geometry& g,
                                          te::gm::SpatialRelation r,
                                          te::common::TraverseType travType = te::common::FORWARDONLY,
                                          te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
 
+        /*!
+          \brief It gets the dataset from the given set of objects identification.
+
+          \param oids     The set of object ids.
+          \param travType The traverse type associated to the returned dataset.
+          \param rwRole   The read and write permission associated to the returned dataset. 
+
+          \return The caller of this method will take the ownership of the returned dataset.
+
+          \exception Exception It can throws an exception if:
+                     <ul>
+                     <li>something goes wrong during the data retrieval</li>
+                     <li>if the data source driver doesn't support the traversal type</li>
+                     <li>if the data source driver doesn't support the access policy</li>
+                     </ul>
+
+          \note Not thread-safe!
+        */
+        virtual te::da::DataSet* getData(const te::da::ObjectIdSet* oids,
+                                         te::common::TraverseType travType = te::common::FORWARDONLY,
+                                         te::common::AccessPolicy rwRole = te::common::RAccess) const = 0;
         /*!
           \brief It returns the layer type.
 
@@ -375,11 +418,15 @@ namespace te
 
       private:
 
-        std::string m_id;             //!< Layer id.
-        std::string m_title;          //!< A brief description of this Layer that can be used by applications to show a text identifying this Layer.
-        te::gm::Envelope m_mbr;       //!< The layer bounding box.
-        int m_srid;                   //!< The identifier of the layer spatial reference system.
-        Visibility m_visibility;      //!< A flag that indicates the visibility status of the layer.
+        std::string m_id;                 //!< Layer id.
+        std::string m_title;              //!< A brief description of this Layer that can be used by applications to show a text identifying this layer.
+        te::gm::Envelope m_mbr;           //!< The layer bounding box.
+        int m_srid;                       //!< The identifier of the layer spatial reference system.
+        Visibility m_visibility;          //!< A flag that indicates the visibility status of the layer.
+
+      protected:
+
+        te::da::ObjectIdSet* m_selected;  //!< The selected group of the layer.
     };
 
     typedef boost::intrusive_ptr<AbstractLayer> AbstractLayerPtr;

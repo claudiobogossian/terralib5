@@ -57,8 +57,8 @@
 #include <iostream>
 
 void LoadModules()
-{    
-  te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_pgis_info.xml"));
+{
+  te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.pgis.teplg"));
   te::plugin::PluginManager::getInstance().add(info);    
   
   te::plugin::PluginManager::getInstance().loadAll();   

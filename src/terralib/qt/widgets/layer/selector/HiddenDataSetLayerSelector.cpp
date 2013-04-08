@@ -90,14 +90,6 @@ std::list<te::map::AbstractLayerPtr> te::qt::widgets::HiddenDataSetLayerSelector
     {
       te::da::DataSetTypePtr dataset(cloader->getDataSetType(datasets[i], true));
 
-      if(dataset->hasDefaultGeom() && (dataset->getDefaultGeomProperty()->getExtent() == 0))
-      {
-// load geometry extent
-        te::gm::Envelope* mbr = cloader->getExtent(dataset->getDefaultGeomProperty());
-
-        dataset->getDefaultGeomProperty()->setExtent(mbr);
-      }
-
       te::map::DataSetLayerPtr layer = converter(dataset);
 
       layers.push_back(layer);

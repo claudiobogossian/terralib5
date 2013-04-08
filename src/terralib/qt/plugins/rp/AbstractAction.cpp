@@ -1,4 +1,4 @@
-/*  Copyright (C) 2008-2011 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,48 +18,37 @@
  */
 
 /*!
-  \file terralib/dataaccess/dataset/ObjectId.cpp
+  \file terralib/qt/plugins/rp/AbstractAction.cpp
 
-  \brief This class represents an unique id for a data set element.
+  \brief This file defines the abstract class AbstractAction
 */
 
-// TerraLib
-#include "ObjectId.h"
+#include "AbstractAction.h"
 
 // STL
 #include <cassert>
 
-te::da::ObjectId::ObjectId()
+te::qt::plugins::rp::AbstractAction::AbstractAction(QMenu* menu): m_menu(menu), m_action(0)
 {
 }
 
-te::da::ObjectId::~ObjectId()
+te::qt::plugins::rp::AbstractAction::~AbstractAction()
 {
+  // do not delete m_action pointer because its son of rp menu... and qt delete automatically
 }
 
-const boost::ptr_vector<te::dt::AbstractData>& te::da::ObjectId::getValue() const
+void te::qt::plugins::rp::AbstractAction::createAction(std::string name, std::string pixmap)
 {
-  return m_data;
-}
+  assert(m_menu);
 
-std::string te::da::ObjectId::getValueAsString() const
-{
-  std::string value;
+  m_action = new QAction(m_menu);
 
-  for(std::size_t i = 0; i < m_data.size(); ++i)
-    value += m_data[i].toString();
-  
-  return value;
-}
+  m_action->setText(name.c_str());
 
-void te::da::ObjectId::addValue(te::dt::AbstractData* data)
-{
-  assert(data);
+  if(pixmap.empty() == false)
+    m_action->setIcon(QIcon::fromTheme(pixmap.c_str()));
 
-  m_data.push_back(data);
-}
+  connect(m_action, SIGNAL(triggered(bool)), this, SLOT(onActionActivated(bool)));
 
-bool te::da::ObjectId::operator<(const ObjectId& rhs) const
-{
-  return getValueAsString() < rhs.getValueAsString();
+  m_menu->addAction(m_action);
 }
