@@ -18,9 +18,9 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/chartStyleWidget.h
+  \file terralib/qt/widgets/charts/chartStyleDialog.h
 
-  \brief A widget created to customize the style parameters of a chart
+  \brief A dialog used to customize the style parameters of a chart
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_CHARTSTYLEWIDGET_H
@@ -78,10 +78,10 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ChartStyleDialog> m_ui;
-          ColorPickerToolButton*              m_colorPicker;
-          te::qt::widgets::ChartStyle*        m_chartStyle;
-          te::qt::widgets::ChartDisplay*      m_display;
+          std::auto_ptr<Ui::ChartStyleDialog>  m_ui;
+          ColorPickerToolButton*               m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
+          te::qt::widgets::ChartStyle*         m_chartStyle;    //!< The display's style that will be configured by this dialog.
+          te::qt::widgets::ChartDisplay*       m_display;       //!< The display that will be configured by this dialog.
       };
     } // end namespace widgets
   }   // end namespace qt

@@ -84,11 +84,11 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ScatterDialog>  m_ui;
-          te::da::DataSet*                  m_dataSet;
-          te::da::DataSetType*              m_type;
-          te::qt::widgets::Scatter*         m_scatter;
-          te::qt::widgets::ScatterChart*    m_scatterChart;
-          te::qt::widgets::Symbol*          m_symbol;
+          te::da::DataSet*                  m_dataSet;        //!< The dataset that will be used to generate the Scatter graph.
+          te::da::DataSetType*              m_type;           //!< The dataset's type.
+          te::qt::widgets::Scatter*         m_scatter;        //!< The scatter that will be configured by this dialog.
+          te::qt::widgets::ScatterChart*    m_scatterChart;   //!< The scatter's chart that will be configured by this dialog.
+          te::qt::widgets::Symbol*          m_symbol;         //!< The symbol that will be used to plot the scatter's points.
       };
     } // end namespace widgets
   }   // end namespace qt

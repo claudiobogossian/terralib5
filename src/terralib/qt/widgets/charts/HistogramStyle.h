@@ -71,8 +71,8 @@ namespace te
 
         private:
 
-          te::se::Fill*    m_fill;
-          te::se::Stroke*  m_stroke;
+          te::se::Fill*    m_fill;     //!< The bar's fill .
+          te::se::Stroke*  m_stroke;   //!< The bar's stroke.
 
       };
     }; //end namespace widgets

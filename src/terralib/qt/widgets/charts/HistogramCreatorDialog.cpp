@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/charts/HistogramCreatorDialog.cpp
 
-  \brief A widget used to create a nem Histogram chart.
+  \brief A dialog used to create a nem Histogram chart.
 */
 
 //Terralib

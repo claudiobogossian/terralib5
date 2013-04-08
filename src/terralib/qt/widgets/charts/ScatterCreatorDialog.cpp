@@ -20,12 +20,11 @@
 /*!
   \file terralib/qt/widgets/charts/ScatterCreatorDialog.cpp
 
-  \brief AA widget used to create a nem Scatter chart.
+  \brief AA dialog used to create a nem Scatter chart.
 */
 
 //Terralib
 #include "ui_scatterCreatorDialog.h"
-#include "ScatterCreatorDialog.h"
 #include "ChartStyleDialog.h"
 #include "ChartDisplay.h"
 #include "../../../dataaccess.h"
@@ -34,6 +33,7 @@
 #include <PointSymbolizerWidget.h>
 #include "Scatter.h"
 #include "ScatterChart.h"
+#include "ScatterCreatorDialog.h"
 #include "Symbol.h"
 
 te::qt::widgets::ScatterCreatorDialog::ScatterCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
