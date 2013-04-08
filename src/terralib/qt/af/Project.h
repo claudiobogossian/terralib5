@@ -71,11 +71,21 @@ namespace te
 
           void remove(const te::map::AbstractLayerPtr& layer);
 
+          bool hasChanged();
+
+          void setFileName(const std::string& fName);
+
+          const std::string& getFileName() const;
+
+          void projectChanged(const bool& changed);
+
         private:
 
           std::string m_title;                            //!< Project title.
           std::string m_author;                           //!< Project author.
           std::list<te::map::AbstractLayerPtr> m_layers;  //!< Project layers.
+          bool m_changed;                                 //!< Flag indicating that the project need to be saved.
+          std::string m_fileName;                         //!< Project file.
       };
 
     } // end namespace af

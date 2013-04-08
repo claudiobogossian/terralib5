@@ -51,6 +51,7 @@ namespace te
           VISIBLE_BBOX_CHANGED,
           STYLE_CHANGED,
           PROJECT_ADDED,
+          PROJECT_UNSAVED,
           CUSTOM = 1024
         };
 
