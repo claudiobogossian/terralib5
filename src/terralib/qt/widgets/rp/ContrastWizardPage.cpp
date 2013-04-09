@@ -35,6 +35,9 @@
 #include <QGridLayout>
 #include <QtGui/QMessageBox>
 
+// Boost
+#include <boost/lexical_cast.hpp>
+
 te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   : QWizardPage(parent),
     m_ui(new Ui::ContrastWizardPageForm),
@@ -139,8 +142,8 @@ void te::qt::widgets::ContrastWizardPage::apply()
   std::map<std::string, std::string> rinfo;
   rinfo["MEM_RASTER_NROWS"] = "100";
   rinfo["MEM_RASTER_NCOLS"] = "100";
-  rinfo["MEM_RASTER_DATATYPE"] = te::common::Convert2String(te::dt::UCHAR_TYPE);
-  rinfo["MEM_RASTER_NBANDS"] = te::common::Convert2String(inputRst->getNumberOfBands());
+  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>((int) te::dt::UCHAR_TYPE);
+  rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
 
   algoOutputParams.m_createdOutRasterDSType = "MEM";
   algoOutputParams.m_createdOutRasterInfo = rinfo;
