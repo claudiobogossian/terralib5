@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/ContrastWizardPage.h
+  \file terralib/qt/widgets/rp/ClassifierWizardPage.h
 
-  \brief This file defines a class for a Contrast Wizard page.
+  \brief This file defines a class for a Classifier Wizard page.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARDPAGE_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARDPAGE_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../rp/Contrast.h"
+#include "../../../rp/Classifier.h"
 #include "../Config.h"
 
 // STL
@@ -38,7 +38,7 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class ContrastWizardPageForm; }
+namespace Ui { class ClassifierWizardPageForm; }
 
 namespace te
 {
@@ -51,24 +51,24 @@ namespace te
       class MapDisplay;
 
       /*!
-        \class ContrastWizardPage
+        \class ClassifierWizardPage
 
-        \brief This class is GUI used to define the contrast parameters for the RP constast operation.
+        \brief This class is GUI used to define the classifier parameters for the RP constast operation.
       */
-      class TEQTWIDGETSEXPORT ContrastWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT ClassifierWizardPage : public QWizardPage
       {
         Q_OBJECT
 
         public:
 
-          ContrastWizardPage(QWidget* parent = 0);
+          ClassifierWizardPage(QWidget* parent = 0);
 
-          ~ContrastWizardPage();
+          ~ClassifierWizardPage();
 
         public:
 
           /*!
-            \brief This method is used to set the selected layer for contrast operation
+            \brief This method is used to set the selected layer for classifier operation
             
             \param layer The layer ptr 
 
@@ -76,9 +76,9 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
-          te::rp::Contrast::InputParameters getInputParams();
+          te::rp::Classifier::InputParameters getInputParams();
 
-          te::rp::Contrast::OutputParameters getOutputParams();
+          te::rp::Classifier::OutputParameters getOutputParams();
 
         protected:
 
@@ -88,18 +88,13 @@ namespace te
 
           te::gm::Envelope calculateExtent();
 
-          void fillContrastTypes();
+          void fillClassifierTypes();
 
           void listBands();
 
-
-        protected slots:
-
-          void showHistogram();
-
         private:
 
-          std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;
+          std::auto_ptr<Ui::ClassifierWizardPageForm> m_ui;
           std::auto_ptr<te::qt::widgets::MapDisplay> m_mapDisplay;
 
           te::map::AbstractLayerPtr m_layer;
@@ -109,4 +104,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARDPAGE_H

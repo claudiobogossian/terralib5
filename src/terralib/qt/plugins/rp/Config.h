@@ -31,11 +31,25 @@
 
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
+
+  \brief It defines if the RP Qt Plugin has the classifier operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_CLASSIFIER
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_CONTRAST
 
   \brief It defines if the RP Qt Plugin has the contrast operation.
 */
 #define TE_QT_PLUGIN_RP_HAVE_CONTRAST
+
+/*!
+  \def TE_QT_PLUGIN_RP_HAVE_SEGMENTER
+
+  \brief It defines if the RP Qt Plugin has the segmenter operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_SEGMENTER
 
 
 /*!

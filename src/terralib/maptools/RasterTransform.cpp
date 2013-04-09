@@ -45,6 +45,8 @@ te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raste
   m_transfFuncPtr(&RasterTransform::setExtractRGB),
   m_RGBAFuncPtr(&RasterTransform::getExtractRGB)
 {
+  m_rstMinValue = std::numeric_limits<double>::min();
+  m_rstMaxValue = std::numeric_limits<double>::max();
 }
 
 te::map::RasterTransform::~RasterTransform()
@@ -208,7 +210,7 @@ te::color::RGBAColor te::map::RasterTransform::getMono2ThreeBand(double icol, do
 
     fixValue(val);
 
-    te::color::RGBAColor c((int)val, (int)val, (int)val, (int)m_transp);
+    te::color::RGBAColor c(static_cast<int>(val), static_cast<int>(val), static_cast<int>(val), static_cast<int>(m_transp));
 
     return c;
   }
@@ -267,7 +269,7 @@ te::color::RGBAColor te::map::RasterTransform::getExtractRGB(double icol, double
     valB = (valB * m_gain + m_offset) * m_bContrast;
     fixValue(valB);
 
-    te::color::RGBAColor c((int)valR, (int)valG, (int)valB, (int)m_transp);
+    te::color::RGBAColor c(static_cast<int>(valR), static_cast<int>(valG), static_cast<int>(valB), static_cast<int>(m_transp));
 
     return c;
   }
@@ -308,7 +310,7 @@ te::color::RGBAColor te::map::RasterTransform::getRed2ThreeBand(double icol, dou
 
     fixValue(val);
 
-    te::color::RGBAColor c((int)val, (int)0., (int)0., (int)m_transp);
+    te::color::RGBAColor c(static_cast<int>(val), static_cast<int>(0.), static_cast<int>(0.), static_cast<int>(m_transp));
 
     return c;
 
@@ -350,7 +352,7 @@ te::color::RGBAColor te::map::RasterTransform::getGreen2ThreeBand(double icol, d
 
     fixValue(val);
 
-    te::color::RGBAColor c((int)0., (int)val, (int)0., (int)m_transp);
+    te::color::RGBAColor c(static_cast<int>(0.), static_cast<int>(val), static_cast<int>(0.), static_cast<int>(m_transp));
 
     return c;
 
@@ -392,7 +394,7 @@ te::color::RGBAColor te::map::RasterTransform::getBlue2ThreeBand(double icol, do
 
     fixValue(val);
 
-    te::color::RGBAColor c((int)0., (int)0., (int)val, (int)m_transp);
+    te::color::RGBAColor c(static_cast<int>(0.), static_cast<int>(0.), static_cast<int>(val), static_cast<int>(m_transp));
 
     return c;
 

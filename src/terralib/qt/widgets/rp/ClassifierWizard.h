@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/ContrastWizard.h
+  \file terralib/qt/widgets/rp/ClassifierWizard.h
 
-  \brief A Qt dialog that allows users to run a contrast operation defined by RP module.
+  \brief A Qt dialog that allows users to run a classifier operation defined by RP module.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARD_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARD_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
@@ -42,23 +42,23 @@ namespace te
   {
     namespace widgets
     {
-      class ContrastWizardPage;
+      class ClassifierWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
 
       /*!
-        \class ContrastWizard
+        \class ClassifierWizard
 
-        \brief This class is GUI used to define the contrast wizard for the RP constast operation.
+        \brief This class is GUI used to define the classifier wizard for the RP constast operation.
       */
-      class TEQTWIDGETSEXPORT ContrastWizard : public QWizard
+      class TEQTWIDGETSEXPORT ClassifierWizard : public QWizard
       {
 
         public:
 
-          ContrastWizard(QWidget* parent);
+          ClassifierWizard(QWidget* parent);
 
-          ~ContrastWizard();
+          ~ClassifierWizard();
 
         public:
 
@@ -74,7 +74,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<te::qt::widgets::ContrastWizardPage> m_contrastPage;
+          std::auto_ptr<te::qt::widgets::ClassifierWizardPage> m_classifierPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
       };
@@ -82,4 +82,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARD_H
