@@ -90,6 +90,9 @@ namespace te
           */
           void draw(const std::list<te::map::AbstractLayerPtr>& layers);
 
+          /*! \brief It clears the map display. */
+          void clear();
+
           /*!
             \brief Updates the current tool being used on te::qt::widgets::MapDisplay.
 

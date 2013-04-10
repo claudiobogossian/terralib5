@@ -139,6 +139,13 @@ void te::qt::af::MapDisplay::draw(const std::list<te::map::AbstractLayerPtr>& la
   m_display->refresh();
 }
 
+void te::qt::af::MapDisplay::clear()
+{
+  std::list<te::map::AbstractLayerPtr> empty;
+  m_display->setLayerList(empty);
+  m_display->refresh();
+}
+
 void te::qt::af::MapDisplay::setCurrentTool(te::qt::widgets::AbstractTool* tool)
 {
   delete m_tool;
@@ -152,7 +159,7 @@ void te::qt::af::MapDisplay::onApplicationTriggered(te::qt::af::evt::Event* e)
   switch (e->m_id)
   {
     case te::qt::af::evt::PROJECT_ADDED:
-      draw(static_cast<te::qt::af::evt::ProjectAdded*>(e)->m_proj->getLayers());
+      clear();
     break;
   }
 }
