@@ -89,51 +89,6 @@ namespace te
           This method will create the dataset schema definition and will 
           save all the dataset data.
 
-          \param d     The source dataset data.
-          \param limit The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-
-          \pre The dataset must be a valid pointer.
-          \pre The dataset must have a dataset type provided by getType method.
-
-          \post It is the caller responsability to release the dataset 'd' pointer.
-
-          \exception Exception It throws an exception if the dataset can not be created.
-
-          \note DataSetPersistence will start reading the dataset 'd' in the
-                current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
-        */
-        virtual void create(DataSet* d, std::size_t limit = 0);
-
-        /*!
-          \brief It creates a new dataset in a data source.
-
-          This method will create the dataset schema definition and will 
-          save all the dataset data.
-
-          \param d        The source dataset data.   
-          \param options  A list of optional modifiers. It is driver specific.
-          \param limit    The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-
-          \pre The dataset must be a valid pointer.
-          \pre The dataset must have a dataset type provided by getType method.
-
-          \post It is the caller responsability to release the dataset 'd' pointer.
-
-          \exception Exception It throws an exception if the dataset can not be created.
-
-          \note DataSetPersistence will start reading the dataset 'd' in the
-                current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
-        */
-        virtual void create(DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
-
-        /*!
-          \brief It creates a new dataset in a data source.
-
-          This method will create the dataset schema definition and will 
-          save all the dataset data.
-
           \param dt      The source dataset definition.
           \param d       The source dataset data.
           \param limit   The number of items to be used from the input dataset. If set to 0 (default) all items are used.
@@ -185,32 +140,18 @@ namespace te
 
           \exception Exception It throws an exception if the elements of the dataset can not be removed.
         */
-        virtual void remove(const DataSetType* dt) = 0;
-
-        virtual void remove(const std::string& datasetName) = 0;
+        virtual void remove(const DataSetType* dt);
 
         /*!
-          \brief It removes all data from the dataset.
+          \brief It removes all data associated to the dataset from the data source.
 
-          It removes all data collection in the dataset from the
-          data source. The dataset items are removed based on their primary
-          key values (or unique keys), therefore the dataset type associated must contain this information.
-
-          \param d      The dataset items to be removed from the data source.
-          \param limit  The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-
-          \pre The dataset must be a valid pointer.
+          \param datasetName The dataset name.
 
           \post All data associated to dataset will be erased.
-          \post It is the caller responsability to release the dataset 'd' pointer.
 
-          \exception Exception It throws an exception if the dataset items can not be removed.
-
-          \note DataSetPersistence will start reading the dataset 'd' in the
-                current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
+          \exception Exception It throws an exception if the elements of the dataset can not be removed.
         */
-        virtual void remove(DataSet* d, std::size_t limit = 0);
+        virtual void remove(const std::string& datasetName) = 0;
 
         /*!
           \brief It removes all data from the dataset having the given definition.
@@ -235,23 +176,6 @@ namespace te
                 to inform the dataset 'd' in the right position (and a valid one) to start processing it.
         */
         virtual void remove(const DataSetType* dt, DataSet* d, std::size_t limit = 0) = 0;
-
-        /*!
-          \brief It removes the dataset item from the data source.
-
-          The dataset item is removed based on its primary
-          key values (or unique keys), therefore the dataset item type associated must contain this information.
-
-          \param item The item to be removed from the data source.
-
-          \pre The item must be a valid pointer.
-
-          \post The data associated to item will be erased.
-          \post It is the caller responsability to release the dataset item pointer.
-
-          \exception Exception It throws an exception if the dataset items can not be removed.
-        */
-        virtual void remove(DataSetItem* item);
 
         /*!
           \brief It removes the dataset item from the data source.

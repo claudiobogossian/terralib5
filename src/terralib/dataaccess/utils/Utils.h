@@ -27,6 +27,7 @@
 #define __TERRALIB_DATAACCESS_INTERNAL_UTILS_H
 
 // TerraLib
+#include "../../geometry/Enums.h"
 #include "../datasource/DataSource.h"
 
 // Boost
@@ -38,15 +39,19 @@
 
 namespace te
 {
+// Forward declaration
   namespace gm
   {
     class Envelope;
+    class Geometry;
     class GeometryProperty;
   }
 
   namespace da
   {
+// Forward declaration
     class DataSet;
+    class DataSetItem;
     class DataSetType;
     class DataSourceCatalogLoader;
     class DataSourceTransactor;
@@ -65,6 +70,17 @@ namespace te
     TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, te::da::DataSource* datasource);
 
     TEDATAACCESSEXPORT void LoadProperties(te::da::DataSetType* dataset, te::da::DataSourceTransactor* transactor);
+
+    /*!
+      \brief It computes the bounding rectangle for the first spatial property of the given dataset.
+
+      \return The bounding rectangle for the first spatial property of the given dataset.
+
+      \post The caller of this method will take the ownership of the returned box.
+
+      \exception Exception It throws an exception if something goes wrong during MBR search.
+    */
+    TEDATAACCESSEXPORT te::gm::Envelope* GetExtent(te::da::DataSet* dataset);
 
     /*!
       \return The data extent considering the informed property. The caller will take the ownership of the returned box.
@@ -152,6 +168,21 @@ namespace te
       \return The object id set generated from the given dataset.
     */
     TEDATAACCESSEXPORT ObjectIdSet* GenerateOIDSet(DataSet* dataset, const std::vector<std::size_t>& indexes);
+
+    /*!
+      \brief It returns the first dataset spatial property or NULL if none is found.
+
+      \param dataset The dataset to search for a spatial property.
+
+      \return The first dataset spatial property or NULL if none is found.
+    */
+    TEDATAACCESSEXPORT std::size_t GetFirstSpatialPropertyPos(const te::da::DataSet* dataset);
+
+    TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSet* dataset, const std::string& name);
+
+    TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSetItem* item, const std::string& name);
+
+    //TEDATAACCESSEXPORT te::da::DataSetType* CreateDataSetType(const te::da::DataSet* dataset);
 
   } // end namespace da
 }   // end namespace te

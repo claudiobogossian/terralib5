@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../common/Translator.h"
+#include "../../datatype/Array.h"
 #include "../../datatype/ByteArray.h"
 #include "../../datatype/DataConverterManager.h"
 #include "../../datatype/DateTime.h"
@@ -34,6 +35,9 @@
 #include "../../geometry/GeometryProperty.h"
 #include "../../raster/Raster.h"
 #include "../datasource/DataSourceCapabilities.h"
+#include "../datasource/DataSourceCatalogLoader.h"
+#include "../datasource/DataSourceTransactor.h"
+#include "../utils/Utils.h"
 #include "../Exception.h"
 #include "DataSetAdapter.h"
 #include "DataSetType.h"
@@ -43,76 +47,55 @@
 #include <memory>
 
 te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, bool isOwner)
-  : te::common::Holder<DataSet>(dataset, isOwner),
-    m_ds(dataset),
-    m_outDataSetType(0)
+  : m_ds(dataset, isOwner)
 {
-  assert(m_ds);
+  assert(dataset);
 
-  // Stores the DataSetType of the given dataset
-  m_inDataSetType = m_ds->getType();
-  assert(m_inDataSetType);
+// by default no property is automatically adapted
+  std::size_t np = m_ds->getNumProperties();
 
-  for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
+  for(std::size_t i = 0; i != np; ++i)
     m_adaptedProperties.push_back(0);
-
-  // Creates the empty Adapter DataSetType
-  m_outDataSetType = new DataSetType(m_inDataSetType->getName(), m_inDataSetType->getId());
 }
 
 te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, const DataSourceCapabilities& capabilities, bool isOwner)
-  : te::common::Holder<DataSet>(dataset, isOwner),
-    m_ds(dataset),
-    m_outDataSetType(0)
+  : m_ds(dataset, isOwner)
 {
-  assert(m_ds);
+  assert(dataset);
 
-  // Stores the DataSetType of the given dataset
-  m_inDataSetType = m_ds->getType();
-  assert(m_inDataSetType);
+// by default no property is automatically adapted
+  std::size_t np = m_ds->getNumProperties();
 
-  for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
+  for(std::size_t i = 0; i != np; ++i)
     m_adaptedProperties.push_back(0);
 
-  // Creates the empty Adapter DataSetType
-  m_outDataSetType = new DataSetType(m_inDataSetType->getName(), m_inDataSetType->getId());
-
-  // Gets the DataTypeCapabilities
+// gets the DataTypeCapabilities
   const DataTypeCapabilities& dtCapabilities = capabilities.getDataTypeCapabilities();
 
-   // Try automatic build the adapter
-  const std::vector<te::dt::Property*> properties = m_inDataSetType->getProperties();
-  for(std::size_t i = 0; i < properties.size(); ++i)
+// try to build automatically the adapter
+  for(std::size_t i = 0; i != np; ++i)
   {
-    te::dt::Property* p = properties[i];
-    assert(p);
+    std::string pname = m_ds->getPropertyName(i);
+    int pdatatype = m_ds->getPropertyDataType(i);
 
-    te::dt::Property* propertyClone = 0;
-
-    if(dtCapabilities.supports(p->getType()))
-      propertyClone = p->clone();
+    if(dtCapabilities.supports(pdatatype))
+    {
+      add(pname, pdatatype, i);
+    }
     else
     {
-      // Try create the property from data source capabilities hint
-      const te::dt::Property* hintProperty = dtCapabilities.getHint(p->getType());
-      if(hintProperty)
-      propertyClone = hintProperty->clone();
+      const te::dt::Property* hintProperty = dtCapabilities.getHint(pdatatype);
+
+      if(hintProperty == 0)
+        continue;
+
+      add(pname, hintProperty->getType(), i);
     }
-
-    if(!propertyClone)
-      continue;
-
-    adapt(i, propertyClone);
-
-    if(m_inDataSetType->hasDefaultGeom())
-      if(i == m_inDataSetType->getDefaultGeomPropertyPos())
-        m_outDataSetType->setDefaultGeomProperty(dynamic_cast<te::gm::GeometryProperty*>(propertyClone));
   }
 }
 
 te::da::DataSetAdapter::~DataSetAdapter()
 {
-  delete m_outDataSetType;
 }
 
 te::common::TraverseType te::da::DataSetAdapter::getTraverseType() const
@@ -125,54 +108,39 @@ te::common::AccessPolicy te::da::DataSetAdapter::getAccessPolicy() const
   return m_ds->getAccessPolicy();
 }
 
-te::da::DataSetType* te::da::DataSetAdapter::getType()
-{
-  return m_outDataSetType;
-}
-
-const te::da::DataSetType* te::da::DataSetAdapter::getType() const
-{
-  return m_outDataSetType;
-}
-
 te::da::DataSourceTransactor* te::da::DataSetAdapter::getTransactor() const
 {
-  return 0;  // TO DO!
+  return m_ds->getTransactor();
 }
 
-void te::da::DataSetAdapter::loadTypeInfo()
+te::gm::Envelope* te::da::DataSetAdapter::getExtent(std::size_t i)
 {
-  getType();
+  throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
 }
 
-te::da::DataSet* te::da::DataSetAdapter::getParent() const
+std::size_t te::da::DataSetAdapter::getNumProperties() const
 {
-  return m_ds->getParent();
+  return m_pnames.size();
 }
 
-te::gm::Envelope* te::da::DataSetAdapter::getExtent(const te::dt::Property* /*p*/)
+int te::da::DataSetAdapter::getPropertyDataType(std::size_t pos) const
 {
-  return 0;  // TO DO!
+  return m_datatypes[pos];
 }
 
-void te::da::DataSetAdapter::setFilter(te::dt::Property* /*p*/, const te::gm::Geometry* /*g*/, te::gm::SpatialRelation /*r*/)
+std::string te::da::DataSetAdapter::getPropertyName(std::size_t pos) const
 {
-  // TO DO!
+  return m_pnames[pos];
 }
 
-void te::da::DataSetAdapter::setFilter(te::dt::Property* /*p*/, const te::gm::Envelope* /*e*/, te::gm::SpatialRelation /*r*/)
+std::string te::da::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) const
 {
-  // TO DO!
+  return "";
 }
 
 te::da::DataSetItem* te::da::DataSetAdapter::getItem() const
 {
-  return m_ds->getItem();
-}
-
-void te::da::DataSetAdapter::add(te::da::DataSetItem* /*item*/)
-{
-  // TO DO!
+  throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
 }
 
 bool te::da::DataSetAdapter::isEmpty() const
@@ -240,318 +208,134 @@ bool te::da::DataSetAdapter::isAfterEnd() const
   return m_ds->isAfterEnd();
 }
 
-char te::da::DataSetAdapter::getChar(int i) const
+char te::da::DataSetAdapter::getChar(std::size_t i) const
 {
   std::auto_ptr<te::dt::Char> data(static_cast<te::dt::Char*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setChar(int i, char value) 
-{
-  setAdaptedValue(i, new te::dt::Char(value));
-}
-
-unsigned char te::da::DataSetAdapter::getUChar(int i) const
+unsigned char te::da::DataSetAdapter::getUChar(std::size_t i) const
 {
   std::auto_ptr<te::dt::UChar> data(static_cast<te::dt::UChar*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setUChar(int i, unsigned char value) 
-{
-  setAdaptedValue(i, new te::dt::UChar(value));
-}
-
-boost::int16_t te::da::DataSetAdapter::getInt16(int i) const
+boost::int16_t te::da::DataSetAdapter::getInt16(std::size_t i) const
 {
   std::auto_ptr<te::dt::Int16> data(static_cast<te::dt::Int16*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setInt16(int i, boost::int16_t value) 
-{
-  setAdaptedValue(i, new te::dt::Int16(value));
-}
-
-boost::int32_t te::da::DataSetAdapter::getInt32(int i) const
+boost::int32_t te::da::DataSetAdapter::getInt32(std::size_t i) const
 {
   std::auto_ptr<te::dt::Int32> data(static_cast<te::dt::Int32*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setInt32(int i, boost::int32_t value) 
-{
-  setAdaptedValue(i, new te::dt::Int32(value));
-}
-
-boost::int64_t te::da::DataSetAdapter::getInt64(int i) const
+boost::int64_t te::da::DataSetAdapter::getInt64(std::size_t i) const
 {
   std::auto_ptr<te::dt::Int64> data(static_cast<te::dt::Int64*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setInt64(int i, boost::int64_t value) 
-{
-  setAdaptedValue(i, new te::dt::Int64(value));
-}
-
-bool te::da::DataSetAdapter::getBool(int i) const
+bool te::da::DataSetAdapter::getBool(std::size_t i) const
 {
   std::auto_ptr<te::dt::Boolean> data(static_cast<te::dt::Boolean*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setBool(int i, bool value) 
-{
-  setAdaptedValue(i, new te::dt::Boolean(value));
-}
-
-float te::da::DataSetAdapter::getFloat(int i) const
+float te::da::DataSetAdapter::getFloat(std::size_t i) const
 {
   std::auto_ptr<te::dt::Float> data(static_cast<te::dt::Float*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setFloat(int i, float value) 
-{
-  setAdaptedValue(i, new te::dt::Float(value));
-}
-
-double te::da::DataSetAdapter::getDouble(int i) const
+double te::da::DataSetAdapter::getDouble(std::size_t i) const
 {
   std::auto_ptr<te::dt::Double> data(static_cast<te::dt::Double*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setDouble(int i, double value) 
-{
-  setAdaptedValue(i, new te::dt::Double(value));
-}
-
-std::string te::da::DataSetAdapter::getNumeric(int i) const
+std::string te::da::DataSetAdapter::getNumeric(std::size_t i) const
 {
   std::auto_ptr<te::dt::Numeric> data(static_cast<te::dt::Numeric*>(getAdaptedValue(i)));
+
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setNumeric(int i, const std::string& value) 
-{
-  setAdaptedValue(i, new te::dt::Numeric(value));
-}
-
-std::string te::da::DataSetAdapter::getString(int i) const
+std::string te::da::DataSetAdapter::getString(std::size_t i) const
 {
   std::auto_ptr<te::dt::String> data(static_cast<te::dt::String*>(getAdaptedValue(i)));
   return data->getValue();
 }
 
-void te::da::DataSetAdapter::setString(int i, const std::string& value) 
-{
-  setAdaptedValue(i, new te::dt::String(value));
-}
-
-te::dt::ByteArray* te::da::DataSetAdapter::getByteArray(int i) const
+te::dt::ByteArray* te::da::DataSetAdapter::getByteArray(std::size_t i) const
 {
   return static_cast<te::dt::ByteArray*>(getAdaptedValue(i));
 }
 
-void te::da::DataSetAdapter::setByteArray(int i, const te::dt::ByteArray& value) 
-{
-  setAdaptedValue(i, (te::dt::AbstractData*)&value);
-}
-
-te::gm::Geometry* te::da::DataSetAdapter::getGeometry(int i) const
+te::gm::Geometry* te::da::DataSetAdapter::getGeometry(std::size_t i) const
 {
   return static_cast<te::gm::Geometry*>(getAdaptedValue(i));
 }
 
-void te::da::DataSetAdapter::setGeometry(int i, const te::gm::Geometry& value) 
-{
-  setAdaptedValue(i, (te::dt::AbstractData*)&value);
-}
-
-te::rst::Raster* te::da::DataSetAdapter::getRaster(int i) const
+te::rst::Raster* te::da::DataSetAdapter::getRaster(std::size_t i) const
 {
   return static_cast<te::rst::Raster*>(getAdaptedValue(i));
 }
 
-void te::da::DataSetAdapter::setRaster(int i, const te::rst::Raster& value) 
-{
-  setAdaptedValue(i, (te::dt::AbstractData*)&value);
-}
-
-te::dt::DateTime* te::da::DataSetAdapter::getDateTime(int i) const
+te::dt::DateTime* te::da::DataSetAdapter::getDateTime(std::size_t i) const
 {
   return static_cast<te::dt::DateTime*>(getAdaptedValue(i));
 }
 
-void te::da::DataSetAdapter::setDateTime(int i, const te::dt::DateTime& value) 
+te::dt::Array* te::da::DataSetAdapter::getArray(std::size_t i) const
 {
-  setAdaptedValue(i, (te::dt::AbstractData*)&value);
+return static_cast<te::dt::Array*>(getAdaptedValue(i));
 }
 
-void te::da::DataSetAdapter::getArray(int i, std::vector<boost::int16_t>& a) const
+bool te::da::DataSetAdapter::isNull(std::size_t i) const
 {
-  // TO DO!
+  std::auto_ptr<te::dt::AbstractData> data(getAdaptedValue(i));
+
+  return data.get() != 0;
 }
 
-const unsigned char* te::da::DataSetAdapter::getWKB(int i) const
+te::da::DataSet* te::da::DataSetAdapter::getAdapted() const
 {
-  if(m_outDataSetType->getProperty(i)->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_DATAACCESS("Not a geometry property to get the WKB."));
-
-  std::size_t size = 0;
-  unsigned char* wkb = (unsigned char*)(getGeometry(i)->asBinary(size));
-
-  return wkb;
-}
-
-te::da::DataSet* te::da::DataSetAdapter::getDataSet(int i)
-{
-  return static_cast<te::da::DataSet*>(getAdaptedValue(i));
-}
-
-void te::da::DataSetAdapter::setDataSet(int i, const te::da::DataSet& value)
-{
-  setAdaptedValue(i, (te::dt::AbstractData*)&value);
-}
-
-void te::da::DataSetAdapter::setValue(int i, te::dt::AbstractData* ad)
-{
-  setAdaptedValue(i, ad);
-}
-
-bool te::da::DataSetAdapter::isNull(int i) const
-{
-  return false;
-}
-
-void te::da::DataSetAdapter::getNonAdaptedProperties(std::vector<std::string>& properties)
-{
-  for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
-  {
-    if(isAdapted(i))
-      continue;
-    properties.push_back(m_inDataSetType->getProperty(i)->getName());
-  }
-}
-
-void te::da::DataSetAdapter::getNonAdaptedProperties(std::vector<int>& properties)
-{
-  for(std::size_t i = 0; i < m_inDataSetType->size(); ++i)
-  {
-    if(isAdapted(i))
-      continue;
-    properties.push_back(i);
-  }
-}
-
-void te::da::DataSetAdapter::adapt(const std::string& propertyName, te::dt::Property* p)
-{
-  std::size_t pos = m_inDataSetType->getPropertyPosition(propertyName);
-  adapt(pos, p);
-}
-
-void te::da::DataSetAdapter::adapt(int i, te::dt::Property* p)
-{
-  adapt(i, p, GenericAttributeConverter);
-}
-
-void te::da::DataSetAdapter::adapt(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv)
-{
-  std::size_t pos = m_inDataSetType->getPropertyPosition(propertyName);
-  adapt(pos, p, conv);
-}
-
-void te::da::DataSetAdapter::adapt(int i, te::dt::Property* p, AttributeConverter conv)
-{
-  std::vector<int> indexes;
-  indexes.push_back(i);
-  adapt(indexes, p, conv);
-}
-
-void te::da::DataSetAdapter::adapt(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv)
-{
-  std::vector<int> indexes;
-  for(std::size_t i = 0; i < propertyNames.size(); ++i)
-    indexes.push_back(m_inDataSetType->getPropertyPosition(propertyNames[i]));
-
-  adapt(indexes, p, conv);
-}
-
-void te::da::DataSetAdapter::adapt(const std::vector<int>& propertyIndexes, te::dt::Property* p, AttributeConverter conv)
-{
-  assert(!propertyIndexes.empty());
-  assert(p);
-
-  // Adding given property on adapted data set type
-  m_outDataSetType->add(p);
-
-  // Storing the adapted properties indexes
-  m_propertyIndexes.push_back(propertyIndexes);
-
-  // Indexing the AttributeConverter functions
-  m_converters.push_back(conv);
-
-  // Counting reference to adapted properties
-  for(std::size_t i = 0; i < propertyIndexes.size(); ++i)
-    m_adaptedProperties[propertyIndexes[i]]++;
-}
-
-std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedProperties(te::dt::Property* p)
-{
-  assert(p);
-
-  return getAdaptedProperties(p->getName());
-}
-
-std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedProperties(const std::string& name)
-{
-  std::size_t pos = m_outDataSetType->getPropertyPosition(name);
-  assert(pos != std::string::npos);
-
-  return getAdaptedProperties(pos);
-}
-
-std::vector<const te::dt::Property*> te::da::DataSetAdapter::getAdaptedProperties(int i)
-{
-  assert(i >= 0 && i < static_cast<int>(m_propertyIndexes.size()));
-
-  std::vector<const te::dt::Property*> result;
-  std::vector<int> indexes = m_propertyIndexes[i];
-
-  for(std::size_t i = 0; i < static_cast<int>(indexes.size()); ++i)
-  {
-    assert(indexes[i] >= 0 && indexes[i] < static_cast<int>(m_inDataSetType->size()));
-    result.push_back(m_inDataSetType->getProperty(indexes[i]));
-  }
-
-  return result;
-}
-
-te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const
-{
-  return m_ds;
+  return m_ds.get();
 }
 
 void te::da::DataSetAdapter::remove(const std::string& propertyName)
 {
-  std::size_t pos = m_outDataSetType->getPropertyPosition(propertyName);
-  remove(pos);
+  for(std::size_t i = 0; i != m_pnames.size(); ++i)
+  {
+    if(m_pnames[i] == propertyName)
+    {
+      remove(i);
+
+      return;
+    }
+  }
 }
 
-void te::da::DataSetAdapter::remove(int i)
+void te::da::DataSetAdapter::remove(std::size_t i)
 {
-  assert(i >= 0 && i < static_cast<int>(m_outDataSetType->size()));
+  assert(i < m_pnames.size());
 
-  // Property that will be removed
-  te::dt::Property* p = m_outDataSetType->getProperty(i);
+  m_pnames.erase(m_pnames.begin() + i);
+  m_datatypes.erase(m_datatypes.begin() + i);
 
-  // Remove from Adapter DataSetType...
-  m_outDataSetType->remove(p);
-
-  // Adjusting internal indexes...
-  const std::vector<int> indexes = m_propertyIndexes[i];
+// adjusting internal indexes...
+  const std::vector<std::size_t>& indexes = m_propertyIndexes[i];
 
   for(std::size_t j = 0; j < indexes.size(); ++j)
     m_adaptedProperties[indexes[j]]--;
@@ -560,79 +344,39 @@ void te::da::DataSetAdapter::remove(int i)
   m_converters.erase(m_converters.begin() + i);
 }
 
-te::da::DataSetAdapter* te::da::DataSetAdapter::adapt(DataSet* dataset, bool isOwner)
+void te::da::DataSetAdapter::add(const std::string& newPropertyName,
+                                 int newPropertyType,
+                                 std::size_t adaptedPropertyPos)
 {
-  return new DataSetAdapter(dataset, isOwner);
+  std::vector<std::size_t> indexes;
+  indexes.push_back(adaptedPropertyPos);
+  add(newPropertyName, newPropertyType, indexes, GenericAttributeConverter);
 }
 
-te::da::DataSetAdapter* te::da::DataSetAdapter::adapt(DataSet* dataset, const DataSourceCapabilities& capabilities, bool isOwner)
+void te::da::DataSetAdapter::add(const std::string& newPropertyName,
+                                 int newPropertyType,
+                                 std::vector<std::size_t> adaptedPropertyPos,
+                                 AttributeConverter conv)
 {
-  return new DataSetAdapter(dataset, capabilities, isOwner);
+  m_datatypes.push_back(newPropertyType);
+  m_pnames.push_back(newPropertyName);
+  m_propertyIndexes.push_back(adaptedPropertyPos);
+  m_converters.push_back(conv);
+
+  for(std::size_t i = 0; i < adaptedPropertyPos.size(); ++i)
+    m_adaptedProperties[adaptedPropertyPos[i] ]++;
 }
 
-bool te::da::DataSetAdapter::needAdapter(DataSet* dataset, const DataSourceCapabilities& capabilities)
+bool te::da::DataSetAdapter::isAdapted(std::size_t i) const
 {
-  assert(dataset);
-
-  // Gets the DataTypeCapabilities
-  const DataTypeCapabilities& dtCapabilities = capabilities.getDataTypeCapabilities();
-
-  const DataSetType* type = dataset->getType();
-  const std::vector<te::dt::Property*> properties = type->getProperties();
-  for(std::size_t i = 0; i < properties.size(); ++i)
-  {
-    te::dt::Property* p = properties[i];
-    assert(p);
-
-    if(!dtCapabilities.supports(p->getType()))
-      return true;
-  }
-
-  return false;
-}
-
-bool te::da::DataSetAdapter::isAdapted(int i) const
-{
-  assert(i >= 0 && i < static_cast<int>(m_adaptedProperties.size()));
+  assert(i < m_adaptedProperties.size());
 
   return m_adaptedProperties[i] > 0;
 }
 
-te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(int i) const
+te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) const
 {
-  return m_converters[i](m_ds, m_propertyIndexes[i], m_outDataSetType->getProperty(i)->getType());
+  return m_converters[i](m_ds.get(), m_propertyIndexes[i], m_datatypes[i]);
 }
 
-void te::da::DataSetAdapter::setAdaptedValue(int i, te::dt::AbstractData* data)
-{
-  assert(data);
 
-  const std::vector<int>& indexes = m_propertyIndexes[i];
-  if(indexes.size() > 1)
-    throw Exception(TR_DATAACCESS("The set operation can not be done considering the current adaptation (n -> 1)."));
-
-  assert(!indexes.empty());
-
-  // Property index on input dataset
-  int index = indexes[0];
-
-  // Source and Destination Types
-  int srcType = data->getTypeCode();
-  int dstType = m_inDataSetType->getProperty(index)->getType();
-  if(srcType == dstType) // Need conversion?
-  {
-    m_ds->setValue(index, data);
-    return;
-  }
-
-  // Try get a data type converter
-  const te::dt::DataTypeConverter& converter = te::dt::DataConverterManager::getInstance().get(srcType, dstType);
-
-  // Converts and sets the given data
-  te::dt::AbstractData* convertedData = converter(data);
-  assert(convertedData);
-
-  m_ds->setValue(index, convertedData);
-
-  delete data;
-}

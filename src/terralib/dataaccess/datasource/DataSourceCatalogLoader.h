@@ -56,9 +56,9 @@ namespace te
   {
 // Forward declarations
     class CheckConstraint;
-    class DataSetType;    
-    class DataSourceTransactor;    
-    class ForeignKey;    
+    class DataSetType;
+    class DataSourceTransactor;
+    class ForeignKey;
     class Index;
     class PrimaryKey;
     class Sequence;
@@ -76,6 +76,12 @@ namespace te
     class TEDATAACCESSEXPORT DataSourceCatalogLoader : public boost::noncopyable 
     {
       public:
+
+        /*! \brief Default constructor. */
+        DataSourceCatalogLoader() {}
+
+        /*! \brief Virtual destructor. */
+        virtual ~DataSourceCatalogLoader() {}
 
         /*!
           \brief It searches for the list of datasets available in the data source.
@@ -237,19 +243,19 @@ namespace te
         virtual Sequence* getSequence(const std::string& seqName) = 0;
 
         /*!
-          \brief It retrieves the bounding rectangle for the given geometric property.
+          \brief It retrieves the bounding rectangle for the given spatial property.
 
-          \param gp The geometric property.
+          \param sp The spatial property.
 
-          \return The geometric property bounding rectangle or NULL if none is found.
+          \return The spatial property bounding rectangle or NULL if none is found.
 
-          \pre The geometric property must be associated to a dataset type.
+          \pre The spatial property must be associated to a dataset type.
 
           \post The caller of this method will take the ownership of the returned box.
 
           \exception Exception It throws an exception if something goes wrong during MBR search.
         */
-        virtual te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp) = 0;
+        virtual te::gm::Envelope* getExtent(const te::dt::Property* sp) = 0;
 
         /*!
           \brief It loads information about the datasets available in the data source and stores their information in the data source catalog.
@@ -357,14 +363,6 @@ namespace te
           \return A pointer to the underlying data source transactor.
         */
         virtual DataSourceTransactor* getTransactor() const = 0;
-
-        /*! \brief Virtual destructor. */
-        virtual ~DataSourceCatalogLoader() {}
-
-      protected:
-
-        /*! \brief Default constructor just can be called by subclasses. */
-        DataSourceCatalogLoader() {}
     };
 
     typedef boost::shared_ptr<DataSourceCatalogLoader> DataSourceCatalogLoaderPtr;

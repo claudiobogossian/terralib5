@@ -55,7 +55,7 @@ namespace te
 
       \sa DataSet
      */
-    class TEDATAACCESSEXPORT DataSetAdapter : public DataSet, public te::common::Holder<DataSet>
+    class TEDATAACCESSEXPORT DataSetAdapter : public DataSet
     {
       public:
 
@@ -104,25 +104,22 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::da::DataSetType* getType();
-
-        const te::da::DataSetType* getType() const;
-
         te::da::DataSourceTransactor* getTransactor() const;
 
-        void loadTypeInfo();
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        te::da::DataSet* getParent() const;
+        std::size_t getNumProperties() const;
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
+        int getPropertyDataType(std::size_t pos) const;
 
-        void setFilter(te::dt::Property* p, const te::gm::Geometry* g, te::gm::SpatialRelation r = te::gm::INTERSECTS);
+        std::string getPropertyName(std::size_t pos) const;
 
-        void setFilter(te::dt::Property* p, const te::gm::Envelope* e, te::gm::SpatialRelation r = te::gm::INTERSECTS);
-        
-        te::da::DataSetItem* getItem() const;
+        /*!
+          \note This method will always return an empty string for the adapter.
+        */
+        std::string getDatasetNameOfProperty(std::size_t pos) const;
 
-        void add(te::da::DataSetItem* item);
+        DataSetItem* getItem() const;
 
         bool isEmpty() const;
 
@@ -150,177 +147,42 @@ namespace te
 
         bool isAfterEnd() const;
 
-        char getChar(int i) const;
+        char getChar(std::size_t i) const;
 
-        void setChar(int i, char value);
+        unsigned char getUChar(std::size_t i) const;
 
-        unsigned char getUChar(int i) const;
+        boost::int16_t getInt16(std::size_t i) const;
 
-        void setUChar(int i, unsigned char value);
+        boost::int32_t getInt32(std::size_t i) const;
 
-        boost::int16_t getInt16(int i) const;
+        boost::int64_t getInt64(std::size_t i) const;
 
-        void setInt16(int i, boost::int16_t value);
+        bool getBool(std::size_t i) const;
 
-        boost::int32_t getInt32(int i) const;
+        float getFloat(std::size_t i) const;
 
-        void setInt32(int i, boost::int32_t value);
+        double getDouble(std::size_t i) const;
 
-        boost::int64_t getInt64(int i) const;
+        std::string getNumeric(std::size_t i) const;
 
-        void setInt64(int i, boost::int64_t value);
+        std::string getString(std::size_t i) const;
 
-        bool getBool(int i) const;
+        te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        void setBool(int i, bool value);
+        te::gm::Geometry* getGeometry(std::size_t i) const;
 
-        float getFloat(int i) const;
+        te::rst::Raster* getRaster(std::size_t i) const;
 
-        void setFloat(int i, float value);
+        te::dt::DateTime* getDateTime(std::size_t i) const;
 
-        double getDouble(int i) const;
+        te::dt::Array* getArray(std::size_t i) const;
 
-        void setDouble(int i, double value);
-
-        std::string getNumeric(int i) const;
-
-        void setNumeric(int i, const std::string& value);
-
-        std::string getString(int i) const;
-
-        void setString(int i, const std::string& value);
-
-        te::dt::ByteArray* getByteArray(int i) const;
-
-        void setByteArray(int i, const te::dt::ByteArray& value);
-
-        te::gm::Geometry* getGeometry(int i) const;
-
-        void setGeometry(int i, const te::gm::Geometry& value);
-
-        te::rst::Raster* getRaster(int i) const;
-
-        void setRaster(int i, const te::rst::Raster& value);
-
-        te::dt::DateTime* getDateTime(int i) const;
-
-        void setDateTime(int i, const te::dt::DateTime& value);
-
-        void getArray(int i, std::vector<boost::int16_t>& a) const;
-
-        const unsigned char* getWKB(int i) const;
-
-        te::da::DataSet* getDataSet(int i);
-
-        void setDataSet(int i, const te::da::DataSet& value);
-        
-        void setValue(int i, te::dt::AbstractData* ad);
-
-        bool isNull(int i) const;
+        bool isNull(std::size_t i) const;
 
         /** @name DataSet Adapter Extended Methods
          *  Methods that exists only in the DataSet Adapter implementation.
          */
         //@{
-
-        /*!
-          \brief This method returns the name of the properties that have not yet been adapted.
-
-          \param properties A vector that will be filled with the name of the properties that have not yet been adapted.
-        */
-        void getNonAdaptedProperties(std::vector<std::string>& properties);
-
-        /*!
-          \brief This method returns the index of the properties that have not yet been adapted.
-
-          \param properties A vector that will be filled with the index of the properties that have not yet been adapted.
-        */
-        void getNonAdaptedProperties(std::vector<int>& properties);
-
-        /*!
-          \brief This method adapts a given property of the handled data set to another property.
-
-          \param propertyName The name of the property that will be adapted.
-          \param p The adapter property.
-        */
-        void adapt(const std::string& propertyName, te::dt::Property* p);
-
-        /*!
-          \brief This method adapts a given property of the handled data set to another property.
-
-          \param i The index of the property that will be adapted.
-          \param p The adapter property.
-        */
-        void adapt(int i, te::dt::Property* p);
-
-        /*!
-          \brief This method adapts a given property of the handled data set to another property.
-
-          \param propertyName The name of the property that will be adapted.
-          \param p The adapter property.
-          \param conv The function that will be used to do the attribute values conversion.
-        */
-        void adapt(const std::string& propertyName, te::dt::Property* p, AttributeConverter conv);
-
-        /*!
-          \brief This method adapts a given property of the handled data set to another property.
-
-          \param i The index of the property that will be adapted.
-          \param p The adapter property.
-          \param conv The function that will be used to do the attribute values conversion.
-        */
-        void adapt(int i, te::dt::Property* p, AttributeConverter conv);
-
-        /*!
-          \brief This method adapts the given properties of the handled data set to another property.
-
-          \param propertyName The name of the property that will be adapted.
-          \param p The adapter property.
-          \param conv The function that will be used to do the attribute values conversion.
-        */
-        void adapt(const std::vector<std::string>& propertyNames, te::dt::Property* p, AttributeConverter conv);
-
-        /*!
-          \brief This method adapts the given properties of the handled data set to another property.
-
-          \param propertyName The name of the property that will be adapted.
-          \param p The adapter property.
-          \param conv The function that will be used to do the attribute values conversion.
-        */
-        void adapt(const std::vector<int>& propertyIndexes, te::dt::Property* p, AttributeConverter conv);
-
-        /*!
-          \brief This method tells which properties of the handled data set that have been adapted based on the given property.
-
-          \param p A property of the DataSetAdapter.
-
-          \return The properties of the handled data set have been adapted.
-
-          \note The caller will NOT take the ownership of the returned pointers.
-        */
-        std::vector<const te::dt::Property*> getAdaptedProperties(te::dt::Property* p);
-
-        /*!
-          \brief This method tells which properties of the handled data set that have been adapted based on the given property name.
-
-          \param p A property name of the DataSetAdapter.
-
-          \return The properties of the handled data set have been adapted.
-
-          \note The caller will NOT take the ownership of the returned pointers.
-        */
-        std::vector<const te::dt::Property*> getAdaptedProperties(const std::string& name);
-
-        /*!
-          \brief This method tells which properties of the handled data set that have been adapted based on the given property index.
-
-          \param p A property index of the DataSetAdapter.
-
-          \return The properties of the handled data set have been adapted.
-
-          \note The caller will NOT take the ownership of the returned pointers.
-        */
-        std::vector<const te::dt::Property*> getAdaptedProperties(int i);
 
         /*!
           \brief This method returns the pointer to the DataSet that is handled by adapter.
@@ -329,7 +191,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        te::da::DataSet* getAdaptee() const;
+        te::da::DataSet* getAdapted() const;
 
         /*!
           \brief This method removes a property of DataSetAdapter.
@@ -343,38 +205,16 @@ namespace te
 
           \param i The property index of the DataSetAdapter that will be removed.
         */
-        void remove(int i);
+        void remove(std::size_t i);
 
-        /*!
-          \brief Static method that creates an adapter to the given data set.
+        void add(const std::string& newPropertyName,
+                 int newPropertyType,
+                 std::size_t adaptedPropertyPos);
 
-          \param dataset The data set that will be adapted.
-          \param isOwner If true the DataSetAdapter will have the ownership of the given data set pointer.
-
-          \return Return an adapter to the given dataset.
-        */
-        static DataSetAdapter* adapt(DataSet* dataset, bool isOwner = false);
-
-        /*!
-          \brief Static method that creates an adapter to the given data set based on the given data source capabilities.
-
-          \param dataset The data set that will be adapted.
-          \param capabilities The data source capabilities that will be used.
-          \param isOwner If true the DataSetAdapter will have the ownership of the given data set pointer.
-
-          \return Return an adapter to the given dataset.
-        */
-        static DataSetAdapter* adapt(DataSet* dataset, const DataSourceCapabilities& capabilities, bool isOwner = false);
-
-        /*!
-          \brief Static method that verifies if the given data set need an adapter based on given data source capabilities.
-
-          \param dataset The data set that will be verified.
-          \param capabilities The data source capabilities that will be used.
-
-          \return Return true if the given data set need an adapter. Otherwise, return false.
-        */
-        static bool needAdapter(DataSet* dataset, const DataSourceCapabilities& capabilities);
+        void add(const std::string& newPropertyName,
+                 int newPropertyType,
+                 std::vector<std::size_t> adaptedPropertyPos,
+                 AttributeConverter conv);
 
         //@}
 
@@ -385,22 +225,21 @@ namespace te
          */
         //@{
 
-        bool isAdapted(int i) const;
+        bool isAdapted(std::size_t i) const;
 
-        te::dt::AbstractData* getAdaptedValue(int i) const;
-
-        void setAdaptedValue(int i, te::dt::AbstractData* data);
+        te::dt::AbstractData* getAdaptedValue(std::size_t i) const;
 
         //@}
 
       private:
 
-        DataSet* m_ds;                                       //!< A pointer to the DataSet that will be handled by adapter
-        const DataSetType* m_inDataSetType;                  //!< A pointer to DataSetType of DataSet that will be handled by adapter.
-        DataSetType* m_outDataSetType;                       //!< Adapter DataSetType.
-        std::vector<std::vector<int> > m_propertyIndexes;    //!< A vector that stores the adapted property indexes.
-        std::vector<AttributeConverter> m_converters;        //!< A vector that stores the attribute converters functions.
-        std::vector<int> m_adaptedProperties;                //!< Internal vector to count the references to adapted properties.
+        std::vector<int> m_datatypes;                             //!< The datatype for each property.
+        std::vector<std::string> m_pnames;                        //!< The name for each property.
+        te::common::Holder<DataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
+
+        std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
+        std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
+        std::vector<std::size_t> m_adaptedProperties;             //!< Internal vector to count the references to adapted properties.
     };
 
   } // end namespace da
