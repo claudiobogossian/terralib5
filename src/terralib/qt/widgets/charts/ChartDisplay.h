@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -83,11 +83,11 @@ namespace te
                  
          private:
           
-          std::string           m_title; //!< The chart's title.
-          te::color::RGBAColor* m_titleColor; //!< The chart title's color.
-          te::se::Font*         m_titleFont; //!< The chart title's font.
-          te::se::Fill*         m_titleBackFill; //!< The chart title's background fill..
-          te::se::Stroke*       m_titleBackStroke;  //!<  background title stroke
+          std::string           m_title;             //!< The chart's title.
+          te::color::RGBAColor* m_titleColor;        //!< The chart title's color.
+          te::se::Font*         m_titleFont;         //!< The chart title's font.
+          te::se::Fill*         m_titleBackFill;     //!< The chart title's background fill..
+          te::se::Stroke*       m_titleBackStroke;   //!<  background title stroke
                      
       }; 
     } // end namespace widgets

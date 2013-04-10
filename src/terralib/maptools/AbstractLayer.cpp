@@ -24,13 +24,15 @@
  */
 
 // TerraLib
+#include "../dataaccess/dataset/ObjectIdSet.h"
 #include "../srs/Config.h"
 #include "AbstractLayer.h"
 
 te::map::AbstractLayer::AbstractLayer(AbstractLayer* parent)
   : te::common::TreeItem(parent),
     m_srid(TE_UNKNOWN_SRS),
-    m_visibility(NOT_VISIBLE)
+    m_visibility(NOT_VISIBLE),
+    m_selected(0)
 {
 }
 
@@ -38,7 +40,8 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id, AbstractLayer* pare
   : te::common::TreeItem(parent),
     m_id(id),
     m_srid(TE_UNKNOWN_SRS),
-    m_visibility(NOT_VISIBLE)
+    m_visibility(NOT_VISIBLE),
+    m_selected(0)
 {
 }
 
@@ -49,12 +52,14 @@ te::map::AbstractLayer::AbstractLayer(const std::string& id,
     m_id(id),
     m_title(title),
     m_srid(TE_UNKNOWN_SRS),
-    m_visibility(NOT_VISIBLE)
+    m_visibility(NOT_VISIBLE),
+    m_selected(0)
 {
 }
 
 te::map::AbstractLayer::~AbstractLayer()
 {
+  delete m_selected;
 }
 
 const std::string& te::map::AbstractLayer::getId() const
@@ -100,6 +105,33 @@ int te::map::AbstractLayer::getSRID() const
 void te::map::AbstractLayer::setSRID(int srid)
 {
   m_srid = srid;
+}
+
+void te::map::AbstractLayer::select(te::da::ObjectIdSet* oids)
+{
+  assert(oids);
+
+  if(m_selected == 0)
+  {
+    m_selected = oids;
+    return;
+  }
+
+  assert(m_selected);
+
+  m_selected->Union(oids);
+}
+
+const te::da::ObjectIdSet* te::map::AbstractLayer::getSelected() const
+{
+  return m_selected;
+}
+
+void te::map::AbstractLayer::deselect(const te::da::ObjectIdSet* oids)
+{
+  assert(m_selected);
+
+  m_selected->difference(oids);
 }
 
 void te::map::AbstractLayer::setVisibility(Visibility v)

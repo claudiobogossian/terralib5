@@ -10,19 +10,19 @@ void LoadModules()
 {
   te::plugin::PluginInfo* info;
   
-#if TE_EXAMPLE_USE_OGR     
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_ogr_info.xml"));
+#if TE_EXAMPLE_USE_OGR
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
   te::plugin::PluginManager::getInstance().add(info); 
 #endif
   
 #if TE_EXAMPLE_USE_GDAL
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_gdal_info.xml"));
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
   te::plugin::PluginManager::getInstance().add(info);
 #endif
   
 #if TE_EXAMPLE_USE_GRIB     
   info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_grib_info.xml"));
-  te::plugin::PluginManager::getInstance().add(info);    
+  te::plugin::PluginManager::getInstance().add(info);
 #endif    
   
   te::plugin::PluginManager::getInstance().loadAll(); 

@@ -11,8 +11,7 @@
 void LoadModules()
 {
   te::plugin::PluginInfo* info;
-
-  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/plugin_ado_info.xml"));
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ado.teplg"));
   te::plugin::PluginManager::getInstance().add(info);
   
   te::plugin::PluginManager::getInstance().loadAll(); 

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -20,7 +20,7 @@
 /*!
   \file  terralib/qt/widgets/charts/ScatterChart.h
 
-  \brief A class to represent a scatter chart. 
+  \brief A class to represent a scatter's chart. 
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_SCATTERCHART_H

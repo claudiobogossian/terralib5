@@ -274,5 +274,5 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
 
   dataset->moveNext();
 
-  return new te::mem::DataSet(*dataset, true);
+  return new te::mem::DataSet(*dataset);
 }

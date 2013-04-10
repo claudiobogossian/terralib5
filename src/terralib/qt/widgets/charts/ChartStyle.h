@@ -82,11 +82,11 @@ namespace te
 
         private:
 
-          std::string      m_title;
-          bool             m_gridChecked;
-          te::se::Fill*    m_fill;
-          te::se::Stroke*  m_stroke;
-          QColor           m_backColor;
+          std::string      m_title;         //!< The chart's title.
+          bool             m_gridChecked;   //!< The boolean used to decide if the chart will have a background grid .
+          te::se::Fill*    m_fill;          //!< The chart's fill.
+          te::se::Stroke*  m_stroke;        //!< The chart's stroke.
+          QColor           m_backColor;     //!< The chart's background color.
 
       };
     }; //end namespace widgets

@@ -27,6 +27,7 @@ if(QT4_FOUND)
 
   list (APPEND _dep_incs ${QT_INCLUDE_DIR})
   list (APPEND _dep_libs ${QT_LIBRARIES})
+  
 endif()
 
 list (APPEND 
@@ -76,9 +77,16 @@ set(TVIEW_LOGO "${ROOT}/resources/images/png/terraview.png" CACHE STRING "Image 
 set(TVIEW_LARGE_LOGO "${ROOT}/resources/images/png/terraview-textual.png" CACHE STRING "Image to be used as TerraView large logo.")
 set(TVIEW_SPLASH_SCREEN_PIXMAP "${ROOT}/resources/images/png/terraview-splashscreen.png" CACHE STRING "Image to be used as TerraView Splash Screen")
 
+if(TE_WIN32_GUI)
+  set (GUI_TYPE WIN32)
+  list (APPEND _dep_libs ${QT_QTMAIN_LIBRARY})
+else()
+  set (GUI_TYPE)
+endif()
+
 add_definitions (-DBOOST_ALL_NO_LIB)
 
-add_executable(${PROJ_NAME} ${SRCS} ${HDRS} ${UI} ${MOC})
+add_executable(${PROJ_NAME} ${GUI_TYPE} ${SRCS} ${HDRS} ${UI} ${MOC})
 set_target_properties(${PROJ_NAME} PROPERTIES DEBUG_POSTFIX _d)
 target_link_libraries(${PROJ_NAME} ${_dep_libs})
 
