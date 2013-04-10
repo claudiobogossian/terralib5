@@ -142,6 +142,11 @@ namespace te
         void setVisibility(Visibility v);
 
         /*!
+          \brief It adjusts the visibility of the descendants layers having children(folder layers).
+        */
+        virtual void adjustVisibility();
+
+        /*!
           \brief It returns the Layer extent (or minimum bounding box).
 
           \return The Layer extent (or minimum bounding box) with coordinates in the same SRS as the layer.
@@ -360,18 +365,6 @@ namespace te
           \param srid   The SRS to be used to draw the layer objects.
         */
         virtual void draw(Canvas* canvas, const te::gm::Envelope& bbox, int srid) = 0;
-
-      protected:
-
-        /*!
-          \brief It sets the visibility of the descendants layers of this layer.
-
-          \param v The visibility of the descendants layers.
-        */
-        virtual void setDescendantsVisibility(Visibility v);
-
-        /*! \brief It adjusts the visibility of the ascendants layers of this layer. */
-        virtual void adjustAscendantsVisibility();
 
       private:
 

@@ -104,76 +104,68 @@ void te::map::AbstractLayer::setSRID(int srid)
 
 void te::map::AbstractLayer::setVisibility(Visibility v)
 {
-  m_visibility = v;
-
-  setDescendantsVisibility(v);
-
-  adjustAscendantsVisibility();
-}
-
-void te::map::AbstractLayer::setDescendantsVisibility(Visibility v)
-{
-  te::common::TreeItem::iterator it = begin();
-  te::common::TreeItem::iterator it_end = end();
-
-  while(it != it_end)
-  {
-    AbstractLayer* layer = dynamic_cast<AbstractLayer*>(it->get());
-
-    if(layer)
-    {
-      layer->m_visibility = v;
-
-      if(v != PARTIALLY_VISIBLE)
-        layer->setDescendantsVisibility(v);
-    }
-
-    ++it;
-  }
-}
-
-void te::map::AbstractLayer::adjustAscendantsVisibility()
-{
-  if(m_parent == 0)
+  if(v == te::map::PARTIALLY_VISIBLE)
     return;
 
-  AbstractLayer* layer = 0;
+  m_visibility = v;
 
-  bool hasNotVisible = false;
-  bool hasVisible = false;
-  bool hasPartiallyVisible = false;
-
-  te::common::TreeItem::iterator it = m_parent->begin();
-  te::common::TreeItem::iterator it_end = m_parent->end();
-
-  while(it != it_end)
+  if(hasChildren())
   {
-    layer = dynamic_cast<AbstractLayer*>(it->get());
+    int numChildren = getChildrenCount();
+    std::vector<AbstractLayer*> childrenVec(numChildren);
 
-    if(layer)
+    for(int i = 0; i < numChildren; ++i)
     {
-      if(layer->getVisibility() == NOT_VISIBLE)
-        hasNotVisible = true;
-      else if(layer->getVisibility() == VISIBLE)
-        hasVisible = true;
-      else
-        hasPartiallyVisible = true;
+      childrenVec[i] = static_cast<AbstractLayer*>(getChild(i).get());
+      childrenVec[i]->setVisibility(v);
     }
-
-    ++it;
   }
 
-  Visibility parentVisibility = PARTIALLY_VISIBLE;
-
-  if((hasNotVisible == true) && (hasVisible == false) && (hasPartiallyVisible == false))  // just not visible
-    parentVisibility = NOT_VISIBLE;
-  else if(hasNotVisible == false && hasVisible == true && hasPartiallyVisible == false)   // just visible
-    parentVisibility = VISIBLE;
-
-  layer = dynamic_cast<AbstractLayer*>(m_parent);
-
-  layer->m_visibility = parentVisibility;
-
-  layer->adjustAscendantsVisibility();
+  // Adjust the visibility of the ascendent layers that are folders
+  AbstractLayer* parentLayer = static_cast<AbstractLayer*>(getParent());
+  while(parentLayer != 0)
+  {
+    parentLayer->adjustVisibility();
+    parentLayer = static_cast<AbstractLayer*>(parentLayer->getParent());
+  }
 }
 
+void te::map::AbstractLayer::adjustVisibility()
+{
+  if(getType() != "FOLDERLAYER")
+    return;
+
+  if(hasChildren())
+  {
+    int numChildren = getChildrenCount();
+    std::vector<AbstractLayer*> childrenVec(numChildren);
+
+    for(int i = 0; i < numChildren; ++i)
+    {
+      childrenVec[i] = static_cast<AbstractLayer*>(getChild(i).get());
+      childrenVec[i]->adjustVisibility();
+    }
+
+    bool allVisible = true;
+    bool allNotVisible = true;
+
+    for(int i = 0; i < numChildren; ++i)
+    {
+      if(childrenVec[i]->getVisibility() == te::map::NOT_VISIBLE)
+        allVisible = false;
+      else if(childrenVec[i]->getVisibility() == te::map::VISIBLE)
+        allNotVisible = false;
+      else if(childrenVec[i]->getVisibility() == te::map::PARTIALLY_VISIBLE)
+      {
+        allVisible = false;
+        allNotVisible = false;
+      }
+    }
+
+    m_visibility = te::map::PARTIALLY_VISIBLE;
+    if(allVisible)
+      m_visibility = te::map::VISIBLE;
+    else if(allNotVisible)
+      m_visibility = te::map::NOT_VISIBLE;
+  }
+}
