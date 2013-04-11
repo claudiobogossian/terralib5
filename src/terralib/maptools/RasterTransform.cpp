@@ -30,6 +30,9 @@
 #include "../raster/RasterProperty.h"
 #include "../se/RasterSymbolizer.h"
 
+// STL
+#include <limits>
+
 te::map::RasterTransform::RasterTransform(te::rst::Raster* input, te::rst::Raster* output) :
   m_rasterIn(input),
   m_rasterOut(output),
