@@ -18,47 +18,50 @@
  */
 
 /*!
-  \file terralib/qt/af/events/Enums.h
+  \file terralib/qt/plugins/rp/ClassifierAction.h
 
-  \brief Enumerations for the TerraLib Application Framework.
+  \brief This file defines the Classifier class
 */
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+#ifndef __TE_QT_PLUGINS_RP_INTERNAL_CLASSIFIERACTION_H
+#define __TE_QT_PLUGINS_RP_INTERNAL_CLASSIFIERACTION_H
 
 // TerraLib
-#include "Event.h"
+#include "Config.h"
+#include "AbstractAction.h"
 
 namespace te
 {
   namespace qt
   {
-    namespace af
+    namespace plugins
     {
-      namespace evt
+      namespace rp
       {
-        enum
+        /*!
+          \class ClassifierAction
+
+          \brief This class register the classifier action into RP Plugin.
+
+        */
+        class ClassifierAction : public te::qt::plugins::rp::AbstractAction
         {
-          APP_CLOSED,
-          TOOLBAR_ADDED,
-          DISPLAY_RESIZED,
-          LAYER_ADDED,
-          LAYER_VISIBILTY_CHANGED,
-          TOOL_CHANGED,
-          LAYER_SELECTED,
-          COORDINATE_TRACKED,
-          POINT_GEOMETRIES,
-          VISIBLE_BBOX_CHANGED,
-          STYLE_CHANGED,
-          PROJECT_ADDED,
-          PROJECT_UNSAVED,
-          CUSTOM = 1024
+          Q_OBJECT
+
+          public:
+
+            ClassifierAction(QMenu* menu);
+
+            virtual ~ClassifierAction();
+
+          protected slots:
+
+            virtual void onActionActivated(bool checked);
         };
 
-      } // end namespace evt
-    }   // end namespace af
-  }     // end namesopace qt
+      } // end namespace rp
+    }   // end namespace plugins
+  }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-
+#endif //__TE_QT_PLUGINS_RP_INTERNAL_CLASSIFIERACTION_H

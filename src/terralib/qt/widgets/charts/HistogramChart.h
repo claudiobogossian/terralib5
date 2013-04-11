@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -91,8 +91,8 @@ namespace te
 
         private:
 
-            Histogram* m_histogram; //!< The histogram that will be shown on this chart.
-            StringScaleDraw* m_histogramScaleDraw; //!< Scale draw that defines how a label will be displayed on this chart.
+            Histogram* m_histogram;                  //!< The histogram that will be shown on this chart.
+            StringScaleDraw* m_histogramScaleDraw;   //!< Scale draw that defines how a label will be displayed on this chart.
 //            HistogramStyle* m_style; 
 
       };

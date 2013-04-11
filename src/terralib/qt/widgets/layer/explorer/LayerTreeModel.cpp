@@ -263,6 +263,21 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
 
       newItemParentIndex = dropParentIndex;
     }
+
+    // Check if the drop item is a folder item and if it has no children; in that case,
+    // the dragged item will be made child of this folder item
+    AbstractLayerTreeItem* dropItem = static_cast<AbstractLayerTreeItem*>(dropIndex.internalPointer());
+
+    if(dropItem)
+    {
+      te::map::AbstractLayer* dropItemLayer = dropItem->getLayer().get();
+
+      if(dropItemLayer->getType() == "FOLDERLAYER" && dropItemLayer->hasChildren() == false)
+      {
+        newItemRow = 0;
+        newItemParentIndex = dropIndex;
+      }
+    }
   }
   else
   {
@@ -300,9 +315,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
   else
   {
     // Insert the associated layer of the dragged item to the list of layers
-    // of the new item parent
-    te::map::AbstractLayer* layer = newItemParent->getLayer().get();
-    layer->insert(newItemRow, draggedItem->getLayer());
+    // of the new parent layer of the new item
+    te::map::AbstractLayer* parentLayerOfNewItem = newItemParent->getLayer().get();
+    parentLayerOfNewItem->insert(newItemRow, draggedItem->getLayer());
 
     // Get the children of the tree item and disconnect them from the tree item
     int numChildren = newItemParent->children().count();
@@ -318,14 +333,9 @@ bool te::qt::widgets::LayerTreeModel::dropMimeData(const QMimeData* data,
     for(int i = 0; i < savedItemsList.count(); ++i)
       savedItemsList.at(i)->setParent(newItemParent);
 
-    // Update the visibility of the layer tree
-    Qt::CheckState visibility = Qt::PartiallyChecked;
-    if(newItem->getLayer().get()->getVisibility() == te::map::VISIBLE)
-      visibility = Qt::Checked;
-    else 
-      visibility = Qt::Unchecked;
-
-    setData(index(newItemRow, 0, newItemParentIndex), visibility, Qt::CheckStateRole);
+    // Adjust the visibility of the ascendent layers of the inserted layer
+    parentLayerOfNewItem->adjustVisibility();
+    dataChangedForAscendents(newItemParentIndex);
   }
 
   endInsertRows();
@@ -368,31 +378,9 @@ bool te::qt::widgets::LayerTreeModel::removeRows(int row, int count, const QMode
 
     delete childItem;
 
-    // Update the visibility of the layer tree
-    bool allVisible = true;
-    bool allNotVisible = true;
-
-    if(parentLayer->hasChildren() == false)
-      allVisible = false;
-    else
-    {
-      for(std::size_t i = 0; i < parentLayer->getChildrenCount(); ++i)
-      {
-        te::map::AbstractLayer* l = static_cast<te::map::AbstractLayer*>(parentLayer->getChild(i).get());
-        if(l->getVisibility() == te::map::VISIBLE)
-          allNotVisible = false;
-        else if(l->getVisibility() == te::map::NOT_VISIBLE)
-          allVisible = false;
-      }
-    }
-
-    Qt::CheckState visibility = Qt::PartiallyChecked;
-    if(allVisible == true && allNotVisible == false)
-      visibility = Qt::Checked;
-    else if(allVisible == false && allNotVisible == true)
-      visibility = Qt::Unchecked;
-
-    setData(parent, visibility, Qt::CheckStateRole);
+    // Adjust the visibility of the ascendent layers of the inserted layer
+    parentLayer->adjustVisibility();
+    dataChangedForAscendents(parent);
   }
 
   endRemoveRows();
@@ -543,5 +531,19 @@ void te::qt::widgets::LayerTreeModel::dataChangedForDescendants(const QModelInde
 
     if(hasChildren(idx))
       dataChangedForDescendants(idx);
+  }
+}
+
+void te::qt::widgets::LayerTreeModel::dataChangedForAscendents(const QModelIndex& index)
+{ 
+  QModelIndex ascendentIndex = parent(index);
+  if(parent(index).isValid())
+  {
+    // Emit the dataChanged signal for the ascendants indexes
+    while(ascendentIndex.isValid())
+    {
+      emit dataChanged(ascendentIndex, ascendentIndex);
+      ascendentIndex = parent(ascendentIndex);
+    }
   }
 }

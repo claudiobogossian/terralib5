@@ -18,47 +18,43 @@
  */
 
 /*!
-  \file terralib/qt/af/events/Enums.h
+  \file terralib/qt/plugins/rp/ClassifierAction.cpp
 
-  \brief Enumerations for the TerraLib Application Framework.
+  \brief This file defines the Classifier class
 */
 
-#ifndef __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-#define __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
+// Terralib
+#include "../../../qt/widgets/rp/ClassifierWizard.h"
+#include "../../af/ApplicationController.h"
+#include "../../af/Project.h"
+#include "ClassifierAction.h"
 
-// TerraLib
-#include "Event.h"
+// Qt
+#include <QtCore/QObject>
 
-namespace te
+// STL
+#include <memory>
+
+te::qt::plugins::rp::ClassifierAction::ClassifierAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
 {
-  namespace qt
+  createAction(tr("Classifier...").toStdString());
+}
+
+te::qt::plugins::rp::ClassifierAction::~ClassifierAction()
+{
+}
+
+void te::qt::plugins::rp::ClassifierAction::onActionActivated(bool checked)
+{
+  te::qt::widgets::ClassifierWizard dlg(0);
+
+// get the list of layers from current project
+  te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().get();
+
+  if(prj)
   {
-    namespace af
-    {
-      namespace evt
-      {
-        enum
-        {
-          APP_CLOSED,
-          TOOLBAR_ADDED,
-          DISPLAY_RESIZED,
-          LAYER_ADDED,
-          LAYER_VISIBILTY_CHANGED,
-          TOOL_CHANGED,
-          LAYER_SELECTED,
-          COORDINATE_TRACKED,
-          POINT_GEOMETRIES,
-          VISIBLE_BBOX_CHANGED,
-          STYLE_CHANGED,
-          PROJECT_ADDED,
-          PROJECT_UNSAVED,
-          CUSTOM = 1024
-        };
+    dlg.setList(prj->getLayers());
+  }
 
-      } // end namespace evt
-    }   // end namespace af
-  }     // end namesopace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_AF_EVENTS_INTERNAL_ENUMS_H
-
+  dlg.exec();
+}

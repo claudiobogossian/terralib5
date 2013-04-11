@@ -32,7 +32,8 @@
 te::qt::af::Project::Project()
   : m_title(""),
     m_author(""),
-    m_layers()
+    m_layers(),
+    m_changed(false)
 {
 }
 
@@ -44,6 +45,7 @@ te::qt::af::Project::~Project()
 void te::qt::af::Project::setTitle(const std::string& title)
 {
   m_title = title;
+  m_changed = true;
 }
 
 const std::string& te::qt::af::Project::getTitle() const
@@ -54,6 +56,7 @@ const std::string& te::qt::af::Project::getTitle() const
 void te::qt::af::Project::setAuthor(const std::string& author)
 {
   m_author = author;
+  m_changed = true;
 }
 
 const std::string& te::qt::af::Project::getAuthor() const
@@ -74,10 +77,31 @@ std::list<te::map::AbstractLayerPtr>& te::qt::af::Project::getLayers()
 void te::qt::af::Project::add(const te::map::AbstractLayerPtr& layer)
 {
   m_layers.push_back(layer);
+  m_changed = true;
 }
 
 void te::qt::af::Project::remove(const te::map::AbstractLayerPtr& layer)
 {
   std::remove(m_layers.begin(), m_layers.end(), layer);
+  m_changed = true;
 }
 
+bool te::qt::af::Project::hasChanged()
+{
+  return m_changed;
+}
+
+void te::qt::af::Project::setFileName(const std::string& fName)
+{
+  m_fileName = fName;
+}
+
+const std::string& te::qt::af::Project::getFileName() const
+{
+  return m_fileName;
+}
+
+void te::qt::af::Project::projectChanged(const bool& changed)
+{
+  m_changed = changed;
+}

@@ -39,57 +39,19 @@
 #include <exception>
 #include <iostream>
 
-void LoadOGRModule()
+void LoadModules()
 {
-  try
-  {
-    //te::plugin::PluginInfo info; 
-    //info.m_name = "te.da.ogr";
-    //info.m_displayName = "OGR DataSource Driver";
-    //info.m_description = "This data source driver supports spatial data managed by OGR";
-    //info.m_engine = "C++";
-    //info.m_folder = TE_PLUGINS_PATH;
-    //
-    //std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_ogr");
-    //
-    //info.m_resources.push_back(rsc);
-    //
-    //te::plugin::PluginManager::getInstance().load(info);
-    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
-    te::plugin::PluginManager::getInstance().add(info); 
+  te::plugin::PluginInfo* info;
+  
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.ogr.teplg"));
+  te::plugin::PluginManager::getInstance().add(info); 
+  
+  info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
+  te::plugin::PluginManager::getInstance().add(info);
 
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "Failed to load data source OGR driver: unknow exception!" << std::endl;
-  }
+  te::plugin::PluginManager::getInstance().loadAll();
 }
 
-void LoadGDALModule()
-{
-  try
-  {
-    //te::plugin::PluginInfo info; 
-    //info.m_name = "te.da.gdal";
-    //info.m_displayName = "GDAL DataSource Driver";
-    //info.m_description = "This data source driver supports spatial data managed by GDAL";
-    //info.m_engine = "C++";
-    //info.m_folder = TE_PLUGINS_PATH;
-    //
-    //std::pair<std::string, std::string> rsc("SharedLibraryName", "terralib_gdal");
-    //
-    //info.m_resources.push_back(rsc);
-    //
-    //te::plugin::PluginManager::getInstance().load(info);
-    te::plugin::PluginInfo* info = te::plugin::GetInstalledPlugin(TE_PLUGINS_PATH + std::string("/te.da.gdal.teplg"));
-    te::plugin::PluginManager::getInstance().add(info);
-
-  }
-  catch(...)
-  {
-    std::cout << std::endl << "Failed to load data source GDAL driver: unknow exception!" << std::endl;
-  }
-}
 
 int main(int argc, char** argv)
 {
@@ -108,8 +70,7 @@ int main(int argc, char** argv)
     QIcon::setThemeName(ICON_THEME);
     QIcon::setThemeSearchPaths(paths);
 
-    LoadOGRModule();
-    LoadGDALModule();
+    LoadModules();
 
     // Instructions
     QString text = QString::fromLatin1("<p>Here you have a Map Display component associated with a set of geographic tools.\

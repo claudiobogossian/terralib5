@@ -18,17 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/ContrastWizardPage.h
+  \file terralib/qt/widgets/rp/SegmenterWizardPage.h
 
-  \brief This file defines a class for a Contrast Wizard page.
+  \brief This file defines a class for a Segmenter Wizard page.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARDPAGE_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARDPAGE_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../rp/Contrast.h"
+#include "../../../rp/Segmenter.h"
 #include "../Config.h"
 
 // STL
@@ -38,37 +38,33 @@
 #include <QtGui/QWizardPage>
 
 // Forward declaration
-namespace Ui { class ContrastWizardPageForm; }
+namespace Ui { class SegmenterWizardPageForm; }
 
 namespace te
 {
-  namespace gm { class Envelope; }
-
   namespace qt
   {
     namespace widgets
     {
-      class MapDisplay;
-
       /*!
-        \class ContrastWizardPage
+        \class SegmenterWizardPage
 
-        \brief This class is GUI used to define the contrast parameters for the RP constast operation.
+        \brief This class is GUI used to define the segmenter parameters for the RP constast operation.
       */
-      class TEQTWIDGETSEXPORT ContrastWizardPage : public QWizardPage
+      class TEQTWIDGETSEXPORT SegmenterWizardPage : public QWizardPage
       {
         Q_OBJECT
 
         public:
 
-          ContrastWizardPage(QWidget* parent = 0);
+          SegmenterWizardPage(QWidget* parent = 0);
 
-          ~ContrastWizardPage();
+          ~SegmenterWizardPage();
 
         public:
 
           /*!
-            \brief This method is used to set the selected layer for contrast operation
+            \brief This method is used to set the selected layer for segmenter operation
             
             \param layer The layer ptr 
 
@@ -76,31 +72,21 @@ namespace te
           */
           void set(te::map::AbstractLayerPtr layer);
 
-          te::rp::Contrast::InputParameters getInputParams();
+          te::rp::Segmenter::InputParameters getInputParams();
 
-          te::rp::Contrast::OutputParameters getOutputParams();
+          te::rp::Segmenter::OutputParameters getOutputParams();
 
         protected:
 
           void apply();
 
-          void preview();
-
-          te::gm::Envelope calculateExtent();
-
-          void fillContrastTypes();
+          void fillSegmenterTypes();
 
           void listBands();
 
-
-        protected slots:
-
-          void showHistogram();
-
         private:
 
-          std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;
-          std::auto_ptr<te::qt::widgets::MapDisplay> m_mapDisplay;
+          std::auto_ptr<Ui::SegmenterWizardPageForm> m_ui;
 
           te::map::AbstractLayerPtr m_layer;
       };
@@ -109,4 +95,4 @@ namespace te
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARDPAGE_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARDPAGE_H

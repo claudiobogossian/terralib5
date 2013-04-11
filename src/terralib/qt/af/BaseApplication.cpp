@@ -56,7 +56,6 @@
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
-//#include "../widgets/utils/AddToolBarDialog.h"
 #include "../widgets/utils/CustomizeToolBarsDialog.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
@@ -221,7 +220,15 @@ void te::qt::af::BaseApplication::init(const std::string& configFile)
 
 void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event* evt)
 {
-  //switch(evt->getId())
+  switch(evt->m_id)
+  {
+    case te::qt::af::evt::PROJECT_UNSAVED:
+      m_project->projectChanged(true);
+    break;
+
+    default:
+    break;
+  }
   //{
   //  case te::qt::af::evt::NEW_TOOLBAR :
   //  break;
@@ -411,7 +418,13 @@ void te::qt::af::BaseApplication::onSaveProjectAsTriggered()
   if(fileName.isEmpty())
     return;
 
-  te::qt::af::Save(*m_project, fileName.toStdString());
+  std::string fName = fileName.toStdString();
+
+  m_project->setFileName(fName);
+
+  te::qt::af::Save(*m_project, fName);
+
+  m_project->projectChanged(false);
 
   ApplicationController::getInstance().updateRecentProjects(fileName, m_project->getTitle().c_str());
 }
@@ -632,6 +645,8 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
 {
   try
   {
+    checkProjectSave();
+
     Project* nproject = te::qt::af::ReadProject(projectFileName.toStdString());
 
     delete m_project;
@@ -657,6 +672,39 @@ void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
     msg = msg.arg(e.what());
 
     QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg);
+  }
+}
+
+void te::qt::af::BaseApplication::checkProjectSave()
+{
+  if(m_project != 0 && m_project->hasChanged())
+  {
+    QString msg("The current project has unsaved changes. Do you want to save?");
+    int btn = QMessageBox::question(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), msg, QMessageBox::No, QMessageBox::Yes);
+
+    if(btn == QMessageBox::Yes)
+    {
+      std::string fName = m_project->getFileName();
+
+      if(fName.empty())
+      {
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Save Project File"), qApp->applicationDirPath(), tr("XML Files (*.xml *.XML)"));
+
+        if(!fileName.isEmpty())
+        {
+          fName = fileName.toStdString();
+          m_project->setFileName(fName);
+        }
+        else
+        {
+          QMessageBox::warning(this, te::qt::af::ApplicationController::getInstance().getAppTitle(), tr("Project not saved."));
+          return;
+        }
+      }
+
+      te::qt::af::Save(*m_project, m_project->getFileName());
+      m_project->projectChanged(false);
+    }
   }
 }
 
@@ -827,6 +875,8 @@ void te::qt::af::BaseApplication::makeDialog()
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
 {
+  checkProjectSave();
+
   //AppClose aclose;
 
   //emit triggered(&aclose);
@@ -968,6 +1018,7 @@ void te::qt::af::BaseApplication::initMenus()
   m_fileMenu->addAction(m_fileSaveProject);
   m_fileMenu->addAction(m_fileSaveProjectAs);
   m_fileMenu->addSeparator();
+  m_fileMenu->addAction(m_recentProjectsMenu->menuAction());
   m_fileMenu->addSeparator();
   m_fileMenu->addAction(m_filePrint);
   m_fileMenu->addAction(m_filePrintPreview);

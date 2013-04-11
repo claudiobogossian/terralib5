@@ -20,13 +20,14 @@
 /*!
   \file terralib/qt/widgets/charts/HistogramCreatorDialog.cpp
 
-  \brief A widget used to create a nem Histogram chart.
+  \brief A dialog used to create a nem Histogram chart.
 */
 
 //Terralib
+#include "BasicFillDialog.h"
+#include "BasicStrokeDialog.h"
 #include "ChartDisplay.h"
 #include "ChartStyleDialog.h"
-#include "../utils/ColorPickerToolButton.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "HistogramCreatorDialog.h"
@@ -40,7 +41,6 @@
 #include "../../../raster/RasterSummaryManager.h"
 #include "ui_histogramCreatorDialog.h"
 
-
 //QT
 #include <QtGui/QDialog>
 
@@ -52,16 +52,6 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
     m_dataSet (dataSet)
 {
   m_ui->setupUi(this);
-
-  // Color Picker
-  m_colorPicker = new te::qt::widgets::ColorPickerToolButton(this);
-  m_colorPicker->setFixedSize(107, 24);
-
-  // Adjusting the color picker
-  QGridLayout* layout = new QGridLayout(m_ui->m_colorPickerFrame);
-  layout->setContentsMargins(0, 0, 0, 0);
-  layout->setSizeConstraint(QLayout::SetFixedSize);
-  layout->addWidget(m_colorPicker);
 
   QString item;
 
@@ -93,7 +83,8 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_ui->m_propertyComboBox, SIGNAL(currentIndexChanged(QString)), this, SLOT(onPropertyComboBoxIndexChanged(QString)));
-  connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
+  connect(m_ui->m_fillPushButton, SIGNAL(clicked()), this, SLOT(onFillPushButtonClicked()));
+  connect(m_ui->m_strokePushButton, SIGNAL(clicked()), this, SLOT(onStrokePushButtonClicked()));
 }
 
 te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog()
@@ -140,10 +131,22 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 
   m_chartDisplay->setParent(&dlg);
 
+  m_chartDisplay->setTitle("Histogram");
+
   lay->addWidget(m_chartDisplay);
 
   m_histogramChart = new te::qt::widgets::HistogramChart(m_histogram);
-  m_histogramChart->setSymbol(m_histogramStyle->getSymbol());
+
+  QPen barPen;
+  QBrush barBrush;
+
+  te::qt::widgets::Config(barPen, m_histogramStyle->getStroke());
+  te::qt::widgets::Config(barBrush, m_histogramStyle->getFill());
+  barBrush.setStyle(Qt::SolidPattern);
+
+  m_histogramChart->setPen(barPen);
+  m_histogramChart->setBrush(barBrush);
+
   m_histogramChart->attach(m_chartDisplay);
 
   m_chartDisplay->show();
@@ -184,10 +187,12 @@ void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QS
   }
 }
 
-void te::qt::widgets::HistogramCreatorDialog::onColorChanged(const QColor& color)
+void te::qt::widgets::HistogramCreatorDialog::onFillPushButtonClicked()
 {
-  // The new fill color
-  m_histogramStyle->setColor(color);
+  m_histogramStyle->setFill(te::qt::widgets::BasicFillDialog::getFill(m_histogramStyle->getFill(), 0, "Bar Fill"));
+}
 
-  m_colorPicker->setColor(m_histogramStyle->getColor());
+void te::qt::widgets::HistogramCreatorDialog::onStrokePushButtonClicked()
+{
+    m_histogramStyle->setStroke(te::qt::widgets::BasicStrokeDialog::getStroke(m_histogramStyle->getStroke(), 0, "Bar Fill"));
 }

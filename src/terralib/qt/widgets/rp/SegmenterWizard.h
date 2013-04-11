@@ -18,16 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/ContrastWizard.h
+  \file terralib/qt/widgets/rp/SegmenterWizard.h
 
-  \brief A Qt dialog that allows users to run a contrast operation defined by RP module.
+  \brief A Qt dialog that allows users to run a segmenter operation defined by RP module.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARD_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARD_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
+#include "../../../raster/Raster.h"
 #include "../Config.h"
 
 // STL
@@ -42,23 +43,23 @@ namespace te
   {
     namespace widgets
     {
-      class ContrastWizardPage;
+      class SegmenterWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
 
       /*!
-        \class ContrastWizard
+        \class SegmenterWizard
 
-        \brief This class is GUI used to define the contrast wizard for the RP constast operation.
+        \brief This class is GUI used to define the segmenter wizard for the RP constast operation.
       */
-      class TEQTWIDGETSEXPORT ContrastWizard : public QWizard
+      class TEQTWIDGETSEXPORT SegmenterWizard : public QWizard
       {
 
         public:
 
-          ContrastWizard(QWidget* parent);
+          SegmenterWizard(QWidget* parent);
 
-          ~ContrastWizard();
+          ~SegmenterWizard();
 
         public:
 
@@ -74,12 +75,16 @@ namespace te
 
         private:
 
-          std::auto_ptr<te::qt::widgets::ContrastWizardPage> m_contrastPage;
+          std::auto_ptr<te::qt::widgets::SegmenterWizardPage> m_segmenterPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+
+        public:
+
+          te::rst::RasterPtr m_outRaster;
       };
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARD_H

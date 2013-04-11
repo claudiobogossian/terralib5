@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -27,6 +27,8 @@
 #include "../../../common/STLUtils.h"
 #include "../../../se/Mark.h"
 #include "../../../maptools/MarkRendererManager.h"
+#include "MarkSymbol.h"
+#include "Utils.h"
 
 // Qt Widgets Utils
 #include "../Utils.h"
@@ -35,8 +37,6 @@
 #include <QtGui/QImage>
 #include <QtGui/QPainter>
 
-#include "MarkSymbol.h"
-#include "Utils.h"
 
 te::qt::widgets::MarkSymbol::MarkSymbol(te::se::Mark* mark, std::size_t size) :
   QwtSymbol(UserStyle),
@@ -46,8 +46,7 @@ te::qt::widgets::MarkSymbol::MarkSymbol(te::se::Mark* mark, std::size_t size) :
   
 }
 
-void 
-te::qt::widgets::MarkSymbol::drawSymbols(QPainter* painter, const QPointF* point, int numPoints) const
+void te::qt::widgets::MarkSymbol::drawSymbols(QPainter* painter, const QPointF* point, int numPoints) const
 {
   te::color::RGBAColor** rgba = te::map::MarkRendererManager::getInstance().render(m_mark, m_size);
   
