@@ -154,17 +154,18 @@ void TsMatrix::rAMMemPolTest()
 
 void TsMatrix::autoMemPolTest()
 {
-  const unsigned int max_ram  = (unsigned int)
-    ( 0.50 * (double)MIN( ( te::common::GetTotalVirtualMemory() / 2.0 ) - 
-    te::common::GetUsedVirtualMemory(), te::common::GetTotalPhysicalMemory() ) );
+  const unsigned long int max_ram  = te::common::GetTotalPhysicalMemory() / 10;
 
-  unsigned long int lines = (unsigned long int)(
-    ( (double)( max_ram + ( 256 * 1024 * 1024 ) ) ) /
-    ( ( (double)sizeof( double ) ) * 1000.00 ) );
+  unsigned long int lines = (unsigned long int)
+    (
+      ( 2 * max_ram ) 
+      /
+      ( sizeof( double ) * 1000 ) 
+    );
   unsigned long int cols = 1000;
 
   te::rp::Matrix< double > m1;
-  CPPUNIT_ASSERT( m1.reset( lines, cols, te::rp::Matrix< double >::AutoMemPol ) );
+  CPPUNIT_ASSERT( m1.reset( lines, cols, te::rp::Matrix< double >::AutoMemPol, 10 ) );
 
   CPPUNIT_ASSERT( m1.getMemPolicy() == te::rp::Matrix< double >::AutoMemPol );
 

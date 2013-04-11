@@ -34,6 +34,8 @@
   #include <cmath>
   #include <cstdio>
   #include <string>
+  #include <vector>
+  #include <memory>
   
   namespace te 
   {
@@ -43,7 +45,7 @@
       \class Matrix
       \brief A generic template matrix
       */
-      template< class ElementType >
+      template< typename ElementType >
       class Matrix {
         public :
           
@@ -117,7 +119,22 @@
           \return true if OK, false on error.
           */
           bool reset( unsigned int lines, unsigned int columns,
-            MemoryPolicy memoryPolicy );        
+            MemoryPolicy memoryPolicy );       
+            
+          /*!
+          \brief Reset (clear) the active instance data and update its
+          internal parameters folowing the the new supplied parameters.
+          \note Other parameters will not be changed.
+          
+          \param lines Number of lines.
+          \param columns Number of columns.
+          \param memoryPolicy Memory policy.
+          \param maxMemPercentUsage The max amount of free memory to use 
+          when necessary (suggested default:40).
+          \return true if OK, false on error.
+          */
+          bool reset( unsigned int lines, unsigned int columns,
+            MemoryPolicy memoryPolicy, unsigned char maxMemPercentUsage );             
             
           /*!
           \brief Reset (clear) the active instance data and update its
@@ -184,7 +201,7 @@
           inline ElementType& operator()( const unsigned int& line, 
             const unsigned int& column )
           {
-            TERP_DEBUG_TRUE_OR_THROW( ( column < totalColumns_ ),
+            TERP_DEBUG_TRUE_OR_THROW( ( column < m_totalColumns ),
               "Invalid columns" )
                 
             return getScanLine( line )[ column ];      
@@ -200,7 +217,7 @@
           inline const ElementType& operator()( const unsigned int& line, 
             const unsigned int& column ) const
           {
-            TERP_DEBUG_TRUE_OR_THROW( ( column < totalColumns_ ),
+            TERP_DEBUG_TRUE_OR_THROW( ( column < m_totalColumns ),
               "Invalid columns" )
               
             return getScanLine( line )[ column ] ;      
@@ -259,106 +276,102 @@
         protected :
         
           /*!
-          \brief Disk lines info node.
+          \brief Disk lines info.
           */         
-          class DiskLinesInfoNode
+          class DiskLineInfo
           {
             public :
               
-              FILE* filePtr_;
-              unsigned int fileOff_;
+              FILE* m_filePtr;
+              unsigned int m_fileOff;
               
-              DiskLinesInfoNode() : filePtr_( 0 ), fileOff_( 0 ) {};
-              ~DiskLinesInfoNode() {};
+              DiskLineInfo() : m_filePtr( 0 ), m_fileOff( 0 ) {};
+              ~DiskLineInfo() {};
           };
           
           /*!
           \brief Openend disk files info node.
           */         
-          class OpenDiskFilesInfoNode
+          class OpenDiskFileHandler
           {
             public :
               
-              FILE* filePtr_;
-              std::string fileName_;
+              FILE* m_filePtr;
               
-              OpenDiskFilesInfoNode() : filePtr_( 0 ) {};          
-              ~OpenDiskFilesInfoNode() {};
+              OpenDiskFileHandler() : m_filePtr( 0 ) {};          
+              ~OpenDiskFileHandler() 
+              {
+                if( m_filePtr ) 
+                {
+                  fclose( m_filePtr );
+                }
+              };
           };      
           
           /*!
           \brief Max bytes per temp file (for swapped tiles only, default: 2GB).
           */
-          unsigned long int maxTmpFileSize_;      
+          unsigned long int m_maxTmpFileSize;      
           
           /*!
-          \brief the max amount of free memory to use when necessary
-          (default:50).
+          \brief the max amount of free memory to use when necessary.
           */        
-          unsigned char maxMemPercentUsage_;
+          unsigned char m_maxMemPercentUsage;
           
           /*!
           \brief The total lines number (default:0).
           */
-          unsigned int totalLines_;
+          unsigned int m_totalLines;
           
           /*!
           \brief The total columns number (default:0).
           */
-          unsigned int totalColumns_;     
+          unsigned int m_totalColumns;     
           
           /*!
           \brief The used memory policy (default:RAMMemPol).
           */
-          MemoryPolicy memoryPolicy_;
-          
-          /*!
-          \brief The line size (bytes, default:0).
-          */     
-          unsigned int lineSize_;      
-
-          /*!
-          \brief A vector with pointers to all lines (size 0 or totalLines_).
-          */
-          ElementType** allLinesPtrsVec_;     
-          
-          /*!
-          \brief A vector with open disk files info (size 0 or openDiskFilesVecSize_).
-          */      
-          OpenDiskFilesInfoNode* openDiskFilesVec_;
-          
-          /*!
-          \brief A vector with open disk files info.
-          */      
-          unsigned int openDiskFilesVecSize_;      
-          
-          /*!
-          \brief Disk lines vector (size 0 or totalLines_).
-          */      
-          DiskLinesInfoNode* diskLinesVec_;      
-          
-          /*!
-          \brief The indexes inside allTilesPtrsVec_ of all RAM lines (size 0 or ramLinesIndexesVecSize_).
-          */        
-          unsigned int* ramLinesIndexesVec_;
-          
-          /*!
-          \brief The size of ramLinesIndexesVec_;
-          */        
-          unsigned int ramLinesIndexesVecSize_;      
+          MemoryPolicy m_memoryPolicy;
           
           /*!
           \brief The index inside ramLinesIndexesVec_ of the next RAM
           line index that will be swapped to disk when a disk line
           is required.
           */        
-          mutable unsigned int nextSwapLineRamLinesIndexesVecIdx_;
+          mutable unsigned int m_nextSwapLineRamLinesIndexesVecIdx;  
+
+          /*!
+          \brief A pointer to the current swap tile.
+          */        
+          mutable ElementType* m_currentSwapTilePtr;
+          
+          std::vector< ElementType* > m_memoryblocksHandler;
+
+          /*!
+          \brief A vector with pointers to all lines.
+          */
+          mutable std::vector< ElementType* > m_allLinesPtrsVec;     
           
           /*!
-          \brief A pointer to the auxiliar line used when swapping
+          \brief A vector with open disk files handler.
+          */      
+          std::vector< OpenDiskFileHandler > m_openDiskFilesHandler;
+          
+          /*!
+          \brief Info of all lines, used when a line is on disk.
+          */      
+          mutable std::vector< DiskLineInfo > m_diskLinesInfoVec;
+          
+          /*!
+          \brief The indexes of all lines loaded into RAM.
+          */        
+          mutable std::vector< unsigned int > m_ramLinesIndexesVec;          
+
+          /*!
+          \brief An auxiliar line used when swapping
           data to/from disk.
           */              
-          mutable ElementType* swapLinePtr_;      
+          mutable std::auto_ptr< ElementType > m_swapMemoryBlockHandler;      
         
           /*!
           \brief Reset the internal variables to the initial state.
@@ -387,41 +400,32 @@
             
           /*!
           \brief Create a new disk file.
-          \param filename The file name.
           \param size The file size.
           \param fileptr The file pointer.
           \return true if OK. false on errors.
           */
-          bool createNewDiskFile( unsigned long int size,
-            const std::string& filename, FILE** fileptr ) const;      
+          bool createNewDiskFile( unsigned long int size, FILE** fileptr ) const;      
       };
 
-      template< class ElementType >
+      template< typename ElementType >
       void Matrix< ElementType >::init()
       {
-        maxTmpFileSize_ = 2ul * 1024ul * 1024ul * 1024ul;;
-        maxMemPercentUsage_ = 40;
-        totalLines_ = 0;
-        totalColumns_ = 0;  
-        memoryPolicy_ = RAMMemPol;
-        lineSize_ = 0;
-        allLinesPtrsVec_ = 0;
-        openDiskFilesVec_ = 0;
-        openDiskFilesVecSize_ = 0;
-        diskLinesVec_ = 0;
-        ramLinesIndexesVec_ = 0;
-        ramLinesIndexesVecSize_ = 0;
-        nextSwapLineRamLinesIndexesVecIdx_ = 0;
-        swapLinePtr_ = 0;
+        m_maxTmpFileSize = 2ul * 1024ul * 1024ul * 1024ul;;
+        m_maxMemPercentUsage = 40;
+        m_totalLines = 0;
+        m_totalColumns = 0;  
+        m_memoryPolicy = RAMMemPol;
+        m_nextSwapLineRamLinesIndexesVecIdx = 0;
+        m_currentSwapTilePtr = 0;
       }
 
-      template< class ElementType >
+      template< typename ElementType >
       Matrix< ElementType >::Matrix()
       {
         init();
       }    
       
-      template< class ElementType >
+      template< typename ElementType >
       Matrix< ElementType >::Matrix( 
         const Matrix< ElementType >& external )
       {
@@ -430,41 +434,50 @@
         operator=( external );
       }
 
-      template< class ElementType >
+      template< typename ElementType >
         Matrix< ElementType >::~Matrix()
       {
         clear();
       }
       
-      template< class ElementType >
+      template< typename ElementType >
       void Matrix< ElementType >::reset()
       {
-        reset( 0, 0, memoryPolicy_, maxTmpFileSize_, maxMemPercentUsage_ );
+        reset( 0, 0, m_memoryPolicy, m_maxTmpFileSize, m_maxMemPercentUsage );
       }  
       
-      template< class ElementType >
+      template< typename ElementType >
       void Matrix< ElementType >::reset( MemoryPolicy memoryPolicy )
       {
-        reset( 0, 0, memoryPolicy, maxTmpFileSize_, maxMemPercentUsage_ );
+        reset( 0, 0, memoryPolicy, m_maxTmpFileSize, m_maxMemPercentUsage );
       }   
       
-      template< class ElementType >
+      template< typename ElementType >
       bool Matrix< ElementType >::reset( unsigned int lines, 
         unsigned int columns )
       {
-        return reset( lines, columns, memoryPolicy_, maxTmpFileSize_,
-          maxMemPercentUsage_ );
+        return reset( lines, columns, m_memoryPolicy, m_maxTmpFileSize,
+          m_maxMemPercentUsage );
       } 
       
-      template< class ElementType >
+      template< typename ElementType >
       bool Matrix< ElementType >::reset( unsigned int lines, 
         unsigned int columns, MemoryPolicy memoryPolicy )
       {
-        return reset( lines, columns, memoryPolicy, maxTmpFileSize_, 
-          maxMemPercentUsage_ );
+        return reset( lines, columns, memoryPolicy, m_maxTmpFileSize, 
+          m_maxMemPercentUsage );
       }
-
-      template< class ElementType >
+      
+      template< typename ElementType >
+      bool Matrix< ElementType >::reset( unsigned int lines, 
+        unsigned int columns, MemoryPolicy memoryPolicy, 
+        unsigned char maxMemPercentUsage )
+      {
+        return reset( lines, columns, memoryPolicy, m_maxTmpFileSize, 
+          maxMemPercentUsage );
+      }
+      
+      template< typename ElementType >
       bool Matrix< ElementType >::reset( unsigned int lines, 
         unsigned int columns, MemoryPolicy memoryPolicy,
         unsigned long int maxTmpFileSize,
@@ -474,9 +487,9 @@
         
         // Updating the global vars
         
-        maxTmpFileSize_ = maxTmpFileSize;
-        maxMemPercentUsage_ = maxMemPercentUsage;
-        memoryPolicy_ = memoryPolicy;
+        m_maxTmpFileSize = maxTmpFileSize;
+        m_maxMemPercentUsage = maxMemPercentUsage;
+        m_memoryPolicy = memoryPolicy;
         
         /* Update the old buffer if necessary */
         
@@ -486,40 +499,28 @@
           {
             // Updating the global vars
             
-            totalLines_ = lines;
-            totalColumns_ = columns;    
-            lineSize_ = sizeof( ElementType ) * totalColumns_;
+            m_totalLines = lines;
+            m_totalColumns = columns;    
+            
+            const unsigned int lineSizeBytes = (unsigned int)(
+              sizeof( ElementType ) * m_totalColumns );
                   
             // Allocating the lines pointers vectpr
             
-            allLinesPtrsVec_ = new ElementType*[ totalLines_ ];
-            if( allLinesPtrsVec_ == 0 )
+            m_allLinesPtrsVec.resize( m_totalLines, 0 );
+            
+            if( m_memoryPolicy == RAMMemPol )
             {
-              clear();
-              TERP_LOG_AND_RETURN_FALSE( "Tiles allocation error" )
-            }
-            else
-            {
+              m_memoryblocksHandler.resize( m_totalLines );
+              
               for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
-                totalLines_ ; ++allLinesPtrsVecIdx )
+                m_totalLines ; ++allLinesPtrsVecIdx )
               {
-                allLinesPtrsVec_[ allLinesPtrsVecIdx ] = 0;
-              }
-            }
-          
-            if( memoryPolicy_ == RAMMemPol )
-            {
-              for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
-                totalLines_ ; ++allLinesPtrsVecIdx )
-              {
-                allLinesPtrsVec_[ allLinesPtrsVecIdx ] = 
-                  new ElementType[ totalColumns_ ];
-                  
-                if( allLinesPtrsVec_[ allLinesPtrsVecIdx ] == 0 )
-                {
-                  clear();
-                  TERP_LOG_AND_RETURN_FALSE( "Tiles allocation error" )
-                }
+                m_memoryblocksHandler[ allLinesPtrsVecIdx ] =
+                  new ElementType[ m_totalColumns ];
+                
+                m_allLinesPtrsVec[ allLinesPtrsVecIdx ] = 
+                  m_memoryblocksHandler[ allLinesPtrsVecIdx ];
               }
             }
             else
@@ -527,18 +528,14 @@
             
               // Allocating the swap line pointer
               
-              swapLinePtr_ = new ElementType[ totalColumns_ ];
-              if( swapLinePtr_ == 0 )
-              {
-                clear();
-                TERP_LOG_AND_RETURN_FALSE( "Swap line allocation error" )
-              }          
+              m_swapMemoryBlockHandler.reset( new ElementType[ m_totalColumns ] );
+              m_currentSwapTilePtr = m_swapMemoryBlockHandler.get();
             
               // Defining the number of max RAM lines
               
               unsigned int maxRAMLines = 1;
               
-              if( memoryPolicy_ == AutoMemPol )
+              if( m_memoryPolicy == AutoMemPol )
               {
                 // Defining the max number of RAM tiles
                 
@@ -551,45 +548,36 @@
                 const double freeVMem = MIN( totalPhysMem, 
                   ( totalVMem - usedVMem ) );
                 
-                const double linesMem = ( ((double)maxMemPercentUsage_) / 100.0 ) *
+                const double linesMem = ( ((double)m_maxMemPercentUsage) / 100.0 ) *
                   freeVMem;
                   
                 maxRAMLines = (unsigned int)MAX( 1, linesMem / 
-                  ((double)lineSize_) );
+                  ((double)lineSizeBytes) );
               }        
               
               // Allocating RAM lines
               
-              ramLinesIndexesVecSize_ = MIN( maxRAMLines, totalLines_ );
-              
-              ramLinesIndexesVec_ = new unsigned int[ ramLinesIndexesVecSize_ ];
-              if( ramLinesIndexesVec_ == 0 )
-              {
-                clear();
-                TERP_LOG_AND_RETURN_FALSE( "Swap line allocation error" )
-              }          
+              const unsigned int ramLinesIndexesVecSize = MIN( maxRAMLines, 
+                m_totalLines );
+                
+              m_ramLinesIndexesVec.resize( ramLinesIndexesVecSize, 0 );
+              m_memoryblocksHandler.resize( ramLinesIndexesVecSize );
               
               for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx <
-                ramLinesIndexesVecSize_ ; ++allLinesPtrsVecIdx )
+                ramLinesIndexesVecSize ; ++allLinesPtrsVecIdx )
               {
-                allLinesPtrsVec_[ allLinesPtrsVecIdx ] = 
-                  new ElementType[ totalColumns_ ];
-                  
-                if( allLinesPtrsVec_[ allLinesPtrsVecIdx ] == 0 )
-                {
-                  clear();
-                  TERP_LOG_AND_RETURN_FALSE( "Tiles allocation error" )
-                }
-                else
-                {
-                  ramLinesIndexesVec_[ allLinesPtrsVecIdx ] = 
-                    allLinesPtrsVecIdx;
-                }
+                m_memoryblocksHandler[ allLinesPtrsVecIdx ] =  
+                  new ElementType[ m_totalColumns ];
+                
+                m_allLinesPtrsVec[ allLinesPtrsVecIdx ] = 
+                  m_memoryblocksHandler[ allLinesPtrsVecIdx ];                
+                
+                m_ramLinesIndexesVec[ allLinesPtrsVecIdx ] = allLinesPtrsVecIdx;
               }
               
               // Allocating Disk lines
             
-              if( ! allocateDiskLines( ramLinesIndexesVecSize_ ) )
+              if( ! allocateDiskLines( ramLinesIndexesVecSize ) )
               {
                 clear();
                 TERP_LOG_AND_RETURN_FALSE( "Tiles allocation error" )
@@ -607,84 +595,66 @@
         return true;
       }
       
-      template< class ElementType >
+      template< typename ElementType >
       void Matrix< ElementType >::clear()
       {
-        if( allLinesPtrsVec_ )
-        {
-          for( unsigned int allLinesPtrsVecIdx = 0 ; allLinesPtrsVecIdx < 
-            totalLines_ ; ++allLinesPtrsVecIdx ) 
-          {
-            if( allLinesPtrsVec_[ allLinesPtrsVecIdx ] ) 
-            {
-              delete[] allLinesPtrsVec_[ allLinesPtrsVecIdx ];
-            }
-          }  
-          
-          delete[] allLinesPtrsVec_;
-        }
+        for( unsigned int memoryblocksHandlerIdx = 0 ; memoryblocksHandlerIdx <
+          m_memoryblocksHandler.size() ; ++memoryblocksHandlerIdx )
+          delete[] ( m_memoryblocksHandler[ memoryblocksHandlerIdx ] );
+        m_memoryblocksHandler.clear();
         
-        if( openDiskFilesVec_ )
-        {
-          for( unsigned int openDiskFilesVecIdx = 0 ; openDiskFilesVecIdx < 
-            openDiskFilesVecSize_ ; ++openDiskFilesVecIdx )
-          {
-            fclose( openDiskFilesVec_[ openDiskFilesVecIdx ].filePtr_ );
-            remove( openDiskFilesVec_[ openDiskFilesVecIdx ].fileName_.c_str() );
-          }
-          
-          delete[] openDiskFilesVec_; 
-        }
-          
-        if( diskLinesVec_ ) delete[] diskLinesVec_;
+        m_allLinesPtrsVec.clear();
         
-        if( ramLinesIndexesVec_ ) delete[] ramLinesIndexesVec_;
+        m_openDiskFilesHandler.clear();
         
-        if( swapLinePtr_ ) delete[] swapLinePtr_;
-      
+        m_diskLinesInfoVec.clear();
+        
+        m_ramLinesIndexesVec.clear();
+        
+        m_swapMemoryBlockHandler.reset();
+        
         init();
       }    
       
-      template< class ElementType >
+      template< typename ElementType >
       unsigned int Matrix< ElementType >::getLinesNumber() const
       {
-        return totalLines_;
+        return m_totalLines;
       }
 
       
-      template< class ElementType >
+      template< typename ElementType >
       unsigned int Matrix< ElementType >::getColumnsNumber() const
       {
-        return totalColumns_;
+        return m_totalColumns;
       }
       
       
-      template< class ElementType >
+      template< typename ElementType >
       bool Matrix< ElementType >::isEmpty() const
       {
-        return ( totalLines_ == 0 ) ? true : false;
-      }
-      
+        return ( m_totalLines == 0 ) ? true : false;
+      }      
 
-      template< class ElementType >
+      template< typename ElementType >
       const Matrix< ElementType >& Matrix< ElementType >::operator=(
         const Matrix< ElementType >& external )
       {
         TERP_TRUE_OR_THROW( 
-          reset( external.totalLines_, external.totalColumns_,
-          memoryPolicy_, maxTmpFileSize_, maxMemPercentUsage_ ),
+          reset( external.m_totalLines, external.m_totalColumns,
+          m_memoryPolicy, m_maxTmpFileSize, m_maxMemPercentUsage ),
           "Unable to initiate the matrix object" );
         
         unsigned int column = 0;;
         ElementType const* inLinePtr = 0;
         ElementType* outLinePtr = 0;
         
-        for( unsigned int line = 0 ; line < totalLines_ ; ++line ) 
+        for( unsigned int line = 0 ; line < m_totalLines ; ++line ) 
         {
           inLinePtr = external.getScanLine( line );
           outLinePtr = getScanLine( line );
           
-          for( column = 0 ; column < totalColumns_ ; ++column ) {
+          for( column = 0 ; column < m_totalColumns ; ++column ) {
             outLinePtr[ column ] = inLinePtr[ column ];
           }
         }
@@ -692,66 +662,53 @@
         return *this;
       }
       
-      template< class ElementType >
+      template< typename ElementType >
       typename Matrix< ElementType >::MemoryPolicy Matrix< ElementType >::getMemPolicy() const
       {
-        return memoryPolicy_;
+        return m_memoryPolicy;
       }  
       
-      template< class ElementType >
+      template< typename ElementType >
       unsigned long int Matrix< ElementType >::getMaxTmpFileSize() const
       {
-        return maxTmpFileSize_;
+        return m_maxTmpFileSize;
       }
       
-      template< class ElementType >
+      template< typename ElementType >
       unsigned char Matrix< ElementType >::getMaxMemPercentUsage() const
       {
-        return maxMemPercentUsage_;
+        return m_maxMemPercentUsage;
       }
       
-      template< class ElementType >
+      template< typename ElementType >
       bool Matrix< ElementType >::allocateDiskLines( unsigned int startingLineIdx )
       {
-        const unsigned long int diskLinesNmb = totalLines_ - startingLineIdx;
+        const unsigned long int diskLinesNmb = m_totalLines - startingLineIdx;
         
         if( diskLinesNmb )
         {    
+          const unsigned long int lineSizeBytes = (unsigned long int)(
+            sizeof( ElementType ) * m_totalColumns );
+              
           const unsigned long int maxLinesPerFile = ( unsigned long int )
-            floor( ( (double)maxTmpFileSize_ ) / ( (double) lineSize_ ) );
+            floor( ( (double)m_maxTmpFileSize ) / ( (double) lineSizeBytes ) );
               
           const unsigned long int maxFileSize = (unsigned long int)
-            ( maxLinesPerFile * lineSize_ );
+            ( maxLinesPerFile * lineSizeBytes );
             
-          openDiskFilesVecSize_ = (unsigned int)ceil( ((double)diskLinesNmb) 
+          const unsigned int openDiskFilesNumber = (unsigned int)ceil( ((double)diskLinesNmb) 
             / ((double)maxLinesPerFile) );
 
-          // Allocating the open disf files info vector
-          
-          openDiskFilesVec_ = new OpenDiskFilesInfoNode[ openDiskFilesVecSize_ ];
-          if( openDiskFilesVec_ == 0 )
-          {
-            return false;        
-          }      
-            
-          // Allocating the disk lines info vector
-          
-          diskLinesVec_ = new DiskLinesInfoNode[ totalLines_ ];
-          if( diskLinesVec_ == 0 )
-          {
-            return false;        
-          }
-          
           // Allocating each file
+          
+          m_diskLinesInfoVec.resize( m_totalLines );
           
           unsigned int remainingLinesNmb = diskLinesNmb;
           unsigned int fileSize = 0;
           unsigned int fileLinesNumber = 0;    
-          OpenDiskFilesInfoNode auxFileData;  
           unsigned int diskLinesVecIdx = startingLineIdx;
-          char* newTempFileNamePtr;
           
-          for( unsigned int fileIdx = 0 ; fileIdx < openDiskFilesVecSize_ ; 
+          for( unsigned int fileIdx = 0 ; fileIdx < openDiskFilesNumber ; 
             ++fileIdx )
           {
             // Defining the current file size
@@ -761,36 +718,31 @@
             
             if( remainingLinesNmb < maxLinesPerFile )
             {
-              fileSize = (unsigned long int)( lineSize_ * remainingLinesNmb );
+              fileSize = (unsigned long int)( lineSizeBytes * remainingLinesNmb );
               fileLinesNumber = remainingLinesNmb;
             }
             
             remainingLinesNmb -= fileLinesNumber;
             
-            // generating a temp file name 
+            // allocating the temporary file
             
-            newTempFileNamePtr = tempnam( 0, 0 );
-            TERP_TRUE_OR_RETURN_FALSE( newTempFileNamePtr,
-              "Unable to get temporary file name" );        
-              
-            // allocating the file
+            FILE* newFilePtr = 0;
             
-            if( ! createNewDiskFile( fileSize, newTempFileNamePtr, 
-              &( auxFileData.filePtr_ ) ) )
+            if( ! createNewDiskFile( fileSize, &( newFilePtr ) ) )
             {
               TERP_LOGERR( "Unable to create temporary disk file" );
               return false;           
             }
             else
             {
-              auxFileData.fileName_ = newTempFileNamePtr;          
-              
-              openDiskFilesVec_[ fileIdx ] = auxFileData;
+              m_openDiskFilesHandler.push_back( OpenDiskFileHandler() );
+              m_openDiskFilesHandler.back().m_filePtr = newFilePtr;
               
               for( unsigned int lineIdx = 0; lineIdx < fileLinesNumber ; ++lineIdx )
               {
-                diskLinesVec_[ diskLinesVecIdx ].filePtr_ = auxFileData.filePtr_;
-                diskLinesVec_[ diskLinesVecIdx ].fileOff_ = lineIdx * lineSize_;
+                m_diskLinesInfoVec[ diskLinesVecIdx ].m_filePtr = newFilePtr; 
+                m_diskLinesInfoVec[ diskLinesVecIdx ].m_fileOff = lineIdx * 
+                  lineSizeBytes;
                 
                 ++diskLinesVecIdx;
               }
@@ -801,95 +753,92 @@
         return true;
       }
       
-      template< class ElementType >
+      template< typename ElementType >
       ElementType* Matrix< ElementType >::getScanLine( const unsigned int& line ) const
       {
-        TERP_DEBUG_TRUE_OR_THROW( line < totalLines_, "Invalid tile index" );
+        TERP_DEBUG_TRUE_OR_THROW( line < m_totalLines, "Invalid tile index" );
           
-        if( allLinesPtrsVec_[ line ] ) 
+        if( m_allLinesPtrsVec[ line ] ) 
         {
-          return allLinesPtrsVec_[ line ];
+          return m_allLinesPtrsVec[ line ];
         } 
         else 
         {
           // Finding the swap line index 
 
-          TERP_DEBUG_TRUE_OR_THROW( nextSwapLineRamLinesIndexesVecIdx_ <
-            ramLinesIndexesVecSize_, "Internal error" );
-          unsigned int swapLineIdx = ramLinesIndexesVec_[ 
-            nextSwapLineRamLinesIndexesVecIdx_ ];
+          TERP_DEBUG_TRUE_OR_THROW( m_nextSwapLineRamLinesIndexesVecIdx <
+            m_ramLinesIndexesVec.size(), "Internal error" );
+          const unsigned int swapLineIdx = m_ramLinesIndexesVec[ 
+            m_nextSwapLineRamLinesIndexesVecIdx ];
           
-          TERP_DEBUG_TRUE_OR_THROW( line < totalLines_, "Internal error" );
-          DiskLinesInfoNode& inLineData = diskLinesVec_[ line ];
+          TERP_DEBUG_TRUE_OR_THROW( line < m_diskLinesInfoVec.size(), "Internal error" );
+          DiskLineInfo& inLineData = m_diskLinesInfoVec[ line ];
           
-          TERP_DEBUG_TRUE_OR_THROW( swapLineIdx < 
-            totalLines_, "Internal error" )
-          DiskLinesInfoNode& outLineData = diskLinesVec_[ 
+          TERP_DEBUG_TRUE_OR_THROW( swapLineIdx < m_diskLinesInfoVec.size(), 
+            "Internal error" )
+          DiskLineInfo& outLineData = m_diskLinesInfoVec[ 
             swapLineIdx ];
             
-          /* Reading the required tile into RAM (swapTilePtr_) */
+          /* Reading the required tile into RAM */
           
-          TERP_DEBUG_TRUE_OR_THROW( inLineData.filePtr_, "Internal error" );
-          TERP_TRUE_OR_THROW( 0 == fseek( inLineData.filePtr_, 
-            (long)( inLineData.fileOff_ ), SEEK_SET ),
+          TERP_DEBUG_TRUE_OR_THROW( inLineData.m_filePtr, "Internal error" );
+          TERP_TRUE_OR_THROW( 0 == fseek( inLineData.m_filePtr, 
+            (long)( inLineData.m_fileOff ), SEEK_SET ),
             "File seek error" )
             
-          TERP_DEBUG_TRUE_OR_THROW( swapLinePtr_, "Internal error" );
-          TERP_TRUE_OR_THROW( 1 == fread( (void*)swapLinePtr_, 
-            (size_t)( lineSize_ ), 1, inLineData.filePtr_ ),
+          TERP_DEBUG_TRUE_OR_THROW( m_currentSwapTilePtr, "Internal error" );
+          TERP_TRUE_OR_THROW( 1 == fread( (void*)m_currentSwapTilePtr, 
+            (size_t)( sizeof( ElementType ) * m_totalColumns ), 1, inLineData.m_filePtr ),
             "File read error" )
         
-          /* Flushing the swap tile to disk */
+          /* Flushing the choosed tile to disk */
             
-          TERP_TRUE_OR_THROW( 0 == fseek( inLineData.filePtr_, 
-            (long)( inLineData.fileOff_ ), SEEK_SET ),
+          TERP_TRUE_OR_THROW( 0 == fseek( inLineData.m_filePtr, 
+            (long)( inLineData.m_fileOff ), SEEK_SET ),
             "File seek error" );
             
-          TERP_DEBUG_TRUE_OR_THROW( swapLineIdx < totalLines_, 
+          TERP_DEBUG_TRUE_OR_THROW( swapLineIdx < m_allLinesPtrsVec.size(), 
             "Internal error" );          
-          TERP_TRUE_OR_THROW( 1 == fwrite( (void*)allLinesPtrsVec_[ 
+          TERP_TRUE_OR_THROW( 1 == fwrite( (void*)m_allLinesPtrsVec[ 
             swapLineIdx ], 
-            (size_t)( lineSize_ ), 1, inLineData.filePtr_ ),
-            "File write error" )        
+            (size_t)( sizeof( ElementType ) * m_totalColumns ), 1, 
+            inLineData.m_filePtr ), "File write error" )        
           
           // Updating the tile pointers
           
-          ElementType* linePtr = allLinesPtrsVec_[ swapLineIdx ];
+          ElementType* linePtr = m_allLinesPtrsVec[ swapLineIdx ];
           
-          allLinesPtrsVec_[ swapLineIdx ] = 0;
+          m_allLinesPtrsVec[ swapLineIdx ] = 0;
           
-          allLinesPtrsVec_[ line ] = swapLinePtr_;
+          m_allLinesPtrsVec[ line ] = m_currentSwapTilePtr;
           
-          swapLinePtr_ = linePtr;
+          m_currentSwapTilePtr = linePtr;
           
           /* Updating the info vectors */
               
-          outLineData.filePtr_ = inLineData.filePtr_;
-          outLineData.fileOff_ = inLineData.fileOff_;
+          outLineData.m_filePtr = inLineData.m_filePtr;
+          outLineData.m_fileOff = inLineData.m_fileOff;
           
-          inLineData.filePtr_ = 0;
-          inLineData.fileOff_ = 0;    
+          inLineData.m_filePtr = 0;
+          inLineData.m_fileOff = 0;    
           
-          ramLinesIndexesVec_[ nextSwapLineRamLinesIndexesVecIdx_ ] =
-            line;
-          nextSwapLineRamLinesIndexesVecIdx_ = 
-            ( ( nextSwapLineRamLinesIndexesVecIdx_ + 1 ) % 
-            ramLinesIndexesVecSize_ );
-          TERP_DEBUG_TRUE_OR_THROW( nextSwapLineRamLinesIndexesVecIdx_ <
-            ramLinesIndexesVecSize_, "Internal error" );          
+          m_ramLinesIndexesVec[ m_nextSwapLineRamLinesIndexesVecIdx ] = line;
+          m_nextSwapLineRamLinesIndexesVecIdx = 
+            ( ( m_nextSwapLineRamLinesIndexesVecIdx + 1 ) % 
+            m_ramLinesIndexesVec.size() );
+          TERP_DEBUG_TRUE_OR_THROW( m_nextSwapLineRamLinesIndexesVecIdx <
+            m_ramLinesIndexesVec.size(), "Internal error" );          
               
-          return allLinesPtrsVec_[ line ];
+          return m_allLinesPtrsVec[ line ];
         }
       } 
       
-      template< class ElementType >
+      template< typename ElementType >
       bool Matrix< ElementType >::createNewDiskFile( unsigned long int size,
-        const std::string& filename, FILE** fileptr ) const
+        FILE** fileptr ) const
       {
-        TERP_TRUE_OR_RETURN_FALSE( ! filename.empty(),
-          "Invalid file name" );
-          
-        (*fileptr) = fopen( filename.c_str(), "wb+" );
+        //(*fileptr) = fopen( filename.c_str(), "wb+" );
+        (*fileptr) = tmpfile();
         TERP_TRUE_OR_RETURN_FALSE( (*fileptr) != 0, "Invalid file pointer" )
         
         long seekoff = (long)( size - 1 );
