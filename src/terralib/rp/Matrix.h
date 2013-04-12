@@ -600,7 +600,12 @@
       {
         for( unsigned int memoryblocksHandlerIdx = 0 ; memoryblocksHandlerIdx <
           m_memoryblocksHandler.size() ; ++memoryblocksHandlerIdx )
-          delete[] ( m_memoryblocksHandler[ memoryblocksHandlerIdx ] );
+        {
+          if( m_memoryblocksHandler[ memoryblocksHandlerIdx ] )
+          {
+            delete[] ( m_memoryblocksHandler[ memoryblocksHandlerIdx ] );
+          }
+        }
         m_memoryblocksHandler.clear();
         
         m_allLinesPtrsVec.clear();
