@@ -232,7 +232,6 @@ void TsPropertyTypes::tcGeometryPropertyFirstConstructor()
   CPPUNIT_ASSERT(geom_name.isRequired() == true);
   CPPUNIT_ASSERT(geom_name.getDefaultValue() == 0);
   CPPUNIT_ASSERT(geom_name.getId() == 1);
-  CPPUNIT_ASSERT(geom_name.getExtent() == 0);
   CPPUNIT_ASSERT(geom_name.getSRID() == 0);
   CPPUNIT_ASSERT(geom_name.getParent() == 0);
   CPPUNIT_ASSERT_MESSAGE("te::gm::GetCoordDimension(te::gm::UnknownGeometryType) cai - Should be tested in geometry/Utils ", 1 == 2); 
@@ -244,7 +243,6 @@ void TsPropertyTypes::tcGeometryPropertyFirstConstructorAssign()
   te::gm::GeometryProperty geom_name("attribute_geom_name",  true, 0, 1);
   geom_name.setGeometryType(te::gm::MultiPointType);
   geom_name.setName("attribute_name_changed");
-  geom_name.setExtent(new te::gm::Envelope(1.0, 1.0, 3.0, 3.0));
   std::string ss = "MULTIPOINT(1 1, 2 2, 3 3)" ;
   geom_name.setDefaultValue(new std::string("MULTIPOINT(1 1, 2 2, 3 3)"));
   //geom_name.setDefaultValue(&ss); //destructor is called and boom!
@@ -255,7 +253,6 @@ void TsPropertyTypes::tcGeometryPropertyFirstConstructorAssign()
   CPPUNIT_ASSERT(geom_name.isRequired() == true);
   CPPUNIT_ASSERT(*geom_name.getDefaultValue() == ss);
   CPPUNIT_ASSERT(geom_name.getId() == 1);
-  CPPUNIT_ASSERT(geom_name.getExtent()->m_llx == 1 &&  geom_name.getExtent()->m_lly == 1 && geom_name.getExtent()->m_urx == 3 && geom_name.getExtent()->m_ury == 3);
   CPPUNIT_ASSERT(geom_name.getSRID() == 0);
   CPPUNIT_ASSERT(geom_name.getParent() == 0);
 }
@@ -270,7 +267,6 @@ void TsPropertyTypes::tcGeometryPropertyCopyConstructor()
   CPPUNIT_ASSERT(geom.getDefaultValue() == 0);
   CPPUNIT_ASSERT(geom.getId() == 2333);
   CPPUNIT_ASSERT(te::gm::GetCoordDimension(geom.getGeometryType()) == 2);
-  CPPUNIT_ASSERT(geom.getExtent() == 0);
   CPPUNIT_ASSERT(geom.getSRID() == 0);
   CPPUNIT_ASSERT(geom.getGeometryType() == te::gm::GeometryType);
   CPPUNIT_ASSERT(geom.getParent() == 0);
@@ -284,7 +280,6 @@ void TsPropertyTypes::tcGeometryPropertyCopyConstructor()
   CPPUNIT_ASSERT(geom_copy.isRequired() == true);
   CPPUNIT_ASSERT(geom_copy.getDefaultValue() == 0);
   CPPUNIT_ASSERT(geom_copy.getId() == 2333);
-  CPPUNIT_ASSERT(geom_copy.getExtent() == 0);
   CPPUNIT_ASSERT(geom_copy.getSRID() == 0);
   CPPUNIT_ASSERT(geom_copy.getParent() == 0);
 }
@@ -300,14 +295,12 @@ void TsPropertyTypes::tcGeometryProperty()
   CPPUNIT_ASSERT(geom.getDefaultValue() == 0);
   CPPUNIT_ASSERT(geom.getId() == 2333);
   CPPUNIT_ASSERT(te::gm::GetCoordDimension(geom.getGeometryType()) == 2);
-  CPPUNIT_ASSERT(geom.getExtent() == 0);
   CPPUNIT_ASSERT(geom.getSRID() == 0);
   CPPUNIT_ASSERT(geom.getGeometryType() == te::gm::GeometryType);
   CPPUNIT_ASSERT(geom.getParent() == 0);
 
   // PolygonMType
   te::gm::GeometryProperty geompol("attribute_geom_polm", 4326, te::gm::PolygonMType, true, 0, 23331);
-  geompol.setExtent(new te::gm::Envelope(-180.0, -90.0, +180.0, +90.0));
 
   CPPUNIT_ASSERT(geompol.getType() == te::dt::GEOMETRY_TYPE );
   CPPUNIT_ASSERT(geompol.getName() == "attribute_geom_polm");
@@ -316,8 +309,6 @@ void TsPropertyTypes::tcGeometryProperty()
   CPPUNIT_ASSERT(geompol.getDefaultValue() == 0);
   CPPUNIT_ASSERT(geompol.getId() == 23331);
   CPPUNIT_ASSERT(te::gm::GetCoordDimension(geompol.getGeometryType()) == 3);
-  CPPUNIT_ASSERT(geompol.getExtent());
-  CPPUNIT_ASSERT(geompol.getExtent()->m_llx == -180.0 &&  geompol.getExtent()->m_lly == -90.0 && geompol.getExtent()->m_urx == +180.0 && geompol.getExtent()->m_ury == +90.0);
   CPPUNIT_ASSERT(geompol.getSRID() == 4326);
   CPPUNIT_ASSERT(geompol.getGeometryType() == te::gm::PolygonMType);
   CPPUNIT_ASSERT(geompol.getParent() == 0);
@@ -332,13 +323,6 @@ void TsPropertyTypes::tcGeometryProperty()
   CPPUNIT_ASSERT(static_cast<te::gm::GeometryProperty*>(geom_cl)->isRequired() == true);
   CPPUNIT_ASSERT(static_cast<te::gm::GeometryProperty*>(geom_cl)->getDefaultValue() == 0);
   CPPUNIT_ASSERT(te::gm::GetCoordDimension(static_cast<te::gm::GeometryProperty*>(geom_cl)->getGeometryType()) == 3);
-  CPPUNIT_ASSERT(static_cast<te::gm::GeometryProperty*>(geom_cl)->getExtent());
-
-  CPPUNIT_ASSERT(static_cast<te::gm::GeometryProperty*>(geom_cl)->getExtent()->m_llx == -180.0  &&  
-    static_cast<te::gm::GeometryProperty*>(geom_cl)->getExtent()->m_lly == -90.0 && 
-    static_cast<te::gm::GeometryProperty*>(geom_cl)->getExtent()->m_urx == +180.0 && 
-    static_cast<te::gm::GeometryProperty*>(geom_cl)->getExtent()->m_ury == +90.0);
-
   CPPUNIT_ASSERT(static_cast<te::gm::GeometryProperty*>(geom_cl)->getSRID() == 4326);
   CPPUNIT_ASSERT(static_cast<te::gm::GeometryProperty*>(geom_cl)->getGeometryType() == te::gm::PolygonMType); 
 }
@@ -685,4 +669,37 @@ void TsPropertyTypes::tcRasterPropertyAssignOp()
   CPPUNIT_ASSERT(rstp_assign.getParent() == 0); 
   CPPUNIT_ASSERT(rstp_assign.getBandProperties()[0] == rstp->getBandProperties()[0]); 
   CPPUNIT_ASSERT(rstp_assign.getBandProperties()[1] == rstp->getBandProperties()[1]); 
+}
+
+void TsPropertyTypes::tcDateTimeProperty()
+{
+  te::dt::DateTimeProperty d1("data1", te::dt::DATE);
+  te::dt::DateTimeProperty d2("datap", te::dt::DATE_PERIOD);
+  te::dt::DateTimeProperty d3("data_dur", te::dt::DATE_DURATION,te::dt::YEAR);
+  te::dt::DateTimeProperty d4("time_dur", te::dt::TIME_DURATION,te::dt::YEAR);
+  te::dt::DateTimeProperty d5("time_inst", te::dt::TIME_INSTANT,te::dt::YEAR);
+  te::dt::DateTimeProperty d6("time_period", te::dt::TIME_PERIOD,te::dt::YEAR);
+  te::dt::DateTimeProperty d7("time_inst", te::dt::TIME_INSTANT_TZ,te::dt::YEAR);
+  te::dt::DateTimeProperty d8("ordinal_inst", te::dt::ORDINAL_INSTANT,te::dt::YEAR);
+  te::dt::DateTimeProperty d9("ordinal_period", te::dt::ORDINAL_PERIOD,te::dt::YEAR);
+
+  CPPUNIT_ASSERT(d1.getName() == "data1");
+  CPPUNIT_ASSERT(d1.getType() == te::dt::DATETIME_TYPE);
+  CPPUNIT_ASSERT(d1.getSubType() == te::dt::DATE);
+
+  CPPUNIT_ASSERT(d2.getType() == te::dt::DATETIME_TYPE);
+  CPPUNIT_ASSERT(d2.getSubType() == te::dt::DATE_PERIOD);
+  CPPUNIT_ASSERT(d2.getResolution() == te::dt::UNKNOWN);
+
+  // Clone
+  te::dt::DateTimeProperty* d10 = static_cast<te::dt::DateTimeProperty*>(d9.clone());
+  CPPUNIT_ASSERT(d10->getName() == "ordinal_period");
+  CPPUNIT_ASSERT(d10->getType() == te::dt::DATETIME_TYPE);
+  CPPUNIT_ASSERT(d10->getSubType() == te::dt::ORDINAL_PERIOD);
+
+  te::dt::DateTimeProperty d11("data1");
+  d11.operator=(*d10) ;
+  CPPUNIT_ASSERT(d10->getName() == "ordinal_period");
+  CPPUNIT_ASSERT(d10->getType() == te::dt::DATETIME_TYPE);
+  CPPUNIT_ASSERT(d10->getSubType() == te::dt::ORDINAL_PERIOD);
 }
