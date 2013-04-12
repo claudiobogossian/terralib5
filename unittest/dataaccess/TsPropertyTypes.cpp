@@ -134,7 +134,6 @@ void TsPropertyTypes::tcCreatePropertyTypes()
     CPPUNIT_ASSERT(geom.getDefaultValue() == 0);
     CPPUNIT_ASSERT(geom.getId() == 2333);
     CPPUNIT_ASSERT(te::gm::GetCoordDimension(geom.getGeometryType()) == 2);
-    CPPUNIT_ASSERT(geom.getExtent() == 0);
     CPPUNIT_ASSERT(geom.getSRID() == 0);
     CPPUNIT_ASSERT(geom.getGeometryType() == te::gm::GeometryType);
     CPPUNIT_ASSERT(geom.getParent() == 0);
@@ -142,7 +141,6 @@ void TsPropertyTypes::tcCreatePropertyTypes()
 
   {
     te::gm::GeometryProperty geom("attribute_geom_polm", 4326, te::gm::PolygonMType, true, 0, 23331);
-    geom.setExtent(new te::gm::Envelope(-180.0, -90.0, +180.0, +90.0));
 
     CPPUNIT_ASSERT(geom.getType() == te::dt::GEOMETRY_TYPE );
     CPPUNIT_ASSERT(geom.getName() == "attribute_geom_polm");
@@ -151,8 +149,6 @@ void TsPropertyTypes::tcCreatePropertyTypes()
     CPPUNIT_ASSERT(geom.getDefaultValue() == 0);
     CPPUNIT_ASSERT(geom.getId() == 23331);
     CPPUNIT_ASSERT(te::gm::GetCoordDimension(geom.getGeometryType()) == 3);
-    CPPUNIT_ASSERT(geom.getExtent());
-    CPPUNIT_ASSERT(geom.getExtent()->m_llx == -180.0 &&  geom.getExtent()->m_lly == -90.0 && geom.getExtent()->m_urx == +180.0 && geom.getExtent()->m_ury == +90.0);
     CPPUNIT_ASSERT(geom.getSRID() == 4326);
     CPPUNIT_ASSERT(geom.getGeometryType() == te::gm::PolygonMType);
     CPPUNIT_ASSERT(geom.getParent() == 0);
