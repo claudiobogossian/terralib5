@@ -29,7 +29,7 @@
 #include "Event.h"
 #include "Enums.h"
 
-//Qt
+// Qt
 #include <QtCore/QSize>
 
 // Forward declarations

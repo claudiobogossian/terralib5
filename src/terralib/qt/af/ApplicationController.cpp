@@ -206,7 +206,7 @@ QMenuBar* te::qt::af::ApplicationController::findMenuBar(const QString& id) cons
 
 QMenuBar* te::qt::af::ApplicationController::getMenuBar(const QString& id) const
 {
-  throw Exception("Not implemented yet.");
+  return m_menuBars[0];
 }
 
 QAction* te::qt::af::ApplicationController::findAction(const QString& id) const

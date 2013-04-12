@@ -18,50 +18,44 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/DisplayFrameFactory.cpp
+  \file terralib/qt/af/settings/DisplayWidgetFactory.cpp
 
   \brief A factory to build the display frame object.
 */
 
-#include "DisplayFrame.h"
-#include "DisplayFrameFactory.h"
+#include "DisplayWidget.h"
+#include "DisplayWidgetFactory.h"
 
-te::qt::af::DisplayFrameFactory* te::qt::af::DisplayFrameFactory::sm_factory(0);
+te::qt::af::DisplayWidgetFactory* te::qt::af::DisplayWidgetFactory::sm_factory(0);
 
-void te::qt::af::DisplayFrameFactory::initialize()
+void te::qt::af::DisplayWidgetFactory::initialize()
 {
   finalize();
-  sm_factory = new DisplayFrameFactory;
+  sm_factory = new DisplayWidgetFactory;
 }
 
-void te::qt::af::DisplayFrameFactory::finalize()
+void te::qt::af::DisplayWidgetFactory::finalize()
 {
   delete sm_factory;
   sm_factory = 0;
 }
 
-const std::string& te::qt::af::DisplayFrameFactory::getType() const
+te::qt::af::DisplayWidgetFactory::~DisplayWidgetFactory()
 {
-  return "DisplayFrame";
 }
 
-te::qt::af::DisplayFrameFactory::~DisplayFrameFactory()
+te::qt::af::AbstractSettingWidget* te::qt::af::DisplayWidgetFactory::build()
 {
-
+  return new DisplayWidget;
 }
 
-te::qt::af::ComponentWidget* te::qt::af::DisplayFrameFactory::build()
-{
-  return new DisplayFrame;
-}
-
-te::qt::af::DisplayFrameFactory::DisplayFrameFactory()
-  : te::qt::af::ComponentWidgetFactory("DisplayFrame")
+te::qt::af::DisplayWidgetFactory::DisplayWidgetFactory() : 
+te::qt::af::SettingsWidgetsFactory(QObject::tr("Display").toStdString())
 {
 
 }
 
-te::qt::af::ComponentWidget* te::qt::af::DisplayFrameFactory::create(QWidget* parent)
+te::qt::af::AbstractSettingWidget* te::qt::af::DisplayWidgetFactory::create(QWidget* parent)
 {
-  return new DisplayFrame(parent);
+  return new DisplayWidget(parent);
 }

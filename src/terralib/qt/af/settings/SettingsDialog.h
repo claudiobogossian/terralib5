@@ -18,52 +18,60 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/DisplayFrame.h
+  \file SettingsDialog.h
 
-  \brief A frame for setting display options.
+  \brief A for customization of the application components.
 */
 
-#ifndef __TERRALIB_QT_AF_DISPLAYFRAME_H
-#define __TERRALIB_QT_AF_DISPLAYFRAME_H
+#ifndef __TERRALIB_QT_AF_SETTINGSDIALOG_H
+#define __TERRALIB_QT_AF_SETTINGSDIALOG_H
 
-// TerraLib
 #include "../Config.h"
-#include "ComponentWidget.h"
 
-#include <memory>
+// Qt
+#include <QDialog>
+#include <QMap>
 
-namespace Ui { class DisplayFrameForm; }
+// Forward declarations
+namespace Ui
+{
+  class SettingsDialogForm;
+}
+
+class QListWidgetItem;
 
 namespace te
 {
   namespace qt
   {
     namespace af
-      {
-      /*!
-        \class DisplayFrame
-
-        \brief A frame for setting display options.
-      */
-      class TEQTAFEXPORT DisplayFrame : public ComponentWidget
+    {
+      class TEQTAFEXPORT SettingsDialog : public QDialog
       {
         Q_OBJECT
 
         public:
 
-          DisplayFrame(QWidget* parent = 0);
+          SettingsDialog (QWidget* parent=0);
 
-          ~DisplayFrame();
+          ~SettingsDialog();
+
+        protected slots:
+
+          void	settingsChanged (QListWidgetItem* current, QListWidgetItem* previous);
+
+          void updateApplyButtonState(const bool& state);
+
+        protected:
+
+          QMap<QString, int> m_widPos;
 
         private:
 
-          std::auto_ptr<Ui::DisplayFrameForm> m_ui;
-
+          Ui::SettingsDialogForm* m_ui;
       };
+    }
+  }
+}
 
-    }   // end namespace af
-  }     // end namespace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_AF_DISPLAYFRAME_H
-
+#endif //__TERRALIB_QT_AF_SETTINGSDIALOG_H

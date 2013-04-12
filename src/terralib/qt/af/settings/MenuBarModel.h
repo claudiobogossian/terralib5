@@ -39,7 +39,7 @@ namespace te
 {
   namespace qt
   {
-    namespace widgets
+    namespace af
     {
 
       /*!
@@ -49,6 +49,8 @@ namespace te
       */
       class MenuBarModel : public QAbstractTableModel
       {
+        Q_OBJECT
+
         public:
 
           /*!
@@ -78,21 +80,20 @@ namespace te
           bool setData (const QModelIndex & index, const QVariant & value, int role = Qt::EditRole);
 
           /*!
-            \brief Check the actions contained in \a toolbar.
+            \brief Check the actions contained in \a acts.
 
-            \param toolBar The toolbar to be used by the model.
+            \param acts List of the actions.
           */
-          void updateActionsState(QToolBar* toolBar);
-
-          /*!
-            \brief Returns a vector with all checked actions.
-          */
-          std::vector<QAction*> getActions() const;
+          void updateActionsState(const QList<QAction*>& acts);
 
           /*!
             \brief Sets the menu bar to be used in the model.
           */
           void setMenuBar(QMenuBar* mnuBar);
+
+        signals:
+
+          void updateAction(QAction*, const bool&);
 
         protected:
 

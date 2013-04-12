@@ -18,23 +18,20 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/DisplayFrameFactory.h
+  \file ToolbarsWidgetFactory.h
 
-  \brief A factory to build the display frame object.
+  \brief A factory to build the tool bars widget object.
 */
 
-#ifndef __TERRALIB_QT_AF_DISPLAYFRAMEFACTORY_H
-#define __TERRALIB_QT_AF_DISPLAYFRAMEFACTORY_H
-
-// QT
-#include <QtGui/QWidget>
+#ifndef __TERRALIB_QT_AF_TOOLBARSWIDGETFACTORY_H
+#define __TERRALIB_QT_AF_TOOLBARSWIDGETFACTORY_H
 
 // TerraLib
-#include "../../../common/AbstractFactory.h"
 #include "../Config.h"
-#include "ComponentWidget.h"
-#include "ComponentWidgetFactory.h"
-#include "DisplayFrame.h"
+#include "SettingsWidgetsFactory.h"
+
+// Forward declaration
+class QWidget;
 
 namespace te
 {
@@ -43,11 +40,11 @@ namespace te
     namespace af
     {
       /*!
-        \class DisplayFrameFactory
+        \class ToolbarsWidgetFactory
 
-        \brief A factory to build the display frame object.
+        \brief A factory to build the Table widget object.
       */
-      class TEQTAFEXPORT DisplayFrameFactory : public te::qt::af::ComponentWidgetFactory
+      class TEQTAFEXPORT ToolbarsWidgetFactory : public SettingsWidgetsFactory
       {
         public:
 
@@ -55,24 +52,22 @@ namespace te
 
           static void finalize();
 
-          const std::string& getType() const;
+          ~ToolbarsWidgetFactory();
 
-          ~DisplayFrameFactory();
+        protected:        
 
-        protected:
+          AbstractSettingWidget* build();
 
-          te::qt::af::ComponentWidget* build();
+          ToolbarsWidgetFactory();
 
-          DisplayFrameFactory();
-
-          virtual te::qt::af::ComponentWidget* create(QWidget* parent = 0);
+          virtual AbstractSettingWidget* create(QWidget* parent = 0);
 
         private:
 
-          static DisplayFrameFactory* sm_factory;
-
+          static ToolbarsWidgetFactory* sm_factory;
       };
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
-#endif // __TERRALIB_QT_AF_DISPLAYFRAMEFACTORY_H
+
+#endif // __TERRALIB_QT_AF_TOOLBARSWIDGETFACTORY_H

@@ -18,22 +18,17 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/TableFrameFactory.h
+  \file DisplayWidgetFactory.h
 
-  \brief A factory to build the Table frame object.
+  \brief A factory to build the display frame object.
 */
 
-#ifndef __TERRALIB_QT_AF_TABLEFRAMEFACTORY_H
-#define __TERRALIB_QT_AF_TABLEFRAMEFACTORY_H
-
-// QT
-#include <QtGui/QWidget>
+#ifndef __TERRALIB_QT_AF_DISPLAYWIDGETFACTORY_H
+#define __TERRALIB_QT_AF_DISPLAYWIDGETFACTORY_H
 
 // TerraLib
-#include "../../../common/AbstractFactory.h"
 #include "../Config.h"
-#include "ComponentWidgetFactory.h"
-#include "TableFrame.h"
+#include "SettingsWidgetsFactory.h"
 
 namespace te
 {
@@ -42,11 +37,11 @@ namespace te
     namespace af
     {
       /*!
-        \class TableFrameFactory
+        \class DisplayWidgetFactory
 
-        \brief A factory to build the Table frame object.
+        \brief A factory to build the display frame object.
       */
-      class TEQTAFEXPORT TableFrameFactory : public te::qt::af::ComponentWidgetFactory
+      class TEQTAFEXPORT DisplayWidgetFactory : public SettingsWidgetsFactory
       {
         public:
 
@@ -54,23 +49,21 @@ namespace te
 
           static void finalize();
 
-          const std::string& getType() const;
+          ~DisplayWidgetFactory();
 
-          ~TableFrameFactory();
+        protected:
 
-        protected:        
+          AbstractSettingWidget* build();
 
-          te::qt::af::ComponentWidget* build();
+          DisplayWidgetFactory();
 
-          TableFrameFactory();
-
-          virtual te::qt::af::ComponentWidget* create(QWidget* parent = 0);
+          virtual AbstractSettingWidget* create(QWidget* parent = 0);
 
         private:
 
-          static TableFrameFactory* sm_factory;
+          static DisplayWidgetFactory* sm_factory;
       };
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te
-#endif // __TERRALIB_QT_AF_TABLEFRAMEFACTORY_H
+#endif // __TERRALIB_QT_AF_DISPLAYWIDGETFACTORY_H

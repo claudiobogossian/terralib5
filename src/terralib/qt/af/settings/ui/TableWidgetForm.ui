@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>TableFrameForm</class>
- <widget class="QWidget" name="TableFrameForm">
+ <class>TableWidgetForm</class>
+ <widget class="QWidget" name="TableWidgetForm">
   <property name="geometry">
    <rect>
     <x>0</x>

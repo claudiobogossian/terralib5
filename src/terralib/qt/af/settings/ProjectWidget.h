@@ -18,21 +18,23 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/ProjectFrame.h
+  \file ProjectWidget.h
 
   \brief A frame for setting project options.
 */
 
-#ifndef __TERRALIB_QT_AF_PROJECTFRAME_H
-#define __TERRALIB_QT_AF_PROJECTFRAME_H
+#ifndef __TERRALIB_QT_AF_PROJECTWIDGET_H
+#define __TERRALIB_QT_AF_PROJECTWIDGET_H
 
 // TerraLib
 #include "../Config.h"
-#include "ComponentWidget.h"
+#include "AbstractSettingWidget.h"
 
-#include <memory>
-
-namespace Ui { class ProjectFrameForm; }
+// Forwar declaration
+namespace Ui 
+{ 
+  class ProjectWidgetForm; 
+}
 
 namespace te
 {
@@ -41,28 +43,33 @@ namespace te
     namespace af
     {
       /*!
-        \class ProjectFrame
+        \class ProjectWidget
 
         \brief A frame for setting grid options.
       */
-      class TEQTAFEXPORT ProjectFrame : public ComponentWidget
+      class TEQTAFEXPORT ProjectWidget : public AbstractSettingWidget
       {
         Q_OBJECT
 
         public:
 
-          ProjectFrame(QWidget* parent = 0);
+          ProjectWidget(QWidget* parent = 0);
 
-          ~ProjectFrame();
+          ~ProjectWidget();
+
+          virtual void saveChanges(){}
+
+        public slots:
+
+          void onApplyButtonClicked(){}
 
         private:
 
-          std::auto_ptr<Ui::ProjectFrameForm> m_ui;
-
+          Ui::ProjectWidgetForm* m_ui;
       };
 
     }   // end namespace af
   }     // end namespace qt
 }       // end namespace te
 
-#endif // __TERRALIB_QT_AF_PROJECTFRAME_H
+#endif // __TERRALIB_QT_AF_PROJECTWIDGET_H

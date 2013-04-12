@@ -18,52 +18,56 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/TableFrame.h
+  \file TableWidgetFactory.h
 
-  \brief A frame for setting Table options.
+  \brief A factory to build the Table frame object.
 */
 
-#ifndef __TERRALIB_QT_AF_TABLEFRAME_H
-#define __TERRALIB_QT_AF_TABLEFRAME_H
+#ifndef __TERRALIB_QT_AF_TABLEWIDGETFACTORY_H
+#define __TERRALIB_QT_AF_TABLEWIDGETFACTORY_H
 
 // TerraLib
 #include "../Config.h"
-#include "ComponentWidget.h"
+#include "SettingsWidgetsFactory.h"
 
-#include <memory>
-
-namespace Ui { class TableFrameForm; }
+// Forward declaration
+class QWidget;
 
 namespace te
 {
   namespace qt
-  {
+  {   
     namespace af
     {
       /*!
-        \class TableFrame
+        \class TableWidgetFactory
 
-        \brief A frame for setting Table options.
+        \brief A factory to build the Table widget object.
       */
-      class TEQTAFEXPORT TableFrame : public ComponentWidget
+      class TEQTAFEXPORT TableWidgetFactory : public SettingsWidgetsFactory
       {
-        Q_OBJECT
-
         public:
 
-          TableFrame(QWidget* parent = 0);
+          static void initialize();
 
-          ~TableFrame();
+          static void finalize();
+
+          ~TableWidgetFactory();
+
+        protected:        
+
+          AbstractSettingWidget* build();
+
+          TableWidgetFactory();
+
+          virtual AbstractSettingWidget* create(QWidget* parent = 0);
 
         private:
 
-          std::auto_ptr<Ui::TableFrameForm> m_ui;
-
+          static TableWidgetFactory* sm_factory;
       };
+    } // end namespace af
+  }   // end namespace qt
+}     // end namespace te
 
-    }   // end namespace af
-  }     // end namespace qt
-}       // end namespace te
-
-#endif // __TERRALIB_QT_AF_TABLEFRAME_H
-
+#endif // __TERRALIB_QT_AF_TABLEWIDGETFACTORY_H

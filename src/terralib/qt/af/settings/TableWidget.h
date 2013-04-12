@@ -18,23 +18,60 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/TableFrame.cpp
+  \file TableWidget.h
 
   \brief A frame for setting Table options.
 */
 
-#include "ui_TableFrameForm.h"
-#include "TableFrame.h"
+#ifndef __TERRALIB_QT_AF_TABLEWIDGET_H
+#define __TERRALIB_QT_AF_TABLEWIDGET_H
 
-te::qt::af::TableFrame::TableFrame(QWidget* parent)
-  : ComponentWidget(parent),
-    m_ui(new Ui::TableFrameForm)
-{
-  m_ui->setupUi(this);
-  m_label = "Table";
+// TerraLib
+#include "../Config.h"
+#include "AbstractSettingWidget.h"
+
+// Forwar declaration
+namespace Ui 
+{ 
+  class TableWidgetForm; 
 }
 
-te::qt::af::TableFrame::~TableFrame()
+namespace te
 {
+  namespace qt
+  {
+    namespace af
+    {
+      /*!
+        \class TableWidget
 
-}
+        \brief A frame for setting Table options.
+      */
+      class TEQTAFEXPORT TableWidget : public AbstractSettingWidget
+      {
+        Q_OBJECT
+
+        public:
+
+          TableWidget(QWidget* parent = 0);
+
+          ~TableWidget();
+
+          virtual void saveChanges(){}
+
+        public slots:
+
+          void onApplyButtonClicked(){}
+
+        private:
+
+          Ui::TableWidgetForm* m_ui;
+
+      };
+
+    }   // end namespace af
+  }     // end namespace qt
+}       // end namespace te
+
+#endif // __TERRALIB_QT_AF_TABLEWIDGET_H
+

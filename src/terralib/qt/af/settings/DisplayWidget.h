@@ -18,62 +18,59 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/SystemSettings.h
+  \file DisplayWidget.h
 
-  \brief A widget for setting user preferences.
+  \brief A frame for setting display options.
 */
 
-#ifndef __TERRALIB_QT_AF_SYSTEMSETTINGS_H
-#define __TERRALIB_QT_AF_SYSTEMSETTINGS_H
-
-// QT
-#include <QtGui/QDialog>
-#include <QtGui/QListWidgetItem>
+#ifndef __TERRALIB_QT_AF_DISPLAYWIDGET_H
+#define __TERRALIB_QT_AF_DISPLAYWIDGET_H
 
 // TerraLib
 #include "../Config.h"
+#include "AbstractSettingWidget.h"
 
-#include <memory>
-
-namespace Ui { class SystemSettingsForm; }
+// Forwar declaration
+namespace Ui 
+{ 
+  class DisplayWidgetForm; 
+}
 
 namespace te
 {
   namespace qt
   {
     namespace af
-    {
-      class ComponentWidget;
+      {
       /*!
-        \class SystemSettings
+        \class DisplayWidget
 
-        \brief A widget for setting user preferences.
+        \brief A frame for setting display options.
       */
-      class TEQTAFEXPORT SystemSettings : public QDialog
+      class TEQTAFEXPORT DisplayWidget : public AbstractSettingWidget
       {
         Q_OBJECT
 
         public:
 
-          SystemSettings(QWidget* parent = 0);
+          DisplayWidget(QWidget* parent = 0);
 
-          ~SystemSettings();
+          ~DisplayWidget();
 
-          public slots:
+          virtual void saveChanges(){}
 
-            void on_itemClicked(QListWidgetItem * current);
+        public slots:
+
+          void onApplyButtonClicked(){}
 
         private:
 
-          std::auto_ptr<Ui::SystemSettingsForm> m_ui;
-
-          ComponentWidget* m_curComp;
-
+          Ui::DisplayWidgetForm* m_ui;
       };
 
     }   // end namespace af
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_AF_SYSTEMSETTINGS_H
+#endif  // __TERRALIB_QT_AF_DISPLAYWIDGET_H
 

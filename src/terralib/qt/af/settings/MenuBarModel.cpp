@@ -16,22 +16,22 @@ std::vector<QAction*> GetActions(QList<QAction*> acts)
   return res;
 }
 
-te::qt::widgets::MenuBarModel::MenuBarModel(QMenuBar* mnuBar, QObject* parent) :
+te::qt::af::MenuBarModel::MenuBarModel(QMenuBar* mnuBar, QObject* parent) :
 QAbstractTableModel(parent)
 {
   setMenuBar(mnuBar);
 }
 
-te::qt::widgets::MenuBarModel::~MenuBarModel()
+te::qt::af::MenuBarModel::~MenuBarModel()
 {
 }
 
-Qt::ItemFlags	te::qt::widgets::MenuBarModel::flags (const QModelIndex & index) const
+Qt::ItemFlags	te::qt::af::MenuBarModel::flags (const QModelIndex & index) const
 {
   return Qt::ItemIsEnabled | Qt::ItemIsUserCheckable;
 }
           
-QVariant te::qt::widgets::MenuBarModel::data (const QModelIndex & index, int role) const
+QVariant te::qt::af::MenuBarModel::data (const QModelIndex & index, int role) const
 {
   if(!index.isValid())
     return QVariant();
@@ -65,39 +65,45 @@ QVariant te::qt::widgets::MenuBarModel::data (const QModelIndex & index, int rol
   }
 }
           
-QVariant te::qt::widgets::MenuBarModel::headerData (int section, Qt::Orientation orientation, int role) const
+QVariant te::qt::af::MenuBarModel::headerData (int section, Qt::Orientation orientation, int role) const
 {
   return QVariant();
 }
       
-int te::qt::widgets::MenuBarModel::columnCount (const QModelIndex & parent) const
+int te::qt::af::MenuBarModel::columnCount (const QModelIndex & parent) const
 {
   return 1;
 }
           
-int te::qt::widgets::MenuBarModel::rowCount (const QModelIndex & parent) const
+int te::qt::af::MenuBarModel::rowCount (const QModelIndex & parent) const
 {
   return (int)m_actions.size();
 }
 
-bool te::qt::widgets::MenuBarModel::setData (const QModelIndex & index, const QVariant & value, int role)
+bool te::qt::af::MenuBarModel::setData (const QModelIndex & index, const QVariant & value, int role)
 {
   if (!index.isValid())
     return false;
 
+  int r = index.row();
+
   if(role == Qt::CheckStateRole)
-    m_actionsActivation[index.row()] = (value.toInt() == Qt::Checked) ?  true : false;
+    m_actionsActivation[r] = (value.toInt() == Qt::Checked) ?  true : false;
+
+  QAction* act = m_actions[r];
+  bool toAdd = m_actionsActivation[r];
+
+  emit updateAction(act, toAdd);
 
   return true;
 }
 
-void te::qt::widgets::MenuBarModel::updateActionsState(QToolBar* toolBar)
+void te::qt::af::MenuBarModel::updateActionsState(const QList<QAction*>& acts)
 {
+  QList<QAction*>::const_iterator it;
+
   m_actionsActivation.clear();
   m_actionsActivation = std::vector<bool>(m_actions.size(), false);
-
-  QList<QAction*> acts = toolBar->actions();
-  QList<QAction*>::iterator it;
 
   for(it = acts.begin(); it != acts.end(); ++it)
   {
@@ -109,18 +115,7 @@ void te::qt::widgets::MenuBarModel::updateActionsState(QToolBar* toolBar)
   reset();
 }
 
-std::vector<QAction*> te::qt::widgets::MenuBarModel::getActions() const
-{
-  std::vector<QAction*> res;
-
-  for (size_t i=0; i<m_actions.size(); i++)
-    if(m_actionsActivation[i])
-      res.push_back(m_actions[i]);
-
-  return res;
-}
-
-void te::qt::widgets::MenuBarModel::setMenuBar(QMenuBar* mnuBar)
+void te::qt::af::MenuBarModel::setMenuBar(QMenuBar* mnuBar)
 {
   QList<QAction*> acts = mnuBar->findChildren<QAction*>();
   m_actions = GetActions(acts);

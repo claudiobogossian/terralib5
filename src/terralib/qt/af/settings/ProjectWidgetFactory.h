@@ -18,46 +18,55 @@
  */
 
 /*!
-  \file terralib/qt/af/settings/ComponentWidget.h
+  \file terralib/qt/af/settings/ProjectWidgetFactory.h
 
-  \brief A base widget for settings.
+  \brief A factory to build the project frame object.
 */
 
-#ifndef __TERRALIB_QT_AF_COMPONENTWIDGET_H
-#define __TERRALIB_QT_AF_COMPONENTWIDGET_H
-
-// QT
-#include <QtGui/QWidget>
+#ifndef __TERRALIB_QT_AF_PROJECTWIDGETFACTORY_H
+#define __TERRALIB_QT_AF_PROJECTWIDGETFACTORY_H
 
 // TerraLib
 #include "../Config.h"
+#include "SettingsWidgetsFactory.h"
+
+// Forward declarations
+class QWidget;
 
 namespace te
 {
   namespace qt
-  {
+  {   
     namespace af
-      {
+    {
       /*!
-        \class ComponentWidget
+        \class ProjectWidgetFactory
 
-        \brief A base widget for settings.
+        \brief A factory to build the project frame object.
       */
-      class TEQTAFEXPORT ComponentWidget : public QWidget
+      class TEQTAFEXPORT ProjectWidgetFactory : public SettingsWidgetsFactory
       {
         public:
 
-          ComponentWidget(QWidget* parent = 0);
+          static void initialize();
 
-          ~ComponentWidget();
+          static void finalize();
 
-        public:
+          ~ProjectWidgetFactory();
 
-          std::string m_label;
+        protected:        
 
+          AbstractSettingWidget* build();
+
+          ProjectWidgetFactory();
+
+          virtual AbstractSettingWidget* create(QWidget* parent = 0);
+
+        private:
+
+          static ProjectWidgetFactory* sm_factory; 
       };
-    }   // end namespace af
-  }     // end namespace qt
-}       // end namespace te
-
-#endif  // __TERRALIB_QT_AF_COMPONENTWIDGET_H
+    } // end namespace af
+  }   // end namespace qt
+}     // end namespace te
+#endif // __TERRALIB_QT_AF_PROJECTWIDGETFACTORY_H

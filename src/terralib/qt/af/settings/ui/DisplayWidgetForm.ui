@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DisplayFrameForm</class>
- <widget class="QWidget" name="DisplayFrameForm">
+ <class>DisplayWidgetForm</class>
+ <widget class="QWidget" name="DisplayWidgetForm">
   <property name="geometry">
    <rect>
     <x>0</x>

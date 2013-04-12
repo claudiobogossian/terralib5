@@ -64,7 +64,7 @@
 #include "events/ProjectEvents.h"
 #include "events/ApplicationEvents.h"
 #include "events/ToolEvents.h"
-#include "settings/SystemSettings.h"
+#include "settings/SettingsDialog.h"
 #include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "BaseApplication.h"
@@ -224,6 +224,13 @@ void te::qt::af::BaseApplication::onApplicationTriggered(te::qt::af::evt::Event*
   {
     case te::qt::af::evt::PROJECT_UNSAVED:
       m_project->projectChanged(true);
+    break;
+
+    case te::qt::af::evt::TOOLBAR_ADDED:
+      {
+        te::qt::af::evt::ToolBarAdded* ev = static_cast<te::qt::af::evt::ToolBarAdded*>(evt);
+        QMainWindow::addToolBar(Qt::TopToolBarArea, ev->m_toolbar);
+      }
     break;
 
     default:
@@ -433,7 +440,7 @@ void te::qt::af::BaseApplication::onToolsCustomizeTriggered()
 {
   try
   {
-    te::qt::af::SystemSettings dlg(this);
+    te::qt::af::SettingsDialog dlg(this);
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -599,46 +606,6 @@ void te::qt::af::BaseApplication::onStopDrawTriggered()
 void te::qt::af::BaseApplication::showProgressDockWidget()
 {
   m_progressDockWidget->setVisible(true);
-}
-
-void te::qt::af::BaseApplication::onCustomizeToolBarsTriggered()
-{
-  te::qt::widgets::CustomizeToolBarsDialog dlg(QMainWindow::menuBar(), ApplicationController::getInstance().getToolBars(), this);
-
-  dlg.exec();
-
-  // Created bars
-  std::vector<QToolBar*> bars = dlg.getCreatedToolBars();
-  std::vector<QToolBar*>::iterator it;
-
-  for(it=bars.begin(); it!=bars.end(); ++it)
-  {
-    (*it)->setParent(this);
-
-    QMainWindow::addToolBar(Qt::TopToolBarArea, *it);
-    ApplicationController::getInstance().registerToolBar((*it)->objectName(), *it);
-
-    QMenu* mnu = ApplicationController::getInstance().findMenu("View.Toolbars");
-
-    if(mnu)
-    {
-      QAction* act = (*it)->toggleViewAction();
-      act->setObjectName("View.Toolbars." + (*it)->objectName());
-      (*it)->setWindowTitle((*it)->objectName());
-      mnu->addAction(act);
-    }
-  }
-
-  // Removed bars
-  std::vector<QString> removed = dlg.getRemovedBars();
-  std::vector<QString>::iterator it2;
-
-  for(it2=removed.begin(); it2!=removed.end(); ++it2)
-  {
-    ApplicationController::getInstance().removeToolBar(*it2);
-    QString actName = "View.Toolbars." + (*it2); 
-    delete ApplicationController::getInstance().findAction(actName);
-  }
 }
 
 void te::qt::af::BaseApplication::openProject(const QString& projectFileName)
@@ -828,49 +795,6 @@ void te::qt::af::BaseApplication::makeDialog()
   m_progressDockWidget->setWindowTitle(tr("Tasks Progress"));
   addDockWidget(Qt::RightDockWidgetArea, m_progressDockWidget);
   m_progressDockWidget->setVisible(false);
-
-// setting icons
-//  m_ui->m_fileNewProject->setIcon(QIcon::fromTheme("document-new"));
-//  m_ui->m_fileOpenProject->setIcon(QIcon::fromTheme("document-open"));
-//  m_ui->m_fileSaveProject->setIcon(QIcon::fromTheme("document-save"));
-//  m_ui->m_fileSaveProjectAs->setIcon(QIcon::fromTheme("document-save-as"));
-//  m_ui->m_filePrint->setIcon(QIcon::fromTheme("document-print"));
-//  m_ui->m_filePrintPreview->setIcon(QIcon::fromTheme("document-print-preview"));
-//  m_ui->m_fileExit->setIcon(QIcon::fromTheme("system-log-out"));
-//
-//  m_ui->m_editUndo->setIcon(QIcon::fromTheme("edit-undo"));
-//  m_ui->m_editRedo->setIcon(QIcon::fromTheme("edit-redo"));
-//  m_ui->m_editCut->setIcon(QIcon::fromTheme("edit-cut"));
-//  m_ui->m_editCopy->setIcon(QIcon::fromTheme("edit-copy"));
-//  m_ui->m_editPaste->setIcon(QIcon::fromTheme("edit-paste"));
-//  m_ui->m_editSelectAll->setIcon(QIcon::fromTheme("edit-select-all"));
-//  m_ui->m_editClear->setIcon(QIcon::fromTheme("edit-clear"));
-//  m_ui->m_editFind->setIcon(QIcon::fromTheme("edit-find"));
-//  m_ui->m_editReplace->setIcon(QIcon::fromTheme("edit-find-replace"));
-//
-//  m_ui->m_viewLayerExplorer->setIcon(QIcon::fromTheme("tree-visible"));
-//  m_ui->m_viewMapDisplay->setIcon(QIcon::fromTheme("display-visible"));
-//  m_ui->m_viewDataTable->setIcon(QIcon::fromTheme("grid-visible"));
-//  m_ui->m_viewStyleExplorer->setIcon(QIcon::fromTheme("grid-visible"));
-//  m_ui->m_viewGrid->setIcon(QIcon::fromTheme("grid-visible"));
-//  m_ui->m_viewDataSourceExplorer->setIcon(QIcon::fromTheme("grid-visible"));
-//  m_ui->m_viewFullScreen->setIcon(QIcon::fromTheme("view-fullscreen"));
-//  m_ui->m_viewRefresh->setIcon(QIcon::fromTheme("view-refresh"));
-//
-//  m_ui->m_layerEdit->setIcon(QIcon::fromTheme("layer-edit"));
-//  m_ui->m_layerRename->setIcon(QIcon::fromTheme("layer-rename"));
-//  m_ui->m_layerRaise->setIcon(QIcon::fromTheme("layer-raise"));
-//  m_ui->m_layerLower->setIcon(QIcon::fromTheme("layer-lower"));
-//  m_ui->m_layerToTop->setIcon(QIcon::fromTheme("layer-to-top"));
-//  m_ui->m_layerToBottom->setIcon(QIcon::fromTheme("layer-to-bottom"));
-//
-//  m_ui->m_toolsCustomize->setIcon(QIcon::fromTheme("preferences-system"));
-//
-//  m_ui->m_helpContents->setIcon(QIcon::fromTheme("help-browser"));
-//  m_ui->m_helpUpdate->setIcon(QIcon::fromTheme("system-software-update"));
-//
-//// connect signals/slots
-//  connect(m_ui->m_projectAddLayerDataset, SIGNAL(triggered()), SLOT(onAddDataSetLayer()));
 }
 
 void te::qt::af::BaseApplication::closeEvent(QCloseEvent* e)
@@ -923,8 +847,6 @@ void te::qt::af::BaseApplication::initActions()
   initAction(m_toolsCustomize, "preferences-system", "Tools.Customize", tr("&Customize..."), tr("Customize the system preferences"), true, false, true, m_menubar);
   initAction(m_toolsDataSourceManagement, "", "Tools.Data Source Management", tr("&Data Source Management..."), tr("Manage the registered data sources"), true, false, 
     false, m_menubar);
-  initAction(m_toolsCustomizeToolBars, "", "Tools.Customize Tool Bars", tr("&Customize Tool Bars..."), tr("Customize existing tool bars"), true, false, true, m_menubar);
-//  initAction(m_toolbarsManagement, "", "Tools.Toolbars customization", tr("Customize &ToolBars..."), tr("Manage the toolbars"), true, false, true, m_menubar);
 
 // Menu -Edit- actions
   //initAction(m_editUndo, "edit-undo", "Undo", tr("&Undo"), tr("Undo the last operation"), true, false, false);
@@ -1101,9 +1023,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_layerMenu->addAction(m_layerToTop);
   m_layerMenu->addAction(m_layerToBottom);
 
-
-
-
 // Map Menu
   m_mapMenu->setObjectName("Map");
   m_mapMenu->setTitle(tr("&Map"));
@@ -1129,7 +1048,6 @@ void te::qt::af::BaseApplication::initMenus()
   m_toolsMenu->setTitle(tr("&Tools"));
 
 //  m_toolsMenu->addAction(m_toolbarsManagement);
-  m_toolsMenu->addAction(m_toolsCustomizeToolBars);
   m_toolsMenu->addSeparator();
   m_toolsMenu->addAction(m_toolsDataSourceManagement);
   m_toolsMenu->addSeparator();
@@ -1241,6 +1159,4 @@ void te::qt::af::BaseApplication::initSlotsConnections()
   connect(m_mapMeasureArea, SIGNAL(toggled(bool)), SLOT(onMeasureAreaToggled(bool)));
   connect(m_mapMeasureAngle, SIGNAL(toggled(bool)), SLOT(onMeasureAngleToggled(bool)));
   connect(m_mapStopDraw, SIGNAL(triggered()), SLOT(onStopDrawTriggered()));
-  connect(m_toolsCustomizeToolBars, SIGNAL(triggered()), SLOT(onCustomizeToolBarsTriggered()));
-//  connect(m_toolbarsManagement, SIGNAL(triggered()), SLOT(onManageToolbarsTriggered()));
 }

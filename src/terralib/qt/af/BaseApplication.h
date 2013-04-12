@@ -121,10 +121,6 @@ namespace te
 
           void showProgressDockWidget();
 
-          void onCustomizeToolBarsTriggered();
-
-//          void onManageToolbarsTriggered();
-
         protected:
 
           virtual void openProject(const QString& projectFileName);
@@ -189,8 +185,6 @@ namespace te
           QAction* m_layerChartsHistogram;
           QAction* m_layerChartsScatter;
           QAction* m_toolsDataSourceManagement;
-          QAction* m_toolsCustomizeToolBars;
-//          QAction* m_toolbarsManagement;
           QAction* m_helpAbout;
           QAction* m_fileNewProject;
           QAction* m_fileSaveProject;
