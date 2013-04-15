@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -18,20 +18,20 @@
  */
 
 /*!
-  \file ScatterChart.cpp
+  \file HistogramChart.cpp
 
   \brief A class to represent a histogram chart.
 */
-
-//QWT
-#include <qwt_column_symbol.h>
-#include <qwt_plot.h>
 
 //Terralib
 #include "HistogramChart.h"
 #include "Histogram.h"
 #include "StringScaleDraw.h"
 #include "../../../datatype.h"
+
+//QWT
+#include <qwt_column_symbol.h>
+#include <qwt_plot.h>
 
 te::qt::widgets::HistogramChart::HistogramChart(Histogram* histogram) :
   QwtPlotHistogram(),

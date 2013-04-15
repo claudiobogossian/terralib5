@@ -43,14 +43,15 @@
   <br>
   This test suite will check the following:
   <ul>
-  <li>BitProperty;</li>
+  <li>SimpleProperty;</li>
   <li>NumericProperty;</li>
   <li>StringProperty;</li>
-  <li>SimpleProperty;</li>
-  <li>GeometryProperty;</li>
-  <li>CompositeProperty;</li>
+  <li>DateTimeProperty;</li>
+  <li>BitProperty;</li>
   <li>ArrayProperty;</li>
+  <li>GeometryProperty;</li>
   <li>RasterProperty;</li>
+  <li>CompositeProperty;</li>
   <li>Other Test Suites are implemented to test ByteaArray, DateTime, Array etc;</li>
   </ul>
  */
@@ -60,19 +61,20 @@ class TsPropertyTypes : public CPPUNIT_NS::TestFixture
   CPPUNIT_TEST_SUITE( TsPropertyTypes );
 
 // It registers the class methods as Test Cases belonging to the suit 
+  CPPUNIT_TEST( tcSimpleProperty );
   CPPUNIT_TEST( tcNumericProperty );
   CPPUNIT_TEST( tcStringProperty );
-  CPPUNIT_TEST( tcSimpleProperty );
+  CPPUNIT_TEST( tcDateTimeProperty );
+  CPPUNIT_TEST( tcBitProperty );
+  CPPUNIT_TEST( tcArrayProperty );
   CPPUNIT_TEST( tcGeometryPropertyFirstConstructor );
   CPPUNIT_TEST( tcGeometryPropertyCopyConstructor );
   CPPUNIT_TEST( tcGeometryPropertyFirstConstructorAssign );
   CPPUNIT_TEST( tcGeometryProperty );
-  CPPUNIT_TEST( tcCompositeProperty );
-  CPPUNIT_TEST( tcBitProperty );
-  CPPUNIT_TEST( tcArrayProperty );
   CPPUNIT_TEST( tcRasterProperty );
   CPPUNIT_TEST( tcRasterPropertyClone );
   CPPUNIT_TEST( tcRasterPropertyAssignOp );
+  CPPUNIT_TEST( tcCompositeProperty );
 
   CPPUNIT_TEST_SUITE_END();    
   
@@ -126,6 +128,10 @@ class TsPropertyTypes : public CPPUNIT_NS::TestFixture
 
     /*! \brief Test Case: Array properties. */
     void tcRasterPropertyAssignOp();
+
+    /*! \brief Test Case: DateTimeProperty properties. */
+    void tcDateTimeProperty();
+
 };
 
 #endif  // __TERRALIB_UNITTEST_DATATYPE_INTERNAL_PROPERTYTYPES_H

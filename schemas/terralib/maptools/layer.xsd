@@ -32,7 +32,7 @@
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="Title" type="xsd:string" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="Visible" type="xsd:boolean" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="Visible" type="te_map:VisibilityType" minOccurs="1" maxOccurs="1" />
     </xsd:sequence>
     <xsd:attribute name="id" type="xsd:string" use="required" />
   </xsd:complexType>
@@ -92,5 +92,16 @@
       <xsd:element ref="se:CoverageStyle" />
     </xsd:choice>
   </xsd:complexType>
+
+  <xsd:simpleType name="VisibilityType">
+    <xsd:annotation>
+      <xsd:documentation>The base set of visibility types </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="VISIBLE" />
+      <xsd:enumeration value="NOT_VISIBLE" />
+      <xsd:enumeration value="PARTIALLY_VISIBLE" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>

@@ -310,6 +310,8 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
+  ${SRCDIR}/widgets/rp/ClassifierWizard.h
+  ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
   ${SRCDIR}/widgets/rp/ContrastWizard.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
@@ -317,6 +319,8 @@ set (
   ${SRCDIR}/widgets/rp/RasterInfoWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWizardPage.h
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
+  ${SRCDIR}/widgets/rp/SegmenterWizard.h
+  ${SRCDIR}/widgets/rp/SegmenterWizardPage.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
 )

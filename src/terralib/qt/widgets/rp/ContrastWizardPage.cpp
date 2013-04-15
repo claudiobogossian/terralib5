@@ -27,6 +27,10 @@
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../raster/Raster.h"
+#include "../../../qt/widgets/charts/ChartDisplay.h"
+#include "../../../qt/widgets/charts/Histogram.h"
+#include "../../../qt/widgets/charts/HistogramChart.h"
+#include "../../../qt/widgets/charts/Utils.h"
 #include "ContrastWizardPage.h"
 #include "MapDisplay.h"
 #include "ui_ContrastWizardPageForm.h"
@@ -34,6 +38,9 @@
 // Qt
 #include <QGridLayout>
 #include <QtGui/QMessageBox>
+
+// Boost
+#include <boost/lexical_cast.hpp>
 
 te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   : QWizardPage(parent),
@@ -55,6 +62,9 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
   m_ui->m_gRadioButton->setIcon(QIcon::fromTheme("bullet-green"));
   m_ui->m_bRadioButton->setIcon(QIcon::fromTheme("bullet-blue"));
   m_ui->m_mRadioButton->setIcon(QIcon::fromTheme("bullet-black"));
+
+//connects
+  connect(m_ui->m_histogramPushButton, SIGNAL(clicked()), this, SLOT(showHistogram()));
 
 //configure page
   this->setTitle(tr("Contrast"));
@@ -133,14 +143,13 @@ void te::qt::widgets::ContrastWizardPage::apply()
 
   algoInputParams.m_inRasterPtr = inputRst;
 
-
   te::rp::Contrast::OutputParameters algoOutputParams;
 
   std::map<std::string, std::string> rinfo;
   rinfo["MEM_RASTER_NROWS"] = "100";
   rinfo["MEM_RASTER_NCOLS"] = "100";
-  rinfo["MEM_RASTER_DATATYPE"] = te::common::Convert2String(te::dt::UCHAR_TYPE);
-  rinfo["MEM_RASTER_NBANDS"] = te::common::Convert2String(inputRst->getNumberOfBands());
+  rinfo["MEM_RASTER_DATATYPE"] = boost::lexical_cast<std::string>((int) te::dt::UCHAR_TYPE);
+  rinfo["MEM_RASTER_NBANDS"] = boost::lexical_cast<std::string>(inputRst->getNumberOfBands());
 
   algoOutputParams.m_createdOutRasterDSType = "MEM";
   algoOutputParams.m_createdOutRasterInfo = rinfo;
@@ -222,4 +231,58 @@ void te::qt::widgets::ContrastWizardPage::listBands()
       }
     }
   }
+
+  delete ds;
+}
+
+void te::qt::widgets::ContrastWizardPage::showHistogram()
+{
+  assert(m_layer.get());
+
+  //get band id
+  int bandId;
+
+  if(m_ui->m_rRadioButton->isChecked())
+  {
+    bandId = m_ui->m_rComboBox->currentText().toInt();
+  }
+  else if(m_ui->m_gRadioButton->isChecked())
+  {
+    bandId = m_ui->m_gComboBox->currentText().toInt();
+  }
+  else if(m_ui->m_bRadioButton->isChecked())
+  {
+    bandId = m_ui->m_bComboBox->currentText().toInt();
+  }
+  else if(m_ui->m_mRadioButton->isChecked())
+  {
+    bandId = m_ui->m_mComboBox->currentText().toInt();
+  }
+  else
+    return;
+
+  //get input raster
+  te::da::DataSet* ds = m_layer->getData();
+
+  if(ds)
+  {
+    QDialog dlg(this);
+    QGridLayout* lay = new QGridLayout(&dlg);
+    dlg.setLayout(lay);
+
+    te::qt::widgets::Histogram* histogram = te::qt::widgets::createHistogram(ds, bandId);
+    te::qt::widgets::HistogramChart* histogramChart = new te::qt::widgets::HistogramChart(histogram);
+    te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
+
+    lay->addWidget(chartDisplay);
+
+    histogramChart->attach(chartDisplay);
+
+    chartDisplay->show();
+    chartDisplay->replot();
+
+    dlg.exec();
+  }
+
+  delete ds;
 }

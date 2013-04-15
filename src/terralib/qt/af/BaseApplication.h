@@ -129,6 +129,8 @@ namespace te
 
           virtual void openProject(const QString& projectFileName);
 
+          virtual void checkProjectSave();
+
           virtual void newProject();
 
           virtual void makeDialog();

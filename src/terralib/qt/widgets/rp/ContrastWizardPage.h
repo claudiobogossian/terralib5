@@ -92,6 +92,11 @@ namespace te
 
           void listBands();
 
+
+        protected slots:
+
+          void showHistogram();
+
         private:
 
           std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;

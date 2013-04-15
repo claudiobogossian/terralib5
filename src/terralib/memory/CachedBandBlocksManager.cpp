@@ -78,8 +78,8 @@ bool te::mem::CachedBandBlocksManager::initialize(
   for( unsigned int bandIdx = 0 ; bandIdx < externalRaster.getNumberOfBands() ;
     ++bandIdx )
   {
-    if( maxBlockSizeBytes < externalRaster.getBand( bandIdx )->getBlockSize() )
-      maxBlockSizeBytes = externalRaster.getBand( bandIdx )->getBlockSize();
+    if( maxBlockSizeBytes < (unsigned int)externalRaster.getBand( bandIdx )->getBlockSize() )
+      maxBlockSizeBytes = (unsigned int)externalRaster.getBand( bandIdx )->getBlockSize();
   }
   
   const double totalPhysMem = (double)te::common::GetTotalPhysicalMemory();
@@ -108,14 +108,14 @@ bool te::mem::CachedBandBlocksManager::initialize(
   for( unsigned int bandIdx = 0 ; bandIdx < externalRaster.getNumberOfBands() ;
     ++bandIdx )
   {
-    if( m_globalBlocksNumberX < externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx )
-      m_globalBlocksNumberX = externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx;
+    if( m_globalBlocksNumberX < (unsigned int)externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx )
+      m_globalBlocksNumberX = (unsigned int)externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx;
       
-    if( m_globalBlocksNumberY < externalRaster.getBand( bandIdx )->getProperty()->m_nblocksy )
-      m_globalBlocksNumberY = externalRaster.getBand( bandIdx )->getProperty()->m_nblocksy;
+    if( m_globalBlocksNumberY < (unsigned int)externalRaster.getBand( bandIdx )->getProperty()->m_nblocksy )
+      m_globalBlocksNumberY = (unsigned int)externalRaster.getBand( bandIdx )->getProperty()->m_nblocksy;
       
-    if( m_globalBlockSizeBytes < externalRaster.getBand( bandIdx )->getBlockSize() )
-      m_globalBlockSizeBytes = externalRaster.getBand( bandIdx )->getBlockSize();
+    if( m_globalBlockSizeBytes < (unsigned int)externalRaster.getBand( bandIdx )->getBlockSize() )
+      m_globalBlockSizeBytes = (unsigned int)externalRaster.getBand( bandIdx )->getBlockSize();
     
     numberOfRasterBlocks +=
       ( externalRaster.getBand( bandIdx )->getProperty()->m_nblocksx *
@@ -126,7 +126,9 @@ bool te::mem::CachedBandBlocksManager::initialize(
   
   m_rasterPtr = (te::rst::Raster*)&externalRaster;
   m_dataPrefetchThreshold = dataPrefetchThreshold;
+  
   m_maxNumberOfCacheBlocks = std::min( maxNumberOfCacheBlocks, numberOfRasterBlocks );
+  m_maxNumberOfCacheBlocks = std::max( m_maxNumberOfCacheBlocks, (unsigned int)1 );
   
   unsigned int blockBIdx = 0;  
   m_blocksPointers.resize( externalRaster.getNumberOfBands() );
@@ -141,8 +143,6 @@ bool te::mem::CachedBandBlocksManager::initialize(
       m_blocksPointers[ blockBIdx ][ blockYIdx ].resize( m_globalBlocksNumberX, 0 );
     }
   }
-  
-  m_blocksFifo.resize( m_maxNumberOfCacheBlocks );
   
   if( m_dataPrefetchThreshold )
   {
@@ -211,7 +211,17 @@ void te::mem::CachedBandBlocksManager::free()
   }
   
   m_blocksPointers.clear();
+  
+  for( std::vector< unsigned char* >::size_type blocksHandlerIdx = 0 ; 
+    blocksHandlerIdx < m_blocksHandler.size() ; ++blocksHandlerIdx )
+  {
+    if( m_blocksHandler[ blocksHandlerIdx ] )
+    {
+      delete[]( m_blocksHandler[ blocksHandlerIdx ] );
+    }
+  }
   m_blocksHandler.clear();
+  
   m_blocksFifo.clear();
   m_threadHandler.reset();
   m_threadParams.m_threadDataBlockHandler.reset();
@@ -226,25 +236,31 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
   assert( band < m_rasterPtr->getNumberOfBands() );
   assert( x < m_globalBlocksNumberX );
   assert( y < m_globalBlocksNumberY );
-  assert( x < m_rasterPtr->getBand( band )->getProperty()->m_nblocksx );
-  assert( y < m_rasterPtr->getBand( band )->getProperty()->m_nblocksy );
+  assert( x < (unsigned int)m_rasterPtr->getBand( band )->getProperty()->m_nblocksx );
+  assert( y < (unsigned int)m_rasterPtr->getBand( band )->getProperty()->m_nblocksy );
   
   m_getBlockPointer_BlkPtr = m_blocksPointers[ band ][ y ][ x ];
   
   if( m_getBlockPointer_BlkPtr == 0 )
   {
-    BlockIndex& choosedSwapBlockIndex = m_blocksFifo[ 
-      m_blocksFifoNextSwapBlockIndex ];      
-      
     // Is swapp necessary ?
     if( m_blocksHandler.size() < m_maxNumberOfCacheBlocks )
     {
       m_getBlockPointer_BlkPtr = new unsigned char[ m_globalBlockSizeBytes ];
-      m_blocksHandler.push_back( boost::shared_array< unsigned char >( 
-        (unsigned char*)m_getBlockPointer_BlkPtr ) );
+      m_blocksHandler.push_back( m_getBlockPointer_BlkPtr );
+      
+      // add FIFO information of the new block
+      BlockIndex newBlockFifoIndex;
+      newBlockFifoIndex.m_b = band;
+      newBlockFifoIndex.m_y = y;
+      newBlockFifoIndex.m_x = x; 
+      m_blocksFifo.push_back( newBlockFifoIndex );
     }
     else
     {
+      BlockIndex& choosedSwapBlockIndex = m_blocksFifo[ 
+        m_blocksFifoNextSwapBlockIndex ];   
+      
       m_getBlockPointer_BlkPtr = m_blocksPointers[ choosedSwapBlockIndex.m_b ][ 
         choosedSwapBlockIndex.m_y ][ choosedSwapBlockIndex.m_x ];
       assert( m_getBlockPointer_BlkPtr );
@@ -290,6 +306,13 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
             m_getBlockPointer_BlkPtr );
         }
       }
+      
+      // advances the next swap block fifo index
+      choosedSwapBlockIndex.m_b = band;
+      choosedSwapBlockIndex.m_y = y;
+      choosedSwapBlockIndex.m_x = x;    
+      m_blocksFifoNextSwapBlockIndex = ( m_blocksFifoNextSwapBlockIndex + 1 ) % 
+        ((unsigned int)m_blocksFifo.size());        
     }
     
     // reading the required block
@@ -332,12 +355,7 @@ void* te::mem::CachedBandBlocksManager::getBlockPointer(unsigned int band,
       m_blocksPointers[ band ][ y ][ x ] = m_getBlockPointer_BlkPtr;
     }
     
-    // advances the next swap block fifo index
-    choosedSwapBlockIndex.m_b = band;
-    choosedSwapBlockIndex.m_y = y;
-    choosedSwapBlockIndex.m_x = x;    
-    m_blocksFifoNextSwapBlockIndex = ( m_blocksFifoNextSwapBlockIndex + 1 ) % 
-      m_maxNumberOfCacheBlocks;        
+      
   }
   
   return m_getBlockPointer_BlkPtr;  
@@ -390,9 +408,9 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
       assert( paramsPtr->m_exchangeBlockPtr );
       
       if( globalReadAheadBlockReady 
-        && ( globalReadAheadBlockB == paramsPtr->m_blockB )
-        && ( globalReadAheadBlockX == paramsPtr->m_blockX )
-        && ( globalReadAheadBlockY == paramsPtr->m_blockY ) )
+        && ( globalReadAheadBlockB == (int)paramsPtr->m_blockB )
+        && ( globalReadAheadBlockX == (int)paramsPtr->m_blockX )
+        && ( globalReadAheadBlockY == (int)paramsPtr->m_blockY ) )
       { 
 //        std::cout << std::endl << "Read-ahead block is avaliable, it will be used" << std::endl;
         
@@ -444,7 +462,7 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
           globalReadAheadDirectionVectorY += currentReadDirectionVectorY;
           globalReadAheadDirectionVectorB += currentReadDirectionVectorB;
           
-          if( std::abs( globalReadAheadDirectionVectorB )  > 
+          if( ((unsigned int)std::abs( globalReadAheadDirectionVectorB ))  > 
             paramsPtr->m_dataPrefetchThreshold )
           {
             if( globalReadAheadDirectionVectorB > 0 )
@@ -459,13 +477,13 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
             }
               
             if( ( nextReadAheadBlkB >= 0 ) &&
-              ( nextReadAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() ) )
+              ( nextReadAheadBlkB < (int)paramsPtr->m_rasterPtr->getNumberOfBands() ) )
               doReadAhead = true;
             else
               nextReadAheadBlkB = ((int)paramsPtr->m_blockB);
           }           
           
-          if( std::abs( globalReadAheadDirectionVectorX )  > 
+          if( ((unsigned int)std::abs( globalReadAheadDirectionVectorX ))  > 
             paramsPtr->m_dataPrefetchThreshold )
           {
             if( globalReadAheadDirectionVectorX > 0 )
@@ -487,7 +505,7 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
               nextReadAheadBlkX = ((int)paramsPtr->m_blockX);
           }
                     
-          if( std::abs( globalReadAheadDirectionVectorY )  > 
+          if( ((unsigned int)std::abs( globalReadAheadDirectionVectorY ))  > 
             paramsPtr->m_dataPrefetchThreshold )
           {
             if( globalReadAheadDirectionVectorY > 0 )
@@ -520,7 +538,7 @@ void te::mem::CachedBandBlocksManager::threadEntry(ThreadParameters* paramsPtr)
         {
 //          std::cout << std::endl << "Reading-ahead a new block" << std::endl;
 
-          assert( nextReadAheadBlkB < paramsPtr->m_rasterPtr->getNumberOfBands() );
+          assert( nextReadAheadBlkB < (int)paramsPtr->m_rasterPtr->getNumberOfBands() );
           assert( nextReadAheadBlkX < 
             paramsPtr->m_rasterPtr->getBand( nextReadAheadBlkB )->getProperty()->m_nblocksx );
           assert( nextReadAheadBlkY < 

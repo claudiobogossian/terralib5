@@ -24,6 +24,7 @@
 #include "../events/Event.h"
 #include "../events/ProjectEvents.h"
 #include "../Project.h"
+#include "../ApplicationController.h"
 #include "LayerExplorer.h"
 
 te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explorer, QObject* parent)
@@ -32,6 +33,7 @@ te::qt::af::LayerExplorer::LayerExplorer(te::qt::widgets::LayerExplorer* explore
 {
   assert(explorer);
   
+  connect (explorer->getTreeView(), SIGNAL(toggled(te::qt::widgets::AbstractLayerTreeItem*, bool)), SLOT(layerVisibility(te::qt::widgets::AbstractLayerTreeItem*, bool)));
 }
 
 te::qt::af::LayerExplorer::~LayerExplorer()
@@ -97,5 +99,11 @@ void te::qt::af::LayerExplorer::onSelectionChanged(const QItemSelection& /*selec
 //          te::qt::af::LayerSelected ls_ev(abs_lay.get());
 //          ApplicationController::getInstance().broadcast(&ls_ev);
 //        }
+}
+
+void te::qt::af::LayerExplorer::layerVisibility(te::qt::widgets::AbstractLayerTreeItem* item, bool checked)
+{
+  te::qt::af::evt::ProjectUnsaved evt;
+  ApplicationController::getInstance().broadcast(&evt);
 }
 
