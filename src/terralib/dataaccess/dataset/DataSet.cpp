@@ -45,107 +45,107 @@
 
 char te::da::DataSet::getChar(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getChar(pos);
+  return getChar(i);
 }
 
 unsigned char te::da::DataSet::getUChar(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getUChar(pos);
+  return getUChar(i);
 }
 
 boost::int16_t te::da::DataSet::getInt16(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getInt16(pos);
+  return getInt16(i);
 }
 
 boost::int32_t te::da::DataSet::getInt32(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getInt32(pos);
+  return getInt32(i);
 }
 
 boost::int64_t te::da::DataSet::getInt64(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getInt64(pos);
+  return getInt64(i);
 }
 
 bool te::da::DataSet::getBool(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getBool(pos);
+  return getBool(i);
 }
 
 float te::da::DataSet::getFloat(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getFloat(pos);
+  return getFloat(i);
 }
 
 double te::da::DataSet::getDouble(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getDouble(pos);
+  return getDouble(i);
 }
 
 std::string te::da::DataSet::getNumeric(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getNumeric(pos);
+  return getNumeric(i);
 }
 
 std::string te::da::DataSet::getString(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getString(pos);
+  return getString(i);
 }
 
 te::dt::ByteArray* te::da::DataSet::getByteArray(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getByteArray(pos);
+  return getByteArray(i);
 }
 
 te::gm::Geometry* te::da::DataSet::getGeometry(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getGeometry(pos);
+  return getGeometry(i);
 }
 
 te::rst::Raster* te::da::DataSet::getRaster(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getRaster(pos);
+  return getRaster(i);
 }
 
 te::dt::DateTime* te::da::DataSet::getDateTime(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getDateTime(pos);
+  return getDateTime(i);
 }
 
 te::dt::Array* te::da::DataSet::getArray(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getArray(pos);
+  return getArray(i);
 }
 
 te::dt::AbstractData* te::da::DataSet::getValue(std::size_t i) const
@@ -210,9 +210,9 @@ te::dt::AbstractData* te::da::DataSet::getValue(std::size_t i) const
 
 te::dt::AbstractData* te::da::DataSet::getValue(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getValue(pos);
+  return getValue(i);
 }
 
 std::string te::da::DataSet::getAsString(std::size_t i, int precision) const
@@ -305,15 +305,15 @@ std::string te::da::DataSet::getAsString(std::size_t i, int precision) const
 
 std::string te::da::DataSet::getAsString(const std::string& name, int precision) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return getAsString(pos, precision);
+  return getAsString(i, precision);
 }
 
 bool te::da::DataSet::isNull(const std::string& name) const
 {
-  std::size_t pos = GetPropertyPos(this, name);
+  std::size_t i = GetPropertyPos(this, name);
 
-  return isNull(pos);
+  return isNull(i);
 }
 

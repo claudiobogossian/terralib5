@@ -158,29 +158,29 @@ namespace te
         /*!
           \brief It returns the underlying data type of the property at position pos.
 
-          \param pos The property position of interest.
+          \param i The property position of interest.
 
           \return The underlying data type of the property at position pos.
         */
-        virtual int getPropertyDataType(std::size_t pos) const = 0;
+        virtual int getPropertyDataType(std::size_t i) const = 0;
 
         /*!
           \brief It returns the property name at position pos.
 
-          \param pos The property name at the position of interest.
+          \param i The property name at the position of interest.
 
           \return The property name at position pos.
         */
-        virtual std::string getPropertyName(std::size_t pos) const = 0;
+        virtual std::string getPropertyName(std::size_t i) const = 0;
 
         /*!
           \brief It returns the underlying dataset name of the property at position pos.
 
-          \param pos The property position of interest.
+          \param i The property position of interest.
 
           \return The underlying dataset name of the property at position pos.
         */
-        virtual std::string getDatasetNameOfProperty(std::size_t pos) const = 0;
+        virtual std::string getDatasetNameOfProperty(std::size_t i) const = 0;
 
         //@}
 
@@ -246,13 +246,13 @@ namespace te
         /*!
           \brief It moves the dataset internal pointer to a given position.
 
-          \param pos The position the dataset internal pointer must be set up.
+          \param i The position the dataset internal pointer must be set up.
 
           \return True, if it was possible to move the dataset reading to the given position.
 
           \note The first item in the collection starts at address 0.
         */
-        virtual bool move(std::size_t pos) = 0;
+        virtual bool move(std::size_t i) = 0;
 
         /*!
           \brief It tells if the dataset internal pointer is on the first element of the collection or not.

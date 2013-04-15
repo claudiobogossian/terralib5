@@ -39,9 +39,6 @@
 
 namespace te
 {
-// Forward declarations
-  namespace dt { class Property; }
-
   namespace da
   {
 // Forward declarations
@@ -77,7 +74,7 @@ namespace te
         //@{
 
         /*!
-          \brief It creates a new dataset in a data source.
+          \brief It creates the dataset definition in a data source and then fill it with data from the input dataset.
 
           This method will create the dataset schema definition and will 
           save all the dataset data.
@@ -96,10 +93,12 @@ namespace te
                 current position. So, keep in mind that it is the caller responsability
                 to inform the dataset 'd' in the right position (and a valid one) to start processing it.
         */
-        virtual void create(DataSetType* dt, DataSet* d, std::size_t limit = 0);
+        virtual void create(DataSetType* dt,
+                            DataSet* d,
+                            std::size_t limit = 0);
 
         /*!
-          \brief It creates a new dataset in a data source.
+          \brief It creates the dataset definition in a data source and then fill it with data from the input dataset.
 
           This method will create the dataset schema definition and will 
           save all the dataset data.
@@ -111,15 +110,18 @@ namespace te
 
           \pre All parameters must be valid pointers.
 
-          \post It is the caller responsability to release the dataset 'd' pointer.
-
           \exception Exception It throws an exception if the dataset can not be created.
+
+          \note It is the caller responsability to release the dataset 'd' pointer.
 
           \note DataSetPersistence will start reading the dataset 'd' in the
                 current position. So, keep in mind that it is the caller responsability
                 to inform the dataset 'd' in the right position (and a valid one) to start processing it.
         */
-        virtual void create(DataSetType* dt, DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0) = 0;
+        virtual void create(DataSetType* dt,
+                            DataSet* d,
+                            const std::map<std::string, std::string>& options,
+                            std::size_t limit = 0) = 0;
 
         /*!
           \brief It removes all data associated to the dataset from the data source.
@@ -133,42 +135,32 @@ namespace te
         virtual void remove(const std::string& datasetName) = 0;
 
         /*!
-          \brief It removes all data from the dataset having the given definition.
+          \brief It removes all the informed items from the dataset.
 
-          It removes all data collection in the dataset from the
-          data source. The dataset items are removed based on their primary
-          key values (or unique keys), therefore they must contain this information.
+          It removes all data collection identified by an 
+          object identifier from the data source.
 
           \param datasetName The dataset name.
-          \param oids        The dataset data to be removed from the datasource.
+          \param oids        A list of object identifiers used to remove data from the datasource.
 
-          \pre All parameters must be valid pointers.
-          \pre The dataset 'd' must be on a valid position where the items will be
-
-          \post It is the caller responsability to release the dataset 'd' pointer.
+          \pre The parameter oids must be a valid pointer.
 
           \exception Exception It throws an exception if the dataset items can not be removed.
-
-          \note DataSetPersistence will start reading the dataset 'd' in the
-                current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
         */
         virtual void remove(const std::string& datasetName, const ObjectIdSet* oids) = 0;
 
         /*!
           \brief It adds more data items to the dataset in the data source.
 
-          \param dt     The source dataset definition.
-          \param d      The data items to be added to the dataset.
-          \param limit  The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+          \param datasetName The target dataset name.
+          \param d           The data items to be added to the dataset.
+          \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
           
           \pre All parameters must be valid pointers.
-          \pre The DataSetType must be a valid in the transactor data source catalog.
-
-          \post All data items in dataset will be added to data source using DataSetType 'dt' definition.
-          \post It is the caller responsability to release the dataset 'd' pointer.
 
           \exception Exception It throws an exception if the data items can not be added.
+
+          \note It is the caller responsability to release the dataset 'd' pointer.
 
           \note DataSetPersistence will start reading the dataset 'd' in the
                 current position. So, keep in mind that it is the caller responsability
@@ -179,18 +171,16 @@ namespace te
         /*!
           \brief It adds more data items to the dataset in the data source.
 
-          \param dt       The source dataset definition.
-          \param d        The data items to be added to the dataset.
-          \param options  A list of optional modifiers. It is driver specific.
-          \param limit    The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-          
-          \pre All parameters must be valid pointers.
-          \pre The DataSetType must be a valid in the transactor data source catalog.
+          \param datasetName The target dataset name.
+          \param d           The data items to be added to the dataset.
+          \param options     A list of optional modifiers. It is driver specific.
+          \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
 
-          \post All data items in dataset will be added to data source using DataSetType 'dt' definition.
-          \post It is the caller responsability to release the dataset 'd' pointer.
+          \pre All parameters must be valid pointers.
 
           \exception Exception It throws an exception if the data items can not be added.
+
+          \note It is the caller responsability to release the dataset 'd' pointer.
 
           \note DataSetPersistence will start reading the dataset 'd' in the
                 current position. So, keep in mind that it is the caller responsability
@@ -202,22 +192,19 @@ namespace te
           \brief It updates the dataset items in the data source.
 
           It updates a dataset in the
-          data source based on primary key value (or unique key).
-          Therefore, the DataSetType 'dt' must have a primary
-          key (or unique key) definition. The set of values
-          of the primary key (or unique key) must not be changed as
-          they will be used to identify each data item.
-          
-          \param dt         The dataset definition.
-          \param dataset    The list of data items to be updated.
-          \param properties The list of properties of the dataset to be updated.
-          \param limit      The number of items to be used from the input dataset. If set to 0 (default) all items are used.
+          data source based on OID list.
+
+          \param datasetName The target dataset name.
+          \param dataset     The list of data items to be updated.
+          \param properties  The list of properties of the dataset to be updated.
+          \param oids        The list of objects to be updated.
+          \param limit       The number of items to be used from the input dataset. If set to 0 (default) all items are used.
 
           \pre All parameters must be valid pointers.
 
-          \post It is the caller responsability to release the dataset pointer.
-
           \exception Exception It throws an exception if the dataset can not be updated.
+
+          \note It is the caller responsability to release the dataset pointer.
 
           \note DataSetPersistence will start reading the dataset 'd' in the
                 current position. So, keep in mind that it is the caller responsability
