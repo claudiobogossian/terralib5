@@ -34,11 +34,8 @@
 #include "Config.h"
 
 // STL
+#include <map>
 #include <vector>
-
-// Boost
-#include <boost/ptr_container/ptr_map.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 
 namespace te
 {
@@ -106,7 +103,7 @@ namespace te
 
           \note In-Memory driver extended method.
         */
-        void add(const std::string& name, DataSet* dataset);
+        void add(te::da::DataSetType* dt, DataSet* dataset);
 
         /*!
           \brief It returns a dataset (a deep copy or a shared copy).
@@ -146,6 +143,19 @@ namespace te
           \note In-Memory driver extended method.
         */
         te::da::DataSetType* getDataSetType(const std::string& name);
+
+        /*!
+          \brief It returns the internal dataset type pointer.
+
+          \return A dataset type or NULL if none is found.
+
+          \note The caller will NOT take the ownership of the returned dataset type.
+
+          \note Thread-safe.
+
+          \note In-Memory driver extended method.
+        */
+        te::da::DataSetType* getDataSetTypeRef(const std::string& name);
 
         /*!
           \brief It returns the list of datasets managed by the data source.
@@ -220,13 +230,14 @@ namespace te
 
       private:
 
-        std::map<std::string, std::string> m_connInfo;      //!< DataSource information.
-        boost::ptr_map<std::string, DataSet> m_datasets;    //!< The set of datasets stored in memory.
-        std::auto_ptr<te::da::DataSourceCatalog> m_catalog; //!< The main system catalog.
-        std::size_t m_ndatasets;                            //!< The number of datasets kept in the data source.
-        std::size_t m_maxdatasets;                          //!< The maximum number of datasets to be handled by the data source.
-        bool m_isOpened;                                    //!< A flag to control the state of the data source.
-        bool m_deepCopy;                                    //!< If true each dataset is cloned in the getDataSet method.
+        std::map<std::string, std::string> m_connInfo;            //!< DataSource information.
+        std::map<std::string, DataSet*> m_datasets;               //!< The set of datasets stored in memory.
+        std::map<std::string, te::da::DataSetType*> m_schemas;    //!< The set of dataset schemas.
+        te::da::DataSourceCatalog* m_catalog;                     //!< The main system catalog.
+        std::size_t m_ndatasets;                                  //!< The number of datasets kept in the data source.
+        std::size_t m_maxdatasets;                                //!< The maximum number of datasets to be handled by the data source.
+        bool m_isOpened;                                          //!< A flag to control the state of the data source.
+        bool m_deepCopy;                                          //!< If true each dataset is cloned in the getDataSet method.
 
         static te::da::DataSourceCapabilities sm_capabilities; //!< The Memory data source capabilities.
         static const te::da::SQLDialect sm_dialect;            //!< A dummy dialect.
