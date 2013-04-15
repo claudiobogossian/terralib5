@@ -37,12 +37,6 @@
 
 namespace te
 {
-// Forward declarations
-  namespace dt
-  {
-    class Property;
-  }
-
   namespace da
   {
 // Forward declarations
@@ -104,8 +98,6 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::da::DataSourceTransactor* getTransactor() const;
-
         te::gm::Envelope* getExtent(std::size_t i);
 
         std::size_t getNumProperties() const;
@@ -115,11 +107,15 @@ namespace te
         std::string getPropertyName(std::size_t pos) const;
 
         /*!
+          \brief It returns the underlying dataset name of the property at position pos.
+
+          \param pos The property position of interest.
+
+          \return The underlying dataset name of the property at position pos.
+
           \note This method will always return an empty string for the adapter.
         */
         std::string getDatasetNameOfProperty(std::size_t pos) const;
-
-        DataSetItem* getItem() const;
 
         bool isEmpty() const;
 
@@ -131,11 +127,7 @@ namespace te
 
         bool moveFirst();
 
-        bool moveBeforeFirst();
-
         bool moveLast();
-
-        bool moveAfterLast();
 
         bool move(std::size_t i);
 
@@ -236,7 +228,6 @@ namespace te
         std::vector<int> m_datatypes;                             //!< The datatype for each property.
         std::vector<std::string> m_pnames;                        //!< The name for each property.
         te::common::Holder<DataSet> m_ds;                         //!< A pointer to the DataSet that will be handled by adapter
-
         std::vector<std::vector<std::size_t> > m_propertyIndexes; //!< A vector that stores the adapted property indexes.
         std::vector<AttributeConverter> m_converters;             //!< A vector that stores the attribute converters functions.
         std::vector<std::size_t> m_adaptedProperties;             //!< Internal vector to count the references to adapted properties.

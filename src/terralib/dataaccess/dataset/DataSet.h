@@ -67,7 +67,6 @@ namespace te
   namespace da
   {
 // Forward declarations
-    class DataSetItem;
     class DataSourceTransactor;
 
     /*!
@@ -97,11 +96,11 @@ namespace te
       datasets, you can find out the dataset that gave the original
       dataset name of a specific property.
 
-      \sa DataSourceCatalogLoader, DataSetType, DataSetItem
+      \sa DataSourceCatalogLoader, DataSetType
 
-      \note A dataset may contain other datasets, in this case it is a collection of datasets.
+      \todo Whe can generaliza the dataset API so that a dataset may contain other datasets, in this case it will be a collection of datasets.
 
-      \note A geometric or raster property is treated just like any other data type.
+      \note A geometric or raster property is represented just like any other data type.
 
       \note Our design also allows a dataset to have multiple geometric or raster properties.
     */
@@ -133,15 +132,6 @@ namespace te
           \return The read and write permission associated to the dataset.
         */
         virtual te::common::AccessPolicy getAccessPolicy() const = 0;
-
-        /*!
-          \brief It returns the transactor associated to this dataset.
-
-          \return A transactor associated to this dataset.
-
-          \note The caller of this method will NOT take the ownership of the returned information.
-        */
-        virtual DataSourceTransactor* getTransactor() const = 0;
 
         /*!
           \brief It computes the bounding rectangle for a spatial property of the dataset.
@@ -200,19 +190,7 @@ namespace te
         //@{
 
         /*!
-          \brief This method will retrieve a copy of the collection element pointed by the internal pointer.
-
-          This method can be used to get all attributes of a given element of the
-          collection represented by the dataset.
-
-          \return A dataset item with all properties of the collection element.
-
-          \note The caller of this method will take the ownership of the returned item.
-        */
-        virtual DataSetItem* getItem() const = 0;
-
-        /*!
-          \brief It returns true, if it contains no DataSets.
+          \brief It returns true if the collection is empty.
 
           \return True, if the collection is empty.
         */
@@ -221,29 +199,27 @@ namespace te
         /*!
           \brief It returns the collection size, if it is known.
 
-          It may return -1, if the size is not known, or it would be
-          too costly to compute (such as when the datasets are streaming
-          from a remote source).
+          It may return std::string::npos if the size is not known,
+          or it would be too costly to compute it.
 
-          \return The size of the collection, if it is known.
+          \return The size of the collection if it is known.
         */
         virtual std::size_t size() const = 0;
 
         /*!
-          \brief It moves the internal pointer (cursor position) to the next item of the collection.
+          \brief It moves the internal pointer to the next item of the collection.
 
           You always has to call this method in order to move the internal pointer to the first
           item in the collection. This method can be used to traverse a dataset.
-          If you need to re-start reading from the first dataset, call reset() method.
 
-          \return True if the internal pointer (cursor position) is on a valid item, or false otherwise.
+          \return True if the internal pointer is on a valid item, or false otherwise.
 
-          \note All type of datasets support this method (FORWARDONLY, BIDIRECTIONAL, RANDOM, INDEXED).
+          \note All dataset types support this method: FORWARDONLY, BIDIRECTIONAL and RANDOM.
         */
         virtual bool moveNext() = 0;
 
         /*!
-          \brief It moves the internal pointer (cursor position) to the previous dataset of the collection.
+          \brief It moves the internal pointer to the previous item of the collection.
 
           \return True, if the internal pointer (cursor position) is on a valid item, or false otherwise.
 
@@ -252,7 +228,7 @@ namespace te
         virtual bool movePrevious() = 0;
         
         /*!
-          \brief It moves the dataset reading to the first item in the collection.
+          \brief It moves the internal pointer to the first item in the collection.
 
           \return True, if it was possible to move to the first item in the collection.
 
@@ -261,62 +237,48 @@ namespace te
         virtual bool moveFirst() = 0;
 
         /*!
-          \brief It sets the dataset reading to a sentinel position before the first item in the collection.
-
-          \return True, if it was possible to move to a sentinel position before the first item in the collection.
-
-          \note This method is not supported by FORWARDONLY datasets.
-        */
-        virtual bool moveBeforeFirst() = 0;
-
-        /*!
-          \brief It sets the dataset reading to the last item in the collection.
+          \brief It sets the dataset internal pointer to the last item in the collection.
 
           \return True, if it was possible to move to the last item in the collection.
         */
         virtual bool moveLast() = 0;
 
         /*!
-          \brief It sets the dataset reading to a sentinel position after the last item in the collection.
+          \brief It moves the dataset internal pointer to a given position.
 
-          \return True, if it was possible to move to a sentinel position after the last item in the collection.
-        */
-        virtual bool moveAfterLast() = 0;
-
-        /*!
-          \brief It moves the dataset reading to a given position.
-
-          \param i The position the dataset reading must be set up (the first position starts at 0).
+          \param pos The position the dataset internal pointer must be set up.
 
           \return True, if it was possible to move the dataset reading to the given position.
+
+          \note The first item in the collection starts at address 0.
         */
-        virtual bool move(std::size_t i) = 0;
+        virtual bool move(std::size_t pos) = 0;
 
         /*!
-          \brief It tells if the dataset internal pointer (cursor position) is on the first element of the collection or not.
+          \brief It tells if the dataset internal pointer is on the first element of the collection or not.
 
-          \return True if the dataset internal pointer (cursor position) is on the first element otherwise it returns false.
+          \return True if the dataset internal pointer is on the first element otherwise it returns false.
         */
         virtual bool isAtBegin() const = 0;
 
         /*!
-          \brief It tells if the dataset internal pointer (cursor position) is on the sentinel position before the first element of the collection or not.
+          \brief It tells if the dataset internal pointer is in a position before the first element of the collection or not.
 
-          \return True, if the dataset internal pointer (cursor position) is on the sentinel position before the first element otherwise it returns false.
+          \return True, if the dataset internal pointer is in a position before the first element otherwise it returns false.
         */
         virtual bool isBeforeBegin() const = 0;
 
         /*!
-          \brief It tells if the dataset internal pointer (cursor position) is on the last element of the collection.
+          \brief It tells if the dataset internal pointer is on the last element of the collection.
 
           \return True, if the dataset internal pointer is on the last element otherwise it returns false.
         */
         virtual bool isAtEnd() const = 0;
 
         /*!
-          \brief It tells if the dataset internal pointer (cursor position) is on the sentinel position after the last element of the collection or not.
+          \brief It tells if the dataset internal pointer is on the sentinel position after the last element of the collection or not.
 
-          \return True, if the dataset internal pointer (cursor position) is on the sentinel position after the last element otherwise it returns false.
+          \return True, if the dataset internal pointer is on the sentinel position after the last element otherwise it returns false.
         */
         virtual bool isAfterEnd() const = 0;
 

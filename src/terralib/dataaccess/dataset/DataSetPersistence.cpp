@@ -25,7 +25,6 @@
 
 // TerraLib
 #include "DataSet.h"
-#include "DataSetItem.h"
 #include "DataSetPersistence.h"
 #include "DataSetType.h"
 #include "DataSetTypePersistence.h"
@@ -38,15 +37,10 @@ void te::da::DataSetPersistence::create(DataSetType* dt, DataSet* d, std::size_t
   create(dt, d, options, limit);
 }
 
-void te::da::DataSetPersistence::remove(const DataSetType* dt)
-{
-  remove(dt->getName());
-}
-
-void te::da::DataSetPersistence::add(const DataSetType* dt, DataSet* d, std::size_t limit)
+void te::da::DataSetPersistence::add(const std::string& datasetName, DataSet* d, std::size_t limit)
 {
   std::map<std::string, std::string> options;
 
-  add(dt, d, options, limit);
+  add(datasetName, d, options, limit);
 }
 

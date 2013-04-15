@@ -35,7 +35,6 @@ namespace te
     class Constraint;
     class DataSet;
     class DataSetAdapter;
-    class DataSetItem;
     class DataSetPersistence;
     class DataSetType;
     class DataSetTypePersistence;

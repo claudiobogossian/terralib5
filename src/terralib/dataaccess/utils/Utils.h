@@ -51,7 +51,6 @@ namespace te
   {
 // Forward declaration
     class DataSet;
-    class DataSetItem;
     class DataSetType;
     class DataSourceCatalogLoader;
     class DataSourceTransactor;
@@ -180,9 +179,15 @@ namespace te
 
     TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSet* dataset, const std::string& name);
 
-    TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSetItem* item, const std::string& name);
-
     //TEDATAACCESSEXPORT te::da::DataSetType* CreateDataSetType(const te::da::DataSet* dataset);
+
+    TEDATAACCESSEXPORT void GetPropertyInfo(const DataSetType* const dt,
+                                            std::vector<std::string>& pnames,
+                                            std::vector<int>& ptypes);
+
+    TEDATAACCESSEXPORT void GetPropertyInfo(const DataSet* const dataset,
+                                            std::vector<std::string>& pnames,
+                                            std::vector<int>& ptypes);
 
   } // end namespace da
 }   // end namespace te

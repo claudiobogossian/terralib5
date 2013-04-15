@@ -108,11 +108,6 @@ te::common::AccessPolicy te::da::DataSetAdapter::getAccessPolicy() const
   return m_ds->getAccessPolicy();
 }
 
-te::da::DataSourceTransactor* te::da::DataSetAdapter::getTransactor() const
-{
-  return m_ds->getTransactor();
-}
-
 te::gm::Envelope* te::da::DataSetAdapter::getExtent(std::size_t i)
 {
   throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
@@ -136,11 +131,6 @@ std::string te::da::DataSetAdapter::getPropertyName(std::size_t pos) const
 std::string te::da::DataSetAdapter::getDatasetNameOfProperty(std::size_t pos) const
 {
   return "";
-}
-
-te::da::DataSetItem* te::da::DataSetAdapter::getItem() const
-{
-  throw Exception(TR_DATAACCESS("Not Implemented Yet!"));
 }
 
 bool te::da::DataSetAdapter::isEmpty() const
@@ -168,19 +158,9 @@ bool te::da::DataSetAdapter::moveFirst()
   return m_ds->moveFirst();
 }
 
-bool te::da::DataSetAdapter::moveBeforeFirst()
-{
-  return m_ds->moveBeforeFirst();
-}
-
 bool te::da::DataSetAdapter::moveLast()
 {
   return m_ds->moveLast();
-}
-
-bool te::da::DataSetAdapter::moveAfterLast()
-{
-  return m_ds->moveAfterLast();
 }
 
 bool te::da::DataSetAdapter::move(std::size_t i)

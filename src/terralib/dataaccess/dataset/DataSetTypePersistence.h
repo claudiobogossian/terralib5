@@ -83,13 +83,6 @@ namespace te
         /*! \brief Virtual destructor. */
         virtual ~DataSetTypePersistence() {}
 
-        /*!
-          \brief It returns a pointer to the underlying data source transactor.
-
-          \return A pointer to the underlying data source transactor.
-        */
-        virtual DataSourceTransactor* getTransactor() const = 0;
-
         /** @name Pure Virtual Methods
          *  Methods that subclasses must implement in order to support the persistence interface.
          */
@@ -189,8 +182,6 @@ namespace te
 
           \exception Exception It throws an exception if the DataSetType can not be removed.
         */
-        virtual void drop(DataSetType* dt) = 0;
-
         virtual void drop(const std::string& datasetName) = 0;
 
         /*!

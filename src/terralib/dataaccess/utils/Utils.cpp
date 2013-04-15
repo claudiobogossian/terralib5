@@ -28,7 +28,6 @@
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../dataset/DataSet.h"
-#include "../dataset/DataSetItem.h"
 #include "../dataset/DataSetType.h"
 #include "../dataset/ObjectId.h"
 #include "../dataset/ObjectIdSet.h"
@@ -451,23 +450,6 @@ std::size_t te::da::GetPropertyPos(const DataSet* dataset, const std::string& na
   return std::string::npos;
 }
 
-std::size_t te::da::GetPropertyPos(const DataSetItem* item, const std::string& name)
-{
-  assert(item);
-
-  const std::size_t np = item->getNumProperties();
-
-  for(std::size_t i = 0; i != np; ++i)
-  {
-    std::string pname = item->getPropertyName(i);
-
-    if(pname == name)
-      return i;
-  }
-
-  return std::string::npos;
-}
-
 //te::da::DataSetType* te::da::CreateDataSetType(const te::da::DataSet* dataset)
 //{
 //  assert(dataset);
@@ -485,4 +467,32 @@ std::size_t te::da::GetPropertyPos(const DataSetItem* item, const std::string& n
 //
 //  return dt;
 //}
+
+void te::da::GetPropertyInfo(const DataSetType* const dt,
+                             std::vector<std::string>& pnames,
+                             std::vector<int>& ptypes)
+{
+  assert(dt);
+
+  for(std::size_t i = 0; i != dt->size(); ++i)
+  {
+    const te::dt::Property* p = dt->getProperty(i);
+
+    pnames.push_back(p->getName());
+    ptypes.push_back(p->getType());
+  }
+}
+
+void te::da::GetPropertyInfo(const DataSet* const dataset,
+                             std::vector<std::string>& pnames,
+                             std::vector<int>& ptypes)
+{
+  assert(dataset);
+
+  for(std::size_t i = 0; i != dataset->getNumProperties(); ++i)
+  {
+    pnames.push_back(dataset->getPropertyName(i));
+    ptypes.push_back(dataset->getPropertyDataType(i));
+  }
+}
 

@@ -164,10 +164,6 @@ namespace te
 
         void setSupportCDouble(const bool& support);
 
-        bool supportsDatasetItem() const;
-
-        void setSupportDatasetItem(const bool& support);
-
         bool supportsPolymorphic() const;
 
         void setSupportPolymorphic(const bool& support);
