@@ -56,8 +56,6 @@ namespace te
 
         void clone(const std::string& datasetName, const std::string& newDatasetName, const std::map<std::string, std::string>& options);
 
-        void drop(te::da::DataSetType* dt);
-
         void drop(const std::string& datasetName);
 
         void rename(te::da::DataSetType* dt, const std::string& newName);
@@ -93,8 +91,6 @@ namespace te
         void create(te::da::Sequence* sequence);
 
         void drop(te::da::Sequence* sequence);
-
-        te::da::DataSourceTransactor* getTransactor() const;
 
       private:
 

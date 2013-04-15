@@ -62,9 +62,9 @@ namespace te
           \param dt The DataSetType associated to the dataset.
           \param t  The associated transactor.
           
-          \note DataSet will take the ownership of the given DataSetType.
+          \note The dataset will NOT take the ownership of the given DataSetType.
         */
-        explicit DataSet(te::da::DataSetType* dt, DataSourceTransactor* t = 0);
+        explicit DataSet(const te::da::DataSetType* const dt, DataSourceTransactor* t = 0);
 
         /*!
           \brief Regular copy constructor.
@@ -172,7 +172,7 @@ namespace te
         void remove();
 
         /*!
-          \brief It removes the current dataset item.
+          \brief It removes a specific dataset item.
 
           \note In-Memory driver extended method.
         */
@@ -232,11 +232,15 @@ namespace te
 
         int getPropertyDataType(std::size_t pos) const;
 
+        void setPropertyDataType(int dt, std::size_t pos);
+
         std::string getPropertyName(std::size_t pos) const;
+
+        void setPropertyName(const std::string& name, std::size_t pos);
 
         std::string getDatasetNameOfProperty(std::size_t pos) const;
 
-        te::da::DataSetItem* getItem() const;
+        DataSetItem* getItem() const;
 
         bool isEmpty() const;
 
@@ -266,15 +270,11 @@ namespace te
 
         char getChar(std::size_t i) const;
 
-        char getChar(const std::string& name) const;
-
         void setChar(std::size_t i, char value);
 
         void setChar(const std::string& name, char value);
 
         unsigned char getUChar(std::size_t i) const;
-
-        unsigned char getUChar(const std::string& name) const;
 
         void setUChar(std::size_t i, unsigned char value);
 
@@ -282,15 +282,11 @@ namespace te
 
         boost::int16_t getInt16(std::size_t i) const;
 
-        boost::int16_t getInt16(const std::string& name) const;
-
         void setInt16(std::size_t i, boost::int16_t value);
 
         void setInt16(const std::string& name, boost::int16_t value);
 
         boost::int32_t getInt32(std::size_t i) const;
-
-        boost::int32_t getInt32(const std::string& name) const;
 
         void setInt32(std::size_t i, boost::int32_t value);
 
@@ -298,15 +294,11 @@ namespace te
 
         boost::int64_t getInt64(std::size_t i) const;
 
-        boost::int64_t getInt64(const std::string& name) const;
-
         void setInt64(std::size_t i, boost::int64_t value);
 
         void setInt64(const std::string& name, boost::int64_t value);
 
         bool getBool(std::size_t i) const;
-
-        bool getBool(const std::string& name) const;
 
         void setBool(std::size_t i, bool value);
 
@@ -314,15 +306,11 @@ namespace te
 
         float getFloat(std::size_t i) const;
 
-        float getFloat(const std::string& name) const;
-
         void setFloat(std::size_t i, float value);
 
         void setFloat(const std::string& name, float value);
 
         double getDouble(std::size_t i) const;
-
-        double getDouble(const std::string& name) const;
 
         void setDouble(std::size_t i, double value);
 
@@ -330,15 +318,11 @@ namespace te
 
         std::string getNumeric(std::size_t i) const;
 
-        std::string getNumeric(const std::string& name) const;
-
         void setNumeric(std::size_t i, const std::string& value);
 
         void setNumeric(const std::string& name, const std::string& value);
 
         std::string getString(std::size_t i) const;
-
-        std::string getString(const std::string& name) const;
 
         void setString(std::size_t i, const std::string& value);
 
@@ -346,15 +330,11 @@ namespace te
 
         te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(const std::string& name) const;
-
         void setByteArray(std::size_t i, const te::dt::ByteArray& value);
 
         void setByteArray(const std::string& name, const te::dt::ByteArray& value);
 
         te::gm::Geometry* getGeometry(std::size_t i) const;
-
-        te::gm::Geometry* getGeometry(const std::string& name) const;
 
         void setGeometry(std::size_t i, const te::gm::Geometry& value);
 
@@ -362,15 +342,11 @@ namespace te
 
         te::rst::Raster* getRaster(std::size_t i) const;
 
-        te::rst::Raster* getRaster(const std::string& name) const;
-
         void setRaster(std::size_t i, const te::rst::Raster& value);
 
         void setRaster(const std::string& name, const  te::rst::Raster& value);
 
         te::dt::DateTime* getDateTime(std::size_t i) const;
-
-        te::dt::DateTime* getDateTime(const std::string& name) const;
 
         void setDateTime(std::size_t i, const te::dt::DateTime& value);
 
@@ -378,11 +354,7 @@ namespace te
 
         te::dt::Array* getArray(std::size_t i) const;
 
-        te::dt::Array* getArray(const std::string& name) const;
-
         te::dt::AbstractData* getValue(std::size_t i) const;
-
-        te::dt::AbstractData* getValue(const std::string& name) const;
 
         void setValue(std::size_t i, te::dt::AbstractData* value);
 
@@ -390,14 +362,11 @@ namespace te
 
         bool isNull(std::size_t i) const;
 
-        bool isNull(const std::string& name) const;
-
       protected:
 
         boost::shared_ptr<boost::ptr_vector<te::mem::DataSetItem> > m_items;   //!< The list of dataset items.
         std::vector<std::string> m_pnames;                                     //!< The list of property names.
         std::vector<int> m_ptypes;                                             //!< The list of property types.
-        DataSet* m_parent;                                                     //!< A parent dataset.
         DataSourceTransactor* m_t;                                             //!< The associated datasource transactor.
         int m_i;                                                               //!< The index of the current item.
     };

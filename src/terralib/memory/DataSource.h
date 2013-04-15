@@ -37,6 +37,9 @@
 #include <map>
 #include <vector>
 
+// Boost
+#include <boost/ptr_container/ptr_vector.hpp>
+
 namespace te
 {
   namespace da
@@ -97,7 +100,7 @@ namespace te
 
           \exception Exception It throws an excpetion if a dataset with the given name already exists or if the data source has reached the maximum size.
 
-          \note The data source will take the ownership of the dataset.
+          \note The data source will take the ownership of the dataset and its schema.
 
           \note Thread-safe.
 
