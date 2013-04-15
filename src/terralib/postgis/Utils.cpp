@@ -319,27 +319,20 @@ void te::pgis::ScapeString(PGconn* conn, const std::string& s, std::string& outp
   delete [] to;
 }
 
-te::da::DataSetType* te::pgis::Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid, unsigned int pgisRasterTypeOid)
+void te::pgis::Convert2TerraLib(PGresult* result,
+                                unsigned int pgisGeomTypeOid,
+                                unsigned int pgisRasterTypeOid,
+                                std::vector<int>& teTypes)
 {
   int ncols = PQnfields(result);
-  te::da::DataSetType* dt = new te::da::DataSetType("");
 
   for(int i = 0; i < ncols; ++i)
   {
-    te::dt::Property* p = Convert2TerraLib(i, PQfname(result, i), PQftype(result, i),
-                                               false, 0, false, 0, -1, pgisGeomTypeOid, pgisRasterTypeOid);
+    std::auto_ptr<te::dt::Property> p(Convert2TerraLib(i, PQfname(result, i), PQftype(result, i),
+                                                       false, 0, false, 0, -1, pgisGeomTypeOid, pgisRasterTypeOid));
 
-    unsigned int pid = PQftablecol(result, i);
-
-    p->setId(pid);
-
-    dt->add(p);
-
-    if(p->getType() == te::dt::GEOMETRY_TYPE)
-      dt->setDefaultGeomProperty(static_cast<te::gm::GeometryProperty*>(p));
+    teTypes.push_back(p->getType());
   }
-
-  return dt;
 }
 
 std::string te::pgis::MakeConnectionStr(const std::map<std::string, std::string>& dsInfo)

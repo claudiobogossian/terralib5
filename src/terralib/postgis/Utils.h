@@ -883,9 +883,11 @@ namespace te
       \param pgisGeomTypeOid The oid of PostGIS geometry type.
 
       \return The data set type created.
-
     */
-    te::da::DataSetType* Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid, unsigned int pgisRasterTypeOid);
+    void Convert2TerraLib(PGresult* result,
+                          unsigned int pgisGeomTypeOid,
+                          unsigned int pgisRasterTypeOid,
+                          std::vector<int>& teTypes);
 
     /*!
       \brief It converts the PostGIS geometry type to a pure OGC WKB code.

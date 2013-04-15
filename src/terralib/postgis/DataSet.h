@@ -30,9 +30,6 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "Config.h"
 
-// Boost
-#include <boost/noncopyable.hpp>
-
 // Forward declaration for libpq
 extern "C"
 {
@@ -62,7 +59,7 @@ namespace te
 
       \sa Transactor, te::da::DataSet
     */
-    class TEPGISEXPORT DataSet : public te::da::DataSet, public boost::noncopyable
+    class TEPGISEXPORT DataSet : public te::da::DataSet
     {
       public:
 
@@ -77,52 +74,22 @@ namespace te
                 Transactor* transactor,
                 std::string* sql);
 
-        /*!
-          \brief Constructor.
-
-          \param result     The internal PGresult.
-          \param transactor The transactor associated to this DataSet.
-          \param sql        The sql command that generated the dataset.
-          \param name       The dataset name.
-        */
-        DataSet(PGresult* result,
-                Transactor* transactor,
-                std::string* sql,
-                std::string* name);
-
-        
-
         /*! \brief The destructor will clear the internal PGresult. */
         ~DataSet();
 
-        te::common::TraverseType getTraverseType() const { return te::common::FORWARDONLY; }
+        te::common::TraverseType getTraverseType() const;
 
-        te::common::AccessPolicy getAccessPolicy() const { return te::common::RAccess; }
+        te::common::AccessPolicy getAccessPolicy() const;
 
-        te::da::DataSetType* getType();
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        const te::da::DataSetType* getType() const;
-        
-        te::da::DataSourceTransactor* getTransactor() const;
+        std::size_t getNumProperties() const;
 
-        void loadTypeInfo();
+        int getPropertyDataType(std::size_t i) const;
 
-        te::da::DataSet* getParent() const;
+        std::string getPropertyName(std::size_t i) const;
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
-
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Geometry* g,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
-
-
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Envelope* e,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
-
-        te::da::DataSetItem* getItem() const;
-
-        void add(te::da::DataSetItem* item);
+        std::string getDatasetNameOfProperty(std::size_t i) const;
 
         bool isEmpty() const;
 
@@ -134,11 +101,7 @@ namespace te
 
         bool moveFirst();
 
-        bool moveBeforeFirst();
-
         bool moveLast();
-
-        bool moveAfterLast();
 
         bool move(std::size_t i);
 
@@ -150,115 +113,37 @@ namespace te
 
         bool isAfterEnd() const;
 
-        char getChar(int i) const;
+        char getChar(std::size_t i) const;
 
-        char getChar(const std::string& name) const;
+        unsigned char getUChar(std::size_t i) const;
 
-        void setChar(int i, char value);
+        boost::int16_t getInt16(std::size_t i) const;
 
-        unsigned char getUChar(int i) const;
+        boost::int32_t getInt32(std::size_t i) const;
 
-        unsigned char getUChar(const std::string& name) const;
+        boost::int64_t getInt64(std::size_t i) const;
 
-        void setUChar(int i, unsigned char value);
+        bool getBool(std::size_t i) const;
 
-        boost::int16_t getInt16(int i) const;
+        float getFloat(std::size_t i) const;
 
-        boost::int16_t getInt16(const std::string& name) const;
+        double getDouble(std::size_t i) const;
 
-        void setInt16(int i, boost::int16_t value);
+        std::string getNumeric(std::size_t i) const;
 
-        boost::int32_t getInt32(int i) const;
+        std::string getString(std::size_t i) const;
 
-        boost::int32_t getInt32(const std::string& name) const;
+        te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        void setInt32(int i, boost::int32_t value);
+        te::gm::Geometry* getGeometry(std::size_t i) const;
 
-        boost::int64_t getInt64(int i) const;
+        te::rst::Raster* getRaster(std::size_t i) const;
 
-        boost::int64_t getInt64(const std::string& name) const;
+        te::dt::DateTime* getDateTime(std::size_t i) const; 
 
-        void setInt64(int i, boost::int64_t value);
+        te::dt::Array* getArray(std::size_t i) const;
 
-        bool getBool(int i) const;
-
-        bool getBool(const std::string& name) const;
-
-        void setBool(int i, bool value);
-
-        float getFloat(int i) const;
-
-        float getFloat(const std::string& name) const;
-
-        void setFloat(int i, float value);
-
-        double getDouble(int i) const;
-
-        double getDouble(const std::string& name) const;
-
-        void setDouble(int i, double value);
-
-        std::string getNumeric(int i) const;
-
-        std::string getNumeric(const std::string& name) const;
-
-        void setNumeric(int i, const std::string& value);
-
-        std::string getString(int i) const;
-
-        std::string getString(const std::string& name) const;
-
-        void setString(int i, const std::string& value);
-
-        te::dt::ByteArray* getByteArray(int i) const;
-
-        te::dt::ByteArray* getByteArray(const std::string& name) const; 
-
-        void setByteArray(int i, const te::dt::ByteArray& value);
-
-        te::gm::Geometry* getGeometry(int i) const;
-
-        te::gm::Geometry* getGeometry(const std::string& name) const;
-
-        void setGeometry(int i, const te::gm::Geometry& value);
-
-        te::rst::Raster* getRaster(int i) const;
-
-        te::rst::Raster* getRaster(const std::string& name) const;
-
-        void setRaster(int i, const te::rst::Raster& value);
-
-        te::dt::DateTime* getDateTime(int i) const; 
-
-        te::dt::DateTime* getDateTime(const std::string& name) const;
-
-        void setDateTime(int i, const te::dt::DateTime& value); 
-
-        void getArray(int i, std::vector<boost::int16_t>& values) const;
-
-        void getArray(const std::string& name, std::vector<boost::int16_t>& values) const;
-
-        te::dt::Array* getArray(int i) const;
-
-        te::dt::Array* getArray(const std::string& name) const;
-
-        const unsigned char* getWKB(int i) const;
-
-        const unsigned char* getWKB(const std::string& name) const;
-
-        te::da::DataSet* getDataSet(int i);
-
-        te::da::DataSet* getDataSet(const std::string& name);
-
-        void setDataSet(int i, const te::da::DataSet& value);
-
-        void setValue(int i, te::dt::AbstractData* value);
-
-        bool isNull(int i) const;
-
-        bool isNull(const std::string& name) const;
-
-        //@}
+        bool isNull(std::size_t i) const;
 
         /** @name PostGIS Extended Methods
          *  Methods that exists only in the PostGIS DataSet implementation.
@@ -270,7 +155,7 @@ namespace te
 
           \return The internal SQL used to generate the dataset.
         */
-        std::string* getSQL() const { return m_sql; }       
+        std::string* getSQL() const { return m_sql; }
 
         /*!
           \brief It returns the internal pg result.
@@ -283,25 +168,12 @@ namespace te
 
       protected:
 
-        void getFilterSQL(const te::gm::GeometryProperty* gp, const te::gm::Geometry* g, te::gm::SpatialRelation r, std::string& sql);
-
-        void getFilterSQL(const te::gm::GeometryProperty* gp, const te::gm::Envelope* e, te::gm::SpatialRelation r, std::string& sql);
-
-      protected:
-
         int m_i;                            //!< The index of the current row.
         int m_size;                         //!< The number of datasets in the collection.
-        int m_ncols;                        //!< The number of columns.
         PGresult* m_result;                 //!< The internal buffer with the result query.
-        mutable te::da::DataSetType* m_dt;  //!< DataSetType.
         Transactor* m_t;                    //!< The PostGIS transactor associated to this dataset.
-        std::string* m_name;                //!< The dataset name if one exists.
         std::string* m_sql;                 //!< The sql command that generated the dataset.
-        te::gm::Geometry* m_geomFilter;     //!< The geometric filter.
-        te::gm::Envelope* m_mbrFilter;      //!< The MBR filter.
-        te::gm::SpatialRelation m_relation; //!< The spatial relation used by installed filters.
-
-        friend class DataSetItem;
+        std::vector<int> m_ptypes;          //!< The list of property types.
     };
 
   } // end namespace pgis

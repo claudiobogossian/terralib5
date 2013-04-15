@@ -30,10 +30,17 @@
 #include "Config.h"
 
 // Boost
+#include <boost/cstdint.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
+
+// Forward declarations
+namespace te { namespace dt { class AbstractData; class Array; class ByteArray; class DateTime; } }
+namespace te { namespace gm { class Geometry; } }
+namespace te { namespace rst { class Raster; } }
 
 namespace te
 {
+
 // Forward declaration
   namespace da
   {

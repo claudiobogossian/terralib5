@@ -34,7 +34,6 @@
 #include "../datatype/DateTime.h"
 #include "../datatype/SimpleData.h"
 #include "../geometry/Geometry.h"
-#include "../memory/DataSetItem.h"
 #include "Connection.h"
 #include "CatalogLoader.h"
 #include "DataSet.h"
@@ -131,178 +130,40 @@ te::pgis::DataSet::DataSet(PGresult* result,
                            std::string* sql)
   : m_i(-1),
     m_result(result),
-    m_dt(0),
     m_t(transactor),
-    m_name(0),
-    m_sql(sql),
-    m_geomFilter(0),
-    m_mbrFilter(0),
-    m_relation(te::gm::UNKNOWN_SPATIAL_RELATION)
+    m_sql(sql)
 {
   m_size = PQntuples(m_result);
-  m_ncols = PQnfields(m_result);
-}
 
-te::pgis::DataSet::DataSet(PGresult* result,
-                           Transactor* transactor,
-                           std::string* sql,
-                           std::string* name)
-  : m_i(-1),
-    m_result(result),
-    m_dt(0),
-    m_t(transactor),
-    m_name(name),
-    m_sql(sql),
-    m_geomFilter(0),
-    m_mbrFilter(0),
-    m_relation(te::gm::UNKNOWN_SPATIAL_RELATION)
-{
-  m_size = PQntuples(m_result);
-  m_ncols = PQnfields(m_result);
+  Convert2TerraLib(m_result, m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId(), m_ptypes);
 }
 
 te::pgis::DataSet::~DataSet()
 {
   PQclear(m_result);
-  delete m_dt;
   delete m_sql;
-  delete m_geomFilter;
-  delete m_mbrFilter;
 }
 
-te::da::DataSetType* te::pgis::DataSet::getType()
+te::common::TraverseType te::pgis::DataSet::getTraverseType() const
 {
-  if(m_dt)
-    return m_dt;
-
-  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId());
-
-  if(m_name)
-    m_dt->setName(*m_name);
-
-  if(m_ncols > 0)
-  {
-    unsigned int tid = PQftable(m_result, 0);
-    m_dt->setId(tid);
-  }
-
-  return m_dt;
+  return te::common::RANDOM;
 }
 
-const te::da::DataSetType* te::pgis::DataSet::getType() const
+te::common::AccessPolicy te::pgis::DataSet::getAccessPolicy() const
 {
-  if(m_dt)
-    return m_dt;
-
-  m_dt = Convert2TerraLib(m_result,  m_t->getPGDataSource()->getGeomTypeId(), m_t->getPGDataSource()->getRasterTypeId());
-
-  if(m_name)
-    m_dt->setName(*m_name);
-
-  if(m_ncols > 0)
-  {
-    unsigned int tid = PQftable(m_result, 0);
-    m_dt->setId(tid);
-  }
-
-  return m_dt;
+  return te::common::RAccess;
 }
 
-te::da::DataSourceTransactor* te::pgis::DataSet::getTransactor() const
+te::gm::Envelope* te::pgis::DataSet::getExtent(std::size_t i)
 {
-  return m_t;
-}
-
-void te::pgis::DataSet::loadTypeInfo()
-{
-  if(m_ncols == 0)
-    return;
-
-  if(m_dt == 0)
-    getType();
-
-  if(m_dt->getName().empty())
-  {
-// try to find a table name
-    unsigned int tid = PQftable(m_result, 0);
-
-    for(int i = 1; i < m_ncols; ++i)
-    {
-      unsigned int ttid = PQftable(m_result, i);
-
-// if dataset has more than one table (a join) we can not load more info
-      if(tid != ttid)
-        return;
-    }
-
-    std::auto_ptr<CatalogLoader> cloader(m_t->getPGCatalogLoader());
-
-    std::string tname = cloader->getTableName(tid);
-
-    m_dt->setName(tname);
-  }
-
-  std::auto_ptr<CatalogLoader> cloader(m_t->getPGCatalogLoader());
-
-// let's try to find more information about DataSetType
-  for(int i = 0; i < m_ncols; ++i)
-  {
-    te::dt::Property* p = m_dt->getProperty(i);
-    te::dt::Property* newp = cloader->getProperty(m_dt->getId(), p->getId());
-    m_dt->replace(p, newp);
-    delete p;
-  }
-
-// find PK, UK, CC ...
-  cloader->getConstraints(m_dt);
-  m_dt->setFullLoaded(true);
-}
-
-te::da::DataSet* te::pgis::DataSet::getParent() const
-{
-  return 0;
-}
-
-te::gm::Envelope* te::pgis::DataSet::getExtent(const te::dt::Property* p)
-{
-  if(p == 0)
-    throw Exception(TR_PGIS("The property is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_PGIS("Not a geometry column to calculate the MBR!"));
-
-  if(m_sql == 0)
-  {
-    std::size_t ii = getType()->getPropertyPosition(p);
-
-    std::auto_ptr<te::gm::Envelope> mbr;
-
-    for(int i = 0; i < m_size; ++i)
-    {
-      std::auto_ptr<te::gm::Geometry> g(EWKBReader::read(PQgetvalue(m_result, i, ii)));
-
-      const te::gm::Envelope* box = g->getMBR();
-
-      mbr->Union(*box);
-    }
-
-    return mbr.release();
-  }
-
-  const te::gm::GeometryProperty* gp = static_cast<const te::gm::GeometryProperty*>(p);
+  if(m_ptypes[i] != te::dt::GEOMETRY_TYPE)
+    throw Exception(TR_PGIS("This driver only supports the getExtent method over a geometry column!"));
 
   std::string sql("SELECT ST_Extent(");
-              sql += gp->getName();
+              sql += PQfname(m_result, i);
               sql += ") FROM (";
-
-  if(m_geomFilter)
-    getFilterSQL(gp, m_geomFilter, m_relation, sql);
-  else if(m_mbrFilter)
-    getFilterSQL(gp, m_mbrFilter, m_relation, sql);
-  else
-    sql += *m_sql;
-
-  sql += ") pgis_driver_subquery";
+              sql += *m_sql;
+              sql += ") pgis_driver_subquery";
 
   PGresult* result = PQexec(m_t->getConnection()->getConn(), sql.c_str());
 
@@ -310,107 +171,42 @@ te::gm::Envelope* te::pgis::DataSet::getExtent(const te::dt::Property* p)
   {
     std::string errmsg(TR_PGIS("Could not find mbr for the given geometry property due to the following error: "));
                 errmsg += PQerrorMessage(m_t->getConnection()->getConn());
+
     PQclear(result);
+
     throw Exception(errmsg);
   }
 
   const char* boxStr = PQgetvalue(result, 0, 0);
-  
+
   te::gm::Envelope* mbr = 0;
 
   if(*boxStr != '\0')
     mbr = GetEnvelope(boxStr);
 
   PQclear(result);
+
   return mbr;
 }
 
-void te::pgis::DataSet::setFilter(te::dt::Property* p, const te::gm::Geometry* g, te::gm::SpatialRelation r)
+std::size_t te::pgis::DataSet::getNumProperties() const
 {
-  if(g == 0)
-    throw Exception(TR_PGIS("The geometry is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_PGIS("The property is not geometric!"));
-
-  if(m_sql == 0)
-    throw Exception(TR_PGIS("Can not set filter over this type of query. Probably it is a result of a prepared query!"));
-
-  te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
-
-// see if it is possible to retrieve the geometry property srid... let's try this otherwise we go ahead!
-  if(gp->getSRID() <= 0)
-  {
-    std::auto_ptr<CatalogLoader> cloader(m_t->getPGCatalogLoader());
-    cloader->getGeometryInfo(gp->getParent()->getName(), gp);
-  }
-
-  std::string sql;
-  
-  getFilterSQL(gp, g, r, sql);
-
-  PQclear(m_result);
-  m_result = 0;
-  m_i = -1;
-  m_size = 0;
-
-  m_result = m_t->getConnection()->query(sql);
-  m_size = PQntuples(m_result);  
-  delete m_geomFilter;
-  m_geomFilter = static_cast<te::gm::Geometry*>(g->clone());
-  delete m_mbrFilter;
-  m_mbrFilter = 0;
-  m_relation = r;
+  return PQnfields(m_result);
 }
 
-void te::pgis::DataSet::setFilter(te::dt::Property* p, const te::gm::Envelope* e, te::gm::SpatialRelation r)
+int te::pgis::DataSet::getPropertyDataType(std::size_t i) const
 {
-  if(e == 0)
-    throw Exception(TR_PGIS("The envelope is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_PGIS("The property is not geometric!"));
-
-  if(p->getParent() == 0)
-    throw Exception(TR_PGIS("The property is not associated to a dataset type!"));
-
-  if(m_sql == 0)
-    throw Exception(TR_PGIS("Can not set filter over this type of query. Probably it is a result of a prepared query!"));
-
-  te::gm::GeometryProperty* gp = static_cast<te::gm::GeometryProperty*>(p);
-
-// see if it is possible to retrieve the geometry property srid... let's try this otherwise we go ahead!
-  if(gp->getSRID() <= 0)
-  {
-    std::auto_ptr<CatalogLoader> cloader(m_t->getPGCatalogLoader());
-    cloader->getGeometryInfo(gp->getParent()->getName(), gp);
-  }
-
-  std::string sql;
-
-  getFilterSQL(gp, e, r, sql);
-
-  PQclear(m_result);
-  m_result = 0;
-  m_i = -1;
-  m_size = 0;
-
-  m_result = m_t->getConnection()->query(sql);
-  m_size = PQntuples(m_result);  
-  delete m_geomFilter;
-  m_geomFilter = 0;
-  delete m_mbrFilter;
-  m_mbrFilter = new te::gm::Envelope(*e);
-  m_relation = r;
+  return m_ptypes[i];
 }
 
-te::da::DataSetItem* te::pgis::DataSet::getItem() const
+std::string te::pgis::DataSet::getPropertyName(std::size_t i) const
 {
-  return new te::mem::DataSetItem(this);
+  return PQfname(m_result, i);
 }
 
-void te::pgis::DataSet::add(te::da::DataSetItem* /*item*/)
+std::string te::pgis::DataSet::getDatasetNameOfProperty(std::size_t i) const
 {
+  throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
 bool te::pgis::DataSet::isEmpty() const
@@ -425,7 +221,7 @@ std::size_t te::pgis::DataSet::size() const
 
 bool te::pgis::DataSet::moveNext()
 {
-  ++m_i;  
+  ++m_i;
   return (m_i < m_size);
 }
 
@@ -441,22 +237,10 @@ bool te::pgis::DataSet::moveFirst()
   return m_size != 0;
 }
 
-bool te::pgis::DataSet::moveBeforeFirst()
-{
-  m_i = -1;
-  return m_size != 0;;
-}
-
 bool te::pgis::DataSet::moveLast()
 {
   m_i = m_size - 1;
   return (m_i < m_size);
-}
-
-bool te::pgis::DataSet::moveAfterLast()
-{
-  m_i = m_size;
-  return m_size != 0;
 }
 
 bool te::pgis::DataSet::move(std::size_t i)
@@ -485,41 +269,19 @@ bool te::pgis::DataSet::isAfterEnd() const
   return m_i >= m_size;
 }
 
-char te::pgis::DataSet::getChar(int i) const
+char te::pgis::DataSet::getChar(std::size_t i) const
 {
   char cval = *(PQgetvalue(m_result, m_i, i));
   return cval;
 }
 
-char te::pgis::DataSet::getChar(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getChar(i);
-}
-
-void te::pgis::DataSet::setChar(int /*i*/, char /*value*/) 
- {
-   throw Exception(TR_PGIS("Not implemented yet!"));
- }
-
-unsigned char te::pgis::DataSet::getUChar(int i) const
+unsigned char te::pgis::DataSet::getUChar(std::size_t i) const
 {
   unsigned char cval = *(PQgetvalue(m_result, m_i, i));
   return cval;
 }
 
-unsigned char te::pgis::DataSet::getUChar(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getUChar(i);
-}
-
-void te::pgis::DataSet::setUChar(int /*i*/, unsigned char /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-boost::int16_t te::pgis::DataSet::getInt16(int i) const
+boost::int16_t te::pgis::DataSet::getInt16(std::size_t i) const
 {
   short int ival = *((short int*)(PQgetvalue(m_result, m_i, i)));
 
@@ -530,18 +292,7 @@ boost::int16_t te::pgis::DataSet::getInt16(int i) const
   return ival;
 }
 
-boost::int16_t te::pgis::DataSet::getInt16(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getInt16(i);
-}
-
- void te::pgis::DataSet::setInt16(int /*i*/, boost::int16_t /*value*/) 
- {
-   throw Exception(TR_PGIS("Not implemented yet!"));
- }
-
-boost::int32_t te::pgis::DataSet::getInt32(int i) const
+boost::int32_t te::pgis::DataSet::getInt32(std::size_t i) const
 {
   int ival = *((int*)(PQgetvalue(m_result, m_i, i)));
 
@@ -552,18 +303,7 @@ boost::int32_t te::pgis::DataSet::getInt32(int i) const
   return ival;
 }
 
-boost::int32_t te::pgis::DataSet::getInt32(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getInt32(i);
-}
-
-void te::pgis::DataSet::setInt32(int /*i*/, boost::int32_t /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-boost::int64_t te::pgis::DataSet::getInt64(int i) const
+boost::int64_t te::pgis::DataSet::getInt64(std::size_t i) const
 {
   long long int ival = *((long long int*)(PQgetvalue(m_result, m_i, i)));
 
@@ -574,35 +314,13 @@ boost::int64_t te::pgis::DataSet::getInt64(int i) const
   return ival;
 }
 
-boost::int64_t te::pgis::DataSet::getInt64(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getInt64(i);
-}
-
-void te::pgis::DataSet::setInt64(int /*i*/, boost::int64_t /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-bool te::pgis::DataSet::getBool(int i) const
+bool te::pgis::DataSet::getBool(std::size_t i) const
 {
   char bval = *(PQgetvalue(m_result, m_i, i));
   return bval != 0;
 }
 
-bool te::pgis::DataSet::getBool(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getBool(i);
-}
-
-void te::pgis::DataSet::setBool(int /*i*/, bool /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-float te::pgis::DataSet::getFloat(int i) const
+float te::pgis::DataSet::getFloat(std::size_t i) const
 {
   float fval = *((float*)(PQgetvalue(m_result, m_i, i)));
 
@@ -613,18 +331,7 @@ float te::pgis::DataSet::getFloat(int i) const
   return fval;
 }
 
-float te::pgis::DataSet::getFloat(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getFloat(i);
-}
-
-void te::pgis::DataSet::setFloat(int /*i*/, float /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-double te::pgis::DataSet::getDouble(int i) const
+double te::pgis::DataSet::getDouble(std::size_t i) const
 {
   double dval = *((double*)(PQgetvalue(m_result, m_i, i)));
 
@@ -635,18 +342,7 @@ double te::pgis::DataSet::getDouble(int i) const
   return dval;
 }
 
-double te::pgis::DataSet::getDouble(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getDouble(i);
-}
-
-void te::pgis::DataSet::setDouble(int /*i*/, double /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-std::string te::pgis::DataSet::getNumeric(int i) const
+std::string te::pgis::DataSet::getNumeric(std::size_t i) const
 {
   char* val = PQgetvalue(m_result, m_i, i);
 
@@ -744,36 +440,13 @@ std::string te::pgis::DataSet::getNumeric(int i) const
   return intVal + "." + decVal;
 }
 
-std::string te::pgis::DataSet::getNumeric(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getNumeric(i);
-}
-
-void te::pgis::DataSet::setNumeric(int /*i*/, const std::string& /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-std::string te::pgis::DataSet::getString(int i) const
+std::string te::pgis::DataSet::getString(std::size_t i) const
 {
   std::string value(PQgetvalue(m_result, m_i, i));
   return value;
 }
 
-std::string te::pgis::DataSet::getString(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  std::string value(PQgetvalue(m_result, m_i, i));
-  return value;
-}
-
-void te::pgis::DataSet::setString(int /*i*/, const std::string& /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-te::dt::ByteArray* te::pgis::DataSet::getByteArray(int i) const
+te::dt::ByteArray* te::pgis::DataSet::getByteArray(std::size_t i) const
 {
   int size = PQgetlength(m_result, m_i, i);
 
@@ -782,50 +455,17 @@ te::dt::ByteArray* te::pgis::DataSet::getByteArray(int i) const
   return b;
 }
 
-te::dt::ByteArray* te::pgis::DataSet::getByteArray(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getByteArray(i);
-}
-
-void te::pgis::DataSet::setByteArray(int /*i*/, const te::dt::ByteArray& /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-te::gm::Geometry* te::pgis::DataSet::getGeometry(int i) const
+te::gm::Geometry* te::pgis::DataSet::getGeometry(std::size_t i) const
 {
   return EWKBReader::read(PQgetvalue(m_result, m_i, i));
 }
 
-te::gm::Geometry* te::pgis::DataSet::getGeometry(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return EWKBReader::read(PQgetvalue(m_result, m_i, i));
-}
-
-void te::pgis::DataSet::setGeometry(int /*i*/, const te::gm::Geometry& /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-te::rst::Raster* te::pgis::DataSet::getRaster(int /*i*/) const
+te::rst::Raster* te::pgis::DataSet::getRaster(std::size_t /*i*/) const
 {
   return 0;
 }
 
-te::rst::Raster* te::pgis::DataSet::getRaster(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getRaster(i);
-}
-
-void te::pgis::DataSet::setRaster(int /*i*/, const te::rst::Raster& /*value*/) 
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-te::dt::DateTime* te::pgis::DataSet::getDateTime(int i) const
+te::dt::DateTime* te::pgis::DataSet::getDateTime(std::size_t i) const
 {
   Oid tid = PQftype(m_result, i);
   boost::int64_t ival = 0;
@@ -926,29 +566,7 @@ te::dt::DateTime* te::pgis::DataSet::getDateTime(int i) const
   }
 }
 
-te::dt::DateTime* te::pgis::DataSet::getDateTime(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getDateTime(i);
-}
-
-void te::pgis::DataSet::setDateTime(int /*i*/, const te::dt::DateTime& /*value*/)
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-void te::pgis::DataSet::getArray(int i, std::vector<boost::int16_t>& values) const
-{
-  GetArray<short int, int>(m_i, i, m_result, values);
-}
-
-void te::pgis::DataSet::getArray(const std::string& name, std::vector<boost::int16_t>& values) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  getArray(i, values);
-}
-
-te::dt::Array* te::pgis::DataSet::getArray(int i) const
+te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
 {
   char* value = PQgetvalue(m_result, m_i, i);
 
@@ -1138,87 +756,8 @@ te::dt::Array* te::pgis::DataSet::getArray(int i) const
   //    }
 }
 
-te::dt::Array* te::pgis::DataSet::getArray(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getArray(i);
-}
-
-const unsigned char* te::pgis::DataSet::getWKB(int i) const
-{
-  return (unsigned char*)PQgetvalue(m_result, m_i, i);
-}
-
-const unsigned char* te::pgis::DataSet::getWKB(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getWKB(i);
-}
-
-te::da::DataSet* te::pgis::DataSet::getDataSet(int /*i*/)
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-te::da::DataSet* te::pgis::DataSet::getDataSet(const std::string& name)
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return getDataSet(i);
-}
-
-void te::pgis::DataSet::setDataSet(int /*i*/, const te::da::DataSet& /*value*/)
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-
-void te::pgis::DataSet::setValue(int /*i*/, te::dt::AbstractData* /*ad*/)
-{
-  throw Exception(TR_PGIS("Not implemented yet!"));
-}
-        
-bool te::pgis::DataSet::isNull(int i) const
+bool te::pgis::DataSet::isNull(std::size_t i) const
 {
   return PQgetisnull(m_result, m_i, i) == 1;
-}
-
-bool te::pgis::DataSet::isNull(const std::string& name) const
-{
-  int i = PQfnumber(m_result, name.c_str());
-  return PQgetisnull(m_result, m_i, i) == 1;
-}
-
-
-void te::pgis::DataSet::getFilterSQL(const te::gm::GeometryProperty* gp, const te::gm::Geometry* g, te::gm::SpatialRelation r, std::string& sql)
-{
-  const std::string& colName = gp->getName();
-  
-  std::string rel = GetSpatialRelation(r);
-
-  sql += "SELECT * FROM (";
-  sql += *m_sql;
-  sql += ") AS pgis_driver_subquery WHERE ";
-  sql += rel;
-  sql += "(";
-
-  Convert2PostGIS(m_t->getConnection()->getConn(), g, sql);
-
-  sql += ",";
-  sql += colName;
-  sql += ")";
-}
-
-void te::pgis::DataSet::getFilterSQL(const te::gm::GeometryProperty* gp, const te::gm::Envelope* e, te::gm::SpatialRelation r, std::string& sql)
-{
-  const std::string& colName = gp->getName();
-  
-  std::string rel = GetBoxSpatialRelation(r);
-
-  sql += "SELECT * FROM (";
-  sql += *m_sql;
-  sql += ") AS pgis_driver_subquery WHERE ";
-  sql += colName;
-  sql += rel;
-
-  Convert2PostGIS(e, gp->getSRID(), sql);
 }
 
