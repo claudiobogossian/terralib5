@@ -76,7 +76,7 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
   }
 
   m_histogramStyle = new te::qt::widgets::HistogramStyle(); 
-  m_chartDisplay = new te::qt::widgets::ChartDisplay();
+  m_chartDisplay = new te::qt::widgets::ChartDisplay(0, QString::fromStdString("Histogram"));
 
 // connect signal and slots
   connect(m_ui->m_stylePushButton, SIGNAL(clicked()), this, SLOT(onStylePushButtonClicked()));
@@ -94,8 +94,7 @@ te::qt::widgets::HistogramCreatorDialog::~HistogramCreatorDialog()
 
 void te::qt::widgets::HistogramCreatorDialog::onStylePushButtonClicked()
 {
-  te::qt::widgets::ChartStyleDialog dlg(this, 0, "Histogram", m_ui->m_propertyComboBox->currentText(), "Frequency");
-  dlg.exec();
+  m_chartDisplay->setStyle(te::qt::widgets::ChartStyleDialog::getStyle(m_chartDisplay->getStyle(), this, 0, "Histogram", m_ui->m_propertyComboBox->currentText(), "Frequency"));
 }
 
 void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
@@ -130,8 +129,6 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
   dlg.setLayout(lay);
 
   m_chartDisplay->setParent(&dlg);
-
-  m_chartDisplay->setTitle("Histogram");
 
   lay->addWidget(m_chartDisplay);
 
