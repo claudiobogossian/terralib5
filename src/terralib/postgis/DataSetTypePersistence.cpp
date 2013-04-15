@@ -120,41 +120,38 @@ void te::pgis::DataSetTypePersistence::clone(const std::string& /*datasetName*/,
   throw Exception(TR_PGIS("Not implemented yet!"));
 }
 
-void te::pgis::DataSetTypePersistence::drop(te::da::DataSetType* dt)
-{
-  std::string sql;
-
-  if(dt->hasGeom())
-  {
-    std::string tSchema, tName;
-    SplitTableName(dt->getName(), m_t->getPGDataSource()->getCurrentSchema(), tSchema, tName);
-
-    sql = "SELECT DropGeometryTable('";
-    sql += te::common::Convert2LCase(tSchema);
-    sql += "', '";
-    sql += te::common::Convert2LCase(tName);
-    sql += "')";
-  }
-  else
-  {
-    sql += "DROP TABLE ";
-    sql += dt->getName();
-  }
-
-  m_t->execute(sql);
- 
-  if(dt->getCatalog())
-  {
-    te::da::DataSourceCatalog* catalog = dt->getCatalog();
-    catalog->remove(dt, true);
-  }
-  else
-    delete dt;
-}
-
 void te::pgis::DataSetTypePersistence::drop(const std::string& /*datasetName*/)
 {
   throw Exception(TR_PGIS("Not implemented yet!"));
+
+  //std::string sql;
+
+  //if(dt->hasGeom())
+  //{
+  //  std::string tSchema, tName;
+  //  SplitTableName(dt->getName(), m_t->getPGDataSource()->getCurrentSchema(), tSchema, tName);
+
+  //  sql = "SELECT DropGeometryTable('";
+  //  sql += te::common::Convert2LCase(tSchema);
+  //  sql += "', '";
+  //  sql += te::common::Convert2LCase(tName);
+  //  sql += "')";
+  //}
+  //else
+  //{
+  //  sql += "DROP TABLE ";
+  //  sql += dt->getName();
+  //}
+
+  //m_t->execute(sql);
+ 
+  //if(dt->getCatalog())
+  //{
+  //  te::da::DataSourceCatalog* catalog = dt->getCatalog();
+  //  catalog->remove(dt, true);
+  //}
+  //else
+  //  delete dt;
 }
 
 void te::pgis::DataSetTypePersistence::rename(te::da::DataSetType* dt, const std::string& newName)
