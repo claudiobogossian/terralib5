@@ -33,6 +33,7 @@ set (
   ${SRCDIR}/AbstractAction.h
   ${SRCDIR}/ClassifierAction.h
   ${SRCDIR}/ContrastAction.h
+  ${SRCDIR}/MixtureModelAction.h
   ${SRCDIR}/SegmenterAction.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/rp" MOC)

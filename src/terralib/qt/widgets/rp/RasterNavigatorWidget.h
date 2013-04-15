@@ -1,0 +1,136 @@
+/*  Copyright (C) 2011-2012 National Institute For Space Research (INPE) - Brazil.
+
+    This file is part of the TerraLib - a Framework for building GIS enabled applications.
+
+    TerraLib is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License,
+    or (at your option) any later version.
+
+    TerraLib is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with TerraLib. See COPYING. If not, write to
+    TerraLib Team at <terralib-team@terralib.org>.
+ */
+
+/*!
+  \file terralib/qt/widgets/rp/RasterNavigatorWidget.h
+
+  \brief This file has the RasterNavigatorWidget class.
+*/
+
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERNAVIGATORWIDGET_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERNAVIGATORWIDGET_H
+
+// TerraLib
+#include "../../../geometry/Polygon.h"
+#include "../../../maptools/AbstractLayer.h"
+#include "../Config.h"
+
+// STL
+#include <memory>
+
+// Qt
+#include <QtGui/QWidget>
+
+namespace Ui { class RasterNavigatorWidgetForm; }
+
+namespace te
+{
+  namespace qt
+  {
+    namespace widgets
+    {
+      class AbstractTool;
+      class MapDisplay;
+
+      /*!
+        \class RasterNavigatorWidget
+
+        \brief This class is used to navigate over a DataSetLayer (having a raster representation)
+           and given a set of tools, such as, zoom in, zoom out, pan, recompose.
+        Two new tools as created for raster interaction:
+        - point clicked
+        - geom definition
+
+        \sa RasterFactory
+      */
+      class TEQTWIDGETSEXPORT RasterNavigatorWidget : public QWidget
+      {
+        Q_OBJECT
+
+        public:
+
+          RasterNavigatorWidget(QWidget* parent = 0, Qt::WindowFlags f = 0);
+
+          ~RasterNavigatorWidget();
+
+        public:
+
+          /*!
+            \brief This method is used to set the selected layer for mixture model operation
+            
+            \param layer The layer ptr 
+
+            \note This layer MUST HAVE a valid raster object.
+          */
+          void set(te::map::AbstractLayerPtr layer);
+
+        protected slots:
+
+          void onGeomAquired(te::gm::Polygon* poly);
+
+          void onPointPicked(QPointF& point);
+
+          void onCoordTrackedChanged(QPointF& coordinate);
+
+          void onMapDisplayExtentChanged();
+
+          void onZoomAreaToggled(bool checked);
+
+          void onZoomOutToggled(bool checked);
+
+          void onPanToggled(bool checked);
+
+          void onPointPickerToggled(bool checked);
+          
+          void onGeomToggled(bool checked);
+
+          void onReadPixelToggled(bool checked);
+
+          void onRecomposeClicked();
+
+        signals:
+
+          void mapDisplayExtentChanged();
+
+          void pointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
+
+          void geomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
+
+        protected:
+
+          void setCurrentTool(te::qt::widgets::AbstractTool* tool);
+
+        private:
+
+          std::auto_ptr<Ui::RasterNavigatorWidgetForm> m_ui;
+
+          te::map::AbstractLayerPtr m_layer;
+          te::qt::widgets::MapDisplay* m_mapDisplay;
+          te::qt::widgets::AbstractTool* m_tool;
+
+          int m_currentColumn;                                       //!< The column position of mouse in map display.
+          int m_currentRow;                                          //!< The row position of mouse in map display.
+      };
+
+    } // end namespace widgets
+  }   // end namespace qt
+}     // end namespace te
+
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_RASTERNAVIGATORWIDGET_H
+

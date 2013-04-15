@@ -18,13 +18,13 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/SegmenterWizard.h
+  \file terralib/qt/widgets/rp/MixtureModelWizard.h
 
-  \brief A Qt dialog that allows users to run a segmenter operation defined by RP module.
+  \brief A Qt dialog that allows users to run a mixture model operation defined by RP module.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARD_H
-#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARD_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_MIXTUREMODELWIZARD_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_MIXTUREMODELWIZARD_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
@@ -42,23 +42,24 @@ namespace te
   {
     namespace widgets
     {
-      class SegmenterWizardPage;
+      class MixtureModelWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
+      class RasterNavigatorWizardPage;
 
       /*!
-        \class SegmenterWizard
+        \class MixtureModelWizard
 
-        \brief This class is GUI used to define the segmenter wizard for the RP constast operation.
+        \brief This class is GUI used to define the mixture model wizard for the RP constast operation.
       */
-      class TEQTWIDGETSEXPORT SegmenterWizard : public QWizard
+      class TEQTWIDGETSEXPORT MixtureModelWizard : public QWizard
       {
 
         public:
 
-          SegmenterWizard(QWidget* parent);
+          MixtureModelWizard(QWidget* parent);
 
-          ~SegmenterWizard();
+          ~MixtureModelWizard(); 
 
         public:
 
@@ -74,12 +75,13 @@ namespace te
 
         private:
 
-          std::auto_ptr<te::qt::widgets::SegmenterWizardPage> m_segmenterPage;
+          std::auto_ptr<te::qt::widgets::MixtureModelWizardPage> m_mixtureModelPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+          std::auto_ptr<te::qt::widgets::RasterNavigatorWizardPage> m_navigatorPage;
       };
     }   // end namespace widgets
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_SEGMENTERWIZARD_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_MIXTUREMODELWIZARD_H

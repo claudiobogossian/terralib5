@@ -27,6 +27,7 @@
 #define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CLASSIFIERWIZARDPAGE_H
 
 // TerraLib
+#include "../../../geometry/Polygon.h"
 #include "../../../maptools/AbstractLayer.h"
 #include "../../../rp/Classifier.h"
 #include "../Config.h"
@@ -36,14 +37,13 @@
 
 // Qt
 #include <QtGui/QWizardPage>
+#include <QtGui/QTableWidget>
 
 // Forward declaration
 namespace Ui { class ClassifierWizardPageForm; }
 
 namespace te
 {
-  namespace gm { class Envelope; }
-
   namespace qt
   {
     namespace widgets
@@ -58,6 +58,18 @@ namespace te
       class TEQTWIDGETSEXPORT ClassifierWizardPage : public QWizardPage
       {
         Q_OBJECT
+
+           enum ClassifierTypes
+          {
+            CLASSIFIER_ISOSEG
+          };
+
+          struct ClassifierSamples
+          {
+            std::string m_id;
+            std::string m_name;
+            te::gm::Polygon* m_poly;
+          };
 
         public:
 
@@ -82,22 +94,33 @@ namespace te
 
         protected:
 
-          void apply();
-
-          void preview();
-
-          te::gm::Envelope calculateExtent();
-
           void fillClassifierTypes();
 
           void listBands();
 
+          void drawSamples();
+
+          void updateSamples();
+
+        public slots:
+
+          void onMapDisplayExtentChanged();
+
+          void onGeomAquired(te::gm::Polygon* poly, te::qt::widgets::MapDisplay* map);
+
+          void onItemChanged(QTableWidgetItem* item);
+
+          void onRemoveToolButtonClicked();
+
         private:
 
           std::auto_ptr<Ui::ClassifierWizardPageForm> m_ui;
-          std::auto_ptr<te::qt::widgets::MapDisplay> m_mapDisplay;
+
+          std::map<std::string, ClassifierSamples > m_samples;   //!< The map of selected samples
+          unsigned int m_countSamples;                           //!< The maximum number of samples inserted.
 
           te::map::AbstractLayerPtr m_layer;
+          te::qt::widgets::MapDisplay* m_display;
       };
 
     } // end namespace widgets

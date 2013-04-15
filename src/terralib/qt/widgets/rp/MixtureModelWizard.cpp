@@ -18,22 +18,23 @@
  */
 
 /*!
-  \file terralib/qt/widgets/rp/SegmenterWizard.cpp
+  \file terralib/qt/widgets/rp/MixtureModelWizard.cpp
 
-  \brief A Qt dialog that allows users to run a segmenter operation defined by RP module.
+  \brief A Qt dialog that allows users to run a mixture model operation defined by RP module.
 */
 
 // TerraLib 
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../raster/Raster.h"
-#include "../../../rp/Segmenter.h"
-#include "../../../rp/SegmenterRegionGrowingStrategy.h"
-#include "SegmenterWizard.h"
-#include "SegmenterWizardPage.h"
+#include "../../../rp/MixtureModel.h"
+#include "MixtureModelWizard.h"
+#include "MixtureModelWizardPage.h"
 #include "LayerSearchWidget.h"
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
+#include "RasterNavigatorWidget.h"
+#include "RasterNavigatorWizardPage.h"
 
 // STL
 #include <cassert>
@@ -42,23 +43,23 @@
 #include <QtGui/QMessageBox>
 
 
-te::qt::widgets::SegmenterWizard::SegmenterWizard(QWidget* parent)
+te::qt::widgets::MixtureModelWizard::MixtureModelWizard(QWidget* parent)
   : QWizard(parent)
 {
   //configure the wizard
   this->setWizardStyle(QWizard::ModernStyle);
-  this->setWindowTitle(tr("Segmenter"));
+  this->setWindowTitle(tr("Mixture Model"));
   this->setFixedSize(640, 480);
 
   addPages();
 }
 
-te::qt::widgets::SegmenterWizard::~SegmenterWizard()
+te::qt::widgets::MixtureModelWizard::~MixtureModelWizard()
 {
 
 }
 
-bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
+bool te::qt::widgets::MixtureModelWizard::validateCurrentPage()
 {
   if(currentPage() ==  m_layerSearchPage.get())
   {
@@ -68,14 +69,19 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
     {
       te::map::AbstractLayerPtr l = *list.begin();
 
-      m_segmenterPage->set(l);
+      m_mixtureModelPage->set(l);
+      m_navigatorPage->set(l);
     }
 
     return m_layerSearchPage->isComplete();
   }
-  else if(currentPage() ==  m_segmenterPage.get())
+  else if(currentPage() ==  m_mixtureModelPage.get())
   {
-    return m_segmenterPage->isComplete();
+    return m_mixtureModelPage->isComplete();
+  }
+  else if(currentPage() == m_navigatorPage.get())
+  {
+    return m_navigatorPage->isComplete();
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {
@@ -85,26 +91,33 @@ bool te::qt::widgets::SegmenterWizard::validateCurrentPage()
   return true;
 }
 
-void te::qt::widgets::SegmenterWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
+void te::qt::widgets::MixtureModelWizard::setList(std::list<te::map::AbstractLayerPtr>& layerList)
 {
   m_layerSearchPage->getSearchWidget()->setList(layerList);
 }
 
-void te::qt::widgets::SegmenterWizard::addPages()
+void te::qt::widgets::MixtureModelWizard::addPages()
 {
   m_layerSearchPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
-  m_segmenterPage.reset(new te::qt::widgets::SegmenterWizardPage(this));
+  m_mixtureModelPage.reset(new te::qt::widgets::MixtureModelWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
+  m_navigatorPage.reset(new te::qt::widgets::RasterNavigatorWizardPage(this));
 
   addPage(m_layerSearchPage.get());
-  addPage(m_segmenterPage.get());
+  addPage(m_mixtureModelPage.get());
+  addPage(m_navigatorPage.get());
   addPage(m_rasterInfoPage.get());
 
   //for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
+
+  //connects
+  connect(m_navigatorPage->getWidget(), SIGNAL(mapDisplayExtentChanged()), m_mixtureModelPage.get(), SLOT(onMapDisplayExtentChanged()));
+  connect(m_navigatorPage->getWidget(), SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 
+    m_mixtureModelPage.get(), SLOT(onPointPicked(double, double, te::qt::widgets::MapDisplay*)));
 }
 
-bool te::qt::widgets::SegmenterWizard::execute()
+bool te::qt::widgets::MixtureModelWizard::execute()
 {
   //get layer
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
@@ -113,24 +126,25 @@ bool te::qt::widgets::SegmenterWizard::execute()
   te::rst::Raster* inputRst = ds->getRaster();
 
   //run contrast
-  te::rp::Segmenter algorithmInstance;
+  te::rp::MixtureModel algorithmInstance;
 
-  te::rp::Segmenter::InputParameters algoInputParams = m_segmenterPage->getInputParams();
+  te::rp::MixtureModel::InputParameters algoInputParams = m_mixtureModelPage->getInputParams();
+  algoInputParams.m_inputRasterPtr = inputRst;
 
-  te::rp::Segmenter::OutputParameters algoOutputParams;
-  algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
+  te::rp::MixtureModel::OutputParameters algoOutputParams = m_mixtureModelPage->getOutputParams();
   algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
-
+  algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
 
   if(algorithmInstance.initialize(algoInputParams))
   {
     if(algorithmInstance.execute(algoOutputParams))
     {
-      QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
+
+      QMessageBox::information(this, tr("Mixture Model"), tr("Mixture Model ended sucessfully"));
     }
     else
     {
-      QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter execution error"));
+      QMessageBox::critical(this, tr("Mixture Model"), tr("Mixture Model execution error"));
 
       delete ds;
       return false;
@@ -138,7 +152,7 @@ bool te::qt::widgets::SegmenterWizard::execute()
   }
   else
   {
-    QMessageBox::critical(this, tr("Segmenter"), tr("Segmenter initialization error"));
+    QMessageBox::critical(this, tr("Mixture Model"), tr("Mixture Model initialization error"));
 
     delete ds;
     return false;

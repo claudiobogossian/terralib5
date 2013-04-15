@@ -45,6 +45,13 @@
 #define TE_QT_PLUGIN_RP_HAVE_CONTRAST
 
 /*!
+  \def TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
+
+  \brief It defines if the RP Qt Plugin has the mixture model operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
+
+/*!
   \def TE_QT_PLUGIN_RP_HAVE_SEGMENTER
 
   \brief It defines if the RP Qt Plugin has the segmenter operation.

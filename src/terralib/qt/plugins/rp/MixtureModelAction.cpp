@@ -18,17 +18,16 @@
  */
 
 /*!
-  \file terralib/qt/plugins/rp/SegmenterAction.cpp
+  \file terralib/qt/plugins/rp/MixtureModelAction.cpp
 
-  \brief This file defines the Segmenter class
+  \brief This file defines the mixture model class
 */
 
 // Terralib
-#include "../../../qt/widgets/rp/SegmenterWizard.h"
-#include "../../../raster/Raster.h"
+#include "../../../qt/widgets/rp/MixtureModelWizard.h"
 #include "../../af/ApplicationController.h"
 #include "../../af/Project.h"
-#include "SegmenterAction.h"
+#include "MixtureModelAction.h"
 
 // Qt
 #include <QtCore/QObject>
@@ -36,18 +35,18 @@
 // STL
 #include <memory>
 
-te::qt::plugins::rp::SegmenterAction::SegmenterAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
+te::qt::plugins::rp::MixtureModelAction::MixtureModelAction(QMenu* menu):te::qt::plugins::rp::AbstractAction(menu)
 {
-  createAction(tr("Segmenter...").toStdString());
+  createAction(tr("Mixture Model...").toStdString());
 }
 
-te::qt::plugins::rp::SegmenterAction::~SegmenterAction()
+te::qt::plugins::rp::MixtureModelAction::~MixtureModelAction()
 {
 }
 
-void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
+void te::qt::plugins::rp::MixtureModelAction::onActionActivated(bool checked)
 {
-  te::qt::widgets::SegmenterWizard dlg(0);
+  te::qt::widgets::MixtureModelWizard dlg(0);
 
 // get the list of layers from current project
   te::qt::af::Project* prj = te::qt::af::ApplicationController::getInstance().get();
@@ -57,8 +56,5 @@ void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
     dlg.setList(prj->getLayers());
   }
 
-  if(dlg.exec() == QDialog::Accepted)
-  {
-
-  }
+  dlg.exec();
 }
