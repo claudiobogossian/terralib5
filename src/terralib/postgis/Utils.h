@@ -958,7 +958,9 @@ namespace te
 
     std::string GetSQLValueNames(const te::da::DataSetType* dt);
 
-    std::string GetSQLBindValues(const te::da::DataSetType* dt);
+    std::string GetSQLValueNames(const te::da::DataSet* dataset);
+
+    std::string GetSQLBindValues(std::size_t nproperties);
 
     /*!
       \brief Given a list of properties it constructs a string with bindable parameters that can be used inside an update query.

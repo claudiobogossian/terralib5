@@ -454,13 +454,30 @@ std::string te::pgis::GetSQLValueNames(const te::da::DataSetType* dt)
   return valueNames;
 }
 
-std::string te::pgis::GetSQLBindValues(const te::da::DataSetType* dt)
+std::string te::pgis::GetSQLValueNames(const te::da::DataSet* dataset)
 {
   std::string valueNames("(");
 
-  const std::size_t np = dt->size();
+  const std::size_t np = dataset->getNumProperties();
 
   for(std::size_t i = 0; i < np; ++i)
+  {
+    if(i != 0)
+      valueNames += ",";
+
+    valueNames += dataset->getPropertyName(i);
+  }
+
+  valueNames += ")";
+
+  return valueNames;
+}
+
+std::string te::pgis::GetSQLBindValues(std::size_t nproperties)
+{
+  std::string valueNames("(");
+
+  for(std::size_t i = 0; i < nproperties; ++i)
   {
     if(i != 0)
       valueNames += ",";
