@@ -41,12 +41,16 @@ namespace Ui { class RasterNavigatorWidgetForm; }
 
 namespace te
 {
+  namespace gm { class Envelope; }
+
   namespace qt
   {
     namespace widgets
     {
       class AbstractTool;
       class MapDisplay;
+      class Pan;
+      class ZoomWheel;
 
       /*!
         \class RasterNavigatorWidget
@@ -79,6 +83,18 @@ namespace te
             \note This layer MUST HAVE a valid raster object.
           */
           void set(te::map::AbstractLayerPtr layer);
+
+          te::gm::Envelope getCurrentExtent();
+
+          void showAsPreview(bool asPreview);
+
+          void hideEditionTools(bool hide);
+
+          void hidePickerTool(bool hide);
+
+          void hideGeomTool(bool hide);
+
+          void hideInfoTool(bool hide);
 
         protected slots:
 
@@ -123,6 +139,9 @@ namespace te
           te::map::AbstractLayerPtr m_layer;
           te::qt::widgets::MapDisplay* m_mapDisplay;
           te::qt::widgets::AbstractTool* m_tool;
+
+          te::qt::widgets::Pan* m_panTool;                          //!< Pan tool (used in preview mode)
+          te::qt::widgets::ZoomWheel* m_zoomTool;                   //!< Zoom tool (used in preview mode)
 
           int m_currentColumn;                                       //!< The column position of mouse in map display.
           int m_currentRow;                                          //!< The row position of mouse in map display.

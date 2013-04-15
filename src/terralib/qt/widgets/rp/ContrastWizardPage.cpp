@@ -32,7 +32,7 @@
 #include "../../../qt/widgets/charts/HistogramChart.h"
 #include "../../../qt/widgets/charts/Utils.h"
 #include "ContrastWizardPage.h"
-#include "MapDisplay.h"
+#include "RasterNavigatorWidget.h"
 #include "ui_ContrastWizardPageForm.h"
 
 // Qt
@@ -54,8 +54,10 @@ te::qt::widgets::ContrastWizardPage::ContrastWizardPage(QWidget* parent)
 
 //build form
   QGridLayout* displayLayout = new QGridLayout(m_ui->m_frame);
-  m_mapDisplay.reset( new te::qt::widgets::MapDisplay(m_ui->m_frame->size(), m_ui->m_frame));
-  displayLayout->addWidget(m_mapDisplay.get());
+  m_navigator.reset( new te::qt::widgets::RasterNavigatorWidget(m_ui->m_frame));
+  m_navigator->showAsPreview(true);
+  displayLayout->addWidget(m_navigator.get());
+  displayLayout->setContentsMargins(0,0,0,0);
 
 //set icons
   m_ui->m_rRadioButton->setIcon(QIcon::fromTheme("bullet-red"));
@@ -83,11 +85,7 @@ void te::qt::widgets::ContrastWizardPage::set(te::map::AbstractLayerPtr layer)
 
   list.push_back(m_layer);
 
-  te::gm::Envelope e = calculateExtent();
-
-  m_mapDisplay->setLayerList(list);
-  m_mapDisplay->setSRID(m_layer->getSRID(), false);
-  m_mapDisplay->setExtent(e, false);
+  m_navigator->set(m_layer);
 
   listBands();
 }
@@ -138,6 +136,9 @@ void te::qt::widgets::ContrastWizardPage::apply()
   te::da::DataSet* ds = m_layer->getData();
   te::rst::Raster* inputRst = ds->getRaster();
 
+  //get current box
+  te::gm::Envelope extent = m_navigator->getCurrentExtent();
+
   //set contrast parameters
   te::rp::Contrast::InputParameters algoInputParams = getInputParams();
 
@@ -182,22 +183,12 @@ void te::qt::widgets::ContrastWizardPage::apply()
 
 void te::qt::widgets::ContrastWizardPage::preview()
 {
-  if(m_ui->m_previewGroupBox->isChecked() && m_layer)
+  if(m_ui->m_previewGroupBox->isChecked())
   {
-    m_mapDisplay->refresh();
+    apply();
+
+
   }
-}
-
-te::gm::Envelope te::qt::widgets::ContrastWizardPage::calculateExtent()
-{
-  if(m_layer.get())
-  {
-    te::gm::Envelope extent(m_layer->getExtent());
-
-    return extent;
-  }
-
-  return te::gm::Envelope();
 }
 
 void te::qt::widgets::ContrastWizardPage::fillContrastTypes()

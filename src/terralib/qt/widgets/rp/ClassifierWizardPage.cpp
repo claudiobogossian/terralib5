@@ -27,6 +27,7 @@
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../raster/Raster.h"
+#include "../../../rp/ClassifierISOSegStrategy.h"
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
 #include "ClassifierWizardPage.h"
@@ -86,7 +87,47 @@ void te::qt::widgets::ClassifierWizardPage::set(te::map::AbstractLayerPtr layer)
 
 te::rp::Classifier::InputParameters te::qt::widgets::ClassifierWizardPage::getInputParams()
 {
+  int idx = m_ui->m_classifierTypeComboBox->currentIndex();
+  int type = m_ui->m_classifierTypeComboBox->itemData(idx).toInt();
+
   te::rp::Classifier::InputParameters algoInputParams;
+
+  if(type == CLASSIFIER_ISOSEG)
+  {
+    algoInputParams.m_strategyName = "isoseg";
+
+    te::rp::ClassifierISOSegStrategy::Parameters classifierparameters;
+    classifierparameters.m_acceptanceThreshold = m_ui->m_acceptanceThresholdComboBox->currentText().toDouble();
+
+    algoInputParams.setClassifierStrategyParams(classifierparameters);
+  }
+
+  //get bands
+  QList<QListWidgetItem*> selectedBands = m_ui->m_inputRasterBandsListWidget->selectedItems();
+
+  QList<QListWidgetItem*>::const_iterator it = selectedBands.begin();
+  QList<QListWidgetItem*>::const_iterator itend = selectedBands.end();
+
+  while(it != itend)
+  {
+    algoInputParams.m_inputRasterBands.push_back((*it)->text().toUInt());
+
+    ++it;
+  }
+
+  //get polygons
+  std::map<std::string, ClassifierSamples>::iterator itSamples = m_samples.begin();
+
+  std::vector<te::gm::Polygon*> polyVec;
+
+  while(itSamples != m_samples.end())
+  {
+    polyVec.push_back(itSamples->second.m_poly);
+
+    ++itSamples;
+  }
+
+  algoInputParams.m_inputPolygons = polyVec;
 
   return algoInputParams;
 }

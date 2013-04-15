@@ -111,6 +111,9 @@ void te::qt::widgets::MixtureModelWizard::addPages()
   //for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 
+  //configure raster navigator
+  m_navigatorPage->getWidget()->hideGeomTool(true);
+
   //connects
   connect(m_navigatorPage->getWidget(), SIGNAL(mapDisplayExtentChanged()), m_mixtureModelPage.get(), SLOT(onMapDisplayExtentChanged()));
   connect(m_navigatorPage->getWidget(), SIGNAL(pointPicked(double, double, te::qt::widgets::MapDisplay*)), 

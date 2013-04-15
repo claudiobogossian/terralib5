@@ -42,13 +42,11 @@ namespace Ui { class ContrastWizardPageForm; }
 
 namespace te
 {
-  namespace gm { class Envelope; }
-
   namespace qt
   {
     namespace widgets
     {
-      class MapDisplay;
+      class RasterNavigatorWidget;
 
       /*!
         \class ContrastWizardPage
@@ -86,8 +84,6 @@ namespace te
 
           void preview();
 
-          te::gm::Envelope calculateExtent();
-
           void fillContrastTypes();
 
           void listBands();
@@ -100,7 +96,7 @@ namespace te
         private:
 
           std::auto_ptr<Ui::ContrastWizardPageForm> m_ui;
-          std::auto_ptr<te::qt::widgets::MapDisplay> m_mapDisplay;
+          std::auto_ptr<te::qt::widgets::RasterNavigatorWidget> m_navigator;
 
           te::map::AbstractLayerPtr m_layer;
       };

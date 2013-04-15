@@ -111,6 +111,9 @@ void te::qt::widgets::ClassifierWizard::addPages()
   //for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
 
+  //configure raster navigator
+  m_navigatorPage->getWidget()->hidePickerTool(true);
+
   //connects
   connect(m_navigatorPage->getWidget(), SIGNAL(mapDisplayExtentChanged()), m_classifierPage.get(), SLOT(onMapDisplayExtentChanged()));
   connect(m_navigatorPage->getWidget(), SIGNAL(geomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)), 
@@ -129,9 +132,11 @@ bool te::qt::widgets::ClassifierWizard::execute()
   te::rp::Classifier algorithmInstance;
 
   te::rp::Classifier::InputParameters algoInputParams = m_classifierPage->getInputParams();
+  algoInputParams.m_inputRasterPtr = inputRst;
 
-
-  te::rp::Classifier::OutputParameters algoOutputParams;
+  te::rp::Classifier::OutputParameters algoOutputParams = m_classifierPage->getOutputParams();
+  algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
+  algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
 
 
   if(algorithmInstance.initialize(algoInputParams))

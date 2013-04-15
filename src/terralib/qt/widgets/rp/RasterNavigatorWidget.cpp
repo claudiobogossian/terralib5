@@ -37,6 +37,7 @@
 #include "../../widgets/tools/ReadPixelTool.h"
 #include "../../widgets/tools/ZoomArea.h"
 #include "../../widgets/tools/ZoomClick.h"
+#include "../../widgets/tools/ZoomWheel.h"
 #include "../canvas/Canvas.h"
 #include "../canvas/MapDisplay.h"
 #include "RasterNavigatorWidget.h"
@@ -46,7 +47,7 @@
 te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
     m_ui(new Ui::RasterNavigatorWidgetForm),
-    m_tool(0)
+    m_tool(0), m_panTool(0), m_zoomTool(0)
 {
   m_ui->setupUi(this);
 
@@ -85,6 +86,8 @@ te::qt::widgets::RasterNavigatorWidget::RasterNavigatorWidget(QWidget* parent, Q
 te::qt::widgets::RasterNavigatorWidget::~RasterNavigatorWidget()
 {
   delete m_tool;
+  delete m_panTool;
+  delete m_zoomTool;
 }
 
 void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer)
@@ -101,6 +104,51 @@ void te::qt::widgets::RasterNavigatorWidget::set(te::map::AbstractLayerPtr layer
   m_mapDisplay->setLayerList(list);
   m_mapDisplay->setSRID(m_layer->getSRID(), false);
   m_mapDisplay->setExtent(e, true);
+}
+
+te::gm::Envelope te::qt::widgets::RasterNavigatorWidget::getCurrentExtent()
+{
+  return m_mapDisplay->getExtent();
+}
+
+void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
+{
+  delete m_panTool;
+  delete m_zoomTool;
+
+  m_ui->m_toolsFrame->setVisible(!asPreview);
+  m_ui->m_label->setVisible(!asPreview);
+
+  if(asPreview)
+  {
+    m_panTool = new te::qt::widgets::Pan(m_mapDisplay, Qt::OpenHandCursor, Qt::ClosedHandCursor);
+    m_zoomTool = new te::qt::widgets::ZoomWheel(m_mapDisplay, 1.5);
+
+    m_mapDisplay->installEventFilter(m_panTool);
+    m_mapDisplay->installEventFilter(m_zoomTool);
+  }
+}
+
+void te::qt::widgets::RasterNavigatorWidget::hideEditionTools(bool hide)
+{
+  hidePickerTool(hide);
+  hideGeomTool(hide);
+  hideInfoTool(hide);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::hidePickerTool(bool hide)
+{
+  m_ui->m_pointActionToolButtontoolButton->setVisible(!hide);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::hideGeomTool(bool hide)
+{
+  m_ui->m_geomActionToolButtontoolButton->setVisible(!hide);
+}
+
+void te::qt::widgets::RasterNavigatorWidget::hideInfoTool(bool hide)
+{
+  m_ui->m_readPixelActionToolButton->setVisible(!hide);
 }
 
 void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coordinate)
