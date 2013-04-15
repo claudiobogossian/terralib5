@@ -74,80 +74,18 @@ namespace te
         //@{
 
         /*!
-          \brief It creates the dataset definition in a data source and then fill it with data from the input dataset.
-
-          This method will create the dataset schema definition and will 
-          save all the dataset data.
-
-          \param dt      The source dataset definition.
-          \param d       The source dataset data.
-          \param limit   The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-
-          \pre All parameters must be valid pointers.
-
-          \post It is the caller responsability to release the dataset 'd' pointer.
-
-          \exception Exception It throws an exception if the dataset can not be created.
-
-          \note DataSetPersistence will start reading the dataset 'd' in the
-                current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
-        */
-        virtual void create(DataSetType* dt,
-                            DataSet* d,
-                            std::size_t limit = 0);
-
-        /*!
-          \brief It creates the dataset definition in a data source and then fill it with data from the input dataset.
-
-          This method will create the dataset schema definition and will 
-          save all the dataset data.
-
-          \param dt       The source dataset definition.
-          \param d        The source dataset data.
-          \param options  A list of optional modifiers. It is driver specific.
-          \param limit    The number of items to be used from the input dataset. If set to 0 (default) all items are used.
-
-          \pre All parameters must be valid pointers.
-
-          \exception Exception It throws an exception if the dataset can not be created.
-
-          \note It is the caller responsability to release the dataset 'd' pointer.
-
-          \note DataSetPersistence will start reading the dataset 'd' in the
-                current position. So, keep in mind that it is the caller responsability
-                to inform the dataset 'd' in the right position (and a valid one) to start processing it.
-        */
-        virtual void create(DataSetType* dt,
-                            DataSet* d,
-                            const std::map<std::string, std::string>& options,
-                            std::size_t limit = 0) = 0;
-
-        /*!
-          \brief It removes all data associated to the dataset from the data source.
-
-          \param datasetName The dataset name.
-
-          \post All data associated to dataset will be erased.
-
-          \exception Exception It throws an exception if the elements of the dataset can not be removed.
-        */
-        virtual void remove(const std::string& datasetName) = 0;
-
-        /*!
           \brief It removes all the informed items from the dataset.
 
           It removes all data collection identified by an 
-          object identifier from the data source.
+          object identifier from the data source. If no OIDs are
+          informed all data will be removed.
 
           \param datasetName The dataset name.
-          \param oids        A list of object identifiers used to remove data from the datasource.
-
-          \pre The parameter oids must be a valid pointer.
+          \param oids        A list of object identifiers used to remove data from the datasource or NULL for all.
 
           \exception Exception It throws an exception if the dataset items can not be removed.
         */
-        virtual void remove(const std::string& datasetName, const ObjectIdSet* oids) = 0;
+        virtual void remove(const std::string& datasetName, const ObjectIdSet* oids = 0) = 0;
 
         /*!
           \brief It adds more data items to the dataset in the data source.

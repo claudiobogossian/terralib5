@@ -28,7 +28,9 @@
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../dataset/DataSet.h"
+#include "../dataset/DataSetPersistence.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/DataSetTypePersistence.h"
 #include "../dataset/ObjectId.h"
 #include "../dataset/ObjectIdSet.h"
 #include "../dataset/PrimaryKey.h"
@@ -494,5 +496,27 @@ void te::da::GetPropertyInfo(const DataSet* const dataset,
     pnames.push_back(dataset->getPropertyName(i));
     ptypes.push_back(dataset->getPropertyDataType(i));
   }
+}
+
+void te::da::Create(DataSourceTransactor* t, DataSetType* dt, DataSet* d, std::size_t limit)
+{
+  std::map<std::string, std::string> options;
+
+  Create(t, dt, d, options, limit);
+}
+
+void te::da::Create(DataSourceTransactor* t,
+                    DataSetType* dt,
+                    DataSet* d,
+                    const std::map<std::string, std::string>& options,
+                    std::size_t limit)
+{
+  std::auto_ptr<te::da::DataSetTypePersistence> dtp(t->getDataSetTypePersistence());
+
+  dtp->create(dt);
+
+  std::auto_ptr<te::da::DataSetPersistence> dp(t->getDataSetPersistence());
+
+  dp->add(dt->getName(), d, options, limit);
 }
 

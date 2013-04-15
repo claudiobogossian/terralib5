@@ -30,13 +30,6 @@
 #include "DataSetTypePersistence.h"
 
 
-void te::da::DataSetPersistence::create(DataSetType* dt, DataSet* d, std::size_t limit)
-{
-  std::map<std::string, std::string> options;
-
-  create(dt, d, options, limit);
-}
-
 void te::da::DataSetPersistence::add(const std::string& datasetName, DataSet* d, std::size_t limit)
 {
   std::map<std::string, std::string> options;
