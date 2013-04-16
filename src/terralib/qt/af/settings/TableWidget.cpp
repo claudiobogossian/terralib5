@@ -7,7 +7,7 @@ te::qt::af::TableWidget::TableWidget(QWidget* parent)
 {
   m_ui->setupUi(this);
 
-  m_resumeText + tr("Maintain data table always visible");
+  m_resumeText = tr("Maintain data table always visible");
 }
 
 te::qt::af::TableWidget::~TableWidget()

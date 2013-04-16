@@ -1082,16 +1082,26 @@ void te::qt::af::BaseApplication::initToolbars()
   m_statusbar->setObjectName("StatusBar");
   setStatusBar(m_statusbar);
 
-// File Tool Bar
-  m_fileToolBar = new QToolBar(this);
-  m_fileToolBar->setObjectName("File Tool Bar");
-  addToolBar(Qt::TopToolBarArea, m_fileToolBar);
-  m_fileToolBar->setWindowTitle(tr("File Tool Bar"));
-  m_fileToolBar->addAction(m_fileNewProject);
-  m_fileToolBar->addAction(m_fileOpenProject);
-  m_fileToolBar->addAction(m_fileSaveProject);
+  std::vector<QToolBar*> bars = ReadToolBarsFromSettings(this);
+  std::vector<QToolBar*>::iterator it;
 
-  m_viewToolBarsMenu->addAction(m_fileToolBar->toggleViewAction());
+  for(it=bars.begin(); it!=bars.end(); ++it)
+  {
+    QToolBar* bar = *it;
+    addToolBar(Qt::TopToolBarArea, bar);
+    m_viewToolBarsMenu->addAction(bar->toggleViewAction());
+    ApplicationController::getInstance().registerToolBar(bar->objectName(), bar);
+  }
+// File Tool Bar
+  //m_fileToolBar = new QToolBar(this);
+  //m_fileToolBar->setObjectName("File Tool Bar");
+  //addToolBar(Qt::TopToolBarArea, m_fileToolBar);
+  //m_fileToolBar->setWindowTitle(tr("File Tool Bar"));
+  //m_fileToolBar->addAction(m_fileNewProject);
+  //m_fileToolBar->addAction(m_fileOpenProject);
+  //m_fileToolBar->addAction(m_fileSaveProject);
+
+  //m_viewToolBarsMenu->addAction(m_fileToolBar->toggleViewAction());
 
 // Edit Tool Bar
   //m_editToolBar = new QToolBar(this);
@@ -1108,29 +1118,29 @@ void te::qt::af::BaseApplication::initToolbars()
   //m_viewToolBarsMenu->addAction(m_editToolBar->toggleViewAction());
 
 // Map Display Tool Bar
-  m_mapToolBar = new QToolBar(this);
-  m_mapToolBar->setObjectName("Map Tool Bar");
-  addToolBar(Qt::TopToolBarArea, m_mapToolBar);
-  m_mapToolBar->setWindowTitle(tr("Map Tool Bar"));
-  m_mapToolBar->addAction(m_mapDraw);
-  m_mapToolBar->addAction(m_mapZoomIn);
-  m_mapToolBar->addAction(m_mapZoomOut);
-  m_mapToolBar->addAction(m_mapZoomArea);
-  m_mapToolBar->addAction(m_mapPan);
-  m_mapToolBar->addAction(m_mapZoomExtent);
-  m_mapToolBar->addAction(m_mapPreviousExtent);
-  m_mapToolBar->addAction(m_mapNextExtent);
+  //m_mapToolBar = new QToolBar(this);
+  //m_mapToolBar->setObjectName("Map Tool Bar");
+  //addToolBar(Qt::TopToolBarArea, m_mapToolBar);
+  //m_mapToolBar->setWindowTitle(tr("Map Tool Bar"));
+  //m_mapToolBar->addAction(m_mapDraw);
+  //m_mapToolBar->addAction(m_mapZoomIn);
+  //m_mapToolBar->addAction(m_mapZoomOut);
+  //m_mapToolBar->addAction(m_mapZoomArea);
+  //m_mapToolBar->addAction(m_mapPan);
+  //m_mapToolBar->addAction(m_mapZoomExtent);
+  //m_mapToolBar->addAction(m_mapPreviousExtent);
+  //m_mapToolBar->addAction(m_mapNextExtent);
 
   QToolButton* stopDrawToolButton = new QToolButton(m_statusbar);
   stopDrawToolButton->setDefaultAction(m_mapStopDraw);
   m_statusbar->addPermanentWidget(stopDrawToolButton);
 
-  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
+//  m_viewToolBarsMenu->addAction(m_mapToolBar->toggleViewAction());
 
 // registering the toolbars
-  ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
-  //ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
-  ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
+  //ApplicationController::getInstance().registerToolBar(m_fileToolBar->objectName(), m_fileToolBar);
+  ////ApplicationController::getInstance().registerToolBar("EditToolBar", m_editToolBar);
+  //ApplicationController::getInstance().registerToolBar(m_mapToolBar->objectName(), m_mapToolBar);
 }
 
 void te::qt::af::BaseApplication::initSlotsConnections()

@@ -4,6 +4,7 @@
 #include "MenuBarModel.h"
 
 #include "../ApplicationController.h"
+#include "../Utils.h"
 
 // Qt
 #include <QtGui/QInputDialog>
@@ -35,6 +36,22 @@ void UpdateActions(QList<QAction*>& acts, QAction* act, const bool& toAdd)
     acts.append(act);
   else
     acts.removeAll(act);
+}
+
+void RemoveBars(const std::set<QToolBar*>& bars)
+{
+  std::set<QToolBar*>::const_iterator it;
+
+  for(it = bars.begin(); it != bars.end(); ++it)
+  {
+    QToolBar* bar = *it;
+
+    te::qt::af::RemoveToolBarFromSettings(bar);
+
+    te::qt::af::ApplicationController::getInstance().removeToolBar(bar->objectName());
+
+    delete bar;
+  }
 }
 
 te::qt::af::ToolbarsWidget::ToolbarsWidget(QWidget* parent) :
@@ -84,8 +101,17 @@ void te::qt::af::ToolbarsWidget::saveChanges()
   for(it = m_createdBars.begin(); it != m_createdBars.end(); ++it)
   {
     QToolBar* bar = *it;
+    
+    AddToolBarToSettings(bar);
+
     te::qt::af::ApplicationController::getInstance().addToolBar(bar->objectName(), bar);
   }
+
+  // Removed toolbars
+  RemoveBars(m_removedToolBars);
+
+  m_createdBars.clear();
+  m_removedToolBars.clear();
 
   changeApplyButtonState(false);
 }
@@ -126,6 +152,19 @@ void te::qt::af::ToolbarsWidget::onAddToolbarButtonClicked()
 
 void te::qt::af::ToolbarsWidget::onRemoveToolbarButtonClicked()
 {
+  QString msg = tr("Did you really want to remove tool bar?");
+
+  if(QMessageBox::question(this, tr("Tool bars customization"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::No)
+    return;
+  
+  int idx = m_ui->m_toolbarsComboBox->currentIndex();
+
+  QToolBar* bar = (QToolBar*)m_ui->m_toolbarsComboBox->itemData(idx, Qt::UserRole).value<QObject*>();
+
+  m_removedToolBars.insert(bar);
+
+  m_ui->m_toolbarsComboBox->removeItem(idx);
+
   changeApplyButtonState(true);
 }
 
@@ -146,4 +185,17 @@ void te::qt::af::ToolbarsWidget::changeApplyButtonState(const bool& state)
 {
   m_hasChanged = state;
   emit updateApplyButtonState(m_hasChanged);
+}
+
+void te::qt::af::ToolbarsWidget::hideEvent(QHideEvent * event)
+{
+  if(m_hasChanged)
+  {
+    QString msg = tr("There are unsaved changes. Do you want to save it?");
+
+    if(QMessageBox::question(this, tr("Tool bars customization"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+      saveChanges();
+  }
+
+  QWidget::hideEvent(event);
 }

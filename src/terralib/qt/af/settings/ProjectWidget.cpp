@@ -7,7 +7,7 @@ te::qt::af::ProjectWidget::ProjectWidget(QWidget* parent)
 {
   m_ui->setupUi(this);
 
-  m_resumeText + tr("Default author for new projects.");
+  m_resumeText = tr("Default author for new projects.");
 }
 
 te::qt::af::ProjectWidget::~ProjectWidget()

@@ -73,8 +73,12 @@ namespace te
         protected:
 
           void changeApplyButtonState(const bool& state);
+          
+          void hideEvent(QHideEvent * event);
 
           std::set<QToolBar*> m_createdBars;
+
+          std::set<QToolBar*> m_removedToolBars;    //!< Indexes of the removed bars.
 
           std::vector< QList<QAction*> > m_actions;
 

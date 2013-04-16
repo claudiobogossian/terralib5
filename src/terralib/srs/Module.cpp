@@ -55,7 +55,7 @@ te::srs::Module::~Module()
 void te::srs::Module::initialize()
 {
 #ifdef TE_AUTOMATIC_INITIALIZATION
-//  te::srs::SpatialReferenceSystemManager::getInstance().init();
+  te::srs::SpatialReferenceSystemManager::getInstance().init();
 #endif
 
   TE_LOG_TRACE(TR_SRS("TerraLib SRS initialized!"));
