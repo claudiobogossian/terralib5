@@ -33,6 +33,7 @@
 #include "../../xml/Reader.h"
 #include "../../xml/ReaderFactory.h"
 #include "../../xml/Writer.h"
+#include "ApplicationController.h"
 #include "ApplicationPlugins.h"
 #include "Exception.h"
 #include "Project.h"
@@ -49,6 +50,10 @@
 
 //Qt
 #include <QtCore/QDir>
+#include <QtCore/QSettings>
+#include <QtGui/QApplication>
+#include <QtGui/QAction>
+#include <QtGui/QToolBar>
 
 te::qt::af::Project* te::qt::af::ReadProject(const std::string& uri)
 {
@@ -265,4 +270,129 @@ void te::qt::af::UpdateApplicationPlugins()
   // Store the file.
   boost::property_tree::xml_writer_settings<char> settings('\t', 1);
   boost::property_tree::write_xml(ApplicationPlugins::getInstance().getFileName(), p, std::locale(), settings);
+}
+
+void te::qt::af::AddToolBarToSettings(QToolBar* bar)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+
+  sett.beginGroup(bar->objectName());
+
+  sett.setValue("name", bar->objectName());
+
+  sett.beginWriteArray("Actions");
+
+  QList<QAction*> acts = bar->actions();
+
+  for(int i=0; i<acts.size(); i++)
+  {
+    sett.setArrayIndex(i);
+    sett.setValue("action", acts.at(i)->objectName());
+  }
+
+  sett.endArray();
+
+  sett.endGroup();
+
+  sett.endGroup();
+}
+
+void te::qt::af::RemoveToolBarFromSettings(QToolBar* bar)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+  sett.remove(bar->objectName());
+  sett.endGroup();
+}
+
+std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
+{
+  std::vector<QToolBar*> bars;
+
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+  QStringList lst = sett.childGroups();
+
+  QStringList::iterator it;
+
+  for(it=lst.begin(); it != lst.end(); ++it)
+  {
+    QString gr = *it;
+
+    sett.beginGroup(gr);
+
+    QString grName = sett.value("name").toString();
+
+    int size = sett.beginReadArray("Actions");
+
+    QToolBar* toolbar = new QToolBar(barsParent);
+    toolbar->setObjectName(grName);
+    toolbar->setWindowTitle(grName);
+
+    for(int i=0; i<size; i++)
+    {
+      sett.setArrayIndex(i);
+      QString act = sett.value("action").toString();
+      QAction* a = ApplicationController::getInstance().findAction(act);
+      
+      if(a != 0)
+        toolbar->addAction(a);
+    }
+
+    sett.endArray();
+    sett.endGroup();
+
+    bars.push_back(toolbar);
+  }
+
+  sett.endGroup();
+
+  return bars;
+}
+
+void te::qt::af::CreateDefaultSettings()
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+
+  sett.beginGroup("File Tool Bar");
+  sett.setValue("name", "File Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "File.New Project");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "File.Open Project");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "File.Save Project");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.beginGroup("Map Tool Bar");
+  sett.setValue("name", "Map Tool Bar");
+  sett.beginWriteArray("Actions");
+  sett.setArrayIndex(0);
+  sett.setValue("action", "Map.Draw");
+  sett.setArrayIndex(1);
+  sett.setValue("action", "Map.Zoom In");
+  sett.setArrayIndex(2);
+  sett.setValue("action", "Map.Zoom Out");
+  sett.setArrayIndex(3);
+  sett.setValue("action", "Map.Zoom Area");
+  sett.setArrayIndex(4);
+  sett.setValue("action", "Map.Pan");
+  sett.setArrayIndex(5);
+  sett.setValue("action", "Map.Zoom Extent");
+  sett.setArrayIndex(6);
+  sett.setValue("action", "Map.Previous Extent");
+  sett.setArrayIndex(7);
+  sett.setValue("action", "Map.Next Extent");
+  sett.endArray();
+  sett.endGroup();
+
+  sett.endGroup();
 }

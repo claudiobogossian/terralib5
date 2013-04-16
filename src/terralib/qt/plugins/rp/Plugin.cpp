@@ -38,6 +38,10 @@
   #include "ContrastAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
+  #include "MixtureModelAction.h"
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
   #include "SegmenterAction.h"
 #endif
@@ -102,6 +106,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
     m_contrast = new te::qt::plugins::rp::ContrastAction(m_rpMenu);
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_MIXTUREMODEL
+  m_mixtureModel = new te::qt::plugins::rp::MixtureModelAction(m_rpMenu);
+#endif
+
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
     m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu);
 #endif
@@ -115,6 +123,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
     delete m_contrast;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_CONTRAST
+    delete m_mixtureModel;
 #endif
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER

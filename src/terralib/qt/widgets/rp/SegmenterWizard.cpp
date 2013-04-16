@@ -126,8 +126,6 @@ bool te::qt::widgets::SegmenterWizard::execute()
   {
     if(algorithmInstance.execute(algoOutputParams))
     {
-      m_outRaster = algoOutputParams.m_outputRasterPtr;
-
       QMessageBox::information(this, tr("Segmenter"), tr("Segmenter ended sucessfully"));
     }
     else

@@ -59,8 +59,6 @@ void te::qt::plugins::rp::SegmenterAction::onActionActivated(bool checked)
 
   if(dlg.exec() == QDialog::Accepted)
   {
-    te::rst::RasterPtr rst = dlg.m_outRaster;
 
-    std::string name = rst->getName();
   }
 }

@@ -45,6 +45,7 @@ namespace te
       class ClassifierWizardPage;
       class LayerSearchWizardPage;
       class RasterInfoWizardPage;
+      class RasterNavigatorWizardPage;
 
       /*!
         \class ClassifierWizard
@@ -77,6 +78,7 @@ namespace te
           std::auto_ptr<te::qt::widgets::ClassifierWizardPage> m_classifierPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
+          std::auto_ptr<te::qt::widgets::RasterNavigatorWizardPage> m_navigatorPage;
       };
     }   // end namespace widgets
   }     // end namespace qt
