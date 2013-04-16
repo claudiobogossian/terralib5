@@ -41,7 +41,10 @@ namespace te
     {
       namespace rp
       {
+        class ClassifierAction;
         class ContrastAction;
+        class MixtureModelAction;
+        class SegmenterAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -71,9 +74,12 @@ namespace te
 
           protected:
 
-            QMenu* m_rpMenu;                                    //!< RP Main Menu registered.
+            QMenu* m_rpMenu;                                        //!< RP Main Menu registered.
 
-            te::qt::plugins::rp::ContrastAction* m_contrast;    //!< Contrast Process Action
+            te::qt::plugins::rp::ClassifierAction* m_classifier;    //!< Classifier Process Action
+            te::qt::plugins::rp::ContrastAction* m_contrast;        //!< Contrast Process Action
+            te::qt::plugins::rp::MixtureModelAction* m_mixtureModel;//!< Contrast Process Action
+            te::qt::plugins::rp::SegmenterAction* m_segmenter;      //!< Segmenter Process Action
 
         };
 

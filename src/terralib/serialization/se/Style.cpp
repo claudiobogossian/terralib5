@@ -218,9 +218,12 @@ te::se::Style* CoverageStyleReader(te::xml::Reader& reader)
         reader.getElementLocalName() == "Rule")
     cs->push_back(te::serialize::ReadRule(reader));
 
-  // TODO: OnlineResource
+  assert(reader.getNodeType() == te::xml::END_ELEMENT);
+  assert(reader.getElementLocalName() == "CoverageStyle");
 
-  assert(reader.getNodeType() == te::xml::END_DOCUMENT);
+  reader.next();
+
+  // TODO: OnlineResource
 
   return cs.release();
 }

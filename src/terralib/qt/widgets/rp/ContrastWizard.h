@@ -23,8 +23,8 @@
   \brief A Qt dialog that allows users to run a contrast operation defined by RP module.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_CONTRASTWIZARD_H
-#define __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_CONTRASTWIZARD_H
+#ifndef __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
+#define __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
@@ -82,4 +82,4 @@ namespace te
   }     // end namespace qt
 }       // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_QUERY_INTERNAL_QUERYLAYERBUILDERWIZARD_H
+#endif  // __TERRALIB_QT_WIDGETS_RP_INTERNAL_CONTRASTWIZARD_H

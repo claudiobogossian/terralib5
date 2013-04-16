@@ -25,6 +25,7 @@ set (
   terralib_plugin
   terralib_raster
   terralib_rp
+  terralib_geometry
   ${CPPUNIT_LIBRARY}
   )
 

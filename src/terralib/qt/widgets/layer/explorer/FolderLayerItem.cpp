@@ -110,9 +110,19 @@ bool te::qt::widgets::FolderLayerItem::setData(const QVariant& value, int role)
 {
   if(role == Qt::CheckStateRole)
   {
-    bool vis = value.toBool();
+    bool ok = false;
+    Qt::CheckState checkState = static_cast<Qt::CheckState>(value.toInt(&ok));
 
-    m_layer->setVisibility(vis ? te::map::VISIBLE : te::map::NOT_VISIBLE);
+    if(!ok)
+      return false;
+
+    if(checkState == Qt::Checked)
+      m_layer->setVisibility(te::map::VISIBLE);
+    else if(checkState == Qt::Unchecked)
+      m_layer->setVisibility(te::map::NOT_VISIBLE);
+    else if (checkState == Qt::PartiallyChecked)
+      m_layer->setVisibility(te::map::PARTIALLY_VISIBLE);
+
     return true;
   }
 

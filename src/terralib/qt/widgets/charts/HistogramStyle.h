@@ -32,9 +32,6 @@
 //QT
 #include "qcolor.h"
 
-//forward declarations
-class QwtColumnSymbol;
-
 namespace te
 {
   namespace se 
@@ -56,7 +53,7 @@ namespace te
 
           HistogramStyle(); 
 
-          HistogramStyle (te::se::Fill* fill, te::se::Stroke* stroke, QwtColumnSymbol* symbol, QColor color);
+          HistogramStyle (te::se::Fill* fill, te::se::Stroke* stroke);
 
           ~HistogramStyle();
 
@@ -68,24 +65,14 @@ namespace te
 
           void setStroke(te::se::Stroke* newStroke);
 
-          QwtColumnSymbol* getSymbol();
-
-          void setSymbol(QwtColumnSymbol* newSymbol);
-
-          QColor& getColor();
-
-          void setColor(QColor newColor);
-
         private:
 
           void adjustSymbol();
 
         private:
 
-          te::se::Fill*    m_fill;
-          te::se::Stroke*  m_stroke;
-          QwtColumnSymbol* m_symbol;
-          QColor           m_color;
+          te::se::Fill*    m_fill;     //!< The bar's fill .
+          te::se::Stroke*  m_stroke;   //!< The bar's stroke.
 
       };
     }; //end namespace widgets

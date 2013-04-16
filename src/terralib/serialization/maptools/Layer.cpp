@@ -52,7 +52,7 @@ void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& wr
 void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 
-te::map::Visibility Visibility(const std::string& visible)
+te::map::Visibility GetVisibility(const std::string& visible)
 {
   return (visible == "VISIBLE") ?
     te::map::VISIBLE :
@@ -61,7 +61,7 @@ te::map::Visibility Visibility(const std::string& visible)
       te::map::PARTIALLY_VISIBLE;
 }
 
-std::string Visibility(const te::map::Visibility& visible)
+std::string GetVisibility(const te::map::Visibility& visible)
 {
   return (visible == te::map::VISIBLE) ?
     "VISIBLE" :
@@ -210,7 +210,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
-  layer->setVisibility(Visibility(visible));
+  layer->setVisibility(GetVisibility(visible));
   layer->setDataSetName(dataset);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
@@ -315,7 +315,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::QueryLayer> layer(new te::map::QueryLayer(id, title, 0));
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
-  layer->setVisibility(Visibility(visible));
+  layer->setVisibility(GetVisibility(visible));
   //layer->setQuery(query); Uba
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
@@ -356,7 +356,7 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
 
   std::auto_ptr<te::map::FolderLayer> flayer(new te::map::FolderLayer(id, title, 0));
 
-  flayer->setVisibility(Visibility(visible));
+  flayer->setVisibility(GetVisibility(visible));
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
@@ -389,11 +389,11 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
 
   writer.writeStartElement("te_map:DataSetLayer");
 
-  std::string visible = (Visibility(layer->getVisibility()));
+  std::string visible = (GetVisibility(layer->getVisibility()));
   
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
-  writer.writeElement("te_map:Visible", Visibility(layer->getVisibility()));
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
   writer.writeElement("te_map:DataSetName", layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
@@ -423,7 +423,7 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
 
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
-  writer.writeElement("te_map:Visible", Visibility(layer->getVisibility()));
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
   writer.writeElement("te_map:Query", "");
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());

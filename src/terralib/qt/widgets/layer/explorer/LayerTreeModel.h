@@ -242,6 +242,13 @@ protected:
           */
           void dataChangedForDescendants(const QModelIndex& parent);
 
+         /*!
+            \brief It emits the dataChanged signal for the ascendents indexes of the given index.
+
+            \param index The item index whose descendants will have the dataChanged signal emitted.
+          */
+          void dataChangedForAscendents(const QModelIndex& index);
+
         private:
 
           std::vector<AbstractLayerTreeItem*> m_items;

@@ -1,4 +1,4 @@
-/*  Copyright (C) 2001-2009 National Institute For Space Research (INPE) - Brazil.
+/*  Copyright (C) 2010-2013 National Institute For Space Research (INPE) - Brazil.
 
     This file is part of the TerraLib - a Framework for building GIS enabled applications.
 
@@ -25,14 +25,13 @@
 
 // TerraLib
 #include "../../../se/Mark.h"
+#include "ScatterChart.h"
+#include "Scatter.h"
 #include "../../../se/Utils.h"
+#include "Utils.h"
 
 //QWT
 #include <qwt_plot_curve.h>
-
-#include "ScatterChart.h"
-#include "Scatter.h"
-#include "Utils.h"
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   QwtPlotCurve(),
@@ -49,7 +48,6 @@ te::qt::widgets::ScatterChart::ScatterChart(Scatter* data) :
   //Set Values
   setData();
 }
-
 
 te::qt::widgets::ScatterChart::ScatterChart(Scatter* data, QwtSymbol* symbol, size_t size) :
   QwtPlotCurve(),
