@@ -20,7 +20,7 @@
 /*!
   \file terralib/qt/widgets/charts/HistogramCreatorDialog.h
 
-  \brief A widget used to define the basic parameters of a new histogram.
+  \brief A dialog used to define the basic parameters of a new histogram.
 */
 
 #ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H

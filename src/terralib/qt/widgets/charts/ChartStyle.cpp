@@ -24,7 +24,7 @@
 */
 
 //Terralib
-#include "ChartStyle.h";
+#include "ChartStyle.h"
 #include "../../../se/Fill.h"
 #include "../../../se/Stroke.h"
 

@@ -129,6 +129,9 @@ set (
   ${SRCDIR}/widgets/charts/ChartStyleDialog.h
   ${SRCDIR}/widgets/charts/HistogramCreatorDialog.h
   ${SRCDIR}/widgets/charts/ScatterCreatorDialog.h
+  ${SRCDIR}/widgets/charts/GraphicSettings.h
+  ${SRCDIR}/widgets/charts/HistogramFrame.h
+  ${SRCDIR}/widgets/charts/ScatterFrame.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/charts" MOC)
 
