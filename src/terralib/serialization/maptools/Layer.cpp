@@ -52,6 +52,24 @@ void DataSetLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& wr
 void QueryLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 void FolderLayerWriter(const te::map::AbstractLayer* layer, te::xml::Writer& writer);
 
+te::map::Visibility GetVisibility(const std::string& visible)
+{
+  return (visible == "VISIBLE") ?
+    te::map::VISIBLE :
+    (visible == "NOT_VISIBLE") ?
+      te::map::NOT_VISIBLE :
+      te::map::PARTIALLY_VISIBLE;
+}
+
+std::string GetVisibility(const te::map::Visibility& visible)
+{
+  return (visible == te::map::VISIBLE) ?
+    "VISIBLE" :
+    (visible == te::map::NOT_VISIBLE) ?
+      "NOT_VISIBLE" :
+      "PARTIALLY_VISIBLE";
+}
+
 void te::serialize::Layer::reg(const std::string& layerType, const LayerFnctSerializeType& fncts)
 {
   m_fncts[layerType] = fncts;
@@ -116,7 +134,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Visible");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
-  bool visible = reader.getElementValueAsBoolean();
+  std::string visible = reader.getElementValue();
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
@@ -192,7 +210,7 @@ te::map::AbstractLayer* DataSetLayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::DataSetLayer> layer(new te::map::DataSetLayer(id, title, 0));
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
-  layer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
+  layer->setVisibility(GetVisibility(visible));
   layer->setDataSetName(dataset);
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
@@ -221,7 +239,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Visible");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
-  bool visible = reader.getElementValueAsBoolean();
+  std::string visible = reader.getElementValue();
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
@@ -297,7 +315,7 @@ te::map::AbstractLayer* QueryLayerReader(te::xml::Reader& reader)
   std::auto_ptr<te::map::QueryLayer> layer(new te::map::QueryLayer(id, title, 0));
   layer->setSRID(srid);
   layer->setExtent(*mbr.get());
-  layer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
+  layer->setVisibility(GetVisibility(visible));
   //layer->setQuery(query); Uba
   layer->setDataSourceId(datasourceId);
   layer->setRendererType(rendererId);
@@ -326,7 +344,7 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
   assert(reader.getElementLocalName() == "Visible");
   reader.next();
   assert(reader.getNodeType() == te::xml::VALUE);
-  bool visible = reader.getElementValueAsBoolean();
+  std::string visible = reader.getElementValue();
   reader.next();
   assert(reader.getNodeType() == te::xml::END_ELEMENT);
 
@@ -338,7 +356,7 @@ te::map::AbstractLayer* FolderLayerReader(te::xml::Reader& reader)
 
   std::auto_ptr<te::map::FolderLayer> flayer(new te::map::FolderLayer(id, title, 0));
 
-  flayer->setVisibility(visible == true ? te::map::VISIBLE : te::map::NOT_VISIBLE);
+  flayer->setVisibility(GetVisibility(visible));
 
   const te::serialize::Layer& lserial = te::serialize::Layer::getInstance();
 
@@ -371,9 +389,11 @@ void DataSetLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& w
 
   writer.writeStartElement("te_map:DataSetLayer");
 
+  std::string visible = (GetVisibility(layer->getVisibility()));
+  
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
-  writer.writeElement("te_map:Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
   writer.writeElement("te_map:DataSetName", layer->getDataSetName());
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());
@@ -403,7 +423,7 @@ void QueryLayerWriter(const te::map::AbstractLayer* alayer, te::xml::Writer& wri
 
   writer.writeAttribute("id", layer->getId());
   writer.writeElement("te_map:Title", layer->getTitle());
-  writer.writeElement("te_map:Visible", layer->getVisibility() == te::map::VISIBLE);
+  writer.writeElement("te_map:Visible", GetVisibility(layer->getVisibility()));
   writer.writeElement("te_map:Query", "");
   writer.writeElement("te_map:DataSourceId", layer->getDataSourceId());
   writer.writeElement("te_map:SRID", layer->getSRID());

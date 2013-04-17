@@ -206,7 +206,7 @@ QMenuBar* te::qt::af::ApplicationController::findMenuBar(const QString& id) cons
 
 QMenuBar* te::qt::af::ApplicationController::getMenuBar(const QString& id) const
 {
-  throw Exception("Not implemented yet.");
+  return m_menuBars[0];
 }
 
 QAction* te::qt::af::ApplicationController::findAction(const QString& id) const
@@ -411,6 +411,13 @@ void  te::qt::af::ApplicationController::initialize()
 
     QMessageBox::warning(m_msgBoxParentWidget, m_appTitle, msgErr);
   }
+
+  QSettings s(QSettings::IniFormat, QSettings::UserScope, m_appOrganization, m_appName);
+
+  QFileInfo info(s.fileName());
+
+  if(!info.exists())
+    CreateDefaultSettings();
 
   m_initialized = true;
 }
@@ -617,6 +624,11 @@ void te::qt::af::ApplicationController::finalize()
   m_appConfigFile.clear();
 
   m_initialized = false;
+}
+
+QSettings& te::qt::af::ApplicationController::getSettings()
+{
+  return m_appSettings;
 }
 
 void  te::qt::af::ApplicationController::broadcast(te::qt::af::evt::Event* evt)

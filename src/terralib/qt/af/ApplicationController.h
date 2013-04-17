@@ -40,6 +40,7 @@
 // Qt
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <QtCore/QSettings>
 
 // Forward declarations
 class QAction;
@@ -328,6 +329,13 @@ namespace te
           */
           virtual void finalize();
 
+          /*!
+            \brief Return the QSettings of the application. This can be used to add settings from external sources.
+
+            \return QSettings being used.
+          */
+          QSettings& getSettings(); 
+
         public slots:
 
           /*!
@@ -391,6 +399,8 @@ namespace te
           bool m_initialized;                         //!< A flag indicating if the controller is initialized.
 
           Project* m_project;                         //!< Pointer to current project.
+
+          QSettings m_appSettings;
 
 // Singleton instance
           static ApplicationController* sm_instance;  //!< There can be only one object of class Application.

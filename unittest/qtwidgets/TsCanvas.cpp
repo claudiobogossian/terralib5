@@ -168,8 +168,8 @@ void TsCanvas::tcPerformance()
 
     te::gm::GeometryProperty* gcol = static_cast<te::gm::GeometryProperty*>(dt->getProperty(geomCol));
     
-    const te::gm::Envelope* extent = gcol->getExtent();
-
+//    const te::gm::Envelope* extent = gcol->getExtent();
+    const te::gm::Envelope* extent = cl->getExtent(gcol);
     if(extent == 0)
       continue;
 

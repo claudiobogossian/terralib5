@@ -167,17 +167,12 @@ namespace te
 
         private:
 
-          int m_histogramType;                           //!< Histogram's type
-
+          int m_histogramType;                                    //!< Histogram's type
           std::map<double, unsigned int>* m_values;               //!< Histogram's numeric values
-
           std::map<std::string, unsigned int>* m_StringValues;    //!< Histogram string values 
-
-          double m_minValue;                            //!< Histogram's minimum numeric value
-
-          double m_interval;                            //!< Histogram's numeric interval
-
-          std::set <std::string> m_StringIntervals;  //!< Histogram unique strings set, represents string intervals
+          double m_minValue;                                      //!< Histogram's minimum numeric value
+          double m_interval;                                      //!< Histogram's numeric interval
+          std::set <std::string> m_StringIntervals;               //!< Histogram unique strings set, represents string intervals
       };
     } // end namespace widgets
   }   // end namespace qt

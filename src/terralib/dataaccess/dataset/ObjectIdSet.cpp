@@ -48,7 +48,6 @@
 
 // STL
 #include <cassert>
-#include <memory>
 
 te::da::ObjectIdSet::ObjectIdSet(const te::da::DataSetType* type)
   : m_type(static_cast<DataSetType*>(type->clone()))
@@ -169,8 +168,6 @@ void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)
 {
   assert(rhs);
 
-  std::auto_ptr<ObjectIdSet*> toDelete(&rhs);
-
   std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& newOids = rhs->m_oids;
 
   std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it;
@@ -178,23 +175,24 @@ void te::da::ObjectIdSet::Union(te::da::ObjectIdSet* rhs)
     m_oids.find(*it) == m_oids.end() ? add(*it) : delete *it;
 
   newOids.clear();
+
+  delete rhs;
+  rhs = 0;
 }
 
-void te::da::ObjectIdSet::difference(te::da::ObjectIdSet* rhs)
+void te::da::ObjectIdSet::difference(const te::da::ObjectIdSet* rhs)
 {
   assert(rhs);
-
-  std::auto_ptr<ObjectIdSet*> toDelete(&rhs);
 
   if(m_oids.empty())
     return;
 
-  std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& oidsToRemove = rhs->m_oids;
+  const std::set<te::da::ObjectId*, te::common::LessCmp<te::da::ObjectId*> >& oidsToRemove = rhs->m_oids;
   
   if(oidsToRemove.empty())
     return;
   
-  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator it;
+  std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::const_iterator it;
   for(it = oidsToRemove.begin(); it != oidsToRemove.end(); ++it)
   {
     std::set<te::da::ObjectId*,  te::common::LessCmp<te::da::ObjectId*> >::iterator itSearch = m_oids.find(*it);

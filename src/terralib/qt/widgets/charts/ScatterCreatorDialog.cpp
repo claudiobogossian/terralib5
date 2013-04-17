@@ -20,18 +20,21 @@
 /*!
   \file terralib/qt/widgets/charts/ScatterCreatorDialog.cpp
 
-  \brief AA widget used to create a nem Scatter chart.
+  \brief AA dialog used to create a nem Scatter chart.
 */
 
+//Terralib
 #include "ui_scatterCreatorDialog.h"
-#include "ScatterCreatorDialog.h"
 #include "ChartStyleDialog.h"
+#include "ChartDisplay.h"
+#include "../../../dataaccess.h"
+#include "../../../qt/widgets/charts/Utils.h"
+#include "../../../datatype/Property.h"
+#include <PointSymbolizerWidget.h>
 #include "Scatter.h"
 #include "ScatterChart.h"
-#include "ChartDisplay.h"
-#include "../../../qt/widgets/charts/Utils.h"
-#include "../../../dataaccess.h"
-#include "../../../datatype/Property.h"
+#include "ScatterCreatorDialog.h"
+#include "Symbol.h"
 
 te::qt::widgets::ScatterCreatorDialog::ScatterCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
@@ -65,7 +68,22 @@ void te::qt::widgets::ScatterCreatorDialog::onStylePushButtonClicked()
     dlg.exec();
 }
 
-void te::qt::widgets::ScatterCreatorDialog::onPlotStylePushButtonClicked(){}
+void te::qt::widgets::ScatterCreatorDialog::onPlotStylePushButtonClicked()
+{
+  QDialog dlg;
+  dlg.setWindowTitle("Symbolizer Widgets Example");
+
+  // Point Symbolizer Widget
+  te::qt::widgets::PointSymbolizerWidget* pts = new te::qt::widgets::PointSymbolizerWidget(&dlg);
+
+  // Adjusting...
+  QGridLayout* layout = new QGridLayout(&dlg);
+  layout->setSizeConstraint(QLayout::SetFixedSize);
+  layout->addWidget(pts);
+
+  dlg.exec();
+//  m_symbol->setSymbolizer(1, static_cast<PointSymbolizerWidget*>(pts)->getSymbolizer());
+}
 
 void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
 {
@@ -73,10 +91,11 @@ void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
   m_type = m_dataSet->getType();
 
   QString aux = m_ui->m_propertyXComboBox->currentText();
-  QString aux2 = m_ui->m_propertyXComboBox->currentText();
+
+  QString aux2 = m_ui->m_propertyYComboBox->currentText();
 
   std::string selectedPropertyX = aux.toStdString();
-  std::string selectedPropertyY = aux.toStdString();
+  std::string selectedPropertyY = aux2.toStdString();
 
   int selectedPropertyXIdx= m_type->getPropertyPosition(selectedPropertyX);
   int selectedPropertyYIdx= m_type->getPropertyPosition(selectedPropertyY);
@@ -88,8 +107,10 @@ void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
   QDialog dlg(this);
   QGridLayout* lay = new QGridLayout(&dlg);
   dlg.setLayout(lay);
-  
+
   te::qt::widgets::ChartDisplay* chartDisplay = new te::qt::widgets::ChartDisplay(&dlg);
+
+  chartDisplay->setTitle("Scatter");
 
   lay->addWidget(chartDisplay);
 

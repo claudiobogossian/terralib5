@@ -32,6 +32,7 @@
 
 // Forward declarations
 class QStringList;
+class QToolBar;
 
 namespace te
 {
@@ -105,6 +106,26 @@ namespace te
         \brief Update plugins file.
       */
       TEQTAFEXPORT void UpdateApplicationPlugins();
+
+      /*!
+        \brief Update settings with a new tool bar.
+      */
+      TEQTAFEXPORT void AddToolBarToSettings(QToolBar* bar);
+
+      /*!
+        \brief Removes a tool bar from the settings.
+      */
+      TEQTAFEXPORT void RemoveToolBarFromSettings(QToolBar* bar);
+
+      /*!
+        \brief Returns a vector of tool bars registered in the QSettings.
+      */
+      TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(QWidget* barsParent=0);
+
+      /*!
+        \brief Creates a default QSettings.
+      */
+      TEQTAFEXPORT void CreateDefaultSettings();
     } // end namespace af
   }   // end namespace qt
 }     // end namespace te

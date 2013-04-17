@@ -30,7 +30,6 @@
 #include "Config.h"
 #include "../raster/Raster.h"
 
-#include <boost/shared_array.hpp>
 #include <boost/thread.hpp>
 
 #include <vector>
@@ -193,7 +192,7 @@ namespace te
             
             boost::condition_variable m_taskFinishedCondVar; //!< Used to wait for the required task finishment.
             
-            boost::shared_array< unsigned char > m_threadDataBlockHandler; //!< A extra block used in exchange when a read-ahead task is performed.
+            std::auto_ptr< unsigned char > m_threadDataBlockHandler; //!< A extra block used in exchange when a read-ahead task is performed.
             
             ThreadParameters() 
             : m_rasterPtr( 0 ), 
@@ -229,7 +228,7 @@ namespace te
         
         std::vector< std::vector< std::vector< unsigned char* > > > m_blocksPointers; //!< 3D Matrix of block pointers indexed as [band][blockYIndex][blockXIndex].
         
-        std::vector< boost::shared_array< unsigned char > > m_blocksHandler; //!< Cache blocks handler.
+        std::vector< unsigned char* > m_blocksHandler; //!< Cache blocks handler.
         
         std::vector< BlockIndex > m_blocksFifo; //!< blocks swap FIFO.
         

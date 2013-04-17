@@ -57,7 +57,6 @@ namespace te
     class HistogramChart;
     class HistogramStyle;
     class ChartDisplay;
-    class ColorPickerToolButton;
 
     /*!
         \class Histogram Creator
@@ -82,20 +81,19 @@ namespace te
           void onStylePushButtonClicked();
           void onOkPushButtonClicked();
           void onHelpPushButtonClicked();
+          void onFillPushButtonClicked();
+          void onStrokePushButtonClicked();
           void onPropertyComboBoxIndexChanged(QString text);
-          void onColorChanged(const QColor& color);
 
         private:
 
           std::auto_ptr<Ui::HistogramDialog>  m_ui;
-          te::da::DataSet*                    m_dataSet;
-          te::da::DataSetType*                m_type;
-          te::qt::widgets::Histogram*         m_histogram;
-          te::qt::widgets::HistogramChart*    m_histogramChart;
-          te::qt::widgets::HistogramStyle*    m_histogramStyle;
-          te::qt::widgets::ChartDisplay*      m_chartDisplay;
-          ColorPickerToolButton*              m_colorPicker;
-
+          te::da::DataSet*                    m_dataSet;          //!< The dataset that will be used to generate the hISTOGRAM graph.
+          te::da::DataSetType*                m_type;             //!< The dataset's type.
+          te::qt::widgets::Histogram*         m_histogram;        //!< The histogram that will be configured by this dialog.
+          te::qt::widgets::HistogramChart*    m_histogramChart;   //!< The histogram's chart that will be configured by this dialog.
+          te::qt::widgets::HistogramStyle*    m_histogramStyle;   //!< The histogram's chart style that will be configured by this dialog.
+          te::qt::widgets::ChartDisplay*      m_chartDisplay;     //!< The display that will be used to draq the new chart.
       };
     } // end namespace widgets
   }   // end namespace qt

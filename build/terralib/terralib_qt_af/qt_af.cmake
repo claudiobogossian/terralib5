@@ -73,10 +73,13 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/connectors" MOC)
 
 set (
   HDRS_TO_MOC
-  ${SRCDIR}/settings/DisplayFrame.h
-  ${SRCDIR}/settings/ProjectFrame.h
-  ${SRCDIR}/settings/SystemSettings.h
-  ${SRCDIR}/settings/TableFrame.h
+  ${SRCDIR}/settings/AbstractSettingWidget.h
+  ${SRCDIR}/settings/DisplayWidget.h
+  ${SRCDIR}/settings/MenuBarModel.h
+  ${SRCDIR}/settings/ProjectWidget.h
+  ${SRCDIR}/settings/SettingsDialog.h
+  ${SRCDIR}/settings/TableWidget.h
+  ${SRCDIR}/settings/ToolbarsWidget.h
 )
 
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/af/settings" MOC)
