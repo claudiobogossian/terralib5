@@ -26,7 +26,6 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/Index.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
