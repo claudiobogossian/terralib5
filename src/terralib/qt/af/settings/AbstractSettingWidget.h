@@ -28,6 +28,7 @@
 
 // Qt
 #include <QtGui/QWidget>
+#include <QtGui/QMessageBox>
 
 namespace te
 {
@@ -48,15 +49,19 @@ namespace te
 
           AbstractSettingWidget(QWidget* parent = 0);
 
-          ~AbstractSettingWidget();
+          virtual ~AbstractSettingWidget();
           
           virtual void saveChanges() = 0;
 
+          virtual void resetState() = 0;
+
           QString getResumeText();
+
+          bool hasChanges();
 
         public slots:
           
-          virtual void onApplyButtonClicked() = 0;
+          virtual void onApplyButtonClicked();
 
         signals:
         
@@ -66,6 +71,10 @@ namespace te
           void updateApplyButtonState(const bool&);
 
         protected:
+
+          virtual void hideEvent(QHideEvent * event);
+
+          virtual void changeApplyButtonState(const bool& state);
 
           bool m_hasChanged;  //!< Flag that defines if the widget has changes to apply.
 
@@ -85,6 +94,39 @@ namespace te
       inline QString AbstractSettingWidget::getResumeText()
       {
         return m_resumeText;
+      }
+
+      inline bool AbstractSettingWidget::hasChanges()
+      {
+        return m_hasChanged;
+      }
+
+      inline void AbstractSettingWidget::onApplyButtonClicked()
+      {
+        saveChanges();
+      }
+
+      inline void AbstractSettingWidget::hideEvent(QHideEvent * event)
+      {
+        if(m_hasChanged)
+        {
+          QString msg = tr("There are unsaved changes. Do you want to save it?");
+
+          if(QMessageBox::question(this, tr("Tool bars customization"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+            saveChanges();
+          else
+            resetState();
+        }
+
+        m_hasChanged = false;
+
+        QWidget::hideEvent(event);
+      }
+
+      inline void AbstractSettingWidget::changeApplyButtonState(const bool& state)
+      {
+        m_hasChanged = state;
+        emit updateApplyButtonState(m_hasChanged);
       }
     }   // end namespace af
   }     // end namespace qt

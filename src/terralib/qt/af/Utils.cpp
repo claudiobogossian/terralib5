@@ -272,12 +272,8 @@ void te::qt::af::UpdateApplicationPlugins()
   boost::property_tree::write_xml(ApplicationPlugins::getInstance().getFileName(), p, std::locale(), settings);
 }
 
-void te::qt::af::AddToolBarToSettings(QToolBar* bar)
+void AddToolbarAndActions(QToolBar* bar, QSettings& sett)
 {
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-  sett.beginGroup("toolbars");
-
   sett.beginGroup(bar->objectName());
 
   sett.setValue("name", bar->objectName());
@@ -295,6 +291,35 @@ void te::qt::af::AddToolBarToSettings(QToolBar* bar)
   sett.endArray();
 
   sett.endGroup();
+}
+
+void te::qt::af::UpdateToolBarsInTheSettings()
+{
+  std::vector<QToolBar*> bars = te::qt::af::ApplicationController::getInstance().getToolBars();
+  std::vector<QToolBar*>::const_iterator it;
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+
+  for (it = bars.begin(); it != bars.end(); ++it)
+  {
+    QToolBar* bar = *it;
+
+    sett.remove(bar->objectName());
+
+    AddToolbarAndActions(bar, sett);
+  }
+
+  sett.endGroup();
+}
+
+void te::qt::af::AddToolBarToSettings(QToolBar* bar)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("toolbars");
+
+  AddToolbarAndActions(bar, sett);
 
   sett.endGroup();
 }
@@ -393,6 +418,13 @@ void te::qt::af::CreateDefaultSettings()
   sett.setValue("action", "Map.Next Extent");
   sett.endArray();
   sett.endGroup();
+
+  sett.endGroup();
+
+  sett.beginGroup("projects");
+
+  sett.setValue("default author", "INPE team");
+  sett.setValue("maximum saved", "10");
 
   sett.endGroup();
 }

@@ -108,12 +108,23 @@ namespace te
       TEQTAFEXPORT void UpdateApplicationPlugins();
 
       /*!
+        \brief Update the existing tool bars
+
+        \param bars Set with the existing tool bars.
+      */
+      TEQTAFEXPORT void UpdateToolBarsInTheSettings();
+
+      /*!
         \brief Update settings with a new tool bar.
+
+        \param bar Bar to be added.
       */
       TEQTAFEXPORT void AddToolBarToSettings(QToolBar* bar);
 
       /*!
         \brief Removes a tool bar from the settings.
+
+        \param bar Bar to be removed.
       */
       TEQTAFEXPORT void RemoveToolBarFromSettings(QToolBar* bar);
 

@@ -115,6 +115,8 @@ void te::qt::af::SettingsDialog::settingsChanged (QListWidgetItem* current, QLis
   QString lbl = ((AbstractSettingWidget*)w)->getResumeText(); 
 
   m_ui->m_resumeLabel->setText(lbl);
+
+  m_ui->m_applyPushButton->setEnabled(false);
 }
 
 void te::qt::af::SettingsDialog::updateApplyButtonState(const bool& state)

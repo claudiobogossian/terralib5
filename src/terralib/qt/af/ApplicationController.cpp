@@ -549,12 +549,15 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
 void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
 {
   int pos = m_recentProjs.indexOf(prjFile);
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  int maxSaved = sett.value("projects/maximum saved").toInt();
 
   if(pos != 0)
   {
     if(pos < 0)
     {
-      if(m_recentProjs.size() >= 10) // TODO: Size of the list must be configurable.
+      if(m_recentProjs.size() >= maxSaved) // TODO: Size of the list must be configurable.
       {
         m_recentProjs.removeLast();
         m_recentProjsTitles.removeLast();
