@@ -24,27 +24,19 @@
 */
 
 // TerraLib
-#include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
 #include "../datatype/Enums.h"
-#include "../datatype/Property.h"
-#include "../geometry/Enums.h"
 #include "../geometry/Envelope.h"
 #include "../raster/RasterProperty.h"
 #include "../raster/Grid.h"
 #include "DataSet.h"
-#include "DataSource.h"
 #include "DataSourceTransactor.h"
 #include "Raster.h"
-#include "Utils.h"
 
 // STL
 #include <cassert>
 #include <memory>
-
-// Boost
-#include <boost/filesystem.hpp>
 
 te::gdal::DataSet::DataSet(DataSourceTransactor* t, te::da::DataSetType* dt, te::common::AccessPolicy rwRole)
   : m_transactor(t),
@@ -53,71 +45,81 @@ te::gdal::DataSet::DataSet(DataSourceTransactor* t, te::da::DataSetType* dt, te:
     m_size(1),
     m_i(-1)
 {
+  assert(m_transactor);
+  assert(m_dsType);
+
+  loadTypeInfo();
 }
 
-void te::gdal::DataSet::loadTypeInfo()
+te::gdal::DataSet::~DataSet()
 {
-  if(m_dsType->isFullLoaded())
-    return;
-
-  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(m_transactor->getCatalogLoader());
-
-  te::da::DataSetType* dt = cloader->getDataSetType(m_dsType->getName(), true);
-
   delete m_dsType;
-
-  m_dsType = dt; 
 }
 
-te::gm::Envelope* te::gdal::DataSet::getExtent(const te::dt::Property* p) 
+te::gm::Envelope* te::gdal::DataSet::getExtent(std::size_t i) 
 {
-  assert(p && (p->getType() == te::dt::RASTER_TYPE));
+  assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
 
-  if(!m_dsType->isFullLoaded())
-    loadTypeInfo();
-
-  const te::rst::RasterProperty* rp = static_cast<const te::rst::RasterProperty*>(m_dsType->getProperty(0));
+  const te::rst::RasterProperty* rp = static_cast<const te::rst::RasterProperty*>(m_dsType->getProperty(i));
 
   return new te::gm::Envelope(*(rp->getGrid()->getExtent()));
 }
 
-te::rst::Raster* te::gdal::DataSet::getRaster(int i) const
+std::size_t te::gdal::DataSet::getNumProperties() const
 {
-  assert(i <static_cast<int>(m_dsType->getProperties().size()));
-  assert(m_dsType->getProperty(i)->getType() == te::dt::RASTER_TYPE);
+  return m_dsType->size();
+}
+
+int te::gdal::DataSet::getPropertyDataType(std::size_t pos) const
+{
+  return m_dsType->getProperty(pos)->getType();
+}
+
+std::string te::gdal::DataSet::getPropertyName(std::size_t pos) const
+{
+  return m_dsType->getProperty(pos)->getName();
+}
+
+std::string te::gdal::DataSet::getDatasetNameOfProperty(std::size_t pos) const
+{
+  return "";
+}
+
+te::rst::Raster* te::gdal::DataSet::getRaster(std::size_t i) const
+{
+  assert(i < getNumProperties());
+  assert(getPropertyDataType(i) == te::dt::RASTER_TYPE);
 
   te::rst::RasterProperty* rp = static_cast<te::rst::RasterProperty*>(m_dsType->getProperty(i));
 
-  te::gdal::Raster* rs = 0;
-
-  rs = new te::gdal::Raster(rp->getInfo().at("URI"), m_rwRole);
+  te::gdal::Raster* rs = new te::gdal::Raster(rp->getInfo().at("URI"), m_rwRole);
 
   return rs;
 }
 
 te::rst::Raster* te::gdal::DataSet::getRaster(const std::string& name) const
 {
-  int idx = static_cast<int>(m_dsType->getPropertyPosition(name));
+  std::size_t pos = m_dsType->getPropertyPosition(name);
 
-  return getRaster(idx);
+  return getRaster(pos);
 }
 
 bool te::gdal::DataSet::moveNext()
 {
   ++m_i;
-  return (m_i < m_size); 
+  return (m_i < m_size);
 }
 
 bool te::gdal::DataSet::movePrevious()
 {
   --m_i;
-  return (m_i > -1); 
+  return (m_i > -1);
 }
 
 bool te::gdal::DataSet::moveFirst()
 {
   m_i = 0; 
-  return (m_size != 0); 
+  return (m_size != 0);
 }
 
 bool te::gdal::DataSet::moveBeforeFirst() 
@@ -162,4 +164,19 @@ bool te::gdal::DataSet::isAtEnd() const
 bool te::gdal::DataSet::isAfterEnd() const
 {
   return (m_i >= m_size);
+}
+
+void te::gdal::DataSet::loadTypeInfo()
+{
+  if(m_dsType->isFullLoaded())
+    return;
+
+  std::auto_ptr<te::da::DataSourceCatalogLoader> cloader(m_transactor->getCatalogLoader());
+
+  te::da::DataSetType* dt = cloader->getDataSetType(m_dsType->getName(), true);
+
+  assert(dt);
+
+  delete m_dsType;
+  m_dsType = dt;
 }
