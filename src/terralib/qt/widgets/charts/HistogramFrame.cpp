@@ -23,12 +23,12 @@
   \brief A frame used to adjust a histogram's chart parameters, weather it is about it's data or it's visual style.
 */
 
-#include "ui_HistogramFrameWidget.h"
+#include "ui_HistogramFrameWidgetForm.h"
 #include "HistogramFrame.h"
 
 te::qt::widgets::HistogramFrame::HistogramFrame(QWidget* parent)
   : GraphicWidget(parent),
-    m_ui(new Ui::HistogramFrameWidget)
+    m_ui(new Ui::HistogramFrameWidgetForm)
 {
   m_ui->setupUi(this);
   m_label = "Histogram";

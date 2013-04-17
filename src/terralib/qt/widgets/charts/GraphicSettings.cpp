@@ -23,7 +23,7 @@
   \brief A dialog used to customize a graphic's parameters, weather it is about it's data or it's visual style
 */
 
-#include "ui_GraphicSettingsDialog.h"
+#include "ui_GraphicSettingsDialogForm.h"
 #include "GraphicWidget.h"
 #include "GraphicWidgetFactory.h"
 //#include "HistogramFrameFactory.h"
@@ -32,7 +32,7 @@
 
 te::qt::widgets::GraphicSettings::GraphicSettings(QWidget* parent)
   : QDialog(parent),
-    m_ui(new Ui::GraphicSettingsDialog),
+    m_ui(new Ui::GraphicSettingsDialogForm),
     m_curComp(0)
 {
   m_ui->setupUi(this);

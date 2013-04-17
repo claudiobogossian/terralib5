@@ -35,7 +35,7 @@
 
 #include <memory>
 
-namespace Ui { class GraphicSettingsDialog; }
+namespace Ui { class GraphicSettingsDialogForm; }
 
 namespace te
 {
@@ -65,7 +65,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::GraphicSettingsDialog> m_ui;
+          std::auto_ptr<Ui::GraphicSettingsDialogForm> m_ui;
 
           GraphicWidget* m_curComp;
 

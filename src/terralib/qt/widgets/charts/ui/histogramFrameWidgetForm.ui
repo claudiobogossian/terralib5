@@ -1,80 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScatterFrameWidget</class>
- <widget class="QWidget" name="ScatterFrameWidget">
+ <class>HistogramFrameWidgetForm</class>
+ <widget class="QWidget" name="HistogramFrameWidgetForm">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>315</width>
-    <height>412</height>
+    <width>364</width>
+    <height>441</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_7">
-   <item row="0" column="0">
-    <widget class="QLabel" name="titleLabel">
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Scatter</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-    </widget>
-   </item>
+  <layout class="QGridLayout" name="gridLayout_12">
    <item row="1" column="0">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QGroupBox" name="m_scatterDataGroupBox">
+    <layout class="QGridLayout" name="gridLayout_11">
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="m_histogramDaaGroupBox">
        <property name="title">
         <string>Data</string>
        </property>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout">
-          <item row="0" column="0">
-           <widget class="QLabel" name="propertyXLabel">
-            <property name="maximumSize">
-             <size>
-              <width>100</width>
-              <height>16777215</height>
-             </size>
-            </property>
-            <property name="text">
-             <string>Property X:</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="m_propertyXComboBox">
+          <item row="0" column="1" colspan="2">
+           <widget class="QComboBox" name="m_propertyComboBox">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="minimumSize">
-             <size>
-              <width>75</width>
-              <height>20</height>
-             </size>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLabel" name="propertyYLabel">
+           <widget class="QLabel" name="slicesLabel">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -82,7 +43,7 @@
              </size>
             </property>
             <property name="text">
-             <string>Property Y:</string>
+             <string>Number of Slices:</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -90,36 +51,14 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="m_propertyYComboBox">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>75</width>
-              <height>20</height>
-             </size>
+           <widget class="QSpinBox" name="m_slicesSpinBox">
+            <property name="minimum">
+             <number>2</number>
             </property>
            </widget>
           </item>
-         </layout>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="m_scatterStyleGroupBox">
-       <property name="title">
-        <string>Scatter Style</string>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="0">
-         <layout class="QHBoxLayout" name="horizontalLayout">
-          <item>
-           <widget class="QLabel" name="plotStyleLabel">
+          <item row="0" column="0">
+           <widget class="QLabel" name="propertyLabel">
             <property name="maximumSize">
              <size>
               <width>100</width>
@@ -127,28 +66,100 @@
              </size>
             </property>
             <property name="text">
-             <string>Plot Style:</string>
+             <string>Property:</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QPushButton" name="m_plotStylePushButton">
-            <property name="minimumSize">
+          <item row="1" column="2">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
              <size>
-              <width>75</width>
+              <width>185</width>
               <height>20</height>
              </size>
             </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QGroupBox" name="m_histogramStyleGroupBox">
+       <property name="title">
+        <string>Histogram Style</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="barFillLabel_2">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="text">
-             <string>Style...</string>
+             <string>Bar Fill:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>
-          <item>
-           <spacer name="horizontalSpacer_8">
+          <item row="0" column="1">
+           <widget class="QPushButton" name="m_fillPushButton_2">
+            <property name="text">
+             <string>Fill...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="barStrokeLabel_2">
+            <property name="maximumSize">
+             <size>
+              <width>100</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Bar Stroke:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QPushButton" name="m_strokePushButton_2">
+            <property name="text">
+             <string>Stroke...</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <spacer name="horizontalSpacer_7">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
             </property>
@@ -165,16 +176,16 @@
        </layout>
       </widget>
      </item>
-     <item>
+     <item row="2" column="0">
       <widget class="QGroupBox" name="m_ChartStyleGroupBox">
        <property name="title">
         <string>Chart Style</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout_6">
+       <layout class="QGridLayout" name="gridLayout_10">
         <item row="0" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout_2">
           <item>
-           <layout class="QGridLayout" name="gridLayout_4">
+           <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
              <widget class="QLabel" name="chartTitleLabel">
               <property name="text">
@@ -206,7 +217,7 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="labelYLabel">
+             <widget class="QLabel" name="labelYLabel_3">
               <property name="text">
                <string>Label y:</string>
               </property>
@@ -248,7 +259,7 @@
            </layout>
           </item>
           <item>
-           <layout class="QGridLayout" name="gridLayout_5">
+           <layout class="QGridLayout" name="gridLayout_9">
             <item row="0" column="0" colspan="2">
              <widget class="QLineEdit" name="m_chartTitleLineEdit">
               <property name="minimumSize">
@@ -276,7 +287,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <spacer name="horizontalSpacer_14">
+             <spacer name="horizontalSpacer_15">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -325,7 +336,7 @@
              </widget>
             </item>
             <item row="4" column="1">
-             <spacer name="horizontalSpacer_18">
+             <spacer name="horizontalSpacer_20">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -348,7 +359,7 @@
              </widget>
             </item>
             <item row="5" column="1">
-             <spacer name="horizontalSpacer_19">
+             <spacer name="horizontalSpacer_21">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -368,7 +379,7 @@
              </widget>
             </item>
             <item row="6" column="1">
-             <spacer name="horizontalSpacer_2">
+             <spacer name="horizontalSpacer_8">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -388,6 +399,23 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="titleLabel">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Histogram</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

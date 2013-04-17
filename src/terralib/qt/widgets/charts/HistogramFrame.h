@@ -32,7 +32,7 @@
 
 #include <memory>
 
-namespace Ui { class HistogramFrameWidget; }
+namespace Ui { class HistogramFrameWidgetForm; }
 
 namespace te
 {
@@ -57,7 +57,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramFrameWidget> m_ui;
+          std::auto_ptr<Ui::HistogramFrameWidgetForm> m_ui;
 
       };
 

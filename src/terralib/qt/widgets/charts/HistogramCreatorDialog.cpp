@@ -39,7 +39,7 @@
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
-#include "ui_histogramCreatorDialog.h"
+#include "ui_histogramCreatorDialogForm.h"
 
 //QT
 #include <QtGui/QDialog>
@@ -48,7 +48,7 @@
 
 te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::HistogramDialog),
+    m_ui(new Ui::HistogramCreatorDialogForm),
     m_dataSet (dataSet)
 {
   m_ui->setupUi(this);

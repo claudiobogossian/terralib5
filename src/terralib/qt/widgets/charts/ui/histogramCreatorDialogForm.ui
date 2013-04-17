@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>HistogramDialog</class>
- <widget class="QDialog" name="HistogramDialog">
+ <class>HistogramCreatorDialogForm</class>
+ <widget class="QDialog" name="HistogramCreatorDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -259,7 +259,7 @@
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>pressed()</signal>
-   <receiver>HistogramDialog</receiver>
+   <receiver>HistogramCreatorDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -26,12 +26,12 @@
 #include "ChartStyleDialog.h"
 #include "ChartStyle.h"
 #include "../utils/ColorPickerToolButton.h"
-#include "ui_chartStyleDialog.h"
+#include "ui_chartStyleDialogForm.h"
 #include "../../../qt/widgets/se/Utils.h"
 
 te::qt::widgets::ChartStyleDialog::ChartStyleDialog(QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY)
   : QDialog(parent, f),
-    m_ui(new Ui::ChartStyleDialog)
+    m_ui(new Ui::ChartStyleDialogForm)
 {
   m_ui->setupUi(this);
   m_ui->m_labelStylePushButton->setEnabled(false);
@@ -61,7 +61,7 @@ te::qt::widgets::ChartStyleDialog::ChartStyleDialog(QWidget* parent, Qt::WindowF
 
 te::qt::widgets::ChartStyleDialog::~ChartStyleDialog(){}
 
-Ui::ChartStyleDialog* te::qt::widgets::ChartStyleDialog::getForm() const
+Ui::ChartStyleDialogForm* te::qt::widgets::ChartStyleDialog::getForm() const
 {
   return m_ui.get();
 }

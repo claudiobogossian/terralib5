@@ -32,7 +32,7 @@
 
 #include <memory>
 
-namespace Ui { class ScatterFrameWidget; }
+namespace Ui { class ScatterFrameWidgetForm; }
 
 namespace te
 {
@@ -57,7 +57,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ScatterFrameWidget> m_ui;
+          std::auto_ptr<Ui::ScatterFrameWidgetForm> m_ui;
 
       };
 

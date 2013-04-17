@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ChartStyleDialog</class>
- <widget class="QDialog" name="ChartStyleDialog">
+ <class>ChartStyleDialogForm</class>
+ <widget class="QDialog" name="ChartStyleDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -288,7 +288,7 @@
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>pressed()</signal>
-   <receiver>ChartStyleDialog</receiver>
+   <receiver>ChartStyleDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScatterDialog</class>
- <widget class="QDialog" name="ScatterDialog">
+ <class>ScatterCreatorDialogForm</class>
+ <widget class="QDialog" name="ScatterCreatorDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -241,7 +241,7 @@
   <connection>
    <sender>m_cancelPushButton</sender>
    <signal>pressed()</signal>
-   <receiver>ScatterDialog</receiver>
+   <receiver>ScatterCreatorDialogForm</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

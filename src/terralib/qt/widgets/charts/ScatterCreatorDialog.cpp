@@ -24,7 +24,7 @@
 */
 
 //Terralib
-#include "ui_scatterCreatorDialog.h"
+#include "ui_scatterCreatorDialogForm.h"
 #include "ChartStyleDialog.h"
 #include "ChartDisplay.h"
 #include "../../../dataaccess.h"
@@ -38,7 +38,7 @@
 
 te::qt::widgets::ScatterCreatorDialog::ScatterCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
-    m_ui(new Ui::ScatterDialog),
+    m_ui(new Ui::ScatterCreatorDialogForm),
     m_dataSet (dataSet)
 {
     m_ui->setupUi(this);

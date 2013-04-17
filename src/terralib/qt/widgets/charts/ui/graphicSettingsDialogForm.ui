@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>GraphicSettingsDialog</class>
- <widget class="QDialog" name="GraphicSettingsDialog">
+ <class>GraphicSettingsDialogForm</class>
+ <widget class="QDialog" name="GraphicSettingsDialogForm">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -167,7 +167,7 @@
   <connection>
    <sender>m_exitButton</sender>
    <signal>clicked()</signal>
-   <receiver>GraphicSettingsDialog</receiver>
+   <receiver>GraphicSettingsDialogForm</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">

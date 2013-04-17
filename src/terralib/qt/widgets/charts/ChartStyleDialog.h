@@ -35,7 +35,7 @@
 //STL
 #include <memory>
 
-namespace Ui { class ChartStyleDialog; }
+namespace Ui { class ChartStyleDialogForm; }
 
 namespace te
 {
@@ -64,7 +64,7 @@ namespace te
 
           ~ChartStyleDialog();
 
-          Ui::ChartStyleDialog* getForm() const;
+          Ui::ChartStyleDialogForm* getForm() const;
 
           static te::qt::widgets::ChartStyle* getStyle(te::qt::widgets::ChartStyle* initial, QWidget* parent, Qt::WindowFlags f, QString title, QString PropertyX, QString PropertyY);
 
@@ -84,7 +84,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ChartStyleDialog>  m_ui;
+          std::auto_ptr<Ui::ChartStyleDialogForm>  m_ui;
           ColorPickerToolButton*               m_colorPicker;   //!< The color picker used to customise the color of several chart parameters.
           te::qt::widgets::ChartStyle*         m_chartStyle;    //!< The display's style that will be configured by this dialog.
       };

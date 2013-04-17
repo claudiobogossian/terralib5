@@ -35,7 +35,7 @@
 //STL
 #include <memory>
 
-namespace Ui { class ScatterDialog; }
+namespace Ui { class ScatterCreatorDialogForm; }
 
 namespace te
 {
@@ -72,7 +72,7 @@ namespace te
 
           ~ScatterCreatorDialog();
 
-          Ui::ScatterDialog* getForm() const;
+          Ui::ScatterCreatorDialogForm* getForm() const;
 
         protected slots:
 
@@ -83,7 +83,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::ScatterDialog>  m_ui;
+          std::auto_ptr<Ui::ScatterCreatorDialogForm>  m_ui;
           te::da::DataSet*                  m_dataSet;        //!< The dataset that will be used to generate the Scatter graph.
           te::da::DataSetType*              m_type;           //!< The dataset's type.
           te::qt::widgets::Scatter*         m_scatter;        //!< The scatter that will be configured by this dialog.

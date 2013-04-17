@@ -35,7 +35,7 @@
 //STL
 #include <memory>
 
-namespace Ui { class HistogramDialog; }
+namespace Ui { class HistogramCreatorDialogForm; }
 
 namespace te
 {
@@ -74,8 +74,6 @@ namespace te
 
           ~HistogramCreatorDialog();
 
-          Ui::HistogramDialog* getForm() const;
-
         protected slots:
 
           void onStylePushButtonClicked();
@@ -87,7 +85,7 @@ namespace te
 
         private:
 
-          std::auto_ptr<Ui::HistogramDialog>  m_ui;
+          std::auto_ptr<Ui::HistogramCreatorDialogForm>  m_ui;
           te::da::DataSet*                    m_dataSet;          //!< The dataset that will be used to generate the hISTOGRAM graph.
           te::da::DataSetType*                m_type;             //!< The dataset's type.
           te::qt::widgets::Histogram*         m_histogram;        //!< The histogram that will be configured by this dialog.

@@ -23,12 +23,12 @@
   \brief A frame used to adjust a scater's chart parameters, weather it is about it's data or it's visual style.
 */
 
-#include "ui_ScatterFrameWidget.h"
+#include "ui_ScatterFrameWidgetForm.h"
 #include "ScatterFrame.h"
 
 te::qt::widgets::ScatterFrame::ScatterFrame(QWidget* parent)
   : GraphicWidget(parent),
-    m_ui(new Ui::ScatterFrameWidget)
+    m_ui(new Ui::ScatterFrameWidgetForm)
 {
   m_ui->setupUi(this);
   m_label = "Scatter";
