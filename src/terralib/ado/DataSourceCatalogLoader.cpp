@@ -25,20 +25,16 @@
 
 // TerraLib
 #include "../common/Translator.h"
-#include "../dataaccess/dataset/DataSetType.h"
-
 #include "../dataaccess/dataset/Constraint.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/ForeignKey.h"
-#include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/dataset/Index.h"
+#include "../dataaccess/dataset/PrimaryKey.h"
+#include "../dataaccess/dataset/UniqueKey.h"
 #include "../dataaccess/datasource/DataSource.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../datatype.h"
-#include "../datatype/SimpleProperty.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
@@ -49,7 +45,7 @@
 
 // ADO
 #import "msado15.dll" \
-    no_namespace rename("EOF", "EndOfFile")
+  no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
 inline void TESTHR(HRESULT x)
@@ -612,12 +608,12 @@ te::da::Sequence* te::ado::DataSourceCatalogLoader::getSequence(const std::strin
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
-te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::gm::GeometryProperty* gp)
+te::gm::Envelope* te::ado::DataSourceCatalogLoader::getExtent(const te::dt::Property* sp)
 {
-  if(!datasetExists(gp->getParent()->getName()))
-    throw Exception(TR_ADO("The Data Set Type doesn't exist!"));
+  if(!datasetExists(sp->getParent()->getName()))
+    throw Exception(TR_ADO("The Data Set Type does not exist!"));
 
-  std::string tableName = gp->getParent()->getName();
+  std::string tableName = sp->getParent()->getName();
 
   te::da::DataSetType* dt = getDataSetType(tableName);
 
