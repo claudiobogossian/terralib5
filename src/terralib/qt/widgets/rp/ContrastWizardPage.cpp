@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../qt/widgets/charts/ChartDisplay.h"
 #include "../../../qt/widgets/charts/Histogram.h"
@@ -134,7 +135,10 @@ void te::qt::widgets::ContrastWizardPage::apply()
 {
   //get input raster
   te::da::DataSet* ds = m_layer->getData();
-  te::rst::Raster* inputRst = ds->getRaster();
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+  te::rst::Raster* inputRst = ds->getRaster(rpos);
 
   //get current box
   te::gm::Envelope extent = m_navigator->getCurrentExtent();
@@ -209,7 +213,9 @@ void te::qt::widgets::ContrastWizardPage::listBands()
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {

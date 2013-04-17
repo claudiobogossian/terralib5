@@ -52,8 +52,7 @@ namespace te
     {
       FORWARDONLY = 0,    /*!< Used when the dataset is only able to move forward.                */
       BIDIRECTIONAL = 1,  /*!< Used when the dataset is able to move forward and backward.        */
-      RANDOM = 2,         /*!< Used when the dataset is able to move to any item.                 */
-      INDEXED = 3,        /*!< Used when the dataset is able to move to an item indexed by a key. */
+      RANDOM = 2          /*!< Used when the dataset is able to move to any item.                 */
     };
 
     /*!

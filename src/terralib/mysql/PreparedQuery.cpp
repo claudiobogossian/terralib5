@@ -27,7 +27,7 @@
 #include "../common/STLUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetItem.h"
+//#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/query/Query.h"
 #include "../datatype/ByteArray.h"
@@ -306,25 +306,25 @@ te::da::DataSourceTransactor* te::mysql::PreparedQuery::getTransactor() const
 }
 
 // MySQL specific
-void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
-}
-
-void te::mysql::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  for(std::size_t i = 0; i < m_nparams; ++i)
-    BindValue(this, i, i, dt->getProperty(i), item);
-}
-
-void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  const std::size_t nparams = propertiesPos.size();
-
-  for(std::size_t i = 0; i < nparams; ++i)
-    BindValue(this, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
-}
+//void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  for(std::size_t i = 0; i < m_nparams; ++i)
+//    BindValue(this, i, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
+//}
+//
+//void te::mysql::PreparedQuery::bind(const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  for(std::size_t i = 0; i < m_nparams; ++i)
+//    BindValue(this, i, i, dt->getProperty(i), item);
+//}
+//
+//void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item)
+//{
+//  const std::size_t nparams = propertiesPos.size();
+//
+//  for(std::size_t i = 0; i < nparams; ++i)
+//    BindValue(this, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), item);
+//}
 
 void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSet* d)
 {
@@ -345,4 +345,3 @@ void te::mysql::PreparedQuery::bind(const std::vector<std::size_t>& propertiesPo
   for(std::size_t i = 0; i < nparams; ++i)
     BindValue(this, i + offset, propertiesPos[i], dt->getProperty(propertiesPos[i]), d);
 }
-

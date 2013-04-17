@@ -62,9 +62,9 @@ namespace te
           \param dt The DataSetType associated to the dataset.
           \param t  The associated transactor.
           
-          \note DataSet will take the ownership of the given DataSetType.
+          \note The dataset will NOT take the ownership of the given DataSetType.
         */
-        explicit DataSet(te::da::DataSetType* dt, DataSourceTransactor* t = 0);
+        explicit DataSet(const te::da::DataSetType* const dt, DataSourceTransactor* t = 0);
 
         /*!
           \brief Regular copy constructor.
@@ -114,7 +114,7 @@ namespace te
 
           \note The dataset will NOT take the ownership of the given properties, internally it will clone them.
         */
-        DataSet(te::da::DataSet& rhs, const std::vector<te::dt::Property*>& properties, std::size_t limit = 0);
+        DataSet(te::da::DataSet& rhs, const std::vector<std::size_t>& properties, std::size_t limit = 0);
 
         /*! \brief Destructor. */
         ~DataSet();
@@ -151,7 +151,7 @@ namespace te
 
           \note In-Memory driver extended method.
         */
-        void copy(te::da::DataSet& src, const std::vector<te::dt::Property*>& properties, std::size_t limit = 0);
+        void copy(te::da::DataSet& src, const std::vector<std::size_t>& properties, std::size_t limit = 0);
 
         /*!
           \brief It adds a new item to the dataset and takes its ownership.
@@ -172,7 +172,7 @@ namespace te
         void remove();
 
         /*!
-          \brief It removes the current dataset item.
+          \brief It removes a specific dataset item.
 
           \note In-Memory driver extended method.
         */
@@ -188,18 +188,18 @@ namespace te
 
           \note In-Memory driver extended method.
         */
-        void add(te::dt::Property* prop, const te::dt::AbstractData* defaultValue = 0);
+        void add(const std::string& propertyName, std::size_t propertyType, const te::dt::AbstractData* defaultValue = 0);
 
         /*!
           \brief It drops a property from the dataset.
 
-          \param prop The property that will be dropped.          
+          \param prop The property that will be dropped.
 
           \note The Property will be destroyed.
 
           \note In-Memory driver extended method.
         */
-        void drop(te::dt::Property* prop);
+        void drop(std::size_t pos);
 
         /*!
           \brief It update a property from the dataset.
@@ -215,7 +215,7 @@ namespace te
         */
         void update(te::dt::Property* prop);
 
-        /*!          
+        /*!
           \note In-Memory driver extended method.
         */
         void setTransactor(DataSourceTransactor* t);
@@ -224,29 +224,23 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::da::DataSetType* getType();
-
-        const te::da::DataSetType* getType() const;
-
         te::da::DataSourceTransactor* getTransactor() const;
 
-        void loadTypeInfo();
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        te::da::DataSet* getParent() const;
+        std::size_t getNumProperties() const;
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
+        int getPropertyDataType(std::size_t pos) const;
 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Geometry* g,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
+        void setPropertyDataType(int dt, std::size_t pos);
 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Envelope* e,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
+        std::string getPropertyName(std::size_t pos) const;
 
-        te::da::DataSetItem* getItem() const;
+        void setPropertyName(const std::string& name, std::size_t pos);
 
-        void add(te::da::DataSetItem* item);
+        std::string getDatasetNameOfProperty(std::size_t pos) const;
+
+        DataSetItem* getItem() const;
 
         bool isEmpty() const;
 
@@ -274,153 +268,105 @@ namespace te
 
         bool isAfterEnd() const;
 
-        char getChar(int i) const;
+        char getChar(std::size_t i) const;
 
-        char getChar(const std::string& name) const;
-
-        void setChar(int i, char value);
+        void setChar(std::size_t i, char value);
 
         void setChar(const std::string& name, char value);
 
-        unsigned char getUChar(int i) const;
+        unsigned char getUChar(std::size_t i) const;
 
-        unsigned char getUChar(const std::string& name) const;
-
-        void setUChar(int i, unsigned char value);
+        void setUChar(std::size_t i, unsigned char value);
 
         void setUChar(const std::string& name, unsigned char value);
 
-        boost::int16_t getInt16(int i) const;
+        boost::int16_t getInt16(std::size_t i) const;
 
-        boost::int16_t getInt16(const std::string& name) const;
-
-        void setInt16(int i, boost::int16_t value);
+        void setInt16(std::size_t i, boost::int16_t value);
 
         void setInt16(const std::string& name, boost::int16_t value);
 
-        boost::int32_t getInt32(int i) const;
+        boost::int32_t getInt32(std::size_t i) const;
 
-        boost::int32_t getInt32(const std::string& name) const;
-
-        void setInt32(int i, boost::int32_t value);
+        void setInt32(std::size_t i, boost::int32_t value);
 
         void setInt32(const std::string& name, boost::int32_t value);
 
-        boost::int64_t getInt64(int i) const;
+        boost::int64_t getInt64(std::size_t i) const;
 
-        boost::int64_t getInt64(const std::string& name) const;
-
-        void setInt64(int i, boost::int64_t value);
+        void setInt64(std::size_t i, boost::int64_t value);
 
         void setInt64(const std::string& name, boost::int64_t value);
 
-        bool getBool(int i) const;
+        bool getBool(std::size_t i) const;
 
-        bool getBool(const std::string& name) const;
-
-        void setBool(int i, bool value);
+        void setBool(std::size_t i, bool value);
 
         void setBool(const std::string& name, bool value);
 
-        float getFloat(int i) const;
+        float getFloat(std::size_t i) const;
 
-        float getFloat(const std::string& name) const;
-
-        void setFloat(int i, float value);
+        void setFloat(std::size_t i, float value);
 
         void setFloat(const std::string& name, float value);
 
-        double getDouble(int i) const;
+        double getDouble(std::size_t i) const;
 
-        double getDouble(const std::string& name) const;
-
-        void setDouble(int i, double value);
+        void setDouble(std::size_t i, double value);
 
         void setDouble(const std::string& name, double value);
 
-        std::string getNumeric(int i) const;
+        std::string getNumeric(std::size_t i) const;
 
-        std::string getNumeric(const std::string& name) const;
-
-        void setNumeric(int i, const std::string& value);
+        void setNumeric(std::size_t i, const std::string& value);
 
         void setNumeric(const std::string& name, const std::string& value);
 
-        std::string getString(int i) const;
+        std::string getString(std::size_t i) const;
 
-        std::string getString(const std::string& name) const;
-
-        void setString(int i, const std::string& value);
+        void setString(std::size_t i, const std::string& value);
 
         void setString(const std::string& name, const std::string& value);
 
-        te::dt::ByteArray* getByteArray(int i) const;
+        te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        te::dt::ByteArray* getByteArray(const std::string& name) const;
-
-        void setByteArray(int i, const te::dt::ByteArray& value);
+        void setByteArray(std::size_t i, const te::dt::ByteArray& value);
 
         void setByteArray(const std::string& name, const te::dt::ByteArray& value);
 
-        te::gm::Geometry* getGeometry(int i) const;
+        te::gm::Geometry* getGeometry(std::size_t i) const;
 
-        te::gm::Geometry* getGeometry(const std::string& name) const;
-
-        void setGeometry(int i, const te::gm::Geometry& value);
+        void setGeometry(std::size_t i, const te::gm::Geometry& value);
 
         void setGeometry(const std::string& name, const te::gm::Geometry& value);
 
-        te::rst::Raster* getRaster(int i) const;
+        te::rst::Raster* getRaster(std::size_t i) const;
 
-        te::rst::Raster* getRaster(const std::string& name) const;
-
-        void setRaster(int i, const te::rst::Raster& value);
+        void setRaster(std::size_t i, const te::rst::Raster& value);
 
         void setRaster(const std::string& name, const  te::rst::Raster& value);
 
-        te::dt::DateTime* getDateTime(int i) const;
+        te::dt::DateTime* getDateTime(std::size_t i) const;
 
-        te::dt::DateTime* getDateTime(const std::string& name) const;
-
-        void setDateTime(int i, const te::dt::DateTime& value);
+        void setDateTime(std::size_t i, const te::dt::DateTime& value);
 
         void setDateTime(const std::string& name, const te::dt::DateTime& value);
 
-        void getArray(int i, std::vector<boost::int16_t>& values) const;
+        te::dt::Array* getArray(std::size_t i) const;
 
-        void getArray(const std::string& name, std::vector<boost::int16_t>& values) const;
+        te::dt::AbstractData* getValue(std::size_t i) const;
 
-        const unsigned char* getWKB(int i) const;
-
-        const unsigned char* getWKB(const std::string& name) const;
-
-        te::da::DataSet* getDataSet(int i);
-
-        te::da::DataSet* getDataSet(const std::string& name);
-
-        void setDataSet(int i, const te::da::DataSet& value);
-
-        void setDataSet(const std::string& name, const te::da::DataSet& value);
-
-        te::dt::AbstractData* getValue(int i) const;
-
-        te::dt::AbstractData* getValue(const std::string& name) const;
-
-        void setValue(int i, te::dt::AbstractData* value);
+        void setValue(std::size_t i, te::dt::AbstractData* value);
 
         void setValue(const std::string& name, te::dt::AbstractData* ad);
 
-        bool isNull(int i) const;
-
-        bool isNull(const std::string& name) const;
-
-        te::dt::AbstractData* clone() const;
+        bool isNull(std::size_t i) const;
 
       protected:
 
         boost::shared_ptr<boost::ptr_vector<te::mem::DataSetItem> > m_items;   //!< The list of dataset items.
-        std::auto_ptr<te::da::DataSetType> m_dt;                               //!< The associated dataset type.
-        DataSet* m_parent;                                                     //!< A parent dataset.
+        std::vector<std::string> m_pnames;                                     //!< The list of property names.
+        std::vector<int> m_ptypes;                                             //!< The list of property types.
         DataSourceTransactor* m_t;                                             //!< The associated datasource transactor.
         int m_i;                                                               //!< The index of the current item.
     };

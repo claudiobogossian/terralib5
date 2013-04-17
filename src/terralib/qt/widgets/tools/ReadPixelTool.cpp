@@ -29,6 +29,7 @@
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry.h"
 #include "../../../maptools/DataSetLayer.h"
 #include "../../../maptools/RasterTransform.h"
@@ -97,7 +98,8 @@ bool te::qt::widgets::ReadPixelTool::mouseReleaseEvent(QMouseEvent* e)
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {

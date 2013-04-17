@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
@@ -68,7 +69,8 @@ te::rp::Segmenter::InputParameters te::qt::widgets::SegmenterWizardPage::getInpu
 
   //get input raster
   te::da::DataSet* ds = m_layer->getData();
-  te::rst::Raster* inputRst = ds->getRaster();
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+  te::rst::Raster* inputRst = ds->getRaster(rpos);
 
   //set segmenter parameters
   algoInputParams.m_inputRasterPtr = inputRst;
@@ -119,7 +121,9 @@ void te::qt::widgets::SegmenterWizardPage::listBands()
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {

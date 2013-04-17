@@ -70,13 +70,11 @@ namespace te
         /** @name te::da::DataSetTypePersistence Pure Virtual Methods Re-Implementation
          *  Methods reimplemented from base class.
          */
-        //@{           
-       
+        //@{
+
         void create(te::da::DataSetType* dt, const std::map<std::string, std::string>& options);
 
         void clone(const std::string& datasetName, const std::string& newDatasetName, const std::map<std::string, std::string>& options);
-
-        void drop(te::da::DataSetType* dt);
 
         void drop(const std::string& datasetName);
 

@@ -31,7 +31,6 @@
 #include "../datatype/Property.h"
 #include "../datatype/SimpleData.h"
 #include "../geometry/Envelope.h"
-#include "../geometry/GeometryProperty.h"
 #include "../raster/RasterProperty.h"
 #include "CatalogLoader.h"
 #include "DataSourceTransactor.h"
@@ -39,16 +38,16 @@
 #include "Exception.h"
 #include "Utils.h"
 
-// STL
-#include <cassert>
+// GDAL
+#include <gdal_priv.h>
+#include <ogr_spatialref.h>
 
 // Boost
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
-// GDAL
-#include <gdal_priv.h>
-#include <ogr_spatialref.h>
+// STL
+#include <cassert>
 
 te::gdal::CatalogLoader::CatalogLoader(te::gdal::DataSourceTransactor* t)
   : m_t(t)
@@ -88,7 +87,7 @@ te::dt::Property* te::gdal::CatalogLoader::getProperty(const std::string& /*data
   throw Exception(TR_GDAL("Not implemented yet!"));
 }
 
-te::gm::Envelope* te::gdal::CatalogLoader::getExtent(const te::gm::GeometryProperty* /*gp*/)
+te::gm::Envelope* te::gdal::CatalogLoader::getExtent(const te::dt::Property* /*sp*/)
 {
   return 0;
 }
@@ -317,7 +316,6 @@ void te::gdal::CatalogLoader::getProperties(te::da::DataSetType* dt)
   GDALClose(dataset);
 }
 
-
 te::da::DataSetType* te::gdal::CatalogLoader::getDataSetType(GDALDataset* dataset)
 {
   te::rst::Grid* grid = GetGrid(dataset);
@@ -354,5 +352,3 @@ te::da::DataSourceCatalog* te::gdal::CatalogLoader::initCatalog()
 
   return catalog;
 }
-
-

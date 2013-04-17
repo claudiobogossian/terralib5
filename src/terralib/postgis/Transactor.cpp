@@ -92,12 +92,12 @@ te::da::DataSet* te::pgis::Transactor::getDataSet(const std::string& name,
                                                   te::common::TraverseType /*travType*/,
                                                   te::common::AccessPolicy /*rwRole*/)
 {
-  std::string sql("SELECT * FROM ");
-              sql += name;
+  std::auto_ptr<std::string> sql(new std::string("SELECT * FROM "));
+                             *sql += name;
 
-  PGresult* result = m_conn->query(sql);
+  PGresult* result = m_conn->query(*sql);
 
-  return new DataSet(result, this, new std::string(sql), new std::string(name));
+  return new DataSet(result, this, sql.release());
 }
 
 te::da::DataSet* te::pgis::Transactor::getDataSet(const std::string& name,
@@ -124,7 +124,7 @@ te::da::DataSet* te::pgis::Transactor::getDataSet(const std::string& name,
 
   PGresult* result = m_conn->query(sql);
 
-  return new DataSet(result, this, new std::string(sql), new std::string(name));
+  return new DataSet(result, this, new std::string(sql));
 }
 
 te::da::DataSet* te::pgis::Transactor::getDataSet(const std::string& name,
@@ -153,7 +153,7 @@ te::da::DataSet* te::pgis::Transactor::getDataSet(const std::string& name,
 
   PGresult* result = m_conn->query(sql);
 
-  return new DataSet(result, this, new std::string(sql), new std::string(name));
+  return new DataSet(result, this, new std::string(sql));
 }
 
 te::da::DataSet* te::pgis::Transactor::query(const te::da::Select& q, 

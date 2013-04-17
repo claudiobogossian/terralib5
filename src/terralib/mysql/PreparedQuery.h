@@ -45,7 +45,7 @@ namespace te
   namespace da
   {
     class DataSet;
-    class DataSetItem;
+    //class DataSetItem;
     class DataSetType;
   }
 
@@ -117,17 +117,17 @@ namespace te
         /*!
           \note MySQL driver extended method.
         */
-        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        //void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
         /*!
           \note MySQL driver extended method.
         */
-        void bind(const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        //void bind(const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
         /*!
           \note MySQL driver extended method.
         */
-        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        //void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
         /*!
           \note MySQL driver extended method.

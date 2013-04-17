@@ -405,12 +405,12 @@ te::da::Sequence* te::mysql::DataSourceCatalogLoader::getSequence(const std::str
   return 0;
 }
 
-te::gm::Envelope* te::mysql::DataSourceCatalogLoader::getExtent(const te::gm::GeometryProperty* gp)
+te::gm::Envelope* te::mysql::DataSourceCatalogLoader::getExtent(const te::dt::Property* sp)
 {
-  assert(gp->getParent());
+  assert(sp->getParent());
 
-  const std::string& tableName = gp->getParent()->getName();
-  const std::string& geomColName = gp->getName();
+  const std::string& tableName = sp->getParent()->getName();
+  const std::string& geomColName = sp->getName();
   
   std::string sql("SELECT MIN(X(PointN(ExteriorRing(Envelope(");
               sql += geomColName;

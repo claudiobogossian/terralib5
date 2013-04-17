@@ -52,8 +52,6 @@ namespace te
     class PrimaryKey;
     class Sequence;
     class UniqueKey;
-    class DataSource;
-    class DataSourceTransactor;
 
     /*!
       \class DataSetTypePersistence
@@ -71,7 +69,7 @@ namespace te
       the DataSetType pointer is associated to a data source catalog. Otherwise, 
       this class does not update the data source catalog. 
 
-      \sa DataSetType, te::dt::Property, DataSource, DataSourceCatalog
+      \sa DataSetType, te::dt::Property
     */
     class TEDATAACCESSEXPORT DataSetTypePersistence : public boost::noncopyable
     {
@@ -82,13 +80,6 @@ namespace te
 
         /*! \brief Virtual destructor. */
         virtual ~DataSetTypePersistence() {}
-
-        /*!
-          \brief It returns a pointer to the underlying data source transactor.
-
-          \return A pointer to the underlying data source transactor.
-        */
-        virtual DataSourceTransactor* getTransactor() const = 0;
 
         /** @name Pure Virtual Methods
          *  Methods that subclasses must implement in order to support the persistence interface.
@@ -158,11 +149,16 @@ namespace te
         */
         virtual void create(DataSetType* dt, const std::map<std::string, std::string>& options) = 0;
 
+        /*!
+          \brief It clones the dataset in the data source.
+
+          \param datasetName    The dataset to be cloned.
+          \param newDataSetName The name of the cloned dataset.
+          \param options        A list of optional modifiers. It is driver specific.
+        */
         virtual void clone(const std::string& datasetName,
                            const std::string& newDatasetName,
                            const std::map<std::string, std::string>& options) = 0;
-
-        //virtual void clone(const std::string& datasetName, DataSetType* newDatasetDef) = 0;
 
         /*!
           \brief It drops the DataSetType from the data source.
@@ -172,12 +168,10 @@ namespace te
           If the DataSetType is associated to a DataSourceCatalog,
           this method will automatically remove it from the catalog. In this case,
           this method can propagate changes to the catalog, for example, removing associated 
-          sequences and foreign keys. Otherwise, the data source catalog is not updated.           
-          
+          sequences and foreign keys. Otherwise, the data source catalog is not updated.
+
           \param dt The DataSetType to be removed from data source.
 
-          \pre All parameters must be valid pointers.
-          
           \post If the DataSetType is associated to a data source catalog, it will automatically remove 
                 the given DataSetType from the data source catalog. Otherwise, the data source catalog 
                 is not updated.
@@ -189,8 +183,6 @@ namespace te
 
           \exception Exception It throws an exception if the DataSetType can not be removed.
         */
-        virtual void drop(DataSetType* dt) = 0;
-
         virtual void drop(const std::string& datasetName) = 0;
 
         /*!
@@ -428,7 +420,7 @@ namespace te
           \post After being removed, the index pointer will be invalidaded.
           \post The changes can propagate to associated primary key or unique key.
 
-          \exception Exception It throws an exception if the index cannot be removed from its DataSetType.          
+          \exception Exception It throws an exception if the index cannot be removed from its DataSetType.
         */
         virtual void drop(Index* index) = 0;
 
@@ -515,7 +507,7 @@ namespace te
           
           \param sequence The sequence that will be created in the data source.
 
-          \pre The parameters must be valid pointers. 
+          \pre The parameters must be valid pointers.
 
           \exception Exception It throws an exception if the sequence cannot be created to the data source.
         */

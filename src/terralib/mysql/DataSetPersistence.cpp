@@ -26,7 +26,6 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
-#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
 #include "../dataaccess/dataset/UniqueKey.h"
@@ -73,114 +72,27 @@ void te::mysql::DataSetPersistence::create(te::da::DataSetType* dt, te::da::Data
 
   dtp->create(dt, options);
   
-  add(dt, d, options, limit);
+  add(dt->getName(), d, options, limit);
 }
 
-void te::mysql::DataSetPersistence::remove(const te::da::DataSetType* dt)
+void te::mysql::DataSetPersistence::remove(const std::string& datasetName)
 {
-  std::string sql("DELETE FROM ");
-              sql += dt->getName();
+  std::string sql("DELETE * FROM ");
+              sql += datasetName;
 
   m_t->execute(sql);
 }
 
-void te::mysql::DataSetPersistence::remove(const std::string& /*datasetName*/)
+void te::mysql::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
   throw Exception(TR_MYSQL("Not implemented yet!"));
 }
 
-void te::mysql::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t limit)
+void te::mysql::DataSetPersistence::add(const std::string& /*datasetName*/, te::da::DataSet* /*d*/, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_MYSQL("Can not remove dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
+  throw Exception(TR_MYSQL("Not implemented yet!"));
 
-// find out the database engine used by the table in order to make a lock or start a transaction
-  std::auto_ptr<DataSourceCatalogLoader> cloader(m_t->getMyCatalogLoader());
-
-  std::string tengine = cloader->getTableEngine(dt->getName());
-
-// create a prepared statement
-  std::string sql  = "DELETE FROM ";
-              sql += dt->getName();
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(*keyProperties);
-
-  std::vector<std::size_t> propertiesPos;
-  
-  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-
-  std::auto_ptr<PreparedQuery> pq(static_cast<PreparedQuery*>(m_t->getPrepared()));
-
-  std::auto_ptr<te::da::ScopedTransaction> st;
-  std::auto_ptr<ScopedLock> sl;
-
-  if(tengine == "MyISAM")
-    sl.reset(new ScopedLock(*m_t, dt->getName()));
-  else if(tengine == "InnoDB")
-    st.reset(new te::da::ScopedTransaction(*m_t));
-
-  pq->prepare(sql, *keyProperties);
-
-  do
-  {
-    pq->bind(propertiesPos, dt, d);
-    pq->execute();
-
-  }while(d->moveNext());
-
-  if(tengine == "InnoDB")
-    st->commit();
-}
-
-void te::mysql::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_MYSQL("Can not remove dataset item because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "DELETE FROM ";
-              sql += dt->getName();
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(*keyProperties);
-
-  std::vector<std::size_t> propertiesPos;
-  
-  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-
-  std::auto_ptr<PreparedQuery> pq(static_cast<PreparedQuery*>(m_t->getPrepared()));
-
-  pq->prepare(sql, *keyProperties);
-  pq->bind(propertiesPos, dt, item);
-  pq->execute();
-}
-
-void te::mysql::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t /*limit*/)
-{
-  std::map<std::string, std::string>::const_iterator it = options.find("ADD_TYPE");
+  /*std::map<std::string, std::string>::const_iterator it = options.find("ADD_TYPE");
 
   if(it == options.end())
   {
@@ -223,198 +135,37 @@ void te::mysql::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::D
 
   pq->prepare(sql, dt->getProperties());
   pq->bind(dt, item);
-  pq->execute();
+  pq->execute();*/
 }
 
-void te::mysql::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                           te::da::DataSet* dataset,
-                                           const std::vector<te::dt::Property*>& properties,
-                                           const std::map<std::string, std::string>& options,
-                                           std::size_t /*limit*/)
+void te::mysql::DataSetPersistence::update(const std::string& /*datasetName*/,
+                                          te::da::DataSet* /*dataset*/,
+                                          const std::vector<std::size_t>& /*properties*/,
+                                          const te::da::ObjectIdSet* /*oids*/,
+                                          const std::map<std::string, std::string>& /*options*/,
+                                          std::size_t /*limit*/)
 {
-  std::map<std::string, std::string>::const_iterator it = options.find("ADD_TYPE");
+  throw Exception(TR_MYSQL("Not implemented yet!"));
 
-  if(it == options.end())
-  {
-    update2(dt, dataset, properties);
-    return;
-  }
+  //std::map<std::string, std::string>::const_iterator it = options.find("ADD_TYPE");
 
-  if(it->second == "T4")
-    update1(dt, dataset, properties);
-  else //if(it->second == "T8")
-    update2(dt, dataset, properties);
-}
+  //if(it == options.end())
+  //{
+  //  update2(dt, dataset, properties);
+  //  return;
+  //}
 
-void te::mysql::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                           te::da::DataSet* oldD,
-                                           te::da::DataSet* newD,
-                                           const std::vector<te::dt::Property*>& properties,
-                                           std::size_t limit)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_MYSQL("Can not update dataset item(s) because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// find out the database engine used by the table in order to make a lock or start a transaction
-  std::auto_ptr<DataSourceCatalogLoader> cloader(m_t->getMyCatalogLoader());
-
-  std::string tengine = cloader->getTableEngine(dt->getName());
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(*keyProperties);
-
-  std::vector<std::size_t> propertiesPos;
-
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  std::vector<std::size_t> keysPos;
-  
-  te::dt::GetPropertiesPosition(*keyProperties, dt, keysPos);
-
-  std::vector<te::dt::Property*> allprops(properties);
-
-  std::copy(keyProperties->begin(), keyProperties->end(), std::back_inserter(allprops));
-
-  std::auto_ptr<PreparedQuery> pq(static_cast<PreparedQuery*>(m_t->getPrepared()));
-
-  std::auto_ptr<te::da::ScopedTransaction> st;
-  std::auto_ptr<ScopedLock> sl;
-
-  if(tengine == "MyISAM")
-    sl.reset(new ScopedLock(*m_t, dt->getName()));
-  else if(tengine == "InnoDB")
-    st.reset(new te::da::ScopedTransaction(*m_t));
-
-  pq->prepare(sql, allprops);
-
-  do
-  {
-    pq->bind(propertiesPos, dt, newD);
-    pq->bind(keysPos, propertiesPos.size(), dt, oldD);
-    pq->execute();
-
-  }while(oldD->moveNext() && newD->moveNext());
-
-  if(tengine == "InnoDB")
-    st->commit();
-}
-
-void te::mysql::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                           te::da::DataSetItem* item,
-                                           const std::vector<te::dt::Property*>& properties)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_MYSQL("Can not update dataset item because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(*keyProperties);
-
-  std::vector<std::size_t> propertiesPos;
-  
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  te::dt::GetPropertiesPosition(*keyProperties, dt, propertiesPos);
-
-  std::vector<te::dt::Property*> allprops(properties);
-
-  std::copy(keyProperties->begin(), keyProperties->end(), std::back_inserter(allprops));
- 
-  std::auto_ptr<PreparedQuery> pq(static_cast<PreparedQuery*>(m_t->getPrepared()));
-
-  pq->prepare(sql, allprops);
-
-  pq->bind(propertiesPos, dt, item);
-  pq->execute();
-}
-
-void te::mysql::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                           te::da::DataSetItem* oldItem,
-                                           te::da::DataSetItem* newItem,
-                                           const std::vector<te::dt::Property*>& properties)
-{
-  const std::vector<te::dt::Property*>* keyProperties = 0;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = &(dt->getPrimaryKey()->getProperties());
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = &(dt->getUniqueKey(0)->getProperties());
-  }
-  else
-  {
-    throw Exception(TR_MYSQL("Can not update dataset item because dataset doesn't have a primary key or unique key!")); 
-  }
-
-// create a prepared statement
-  std::string sql  = "UPDATE ";
-              sql += dt->getName();
-              sql += " SET ";
-              sql += GetBindableUpdateSQL(properties);
-              sql += " WHERE ";
-              sql += GetBindableWhereSQL(*keyProperties);
-
-  std::vector<std::size_t> propertiesPos;
-
-  te::dt::GetPropertiesPosition(properties, dt, propertiesPos);
-
-  std::vector<std::size_t> keysPos;
-  
-  te::dt::GetPropertiesPosition(*keyProperties, dt, keysPos);
-
-  std::vector<te::dt::Property*> allprops(properties);
-
-  std::copy(keyProperties->begin(), keyProperties->end(), std::back_inserter(allprops));
-
-  std::auto_ptr<PreparedQuery> pq(static_cast<PreparedQuery*>(m_t->getPrepared()));
-
-  pq->prepare(sql, allprops);
-
-  pq->bind(propertiesPos, dt, newItem);
-  pq->bind(keysPos, propertiesPos.size(), dt, oldItem);
-  pq->execute();
+  //if(it->second == "T4")
+  //  update1(dt, dataset, properties);
+  //else //if(it->second == "T8")
+  //  update2(dt, dataset, properties);
 }
 
 te::da::DataSourceTransactor* te::mysql::DataSetPersistence::getTransactor() const
 {
   return m_t;
 }
-                 
+
 // insere 1-linha nao preparada por item
 void te::mysql::DataSetPersistence::add1(const te::da::DataSetType* dt, te::da::DataSet* d)
 {

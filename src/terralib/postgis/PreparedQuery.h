@@ -45,7 +45,6 @@ namespace te
 // Forward declarations
   namespace da
   {
-    class DataSetItem;
     class DataSetType;
   }
 
@@ -118,21 +117,6 @@ namespace te
         void bind(int i, const te::dt::AbstractData& ad);
 
         te::da::DataSourceTransactor* getTransactor() const;
-
-        /*!
-          \note PostgeSQL driver extended method.
-        */
-        void bind(const std::vector<std::size_t>& propertiesPos, std::size_t offset, const te::da::DataSetType* dt, te::da::DataSetItem* item);
-
-        /*!
-          \note PostgeSQL driver extended method.
-        */
-        void bind(const std::vector<std::size_t>& propertiesPos, const te::da::DataSetType* dt, te::da::DataSetItem* item);
-
-        /*!
-          \note PostgeSQL driver extended method.
-        */
-        void bind(const te::da::DataSetType* dt, te::da::DataSetItem* item);
 
         /*!
           \note PostgeSQL driver extended method.

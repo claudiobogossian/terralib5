@@ -25,6 +25,7 @@
 
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Coord2D.h"
 #include "../../../geometry/Point.h"
 #include "../../../raster/Grid.h"
@@ -160,7 +161,8 @@ void te::qt::widgets::RasterNavigatorWidget::onCoordTrackedChanged(QPointF& coor
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {

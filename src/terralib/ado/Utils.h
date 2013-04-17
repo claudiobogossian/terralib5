@@ -40,7 +40,6 @@ namespace te
   {
     class DataSet;
     class DataSetType;
-    class DataSetItem;
     class PrimaryKey;
     class ForeignKey;
     class UniqueKey;
@@ -55,6 +54,11 @@ namespace te
   namespace gm
   {
     class GeometryProperty;
+  }
+
+  namespace mem
+  {
+    class DataSetItem;
   }
 
   namespace ado
@@ -212,7 +216,7 @@ namespace te
       \param prop The property that will be updated
       \param item The TerraLib item referenced
     */
-    void updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::da::DataSetItem* item);
+    void updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::mem::DataSetItem* item);
 
     /*!
       \brief Insert DataSetType with geometry in the geometryColumns table

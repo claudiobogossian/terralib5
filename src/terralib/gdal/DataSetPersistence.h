@@ -35,7 +35,7 @@ namespace te
   namespace gdal
   {
 // Forward declaration
-    class DataSourceTransactor;    
+    class DataSourceTransactor;
           
     /*!
       \brief This class is responsiblefor pesisting a dataset using the GDAL driver.
@@ -53,46 +53,22 @@ namespace te
         */
         DataSetPersistence(DataSourceTransactor* t);
 
-        /*! \brief Destructor. */
         ~DataSetPersistence();
 
         void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
 
-        void remove(const te::da::DataSetType* dt);
-
         void remove(const std::string& datasetName);
 
-        void remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t limit = 0); 
+        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
 
-        void remove(const te::da::DataSetType* dt, te::da::DataSetItem* item);
+        void add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
 
-        void add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
-
-        void add(const te::da::DataSetType* dt, te::da::DataSetItem* item);
-
-        void update(const te::da::DataSetType* dt,
-                    te::da::DataSet* f,
-                    const std::vector<te::dt::Property*>& properties,
+        void update(const std::string& datasetName,
+                    te::da::DataSet* dataset,
+                    const std::vector<std::size_t>& properties,
+                    const te::da::ObjectIdSet* oids,
                     const std::map<std::string, std::string>& options,
                     std::size_t limit = 0);
-
-        void update(const te::da::DataSetType* dt, 
-                    te::da::DataSet* oldF, 
-                    te::da::DataSet* newF,
-                    const std::vector<te::dt::Property*>& properties,
-                    std::size_t limit = 0);
-
-        void update(const te::da::DataSetType* dt,
-                    te::da::DataSetItem* item,
-                    const std::vector<te::dt::Property*>& properties);
-
-
-        void update(const te::da::DataSetType* dt,
-                    te::da::DataSetItem* oldItem,
-                    te::da::DataSetItem* newItem,
-                    const std::vector<te::dt::Property*>& properties);
-
-        te::da::DataSourceTransactor* getTransactor() const;
 
         private:
 
