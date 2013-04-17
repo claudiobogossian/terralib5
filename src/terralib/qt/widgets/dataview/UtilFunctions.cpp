@@ -270,20 +270,20 @@ std::vector<size_t> getPKeysPositions(te::da::DataSet* dset)
 {
   std::vector<size_t> res;
 
-  if(dset != 0)
-  {
-    te::da::DataSetType* type = dset->getType();
-    te::da::PrimaryKey* pk = type->getPrimaryKey();
+  //if(dset != 0)
+  //{
+  //  te::da::DataSetType* type = dset->getType();
+  //  te::da::PrimaryKey* pk = type->getPrimaryKey();
 
-    if(pk != 0)
-    {
-      std::vector<te::dt::Property*> ps = pk->getProperties();
-      std::vector<te::dt::Property*>::iterator it;
+  //  if(pk != 0)
+  //  {
+  //    std::vector<te::dt::Property*> ps = pk->getProperties();
+  //    std::vector<te::dt::Property*>::iterator it;
 
-      for(it = ps.begin(); it != ps.end(); ++it)
-        res.push_back(type->getPropertyPosition(*it));
-    }
-  }
+  //    for(it = ps.begin(); it != ps.end(); ++it)
+  //      res.push_back(type->getPropertyPosition(*it));
+  //  }
+  //}
 
   return res;
 }

@@ -226,7 +226,16 @@ namespace te
           \note This method is not supported by FORWARDONLY datasets.
         */
         virtual bool movePrevious() = 0;
-        
+
+        /*!
+          \brief It moves the internal pointer to a position before the first item in the collection.
+
+          \return True, if it was possible to move to a sentinel position before the first item in the collection.
+
+          \note This method is not supported by FORWARDONLY datasets.
+        */
+        virtual bool moveBeforeFirst() = 0;
+
         /*!
           \brief It moves the internal pointer to the first item in the collection.
 

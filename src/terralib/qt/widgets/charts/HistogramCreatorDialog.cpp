@@ -55,9 +55,11 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
 
   QString item;
 
-  if(dataSet->getRaster())
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
+
+  if(dataSet->getRaster(rpos))
     {
-      size_t size =  dataSet->getRaster()->getNumberOfBands();
+      size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
       for (unsigned int i = 0; i < size; i++)
       {
         item = QString::number(i);
@@ -66,11 +68,9 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
     }
   else
   {
-    std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
-
-    for (double i = 0; i < properties.size(); i++)
+    for (std::size_t i = 0; i < dataSet->getNumProperties(); i++)
     {
-      item = QString::fromStdString(properties[i]->getName());
+      item = QString::fromStdString(dataSet->getPropertyName(i));
       m_ui->m_propertyComboBox->addItem(item);
     }
   }
@@ -100,20 +100,18 @@ void te::qt::widgets::HistogramCreatorDialog::onStylePushButtonClicked()
 
 void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 {
+  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
 
-  if(m_dataSet->getRaster())
+  if(m_dataSet->getRaster(rpos))
   {
     int teste  =  m_ui->m_propertyComboBox->currentIndex();
     m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
   }
   else
   {
-    //Acquiring the dataset Properties types
-    m_type = m_dataSet->getType();
-
     //Getting the Columns that will be used to populate the graph
     int selectedPropertyIdx= m_type->getPropertyPosition(m_ui->m_propertyComboBox->currentText().toStdString());
-    int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
+    int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {
@@ -164,13 +162,13 @@ void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
 
 void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QString text)
 {
-  m_type = m_dataSet->getType();
   QString aux = m_ui->m_propertyComboBox->currentText();
   std::string selectedProperty = aux.toStdString();
-  if(!(m_dataSet->getRaster()))
+  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
+  if(!(m_dataSet->getRaster(rpos)))
   {
-    int selectedPropertyIdx= m_type->getPropertyPosition(selectedProperty);
-    int propType = m_dataSet->getType()->getProperty(selectedPropertyIdx)->getType();
+    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet, selectedProperty);
+    int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
     {

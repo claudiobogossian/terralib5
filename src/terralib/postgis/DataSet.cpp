@@ -243,6 +243,12 @@ bool te::pgis::DataSet::moveLast()
   return (m_i < m_size);
 }
 
+bool te::pgis::DataSet::moveBeforeFirst()
+{
+  m_i = -1;
+  return m_size != 0;;
+}
+
 bool te::pgis::DataSet::move(std::size_t i)
 {
   m_i = static_cast<int>(i);

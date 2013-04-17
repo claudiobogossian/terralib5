@@ -99,6 +99,8 @@ namespace te
 
         bool movePrevious();
 
+        bool moveBeforeFirst();
+
         bool moveFirst();
 
         bool moveLast();

@@ -105,25 +105,25 @@ void te::qt::widgets::PropertyConverterDialog::set(std::string dataSourceId)
 
 void te::qt::widgets::PropertyConverterDialog::adapt(te::da::DataSetAdapter* dsAdapter)
 {
-  te::dt::SimpleProperty* p = m_propWidget->getProperty();
-  std::vector<std::string> names;
-  std::string converter = m_ui->m_comboBox->currentText().toStdString();
+  //te::dt::SimpleProperty* p = m_propWidget->getProperty();
+  //std::vector<std::string> names;
+  //std::string converter = m_ui->m_comboBox->currentText().toStdString();
 
-  //get selected attributes
-  int row = m_ui->m_tableWidget->rowCount();
+  ////get selected attributes
+  //int row = m_ui->m_tableWidget->rowCount();
 
-  for(int i = 0; i < row; ++i)
-  {
-    QTableWidgetItem* item = m_ui->m_tableWidget->item(i, 0);
+  //for(int i = 0; i < row; ++i)
+  //{
+  //  QTableWidgetItem* item = m_ui->m_tableWidget->item(i, 0);
 
-    if(item && item->checkState() == Qt::Checked)
-    {
-      names.push_back(m_ui->m_tableWidget->item(i, 1)->text().toStdString());
-    }
-  }
+  //  if(item && item->checkState() == Qt::Checked)
+  //  {
+  //    names.push_back(m_ui->m_tableWidget->item(i, 1)->text().toStdString());
+  //  }
+  //}
 
-  //adapt
-  dsAdapter->adapt(names, (te::dt::Property*)p, m_converterMap[converter]);
+  ////adapt
+  //dsAdapter->adapt(names, (te::dt::Property*)p, m_converterMap[converter]);
 }
 
 void te::qt::widgets::PropertyConverterDialog::onOkPushButtonClicked()
