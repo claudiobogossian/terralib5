@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Segmenter.h"
 #include "../../../rp/SegmenterRegionGrowingStrategy.h"
@@ -119,6 +120,8 @@ void te::qt::widgets::SegmenterWizardPage::listBands()
 
   if(ds)
   {
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
     te::rst::Raster* inputRst = ds->getRaster();
 
     if(inputRst)

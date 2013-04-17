@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../common/StringUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/ClassifierISOSegStrategy.h"
 #include "../../widgets/canvas/Canvas.h"
@@ -155,7 +156,9 @@ void te::qt::widgets::ClassifierWizardPage::listBands()
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {

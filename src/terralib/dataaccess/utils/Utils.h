@@ -177,6 +177,8 @@ namespace te
     */
     TEDATAACCESSEXPORT std::size_t GetFirstSpatialPropertyPos(const te::da::DataSet* dataset);
 
+    TEDATAACCESSEXPORT std::size_t GetFirstPropertyPos(const te::da::DataSet* dataset, int datatype);
+
     TEDATAACCESSEXPORT std::size_t GetPropertyPos(const DataSet* dataset, const std::string& name);
 
     //TEDATAACCESSEXPORT te::da::DataSetType* CreateDataSetType(const te::da::DataSet* dataset);

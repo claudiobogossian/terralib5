@@ -110,9 +110,11 @@ void te::qt::widgets::DataSetDisplay::draw(const te::da::DataSetTypePtr& dataset
 
   std::auto_ptr<te::da::DataSet> feature(transactor->getDataSet(dataset->getName()));
 
+  std::size_t gpos = te::da::GetFirstPropertyPos(ds, te::dt::GEOMETRY_TYPE);
+
   while(feature->moveNext())
   {
-    std::auto_ptr<te::gm::Geometry> g(feature->getGeometry());
+    std::auto_ptr<te::gm::Geometry> g(feature->getGeometry(gpos));
     m_canvas->draw(g.get());
   }
 
