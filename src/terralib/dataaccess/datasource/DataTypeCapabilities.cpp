@@ -56,7 +56,6 @@ te::da::DataTypeCapabilities::DataTypeCapabilities()
   m_types[te::dt::CINT32_TYPE]      = false;
   m_types[te::dt::CFLOAT_TYPE]      = false;
   m_types[te::dt::CDOUBLE_TYPE]     = false;
-  m_types[te::dt::DATASETITEM_TYPE] = false;
   m_types[te::dt::POLYMORPHIC_TYPE] = false;
 }
 
@@ -322,16 +321,6 @@ bool te::da::DataTypeCapabilities::supportsCDouble() const
 void te::da::DataTypeCapabilities::setSupportCDouble(const bool& support)
 {
   setSupport(te::dt::CDOUBLE_TYPE, support);
-}
-
-bool te::da::DataTypeCapabilities::supportsDatasetItem() const
-{
-  return supports(te::dt::DATASETITEM_TYPE);
-}
-
-void te::da::DataTypeCapabilities::setSupportDatasetItem(const bool& support)
-{
-  setSupport(te::dt::DATASETITEM_TYPE, support);
 }
 
 bool te::da::DataTypeCapabilities::supportsPolymorphic() const

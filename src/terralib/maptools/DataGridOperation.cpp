@@ -810,13 +810,14 @@ int te::map::DataGridOperation::moveColumn(int fromPos, int toPos)
 
 std::string te::map::DataGridOperation::getColumnFullName(size_t logicalColumn)
 {
-  const te::da::DataSetType* featureType = m_dataSet->getType();
-  const std::string& featureName = featureType->getName();
-  const std::string& propertyName = featureType->getProperty(logicalColumn)->getName();
+  return m_dataSet->getPropertyName(logicalColumn);
+  //const te::da::DataSetType* featureType = m_dataSet->getType();
+  //const std::string& featureName = featureType->getName();
+  //const std::string& propertyName = featureType->getProperty(logicalColumn)->getName();
 
-  std::string columnName = featureName + "." + propertyName;
+  //std::string columnName = featureName + "." + propertyName;
 
-  return columnName;
+  //return columnName;
 }
 
 const std::set<std::string>& te::map::DataGridOperation::getTheChanged()

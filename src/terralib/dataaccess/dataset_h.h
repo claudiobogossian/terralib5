@@ -31,7 +31,6 @@
 #include "dataset/Constraint.h"
 #include "dataset/DataSet.h"
 #include "dataset/DataSetAdapter.h"
-#include "dataset/DataSetItem.h"
 #include "dataset/DataSetPersistence.h"
 #include "dataset/DataSetType.h"
 #include "dataset/DataSetTypePersistence.h"

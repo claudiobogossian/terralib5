@@ -32,14 +32,20 @@
 
 // ADO
 #import "msado15.dll" \
-    no_namespace rename("EOF", "EndOfFile")
+  no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
 namespace te
 {
+// Forward declaration
+  namespace da
+  {
+    class DataSetType;
+  }
+
   namespace ado
   {
-
+// Forward declaration
     class DataSourceTransactor;
 
     /*!
@@ -69,29 +75,19 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const;
 
-        te::da::DataSetType* getType();
-
-        const te::da::DataSetType* getType() const;
-        
         te::da::DataSourceTransactor* getTransactor() const;
-
-        void loadTypeInfo();
 
         te::da::DataSet* getParent() const;
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Geometry* g,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
- 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Envelope* e,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS); 
+        std::size_t getNumProperties() const;
 
-        te::da::DataSetItem* getItem() const;
+        int getPropertyDataType(std::size_t pos) const;
 
-        void add(te::da::DataSetItem* item);
+        std::string getPropertyName(std::size_t pos) const;
+
+        std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         bool isEmpty() const;
 
@@ -119,103 +115,52 @@ namespace te
 
         bool isAfterEnd() const;
 
-        char getChar(int i) const;
+        char getChar(std::size_t i) const;
         char getChar(const std::string& name) const;
 
-        void setChar(int i, char value);
-        void setChar(const std::string& name, char value);
-
-        unsigned char getUChar(int i) const;
+        unsigned char getUChar(std::size_t i) const;
         unsigned char getUChar(const std::string& name) const;
 
-        void setUChar(int i, unsigned char value);
-        void setUChar(const std::string& name, unsigned char value);
-
-        boost::int16_t getInt16(int i) const;
+        boost::int16_t getInt16(std::size_t i) const;
         boost::int16_t getInt16(const std::string& name) const;
 
-        void setInt16(int i, boost::int16_t value);
-        void setInt16(const std::string& name, boost::int16_t value);
-
-        boost::int32_t getInt32(int i) const;
+        boost::int32_t getInt32(std::size_t i) const;
         boost::int32_t getInt32(const std::string& name) const;
 
-        void setInt32(int i, boost::int32_t value);
-        void setInt32(const std::string& name, boost::int32_t value);
-
-        boost::int64_t getInt64(int i) const;
+        boost::int64_t getInt64(std::size_t i) const;
         boost::int64_t getInt64(const std::string& name) const;
 
-        void setInt64(int i, boost::int64_t value);
-        void setInt64(const std::string& name, boost::int64_t value);
-
-        bool getBool(int i) const;
+        bool getBool(std::size_t i) const;
         bool getBool(const std::string& name) const;
 
-        void setBool(int i, bool value);
-        void setBool(const std::string& name, bool value);
-
-        float getFloat(int i) const;
+        float getFloat(std::size_t i) const;
         float getFloat(const std::string& name) const;
 
-        void setFloat(int i, float value);
-        void setFloat(const std::string& name, float value);
-
-        double getDouble(int i) const;
+        double getDouble(std::size_t i) const;
         double getDouble(const std::string& name) const;
 
-        void setDouble(int i, double value);
-        void setDouble(const std::string& name, double value);
-
-        std::string getNumeric(int i) const;
+        std::string getNumeric(std::size_t i) const;
         std::string getNumeric(const std::string& name) const;
 
-        void setNumeric(int i, const std::string& value);
-        void setNumeric(const std::string& name, const std::string& value);
-
-        std::string getString(int i) const;
+        std::string getString(std::size_t i) const;
         std::string getString(const std::string& name) const;
 
-        void setString(int i, const std::string& value);
-        void setString(const std::string& name, const std::string& value);
-
-        te::dt::ByteArray* getByteArray(int i) const;
+        te::dt::ByteArray* getByteArray(std::size_t i) const;
         te::dt::ByteArray* getByteArray(const std::string& name) const;
 
-        void setByteArray(int i, const te::dt::ByteArray& value);
-        void setByteArray(const std::string& name, const te::dt::ByteArray& value);
-
-        te::gm::Geometry* getGeometry(int i) const;
+        te::gm::Geometry* getGeometry(std::size_t i) const;
         te::gm::Geometry* getGeometry(const std::string& name) const;
 
-        void setGeometry(int i, const te::gm::Geometry& value);
-        void setGeometry(const std::string& name, const te::gm::Geometry& value);
-
-        te::rst::Raster* getRaster(int i) const;
+        te::rst::Raster* getRaster(std::size_t i) const;
         te::rst::Raster* getRaster(const std::string& name) const;
 
-        void setRaster(int i, const te::rst::Raster& value);
-        void setRaster(const std::string& name, const te::rst::Raster& value);
-
-        te::dt::DateTime* getDateTime(int i) const;
+        te::dt::DateTime* getDateTime(std::size_t i) const;
         te::dt::DateTime* getDateTime(const std::string& name) const;
-
-        void setDateTime(int i, const te::dt::DateTime& value);
-        void setDateTime(const std::string& name, const te::dt::DateTime& value);
         
-        void getArray(int i, std::vector<boost::int16_t>& a) const;
-        void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
+        te::dt::Array* getArray(std::size_t i) const;
+        te::dt::Array* getArray(const std::string& name) const;
 
-        const unsigned char* getWKB(int i) const;
-        const unsigned char* getWKB(const std::string& name) const;
-
-        te::da::DataSet* getDataSet(int i);
-
-        void setDataSet(int i, const te::da::DataSet& value);
-        
-        void setValue(int i, te::dt::AbstractData* ad);
-
-        bool isNull(int i) const;
+        bool isNull(std::size_t i) const;
 
       protected:
 

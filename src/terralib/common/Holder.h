@@ -71,7 +71,11 @@ namespace te
       {
         return m_handle;
       }
-      
+
+      T* get() const
+      {
+        return m_handle;
+      }
     };
 
   } // end namespace common

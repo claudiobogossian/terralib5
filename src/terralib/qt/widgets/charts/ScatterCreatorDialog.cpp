@@ -44,11 +44,10 @@ te::qt::widgets::ScatterCreatorDialog::ScatterCreatorDialog(te::da::DataSet* dat
     m_ui->setupUi(this);
 
   QString item;
-  std::vector<te::dt::Property*>& properties = dataSet->getType()->getProperties();
 
-  for (double i = 0; i < properties.size(); i++)
+  for(std::size_t i = 0; i < m_dataSet->getNumProperties(); i++)
   {
-    item = item.fromStdString(properties[i]->getName());
+    item = item.fromStdString(m_dataSet->getPropertyName(i));
     m_ui->m_propertyXComboBox->addItem(item);
     m_ui->m_propertyYComboBox->addItem(item);
   }
@@ -88,8 +87,6 @@ void te::qt::widgets::ScatterCreatorDialog::onPlotStylePushButtonClicked()
 void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
 {
   //Acquiring the dataset Properties types
-  m_type = m_dataSet->getType();
-
   QString aux = m_ui->m_propertyXComboBox->currentText();
 
   QString aux2 = m_ui->m_propertyYComboBox->currentText();
@@ -97,8 +94,8 @@ void te::qt::widgets::ScatterCreatorDialog::onOkPushButtonClicked()
   std::string selectedPropertyX = aux.toStdString();
   std::string selectedPropertyY = aux2.toStdString();
 
-  int selectedPropertyXIdx= m_type->getPropertyPosition(selectedPropertyX);
-  int selectedPropertyYIdx= m_type->getPropertyPosition(selectedPropertyY);
+  int selectedPropertyXIdx= te::da::GetPropertyPos(m_dataSet, selectedPropertyX);
+  int selectedPropertyYIdx= te::da::GetPropertyPos(m_dataSet, selectedPropertyY);
 
   m_scatter = te::qt::widgets::createScatter(m_dataSet, selectedPropertyXIdx, selectedPropertyYIdx);
 

@@ -32,11 +32,6 @@
 
 namespace te
 {
-  namespace gm
-  {
-    class GeometryProperty;
-  }
-
   namespace ado
   {
 // Forward declaration
@@ -81,7 +76,7 @@ namespace te
 
         te::da::Sequence* getSequence(const std::string& seqName);
 
-        te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp);
+        te::gm::Envelope* getExtent(const te::dt::Property* sp);
 
          /*!
           \brief It loads the information about a given geometry column.

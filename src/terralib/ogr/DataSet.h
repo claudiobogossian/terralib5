@@ -20,8 +20,8 @@
 /*!
   \file terralib/ogr/DataSet.h
 
-  \brief Implementation of a DataSet for OGR data provider.  
- */
+  \brief Implementation of a DataSet for OGR data provider.
+*/
 
 #ifndef __TERRALIB_OGR_INTERNAL_DATASET_H
 #define __TERRALIB_OGR_INTERNAL_DATASET_H
@@ -30,16 +30,19 @@
 #include "../dataaccess/dataset/DataSet.h"
 #include "Config.h"
 
+// STL
+#include <vector>
+
 // Forward declarations
 class OGRLayer;
 class OGRFeature;
 
 namespace te
 {
-// Forward declarations
+// Forward declaration
   namespace da
   {
-    class GeometryProperty;
+    class DataSetType;
   }
 
   namespace ogr
@@ -75,29 +78,17 @@ namespace te
 
         te::common::AccessPolicy getAccessPolicy() const { return te::common::RAccess; }
 
-        te::da::DataSetType* getType();
-
-        const te::da::DataSetType* getType() const;
-
         te::da::DataSourceTransactor* getTransactor() const;
 
-        void loadTypeInfo();
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        te::da::DataSet* getParent() const;
+        std::size_t getNumProperties() const;
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
+        int getPropertyDataType(std::size_t pos) const;
 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Geometry* g,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
+        std::string getPropertyName(std::size_t pos) const;
 
-        void setFilter(te::dt::Property* p,
-                       const te::gm::Envelope* e,
-                       te::gm::SpatialRelation r = te::gm::INTERSECTS);
-        
-        te::da::DataSetItem* getItem() const;
-
-        void add(te::da::DataSetItem* item);
+        std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         bool isEmpty() const;
 
@@ -125,135 +116,41 @@ namespace te
 
         bool isAfterEnd() const;
 
-        char getChar(int i) const;
+        char getChar(std::size_t i) const;
 
-        char getChar(const std::string& name) const;
+        unsigned char getUChar(std::size_t i) const;
 
-        void setChar(int i, char value);
+        boost::int16_t getInt16(std::size_t i) const;
 
-        void setChar(const std::string& name, char value);
+        boost::int32_t getInt32(std::size_t i) const;
 
-        unsigned char getUChar(int i) const;
+        boost::int64_t getInt64(std::size_t i) const;
 
-        unsigned char getUChar(const std::string& name) const;
+        bool getBool(std::size_t i) const;
 
-        void setUChar(int i, unsigned char value);
+        float getFloat(std::size_t i) const;
 
-        void setUChar(const std::string& name, unsigned char value);
+        double getDouble(std::size_t i) const;
 
-        boost::int16_t getInt16(int i) const;
+        std::string getNumeric(std::size_t i) const;
 
-        boost::int16_t getInt16(const std::string& name) const;
+        std::string getString(std::size_t i) const;
 
-        void setInt16(int i, boost::int16_t value);
+        te::dt::ByteArray* getByteArray(std::size_t i) const;
 
-        void setInt16(const std::string& name, boost::int16_t value);
+        te::gm::Geometry* getGeometry(std::size_t i) const;
 
-        boost::int32_t getInt32(int i) const;
+        te::rst::Raster* getRaster(std::size_t i) const;
 
-        boost::int32_t getInt32(const std::string& name) const;
+        te::dt::DateTime* getDateTime(std::size_t i) const;
 
-        void setInt32(int i, boost::int32_t value);
+        te::dt::Array* getArray(std::size_t i) const;
 
-        void setInt32(const std::string& name, boost::int32_t value);
+        bool isNull(std::size_t i) const;
 
-        boost::int64_t getInt64(int i) const;
+      private:
 
-        boost::int64_t getInt64(const std::string& name) const;
-
-        void setInt64(int i, boost::int64_t value);
-
-        void setInt64(const std::string& name, boost::int64_t value);
-
-        bool getBool(int i) const;
-
-        bool getBool(const std::string& name) const;
-
-        void setBool(int i, bool value);
-
-        void setBool(const std::string& name, bool value);
-
-        float getFloat(int i) const;
-
-        float getFloat(const std::string& name) const;
-
-        void setFloat(int i, float value);
-
-        void setFloat(const std::string& name, float value);
-
-        double getDouble(int i) const;
-
-        double getDouble(const std::string& name) const;
-
-        void setDouble(int i, double value);
-
-        void setDouble(const std::string& name, double value);
-
-        std::string getNumeric(int i) const;
-
-        std::string getNumeric(const std::string& name) const;
-
-        void setNumeric(int i, const std::string& value);
-
-        void setNumeric(const std::string& name, const std::string& value);
-
-        std::string getString(int i) const;
-
-        std::string getString(const std::string& name) const;
-
-        void setString(int i, const std::string& value);
-
-        void setString(const std::string& name, const std::string& value);
-
-        te::dt::ByteArray* getByteArray(int i) const;
-
-        te::dt::ByteArray* getByteArray(const std::string& name) const;
-
-        void setByteArray(int i, const te::dt::ByteArray& value);
-
-        void setByteArray(const std::string& name, const te::dt::ByteArray& value);
-
-        te::gm::Geometry* getGeometry(int i) const;
-
-        te::gm::Geometry* getGeometry(const std::string& name) const;
-
-        te::gm::Geometry* getGeometry() const;
-
-        void setGeometry(int i, const te::gm::Geometry& value);
-
-        void setGeometry(const std::string& name, const te::gm::Geometry& value);
-
-        te::rst::Raster* getRaster(int i) const;
-
-        te::rst::Raster* getRaster(const std::string& name) const;
-
-        void setRaster(int i, const te::rst::Raster& value);
-
-        void setRaster(const std::string& name, const te::rst::Raster& value);
-
-        te::dt::DateTime* getDateTime(int i) const;
-
-        te::dt::DateTime* getDateTime(const std::string& name) const;
-
-        void setDateTime(int i, const te::dt::DateTime& value);
-
-        void setDateTime(const std::string& name, const te::dt::DateTime& value);
-
-        void getArray(int i, std::vector<boost::int16_t>& a) const;
-
-        void getArray(const std::string& name, std::vector<boost::int16_t>& a) const;
-
-        const unsigned char* getWKB(int i) const;
-
-        const unsigned char* getWKB(const std::string& name) const;
-
-        te::da::DataSet* getDataSet(int i);
-
-        void setDataSet(int i, const te::da::DataSet& value);
-        
-        void setValue(int i, te::dt::AbstractData* ad);
-
-        bool isNull(int i) const;
+        const unsigned char* te::ogr::DataSet::getWKB() const;
 
       private:
 
@@ -261,7 +158,7 @@ namespace te
 
         mutable te::da::DataSetType* m_dt;    //!< DataSetType.
 
-        OGRLayer*   m_ogrLayer;               //<! A pointer to OGR Layer.
+        OGRLayer* m_layer;                    //<! A pointer to OGR Layer.
         OGRFeature* m_currentFeature;         //<! A pointer to current OGR Feature of layer.
         int m_i;                              //<! The current dataset index.
 
@@ -269,14 +166,10 @@ namespace te
         mutable int m_wkbArraySize;           //<! The size of wkb array.
 
         bool m_isOwner;                       //!< It defines if this dataset has the ownership of OGR Layer.
-        int m_srid;                           //!< The STR id associated to this dataset.
+        int m_srid;                           //!< The SRS id associated to this dataset.
     };
 
   } // end namespace ogr
 }   // end namespace te
 
-
 #endif  // __TERRALIB_OGR_INTERNAL_DATASET_H
-
-
-

@@ -193,24 +193,32 @@ te::da::ForeignKey* te::pgis::CatalogLoader::getForeignKey(const std::string& fk
   char onUpdate = result->getChar(1);
   char onDeletion = result->getChar(2);
   //char matchType = result->getChar(3);
-  std::vector<boost::int16_t> fkCols;
-  std::vector<boost::int16_t> fkRefCols;
-  result->getArray(4, fkCols);
-  result->getArray(5, fkRefCols);
+  std::auto_ptr<te::dt::Array> fkCols(result->getArray(4));
+  std::auto_ptr<te::dt::Array> fkRefCols(result->getArray(5));
 
-  assert(fkCols.size() == fkRefCols.size());
+  assert(fkCols->getDimension() == 1);
+  assert(fkCols->getDimension() == fkRefCols->getDimension());
+  assert(fkCols->getDimensionSize(0) == fkRefCols->getDimensionSize(0));
 
   te::da::ForeignKey* fk = new te::da::ForeignKey(fkName, id);
   fk->setOnUpdateAction(GetAction(onUpdate));
   fk->setOnDeleteAction(GetAction(onDeletion));
   fk->setReferencedDataSetType(rdt);
   
-  std::size_t size = fkCols.size();
+  std::size_t size = fkCols->getDimensionSize(0);
+
+  std::vector<std::size_t> pos;
+  pos.push_back(0);
 
   for(std::size_t i = 0; i < size; ++i)
   {
-    fk->addRefProperty(rdt->getPropertyById(fkRefCols[i]));
-    fk->add(dt->getPropertyById(fkCols[i]));
+    pos[0] = i;
+
+    te::dt::AbstractData* fkRefCol = fkRefCols->getData(pos);
+    fk->addRefProperty(rdt->getPropertyById(static_cast<te::dt::Int16*>(fkRefCol)->getValue()));
+
+    te::dt::AbstractData* fkCol = fkCols->getData(pos);
+    fk->add(dt->getPropertyById(static_cast<te::dt::Int16*>(fkCol)->getValue()));
   }
 
   return fk;
@@ -276,14 +284,14 @@ te::da::Sequence* te::pgis::CatalogLoader::getSequence(const std::string& seqNam
   return seq;
 }
 
-te::gm::Envelope* te::pgis::CatalogLoader::getExtent(const te::gm::GeometryProperty* gp)
+te::gm::Envelope* te::pgis::CatalogLoader::getExtent(const te::dt::Property* sp)
 {
-  assert(gp->getParent());
+  assert(sp->getParent());
 
   std::string sql("SELECT ST_Extent(");
-              sql += gp->getName();
+              sql += sp->getName();
               sql += ") FROM ";
-              sql += gp->getParent()->getName();
+              sql += sp->getParent()->getName();
 
   PGresult* result = PQexec(m_t->getConnection()->getConn(), sql.c_str());
 
@@ -797,16 +805,22 @@ te::da::PrimaryKey* te::pgis::CatalogLoader::addPrimaryKey(te::da::DataSet* pkIn
 
   std::string pkName  = pkInfo->getString(2);
 
-  std::vector<boost::int16_t> pkCols;
-  pkInfo->getArray(8, pkCols);
+  std::auto_ptr<te::dt::Array> pkCols(pkInfo->getArray(8));
 
   std::auto_ptr<te::da::PrimaryKey> pk(new te::da::PrimaryKey(pkName, 0, id));
 
-  std::size_t size = pkCols.size();
+  std::size_t size = pkCols->getDimensionSize(0);
+
+  std::vector<std::size_t> pos;
+  pos.push_back(0);
 
   for(std::size_t i = 0; i < size; ++i)
   {
-    te::dt::Property* p = dt->getPropertyById(pkCols[i]);
+    pos[0] = i;
+
+    te::dt::AbstractData* pkCol = pkCols->getData(pos);
+
+    te::dt::Property* p = dt->getPropertyById(static_cast<te::dt::Int16*>(pkCol)->getValue());
 
     if(p == 0) // property not found in dataset type list
       return 0;
@@ -835,16 +849,22 @@ te::da::UniqueKey* te::pgis::CatalogLoader::addUniqueKey(te::da::DataSet* ukInfo
 
   std::string ukName  = ukInfo->getString(2);
 
-  std::vector<boost::int16_t> ukCols;
-  ukInfo->getArray(8, ukCols);
+  std::auto_ptr<te::dt::Array> ukCols(ukInfo->getArray(8));
 
   std::auto_ptr<te::da::UniqueKey> uk(new te::da::UniqueKey(ukName, 0, id));
 
-  std::size_t size = ukCols.size();
+  std::size_t size = ukCols->getDimensionSize(0);
 
-  for( std::size_t i = 0; i < size; ++i)
+  std::vector<std::size_t> pos;
+  pos.push_back(0);
+
+  for(std::size_t i = 0; i < size; ++i)
   {
-    te::dt::Property* p = dt->getPropertyById(ukCols[i]);
+    pos[0] = i;
+
+    te::dt::AbstractData* ukCol = ukCols->getData(pos);
+
+    te::dt::Property* p = dt->getPropertyById(static_cast<te::dt::Int16*>(ukCol)->getValue());
 
     if(p == 0) // property not found
       return 0;
@@ -914,12 +934,13 @@ te::da::ForeignKey* te::pgis::CatalogLoader::addForeignKey(te::da::DataSet* fkIn
   unsigned int refFTId = fkInfo->getInt32(4);
   char onUpdate = fkInfo->getChar(5);
   char onDeletion = fkInfo->getChar(6);
-  std::vector<boost::int16_t> fkCols;
-  std::vector<boost::int16_t> fkRefCols;
-  fkInfo->getArray(8, fkCols);
-  fkInfo->getArray(9, fkRefCols);
 
-  assert(fkCols.size() == fkRefCols.size());
+  std::auto_ptr<te::dt::Array> fkCols(fkInfo->getArray(8));
+  std::auto_ptr<te::dt::Array> fkRefCols(fkInfo->getArray(9));
+
+  assert(fkCols->getDimension() == 1);
+  assert(fkCols->getDimension() == fkRefCols->getDimension());
+  assert(fkCols->getDimensionSize(0) == fkRefCols->getDimensionSize(0));
 
   std::string refName = getTableName(refFTId);
 
@@ -937,12 +958,20 @@ te::da::ForeignKey* te::pgis::CatalogLoader::addForeignKey(te::da::DataSet* fkIn
   fk->setOnDeleteAction(GetAction(onDeletion));
   fk->setReferencedDataSetType(refFT.get());
   
-  std::size_t size = fkCols.size();
+  std::size_t size = fkCols->getDimensionSize(0);
+
+  std::vector<std::size_t> pos;
+  pos.push_back(0);
 
   for(std::size_t i = 0; i < size; ++i)
   {
-    fk->addRefProperty(refFT->getPropertyById(fkRefCols[i]));
-    fk->add(dt->getPropertyById(fkCols[i]));
+    pos[0] = i;
+
+    te::dt::AbstractData* fkRefCol = fkRefCols->getData(pos);
+    fk->addRefProperty(refFT->getPropertyById(static_cast<te::dt::Int16*>(fkRefCol)->getValue()));
+
+    te::dt::AbstractData* fkCol = fkCols->getData(pos);
+    fk->add(dt->getPropertyById(static_cast<te::dt::Int16*>(fkCol)->getValue()));
   }
 
   dt->add(fk);
@@ -978,18 +1007,27 @@ te::da::Index* te::pgis::CatalogLoader::addIndex(te::da::DataSet* idxInfo, te::d
               name += ".";
               name += idxInfo->getString(2);
 
-  std::vector<boost::int16_t> idxCols;
-  idxInfo->getArray(3, idxCols);
+  std::auto_ptr<te::dt::Array> idxCols(idxInfo->getArray(3));
+
+
   std::string idxType = idxInfo->getString(4);
   bool isUK = idxInfo->getBool(5);
   bool isPK = idxInfo->getBool(6);
 
   te::da::Index* idx = new te::da::Index(name, GetIndexType(idxType.c_str()), dt, id);
 
-  std::size_t size = idxCols.size();
+  std::size_t size = idxCols->getDimensionSize(0);
+
+  std::vector<std::size_t> pos;
+  pos.push_back(0);
 
   for(std::size_t i = 0; i < size; ++i)
-    idx->add(dt->getPropertyById(idxCols[i]));
+  {
+    pos[0] = i;
+    te::dt::AbstractData* idxCol = idxCols->getData(pos);
+
+    idx->add(dt->getPropertyById(static_cast<te::dt::Int16*>(idxCol)->getValue()));
+  }
 
 // look if there is an association with a pk and uk
   name = idxInfo->getString(2);

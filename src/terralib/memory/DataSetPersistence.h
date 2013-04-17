@@ -50,42 +50,16 @@ namespace te
 
         ~DataSetPersistence();
 
-        void create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
+        void remove(const std::string& datasetName, const te::da::ObjectIdSet* oids);
 
-        void remove(const te::da::DataSetType* dt);
+        void add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
 
-        void remove(const std::string& datasetName);
-
-        void remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t limit = 0);
-
-        void remove(const te::da::DataSetType* dt, te::da::DataSetItem* item);
-
-        void add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit = 0);
-
-        void add(const te::da::DataSetType* dt, te::da::DataSetItem* item);
-
-        void update(const te::da::DataSetType* dt,
+        void update(const std::string& datasetName,
                     te::da::DataSet* dataset,
-                    const std::vector<te::dt::Property*>& properties,
+                    const std::vector<std::size_t>& properties,
+                    const te::da::ObjectIdSet* oids,
                     const std::map<std::string, std::string>& options,
                     std::size_t limit = 0);
-
-        void update(const te::da::DataSetType* dt,
-                    te::da::DataSet* oldD,
-                    te::da::DataSet* newD,
-                    const std::vector<te::dt::Property*>& properties,
-                    std::size_t limit = 0);
-
-        void update(const te::da::DataSetType* dt,
-                    te::da::DataSetItem* item,
-                    const std::vector<te::dt::Property*>& properties);
-
-        void update(const te::da::DataSetType* dt,
-                    te::da::DataSetItem* oldItem,
-                    te::da::DataSetItem* newItem,
-                    const std::vector<te::dt::Property*>& properties);
-
-        te::da::DataSourceTransactor* getTransactor() const;
 
       private:
 

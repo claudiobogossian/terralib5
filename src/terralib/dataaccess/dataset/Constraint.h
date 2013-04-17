@@ -65,8 +65,8 @@ namespace te
         /*!
           \brief Constructor.
 
-          \param name The constraint name.      
-          \param id   The constraint identifier.             
+          \param name The constraint name.
+          \param id   The constraint identifier.
 
           \warning The identifier value (id) may be used by data source implementations. So, don't rely on its value!
         */
@@ -164,7 +164,7 @@ namespace te
 
         unsigned int m_id;    //!< An identification number for the constraint.
         DataSetType* m_dt;    //!< The associated DataSetType.
-        std::string m_name;   //!< The constraint name.           
+        std::string m_name;   //!< The constraint name.
     };
 
   } // end namespace da

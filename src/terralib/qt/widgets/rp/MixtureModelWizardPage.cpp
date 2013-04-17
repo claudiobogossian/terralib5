@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../common/STLUtils.h"
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../geometry/Point.h"
 #include "../../../maptools/MarkRendererManager.h"
 #include "../../../raster/Raster.h"
@@ -188,7 +189,8 @@ void te::qt::widgets::MixtureModelWizardPage::onPointPicked(double x, double y, 
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {
@@ -301,7 +303,8 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
 
   if(ds)
   {
-    te::rst::Raster* inputRst = ds->getRaster();
+    std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+    te::rst::Raster* inputRst = ds->getRaster(rpos);
 
     if(inputRst)
     {

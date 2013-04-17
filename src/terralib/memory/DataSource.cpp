@@ -50,13 +50,15 @@ te::mem::DataSource::DataSource()
     m_isOpened(false),
     m_deepCopy(false)
 {
-  m_catalog.reset(new te::da::DataSourceCatalog);
+  m_catalog = new te::da::DataSourceCatalog;
   m_catalog->setDataSource(this);
 }
 
 te::mem::DataSource::~DataSource()
 {
   close();
+
+  delete m_catalog;
 }
 
 const std::string& te::mem::DataSource::getType() const
@@ -111,7 +113,9 @@ void te::mem::DataSource::close()
 
   m_catalog->clear();
 
-  m_datasets.clear();
+  te::common::FreeContents(m_datasets);
+
+  te::common::FreeContents(m_schemas);
 
   m_ndatasets = 0;
 
@@ -134,7 +138,7 @@ bool te::mem::DataSource::isValid() const
 
 te::da::DataSourceCatalog* te::mem::DataSource::getCatalog() const
 {
-  return m_catalog.get();
+  return m_catalog;
 }
 
 te::da::DataSourceTransactor* te::mem::DataSource::getTransactor()
@@ -147,20 +151,20 @@ void te::mem::DataSource::optimize(const std::map<std::string, std::string>& /*o
 // Not supported by In-Memory driver!
 }
 
-void te::mem::DataSource::add(const std::string& name, DataSet* dataset)
+void te::mem::DataSource::add(te::da::DataSetType* dt, DataSet* dataset)
 {
   LockWrite l(this);
 
   if(m_ndatasets == m_maxdatasets)
-    throw Exception((boost::format(TR_MEMORY("Could not add dataset %1% because the maximum number of datasets has reached its maximum: %2%!")) % name % m_maxdatasets).str());
+    throw Exception((boost::format(TR_MEMORY("Could not add dataset %1% because the maximum number of datasets has reached its maximum: %2%!")) % dt->getName() % m_maxdatasets).str());
 
-  boost::ptr_map<std::string, te::da::DataSet>::const_iterator it = m_datasets.find(name);
+  std::map<std::string, DataSet*>::const_iterator it = m_datasets.find(dt->getName());
 
   if(it != m_datasets.end())
-    throw Exception((boost::format(TR_MEMORY("A dataset with the given name %1% already exist!")) % name).str());
+    throw Exception((boost::format(TR_MEMORY("A dataset with the given name %1% already exists!")) % dt->getName()).str());
 
-  std::string copyname = name;
-  m_datasets.insert(copyname, dataset);
+  m_datasets[dt->getName()] = dataset;
+  m_schemas[dt->getName()] = dt;
 
   ++m_ndatasets;
 }
@@ -169,7 +173,7 @@ te::mem::DataSet* te::mem::DataSource::getDataSet(const std::string& name)
 {
   LockRead l(this);
 
-  boost::ptr_map<std::string, DataSet>::const_iterator it = m_datasets.find(name);
+  std::map<std::string, DataSet*>::const_iterator it = m_datasets.find(name);
 
   if(it == m_datasets.end())
     return 0;
@@ -181,7 +185,7 @@ te::mem::DataSet* te::mem::DataSource::getDataSetRef(const std::string& name)
 {
   LockRead l(this);
 
-  boost::ptr_map<std::string, DataSet>::iterator it = m_datasets.find(name);
+  std::map<std::string, DataSet*>::iterator it = m_datasets.find(name);
 
   if(it == m_datasets.end())
     return 0;
@@ -193,20 +197,32 @@ te::da::DataSetType* te::mem::DataSource::getDataSetType(const std::string& name
 {
   LockRead l(this);
 
-  boost::ptr_map<std::string, DataSet>::const_iterator it = m_datasets.find(name);
+  std::map<std::string, te::da::DataSetType*>::const_iterator it = m_schemas.find(name);
 
-  if(it == m_datasets.end())
+  if(it == m_schemas.end())
     return 0;
 
-  return static_cast<te::da::DataSetType*>(it->second->getType()->clone());
+  return static_cast<te::da::DataSetType*>(it->second->clone());
+}
+
+te::da::DataSetType* te::mem::DataSource::getDataSetTypeRef(const std::string& name)
+{
+  LockRead l(this);
+
+  std::map<std::string, te::da::DataSetType*>::const_iterator it = m_schemas.find(name);
+
+  if(it == m_schemas.end())
+    return 0;
+
+  return it->second;
 }
 
 void te::mem::DataSource::getDataSets(boost::ptr_vector<std::string>& datasets) const
 {
   LockRead l(this);
 
-  boost::ptr_map<std::string, DataSet>::const_iterator it = m_datasets.begin();
-  boost::ptr_map<std::string, DataSet>::const_iterator itend = m_datasets.end();
+  std::map<std::string, DataSet*>::const_iterator it = m_datasets.begin();
+  std::map<std::string, DataSet*>::const_iterator itend = m_datasets.end();
 
   while(it != itend)
   {
@@ -219,7 +235,7 @@ bool te::mem::DataSource::datasetExists(const std::string& name) const
 {
   LockRead l(this);
 
-  boost::ptr_map<std::string, DataSet>::const_iterator it = m_datasets.find(name);
+  std::map<std::string, DataSet*>::const_iterator it = m_datasets.find(name);
 
   return it != m_datasets.end();
 }
@@ -228,30 +244,74 @@ void te::mem::DataSource::remove(const std::string& datasetName)
 {
   LockWrite l(this);
 
-  boost::ptr_map<std::string, DataSet>::iterator it = m_datasets.find(datasetName);
+  {
+    std::map<std::string, DataSet*>::iterator it = m_datasets.find(datasetName);
 
-  if(it != m_datasets.end())
-    m_datasets.erase(it);
-  else
-    throw Exception((boost::format(TR_MEMORY("There isn't a dataset with the given name %1%")) % datasetName).str());
+    if(it != m_datasets.end())
+    {
+      delete it->second;
+      m_datasets.erase(it);
+    }
+    else
+    {
+      throw Exception((boost::format(TR_MEMORY("There isn't a dataset with the given name %1%")) % datasetName).str());
+    }
+  }
+
+  {
+    std::map<std::string, te::da::DataSetType*>::iterator it = m_schemas.find(datasetName);
+
+    if(it != m_schemas.end())
+    {
+      delete it->second;
+      m_schemas.erase(it);
+    }
+    else
+    {
+      throw Exception((boost::format(TR_MEMORY("There isn't a dataset with the given name %1%")) % datasetName).str());
+    }
+  }
 }
 
 void te::mem::DataSource::rename(const std::string& oldName, std::string newName)
 {
   LockWrite l(this);
 
-  boost::ptr_map<std::string, DataSet>::iterator it = m_datasets.find(oldName);
+  {
+    std::map<std::string, DataSet*>::iterator it = m_datasets.find(oldName);
 
-  if(it == m_datasets.end())
-    throw Exception((boost::format(TR_MEMORY("There isn't a dataset with the given name %1%")) % oldName).str());
+    if(it == m_datasets.end())
+      throw Exception((boost::format(TR_MEMORY("There isn't a dataset with the given name %1%")) % oldName).str());
 
-  it = m_datasets.find(newName);
+    it = m_datasets.find(newName);
 
-  if(it == m_datasets.end())
-    throw Exception((boost::format(TR_MEMORY("There is already a dataset with the new name %1%")) % newName).str());
+    if(it == m_datasets.end())
+      throw Exception((boost::format(TR_MEMORY("There is already a dataset with the new name %1%")) % newName).str());
 
-  boost::ptr_map<std::string, DataSet>::auto_type ptr = m_datasets.release(it);
-  m_datasets.insert(newName, ptr.release());
+    DataSet* dataset = it->second;
+
+    m_datasets.erase(it);
+
+    m_datasets[newName] = dataset;
+  }
+
+  {
+    std::map<std::string, te::da::DataSetType*>::iterator it = m_schemas.find(oldName);
+
+    if(it == m_schemas.end())
+      throw Exception((boost::format(TR_MEMORY("There isn't a dataset with the given name %1%")) % oldName).str());
+
+    it = m_schemas.find(newName);
+
+    if(it == m_schemas.end())
+      throw Exception((boost::format(TR_MEMORY("There is already a dataset with the new name %1%")) % newName).str());
+
+    te::da::DataSetType* dataset = it->second;
+
+    m_schemas.erase(it);
+
+    m_schemas[newName] = dataset;
+  }
 }
 
 bool te::mem::DataSource::hasDataSets()

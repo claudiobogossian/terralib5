@@ -27,7 +27,6 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/PrimaryKey.h"
-#include "../dataaccess/dataset/DataSetItem.h"
 #include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../raster/Grid.h"
 #include "../raster/RasterProperty.h"
@@ -55,117 +54,52 @@ te::mem::DataSetPersistence::~DataSetPersistence()
 {
 }
 
-void te::mem::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
+void te::mem::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
-  DataSource* ds = m_t->getMemDataSource();
+  //DataSource* ds = m_t->getMemDataSource();
 
-  DataSource::LockWrite l(ds);
+  //DataSource::LockWrite l(ds);
 
-  if(ds->datasetExists(dt->getName()))
-    throw Exception((boost::format(TR_MEMORY("A dataset with the same name (%1%) already exists!")) % dt->getName()).str());
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
 
-  std::auto_ptr<te::da::DataSetTypePersistence> dtp(m_t->getDataSetTypePersistence());
+  //ds->getDataSet(dt->getName())->remove(dynamic_cast<DataSetItem*>(item));
 
-  dtp->create(dt, options);
-
-  add(dt, d, options, limit);
-}
-
-void te::mem::DataSetPersistence::remove(const te::da::DataSetType* dt)
-{
-  DataSource* ds = m_t->getMemDataSource();
-
-  DataSource::LockWrite l(ds);
-
-  if(!ds->datasetExists(dt->getName()))
-    throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  ds->remove(dt->getName());
-}
-
-void te::mem::DataSetPersistence::remove(const std::string& /*datasetName*/)
-{
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
+void te::mem::DataSetPersistence::add(const std::string& /*datasetName*/, te::da::DataSet* /*d*/, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //DataSource::LockWrite l(ds);
+
+  //te::mem::DataSet* idataset = ds->getDataSetRef(dt->getName());
+
+  //if(idataset == 0)
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % dt->getName()).str());
+
+  //idataset->copy(*d);
+
+  //DataSource* ds = m_t->getMemDataSource();
+
+  //if(!ds->datasetExists(dt->getName()))
+  //  throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
+
+  //DataSource::LockWrite l(ds);
+
+  //ds->getDataSet(dt->getName())->add(item);
+
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  DataSource* ds = m_t->getMemDataSource();
-
-  DataSource::LockWrite l(ds);
-
-  if(!ds->datasetExists(dt->getName()))
-    throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  ds->getDataSet(dt->getName())->remove(dynamic_cast<DataSetItem*>(item));
-}
-
-void te::mem::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
-{
-  DataSource* ds = m_t->getMemDataSource();
-
-  DataSource::LockWrite l(ds);
-
-  te::mem::DataSet* idataset = ds->getDataSetRef(dt->getName());
-
-  if(idataset == 0)
-    throw Exception((boost::format(TR_MEMORY("The dataset %1% doesn't exist!")) % dt->getName()).str());
-
-  idataset->copy(*d);
-}
-
-void te::mem::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  DataSource* ds = m_t->getMemDataSource();
-
-  if(!ds->datasetExists(dt->getName()))
-    throw Exception((boost::format(TR_MEMORY("The dataset %1% not exists!")) % dt->getName()).str());
-
-  DataSource::LockWrite l(ds);
-
-  ds->getDataSet(dt->getName())->add(item);
-}
-
-void te::mem::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
+void te::mem::DataSetPersistence::update(const std::string& /*datasetName*/,
                                          te::da::DataSet* /*dataset*/,
-                                         const std::vector<te::dt::Property*>& /*properties*/,
-                                         const std::map<std::string, std::string>& options,
+                                         const std::vector<std::size_t>& /*properties*/,
+                                         const te::da::ObjectIdSet* /*oids*/,
+                                         const std::map<std::string, std::string>& /*options*/,
                                          std::size_t /*limit*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-void te::mem::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                         te::da::DataSet* /*oldD*/,
-                                         te::da::DataSet* /*newD*/,
-                                         const std::vector<te::dt::Property*>& /*properties*/,
-                                         std::size_t /*limit*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                         te::da::DataSetItem* /*item*/,
-                                         const std::vector<te::dt::Property*>& /*properties*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-void te::mem::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                         te::da::DataSetItem* /*oldItem*/,
-                                         te::da::DataSetItem* /*newItem*/,
-                                         const std::vector<te::dt::Property*>& /*properties*/)
-{
-  throw Exception(TR_MEMORY("Not implemented yet!"));
-}
-
-te::da::DataSourceTransactor* te::mem::DataSetPersistence::getTransactor() const
-{
-  return m_t;
-}
-                 

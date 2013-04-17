@@ -83,7 +83,7 @@ namespace te
 
         te::da::Sequence* getSequence(const std::string& seqName);
 
-        te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp);
+        te::gm::Envelope* getExtent(const te::dt::Property* sp);
 
         void loadCatalog(const bool full = false);
 

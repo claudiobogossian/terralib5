@@ -59,6 +59,8 @@ namespace te
 
           virtual void saveChanges(){}
 
+          virtual void resetState(){};
+
         public slots:
 
           void onApplyButtonClicked(){}

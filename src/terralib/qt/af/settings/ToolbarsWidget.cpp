@@ -3,6 +3,7 @@
 #include "ToolbarsWidget.h"
 #include "MenuBarModel.h"
 
+#include "../../../common/STLUtils.h"
 #include "../ApplicationController.h"
 #include "../Utils.h"
 
@@ -26,8 +27,12 @@ void SetToolbars(QComboBox* cmb, std::vector< QList<QAction*> >& acts)
 
 void SetActions(QListView* view)
 {
+  QAbstractItemModel* old_m = view->model();
+
   te::qt::af::MenuBarModel* model = new te::qt::af::MenuBarModel(te::qt::af::ApplicationController::getInstance().getMenuBar("menubar"), view);
   view->setModel(model);
+
+  delete old_m;
 }
 
 void UpdateActions(QList<QAction*>& acts, QAction* act, const bool& toAdd)
@@ -60,9 +65,7 @@ m_ui(new Ui::ToolbarsWidgetForm)
 {
   m_ui->setupUi(this);
 
-  SetToolbars(m_ui->m_toolbarsComboBox, m_actions);
-
-  SetActions(m_ui->m_actionsListViewWidget);
+  resetState();
 
   //Setting icons
   m_ui->m_addToolButton->setIcon(QIcon::fromTheme("list-add"));
@@ -75,9 +78,9 @@ m_ui(new Ui::ToolbarsWidgetForm)
   connect (m_ui->m_removeToolButton, SIGNAL(clicked()), SLOT(onRemoveToolbarButtonClicked()));
   connect (m_ui->m_actionsListViewWidget->model(), SIGNAL(updateAction(QAction*, const bool&)), SLOT(updateActions(QAction*, const bool&)));
 
-  currentToolbarChanged(0);
-
   m_resumeText = tr("Add, remove or modify system tool bars.");
+
+  currentToolbarChanged(0);
 }
 
 te::qt::af::ToolbarsWidget::~ToolbarsWidget()
@@ -94,6 +97,8 @@ void te::qt::af::ToolbarsWidget::saveChanges()
     bar->clear();
     bar->addActions(m_actions[i]);
   }
+
+  UpdateToolBarsInTheSettings();
 
   // Updating new toolbars
   std::set<QToolBar*>::iterator it;
@@ -116,8 +121,27 @@ void te::qt::af::ToolbarsWidget::saveChanges()
   changeApplyButtonState(false);
 }
 
+void te::qt::af::ToolbarsWidget::resetState()
+{
+  te::common::FreeContents(m_createdBars);
+
+  m_createdBars.clear();
+  m_removedToolBars.clear();
+  m_actions.clear();
+
+  m_ui->m_toolbarsComboBox->clear();
+
+  SetToolbars(m_ui->m_toolbarsComboBox, m_actions);
+  SetActions(m_ui->m_actionsListViewWidget);
+
+  currentToolbarChanged(0);
+}
+
 void te::qt::af::ToolbarsWidget::currentToolbarChanged(int idx)
 {
+  if(idx < 0 || m_actions.empty())
+    return;
+
   QList<QAction*> acts = m_actions[idx];
   ((te::qt::af::MenuBarModel*)m_ui->m_actionsListViewWidget->model())->updateActionsState(acts);
 }
@@ -179,23 +203,4 @@ void te::qt::af::ToolbarsWidget::updateActions(QAction* act, const bool& toAdd)
   UpdateActions(m_actions[idx], act, toAdd);
 
   changeApplyButtonState(true);
-}
-
-void te::qt::af::ToolbarsWidget::changeApplyButtonState(const bool& state)
-{
-  m_hasChanged = state;
-  emit updateApplyButtonState(m_hasChanged);
-}
-
-void te::qt::af::ToolbarsWidget::hideEvent(QHideEvent * event)
-{
-  if(m_hasChanged)
-  {
-    QString msg = tr("There are unsaved changes. Do you want to save it?");
-
-    if(QMessageBox::question(this, tr("Tool bars customization"), msg, QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
-      saveChanges();
-  }
-
-  QWidget::hideEvent(event);
 }

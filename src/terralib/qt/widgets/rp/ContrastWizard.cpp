@@ -25,6 +25,7 @@
 
 // TerraLib 
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Contrast.h"
 #include "ContrastWizard.h"
@@ -109,7 +110,10 @@ bool te::qt::widgets::ContrastWizard::execute()
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
   te::da::DataSet* ds = l->getData();
-  te::rst::Raster* inputRst = ds->getRaster();
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+  te::rst::Raster* inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Contrast algorithmInstance;

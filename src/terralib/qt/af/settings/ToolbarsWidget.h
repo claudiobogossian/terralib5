@@ -58,6 +58,8 @@ namespace te
 
           virtual void saveChanges();
 
+          virtual void resetState();
+
         protected slots:
 
           void currentToolbarChanged(int idx);
@@ -71,10 +73,6 @@ namespace te
           void updateActions(QAction* act, const bool& toAdd);
 
         protected:
-
-          void changeApplyButtonState(const bool& state);
-          
-          void hideEvent(QHideEvent * event);
 
           std::set<QToolBar*> m_createdBars;
 

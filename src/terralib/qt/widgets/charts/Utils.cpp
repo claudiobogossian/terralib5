@@ -26,6 +26,7 @@
 // TerraLib
 #include "../../../dataaccess/dataset/DataSet.h"
 #include "../../../dataaccess/dataset/DataSetType.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../datatype.h"
 #include "Histogram.h"
 #include "../../../raster.h"
@@ -77,8 +78,8 @@ double te::qt::widgets::getDouble(te::dt::DateTime* dateTime)
 te::qt::widgets::Scatter* te::qt::widgets::createScatter(te::da::DataSet* dataset, int propX, int propY)
 {
   te::qt::widgets::Scatter* newScatter = new te::qt::widgets::Scatter();
-  int xType = dataset->getType()->getProperty(propX)->getType();
-  int yType = dataset->getType()->getProperty(propY)->getType();
+  int xType = dataset->getPropertyDataType(propX);
+  int yType = dataset->getPropertyDataType(propY);
 
   while(dataset->moveNext())
   {
@@ -165,7 +166,7 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 {
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
-  int propType = dataset->getType()->getProperty(propId)->getType();
+  int propType = dataset->getPropertyDataType(propId);
 
   newHistogram->setType(propType);
 
@@ -245,14 +246,16 @@ te::qt::widgets::Histogram* te::qt::widgets::createHistogram(te::da::DataSet* da
 {
   te::qt::widgets::Histogram* newHistogram = new te::qt::widgets::Histogram();
 
-  if(dataset->getRaster())
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset, te::dt::RASTER_TYPE);
+
+  if(dataset->getRaster(rpos))
   {
-    const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(), te::rst::SUMMARY_R_HISTOGRAM);
+    const te::rst::RasterSummary* rs = te::rst::RasterSummaryManager::getInstance().get(dataset->getRaster(rpos), te::rst::SUMMARY_R_HISTOGRAM);
     newHistogram->setValues(rs->at(propId).m_histogramR);
   }
   else
   {
-    int propType = dataset->getType()->getProperty(propId)->getType();
+    int propType = dataset->getPropertyDataType(propId);
 
     newHistogram->setType(propType);
 

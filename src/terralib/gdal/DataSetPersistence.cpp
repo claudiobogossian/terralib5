@@ -26,14 +26,10 @@
 // TerraLib
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/datasource/DataSource.h"
-#include "../dataaccess/datasource/DataSourceCatalog.h"
 #include "../raster/Raster.h"
 #include "../raster/RasterProperty.h"
 #include "DataSet.h"
 #include "DataSetPersistence.h"
-#include "DataSetTypePersistence.h"
-#include "DataSourceTransactor.h"
 #include "Exception.h"
 #include "Raster.h"
 #include "Utils.h"
@@ -61,19 +57,19 @@ void te::gdal::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataS
   GDALDataset* gds = CreateRaster(rprop->getGrid(), rprop->getBandProperties(), rprop->getInfo());
 
   if(!gds)
-    throw Exception(TR_GDAL("GDAL driver couldn't persist the raster file."));
+    throw Exception(TR_GDAL("GDAL driver could not persist the raster file."));
 
   te::rst::Raster* rOut = new Raster(gds, te::common::RWAccess);
 
-  te::rst::Raster* rIn = d->getRaster();
+  te::rst::Raster* rIn = d->getRaster(0);
 
   std::complex<double> val;
 
-  for (unsigned int b = 0; b < rIn->getNumberOfBands(); ++b)
+  for(std::size_t b = 0; b < rIn->getNumberOfBands(); ++b)
   {
-    for (unsigned int l = 0; l < rIn->getNumberOfRows(); ++l)
+    for(std::size_t l = 0; l < rIn->getNumberOfRows(); ++l)
     {
-      for (unsigned int c=0; c < rIn->getNumberOfColumns(); ++c)
+      for(std::size_t c = 0; c < rIn->getNumberOfColumns(); ++c)
       {
         rIn->getValue(c,l,val,b);
         rOut->setValue(c,l,val,b);
@@ -82,79 +78,32 @@ void te::gdal::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataS
   }
 
   delete rIn;
-
   delete rOut;
-}
-
-void te::gdal::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/)
-{
-  // remover arquivo ou colocar nodata?
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
 }
 
 void te::gdal::DataSetPersistence::remove(const std::string& /*datasetName*/)
 {
-  throw te::common::Exception(TR_GDAL("Not implemented yet!"));
+  // TODO: remover arquivo ou colocar nodata?
+  throw te::common::Exception(TR_GDAL("GDAL driver: not implemented yet."));
 }
 
-void te::gdal::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, std::size_t /*limit*/)
+void te::gdal::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
+  throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
 }
 
-void te::gdal::DataSetPersistence::remove(const te::da::DataSetType* /*dt*/, te::da::DataSetItem* /*item*/)
+void te::gdal::DataSetPersistence::add(const std::string& /*datasetName*/, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
+  throw te::common::Exception(TR_GDAL("GDAL driver: not implemented yet."));
 }
 
-void te::gdal::DataSetPersistence::add(const te::da::DataSetType* /*dt*/, te::da::DataSet* /*d*/, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
-{
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
-}
-
-void te::gdal::DataSetPersistence::add(const te::da::DataSetType* /*dt*/, te::da::DataSetItem* /*item*/)
-{
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support the concept of data set item."));
-}
-
-void te::gdal::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                          te::da::DataSet* /*f*/,
-                                          const std::vector<te::dt::Property*>& /*properties*/,
+void te::gdal::DataSetPersistence::update(const std::string& /*datasetName*/,
+                                          te::da::DataSet* /*dataset*/,
+                                          const std::vector<std::size_t>& /*properties*/,
+                                          const te::da::ObjectIdSet* /*oids*/,
                                           const std::map<std::string, std::string>& /*options*/,
                                           std::size_t /*limit*/)
 {
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
   // The raster interface should be used.
-}
-
-void te::gdal::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                          te::da::DataSetItem* /*item*/,
-                                          const std::vector<te::dt::Property*>& /*properties*/)
-{
   throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
-  // The raster interface should be used.
-}
-
-void te::gdal::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                          te::da::DataSet* /*oldD*/,
-                                          te::da::DataSet* /*newD*/,
-                                          const std::vector<te::dt::Property*>& /*properties*/,
-                                          std::size_t /*limit*/)
-{
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
-  // The raster interface should be used.
-}
-
-void te::gdal::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                                          te::da::DataSetItem* /*oldItem*/,
-                                          te::da::DataSetItem* /*newItem*/,
-                                          const std::vector<te::dt::Property*>& /*properties*/)
-{
-  throw te::common::Exception(TR_GDAL("GDAL driver does not support this method."));
-  // The raster interface should be used.
-}
-
-te::da::DataSourceTransactor* te::gdal::DataSetPersistence::getTransactor() const
-{
-  return m_t;
 }
