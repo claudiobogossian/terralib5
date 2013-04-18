@@ -86,10 +86,9 @@ namespace te
 
         bool moveNext();
         bool movePrevious();
-        bool moveFirst();
         bool moveBeforeFirst();
+        bool moveFirst();
         bool moveLast();
-        bool moveAfterLast();
         bool move(std::size_t i);
 
         bool isAtBegin() const;

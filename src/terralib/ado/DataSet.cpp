@@ -131,17 +131,17 @@ bool te::ado::DataSet::movePrevious()
   return (m_i > -1);
 }
 
-bool te::ado::DataSet::moveFirst()
-{
-  m_result->MoveFirst();
-  m_i = 0;
-  return m_size != 0;
-}
-
 bool te::ado::DataSet::moveBeforeFirst()
 {
   m_result->MoveFirst();
   m_i = -1;
+  return m_size != 0;
+}
+
+bool te::ado::DataSet::moveFirst()
+{
+  m_result->MoveFirst();
+  m_i = 0;
   return m_size != 0;
 }
 
@@ -150,13 +150,6 @@ bool te::ado::DataSet::moveLast()
   m_result->MoveLast();
   m_i = m_size - 1;
   return (m_i < m_size);
-}
-
-bool te::ado::DataSet::moveAfterLast()
-{
-  m_result->MoveLast();
-  m_i = m_size;
-  return m_size != 0;
 }
 
 bool te::ado::DataSet::move(std::size_t i)

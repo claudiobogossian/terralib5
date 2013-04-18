@@ -142,13 +142,6 @@ bool te::ogr::DataSet::movePrevious()
   return move(m_i - 1);
 }
 
-bool te::ogr::DataSet::moveFirst()
-{
-  m_layer->ResetReading();
-  m_i = -1;
-  return moveNext();
-}
-
 bool te::ogr::DataSet::moveBeforeFirst()
 {
   m_layer->ResetReading();
@@ -156,15 +149,17 @@ bool te::ogr::DataSet::moveBeforeFirst()
   return true;
 }
 
+bool te::ogr::DataSet::moveFirst()
+{
+  m_layer->ResetReading();
+  m_i = -1;
+  return moveNext();
+}
+
 bool te::ogr::DataSet::moveLast()
 {
   int lastPos = m_layer->GetFeatureCount() - 1;
   return move(lastPos);
-}
-
-bool te::ogr::DataSet::moveAfterLast()
-{
-  return move(m_layer->GetFeatureCount() + 1);
 }
 
 bool te::ogr::DataSet::move(std::size_t i)
