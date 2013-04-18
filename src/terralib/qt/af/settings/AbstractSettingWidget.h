@@ -74,6 +74,11 @@ namespace te
 
           virtual void hideEvent(QHideEvent * event);
 
+          /*!
+            \brief Indicates that there's unsaved information. Use this method after each change in informations of the widget.
+
+            \param state If true indicates that there are unsave information.
+          */
           virtual void changeApplyButtonState(const bool& state);
 
           bool m_hasChanged;  //!< Flag that defines if the widget has changes to apply.

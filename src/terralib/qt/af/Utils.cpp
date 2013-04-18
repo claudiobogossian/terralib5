@@ -379,6 +379,26 @@ std::vector<QToolBar*> te::qt::af::ReadToolBarsFromSettings(QWidget* barsParent)
   return bars;
 }
 
+void te::qt::af::GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("projects");
+  defaultAuthor = sett.value("default author").toString();
+  maxSaved = sett.value("maximum saved").toInt();
+  sett.endGroup();
+}
+
+void te::qt::af::SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved)
+{
+  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+  sett.beginGroup("projects");
+  sett.setValue("default author", defaultAuthor);
+  sett.setValue("maximum saved", maxSaved);
+  sett.endGroup();
+}
+
 void te::qt::af::CreateDefaultSettings()
 {
   QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());

@@ -130,8 +130,28 @@ namespace te
 
       /*!
         \brief Returns a vector of tool bars registered in the QSettings.
+
+        \param barsParent
       */
       TEQTAFEXPORT std::vector<QToolBar*> ReadToolBarsFromSettings(QWidget* barsParent=0);
+
+      /*
+        \brief
+
+        \param[out]
+
+        \param[out]
+      */
+      TEQTAFEXPORT void GetProjectInformationsFromSettings(QString& defaultAuthor, int& maxSaved);
+
+      /*
+        \brief
+
+        \param
+
+        \param
+      */
+      TEQTAFEXPORT void SaveProjectInformationsOnSettings(const QString& defaultAuthor, const int& maxSaved);
 
       /*!
         \brief Creates a default QSettings.
