@@ -297,15 +297,15 @@ bool te::mem::DataSet::movePrevious()
   return m_i > 0;
 }
 
-bool te::mem::DataSet::moveFirst()
-{
-  m_i = 0;
-  return true;
-}
-
 bool te::mem::DataSet::moveBeforeFirst()
 {
   m_i = -1;
+  return true;
+}
+
+bool te::mem::DataSet::moveFirst()
+{
+  m_i = 0;
   return true;
 }
 
@@ -313,12 +313,6 @@ bool te::mem::DataSet::moveLast()
 {
   m_i = m_items->size() - 1;
   return m_i < static_cast<int>(m_items->size());
-}
-
-bool te::mem::DataSet::moveAfterLast()
-{
-  m_i = m_items->size();
-  return true;
 }
 
 bool te::mem::DataSet::move(std::size_t i)

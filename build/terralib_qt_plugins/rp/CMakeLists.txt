@@ -35,6 +35,7 @@ set (
   ${SRCDIR}/ContrastAction.h
   ${SRCDIR}/MixtureModelAction.h
   ${SRCDIR}/SegmenterAction.h
+  ${SRCDIR}/TiePointLocatorAction.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/plugins/rp" MOC)
 

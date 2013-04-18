@@ -154,11 +154,6 @@ bool te::mysql::DataSet::movePrevious()
   return m_result->previous();
 }
 
-bool te::mysql::DataSet::moveFirst()
-{
-  return m_result->first();
-}
-
 bool te::mysql::DataSet::moveBeforeFirst()
 {
   m_result->beforeFirst();
@@ -166,16 +161,14 @@ bool te::mysql::DataSet::moveBeforeFirst()
   return true;
 }
 
+bool te::mysql::DataSet::moveFirst()
+{
+  return m_result->first();
+}
+
 bool te::mysql::DataSet::moveLast()
 {
   return m_result->last();
-}
-
-bool te::mysql::DataSet::moveAfterLast()
-{
-  m_result->afterLast();
-
-  return true;
 }
 
 bool te::mysql::DataSet::move(std::size_t i)

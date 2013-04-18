@@ -250,13 +250,11 @@ namespace te
 
         bool movePrevious();
 
-        bool moveFirst();
-
         bool moveBeforeFirst();
 
-        bool moveLast();
+        bool moveFirst();
 
-        bool moveAfterLast();
+        bool moveLast();
 
         bool move(std::size_t i);
 

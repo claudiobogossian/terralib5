@@ -58,6 +58,13 @@
 */
 #define TE_QT_PLUGIN_RP_HAVE_SEGMENTER
 
+/*!
+  \def TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+
+  \brief It defines if the RP Qt Plugin has the tie point locator operation.
+*/
+#define TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+
 
 /*!
   \def TE_QT_PLUGIN_RP_PLUGIN_NAME
