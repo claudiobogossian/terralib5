@@ -86,6 +86,8 @@ namespace te
 
           te::gm::Envelope getCurrentExtent();
 
+           te::qt::widgets::MapDisplay* getDisplay();
+
           void showAsPreview(bool asPreview);
 
           void hideEditionTools(bool hide);

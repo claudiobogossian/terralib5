@@ -46,6 +46,10 @@
   #include "SegmenterAction.h"
 #endif
 
+#ifdef TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+  #include "TiePointLocatorAction.h"
+#endif
+
 // QT
 #include <QtGui/QMenu>
 #include <QtGui/QMenuBar>
@@ -113,6 +117,10 @@ void te::qt::plugins::rp::Plugin::registerActions()
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
     m_segmenter = new te::qt::plugins::rp::SegmenterAction(m_rpMenu);
 #endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+  m_tiePoint = new te::qt::plugins::rp::TiePointLocatorAction(m_rpMenu);
+#endif
 }
 
 void  te::qt::plugins::rp::Plugin::unRegisterActions()
@@ -131,6 +139,10 @@ void  te::qt::plugins::rp::Plugin::unRegisterActions()
 
 #ifdef TE_QT_PLUGIN_RP_HAVE_SEGMENTER
     delete m_segmenter;
+#endif
+
+#ifdef TE_QT_PLUGIN_RP_HAVE_TIEPOINTLOCATOR
+  delete m_tiePoint;
 #endif
 }
 
