@@ -292,7 +292,7 @@ bool te::da::DataSetAdapter::isNull(std::size_t i) const
   return data.get() != 0;
 }
 
-te::da::DataSet* te::da::DataSetAdapter::getAdapted() const
+te::da::DataSet* te::da::DataSetAdapter::getAdaptee() const
 {
   return m_ds.get();
 }

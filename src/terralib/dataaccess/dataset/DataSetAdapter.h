@@ -185,7 +185,7 @@ namespace te
 
           \note The caller will NOT take the ownership of the returned pointer.
         */
-        te::da::DataSet* getAdapted() const;
+        te::da::DataSet* getAdaptee() const;
 
         /*!
           \brief This method returns the name of the properties that have not yet been adapted.
