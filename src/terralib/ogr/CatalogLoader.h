@@ -28,14 +28,10 @@
 
 // TerraLib
 #include "../dataaccess/datasource/DataSourceCatalogLoader.h"
-#include "../datatype/Property.h"
 #include "Config.h"
 
 namespace te
 {
-// Forward declaration
-  namespace da { class DataSet; }
-
   namespace ogr
   {
 // Forward declaration
@@ -52,19 +48,9 @@ namespace te
     {
       public:
 
-        /** @name Constructor/Destructor
-         *  Initilizer methods.
-         */
-        //@{
-
-        /*! \brief Constructor. */
         CatalogLoader(DataSourceTransactor* t);
 
-        /*! \brief Destructor. */
         ~CatalogLoader();
-
-        //@}
-
 
         void getDataSets(boost::ptr_vector<std::string>& datasets);
 
@@ -90,7 +76,7 @@ namespace te
 
         te::da::Sequence* getSequence(const std::string& seqName);
 
-        te::gm::Envelope* getExtent(const te::gm::GeometryProperty* gp);
+        te::gm::Envelope* getExtent(const te::dt::Property* sp);
 
         void loadCatalog(const bool full = false);
 

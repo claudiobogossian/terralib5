@@ -107,7 +107,7 @@ te::da::Sequence* te::mem::DataSourceCatalogLoader::getSequence(const std::strin
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }
 
-te::gm::Envelope* te::mem::DataSourceCatalogLoader::getExtent(const te::gm::GeometryProperty* /*gp*/)
+te::gm::Envelope* te::mem::DataSourceCatalogLoader::getExtent(const te::dt::Property* /*sp*/)
 {
   throw Exception(TR_MEMORY("Not implemented yet!"));
 }

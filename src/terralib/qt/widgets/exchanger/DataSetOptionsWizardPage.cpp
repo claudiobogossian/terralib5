@@ -106,10 +106,8 @@ void te::qt::widgets::DataSetOptionsWizardPage::set(const std::list<te::da::Data
     te::da::DataSourcePtr targetDataSource = te::da::DataSourceManager::getInstance().find(m_targetDatasource->getId());
 
     te::da::DataSourceTransactor* transactor = sourceDataSource->getTransactor();
-    
-    te::da::DataSet* sourceDataSet = transactor->getDataSet((*it)->getName());
 
-    sourceDataSet->loadTypeInfo();
+    te::da::DataSet* sourceDataSet = transactor->getDataSet((*it)->getName());
 
     delete transactor;
 

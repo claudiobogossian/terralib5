@@ -253,8 +253,8 @@ void te::map::DataSetLayerRenderer::drawGeometries(DataSetLayer* layer,
     if(dataset.get() == 0)
       throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1% referenced by the layer %2%.")) % dsname % layer->getTitle()).str());
 
-// loading the dataset type (Question: Is it necessary?)
-    dataset->loadTypeInfo();
+    if(dataset->moveNext() == false)
+      continue;
 
 // get the set of symbolizers defined on current rule
     const std::vector<te::se::Symbolizer*> symbolizers = rule->getSymbolizers();
@@ -279,8 +279,11 @@ void te::map::DataSetLayerRenderer::drawGeometries(DataSetLayer* layer,
 // let's config de canvas based on the current symbolizer
       cc.config(symb);
 
-// let's draw!
-      while(dataset->moveNext()) // for each data set object
+// for while, first geometry. TODO: get which property the symbolizer references
+      std::size_t gpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::GEOMETRY_TYPE);
+
+// let's draw! for each data set object...
+      do
       {
         if(!task.isActive())
           return;
@@ -288,8 +291,7 @@ void te::map::DataSetLayerRenderer::drawGeometries(DataSetLayer* layer,
 // update the draw task
         task.pulse();
 
-// for while, default geometry. TODO: need a visitor to get which properties the style references
-        te::gm::Geometry* geom = dataset->getGeometry();
+        te::gm::Geometry* geom = dataset->getGeometry(gpos);
         if(geom == 0)
           continue;
 
@@ -304,10 +306,10 @@ void te::map::DataSetLayerRenderer::drawGeometries(DataSetLayer* layer,
 
         delete geom;
 
-      } // end while
+      }while(dataset->moveNext()); // next geometry!
 
 // prepare to draw the other symbolizer
-      dataset->moveBeforeFirst();
+      dataset->moveFirst();
 
     } // end for each <Symbolizer>
 
@@ -341,7 +343,8 @@ void te::map::DataSetLayerRenderer::drawRaster(DataSetLayer* layer,
     throw Exception((boost::format(TR_MAP("Could not retrieve the data set %1% referenced by the layer %2%.")) % dsname % layer->getTitle()).str());
 
 // retrieve the raster
-  std::auto_ptr<te::rst::Raster> raster(dataset->getRaster());
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
   if(dataset.get() == 0)
     throw Exception((boost::format(TR_MAP("Could not retrieve the raster %1% referenced by the layer %2%.")) % dsname % layer->getTitle()).str());
 

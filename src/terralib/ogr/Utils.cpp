@@ -42,12 +42,12 @@
 #include "../srs/Config.h"
 #include "Utils.h"
 
-// Boost
-#include <boost/filesystem.hpp>
-
 // OGR
 #include <ogrsf_frmts.h>
 #include <ogr_spatialref.h>
+
+// Boost
+#include <boost/filesystem.hpp>
 
 te::gm::Geometry* te::ogr::Convert2TerraLib(OGRGeometry* ogrGeom)
 {
@@ -107,7 +107,7 @@ OGRGeometry* te::ogr::Convert2OGR(const te::gm::Geometry* teGeom)
 
 te::gm::Envelope* te::ogr::Convert2TerraLib(const OGREnvelope* env)
 {
-   return new te::gm::Envelope(env->MinX, env->MinY, env->MaxX, env->MaxY);  
+   return new te::gm::Envelope(env->MinX, env->MinY, env->MaxX, env->MaxY);
 }
 
 OGREnvelope* te::ogr::Convert2OGR(const te::gm::Envelope* env)
@@ -430,9 +430,9 @@ OGRwkbGeometryType te::ogr::Convert2OGR(te::gm::GeomType geomType)
   }
 }
 
-std::string te::ogr::GetDriverName(const std::string& name)
+std::string te::ogr::GetDriverName(const std::string& path)
 {
-  boost::filesystem::path mpath(name.c_str());
+  boost::filesystem::path mpath(path.c_str());
 
   std::string ext = mpath.extension().string();
   
@@ -444,4 +444,3 @@ std::string te::ogr::GetDriverName(const std::string& name)
 
   return "";
 }
-

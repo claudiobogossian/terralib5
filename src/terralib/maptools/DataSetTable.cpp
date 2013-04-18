@@ -17,7 +17,7 @@ void te::map::DataSetTable::resetTable()
 {
   te::map::AbstractTable::resetTable();
 
-  for(size_t i=0; i<m_dataSet->getType()->size(); i++)
+  for(size_t i = 0; i < m_dataSet->getNumProperties(); i++)
   {
     m_presentOrder.push_back(i);
     m_colVisiblity.push_back(true);
@@ -65,10 +65,9 @@ std::string te::map::DataSetTable::dataAsString(size_t row, size_t column)
 
 std::string te::map::DataSetTable::getColumnName(size_t column) const
 {
-  te::da::DataSetType* type = m_dataSet->getType();
   size_t c = getLogicalColumn(column);
 
-  std::string pName = type->getProperty(m_presentOrder[c])->getName();
+  std::string pName = m_dataSet->getPropertyName(m_presentOrder[c]);
 
   return pName;
 }
@@ -102,19 +101,10 @@ std::set<size_t> te::map::DataSetTable::findGeoColsPositions() const
 {
   std::set<size_t> cols;
 
-  te::da::DataSetType* type = m_dataSet->getType();
-
-  if(type->hasGeom())
+  for(size_t i = 0; i < m_dataSet->getNumProperties(); i++)
   {
-    std::vector<te::dt::Property*> props = type->getProperties();
-
-    for(size_t i=0; i<props.size(); i++)
-    {
-      te::dt::Property* p = props[i];
-
-      if(p->getType() == te::dt::GEOMETRY_TYPE)
-        cols.insert(i);
-    }
+    if(m_dataSet->getPropertyDataType(i) == te::dt::GEOMETRY_TYPE)
+      cols.insert(i);
   }
 
   return cols;

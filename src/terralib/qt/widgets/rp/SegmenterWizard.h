@@ -28,7 +28,6 @@
 
 // TerraLib
 #include "../../../maptools/AbstractLayer.h"
-#include "../../../raster/Raster.h"
 #include "../Config.h"
 
 // STL
@@ -78,10 +77,6 @@ namespace te
           std::auto_ptr<te::qt::widgets::SegmenterWizardPage> m_segmenterPage;
           std::auto_ptr<te::qt::widgets::LayerSearchWizardPage> m_layerSearchPage;
           std::auto_ptr<te::qt::widgets::RasterInfoWizardPage> m_rasterInfoPage;
-
-        public:
-
-          te::rst::RasterPtr m_outRaster;
       };
     }   // end namespace widgets
   }     // end namespace qt

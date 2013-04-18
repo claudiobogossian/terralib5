@@ -25,6 +25,7 @@
 
 // TerraLib 
 #include "../../../dataaccess/dataset/DataSet.h"
+#include "../../../dataaccess/utils/Utils.h"
 #include "../../../raster/Raster.h"
 #include "../../../rp/Classifier.h"
 #include "ClassifierWizard.h"
@@ -33,6 +34,8 @@
 #include "LayerSearchWizardPage.h"
 #include "RasterInfoWidget.h"
 #include "RasterInfoWizardPage.h"
+#include "RasterNavigatorWidget.h"
+#include "RasterNavigatorWizardPage.h"
 
 // STL
 #include <cassert>
@@ -68,6 +71,7 @@ bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
       te::map::AbstractLayerPtr l = *list.begin();
 
       m_classifierPage->set(l);
+      m_navigatorPage->set(l);
     }
 
     return m_layerSearchPage->isComplete();
@@ -75,6 +79,10 @@ bool te::qt::widgets::ClassifierWizard::validateCurrentPage()
   else if(currentPage() ==  m_classifierPage.get())
   {
     return m_classifierPage->isComplete();
+  }
+  else if(currentPage() == m_navigatorPage.get())
+  {
+    return m_navigatorPage->isComplete();
   }
   else if(currentPage() ==  m_rasterInfoPage.get())
   {
@@ -94,13 +102,23 @@ void te::qt::widgets::ClassifierWizard::addPages()
   m_layerSearchPage.reset(new te::qt::widgets::LayerSearchWizardPage(this));
   m_classifierPage.reset(new te::qt::widgets::ClassifierWizardPage(this));
   m_rasterInfoPage.reset(new te::qt::widgets::RasterInfoWizardPage(this));
+  m_navigatorPage.reset(new te::qt::widgets::RasterNavigatorWizardPage(this));
 
   addPage(m_layerSearchPage.get());
   addPage(m_classifierPage.get());
+  addPage(m_navigatorPage.get());
   addPage(m_rasterInfoPage.get());
 
   //for contrast only one layer can be selected
   m_layerSearchPage->getSearchWidget()->enableMultiSelection(false);
+
+  //configure raster navigator
+  m_navigatorPage->getWidget()->hidePickerTool(true);
+
+  //connects
+  connect(m_navigatorPage->getWidget(), SIGNAL(mapDisplayExtentChanged()), m_classifierPage.get(), SLOT(onMapDisplayExtentChanged()));
+  connect(m_navigatorPage->getWidget(), SIGNAL(geomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)), 
+    m_classifierPage.get(), SLOT(onGeomAquired(te::gm::Polygon*, te::qt::widgets::MapDisplay*)));
 }
 
 bool te::qt::widgets::ClassifierWizard::execute()
@@ -109,15 +127,20 @@ bool te::qt::widgets::ClassifierWizard::execute()
   std::list<te::map::AbstractLayerPtr> list = m_layerSearchPage->getSearchWidget()->getSelecteds();
   te::map::AbstractLayerPtr l = *list.begin();
   te::da::DataSet* ds = l->getData();
-  te::rst::Raster* inputRst = ds->getRaster();
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds, te::dt::RASTER_TYPE);
+
+  te::rst::Raster* inputRst = ds->getRaster(rpos);
 
   //run contrast
   te::rp::Classifier algorithmInstance;
 
   te::rp::Classifier::InputParameters algoInputParams = m_classifierPage->getInputParams();
+  algoInputParams.m_inputRasterPtr = inputRst;
 
-
-  te::rp::Classifier::OutputParameters algoOutputParams;
+  te::rp::Classifier::OutputParameters algoOutputParams = m_classifierPage->getOutputParams();
+  algoOutputParams.m_rInfo = m_rasterInfoPage->getWidget()->getInfo();
+  algoOutputParams.m_rType = m_rasterInfoPage->getWidget()->getType();
 
 
   if(algorithmInstance.initialize(algoInputParams))
@@ -125,11 +148,11 @@ bool te::qt::widgets::ClassifierWizard::execute()
     if(algorithmInstance.execute(algoOutputParams))
     {
 
-      QMessageBox::information(this, tr("Classifier"), tr("Classifier enhencement ended sucessfully"));
+      QMessageBox::information(this, tr("Classifier"), tr("Classifier ended sucessfully"));
     }
     else
     {
-      QMessageBox::critical(this, tr("Classifier"), tr("Classifier enhencement execution error"));
+      QMessageBox::critical(this, tr("Classifier"), tr("Classifier execution error"));
 
       delete ds;
       return false;
@@ -137,7 +160,7 @@ bool te::qt::widgets::ClassifierWizard::execute()
   }
   else
   {
-    QMessageBox::critical(this, tr("Classifier"), tr("Classifier enhencement initialization error"));
+    QMessageBox::critical(this, tr("Classifier"), tr("Classifier initialization error"));
 
     delete ds;
     return false;

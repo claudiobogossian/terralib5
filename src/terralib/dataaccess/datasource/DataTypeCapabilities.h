@@ -35,12 +35,6 @@
 
 namespace te
 {
-// Forwared declarations
-  namespace dt
-  {
-    class Property;
-  }
-
   namespace da
   {
     /*!
@@ -164,10 +158,6 @@ namespace te
 
         void setSupportCDouble(const bool& support);
 
-        bool supportsDatasetItem() const;
-
-        void setSupportDatasetItem(const bool& support);
-
         bool supportsPolymorphic() const;
 
         void setSupportPolymorphic(const bool& support);
@@ -178,14 +168,14 @@ namespace te
 
         void setSupportAll();
 
-        void addHint(const int& type, te::dt::Property* hint);
+        void addHint(const int& type, const int& hint);
 
-        const te::dt::Property* getHint(const int& type) const;
+        int getHint(const int& type) const;
 
       private:
 
-        std::map<int, bool> m_types;              //!< A map that indicates the supported data types.
-        std::map<int, te::dt::Property*> m_hints; //!< A map that indicates a property hint to a given type.
+        std::map<int, bool> m_types;  //!< A map that indicates the supported data types.
+        std::map<int, int> m_hints;   //!< A map that indicates a type hint to a given type.
     };
 
   } // end namespace da

@@ -32,7 +32,6 @@
 #include "../geometry/Geometry.h"
 #include "../geometry/GeometryProperty.h"
 #include "../geometry/WKBReader.h"
-#include "../memory/DataSetItem.h"
 #include "DataSet.h"
 #include "DataSourceTransactor.h"
 #include "Exception.h"
@@ -55,6 +54,8 @@ te::mysql::DataSet::DataSet(DataSourceTransactor* t, sql::ResultSet* result, std
     m_dt(0),
     m_originalsql(sql)
 {
+  assert(result);
+  m_dt = Convert2TerraLibDataSetType(result);
 }
 
 te::mysql::DataSet::~DataSet()
@@ -81,48 +82,17 @@ te::common::AccessPolicy te::mysql::DataSet::getAccessPolicy() const
   return te::common::RAccess;
 }
 
-te::da::DataSetType* te::mysql::DataSet::getType()
-{
-  if(!m_dt)
-    m_dt = Convert2TerraLibDataSetType(m_result);
-
-  return m_dt;
-}
-
-const te::da::DataSetType* te::mysql::DataSet::getType() const
-{
-  if(!m_dt)
-    m_dt = Convert2TerraLibDataSetType(m_result);
-
-  return m_dt;
-}
-
 te::da::DataSourceTransactor* te::mysql::DataSet::getTransactor() const
 {
   return m_transactor;
 }
 
-void te::mysql::DataSet::loadTypeInfo()
+te::gm::Envelope* te::mysql::DataSet::getExtent(std::size_t i)
 {
-// doesn't affect this implementation
-}
-
-te::da::DataSet* te::mysql::DataSet::getParent() const
-{
-  return 0;
-}
-
-te::gm::Envelope* te::mysql::DataSet::getExtent(const te::dt::Property* p)
-{
-  if(p == 0)
-    throw Exception(TR_MYSQL("The property is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_MYSQL("Not a geometry column to calculate the MBR!"));
-
-  std::size_t i = getType()->getPropertyPosition(p);
-
   assert(i != std::string::npos);
+
+  if(getPropertyDataType(i) != te::dt::GEOMETRY_TYPE)
+    throw Exception(TR_MYSQL("Not a geometry column to calculate the MBR!"));
 
   if(isEmpty() || !moveFirst())
     return new te::gm::Envelope;
@@ -144,84 +114,24 @@ te::gm::Envelope* te::mysql::DataSet::getExtent(const te::dt::Property* p)
   return mbr.release();
 }
 
-void te::mysql::DataSet::setFilter(te::dt::Property* p,
-                                   const te::gm::Geometry* g,
-                                   te::gm::SpatialRelation r)
+std::size_t te::mysql::DataSet::getNumProperties() const
 {
-  if(g == 0)
-    throw Exception(TR_MYSQL("The geometry is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_MYSQL("The property is not geometric!"));
-  
-  if(m_originalsql == 0)
-    throw Exception(TR_MYSQL("Can not set filter over this type of query. Probably it is a result of a prepared query!"));
-
-  std::auto_ptr<std::string> sql(new std::string("SELECT * FROM ("));
-
-  *sql += *m_originalsql;
-  *sql += ") AS mysql_driver_subquery WHERE ";
-  
-  GetFilter(p->getName(), g, r, *sql);
-
-  delete m_originalsql;
-
-  m_originalsql = sql.release();
-
-  sql::ResultSet* newresult = m_transactor->myQuery(*m_originalsql);
-
-  delete m_result;
-
-  m_result = newresult;
-
-  delete m_dt;
-
-  m_dt = 0;  
-}
- 
-void te::mysql::DataSet::setFilter(te::dt::Property* p,
-                                   const te::gm::Envelope* e,
-                                   te::gm::SpatialRelation r)
-{
-  if(e == 0)
-    throw Exception(TR_MYSQL("The MBR is missing!"));
-
-  if(p->getType() != te::dt::GEOMETRY_TYPE)
-    throw Exception(TR_MYSQL("The property is not geometric!"));
-  
-  if(m_originalsql == 0)
-    throw Exception(TR_MYSQL("Can not set filter over this typq of query. Probably it is a result of a prepared query!"));
-
-  std::auto_ptr<std::string> sql(new std::string("SELECT * FROM ("));
-
-  *sql += *m_originalsql;
-  *sql += ") AS mysql_driver_subquery WHERE ";
-  
-  GetFilter(p->getName(), e, r, *sql);
-
-  delete m_originalsql;
-
-  m_originalsql = sql.release();
-
-  sql::ResultSet* newresult = m_transactor->myQuery(*m_originalsql);
-
-  delete m_result;
-
-  m_result = newresult;
-
-  delete m_dt;
-
-  m_dt = 0;  
+  return m_dt->size();
 }
 
-te::da::DataSetItem* te::mysql::DataSet::getItem() const
+int te::mysql::DataSet::getPropertyDataType(std::size_t pos) const
 {
-  return new te::mem::DataSetItem(this);
+  return m_dt->getProperty(pos)->getType();
 }
 
-void te::mysql::DataSet::add(te::da::DataSetItem* /*item*/)
+std::string te::mysql::DataSet::getPropertyName(std::size_t pos) const
 {
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
+  return m_dt->getProperty(pos)->getName();
+}
+
+std::string te::mysql::DataSet::getDatasetNameOfProperty(std::size_t pos) const
+{
+  return "";
 }
 
 bool te::mysql::DataSet::isEmpty() const
@@ -244,11 +154,6 @@ bool te::mysql::DataSet::movePrevious()
   return m_result->previous();
 }
 
-bool te::mysql::DataSet::moveFirst()
-{
-  return m_result->first();
-}
-
 bool te::mysql::DataSet::moveBeforeFirst()
 {
   m_result->beforeFirst();
@@ -256,16 +161,14 @@ bool te::mysql::DataSet::moveBeforeFirst()
   return true;
 }
 
+bool te::mysql::DataSet::moveFirst()
+{
+  return m_result->first();
+}
+
 bool te::mysql::DataSet::moveLast()
 {
   return m_result->last();
-}
-
-bool te::mysql::DataSet::moveAfterLast()
-{
-  m_result->afterLast();
-
-  return true;
 }
 
 bool te::mysql::DataSet::move(std::size_t i)
@@ -293,7 +196,7 @@ bool te::mysql::DataSet::isAfterEnd() const
   return m_result->isAfterLast();
 }
 
-char te::mysql::DataSet::getChar(int i) const
+char te::mysql::DataSet::getChar(std::size_t i) const
 {
   boost::int32_t value = m_result->getInt(i + 1);
 
@@ -302,12 +205,7 @@ char te::mysql::DataSet::getChar(int i) const
   return cvalue;
 }
 
-void te::mysql::DataSet::setChar(int /*i*/, char /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-unsigned char te::mysql::DataSet::getUChar(int i) const
+unsigned char te::mysql::DataSet::getUChar(std::size_t i) const
 {
   boost::uint32_t value = m_result->getUInt(i + 1);
 
@@ -316,12 +214,7 @@ unsigned char te::mysql::DataSet::getUChar(int i) const
   return ucvalue;
 }
 
-void te::mysql::DataSet::setUChar(int /*i*/, unsigned char /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-boost::int16_t te::mysql::DataSet::getInt16(int i) const
+boost::int16_t te::mysql::DataSet::getInt16(std::size_t i) const
 {
   boost::int32_t value = m_result->getInt(i + 1);
 
@@ -330,95 +223,55 @@ boost::int16_t te::mysql::DataSet::getInt16(int i) const
   return ivalue;
 }
 
-void te::mysql::DataSet::setInt16(int /*i*/, boost::int16_t /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-boost::int32_t te::mysql::DataSet::getInt32(int i) const
+boost::int32_t te::mysql::DataSet::getInt32(std::size_t i) const
 {
   return m_result->getInt(i + 1);
 }
 
-void te::mysql::DataSet::setInt32(int /*i*/, boost::int32_t /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-boost::int64_t te::mysql::DataSet::getInt64(int i) const
+boost::int64_t te::mysql::DataSet::getInt64(std::size_t i) const
 {
   return m_result->getInt64(i + 1);
 }
 
-void te::mysql::DataSet::setInt64(int /*i*/, boost::int64_t /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-bool te::mysql::DataSet::getBool(int i) const
+bool te::mysql::DataSet::getBool(std::size_t i) const
 {
   return m_result->getBoolean(i + 1);
 }
 
-void te::mysql::DataSet::setBool(int /*i*/, bool /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-float te::mysql::DataSet::getFloat(int i) const
+float te::mysql::DataSet::getFloat(std::size_t i) const
 {
   float value = static_cast<float>(m_result->getDouble(i + 1));
 
   return value;
 }
 
-void te::mysql::DataSet::setFloat(int /*i*/, float /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-double te::mysql::DataSet::getDouble(int i) const
+double te::mysql::DataSet::getDouble(std::size_t i) const
 {
   double value = static_cast<double>(m_result->getDouble(i + 1));
 
   return value;
 }
 
-void te::mysql::DataSet::setDouble(int /*i*/, double /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-std::string te::mysql::DataSet::getNumeric(int i) const
+std::string te::mysql::DataSet::getNumeric(std::size_t i) const
 {
   std::string value = boost::lexical_cast<std::string>(m_result->getDouble(i + 1));
 
   return value;
 }
 
-void te::mysql::DataSet::setNumeric(int /*i*/, const std::string& /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-std::string te::mysql::DataSet::getString(int i) const
+std::string te::mysql::DataSet::getString(std::size_t i) const
 {
   return m_result->getString(i + 1);
 }
 
-void te::mysql::DataSet::setString(int /*i*/, const std::string& /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-te::dt::ByteArray* te::mysql::DataSet::getByteArray(int i) const
+te::dt::ByteArray* te::mysql::DataSet::getByteArray(std::size_t i) const
 {
   std::istream* is = m_result->getBlob(i + 1);
 
 // get buffer size
   is->seekg(0, std::ios::end);
 
-  std::size_t size = is->tellg();
+  std::size_t size = static_cast<std::size_t>(is->tellg());
 
 // allocate buffer
   std::auto_ptr<te::dt::ByteArray> byteArray(new te::dt::ByteArray(size));
@@ -435,12 +288,7 @@ te::dt::ByteArray* te::mysql::DataSet::getByteArray(int i) const
   return byteArray.release();
 }
 
-void te::mysql::DataSet::setByteArray(int /*i*/, const te::dt::ByteArray& /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-te::gm::Geometry* te::mysql::DataSet::getGeometry(int i) const
+te::gm::Geometry* te::mysql::DataSet::getGeometry(std::size_t i) const
 {
   std::auto_ptr<te::dt::ByteArray> mywkb(getByteArray(i));
 
@@ -453,59 +301,22 @@ te::gm::Geometry* te::mysql::DataSet::getGeometry(int i) const
   return geom;
 }
 
-void te::mysql::DataSet::setGeometry(int /*i*/, const te::gm::Geometry& /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-te::rst::Raster* te::mysql::DataSet::getRaster(int /*i*/) const
+te::rst::Raster* te::mysql::DataSet::getRaster(std::size_t /*i*/) const
 {
   throw Exception(TR_MYSQL("Not implemented yet!"));
 }
 
-void te::mysql::DataSet::setRaster(int /*i*/, const te::rst::Raster& /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-te::dt::DateTime* te::mysql::DataSet::getDateTime(int /*i*/) const
+te::dt::DateTime* te::mysql::DataSet::getDateTime(std::size_t /*i*/) const
 {
   throw Exception(TR_MYSQL("Not implemented yet!"));
 }
 
-void te::mysql::DataSet::setDateTime(int /*i*/, const te::dt::DateTime& /*value*/)
+te::dt::Array* te::mysql::DataSet::getArray(std::size_t /*i*/) const
 {
   throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
 }
 
-void te::mysql::DataSet::getArray(int /*i*/, std::vector<boost::int16_t>& /*values*/) const
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-const unsigned char* te::mysql::DataSet::getWKB(int /*i*/) const
-{
-  throw Exception(TR_MYSQL("Not implemented yet!"));
-}
-
-te::da::DataSet* te::mysql::DataSet::getDataSet(int /*i*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-void te::mysql::DataSet::setDataSet(int /*i*/, const te::da::DataSet& /*value*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-void te::mysql::DataSet::setValue(int /*i*/, te::dt::AbstractData* /*ad*/)
-{
-  throw Exception(TR_MYSQL("Not supported by MySQL driver!"));
-}
-
-bool te::mysql::DataSet::isNull(int i) const
+bool te::mysql::DataSet::isNull(std::size_t i) const
 {
   return m_result->isNull(i + 1);
 }
-
-

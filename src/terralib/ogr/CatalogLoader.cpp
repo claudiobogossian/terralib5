@@ -162,12 +162,12 @@ te::da::Sequence* te::ogr::CatalogLoader::getSequence(const std::string& /*seqNa
   return 0;
 }
 
-te::gm::Envelope* te::ogr::CatalogLoader::getExtent(const te::gm::GeometryProperty* gp)
+te::gm::Envelope* te::ogr::CatalogLoader::getExtent(const te::dt::Property* sp)
 {
-  assert(gp->getParent());
+  assert(sp->getParent());
 
   OGRDataSource* ogrDS = m_t->getOGRDataSource();
-  OGRLayer* layer = ogrDS->GetLayerByName(gp->getParent()->getName().c_str());
+  OGRLayer* layer = ogrDS->GetLayerByName(sp->getParent()->getName().c_str());
 
   OGREnvelope* envOGR = new OGREnvelope();
 

@@ -27,29 +27,20 @@
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSet.h"
 #include "../dataaccess/dataset/DataSetType.h"
-#include "../dataaccess/dataset/DataSetItem.h"
-#include "../dataaccess/dataset/PrimaryKey.h"
-#include "../dataaccess/dataset/UniqueKey.h"
-#include "../geometry/WKBReader.h"
-#include "../geometry/WKBWriter.h"
-#include "../geometry/Geometry.h"
-#include "../geometry/GeometryProperty.h"
-#include "../datatype/ByteArray.h"
-#include "../datatype/AbstractData.h"
-#include "../memory/DataSetItem.h"
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../datatype/Property.h"
+#include "../datatype/ByteArray.h"
 #include "DataSetPersistence.h"
 #include "DataSourceTransactor.h"
 #include "Exception.h"
-
 #include "Utils.h"
 
 // ADO
 #import "msado15.dll" \
-    no_namespace rename("EOF", "EndOfFile")
+  no_namespace rename("EOF", "EndOfFile")
 #import "msadox.dll"
 
+// STL
 #include <vector>
 
 inline void TESTHR(HRESULT x)
@@ -73,12 +64,11 @@ void te::ado::DataSetPersistence::create(te::da::DataSetType* dt, te::da::DataSe
 
   dtp->create(dt);
 
-  add(dt, d, options, limit);
+  add(dt->getName(), d, options, limit);
 }
 
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
+void te::ado::DataSetPersistence::remove(const std::string& datasetName)
 {
-
   _ConnectionPtr adoConn = m_t->getADOConnection();
 
   _RecordsetPtr recset;
@@ -90,7 +80,7 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
 
   try
   {
-    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+    TESTHR(recset->Open(_bstr_t(datasetName.c_str()),
     _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
   }
   catch(_com_error& e)
@@ -99,167 +89,92 @@ void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt)
   }
 
   TESTHR(recset->Delete(adAffectCurrent));
-
-  te::da::DataSet* ds = m_t->getDataSet(dt->getName());
-
 }
 
-void te::ado::DataSetPersistence::remove(const std::string& /*datasetName*/)
+void te::ado::DataSetPersistence::remove(const std::string& /*datasetName*/, const te::da::ObjectIdSet* /*oids*/)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
 
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  std::vector<te::dt::Property*> keyProperties;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = dt->getPrimaryKey()->getProperties();
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = dt->getUniqueKey(0)->getProperties();
-  }
-  else
-  {
-    throw Exception(TR_ADO("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
-  }
-
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-
-  std::string sql = "SELECT * FROM " + dt->getName() + " WHERE ";
-
-  for(size_t i = 0; i < keyProperties.size(); i++)
-  {
-    if(keyProperties[i]->getType() == te::dt::STRING_TYPE)
-      sql += keyProperties[i]->getName() + " = '" + item->getValue(keyProperties[i]->getName())->toString() + "'";
-    else
-      sql += keyProperties[i]->getName() + " = " + item->getValue(keyProperties[i]->getName())->toString();
-
-    if(i+1 != keyProperties.size())
-      sql += " AND ";
-  }
-
-  sql += ";";
-  
-  _RecordsetPtr adoItem = 0;
-
-  try
-  {
-    TESTHR(adoItem.CreateInstance(__uuidof(Recordset)));
-    adoItem->Open(sql.c_str(), 
-           _variant_t((IDispatch *)adoConn), 
-           adOpenKeyset, adLockOptimistic, adCmdText);
-
-    adoItem->Delete(adAffectCurrent);
-    adoItem->Update();
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-}
-
-void te::ado::DataSetPersistence::remove(const te::da::DataSetType* dt, te::da::DataSet* d, std::size_t /*limit*/)
-{
-  try
-  {
-    do
-    {
-      m_t->begin();
-      remove(dt, d->getItem());
-      m_t->commit();
-    }
-    while(d->moveNext());
-  }
-  catch(...)
-  {
-    m_t->rollBack();
-  }
-
-}
-
-void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
+void te::ado::DataSetPersistence::add(const std::string& datasetName, te::da::DataSet* d, const std::map<std::string, std::string>& /*options*/, std::size_t /*limit*/)
 {
   _ConnectionPtr adoConn = m_t->getADOConnection();
-
-  std::vector<te::dt::Property*> props = dt->getProperties();
 
   _RecordsetPtr recset;
   TESTHR(recset.CreateInstance(__uuidof(Recordset)));
 
   try
   {
-    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
+    TESTHR(recset->Open(_bstr_t(datasetName.c_str()),
     _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
     
     do
     {
       TESTHR(recset->AddNew());
 
-      for(size_t i = 0; i < props.size(); i++)
+      for(std::size_t i = 0; i < d->getNumProperties(); ++i)
       {
       
-        int pType = props[i]->getType();
+        std::string pname = d->getPropertyName(i);
+        int pType = d->getPropertyDataType(i);
 
         switch(pType)
         {
           case te::dt::CHAR_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)d->getChar(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getChar(pname.c_str());
             break;
 
           //case te::dt::UCHAR_TYPE:
 
           case te::dt::INT16_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getInt16(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt16(pname.c_str());
             break;
 
           case te::dt::INT32_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getInt32(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt32(pname.c_str());
             break;
 
           case te::dt::INT64_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getInt64(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getInt64(pname.c_str());
             break;
 
           //case te::dt::NUMERIC_TYPE:
           //case te::dt::DATETIME_TYPE:
           case te::dt::FLOAT_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getFloat(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getFloat(pname.c_str());
             break;
 
           case te::dt::DOUBLE_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getDouble(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getDouble(pname.c_str());
             break;
 
           case te::dt::STRING_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)d->getString(props[i]->getName().c_str()).c_str();
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_bstr_t)d->getString(pname.c_str()).c_str();
             break;
           
           case te::dt::BOOLEAN_TYPE:
-            recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)d->getBool(props[i]->getName().c_str());
+            recset->GetFields()->GetItem(pname.c_str())->Value = (_variant_t)d->getBool(pname.c_str());
             break;
 
           case te::dt::BYTE_ARRAY_TYPE:
-            {
-              char * data = ((te::dt::ByteArray*)props[i])->getData();
+          {
+            /*char * data = ((te::dt::ByteArray*)props[i])->getData();
 
-              _variant_t var;
-              te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
+            _variant_t var;
+            te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
 
-              recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+            recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
 
-              break;
-            }
+            break;*/
+          }
 
           //case te::dt::ARRAY_TYPE:
           case te::dt::GEOMETRY_TYPE:
           {
             _variant_t var;
-            Convert2Ado(d->getGeometry(props[i]->getName()), var);
+            Convert2Ado(d->getGeometry(pname), var);
             
-            recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
+            recset->Fields->GetItem(pname.c_str())->AppendChunk (var);
             
             break;
           }
@@ -281,196 +196,12 @@ void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::Dat
   }
 }
 
-void te::ado::DataSetPersistence::add(const te::da::DataSetType* dt, te::da::DataSetItem* item)
-{
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-
-  std::vector<te::dt::Property*> props = dt->getProperties();
-
-  _RecordsetPtr recset;
-  TESTHR(recset.CreateInstance(__uuidof(Recordset)));
-  
-  try
-  {
-    TESTHR(recset->Open(_bstr_t(dt->getName().c_str()),
-    _variant_t((IDispatch*)adoConn,true), adOpenKeyset, adLockOptimistic, adCmdTable));
-
-    TESTHR(recset->AddNew());
-
-    for(size_t i = 0; i < props.size(); i++)
-    {
-      int pType = props[i]->getType();
-
-      switch(pType)
-      {
-      case te::dt::CHAR_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getChar(props[i]->getName().c_str());
-        break;
-
-        //case te::dt::UCHAR_TYPE:
-
-      case te::dt::INT16_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt16(props[i]->getName().c_str());
-        break;
-
-      case te::dt::INT32_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt32(props[i]->getName().c_str());
-        break;
-
-      case te::dt::INT64_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getInt64(props[i]->getName().c_str());
-        break;
-
-        //case te::dt::NUMERIC_TYPE:
-        //case te::dt::DATETIME_TYPE:
-      case te::dt::FLOAT_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getFloat(props[i]->getName().c_str());
-        break;
-
-      case te::dt::DOUBLE_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getDouble(props[i]->getName().c_str());
-        break;
-
-      case te::dt::STRING_TYPE:
-        {
-        std::string aaaaa=item->getString(props[i]->getName().c_str());
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_bstr_t)item->getString(props[i]->getName().c_str()).c_str();
-        break;
-        }
-
-      case te::dt::BOOLEAN_TYPE:
-        recset->GetFields()->GetItem(props[i]->getName().c_str())->Value = (_variant_t)item->getBool(props[i]->getName().c_str());
-        break;
-
-      case te::dt::BYTE_ARRAY_TYPE:
-        {
-          char * data = ((te::dt::ByteArray*)props[i])->getData();
-
-          _variant_t var;
-          te::ado::Blob2Variant(data, ((te::dt::ByteArray*)props[i])->bytesUsed(), var);
-
-          recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-
-          break;
-        }
-      case te::dt::GEOMETRY_TYPE:
-      {
-        _variant_t var;
-        Convert2Ado(item->getGeometry(props[i]->getName()), var);
-        
-        recset->Fields->GetItem(props[i]->getName().c_str())->AppendChunk (var);
-        
-        break;
-      }
-
-        //case te::dt::ARRAY_TYPE:
-
-      default:
-        throw te::ado::Exception(TR_ADO("The informed type could not be mapped to ADO type system!"));
-        break;
-      }      
-    }
-
-    TESTHR(recset->Update());
-
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-}
-
-void te::ado::DataSetPersistence::update(const te::da::DataSetType* dt,
-                                         te::da::DataSet* dataset,
-                                         const std::vector<te::dt::Property*>& properties,
-                                         const std::map<std::string, std::string>& options,
+void te::ado::DataSetPersistence::update(const std::string& /*datasetName*/,
+                                         te::da::DataSet* /*dataset*/,
+                                         const std::vector<std::size_t>& /*properties*/,
+                                         const te::da::ObjectIdSet* /*oids*/,
+                                         const std::map<std::string, std::string>& /*options*/,
                                          std::size_t /*limit*/)
-{
-  try
-  {
-    do
-    {
-      m_t->begin();
-      update(dt, dataset->getItem(), properties);
-      m_t->commit();
-    }
-    while(dataset->moveNext());
-  }
-  catch(...)
-  {
-    m_t->rollBack();
-  }
-  
-}
-
-void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                    te::da::DataSet* /*oldD*/,
-                    te::da::DataSet* /*newD*/,
-                    const std::vector<te::dt::Property*>& /*properties*/,
-                    std::size_t /*limit*/)
-{
-  throw Exception(TR_ADO("Not implemented yet!"));
-}
-
-void te::ado::DataSetPersistence::update(const te::da::DataSetType* dt,
-                    te::da::DataSetItem* item,
-                    const std::vector<te::dt::Property*>& properties)
-{
-  std::vector<te::dt::Property*> keyProperties;
- 
-  if(dt->getPrimaryKey())
-  {
-    keyProperties = dt->getPrimaryKey()->getProperties();
-  }
-  else if(dt->getNumberOfUniqueKeys() > 0)
-  {
-    keyProperties = dt->getUniqueKey(0)->getProperties();
-  }
-  else
-  {
-    throw Exception(TR_ADO("Can not remove dataset items because dataset doesn't have a primary key or unique key!")); 
-  }
-
-  _ConnectionPtr adoConn = m_t->getADOConnection();
-
-  std::string sql = "SELECT * FROM " + dt->getName() + " WHERE ";
-
-  for(size_t i = 0; i < keyProperties.size(); i++)
-  {
-    if(keyProperties[i]->getType() == te::dt::STRING_TYPE)
-      sql += keyProperties[i]->getName() + " = '" + item->getValue(keyProperties[i]->getName())->toString() + "'";
-    else
-      sql += keyProperties[i]->getName() + " = " + item->getValue(keyProperties[i]->getName())->toString();
-
-    if(i+1 != keyProperties.size())
-      sql += " AND ";
-  }
-
-  sql += ";";
-  
-  _RecordsetPtr adoItem = 0;
-
-  try
-  {
-    TESTHR(adoItem.CreateInstance(__uuidof(Recordset)));
-    adoItem->Open(sql.c_str(), 
-           _variant_t((IDispatch *)adoConn), 
-           adOpenKeyset, adLockOptimistic, adCmdText);
-  }
-  catch(_com_error& e)
-  {
-    throw Exception(TR_ADO(e.Description()));
-  }
-
-  for(size_t i = 0; i < properties.size(); i++)
-    te::ado::updateAdoColumn(dt, adoItem, properties[i], item);
-}
-
-void te::ado::DataSetPersistence::update(const te::da::DataSetType* /*dt*/,
-                    te::da::DataSetItem* /*oldItem*/,
-                    te::da::DataSetItem* /*newItem*/,
-                    const std::vector<te::dt::Property*>& /*properties*/)
 {
   throw Exception(TR_ADO("Not implemented yet!"));
 }
@@ -479,4 +210,3 @@ te::da::DataSourceTransactor* te::ado::DataSetPersistence::getTransactor() const
 {
   return m_t;
 }
-                 

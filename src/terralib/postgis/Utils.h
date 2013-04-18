@@ -883,9 +883,11 @@ namespace te
       \param pgisGeomTypeOid The oid of PostGIS geometry type.
 
       \return The data set type created.
-
     */
-    te::da::DataSetType* Convert2TerraLib(PGresult* result, unsigned int pgisGeomTypeOid, unsigned int pgisRasterTypeOid);
+    void Convert2TerraLib(PGresult* result,
+                          unsigned int pgisGeomTypeOid,
+                          unsigned int pgisRasterTypeOid,
+                          std::vector<int>& teTypes);
 
     /*!
       \brief It converts the PostGIS geometry type to a pure OGC WKB code.
@@ -956,7 +958,9 @@ namespace te
 
     std::string GetSQLValueNames(const te::da::DataSetType* dt);
 
-    std::string GetSQLBindValues(const te::da::DataSetType* dt);
+    std::string GetSQLValueNames(const te::da::DataSet* dataset);
+
+    std::string GetSQLBindValues(std::size_t nproperties);
 
     /*!
       \brief Given a list of properties it constructs a string with bindable parameters that can be used inside an update query.

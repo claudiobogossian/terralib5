@@ -75,7 +75,7 @@ set (
   widgets/datasource/explorer
   widgets/datasource/selector
   widgets/datasource/connector
-  widgets/exchanger
+  #widgets/exchanger
   widgets/layer/explorer
   widgets/layer/search
   widgets/layer/selector
@@ -164,13 +164,13 @@ set (
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/datasource/selector" MOC)
 
-set (
-  HDRS_TO_MOC
-  ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
-  ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
-  ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
-)
-te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
+#set (
+#  HDRS_TO_MOC
+#  ${SRCDIR}/widgets/exchanger/DataExchangerWizard.h
+#  ${SRCDIR}/widgets/exchanger/DataExchangeSummaryWizardPage.h
+#  ${SRCDIR}/widgets/exchanger/DataSetOptionsWizardPage.h
+#)
+#te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/exchanger" MOC)
 
 set (
   HDRS_TO_MOC
@@ -310,19 +310,22 @@ te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/rp/ClassifierDialog.h
-  ${SRCDIR}/widgets/rp/ClassifierWizard.h
   ${SRCDIR}/widgets/rp/ClassifierWizardPage.h
   ${SRCDIR}/widgets/rp/ContrastDialog.h
-  ${SRCDIR}/widgets/rp/ContrastWizard.h
   ${SRCDIR}/widgets/rp/ContrastWizardPage.h
   ${SRCDIR}/widgets/rp/MixtureModelDialog.h
+  ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
   ${SRCDIR}/widgets/rp/RasterInfoWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWizardPage.h
+  ${SRCDIR}/widgets/rp/RasterNavigatorDialog.h
+  ${SRCDIR}/widgets/rp/RasterNavigatorWidget.h
+  ${SRCDIR}/widgets/rp/RasterNavigatorWizardPage.h
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
-  ${SRCDIR}/widgets/rp/SegmenterWizard.h
   ${SRCDIR}/widgets/rp/SegmenterWizardPage.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
+  ${SRCDIR}/widgets/rp/TiePointLocatorWidget.h
+  ${SRCDIR}/widgets/rp/TiePointLocatorWizardPage.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
 
@@ -395,6 +398,9 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
   ${SRCDIR}/widgets/tools/Measure.h
+  ${SRCDIR}/widgets/tools/PointPicker.h
+  ${SRCDIR}/widgets/tools/PolygonAcquire.h
+  ${SRCDIR}/widgets/tools/ReadPixelTool.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/tools" MOC)
 
@@ -436,7 +442,7 @@ file(
   ${SRCDIR}/widgets/dataset/*.ui
   ${SRCDIR}/widgets/dataset/selector/ui/*.ui
   ${SRCDIR}/widgets/datasource/selector/ui/*.ui
-  ${SRCDIR}/widgets/exchanger/ui/*.ui
+  #${SRCDIR}/widgets/exchanger/ui/*.ui
   ${SRCDIR}/widgets/layer/search/ui/*.ui
   ${SRCDIR}/widgets/property/*.ui
   ${SRCDIR}/widgets/property/ui/*.ui

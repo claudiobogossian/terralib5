@@ -40,7 +40,12 @@ class OGRFeatureDefn;
 class OGRFieldDefn;
 
 namespace te
-{ 
+{
+  namespace da
+  {
+    class DataSetType;
+  }
+
   namespace gm
   { 
     class Envelope;
@@ -151,7 +156,6 @@ namespace te
       \note The caller of this function will take the ownership of the returned TerraLib DataSet Type.
     */
     TEOGREXPORT te::da::DataSetType* Convert2TerraLib(OGRFeatureDefn* featDef);
-    
 
     /*!
       \brief It converts the TerraLib DataSet Type to OGR Feature Definition
@@ -211,23 +215,14 @@ namespace te
     */
     TEOGREXPORT OGRwkbGeometryType Convert2OGR(te::gm::GeomType geomType);
 
-    std::string GetDriverName(const std::string& name);
-
     /*!
-      \TODO: Method that given the data set name, extract the driver name used by OGR Library
-             Example: m_dataSetName = "../../data/shp/munic_2001.shp" should return "ESRI Shapefile"
-             It will be used by DataSource methods drop() and create().
-     */
-    /*std::string te::ogr::DataSourceInfo::getDriverName() const
-    {
-      size_t pos = m_dataSetName.find(":");
-  
-      if(pos != std::string::npos)
-        return m_dataSetName.substr(0, pos);
+      \brief It tries extract the driver name used by OGR Library based on the given path.
 
-      return "";
-    }*/
+      \param path The path that will be consulted.
 
+      \return The driver name used by OGR Library or an empty string if not possible extract the driver name.
+    */
+    std::string GetDriverName(const std::string& path);
 
   } // end namespace ogr
 }   // end namespace te

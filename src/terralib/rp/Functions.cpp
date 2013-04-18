@@ -26,6 +26,7 @@
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../dataaccess/dataset/DataSetTypePersistence.h"
 #include "../dataaccess/datasource/DataSourceFactory.h"
+#include "../dataaccess/utils/Utils.h"
 #include "../datatype/Enums.h"
 #include "../raster/BandProperty.h"
 #include "../raster/Grid.h"
@@ -104,7 +105,9 @@ namespace te
 
       // Creating a raster instance
 
-      std::auto_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster() );
+      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
+
+      std::auto_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
 
       if( rasterPtr.get() )
       {
@@ -174,8 +177,9 @@ namespace te
       }
 
       // Creating a raster instance
+      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
 
-      boost::shared_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster() );
+      boost::shared_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
 
       if( rasterPtr.get() )
       {
@@ -254,8 +258,9 @@ namespace te
       }
 
       // Creating a raster instance
+      std::size_t rpos = te::da::GetFirstPropertyPos(dataSetPtr.get(), te::dt::RASTER_TYPE);
 
-      boost::shared_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster() );
+      boost::shared_ptr< te::rst::Raster > rasterPtr( dataSetPtr->getRaster(rpos) );
 
       if( rasterPtr.get() )
       {

@@ -25,50 +25,15 @@
 
 // TerraLib
 #include "DataSet.h"
-#include "DataSetItem.h"
 #include "DataSetPersistence.h"
 #include "DataSetType.h"
 #include "DataSetTypePersistence.h"
 
-void te::da::DataSetPersistence::create(DataSet* d, std::size_t limit)
+
+void te::da::DataSetPersistence::add(const std::string& datasetName, DataSet* d, std::size_t limit)
 {
   std::map<std::string, std::string> options;
 
-  create(d, options, limit);
-}
-
-void te::da::DataSetPersistence::create(DataSet* d, const std::map<std::string, std::string>& options, std::size_t limit)
-{
-  te::da::DataSetType* dt = d->getType();
-
-  if(!dt->isFullLoaded())
-    d->loadTypeInfo();
-
-// get again the dataset type because loadTypeInfo can invalidate dt!
-  create(d->getType(), d, options, limit);
-}
-
-void te::da::DataSetPersistence::create(DataSetType* dt, DataSet* d, std::size_t limit)
-{
-  std::map<std::string, std::string> options;
-
-  create(dt, d, options, limit);
-}
-
-void te::da::DataSetPersistence::remove(DataSet* d, std::size_t limit)
-{
-  remove(d->getType(), d, limit);
-}
-
-void te::da::DataSetPersistence::remove(DataSetItem* item)
-{
-  remove(item->getType(), item);
-}
-
-void te::da::DataSetPersistence::add(const DataSetType* dt, DataSet* d, std::size_t limit)
-{
-  std::map<std::string, std::string> options;
-
-  add(dt, d, options, limit);
+  add(datasetName, d, options, limit);
 }
 

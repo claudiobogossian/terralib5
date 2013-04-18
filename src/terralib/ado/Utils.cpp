@@ -771,7 +771,7 @@ void te::ado::Variant2Blob(const _variant_t var, int size, char* & blob)
   }
 }
 
-void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::da::DataSetItem* item)
+void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recset, te::dt::Property* prop, te::mem::DataSetItem* item)
 {
   try
   {
@@ -782,52 +782,51 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
     if(geomProp && (geomProp->getName() == prop->getName()))
     {
       _variant_t var;
-      Convert2Ado(item->getGeometry(prop->getName()), var);
+      Convert2Ado(item->getGeometry(dt->getPropertyPosition(prop->getName())), var);
       
       recset->Fields->GetItem(prop->getName().c_str())->AppendChunk (var);
     }
     else
     {
-
       int pType = prop->getType();
 
       switch(pType)
       {
         case te::dt::CHAR_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_bstr_t)item->getChar(prop->getName().c_str());
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_bstr_t)item->getChar(dt->getPropertyPosition(prop->getName()));
+        break;
 
         //case te::dt::UCHAR_TYPE:
 
         case te::dt::INT16_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt16(prop->getName().c_str());
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt16(dt->getPropertyPosition(prop->getName()));
+        break;
 
         case te::dt::INT32_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt32(prop->getName().c_str());
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt32(dt->getPropertyPosition(prop->getName()));
           break;
 
         case te::dt::INT64_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt64(prop->getName().c_str());
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getInt64(dt->getPropertyPosition(prop->getName()));
+        break;
 
         //case te::dt::NUMERIC_TYPE:
         //case te::dt::DATETIME_TYPE:
         case te::dt::FLOAT_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getFloat(prop->getName().c_str());
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getFloat(dt->getPropertyPosition(prop->getName()));
+        break;
 
         case te::dt::DOUBLE_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getDouble(prop->getName().c_str());
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getDouble(dt->getPropertyPosition(prop->getName()));
+        break;
 
         case te::dt::STRING_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_bstr_t)item->getString(prop->getName().c_str()).c_str();
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_bstr_t)item->getString(dt->getPropertyPosition(prop->getName())).c_str();
+        break;
 
         case te::dt::BOOLEAN_TYPE:
-          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getBool(prop->getName().c_str());
-          break;
+          recset->GetFields()->GetItem(prop->getName().c_str())->Value = (_variant_t)item->getBool(dt->getPropertyPosition(prop->getName()));
+        break;
 
         case te::dt::BYTE_ARRAY_TYPE:
         {
@@ -837,9 +836,8 @@ void te::ado::updateAdoColumn(const te::da::DataSetType* dt, _RecordsetPtr recse
           te::ado::Blob2Variant(data, ((te::dt::ByteArray*)prop)->bytesUsed(), var);
 
           recset->Fields->GetItem(prop->getName().c_str())->AppendChunk (var);
-
-          break;
         }
+        break;
 
         //case te::dt::ARRAY_TYPE:
      

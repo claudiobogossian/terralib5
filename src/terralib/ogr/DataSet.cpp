@@ -20,25 +20,19 @@
 /*!
   \file terralib/ogr/DataSet.cpp
 
-  \brief Implementation of a DataSet for OGR data provider.  
- */
+  \brief Implementation of a DataSet for OGR data provider.
+*/
 
 // TerraLib
-#include "../common/ByteSwapUtils.h"
 #include "../common/Exception.h"
-#include "../common/StringUtils.h"
 #include "../common/Translator.h"
 #include "../dataaccess/dataset/DataSetType.h"
 #include "../datatype/DateTimeProperty.h"
 #include "../datatype/ByteArray.h"
-#include "../datatype/Date.h"
-#include "../datatype/TimeDuration.h"
 #include "../datatype/TimeInstant.h"
 #include "../geometry/Envelope.h"
 #include "../geometry/Geometry.h"
-#include "../geometry/GeometryProperty.h"
 #include "../geometry/WKBReader.h"
-#include "../memory/DataSetItem.h"
 #include "../srs/Config.h"
 #include "DataSource.h"
 #include "DataSourceTransactor.h"
@@ -48,10 +42,14 @@
 // OGR
 #include <ogrsf_frmts.h>
 
+// STL
+#include <cassert>
+#include <memory>
+
 te::ogr::DataSet::DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isOwner)
   : m_trans(trans),
     m_dt(0),
-    m_ogrLayer(layer),
+    m_layer(layer),
     m_currentFeature(0),
     m_i(-1),
     m_wkbArray(0),
@@ -59,7 +57,22 @@ te::ogr::DataSet::DataSet(DataSourceTransactor* trans, OGRLayer* layer, bool isO
     m_isOwner(isOwner),
     m_srid(TE_UNKNOWN_SRS)
 {
+  assert(layer);
+
   layer->ResetReading();
+
+  m_dt = Convert2TerraLib(layer->GetLayerDefn());
+  
+  assert(m_dt);
+
+  m_dt->setFullLoaded(true);
+
+  if(m_dt->hasGeom())
+  {
+    OGRSpatialReference* osrs = m_layer->GetSpatialRef();
+    if(osrs)
+      m_srid = Convert2TerraLibProjection(osrs);
+  }
 }
 
 te::ogr::DataSet::~DataSet()
@@ -71,86 +84,39 @@ te::ogr::DataSet::~DataSet()
   delete m_dt;
 
   if(m_isOwner)
-    m_trans->getOGRDataSource()->ReleaseResultSet(m_ogrLayer);
-}
-
-te::da::DataSetType* te::ogr::DataSet::getType()
-{
-  if(m_dt == 0)
-  {
-    m_dt = Convert2TerraLib(m_ogrLayer->GetLayerDefn());
-    m_dt->setFullLoaded(true);
-    
-    if(m_dt->hasGeom())
-    {
-      OGRSpatialReference* osrs = m_ogrLayer->GetSpatialRef();
-      if(osrs)
-      {
-        m_srid = Convert2TerraLibProjection(osrs);
-        m_dt->getDefaultGeomProperty()->setSRID(m_srid);
-      }
-    } 
-  }
-  
-  return m_dt;
-}
-
-const te::da::DataSetType* te::ogr::DataSet::getType() const
-{
-  if(m_dt == 0)
-  {
-    m_dt = Convert2TerraLib(m_ogrLayer->GetLayerDefn());
-    m_dt->setFullLoaded(true);
-  }
-  
-  return m_dt;
+    m_trans->getOGRDataSource()->ReleaseResultSet(m_layer);
 }
 
 te::da::DataSourceTransactor* te::ogr::DataSet::getTransactor() const
 {
-  return m_trans; 
+  return m_trans;
 }
 
-void te::ogr::DataSet::loadTypeInfo()
-{
-  getType();
-}
-
-te::da::DataSet* te::ogr::DataSet::getParent() const
-{
-  return 0;
-}
-
-te::gm::Envelope* te::ogr::DataSet::getExtent(const te::dt::Property* /*p*/)
+te::gm::Envelope* te::ogr::DataSet::getExtent(std::size_t /*i*/)
 {
   OGREnvelope psExtent;
-  m_ogrLayer->GetExtent(&psExtent);
+  m_layer->GetExtent(&psExtent);
   return Convert2TerraLib(&psExtent);
 }
 
-void te::ogr::DataSet::setFilter(te::dt::Property* /*p*/,
-                                 const te::gm::Geometry* g,
-                                 te::gm::SpatialRelation /*r*/)
+std::size_t te::ogr::DataSet::getNumProperties() const
 {
-  OGRGeometry* ogrg = Convert2OGR(g);
-  m_ogrLayer->SetSpatialFilter(ogrg);
-  OGRGeometryFactory::destroyGeometry(ogrg);
+  return m_dt->size();
 }
 
-void te::ogr::DataSet::setFilter(te::dt::Property* /*p*/,
-                                 const te::gm::Envelope* e,
-                                 te::gm::SpatialRelation /*r*/)
+int te::ogr::DataSet::getPropertyDataType(std::size_t pos) const
 {
-  m_ogrLayer->SetSpatialFilterRect(e->m_llx, e->m_lly, e->m_urx, e->m_ury);
+  return m_dt->getProperty(pos)->getType();
 }
 
-te::da::DataSetItem* te::ogr::DataSet::getItem() const
+std::string te::ogr::DataSet::getPropertyName(std::size_t pos) const
 {
-  return new te::mem::DataSetItem(this);
+  return m_dt->getProperty(pos)->getName();
 }
 
-void te::ogr::DataSet::add(te::da::DataSetItem* /*item*/)
+std::string te::ogr::DataSet::getDatasetNameOfProperty(std::size_t pos) const
 {
+  return "";
 }
 
 bool te::ogr::DataSet::isEmpty() const
@@ -160,13 +126,13 @@ bool te::ogr::DataSet::isEmpty() const
 
 std::size_t te::ogr::DataSet::size() const
 {
-  return m_ogrLayer->GetFeatureCount();
+  return m_layer->GetFeatureCount();
 }
 
 bool te::ogr::DataSet::moveNext()
 {
   OGRFeature::DestroyFeature(m_currentFeature);
-  m_currentFeature = m_ogrLayer->GetNextFeature();
+  m_currentFeature = m_layer->GetNextFeature();
   m_i++;
   return m_currentFeature != 0;
 }
@@ -176,35 +142,30 @@ bool te::ogr::DataSet::movePrevious()
   return move(m_i - 1);
 }
 
-bool te::ogr::DataSet::moveFirst()
-{
-  m_ogrLayer->ResetReading();
-  m_i = -1;
-  return moveNext();
-}
-
 bool te::ogr::DataSet::moveBeforeFirst()
 {
-  m_ogrLayer->ResetReading();
+  m_layer->ResetReading();
   m_i = -1;
   return true;
 }
 
-bool te::ogr::DataSet::moveLast()
+bool te::ogr::DataSet::moveFirst()
 {
-  int lastPos = m_ogrLayer->GetFeatureCount() - 1;
-  return move(lastPos);
+  m_layer->ResetReading();
+  m_i = -1;
+  return moveNext();
 }
 
-bool te::ogr::DataSet::moveAfterLast()
+bool te::ogr::DataSet::moveLast()
 {
-  return move(m_ogrLayer->GetFeatureCount() + 1);
+  int lastPos = m_layer->GetFeatureCount() - 1;
+  return move(lastPos);
 }
 
 bool te::ogr::DataSet::move(std::size_t i)
 {
   int p = static_cast<int>(i);
-  OGRErr error = m_ogrLayer->SetNextByIndex(p);
+  OGRErr error = m_layer->SetNextByIndex(p);
   m_i = p - 1;
   if(error == OGRERR_NONE)
     return moveNext();
@@ -229,172 +190,60 @@ bool te::ogr::DataSet::isAtEnd() const
 
 bool te::ogr::DataSet::isAfterEnd() const
 {
-  return m_i > (int)size();
+  return m_i > static_cast<int>(size());
 }
 
-char te::ogr::DataSet::getChar(int /*i*/) const
+char te::ogr::DataSet::getChar(std::size_t /*i*/) const
 {
-  return '\0'; // Not supported by OGR library
+  throw te::common::Exception(TR_OGR("OGR driver: getChar not supported."));
 }
 
-char te::ogr::DataSet::getChar(const std::string& /*name*/) const
+unsigned char te::ogr::DataSet::getUChar(std::size_t /*i*/) const
 {
-  return '\0'; // Not supported by OGR library
+  throw te::common::Exception(TR_OGR("OGR driver: getUChar not supported."));
 }
 
-void te::ogr::DataSet::setChar(int /*i*/, char /*value*/) 
- {}
-
-void te::ogr::DataSet::setChar(const std::string& /*name*/, char /*value*/) 
-{}
-
-unsigned char te::ogr::DataSet::getUChar(int /*i*/) const
+boost::int16_t te::ogr::DataSet::getInt16(std::size_t /*i*/) const
 {
-  return '\0'; // Not supported by OGR library
+  throw te::common::Exception(TR_OGR("OGR driver: getInt16 not supported."));
 }
 
-unsigned char te::ogr::DataSet::getUChar(const std::string& /*name*/) const
-{
-  return '\0'; // Not supported by OGR library
-}
-
-void te::ogr::DataSet::setUChar(int /*i*/, unsigned char /*value*/) 
-{}
-
-void te::ogr::DataSet::setUChar(const std::string& /*name*/, unsigned char /*value*/) 
-{}
-
-boost::int16_t te::ogr::DataSet::getInt16(int /*i*/) const
-{
-  return 0; // Not supported by OGR library
-}
-
-boost::int16_t te::ogr::DataSet::getInt16(const std::string& /*name*/) const
-{
-  return 0; // Not supported by OGR library
-}
-
-void te::ogr::DataSet::setInt16(int /*i*/, boost::int16_t /*value*/) 
-{}
-
-void te::ogr::DataSet::setInt16(const std::string& /*name*/, boost::int16_t /*value*/) 
-{}
-
-boost::int32_t te::ogr::DataSet::getInt32(int i) const
+boost::int32_t te::ogr::DataSet::getInt32(std::size_t i) const
 {
   return m_currentFeature->GetFieldAsInteger(i);
 }
 
-boost::int32_t te::ogr::DataSet::getInt32(const std::string& name) const
+boost::int64_t te::ogr::DataSet::getInt64(std::size_t /*i*/) const
 {
-  return m_currentFeature->GetFieldAsInteger(name.c_str());
+  throw te::common::Exception(TR_OGR("OGR driver: getInt64 not supported."));
 }
 
-void te::ogr::DataSet::setInt32(int /*i*/, boost::int32_t /*value*/) 
-{}
-
-void te::ogr::DataSet::setInt32(const std::string& /*name*/, boost::int32_t /*value*/) 
-{}
-
-boost::int64_t te::ogr::DataSet::getInt64(int /*i*/) const
+bool te::ogr::DataSet::getBool(std::size_t /*i*/) const
 {
-  return 0; // Not supported by OGR library
+  throw te::common::Exception(TR_OGR("OGR driver: getBool not supported."));
 }
 
-boost::int64_t te::ogr::DataSet::getInt64(const std::string& /*name*/) const
+float te::ogr::DataSet::getFloat(std::size_t /*i*/) const
 {
-  return 0; // Not supported by OGR library
+  throw te::common::Exception(TR_OGR("OGR driver: getFloat not supported."));
 }
 
-void te::ogr::DataSet::setInt64(int /*i*/, boost::int64_t /*value*/) 
-{}
-
-void te::ogr::DataSet::setInt64(const std::string& /*name*/, boost::int64_t /*value*/) 
-{}
-
-bool te::ogr::DataSet::getBool(int /*i*/) const
-{
-  return false; // Not supported by OGR library
-}
-
-bool te::ogr::DataSet::getBool(const std::string& /*name*/) const
-{
-  return false; // Not supported by OGR library
-}
-
-void te::ogr::DataSet::setBool(int /*i*/, bool /*value*/) 
-{}
-
-void te::ogr::DataSet::setBool(const std::string& /*name*/, bool /*value*/) 
-{}
-
-float te::ogr::DataSet::getFloat(int /*i*/) const
-{
-  return 0.0; //Not supported by OGR library
-}
-
-float te::ogr::DataSet::getFloat(const std::string& /*name*/) const
-{
-  return 0.0; //Not supported by OGR library
-}
-
-void te::ogr::DataSet::setFloat(int /*i*/, float /*value*/) 
-{}
-
-void te::ogr::DataSet::setFloat(const std::string& /*name*/, float /*value*/) 
-{}
-
-double te::ogr::DataSet::getDouble(int i) const
+double te::ogr::DataSet::getDouble(std::size_t i) const
 {
   return m_currentFeature->GetFieldAsDouble(i);
 }
 
-double te::ogr::DataSet::getDouble(const std::string& name) const
+std::string te::ogr::DataSet::getNumeric(std::size_t i) const
 {
-  return m_currentFeature->GetFieldAsDouble(name.c_str());
+  return m_currentFeature->GetFieldAsString(i);
 }
 
-void te::ogr::DataSet::setDouble(int /*i*/, double /*value*/) 
-{}
-
-void te::ogr::DataSet::setDouble(const std::string& /*name*/, double /*value*/) 
-{}
-
-std::string te::ogr::DataSet::getNumeric(int /*i*/) const
+std::string te::ogr::DataSet::getString(std::size_t i) const
 {
-  return "";
+  return m_currentFeature->GetFieldAsString(i);
 }
 
-std::string te::ogr::DataSet::getNumeric(const std::string& /*name*/) const
-{
-  return "";
-}
-
-void te::ogr::DataSet::setNumeric(int /*i*/, const std::string& /*value*/) 
-{}
-
-void te::ogr::DataSet::setNumeric(const std::string& /*name*/, const std::string& /*value*/) 
-{}
-
-std::string te::ogr::DataSet::getString(int i) const
-{
-  std::string value(m_currentFeature->GetFieldAsString(i));
-  return value;
-}
-
-std::string te::ogr::DataSet::getString(const std::string& name) const
-{
-  std::string value(m_currentFeature->GetFieldAsString(name.c_str()));
-  return value;
-}
-
-void te::ogr::DataSet::setString(int /*i*/, const std::string& /*value*/) 
-{}
-
-void te::ogr::DataSet::setString(const std::string& /*name*/, const std::string& /*value*/) 
-{}
-
-te::dt::ByteArray* te::ogr::DataSet::getByteArray(int i) const
+te::dt::ByteArray* te::ogr::DataSet::getByteArray(std::size_t i) const
 {
   int size = 0;
   GByte* bytes = m_currentFeature->GetFieldAsBinary(i, &size);
@@ -405,63 +254,24 @@ te::dt::ByteArray* te::ogr::DataSet::getByteArray(int i) const
   return byteArray;
 }
 
-te::dt::ByteArray* te::ogr::DataSet::getByteArray(const std::string& name) const
+te::gm::Geometry* te::ogr::DataSet::getGeometry(std::size_t /*i*/) const
 {
-  int i = m_currentFeature->GetFieldIndex(name.c_str());
-  return getByteArray(i);
-}
-
-void te::ogr::DataSet::setByteArray(int /*i*/, const te::dt::ByteArray& /*value*/) 
-{}
-
-void te::ogr::DataSet::setByteArray(const std::string& /*name*/, const te::dt::ByteArray& /*value*/) 
-{}
-
-te::gm::Geometry* te::ogr::DataSet::getGeometry(int /*i*/) const
-{
-  return getGeometry();
-}
-
-te::gm::Geometry* te::ogr::DataSet::getGeometry(const std::string& /*name*/) const
-{
-  return getGeometry();
-}
-
-te::gm::Geometry* te::ogr::DataSet::getGeometry() const
-{
-  char* wkb = (char*)getWKB(0);
+  char* wkb = (char*)getWKB();
   te::gm::Geometry* geom = te::gm::WKBReader::read(wkb);
   geom->setSRID(m_srid);
   return geom;
 }
 
-void te::ogr::DataSet::setGeometry(int /*i*/, const te::gm::Geometry& /*value*/) 
-{}
-
-void te::ogr::DataSet::setGeometry(const std::string& /*name*/, const te::gm::Geometry& /*value*/) 
-{}
-
-te::rst::Raster* te::ogr::DataSet::getRaster(int /*i*/) const
+te::rst::Raster* te::ogr::DataSet::getRaster(std::size_t /*i*/) const
 {
-  return 0;
+  throw te::common::Exception(TR_OGR("OGR driver: getRaster not supported."));
 }
 
-te::rst::Raster* te::ogr::DataSet::getRaster(const std::string& /*name*/) const
+te::dt::DateTime* te::ogr::DataSet::getDateTime(std::size_t i) const
 {
-  return 0;
-}
-
-void te::ogr::DataSet::setRaster(int /*i*/, const te::rst::Raster& /*value*/) 
-{}
-
-void te::ogr::DataSet::setRaster(const std::string& /*name*/, const te::rst::Raster& /*value*/) 
-{}
-
-te::dt::DateTime* te::ogr::DataSet::getDateTime(int i) const
-{
-  if(m_dt==0)
+  if(m_dt == 0)
     return 0;
-  
+
   int pnYear,
       pnMonth,
       pnDay,
@@ -472,48 +282,43 @@ te::dt::DateTime* te::ogr::DataSet::getDateTime(int i) const
 
   if(m_currentFeature->GetFieldAsDateTime(i, &pnYear, &pnMonth, &pnDay, &pnHour, &pnMinute, &pnSecond, &pnTZFlag) == FALSE)
     return new te::dt::Date;
-  
+
   te::dt::Property* p = m_dt->getProperty(i);
   te::dt::DateTimeType subType = static_cast<te::dt::DateTimeProperty*>(p)->getSubType();
   te::dt::DateTime* dateTime = 0;
 
-  if(subType==te::dt::DATE)
-    dateTime = new te::dt::Date((unsigned short)pnYear, (unsigned short)pnMonth, (unsigned short)pnDay);
-  else if(subType==te::dt::TIME_DURATION)
-    dateTime = new te::dt::TimeDuration(pnHour, pnMinute, pnSecond);
-  else if(subType==te::dt::TIME_INSTANT)
+  if(subType == te::dt::DATE)
   {
-      te::dt::Date d(pnYear, pnMonth, pnDay);
-      te::dt::TimeDuration td(pnHour, pnMinute, pnSecond);
-      dateTime = new te::dt::TimeInstant(d, td);
+    dateTime = new te::dt::Date((unsigned short)pnYear, (unsigned short)pnMonth, (unsigned short)pnDay);
   }
-  
+  else if(subType == te::dt::TIME_DURATION)
+  {
+    dateTime = new te::dt::TimeDuration(pnHour, pnMinute, pnSecond);
+  }
+  else if(subType == te::dt::TIME_INSTANT)
+  {
+    te::dt::Date d(pnYear, pnMonth, pnDay);
+    te::dt::TimeDuration td(pnHour, pnMinute, pnSecond);
+    dateTime = new te::dt::TimeInstant(d, td);
+  }
+
   return dateTime;
 }
 
-te::dt::DateTime* te::ogr::DataSet::getDateTime(const std::string& name) const
+te::dt::Array* te::ogr::DataSet::getArray(std::size_t /*i*/) const
 {
-  int i = m_currentFeature->GetFieldIndex(name.c_str());
-  return getDateTime(i);
+  return 0; // Not supported by OGR library
 }
 
-void te::ogr::DataSet::setDateTime(int /*i*/, const te::dt::DateTime& /*value*/) 
-{}
-
-void te::ogr::DataSet::setDateTime(const std::string& /*name*/, const te::dt::DateTime& /*value*/) 
-{}
-
-void te::ogr::DataSet::getArray(int /*i*/, std::vector<boost::int16_t>& /*a*/) const
+bool te::ogr::DataSet::isNull(std::size_t i) const
 {
-  // Not supported by OGR library;
+  if(m_currentFeature->IsFieldSet(i) == 0)
+    return true;
+
+  return false;
 }
 
-void te::ogr::DataSet::getArray(const std::string& /*name*/, std::vector<boost::int16_t>& /*a*/) const
-{
-  // Not supported by OGR library;
-}
-
-const unsigned char* te::ogr::DataSet::getWKB(int /*i*/) const
+const unsigned char* te::ogr::DataSet::getWKB() const
 {
   // The OGR library supports only one geometry field
   OGRGeometry* geom = m_currentFeature->GetGeometryRef();
@@ -542,29 +347,3 @@ const unsigned char* te::ogr::DataSet::getWKB(int /*i*/) const
 
   return (const unsigned char*)m_wkbArray;
 }
-
-const unsigned char* te::ogr::DataSet::getWKB(const std::string& /*name*/) const
-{
-  return getWKB(0);
-}
-
-te::da::DataSet* te::ogr::DataSet::getDataSet(int /*i*/)
-{
-  return 0;
-}
-
-void te::ogr::DataSet::setDataSet(int /*i*/, const te::da::DataSet& /*value*/)
-{}
-
-void te::ogr::DataSet::setValue(int /*i*/, te::dt::AbstractData* /*ad*/)
-{
-  return;
-}
-        
-bool te::ogr::DataSet::isNull(int i) const
-{
-  if(m_currentFeature->IsFieldSet(i)==0)
-    return true;
-  return false;
-}
-

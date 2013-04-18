@@ -677,7 +677,8 @@ void te::qt::widgets::UpdateProperty::setGeometryPropertyData()
 
   // Set the envelope
   te::da::DataSet* dataSet = m_transactor->getDataSet(dataSetComboBox->currentText().toStdString());
-  te::gm::Envelope* e = dataSet->getExtent();
+  std::size_t gpos = te::da::GetFirstPropertyPos(dataSet, te::dt::GEOMETRY_TYPE);
+  te::gm::Envelope* e = dataSet->getExtent(gpos);
   if(e != 0)
   {
     geometryLLXLineEdit->setText(QString().setNum(e->getLowerLeftX(), 'g', 15));

@@ -205,7 +205,9 @@ te::rst::Raster* te::map::GetRaster(DataSetLayer* layer)
     throw Exception(TR_MAP("Could not get the data set reference by the layer!"));
 
 // gets the raster
-  std::auto_ptr<te::rst::Raster> raster(dataset->getRaster());
+  std::size_t rpos = te::da::GetFirstPropertyPos(dataset.get(), te::dt::RASTER_TYPE);
+
+  std::auto_ptr<te::rst::Raster> raster(dataset->getRaster(rpos));
   if(raster.get() == 0)
     throw Exception(TR_MAP("Could not get the raster referenced by the layer!"));
 
@@ -269,10 +271,8 @@ te::da::DataSet* te::map::DataSet2Memory(te::da::DataSet* dataset)
 {
   assert(dataset);
 
-  if(dataset->isEmpty())
-    return new te::mem::DataSet(static_cast<te::da::DataSetType*>(dataset->getType()->clone()));
-
-  dataset->moveNext();
+  //if(!dataset->moveNext())
+    //return new te::mem::DataSet(*dataset);
 
   return new te::mem::DataSet(*dataset);
 }

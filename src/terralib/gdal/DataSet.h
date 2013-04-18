@@ -32,6 +32,12 @@
 
 namespace te
 {
+// Forward declaration
+  namespace da
+  {
+    class DataSetType;
+  }
+
   namespace gdal
   {
 // Forward declaration
@@ -56,39 +62,33 @@ namespace te
         DataSet(DataSourceTransactor* t, te::da::DataSetType* dt, te::common::AccessPolicy rwRole = te::common::RAccess);
 
         /*! \brief Destructor. */
-        ~DataSet() {}
+        ~DataSet();
 
         te::common::TraverseType getTraverseType() const { return te::common::FORWARDONLY; }
 
         te::common::AccessPolicy getAccessPolicy() const { return m_rwRole; }
 
-        te::da::DataSetType* getType() { return m_dsType; }
-
-        const te::da::DataSetType* getType() const { return m_dsType; }
-
         te::da::DataSourceTransactor* getTransactor() const { return 0; }
-        
-        void loadTypeInfo();
 
-        te::da::DataSet* getParent() const { return 0; }
+        te::gm::Envelope* getExtent(std::size_t i);
 
-        te::gm::Envelope* getExtent(const te::dt::Property* p);
+        std::size_t getNumProperties() const;
 
-        void setFilter(te::dt::Property* /*p*/, const te::gm::Geometry* /*g*/, te::gm::SpatialRelation /*r = te::gm::INTERSECTS*/) {}
-        void setFilter(te::dt::Property* /*p*/, const te::gm::Envelope* /*e*/, te::gm::SpatialRelation /*r = te::gm::INTERSECTS*/) {}
+        int getPropertyDataType(std::size_t pos) const;
 
-        te::da::DataSetItem* getItem() const { return 0; }
-        void add(te::da::DataSetItem* /*item*/) {}
+        std::string getPropertyName(std::size_t pos) const;
+
+        std::string getDatasetNameOfProperty(std::size_t pos) const;
 
         bool isEmpty() const { return false; }
+
         std::size_t size() const { return 1; }
 
         bool moveNext();
         bool movePrevious();
-        bool moveFirst();
         bool moveBeforeFirst();
+        bool moveFirst();
         bool moveLast();
-        bool moveAfterLast();
         bool move(std::size_t i);
 
         bool isAtBegin() const;
@@ -96,109 +96,71 @@ namespace te
         bool isAtEnd() const;
         bool isAfterEnd() const;
 
-        char getChar(int /*i*/) const { return '\0'; }
+        char getChar(std::size_t /*i*/) const { return '\0'; }
         char getChar(const std::string& /*name*/) const { return '\0'; }
-        void setChar(int /*i*/, char /*value*/) {}
-        void setChar(const std::string& /*name*/, char /*value*/){}
 
-        unsigned char getUChar(int /*i*/) const { return 0; }
+        unsigned char getUChar(std::size_t /*i*/) const { return 0; }
         unsigned char getUChar(const std::string& /*name*/) const { return 0; }
-        void setUChar(int /*i*/, unsigned char /*value*/){}
-        void setUChar(const std::string& /*name*/, unsigned char /*value*/){}
 
-        boost::int16_t getInt16(int /*i*/) const { return 0; }
+        boost::int16_t getInt16(std::size_t /*i*/) const { return 0; }
         boost::int16_t getInt16(const std::string& /*name*/) const { return 0; }
-        void setInt16(int /*i*/, boost::int16_t /*value*/) {}
-        void setInt16(const std::string& /*name*/, boost::int16_t /*value*/){}
 
-        boost::int32_t getInt32(int /*i*/) const { return 0; }
+        boost::int32_t getInt32(std::size_t /*i*/) const { return 0; }
         boost::int32_t getInt32(const std::string& /*name*/) const { return 0; }
-        void setInt32(int /*i*/, boost::int32_t /*value*/) {}
-        void setInt32(const std::string& /*name*/, boost::int32_t /*value*/) {}
 
-        boost::int64_t getInt64(int /*i*/) const { return 0; }
+        boost::int64_t getInt64(std::size_t /*i*/) const { return 0; }
         boost::int64_t getInt64(const std::string& /*name*/) const { return 0; }
-        void setInt64(int /*i*/, boost::int64_t /*value*/) {}
-        void setInt64(const std::string& /*name*/, boost::int64_t /*value*/) {}
 
-        bool getBool(int /*i*/) const { return false; }
+        bool getBool(std::size_t /*i*/) const { return false; }
         bool getBool(const std::string& /*name*/) const { return false; }
-        void setBool(int /*i*/, bool /*value*/){}
-        void setBool(const std::string& /*name*/, bool /*value*/){}
 
-        float getFloat(int /*i*/) const { return 0.0; }
+        float getFloat(std::size_t /*i*/) const { return 0.0; }
         float getFloat(const std::string& /*name*/) const {return 0.0; }
-        void setFloat(int /*i*/, float /*value*/) {}
-        void setFloat(const std::string& /*name*/, float /*value*/){}
         
-        double getDouble(int /*i*/) const { return 0.0; }
+        double getDouble(std::size_t /*i*/) const { return 0.0; }
         double getDouble(const std::string& /*name*/) const { return 0.0; }
-        void setDouble(int /*i*/, double /*value*/){}
-        void setDouble(const std::string& /*name*/, double /*value*/){}
         
-        std::string getNumeric(int /*i*/) const { return ""; }
+        std::string getNumeric(std::size_t /*i*/) const { return ""; }
         std::string getNumeric(const std::string& /*name*/) const { return ""; }
-        void setNumeric(int /*i*/, const std::string& /*value*/) {}
-        void setNumeric(const std::string& /*name*/, const std::string& /*value*/){}
         
-        std::string getString(int /*i*/) const { return ""; }
+        std::string getString(std::size_t /*i*/) const { return ""; }
         std::string getString(const std::string& /*name*/) const { return ""; }
-        void setString(int /*i*/, const std::string& /*value*/) {}
-        void setString(const std::string& /*name*/, const std::string& /*value*/) {}
 
-        te::dt::ByteArray* getByteArray(int /*i*/) const { return 0; }
+        te::dt::ByteArray* getByteArray(std::size_t /*i*/) const { return 0; }
         te::dt::ByteArray* getByteArray(const std::string& /*name*/) const { return 0; }
-        void setByteArray(int /*i*/, const te::dt::ByteArray& /*value*/) {}
-        void setByteArray(const std::string& /*name*/, const te::dt::ByteArray& /*value*/) {}
 
-        te::gm::Geometry* getGeometry(int /*i*/) const { return 0; }
+        te::gm::Geometry* getGeometry(std::size_t /*i*/) const { return 0; }
         te::gm::Geometry* getGeometry(const std::string& /*name*/) const { return 0; }
-        te::gm::Geometry* getGeometry() const { return 0; }
-        void setGeometry(int /*i*/, const te::gm::Geometry& /*value*/) {}
-        void setGeometry(const std::string& /*name*/, const te::gm::Geometry& /*value*/) {}
 
-        te::rst::Raster* getRaster(int i) const;
-        te::rst::Raster* getRaster(const std::string& name) const; 
-        void setRaster(int /*i*/, const te::rst::Raster& /*value*/) {}
-        void setRaster(const std::string& /*name*/, const te::rst::Raster& /*value*/) {}
+        te::rst::Raster* getRaster(std::size_t i) const;
+        te::rst::Raster* getRaster(const std::string& name) const;
 
-        te::dt::DateTime* getDateTime(int /*i*/) const { return 0; }
+        te::dt::DateTime* getDateTime(std::size_t /*i*/) const { return 0; }
         te::dt::DateTime* getDateTime(const std::string& /*name*/) const { return 0; }
-        void setDateTime(int /*i*/, const te::dt::DateTime& /*value*/) {}
-        void setDateTime(const std::string& /*name*/, const te::dt::DateTime& /*value*/) {}
 
-        void getArray(int /*i*/, std::vector<boost::int16_t>& /*a*/) const {}
-        void getArray(const std::string& /*name*/, std::vector<boost::int16_t>& /*a*/) const {}
+        te::dt::Array* getArray(std::size_t /*i*/) const { return 0; }
+        te::dt::Array* getArray(const std::string& /*name*/) const { return 0; }
 
-        const unsigned char* getWKB(int /*i*/) const { return 0; }
-        const unsigned char* getWKB(const std::string& /*name*/) const { return 0; }
-
-        DataSet* getDataSet(int /*i*/) { return 0; }
-        DataSet* getDataSet(const std::string& /*name*/) { return 0; }
-        void setDataSet(int /*i*/, const te::da::DataSet& /*value*/) {}
-        void setDataSet(const std::string& /*name*/, const te::da::DataSet& /*value*/) {}
-
-        te::dt::AbstractData* getValue(int /*i*/) const { return 0; }
+        te::dt::AbstractData* getValue(std::size_t /*i*/) const { return 0; }
         te::dt::AbstractData* getValue(const std::string& /*name*/) const {return 0; }
-        void setValue(int /*i*/, te::dt::AbstractData* /*ad*/) {}
-        void setValue(const std::string& /*name*/, te::dt::AbstractData* /*ad*/) {}
 
-        bool isNull(int i) const { return i != 0; }
+        bool isNull(std::size_t i) const { return i != 0; }
         bool isNull(const std::string& /*name*/) const { return true; }
 
-    private:
-      
-      DataSourceTransactor* m_transactor;   //!< The associated data source transactor.
-      te::da::DataSetType* m_dsType;        //!< It describes the dataset.
-      te::common::AccessPolicy m_rwRole;    //!< Access role.
-      int m_size;                           //!< For GDAL driver this will be constant: 1.
-      int m_i;                              //!< Just to indicate the internal pointer movement.
+      private:
+
+        void loadTypeInfo();
+
+      private:
+
+        DataSourceTransactor* m_transactor;   //!< The associated data source transactor.
+        te::da::DataSetType* m_dsType;        //!< It describes the dataset.
+        te::common::AccessPolicy m_rwRole;    //!< Access role.
+        int m_size;                           //!< For GDAL driver this will be constant: 1.
+        int m_i;                              //!< Just to indicate the internal pointer movement.
    };
 
   } // end namespace gdal
 }   // end namespace te
 
-
 #endif  // __TERRALIB_GDAL_INTERNAL_DATASET_H
-
-

@@ -56,7 +56,6 @@ te::da::DataTypeCapabilities::DataTypeCapabilities()
   m_types[te::dt::CINT32_TYPE]      = false;
   m_types[te::dt::CFLOAT_TYPE]      = false;
   m_types[te::dt::CDOUBLE_TYPE]     = false;
-  m_types[te::dt::DATASETITEM_TYPE] = false;
   m_types[te::dt::POLYMORPHIC_TYPE] = false;
 }
 
@@ -324,16 +323,6 @@ void te::da::DataTypeCapabilities::setSupportCDouble(const bool& support)
   setSupport(te::dt::CDOUBLE_TYPE, support);
 }
 
-bool te::da::DataTypeCapabilities::supportsDatasetItem() const
-{
-  return supports(te::dt::DATASETITEM_TYPE);
-}
-
-void te::da::DataTypeCapabilities::setSupportDatasetItem(const bool& support)
-{
-  setSupport(te::dt::DATASETITEM_TYPE, support);
-}
-
 bool te::da::DataTypeCapabilities::supportsPolymorphic() const
 {
   return supports(te::dt::POLYMORPHIC_TYPE);
@@ -365,16 +354,17 @@ void te::da::DataTypeCapabilities::setSupportAll()
     it->second = true;
 }
 
-void te::da::DataTypeCapabilities::addHint(const int& type, te::dt::Property* hint)
+void te::da::DataTypeCapabilities::addHint(const int& type, const int& hint)
 {
   m_hints[type] = hint;
 }
 
-const te::dt::Property* te::da::DataTypeCapabilities::getHint(const int& type) const
+int te::da::DataTypeCapabilities::getHint(const int& type) const
 {
-  std::map<int, te::dt::Property*>::const_iterator it = m_hints.find(type);
+  std::map<int, int>::const_iterator it = m_hints.find(type);
+
   if(it != m_hints.end())
     return it->second;
 
-  return 0;
+  return te::dt::UNKNOWN_TYPE;
 }
