@@ -75,21 +75,19 @@ te::da::DataSetAdapter::DataSetAdapter(DataSet* dataset, const DataSourceCapabil
 // try to build automatically the adapter
   for(std::size_t i = 0; i != np; ++i)
   {
-    std::string pname = m_ds->getPropertyName(i);
-    int pdatatype = m_ds->getPropertyDataType(i);
+    std::string propertyName = m_ds->getPropertyName(i);
+    int propertyDataType = m_ds->getPropertyDataType(i);
 
-    if(dtCapabilities.supports(pdatatype))
+    if(dtCapabilities.supports(propertyDataType))
     {
-      add(pname, pdatatype, i);
+      add(propertyName, propertyDataType, i);
     }
     else
     {
-      const te::dt::Property* hintProperty = dtCapabilities.getHint(pdatatype);
+      int hintDataType = dtCapabilities.getHint(propertyDataType);
 
-      if(hintProperty == 0)
-        continue;
-
-      add(pname, hintProperty->getType(), i);
+      if(hintDataType != te::dt::UNKNOWN_TYPE)
+        add(propertyName, hintDataType, i);
     }
   }
 }
@@ -151,6 +149,11 @@ bool te::da::DataSetAdapter::moveNext()
 bool te::da::DataSetAdapter::movePrevious()
 {
   return m_ds->movePrevious();
+}
+
+bool te::da::DataSetAdapter::moveBeforeFirst()
+{
+  return m_ds->moveBeforeFirst();
 }
 
 bool te::da::DataSetAdapter::moveFirst()
@@ -358,5 +361,3 @@ te::dt::AbstractData* te::da::DataSetAdapter::getAdaptedValue(std::size_t i) con
 {
   return m_converters[i](m_ds.get(), m_propertyIndexes[i], m_datatypes[i]);
 }
-
-
