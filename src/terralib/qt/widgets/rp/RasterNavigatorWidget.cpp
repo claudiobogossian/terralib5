@@ -112,6 +112,11 @@ te::gm::Envelope te::qt::widgets::RasterNavigatorWidget::getCurrentExtent()
   return m_mapDisplay->getExtent();
 }
 
+te::qt::widgets::MapDisplay* te::qt::widgets::RasterNavigatorWidget::getDisplay()
+{
+  return m_mapDisplay;
+}
+
 void te::qt::widgets::RasterNavigatorWidget::showAsPreview(bool asPreview)
 {
   delete m_panTool;

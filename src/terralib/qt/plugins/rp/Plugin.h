@@ -45,6 +45,7 @@ namespace te
         class ContrastAction;
         class MixtureModelAction;
         class SegmenterAction;
+        class TiePointLocatorAction;
 
         class Plugin : public te::plugin::Plugin
         {
@@ -80,6 +81,7 @@ namespace te
             te::qt::plugins::rp::ContrastAction* m_contrast;        //!< Contrast Process Action
             te::qt::plugins::rp::MixtureModelAction* m_mixtureModel;//!< Contrast Process Action
             te::qt::plugins::rp::SegmenterAction* m_segmenter;      //!< Segmenter Process Action
+            te::qt::plugins::rp::TiePointLocatorAction* m_tiePoint; //!< Tie Point Locator Process Action
 
         };
 

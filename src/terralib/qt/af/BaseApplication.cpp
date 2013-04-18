@@ -681,11 +681,14 @@ void te::qt::af::BaseApplication::newProject()
 
   m_project = new Project;
 
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+  QString author;
+  int maxSaved;
+
+  GetProjectInformationsFromSettings(author, maxSaved);
 
   m_project->setTitle("New Project");
 
-  m_project->setAuthor(sett.value("projects/default author").toString().toStdString());
+  m_project->setAuthor(author.toStdString());
 
   QString projectTile(tr(" - Project: %1"));
 

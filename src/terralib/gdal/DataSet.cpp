@@ -116,27 +116,21 @@ bool te::gdal::DataSet::movePrevious()
   return (m_i > -1);
 }
 
-bool te::gdal::DataSet::moveFirst()
-{
-  m_i = 0; 
-  return (m_size != 0);
-}
-
 bool te::gdal::DataSet::moveBeforeFirst() 
 {
   m_i = -1;
   return (m_size != 0);
 }
 
-bool te::gdal::DataSet::moveLast() 
+bool te::gdal::DataSet::moveFirst()
 {
-  m_i = m_size - 1;
+  m_i = 0; 
   return (m_size != 0);
 }
 
-bool te::gdal::DataSet::moveAfterLast()
+bool te::gdal::DataSet::moveLast()
 {
-  m_i = m_size;
+  m_i = m_size - 1;
   return (m_size != 0);
 }
 

@@ -354,16 +354,17 @@ void te::da::DataTypeCapabilities::setSupportAll()
     it->second = true;
 }
 
-void te::da::DataTypeCapabilities::addHint(const int& type, te::dt::Property* hint)
+void te::da::DataTypeCapabilities::addHint(const int& type, const int& hint)
 {
   m_hints[type] = hint;
 }
 
-const te::dt::Property* te::da::DataTypeCapabilities::getHint(const int& type) const
+int te::da::DataTypeCapabilities::getHint(const int& type) const
 {
-  std::map<int, te::dt::Property*>::const_iterator it = m_hints.find(type);
+  std::map<int, int>::const_iterator it = m_hints.find(type);
+
   if(it != m_hints.end())
     return it->second;
 
-  return 0;
+  return te::dt::UNKNOWN_TYPE;
 }

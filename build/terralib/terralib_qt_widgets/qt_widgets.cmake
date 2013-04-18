@@ -320,12 +320,15 @@ set (
   ${SRCDIR}/widgets/rp/MixtureModelWizardPage.h
   ${SRCDIR}/widgets/rp/RasterInfoWidget.h
   ${SRCDIR}/widgets/rp/RasterInfoWizardPage.h
+  ${SRCDIR}/widgets/rp/RasterNavigatorDialog.h
   ${SRCDIR}/widgets/rp/RasterNavigatorWidget.h
   ${SRCDIR}/widgets/rp/RasterNavigatorWizardPage.h
   ${SRCDIR}/widgets/rp/SegmenterDialog.h
   ${SRCDIR}/widgets/rp/SegmenterWizardPage.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorAdvancedDialog.h
   ${SRCDIR}/widgets/rp/TiePointsLocatorDialog.h
+  ${SRCDIR}/widgets/rp/TiePointLocatorWidget.h
+  ${SRCDIR}/widgets/rp/TiePointLocatorWizardPage.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/rp" MOC)
 

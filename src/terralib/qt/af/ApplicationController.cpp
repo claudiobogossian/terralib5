@@ -549,9 +549,11 @@ void te::qt::af::ApplicationController::initializeProjectMenus()
 void te::qt::af::ApplicationController::updateRecentProjects(const QString& prjFile, const QString& prjTitle)
 {
   int pos = m_recentProjs.indexOf(prjFile);
-  QSettings sett(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-  int maxSaved = sett.value("projects/maximum saved").toInt();
+  QString author;
+  int maxSaved;
+
+  GetProjectInformationsFromSettings(author, maxSaved);
 
   if(pos != 0)
   {

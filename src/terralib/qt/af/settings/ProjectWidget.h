@@ -57,13 +57,15 @@ namespace te
 
           ~ProjectWidget();
 
-          virtual void saveChanges(){}
+          void saveChanges();
 
-          virtual void resetState(){};
+          void resetState();
 
-        public slots:
+        protected slots:
 
-          void onApplyButtonClicked(){}
+          void authorChanged(const QString& text);
+
+          void maxSavedChanged(int i);
 
         private:
 
