@@ -19,7 +19,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="0" column="0">
-        <widget class="QLabel" name="chartTitleLabel_2">
+        <widget class="QLabel" name="chartTitleLabel">
          <property name="text">
           <string>Title:</string>
          </property>
@@ -29,7 +29,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QLabel" name="titleStyleLabel_3">
+        <widget class="QLabel" name="titleStyleLabel">
          <property name="text">
           <string>Title Style:</string>
          </property>
@@ -39,7 +39,7 @@
         </widget>
        </item>
        <item row="2" column="0">
-        <widget class="QLabel" name="labelXLabel_2">
+        <widget class="QLabel" name="labelXLabel">
          <property name="text">
           <string>Label x:</string>
          </property>
@@ -49,7 +49,7 @@
         </widget>
        </item>
        <item row="3" column="0">
-        <widget class="QLabel" name="labelYLabel_2">
+        <widget class="QLabel" name="labelYLabel">
          <property name="text">
           <string>Label y:</string>
          </property>
@@ -59,7 +59,7 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QLabel" name="titleStyleLabel_4">
+        <widget class="QLabel" name="titleStyleLabel_2">
          <property name="text">
           <string>label Style:</string>
          </property>
@@ -69,7 +69,7 @@
         </widget>
        </item>
        <item row="5" column="0">
-        <widget class="QLabel" name="backgroundLabel_2">
+        <widget class="QLabel" name="backgroundLabel">
          <property name="text">
           <string>Background Color:</string>
          </property>
@@ -79,7 +79,7 @@
         </widget>
        </item>
        <item row="6" column="0">
-        <widget class="QLabel" name="gridLabel_2">
+        <widget class="QLabel" name="gridLabel">
          <property name="text">
           <string>Grid:</string>
          </property>
@@ -93,7 +93,7 @@
      <item>
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0" colspan="2">
-        <widget class="QLineEdit" name="m_chartTitleLineEdit_2">
+        <widget class="QLineEdit" name="m_chartTitleLineEdit">
          <property name="minimumSize">
           <size>
            <width>175</width>
@@ -106,7 +106,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QPushButton" name="m_titleStylePushButton_2">
+        <widget class="QPushButton" name="m_titleStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -132,7 +132,7 @@
         </spacer>
        </item>
        <item row="2" column="0" colspan="2">
-        <widget class="QLineEdit" name="m_labelXlLineEdit_2">
+        <widget class="QLineEdit" name="m_labelXlLineEdit">
          <property name="minimumSize">
           <size>
            <width>175</width>
@@ -142,7 +142,7 @@
         </widget>
        </item>
        <item row="3" column="0" colspan="2">
-        <widget class="QLineEdit" name="m_labelYlLineEdit_2">
+        <widget class="QLineEdit" name="m_labelYlLineEdit">
          <property name="minimumSize">
           <size>
            <width>175</width>
@@ -155,7 +155,7 @@
         </widget>
        </item>
        <item row="4" column="0">
-        <widget class="QPushButton" name="m_labelStylePushButton_2">
+        <widget class="QPushButton" name="m_labelStylePushButton">
          <property name="minimumSize">
           <size>
            <width>75</width>
@@ -181,7 +181,7 @@
         </spacer>
        </item>
        <item row="5" column="0">
-        <widget class="QFrame" name="m_colorPickerFrame_2">
+        <widget class="QFrame" name="m_colorPickerFrame">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -204,7 +204,7 @@
         </spacer>
        </item>
        <item row="6" column="0">
-        <widget class="QCheckBox" name="m_gridCheckBox_2">
+        <widget class="QCheckBox" name="m_gridCheckBox">
          <property name="text">
           <string/>
          </property>

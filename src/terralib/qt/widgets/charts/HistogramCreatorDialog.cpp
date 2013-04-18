@@ -57,10 +57,10 @@ te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet*
 
   std::size_t rpos = te::da::GetFirstPropertyPos(dataSet, te::dt::RASTER_TYPE);
 
-  if(dataSet->getRaster(rpos))
+  if(rpos != std::string::npos)
     {
       size_t size =  dataSet->getRaster(rpos)->getNumberOfBands();
-      for (unsigned int i = 0; i < size; i++)
+      for (size_t i = 0; i < size; i++)
       {
         item = QString::number(i);
         m_ui->m_propertyComboBox->addItem(item);
@@ -101,7 +101,7 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
 
-  if(m_dataSet->getRaster(rpos))
+  if(rpos != std::string::npos)
   {
     int teste  =  m_ui->m_propertyComboBox->currentIndex();
     m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
@@ -109,7 +109,15 @@ void te::qt::widgets::HistogramCreatorDialog::onOkPushButtonClicked()
   else
   {
     //Getting the Columns that will be used to populate the graph
-    int selectedPropertyIdx= m_type->getPropertyPosition(m_ui->m_propertyComboBox->currentText().toStdString());
+
+    size_t selectedPropertyIdx = 0;
+
+    for (size_t i = 0; i < m_dataSet->getNumProperties(); i++)
+    {
+      if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet->getPropertyName(i))
+        selectedPropertyIdx = i;
+    }
+
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
@@ -159,12 +167,10 @@ void te::qt::widgets::HistogramCreatorDialog::onHelpPushButtonClicked()
 
 void te::qt::widgets::HistogramCreatorDialog::onPropertyComboBoxIndexChanged (QString text)
 {
-  QString aux = m_ui->m_propertyComboBox->currentText();
-  std::string selectedProperty = aux.toStdString();
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
-  if(!(m_dataSet->getRaster(rpos)))
+  if(rpos != std::string::npos)
   {
-    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet, selectedProperty);
+    int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet,  m_ui->m_propertyComboBox->currentText().toStdString());
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
 
     if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)

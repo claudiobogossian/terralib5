@@ -18,24 +18,24 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/HistogramCreatorDialog.h
+  \file terralib/qt/widgets/charts/histogramDataWidget.h
 
-  \brief A dialog used to define the basic parameters of a new histogram.
+  \brief A widget used to adjust a histogram's input data.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDATAWIDGET_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDATAWIDGET_H
 
 //TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QDialog>
+#include <QtGui/QWidget>
 
 //STL
 #include <memory>
 
-namespace Ui { class HistogramCreatorDialogForm; }
+namespace Ui { class HistogramDataWidgetForm; }
 
 namespace te
 {
@@ -44,6 +44,7 @@ namespace te
   {
     //forward declarations
     class DataSet;
+    class DataSetType;
   }
 
   namespace qt
@@ -60,39 +61,31 @@ namespace te
     /*!
         \class Histogram Creator
 
-        \brief A wdiget used to customize a Histogram parameters.
+        \brief A widget used to adjust a histogram's input data.
       */
-      class TEQTWIDGETSEXPORT HistogramCreatorDialog : public QDialog
+      class TEQTWIDGETSEXPORT HistogramDataWidget : public QWidget
       {
 
         Q_OBJECT
 
         public:
 
-          HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          HistogramDataWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
-          ~HistogramCreatorDialog();
+          ~HistogramDataWidget();
 
         protected slots:
 
-          void onStylePushButtonClicked();
-          void onOkPushButtonClicked();
-          void onHelpPushButtonClicked();
-          void onFillPushButtonClicked();
-          void onStrokePushButtonClicked();
           void onPropertyComboBoxIndexChanged(QString text);
 
         private:
 
-          std::auto_ptr<Ui::HistogramCreatorDialogForm>  m_ui;
+          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;       //!< The widget form.
           te::da::DataSet*                    m_dataSet;          //!< The dataset that will be used to generate the hISTOGRAM graph.
-          te::qt::widgets::Histogram*         m_histogram;        //!< The histogram that will be configured by this dialog.
-          te::qt::widgets::HistogramChart*    m_histogramChart;   //!< The histogram's chart that will be configured by this dialog.
-          te::qt::widgets::HistogramStyle*    m_histogramStyle;   //!< The histogram's chart style that will be configured by this dialog.
-          te::qt::widgets::ChartDisplay*      m_chartDisplay;     //!< The display that will be used to draq the new chart.
-      };
+          te::da::DataSetType*                m_type;             //!< The dataset's type.
+       };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMCREATORWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDATAWIDGET_H
