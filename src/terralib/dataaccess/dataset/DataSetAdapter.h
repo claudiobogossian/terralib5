@@ -188,6 +188,36 @@ namespace te
         te::da::DataSet* getAdapted() const;
 
         /*!
+          \brief This method returns the name of the properties that have not yet been adapted.
+
+          \param propertyNames A vector that will be filled with the name of the properties that have not yet been adapted.
+        */
+        void getNonAdaptedProperties(std::vector<std::string>& propertyNames) const;
+
+        /*!
+          \brief This method returns the index of the properties that have not yet been adapted.
+
+          \param propertyPos A vector that will be filled with the index of the properties that have not yet been adapted.
+        */
+        void getNonAdaptedProperties(std::vector<std::size_t>& propertyPos) const;
+
+         /*!
+          \brief This method tells which properties of the handled data set that have been adapted based on the given property name.
+
+          \param propertyName A property name of the DataSetAdapter.
+          \param adaptedPropertyPos  A vector that will be filled with the property positions of the handled data set have been adapted.
+        */
+        void getAdaptedProperties(const std::string& propertyName, std::vector<std::size_t>& adaptedPropertyPos);
+
+        /*!
+          \brief This method tells which properties of the handled data set that have been adapted based on the given property name.
+
+          \param propertyPos A property position of the DataSetAdapter.
+          \param adaptedPropertyPos  A vector that will be filled with the property positions of the handled data set have been adapted.
+        */
+        void getAdaptedProperties(std::size_t propertyPos, std::vector<std::size_t>& adaptedPropertyPos);
+
+        /*!
           \brief This method removes a property of DataSetAdapter.
 
           \param propertyName The property name of the DataSetAdapter that will be removed.
@@ -203,11 +233,22 @@ namespace te
 
         void add(const std::string& newPropertyName,
                  int newPropertyType,
-                 std::size_t adaptedPropertyPos);
+                 const std::string& adaptedPropertyName,
+                 AttributeConverter conv = GenericAttributeConverter);
 
         void add(const std::string& newPropertyName,
                  int newPropertyType,
-                 std::vector<std::size_t> adaptedPropertyPos,
+                 std::size_t adaptedPropertyPos,
+                 AttributeConverter conv = GenericAttributeConverter);
+
+        void add(const std::string& newPropertyName,
+                 int newPropertyType,
+                 const std::vector<std::string>& adaptedPropertyNames,
+                 AttributeConverter conv);
+
+        void add(const std::string& newPropertyName,
+                 int newPropertyType,
+                 const std::vector<std::size_t>& adaptedPropertyPos,
                  AttributeConverter conv);
 
         //@}
