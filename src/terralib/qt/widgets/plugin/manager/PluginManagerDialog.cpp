@@ -222,7 +222,7 @@ void MakeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vec
         te::plugin::PluginManager::getInstance().load(plgs[i]->m_name);
       }
     }
-    catch(te::qt::widgets::Exception& e)
+    catch(const std::exception& e)
     {
       QMessageBox::warning(parent, QObject::tr("Fail to load plugin"), e.what());
 
