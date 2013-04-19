@@ -63,6 +63,8 @@ namespace te
 
           ~ScatterStyleWidget();
 
+          te::qt::widgets::Symbol* getSymbol();
+
         protected slots:
 
           void onPlotStylePushButtonClicked();

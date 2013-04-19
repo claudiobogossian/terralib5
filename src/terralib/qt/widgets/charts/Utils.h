@@ -32,6 +32,9 @@
 //QWT
 #include <qwt_text.h>
 
+//STL
+#include <vector>
+
 namespace te
 {
   // Forward declarations

@@ -18,24 +18,24 @@
  */
 
 /*!
-  \file terralib/qt/widgets/charts/histogramDataWidget.h
+  \file terralib/qt/widgets/charts/HistogramDialog.h
 
-  \brief A widget used to adjust a histogram's input data.
+  \brief A dialog used to define the basic parameters of a new histogram.
 */
 
-#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDATAWIDGET_H
-#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDATAWIDGET_H
+#ifndef __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDIALOG_H
+#define __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDIALOG_H
 
 //TerraLib
 #include "../Config.h"
 
 // Qt
-#include <QtGui/QWidget>
+#include <QtGui/QDialog>
 
 //STL
 #include <memory>
 
-namespace Ui { class HistogramDataWidgetForm; }
+namespace Ui { class HistogramDialogForm; }
 
 namespace te
 {
@@ -52,39 +52,41 @@ namespace te
     {
 
     //forward declarations
-    class Histogram;
     class ChartDisplay;
+    class HistogramChart;
+    class HistogramDataWidget;
 
     /*!
         \class Histogram Creator
 
-        \brief A widget used to adjust a histogram's input data.
+        \brief A wdiget used to customize a Histogram parameters.
       */
-      class TEQTWIDGETSEXPORT HistogramDataWidget : public QWidget
+      class TEQTWIDGETSEXPORT HistogramDialog : public QDialog
       {
 
         Q_OBJECT
 
         public:
 
-          HistogramDataWidget(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          HistogramDialog(te::da::DataSet* dataSet, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
-          ~HistogramDataWidget();
-
-          te::qt::widgets::Histogram* getHistogram();
+          ~HistogramDialog();
 
         protected slots:
 
-          void onPropertyComboBoxIndexChanged(QString text);
+          void onOkPushButtonClicked();
+          void onHelpPushButtonClicked();
 
         private:
 
-          std::auto_ptr<Ui::HistogramDataWidgetForm>  m_ui;        //!< The widget form.
-          te::da::DataSet*                            m_dataSet;   //!< The dataset that will be used to generate the histogram graph.
-          te::qt::widgets::Histogram*                 m_histogram; //!< The histogram that will be configured by this widget.
-       };
+          std::auto_ptr<Ui::HistogramDialogForm>  m_ui;               //!< The dialog form.
+          te::qt::widgets::ChartDisplay*          m_chartDisplay;     //!< The display that will be used to draq the new chart.
+          te::qt::widgets::HistogramChart*        m_histogramChart;   //!< The histogram's chart that will be configured by this dialog.
+          te::qt::widgets::HistogramDataWidget*   m_histogramDataWidget;       //!< The histogram's data widget used to configure the basic parameters of the new histogram.
+
+      };
     } // end namespace widgets
   }   // end namespace qt
 }     // end namespace te
 
-#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDATAWIDGET_H
+#endif  // __TERRALIB_QT_WIDGETS_INTERNAL_HISTOGRAMDIALOG_H

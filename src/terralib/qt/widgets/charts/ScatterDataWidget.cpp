@@ -25,6 +25,7 @@
 
 //Terralib
 #include "ui_scatterDataWidgetForm.h"
+#include "../../../qt/widgets/charts/Utils.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "ScatterDataWidget.h"
@@ -44,6 +45,14 @@ te::qt::widgets::ScatterDataWidget::ScatterDataWidget(te::da::DataSet* dataSet, 
     m_ui->m_propertyXComboBox->addItem(item);
     m_ui->m_propertyYComboBox->addItem(item);
   }
+}
+
+te::qt::widgets::Scatter* te::qt::widgets::ScatterDataWidget::getScatter()
+{
+  //Acquiring the dataset Properties types and creating a new scatter
+  m_scatter = te::qt::widgets::createScatter(m_dataSet, te::da::GetPropertyPos(m_dataSet, m_ui->m_propertyXComboBox->currentText().toStdString()), te::da::GetPropertyPos(m_dataSet, m_ui->m_propertyYComboBox->currentText().toStdString()));
+
+  return m_scatter;
 }
 
 te::qt::widgets::ScatterDataWidget::~ScatterDataWidget(){}

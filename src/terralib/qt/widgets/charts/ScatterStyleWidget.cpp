@@ -46,6 +46,11 @@ te::qt::widgets::ScatterStyleWidget::ScatterStyleWidget(QWidget* parent, Qt::Win
 
 te::qt::widgets::ScatterStyleWidget::~ScatterStyleWidget(){}
 
+te::qt::widgets::Symbol* te::qt::widgets::ScatterStyleWidget::getSymbol()
+{
+  return m_symbol;
+}
+
 void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
 {
   QDialog dlg;
@@ -60,5 +65,5 @@ void te::qt::widgets::ScatterStyleWidget::onPlotStylePushButtonClicked()
   layout->addWidget(pts);
 
   dlg.exec();
-//  m_symbol->setSymbolizer(1, static_cast<PointSymbolizerWidget*>(pts)->getSymbolizer());
+  m_symbol->setSymbolizer(1, static_cast<PointSymbolizerWidget*>(pts)->getSymbolizer());
 }

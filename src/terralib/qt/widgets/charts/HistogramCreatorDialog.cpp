@@ -44,8 +44,6 @@
 //QT
 #include <QtGui/QDialog>
 
-#include <iostream>
-
 te::qt::widgets::HistogramCreatorDialog::HistogramCreatorDialog(te::da::DataSet* dataSet, QWidget* parent, Qt::WindowFlags f)
   : QDialog(parent, f),
     m_ui(new Ui::HistogramCreatorDialogForm),

@@ -45,8 +45,6 @@ namespace te
     {
 
     //forward declarations
-    class Histogram;
-    class HistogramChart;
     class HistogramStyle;
 
     /*!
@@ -61,9 +59,11 @@ namespace te
 
         public:
 
-          HistogramStyleWidget(QWidget* parent = 0,  Qt::WindowFlags f = 0);
+          HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial, QWidget* parent = 0,  Qt::WindowFlags f = 0);
 
           ~HistogramStyleWidget();
+
+          te::qt::widgets::HistogramStyle* getHistogramStyle();
 
         protected slots:
 
@@ -73,8 +73,6 @@ namespace te
         private:
 
           std::auto_ptr<Ui::HistogramStyleWidgetForm>  m_ui;      //!< The widget form.
-          te::qt::widgets::Histogram*         m_histogram;        //!< The histogram that will be configured by this widget.
-          te::qt::widgets::HistogramChart*    m_histogramChart;   //!< The histogram's chart that will be configured by this widget.
           te::qt::widgets::HistogramStyle*    m_histogramStyle;   //!< The histogram's chart style that will be configured by this widget.
       };
     } // end namespace widgets

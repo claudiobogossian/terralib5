@@ -28,8 +28,6 @@
 #include "BasicFillDialog.h"
 #include "BasicStrokeDialog.h"
 #include "HistogramStyleWidget.h"
-#include "Histogram.h"
-#include "HistogramChart.h"
 #include "HistogramStyle.h"
 #include "ui_histogramStyleWidgetForm.h"
 
@@ -38,12 +36,15 @@
 
 #include <iostream>
 
-te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(QWidget* parent, Qt::WindowFlags f)
+te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(te::qt::widgets::HistogramStyle* initial, QWidget* parent, Qt::WindowFlags f)
   : QWidget(parent, f),
-    m_ui(new Ui::HistogramStyleWidgetForm)
+    m_ui(new Ui::HistogramStyleWidgetForm),
+    m_histogramStyle(initial)
 {
   m_ui->setupUi(this);
-  m_histogramStyle = new te::qt::widgets::HistogramStyle(); 
+
+  if(!m_histogramStyle)
+    m_histogramStyle = new te::qt::widgets::HistogramStyle(); 
 
 // connect signal and slots
   connect(m_ui->m_fillPushButton, SIGNAL(clicked()), this, SLOT(onFillPushButtonClicked()));
@@ -53,6 +54,11 @@ te::qt::widgets::HistogramStyleWidget::HistogramStyleWidget(QWidget* parent, Qt:
 te::qt::widgets::HistogramStyleWidget::~HistogramStyleWidget()
 {
 
+}
+
+te::qt::widgets::HistogramStyle* te::qt::widgets::HistogramStyleWidget::getHistogramStyle()
+{
+  return m_histogramStyle;
 }
 
 void te::qt::widgets::HistogramStyleWidget::onFillPushButtonClicked()

@@ -24,11 +24,13 @@
 */
 
 //Terralib
+#include "../../../qt/widgets/charts/Utils.h"
 #include "../../../dataaccess.h"
 #include "../../../datatype/Property.h"
 #include "../../../raster.h"
 #include "../../../raster/RasterSummary.h"
 #include "../../../raster/RasterSummaryManager.h"
+#include "Histogram.h"
 #include "HistogramDataWidget.h"
 #include "ui_histogramDataWidgetForm.h"
 
@@ -75,11 +77,48 @@ te::qt::widgets::HistogramDataWidget::~HistogramDataWidget()
 
 }
 
+te::qt::widgets::Histogram* te::qt::widgets::HistogramDataWidget::getHistogram() 
+{
+  std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
+
+  if(rpos != std::string::npos)
+  {
+    m_histogram = te::qt::widgets::createHistogram(m_dataSet, m_ui->m_propertyComboBox->currentIndex());
+  }
+  else
+  {
+    //Getting the Columns that will be used to populate the graph
+
+    size_t selectedPropertyIdx = 0;
+
+    for (size_t i = 0; i < m_dataSet->getNumProperties(); i++)
+    {
+      if(m_ui->m_propertyComboBox->currentText().toStdString() == m_dataSet->getPropertyName(i))
+        selectedPropertyIdx = i;
+    }
+
+    int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
+
+    if(propType == te::dt::DATETIME_TYPE || propType == te::dt::STRING_TYPE)
+    {
+      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx);
+    }
+    else
+    {
+      m_histogram = te::qt::widgets::createHistogram(m_dataSet, selectedPropertyIdx,m_ui->m_slicesSpinBox->value());
+    }
+  }
+  return m_histogram;
+}
 
 void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QString text)
 {
   std::size_t rpos = te::da::GetFirstPropertyPos(m_dataSet, te::dt::RASTER_TYPE);
   if(rpos != std::string::npos)
+  {
+    m_ui->m_slicesSpinBox->setEnabled(false);
+  }
+  else 
   {
     int selectedPropertyIdx= te::da::GetPropertyPos(m_dataSet,  m_ui->m_propertyComboBox->currentText().toStdString());
     int propType = m_dataSet->getPropertyDataType(selectedPropertyIdx);
@@ -92,9 +131,5 @@ void te::qt::widgets::HistogramDataWidget::onPropertyComboBoxIndexChanged (QStri
     {
     m_ui->m_slicesSpinBox->setEnabled(true);
     }
-  }
-  else 
-  {
-    m_ui->m_slicesSpinBox->setEnabled(false);
   }
 }
