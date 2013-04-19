@@ -148,7 +148,7 @@ namespace te
 
       private:
 
-        const unsigned char* te::ogr::DataSet::getWKB() const;
+        const unsigned char* getWKB() const;
 
       private:
 
