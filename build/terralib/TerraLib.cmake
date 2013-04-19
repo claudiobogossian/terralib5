@@ -61,11 +61,10 @@ option (BUILD_SAM "Build Spatial Access Methods module?" ON)
 option (BUILD_SERIALIZATION "Build Serialization module?" ON)
 option (BUILD_SQLITE "Build SQLite module?" OFF)
 option (BUILD_SRS "Build Spatial Reference System module?" ON)
-
-option (BUILD_ST "Build Spatial-Temporal module?" OFF)
-option (BUILD_STLOADER "Build Spatial-Temporal Loader module?" OFF)
-
+option (BUILD_ST "Build Spatial-Temporal module?" ON)
+option (BUILD_STLOADER "Build Spatial-Temporal Loader module?" ON)
 option (BUILD_SYMBOLOGY "Build Symbology module?" ON)
+option (BUILD_VP "Build Vector Processing module?" OFF)
 option (BUILD_XERCES "Build Xerces module?" ON)
 option (BUILD_XLINK "Build XLink module?" ON)
 option (BUILD_XML "Build XML module?" ON)
@@ -197,6 +196,10 @@ endif()
 
 IF(BUILD_SYMBOLOGY)
 	add_subdirectory(terralib/terralib_symbology)
+endif()
+
+IF(BUILD_VP)
+	add_subdirectory(terralib/terralib_vp)
 endif()
 
 IF(BUILD_XERCES)
