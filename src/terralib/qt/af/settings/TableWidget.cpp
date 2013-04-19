@@ -14,3 +14,9 @@ te::qt::af::TableWidget::~TableWidget()
 {
   delete m_ui;
 }
+
+void te::qt::af::TableWidget::getHelpInformations(QString& ns, QString& helpFile)
+{
+  ns = "dpi.inpe.br.apf";
+  helpFile = "/apf/settings/table/TableConfig.html";
+}

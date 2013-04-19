@@ -905,11 +905,6 @@ namespace te
                     paramsPtr->m_inputParametersPtr->m_inputRasterPtr->getGrid();
                   te::gm::Coord2D newULC( oldGridPtr->gridToGeo( ((double)
                     segsBlk.m_startX) - 0.5, ((double)segsBlk.m_startY )-0.5 ) );
-                    
-                  new te::rst::Grid( segsBlk.m_width, segsBlk.m_height,
-                    oldGridPtr->getResolutionX(),
-                    oldGridPtr->getResolutionY(),
-                    &newULC, oldGridPtr->getSRID() );
                  
                   std::map< std::string, std::string > rInfo;
 

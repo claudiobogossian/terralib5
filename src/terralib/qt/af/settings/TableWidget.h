@@ -61,6 +61,8 @@ namespace te
 
           virtual void resetState(){};
 
+          virtual void getHelpInformations(QString& ns, QString& helpFile);
+
         public slots:
 
           void onApplyButtonClicked(){}
