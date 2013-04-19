@@ -32,9 +32,8 @@
 #include "../../maptools/FolderLayer.h"
 #include "../../srs/Config.h"
 #include "../widgets/canvas/MultiThreadMapDisplay.h"
-#include "../widgets/charts/ChartStyleDialog.h"
-#include "../widgets/charts/HistogramCreatorDialog.h"
-#include "../widgets/charts/ScatterCreatorDialog.h"
+#include "../widgets/charts/HistogramDialog.h"
+#include "../widgets/charts/ScatterDialog.h"
 #include "../widgets/datasource/core/DataSourceType.h"
 #include "../widgets/datasource/core/DataSourceTypeManager.h"
 #include "../widgets/datasource/selector/DataSourceSelectorDialog.h"
@@ -496,7 +495,7 @@ void te::qt::af::BaseApplication::onLayerHistogramTriggered()
     }
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::HistogramCreatorDialog dlg(dataset, this);
+    te::qt::widgets::HistogramDialog dlg(dataset, this);
     dlg.exec();
   }
   catch(const std::exception& e)
@@ -518,7 +517,8 @@ void te::qt::af::BaseApplication::onLayerScatterTriggered()
     }
     
     te::da::DataSet* dataset = (*(layers.begin()))->getLayer()->getData();
-    te::qt::widgets::ScatterCreatorDialog dlg(dataset, this);
+    te::qt::widgets::ScatterDialog dlg(dataset, this);
+
     dlg.exec();
   }
   catch(const std::exception& e)
