@@ -112,7 +112,16 @@ void te::qt::af::SettingsDialog::settingsChanged (QListWidgetItem* current, QLis
   m_ui->m_widgetStack->setCurrentIndex(pos);
   m_ui->m_customGroupBox->setTitle(sett + tr(" settings"));
 
-  QString lbl = ((AbstractSettingWidget*)w)->getResumeText(); 
+  AbstractSettingWidget* w2 = ((AbstractSettingWidget*)w);
+
+  QString lbl = w2->getResumeText(),
+          ns,
+          page;
+
+  w2->getHelpInformations(ns, page);
+
+  m_ui->m_helpPushButton->setNameSpace(ns);
+  m_ui->m_helpPushButton->setPageReference(page);
 
   m_ui->m_resumeLabel->setText(lbl);
 

@@ -12,9 +12,15 @@ te::qt::af::ProjectWidget::ProjectWidget(QWidget* parent)
   m_resumeText = tr("Default author for new projects.");
 
   connect(m_ui->m_authorLineEdit, SIGNAL(textChanged(const QString&)), SLOT(authorChanged(const QString&)));
-  connect(m_ui->m_numSavedProjectsSpinBox, SIGNAL(valueChanged(int)), SLOT(maxSavedChanged()));
+  connect(m_ui->m_numSavedProjectsSpinBox, SIGNAL(valueChanged(int)), SLOT(maxSavedChanged(int)));
 
   resetState();
+}
+
+void te::qt::af::ProjectWidget::getHelpInformations(QString& ns, QString& helpFile)
+{
+  ns = "dpi.inpe.br.apf";
+  helpFile = "/apf/settings/project/ProjectConfig.html";
 }
 
 te::qt::af::ProjectWidget::~ProjectWidget()

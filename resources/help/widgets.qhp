@@ -6,17 +6,29 @@
     <filterAttribute>help</filterAttribute>
     <toc>
       <section title="Qt components" ref="./widgets/index.html">
-        <section title="Plugins Manager" ref="./widgets/pluginmanager/PluginManager.html"/>
+        <section title="Plugins manager" ref="./widgets/pluginmanager/PluginManager.html"/>
+        <section title="Chart style" ref="./widgets/charts/chart_style.html"/>
+        <section title="Classifier" ref="./widgets/rp/classifier.html"/>
+        <section title="Data set selector" ref="./widgets/dataset_selector/dataset_selector.html"/>
+        <section title="Data source selector" ref="./widgets/datasource_selector/datasource_selector.html"/>
       </section>
     </toc>
     <keywords>
       <keyword name="Components" ref="./widgets/index.html"/>
       <keyword name="Plugin manager" ref="./widgets/pluginmanager/PluginManager.html"/>
+      <keyword name="Chart" ref="./widgets/charts/chart_style.html"/>
+      <keyword name="Classifier" ref="./widgets/rp/classifier.html"/>
+      <keyword name="Dataset" ref="./widgets/dataset_selector/dataset_selector.html"/>
+      <keyword name="Data source" ref="./widgets/datasource_selector/datasource_selector.html"/>
     </keywords>
      <files>
       <file>widgets/index.html</file>
       <file>widgets/pluginmanager/PluginManager.html</file>
       <file>widgets/pluginmanager/*.png</file>
+      <file>widgets/charts/chart_style.html</file>
+      <file>widgets/rp/classifier.html</file>
+      <file>widgets/dataset_selector/dataset_selector.html</file>
+      <file>widgets/datasource_selector/datasource_selector.html</file>
     </files>
   </filterSection>
 </QtHelpProject>

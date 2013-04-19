@@ -55,6 +55,7 @@ te::qt::widgets::ClassifierDialog::ClassifierDialog(const te::rst::Raster* input
   for(unsigned b = 0 ; b < inputRasterPtr->getNumberOfBands(); b++)
     m_uiPtr->m_inputRasterBandsListWidget->addItem(QString::number(b));
 
+  m_uiPtr->m_helpPushButton->setPageReference("widgets/rp/classifier.html");
 }
 
 te::qt::widgets::ClassifierDialog::~ClassifierDialog()

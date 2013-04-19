@@ -73,8 +73,6 @@ namespace te
 
             void testPushButtonPressed();
 
-            void helpPushButtonPressed();
-
             void advancedConnectionOptionsCheckBoxToggled(bool t);
 
             void passwordLineEditEditingFinished();

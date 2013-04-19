@@ -86,9 +86,8 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="m_helpPushButton">
+        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton" native="false">
          <property name="enabled">
-          <bool>false</bool>
          </property>
          <property name="text">
           <string>&amp;Help</string>
@@ -133,4 +132,11 @@
  </widget>
  <resources/>
  <connections/>
+ <CustomWidgets>
+	<CustomWidget>
+	 <class>te::qt::widgets::HelpPushButton</class> 
+	 <extends>QPushButton</extends> 
+	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+	</CustomWidget>
+ </CustomWidgets>
 </ui>

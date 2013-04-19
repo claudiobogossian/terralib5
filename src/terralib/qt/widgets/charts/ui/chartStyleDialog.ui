@@ -234,7 +234,7 @@
      <item row="1" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_10">
        <item>
-        <widget class="QPushButton" name="m_helpPushButton">
+        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
          <property name="text">
           <string>Help</string>
          </property>
@@ -299,4 +299,11 @@
    </hints>
   </connection>
  </connections>
+ <CustomWidgets>
+	<CustomWidget>
+	 <class>te::qt::widgets::HelpPushButton</class> 
+	 <extends>QPushButton</extends> 
+	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+	</CustomWidget>
+ </CustomWidgets>
 </ui>
