@@ -110,7 +110,7 @@ void te::qt::widgets::DataSetAdapterWidget::onRemoveToolButtonClicked()
 
   std::string propName = m_ui->m_tableWidget->item(m_ui->m_tableWidget->currentRow(), 1)->text().toStdString();
 
-  m_dataSetAdapter->remove(propName);
+  //m_dataSetAdapter->remove(propName);
 
   m_ui->m_removeToolButton->setEnabled(false);
 
