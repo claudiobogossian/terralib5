@@ -47,7 +47,7 @@ te::vp::AggregationDialog::AggregationDialog(QWidget* parent, Qt::WindowFlags f)
 // add controls
   m_ui->setupUi(this);
 
-  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregationHint").pixmap(48,48));
+  m_ui->m_imgLabel->setPixmap(QIcon::fromTheme("vp-aggregation-hint").pixmap(48,48));
   m_ui->m_datasourcesToolButton->setIcon(QIcon::fromTheme("datasource"));
 }
 
