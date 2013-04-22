@@ -149,6 +149,8 @@ void te::qt::widgets::TiePointLocatorWidget::setReferenceLayer(te::map::Abstract
 
     if(inputRst)
     {
+      m_ui->m_referenceBand1ComboBox->clear();
+
       for(unsigned band1Idx = 0; band1Idx < inputRst->getNumberOfBands(); ++band1Idx)
         m_ui->m_referenceBand1ComboBox->addItem(QString::number(band1Idx));
     }
@@ -171,6 +173,8 @@ void te::qt::widgets::TiePointLocatorWidget::setAdjustLayer(te::map::AbstractLay
 
     if(inputRst)
     {
+      m_ui->m_referenceBand2ComboBox->clear();
+
       for(unsigned band2Idx = 0; band2Idx < inputRst->getNumberOfBands(); ++band2Idx)
         m_ui->m_referenceBand2ComboBox->addItem(QString::number(band2Idx));
     }
@@ -236,6 +240,21 @@ void te::qt::widgets::TiePointLocatorWidget::adjCoordPicked(double x, double y)
   }
 
   delete ds;
+}
+
+void te::qt::widgets::TiePointLocatorWidget::setTiePointMarkLegend(QPixmap p)
+{
+  m_ui->m_tiePointLabel->setPixmap(p);
+}
+
+void te::qt::widgets::TiePointLocatorWidget::setSelectedTiePointMarkLegend(QPixmap p)
+{
+  m_ui->m_selectedTiePointLabel->setPixmap(p);
+}
+
+void te::qt::widgets::TiePointLocatorWidget::setReferenceTiePointMarkLegend(QPixmap p)
+{
+  m_ui->m_refTiePointLabel->setPixmap(p);
 }
 
 void te::qt::widgets::TiePointLocatorWidget::onAutoAcquireTiePointsToolButtonClicked()
@@ -495,6 +514,9 @@ void te::qt::widgets::TiePointLocatorWidget::transformationInfoUpdate()
     m_ui->m_transformationRMSEunselectedLineEdit->setText(QString::number(transfUnselectedTPPtr->getDirectMapRMSE()));
   else
     m_ui->m_transformationRMSEunselectedLineEdit->setText("N/A");
+
+  //emit signal
+  emit tiePointsUpdated();
 }
 
 void te::qt::widgets::TiePointLocatorWidget::startAdvancedOptions()
