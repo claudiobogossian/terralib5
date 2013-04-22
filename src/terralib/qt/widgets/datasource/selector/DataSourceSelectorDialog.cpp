@@ -49,10 +49,11 @@ te::qt::widgets::DataSourceSelectorDialog::DataSourceSelectorDialog(QWidget* par
   layout->addWidget(m_ui->layoutWidget, 0);
 
 // connect signal and slots
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_selectPushButton, SIGNAL(pressed()), this, SLOT(selectPushButtonPressed()));
   connect(m_selectorWidget->getForm()->m_datasourceListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(checkButtonsState()));
   connect(m_selectorWidget->getForm()->m_datasourceListWidget, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(selectPushButtonPressed()));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/datasource_selector/datasource_selector.html");
 }
 
 te::qt::widgets::DataSourceSelectorDialog::~DataSourceSelectorDialog()
@@ -67,13 +68,6 @@ const std::list<te::da::DataSourceInfoPtr>& te::qt::widgets::DataSourceSelectorD
 te::qt::widgets::DataSourceSelectorWidget* te::qt::widgets::DataSourceSelectorDialog::getSelectorWidget() const
 {
   return m_selectorWidget.get();
-}
-
-void te::qt::widgets::DataSourceSelectorDialog::helpPushButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("This option is not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::widgets::DataSourceSelectorDialog::selectPushButtonPressed()

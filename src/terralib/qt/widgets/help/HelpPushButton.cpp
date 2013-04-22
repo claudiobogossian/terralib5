@@ -40,10 +40,15 @@ void te::qt::widgets::HelpPushButton::setPageReference(const QString& ref)
   m_pgRef = ref;
 }
 
+void te::qt::widgets::HelpPushButton::setNameSpace(const QString& ns)
+{
+  m_ns = ns;
+}
+
 void te::qt::widgets::HelpPushButton::mousePressEvent(QMouseEvent* e)
 {
   QPushButton::mousePressEvent(e);
 
   if(e->button() == Qt::LeftButton)
-    te::qt::widgets::HelpManager::getInstance().showHelp(m_pgRef);
+    te::qt::widgets::HelpManager::getInstance().showHelp(m_pgRef, m_ns);
 }

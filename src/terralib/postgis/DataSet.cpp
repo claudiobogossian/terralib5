@@ -632,6 +632,10 @@ te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
       }
     }
   }
+  else
+  {
+    value += sizeof(uint32_t);
+  }
 
   switch(elemtype)
   {
@@ -721,6 +725,51 @@ te::dt::Array* te::pgis::DataSet::getArray(std::size_t i) const
             arr->insert(new te::dt::Double(val), pos);
 
             value += sizeof(double);
+          }
+        }
+
+        return arr.release();
+      }
+    break;
+
+    case PG_INT2_TYPE:
+      {
+        std::auto_ptr<te::dt::Array> arr(new te::dt::Array(ndim, te::dt::INT16_TYPE));
+
+        std::vector<std::size_t> pos(ndim, 0);
+
+        for(int d = 0; d != ndim; ++d)
+        {
+          int d_size = dimensions[d];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+          te::common::SwapBytes(d_size);
+#endif
+          int d_lower_boundary = lowerbounds[d];
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+          te::common::SwapBytes(d_lower_boundary);
+#endif
+
+          for(i = 0; i != d_size; ++i)
+          {
+            if((dataoffset != 0) && (mask[i] == false))
+            {
+              arr->insert(0, pos);
+              continue;
+            }
+
+            pos[d] = i;
+
+            boost::uint16_t val = *(boost::uint16_t*)value;
+
+#if TE_MACHINE_BYTE_ORDER == TE_NDR
+            te::common::SwapBytes(val);
+#endif
+
+            arr->insert(new te::dt::Int16(val), pos);
+
+            value += sizeof(boost::int16_t);
           }
         }
 

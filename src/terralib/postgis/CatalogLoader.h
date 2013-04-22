@@ -35,6 +35,7 @@ namespace te
 // Forward declaration
   namespace da { class DataSet; }
   namespace dt { class Property; }
+  namespace rst { class RasterProperty; }
 
   namespace pgis
   {

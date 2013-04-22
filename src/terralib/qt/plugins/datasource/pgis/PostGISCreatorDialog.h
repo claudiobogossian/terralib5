@@ -73,8 +73,6 @@ namespace te
 
             void closePushButtonPressed();
 
-            void helpPushButtonPressed();
-
             void passwordLineEditEditingFinished();
 
           protected:

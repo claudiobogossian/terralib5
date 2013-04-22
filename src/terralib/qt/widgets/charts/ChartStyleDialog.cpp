@@ -57,6 +57,8 @@ te::qt::widgets::ChartStyleDialog::ChartStyleDialog(QWidget* parent, Qt::WindowF
   connect(m_ui->m_okPushButton, SIGNAL(clicked()), this, SLOT(onOkPushButtonClicked()));
   connect(m_ui->m_helpPushButton, SIGNAL(clicked()), this, SLOT(onHelpPushButtonClicked()));
   connect(m_colorPicker, SIGNAL(colorChanged(const QColor&)), SLOT(onColorChanged(const QColor&)));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/charts/chart_style.html");
 }
 
 te::qt::widgets::ChartStyleDialog::~ChartStyleDialog(){}
@@ -78,8 +80,6 @@ void te::qt::widgets::ChartStyleDialog::onOkPushButtonClicked()
 {
   this->accept();
 }
-
-void te::qt::widgets::ChartStyleDialog::onHelpPushButtonClicked(){}
 
 void te::qt::widgets::ChartStyleDialog::onColorChanged(const QColor& color)
 {
