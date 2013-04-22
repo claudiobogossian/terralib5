@@ -25,24 +25,9 @@
 
 // TerraLib
 #include "../common/Translator.h"
-// #include "../common/STLUtils.h"
-// #include "../common/StringUtils.h"
-// #include "../common/Translator.h"
-// #include "../geometry/Envelope.h"
-// #include "../raster/Grid.h"
-// #include "../raster/RasterFactory.h"
-// #include "../raster/Utils.h"
-// #include "Band.h"
 #include "Exception.h"
 #include "CachedRaster.h"
 #include "CachedBand.h"
-
-// STL
-//#include <cassert>
-//#include <memory>
-
-// Boost
-//#include <boost/lexical_cast.hpp>
 
 te::mem::CachedRaster::CachedRaster()
 {

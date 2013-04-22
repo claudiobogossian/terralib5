@@ -58,8 +58,6 @@ namespace te
           \param maxMemPercentUsed The maximum free memory percentual to use valid range: [1:100].
           
           \param dataPrefetchThreshold The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
-          
-          \return true if OK, false on errors.
         */
         CachedRaster( const te::rst::Raster& rhs, const unsigned char maxMemPercentUsed, 
           const unsigned int dataPrefetchThreshold );
@@ -72,8 +70,6 @@ namespace te
           \param maxNumberOfCacheBlocks The maximum number of cache blocks.
           
           \param dataPrefetchThreshold The read-ahead data prefetch threshold (0-will disable prefetch, 1-data always prefetched, higher values will do prefetch when necessary).
-          
-          \return true if OK, false on errors.
         */
         CachedRaster( const unsigned int maxNumberOfCacheBlocks, const te::rst::Raster& rhs, 
           const unsigned int dataPrefetchThreshold );          
