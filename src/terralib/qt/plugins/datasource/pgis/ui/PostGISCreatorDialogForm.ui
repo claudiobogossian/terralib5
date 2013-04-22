@@ -389,7 +389,7 @@
      <item row="3" column="0">
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
-        <widget class="QPushButton" name="m_helpPushButton">
+        <widget class="te::qt::widgets::HelpPushButton" name="m_helpPushButton">
          <property name="text">
           <string>&amp;Help</string>
          </property>
@@ -411,7 +411,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <item>
-          <widget class="QPushButton" name="m_applyPushButton">
+          <widget class="te::qt::widgets::HelpPushButton" name="m_applyPushButton">
            <property name="text">
             <string>&amp;Apply</string>
            </property>
@@ -468,4 +468,11 @@
    </hints>
   </connection>
  </connections>
+ <CustomWidgets>
+	<CustomWidget>
+	 <class>te::qt::widgets::HelpPushButton</class> 
+	 <extends>QPushButton</extends> 
+	 <header>terralib/qt/widgets/help/HelpPushButton.h</header>
+	</CustomWidget>
+ </CustomWidgets>
 </ui>

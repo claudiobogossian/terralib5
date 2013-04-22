@@ -50,7 +50,8 @@ te::qt::widgets::DataSetSelectorDialog::DataSetSelectorDialog(QWidget* parent, Q
 // connect signals and slots
   connect(m_selectorW->getTreeView(), SIGNAL(toggled(DataSetItem*)), this, SLOT(onDataSetToggled(DataSetItem*)));
   connect(m_selectorW->getTreeView(), SIGNAL(clicked(DataSetItem*)), this, SLOT(onDataSetClicked(DataSetItem*)));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(onHelpPushButtonPressed()));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/dataset_selector/dataset_selector.html");
 }
 
 te::qt::widgets::DataSetSelectorDialog::~DataSetSelectorDialog()
@@ -114,12 +115,5 @@ void te::qt::widgets::DataSetSelectorDialog::onDataSetClicked(DataSetItem* /*ite
     m_ui->m_selectPushButton->setEnabled(m_selectorW->hasCheckedDataSets());
   else //if(m_selectMode == SELECTED_ITEMS)
     m_ui->m_selectPushButton->setEnabled(m_selectorW->hasSelectedDataSets());
-}
-
-void te::qt::widgets::DataSetSelectorDialog::onHelpPushButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon"));
 }
 

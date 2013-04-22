@@ -55,9 +55,11 @@ te::qt::plugins::pgis::PostGISCreatorDialog::PostGISCreatorDialog(QWidget* paren
   connect(m_ui->m_advancedOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(advancedCreationOptionsCheckBoxToggled(bool)));
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_ui->m_closePushButton, SIGNAL(pressed()), this, SLOT(closePushButtonPressed()));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
   connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/pgis/pgis_creator.html");
 }
 
 te::qt::plugins::pgis::PostGISCreatorDialog::~PostGISCreatorDialog()
@@ -103,11 +105,6 @@ void te::qt::plugins::pgis::PostGISCreatorDialog::applyPushButtonPressed()
 void te::qt::plugins::pgis::PostGISCreatorDialog::closePushButtonPressed()
 {
   reject();
-}
-
-void te::qt::plugins::pgis::PostGISCreatorDialog::helpPushButtonPressed()
-{
-
 }
 
 void te::qt::plugins::pgis::PostGISCreatorDialog::advancedCreationOptionsCheckBoxToggled(bool t)

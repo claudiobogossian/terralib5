@@ -60,6 +60,8 @@ namespace te
 
           virtual void resetState();
 
+          virtual void getHelpInformations(QString& ns, QString& helpFile);
+
         protected slots:
 
           void currentToolbarChanged(int idx);

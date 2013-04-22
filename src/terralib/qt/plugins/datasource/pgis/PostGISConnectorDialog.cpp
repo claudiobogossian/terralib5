@@ -55,10 +55,12 @@ te::qt::plugins::pgis::PostGISConnectorDialog::PostGISConnectorDialog(QWidget* p
 // connect signal and slots
   connect(m_ui->m_openPushButton, SIGNAL(pressed()), this, SLOT(openPushButtonPressed()));
   connect(m_ui->m_testPushButton, SIGNAL(pressed()), this, SLOT(testPushButtonPressed()));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_userNameLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
   connect(m_ui->m_passwordLineEdit, SIGNAL(editingFinished()), this, SLOT(passwordLineEditEditingFinished()));
   connect(m_ui->m_advancedConnectionOptionsCheckBox, SIGNAL(toggled(bool)), this, SLOT(advancedConnectionOptionsCheckBoxToggled(bool)));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/pgis/pgis.html");
 }
 
 te::qt::plugins::pgis::PostGISConnectorDialog::~PostGISConnectorDialog()
@@ -192,13 +194,6 @@ void te::qt::plugins::pgis::PostGISConnectorDialog::testPushButtonPressed()
                          tr("TerraLib Qt Components"),
                          tr("Unknown error while testing PostgreSQL + PostGIS data source!"));
   }
-}
-
-void te::qt::plugins::pgis::PostGISConnectorDialog::helpPushButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::pgis::PostGISConnectorDialog::getConnectionInfo(std::map<std::string, std::string>& connInfo) const

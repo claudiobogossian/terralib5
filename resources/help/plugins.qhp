@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QtHelpProject version="1.0">
+  <namespace>dpi.inpe.br.plugins</namespace>
+  <virtualFolder>doc</virtualFolder>
+  <filterSection>
+    <filterAttribute>help</filterAttribute>
+    <toc>
+      <section title="TerraLib Qt plugins" ref="./plugins/index.html">
+        <section title="GDAL plugin" ref="./plugins/gdal/gdal.html"/>
+        <section title="OGR plugin" ref="./plugins/ogr/ogr.html"/>
+        <section title="PostGIS plugin" ref="./plugins/pgis/index.html">
+          <section title="PostGIS plugin" ref="./plugins/pgis/pgis.html"/>
+          <section title="PostGIS creator" ref="./plugins/pgis/pgis_creator.html"/>
+        </section>
+      </section>
+    </toc>
+    <keywords>
+      <keyword name="Plugins" ref="./plugins/index.html"/>
+      <keyword name="PostGIS" ref="./plugins/pgis/pgis.html"/>
+      <keyword name="PostGIS creator" ref="./plugins/pgis/pgis_creator.html"/>
+      <keyword name="OGR" ref="./plugins/ogr/ogr.html"/>
+      <keyword name="GDAL" ref="./plugins/gdal/gdal.html"/>
+    </keywords>
+     <files>
+      <file>./plugins/index.html</file>
+      <file>./plugins/pgis/*.html</file>
+      <file>./plugins/ogr/ogr.html</file>
+      <file>./plugins/gdal/gdal.html</file>
+    </files>
+  </filterSection>
+</QtHelpProject>

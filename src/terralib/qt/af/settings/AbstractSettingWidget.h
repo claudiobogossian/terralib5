@@ -47,16 +47,39 @@ namespace te
         
         public:
 
+          /*!
+            \brief
+          */
           AbstractSettingWidget(QWidget* parent = 0);
 
+          /*!
+            \brief
+          */
           virtual ~AbstractSettingWidget();
           
+          /*!
+            \brief
+          */
           virtual void saveChanges() = 0;
 
+          /*!
+            \brief
+          */
           virtual void resetState() = 0;
 
+          /*!
+            \brief
+          */
+          virtual void getHelpInformations(QString& ns, QString& helpFile) = 0;
+
+          /*!
+            \brief
+          */
           QString getResumeText();
 
+          /*!
+            \brief
+          */
           bool hasChanges();
 
         public slots:

@@ -222,7 +222,7 @@ void MakeEnable(const std::vector<te::plugin::PluginInfo*>& plgs, const std::vec
         te::plugin::PluginManager::getInstance().load(plgs[i]->m_name);
       }
     }
-    catch(te::qt::widgets::Exception& e)
+    catch(const std::exception& e)
     {
       QMessageBox::warning(parent, QObject::tr("Fail to load plugin"), e.what());
 
@@ -276,7 +276,7 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
 
   connect(m_ui->m_applyPushButton, SIGNAL(pressed()), this, SLOT(applyPushButtonPressed()));
   connect(m_model, SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&)), SLOT(dataChanged(const QModelIndex&, const QModelIndex&)));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), SLOT(onHelpPushButtonPressed()));
+//  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), SLOT(onHelpPushButtonPressed()));
   connect(m_ui->m_enableAll, SIGNAL(clicked(bool)), SLOT(onEnableAllChanged(bool)));
 
   m_ui->m_addButton->setIcon(QIcon::fromTheme("list-add"));
@@ -287,6 +287,8 @@ te::qt::widgets::PluginManagerDialog::PluginManagerDialog(QWidget* parent, Qt::W
   m_ui->m_pluginsTabWidget->setTabEnabled(1, false);
 
   m_ui->m_enableAll->setCheckState(GetCheckState(m_model));
+
+  m_ui->m_helpPushButton->setPageReference("widgets/pluginmanager/PluginManager.html");
 }
 
 te::qt::widgets::PluginManagerDialog::~PluginManagerDialog()
@@ -480,10 +482,10 @@ void te::qt::widgets::PluginManagerDialog::dataChanged(const QModelIndex& index,
   m_ui->m_enableAll->setCheckState(GetCheckState(m_model));
 }
 
-void te::qt::widgets::PluginManagerDialog::onHelpPushButtonPressed()
-{
-  te::qt::widgets::HelpManager::getInstance().showHelp("widgets/pluginmanager/PluginManager.html", "dpi.inpe.br.qtwidgets");
-}
+//void te::qt::widgets::PluginManagerDialog::onHelpPushButtonPressed()
+//{
+//  te::qt::widgets::HelpManager::getInstance().showHelp("widgets/pluginmanager/PluginManager.html", "dpi.inpe.br.qtwidgets");
+//}
 
 void te::qt::widgets::PluginManagerDialog::onEnableAllChanged(bool st)
 {
