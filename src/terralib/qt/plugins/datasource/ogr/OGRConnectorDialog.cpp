@@ -53,8 +53,10 @@ te::qt::plugins::ogr::OGRConnectorDialog::OGRConnectorDialog(QWidget* parent, Qt
 // connect signal and slots
   connect(m_ui->m_openPushButton, SIGNAL(pressed()), this, SLOT(openPushButtonPressed()));
   connect(m_ui->m_testPushButton, SIGNAL(pressed()), this, SLOT(testPushButtonPressed()));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_searchFeatureToolButton, SIGNAL(pressed()), this, SLOT(searchFeatureToolButtonPressed()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/ogr/ogr.html");
 }
 
 te::qt::plugins::ogr::OGRConnectorDialog::~OGRConnectorDialog()
@@ -188,13 +190,6 @@ void te::qt::plugins::ogr::OGRConnectorDialog::testPushButtonPressed()
                          tr("TerraLib Qt Components"),
                          tr("Unknown error while testing OGR data source!"));
   }
-}
-
-void te::qt::plugins::ogr::OGRConnectorDialog::helpPushButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::ogr::OGRConnectorDialog::searchFeatureToolButtonPressed()

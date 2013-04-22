@@ -82,8 +82,6 @@ namespace te
 
           void onDataSetClicked(DataSetItem* item);
 
-          void onHelpPushButtonPressed();
-
         private:
 
           std::auto_ptr<Ui::DataSetSelectorDialogForm> m_ui;

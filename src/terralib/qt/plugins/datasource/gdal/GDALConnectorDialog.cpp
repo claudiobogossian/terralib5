@@ -53,8 +53,10 @@ te::qt::plugins::gdal::GDALConnectorDialog::GDALConnectorDialog(QWidget* parent,
 // connect signal and slots
   connect(m_ui->m_openPushButton, SIGNAL(pressed()), this, SLOT(openPushButtonPressed()));
   connect(m_ui->m_testPushButton, SIGNAL(pressed()), this, SLOT(testPushButtonPressed()));
-  connect(m_ui->m_helpPushButton, SIGNAL(pressed()), this, SLOT(helpPushButtonPressed()));
   connect(m_ui->m_searchDatasetToolButton, SIGNAL(pressed()), this, SLOT(searchDatasetToolButtonPressed()));
+
+  m_ui->m_helpPushButton->setNameSpace("dpi.inpe.br.plugins");
+  m_ui->m_helpPushButton->setPageReference("plugins/gdal/gdal.html");
 }
 
 te::qt::plugins::gdal::GDALConnectorDialog::~GDALConnectorDialog()
@@ -188,13 +190,6 @@ void te::qt::plugins::gdal::GDALConnectorDialog::testPushButtonPressed()
                          tr("TerraLib Qt Components"),
                          tr("Unknown error while testing GDAL data source!"));
   }
-}
-
-void te::qt::plugins::gdal::GDALConnectorDialog::helpPushButtonPressed()
-{
-  QMessageBox::warning(this,
-                       tr("TerraLib Qt Components"),
-                       tr("Not implemented yet!\nWe will provide it soon!"));
 }
 
 void te::qt::plugins::gdal::GDALConnectorDialog::searchDatasetToolButtonPressed()

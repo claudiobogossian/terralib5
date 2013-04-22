@@ -56,7 +56,6 @@
 #include "../widgets/tools/Pan.h"
 #include "../widgets/tools/ZoomArea.h"
 #include "../widgets/tools/ZoomClick.h"
-#include "../widgets/utils/CustomizeToolBarsDialog.h"
 #include "connectors/LayerExplorer.h"
 #include "connectors/MapDisplay.h"
 #include "connectors/TabularViewer.h"

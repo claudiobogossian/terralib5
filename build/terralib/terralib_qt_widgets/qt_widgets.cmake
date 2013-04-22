@@ -113,8 +113,10 @@ set (MOC "")
 set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/canvas/DrawLayerThread.h
+  ${SRCDIR}/widgets/canvas/EyeBirdMapDisplayWidget.h
   ${SRCDIR}/widgets/canvas/MapDisplay.h
   ${SRCDIR}/widgets/canvas/MultiThreadMapDisplay.h
+  ${SRCDIR}/widgets/canvas/ZoomInMapDisplayWidget.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/canvas" MOC)
 
@@ -302,8 +304,6 @@ set (
   ${SRCDIR}/widgets/utils/ColorPickerToolButton.h
   ${SRCDIR}/widgets/utils/FileChooser.h
   ${SRCDIR}/widgets/utils/ResourceChooser.h
-  ${SRCDIR}/widgets/utils/CustomizeToolBarsDialog.h
-#  ${SRCDIR}/widgets/utils/AddToolBarDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/qt/widgets/utils" MOC)
 
@@ -398,6 +398,7 @@ set (
   HDRS_TO_MOC
   ${SRCDIR}/widgets/tools/CoordTracking.h
   ${SRCDIR}/widgets/tools/Measure.h
+  ${SRCDIR}/widgets/tools/PanExtent.h
   ${SRCDIR}/widgets/tools/PointPicker.h
   ${SRCDIR}/widgets/tools/PolygonAcquire.h
   ${SRCDIR}/widgets/tools/ReadPixelTool.h

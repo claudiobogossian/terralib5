@@ -67,6 +67,13 @@ namespace te
           */
           void setPageReference(const QString& ref);
 
+          /*!
+            \brief Sets the namespace to be used.
+
+            \param ns New namespace.
+          */
+          void setNameSpace(const QString& ns);
+
         protected:
 
           /*!
@@ -79,6 +86,7 @@ namespace te
         protected:
 
           QString m_pgRef;   //!< Stores the reference for the help file to be presented.
+          QString m_ns;      //!< Namespace being used. (Qt help usage)
       };
     }
   }

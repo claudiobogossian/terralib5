@@ -97,16 +97,13 @@ int main(int /*argc*/, char** /*argv*/)
        return 0;
     }
     
-    //Acquiring the dataset Properties types
-    te::da::DataSetType* type = dataset->getType();
-
     //Getting the Columns that will be used to populate the graph
 
     std::string renda = "RENDA_FAM";
     std::string anosest = "ANOS_EST";
 
-    int rendaIdx= type->getPropertyPosition(renda);
-    int anosestIdx= type->getPropertyPosition(anosest);
+    int rendaIdx= te::da::GetPropertyPos(dataset, renda);
+    int anosestIdx= te::da::GetPropertyPos(dataset, anosest);
 
     int argc = 1;
     QApplication app(argc, 0);

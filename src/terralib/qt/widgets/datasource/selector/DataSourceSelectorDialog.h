@@ -70,8 +70,6 @@ namespace te
 
         protected slots:
 
-          void helpPushButtonPressed();
-
           void selectPushButtonPressed();
 
           void checkButtonsState();

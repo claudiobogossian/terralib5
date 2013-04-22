@@ -45,7 +45,9 @@ te::map::DataSetLayer* CreateRasterLayer(const std::string& path)
   // Gets the first dataset
   std::string dataSetName(datasets[0]);
   std::auto_ptr<te::da::DataSet> ds(transactor->getDataSet(dataSetName));
-  std::auto_ptr<te::rst::Raster> raster(ds->getRaster());
+
+  std::size_t rpos = te::da::GetFirstPropertyPos(ds.get(), te::dt::RASTER_TYPE);
+  std::auto_ptr<te::rst::Raster> raster(ds->getRaster(rpos));
 
   // Box
   te::gm::Envelope extent(*raster->getExtent());

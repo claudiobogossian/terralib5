@@ -86,8 +86,6 @@ namespace te
 
           void dataChanged(const QModelIndex&, const QModelIndex&);
 
-          void onHelpPushButtonPressed();
-
           void onEnableAllChanged(bool st);
 
         protected:

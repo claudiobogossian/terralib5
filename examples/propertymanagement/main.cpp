@@ -90,7 +90,7 @@ int main(int argc, char* argv[])
     
     return EXIT_FAILURE;
   }
-  catch(const std::exception& e)
+  catch(const std::exception& /*e*/)
   {
     std::cout << std::endl << "An unexpected exception has occuried!" << std::endl;
     std::cout << "Press Enter to exit..." << std::endl;

@@ -73,7 +73,6 @@ namespace te
           void onLabelStylePushButtonClicked();
           void onGridCheckBoxToggled();
           void onOkPushButtonClicked();
-          void onHelpPushButtonClicked();
           void onColorChanged(const QColor& color);
 
         private:
