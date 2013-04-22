@@ -68,6 +68,7 @@ set (MOC "")
 set (
   HDRS_TO_MOC
   ${SRCDIR}/qt/IntersectionDialog.h
+  ${SRCDIR}/qt/AggregationDialog.h
 )
 te_moc2("${HDRS_TO_MOC}" "terralib/vp/qt" MOC)
 
