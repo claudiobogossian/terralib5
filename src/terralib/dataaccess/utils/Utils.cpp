@@ -28,8 +28,10 @@
 #include "../../geometry/Envelope.h"
 #include "../../geometry/GeometryProperty.h"
 #include "../dataset/DataSet.h"
+#include "../dataset/DataSetAdapter.h"
 #include "../dataset/DataSetPersistence.h"
 #include "../dataset/DataSetType.h"
+#include "../dataset/DataSetTypeConverter.h"
 #include "../dataset/DataSetTypePersistence.h"
 #include "../dataset/ObjectId.h"
 #include "../dataset/ObjectIdSet.h"
@@ -539,3 +541,28 @@ void te::da::Create(DataSourceTransactor* t,
   dp->add(dt->getName(), d, options, limit);
 }
 
+te::da::DataSetAdapter* te::da::CreateAdapter(DataSet* ds, DataSetTypeConverter* converter, bool isOwner)
+{
+  assert(ds);
+  assert(converter);
+
+  DataSetType* type = converter->getResult();
+  assert(type);
+
+  const std::vector<std::vector<std::size_t> >& indexes = converter->getConvertedPropertyIndexes();
+  const std::vector<AttributeConverter>& funcs = converter->getConverters();
+  
+  assert((type->size() == indexes.size()) && (type->size() == funcs.size()));
+
+  DataSetAdapter* adapter = new DataSetAdapter(ds, isOwner);
+
+  for(std::size_t i = 0; i < type->size(); ++i)
+  {
+    te::dt::Property* p = type->getProperty(i);
+    assert(p);
+
+    adapter->add(p->getName(), p->getType(), indexes[i], funcs[i]);
+  }
+
+  return adapter;
+}

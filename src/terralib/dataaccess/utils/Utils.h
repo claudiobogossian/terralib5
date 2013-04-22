@@ -51,7 +51,9 @@ namespace te
   {
 // Forward declaration
     class DataSet;
+    class DataSetAdapter;
     class DataSetType;
+    class DataSetTypeConverter;
     class DataSourceCatalogLoader;
     class DataSourceTransactor;
     class ObjectIdSet;
@@ -240,6 +242,8 @@ namespace te
                                    DataSet* d,
                                    const std::map<std::string, std::string>& options,
                                    std::size_t limit = 0);
+
+    TEDATAACCESSEXPORT DataSetAdapter* CreateAdapter(DataSet* ds, DataSetTypeConverter* converter, bool isOwner = false);
 
   } // end namespace da
 }   // end namespace te
