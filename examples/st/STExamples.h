@@ -116,7 +116,7 @@ void PrintDataSets(te::da::DataSource* ds);
 
   \param dataset Any dataset.
  */
-void PrintDataSet(te::da::DataSet* dataset);
+void PrintDataSet(const std::string& datasetName, te::da::DataSet* dataset);
 
 /*!
   \brief It prints the type of a given dataset.
