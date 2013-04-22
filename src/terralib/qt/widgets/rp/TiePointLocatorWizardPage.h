@@ -108,11 +108,15 @@ namespace te
 
           void onAdjPointPicked(double x, double y, te::qt::widgets::MapDisplay* map);
 
+          void onTiePointsUpdated();
+
         protected:
 
           void startUpNavigators();
 
           void drawTiePoints();
+
+          QPixmap getPixmap(te::color::RGBAColor** rgba);
 
         private:
 

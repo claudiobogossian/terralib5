@@ -333,8 +333,8 @@ void ExemplifyPointSetIterator()
   std::vector<te::gm::Point*> points;
   double x, y;
   boost::random::mt19937 gen(static_cast<boost::uint32_t>(std::time(0)));
-  boost::random::uniform_int_distribution<> distX(inraster->getExtent()->getLowerLeftX(), inraster->getExtent()->getUpperRightX());
-  boost::random::uniform_int_distribution<> distY(inraster->getExtent()->getLowerLeftY(), inraster->getExtent()->getUpperRightY());
+  boost::random::uniform_int_distribution<> distX((int)(inraster->getExtent()->getLowerLeftX()), (int)(inraster->getExtent()->getUpperRightX()));
+  boost::random::uniform_int_distribution<> distY((int)(inraster->getExtent()->getLowerLeftY()), (int)(inraster->getExtent()->getUpperRightY()));
   for (unsigned int i = 0; i < 50; i++)
   {
     x = distX(gen);

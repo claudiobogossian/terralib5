@@ -37,6 +37,7 @@
 #include "../../../se/Utils.h"
 #include "../../widgets/canvas/Canvas.h"
 #include "../../widgets/canvas/MapDisplay.h"
+#include "../../widgets/Utils.h"
 #include "RasterNavigatorDialog.h"
 #include "RasterNavigatorWidget.h"
 #include "TiePointLocatorWidget.h"
@@ -46,6 +47,7 @@
 
 // Qt
 #include <QGridLayout>
+#include <QPixmap>
 
 #define PATTERN_SIZE 18
 
@@ -60,6 +62,7 @@ te::qt::widgets::TiePointLocatorWizardPage::TiePointLocatorWizardPage(QWidget* p
 // connects
   connect(m_tiePointWidget->getForm()->m_showRefNavTtoolButton, SIGNAL(toggled(bool)), this, SLOT(showReferenceNavigator(bool)));
   connect(m_tiePointWidget->getForm()->m_showAdjNavTtoolButton, SIGNAL(toggled(bool)), this, SLOT(showAdjustNavigator(bool)));
+  connect(m_tiePointWidget.get(), SIGNAL(tiePointsUpdated()), this, SLOT(onTiePointsUpdated()));
 
 //define mark selected
   te::se::Stroke* strokeSel = te::se::CreateStroke("#000000", "2");
@@ -68,6 +71,9 @@ te::qt::widgets::TiePointLocatorWizardPage::TiePointLocatorWizardPage(QWidget* p
 
   m_rgbaMarkSelected = te::map::MarkRendererManager::getInstance().render(m_markSelected, PATTERN_SIZE);
 
+  QPixmap markSelPix = getPixmap(m_rgbaMarkSelected);
+  m_tiePointWidget->setSelectedTiePointMarkLegend(markSelPix);
+
 //define mark unselected
   te::se::Stroke* strokeUnsel = te::se::CreateStroke("#000000", "2");
   te::se::Fill* fillUnsel = te::se::CreateFill("#000000", "1.0");
@@ -75,12 +81,18 @@ te::qt::widgets::TiePointLocatorWizardPage::TiePointLocatorWizardPage(QWidget* p
 
   m_rgbaMarkUnselected = te::map::MarkRendererManager::getInstance().render(m_markUnselected, PATTERN_SIZE);
 
+  QPixmap markPix = getPixmap(m_rgbaMarkUnselected);
+  m_tiePointWidget->setTiePointMarkLegend(markPix);
+
 //define mark reference
   te::se::Stroke* strokeRef = te::se::CreateStroke("#000000", "2");
   te::se::Fill* fillRef = te::se::CreateFill("#FF0000", "1.0");
   m_markRef = te::se::CreateMark("x", strokeRef, fillRef);
 
   m_rgbaMarkRef = te::map::MarkRendererManager::getInstance().render(m_markRef, PATTERN_SIZE);
+
+  QPixmap markRefPix = getPixmap(m_rgbaMarkRef);
+  m_tiePointWidget->setReferenceTiePointMarkLegend(markRefPix);
 
 //configure page
   this->setTitle(tr("Tie Point Locator"));
@@ -183,12 +195,17 @@ void te::qt::widgets::TiePointLocatorWizardPage::onAdjPointPicked(double x, doub
   drawTiePoints();
 }
 
+void te::qt::widgets::TiePointLocatorWizardPage::onTiePointsUpdated()
+{
+  drawTiePoints();
+}
+
 void te::qt::widgets::TiePointLocatorWizardPage::startUpNavigators()
 {
   //reference
   m_refNavigator = new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool);
   m_refNavigator->setWindowTitle(tr("Referece"));
-  m_refNavigator->setMinimumSize(400, 400);
+  m_refNavigator->setMinimumSize(550, 400);
   m_refNavigator->getWidget()->hideGeomTool(true);
   m_refNavigator->getWidget()->hideInfoTool(true);
 
@@ -200,7 +217,7 @@ void te::qt::widgets::TiePointLocatorWizardPage::startUpNavigators()
   //adjust
   m_adjNavigator = new te::qt::widgets::RasterNavigatorDialog(this, Qt::Tool);
   m_adjNavigator->setWindowTitle(tr("Adjust"));
-  m_adjNavigator->setMinimumSize(400, 400);
+  m_adjNavigator->setMinimumSize(550, 400);
   m_adjNavigator->getWidget()->hideGeomTool(true);
   m_adjNavigator->getWidget()->hideInfoTool(true);
 
@@ -281,10 +298,12 @@ void te::qt::widgets::TiePointLocatorWizardPage::drawTiePoints()
     refCanvasInstance.draw(&refPoint);
 
     //ref text
-    refCoord.x = refCoord.x + 6;
-    rstRef->getGrid()->gridToGeo(refCoord.x, refCoord.y, refGeoCoord.x, refGeoCoord.y );
-    refPoint.setX(refGeoCoord.x);
-    refPoint.setY(refGeoCoord.y);
+    QMatrix matrix = refCanvasInstance.getMatrix();
+    QPointF pointCanvas = matrix.map(QPointF(refGeoCoord.x, refGeoCoord.y));
+    pointCanvas.setX(pointCanvas.x() + 8);
+    QPointF pointGeo = matrix.inverted().map(pointCanvas);
+    refPoint.setX(pointGeo.x());
+    refPoint.setY(pointGeo.y());
     refCanvasInstance.drawText(&refPoint, QString::number(id).toStdString());
 
     //adj coord
@@ -296,10 +315,12 @@ void te::qt::widgets::TiePointLocatorWizardPage::drawTiePoints()
     adjCanvasInstance.draw(&adjPoint);
 
     //adj text
-    adjCoord.x = adjCoord.x + 6;
-    rstAdj->getGrid()->gridToGeo(adjCoord.x, adjCoord.y, adjGeoCoord.x, adjGeoCoord.y );
-    adjPoint.setX(adjGeoCoord.x);
-    adjPoint.setY(adjGeoCoord.y);
+    matrix = adjCanvasInstance.getMatrix();
+    pointCanvas = matrix.map(QPointF(adjGeoCoord.x, adjGeoCoord.y));
+    pointCanvas.setX(pointCanvas.x() + 8);
+    pointGeo = matrix.inverted().map(pointCanvas);
+    adjPoint.setX(pointGeo.x());
+    adjPoint.setY(pointGeo.y());
     adjCanvasInstance.drawText(&adjPoint, QString::number(id).toStdString());
 
     ++it;
@@ -324,4 +345,17 @@ void te::qt::widgets::TiePointLocatorWizardPage::drawTiePoints()
 
   delete dsRef;
   delete dsAdj;
+}
+
+QPixmap te::qt::widgets::TiePointLocatorWizardPage::getPixmap(te::color::RGBAColor** rgba)
+{
+  QPixmap p;
+
+  QImage* img = te::qt::widgets::GetImage(rgba, PATTERN_SIZE, PATTERN_SIZE);
+
+  p.convertFromImage(*img);
+
+  delete img;
+
+  return p;
 }

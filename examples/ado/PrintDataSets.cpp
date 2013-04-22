@@ -62,7 +62,7 @@ void PrintDataSets(te::da::DataSource* ds)
     te::da::DataSet* dataset = transactor->getDataSet(datasets[i]);
 
     // Print its data to the standard output
-    PrintDataSetValues(dataset);
+    PrintDataSetValues(datasets[i], dataset);
 
     // Release the dataset: you are the owner
     delete dataset;

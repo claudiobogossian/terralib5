@@ -123,19 +123,20 @@ te::rp::MixtureModel::InputParameters te::qt::widgets::MixtureModelWizardPage::g
 // insert selected bands
   unsigned selectedBands = 0;
   std::vector<bool> selectedBandsVector;
-  for (int i = 0; i < (m_ui->m_bandsListGroupBox->layout()->count() - 1); i += 2)
+
+  for (int i = 0; i < m_ui->m_bandTableWidget->rowCount(); ++i)
   {
-    QCheckBox* bandCheckBox = (QCheckBox*) m_ui->m_bandsListGroupBox->layout()->itemAt(i)->widget();
+    QCheckBox* bandCheckBox = (QCheckBox*) m_ui->m_bandTableWidget->cellWidget(i, 0);
 
     if (bandCheckBox->isChecked())
     {
       selectedBandsVector.push_back(true);
       selectedBands++;
 
-      algoInputParams.m_inputRasterBands.push_back(i / 2);
+      algoInputParams.m_inputRasterBands.push_back(i);
 
-      QComboBox *sensorComboBox = (QComboBox*) m_ui->m_bandsListGroupBox->layout()->itemAt(i + 1)->widget();
-      algoInputParams.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toAscii()));
+      QComboBox *sensorComboBox = (QComboBox*) m_ui->m_bandTableWidget->cellWidget(i, 1);
+      algoInputParams.m_inputSensorBands.push_back(std::string(sensorComboBox->currentText().toStdString()));
     }
     else
       selectedBandsVector.push_back(false);
@@ -315,11 +316,15 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
       for(unsigned int i = 0; i < bandNames.size(); i++)
         sensorsDescriptions.append(bandNames[i].c_str());
 
+      m_ui->m_bandTableWidget->setRowCount(0);
+
       // initializing the list of bands
-      QGridLayout* bandsListLayout = new QGridLayout(m_ui->m_bandsListGroupBox);
       for(unsigned b = 0 ; b < inputRst->getNumberOfBands(); b++)
       {
-        QString bName(tr("Band: "));
+        int newrow = m_ui->m_bandTableWidget->rowCount();
+        m_ui->m_bandTableWidget->insertRow(newrow);
+
+        QString bName(tr("Band "));
         bName.append(QString::number(b));
         
         QCheckBox* bandCheckBox = new QCheckBox(bName, this);
@@ -327,11 +332,11 @@ void te::qt::widgets::MixtureModelWizardPage::listBands()
         QComboBox* sensorDescriptionComboBox = new QComboBox(this);
         sensorDescriptionComboBox->addItems(sensorsDescriptions);
 
-        bandsListLayout->addWidget(bandCheckBox, b, 0);
-        bandsListLayout->addWidget(sensorDescriptionComboBox, b, 1);
+        m_ui->m_bandTableWidget->setCellWidget(newrow, 0, bandCheckBox);
+        m_ui->m_bandTableWidget->setCellWidget(newrow, 1, sensorDescriptionComboBox);
       }
 
-      m_ui->m_bandsListGroupBox->setLayout(bandsListLayout);
+      m_ui->m_bandTableWidget->resizeColumnToContents(0);
     }
   }
 

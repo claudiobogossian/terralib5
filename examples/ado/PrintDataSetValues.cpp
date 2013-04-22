@@ -34,7 +34,7 @@
 #include <iostream>
 
 
-void PrintDataSetValues(te::da::DataSet* dataset)
+void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset)
 {
   if(dataset == 0)
   {
@@ -42,26 +42,23 @@ void PrintDataSetValues(te::da::DataSet* dataset)
     return;
   }
 
-  // Get the dataset structure
-  const te::da::DataSetType* dt = dataset->getType();
-
-  int nproperties = static_cast<int>(dt->size());
+  std::size_t numProperties = dataset->getNumProperties();
 
   // This will be used just to count the items in the dataset
   int item = 0;
 
   std::cout << std::endl <<  "===========================================================" << std::endl;
   std::cout << std::endl <<  "===========================================================" << std::endl;
-  std::cout << "Printing information about the dataset: " << dt->getName() << std::endl;
+  std::cout << "Printing information about the dataset: " << datasetName << std::endl;
 
   // Traverse the dataset and print each dataset item
   while(dataset->moveNext())
   {
     std::cout << std::endl << "Row Number: " << item++ << " =======================" << std::endl;
   
-    for(int i = 0; i < nproperties; ++i)
+    for(std::size_t i = 0; i < numProperties; ++i)
     {
-      std::cout << dt->getProperty(i)->getName() << ": " ; 
+      std::cout << dataset->getPropertyName(i) << ": " ; 
 
       // Check if the value is not null
       if(dataset->isNull(i))
@@ -72,7 +69,7 @@ void PrintDataSetValues(te::da::DataSet* dataset)
   
       std::string value;
       // Get the data value if it is not binary
-      int colType = dt->getProperty(i)->getType();
+      int colType = dataset->getPropertyDataType(i);
       if(colType == te::dt::BYTE_ARRAY_TYPE)
         value = "Binary Type";
       else if(colType == te::dt::UNKNOWN_TYPE)
