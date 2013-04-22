@@ -44,7 +44,8 @@ void RasterizePolygonSet()
           std::cout << "  Drawing city " << dataset->getString("nome") << std::endl;
 
 // retrieve polygon's geometry
-          te::gm::Geometry* geometry = dataset->getGeometry();
+          std::size_t geomPos = te::da::GetFirstPropertyPos(dataset, te::dt::GEOMETRY_TYPE);
+          te::gm::Geometry* geometry = dataset->getGeometry(geomPos);
           te::gm::Coord2D ll = geometry->getMBR()->getLowerLeft();
           te::gm::Coord2D ur = geometry->getMBR()->getUpperRight();
           te::gm::Envelope* envelope = new te::gm::Envelope(ll.x, ll.y, ur.x, ur.y);
@@ -84,7 +85,9 @@ void RasterizePolygonSet()
 
 // access the data set
           te::da::DataSet* dset = tr->getDataSet(rname, te::common::FORWARDONLY, te::common::RWAccess);
-          te::rst::Raster* rst = dset->getRaster();
+
+          std::size_t rpos = te::da::GetFirstPropertyPos(dset, te::dt::RASTER_TYPE);
+          te::rst::Raster* rst = dset->getRaster(rpos);
 
 // fill Raster with PolygonSet information
           std::vector<te::gm::Geometry*> vgeometry;
