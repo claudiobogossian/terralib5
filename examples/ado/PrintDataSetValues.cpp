@@ -34,7 +34,7 @@
 #include <iostream>
 
 
-void PrintDataSetValues(te::da::DataSet* dataset)
+void PrintDataSetValues(const std::string& datasetName, te::da::DataSet* dataset)
 {
   if(dataset == 0)
   {
@@ -49,7 +49,7 @@ void PrintDataSetValues(te::da::DataSet* dataset)
 
   std::cout << std::endl <<  "===========================================================" << std::endl;
   std::cout << std::endl <<  "===========================================================" << std::endl;
-  //std::cout << "Printing information about the dataset: " << dt->getName() << std::endl;
+  std::cout << "Printing information about the dataset: " << datasetName << std::endl;
 
   // Traverse the dataset and print each dataset item
   while(dataset->moveNext())
