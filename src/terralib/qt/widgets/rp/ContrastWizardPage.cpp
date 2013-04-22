@@ -206,6 +206,11 @@ void te::qt::widgets::ContrastWizardPage::fillContrastTypes()
 
 void te::qt::widgets::ContrastWizardPage::listBands()
 {
+  m_ui->m_rComboBox->clear();
+  m_ui->m_gComboBox->clear();
+  m_ui->m_bComboBox->clear();
+  m_ui->m_mComboBox->clear();
+
   assert(m_layer.get());
 
   //get input raster
